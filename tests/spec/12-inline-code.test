@@ -5,3 +5,21 @@ Run `npm install` first.
 .
 <p>Run <code>npm install</code> first.</p>
 ```
+
+```
+The literal `` ` `` is one backtick.
+.
+<p>The literal <code>`</code> is one backtick.</p>
+```
+
+```
+The string `*not bold*` is literal.
+.
+<p>The string <code>*not bold*</code> is literal.</p>
+```
+
+```
+Use `ls | grep foo` to filter.
+.
+<p>Use <code>ls | grep foo</code> to filter.</p>
+```

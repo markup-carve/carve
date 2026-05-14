@@ -127,6 +127,72 @@ Whitespace immediately after an opener (or before a closer) blocks emphasis — 
 
 :::
 
+All six heading levels are supported.
+
+::: compare
+
+```carve
+# H1
+## H2
+### H3
+#### H4
+##### H5
+###### H6
+```
+
+```html
+<h1>H1</h1>
+<h2>H2</h2>
+<h3>H3</h3>
+<h4>H4</h4>
+<h5>H5</h5>
+<h6>H6</h6>
+```
+
+:::
+
+Attributes attach to the heading via a trailing `{…}` block.
+
+::: compare
+
+```carve
+## Setup {#install .featured}
+```
+
+```html
+<h2 id="install" class="featured">Setup</h2>
+```
+
+:::
+
+Inline emphasis renders inside heading text.
+
+::: compare
+
+```carve
+## Why /Carve/?
+```
+
+```html
+<h2>Why <em>Carve</em>?</h2>
+```
+
+:::
+
+A `#` at line start without a following space is a tag, not a heading. The line renders as a paragraph containing the tag.
+
+::: compare
+
+```carve
+#notaheading
+```
+
+```html
+<p><a class="tag" href="#notaheading">#notaheading</a></p>
+```
+
+:::
+
 ## Links
 
 ::: compare
@@ -226,6 +292,95 @@ An empty link text is allowed and produces an empty anchor — useful as a targe
   <li>apples</li>
   <li>oranges</li>
   <li>pears</li>
+</ul>
+```
+
+:::
+
+Ordered lists use `N.` prefixes — numbering starts from the first marker.
+
+::: compare
+
+```carve
+1. first
+2. second
+3. third
+```
+
+```html
+<ol>
+  <li>first</li>
+  <li>second</li>
+  <li>third</li>
+</ol>
+```
+
+:::
+
+Nested lists indent two spaces under the parent item.
+
+::: compare
+
+```carve
+- fruit
+  - apples
+  - oranges
+- vegetables
+```
+
+```html
+<ul>
+  <li>fruit
+    <ul>
+      <li>apples</li>
+      <li>oranges</li>
+    </ul>
+  </li>
+  <li>vegetables</li>
+</ul>
+```
+
+:::
+
+Lists can mix markers — an ordered list may contain a nested unordered list (and vice versa).
+
+::: compare
+
+```carve
+1. setup
+   - clone
+   - install
+2. build
+```
+
+```html
+<ol>
+  <li>setup
+    <ul>
+      <li>clone</li>
+      <li>install</li>
+    </ul>
+  </li>
+  <li>build</li>
+</ol>
+```
+
+:::
+
+A blank line between items produces a loose list — each item wraps in a paragraph.
+
+::: compare
+
+```carve
+- apples
+
+- oranges
+```
+
+```html
+<ul>
+  <li><p>apples</p></li>
+  <li><p>oranges</p></li>
 </ul>
 ```
 
@@ -436,6 +591,80 @@ print("hi")
 
 :::
 
+A fenced block with no info string renders without a language class.
+
+::: compare
+
+````carve
+```
+plain text
+```
+````
+
+```html
+<pre><code>plain text
+</code></pre>
+```
+
+:::
+
+Tildes are an alternative fence — useful when the body contains backtick fences.
+
+::: compare
+
+```carve
+~~~yaml
+key: value
+~~~
+```
+
+```html
+<pre><code class="language-yaml">key: value
+</code></pre>
+```
+
+:::
+
+Lengthening the fence lets a code block embed a literal triple-backtick fence as content.
+
+::: compare
+
+`````carve
+````markdown
+```python
+print("hi")
+```
+````
+`````
+
+```html
+<pre><code class="language-markdown">```python
+print("hi")
+```
+</code></pre>
+```
+
+:::
+
+Code-block content is never parsed for Carve syntax — emphasis, headings, and tags inside are literal.
+
+::: compare
+
+````carve
+```
+# not a heading
+/not italic/  *not bold*  #notatag
+```
+````
+
+```html
+<pre><code># not a heading
+/not italic/  *not bold*  #notatag
+</code></pre>
+```
+
+:::
+
 ## Inline code
 
 ::: compare
@@ -446,6 +675,48 @@ Run `npm install` first.
 
 ```html
 <p>Run <code>npm install</code> first.</p>
+```
+
+:::
+
+Use a longer run of backticks to embed a literal backtick inside the span.
+
+::: compare
+
+```carve
+The literal `` ` `` is one backtick.
+```
+
+```html
+<p>The literal <code>`</code> is one backtick.</p>
+```
+
+:::
+
+Carve syntax inside a code span is never parsed — it renders as literal text.
+
+::: compare
+
+```carve
+The string `*not bold*` is literal.
+```
+
+```html
+<p>The string <code>*not bold*</code> is literal.</p>
+```
+
+:::
+
+A pipe inside an inline code span does not split the surrounding table cell.
+
+::: compare
+
+```carve
+Use `ls | grep foo` to filter.
+```
+
+```html
+<p>Use <code>ls | grep foo</code> to filter.</p>
 ```
 
 :::
@@ -463,6 +734,49 @@ Heads up — this is important.
 ```html
 <aside class="admonition note">
   <p>Heads up — this is important.</p>
+</aside>
+```
+
+:::
+
+Each admonition type produces a matching CSS class — `note`, `tip`, `warning`, and `caution` are the named variants.
+
+::: compare
+
+```carve
+::: warning
+Mind the gap.
+:::
+```
+
+```html
+<aside class="admonition warning">
+  <p>Mind the gap.</p>
+</aside>
+```
+
+:::
+
+An admonition may contain multiple block-level children, including lists and code blocks.
+
+::: compare
+
+````carve
+::: tip
+Quick steps:
+
+- read the docs
+- run the demo
+:::
+````
+
+```html
+<aside class="admonition tip">
+  <p>Quick steps:</p>
+  <ul>
+    <li>read the docs</li>
+    <li>run the demo</li>
+  </ul>
 </aside>
 ```
 

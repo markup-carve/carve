@@ -9,3 +9,30 @@ Heads up — this is important.
   <p>Heads up — this is important.</p>
 </aside>
 ```
+
+```
+::: warning
+Mind the gap.
+:::
+.
+<aside class="admonition warning">
+  <p>Mind the gap.</p>
+</aside>
+```
+
+```
+::: tip
+Quick steps:
+
+- read the docs
+- run the demo
+:::
+.
+<aside class="admonition tip">
+  <p>Quick steps:</p>
+  <ul>
+    <li>read the docs</li>
+    <li>run the demo</li>
+  </ul>
+</aside>
+```

@@ -11,3 +11,60 @@ Lists
   <li>pears</li>
 </ul>
 ```
+
+```
+1. first
+2. second
+3. third
+.
+<ol>
+  <li>first</li>
+  <li>second</li>
+  <li>third</li>
+</ol>
+```
+
+```
+- fruit
+  - apples
+  - oranges
+- vegetables
+.
+<ul>
+  <li>fruit
+    <ul>
+      <li>apples</li>
+      <li>oranges</li>
+    </ul>
+  </li>
+  <li>vegetables</li>
+</ul>
+```
+
+```
+1. setup
+   - clone
+   - install
+2. build
+.
+<ol>
+  <li>setup
+    <ul>
+      <li>clone</li>
+      <li>install</li>
+    </ul>
+  </li>
+  <li>build</li>
+</ol>
+```
+
+```
+- apples
+
+- oranges
+.
+<ul>
+  <li><p>apples</p></li>
+  <li><p>oranges</p></li>
+</ul>
+```

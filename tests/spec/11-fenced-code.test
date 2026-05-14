@@ -8,3 +8,43 @@ print("hi")
 <pre><code class="language-python">print("hi")
 </code></pre>
 ````
+
+````
+```
+plain text
+```
+.
+<pre><code>plain text
+</code></pre>
+````
+
+```
+~~~yaml
+key: value
+~~~
+.
+<pre><code class="language-yaml">key: value
+</code></pre>
+```
+
+`````
+````markdown
+```python
+print("hi")
+```
+````
+.
+<pre><code class="language-markdown">```python
+print("hi")
+`````
+
+````
+```
+# not a heading
+/not italic/  *not bold*  #notatag
+```
+.
+<pre><code># not a heading
+/not italic/  *not bold*  #notatag
+</code></pre>
+````
