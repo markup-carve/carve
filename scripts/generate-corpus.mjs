@@ -72,14 +72,27 @@ for (const f of readdirSync(outDir)) {
 const slugify = (s) =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
 
-let n = 0
+// Stable per-section numbering. Examples in the same section share the section
+// index; their suffix increments per example within the section (omitted for the
+// first example so single-example sections keep their existing filenames).
+const sectionState = new Map()
+let sectionCounter = 0
 for (const ex of examples) {
-  n += 1
-  const idx = String(n).padStart(2, '0')
-  const slug = slugify(ex.section)
-  ex.idx = idx
-  ex.slug = slug
-  const base = `${idx}-${slug}`
+  let state = sectionState.get(ex.section)
+  if (!state) {
+    sectionCounter += 1
+    state = { idx: sectionCounter, count: 0 }
+    sectionState.set(ex.section, state)
+  }
+  state.count += 1
+  ex.idx = String(state.idx).padStart(2, '0')
+  ex.slug = slugify(ex.section)
+  ex.exampleIdx = state.count
+}
+
+for (const ex of examples) {
+  const suffix = ex.exampleIdx === 1 ? '' : `-${ex.exampleIdx}`
+  const base = `${ex.idx}-${ex.slug}${suffix}`
   writeFileSync(resolve(outDir, `${base}.crv`), ex.carve + '\n')
   writeFileSync(resolve(outDir, `${base}.html`), ex.html + '\n')
   console.log(`  ${base}.{crv,html}`)
@@ -99,20 +112,22 @@ const maxRun = (s, ch) => {
   return m ? Math.max(...m.map((r) => r.length)) : 0
 }
 
+// One .test file per section, concatenating every example in the section.
+const bySection = new Map()
 for (const ex of examples) {
-  const base = `${ex.idx}-${ex.slug}`
-  const fenceLen = Math.max(3, maxRun(ex.carve, '`') + 1, maxRun(ex.html, '`') + 1)
-  const fence = '`'.repeat(fenceLen)
-  const body = [
-    ex.section,
-    '',
-    fence,
-    ex.carve,
-    '.',
-    ex.html,
-    fence,
-    '',
-  ].join('\n')
-  writeFileSync(resolve(specDir, `${base}.test`), body)
+  if (!bySection.has(ex.section)) bySection.set(ex.section, [])
+  bySection.get(ex.section).push(ex)
 }
-console.log(`Wrote ${examples.length} .test files to ${specDir}`)
+
+for (const [section, exs] of bySection) {
+  const first = exs[0]
+  const base = `${first.idx}-${first.slug}`
+  const parts = [section, '']
+  for (const ex of exs) {
+    const fenceLen = Math.max(3, maxRun(ex.carve, '`') + 1, maxRun(ex.html, '`') + 1)
+    const fence = '`'.repeat(fenceLen)
+    parts.push(fence, ex.carve, '.', ex.html, fence, '')
+  }
+  writeFileSync(resolve(specDir, `${base}.test`), parts.join('\n'))
+}
+console.log(`Wrote ${bySection.size} .test files to ${specDir}`)

@@ -5,3 +5,27 @@ Read [Djot](https://djot.net) for details.
 .
 <p>Read <a href="https://djot.net">Djot</a> for details.</p>
 ```
+
+```
+[Site](https://example.com "Hover text")
+.
+<p><a href="https://example.com" title="Hover text">Site</a></p>
+```
+
+```
+Visit <https://example.com> or write <hello@example.com>.
+.
+<p>Visit <a href="https://example.com">https://example.com</a> or write <a href="mailto:hello@example.com">hello@example.com</a>.</p>
+```
+
+```
+\[not a link\](https://example.com)
+.
+<p>[not a link](https://example.com)</p>
+```
+
+```
+[](https://example.com)
+.
+<p><a href="https://example.com"></a></p>
+```

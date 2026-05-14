@@ -9,3 +9,39 @@ _underline_  ~strikethrough~
 <u>underline</u>  <s>strikethrough</s>
 <sup>super</sup>  <sub>sub</sub>  <mark>highlight</mark></p>
 ```
+
+```
+foo*bar*baz and one/two/three
+.
+<p>foo<strong>bar</strong>baz and one<em>two</em>three</p>
+```
+
+```
+/foo bar
+.
+<p>/foo bar</p>
+```
+
+```
+\/literal\/ and \*not bold\*
+.
+<p>/literal/ and *not bold*</p>
+```
+
+```
+*bold with /italic/ inside* and /italic with *bold* inside/
+.
+<p><strong>bold with <em>italic</em> inside</strong> and <em>italic with <strong>bold</strong> inside</em></p>
+```
+
+```
+/usr/local/
+.
+<p><em>usr/local</em></p>
+```
+
+```
+/ not emphasis /
+.
+<p>/ not emphasis /</p>
+```

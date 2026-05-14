@@ -25,6 +25,90 @@ _underline_  ~strikethrough~
 
 :::
 
+Intraword emphasis is supported on all delimiters — content is consumed even with no surrounding whitespace.
+
+::: compare
+
+```carve
+foo*bar*baz and one/two/three
+```
+
+```html
+<p>foo<strong>bar</strong>baz and one<em>two</em>three</p>
+```
+
+:::
+
+An opener without a matching closer is left as a literal character.
+
+::: compare
+
+```carve
+/foo bar
+```
+
+```html
+<p>/foo bar</p>
+```
+
+:::
+
+Escapes neutralize delimiters — `\/`, `\*`, `\_` render as the literal character.
+
+::: compare
+
+```carve
+\/literal\/ and \*not bold\*
+```
+
+```html
+<p>/literal/ and *not bold*</p>
+```
+
+:::
+
+Emphasis nests freely; inner spans render inside outer ones.
+
+::: compare
+
+```carve
+*bold with /italic/ inside* and /italic with *bold* inside/
+```
+
+```html
+<p><strong>bold with <em>italic</em> inside</strong> and <em>italic with <strong>bold</strong> inside</em></p>
+```
+
+:::
+
+Inner slashes inside a `/…/` span are literal content — a path-like span still parses as emphasis.
+
+::: compare
+
+```carve
+/usr/local/
+```
+
+```html
+<p><em>usr/local</em></p>
+```
+
+:::
+
+Whitespace immediately after an opener (or before a closer) blocks emphasis — the delimiter renders literally.
+
+::: compare
+
+```carve
+/ not emphasis /
+```
+
+```html
+<p>/ not emphasis /</p>
+```
+
+:::
+
 ## Headings
 
 ::: compare
@@ -53,6 +137,62 @@ Read [Djot](https://djot.net) for details.
 
 ```html
 <p>Read <a href="https://djot.net">Djot</a> for details.</p>
+```
+
+:::
+
+A quoted title after the URL becomes the `title` attribute on the anchor.
+
+::: compare
+
+```carve
+[Site](https://example.com "Hover text")
+```
+
+```html
+<p><a href="https://example.com" title="Hover text">Site</a></p>
+```
+
+:::
+
+Autolinks use angle brackets and produce a self-titled anchor; bare email addresses get the `mailto:` scheme.
+
+::: compare
+
+```carve
+Visit <https://example.com> or write <hello@example.com>.
+```
+
+```html
+<p>Visit <a href="https://example.com">https://example.com</a> or write <a href="mailto:hello@example.com">hello@example.com</a>.</p>
+```
+
+:::
+
+Escaped brackets render as literals, no link is produced.
+
+::: compare
+
+```carve
+\[not a link\](https://example.com)
+```
+
+```html
+<p>[not a link](https://example.com)</p>
+```
+
+:::
+
+An empty link text is allowed and produces an empty anchor — useful as a target for a styled link.
+
+::: compare
+
+```carve
+[](https://example.com)
+```
+
+```html
+<p><a href="https://example.com"></a></p>
 ```
 
 :::
@@ -163,6 +303,92 @@ Read [Djot](https://djot.net) for details.
   <tbody>
     <tr><td>Apple</td><td>$1</td></tr>
     <tr><td>Pear</td><td>$2</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+Single-column tables follow the same rules — one `|=` cell yields the header row.
+
+::: compare
+
+```carve
+|= Heading |
+| Row 1    |
+| Row 2    |
+```
+
+```html
+<table>
+  <thead><tr><th>Heading</th></tr></thead>
+  <tbody>
+    <tr><td>Row 1</td></tr>
+    <tr><td>Row 2</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+An escaped pipe inside cell content (`\|`) renders as a literal `|` and does not split the cell.
+
+::: compare
+
+```carve
+|= Symbol |= Meaning  |
+| \|      | pipe char |
+```
+
+```html
+<table>
+  <thead><tr><th>Symbol</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td>|</td><td>pipe char</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+Empty cells produce empty `<td>` elements — placement is preserved, not collapsed.
+
+::: compare
+
+```carve
+|= A |= B |= C |
+| 1  |    | 3  |
+```
+
+```html
+<table>
+  <thead><tr><th>A</th><th>B</th><th>C</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td></td><td>3</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+Inline emphasis applies inside cells just like in paragraphs.
+
+::: compare
+
+```carve
+|= Style    |= Sample      |
+| italic    | /soft/        |
+| strong    | *firm*        |
+| code      | `literal`     |
+```
+
+```html
+<table>
+  <thead><tr><th>Style</th><th>Sample</th></tr></thead>
+  <tbody>
+    <tr><td>italic</td><td><em>soft</em></td></tr>
+    <tr><td>strong</td><td><strong>firm</strong></td></tr>
+    <tr><td>code</td><td><code>literal</code></td></tr>
   </tbody>
 </table>
 ```
