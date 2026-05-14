@@ -25,16 +25,16 @@ _underline_  ~strikethrough~
 
 :::
 
-Intraword emphasis is supported on all delimiters — content is consumed even with no surrounding whitespace.
+The `*` delimiter supports intraword emphasis, but `/` and `_` do not — both must be preceded by a non-alphanumeric character to open (Djot's rule for `_`, extended to Carve's italic `/`).
 
 ::: compare
 
 ```carve
-foo*bar*baz and one/two/three
+foo*bar*baz works but a/b/c does not.
 ```
 
 ```html
-<p>foo<strong>bar</strong>baz and one<em>two</em>three</p>
+<p>foo<strong>bar</strong>baz works but a/b/c does not.</p>
 ```
 
 :::
