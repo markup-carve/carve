@@ -1,0 +1,11 @@
+Admonitions
+
+```
+::: note
+Heads up — this is important.
+:::
+.
+<aside class="admonition note">
+  <p>Heads up — this is important.</p>
+</aside>
+```

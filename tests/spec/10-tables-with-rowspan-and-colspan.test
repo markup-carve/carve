@@ -1,0 +1,17 @@
+Tables with rowspan and colspan
+
+```
+|= Category |= Item    |= Price |
+| Fruit     | Apple    | $1     |
+| ^         | Banana   | $0.50  |
+| Total     | <        | $1.50  |
+.
+<table>
+  <thead><tr><th>Category</th><th>Item</th><th>Price</th></tr></thead>
+  <tbody>
+    <tr><td rowspan="2">Fruit</td><td>Apple</td><td>$1</td></tr>
+    <tr><td>Banana</td><td>$0.50</td></tr>
+    <tr><td colspan="2">Total</td><td>$1.50</td></tr>
+  </tbody>
+</table>
+```

@@ -1,0 +1,7 @@
+Inline extensions
+
+```
+Press :kbd[Ctrl+C] to copy.
+.
+<p>Press <kbd>Ctrl+C</kbd> to copy.</p>
+```

@@ -1,0 +1,17 @@
+Tables
+
+```
+|= Fruit |= Price |
+| Apple  | $1     |
+| Pear   | $2     |
+^ Fruit prices
+.
+<table>
+  <caption>Fruit prices</caption>
+  <thead><tr><th>Fruit</th><th>Price</th></tr></thead>
+  <tbody>
+    <tr><td>Apple</td><td>$1</td></tr>
+    <tr><td>Pear</td><td>$2</td></tr>
+  </tbody>
+</table>
+```

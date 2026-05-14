@@ -1,0 +1,10 @@
+Attributes
+
+```
+# Title {.large #intro}
+
+A paragraph with [a styled link](url){.btn .primary}.
+.
+<h1 class="large" id="intro">Title</h1>
+<p>A paragraph with <a href="url" class="btn primary">a styled link</a>.</p>
+```

@@ -77,9 +77,42 @@ for (const ex of examples) {
   n += 1
   const idx = String(n).padStart(2, '0')
   const slug = slugify(ex.section)
+  ex.idx = idx
+  ex.slug = slug
   const base = `${idx}-${slug}`
   writeFileSync(resolve(outDir, `${base}.crv`), ex.carve + '\n')
   writeFileSync(resolve(outDir, `${base}.html`), ex.html + '\n')
   console.log(`  ${base}.{crv,html}`)
 }
 console.log(`\nWrote ${examples.length} pairs to ${outDir}`)
+
+// --- djot-style mirror: NN-slug.test files for implementations whose runners
+// already speak djot's fenced-pair format (e.g. carve-php's OfficialTestSuiteTest).
+const specDir = resolve(repoRoot, 'tests/spec')
+mkdirSync(specDir, { recursive: true })
+for (const f of readdirSync(specDir)) {
+  if (f.endsWith('.test')) unlinkSync(resolve(specDir, f))
+}
+
+const maxRun = (s, ch) => {
+  const m = s.match(new RegExp(`${ch}+`, 'g'))
+  return m ? Math.max(...m.map((r) => r.length)) : 0
+}
+
+for (const ex of examples) {
+  const base = `${ex.idx}-${ex.slug}`
+  const fenceLen = Math.max(3, maxRun(ex.carve, '`') + 1, maxRun(ex.html, '`') + 1)
+  const fence = '`'.repeat(fenceLen)
+  const body = [
+    ex.section,
+    '',
+    fence,
+    ex.carve,
+    '.',
+    ex.html,
+    fence,
+    '',
+  ].join('\n')
+  writeFileSync(resolve(specDir, `${base}.test`), body)
+}
+console.log(`Wrote ${examples.length} .test files to ${specDir}`)

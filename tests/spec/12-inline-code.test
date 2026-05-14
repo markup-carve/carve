@@ -1,0 +1,7 @@
+Inline code
+
+```
+Run `npm install` first.
+.
+<p>Run <code>npm install</code> first.</p>
+```

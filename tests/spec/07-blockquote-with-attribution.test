@@ -1,0 +1,11 @@
+Blockquote with attribution
+
+```
+> Stay hungry, stay foolish.
+^ Steve Jobs
+.
+<figure>
+  <blockquote><p>Stay hungry, stay foolish.</p></blockquote>
+  <figcaption>Steve Jobs</figcaption>
+</figure>
+```
