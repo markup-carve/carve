@@ -36,6 +36,8 @@ print("hi")
 .
 <pre><code class="language-markdown">```python
 print("hi")
+```
+</code></pre>
 `````
 
 ````

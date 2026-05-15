@@ -29,7 +29,7 @@ Headings
 ```
 ## Setup {#install .featured}
 .
-<h2 id="install" class="featured">Setup</h2>
+<h2 class="featured" id="install">Setup</h2>
 ```
 
 ```
@@ -41,5 +41,5 @@ Headings
 ```
 #notaheading
 .
-<p><a class="tag" href="#notaheading">#notaheading</a></p>
+<p><a class="tag" href="/tags/notaheading">#notaheading</a></p>
 ```

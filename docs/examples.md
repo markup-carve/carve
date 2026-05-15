@@ -151,7 +151,7 @@ All six heading levels are supported.
 
 :::
 
-Attributes attach to the heading via a trailing `{…}` block.
+Attributes attach to the heading via a trailing `{…}` block. The rendered attribute order is alphabetical.
 
 ::: compare
 
@@ -160,7 +160,7 @@ Attributes attach to the heading via a trailing `{…}` block.
 ```
 
 ```html
-<h2 id="install" class="featured">Setup</h2>
+<h2 class="featured" id="install">Setup</h2>
 ```
 
 :::
@@ -179,7 +179,7 @@ Inline emphasis renders inside heading text.
 
 :::
 
-A `#` at line start without a following space is a tag, not a heading. The line renders as a paragraph containing the tag.
+A `#` at line start without a following space is a tag, not a heading. The line renders as a paragraph containing the tag, with a `/tags/<slug>` URL.
 
 ::: compare
 
@@ -188,7 +188,7 @@ A `#` at line start without a following space is a tag, not a heading. The line 
 ```
 
 ```html
-<p><a class="tag" href="#notaheading">#notaheading</a></p>
+<p><a class="tag" href="/tags/notaheading">#notaheading</a></p>
 ```
 
 :::
@@ -637,12 +637,12 @@ print("hi")
 ````
 `````
 
-```html
+`````html
 <pre><code class="language-markdown">```python
 print("hi")
 ```
 </code></pre>
-```
+`````
 
 :::
 
