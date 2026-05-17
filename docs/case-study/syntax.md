@@ -169,6 +169,14 @@ See </#intro> for background.
 The `</#id>` syntax auto-fills link text from the target heading.
 No need to repeat yourself or keep text in sync.
 
+`</#id>` resolves against the document's full identifier namespace —
+both explicit `{#id}` attributes and the automatic identifiers defined
+under "Automatic Identifiers" above. So `# Getting Started` is reachable
+as `</#getting-started>` without an explicit attribute. When a bare
+identifier is ambiguous because of duplicate headings, it resolves to
+the first occurrence; target a later one explicitly with its numeric
+suffix (`</#setup-2>`).
+
 #### Wiki-Style Links
 For internal documents, use collapsed reference links:
 ```
