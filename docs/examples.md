@@ -862,3 +862,35 @@ Content begins here.
 ```
 
 :::
+
+## Heading IDs
+
+::: compare
+
+```carve
+# Café Notes
+
+# Über uns
+
+# 2024 Recap
+
+## Setup
+
+## Setup
+
+# API {#api-v2}
+
+See </#café-notes>, </#section-2024-recap>, </#setup-2>, and </#api-v2>.
+```
+
+```html
+<h1 id="café-notes">Café Notes</h1>
+<h1 id="über-uns">Über uns</h1>
+<h1 id="section-2024-recap">2024 Recap</h1>
+<h2 id="setup">Setup</h2>
+<h2 id="setup-2">Setup</h2>
+<h1 id="api-v2">API</h1>
+<p>See <a href="#café-notes">Café Notes</a>, <a href="#section-2024-recap">2024 Recap</a>, <a href="#setup-2">Setup</a>, and <a href="#api-v2">API</a>.</p>
+```
+
+:::
