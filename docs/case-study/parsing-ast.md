@@ -82,6 +82,10 @@ Inline
 └── RawInline { format, content }
 ```
 
+(`id` is optional in the parsed AST but always populated after the
+identifier-resolution pass — automatic or explicit — so consumers
+downstream of resolution can treat it as required.)
+
 ### 6.2 Source Mapping
 
 Every node includes:
