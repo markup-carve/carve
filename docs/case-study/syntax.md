@@ -34,6 +34,57 @@ Heading 2
 ---------
 ```
 
+#### Automatic Identifiers
+
+Every heading has an identifier. If the heading carries an explicit
+`{#id}` attribute, that value is the identifier and is used **verbatim**
+(no normalization). Otherwise the identifier is generated from the
+heading text by the following algorithm, applied in order:
+
+1. Take the heading's rendered plain text (inline markup removed:
+   `# *Setup* guide` yields `Setup guide`).
+2. Lowercase it (Unicode-aware).
+3. Trim leading and trailing whitespace.
+4. Delete every CSS-unsafe punctuation character: `'` `"` `;` `:`
+   (so `What's New` becomes `whats-new`, not `what-s-new`).
+5. Replace each maximal run of characters that are not Unicode letters,
+   Unicode digits, `_`, or `-` — spaces included — with a single `-`.
+6. Unicode letters, Unicode digits, `_` and `-` are preserved. `_` and
+   `-` are valid CSS identifier characters and meaningful in technical
+   headings, so they are kept rather than folded into `-`.
+7. Collapse runs of `-`, then trim leading and trailing `-`.
+8. If the result starts with a digit, prefix `section-`
+   (`2024 Recap` becomes `section-2024-recap`). A CSS identifier may not
+   start with a digit, and generated IDs must be usable as CSS selectors
+   and `querySelector` arguments, not only as URL fragments.
+9. If the result is empty, the identifier is `section`.
+10. Deduplicate against the document's identifier namespace. Explicit
+    `{#id}` values are reserved first, in document order; generated IDs
+    are reserved as headings are processed. The first use of an
+    identifier is kept bare; each later collision takes the next numeric
+    suffix, 1-based (the second is `-2`, the third `-3`). Explicit and
+    generated identifiers share one namespace.
+
+| Heading | Identifier |
+|---|---|
+| `# Getting Started` | `getting-started` |
+| `# Café & Crème` | `café-crème` |
+| `# Über uns` | `über-uns` |
+| `# RFC 2119: Key Words` | `rfc-2119-key-words` |
+| `# 2024 Recap` | `section-2024-recap` |
+| `# What's New?` | `whats-new` |
+| `# user_id field` | `user_id-field` |
+| `# 日本語の見出し` | `日本語の見出し` |
+| `# !!!` | `section` |
+| `# Setup` then `# Setup` | `setup`, then `setup-2` |
+| `# Introduction {#intro}` then `# Intro` | `intro`, then `intro-2` |
+
+Identifiers are lowercased and CSS-selector-safe by design: the rendered
+`id` is consumed by code Carve does not control (TOC scripts, anchor
+highlighting, `:target` rules, `document.querySelector('#' + id)`), and a
+predictable lowercase slug is also what an author must be able to guess
+when writing a `</#id>` cross-reference.
+
 ### 4.2 Inline Formatting
 
 ```
@@ -117,6 +168,14 @@ See </#intro> for background.
 
 The `</#id>` syntax auto-fills link text from the target heading.
 No need to repeat yourself or keep text in sync.
+
+`</#id>` resolves against the document's full identifier namespace —
+both explicit `{#id}` attributes and the automatic identifiers defined
+under "Automatic Identifiers" above. So `# Getting Started` is reachable
+as `</#getting-started>` without an explicit attribute. When a bare
+identifier is ambiguous because of duplicate headings, it resolves to
+the first occurrence; target a later one explicitly with its numeric
+suffix (`</#setup-2>`).
 
 #### Wiki-Style Links
 For internal documents, use collapsed reference links:
