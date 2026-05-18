@@ -27,12 +27,17 @@ Parse in this precedence order:
 
 ### 5.3 The Disambiguation Rule
 
-When ambiguous, prefer:
-1. Literal text over markup
-2. Shorter spans over longer
-3. Earlier opening over later
+1. **Literal over markup.** A delimiter with no valid match (per the
+   word-boundary conditions) is literal text.
+2. **Opener → nearest valid same-type closer.** Same-type delimiters between
+   them are literal content (same-type spans do not nest), so `/usr/local/`
+   is `<em>usr/local</em>`, *not* `<em>usr</em>local/`.
+3. **Different-type spans nest**, resolved with a delimiter stack in a single
+   left-to-right pass — linear time, no backtracking (Design Principle 1).
 
-Example: `*a *b* c*` parses as `*a ` + bold(b) + ` c*` (literal asterisks around)
+This is *not* "shortest span / earliest opening wins": that rule would truncate
+`/usr/local/` to `<em>usr</em>` and break nested emphasis. See
+`resources/grammar.ebnf` PART 8 and PART 9 §9, and `docs/edge-cases.md` §1, §8.
 
 ### 5.4 Whitespace Rules
 

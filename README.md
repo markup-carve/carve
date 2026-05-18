@@ -78,8 +78,17 @@ Carve inherits and extends Djot's rationale:
 
 ### From Djot
 
-1. **Linear parsing** - Parse in linear time with no backtracking
-2. **Local inline parsing** - No dependency on later references for syntax highlighting
+1. **Linear parsing** - Parse in linear time with no backtracking. Inline
+   emphasis is resolved with a delimiter stack in a single left-to-right pass;
+   document-level definitions (link/footnote/abbreviation references, heading
+   IDs) are collected in a first pass before inline resolution. Both are O(n);
+   neither requires backtracking.
+2. **Local inline parsing** - Inline *tokenization and syntax highlighting*
+   never depend on later content. Semantic *expansion* that does need the
+   definition table (abbreviation `<abbr>`, `</#id>` auto-text, `[text][ref]`
+   targets) runs after the first-pass collection above — a definition that
+   appears later in document order is still resolved. This is the defined
+   two-pass model, not backtracking.
 3. **Simple emphasis** - Single characters, no complex disambiguation rules
 4. **No expressive blind spots** - All outputs achievable without workarounds
 5. **Simple list indentation** - Indented content belongs to the list item

@@ -173,7 +173,15 @@ paragraph = inline_content+, blank_line ;
    PART 3: INLINE ELEMENTS
    ============================================================================ *)
 
-inline_content = {inline_element | text_run}+ ;
+inline_content = {inline_element | text_run | literal_special}+ ;
+
+(* A special_char that does not begin (or close) a construct under PART 8
+   precedence + PART 9 conditions is literal text. Without this production
+   the grammar cannot represent "a/b/c", "x = a*b", or an inner delimiter
+   such as the middle '/' of /usr/local/ -- yet these are canonical outputs
+   (edge-cases.md §1, corpus 01-emphasis). The "is this a construct?"
+   decision is the semantic constraint in PART 9, not a context-free one. *)
+literal_special = special_char ;
 
 inline_element = escaped_char
                | code_span
@@ -276,14 +284,20 @@ superscript = '^', super_content, '^' ;
 subscript = ",,", sub_content, ",," ;
 highlight = "==", highlight_content, "==" ;
 
-emphasis_content = (inline_element | text_run - '/')+ ;
-strong_content = (inline_element | text_run - '*')+ ;
-bi_content = (inline_element | text_run - "*/")+;
-underline_content = (inline_element | text_run - '_')+ ;
-strike_content = (inline_element | text_run - '~')+ ;
-super_content = (inline_element | text_run - '^')+ ;
-sub_content = (inline_element | text_run - ",,")+;
-highlight_content = (inline_element | text_run - "==")+;
+(* Content MAY contain the delimiter character: a delimiter that does not
+   satisfy the close condition (PART 9 §1) is literal content, not the span
+   boundary. The span ends at the matched closer only. Subtracting the
+   delimiter here would make e.g. "/usr/local/" -> <em>usr/local</em>
+   ungrammatical, contradicting edge-cases.md §1. The boundary is a semantic
+   constraint (PART 9 §1, §9), not a context-free one. *)
+emphasis_content = (inline_element | text_run | literal_special)+ ;
+strong_content = (inline_element | text_run | literal_special)+ ;
+bi_content = (inline_element | text_run | literal_special)+ ;
+underline_content = (inline_element | text_run | literal_special)+ ;
+strike_content = (inline_element | text_run | literal_special)+ ;
+super_content = (inline_element | text_run | literal_special)+ ;
+sub_content = (inline_element | text_run | literal_special)+ ;
+highlight_content = (inline_element | text_run | literal_special)+ ;
 
 (* Word boundary rule for emphasis openers/closers *)
 emphasis_open_condition = (* preceding char is whitespace or start, following is non-whitespace *) ;
@@ -443,9 +457,19 @@ EOF = (* end of file *) ;
    11. Plain text
 
    Disambiguation rule:
-   - Prefer literal text over markup
-   - Prefer shorter spans over longer
-   - Prefer earlier opening over later
+   - Prefer literal text over markup: a delimiter that has no valid match
+     (per the word-boundary conditions, PART 9 §1) is literal.
+   - An opener matches the NEAREST following valid closer of the same type.
+     Delimiters of the same type between them are literal content (same-type
+     spans do not nest, PART 9 §3); e.g. /usr/local/ -> <em>usr/local</em>.
+   - Different-type spans nest and are resolved with a delimiter stack in a
+     single left-to-right pass (NO backtracking, linear time); e.g.
+     *bold /italic/* and /italic *bold*/ nests fully.
+
+   Note: "shorter spans / earlier opening wins" does NOT apply -- it would
+   truncate /usr/local/ to <em>usr</em> and break nested emphasis. The
+   delimiter-stack model is what makes Design Principle 1 (no backtracking)
+   hold while still producing the canonical outputs in the corpus.
 *)
 
 (* ============================================================================
@@ -478,6 +502,14 @@ EOF = (* end of file *) ;
       - Reference links [text][ref] resolved to [ref]: url definitions
       - Collapsed references [text][] use text as reference label
       - Abbreviations matched at word boundaries only
+      - All definitions (link/footnote/abbreviation references, heading IDs)
+        are collected in the first pass (PART 8, "first pass") BEFORE inline
+        resolution runs. A document-order definition appearing AFTER its use
+        is still resolved -- this is the defined two-pass model, not
+        backtracking, and is O(n). Design Principle 2 ("no dependency on
+        later references") scopes to inline *tokenization/highlighting*,
+        which never needs the definition table; semantic *expansion*
+        (abbr <abbr>, </#id> auto-text, [ref] targets) uses it.
 
    7. MENTION/TAG BOUNDARIES
       - @ and # only start mentions/tags at word boundaries
@@ -486,4 +518,16 @@ EOF = (* end of file *) ;
    8. SMART TYPOGRAPHY CONTEXT
       - Only applies outside code spans/blocks
       - Patterns must match exactly (not partial)
+
+   9. EMPHASIS SPAN BOUNDARY (governs *_content productions in PART 3)
+      - A delimiter opens only if NOT followed by whitespace AND preceded by
+        whitespace, start, or punctuation (left word boundary).
+      - A delimiter closes only if NOT preceded by whitespace (right word
+        boundary). "/ not italic /" stays literal (ws after opener).
+      - The span runs from the opener to its matched closer; any same-type
+        delimiter in between is LITERAL content (no same-type nesting, §3).
+        Hence /usr/local/ -> <em>usr/local</em> and the/path/here is literal
+        (first / has no left boundary). See edge-cases.md §1.
+      - Resolution uses a delimiter stack, single left-to-right pass, no
+        backtracking (Design Principle 1).
 *)
