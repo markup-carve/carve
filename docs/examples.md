@@ -25,7 +25,12 @@ _underline_  ~strikethrough~
 
 :::
 
-The `*` delimiter supports intraword emphasis, but `/` and `_` do not — both must be preceded by a non-alphanumeric character to open (Djot's rule for `_`, extended to Carve's italic `/`).
+Only `/` and `_` are word-boundary–restricted; every other delimiter (`*`, `~`, `^`, `==`, `,,`) supports intraword emphasis (e.g. `foo*bar*baz` → `foo<strong>bar</strong>baz`, `foo~bar~baz` → `foo<s>bar</s>baz`). For `/` and `_`:
+
+- an **opener** is recognized only if it is *not* followed by whitespace **and** is preceded by the start of the line/block, whitespace, or a punctuation character (not by an alphanumeric, `_`, or the same delimiter) — so `a/b/c`, `foo_bar_baz`, `snake_case`, and `//a/` stay literal, while `(/x/)` and `a./b/` open after punctuation;
+- a **closer** is recognized only if it is *not* preceded by whitespace **and** *not* followed by an alphanumeric character — so `x /a/b y` stays literal.
+
+This is a Carve restriction that is *stricter* than Djot: Djot's `_`/`*` rule is purely whitespace-flanking (open if not directly followed by whitespace, close if not directly preceded by whitespace), with no alphanumeric/punctuation condition, so Djot would treat `foo_bar_baz` as emphasis where Carve does not. The boundary rule still allows `/usr/local/` → `<em>usr/local</em>`: the opening `/` sits at line start and the inner same-type `/` characters are literal content (Carve does not nest same-type emphasis). Exact disambiguation of delimiter runs is pinned by the corpus pairs below; the normative rule lives in `resources/grammar.ebnf` PART 9 §9.
 
 ::: compare
 
@@ -105,6 +110,62 @@ Whitespace immediately after an opener (or before a closer) blocks emphasis — 
 
 ```html
 <p>/ not emphasis /</p>
+```
+
+:::
+
+An opener may follow punctuation, not only whitespace or the line start.
+
+::: compare
+
+```carve
+(/x/) and a./b/
+```
+
+```html
+<p>(<em>x</em>) and a.<em>b</em></p>
+```
+
+:::
+
+A closer is rejected when followed by an alphanumeric character, so an interrupted path stays literal.
+
+::: compare
+
+```carve
+x /a/b y
+```
+
+```html
+<p>x /a/b y</p>
+```
+
+:::
+
+Unlike `*`, the `/` and `_` delimiters never produce intraword emphasis.
+
+::: compare
+
+```carve
+foo_bar_baz and snake_case stay literal
+```
+
+```html
+<p>foo_bar_baz and snake_case stay literal</p>
+```
+
+:::
+
+A `/` or `_` opener immediately preceded by the *same* delimiter or by `_` is not valid (this does not affect different-delimiter combinations like `/*bold italic*/`).
+
+::: compare
+
+```carve
+//a/ and snake_/case/
+```
+
+```html
+<p>//a/ and snake_/case/</p>
 ```
 
 :::

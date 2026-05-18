@@ -25,7 +25,7 @@ A comparison of lightweight markup languages available today.
 | Strong | `**text**` | `**text**` | `**text**` | `*text*` | `*text*` | `**text**` |
 | Emphasis | `*text*` | `*text*` | `*text*` | `_text_` | `_text_` | `*text*` |
 | Code inline | `` `code` `` | `` `code` `` | `` `code` `` | `` `code` `` | `` `+code+` `` | ``` ``code`` ``` |
-| Strikethrough | - | - | `~~text~~` | `{-text-}` | `[.line-through]#text#` | - |
+| Strikethrough | - | - | `~~text~~` | N/A | `[.line-through]#text#` | - |
 | Highlight | - | - | - | `{=text=}` | `#text#` | - |
 | Subscript | - | - | - | `{~text~}` | `~text~` | - |
 | Superscript | - | - | - | `{^text^}` | `^text^` | - |
@@ -35,6 +35,11 @@ A comparison of lightweight markup languages available today.
 | Attributes | - | - | - | `{.class #id}` | `[.class]` | `:class:` |
 | Divs/Admonitions | - | - | - | `:::` | `====` | `.. note::` |
 | Smart quotes | varies | - | - | auto | auto | - |
+
+**Notes on the Djot column:**
+
+- **Strikethrough:** Djot has no strikethrough. Its nearest elements are *delete* `{-text-}` (`<del>`) and *insert* `{+text+}` (`<ins>`); plain `~text~` is subscript, not a line-through.
+- **Subscript / Superscript:** the braces are optional in Djot — `~text~`/`^text^` work as shorthand, and the `{~ ~}`/`{^ ^}` forms are only needed when the span contains spaces or ambiguous boundaries.
 
 ## Syntax Examples
 

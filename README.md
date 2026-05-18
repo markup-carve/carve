@@ -167,7 +167,7 @@ Carve inherits and extends Djot's rationale:
 | Table rowspan | N/A (raw HTML only) | `^` marker |
 | Table colspan | N/A (raw HTML only) | `<` marker |
 | Multi-line cells | N/A (raw HTML only) | `+` continuation |
-| Captions | N/A | `^ caption` |
+| Captions | Tables only (`^ caption`) | `^ caption` (images, quotes, tables) |
 
 ### Blocks & structure
 
@@ -179,7 +179,7 @@ Carve inherits and extends Djot's rationale:
 | Comments | `{% … %}` | `%%` line / `%%%` block |
 | Raw / passthrough | `` `…`{=html} `` | ` ```raw html ` fenced block |
 | Includes | N/A | `{{ path/to/file }}` |
-| Abbreviations | `[ABBR]{title="..."}` (span tooltip) | `*[ABBR]: ...` |
+| Abbreviations | N/A | `*[ABBR]: ...` |
 | Attributes | `{.class}` | `{.class}` |
 
 ### Social & extensibility
@@ -189,6 +189,12 @@ Carve inherits and extends Djot's rationale:
 | Extensions | Fenced divs | `:type[content]{attrs}` |
 | Mentions | N/A | `@user` |
 | Tags | N/A | `#tag` |
+
+> **Djot accuracy notes:** Djot defines captions for pipe **tables only** (a
+> `^ ` line after the table); Carve extends the same `^` prefix to images and
+> block quotes. Djot has **no abbreviation syntax** — the nearest workaround is
+> a titled generic span (`[ABBR]{title="..."}`), which only yields a tooltip,
+> not managed `<abbr>` expansion.
 
 ## Key Differences from Markdown
 
