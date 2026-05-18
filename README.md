@@ -130,18 +130,62 @@ Carve inherits and extends Djot's rationale:
 
 ## Comparison with Djot
 
+### Inline emphasis
+
 | Feature | Djot | Carve |
 |---------|------|------|
 | Italic | `_text_` | `/text/` |
 | Bold | `*text*` | `*text*` |
+| Bold italic | `_*text*_` | `/*text*/` |
 | Underline | `{+text+}` (→ `<ins>`) | `_text_` |
+| Strikethrough | `{-text-}` (→ `<del>`) | `~text~` (→ `<s>`) |
+| Highlight | `{=text=}` | `==text==` |
+| Superscript | `^text^` | `^text^` |
+| Subscript | `~text~` | `,,text,,` |
+
+> **Heads-up for Djot users:** `~text~` is *subscript* in Djot but
+> *strikethrough* in Carve, and Carve writes subscript as `,,text,,`. This is
+> the one inline delimiter whose meaning flips between the two languages.
+
+### Links & references
+
+| Feature | Djot | Carve |
+|---------|------|------|
 | Links | `[text](url)` | `[text](url)` |
+| Wiki-style links | N/A | `[Page Name][]` |
+| Cross-references | N/A (manual `[](#id)`) | `</#id>` (auto-fills link text from the target heading) |
+| Heading IDs | Auto-generated (case-preserving) | Auto-generated (lowercase, CSS-selector-safe) |
+
+### Lists & tables
+
+| Feature | Djot | Carve |
+|---------|------|------|
+| Definition lists | `: term` + indented def | `:: term` / `:  def` |
 | Table headers | `\|---\|` separator | `\|=` prefix |
+| Table alignment | `:--` / `--:` separator | implicit by whitespace, or `\|=<` / `\|=>` / `\|=~` |
+| Headerless tables | N/A (header + separator required) | omit `\|=` |
 | Table rowspan | N/A (raw HTML only) | `^` marker |
 | Table colspan | N/A (raw HTML only) | `<` marker |
+| Multi-line cells | N/A (raw HTML only) | `+` continuation |
 | Captions | N/A | `^ caption` |
+
+### Blocks & structure
+
+| Feature | Djot | Carve |
+|---------|------|------|
+| Footnotes | `[^ref]` (reference only) | `[^ref]`, inline `[^text]`, sidenote `[>text]` |
+| Math | `` $`…` `` / `` $$`…` `` | `$…$` / `$$…$$` (or `\(…\)` / `\[…\]`) |
+| Editorial markup | `{+ +}` `{- -}` `{= =}` | `{+ +}` `{- -}` `{~ ~> ~}` `{= =}` `{# #}` |
+| Comments | `{% … %}` | `%%` line / `%%%` block |
+| Raw / passthrough | `` `…`{=html} `` | ` ```raw html ` fenced block |
+| Includes | N/A | `{{ path/to/file }}` |
 | Abbreviations | `[ABBR]{title="..."}` (span tooltip) | `*[ABBR]: ...` |
 | Attributes | `{.class}` | `{.class}` |
+
+### Social & extensibility
+
+| Feature | Djot | Carve |
+|---------|------|------|
 | Extensions | Fenced divs | `:type[content]{attrs}` |
 | Mentions | N/A | `@user` |
 | Tags | N/A | `#tag` |
