@@ -45,7 +45,7 @@ A feature should remain an **extension** if:
 | **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `:kbd[text]` | Use extension syntax for consistency. |
 | **Autolinks** | Bare URLs | Bare URLs auto-link | Already implied in spec (4.3). |
 | **Inline footnotes** | `[content]{.fn}` | `[^inline content]` | Already in spec, confirm syntax. |
-| **Table alignment** | `:--`, `--:`, `:--:` | Whitespace-based | Already in spec (4.8). |
+| **Table alignment** | `:--`, `--:`, `:--:` | `\|=<` / `\|=>` / `\|=~` markers | Already in spec (4.8). |
 | **Rowspan/colspan** | `^` and `<` markers | `^` and `<` markers | Already in _multiline-table-proposal.md. |
 | **Multi-line cells** | `+` continuation | `+` continuation | Already in _multiline-table-proposal.md. |
 

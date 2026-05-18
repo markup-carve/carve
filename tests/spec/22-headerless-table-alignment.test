@@ -1,0 +1,13 @@
+Headerless table alignment
+
+```
+| a |> 9  |
+| b |> 10 |
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td style="text-align: right;">9</td></tr>
+    <tr><td>b</td><td style="text-align: right;">10</td></tr>
+  </tbody>
+</table>
+```

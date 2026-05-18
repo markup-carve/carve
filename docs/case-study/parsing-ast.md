@@ -63,7 +63,8 @@ Document
     ├── BlockQuote { blocks, attribution? }
     ├── List { type, tight, items }
     │   └── ListItem { blocks, checked? }
-    ├── Table { headers, rows, alignment[] }
+    ├── Table { headers, rows, alignment[] }   // alignment[] = column defaults
+    │   └── Cell { content, align?, colspan?, rowspan? }   // align? overrides the column default
     ├── ThematicBreak
     ├── Admonition { type, title?, blocks }
     └── RawBlock { format, content }

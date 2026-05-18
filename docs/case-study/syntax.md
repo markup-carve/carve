@@ -440,22 +440,73 @@ The `^` prefix creates a `<figure>` wrapper with `<figcaption>` for attribution.
 The `^` prefix adds a `<caption>` element to the table.
 
 #### Alignment
+
+Alignment is set by an explicit marker glued **directly** to the cell-opening
+pipe — no whitespace between the pipe and the marker. Whitespace *inside* a
+cell is cosmetic padding only and never affects alignment.
+
+| Marker            | On          | Alignment                              |
+|-------------------|-------------|----------------------------------------|
+| `\|=<` `\|=>` `\|=~` | header cell | column default: left / right / center  |
+| `\|<` `\|>` `\|~`    | body cell   | this cell only: left / right / center  |
+
+Mnemonics: `<` left, `>` right, `~` center.
+
 ```
-|= Name     |= Age |= City      |
-| Alice     |   28 | New York   |
-| Bob       |   34 | London     |
+|= Name |=> Age |=~ City |
+| Alice  |   28   | NYC     |
+| Bob    |   34   | London  |
 ```
 
-Alignment is inferred from whitespace:
-- More space on left = right-aligned
-- More space on right = left-aligned
-- Equal space = centered
+The `Age` column is right-aligned, `City` centered, `Name` left (default).
+The ragged source whitespace above is irrelevant — only the markers matter.
 
-**Explicit alignment:**
+**Disambiguation.** A `<`, `>`, or `~` *immediately* after `|` or `|=` (no
+space) is an alignment marker. A lone `<` or `^` that is a cell's
+whitespace-delimited *content* (`| < |`, `| ^ |`) is a colspan / rowspan
+marker (see below) and is unchanged. Exactly one optional marker character is
+recognized; a repeated character (`|=<<`) is content. An escaped pipe (`\|`)
+never opens a cell and so never carries a marker.
+
+**Rules.**
+
+- A header marker sets the whole column's default (its `<th>` and every
+  `<td>` in that column).
+- A body-cell marker overrides the column default for that cell only. This
+  per-cell override is a **Carve extension beyond djot-php**, which is
+  column-only.
+- Headerless tables have no column default; a body cell's own marker is the
+  only alignment available.
+- With multiple header rows, the column default is the marker on the last
+  header row that specifies one for that column (later wins; omission does
+  not reset).
+- A spanning (colspan / rowspan) cell uses its own marker, otherwise the
+  default of its origin (leftmost) column.
+- `+` multi-line continuation lines carry no markers; alignment follows the
+  originating cell. The caption (`^`) line is never aligned.
+
+**Rendered HTML.** An aligned cell renders with an inline style; a cell with
+no effective alignment renders with **no** `style` attribute.
+
 ```
-|=< Name  |=> Age |=~ City   |
-| Left    | Right | Center   |
+|=> Price |
+| 9        |
 ```
+
+renders as:
+
+```html
+<table>
+  <thead><tr><th style="text-align: right;">Price</th></tr></thead>
+  <tbody>
+    <tr><td style="text-align: right;">9</td></tr>
+  </tbody>
+</table>
+```
+
+`VALUE` is exactly one of `left`, `right`, `center`, serialized as
+`text-align: VALUE;` (one space after the colon, trailing semicolon) — the
+same output as djot-php.
 
 #### Colspan (`<`)
 

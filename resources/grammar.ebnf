@@ -120,7 +120,9 @@ continuation_row = '+', table_cell, {'|', table_cell}, '|', newline ;
 table_cell = header_cell | data_cell | span_cell ;
 
 header_cell = '=', [alignment_marker], {whitespace}, cell_content, {whitespace} ;
-data_cell = {whitespace}, cell_content, {whitespace} ;
+data_cell = [alignment_marker], {whitespace}, cell_content, {whitespace} ;
+(* alignment_marker is glued to the opening '|' (no preceding whitespace),
+   mirroring header_cell; a whitespace-delimited lone '^'/'<' is span_cell *)
 span_cell = rowspan_marker | colspan_marker ;
 
 rowspan_marker = {whitespace}, '^', {whitespace} ;
