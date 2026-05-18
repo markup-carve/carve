@@ -120,9 +120,9 @@ Whitespace immediately after an opener (or before a closer) blocks emphasis — 
 ```
 
 ```html
-<h1>Welcome</h1>
-<h2>Getting started</h2>
-<h3>Setup</h3>
+<h1 id="welcome">Welcome</h1>
+<h2 id="getting-started">Getting started</h2>
+<h3 id="setup">Setup</h3>
 ```
 
 :::
@@ -141,12 +141,12 @@ All six heading levels are supported.
 ```
 
 ```html
-<h1>H1</h1>
-<h2>H2</h2>
-<h3>H3</h3>
-<h4>H4</h4>
-<h5>H5</h5>
-<h6>H6</h6>
+<h1 id="h1">H1</h1>
+<h2 id="h2">H2</h2>
+<h3 id="h3">H3</h3>
+<h4 id="h4">H4</h4>
+<h5 id="h5">H5</h5>
+<h6 id="h6">H6</h6>
 ```
 
 :::
@@ -174,7 +174,7 @@ Inline emphasis renders inside heading text.
 ```
 
 ```html
-<h2>Why <em>Carve</em>?</h2>
+<h2 id="why-carve">Why <em>Carve</em>?</h2>
 ```
 
 :::
