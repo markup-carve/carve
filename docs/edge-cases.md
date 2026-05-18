@@ -213,7 +213,18 @@ See *[the docs](url) for more* info
 /*Bold italic*/                # Valid: combined
 ```
 
-**Parsing:** First matched delimiter wins. Inner delimiters of same type are literal.
+**Parsing:** An opener matches a valid closer of the same type (a delimiter
+closes only when not preceded by whitespace, see §1). Same-type delimiters
+*inside* the span are literal content — same-type spans do not nest — so
+`/usr/local/` is `<em>usr/local</em>`, not `<em>usr</em>local/`. Different-type
+spans nest fully (`*Bold with /italic/ inside*`). Resolution uses a delimiter
+stack in a single left-to-right pass: linear time, no backtracking.
+
+> This is *not* "shortest span / first match wins" — that rule would truncate
+> `/usr/local/` to `<em>usr</em>` and break nested emphasis. The ambiguous form
+> `/This /does not/ nest/` is discouraged (use code spans for paths, §1); its
+> exact output is intentionally unspecified. See grammar.ebnf PART 8
+> (Disambiguation rule) and PART 9 §9.
 
 ---
 
