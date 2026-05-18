@@ -152,7 +152,7 @@ Carve inherits and extends Djot's rationale:
 | Feature | Djot | Carve |
 |---------|------|------|
 | Links | `[text](url)` | `[text](url)` |
-| Wiki-style links | N/A | `[Page Name][]` |
+| Wiki-style links | `[Page Name][]` (reference link; needs a `[Page Name]: url` definition) | `[Page Name][]` (auto-resolves, no definition) |
 | Cross-references | N/A (manual `[](#id)`) | `</#id>` (auto-fills link text from the target heading) |
 | Heading IDs | Auto-generated (case-preserving) | Auto-generated (lowercase, CSS-selector-safe) |
 
