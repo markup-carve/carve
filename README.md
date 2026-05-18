@@ -125,17 +125,17 @@ Carve inherits and extends Djot's rationale:
 |---------|------|------|
 | Italic | `_text_` | `/text/` |
 | Bold | `*text*` | `*text*` |
-| Underline | `{+text+}` (→ `<ins>`) or `[text]{.underline}` | `_text_` |
+| Underline | `{+text+}` (→ `<ins>`) | `_text_` |
 | Links | `[text](url)` | `[text](url)` |
 | Table headers | `\|---\|` separator | `\|=` prefix |
 | Table rowspan | N/A (raw HTML only) | `^` marker |
 | Table colspan | N/A (raw HTML only) | `<` marker |
-| Captions | `::: caption` (fenced div) | `^ caption` |
-| Abbreviations | `[ABBR]{title="..."}` | `*[ABBR]: ...` |
+| Captions | N/A | `^ caption` |
+| Abbreviations | `[ABBR]{title="..."}` (span tooltip) | `*[ABBR]: ...` |
 | Attributes | `{.class}` | `{.class}` |
 | Extensions | Fenced divs | `:type[content]{attrs}` |
-| Mentions | `[@user](url)` | `@user` |
-| Tags | `[#tag]{.tag}` | `#tag` |
+| Mentions | N/A | `@user` |
+| Tags | N/A | `#tag` |
 
 ## Key Differences from Markdown
 
