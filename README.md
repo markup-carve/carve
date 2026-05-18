@@ -125,7 +125,7 @@ Carve inherits and extends Djot's rationale:
 |---------|------|------|
 | Italic | `_text_` | `/text/` |
 | Bold | `*text*` | `*text*` |
-| Underline | N/A | `_text_` |
+| Underline | `{+text+}` (→ `<ins>`) or `[text]{.underline}` | `_text_` |
 | Links | `[text](url)` | `[text](url)` |
 | Table headers | `\|---\|` separator | `\|=` prefix |
 | Table rowspan | N/A | `^` marker |
