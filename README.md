@@ -1,12 +1,12 @@
 # Carve
 
-A post-Djot lightweight markup language with visual mnemonics and human-centered design.
+A lightweight markup language with visual mnemonics and human-centered design.
 
 > "The best markup is the one you don't have to think about."
 
 ## Philosophy
 
-Carve builds on Djot's technical rigor while adding:
+Carve builds on Markdown's basics and Djot's technical rigor while adding:
 
 - **Visual mnemonics** - Syntax resembles its output
 - **Human factors research** - Based on how non-technical users naturally mark up text
