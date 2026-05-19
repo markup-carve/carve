@@ -1361,3 +1361,57 @@ markers produce `rowspan="3"`.
 ```
 
 :::
+
+## Reference link
+
+`[text][label]` resolves against a `[label]: url "title"` definition
+anywhere in the document (order-independent). The definition line
+itself produces no output.
+
+::: compare
+
+```carve
+Read the [introduction][intro] first.
+
+[intro]: https://example.com/intro "Introduction"
+```
+
+```html
+<p>Read the <a href="https://example.com/intro" title="Introduction">introduction</a> first.</p>
+```
+
+:::
+
+## Collapsed reference link
+
+`[text][]` uses the link text as the label.
+
+::: compare
+
+```carve
+See [Other Page][] for details.
+
+[Other Page]: /other-page
+```
+
+```html
+<p>See <a href="/other-page">Other Page</a> for details.</p>
+```
+
+:::
+
+## Unresolved reference link
+
+A reference with no matching definition renders as literal text.
+
+::: compare
+
+```carve
+A [missing][nope] ref stays literal.
+```
+
+```html
+<p>A [missing][nope] ref stays literal.</p>
+```
+
+:::

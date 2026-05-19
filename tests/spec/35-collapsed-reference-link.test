@@ -1,0 +1,9 @@
+Collapsed reference link
+
+```
+See [Other Page][] for details.
+
+[Other Page]: /other-page
+.
+<p>See <a href="/other-page">Other Page</a> for details.</p>
+```
