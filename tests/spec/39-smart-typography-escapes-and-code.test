@@ -1,0 +1,7 @@
+Smart typography escapes and code
+
+```
+Escaped \-> and \... stay; code `a -- b ...` stays.
+.
+<p>Escaped -&gt; and ... stay; code <code>a -- b ...</code> stays.</p>
+```

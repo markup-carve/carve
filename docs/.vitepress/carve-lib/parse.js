@@ -665,6 +665,61 @@ const RE_CRITIC_CMT = /^\{#([^}]*)#\}/;
 // but a trailing period is treated as sentence punctuation, not part of the name.
 const RE_MENTION = /^@([a-zA-Z][\w-]*(?:\.\w+)*)/;
 const RE_TAG = /^#([a-zA-Z][\w-]*(?:\.\w+)*)/;
+// Fixed multi-character smart-typography tokens, longest first so
+// `<->` beats `<-`, `---` beats `--`, `(tm)` beats `(c)`.
+const SMART_TOKENS = [
+    ['<->', '↔'],
+    ['(tm)', '™'],
+    ['---', '—'],
+    ['...', '…'],
+    ['->', '→'],
+    ['<-', '←'],
+    ['=>', '⇒'],
+    ['<=', '≤'],
+    ['>=', '≥'],
+    ['!=', '≠'],
+    ['+-', '±'],
+    ['--', '–'],
+    ['(c)', '©'],
+    ['(r)', '®'],
+];
+const SMART_FRACTIONS = {
+    '1/2': '½',
+    '1/4': '¼',
+    '3/4': '¾',
+    '1/3': '⅓',
+    '2/3': '⅔',
+};
+const isAlnum = (ch) => /[A-Za-z0-9]/.test(ch);
+const isQuoteOpenContext = (prev) => prev === '' || /[\s([{\-–—/]/.test(prev) || prev === '“' || prev === '‘';
+/**
+ * Recognize one smart-typography construct at `text[i]`.
+ * `prev` is the character immediately before (for contextual quotes).
+ * Returns the replacement and consumed length, or null.
+ */
+function smartToken(text, i, prev) {
+    for (const [tok, out] of SMART_TOKENS) {
+        if (text.startsWith(tok, i))
+            return { out, len: tok.length };
+    }
+    // Fractions: only when not glued to surrounding digits (so `1/2` but
+    // not `21/2` or `1/24`).
+    const frac = text.slice(i, i + 3);
+    if (SMART_FRACTIONS[frac] &&
+        !isAlnum(prev) &&
+        !/[0-9]/.test(text[i + 3] ?? '')) {
+        return { out: SMART_FRACTIONS[frac], len: 3 };
+    }
+    const c = text[i];
+    if (c === '"') {
+        return { out: isQuoteOpenContext(prev) ? '“' : '”', len: 1 };
+    }
+    if (c === "'") {
+        // After an alphanumeric it is an apostrophe / closing quote.
+        return { out: isAlnum(prev) || !isQuoteOpenContext(prev) ? '’' : '‘', len: 1 };
+    }
+    return null;
+}
 function parseInline(text, abbrDefs, linkDefs = new Map()) {
     const nodes = applyAbbreviations(scanInline(text), abbrDefs);
     return applyLinkDefs(nodes, linkDefs);
@@ -685,9 +740,30 @@ function scanInline(text) {
         // Escape
         if (c === '\\' && i + 1 < text.length) {
             const nxt = text[i + 1];
-            if (/[\\`*_{}\[\]()#+\-.!~^/<>@%|=,]/.test(nxt)) {
+            if (/[\\`*_{}\[\]()#+\-.!~^/<>@%|=,"']/.test(nxt)) {
                 buf += nxt;
                 i += 2;
+                continue;
+            }
+        }
+        // Smart typography (grammar.ebnf §"Smart Typography", PART 9 §8).
+        // Runs after the escape check, so `\->` etc. are already absorbed
+        // into buf as literals and never reach here. Inside code is handled
+        // by the opaque code branch below (continues before this on a
+        // backtick). Multi-char tokens are matched longest-first.
+        {
+            // Quote context: the char in buf, else (buf flushed by a prior
+            // inline node like code/emphasis/link) treat it as word-adjacent
+            // so a closing quote stays closing; only true start is "".
+            const prevForQuote = buf.length
+                ? buf[buf.length - 1]
+                : out.length
+                    ? 'x'
+                    : '';
+            const st = smartToken(text, i, prevForQuote);
+            if (st) {
+                buf += st.out;
+                i += st.len;
                 continue;
             }
         }

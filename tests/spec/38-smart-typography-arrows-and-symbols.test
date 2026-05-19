@@ -1,0 +1,9 @@
+Smart typography arrows and symbols
+
+```
+Flow: a -> b <- c <-> d => e; x != y, p <= q, r >= s, +-1.
+(c) 2024, (r), (tm); halves 1/2, 1/4, 3/4.
+.
+<p>Flow: a → b ← c ↔ d ⇒ e; x ≠ y, p ≤ q, r ≥ s, ±1.
+© 2024, ®, ™; halves ½, ¼, ¾.</p>
+```
