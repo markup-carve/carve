@@ -1,0 +1,17 @@
+Table multi-line cell continuation
+
+```
+|= Feature |= Description        |
+| Complex  | A long description |
++          | that continues     |
++          | across lines.      |
+| Simple   | Single line.       |
+.
+<table>
+  <thead><tr><th>Feature</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>Complex</td><td>A long description that continues across lines.</td></tr>
+    <tr><td>Simple</td><td>Single line.</td></tr>
+  </tbody>
+</table>
+```

@@ -1468,3 +1468,56 @@ Escaped \-> and \... stay; code `a -- b ...` stays.
 ```
 
 :::
+
+## Table multi-line cell continuation
+
+A `+` line continues the previous row's cells, so a logical cell can
+span several source lines.
+
+::: compare
+
+```carve
+|= Feature |= Description        |
+| Complex  | A long description |
++          | that continues     |
++          | across lines.      |
+| Simple   | Single line.       |
+```
+
+```html
+<table>
+  <thead><tr><th>Feature</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>Complex</td><td>A long description that continues across lines.</td></tr>
+    <tr><td>Simple</td><td>Single line.</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+## Table rowspan with multi-line content
+
+A `+` continuation before a `^` rowspan extends the spanned cell.
+
+::: compare
+
+```carve
+|= Category       |= Item   |
+| Fresh Fruits    | Apple   |
++ from local      |         |
++ farms           |         |
+| ^               | Banana  |
+```
+
+```html
+<table>
+  <thead><tr><th>Category</th><th>Item</th></tr></thead>
+  <tbody>
+    <tr><td rowspan="2">Fresh Fruits from local farms</td><td>Apple</td></tr>
+    <tr><td>Banana</td></tr>
+  </tbody>
+</table>
+```
+
+:::
