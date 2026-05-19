@@ -246,56 +246,101 @@ function parseBlockImage(lexer) {
     }
     return img;
 }
+function matchListMarker(line, isTask, isOrdered) {
+    if (isTask)
+        return RE_TASK.exec(line);
+    if (isOrdered) {
+        // An ordered list is not continued by a task or unordered marker.
+        if (RE_TASK.test(line))
+            return null;
+        return RE_ORDERED.exec(line);
+    }
+    // Unordered: not continued by task or ordered markers.
+    if (RE_TASK.test(line) || RE_ORDERED.test(line))
+        return null;
+    return RE_UNORDERED.exec(line);
+}
 function parseList(lexer) {
-    // Determine list type from first item
     const first = lexer.peek();
+    const baseIndent = leadingWhitespace(first);
     const isTask = RE_TASK.test(first);
     const isOrdered = !isTask && RE_ORDERED.test(first);
     const items = [];
+    let loose = false;
     while (!lexer.eof()) {
         const line = lexer.peek();
-        let m = null;
+        if (line.trim() === '') {
+            // Blank lines between siblings are handled by the per-item collector
+            // below; a stray leading blank just ends the list.
+            break;
+        }
+        if (leadingWhitespace(line) !== baseIndent)
+            break;
+        const m = matchListMarker(line, isTask, isOrdered);
+        if (!m)
+            break;
         let content;
         let checked;
         if (isTask) {
-            m = RE_TASK.exec(line);
-            if (!m)
-                break;
             checked = m[2].toLowerCase() === 'x';
             content = m[3];
         }
         else if (isOrdered) {
-            m = RE_ORDERED.exec(line);
-            if (!m)
-                break;
             content = m[3];
         }
         else {
-            // For unordered, also accept task markers as continuation? No.
-            if (RE_TASK.test(line) || RE_ORDERED.test(line))
-                break;
-            m = RE_UNORDERED.exec(line);
-            if (!m)
-                break;
             content = m[2];
         }
+        // Column where item content begins; deeper-indented lines belong to
+        // this item (continuation paragraphs or nested lists).
+        const contentCol = m[0].length - content.length;
         lexer.consume();
-        // Single-line items only for now; nested content not supported in this pass.
-        const item = {
-            type: 'list-item',
-            children: [{ type: 'paragraph', children: parseInline(content, lexer.abbrDefs) }],
-        };
+        const nested = [];
+        let pendingBlanks = 0;
+        while (!lexer.eof()) {
+            const l = lexer.peek();
+            if (l.trim() === '') {
+                pendingBlanks++;
+                lexer.consume();
+                continue;
+            }
+            if (leadingWhitespace(l) >= contentCol) {
+                for (let k = 0; k < pendingBlanks; k++)
+                    nested.push('');
+                pendingBlanks = 0;
+                nested.push(l.slice(contentCol));
+                lexer.consume();
+            }
+            else {
+                break;
+            }
+        }
+        // Blank line(s) before the next sibling marker make the list loose.
+        if (pendingBlanks > 0 && !lexer.eof()) {
+            const nextLine = lexer.peek();
+            if (leadingWhitespace(nextLine) === baseIndent &&
+                matchListMarker(nextLine, isTask, isOrdered)) {
+                loose = true;
+            }
+        }
+        // An internal blank line (one kept inside `nested`, i.e. followed by
+        // more item content) splits the item into multiple blocks, which by
+        // the Djot/CommonMark rule makes the whole list loose.
+        if (nested.includes(''))
+            loose = true;
+        // Parse the lead text together with its continuation/nested lines as
+        // one block sequence. Lazy continuation (an indented line with no
+        // blank before it) then merges into the lead paragraph instead of
+        // becoming a stray second block.
+        const sub = new Lexer([content, ...nested].join('\n'));
+        sub.abbrDefs = lexer.abbrDefs;
+        const children = parseBlocks(sub, 0);
+        const item = { type: 'list-item', children };
         if (checked !== undefined)
             item.checked = checked;
         items.push(item);
     }
-    const list = {
-        type: 'list',
-        ordered: isOrdered,
-        tight: true,
-        items,
-    };
-    return list;
+    return { type: 'list', ordered: isOrdered, tight: !loose, items };
 }
 function parseTable(lexer) {
     const rows = [];
@@ -419,6 +464,7 @@ const RE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]*)(?:\s+"([^"]*)")?\)(?:\{([^}]+)\})?/;
 const RE_REF_LINK = /^\[([^\]]+)\]\[([^\]]*)\]/;
 const RE_EXTENSION = /^:([a-zA-Z][\w-]*)\[([^\]]*)\](?:\{([^}]+)\})?/;
 const RE_AUTOLINK = /^<([a-zA-Z][a-zA-Z0-9+.\-]*:[^>\s]+|[^\s>@]+@[^\s>]+)>/;
+const RE_CROSSREF = /^<\/#([^>\s]+)>/;
 const RE_INLINE_ATTR = /^\{([^}\n]+)\}/;
 const RE_CRITIC_INS = /^\{\+([^}]*)\+\}/;
 const RE_CRITIC_DEL = /^\{-([^}]*)-\}/;
@@ -526,6 +572,14 @@ function scanInline(text) {
         }
         // Autolink <url>
         if (c === '<') {
+            const cr = RE_CROSSREF.exec(rest);
+            if (cr) {
+                flush();
+                const cref = { type: 'crossref', target: cr[1] };
+                out.push(cref);
+                i += cr[0].length;
+                continue;
+            }
             const m = RE_AUTOLINK.exec(rest);
             if (m) {
                 flush();
