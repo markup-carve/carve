@@ -68,3 +68,59 @@ Lists
   <li><p>oranges</p></li>
 </ul>
 ```
+
+```
+Die Frage ist x = 5
+* 3 + 17 wahr.
+.
+<p>Die Frage ist x = 5
+* 3 + 17 wahr.</p>
+```
+
+```
+Liste:
+- eins
+- zwei
+.
+<p>Liste:</p>
+<ul>
+  <li>eins</li>
+  <li>zwei</li>
+</ul>
+```
+
+```
+Text hier
+
+- nur eins
+.
+<p>Text hier</p>
+<ul>
+  <li>nur eins</li>
+</ul>
+```
+
+```
+- parent
+  - child
+.
+<ul>
+  <li>parent
+    <ul>
+      <li>child</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+Intro
+> Stay hungry
+^ Steve Jobs
+.
+<p>Intro</p>
+<figure>
+  <blockquote><p>Stay hungry</p></blockquote>
+  <figcaption>Steve Jobs</figcaption>
+</figure>
+```

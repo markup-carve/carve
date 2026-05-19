@@ -447,6 +447,108 @@ A blank line between items produces a loose list — each item wraps in a paragr
 
 :::
 
+A hard-wrapped prose line may begin with `-`, `*`, `+`, `>` or `|` as an
+operator, not a marker. A lone marker line directly under prose stays prose —
+it only starts a block when it forms a real one (two or more markers, an
+indented continuation, or a blank line before it). This keeps paragraph
+wrapping from changing interpretation (Design Principle 7).
+
+::: compare
+
+```carve
+Die Frage ist x = 5
+* 3 + 17 wahr.
+```
+
+```html
+<p>Die Frage ist x = 5
+* 3 + 17 wahr.</p>
+```
+
+:::
+
+Two or more markers are an unambiguous list and do interrupt the paragraph.
+
+::: compare
+
+```carve
+Liste:
+- eins
+- zwei
+```
+
+```html
+<p>Liste:</p>
+<ul>
+  <li>eins</li>
+  <li>zwei</li>
+</ul>
+```
+
+:::
+
+A blank line before the marker also makes it a list, even with one item.
+
+::: compare
+
+```carve
+Text hier
+
+- nur eins
+```
+
+```html
+<p>Text hier</p>
+<ul>
+  <li>nur eins</li>
+</ul>
+```
+
+:::
+
+The guard is scoped to the top level: inside an already-nested block a single
+marker still starts a block, so a one-child nested list still nests.
+
+::: compare
+
+```carve
+- parent
+  - child
+```
+
+```html
+<ul>
+  <li>parent
+    <ul>
+      <li>child</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+A single-line block followed by its caption still interrupts prose — the
+caption line is itself a real-block signal.
+
+::: compare
+
+```carve
+Intro
+> Stay hungry
+^ Steve Jobs
+```
+
+```html
+<p>Intro</p>
+<figure>
+  <blockquote><p>Stay hungry</p></blockquote>
+  <figcaption>Steve Jobs</figcaption>
+</figure>
+```
+
+:::
+
 ## Task lists
 
 ::: compare
