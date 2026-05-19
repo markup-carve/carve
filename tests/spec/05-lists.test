@@ -99,3 +99,28 @@ Text hier
   <li>nur eins</li>
 </ul>
 ```
+
+```
+- parent
+  - child
+.
+<ul>
+  <li>parent
+    <ul>
+      <li>child</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+Intro
+> Stay hungry
+^ Steve Jobs
+.
+<p>Intro</p>
+<figure>
+  <blockquote><p>Stay hungry</p></blockquote>
+  <figcaption>Steve Jobs</figcaption>
+</figure>
+```

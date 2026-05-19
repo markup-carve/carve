@@ -1,0 +1,12 @@
+Blockquote caption after a blank line
+
+```
+> quote text
+
+^ Source: Someone
+.
+<figure>
+  <blockquote><p>quote text</p></blockquote>
+  <figcaption>Source: Someone</figcaption>
+</figure>
+```

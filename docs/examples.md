@@ -506,6 +506,49 @@ Text hier
 
 :::
 
+The guard is scoped to the top level: inside an already-nested block a single
+marker still starts a block, so a one-child nested list still nests.
+
+::: compare
+
+```carve
+- parent
+  - child
+```
+
+```html
+<ul>
+  <li>parent
+    <ul>
+      <li>child</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+A single-line block followed by its caption still interrupts prose — the
+caption line is itself a real-block signal.
+
+::: compare
+
+```carve
+Intro
+> Stay hungry
+^ Steve Jobs
+```
+
+```html
+<p>Intro</p>
+<figure>
+  <blockquote><p>Stay hungry</p></blockquote>
+  <figcaption>Steve Jobs</figcaption>
+</figure>
+```
+
+:::
+
 ## Task lists
 
 ::: compare
@@ -1143,6 +1186,176 @@ the header `=`.
   <thead><tr><th style="text-align: left;">&lt; Note</th><th>Plain</th></tr></thead>
   <tbody>
     <tr><td style="text-align: left;">a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+## Fenced code shorter inner fence
+
+A code-fence closer must use the same character and be at least as
+long as the opener — a shorter run inside is literal content.
+
+::: compare
+
+````carve
+```
+line
+``
+still code
+```
+````
+
+````html
+<pre><code>line
+``
+still code
+</code></pre>
+````
+
+:::
+
+## Blockquote caption after a blank line
+
+One blank line is allowed between a block and its `^` caption; the
+quote becomes a `<figure>` with a `<figcaption>`.
+
+::: compare
+
+```carve
+> quote text
+
+^ Source: Someone
+```
+
+```html
+<figure>
+  <blockquote><p>quote text</p></blockquote>
+  <figcaption>Source: Someone</figcaption>
+</figure>
+```
+
+:::
+
+## Table cell escaped pipe
+
+A backslash-escaped pipe is literal content and does not split the
+cell.
+
+::: compare
+
+```carve
+|= A |= B |
+| x \| y | z |
+```
+
+```html
+<table>
+  <thead><tr><th>A</th><th>B</th></tr></thead>
+  <tbody>
+    <tr><td>x | y</td><td>z</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+## Table cell pipe inside code span
+
+A pipe inside a code span is protected and does not split the cell.
+
+::: compare
+
+```carve
+|= A |= B |
+| `a|b` | z |
+```
+
+```html
+<table>
+  <thead><tr><th>A</th><th>B</th></tr></thead>
+  <tbody>
+    <tr><td><code>a|b</code></td><td>z</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+## Abbreviation matches on word boundaries only
+
+A defined abbreviation is expanded only as a whole word — it is not
+substituted inside a longer word.
+
+::: compare
+
+```carve
+*[HTML]: HyperText Markup Language
+
+HTML and XHTMLish.
+```
+
+```html
+<p><abbr title="HyperText Markup Language">HTML</abbr> and XHTMLish.</p>
+```
+
+:::
+
+## Mention ignores email addresses
+
+`@` starts a mention only at a word boundary, so an email address is
+left untouched.
+
+::: compare
+
+```carve
+Write me@example.com or ping @markus.
+```
+
+```html
+<p>Write me@example.com or ping <a class="mention" href="/users/markus">@markus</a>.</p>
+```
+
+:::
+
+## Tag requires a word boundary
+
+`#` starts a tag only at a word boundary; `foo#bar` is literal text.
+
+::: compare
+
+```carve
+A #tag here, but not in foo#bar.
+```
+
+```html
+<p>A <a class="tag" href="/tags/tag">#tag</a> here, but not in foo#bar.</p>
+```
+
+:::
+
+## Table stacked rowspan
+
+Consecutive `^` cells extend the same origin cell; two stacked `^`
+markers produce `rowspan="3"`.
+
+::: compare
+
+```carve
+|= Tier |= User |
+| Gold   | Ann  |
+| ^      | Bo   |
+| ^      | Cy   |
+```
+
+```html
+<table>
+  <thead><tr><th>Tier</th><th>User</th></tr></thead>
+  <tbody>
+    <tr><td rowspan="3">Gold</td><td>Ann</td></tr>
+    <tr><td>Bo</td></tr>
+    <tr><td>Cy</td></tr>
   </tbody>
 </table>
 ```

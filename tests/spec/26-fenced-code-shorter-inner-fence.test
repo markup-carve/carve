@@ -1,0 +1,14 @@
+Fenced code shorter inner fence
+
+````
+```
+line
+``
+still code
+```
+.
+<pre><code>line
+``
+still code
+</code></pre>
+````

@@ -1,0 +1,9 @@
+Abbreviation matches on word boundaries only
+
+```
+*[HTML]: HyperText Markup Language
+
+HTML and XHTMLish.
+.
+<p><abbr title="HyperText Markup Language">HTML</abbr> and XHTMLish.</p>
+```

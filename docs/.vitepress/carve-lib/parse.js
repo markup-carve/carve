@@ -23,6 +23,13 @@ class Lexer {
     pos = 0;
     frontmatter;
     abbrDefs = new Map();
+    // True for sub-lexers over already-nested block content (list item /
+    // blockquote / admonition bodies). The lone-marker paragraph-interruption
+    // guard applies only at the document top level; inside nested content a
+    // marker interrupts as before, so `- a\n  - b` (single nested child) still
+    // nests. Mirrors djot-php #180's scoping (guard only on the top-level
+    // paragraph path).
+    nested = false;
     constructor(source) {
         this.lines = source.replace(/\r\n?/g, '\n').split('\n');
         // Drop trailing empty line introduced by terminal newline
@@ -171,6 +178,7 @@ function parseAdmonition(lexer) {
     }
     const subLexer = new Lexer(inner.join('\n'));
     subLexer.abbrDefs = lexer.abbrDefs;
+    subLexer.nested = true;
     const children = parseBlocks(subLexer, 0);
     const node = { type: 'admonition', kind, children };
     if (titleText)
@@ -197,6 +205,7 @@ function parseBlockQuote(lexer) {
     }
     const subLexer = new Lexer(inner.join('\n'));
     subLexer.abbrDefs = lexer.abbrDefs;
+    subLexer.nested = true;
     const children = parseBlocks(subLexer, 0);
     const bq = { type: 'blockquote', children };
     // Optional caption with ^
@@ -334,6 +343,7 @@ function parseList(lexer) {
         // becoming a stray second block.
         const sub = new Lexer([content, ...nested].join('\n'));
         sub.abbrDefs = lexer.abbrDefs;
+        sub.nested = true;
         const children = parseBlocks(sub, 0);
         const item = { type: 'list-item', children };
         if (checked !== undefined)
@@ -472,7 +482,8 @@ function parseParagraph(lexer) {
         const ln = lexer.peek();
         if (ln.trim() === '')
             break;
-        if (isBlockStart(ln) && interruptsParagraph(lexer, ln))
+        if (isBlockStart(ln) &&
+            (lexer.nested || interruptsParagraph(lexer, ln)))
             break;
         lexer.consume();
         lines.push(ln);
@@ -507,9 +518,12 @@ function interruptsParagraph(lexer, ln) {
             return true; // indented continuation
         return false;
     }
+    // A following caption line (`^ ...`) is also a real-block signal: a
+    // single-line quote/table directly under prose can still be a captioned
+    // figure (parseBlockQuote/parseTable support `> q` / `|= h |` + `^ cap`).
     if (isQuote)
-        return RE_BLOCKQUOTE.test(next); // 2+ quote lines
-    return RE_TABLE_ROW.test(next); // 2+ table rows
+        return RE_BLOCKQUOTE.test(next) || RE_CAPTION.test(next);
+    return RE_TABLE_ROW.test(next) || RE_CAPTION.test(next);
 }
 function isBlockStart(line) {
     return (RE_HEADING.test(line) ||

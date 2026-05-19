@@ -1,0 +1,17 @@
+Table stacked rowspan
+
+```
+|= Tier |= User |
+| Gold   | Ann  |
+| ^      | Bo   |
+| ^      | Cy   |
+.
+<table>
+  <thead><tr><th>Tier</th><th>User</th></tr></thead>
+  <tbody>
+    <tr><td rowspan="3">Gold</td><td>Ann</td></tr>
+    <tr><td>Bo</td></tr>
+    <tr><td>Cy</td></tr>
+  </tbody>
+</table>
+```
