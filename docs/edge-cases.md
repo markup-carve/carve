@@ -391,6 +391,47 @@ Inside code spans, backslash is literal:
 
 ---
 
+## 17. Hard-Wrapped Prose vs. Markers (Paragraph Interruption)
+
+**Problem:** A hard-wrapped sentence can wrap onto a line that starts with `-`,
+`*`, `+`, `>` or `|` as an *operator* — arithmetic, comparison, a pipe — not a
+list/quote/table marker. Turning it into a block would mean paragraph wrapping
+changes interpretation, violating Design Principle 7.
+
+```carve
+Die Frage ist x = 5
+* 3 + 17 wahr.
+```
+
+This is **one paragraph**, not a paragraph plus a list.
+
+**Rule:** an ambiguous marker line (unordered/task list, block quote, table
+row) that directly follows a paragraph line interrupts the paragraph **only
+when it forms a real block**:
+
+1. two or more consecutive same-kind marker lines, **or**
+2. a marker line with an indented continuation line, **or**
+3. a blank line before it (then any single marker starts a block).
+
+Otherwise the marker line is paragraph text. A lone marker with no blank line
+and no continuation does **not** become a one-item list.
+
+| Input | Result | Reason |
+|-------|--------|--------|
+| `Liste:` / `- a` / `- b` | paragraph + list | 2+ markers |
+| `Text` / (blank) / `- a` | paragraph + list | blank line before marker |
+| `Shopping:` / `- milk` / `  more` | paragraph + list | indented continuation |
+| `x = 5` / `* 3 + 17` | one paragraph | lone operator, no real block |
+| `Preis:` / `- 10 euro` | one paragraph | single marker, no blank line |
+
+Unambiguous starts — headings (`#`), fences (` ``` `), thematic breaks
+(`---`), admonitions (`:::`), bare images, abbreviation definitions, and
+ordered lists (`1.`) — cannot be confused with prose operators and still
+interrupt on a single line. Normative statement: `resources/grammar.ebnf`
+PART 9 §10. Verified by corpus `05-lists-6..8`.
+
+---
+
 ## Summary: Parser Priority
 
 When multiple interpretations are possible, use this order:

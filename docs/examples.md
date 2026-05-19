@@ -447,6 +447,65 @@ A blank line between items produces a loose list — each item wraps in a paragr
 
 :::
 
+A hard-wrapped prose line may begin with `-`, `*`, `+`, `>` or `|` as an
+operator, not a marker. A lone marker line directly under prose stays prose —
+it only starts a block when it forms a real one (two or more markers, an
+indented continuation, or a blank line before it). This keeps paragraph
+wrapping from changing interpretation (Design Principle 7).
+
+::: compare
+
+```carve
+Die Frage ist x = 5
+* 3 + 17 wahr.
+```
+
+```html
+<p>Die Frage ist x = 5
+* 3 + 17 wahr.</p>
+```
+
+:::
+
+Two or more markers are an unambiguous list and do interrupt the paragraph.
+
+::: compare
+
+```carve
+Liste:
+- eins
+- zwei
+```
+
+```html
+<p>Liste:</p>
+<ul>
+  <li>eins</li>
+  <li>zwei</li>
+</ul>
+```
+
+:::
+
+A blank line before the marker also makes it a list, even with one item.
+
+::: compare
+
+```carve
+Text hier
+
+- nur eins
+```
+
+```html
+<p>Text hier</p>
+<ul>
+  <li>nur eins</li>
+</ul>
+```
+
+:::
+
 ## Task lists
 
 ::: compare
