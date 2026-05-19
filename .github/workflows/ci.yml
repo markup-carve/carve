@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  conformance:
+    name: spec-corpus conformance
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20, 22]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Regenerate the corpus from docs/examples.md and fail if it
+      # drifted from what is committed — keeps examples and fixtures
+      # in lockstep.
+      - name: Corpus is in sync with examples
+        run: |
+          npm run corpus:build
+          git diff --exit-code -- tests/corpus tests/spec
+
+      # Run every corpus pair through the vendored carve-lib. A red
+      # run means the vendored reference lags carve-js (re-run
+      # `npm run sync-carve-lib`) or the spec changed.
+      - name: Conformance
+        run: npm test
