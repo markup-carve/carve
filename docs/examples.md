@@ -1415,3 +1415,56 @@ A [missing][nope] ref stays literal.
 ```
 
 :::
+
+## Smart typography dashes and quotes
+
+`--` `---` `...` become en/em dashes and ellipsis; straight quotes
+become contextual curly quotes.
+
+::: compare
+
+```carve
+He paused -- then ran --- fast... "Stop!" it's over.
+```
+
+```html
+<p>He paused – then ran — fast… “Stop!” it’s over.</p>
+```
+
+:::
+
+## Smart typography arrows and symbols
+
+Arrows, comparisons, plus/minus, symbols and standalone fractions are
+converted.
+
+::: compare
+
+```carve
+Flow: a -> b <- c <-> d => e; x != y, p <= q, r >= s, +-1.
+(c) 2024, (r), (tm); halves 1/2, 1/4, 3/4.
+```
+
+```html
+<p>Flow: a → b ← c ↔ d ⇒ e; x ≠ y, p ≤ q, r ≥ s, ±1.
+© 2024, ®, ™; halves ½, ¼, ¾.</p>
+```
+
+:::
+
+## Smart typography escapes and code
+
+A backslash keeps the literal sequence; code spans and blocks are
+never transformed.
+
+::: compare
+
+```carve
+Escaped \-> and \... stay; code `a -- b ...` stays.
+```
+
+```html
+<p>Escaped -&gt; and ... stay; code <code>a -- b ...</code> stays.</p>
+```
+
+:::
