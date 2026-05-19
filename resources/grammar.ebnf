@@ -16,6 +16,18 @@
    - x+      = repetition (1 or more)
    - x - y   = exception (x but not y)
    - (x)     = grouping
+
+   NORMATIVITY
+   - This file (resources/grammar.ebnf) is the NORMATIVE specification of
+     Carve. Where any document disagrees with it, this file wins. Within
+     it, PART 9 (semantic constraints not expressible in pure EBNF) is the
+     authority for behavior the grammar productions cannot encode.
+   - docs/case-study/syntax.md and docs/edge-cases.md are EXPLANATORY and
+     DERIVED — prose for humans, non-normative.
+   - docs/examples.md and the generated tests/corpus/* pairs are the
+     CONFORMANCE CONTRACT: every example is checked against the reference
+     implementation in CI. A spec change is not real until a corpus pair
+     pins it.
    ============================================================================ *)
 
 (* ============================================================================

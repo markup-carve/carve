@@ -1,5 +1,10 @@
 # Carve Edge Cases Analysis
 
+> **Non-normative.** This document analyzes tricky cases for humans. The
+> normative specification is [`resources/grammar.ebnf`](../resources/grammar.ebnf)
+> (PART 9 for semantic constraints); `docs/examples.md` + `tests/corpus`
+> are the conformance contract. On any disagreement, the grammar wins.
+
 This document analyzes potentially ambiguous or tricky parsing scenarios in Carve syntax.
 
 ---
