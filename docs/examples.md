@@ -955,3 +955,111 @@ See </#café-notes>, </#section-2024-recap>, </#setup-2>, and </#api-v2>.
 ```
 
 :::
+
+## Table column alignment
+
+::: compare
+
+```carve
+|= Name |=> Age |=~ City |
+| Alice  | 28     | NYC     |
+| Bob    | 34     | London  |
+```
+
+```html
+<table>
+  <thead><tr><th>Name</th><th style="text-align: right;">Age</th><th style="text-align: center;">City</th></tr></thead>
+  <tbody>
+    <tr><td>Alice</td><td style="text-align: right;">28</td><td style="text-align: center;">NYC</td></tr>
+    <tr><td>Bob</td><td style="text-align: right;">34</td><td style="text-align: center;">London</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+## Table per-cell alignment override
+
+::: compare
+
+```carve
+|= Item     |=> Qty |
+| Apple      | 12     |
+| Subtotal   |< 12    |
+```
+
+```html
+<table>
+  <thead><tr><th>Item</th><th style="text-align: right;">Qty</th></tr></thead>
+  <tbody>
+    <tr><td>Apple</td><td style="text-align: right;">12</td></tr>
+    <tr><td>Subtotal</td><td style="text-align: left;">12</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+## Headerless table alignment
+
+::: compare
+
+```carve
+| a |> 9  |
+| b |> 10 |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a</td><td style="text-align: right;">9</td></tr>
+    <tr><td>b</td><td style="text-align: right;">10</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+## Table without alignment
+
+::: compare
+
+```carve
+|= Name     |= Age |
+| Alice     |   28 |
+| Bob       |   34 |
+```
+
+```html
+<table>
+  <thead><tr><th>Name</th><th>Age</th></tr></thead>
+  <tbody>
+    <tr><td>Alice</td><td>28</td></tr>
+    <tr><td>Bob</td><td>34</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+## Table alignment with colspan
+
+::: compare
+
+```carve
+|=> Category |= Item   |= Price |
+| Fruit       | Apple    | $1      |
+| Total       | <        | $1.50   |
+```
+
+```html
+<table>
+  <thead><tr><th style="text-align: right;">Category</th><th>Item</th><th>Price</th></tr></thead>
+  <tbody>
+    <tr><td style="text-align: right;">Fruit</td><td>Apple</td><td>$1</td></tr>
+    <tr><td colspan="2" style="text-align: right;">Total</td><td>$1.50</td></tr>
+  </tbody>
+</table>
+```
+
+:::

@@ -1,0 +1,15 @@
+Table per-cell alignment override
+
+```
+|= Item     |=> Qty |
+| Apple      | 12     |
+| Subtotal   |< 12    |
+.
+<table>
+  <thead><tr><th>Item</th><th style="text-align: right;">Qty</th></tr></thead>
+  <tbody>
+    <tr><td>Apple</td><td style="text-align: right;">12</td></tr>
+    <tr><td>Subtotal</td><td style="text-align: left;">12</td></tr>
+  </tbody>
+</table>
+```

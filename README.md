@@ -162,7 +162,7 @@ Carve inherits and extends Djot's rationale:
 |---------|------|------|
 | Definition lists | `: term` + indented def | `:: term` / `:  def` |
 | Table headers | `\|---\|` separator | `\|=` prefix |
-| Table alignment | `:--` / `--:` separator | implicit by whitespace, or `\|=<` / `\|=>` / `\|=~` |
+| Table alignment | `:--` / `--:` separator | `\|=<` / `\|=>` / `\|=~` (column), `\|<` / `\|>` / `\|~` (cell) |
 | Headerless tables | N/A (header + separator required) | omit `\|=` |
 | Table rowspan | N/A (raw HTML only) | `^` marker |
 | Table colspan | N/A (raw HTML only) | `<` marker |
