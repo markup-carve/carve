@@ -1,0 +1,13 @@
+Table doubled alignment marker
+
+```
+|=<< Note |= Plain |
+| a         | b       |
+.
+<table>
+  <thead><tr><th style="text-align: left;">&lt; Note</th><th>Plain</th></tr></thead>
+  <tbody>
+    <tr><td style="text-align: left;">a</td><td>b</td></tr>
+  </tbody>
+</table>
+```

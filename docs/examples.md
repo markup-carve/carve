@@ -1063,3 +1063,29 @@ See </#café-notes>, </#section-2024-recap>, </#setup-2>, and </#api-v2>.
 ```
 
 :::
+
+## Table doubled alignment marker
+
+Per the disambiguation rule, a `<`/`>`/`~` immediately after `|` or
+`|=` is an alignment marker, and exactly one is recognized — so in
+`|=<<` the first `<` aligns the column left and the *repeated* second
+`<` is ordinary content. The marker is never doubled and never escapes
+the header `=`.
+
+::: compare
+
+```carve
+|=<< Note |= Plain |
+| a         | b       |
+```
+
+```html
+<table>
+  <thead><tr><th style="text-align: left;">&lt; Note</th><th>Plain</th></tr></thead>
+  <tbody>
+    <tr><td style="text-align: left;">a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+:::
