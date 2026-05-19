@@ -506,6 +506,49 @@ Text hier
 
 :::
 
+The guard is scoped to the top level: inside an already-nested block a single
+marker still starts a block, so a one-child nested list still nests.
+
+::: compare
+
+```carve
+- parent
+  - child
+```
+
+```html
+<ul>
+  <li>parent
+    <ul>
+      <li>child</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+A single-line block followed by its caption still interrupts prose — the
+caption line is itself a real-block signal.
+
+::: compare
+
+```carve
+Intro
+> Stay hungry
+^ Steve Jobs
+```
+
+```html
+<p>Intro</p>
+<figure>
+  <blockquote><p>Stay hungry</p></blockquote>
+  <figcaption>Steve Jobs</figcaption>
+</figure>
+```
+
+:::
+
 ## Task lists
 
 ::: compare
