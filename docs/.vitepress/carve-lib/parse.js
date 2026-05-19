@@ -472,7 +472,7 @@ function parseParagraph(lexer) {
         const ln = lexer.peek();
         if (ln.trim() === '')
             break;
-        if (isBlockStart(ln))
+        if (isBlockStart(ln) && interruptsParagraph(lexer, ln))
             break;
         lexer.consume();
         lines.push(ln);
@@ -481,6 +481,35 @@ function parseParagraph(lexer) {
         type: 'paragraph',
         children: parseInline(lines.join('\n'), lexer.abbrDefs),
     };
+}
+// Hard-wrap friendliness (Design Principle 7): a hard-wrapped prose line that
+// happens to begin with an operator/marker (`* 3`, `- 3`, `> 5`, `| x`) must
+// not silently become a list/quote/table. An ambiguous marker line only
+// interrupts a paragraph when it forms a *real* block: 2+ consecutive markers
+// of the same kind, or an indented continuation (multi-line first item). The
+// blank-line-preceded case never reaches here — a blank line ends the
+// paragraph earlier, and the block is then parsed fresh. Unambiguous starts
+// (heading, fence, hr, admonition, image, abbr def, ordered list) always
+// interrupt. Mirrors djot-php #180.
+function interruptsParagraph(lexer, ln) {
+    const isBullet = RE_UNORDERED.test(ln) || RE_TASK.test(ln);
+    const isQuote = RE_BLOCKQUOTE.test(ln);
+    const isTable = RE_TABLE_ROW.test(ln);
+    if (!isBullet && !isQuote && !isTable)
+        return true; // unambiguous block
+    const next = lexer.peek(1);
+    if (next === undefined || next.trim() === '')
+        return false;
+    if (isBullet) {
+        if (RE_UNORDERED.test(next) || RE_TASK.test(next))
+            return true; // 2+ markers
+        if (leadingWhitespace(next) > 0)
+            return true; // indented continuation
+        return false;
+    }
+    if (isQuote)
+        return RE_BLOCKQUOTE.test(next); // 2+ quote lines
+    return RE_TABLE_ROW.test(next); // 2+ table rows
 }
 function isBlockStart(line) {
     return (RE_HEADING.test(line) ||

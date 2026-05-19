@@ -168,6 +168,9 @@ format_name = "html" | "latex" | identifier ;
 raw_content = (* any content until closing fence *) ;
 
 (* --- Paragraphs --- *)
+(* A paragraph also ends when an ambiguous marker line forms a real block
+   (paragraph interruption); a lone marker line in flowing prose does not.
+   This is the semantic constraint PART 9 §10, not a context-free one. *)
 paragraph = inline_content+, blank_line ;
 
 
@@ -561,4 +564,24 @@ EOF = (* end of file *) ;
         conformance corpus rather than restated here. See edge-cases.md §1.
       - Resolution uses a delimiter stack, single left-to-right pass, no
         backtracking (Design Principle 1).
+
+   10. PARAGRAPH INTERRUPTION -- NORMATIVE (governs `paragraph` in PART 2;
+      Design Principle 7, hard-wrap friendly). A hard-wrapped prose line may
+      begin with `-`, `*`, `+`, `>` or `|` as an operator/pipe, not a marker.
+      An *ambiguous* marker line (unordered/task list, block quote, table row)
+      directly following a paragraph line interrupts the paragraph ONLY when
+      it forms a real block:
+      - two or more consecutive same-kind marker lines, OR
+      - a marker line with an indented continuation line (multi-line first
+        item), OR
+      - it is preceded by a blank line (then any single marker starts a
+        block -- a blank line already ends the paragraph, so the block is
+        parsed fresh).
+      Otherwise the marker line is paragraph text. So "x = 5 \n * 3 + 17" is
+      one paragraph, while "Liste: \n - a \n - b" is paragraph + list
+      (corpus 05-lists-6..8). A single marker line with no blank line before
+      it and no continuation does NOT start a one-item list.
+      Unambiguous starts (heading, fence, thematic break, admonition, bare
+      image, abbreviation definition, ordered list) always interrupt on a
+      single line -- they cannot be confused with prose operators.
 *)
