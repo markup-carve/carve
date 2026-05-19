@@ -120,6 +120,14 @@ export interface Link extends BaseNode {
     href: string;
     title?: string;
     children: InlineNode[];
+    /**
+     * Internal: an unresolved reference label, set by the inline scanner
+     * for `[text][ref]` / collapsed `[text][]`. The post-parse
+     * applyLinkDefs pass resolves it to `href`/`title` (and clears these)
+     * or, if undefined, falls back to literal `rawRef` text.
+     */
+    ref?: string;
+    rawRef?: string;
 }
 export interface Image extends BaseNode {
     type: 'image';

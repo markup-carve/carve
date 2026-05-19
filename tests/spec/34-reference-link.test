@@ -1,0 +1,9 @@
+Reference link
+
+```
+Read the [introduction][intro] first.
+
+[intro]: https://example.com/intro "Introduction"
+.
+<p>Read the <a href="https://example.com/intro" title="Introduction">introduction</a> first.</p>
+```

@@ -4,6 +4,7 @@ import { type RenderOptions } from './render-html.js';
 export * from './ast.js';
 export type { ParseOptions } from './parse.js';
 export type { RenderOptions } from './render-html.js';
+export { djotMigrationWarnings, formatMigrationWarnings, type MigrationWarning, } from './djot-migrate.js';
 /** Parse Carve source into a typed AST. */
 export declare function parse(source: string, opts?: ParseOptions): Document;
 /** Render a Carve AST to HTML matching the spec corpus. */
