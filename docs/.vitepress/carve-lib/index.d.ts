@@ -8,6 +8,8 @@ export type { RenderOptions } from './render-html.js';
 export declare function parse(source: string, opts?: ParseOptions): Document;
 /** Render a Carve AST to HTML matching the spec corpus. */
 export declare function renderHtml(ast: Document, opts?: RenderOptions): string;
-/** Convenience: parse + render in one call. */
+/** Resolve heading ids and </#id> cross-references (post-parse semantic pass). */
+export declare function resolve(doc: Document): Document;
+/** Convenience: parse + resolve + render in one call. */
 export declare function carveToHtml(source: string, opts?: ParseOptions & RenderOptions): string;
 //# sourceMappingURL=index.d.ts.map

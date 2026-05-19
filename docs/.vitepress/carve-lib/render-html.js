@@ -87,24 +87,45 @@ function renderList(node, opts, level) {
     const pad = indent(level);
     const tag = node.ordered ? 'ol' : 'ul';
     const items = node.items
-        .map((it) => renderListItem(it, opts, level + 1))
+        .map((it) => renderListItem(it, opts, level + 1, node.tight))
         .join('\n');
     return `${pad}<${tag}>\n${items}\n${pad}</${tag}>`;
 }
-function renderListItem(item, opts, level) {
+function renderListItem(item, opts, level, tight) {
     const pad = indent(level);
-    // Single-paragraph item: render inline content directly inside <li>
     const checkbox = item.checked === undefined
         ? ''
         : item.checked
             ? '<input type="checkbox" checked disabled> '
             : '<input type="checkbox" disabled> ';
+    const wrapPara = (p) => {
+        const inner = renderInlines(p.children, opts);
+        return tight ? inner : `<p>${inner}</p>`;
+    };
+    // Single paragraph: stays on the <li> line. Tight omits <p>, loose keeps it.
     if (item.children.length === 1 && item.children[0].type === 'paragraph') {
-        const inner = renderInlines(item.children[0].children, opts);
-        return `${pad}<li>${checkbox}${inner}</li>`;
+        return `${pad}<li>${checkbox}${wrapPara(item.children[0])}</li>`;
     }
-    const inner = item.children.map((c) => renderBlock(c, opts, level + 1)).join('\n');
-    return `${pad}<li>\n${checkbox}${inner}\n${pad}</li>`;
+    // Mixed content (e.g. a lead paragraph followed by a nested list): the
+    // first paragraph sits on the <li> line; remaining blocks go below,
+    // indented one level deeper, with the closing </li> back at item indent.
+    let head = `${pad}<li>${checkbox}`;
+    const body = [];
+    item.children.forEach((child, i) => {
+        if (child.type === 'paragraph') {
+            const rendered = wrapPara(child);
+            if (i === 0)
+                head += rendered;
+            else
+                body.push(`${indent(level + 1)}${rendered}`);
+        }
+        else {
+            body.push(renderBlock(child, opts, level + 1));
+        }
+    });
+    if (body.length === 0)
+        return `${head}</li>`;
+    return `${head}\n${body.join('\n')}\n${pad}</li>`;
 }
 function renderTable(node, opts, level) {
     const pad = indent(level);
@@ -288,6 +309,8 @@ function renderInline(node, opts) {
             return `<mark>${renderInlines(node.children, opts)}</mark>`;
         case 'critic-comment':
             return `<span class="critic-comment">${escapeHtml(node.text)}</span>`;
+        case 'crossref':
+            return `&lt;/#${escapeHtml(node.target)}&gt;`;
         default: {
             const t = node;
             throw new Error(`renderHtml: unknown inline ${t.type}`);
