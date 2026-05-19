@@ -20,7 +20,7 @@ features:
   - title: Visual Mnemonics
     details: "/italic/ slashes lean, *bold* asterisks are heavy, _underline_ sits below, ~strikethrough~ runs through. Syntax that looks like its output."
   - title: Post-Djot Rigor
-    details: Inherits Djot's linear-time parsing, no backtracking, unambiguous rules — extended with captions, abbreviations, and social conventions.
+    details: Djot-style linear-time parsing with no backtracking, unambiguous rules — extended with captions, abbreviations, and social conventions.
   - title: Five-Second Rule
     details: Learnable in 5 seconds for basic use. Memorable after 5 days without practice. Unambiguous within 5 characters of context.
   - title: Captions Everywhere

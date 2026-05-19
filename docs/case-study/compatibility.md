@@ -43,13 +43,19 @@ carve migrate input.md --from markdown --to carve > output.crv
 | Italic           | `*t*`/`_t_` | `_t_`       | `*t*`         | `_t_`        | `/t/`       | `/t/`        |
 | Bold             | `**t**`     | `*t*`       | `**t**`       | `*t*`        | `*t*`       | `*t*`        |
 | Underline        | N/A         | N/A         | N/A           | `[.underline]#t#` | `_t_` | `_t_`        |
-| Strikethrough    | `~~t~~`     | `~t~`       | N/A           | `[.line-through]#t#` | `+t+` | `~t~`   |
+| Strikethrough    | `~~t~~`     | N/A         | N/A           | `[.line-through]#t#` | `+t+` | `~t~`   |
 | Links            | `[t](u)`    | `[t](u)`    | `` `t <u>`_ ``| `u[t]`       | `[[u][t]]`  | `[t](u)`     |
 | Images           | `![a](u)`   | `![a](u)`   | directive     | `image::u[]` | `[[u]]`     | `![a](u)`    |
 | Attributes       | N/A         | `{.c #i}`   | roles         | `[attrs]`    | `#+ATTR`    | `{.c #i}`    |
 | Table headers    | `---`       | `---`       | underline     | `|===`       | `\|---+`    | `\|=`        |
-| Admonitions      | N/A         | `:::type`   | `.. type::`   | `TYPE:`      | N/A         | `:::type`    |
+| Admonitions      | N/A         | `::: class` | `.. type::`   | `TYPE:`      | N/A         | `:::type`    |
 | Code fence       | ``` ` ```   | ``` ` ```   | `::`          | `----`       | `#+BEGIN`   | ``` ` ```    |
+
+**Notes on the Djot column:**
+
+- **Underline:** Djot has no underline element; `{+ +}` is *insert* (`<ins>`), browser-underlined by default.
+- **Strikethrough:** Djot has no strikethrough. `~t~` is Djot *subscript*; the closest struck-out element is *delete* `{-t-}` (`<del>`). Carve's `~t~` strikethrough therefore collides with Djot subscript — see migration warnings.
+- **Admonitions:** Djot has only generic divs (`:::` + a class). Named/styled admonition *types* are renderer-defined, not built into the Djot spec.
 
 ### 8.2 Learning Curve
 

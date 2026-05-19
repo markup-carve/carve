@@ -8,14 +8,29 @@ This document analyzes potentially ambiguous or tricky parsing scenarios in Carv
 
 **Problem:** Slashes are common in paths and URLs.
 
-**Resolution:** Follow Djot's emphasis rules exactly:
-- `/` opens emphasis if NOT followed by whitespace
-- `/` closes emphasis if NOT preceded by whitespace
-- Inner `/` characters become literal content
+**Resolution:** Carve uses a word-boundary emphasis rule that is *stricter*
+than Djot (Djot's `_`/`*` rule is purely whitespace-flanking; Carve adds
+word-boundary conditions so intraword `a/b/c`, `foo_bar_baz`, and `snake_case`
+stay literal). The normative statement lives in `resources/grammar.ebnf`
+PART 9 §9; in summary, for `/` and `_`:
+- **opens** only if *not* followed by whitespace **and** preceded by the start
+  of the line/block, whitespace, or punctuation — but not by an alphanumeric,
+  `_`, or the same delimiter (so `(/x/)` and `a./b/` open, while `snake_/case/`
+  and `//a/` do not)
+- **closes** only if *not* preceded by whitespace **and** *not* followed by an
+  alphanumeric (so `x /a/b y` stays literal — the candidate closer is followed
+  by `b`)
+- inner `/` characters become literal content (same-type spans do not nest)
 
-**This means `/etc/nginx/` would become italic "etc/nginx".**
+**This means a path in an emphasizing position still italicizes:**
+`/usr/local/` → `<em>usr/local</em>` (verified — corpus `01-emphasis-6`),
+because the opening `/` is at line start and the inner slashes are literal
+content. An intraword path fragment like `a/b/c` stays literal because the `/`
+is alphanumeric-flanked and cannot open; `x /a/b y` stays literal because the
+closing `/` is followed by an alphanumeric (corpus `01-emphasis-9`).
 
-**Recommendation:** Use code fencing for paths - they're code anyway:
+**Recommendation:** For paths that sit in an emphasizing position, use code
+fencing - they're code anyway:
 
 ```carve
 The config is in `/etc/nginx/nginx.conf` for setup.

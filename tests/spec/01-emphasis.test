@@ -45,3 +45,27 @@ foo*bar*baz works but a/b/c does not.
 .
 <p>/ not emphasis /</p>
 ```
+
+```
+(/x/) and a./b/
+.
+<p>(<em>x</em>) and a.<em>b</em></p>
+```
+
+```
+x /a/b y
+.
+<p>x /a/b y</p>
+```
+
+```
+foo_bar_baz and snake_case stay literal
+.
+<p>foo_bar_baz and snake_case stay literal</p>
+```
+
+```
+//a/ and snake_/case/
+.
+<p>//a/ and snake_/case/</p>
+```

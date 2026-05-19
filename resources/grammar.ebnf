@@ -270,10 +270,21 @@ math_content = (* LaTeX math content, no unescaped delimiters *) ;
 math_inline_alt = '\(', math_content, '\)' ;
 math_block_alt = '\[', newline, math_content, newline, '\]' ;
 
-(* --- Emphasis (follows Djot word boundary rules) --- *)
+(* --- Emphasis (left/right word-boundary rule; PART 9 §9 is normative).
+   NOTE: this is STRICTER than Djot. Djot's official rule is whitespace-only
+   (open if not directly followed by whitespace, close if not directly
+   preceded by whitespace) with no word-boundary condition, so Djot emphasizes
+   intraword `foo_bar_baz`; Carve does not. The word-boundary restriction
+   applies to `/` and `_` ONLY; every other delimiter (`*`, `~`, `^`, `==`,
+   `,,`) allows intraword emphasis (e.g. `foo*bar*baz`, `foo~bar~baz`). --- *)
 
-(* Opener: delimiter NOT followed by whitespace *)
-(* Closer: delimiter NOT preceded by whitespace *)
+(* For `/` and `_` ONLY (NOT `*`, `~`, `^`, `==`, `,,`):
+   Opener: NOT followed by whitespace, AND preceded by start, whitespace, or
+           punctuation -- but NOT by an alphanumeric, by `_`, or by the same
+           delimiter character.
+   Closer: NOT preceded by whitespace, AND NOT followed by an alphanumeric.
+   Exact disambiguation of delimiter runs is pinned by the conformance corpus
+   (tests/corpus/01-emphasis*); see PART 9 §9. *)
 
 emphasis = '/', emphasis_content, '/' ;  (* italic *)
 strong = '*', strong_content, '*' ;       (* bold *)
@@ -299,9 +310,9 @@ super_content = (inline_element | text_run | literal_special)+ ;
 sub_content = (inline_element | text_run | literal_special)+ ;
 highlight_content = (inline_element | text_run | literal_special)+ ;
 
-(* Word boundary rule for emphasis openers/closers *)
-emphasis_open_condition = (* preceding char is whitespace or start, following is non-whitespace *) ;
-emphasis_close_condition = (* preceding char is non-whitespace, following is whitespace or end *) ;
+(* Word boundary rule for emphasis openers/closers (normative: PART 9 §9) *)
+emphasis_open_condition = (* preceding char is whitespace, start, or punctuation but NOT alphanumeric or '_'; following char is non-whitespace *) ;
+emphasis_close_condition = (* preceding char is non-whitespace; following char is NOT alphanumeric *) ;
 
 (* --- Footnotes --- *)
 footnote = inline_footnote | reference_footnote ;
@@ -477,10 +488,18 @@ EOF = (* end of file *) ;
    ============================================================================ *)
 
 (*
-   1. WORD BOUNDARIES FOR EMPHASIS
-      - Opener: delimiter must NOT be followed by whitespace
-      - Closer: delimiter must NOT be preceded by whitespace
-      - Example: "/ not italic /" is literal (whitespace after opener)
+   1. WORD BOUNDARIES FOR EMPHASIS (summary -- §9 below is NORMATIVE).
+      Applies to `/` and `_` ONLY; `*`, `~`, `^`, `==`, `,,` allow intraword.
+      - Opener: NOT followed by whitespace AND preceded by whitespace, start,
+        or punctuation but NOT by an alphanumeric, `_`, or the same delimiter
+        (left word boundary)
+      - Closer: NOT preceded by whitespace AND NOT followed by an alphanumeric
+        (right word boundary)
+      - Example: "/ not italic /" is literal (whitespace after opener);
+        "a/b/c" is literal (opener / has no left boundary, see corpus
+        01-emphasis-2); "/usr/local/" -> <em>usr/local</em> (01-emphasis-6)
+      - This is STRICTER than Djot, whose rule is whitespace-only with no
+        word-boundary condition (Djot emphasizes intraword foo_bar_baz)
 
    2. MATCHING FENCES
       - Code fence closer must have same character and >= same length as opener
@@ -519,15 +538,25 @@ EOF = (* end of file *) ;
       - Only applies outside code spans/blocks
       - Patterns must match exactly (not partial)
 
-   9. EMPHASIS SPAN BOUNDARY (governs *_content productions in PART 3)
+   9. EMPHASIS SPAN BOUNDARY -- NORMATIVE (governs *_content productions in
+      PART 3; §1 above is a summary of this section). Applies to `/` and `_`
+      ONLY; `*`, `~`, `^`, `==`, `,,` allow intraword emphasis.
       - A delimiter opens only if NOT followed by whitespace AND preceded by
-        whitespace, start, or punctuation (left word boundary).
-      - A delimiter closes only if NOT preceded by whitespace (right word
-        boundary). "/ not italic /" stays literal (ws after opener).
+        whitespace, start, or punctuation -- but NOT by an alphanumeric, by
+        `_`, or by the same delimiter (left word boundary). So (/x/) ->
+        (<em>x</em>) and a./b/ ->
+        a.<em>b</em> (corpus 01-emphasis-8), while foo_bar_baz, snake_case
+        and snake_/case/ stay literal (01-emphasis-10, 01-emphasis-11).
+      - A delimiter closes only if NOT preceded by whitespace AND NOT followed
+        by an alphanumeric (right word boundary). "/ not italic /" stays
+        literal (ws after opener); "x /a/b y" stays literal because the
+        candidate closer is followed by `b` (corpus 01-emphasis-9).
       - The span runs from the opener to its matched closer; any same-type
         delimiter in between is LITERAL content (no same-type nesting, §3).
-        Hence /usr/local/ -> <em>usr/local</em> and the/path/here is literal
-        (first / has no left boundary). See edge-cases.md §1.
+        Hence /usr/local/ -> <em>usr/local</em> (01-emphasis-6) and
+        the/path/here is literal (first / has no left boundary). Delimiter
+        runs adjacent to a same-type delimiter (e.g. //a/) are pinned by the
+        conformance corpus rather than restated here. See edge-cases.md §1.
       - Resolution uses a delimiter stack, single left-to-right pass, no
         backtracking (Design Principle 1).
 *)
