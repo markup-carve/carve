@@ -1,0 +1,13 @@
+Table cell pipe inside code span
+
+```
+|= A |= B |
+| `a|b` | z |
+.
+<table>
+  <thead><tr><th>A</th><th>B</th></tr></thead>
+  <tbody>
+    <tr><td><code>a|b</code></td><td>z</td></tr>
+  </tbody>
+</table>
+```

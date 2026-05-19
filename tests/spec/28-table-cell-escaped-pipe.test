@@ -1,0 +1,13 @@
+Table cell escaped pipe
+
+```
+|= A |= B |
+| x \| y | z |
+.
+<table>
+  <thead><tr><th>A</th><th>B</th></tr></thead>
+  <tbody>
+    <tr><td>x | y</td><td>z</td></tr>
+  </tbody>
+</table>
+```
