@@ -68,6 +68,12 @@ export interface TableCell extends BaseNode {
     header: boolean;
     /** undefined = normal cell, 'rowspan' = `^`, 'colspan' = `<` */
     span?: 'rowspan' | 'colspan';
+    /**
+     * Explicit per-cell alignment from a tight prefix marker
+     * (`>` right, `<` left, `~` center). When undefined the cell
+     * inherits its column's alignment (taken from row 0).
+     */
+    align?: 'left' | 'right' | 'center';
     children: InlineNode[];
 }
 export interface Admonition extends BaseNode {
