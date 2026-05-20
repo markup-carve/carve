@@ -902,7 +902,7 @@ Heads up — this is important.
 
 :::
 
-Each admonition type produces a matching CSS class — `note`, `tip`, `warning`, and `caution` are the named variants.
+Each admonition type produces a matching CSS class — `note`, `tip`, `warning`, `danger`, `info`, `success`, `example`, `quote`, and `details` are the canonical types. Custom identifiers (e.g. `hint`, `glossary`) render to the same shape with the literal type as the class. See PART 9 §12 of the grammar for the full rule.
 
 ::: compare
 

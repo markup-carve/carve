@@ -157,7 +157,8 @@ admonition_close = ":::" ;
 
 admonition_type = "note" | "tip" | "warning" | "danger" | "info"
                 | "success" | "example" | "quote" | "details"
-                | identifier ;  (* custom types *)
+                | identifier ;  (* custom types -- see PART 9 §12 for
+                                   rendering semantics *)
 
 quoted_title = '"', {character - '"'}, '"' ;
 
@@ -596,4 +597,65 @@ EOF = (* end of file *) ;
       Unambiguous starts (heading, fence, thematic break, admonition, bare
       image, abbreviation definition, ordered list) always interrupt on a
       single line -- they cannot be confused with prose operators.
+
+   11. LIST MARKER CHANGE STARTS A NEW LIST -- NORMATIVE (governs `list`
+      in PART 2). §10 decides FIRST whether a sequence of marker lines
+      establishes a list at all (paragraph-interruption gate); §11 then
+      decides whether established list items belong to one list or to
+      adjacent sibling lists. The rules layer; §11 never overrides §10.
+      Given two adjacent list items at the same indent that both passed
+      §10, they belong to the SAME list only when their marker matches:
+        - same character within `-`, `*`, `+` for unordered;
+        - same `ordered_marker` alternative for ordered;
+        - same plain-vs-task classification.
+      A line whose marker differs from the immediately-preceding item
+      on any of those axes starts a new sibling list at the same indent.
+      Matches djot. Example:
+        - a              produces:    <ul><li>a</li><li>b</li></ul>
+        - b                            <ul><li>c</li><li>d</li></ul>
+        + c
+        + d
+      Same axis for ordered-list dialect changes: a switch between
+      `digit+ '.'`, `letter '.'`, and `roman_numeral '.'` between adjacent
+      items splits. Same axis for plain-vs-task: `- a` followed by
+      `- [x] b` is two lists (matches djot, where `- [ ]` and `- a` are
+      treated as distinct kinds). Parser stateless w.r.t. marker history
+      -- the rule looks one line back.
+      LETTER-VS-ROMAN TIE-BREAKER (open). The markers `i.`, `v.`, and
+      `x.` match both `letter '.'` and `roman_numeral '.'`. When the
+      letter and roman dialects are both supported by an implementation,
+      a single-character item that could be either classifies as
+      ROMAN if the immediately-following item is a multi-character
+      roman continuation (`ii.`, `iii.`, ...), otherwise as LETTER.
+      Carve-js does not yet implement letter or roman ordered lists
+      (RE_ORDERED accepts digits only); the tie-breaker is pinned here
+      for the implementations that will.
+
+   12. ADMONITION RENDERING -- NORMATIVE (governs `admonition` in PART 2).
+      Every `:::` block carries a required `type` identifier (bare
+      `:::` is a syntax error -- carve does not accept djot's
+      "generic fenced div with no class"). The renderer emits, for
+      every type, a uniform wrapper:
+            <aside class="admonition {type}">
+              [<p class="admonition-title">{quoted_title}</p>]
+              {body}
+            </aside>
+      Two pinned rules:
+        a. The wrapper class is `admonition` followed by the literal
+           type identifier separated by a single space (no prefix form:
+           `admonition note`, NOT `admonition-note`).
+        b. A `<p class="admonition-title">…</p>` line is emitted ONLY
+           when the author supplied a `quoted_title` after the type.
+           Carve does NOT invent a default title from the type name --
+           `::: note` without `"…"` produces no title line at all.
+           This holds for canonical and custom types alike.
+      The eight canonical types (`note`, `tip`, `warning`, `danger`,
+      `info`, `success`, `example`, `quote`) plus `details` are carve
+      idioms that consuming CSS frameworks target by exact class name.
+      Custom types render to the same shape; authors layer their own
+      CSS against the `{type}` class.
+      Forward-compatibility: a registered block-extension mechanism
+      (syntax.md §4.20) may, in a future revision of this rule,
+      intercept the type identifier before the admonition fallback
+      fires. Today every `:::` block goes through the rule above.
 *)

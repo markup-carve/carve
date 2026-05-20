@@ -260,7 +260,25 @@ The `^` prefix on the following line creates a `<figure>` with `<figcaption>`.
 + And this
 ```
 
-All three (`-`, `*`, `+`) are equivalent. User preference.
+Use whichever marker you prefer for a given list. The three markers are
+**not interchangeable within one list**: changing the marker character
+starts a new list (matching djot, see PART 9 §11). So
+
+```
+- a
+- b
++ c
++ d
+```
+
+renders as two separate `<ul>`s, not one merged list. The same rule
+applies to task-list markers: a `- [ ] x` line followed by a `+ [ ] y`
+line produces two single-item task lists, not one. This keeps the
+parser stateless about "which marker came first" and matches the
+reader's intuition that the visual change signals a structural break.
+
+To consolidate visually-mixed bullets into a single list, normalize the
+markers in the source.
 
 #### Ordered
 ```
@@ -671,21 +689,56 @@ This action cannot be undone.
 :::
 ```
 
-**Built-in types:** note, tip, warning, danger, info, success, example, quote
+**Canonical types:** `note`, `tip`, `warning`, `danger`, `info`,
+`success`, `example`, `quote`, `details`. The carve VitePress theme
+and most third-party themes ship CSS targeting these exact class
+names. Render as:
 
-**Custom types:**
+```html
+<aside class="admonition note">
+  <p>Heads up — this is important.</p>
+</aside>
 ```
-::: custom-type
-Content here.
+
+**Custom types** render to the same shape — no prefix, no
+special-casing:
+
+```
+::: hint "Pro tip"
+Project-specific call-out.
+:::
+
+::: glossary
+A custom type without an explicit title renders without one.
 :::
 ```
 
-**Collapsible blocks:**
+→
+
+```html
+<aside class="admonition hint">
+  <p class="admonition-title">Pro tip</p>
+  <p>Project-specific call-out.</p>
+</aside>
+<aside class="admonition glossary">
+  <p>A custom type without an explicit title renders without one.</p>
+</aside>
 ```
-::: details "Click to expand"
-Hidden content revealed on interaction.
-:::
-```
+
+A `<p class="admonition-title">…</p>` line is emitted **only** when an
+explicit `quoted_title` is given. Carve does **not** synthesize a
+default title from the type name — `::: note` without `"…"` produces
+no title element at all (canonical and custom types alike).
+
+The §4.20 extension registry MAY in a future revision intercept a
+matching type identifier before the admonition fallback fires (e.g.
+`::: youtube` rendering via a registered handler). Today every `:::`
+block goes through the admonition rule above; see PART 9 §12.
+
+> **No bare `:::` blocks.** Every `:::` block must declare a type
+> identifier. Carve does not accept djot's "generic fenced div with no
+> class" form (`:::\n…\n:::`); use `::: note` or `::: info` for the
+> unstyled case.
 
 ### 4.13 Comments
 
