@@ -658,4 +658,49 @@ EOF = (* end of file *) ;
       (syntax.md §4.20) may, in a future revision of this rule,
       intercept the type identifier before the admonition fallback
       fires. Today every `:::` block goes through the rule above.
+
+   13. HEADING SECTION WRAPPING -- NORMATIVE (governs `atx_heading` in
+      PART 2 and the renderer; matches djot, see `jgm/djot` official
+      `headings.test`). Every heading emits a `<section id="{id}">`
+      wrapper around itself and the following content up to the next
+      same-or-shallower heading. The slug-derivation rule (§4.1 plus
+      ASCII transliteration, see PART 9 §0 / syntax.md §4.1) computes
+      the id; the id lives on the `<section>` element, NOT on the
+      `<h*>` element. This shifts the existing carve behavior
+      (id-on-h*, no section wrapper) to match djot's structural model.
+      Algorithm (one stateful pass over top-level blocks):
+        let openSections : Stack of (level, sectionElement) = []
+        for each top-level child node:
+          if node is Heading at level N:
+            while openSections is non-empty AND top.level >= N:
+              emit </section>; pop openSections
+            emit <section id="{slug}">; push (N, ...)
+            emit <h{N}>{inline-rendered children}</h{N}>
+          else:
+            emit node normally
+        while openSections is non-empty:
+          emit </section>; pop openSections
+      Properties:
+      - Adjacent same-level headings: produce sibling sections at the
+        same level (`# A / # B` -> two <section>s).
+      - Skipped levels: a `# H1 / ### H3` sequence nests H3's section
+        inside H1's, because the §11-style stack-close test (top.level
+        >= N) only closes sections at level >= 3 (none open at level 3
+        or 5/6). The structure mirrors djot's behavior; carve does NOT
+        synthesize intermediate <h2>/<section> nodes.
+      - Explicit `{#id}` on a heading: the id still lives on the
+        `<section>`, not on the `<h*>`. The dedup namespace (PART 9 §1
+        / heading-id-tracker rules) is unchanged -- explicit ids are
+        reserved before auto-ids in document order.
+      - Empty document or doc with no headings: zero <section> elements
+        are emitted.
+      - The two-pass id resolution (collect explicit ids first, then
+        auto-slug headings with collision-dedup) is unaffected by this
+        rule -- only the EMISSION site of the id moves from <h*> to
+        <section>. Existing crossref (`</#id>`) and implicit-heading
+        ref (`[Heading][]`) resolution continue to target the same
+        slug; the fragment URL `#{slug}` resolves to <section id> the
+        same way browsers resolve to <h* id>.
+      - Carve does NOT add `<section>` wrappers around non-heading
+        top-level blocks. Headings are the only trigger.
 *)
