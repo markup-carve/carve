@@ -154,7 +154,7 @@ Carve inherits and extends Djot's rationale:
 | Links | `[text](url)` | `[text](url)` |
 | Wiki-style links | `[Page Name][]` (reference link; needs a `[Page Name]: url` definition) | `[Page Name][]` (auto-resolves, no definition) |
 | Cross-references | N/A (manual `[](#id)`) | `</#id>` (auto-fills link text from the target heading) |
-| Heading IDs | Auto-generated (case-preserving) | Auto-generated (lowercase, CSS-selector-safe) |
+| Heading IDs | Auto-generated (Unicode, case-preserving) | Auto-generated (ASCII-safe transliteration, lowercase, CSS-selector-safe) |
 
 ### Lists & tables
 
