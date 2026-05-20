@@ -1,5 +1,5 @@
 import type { Document, InlineNode } from './ast.js';
-/** The 9-step automatic-identifier rule. Pure, context-free, no dedup. */
+/** The automatic-identifier rule. Pure, context-free, no dedup. */
 export declare function slugify(plainText: string): string;
 /** Visible plain text of an inline run (markup stripped). */
 export declare function inlineText(nodes: InlineNode[]): string;

@@ -48,22 +48,29 @@ heading text by the following algorithm, applied in order:
 
 1. Take the heading's rendered plain text (inline markup removed:
    `# *Setup* guide` yields `Setup guide`).
-2. Lowercase it (Unicode-aware).
-3. Trim leading and trailing whitespace.
-4. Delete every CSS-unsafe punctuation character: `'` `"` `;` `:`
+2. NFC-normalize, then **transliterate non-ASCII to ASCII** via a baked
+   Unicode→ASCII map covering Latin / IPA / combining marks / Cyrillic /
+   Latin-Extended-Additional / punctuation / super- and sub-script /
+   currency / letterlike ranges. Code points not in the map — Greek
+   (context-sensitive in ICU, deliberately excluded), CJK, Arabic — pass
+   through unchanged.
+3. Lowercase it (Unicode-aware; only matters for any letters that
+   survived step 2 unmapped).
+4. Trim leading and trailing whitespace.
+5. Delete every CSS-unsafe punctuation character: `'` `"` `;` `:`
    (so `What's New` becomes `whats-new`, not `what-s-new`).
-5. Replace each maximal run of characters that are not Unicode letters,
+6. Replace each maximal run of characters that are not Unicode letters,
    Unicode digits, `_`, or `-` — spaces included — with a single `-`.
-6. Unicode letters, Unicode digits, `_` and `-` are preserved. `_` and
+7. Unicode letters, Unicode digits, `_` and `-` are preserved. `_` and
    `-` are valid CSS identifier characters and meaningful in technical
    headings, so they are kept rather than folded into `-`.
-7. Collapse runs of `-`, then trim leading and trailing `-`.
-8. If the result starts with a digit, prefix `section-`
+8. Collapse runs of `-`, then trim leading and trailing `-`.
+9. If the result starts with a digit, prefix `section-`
    (`2024 Recap` becomes `section-2024-recap`). A CSS identifier may not
    start with a digit, and generated IDs must be usable as CSS selectors
    and `querySelector` arguments, not only as URL fragments.
-9. If the result is empty, the identifier is `section`.
-10. Deduplicate against the document's identifier namespace. Explicit
+10. If the result is empty, the identifier is `section`.
+11. Deduplicate against the document's identifier namespace. Explicit
     `{#id}` values are reserved first, in document order; generated IDs
     are reserved as headings are processed. The first use of an
     identifier is kept bare; each later collision takes the next numeric
@@ -73,22 +80,31 @@ heading text by the following algorithm, applied in order:
 | Heading | Identifier |
 |---|---|
 | `# Getting Started` | `getting-started` |
-| `# Café & Crème` | `café-crème` |
-| `# Über uns` | `über-uns` |
+| `# Café & Crème` | `cafe-creme` |
+| `# Über uns` | `uber-uns` |
+| `# Привет мир` | `privet-mir` |
 | `# RFC 2119: Key Words` | `rfc-2119-key-words` |
 | `# 2024 Recap` | `section-2024-recap` |
 | `# What's New?` | `whats-new` |
 | `# user_id field` | `user_id-field` |
-| `# 日本語の見出し` | `日本語の見出し` |
+| `# 日本語の見出し` | `日本語の見出し` (unmapped script — pass-through) |
+| `# Καλημέρα` | `καλημέρα` (Greek pass-through, deliberately) |
 | `# !!!` | `section` |
 | `# Setup` then `# Setup` | `setup`, then `setup-2` |
 | `# Introduction {#intro}` then `# Intro` | `intro`, then `intro-2` |
 
-Identifiers are lowercased and CSS-selector-safe by design: the rendered
-`id` is consumed by code Carve does not control (TOC scripts, anchor
-highlighting, `:target` rules, `document.querySelector('#' + id)`), and a
-predictable lowercase slug is also what an author must be able to guess
-when writing a `</#id>` cross-reference.
+Identifiers are lowercased, ASCII-safe, and CSS-selector-safe by design.
+The rendered `id` is consumed by code Carve does not control: anchor
+highlighting, `:target` rules, `document.querySelector('#' + id)`, and
+crucially **URL-fragment autolinkers in chat / email / aggregators that
+routinely truncate or mis-encode non-ASCII fragments**. The ASCII step
+makes the slug survive being shared as `https://…/page#some-id`. A
+predictable lowercase ASCII slug is also what an author must be able to
+guess when writing a `</#id>` cross-reference.
+
+For scripts the baked map does not cover (CJK, Arabic, Greek), the slug
+keeps the Unicode letters. If a share-safe slug is required for those
+headings, attach an explicit `{#share-safe-id}`.
 
 ### 4.2 Inline Formatting
 

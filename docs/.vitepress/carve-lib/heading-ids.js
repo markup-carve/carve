@@ -1,12 +1,39 @@
 /*
  * Heading identifier generation + cross-reference resolution.
  *
- * Behavior is fixed by markup-carve/carve PR #1 ("Automatic Identifiers").
+ * Behavior is fixed by markup-carve/carve PR #1 ("Automatic Identifiers")
+ * plus the ASCII-safety transliteration step ported from djot-php #183
+ * (so a heading id survives being shared as a URL fragment through
+ * auto-linkers, which routinely truncate or mis-encode non-ASCII).
  * slugify is pure and context-free; dedup lives in resolveHeadingIds.
  */
-/** The 9-step automatic-identifier rule. Pure, context-free, no dedup. */
+import { TRANSLIT_MAP } from './translit-map.js';
+/**
+ * Apply the baked Unicode->ASCII map (Latin / IPA / combining marks /
+ * Cyrillic / Latin-Extended-Additional / punctuation / super- and
+ * sub-script / currency / letterlike, byte-identical with djot-php's
+ * deterministic fallback). Greek is *deliberately excluded* — its ICU
+ * transliteration is context-sensitive (`αυ`->`au` but `υ`->`y`) so it
+ * can't be baked as a context-free map; Greek headings, like CJK and
+ * Arabic, pass through unchanged. The downstream regex keeps them as
+ * letters; an author can attach an explicit `{#id}` for a share-safe
+ * slug if needed.
+ */
+function transliterate(s) {
+    let out = '';
+    for (const ch of s)
+        out += TRANSLIT_MAP[ch] ?? ch;
+    return out;
+}
+/** The automatic-identifier rule. Pure, context-free, no dedup. */
 export function slugify(plainText) {
-    let s = plainText.toLowerCase();
+    // NFC first so a decomposed `résumé` (macOS copy-paste,
+    // some editors) slugs identically to its precomposed `résumé` form.
+    // Without this, the map would only catch precomposed letters and
+    // NFD inputs would emit different ids for visually identical text.
+    let s = plainText.normalize('NFC');
+    s = transliterate(s);
+    s = s.toLowerCase();
     s = s.trim();
     s = s.replace(/['";:]/gu, '');
     s = s.replace(/[^\p{L}\p{N}_-]+/gu, '-');
