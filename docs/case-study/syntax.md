@@ -39,6 +39,57 @@ Heading 2
 ---------
 ```
 
+#### Section wrapping
+
+Every heading emits a `<section id="…">` wrapper around itself and the
+content that follows it (paragraphs, lists, blockquotes, …) until the
+next heading at the same or shallower level. The id derived from the
+heading text (or the explicit `{#id}` attribute) lives on the
+`<section>` element, not on the `<h*>`. This matches djot and lets
+authors target sections directly with CSS, JavaScript, and `:target`
+selectors:
+
+```
+# Intro
+
+A paragraph.
+
+## Background
+
+Another paragraph.
+
+# Next chapter
+
+Body.
+```
+
+renders as
+
+```html
+<section id="intro">
+  <h1>Intro</h1>
+  <p>A paragraph.</p>
+  <section id="background">
+    <h2>Background</h2>
+    <p>Another paragraph.</p>
+  </section>
+</section>
+<section id="next-chapter">
+  <h1>Next chapter</h1>
+  <p>Body.</p>
+</section>
+```
+
+Skipped levels nest by the heading number — a `# H1` followed by
+`### H3` puts the H3 section two levels deep inside the H1 section,
+without synthesizing an intermediate H2.
+
+The fragment URL `https://example.com/page#intro` resolves the same
+way whether the id is on `<h1>` or `<section>` — browsers locate the
+first element matching the id. Existing `</#id>` cross-references and
+`[Heading][]` implicit references keep working unchanged. See PART 9
+§13 of the grammar for the full algorithm.
+
 #### Automatic Identifiers
 
 Every heading has an identifier. If the heading carries an explicit

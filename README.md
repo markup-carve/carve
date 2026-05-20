@@ -155,6 +155,7 @@ Carve inherits and extends Djot's rationale:
 | Wiki-style links | `[Page Name][]` (reference link; needs a `[Page Name]: url` definition) | `[Page Name][]` (auto-resolves, no definition) |
 | Cross-references | N/A (manual `[](#id)`) | `</#id>` (auto-fills link text from the target heading) |
 | Heading IDs | Auto-generated (Unicode, case-preserving) | Auto-generated (ASCII-safe transliteration, lowercase, CSS-selector-safe) |
+| Heading structure | `<section id="…"><h*>…</h*></section>` with level-aware nesting | `<section id="…"><h*>…</h*></section>` with level-aware nesting (matches djot — id on `<section>`, not on `<h*>`) |
 
 ### Lists & tables
 
