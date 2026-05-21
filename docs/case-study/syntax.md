@@ -266,6 +266,35 @@ See [click here](Other Page) for details.
 **Why not `[[...]]`?** It conflicts with valid nested spans:
 `[[inner]{.attr} outer]{.attr}` is valid djot. The `[[` is ambiguous.
 
+#### Inline Spans
+
+A bracketed inline run immediately followed by an attribute block
+attaches those attributes to a `<span>`:
+
+```
+[some text]{.highlight #note key=val}
+```
+
+→
+
+```html
+<p><span class="highlight" id="note" key="val">some text</span></p>
+```
+
+The character right after `]` decides the construct (PART 9 §14):
+
+| After `]` | Construct |
+|---|---|
+| `(` | inline link — `[text](url)` |
+| `[` | reference link — `[text][ref]` / `[text][]` |
+| `{` | **inline span** — `[text]{attrs}` |
+| anything else | literal `[text]` (carve has no shortcut reference links) |
+
+The content is full inline content, parsed recursively
+(`[a /b/ c]{.x}` → `<span class="x">a <em>b</em> c</span>`). The
+attribute block must directly abut `]`: `[text] {.x}` (with a space) is
+literal text, not a span.
+
 ### 4.4 Images
 
 Use djot's standard image syntax:
