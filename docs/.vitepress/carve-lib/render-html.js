@@ -358,6 +358,8 @@ function renderInline(node, opts) {
         }
         case 'image':
             return renderImage(node, opts);
+        case 'span':
+            return `<span${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</span>`;
         case 'autolink': {
             const display = node.href.startsWith('mailto:') ? node.href.slice(7) : node.href;
             return `<a href="${escapeAttr(node.href)}">${escapeHtml(display)}</a>`;

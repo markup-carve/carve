@@ -73,6 +73,7 @@ export function inlineText(nodes) {
             case 'highlight':
             case 'bold-italic':
             case 'link':
+            case 'span':
             case 'critic-insert':
             case 'critic-delete':
             case 'critic-highlight':
@@ -183,6 +184,7 @@ export function resolveHeadingIds(doc) {
                 case 'highlight':
                 case 'bold-italic':
                 case 'link':
+                case 'span':
                 case 'critic-insert':
                 case 'critic-delete':
                 case 'critic-highlight':
@@ -229,6 +231,7 @@ export function resolveHeadingIds(doc) {
                 case 'highlight':
                 case 'bold-italic':
                 case 'link':
+                case 'span':
                 case 'critic-insert':
                 case 'critic-delete':
                 case 'critic-highlight':

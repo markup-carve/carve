@@ -152,6 +152,11 @@ export interface Image extends BaseNode {
     alt: string;
     title?: string;
 }
+/** Inline span: `[text]{attrs}` -> <span {attrs}>text</span> (PART 9 §14). */
+export interface Span extends BaseNode {
+    type: 'span';
+    children: InlineNode[];
+}
 export interface AutoLink extends BaseNode {
     type: 'autolink';
     href: string;
@@ -212,6 +217,6 @@ export interface CriticComment extends BaseNode {
     type: 'critic-comment';
     text: string;
 }
-export type InlineNode = Text | Emphasis | InlineCode | Link | Image | AutoLink | CrossRef | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticHighlight | CriticComment;
+export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | AutoLink | CrossRef | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticHighlight | CriticComment;
 export type AnyNode = Document | BlockNode | InlineNode;
 //# sourceMappingURL=ast.d.ts.map

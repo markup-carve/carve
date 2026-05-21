@@ -29,3 +29,15 @@ Visit <https://example.com> or write <hello@example.com>.
 .
 <p><a href="https://example.com"></a></p>
 ```
+
+```
+[some text]{.highlight #note key=val}
+.
+<p><span class="highlight" id="note" key="val">some text</span></p>
+```
+
+```
+[a /b/ c]{.x} and [t](u)
+.
+<p><span class="x">a <em>b</em> c</span> and <a href="u">t</a></p>
+```

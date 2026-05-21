@@ -346,6 +346,34 @@ An empty link text is allowed and produces an empty anchor — useful as a targe
 
 :::
 
+A bracketed run directly followed by an attribute block is an inline span (PART 9 §14): the attributes attach to a `<span>`.
+
+::: compare
+
+```carve
+[some text]{.highlight #note key=val}
+```
+
+```html
+<p><span class="highlight" id="note" key="val">some text</span></p>
+```
+
+:::
+
+Span content is parsed recursively, and an inline link still wins over a span.
+
+::: compare
+
+```carve
+[a /b/ c]{.x} and [t](u)
+```
+
+```html
+<p><span class="x">a <em>b</em> c</span> and <a href="u">t</a></p>
+```
+
+:::
+
 ## Images
 
 ::: compare

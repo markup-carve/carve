@@ -747,13 +747,18 @@ EOF = (* end of file *) ;
             <span {attrs}>{inline-rendered content}</span>
       where {attrs} is the attribute block applied verbatim (id, classes,
       key=value), in the same form as any other attribute carrier
-      (`#id` -> id, `.x` -> class, `k=v` -> key). An empty `{}` is not a
-      valid attribute block (the `attributes` production requires at
-      least one attribute), so `[text]{}` is NOT a span -- it is literal
-      `[text]{}`. The bracketed content is full inline content and is
-      parsed recursively, so
+      (`#id` -> id, `.x` -> class, `k=v` -> key). The bracketed content
+      is full inline content and is parsed recursively, so
       `[a /b/ c]{.x}` -> `<span class="x">a <em>b</em> c</span>`.
       Because the `{` test fires only when the attribute block directly
       abuts `]`, `[text] {.x}` (with a space) is literal `[text]`
       followed by a literal `{.x}` -- the span requires adjacency.
+      IMPLEMENTATION-DEFINED EDGE: a block carrying no recognized
+      attribute (`[text]{}`, `[text]{ }`, `[text]{???}`) sits between
+      "valid span" and "literal text". carve-js treats it as literal
+      (the `attributes` production needs at least one attribute);
+      carve-php emits a bare `<span>text</span>` so a default-attribute
+      extension can target it. Authors MUST NOT rely on this edge --
+      use a real attribute (`[text]{.x}`) for a span, or no braces for
+      literal text.
 *)
