@@ -119,7 +119,9 @@ indent = space, space, {space} ;  (* 2+ spaces *)
 
 (* Task lists are unordered lists with special markers *)
 task_marker = '[', task_state, ']', space ;
-task_state = ' ' | 'x' | 'X' | '-' | '>' | '?' ;
+(* `x`/`X` render a CHECKED checkbox; every other state (` `, `-`, `_`,
+   `>`, `?`) renders an UNCHECKED checkbox. Matches djot-php. *)
+task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
 
 (* --- Definition Lists --- *)
 definition_list = definition_entry+ ;
