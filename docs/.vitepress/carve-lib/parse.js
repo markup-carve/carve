@@ -739,6 +739,10 @@ function leadingWhitespace(line) {
 const RE_LINK = /^(\[)([^\]]*)\]\(([^)\s]*)(?:\s+"([^"]*)")?\)(?:\{([^}]+)\})?/;
 const RE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]*)(?:\s+"([^"]*)")?\)(?:\{([^}]+)\})?/;
 const RE_REF_LINK = /^\[([^\]]+)\]\[([^\]]*)\](?:\{([^}\n]+)\})?/;
+// Inline span: a bracketed run directly followed by an attribute block
+// (PART 9 §14). The `{` must abut `]`; an empty `{}` is not a valid
+// attribute block, so the inner group requires at least one character.
+const RE_SPAN = /^\[([^\]]*)\]\{([^}\n]+)\}/;
 const RE_EXTENSION = /^:([a-zA-Z][\w-]*)\[([^\]]*)\](?:\{([^}]+)\})?/;
 const RE_AUTOLINK = /^<([a-zA-Z][a-zA-Z0-9+.\-]*:[^>\s]+|[^\s>@]+@[^\s>]+)>/;
 const RE_CROSSREF = /^<\/#([^>\s]+)>/;
@@ -920,6 +924,22 @@ function scanInline(text) {
                 out.push(refLink);
                 i += mr[0].length;
                 continue;
+            }
+            // Inline span `[text]{attrs}` (PART 9 §14). Checked after links so
+            // `[t](u)` / `[t][r]` win; the `{` must directly abut `]`. The
+            // attribute block is the ONLY thing distinguishing a span from
+            // literal bracketed text, so a block that yields no real attribute
+            // (`{ }`, `{???}`) is not a valid span -- fall through to literal.
+            const ms = RE_SPAN.exec(rest);
+            if (ms) {
+                const attrs = parseAttrs(ms[2]);
+                if (!isEmptyAttrs(attrs)) {
+                    flush();
+                    const span = { type: 'span', children: scanInline(ms[1]), attrs };
+                    out.push(span);
+                    i += ms[0].length;
+                    continue;
+                }
             }
         }
         // Inline extension :type[content]{attrs}
@@ -1245,6 +1265,12 @@ function applyLinkDefs(nodes, defs) {
 // ============================================================================
 // Attribute block parsing — {#id .class key=value key="value with spaces"}
 // ============================================================================
+/** True when an attribute block parsed to no id, classes, or key=values. */
+function isEmptyAttrs(attrs) {
+    return (attrs.id === undefined &&
+        (attrs.classes === undefined || attrs.classes.length === 0) &&
+        (attrs.keyValues === undefined || Object.keys(attrs.keyValues).length === 0));
+}
 export function parseAttrs(src) {
     const attrs = {};
     const re = /(?:#([\w-]+))|(?:\.([\w-]+))|(?:([\w-]+)=(?:"([^"]*)"|(\S+)))/g;
