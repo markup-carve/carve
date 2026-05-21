@@ -8,6 +8,15 @@ export interface Attrs {
     id?: string;
     classes?: string[];
     keyValues?: Record<string, string>;
+    /**
+     * Source-appearance order of the attribute slots, so the renderer can
+     * emit them in the order the author wrote (matching djot + carve-php).
+     * Entries: `'#id'` for the id, `'.class'` for the (merged) class group,
+     * or a bare key name for a `key=value`. Each slot appears once, at its
+     * first-appearance position. Absent on programmatically-built Attrs,
+     * in which case the renderer falls back to a fixed id/class/key order.
+     */
+    order?: string[];
 }
 export interface BaseNode {
     attrs?: Attrs;

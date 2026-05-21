@@ -1359,20 +1359,30 @@ function isEmptyAttrs(attrs) {
 }
 export function parseAttrs(src) {
     const attrs = {};
+    const order = [];
+    const note = (slot) => {
+        if (!order.includes(slot))
+            order.push(slot);
+    };
     const re = /(?:#([\w-]+))|(?:\.([\w-]+))|(?:([\w-]+)=(?:"([^"]*)"|(\S+)))/g;
     let m;
     while ((m = re.exec(src))) {
         if (m[1]) {
             attrs.id = m[1];
+            note('#id');
         }
         else if (m[2]) {
             attrs.classes = [...(attrs.classes ?? []), m[2]];
+            note('.class');
         }
         else if (m[3]) {
             const val = m[4] ?? m[5] ?? '';
             attrs.keyValues = { ...(attrs.keyValues ?? {}), [m[3]]: val };
+            note(m[3]);
         }
     }
+    if (order.length)
+        attrs.order = order;
     return attrs;
 }
 function mergeAttrs(a, b) {
@@ -1385,7 +1395,30 @@ function mergeAttrs(a, b) {
         out.classes = [...(out.classes ?? []), ...b.classes];
     if (b.keyValues)
         out.keyValues = { ...(out.keyValues ?? {}), ...b.keyValues };
+    // Merge source order: keep `a`'s order, append `b`'s new slots (a slot
+    // already present keeps its earlier position; values are last-wins via
+    // the merges above). §15 + source-order rendering.
+    const order = [...attrOrder(a)];
+    for (const slot of attrOrder(b))
+        if (!order.includes(slot))
+            order.push(slot);
+    if (order.length)
+        out.order = order;
     return out;
+}
+/** The attribute slots of `a` in order (its `order`, or a derived default). */
+function attrOrder(a) {
+    if (a.order)
+        return a.order;
+    const o = [];
+    if (a.classes?.length)
+        o.push('.class');
+    if (a.id !== undefined)
+        o.push('#id');
+    if (a.keyValues)
+        for (const k of Object.keys(a.keyValues))
+            o.push(k);
+    return o;
 }
 // ============================================================================
 // Minimal flat YAML parser (key: value, one per line; values are unquoted

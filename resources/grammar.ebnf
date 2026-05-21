@@ -410,6 +410,13 @@ soft_break = newline ;        (* regular line ending within paragraph *)
 
 attributes = '{', attribute_list, '}' ;
 attribute_list = attribute, {whitespace, attribute} ;
+(* RENDER ORDER -- NORMATIVE: attributes are emitted in the order they
+   appear in the source, with all classes merged into a single `class`
+   attribute placed at the position of the FIRST class. So `{.a #b k=c}`
+   -> `class="a" id="b" k="c"` and `{k=c .a #b}` -> `k="c" class="a"
+   id="b"`. Matches djot and carve-php. (Block-attribute merge keeps
+   each slot at its first-appearance position; values are last-wins,
+   PART 9 §15.) *)
 
 attribute = id_attribute | class_attribute | key_value_attribute ;
 

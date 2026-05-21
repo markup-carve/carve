@@ -1146,6 +1146,20 @@ Block attributes attach to any block — here, a list.
 
 :::
 
+Attributes render in the order written in the source — classes merge into one `class` at the first class's position (PART 9 attributes rule).
+
+::: compare
+
+```carve
+[label]{key=c .a #b}
+```
+
+```html
+<p><span key="c" class="a" id="b">label</span></p>
+```
+
+:::
+
 ## Frontmatter
 
 ::: compare
