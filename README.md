@@ -176,7 +176,7 @@ Carve inherits and extends Djot's rationale:
 |---------|------|------|
 | Footnotes | `[^ref]` + `[^ref]: def` | `[^ref]` + `[^ref]: def` (inline/sidenote deferred) |
 | Math | `` $`…` `` / `` $$`…` `` | `` $`…` `` / `` $$`…` `` (djot form) |
-| Generic divs | `:::` (→ `<div>`) | two-tier: canonical → `<aside>`, custom `::: word` → `<div class=word>` |
+| Generic divs | `:::` (→ `<div>`) | bare `:::` / `::: {…}` → plain `<div>`; `::: word` two-tier (canonical → `<aside>`, custom → `<div class=word>`) |
 | Inline spans | `[text]{.c}` (→ `<span>`) | `[text]{.c}` (→ `<span>`) |
 | Editorial markup | `{+ +}` `{- -}` `{= =}` | `{+ +}` `{- -}` `{~ ~> ~}` `{= =}` `{# #}` |
 | Comments | `{% … %}` | `%%` line / `%%%` block |

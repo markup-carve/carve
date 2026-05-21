@@ -879,10 +879,37 @@ and the title is never folded into the class. Carve does **not**
 synthesize a default title from the type name; `::: note` without `"…"`
 produces no title element at all.
 
-> **No bare `:::` blocks.** Every `:::` block must declare a type
-> identifier. Carve does not accept djot's "generic fenced div with no
-> class" form (`:::\n…\n:::`); use `::: note` or `::: info` for the
-> unstyled case.
+#### Generic divs (no type word)
+
+A `:::` opener with **no type word** — bare `:::` or an attributes-only
+`::: {…}` — is djot's generic container: a plain `<div>` carrying only
+the opener's attributes (no class added). This is the no-class case the
+two tiers above don't cover.
+
+```
+:::
+A plain box.
+:::
+
+::: {#s .sidebar}
+A div with attributes.
+:::
+```
+
+→
+
+```html
+<div>
+  <p>A plain box.</p>
+</div>
+<div id="s" class="sidebar">
+  <p>A div with attributes.</p>
+</div>
+```
+
+So `::: word` is a typed block (Tier 1 admonition / Tier 2 div); bare
+`:::` or `::: {…}` is a generic `<div>` (PART 9 §12). Like admonitions, a
+div closes at the first bare `:::` (no length-based nesting).
 
 ### 4.13 Comments
 

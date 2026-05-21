@@ -13,6 +13,10 @@ const RE_TASK = /^(\s*)[-*+]\s+\[([ xX])\]\s+(.*)$/;
 const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 const RE_ADMONITION_OPEN = /^:::\s*([a-zA-Z][\w-]*)\s*(.*)$/;
 const RE_ADMONITION_CLOSE = /^:::\s*$/;
+// Generic fenced div: a `:::` opener with NO type word -- bare `:::` or
+// an attributes-only `::: {.class}` (djot's generic container). A typed
+// `::: word` routes to parseAdmonition instead. Shares the `:::` closer.
+const RE_DIV_OPEN = /^:::\s*(?:\{([^}\n]+)\})?\s*$/;
 const RE_ABBR_DEF = /^\*\[([A-Z][A-Z0-9]*)\]:\s+(.+)$/;
 // Block-level reference-link definition: `[label]: url "title"` or
 // `[label]: url 'title'` (grammar.ebnf link_title allows both quote
@@ -289,6 +293,10 @@ function parseBlock(lexer) {
         return parseFence(lexer);
     if (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line))
         return parseAdmonition(lexer);
+    // Bare `:::` or attributes-only `::: {…}` opens a generic div (the
+    // admonition branch above already claimed the `::: word` form).
+    if (RE_DIV_OPEN.test(line))
+        return parseDiv(lexer);
     if (RE_ABBR_DEF.test(line)) {
         return parseAbbrDef(lexer);
     }
@@ -435,6 +443,31 @@ function parseAdmonition(lexer) {
     if (titleText !== undefined) {
         node.title = parseInline(titleText, lexer.abbrDefs, lexer.linkDefs);
     }
+    return node;
+}
+// Generic div: same body collection as an admonition, but emits a plain
+// <div> carrying the opener's attributes (no class added). Like
+// admonitions it closes at the first bare `:::` (no length-based nesting).
+function parseDiv(lexer) {
+    const attrSrc = RE_DIV_OPEN.exec(lexer.consume())[1];
+    const inner = [];
+    while (!lexer.eof()) {
+        const ln = lexer.peek();
+        if (RE_ADMONITION_CLOSE.test(ln)) {
+            lexer.consume();
+            break;
+        }
+        lexer.consume();
+        inner.push(ln);
+    }
+    const subLexer = new Lexer(inner.join('\n'));
+    subLexer.abbrDefs = lexer.abbrDefs;
+    subLexer.linkDefs = lexer.linkDefs;
+    subLexer.footnoteDefs = lexer.footnoteDefs;
+    subLexer.nested = true;
+    const node = { type: 'div', children: parseBlocks(subLexer, 0) };
+    if (attrSrc)
+        node.attrs = parseAttrs(attrSrc);
     return node;
 }
 function parseAbbrDef(lexer) {
@@ -861,6 +894,7 @@ function isBlockStart(line) {
         RE_ORDERED.test(line) ||
         RE_TABLE_ROW.test(line) ||
         RE_ADMONITION_OPEN.test(line) ||
+        RE_DIV_OPEN.test(line) ||
         RE_BARE_IMAGE.test(line) ||
         RE_ABBR_DEF.test(line) ||
         RE_FOOTNOTE_DEF.test(line) ||

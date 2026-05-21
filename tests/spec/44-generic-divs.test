@@ -1,0 +1,18 @@
+Generic divs
+
+```
+:::
+A plain box.
+:::
+
+::: {#s .sidebar}
+A div with attributes.
+:::
+.
+<div>
+  <p>A plain box.</p>
+</div>
+<div id="s" class="sidebar">
+  <p>A div with attributes.</p>
+</div>
+```

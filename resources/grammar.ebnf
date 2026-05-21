@@ -47,6 +47,7 @@ block = heading
       | list
       | table
       | admonition
+      | div
       | comment_block
       | raw_block
       | paragraph
@@ -170,6 +171,14 @@ admonition_type = "note" | "tip" | "warning" | "danger" | "info"
                                    rendering rule *)
 
 quoted_title = '"', {character - '"'}, '"' ;
+
+(* --- Generic Divs (djot generic container; PART 9 §12) --- *)
+(* A `:::` opener with NO type word -- bare `:::` or an attributes-only
+   `::: {…}` -- is a generic div, NOT an admonition. It carries only its
+   own attributes (no class added). Shares the `:::` closer; no
+   length-based nesting (closes at the first bare `:::`). *)
+div = div_open, newline, {block - admonition_close}, admonition_close, newline ;
+div_open = ":::", [space, attributes] ;
 
 (* --- Comments --- *)
 comment_line = "%%", {character}, newline ;
@@ -671,11 +680,13 @@ EOF = (* end of file *) ;
       dialect", and an `i.`/`v.`/`x.` tie-breaker must be specified then.
 
    12. FENCED ":::" BLOCK RENDERING -- NORMATIVE (governs `admonition`
-      in PART 2; cross-references syntax.md §4.20 "Block Extensions").
-      Every `:::` block carries a required `type` identifier (bare
-      `:::` is a syntax error -- carve does not accept djot's
-      "generic fenced div with no class"). The renderer chooses the
-      wrapper element by a TWO-TIER rule on the type identifier:
+      and `div` in PART 2; cross-references syntax.md §4.20 "Block
+      Extensions"). A TYPED `::: word` block renders by a TWO-TIER rule
+      on the type identifier (below). A `:::` opener with NO type word --
+      bare `:::` or an attributes-only `::: {…}` -- is a GENERIC DIV: a
+      plain `<div>` carrying ONLY the opener's attributes (no class
+      added; an empty div is `<div></div>`), i.e. djot's generic
+      container. The two tiers for a typed block:
 
       Tier 1 -- CANONICAL ADMONITION TYPES render as a semantic
         `<aside>` with the `admonition` marker class:

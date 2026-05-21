@@ -268,6 +268,9 @@ export function resolveHeadingIds(doc) {
                     fn(b.title);
                 b.children.forEach((c) => walkBlock(c, fn));
                 break;
+            case 'div':
+                b.children.forEach((c) => walkBlock(c, fn));
+                break;
             case 'table':
                 if (b.caption)
                     fn(b.caption);
