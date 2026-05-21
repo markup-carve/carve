@@ -1763,3 +1763,33 @@ and a continuation line.<a href="#fnref1" role="doc-backlink">↩</a></p>
 ```
 
 :::
+
+## Generic divs
+
+A `:::` opener with no type word — bare `:::` or an attributes-only
+`::: {…}` — is djot's generic container: a plain `<div>` carrying only
+the opener's attributes (a typed `::: word` is a two-tier admonition/div
+instead).
+
+::: compare
+
+```carve
+:::
+A plain box.
+:::
+
+::: {#s .sidebar}
+A div with attributes.
+:::
+```
+
+```html
+<div>
+  <p>A plain box.</p>
+</div>
+<div id="s" class="sidebar">
+  <p>A div with attributes.</p>
+</div>
+```
+
+:::

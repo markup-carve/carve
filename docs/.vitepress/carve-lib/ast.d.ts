@@ -97,6 +97,16 @@ export interface Admonition extends BaseNode {
     title?: InlineNode[];
     children: BlockNode[];
 }
+/**
+ * Generic fenced div — djot's generic container. A `:::` opener with NO
+ * type word (bare `:::` or an attributes-only `::: {.class}`) is a Div;
+ * a typed `::: word` is an Admonition (two-tier rule, PART 9 §12).
+ * Renders to a plain `<div>` carrying its `attrs` (no class added).
+ */
+export interface Div extends BaseNode {
+    type: 'div';
+    children: BlockNode[];
+}
 export interface Figure extends BaseNode {
     type: 'figure';
     target: Image | BlockQuote | Table;
@@ -117,7 +127,7 @@ export interface Comment extends BaseNode {
     block: boolean;
     content: string;
 }
-export type BlockNode = Heading | Paragraph | BlockQuote | List | CodeBlock | ThematicBreak | Table | Admonition | Figure | Image | AbbreviationDef | RawBlock | Comment;
+export type BlockNode = Heading | Paragraph | BlockQuote | List | CodeBlock | ThematicBreak | Table | Admonition | Div | Figure | Image | AbbreviationDef | RawBlock | Comment;
 export interface Text extends BaseNode {
     type: 'text';
     value: string;

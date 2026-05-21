@@ -1,0 +1,7 @@
+:::
+A plain box.
+:::
+
+::: {#s .sidebar}
+A div with attributes.
+:::
