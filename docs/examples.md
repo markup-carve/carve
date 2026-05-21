@@ -1033,6 +1033,24 @@ Quick steps:
 
 :::
 
+A bare `:::` block (no type) renders as a plain generic `<div>` — djot's generic fenced div.
+
+::: compare
+
+````carve
+:::
+Unstyled grouping.
+:::
+````
+
+```html
+<div>
+  <p>Unstyled grouping.</p>
+</div>
+```
+
+:::
+
 ## Abbreviations
 
 ::: compare
@@ -1613,7 +1631,7 @@ Flow: a -> b <- c <-> d => e; x != y, p <= q, r >= s, +-1.
 
 ```html
 <p>Flow: a → b ← c ↔ d ⇒ e; x ≠ y, p ≤ q, r ≥ s, ±1.
-© 2024, ®, ™; halves ½, ¼, ¾.</p>
+© 2024, ®, ™; halves 1/2, 1/4, 3/4.</p>
 ```
 
 :::

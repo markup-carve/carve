@@ -856,10 +856,29 @@ and the title is never folded into the class. Carve does **not**
 synthesize a default title from the type name; `::: note` without `"…"`
 produces no title element at all.
 
-> **No bare `:::` blocks.** Every `:::` block must declare a type
-> identifier. Carve does not accept djot's "generic fenced div with no
-> class" form (`:::\n…\n:::`); use `::: note` or `::: info` for the
-> unstyled case.
+**Bare and attribute-only `:::` blocks** render as a plain generic
+`<div>` (djot's generic fenced div):
+
+```
+:::
+Unstyled grouping.
+:::
+
+::: {.sidebar #aside-1}
+Grouped, with attributes.
+:::
+```
+
+→
+
+```html
+<div>
+  <p>Unstyled grouping.</p>
+</div>
+<div class="sidebar" id="aside-1">
+  <p>Grouped, with attributes.</p>
+</div>
+```
 
 ### 4.13 Comments
 
@@ -974,11 +993,13 @@ Auto-converted by default (can be disabled):
 | `<=`        | ≤      | Less or equal    |
 | `>=`        | ≥      | Greater or equal |
 | `+-`        | ±      | Plus/minus       |
-| `1/2`       | ½      | Fractions        |
-| `1/4`       | ¼      | Fractions        |
-| `3/4`       | ¾      | Fractions        |
 
 Escape with backslash: `\->` = literal `->`
+
+Carve does **not** convert fraction sequences (`1/2`, `1/4`, `3/4`) to
+vulgar-fraction glyphs — they render literally. Djot has no such
+conversion, and the heuristic mis-fires on dates, ratios, and version
+strings; authors who want `½` should write the glyph directly.
 
 ### 4.19 Abbreviations
 

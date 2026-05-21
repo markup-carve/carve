@@ -157,7 +157,10 @@ admonition = admonition_open, newline,
              {block - admonition_close}+,
              admonition_close, newline ;
 
-admonition_open = ":::", space, admonition_type, [space, quoted_title], [attributes] ;
+(* A `:::` opener may carry a type, an attribute block, or neither.
+   With a type -> Tier 1/2 per PART 9 §12; with no type (bare `:::` or
+   `::: {attrs}`) -> a generic <div>. *)
+admonition_open = ":::", [space, admonition_type, [space, quoted_title]], [space, attributes] ;
 admonition_close = ":::" ;
 
 admonition_type = "note" | "tip" | "warning" | "danger" | "info"
@@ -385,7 +388,9 @@ tag_boundary = (* #name must have word boundary before # *) ;
 
 (* --- Smart Typography --- *)
 smart_typography = em_dash | en_dash | ellipsis | smart_quote
-                 | arrow | comparison | fraction | symbol ;
+                 | arrow | comparison | symbol ;
+(* Fractions (1/2 -> ½ etc.) are NOT converted -- djot has none and the
+   heuristic mis-fires on dates/ratios/versions. They render literally. *)
 
 em_dash = "---" ;     (* → — *)
 en_dash = "--" ;      (* → – *)
@@ -397,7 +402,6 @@ smart_single_quote = "'", {character - "'"}, "'" ;
 
 arrow = "->" | "<-" | "<->" | "=>" ;
 comparison = "!=" | "<=" | ">=" ;
-fraction = "1/2" | "1/4" | "3/4" | "1/3" | "2/3" ;
 symbol = "(c)" | "(r)" | "(tm)" | "+-" ;
 
 (* --- Breaks --- *)
@@ -665,10 +669,15 @@ EOF = (* end of file *) ;
 
    12. FENCED ":::" BLOCK RENDERING -- NORMATIVE (governs `admonition`
       in PART 2; cross-references syntax.md §4.20 "Block Extensions").
-      Every `:::` block carries a required `type` identifier (bare
-      `:::` is a syntax error -- carve does not accept djot's
-      "generic fenced div with no class"). The renderer chooses the
-      wrapper element by a TWO-TIER rule on the type identifier:
+      A `:::` block may carry a type identifier, an attribute block, or
+      neither. The renderer chooses the wrapper element by the TWO-TIER
+      rule below; a `:::` with no type (bare `:::` or `::: {attrs}`)
+      renders as a plain generic `<div>` (Tier 2 with no type class --
+      djot's generic fenced div):
+        :::            -> <div>…</div>
+        ::: {.x #y}    -> <div class="x" id="y">…</div>
+      The renderer chooses the wrapper element by a TWO-TIER rule on the
+      type identifier:
 
       Tier 1 -- CANONICAL ADMONITION TYPES render as a semantic
         `<aside>` with the `admonition` marker class:

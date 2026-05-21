@@ -60,15 +60,10 @@ const RULES = [
         message: () => 'Djot highlight `{=x=}` is written `==x==` in Carve.',
         suggestion: (m) => `==${m[1]}==`,
     },
-    {
-        // Only the *full* form `[text][ref]`. The collapsed form `[text][]`
-        // is resolved by Carve unchanged, so flagging it would be noise.
-        id: 'djot-reference-link',
-        family: '[',
-        pattern: /\[[^\]\n]+\]\[[^\]\n]+\]/g,
-        message: () => 'Djot reference-style link `[text][ref]`: Carve resolves the collapsed form `[text][]` but full `[text][ref]` resolution is not guaranteed — verify the target.',
-        suggestion: (m) => m[0],
-    },
+    // NOTE: full Djot reference links `[text][ref]` are NOT flagged — Carve
+    // resolves them identically against a `[ref]: url` definition (corpus
+    // 34-reference-link), so there is no silent mis-render. Math (`$`x``)
+    // and editorial `{+ +}`/`{- -}` are likewise identical and unflagged.
 ];
 const blanks = (s) => s.replace(/[^\n]/g, ' ');
 /**
