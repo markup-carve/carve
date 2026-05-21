@@ -50,7 +50,12 @@ block = heading
       | comment_block
       | raw_block
       | paragraph
+      | block_attributes
       | blank_line ;
+(* `block_attributes` is a standalone block-level line that renders
+   nothing on its own; it attaches to a following block. Its precise
+   reach (floating across blank lines), accumulation, and drop-if-dangling
+   semantics are NOT context-free -- they are pinned in PART 9 §15. *)
 
 blank_line = {whitespace}, newline ;
 
@@ -417,8 +422,14 @@ unquoted_value = (letter | digit | '-' | '_')+ ;
 quoted_value = '"', {character - '"'}, '"'
              | "'", {character - "'"}, "'" ;
 
-(* Block-level attributes appear on preceding line *)
-block_attributes = attributes, newline ;
+(* Block-level attributes appear on their own line(s) preceding a block.
+   A single attribute block may also span multiple physical lines (the
+   `}` need not be on the opening line); attributes are separated by any
+   mix of whitespace and newlines, so continuation lines may be indented.
+   Merge + reach semantics: PART 9 §15. *)
+block_attributes = '{', opt_ws_nl, attribute, {ws_nl_sep, attribute}, opt_ws_nl, '}', newline ;
+opt_ws_nl = {whitespace | newline} ;          (* padding / wrapping: zero or more *)
+ws_nl_sep = (whitespace | newline), opt_ws_nl ;  (* mandatory separator between attributes *)
 
 (* ============================================================================
    PART 5: ABBREVIATIONS
@@ -761,4 +772,39 @@ EOF = (* end of file *) ;
       extension can target it. Authors MUST NOT rely on this edge --
       use a real attribute (`[text]{.x}`) for a span, or no braces for
       literal text.
+
+   15. BLOCK ATTRIBUTE LINES -- NORMATIVE (governs `block_attributes`
+      in PART 2; matches djot). A `{...}` attribute block on its own
+      line is a leading block attribute: it does NOT render -- it
+      attaches to the next block element. Semantics:
+      - REACH: leading attribute blocks float forward to the next block
+        element, across intervening blank lines. `{#id}\n\nText` yields
+        `<p id="id">Text</p>`. A run with no following block element
+        (e.g. at end of document) is dropped, producing no output.
+      - ACCUMULATION across consecutive blocks: when several attribute
+        blocks precede the same target (adjacent or blank-separated),
+        they merge in source order with these rules --
+          * id: last one wins.
+          * key=value: last value for a given key wins.
+          * class: ALL classes accumulate in source order, with NO
+            de-duplication (`{.a .b}` then `{.b .c}` -> `class="a b b c"`,
+            matching djot and carve-php).
+        Worked example (the djot canonical case):
+          {#id}
+          {key=val}
+          {.foo .bar}
+          {key=val2}
+          {.baz}
+          {#id2}
+          Okay
+        -> <p id="id2" key="val2" class="foo bar baz">Okay</p>
+      - MULTI-LINE BLOCK: a single attribute block may wrap across lines
+        -- the `}` need not sit on the opening line. `{#id\n .foo}` is
+        one block contributing id `id` and class `foo`.
+      - The target block's OWN trailing attributes (e.g. a heading's
+        `# H {#x}`, PART 9 §13/§12 carriers) merge with the leading
+        block attributes under the same rules.
+      Implementation status: carve-php implements §15 in full; carve-js
+      does not yet parse leading block-attribute lines (they currently
+      render as literal text). Tracked as a carve-js follow-up.
 *)

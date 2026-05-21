@@ -722,6 +722,42 @@ This paragraph {lang=en} has inline attributes.
 This entire paragraph gets these attributes.
 ```
 
+A leading `{...}` line does not render — it attaches to the next block
+element. Several rules apply (PART 9 §15):
+
+- **Reach:** the attributes float forward to the next block, even across
+  a blank line. A run with no following block (e.g. at end of document)
+  is dropped.
+- **Accumulation:** consecutive attribute lines merge in source order —
+  `id` last-wins, `key=value` last-wins per key, and **classes
+  accumulate** (no de-duplication):
+
+  ```
+  {#id}
+  {key=val}
+  {.foo .bar}
+  {key=val2}
+  {.baz}
+  {#id2}
+  Okay
+  ```
+  →
+  ```html
+  <p id="id2" key="val2" class="foo bar baz">Okay</p>
+  ```
+
+- **Multi-line:** a single block may wrap — the `}` need not be on the
+  opening line:
+  ```
+  {#id
+   .foo}
+  Text
+  ```
+
+> Cross-impl status: carve-php implements block-attribute lines in full;
+> carve-js does not yet (a tracked follow-up). Trailing attributes on a
+> block's own syntax (e.g. `# Heading {#x}`) work in both.
+
 **Why keep Djot's syntax:**
 - Already familiar to Djot users
 - Attributes are a power feature anyway
