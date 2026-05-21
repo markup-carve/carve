@@ -117,14 +117,31 @@ export interface InlineCode extends BaseNode {
 }
 export interface Link extends BaseNode {
     type: 'link';
+    /**
+     * Resolved hyperlink target. Always meaningful after `resolve()`.
+     * Between parse() and resolve() this may be `''` on a Link node whose
+     * `ref` is still set — that placeholder shape means "unresolved
+     * reference; the resolve pass will finalize it" (see `ref` below).
+     * After `resolve()`, any Link surviving in the tree has `ref` cleared
+     * and a meaningful `href`.
+     */
     href: string;
     title?: string;
     children: InlineNode[];
     /**
-     * Internal: an unresolved reference label, set by the inline scanner
-     * for `[text][ref]` / collapsed `[text][]`. The post-parse
-     * applyLinkDefs pass resolves it to `href`/`title` (and clears these)
-     * or, if undefined, falls back to literal `rawRef` text.
+     * Internal placeholder: an unresolved reference label, set by the
+     * inline scanner for `[text][ref]` / collapsed `[text][]`. The
+     * resolution lifecycle is:
+     *   1. applyLinkDefs (inside parse) matches against the document's
+     *      explicit `[label]: url` defs; on hit it sets `href`/`title`
+     *      and deletes `ref`/`rawRef`.
+     *   2. resolveHeadingIds (inside resolve) matches still-unresolved
+     *      refs against the document's headings (implicit references);
+     *      on hit it sets `href` and deletes `ref`/`rawRef`.
+     *   3. Anything still unresolved at the end of resolveHeadingIds is
+     *      replaced with a Text node carrying `rawRef` (literal source).
+     * Consumers that call parse() without resolve() will see a Link node
+     * with `ref` set and `href: ''` for any genuinely-unresolvable input.
      */
     ref?: string;
     rawRef?: string;

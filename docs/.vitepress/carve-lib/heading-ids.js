@@ -7,6 +7,7 @@
  * auto-linkers, which routinely truncate or mis-encode non-ASCII).
  * slugify is pure and context-free; dedup lives in resolveHeadingIds.
  */
+import { normalizeRefLabel } from './parse.js';
 import { TRANSLIT_MAP } from './translit-map.js';
 /**
  * Apply the baked Unicode->ASCII map (Latin / IPA / combining marks /
@@ -45,7 +46,16 @@ export function slugify(plainText) {
         s = 'section';
     return s;
 }
-/** Visible plain text of an inline run (markup stripped). */
+/**
+ * Visible plain text of an inline run (markup stripped).
+ *
+ * A reference-link placeholder (Link with `ref` still set) contributes
+ * its `children` text just like a resolved Link — both for heading-id
+ * derivation and for the implicit-heading-ref key. This matches the
+ * cross-impl behavior in carve-php's CarveConverter: a heading
+ * `# [Title][maybe]` slugs to `title` regardless of whether `maybe`
+ * resolves, so an implicit `[Title][]` can target it consistently.
+ */
 export function inlineText(nodes) {
     let out = '';
     for (const n of nodes) {
@@ -103,6 +113,11 @@ export function inlineText(nodes) {
 export function resolveHeadingIds(doc) {
     const used = new Set();
     const targets = new Map();
+    // Implicit-reference index: normalized visible heading text -> heading id.
+    // First-occurrence wins (matches `</#id>` ambiguous-ref behavior). Built
+    // from the parsed AST's inlineText so it agrees with the heading slug
+    // exactly — no regex pre-pass guesswork.
+    const headingRefs = new Map();
     for (const block of doc.children) {
         if (block.type !== 'heading')
             continue;
@@ -127,8 +142,62 @@ export function resolveHeadingIds(doc) {
         }
         if (!targets.has(id))
             targets.set(id, block.children);
+        const plain = inlineText(block.children);
+        const key = normalizeRefLabel(plain);
+        if (key && !headingRefs.has(key))
+            headingRefs.set(key, id);
     }
-    const resolveList = (nodes) => {
+    // Two-pass resolution: implicit-heading refs must be finalized
+    // BEFORE crossref cloning, otherwise a forward `</#id>` could clone
+    // a heading's children while they still hold unresolved Link
+    // placeholders, locking those placeholders into the clone where the
+    // second pass can't see them. Refs are resolved first; then crossrefs
+    // clone the now-finalized heading children.
+    /** Pass 1: finalize unresolved reference links in-place. */
+    const resolveRefs = (nodes) => {
+        for (let i = 0; i < nodes.length; i++) {
+            const n = nodes[i];
+            if (n.type === 'link' && n.ref !== undefined) {
+                // No explicit `[label]: url` def matched in applyLinkDefs.
+                // Try the implicit-heading index; otherwise fall back to the
+                // raw source text. Explicit defs win because applyLinkDefs
+                // already resolved those before this pass.
+                const id = headingRefs.get(normalizeRefLabel(n.ref));
+                if (id) {
+                    n.href = `#${id}`;
+                    delete n.ref;
+                    delete n.rawRef;
+                }
+                else {
+                    nodes[i] = { type: 'text', value: n.rawRef ?? '' };
+                    continue;
+                }
+            }
+            switch (n.type) {
+                case 'italic':
+                case 'strong':
+                case 'underline':
+                case 'strike':
+                case 'super':
+                case 'sub':
+                case 'highlight':
+                case 'bold-italic':
+                case 'link':
+                case 'critic-insert':
+                case 'critic-delete':
+                case 'critic-highlight':
+                    resolveRefs(n.children);
+                    break;
+                case 'extension':
+                    resolveRefs(n.content);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+    /** Pass 2: resolve `</#id>` crossrefs, cloning finalized children. */
+    const resolveCrossrefs = (nodes) => {
         for (let i = 0; i < nodes.length; i++) {
             const n = nodes[i];
             if (n.type === 'crossref') {
@@ -163,54 +232,56 @@ export function resolveHeadingIds(doc) {
                 case 'critic-insert':
                 case 'critic-delete':
                 case 'critic-highlight':
-                    resolveList(n.children);
+                    resolveCrossrefs(n.children);
                     break;
                 case 'extension':
-                    resolveList(n.content);
+                    resolveCrossrefs(n.content);
                     break;
                 default:
                     break;
             }
         }
     };
-    const walkBlock = (b) => {
+    const walkBlock = (b, fn) => {
         switch (b.type) {
             case 'heading':
             case 'paragraph':
-                resolveList(b.children);
+                fn(b.children);
                 break;
             case 'blockquote':
                 if (b.attribution)
-                    resolveList(b.attribution);
-                b.children.forEach(walkBlock);
+                    fn(b.attribution);
+                b.children.forEach((c) => walkBlock(c, fn));
                 break;
             case 'list':
                 for (const item of b.items)
-                    item.children.forEach(walkBlock);
+                    item.children.forEach((c) => walkBlock(c, fn));
                 break;
             case 'admonition':
                 if (b.title)
-                    resolveList(b.title);
-                b.children.forEach(walkBlock);
+                    fn(b.title);
+                b.children.forEach((c) => walkBlock(c, fn));
                 break;
             case 'table':
                 if (b.caption)
-                    resolveList(b.caption);
+                    fn(b.caption);
                 for (const row of b.rows)
                     for (const cell of row.cells)
-                        resolveList(cell.children);
+                        fn(cell.children);
                 break;
             case 'figure':
-                resolveList(b.caption);
+                fn(b.caption);
                 if (b.target.type === 'blockquote' || b.target.type === 'table')
-                    walkBlock(b.target);
+                    walkBlock(b.target, fn);
                 break;
             default:
                 break;
         }
     };
     for (const block of doc.children)
-        walkBlock(block);
+        walkBlock(block, resolveRefs);
+    for (const block of doc.children)
+        walkBlock(block, resolveCrossrefs);
     return doc;
 }
 //# sourceMappingURL=heading-ids.js.map

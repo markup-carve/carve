@@ -7,11 +7,50 @@
  * indented children for readability.
  */
 export function renderHtml(ast, opts = {}) {
-    const blocks = ast.children
-        .filter((n) => n.type !== 'abbreviation-def')
-        .map((n) => renderBlock(n, opts, 0))
-        .filter((s) => s !== '');
-    return blocks.join('\n');
+    const out = [];
+    // Section-wrapping pass (grammar PART 9 §13): every top-level heading
+    // opens a <section id="{slug}"> that holds the heading and the content
+    // up to the next same-or-shallower heading. The id lives on the
+    // <section>, not on the <h*>. Sections nest by heading level.
+    const sectionStack = []; // open section heading-levels, outer→inner
+    const closeTo = (level) => {
+        while (sectionStack.length && sectionStack[sectionStack.length - 1] >= level) {
+            sectionStack.pop();
+            out.push(`${indent(sectionStack.length)}</section>`);
+        }
+    };
+    for (const node of ast.children) {
+        if (node.type === 'abbreviation-def')
+            continue;
+        if (node.type === 'heading') {
+            closeTo(node.level);
+            const depth = sectionStack.length;
+            // The id moves to <section>; any other heading attrs (classes,
+            // key-values) stay on the <h*>.
+            const id = node.attrs?.id;
+            const sectionId = id ? ` id="${escapeAttr(id)}"` : '';
+            out.push(`${indent(depth)}<section${sectionId}>`);
+            sectionStack.push(node.level);
+            const headingAttrs = stripId(node.attrs);
+            const inner = renderInlines(node.children, opts);
+            out.push(`${indent(depth + 1)}<h${node.level}${renderAttrs(headingAttrs)}>${inner}</h${node.level}>`);
+            continue;
+        }
+        const rendered = renderBlock(node, opts, sectionStack.length);
+        if (rendered !== '')
+            out.push(rendered);
+    }
+    closeTo(1); // close any sections still open at end of document
+    return out.join('\n');
+}
+/** Copy attrs without the `id` (the id moves to the enclosing <section>). */
+function stripId(attrs) {
+    if (!attrs)
+        return undefined;
+    if (attrs.id === undefined)
+        return attrs;
+    const { id: _omit, ...rest } = attrs;
+    return rest;
 }
 function indent(level) {
     return '  '.repeat(level);
