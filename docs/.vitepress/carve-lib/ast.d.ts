@@ -107,6 +107,21 @@ export interface Div extends BaseNode {
     type: 'div';
     children: BlockNode[];
 }
+/**
+ * Definition list (§4.5): `:: term` lines (one or more) followed by
+ * `:  definition` lines (one or more) form an entry; entries render to a
+ * `<dl>` of `<dt>` (terms) then `<dd>` (definitions). `::` is exactly two
+ * colons (three is a div/admonition); a definition line is colon + two
+ * spaces; deeper-indented lines continue a definition.
+ */
+export interface DefinitionItem {
+    terms: InlineNode[][];
+    definitions: BlockNode[][];
+}
+export interface DefinitionList extends BaseNode {
+    type: 'definition-list';
+    items: DefinitionItem[];
+}
 export interface Figure extends BaseNode {
     type: 'figure';
     target: Image | BlockQuote | Table;
@@ -127,7 +142,7 @@ export interface Comment extends BaseNode {
     block: boolean;
     content: string;
 }
-export type BlockNode = Heading | Paragraph | BlockQuote | List | CodeBlock | ThematicBreak | Table | Admonition | Div | Figure | Image | AbbreviationDef | RawBlock | Comment;
+export type BlockNode = Heading | Paragraph | BlockQuote | List | CodeBlock | ThematicBreak | Table | Admonition | Div | DefinitionList | Figure | Image | AbbreviationDef | RawBlock | Comment;
 export interface Text extends BaseNode {
     type: 'text';
     value: string;

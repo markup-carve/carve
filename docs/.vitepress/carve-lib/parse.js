@@ -19,6 +19,11 @@ const RE_ADMONITION_CLOSE = /^:::\s*$/;
 // an attributes-only `::: {.class}` (djot's generic container). A typed
 // `::: word` routes to parseAdmonition instead. Shares the `:::` closer.
 const RE_DIV_OPEN = /^:::\s*(?:\{([^}\n]+)\})?\s*$/;
+// Definition list (§4.5). A TERM line is exactly two colons + space(s)
+// + text — the `(?!:)` keeps it distinct from a `:::` div/admonition. A
+// DEFINITION line is a colon + two-or-more spaces + text.
+const RE_DEFLIST_TERM = /^::(?!:)\s+(.+)$/;
+const RE_DEFLIST_DEF = /^: {2,}(.+)$/;
 const RE_ABBR_DEF = /^\*\[([A-Z][A-Z0-9]*)\]:\s+(.+)$/;
 // Block-level reference-link definition: `[label]: url "title"` or
 // `[label]: url 'title'` (grammar.ebnf link_title allows both quote
@@ -328,6 +333,9 @@ function parseBlock(lexer) {
     }
     if (RE_HEADING.test(line))
         return parseHeading(lexer);
+    // Definition list starts on a `:: term` line (two colons, not three).
+    if (RE_DEFLIST_TERM.test(line))
+        return parseDefinitionList(lexer);
     if (RE_BLOCKQUOTE.test(line))
         return parseBlockQuote(lexer);
     if (RE_TASK.test(line) || RE_UNORDERED.test(line) || RE_ORDERED.test(line))
@@ -499,6 +507,63 @@ function parseDiv(lexer) {
     if (attrSrc)
         node.attrs = parseAttrs(attrSrc);
     return node;
+}
+// Definition list (§4.5). An entry is 1+ `:: term` lines followed by 1+
+// `:  definition` lines; a definition continues on lines indented >= 3
+// spaces. A `:: term` after a definition starts a new entry; a single
+// blank line between entries is allowed, anything else ends the list.
+function parseDefinitionList(lexer) {
+    const items = [];
+    const parseDefBody = (first) => {
+        const bodyLines = [first];
+        while (!lexer.eof()) {
+            const ln = lexer.peek();
+            if (ln.trim() !== '' && leadingWhitespace(ln) >= 3) {
+                bodyLines.push(ln.replace(/^\s+/, ''));
+                lexer.consume();
+            }
+            else
+                break;
+        }
+        const sub = new Lexer(bodyLines.join('\n'));
+        sub.abbrDefs = lexer.abbrDefs;
+        sub.linkDefs = lexer.linkDefs;
+        sub.footnoteDefs = lexer.footnoteDefs;
+        sub.nested = true;
+        return parseBlocks(sub, 0);
+    };
+    while (!lexer.eof() && RE_DEFLIST_TERM.test(lexer.peek())) {
+        const terms = [];
+        const definitions = [];
+        while (!lexer.eof()) {
+            const t = RE_DEFLIST_TERM.exec(lexer.peek());
+            if (!t)
+                break;
+            lexer.consume();
+            terms.push(parseInline(t[1], lexer.abbrDefs, lexer.linkDefs));
+        }
+        while (!lexer.eof()) {
+            const d = RE_DEFLIST_DEF.exec(lexer.peek());
+            if (!d)
+                break;
+            lexer.consume();
+            definitions.push(parseDefBody(d[1]));
+        }
+        items.push({ terms, definitions });
+        // Allow a single blank line before the next entry's `:: term`.
+        if (!lexer.eof() && lexer.peek().trim() === '') {
+            let look = 1;
+            while (lexer.peek(look)?.trim() === '')
+                look++;
+            const next = lexer.peek(look);
+            if (next && RE_DEFLIST_TERM.test(next))
+                for (let k = 0; k < look; k++)
+                    lexer.consume();
+            else
+                break;
+        }
+    }
+    return { type: 'definition-list', items };
 }
 function parseAbbrDef(lexer) {
     const line = lexer.consume();
@@ -932,6 +997,7 @@ function isBlockStart(line) {
         RE_TABLE_ROW.test(line) ||
         RE_ADMONITION_OPEN.test(line) ||
         RE_DIV_OPEN.test(line) ||
+        RE_DEFLIST_TERM.test(line) ||
         RE_BARE_IMAGE.test(line) ||
         RE_ABBR_DEF.test(line) ||
         RE_FOOTNOTE_DEF.test(line) ||

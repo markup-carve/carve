@@ -1,0 +1,15 @@
+Definition lists
+
+```
+:: color
+:: colour
+:  The visual property of objects.
+:  A pigment or paint.
+.
+<dl>
+  <dt>color</dt>
+  <dt>colour</dt>
+  <dd>The visual property of objects.</dd>
+  <dd>A pigment or paint.</dd>
+</dl>
+```

@@ -1829,3 +1829,29 @@ A div with attributes.
 ```
 
 :::
+
+## Definition lists
+
+`:: term` (one or more) then `:  definition` (one or more) form an entry,
+rendered as a `<dl>` of `<dt>` then `<dd>`. Two colons is a term; three
+is a div/admonition.
+
+::: compare
+
+```carve
+:: color
+:: colour
+:  The visual property of objects.
+:  A pigment or paint.
+```
+
+```html
+<dl>
+  <dt>color</dt>
+  <dt>colour</dt>
+  <dd>The visual property of objects.</dd>
+  <dd>A pigment or paint.</dd>
+</dl>
+```
+
+:::

@@ -406,6 +406,14 @@ text directly (`<li>text</li>`); a loose item wraps each paragraph in
 - `::` (double colon) marks terms
 - `:  ` (colon + 2 spaces) marks definitions
 
+> **`::` vs `:::`.** A term is *exactly two* colons; *three* colons is a
+> div/admonition (§4.12). The parser keys on the colon count with no
+> lookahead — `:: x` is always a term, `::: x` always a fenced block —
+> so the one-keystroke visual difference is never ambiguous to the
+> parser. (Carve keeps the explicit `::` term marker rather than djot's
+> bare-line-plus-`:` form precisely to avoid the setext-style lookahead
+> Carve dropped in §4.1.)
+
 **Multiple terms sharing a definition:**
 ```
 :: color

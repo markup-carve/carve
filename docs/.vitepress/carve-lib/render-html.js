@@ -71,6 +71,15 @@ function walkBlockInlines(node, visit) {
         case 'div':
             node.children.forEach((c) => walkBlockInlines(c, visit));
             break;
+        case 'definition-list':
+            for (const it of node.items) {
+                for (const t of it.terms)
+                    visit(t);
+                for (const d of it.definitions)
+                    for (const b of d)
+                        walkBlockInlines(b, visit);
+            }
+            break;
         case 'table':
             if (node.caption)
                 visit(node.caption);
@@ -271,6 +280,24 @@ function renderBlock(node, opts, level) {
                 return `${open}\n${pad}</div>`;
             const body = node.children.map((c) => renderBlock(c, opts, level + 1)).join('\n');
             return `${open}\n${body}\n${pad}</div>`;
+        }
+        case 'definition-list': {
+            const lines = [`${pad}<dl>`];
+            for (const it of node.items) {
+                for (const t of it.terms)
+                    lines.push(`${pad}  <dt>${renderInlines(t, opts)}</dt>`);
+                for (const d of it.definitions) {
+                    if (d.length === 1 && d[0].type === 'paragraph') {
+                        lines.push(`${pad}  <dd>${renderInlines(d[0].children, opts)}</dd>`);
+                    }
+                    else {
+                        const body = d.map((b) => renderBlock(b, opts, level + 2)).join('\n');
+                        lines.push(`${pad}  <dd>\n${body}\n${pad}  </dd>`);
+                    }
+                }
+            }
+            lines.push(`${pad}</dl>`);
+            return lines.join('\n');
         }
         case 'figure':
             return renderFigure(node, opts, level);
