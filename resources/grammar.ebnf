@@ -206,6 +206,7 @@ inline_element = escaped_char
                | code_span
                | autolink
                | link
+               | inline_span
                | image
                | math_inline
                | emphasis
@@ -258,6 +259,14 @@ link_title = space, ('"', {character - '"'}, '"')
 
 reference_label = {character - ']'}+ ;
 reference_definition = '[', reference_label, ']', ':', space, url, [link_title], newline ;
+
+(* --- Inline Spans --- *)
+(* A bracketed inline run immediately followed by an attribute block
+   attaches those attributes to a <span>. Distinguished from links by the
+   character after ']': '(' -> inline_link, '[' -> reference link, '{' ->
+   inline_span. A bare '[text]' with none of those is literal text (carve
+   has no shortcut reference links). See PART 9 §14. *)
+inline_span = '[', inline_content, ']', attributes ;
 
 autolink = '<', (url_autolink | email_autolink), '>' ;
 url_autolink = scheme, ':', {url_char}+ ;
@@ -722,4 +731,29 @@ EOF = (* end of file *) ;
         same way browsers resolve to <h* id>.
       - Carve does NOT add `<section>` wrappers around non-heading
         top-level blocks. Headings are the only trigger.
+
+   14. INLINE SPAN VS LINK DISAMBIGUATION -- NORMATIVE (governs `link`
+      and `inline_span` in PART 3). After scanning a bracketed run
+      `[ inline_content ]`, the IMMEDIATELY FOLLOWING character selects
+      the construct (single-character lookahead, no backtracking):
+        - `(` -> inline_link  ([text](url))
+        - `[` -> reference_link or collapsed_reference_link
+                 ([text][ref] / [text][])
+        - `{` -> inline_span  ([text]{attrs})
+        - anything else (or end of input) -> the `[`...`]` is LITERAL
+          text. Carve has no shortcut reference link: a bare `[label]`
+          never resolves against a `[label]: url` definition.
+      An inline_span renders as
+            <span {attrs}>{inline-rendered content}</span>
+      where {attrs} is the attribute block applied verbatim (id, classes,
+      key=value), in the same form as any other attribute carrier
+      (`#id` -> id, `.x` -> class, `k=v` -> key). An empty `{}` is not a
+      valid attribute block (the `attributes` production requires at
+      least one attribute), so `[text]{}` is NOT a span -- it is literal
+      `[text]{}`. The bracketed content is full inline content and is
+      parsed recursively, so
+      `[a /b/ c]{.x}` -> `<span class="x">a <em>b</em> c</span>`.
+      Because the `{` test fires only when the attribute block directly
+      abuts `]`, `[text] {.x}` (with a space) is literal `[text]`
+      followed by a literal `{.x}` -- the span requires adjacency.
 *)
