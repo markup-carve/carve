@@ -1,7 +1,7 @@
 # Syntax Specification
 
 > **Non-normative.** This page is explanatory prose. The normative
-> specification is [`resources/grammar.ebnf`](../../resources/grammar.ebnf)
+> specification is [`resources/grammar.ebnf`](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf)
 > (PART 9 for semantic constraints); `docs/examples.md` + `tests/corpus`
 > are the conformance contract. On any disagreement, the grammar wins.
 

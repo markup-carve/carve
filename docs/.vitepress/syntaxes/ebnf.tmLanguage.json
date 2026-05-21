@@ -1,0 +1,66 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "ebnf",
+  "scopeName": "source.ebnf",
+  "fileTypes": [
+    "ebnf"
+  ],
+  "patterns": [
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#string"
+    },
+    {
+      "include": "#special"
+    },
+    {
+      "include": "#definition"
+    },
+    {
+      "include": "#operator"
+    }
+  ],
+  "repository": {
+    "comment": {
+      "name": "comment.block.ebnf",
+      "begin": "\\(\\*",
+      "end": "\\*\\)"
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.ebnf",
+          "begin": "\"",
+          "end": "\""
+        },
+        {
+          "name": "string.quoted.single.ebnf",
+          "begin": "'",
+          "end": "'"
+        }
+      ]
+    },
+    "special": {
+      "name": "string.regexp.ebnf",
+      "begin": "\\?",
+      "end": "\\?"
+    },
+    "definition": {
+      "match": "^\\s*([A-Za-z][A-Za-z0-9_]*)\\s*(=)",
+      "captures": {
+        "1": {
+          "name": "entity.name.function.ebnf"
+        },
+        "2": {
+          "name": "keyword.operator.assignment.ebnf"
+        }
+      }
+    },
+    "operator": {
+      "name": "keyword.operator.ebnf",
+      "match": "[|,;]|\\.\\.\\.|[\\[\\]{}()*+-]"
+    }
+  }
+}
