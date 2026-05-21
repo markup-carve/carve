@@ -1096,6 +1096,56 @@ A paragraph with [a styled link](url){.btn .primary}.
 
 :::
 
+A `{...}` line on its own attaches to the next block (PART 9 §15).
+
+::: compare
+
+```carve
+{.note}
+This paragraph gets the class.
+```
+
+```html
+<p class="note">This paragraph gets the class.</p>
+```
+
+:::
+
+Consecutive attribute lines merge, and classes accumulate in source order.
+
+::: compare
+
+```carve
+{.a}
+{.b}
+Merged.
+```
+
+```html
+<p class="a b">Merged.</p>
+```
+
+:::
+
+Block attributes attach to any block — here, a list.
+
+::: compare
+
+```carve
+{.todo}
+- one
+- two
+```
+
+```html
+<ul class="todo">
+  <li>one</li>
+  <li>two</li>
+</ul>
+```
+
+:::
+
 ## Frontmatter
 
 ::: compare

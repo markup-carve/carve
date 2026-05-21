@@ -423,13 +423,17 @@ quoted_value = '"', {character - '"'}, '"'
              | "'", {character - "'"}, "'" ;
 
 (* Block-level attributes appear on their own line(s) preceding a block.
-   A single attribute block may also span multiple physical lines (the
-   `}` need not be on the opening line); attributes are separated by any
-   mix of whitespace and newlines, so continuation lines may be indented.
-   Merge + reach semantics: PART 9 §15. *)
-block_attributes = '{', opt_ws_nl, attribute, {ws_nl_sep, attribute}, opt_ws_nl, '}', newline ;
-opt_ws_nl = {whitespace | newline} ;          (* padding / wrapping: zero or more *)
-ws_nl_sep = (whitespace | newline), opt_ws_nl ;  (* mandatory separator between attributes *)
+   A single attribute block may span multiple physical lines (the `}`
+   need not be on the opening line): a continuation is a single line
+   break optionally followed by indentation. A BLANK line (two line
+   breaks) ends the block -- it is not interior padding; an attribute
+   block interrupted by a blank line is not a block_attributes (both
+   reference impls treat it as literal text). Merge + reach semantics
+   (including float-across-blank-lines BETWEEN separate blocks): §15. *)
+block_attributes = '{', opt_ws, attribute, {attr_separator, attribute}, opt_ws, '}', newline ;
+opt_ws = {whitespace} ;                  (* spaces/tabs only, no line breaks *)
+attr_separator = (whitespace | continuation), opt_ws ;  (* one ws OR one line break *)
+continuation = newline, opt_ws ;         (* a single line break + indent; NOT a blank line *)
 
 (* ============================================================================
    PART 5: ABBREVIATIONS
@@ -800,7 +804,11 @@ EOF = (* end of file *) ;
         -> <p id="id2" key="val2" class="foo bar baz">Okay</p>
       - MULTI-LINE BLOCK: a single attribute block may wrap across lines
         -- the `}` need not sit on the opening line. `{#id\n .foo}` is
-        one block contributing id `id` and class `foo`.
+        one block contributing id `id` and class `foo`. A BLANK line
+        inside the braces ends the block (it is then literal text, not a
+        block_attributes). A quoted value containing a literal `}` that
+        spans lines is not supported by the reference impls
+        (pathological).
       - The target block's OWN trailing attributes (e.g. a heading's
         `# H {#x}`, PART 9 §13/§12 carriers) merge with the leading
         block attributes under the same rules.
