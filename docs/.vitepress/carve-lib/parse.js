@@ -98,25 +98,6 @@ export function normalizeRefLabel(label) {
     return label.trim().replace(/\s+/g, ' ').toLowerCase();
 }
 /**
- * One top-level pass over the whole source collects every reference
- * definition, so resolution is order-independent (grammar §6).
- * Blockquote markers are stripped first, so a quoted def (`> [r]: /u`)
- * is found here too — and fence tracking runs on the *stripped* line so
- * a definition shown inside a quoted code block stays a literal sample.
- * Admonition bodies and indented list defs already match the
- * whitespace-tolerant RE_LINK_DEF. Because this single pass is complete,
- * sub-lexers must NOT re-collect (that would overwrite a later
- * document-wide definition with a stale nested one).
- *
- * Deliberate limitation: this flat pre-pass is the price of
- * order-independent resolution (§6) without a second structural parse.
- * A definition jammed into a hard-wrapped paragraph with no surrounding
- * blank line (e.g. `Intro\n- [r]: /u`) is still collected here even
- * though parseParagraph keeps that line as prose. Reference definitions
- * are conventionally blank-line-separated; the jammed-in form is
- * pathological and intentionally not special-cased.
- */
-/**
  * Strip leading block-container prefixes (blockquote `>`, list/task
  * markers, indentation) so a definition or fence nested at any depth is
  * seen by the single first pass. RE_LINK_DEF is specific enough that
@@ -133,6 +114,31 @@ function stripContainerPrefixes(raw) {
     } while (line !== prev);
     return line.replace(/^\s+/, ''); // residual indentation
 }
+/**
+ * One top-level pass over the whole source collects every reference
+ * definition, so resolution is order-independent (grammar §6).
+ * Blockquote markers are stripped first, so a quoted def (`> [r]: /u`)
+ * is found here too — and fence tracking runs on the *stripped* line so
+ * a definition shown inside a quoted code block stays a literal sample.
+ * Admonition bodies and indented list defs already match the
+ * whitespace-tolerant RE_LINK_DEF. Because this single pass is complete,
+ * sub-lexers must NOT re-collect (that would overwrite a later
+ * document-wide definition with a stale nested one).
+ *
+ * Implicit heading references (`[Heading Text][]` resolves to a matching
+ * top-level heading) are handled in resolveHeadingIds, NOT here. That
+ * deferred pass walks the parsed AST and uses the real inlineText, so
+ * the implicit-ref key always agrees with the heading slug — no regex
+ * pre-pass can mirror the inline parser perfectly.
+ *
+ * Deliberate limitation: this flat pre-pass is the price of
+ * order-independent resolution (§6) without a second structural parse.
+ * A definition jammed into a hard-wrapped paragraph with no surrounding
+ * blank line (e.g. `Intro\n- [r]: /u`) is still collected here even
+ * though parseParagraph keeps that line as prose. Reference definitions
+ * are conventionally blank-line-separated; the jammed-in form is
+ * pathological and intentionally not special-cased.
+ */
 function collectLinkDefs(lexer) {
     let fence = null;
     // Skip leading YAML frontmatter — it is opaque metadata, never
@@ -161,13 +167,14 @@ function collectLinkDefs(lexer) {
         if (RE_ABBR_DEF.test(line))
             continue;
         const m = RE_LINK_DEF.exec(line);
-        if (!m)
+        if (m) {
+            const def = { href: m[2] };
+            const title = m[3] ?? m[4];
+            if (title !== undefined)
+                def.title = title;
+            lexer.linkDefs.set(normalizeRefLabel(m[1]), def);
             continue;
-        const def = { href: m[2] };
-        const title = m[3] ?? m[4];
-        if (title !== undefined)
-            def.title = title;
-        lexer.linkDefs.set(normalizeRefLabel(m[1]), def);
+        }
     }
 }
 function parseBlocks(lexer, baseIndent) {
@@ -1190,12 +1197,13 @@ function applyLinkDefs(nodes, defs) {
                     node.title = def.title;
                 delete node.ref;
                 delete node.rawRef;
-                out.push(node);
             }
-            else {
-                // Unresolved reference renders as its literal source text.
-                out.push({ type: 'text', value: node.rawRef ?? '' });
-            }
+            // If unresolved, KEEP the placeholder so a post-parse pass
+            // (resolveImplicitHeadingRefs in heading-ids.ts) can match it
+            // against the document's parsed headings, or finalize it to
+            // literal text. Falling back here would lose the link node
+            // before that pass ever sees it.
+            out.push(node);
             continue;
         }
         out.push(node);

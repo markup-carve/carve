@@ -181,9 +181,15 @@ A `/` or `_` opener immediately preceded by the *same* delimiter or by `_` is no
 ```
 
 ```html
-<h1 id="welcome">Welcome</h1>
-<h2 id="getting-started">Getting started</h2>
-<h3 id="setup">Setup</h3>
+<section id="welcome">
+  <h1>Welcome</h1>
+  <section id="getting-started">
+    <h2>Getting started</h2>
+    <section id="setup">
+      <h3>Setup</h3>
+    </section>
+  </section>
+</section>
 ```
 
 :::
@@ -202,12 +208,24 @@ All six heading levels are supported.
 ```
 
 ```html
-<h1 id="h1">H1</h1>
-<h2 id="h2">H2</h2>
-<h3 id="h3">H3</h3>
-<h4 id="h4">H4</h4>
-<h5 id="h5">H5</h5>
-<h6 id="h6">H6</h6>
+<section id="h1">
+  <h1>H1</h1>
+  <section id="h2">
+    <h2>H2</h2>
+    <section id="h3">
+      <h3>H3</h3>
+      <section id="h4">
+        <h4>H4</h4>
+        <section id="h5">
+          <h5>H5</h5>
+          <section id="h6">
+            <h6>H6</h6>
+          </section>
+        </section>
+      </section>
+    </section>
+  </section>
+</section>
 ```
 
 :::
@@ -221,7 +239,9 @@ Attributes attach to the heading via a trailing `{…}` block. The rendered attr
 ```
 
 ```html
-<h2 class="featured" id="install">Setup</h2>
+<section id="install">
+  <h2 class="featured">Setup</h2>
+</section>
 ```
 
 :::
@@ -235,7 +255,9 @@ Inline emphasis renders inside heading text.
 ```
 
 ```html
-<h2 id="why-carve">Why <em>Carve</em>?</h2>
+<section id="why-carve">
+  <h2>Why <em>Carve</em>?</h2>
+</section>
 ```
 
 :::
@@ -1000,8 +1022,10 @@ A paragraph with [a styled link](url){.btn .primary}.
 ```
 
 ```html
-<h1 class="large" id="intro">Title</h1>
-<p>A paragraph with <a href="url" class="btn primary">a styled link</a>.</p>
+<section id="intro">
+  <h1 class="large">Title</h1>
+  <p>A paragraph with <a href="url" class="btn primary">a styled link</a>.</p>
+</section>
 ```
 
 :::
@@ -1047,13 +1071,25 @@ See </#cafe-notes>, </#section-2024-recap>, </#setup-2>, and </#api-v2>.
 ```
 
 ```html
-<h1 id="cafe-notes">Café Notes</h1>
-<h1 id="uber-uns">Über uns</h1>
-<h1 id="section-2024-recap">2024 Recap</h1>
-<h2 id="setup">Setup</h2>
-<h2 id="setup-2">Setup</h2>
-<h1 id="api-v2">API</h1>
-<p>See <a href="#cafe-notes">Café Notes</a>, <a href="#section-2024-recap">2024 Recap</a>, <a href="#setup-2">Setup</a>, and <a href="#api-v2">API</a>.</p>
+<section id="cafe-notes">
+  <h1>Café Notes</h1>
+</section>
+<section id="uber-uns">
+  <h1>Über uns</h1>
+</section>
+<section id="section-2024-recap">
+  <h1>2024 Recap</h1>
+  <section id="setup">
+    <h2>Setup</h2>
+  </section>
+  <section id="setup-2">
+    <h2>Setup</h2>
+  </section>
+</section>
+<section id="api-v2">
+  <h1>API</h1>
+  <p>See <a href="#cafe-notes">Café Notes</a>, <a href="#section-2024-recap">2024 Recap</a>, <a href="#setup-2">Setup</a>, and <a href="#api-v2">API</a>.</p>
+</section>
 ```
 
 :::
