@@ -740,10 +740,14 @@ This action cannot be undone.
 :::
 ```
 
-**Canonical types:** `note`, `tip`, `warning`, `danger`, `info`,
-`success`, `example`, `quote`, `details`. The carve VitePress theme
-and most third-party themes ship CSS targeting these exact class
-names. Render as:
+Carve renders a `:::` block by a **two-tier rule** on the type
+identifier (PART 9 §12):
+
+**Tier 1 — canonical admonition types** render as a semantic `<aside>`
+with the `admonition` marker class. The canonical set is `note`, `tip`,
+`warning`, `danger`, `info`, `success`, `example`, `quote`. The carve
+VitePress theme and most third-party themes ship CSS targeting these
+exact class names:
 
 ```html
 <aside class="admonition note">
@@ -751,40 +755,41 @@ names. Render as:
 </aside>
 ```
 
-**Custom types** render to the same shape — no prefix, no
-special-casing:
+**Tier 2 — any other (custom) type** renders as a generic block-level
+`<div>` carrying the verbatim type as its class. This is the carve
+fenced-div primitive that the block-extension mechanism (§4.20) builds
+on (`::: tabs`, `::: mermaid`, `::: codepen` → `<div class="tabs">`
+etc., post-processed by a registered extension; an unregistered type
+still renders as its plain `<div class="{type}">`):
 
 ```
 ::: hint "Pro tip"
 Project-specific call-out.
 :::
 
-::: glossary
-A custom type without an explicit title renders without one.
+::: tabs
+...
 :::
 ```
 
 →
 
 ```html
-<aside class="admonition hint">
+<div class="hint">
   <p class="admonition-title">Pro tip</p>
   <p>Project-specific call-out.</p>
-</aside>
-<aside class="admonition glossary">
-  <p>A custom type without an explicit title renders without one.</p>
-</aside>
+</div>
+<div class="tabs">
+  ...
+</div>
 ```
 
 A `<p class="admonition-title">…</p>` line is emitted **only** when an
-explicit `quoted_title` is given. Carve does **not** synthesize a
-default title from the type name — `::: note` without `"…"` produces
-no title element at all (canonical and custom types alike).
-
-The §4.20 extension registry MAY in a future revision intercept a
-matching type identifier before the admonition fallback fires (e.g.
-`::: youtube` rendering via a registered handler). Today every `:::`
-block goes through the admonition rule above; see PART 9 §12.
+explicit `quoted_title` is given (both tiers). The quote characters are
+delimiters and are stripped — they never appear in the rendered title,
+and the title is never folded into the class. Carve does **not**
+synthesize a default title from the type name; `::: note` without `"…"`
+produces no title element at all.
 
 > **No bare `:::` blocks.** Every `:::` block must declare a type
 > identifier. Carve does not accept djot's "generic fenced div with no

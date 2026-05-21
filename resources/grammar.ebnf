@@ -156,9 +156,10 @@ admonition_open = ":::", space, admonition_type, [space, quoted_title], [attribu
 admonition_close = ":::" ;
 
 admonition_type = "note" | "tip" | "warning" | "danger" | "info"
-                | "success" | "example" | "quote" | "details"
-                | identifier ;  (* custom types -- see PART 9 §12 for
-                                   rendering semantics *)
+                | "success" | "example" | "quote"  (* Tier 1 canonical *)
+                | identifier ;  (* Tier 2 custom types (incl. `details`)
+                                   -- see PART 9 §12 for the two-tier
+                                   rendering rule *)
 
 quoted_title = '"', {character - '"'}, '"' ;
 
@@ -631,33 +632,51 @@ EOF = (* end of file *) ;
       (RE_ORDERED accepts digits only); the tie-breaker is pinned here
       for the implementations that will.
 
-   12. ADMONITION RENDERING -- NORMATIVE (governs `admonition` in PART 2).
+   12. FENCED ":::" BLOCK RENDERING -- NORMATIVE (governs `admonition`
+      in PART 2; cross-references syntax.md §4.20 "Block Extensions").
       Every `:::` block carries a required `type` identifier (bare
       `:::` is a syntax error -- carve does not accept djot's
-      "generic fenced div with no class"). The renderer emits, for
-      every type, a uniform wrapper:
+      "generic fenced div with no class"). The renderer chooses the
+      wrapper element by a TWO-TIER rule on the type identifier:
+
+      Tier 1 -- CANONICAL ADMONITION TYPES render as a semantic
+        `<aside>` with the `admonition` marker class:
             <aside class="admonition {type}">
               [<p class="admonition-title">{quoted_title}</p>]
               {body}
             </aside>
-      Two pinned rules:
-        a. The wrapper class is `admonition` followed by the literal
-           type identifier separated by a single space (no prefix form:
-           `admonition note`, NOT `admonition-note`).
+        The canonical set is the eight call-out types
+        `note`, `tip`, `warning`, `danger`, `info`, `success`,
+        `example`, `quote`. Consuming CSS frameworks target these exact
+        class names.
+
+      Tier 2 -- ANY OTHER (custom) type renders as a generic block-level
+        `<div>` carrying the verbatim type as its class:
+            <div class="{type}">
+              [<p class="admonition-title">{quoted_title}</p>]
+              {body}
+            </div>
+        This is the carve fenced-div primitive that the block-extension
+        mechanism (syntax.md §4.20) builds on -- e.g. `::: tabs`,
+        `::: mermaid`, `::: codepen` produce `<div class="tabs">`,
+        `<div class="mermaid">`, `<div class="codepen">` respectively,
+        which a registered extension may post-process. An unregistered
+        custom type still renders as its generic `<div class="{type}">`
+        so the document stays readable. `details` is an ordinary Tier-2
+        type (`<div class="details">`); an extension that wants the
+        HTML5 `<details>/<summary>` disclosure element opts in via §4.20.
+
+      Pinned rules common to both tiers:
+        a. The class is the literal type identifier (Tier 1 prefixes it
+           with `admonition ` separated by a single space:
+           `admonition note`, NOT `admonition-note`; Tier 2 uses the
+           bare `{type}`). The type is NEVER folded together with the
+           quoted title -- the title is a child element, never a class.
         b. A `<p class="admonition-title">…</p>` line is emitted ONLY
            when the author supplied a `quoted_title` after the type.
-           Carve does NOT invent a default title from the type name --
-           `::: note` without `"…"` produces no title line at all.
-           This holds for canonical and custom types alike.
-      The eight canonical types (`note`, `tip`, `warning`, `danger`,
-      `info`, `success`, `example`, `quote`) plus `details` are carve
-      idioms that consuming CSS frameworks target by exact class name.
-      Custom types render to the same shape; authors layer their own
-      CSS against the `{type}` class.
-      Forward-compatibility: a registered block-extension mechanism
-      (syntax.md §4.20) may, in a future revision of this rule,
-      intercept the type identifier before the admonition fallback
-      fires. Today every `:::` block goes through the rule above.
+           Carve does NOT invent a default title from the type name.
+           An explicitly empty `""` still counts as a supplied (empty)
+           title. Applies to both tiers.
 
    13. HEADING SECTION WRAPPING -- NORMATIVE (governs `atx_heading` in
       PART 2 and the renderer; matches djot, see `jgm/djot` official

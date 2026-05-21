@@ -924,7 +924,7 @@ Heads up — this is important.
 
 :::
 
-Each admonition type produces a matching CSS class — `note`, `tip`, `warning`, `danger`, `info`, `success`, `example`, `quote`, and `details` are the canonical types. Custom identifiers (e.g. `hint`, `glossary`) render to the same shape with the literal type as the class. See PART 9 §12 of the grammar for the full rule.
+Carve renders `:::` blocks by a two-tier rule (PART 9 §12). The eight canonical types — `note`, `tip`, `warning`, `danger`, `info`, `success`, `example`, `quote` — render as `<aside class="admonition {type}">`. Any other identifier (`hint`, `tabs`, `mermaid`, `details`, …) renders as a generic `<div class="{type}">`, the fenced-div primitive the block-extension mechanism builds on. A quoted title after the type becomes a `<p class="admonition-title">` in either tier; the quotes are stripped and never folded into the class.
 
 ::: compare
 
