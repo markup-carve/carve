@@ -276,14 +276,34 @@ function renderTableRowFlat(cells, opts) {
     parts.push('</tr>');
     return parts.join('');
 }
+/**
+ * The eight canonical admonition types (grammar PART 9 §12, Tier 1).
+ * These render as a semantic `<aside class="admonition {type}">`; any
+ * other type is a Tier-2 generic `<div class="{type}">`.
+ */
+const CANONICAL_ADMONITIONS = new Set([
+    'note',
+    'tip',
+    'warning',
+    'danger',
+    'info',
+    'success',
+    'example',
+    'quote',
+]);
 function renderAdmonition(node, opts, level) {
     const pad = indent(level);
-    const cls = `admonition ${node.kind}`;
-    const titleLine = node.title
+    // `node.title` undefined => no title supplied; an empty-but-defined
+    // title (`::: note ""`) still emits an (empty) title element.
+    const titleLine = node.title !== undefined
         ? `${pad}  <p class="admonition-title">${renderInlines(node.title, opts)}</p>\n`
         : '';
     const body = node.children.map((c) => renderBlock(c, opts, level + 1)).join('\n');
-    return `${pad}<aside class="${cls}">\n${titleLine}${body}\n${pad}</aside>`;
+    if (CANONICAL_ADMONITIONS.has(node.kind)) {
+        return `${pad}<aside class="admonition ${node.kind}">\n${titleLine}${body}\n${pad}</aside>`;
+    }
+    // Tier 2: custom type -> generic <div class="{type}">.
+    return `${pad}<div class="${node.kind}">\n${titleLine}${body}\n${pad}</div>`;
 }
 function renderFigure(node, opts, level) {
     const pad = indent(level);

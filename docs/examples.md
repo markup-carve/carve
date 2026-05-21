@@ -926,6 +926,44 @@ Heads up — this is important.
 
 Carve renders `:::` blocks by a two-tier rule (PART 9 §12). The eight canonical types — `note`, `tip`, `warning`, `danger`, `info`, `success`, `example`, `quote` — render as `<aside class="admonition {type}">`. Any other identifier (`hint`, `tabs`, `mermaid`, `details`, …) renders as a generic `<div class="{type}">`, the fenced-div primitive the block-extension mechanism builds on. A quoted title after the type becomes a `<p class="admonition-title">` in either tier; the quotes are stripped and never folded into the class.
 
+A quoted title on a canonical type renders inside the `<aside>`:
+
+::: compare
+
+```carve
+::: tip "Pro Tip"
+Save early, save often.
+:::
+```
+
+```html
+<aside class="admonition tip">
+  <p class="admonition-title">Pro Tip</p>
+  <p>Save early, save often.</p>
+</aside>
+```
+
+:::
+
+A custom (Tier-2) type renders as a generic `<div>` with the literal type as its class.
+
+::: compare
+
+```carve
+::: hint "Heads up"
+Custom call-out.
+:::
+```
+
+```html
+<div class="hint">
+  <p class="admonition-title">Heads up</p>
+  <p>Custom call-out.</p>
+</div>
+```
+
+:::
+
 ::: compare
 
 ```carve
