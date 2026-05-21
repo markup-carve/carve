@@ -1,0 +1,98 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "org",
+  "scopeName": "source.org",
+  "fileTypes": [
+    "org"
+  ],
+  "patterns": [
+    {
+      "include": "#srcblock"
+    },
+    {
+      "include": "#keyword"
+    },
+    {
+      "include": "#heading"
+    },
+    {
+      "include": "#checkbox"
+    },
+    {
+      "include": "#listmarker"
+    },
+    {
+      "include": "#tablerow"
+    },
+    {
+      "include": "#bold"
+    },
+    {
+      "include": "#italic"
+    },
+    {
+      "include": "#underline"
+    },
+    {
+      "include": "#strike"
+    }
+  ],
+  "repository": {
+    "srcblock": {
+      "name": "meta.embedded.block.org",
+      "begin": "(?i)^\\s*(#\\+BEGIN_SRC)\\b.*$",
+      "end": "(?i)^\\s*(#\\+END_SRC)\\b.*$",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.org"
+        }
+      },
+      "endCaptures": {
+        "1": {
+          "name": "keyword.control.org"
+        }
+      }
+    },
+    "keyword": {
+      "name": "keyword.control.org",
+      "match": "(?i)^\\s*#\\+[A-Z_]+:?.*$"
+    },
+    "heading": {
+      "name": "markup.heading.org",
+      "match": "^(\\*+)\\s+.*$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.heading.org"
+        }
+      }
+    },
+    "checkbox": {
+      "name": "constant.language.checkbox.org",
+      "match": "\\[[ xX-]\\]"
+    },
+    "listmarker": {
+      "name": "punctuation.definition.list.org",
+      "match": "^\\s*([-+])\\s+"
+    },
+    "tablerow": {
+      "name": "markup.other.table.org",
+      "match": "^\\s*\\|.*$"
+    },
+    "bold": {
+      "name": "markup.bold.org",
+      "match": "(?<![\\w*])\\*(?![\\s*])[^*\\n]*\\*(?![\\w*])"
+    },
+    "italic": {
+      "name": "markup.italic.org",
+      "match": "(?<![\\w/])/(?![\\s/])[^/\\n]*/(?![\\w/])"
+    },
+    "underline": {
+      "name": "markup.underline.org",
+      "match": "(?<![\\w_])_(?![\\s_])[^_\\n]*_(?![\\w_])"
+    },
+    "strike": {
+      "name": "markup.strikethrough.org",
+      "match": "(?<![\\w+])\\+(?![\\s+])[^+\\n]*\\+(?![\\w+])"
+    }
+  }
+}

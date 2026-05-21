@@ -7,9 +7,17 @@ import githubDark from 'shiki/themes/github-dark.mjs'
 import container from 'markdown-it-container'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const carveGrammar = JSON.parse(
-  readFileSync(resolve(__dirname, './syntaxes/carve.tmLanguage.json'), 'utf8'),
-)
+const loadGrammar = (file: string) =>
+  JSON.parse(readFileSync(resolve(__dirname, `./syntaxes/${file}`), 'utf8'))
+
+const carveGrammar = loadGrammar('carve.tmLanguage.json')
+// Languages used in the docs that Shiki does not bundle. Without these,
+// the build warns ("language 'ebnf' is not loaded, falling back to
+// 'txt'") for the formal-grammar snippet import and the background.md
+// comparison fences.
+const ebnfGrammar = loadGrammar('ebnf.tmLanguage.json')
+const orgGrammar = loadGrammar('org.tmLanguage.json')
+const textileGrammar = loadGrammar('textile.tmLanguage.json')
 
 // Extend the bundled GitHub themes with rules for Carve scopes that don't
 // have stock styling: highlight, subscript, superscript. Strikethrough has
@@ -154,7 +162,7 @@ export default defineConfig({
   lastUpdated: true,
 
   markdown: {
-    languages: [carveGrammar],
+    languages: [carveGrammar, ebnfGrammar, orgGrammar, textileGrammar],
     theme: { light: carveLightTheme, dark: carveDarkTheme },
     codeTransformers: [carveStylingTransformer],
     config(md) {

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "textile",
+  "scopeName": "source.textile",
+  "fileTypes": [
+    "textile"
+  ],
+  "patterns": [
+    {
+      "include": "#heading"
+    },
+    {
+      "include": "#tablerow"
+    },
+    {
+      "include": "#link"
+    },
+    {
+      "include": "#image"
+    },
+    {
+      "include": "#strong"
+    },
+    {
+      "include": "#emphasis"
+    },
+    {
+      "include": "#deleted"
+    },
+    {
+      "include": "#inserted"
+    }
+  ],
+  "repository": {
+    "heading": {
+      "name": "markup.heading.textile",
+      "match": "^\\s*(h[1-6]|bq|p)\\.\\s+.*$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.heading.textile"
+        }
+      }
+    },
+    "tablerow": {
+      "name": "markup.other.table.textile",
+      "match": "^\\s*\\|.*\\|\\s*$"
+    },
+    "link": {
+      "name": "markup.underline.link.textile",
+      "match": "\"[^\"\\n]+\":\\S+"
+    },
+    "image": {
+      "name": "markup.other.image.textile",
+      "match": "!\\S+!"
+    },
+    "strong": {
+      "name": "markup.bold.textile",
+      "match": "(?<![\\w*])\\*(?![\\s*])[^*\\n]*\\*(?![\\w*])"
+    },
+    "emphasis": {
+      "name": "markup.italic.textile",
+      "match": "(?<![\\w_])_(?![\\s_])[^_\\n]*_(?![\\w_])"
+    },
+    "deleted": {
+      "name": "markup.deleted.textile",
+      "match": "(?<![\\w-])-(?![\\s-])[^-\\n]*-(?![\\w-])"
+    },
+    "inserted": {
+      "name": "markup.inserted.textile",
+      "match": "(?<![\\w+])\\+(?![\\s+])[^+\\n]*\\+(?![\\w+])"
+    }
+  }
+}
