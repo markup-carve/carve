@@ -306,7 +306,8 @@ function renderBlock(node, opts, level) {
         case 'raw-block':
             return node.format === 'html' ? node.content : '';
         case 'comment':
-            return `${pad}<!-- ${node.content} -->`;
+            // Comments are not rendered (§4.13).
+            return '';
         default: {
             const t = node;
             throw new Error(`renderHtml: unknown block ${t.type}`);

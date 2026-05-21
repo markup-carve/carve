@@ -1,0 +1,17 @@
+Comments
+
+```
+Visible.
+
+%% this line is a comment
+
+%%%
+a hidden
+block
+%%%
+
+Also visible.
+.
+<p>Visible.</p>
+<p>Also visible.</p>
+```

@@ -1855,3 +1855,67 @@ is a div/admonition.
 ```
 
 :::
+
+## Comments
+
+`%%` starts a line comment and a `%%%` fence a block comment; neither is
+rendered.
+
+::: compare
+
+```carve
+Visible.
+
+%% this line is a comment
+
+%%%
+a hidden
+block
+%%%
+
+Also visible.
+```
+
+```html
+<p>Visible.</p>
+<p>Also visible.</p>
+```
+
+:::
+
+## Raw blocks
+
+A ` ```raw FORMAT ` block passes its content through verbatim when FORMAT
+matches the output; other formats are dropped.
+
+::: compare
+
+````carve
+```raw html
+<custom-el>Verbatim HTML</custom-el>
+```
+````
+
+````html
+<custom-el>Verbatim HTML</custom-el>
+````
+
+:::
+
+## Hard line breaks
+
+A backslash at the end of a line forces a `<br>`.
+
+::: compare
+
+```carve
+line one\
+line two
+```
+
+```html
+<p>line one<br>
+line two</p>
+```
+
+:::
