@@ -9,7 +9,9 @@ const RE_HR = /^-{3,}\s*$/;
 const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_-]*)\s*$/;
 const RE_UNORDERED = /^(\s*)[-*+]\s+(.*)$/;
 const RE_ORDERED = /^(\s*)(\d+)\.\s+(.*)$/;
-const RE_TASK = /^(\s*)[-*+]\s+\[([ xX])\]\s+(.*)$/;
+// Task states (matches djot-php): `x`/`X` are checked; ` `, `-`, `_`,
+// `>`, `?` are all accepted and render as an unchecked checkbox.
+const RE_TASK = /^(\s*)[-*+]\s+\[([ xX\-_>?])\]\s+(.*)$/;
 const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 const RE_ADMONITION_OPEN = /^:::\s*([a-zA-Z][\w-]*)\s*(.*)$/;
 const RE_ADMONITION_CLOSE = /^:::\s*$/;
@@ -52,6 +54,12 @@ class Lexer {
     // nests. Mirrors djot-php #180's scoping (guard only on the top-level
     // paragraph path).
     nested = false;
+    // Memo for divHasCloser: the smallest line index from which NO bare
+    // `:::` closer exists onward. Once a scan proves there is no closer
+    // beyond some point, every later opener (pos only advances) is O(1).
+    // Keeps generic-div detection linear on pathological input (many
+    // attrs-only `::: {…}` openers that never match the bare-`:::` closer).
+    divNoCloserFrom = Infinity;
     constructor(source) {
         this.lines = source.replace(/\r\n?/g, '\n').split('\n');
         // Drop trailing empty line introduced by terminal newline
@@ -122,7 +130,7 @@ function stripContainerPrefixes(raw) {
         prev = line;
         line = line
             .replace(/^\s*>\s?/, '') // blockquote
-            .replace(/^\s*(?:[-*+]|\d+\.)\s+(?:\[[ xX]\]\s+)?/, ''); // list/task
+            .replace(/^\s*(?:[-*+]|\d+\.)\s+(?:\[[ xX\-_>?]\]\s+)?/, ''); // list/task
     } while (line !== prev);
     return line.replace(/^\s+/, ''); // residual indentation
 }
@@ -294,8 +302,12 @@ function parseBlock(lexer) {
     if (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line))
         return parseAdmonition(lexer);
     // Bare `:::` or attributes-only `::: {…}` opens a generic div (the
-    // admonition branch above already claimed the `::: word` form).
-    if (RE_DIV_OPEN.test(line))
+    // admonition branch above already claimed the `::: word` form) — but
+    // ONLY when a matching closing `:::` exists ahead. A lone, unclosed
+    // `:::` is literal text (matches djot + carve-php + the grammar, which
+    // requires a closer); without this guard it would swallow the rest of
+    // the document into a div.
+    if (RE_DIV_OPEN.test(line) && divHasCloser(lexer))
         return parseDiv(lexer);
     if (RE_ABBR_DEF.test(line)) {
         return parseAbbrDef(lexer);
@@ -448,6 +460,24 @@ function parseAdmonition(lexer) {
 // Generic div: same body collection as an admonition, but emits a plain
 // <div> carrying the opener's attributes (no class added). Like
 // admonitions it closes at the first bare `:::` (no length-based nesting).
+/**
+ * From a `:::` opener at peek(0), is there a matching closing `:::`
+ * line ahead? A flat scan (first bare `:::` closes), mirroring parseDiv.
+ * Used to reject a lone, unclosed `:::` as a div opener (PART 9 §12 /
+ * grammar: a div requires a closer).
+ */
+function divHasCloser(lexer) {
+    const start = lexer.pos + 1;
+    if (start >= lexer.divNoCloserFrom)
+        return false; // memoized: none ahead
+    for (let i = start; i < lexer.lines.length; i++) {
+        if (RE_ADMONITION_CLOSE.test(lexer.lines[i]))
+            return true;
+    }
+    // No closer from `start` onward; pos only advances, so cache it.
+    lexer.divNoCloserFrom = start;
+    return false;
+}
 function parseDiv(lexer) {
     const attrSrc = RE_DIV_OPEN.exec(lexer.consume())[1];
     const inner = [];
@@ -828,7 +858,14 @@ function parseParagraph(lexer) {
         const ln = lexer.peek();
         if (ln.trim() === '')
             break;
-        if (isBlockStart(ln) &&
+        // A bare/attrs-only `:::` (generic div opener) never interrupts a
+        // paragraph: djot opens a fenced div only after a blank line / at a
+        // block start, so a `:::` reached mid-paragraph is literal text.
+        // (This also avoids a non-terminating retry on an unclosed `:::`,
+        // which has no parseBlock handler once divHasCloser is false.)
+        const isDivOpener = RE_DIV_OPEN.test(ln) && !RE_ADMONITION_OPEN.test(ln);
+        if (!isDivOpener &&
+            isBlockStart(ln) &&
             (lexer.nested || interruptsParagraph(lexer, ln)))
             break;
         lexer.consume();
@@ -966,11 +1003,14 @@ function smartToken(text, i, prev) {
         return { out: isQuoteOpenContext(prev) ? '“' : '”', len: 1 };
     }
     if (c === "'") {
-        // Spec §4.18 defines only the paired `'text'` -> ‘text’ form; it
-        // does not mandate decade-elision (`'90s`). The contextual rule
-        // (apostrophe/closing after a word, opening otherwise) is faithful
-        // and avoids regressing genuinely quoted numbers like `'24'`.
-        return { out: isAlnum(prev) || !isQuoteOpenContext(prev) ? '’' : '‘', len: 1 };
+        // Contextual single quote (matches djot): an apostrophe / closing
+        // quote `’` when the previous char is alphanumeric (`it's`,
+        // `John's`) OR the next char is a digit (decade elision `'70s`, and
+        // `'24'` -> `’24’` as djot does); an opening quote `‘` in an open
+        // context (`'word'`, `rock 'n' roll`); otherwise `’`.
+        const next = text[i + 1] ?? '';
+        const apostrophe = isAlnum(prev) || /[0-9]/.test(next) || !isQuoteOpenContext(prev);
+        return { out: apostrophe ? '’' : '‘', len: 1 };
     }
     return null;
 }

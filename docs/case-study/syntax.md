@@ -1021,8 +1021,8 @@ On by default in the conformant core; a processor MAY disable it
 | `--`        | –      | En dash          |
 | `---`       | —      | Em dash          |
 | `...`       | …      | Ellipsis         |
-| `"text"`    | "text" | Smart quotes     |
-| `'text'`    | 'text' | Smart apostrophe |
+| `"text"`    | “text” | Smart double quotes |
+| `'text'`    | ‘text’ | Smart single quotes |
 | `(c)`       | ©      | Copyright        |
 | `(r)`       | ®      | Registered       |
 | `(tm)`      | ™      | Trademark        |
@@ -1036,6 +1036,12 @@ On by default in the conformant core; a processor MAY disable it
 | `+-`        | ±      | Plus/minus       |
 
 Escape with backslash: `\->` = literal `->`.
+
+Single quotes are contextual (matching djot): a `'` is an apostrophe /
+closing quote `’` when the preceding character is alphanumeric (`it's`,
+`John's`) **or the next character is a digit** (`'70s` → `’70s`, and a
+digit pair `'24'` → `’24’`); otherwise it opens `‘` in an open context
+(`'word'` → `‘word’`, `rock 'n' roll` → `rock ‘n’ roll`).
 
 Fractions (`1/2`, `3/4`, …) are **not** converted — they collide with
 dates (`1/2/2024`) and paths, and djot has none (see

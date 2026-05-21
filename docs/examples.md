@@ -617,6 +617,28 @@ Intro
 
 :::
 
+Only `[x]`/`[X]` render a checked box; every other state (`[ ]`, `[-]`, `[_]`, `[>]`, `[?]`) renders an unchecked box.
+
+::: compare
+
+```carve
+- [-] dropped
+- [_] paused
+- [>] deferred
+- [?] maybe
+```
+
+```html
+<ul>
+  <li><input type="checkbox" disabled> dropped</li>
+  <li><input type="checkbox" disabled> paused</li>
+  <li><input type="checkbox" disabled> deferred</li>
+  <li><input type="checkbox" disabled> maybe</li>
+</ul>
+```
+
+:::
+
 ## Blockquote with attribution
 
 ::: compare
@@ -1595,6 +1617,20 @@ He paused -- then ran --- fast... "Stop!" it's over.
 
 ```html
 <p>He paused – then ran — fast… “Stop!” it’s over.</p>
+```
+
+:::
+
+A single quote before a digit is an apostrophe (decade elision), so a digit pair becomes apostrophes on both sides; a quote before a letter in an open context opens.
+
+::: compare
+
+```carve
+the '70s and '24' and 'word'
+```
+
+```html
+<p>the ’70s and ’24’ and ‘word’</p>
 ```
 
 :::

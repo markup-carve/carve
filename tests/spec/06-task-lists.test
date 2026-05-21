@@ -9,3 +9,17 @@ Task lists
   <li><input type="checkbox" checked disabled> done</li>
 </ul>
 ```
+
+```
+- [-] dropped
+- [_] paused
+- [>] deferred
+- [?] maybe
+.
+<ul>
+  <li><input type="checkbox" disabled> dropped</li>
+  <li><input type="checkbox" disabled> paused</li>
+  <li><input type="checkbox" disabled> deferred</li>
+  <li><input type="checkbox" disabled> maybe</li>
+</ul>
+```
