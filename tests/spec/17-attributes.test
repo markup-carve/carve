@@ -36,3 +36,9 @@ Merged.
   <li>two</li>
 </ul>
 ```
+
+```
+[label]{key=c .a #b}
+.
+<p><span key="c" class="a" id="b">label</span></p>
+```
