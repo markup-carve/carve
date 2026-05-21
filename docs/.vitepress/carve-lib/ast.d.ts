@@ -26,6 +26,12 @@ export interface Document extends BaseNode {
     type: 'document';
     frontmatter?: Record<string, unknown>;
     children: BlockNode[];
+    /**
+     * Footnote definitions collected during parsing, keyed by raw label
+     * (`[^label]: …`). The renderer numbers them by reference order and
+     * emits the endnotes section; an unreferenced definition is dropped.
+     */
+    footnoteDefs?: Record<string, BlockNode[]>;
 }
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 export interface Heading extends BaseNode {
@@ -166,6 +172,16 @@ export interface Span extends BaseNode {
     type: 'span';
     children: InlineNode[];
 }
+/**
+ * Math, djot form: inline `` $`x` `` and display `` $$`x` ``. `content`
+ * is verbatim LaTeX from the backtick span; rendering wraps it in
+ * `\(…\)` (inline) or `\[…\]` (display) inside `<span class="math …">`.
+ */
+export interface Math extends BaseNode {
+    type: 'math';
+    display: boolean;
+    content: string;
+}
 export interface AutoLink extends BaseNode {
     type: 'autolink';
     href: string;
@@ -195,9 +211,13 @@ export interface Abbreviation extends BaseNode {
 }
 export interface Footnote extends BaseNode {
     type: 'footnote';
-    /** Either a reference id (defined elsewhere) or inline content */
+    /** Reference label (`[^label]`); resolved against Document.footnoteDefs. */
     id?: string;
     inline?: InlineNode[];
+    /** Renderer-assigned 1-based number, by document reference order. */
+    number?: number;
+    /** Renderer-assigned unique id for this reference (a backlink target). */
+    refId?: string;
 }
 export interface SoftBreak extends BaseNode {
     type: 'soft-break';
@@ -226,6 +246,6 @@ export interface CriticComment extends BaseNode {
     type: 'critic-comment';
     text: string;
 }
-export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | AutoLink | CrossRef | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticHighlight | CriticComment;
+export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | AutoLink | CrossRef | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticHighlight | CriticComment;
 export type AnyNode = Document | BlockNode | InlineNode;
 //# sourceMappingURL=ast.d.ts.map

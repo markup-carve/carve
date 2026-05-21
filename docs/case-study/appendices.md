@@ -63,7 +63,7 @@ EXTENSIONS
   @username  #tagname        (mentions/tags)
 
 FOOTNOTES
-  text[^footnote content]
+  text[^ref]    [^ref]: definition
 
 COMMENTS
   %% line comment
@@ -124,9 +124,9 @@ def greet(name: str) -> str:
 > The best markup is the one you don't have to think about.
 > -- Anonymous
 
-For more info, see the [documentation](https://github.com/markup-carve).
+For more info, see the [documentation](https://github.com/markup-carve).[^docs]
 
-[^This is a footnote with inline definition.]
+[^docs]: The full specification lives in the case study.
 ````
 
 ## Appendix C: Influences and Acknowledgments

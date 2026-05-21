@@ -28,16 +28,10 @@ YAML frontmatter at document start. Well-established convention.
 #### Heading 4
 ```
 
-Keep what works. The `#` convention is universal.
-
-**Alternative (Setext-style for h1/h2 only):**
-```
-Heading 1
-=========
-
-Heading 2
----------
-```
+Keep what works. The `#` convention is universal. Carve has **ATX
+headings only** — setext (underline) headings are intentionally absent,
+matching djot: a `---` underline collides with the thematic break and
+the frontmatter delimiter, reintroducing the ambiguity djot removed.
 
 #### Section wrapping
 
@@ -364,11 +358,14 @@ markers in the source.
 ```
 1. First item
 2. Second item
-   a. Sub-item
-   b. Another
-      i. Roman numeral sub-sub
+   1. Sub-item
+   2. Another
 3. Third item
 ```
+
+Ordered lists use **digits + `.`** only. Djot's letter (`a.`) and roman
+(`i.`) dialects and the `)` delimiter (`1)`) are a known gap — not yet
+implemented in Carve (see PART 9 §11).
 
 **Auto-numbering:**
 ```
@@ -387,6 +384,13 @@ markers in the source.
 ```
 
 Inspired by Org-mode TODO states but simplified.
+
+#### Tight vs loose
+
+A list is **tight** unless a blank line separates its items (or an item
+holds a second block); then it is **loose**. A tight item renders its
+text directly (`<li>text</li>`); a loose item wraps each paragraph in
+`<p>` — matching djot/CommonMark (PART 9 §17).
 
 #### Definition Lists
 
@@ -766,24 +770,43 @@ element. Several rules apply (PART 9 §15):
 
 ### 4.11 Footnotes
 
-**Inline definition:**
-```
-The theory[^Published in 1905 and changed physics forever.] was groundbreaking.
-```
+A `[^label]` reference points at a `[^label]: …` definition. References
+are numbered by document order; the definitions render in an endnotes
+section with backlinks, using djot-compatible roles.
 
-**Reference style:**
 ```
 The theory[^einstein] revolutionized physics.
 
 [^einstein]: Published in 1905 by Albert Einstein.
 ```
 
-**Sidenotes (alternative display):**
-```
-The theory[>Published in 1905.] was groundbreaking.
+renders as
+
+```html
+<p>The theory<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> revolutionized physics.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>Published in 1905 by Albert Einstein.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
-`[>note]` suggests content pushed to the side/margin.
+**Rules** (PART 9 §16):
+- Definitions may appear anywhere (order-independent); the first
+  definition for a label wins. A body is the def line plus any indented
+  continuation lines (parsed as blocks).
+- A reference with no matching definition stays literal `[^label]`; an
+  unreferenced definition is dropped.
+- A label referenced twice keeps one number and gets a backlink per
+  reference.
+
+> **Deferred.** The earlier *inline footnote* (`[^content]`) and
+> *sidenote* (`[>content]`) forms are reserved but **not yet
+> implemented** — they are ambiguous against the reference form and have
+> no djot equivalent. Use reference footnotes.
 
 ### 4.12 Special Blocks (Admonitions)
 
@@ -925,6 +948,12 @@ Useful for:
 
 ### 4.16 Includes
 
+Includes are a **processor-level** directive, not part of the core
+parser. A conformant core MAY leave `{{ … }}` as literal text; a
+processor that implements them MUST forbid path traversal outside the
+project root, bound recursion depth, and treat includes as opt-in
+(PART 9 §19).
+
 ```
 {{ path/to/file.md }}
 {{ path/to/file.md#section-id }}
@@ -933,28 +962,32 @@ Useful for:
 
 ### 4.17 Math
 
-```
-Inline math: $E = mc^2$ renders in-line.
+Math uses djot's form: inline `` $`…` `` and display `` $$`…` ``. The
+backtick (verbatim) span removes any ambiguity with a literal `$`, so
+currency like `$5` stays literal. There is no bare `$…$` input form.
 
-Block math:
-$$
-\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
-$$
+```
+Inline math: $`E = mc^2` renders in-line.
+
+Display math on its own line:
+
+$$`\int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}`
 ```
 
-**Alternative for dollar sign conflicts:**
-```
-Inline: \(E = mc^2\)
+→
 
-Block:
-\[
-\int_0^\infty e^{-x^2} dx
-\]
+```html
+<p>Inline math: <span class="math inline">\(E = mc^2\)</span> renders in-line.</p>
+<p>Display math on its own line:</p>
+<p><span class="math display">\[\int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}\]</span></p>
 ```
+
+Escape a literal dollar with `\$`. See PART 9 §18.
 
 ### 4.18 Smart Typography
 
-Auto-converted by default (can be disabled):
+On by default in the conformant core; a processor MAY disable it
+(PART 9 §19). Conversions:
 
 | Input       | Output | Description      |
 |-------------|--------|------------------|
@@ -974,11 +1007,12 @@ Auto-converted by default (can be disabled):
 | `<=`        | ≤      | Less or equal    |
 | `>=`        | ≥      | Greater or equal |
 | `+-`        | ±      | Plus/minus       |
-| `1/2`       | ½      | Fractions        |
-| `1/4`       | ¼      | Fractions        |
-| `3/4`       | ¾      | Fractions        |
 
-Escape with backslash: `\->` = literal `->`
+Escape with backslash: `\->` = literal `->`.
+
+Fractions (`1/2`, `3/4`, …) are **not** converted — they collide with
+dates (`1/2/2024`) and paths, and djot has none (see
+[dismissed syntax](../dismissed-syntax), PART 9 §8).
 
 ### 4.19 Abbreviations
 
@@ -1338,6 +1372,15 @@ Keeping them separate means:
 - Cleaner specification
 - Users choose their own templating tool
 - No reinventing the wheel
+
+### 4.24 HTML Serialization
+
+The exact bytes a conformant renderer emits — attribute order, escaping,
+indentation, void elements, tight/loose `<p>` wrapping, table styles —
+are pinned normatively in **`resources/grammar.ebnf` PART 10** (HTML
+Serialization Conventions). They exist so a second implementation (for
+example carve-php) can match the corpus without copying the reference
+renderer byte-for-byte. The corpus wins on any disagreement.
 
 ---
 

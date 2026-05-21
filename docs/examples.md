@@ -1601,19 +1601,20 @@ He paused -- then ran --- fast... "Stop!" it's over.
 
 ## Smart typography arrows and symbols
 
-Arrows, comparisons, plus/minus, symbols and standalone fractions are
-converted.
+Arrows, comparisons, plus/minus and symbols are converted. Fractions are
+intentionally **not** converted (they collide with dates and paths; see
+`docs/dismissed-syntax.md`).
 
 ::: compare
 
 ```carve
 Flow: a -> b <- c <-> d => e; x != y, p <= q, r >= s, +-1.
-(c) 2024, (r), (tm); halves 1/2, 1/4, 3/4.
+(c) 2024, (r), (tm). Dates like 1/2/2024 stay literal.
 ```
 
 ```html
 <p>Flow: a → b ← c ↔ d ⇒ e; x ≠ y, p ≤ q, r ≥ s, ±1.
-© 2024, ®, ™; halves ½, ¼, ¾.</p>
+© 2024, ®, ™. Dates like 1/2/2024 stay literal.</p>
 ```
 
 :::
@@ -1684,6 +1685,81 @@ A `+` continuation before a `^` rowspan extends the spanned cell.
     <tr><td>Banana</td></tr>
   </tbody>
 </table>
+```
+
+:::
+
+## Math
+
+Inline math is `` $`…` `` and display math `` $$`…` ``. Wrapping the
+content in a backtick span removes any ambiguity with a literal `$`, so
+currency stays literal. The output matches djot.
+
+::: compare
+
+```carve
+Inline $`E = mc^2` and currency $5 stays literal.
+
+$$`\int_0^1 x\,dx`
+```
+
+```html
+<p>Inline <span class="math inline">\(E = mc^2\)</span> and currency $5 stays literal.</p>
+<p><span class="math display">\[\int_0^1 x\,dx\]</span></p>
+```
+
+:::
+
+## Footnotes
+
+A `[^label]` reference is numbered by document order; its `[^label]: …`
+definition renders in an endnotes section with a backlink, using djot's
+`doc-noteref` / `doc-endnotes` / `doc-backlink` roles.
+
+::: compare
+
+```carve
+Carve has footnotes.[^fn]
+
+[^fn]: Defined anywhere; resolved by label.
+```
+
+```html
+<p>Carve has footnotes.<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>Defined anywhere; resolved by label.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+A definition right after prose still ends the paragraph (it does not leak
+into it), and indented lines continue the note body.
+
+::: compare
+
+```carve
+See the note[^m].
+[^m]: First line of the note
+   and a continuation line.
+```
+
+```html
+<p>See the note<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>First line of the note
+and a continuation line.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 :::

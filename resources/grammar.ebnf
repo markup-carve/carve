@@ -64,13 +64,15 @@ blank_line = {whitespace}, newline ;
    ============================================================================ *)
 
 (* --- Headings --- *)
-heading = atx_heading | setext_heading ;
+(* ATX (`#` prefix) only. Setext (underline) headings are intentionally
+   NOT supported, matching djot: a `---` underline collides with the
+   thematic break and frontmatter delimiter, reintroducing the ambiguity
+   djot removed and breaking Design Principle 1 ("one syntax, one
+   meaning"). *)
+heading = atx_heading ;
 
 atx_heading = heading_marker, space, inline_content, [attributes], newline ;
 heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
-
-setext_heading = inline_content, newline, setext_underline, newline ;
-setext_underline = ('=' | '-')+, newline ;
 
 (* --- Thematic Breaks --- *)
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
@@ -104,9 +106,10 @@ bullet_marker = '-' | '*' | '+' ;
 
 ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, space, list_item_content ;
-ordered_marker = digit+, '.'
-               | letter, '.'
-               | roman_numeral, '.' ;
+(* Digits + '.' only. Djot's letter/roman dialects and the ')' delimiter
+   (`1)`, `a.`, `i.`) are a KNOWN GAP, deliberately not yet in Carve --
+   see PART 9 §11. *)
+ordered_marker = digit+, '.' ;
 
 list_item_content = inline_content, newline, {list_continuation | nested_list} ;
 list_continuation = indent, inline_content, newline ;
@@ -213,7 +216,7 @@ inline_element = escaped_char
                | link
                | inline_span
                | image
-               | math_inline
+               | math
                | emphasis
                | strong
                | bold_italic
@@ -294,14 +297,17 @@ image_title = link_title ;
 (* image with caption follows on next line *)
 image_with_caption = image, newline, caption ;
 
-(* --- Math --- *)
-math_inline = '$', math_content, '$' ;
-math_block = "$$", newline, math_content, newline, "$$" ;
-math_content = (* LaTeX math content, no unescaped delimiters *) ;
-
-(* Alternative math syntax *)
-math_inline_alt = '\(', math_content, '\)' ;
-math_block_alt = '\[', newline, math_content, newline, '\]' ;
+(* --- Math (djot form; PART 9 §18) --- *)
+(* Inline `$` + a verbatim (backtick) span; display `$$` + a verbatim
+   span. The backtick span removes ambiguity with a literal `$`, so
+   currency such as `$5` (no following backtick run) stays literal text.
+   Both forms are inline; display math renders inside its own paragraph
+   when alone on a line. There is NO bare `$…$` form and NO `\(…\)` input
+   form -- those were dropped (`\(` is just an escaped paren). *)
+math = math_inline | math_display ;
+math_inline = '$', code_span ;
+math_display = "$$", code_span ;
+math_content = (* verbatim LaTeX, taken from the code_span *) ;
 
 (* --- Emphasis (left/right word-boundary rule; PART 9 §9 is normative).
    NOTE: this is STRICTER than Djot. Djot's official rule is whitespace-only
@@ -347,16 +353,20 @@ highlight_content = (inline_element | text_run | literal_special)+ ;
 emphasis_open_condition = (* preceding char is whitespace, start, or punctuation but NOT alphanumeric or '_'; following char is non-whitespace *) ;
 emphasis_close_condition = (* preceding char is non-whitespace; following char is NOT alphanumeric *) ;
 
-(* --- Footnotes --- *)
-footnote = inline_footnote | reference_footnote ;
-inline_footnote = "[^", footnote_content, ']' ;
+(* --- Footnotes (PART 9 §16) --- *)
+(* Reference footnotes are implemented: `[^label]` references a
+   `[^label]: body` definition. Numbering (by document reference order)
+   and endnotes rendering are PART 9 §16. The inline-footnote and
+   sidenote forms are DEFERRED -- reserved syntax, not yet implemented. *)
+footnote = reference_footnote ;
 reference_footnote = "[^", footnote_label, ']' ;
-footnote_label = identifier ;
-footnote_content = inline_content ;
+footnote_label = {character - ']'}+ ;
 
 footnote_definition = "[^", footnote_label, "]:", space, inline_content, newline ;
 
-sidenote = "[>", inline_content, ']' ;
+(* DEFERRED (reserved, not implemented):
+   inline_footnote = "[^", inline_content, ']' ;
+   sidenote        = "[>", inline_content, ']' ; *)
 
 (* --- Extensions --- *)
 extension_inline = ':', extension_name, '[', extension_content, ']', [attributes] ;
@@ -385,7 +395,9 @@ tag_boundary = (* #name must have word boundary before # *) ;
 
 (* --- Smart Typography --- *)
 smart_typography = em_dash | en_dash | ellipsis | smart_quote
-                 | arrow | comparison | fraction | symbol ;
+                 | arrow | comparison | symbol ;
+(* NOTE: fractions are deliberately NOT converted (PART 9 §8 / dismissed-
+   syntax.md) -- `1/2` collides with dates (`1/2/2024`) and paths. *)
 
 em_dash = "---" ;     (* → — *)
 en_dash = "--" ;      (* → – *)
@@ -397,7 +409,6 @@ smart_single_quote = "'", {character - "'"}, "'" ;
 
 arrow = "->" | "<-" | "<->" | "=>" ;
 comparison = "!=" | "<=" | ">=" ;
-fraction = "1/2" | "1/4" | "3/4" | "1/3" | "2/3" ;
 symbol = "(c)" | "(r)" | "(tm)" | "+-" ;
 
 (* --- Breaks --- *)
@@ -474,9 +485,6 @@ letter = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j'
 
 digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
-roman_numeral = 'i' | 'ii' | 'iii' | 'iv' | 'v' | 'vi' | 'vii' | 'viii' | 'ix' | 'x'
-              | 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII' | 'VIII' | 'IX' | 'X' ;
-
 whitespace = ' ' | '\t' ;
 space = ' ' ;
 newline = '\n' | '\r\n' | '\r' ;
@@ -496,7 +504,7 @@ EOF = (* end of file *) ;
    1. Frontmatter (--- delimited at document start)
    2. Comments (%% line, %%% block)
    3. Code blocks (``` or ~~~ fenced)
-   4. Headings (# prefix or setext underline)
+   4. Headings (# prefix)
    5. Thematic breaks (---, ***, ___)
    6. Block quotes (> prefix)
    7. Lists (-, *, +, 1. prefix)
@@ -509,7 +517,7 @@ EOF = (* end of file *) ;
    2. Code spans (`...`)
    3. Autolinks (<url>)
    4. Links and images ([text](url), ![alt](src))
-   5. Math ($...$)
+   5. Math ($`…`, $$`…`)
    6. Emphasis markers (/, *, _, ~, ^, ==, ,,)
    7. Editorial markup ({+...+}, etc.)
    8. Extensions (:type[content])
@@ -587,6 +595,11 @@ EOF = (* end of file *) ;
    8. SMART TYPOGRAPHY CONTEXT
       - Only applies outside code spans/blocks
       - Patterns must match exactly (not partial)
+      - FRACTIONS ARE NOT CONVERTED. `1/2`, `3/4`, etc. stay literal --
+        they collide with dates (`1/2/2024`) and paths, and djot has no
+        fractions (recorded in dismissed-syntax.md). Converted set:
+        dashes, ellipsis, smart quotes, arrows, comparisons, `+-`, and
+        symbols (`(c)`,`(r)`,`(tm)`).
 
    9. EMPHASIS SPAN BOUNDARY -- NORMATIVE (governs *_content productions in
       PART 3; §1 above is a summary of this section). Applies to `/` and `_`
@@ -647,21 +660,15 @@ EOF = (* end of file *) ;
         - b                            <ul><li>c</li><li>d</li></ul>
         + c
         + d
-      Same axis for ordered-list dialect changes: a switch between
-      `digit+ '.'`, `letter '.'`, and `roman_numeral '.'` between adjacent
-      items splits. Same axis for plain-vs-task: `- a` followed by
-      `- [x] b` is two lists (matches djot, where `- [ ]` and `- a` are
-      treated as distinct kinds). Parser stateless w.r.t. marker history
-      -- the rule looks one line back.
-      LETTER-VS-ROMAN TIE-BREAKER (open). The markers `i.`, `v.`, and
-      `x.` match both `letter '.'` and `roman_numeral '.'`. When the
-      letter and roman dialects are both supported by an implementation,
-      a single-character item that could be either classifies as
-      ROMAN if the immediately-following item is a multi-character
-      roman continuation (`ii.`, `iii.`, ...), otherwise as LETTER.
-      Carve-js does not yet implement letter or roman ordered lists
-      (RE_ORDERED accepts digits only); the tie-breaker is pinned here
-      for the implementations that will.
+      Same axis for plain-vs-task: `- a` followed by `- [x] b` is two
+      lists (matches djot). Parser stateless w.r.t. marker history -- the
+      rule looks one line back.
+      ORDERED LISTS ARE DIGITS-ONLY (`digit+ '.'`). Djot's letter and
+      roman dialects and the `)` delimiter (`a.`, `i.`, `1)`) are a
+      KNOWN GAP -- deliberately not implemented in Carve yet, so there is
+      no letter-vs-roman ambiguity to resolve. If those dialects are
+      added later, the split rule extends to "same `ordered_marker`
+      dialect", and an `i.`/`v.`/`x.` tie-breaker must be specified then.
 
    12. FENCED ":::" BLOCK RENDERING -- NORMATIVE (governs `admonition`
       in PART 2; cross-references syntax.md §4.20 "Block Extensions").
@@ -822,4 +829,113 @@ EOF = (* end of file *) ;
       Implementation status: carve-php implements §15 in full; carve-js
       does not yet parse leading block-attribute lines (they currently
       render as literal text). Tracked as a carve-js follow-up.
+
+   16. FOOTNOTES -- NORMATIVE (governs `footnote` / `footnote_definition`
+      in PART 3). Only the reference form `[^label]` + `[^label]: body`
+      is implemented (inline-footnote and sidenote are deferred).
+      - A `[^label]` reference with a matching definition is NUMBERED by
+        document reference order (first referenced = 1); the same label
+        referenced again reuses its number.
+      - Definitions may appear anywhere (order-independent); the FIRST
+        definition for a label wins. A body is the def line plus any
+        following lines indented by >= 2 spaces (single blank lines
+        allowed between chunks), parsed as blocks.
+      - A reference with NO matching definition renders as literal source
+        text `[^label]` (a trailing `{attrs}` on an unresolved ref is not
+        round-tripped -- a marginal mistyped-label edge). An UNREFERENCED
+        definition is dropped.
+      - Rendering (djot-compatible roles):
+          reference -> <a id="{refId}" href="#fn{n}" role="doc-noteref"><sup>{n}</sup></a>
+          endnotes  -> ONE <section role="doc-endnotes"> appended AFTER
+                       all body content (outside heading <section>s),
+                       containing <hr> then an <ol> of <li id="fn{n}">;
+                       each note's last paragraph gets a trailing backlink
+                       <a href="#{refId}" role="doc-backlink">↩</a>.
+        First reference to note n has refId `fnref{n}`; a k-th (k>1)
+        repeat uses `fnref{n}-{k}` and adds another backlink. The
+        backlink glyph is the plain return arrow `↩` (Carve's choice;
+        djot appends a variation selector).
+      - LIMITATION: a footnote reference inside link text (`[t[^1]](u)`)
+        or inside a heading later cloned by a `</#id>` crossref nests an
+        <a> in an <a>; avoid footnotes in those positions.
+
+   17. TIGHT vs LOOSE LISTS -- NORMATIVE (governs `list` rendering;
+      matches djot/CommonMark). A list is LOOSE if any item is followed
+      by a blank line before the next sibling marker, OR any item holds a
+      blank-line-separated second block; otherwise TIGHT. A tight item's
+      paragraph renders WITHOUT a `<p>` (`<li>text</li>`); a loose item's
+      paragraphs ARE wrapped (`<li><p>text</p></li>`).
+
+   18. MATH -- NORMATIVE (governs `math` in PART 3; djot form). Inline
+      `$` + verbatim backtick span; display `$$` + verbatim backtick
+      span. A `$` NOT immediately followed by a backtick run is literal
+      (`$5` is currency); `\$` escapes a literal `$`. Rendering:
+        inline  -> <span class="math inline">\(content\)</span>
+        display -> <span class="math display">\[content\]</span>
+      `content` is the verbatim span text, HTML-escaped (`&`,`<`,`>`).
+      Display math alone on a line renders inside its own paragraph.
+      Author `{attrs}` after the span merge onto the <span> (the base
+      `math …` class is kept; see PART 10 §1).
+
+   19. CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES -- NORMATIVE.
+      - `</#id>` clones the target heading's full inline children, so a
+        heading with markup (`# *Setup*`) yields a link that KEEPS the
+        markup (`<a href="#…"><strong>Setup</strong> …</a>`).
+      - Mentions (`@user`), tags (`#tag`) and smart typography are ON by
+        default in the conformant core; a processor MAY disable them. The
+        corpus pins the default-on behavior.
+      - Includes (`{{ path }}`) are a PROCESSOR-LEVEL directive, NOT part
+        of the core parser; a conformant core MAY leave `{{ … }}` literal.
+        An implementing processor MUST forbid path traversal outside the
+        project root, bound recursion depth, and treat includes as opt-in.
+*)
+
+(* ============================================================================
+   PART 10: HTML SERIALIZATION CONVENTIONS (NORMATIVE)
+   ============================================================================
+
+   The corpus pins exact bytes against the reference (carve-js); these
+   conventions state the rules a SECOND implementation (e.g. carve-php)
+   must follow to match WITHOUT copying carve-js output. On any
+   disagreement the corpus wins.
+
+   1. ATTRIBUTE ORDER. Attributes serialize in the AUTHOR's source order
+      (the recorded `order`; see the RENDER ORDER rule in PART 4 and
+      PART 9 §12-style note). An Attrs built programmatically with no
+      recorded order falls back to a fixed `class`, then `id`, then
+      key=value order. All classes accumulate (space-joined) into one
+      `class` slot at its first-appearance position. An element with no
+      effective attributes emits none. (Heading ids move to <section>,
+      §13.) A mandatory base class (math `math inline|display`) is
+      prepended to that class slot.
+
+   2. ATTRIBUTE QUOTING + ESCAPING. Attribute values are double-quoted.
+      In an attribute value escape `&`->&amp;, `<`->&lt;, `>`->&gt;,
+      `"`->&quot;. In text/content escape `&`,`<`,`>` (NOT `"`). No other
+      entities are produced.
+
+   3. VOID ELEMENTS are written WITHOUT a trailing slash: `<hr>`,
+      `<img …>`, `<br>`. A hard break serializes as `<br>` + newline.
+
+   4. BLOCK WHITESPACE. Block elements are newline-separated, one per
+      line. Nested block structures (list, blockquote, table, admonition,
+      div, figure, section, endnotes) indent their children by TWO spaces
+      per nesting level. Inline content stays flat on its block's line.
+
+   5. PARAGRAPH WRAPPING follows the tight/loose rule (§17): a tight list
+      item's text has no <p>; a loose item's paragraphs are wrapped.
+
+   6. CODE. A fenced code block is `<pre><code[ class="language-X"]>` +
+      escaped content + a trailing newline + `</code></pre>`. An inline
+      code span is `<code>` + escaped content + `</code>`.
+
+   7. TABLES. Alignment renders as `style="text-align: VALUE;"` (one
+      space after the colon, trailing semicolon); a cell with no effective
+      alignment emits NO style attribute. `rowspan`/`colspan` are emitted
+      only when their count is > 1.
+
+   8. STABLE STRINGS. Mentions default to `/users/{user}` and tags to
+      `/tags/{name}` when no URL template is configured. The footnote
+      backlink glyph is `↩` (§16). Math wraps content in `\(…\)` /
+      `\[…\]` inside `<span class="math inline|display">` (§18).
 *)
