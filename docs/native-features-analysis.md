@@ -160,3 +160,45 @@ This fits the `:type[content]{attrs}` pattern already in the spec.
 - Mermaid/diagram support
 - Tabbed UI components
 - Wiki-style links (context-dependent)
+
+---
+
+## Conformance Core (what every implementation MUST produce)
+
+The native/extension split above answers "what belongs in the language."
+This answers the question a *second* implementer (e.g. carve-php) needs:
+**what must I produce to be conformant, and what is optional?** Byte-level
+output rules live in `resources/grammar.ebnf` PART 10; this is the
+feature-level boundary.
+
+### MUST (core) — pinned by the corpus, identical across implementations
+
+- **Blocks:** headings (+ `<section>` wrapping, §13), paragraphs,
+  thematic breaks, fenced code, blockquotes, lists (ordered digits-only,
+  unordered, task; tight/loose §17), tables (`|=` headers, alignment,
+  rowspan/colspan/multi-line), the two-tier `:::` model (canonical
+  `<aside class="admonition …">` / custom `<div class="…">`, §12),
+  figures/captions, abbreviation definitions, raw blocks, comments.
+- **Inline:** emphasis family (`/ * _ ~ ^ ,, ==` + `/* */`, §9), code
+  spans, links (inline / reference / collapsed), autolinks + bare-URL
+  autolinking, images, spans (§14), math (djot form, §18), footnotes
+  (reference form, §16), abbreviations, editorial markup, crossrefs
+  (`</#id>`, markup-preserving §19), hard/soft breaks.
+- **Semantics:** automatic heading ids (ASCII slug), id de-duplication,
+  order-independent reference/abbreviation/footnote resolution.
+
+### SHOULD / configurable (on by default, a processor MAY disable)
+
+- `@mention` and `#tag` shorthands, smart typography (§19).
+
+### MAY / out of core (processor-level)
+
+- Includes (`{{ … }}`, §19, with the security requirements there).
+- The `:type[content]` extension *registry* beyond the generic fallback.
+- Everything under "Keep as implementation extensions" above.
+
+### Deferred (reserved syntax, not yet implemented)
+
+- Inline footnotes (`[^content]`) and sidenotes (`[>content]`).
+- Ordered-list letter/roman dialects and the `)` delimiter.
+- Setext (underline) headings — intentionally excluded (matches djot).

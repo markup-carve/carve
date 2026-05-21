@@ -156,6 +156,11 @@ Add 1/2 cup of flour and 3/4 teaspoon of salt.
 
 **Decision:** Not included. Use explicit Unicode (½) or leave as `1/2`.
 
+> A draft of the grammar and reference implementation briefly added
+> fractions with an anti-digit-gluing guard; that drift was reconciled by
+> **removing** them — the guard still converted the date `1/2/2024` to
+> `½/2024`. The grammar (PART 9 §8) and impl now match this decision.
+
 ---
 
 ## Emoji Shortcodes: `:smile:`

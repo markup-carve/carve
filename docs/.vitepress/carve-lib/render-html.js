@@ -19,6 +19,8 @@ export function renderHtml(ast, opts = {}) {
             out.push(`${indent(sectionStack.length)}</section>`);
         }
     };
+    // Number footnote refs by document reference order before rendering.
+    const footnotes = collectFootnotes(ast);
     for (const node of ast.children) {
         if (node.type === 'abbreviation-def')
             continue;
@@ -41,7 +43,112 @@ export function renderHtml(ast, opts = {}) {
             out.push(rendered);
     }
     closeTo(1); // close any sections still open at end of document
+    if (footnotes.order.length)
+        out.push(renderFootnoteSection(ast, footnotes, opts));
     return out.join('\n');
+}
+/** Visit every inline array under a block subtree (depth-first). */
+function walkBlockInlines(node, visit) {
+    switch (node.type) {
+        case 'heading':
+        case 'paragraph':
+            visit(node.children);
+            break;
+        case 'blockquote':
+            if (node.attribution)
+                visit(node.attribution);
+            node.children.forEach((c) => walkBlockInlines(c, visit));
+            break;
+        case 'list':
+            for (const it of node.items)
+                it.children.forEach((c) => walkBlockInlines(c, visit));
+            break;
+        case 'admonition':
+            if (node.title)
+                visit(node.title);
+            node.children.forEach((c) => walkBlockInlines(c, visit));
+            break;
+        case 'table':
+            if (node.caption)
+                visit(node.caption);
+            for (const row of node.rows)
+                for (const cell of row.cells)
+                    visit(cell.children);
+            break;
+        case 'figure':
+            visit(node.caption);
+            if (node.target.type === 'blockquote' || node.target.type === 'table')
+                walkBlockInlines(node.target, visit);
+            break;
+        default:
+            break;
+    }
+}
+function visitInlineTree(nodes, fn) {
+    for (const n of nodes) {
+        fn(n);
+        const kids = n.children ??
+            n.content;
+        if (Array.isArray(kids))
+            visitInlineTree(kids, fn);
+    }
+}
+function collectFootnotes(ast) {
+    const defs = ast.footnoteDefs ?? {};
+    const order = [];
+    const backrefs = {};
+    const seen = {};
+    const onNode = (n) => {
+        if (n.type !== 'footnote' || !n.id || !defs[n.id])
+            return;
+        let idx = order.indexOf(n.id);
+        if (idx === -1) {
+            order.push(n.id);
+            idx = order.length - 1;
+            backrefs[n.id] = [];
+        }
+        const number = idx + 1;
+        const occ = (seen[n.id] = (seen[n.id] ?? 0) + 1);
+        const refId = occ === 1 ? `fnref${number}` : `fnref${number}-${occ}`;
+        n.number = number;
+        n.refId = refId;
+        backrefs[n.id].push(refId);
+    };
+    for (const b of ast.children)
+        walkBlockInlines(b, (xs) => visitInlineTree(xs, onNode));
+    // Footnote bodies may reference further footnotes; walk referenced
+    // bodies in discovery order (the queue grows as onNode appends labels).
+    for (let k = 0; k < order.length; k++) {
+        for (const b of defs[order[k]] ?? [])
+            walkBlockInlines(b, (xs) => visitInlineTree(xs, onNode));
+    }
+    return { order, backrefs };
+}
+/**
+ * Endnotes section, djot-compatible roles. The backlink glyph is the
+ * plain return arrow `↩` (Carve's choice; djot appends a variation
+ * selector). Indentation follows Carve's house style.
+ */
+function renderFootnoteSection(ast, st, opts) {
+    const defs = ast.footnoteDefs ?? {};
+    const lines = ['<section role="doc-endnotes">', `${indent(1)}<hr>`, `${indent(1)}<ol>`];
+    st.order.forEach((label, idx) => {
+        const number = idx + 1;
+        const body = (defs[label] ?? []).map((b) => renderBlock(b, opts, 3));
+        const blink = (st.backrefs[label] ?? [])
+            .map((rid) => `<a href="#${rid}" role="doc-backlink">↩</a>`)
+            .join('');
+        const last = body.length - 1;
+        if (last >= 0 && /<\/p>\s*$/.test(body[last])) {
+            body[last] = body[last].replace(/<\/p>(\s*)$/, `${blink}</p>$1`);
+        }
+        else {
+            body.push(`${indent(3)}<p>${blink}</p>`);
+        }
+        lines.push(`${indent(2)}<li id="fn${number}">`, ...body, `${indent(2)}</li>`);
+    });
+    lines.push(`${indent(1)}</ol>`, '</section>');
+    return lines.join('\n');
 }
 /** Copy attrs without the `id` (the id moves to the enclosing <section>). */
 function stripId(attrs) {
@@ -99,6 +206,33 @@ function renderAttrs(attrs) {
         }
     }
     return parts.length ? ' ' + parts.join(' ') : '';
+}
+/**
+ * Like renderAttrs, but merges a mandatory `baseClass` ahead of author
+ * classes (math keeps `math inline` while honoring `{.foo}`), and can
+ * drop the author id when a structural id already exists (footnote refs).
+ * With no attrs and no baseClass it returns '' — unchanged output.
+ */
+function renderAttrs2(attrs, opts = {}) {
+    if (!attrs && !opts.baseClass)
+        return '';
+    // Build a synthetic Attrs and delegate to renderAttrs so author
+    // attributes still emit in source order (PART 10 §1): merge a
+    // mandatory base class ahead of author classes (math keeps
+    // `math inline` while honoring `{.foo}`), and optionally drop the
+    // author id when a structural id already exists (footnote refs).
+    const a = attrs ? { ...attrs } : {};
+    if (opts.baseClass) {
+        a.classes = [opts.baseClass, ...(a.classes ?? [])];
+        if (a.order && !a.order.includes('.class'))
+            a.order = ['.class', ...a.order];
+    }
+    if (opts.dropId) {
+        delete a.id;
+        if (a.order)
+            a.order = a.order.filter((s) => s !== '#id');
+    }
+    return renderAttrs(a);
 }
 function renderBlock(node, opts, level) {
     const pad = indent(level);
@@ -410,6 +544,13 @@ function renderInline(node, opts) {
             return renderImage(node, opts);
         case 'span':
             return `<span${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</span>`;
+        case 'math': {
+            const base = node.display ? 'math display' : 'math inline';
+            const body = node.display
+                ? `\\[${escapeHtml(node.content)}\\]`
+                : `\\(${escapeHtml(node.content)}\\)`;
+            return `<span${renderAttrs2(node.attrs, { baseClass: base })}>${body}</span>`;
+        }
         case 'autolink': {
             const display = node.href.startsWith('mailto:') ? node.href.slice(7) : node.href;
             return `<a href="${escapeAttr(node.href)}">${escapeHtml(display)}</a>`;
@@ -429,9 +570,11 @@ function renderInline(node, opts) {
         case 'abbreviation':
             return `<abbr title="${escapeAttr(node.expansion)}">${escapeHtml(node.abbr)}</abbr>`;
         case 'footnote':
-            return node.id
-                ? `<sup class="footnote-ref"><a href="#fn-${node.id}">${escapeHtml(node.id)}</a></sup>`
-                : '';
+            // number is assigned by collectFootnotes for refs with a matching
+            // definition; an unresolved ref falls back to literal source.
+            return node.number === undefined
+                ? escapeHtml(`[^${node.id ?? ''}]`)
+                : `<a id="${node.refId}" href="#fn${node.number}" role="doc-noteref"${renderAttrs2(node.attrs, { dropId: true })}><sup>${node.number}</sup></a>`;
         case 'soft-break':
             return '\n';
         case 'hard-break':
