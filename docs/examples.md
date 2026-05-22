@@ -304,6 +304,20 @@ A quoted title after the URL becomes the `title` attribute on the anchor.
 
 :::
 
+Single-quoted titles work too (a deliberate enhancement over djot). A literal apostrophe in a rendered title is escaped to `&apos;`.
+
+::: compare
+
+```carve
+[A](/a 'plain') and [B](/b "Bob's")
+```
+
+```html
+<p><a href="/a" title="plain">A</a> and <a href="/b" title="Bob&apos;s">B</a></p>
+```
+
+:::
+
 Autolinks use angle brackets and produce a self-titled anchor; bare email addresses get the `mailto:` scheme.
 
 ::: compare
@@ -314,6 +328,20 @@ Visit <https://example.com> or write <hello@example.com>.
 
 ```html
 <p>Visit <a href="https://example.com">https://example.com</a> or write <a href="mailto:hello@example.com">hello@example.com</a>.</p>
+```
+
+:::
+
+A trailing `{…}` block attaches attributes to an autolink.
+
+::: compare
+
+```carve
+<https://example.com>{.ext}
+```
+
+```html
+<p><a href="https://example.com" class="ext">https://example.com</a></p>
 ```
 
 :::
@@ -1631,6 +1659,20 @@ the '70s and '24' and 'word'
 
 ```html
 <p>the ’70s and ’24’ and ‘word’</p>
+```
+
+:::
+
+A run of four or more hyphens is allocated into em/en dashes (all em if divisible by 3, all en if by 2, otherwise max em-dashes with an en remainder) — matching djot.
+
+::: compare
+
+```carve
+a---- b----- c------
+```
+
+```html
+<p>a–– b—– c——</p>
 ```
 
 :::

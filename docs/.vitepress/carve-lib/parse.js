@@ -49,7 +49,7 @@ const RE_TABLE_ROW = /^\|/;
 // it from a `+ ` list item (which never ends with `|`). Only consumed
 // inside parseTable, after a standard `|` row has opened the table.
 const RE_TABLE_CONT = /^\+.*\|\s*$/;
-const RE_BARE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)\s*(?:\{([^}]+)\})?\s*$/;
+const RE_BARE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)"|\s+'([^']*)')?\)\s*(?:\{([^}]+)\})?\s*$/;
 const RE_FRONTMATTER_FENCE = /^---\s*$/;
 // Raw passthrough block: ```raw FORMAT … ``` (§4.15). The info string has
 // two tokens ("raw FORMAT"), so this never collides with RE_FENCE (which
@@ -700,10 +700,11 @@ function parseBlockImage(lexer) {
     const line = lexer.consume();
     const m = RE_BARE_IMAGE.exec(line);
     const img = { type: 'image', src: m[2], alt: m[1] };
-    if (m[3])
-        img.title = m[3];
-    if (m[4])
-        img.attrs = parseAttrs(m[4]);
+    const title = m[3] ?? m[4];
+    if (title)
+        img.title = title;
+    if (m[5])
+        img.attrs = parseAttrs(m[5]);
     // Optional caption
     let lookahead = 0;
     while (!lexer.eof() && lexer.peek(lookahead)?.trim() === '')
@@ -1232,8 +1233,12 @@ function leadingWhitespace(line) {
 // ============================================================================
 // Inline parsing
 // ============================================================================
-const RE_LINK = /^(\[)([^\]]*)\]\(([^)\s]*)(?:\s+"([^"]*)")?\)(?:\{([^}]+)\})?/;
-const RE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]*)(?:\s+"([^"]*)")?\)(?:\{([^}]+)\})?/;
+// Link/image titles accept double OR single quotes (grammar link_title;
+// a deliberate enhancement over djot, which has no single-quote titles).
+// The double- and single-quoted titles are separate capture groups so
+// the other quote may appear inside (`"it's"`, `'say "hi"'`).
+const RE_LINK = /^(\[)([^\]]*)\]\(([^)\s]*)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{([^}]+)\})?/;
+const RE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]*)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{([^}]+)\})?/;
 const RE_REF_LINK = /^\[([^\]]+)\]\[([^\]]*)\](?:\{([^}\n]+)\})?/;
 // Inline span: a bracketed run directly followed by an attribute block
 // (PART 9 §14). The `{` must abut `]`; an empty `{}` is not a valid
@@ -1263,7 +1268,6 @@ const RE_TAG = /^#([a-zA-Z][\w-]*(?:\.\w+)*)/;
 const SMART_TOKENS = [
     ['<->', '↔'],
     ['(tm)', '™'],
-    ['---', '—'],
     ['...', '…'],
     ['->', '→'],
     ['<-', '←'],
@@ -1272,10 +1276,31 @@ const SMART_TOKENS = [
     ['>=', '≥'],
     ['!=', '≠'],
     ['+-', '±'],
-    ['--', '–'],
     ['(c)', '©'],
     ['(r)', '®'],
 ];
+/**
+ * Allocate a run of `n` hyphens (n >= 2) into em/en dashes, matching
+ * djot + carve-php: all em when divisible by 3, all en when divisible by
+ * 2, otherwise max em-dashes with the remainder as en-dashes (a
+ * remainder of 1 trades one em for two en). 2->–, 3->—, 4->––, 5->—–.
+ */
+function allocateDashes(n) {
+    if (n % 3 === 0)
+        return '—'.repeat(n / 3);
+    if (n % 2 === 0)
+        return '–'.repeat(n / 2);
+    let em = Math.floor(n / 3);
+    let en;
+    if (n % 3 === 1) {
+        em -= 1;
+        en = 2;
+    }
+    else {
+        en = 1;
+    }
+    return '—'.repeat(em) + '–'.repeat(en);
+}
 const isAlnum = (ch) => /[A-Za-z0-9]/.test(ch);
 const isQuoteOpenContext = (prev) => prev === '' || /[\s([{\-–—/]/.test(prev) || prev === '“' || prev === '‘';
 /**
@@ -1287,6 +1312,14 @@ function smartToken(text, i, prev) {
     for (const [tok, out] of SMART_TOKENS) {
         if (text.startsWith(tok, i))
             return { out, len: tok.length };
+    }
+    // A run of 2+ hyphens collapses to em/en dashes (djot allocation). A
+    // lone `-` stays literal.
+    if (text[i] === '-' && text[i + 1] === '-') {
+        let n = 0;
+        while (text[i + n] === '-')
+            n++;
+        return { out: allocateDashes(n), len: n };
     }
     const c = text[i];
     if (c === '"') {
@@ -1405,10 +1438,11 @@ function scanInline(text) {
             if (m) {
                 flush();
                 const img = { type: 'image', src: m[2], alt: m[1] };
-                if (m[3])
-                    img.title = m[3];
-                if (m[4])
-                    img.attrs = parseAttrs(m[4]);
+                const title = m[3] ?? m[4];
+                if (title)
+                    img.title = title;
+                if (m[5])
+                    img.attrs = parseAttrs(m[5]);
                 out.push(img);
                 i += m[0].length;
                 continue;
@@ -1424,10 +1458,11 @@ function scanInline(text) {
                     href: m[3],
                     children: scanInline(m[2]),
                 };
-                if (m[4])
-                    link.title = m[4];
-                if (m[5])
-                    link.attrs = parseAttrs(m[5]);
+                const title = m[4] ?? m[5];
+                if (title)
+                    link.title = title;
+                if (m[6])
+                    link.attrs = parseAttrs(m[6]);
                 out.push(link);
                 i += m[0].length;
                 continue;
@@ -1522,8 +1557,29 @@ function scanInline(text) {
                     type: 'autolink',
                     href: href.includes('@') && !href.includes(':') ? `mailto:${href}` : href,
                 };
+                let consumed = m[0].length;
+                // Optional trailing {attrs} (djot): `<url>{.c}`. An explicit
+                // `href` in the block is ignored -- the structural href wins
+                // (djot + carve-php), so it never produces a duplicate attribute.
+                const am = /^\{([^}\n]+)\}/.exec(text.slice(i + consumed));
+                if (am) {
+                    const attrs = parseAttrs(am[1]);
+                    if (!isEmptyAttrs(attrs)) {
+                        // A real attribute block: consume it (so it is not
+                        // re-processed). Drop a structural `href` so it never
+                        // duplicates the autolink's own href (djot + carve-php).
+                        if (attrs.keyValues?.href !== undefined) {
+                            delete attrs.keyValues.href;
+                            if (attrs.order)
+                                attrs.order = attrs.order.filter((s) => s !== 'href');
+                        }
+                        if (!isEmptyAttrs(attrs))
+                            auto.attrs = attrs;
+                        consumed += am[0].length;
+                    }
+                }
                 out.push(auto);
-                i += m[0].length;
+                i += consumed;
                 continue;
             }
         }

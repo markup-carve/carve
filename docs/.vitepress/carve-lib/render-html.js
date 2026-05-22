@@ -171,6 +171,16 @@ function stripId(attrs) {
     const { id: _omit, ...rest } = attrs;
     return rest;
 }
+/** Copy attrs without a given key-value (e.g. a structural `href`). */
+function stripKeyValue(attrs, key) {
+    if (!attrs?.keyValues || attrs.keyValues[key] === undefined)
+        return attrs;
+    const { [key]: _omit, ...kv } = attrs.keyValues;
+    const result = { ...attrs, keyValues: kv };
+    if (attrs.order)
+        result.order = attrs.order.filter((s) => s !== key);
+    return result;
+}
 function indent(level) {
     return '  '.repeat(level);
 }
@@ -603,7 +613,9 @@ function renderInline(node, opts) {
             return opts.emoji?.[node.name] ?? escapeHtml(`:${node.name}:`);
         case 'autolink': {
             const display = node.href.startsWith('mailto:') ? node.href.slice(7) : node.href;
-            return `<a href="${escapeAttr(node.href)}">${escapeHtml(display)}</a>`;
+            // The structural href always wins; never re-emit an author-supplied
+            // `href` from an attribute block (it would duplicate the attribute).
+            return `<a href="${escapeAttr(node.href)}"${renderAttrs(stripKeyValue(node.attrs, 'href'))}>${escapeHtml(display)}</a>`;
         }
         case 'mention': {
             const href = opts.mentionUrl
@@ -669,6 +681,6 @@ function escapeHtml(s) {
     return s.replace(/[&<>\u00a0]/g, (c) => HTML_ESCAPE[c]);
 }
 function escapeAttr(s) {
-    return s.replace(/[&<>"]/g, (c) => (c === '"' ? '&quot;' : HTML_ESCAPE[c]));
+    return s.replace(/[&<>"']/g, (c) => c === '"' ? '&quot;' : c === "'" ? '&apos;' : HTML_ESCAPE[c]);
 }
 //# sourceMappingURL=render-html.js.map

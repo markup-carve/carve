@@ -13,9 +13,21 @@ Read [Djot](https://djot.net) for details.
 ```
 
 ```
+[A](/a 'plain') and [B](/b "Bob's")
+.
+<p><a href="/a" title="plain">A</a> and <a href="/b" title="Bob&apos;s">B</a></p>
+```
+
+```
 Visit <https://example.com> or write <hello@example.com>.
 .
 <p>Visit <a href="https://example.com">https://example.com</a> or write <a href="mailto:hello@example.com">hello@example.com</a>.</p>
+```
+
+```
+<https://example.com>{.ext}
+.
+<p><a href="https://example.com" class="ext">https://example.com</a></p>
 ```
 
 ```
