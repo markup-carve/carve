@@ -207,6 +207,25 @@ export interface Math extends BaseNode {
     display: boolean;
     content: string;
 }
+/**
+ * Raw inline passthrough (djot `` `…`{=format} ``): a verbatim span tagged
+ * with an output format. Emitted verbatim when `format` matches the
+ * renderer's output (html), dropped otherwise.
+ */
+export interface RawInline extends BaseNode {
+    type: 'raw-inline';
+    format: string;
+    content: string;
+}
+/**
+ * Emoji shortcode `:name:` (djot symbols). Resolved against a
+ * processor-supplied name->glyph map at render time; an unmapped name
+ * renders literally as `:name:`.
+ */
+export interface Emoji extends BaseNode {
+    type: 'emoji';
+    name: string;
+}
 export interface AutoLink extends BaseNode {
     type: 'autolink';
     href: string;
@@ -271,6 +290,6 @@ export interface CriticComment extends BaseNode {
     type: 'critic-comment';
     text: string;
 }
-export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | AutoLink | CrossRef | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticHighlight | CriticComment;
+export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | Emoji | AutoLink | CrossRef | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticHighlight | CriticComment;
 export type AnyNode = Document | BlockNode | InlineNode;
 //# sourceMappingURL=ast.d.ts.map

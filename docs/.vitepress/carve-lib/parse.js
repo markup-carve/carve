@@ -1077,6 +1077,10 @@ const RE_SPAN = /^\[([^\]]*)\]\{([^}\n]+)\}/;
 // Footnote reference `[^label]` (no `]` in the label).
 const RE_FOOTNOTE_REF = /^\[\^([^\]]+)\]/;
 const RE_EXTENSION = /^:([a-zA-Z][\w-]*)\[([^\]]*)\](?:\{([^}]+)\})?/;
+// Raw inline passthrough tag, follows a verbatim span: `` `…`{=html} ``.
+const RE_RAW_INLINE = /^\{=([a-zA-Z][\w-]*)\}/;
+// Emoji shortcode `:name:` (after extension, which needs `[`).
+const RE_EMOJI = /^:([a-zA-Z0-9][\w+-]*):/;
 const RE_AUTOLINK = /^<([a-zA-Z][a-zA-Z0-9+.\-]*:[^>\s]+|[^\s>@]+@[^\s>]+)>/;
 const RE_CROSSREF = /^<\/#([^>\s]+)>/;
 const RE_INLINE_ATTR = /^\{([^}\n]+)\}/;
@@ -1159,6 +1163,12 @@ function scanInline(text) {
             i += 2;
             continue;
         }
+        // Non-breaking space: a backslash followed by a space (djot).
+        if (c === '\\' && text[i + 1] === ' ') {
+            buf += '\u00a0';
+            i += 2;
+            continue;
+        }
         // Escape
         if (c === '\\' && i + 1 < text.length) {
             const nxt = text[i + 1];
@@ -1195,8 +1205,16 @@ function scanInline(text) {
             if (m) {
                 flush();
                 const inner = m[2].replace(/^ (.*) $/, '$1');
-                out.push({ type: 'code', value: inner });
-                i += m[0].length;
+                // A verbatim span tagged `{=format}` is raw inline passthrough.
+                const raw = RE_RAW_INLINE.exec(text.slice(i + m[0].length));
+                if (raw) {
+                    out.push({ type: 'raw-inline', format: raw[1], content: inner });
+                    i += m[0].length + raw[0].length;
+                }
+                else {
+                    out.push({ type: 'code', value: inner });
+                    i += m[0].length;
+                }
                 continue;
             }
         }
@@ -1310,6 +1328,14 @@ function scanInline(text) {
                     ext.attrs = parseAttrs(m[3]);
                 out.push(ext);
                 i += m[0].length;
+                continue;
+            }
+            // Emoji shortcode `:name:` (after extension, which needs `[`).
+            const em = RE_EMOJI.exec(rest);
+            if (em) {
+                flush();
+                out.push({ type: 'emoji', name: em[1] });
+                i += em[0].length;
                 continue;
             }
         }

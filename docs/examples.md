@@ -1919,3 +1919,53 @@ line two</p>
 ```
 
 :::
+
+## Non-breaking space
+
+A backslash before a space produces a non-breaking space.
+
+::: compare
+
+```carve
+10\ kg
+```
+
+```html
+<p>10&nbsp;kg</p>
+```
+
+:::
+
+## Raw inline
+
+A verbatim span tagged `{=format}` passes through when the format
+matches the output; otherwise it is dropped.
+
+::: compare
+
+```carve
+Use `<br>`{=html} to break, and `\foo`{=latex} is dropped.
+```
+
+```html
+<p>Use <br> to break, and  is dropped.</p>
+```
+
+:::
+
+## Emoji
+
+`:name:` is an emoji shortcode resolved against a processor-supplied map;
+with no map it renders literally. `:type[…]` is still an extension.
+
+::: compare
+
+```carve
+Great :rocket: and :kbd[Ctrl] is an extension.
+```
+
+```html
+<p>Great :rocket: and <kbd>Ctrl</kbd> is an extension.</p>
+```
+
+:::
