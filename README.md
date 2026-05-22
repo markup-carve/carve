@@ -11,7 +11,7 @@ Carve builds on Markdown's basics and Djot's technical rigor while adding:
 - **Visual mnemonics** - Syntax resembles its output
 - **Human factors research** - Based on how non-technical users naturally mark up text
 - **Progressive disclosure** - Basic usage is trivial, power features exist when needed
-- **Social conventions** - `@mentions` and `#tags` work as users expect
+- **Social conventions** - `@mentions` and `#tags` are recognized as first-class inline tokens
 
 ## Quick Reference
 
@@ -124,7 +124,7 @@ Carve inherits and extends Djot's rationale:
 
 18. **Abbreviations** - `*[ABBR]: expansion` for automatic `<abbr>` tags
 
-19. **Social integration** - `@mentions` and `#tags` work as expected from social platforms
+19. **Social integration** - `@mentions` and `#tags` are built into the syntax
 
 20. **Extension system** - `:type[content]{attrs}` for custom inline elements
 
@@ -192,6 +192,53 @@ Carve inherits and extends Djot's rationale:
 | Extensions | Fenced divs | `:type[content]{attrs}` |
 | Mentions | N/A | `@user` |
 | Tags | N/A | `#tag` |
+
+### Mention and tag rendering
+
+Carve parses `@user` and `#tag` into dedicated AST nodes. The default HTML
+renderer does **not** invent destination URLs. Without renderer config, they
+render as non-link spans:
+
+```html
+<span class="mention"><strong>@alice</strong></span>
+<span class="tag"><strong>#release</strong></span>
+```
+
+If your application has real routes, provide URL templates at render time:
+
+```ts
+carveToHtml(source, {
+  mentionUrl: 'https://github.com/{user}',
+  tagUrl: '/topics/{name}',
+})
+```
+
+Suggested CSS:
+
+```css
+.mention,
+.tag {
+  font: inherit;
+}
+
+.mention strong,
+.tag strong {
+  font-weight: 600;
+}
+
+a.mention,
+a.tag {
+  font-weight: 600;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+}
+```
+
+Guidelines:
+
+- Keep the default non-link styling close to body text; mentions and tags are identifiers, not calls to action.
+- Reserve stronger color and hover treatment for real links so users can tell whether interaction is available.
+- Target `.mention` and `.tag` in shared rules so switching from `<span>` to `<a>` does not require a CSS rewrite.
 
 > **Djot accuracy notes:** Djot defines captions for pipe **tables only** (a
 > `^ ` line after the table); Carve extends the same `^` prefix to images and

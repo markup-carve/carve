@@ -63,5 +63,5 @@ Headings
 ```
 #notaheading
 .
-<p><a class="tag" href="/tags/notaheading">#notaheading</a></p>
+<p><span class="tag"><strong>#notaheading</strong></span></p>
 ```

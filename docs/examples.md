@@ -262,7 +262,8 @@ Inline emphasis renders inside heading text.
 
 :::
 
-A `#` at line start without a following space is a tag, not a heading. The line renders as a paragraph containing the tag, with a `/tags/<slug>` URL.
+A `#` at line start without a following space is a tag, not a heading. By
+default it renders as a styled inline token, not an invented link target.
 
 ::: compare
 
@@ -271,7 +272,7 @@ A `#` at line start without a following space is a tag, not a heading. The line 
 ```
 
 ```html
-<p><a class="tag" href="/tags/notaheading">#notaheading</a></p>
+<p><span class="tag"><strong>#notaheading</strong></span></p>
 ```
 
 :::
@@ -1108,7 +1109,7 @@ Hey @alice, see #release-1.0.
 ```
 
 ```html
-<p>Hey <a class="mention" href="/users/alice">@alice</a>, see <a class="tag" href="/tags/release-1.0">#release-1.0</a>.</p>
+<p>Hey <span class="mention"><strong>@alice</strong></span>, see <span class="tag"><strong>#release-1.0</strong></span>.</p>
 ```
 
 :::
@@ -1530,7 +1531,7 @@ Write me@example.com or ping @markus.
 ```
 
 ```html
-<p>Write me@example.com or ping <a class="mention" href="/users/markus">@markus</a>.</p>
+<p>Write me@example.com or ping <span class="mention"><strong>@markus</strong></span>.</p>
 ```
 
 :::
@@ -1546,7 +1547,7 @@ A #tag here, but not in foo#bar.
 ```
 
 ```html
-<p>A <a class="tag" href="/tags/tag">#tag</a> here, but not in foo#bar.</p>
+<p>A <span class="tag"><strong>#tag</strong></span> here, but not in foo#bar.</p>
 ```
 
 :::

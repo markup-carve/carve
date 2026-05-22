@@ -618,14 +618,18 @@ function renderInline(node, opts) {
             return `<a href="${escapeAttr(node.href)}"${renderAttrs(stripKeyValue(node.attrs, 'href'))}>${escapeHtml(display)}</a>`;
         }
         case 'mention': {
-            const href = opts.mentionUrl
-                ? opts.mentionUrl.replace('{user}', node.user)
-                : `/users/${node.user}`;
-            return `<a class="mention" href="${escapeAttr(href)}">@${escapeHtml(node.user)}</a>`;
+            const text = `@${escapeHtml(node.user)}`;
+            if (!opts.mentionUrl)
+                return `<span class="mention"><strong>${text}</strong></span>`;
+            const href = opts.mentionUrl.replaceAll('{user}', encodeURIComponent(node.user));
+            return `<a class="mention" href="${escapeAttr(href)}">${text}</a>`;
         }
         case 'tag': {
-            const href = opts.tagUrl ? opts.tagUrl.replace('{name}', node.name) : `/tags/${node.name}`;
-            return `<a class="tag" href="${escapeAttr(href)}">#${escapeHtml(node.name)}</a>`;
+            const text = `#${escapeHtml(node.name)}`;
+            if (!opts.tagUrl)
+                return `<span class="tag"><strong>${text}</strong></span>`;
+            const href = opts.tagUrl.replaceAll('{name}', encodeURIComponent(node.name));
+            return `<a class="tag" href="${escapeAttr(href)}">${text}</a>`;
         }
         case 'extension':
             return renderExtension(node.name, node.content, opts);
