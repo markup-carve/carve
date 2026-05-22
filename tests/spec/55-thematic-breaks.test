@@ -1,0 +1,22 @@
+Thematic breaks
+
+```
+a
+
+---
+
+b
+
+***
+
+c
+
+___
+.
+<p>a</p>
+<hr>
+<p>b</p>
+<hr>
+<p>c</p>
+<hr>
+```

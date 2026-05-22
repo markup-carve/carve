@@ -5,11 +5,15 @@
  * over each block's text content. No backtracking.
  */
 const RE_HEADING = /^(#{1,6})\s+(.+?)(?:\s+\{([^}\n]+)\})?\s*$/;
-const RE_HR = /^-{3,}\s*$/;
+// Thematic break: a line of 3+ of the same `-`, `*`, or `_` (grammar
+// thematic_break). A run alone on a line can't be emphasis (no content).
+const RE_HR = /^(?:-{3,}|\*{3,}|_{3,})\s*$/;
 const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_-]*)\s*$/;
 const RE_UNORDERED = /^(\s*)[-*+]\s+(.*)$/;
 const RE_ORDERED = /^(\s*)(\d+)([.)])\s+(.*)$/;
-const RE_TASK = /^(\s*)[-*+]\s+\[([ xX])\]\s+(.*)$/;
+// Task states (matches djot-php): `x`/`X` are checked; ` `, `-`, `_`,
+// `>`, `?` are all accepted and render as an unchecked checkbox.
+const RE_TASK = /^(\s*)[-*+]\s+\[([ xX\-_>?])\]\s+(.*)$/;
 const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 const RE_ADMONITION_OPEN = /^:::\s*([a-zA-Z][\w-]*)\s*(.*)$/;
 const RE_ADMONITION_CLOSE = /^:::\s*$/;
@@ -141,7 +145,7 @@ function stripContainerPrefixes(raw) {
         prev = line;
         line = line
             .replace(/^\s*>\s?/, '') // blockquote
-            .replace(/^\s*(?:[-*+]|\d+[.)])\s+(?:\[[ xX]\]\s+)?/, ''); // list/task
+            .replace(/^\s*(?:[-*+]|\d+[.)])\s+(?:\[[ xX\-_>?]\]\s+)?/, ''); // list/task
     } while (line !== prev);
     return line.replace(/^\s+/, ''); // residual indentation
 }
@@ -1138,11 +1142,14 @@ function smartToken(text, i, prev) {
         return { out: isQuoteOpenContext(prev) ? '“' : '”', len: 1 };
     }
     if (c === "'") {
-        // Spec §4.18 defines only the paired `'text'` -> ‘text’ form; it
-        // does not mandate decade-elision (`'90s`). The contextual rule
-        // (apostrophe/closing after a word, opening otherwise) is faithful
-        // and avoids regressing genuinely quoted numbers like `'24'`.
-        return { out: isAlnum(prev) || !isQuoteOpenContext(prev) ? '’' : '‘', len: 1 };
+        // Contextual single quote (matches djot): an apostrophe / closing
+        // quote `’` when the previous char is alphanumeric (`it's`,
+        // `John's`) OR the next char is a digit (decade elision `'70s`, and
+        // `'24'` -> `’24’` as djot does); an opening quote `‘` in an open
+        // context (`'word'`, `rock 'n' roll`); otherwise `’`.
+        const next = text[i + 1] ?? '';
+        const apostrophe = isAlnum(prev) || /[0-9]/.test(next) || !isQuoteOpenContext(prev);
+        return { out: apostrophe ? '’' : '‘', len: 1 };
     }
     return null;
 }

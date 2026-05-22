@@ -2038,3 +2038,121 @@ See the note.[^n]
 ```
 
 :::
+
+## Editorial markup
+
+CriticMarkup-style review marks: insert, delete, substitute, highlight,
+and an inline comment.
+
+::: compare
+
+```carve
+a {+ins+} {-del-} {~old~>new~} {=hl=} b{# note #}
+```
+
+```html
+<p>a <ins>ins</ins> <del>del</del> <del>old</del><ins>new</ins> <mark>hl</mark> b<span class="critic-comment"> note </span></p>
+```
+
+:::
+
+## Thematic breaks
+
+A line of three or more `-`, `*`, or `_` is a thematic break.
+
+::: compare
+
+```carve
+a
+
+---
+
+b
+
+***
+
+c
+
+___
+```
+
+```html
+<p>a</p>
+<hr>
+<p>b</p>
+<hr>
+<p>c</p>
+<hr>
+```
+
+:::
+
+## Cross-reference
+
+`</#id>` links to a heading and fills in its text (here, standalone).
+
+::: compare
+
+```carve
+# Getting Started
+
+See </#getting-started>.
+```
+
+```html
+<section id="getting-started">
+  <h1>Getting Started</h1>
+  <p>See <a href="#getting-started">Getting Started</a>.</p>
+</section>
+```
+
+:::
+
+## Autolinks
+
+A `<url>` or `<email>` in angle brackets becomes a self-titled link;
+email gets a `mailto:` scheme.
+
+::: compare
+
+```carve
+<https://example.com> and <a@b.com>
+```
+
+```html
+<p><a href="https://example.com">https://example.com</a> and <a href="mailto:a@b.com">a@b.com</a></p>
+```
+
+:::
+
+## Escapes
+
+A backslash before ASCII punctuation makes it literal.
+
+::: compare
+
+```carve
+\*lit\* \[x\] \#h \@u
+```
+
+```html
+<p>*lit* [x] #h @u</p>
+```
+
+:::
+
+## Empty delimiters
+
+A delimiter pair with no content is literal text, not emphasis.
+
+::: compare
+
+```carve
+** and // and ^^
+```
+
+```html
+<p>** and // and ^^</p>
+```
+
+:::

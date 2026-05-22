@@ -886,6 +886,16 @@ and the title is never folded into the class. Carve does **not**
 synthesize a default title from the type name; `::: note` without `"…"`
 produces no title element at all.
 
+> **Design note — a conscious exception.** Whether `::: x` renders as an
+> `<aside>` (Tier 1) or a `<div>` (Tier 2) depends on whether `x` is in
+> the canonical set — i.e. the *meaning* of the construct is
+> context-dependent, in mild tension with Design Principle 1 ("one
+> syntax, one meaning"). This is deliberate: both tiers share the same
+> `<div>`-shaped fenced-container primitive, and the canonical names are
+> a curated styling convention layered on top, not a separate syntax.
+> The *parse* is never ambiguous (every `::: word` is a fenced block);
+> only the wrapper element/class differs by name.
+
 #### Generic divs (no type word)
 
 A `:::` opener with **no type word** — bare `:::` or an attributes-only
