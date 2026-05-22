@@ -621,14 +621,14 @@ function renderInline(node, opts) {
             const text = `@${escapeHtml(node.user)}`;
             if (!opts.mentionUrl)
                 return `<span class="mention"><strong>${text}</strong></span>`;
-            const href = opts.mentionUrl.replace('{user}', node.user);
+            const href = opts.mentionUrl.replaceAll('{user}', encodeURIComponent(node.user));
             return `<a class="mention" href="${escapeAttr(href)}">${text}</a>`;
         }
         case 'tag': {
             const text = `#${escapeHtml(node.name)}`;
             if (!opts.tagUrl)
                 return `<span class="tag"><strong>${text}</strong></span>`;
-            const href = opts.tagUrl.replace('{name}', node.name);
+            const href = opts.tagUrl.replaceAll('{name}', encodeURIComponent(node.name));
             return `<a class="tag" href="${escapeAttr(href)}">${text}</a>`;
         }
         case 'extension':

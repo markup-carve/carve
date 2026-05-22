@@ -66,3 +66,13 @@ test('mentions and tags render as links when URL templates are configured', () =
     '<p>Hey <a class="mention" href="https://github.com/alice">@alice</a>, see <a class="tag" href="/topics/release-1.0">#release-1.0</a>.</p>',
   )
 })
+
+test('mention and tag URL templates replace every placeholder occurrence', () => {
+  assert.equal(
+    carveToHtml('Hey @john.doe, see #release-1.0.', {
+      mentionUrl: '/users/{user}?q={user}',
+      tagUrl: '/topics/{name}?tag={name}',
+    }).trim(),
+    '<p>Hey <a class="mention" href="/users/john.doe?q=john.doe">@john.doe</a>, see <a class="tag" href="/topics/release-1.0?tag=release-1.0">#release-1.0</a>.</p>',
+  )
+})
