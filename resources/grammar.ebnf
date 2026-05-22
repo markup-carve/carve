@@ -286,6 +286,9 @@ collapsed_reference_link = '[', link_text, ']', '[', ']', [attributes] ;
 
 link_text = inline_content - ']' ;
 link_destination = url | ('<', url, '>') ;
+(* Titles accept double OR single quotes -- a deliberate enhancement
+   over djot (which has no single-quote titles; it would fold `'...'`
+   into the URL). The non-delimiting quote may appear inside the title. *)
 link_title = space, ('"', {character - '"'}, '"')
            | space, ("'", {character - "'"}, "'") ;
 
@@ -955,8 +958,8 @@ EOF = (* end of file *) ;
 
    2. ATTRIBUTE QUOTING + ESCAPING. Attribute values are double-quoted.
       In an attribute value escape `&`->&amp;, `<`->&lt;, `>`->&gt;,
-      `"`->&quot;. In text/content escape `&`,`<`,`>` (NOT `"`). No other
-      entities are produced.
+      `"`->&quot;, `'`->&apos;. In text/content escape `&`,`<`,`>` (NOT
+      quotes). No other entities are produced.
 
    3. VOID ELEMENTS are written WITHOUT a trailing slash: `<hr>`,
       `<img …>`, `<br>`. A hard break serializes as `<br>` + newline.
