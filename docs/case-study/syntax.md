@@ -204,9 +204,11 @@ Read the [introduction][intro] first.
 [intro]: https://example.com/intro "Introduction"
 ```
 
-**Bare URLs (auto-linked):**
+**Bare URLs are not auto-linked** (matching djot and the reference
+implementations). A plain `https://example.com` in text stays literal;
+wrap it in angle brackets for an explicit autolink:
 ```
-Check out https://example.com for details.
+See <https://example.com> for details.
 ```
 
 **Email:**
@@ -925,8 +927,25 @@ A div with attributes.
 ```
 
 So `::: word` is a typed block (Tier 1 admonition / Tier 2 div); bare
-`:::` or `::: {…}` is a generic `<div>` (PART 9 §12). Like admonitions, a
-div closes at the first bare `:::` (no length-based nesting).
+`:::` or `::: {…}` is a generic `<div>` (PART 9 §12).
+
+**Nesting by fence length.** A fence is a run of three or more colons. A
+block is closed only by a bare fence of *equal-or-greater* length, so a
+longer opener nests shorter blocks — a `:::` inside a `::::` block is
+content, not a closer. (Equal-length fences do not nest; use a longer
+outer fence.) This applies to admonitions and generic divs alike:
+
+```
+:::: note
+Outer.
+
+::: tip
+Nested — the inner ::: does not close the :::: block.
+:::
+::::
+```
+
+renders the `tip` aside inside the `note` aside.
 
 ### 4.13 Comments
 

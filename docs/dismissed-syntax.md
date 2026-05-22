@@ -187,14 +187,17 @@ Great work! :thumbsup: :rocket:
 Check out https://example.com for more.
 ```
 
-**Status:** Actually included, but with caveats.
+**Status:** Dismissed.
 
 **Considerations:**
-- Must not conflict with `<url>` explicit autolinks
-- Must handle trailing punctuation correctly
-- Must work at word boundaries only
+- Trailing-punctuation handling (`(https://x)`, `https://x.`) is fiddly and
+  a perennial source of surprise.
+- djot itself does not auto-link bare URLs.
+- The explicit `<url>` autolink already covers the need unambiguously.
 
-**Decision:** Bare URLs are auto-linked, but `<url>` syntax also supported for explicit control.
+**Decision:** Bare URLs are **not** auto-linked. Use the angle-bracket
+autolink `<https://example.com>` for an explicit link. (This aligns the
+spec with djot and the reference implementations.)
 
 ---
 

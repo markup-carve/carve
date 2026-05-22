@@ -1,0 +1,7 @@
+Bare URLs stay literal
+
+```
+see https://example.com now
+.
+<p>see https://example.com now</p>
+```

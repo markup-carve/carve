@@ -15,12 +15,15 @@ const RE_ORDERED = /^(\s*)(\d+)([.)])\s+(.*)$/;
 // `>`, `?` are all accepted and render as an unchecked checkbox.
 const RE_TASK = /^(\s*)[-*+]\s+\[([ xX\-_>?])\]\s+(.*)$/;
 const RE_BLOCKQUOTE = /^>\s?(.*)$/;
-const RE_ADMONITION_OPEN = /^:::\s*([a-zA-Z][\w-]*)\s*(.*)$/;
-const RE_ADMONITION_CLOSE = /^:::\s*$/;
+// Fences are a run of 3+ colons (group 1). A longer opener nests: a
+// `::::` block contains `:::` blocks, and only a bare closer of equal-or-
+// greater length closes it (djot fence-length rule).
+const RE_ADMONITION_OPEN = /^(:{3,})\s*([a-zA-Z][\w-]*)\s*(.*)$/;
+const RE_ADMONITION_CLOSE = /^(:{3,})\s*$/;
 // Generic fenced div: a `:::` opener with NO type word -- bare `:::` or
 // an attributes-only `::: {.class}` (djot's generic container). A typed
 // `::: word` routes to parseAdmonition instead. Shares the `:::` closer.
-const RE_DIV_OPEN = /^:::\s*(?:\{([^}\n]+)\})?\s*$/;
+const RE_DIV_OPEN = /^(:{3,})\s*(?:\{([^}\n]+)\})?\s*$/;
 // Definition list (§4.5). A TERM line is exactly two colons + space(s)
 // + text — the `(?!:)` keeps it distinct from a `:::` div/admonition. A
 // DEFINITION line is a colon + two-or-more spaces + text.
@@ -69,11 +72,10 @@ class Lexer {
     // nests. Mirrors djot-php #180's scoping (guard only on the top-level
     // paragraph path).
     nested = false;
-    // Memo for divHasCloser: the smallest line index from which NO bare
-    // `:::` closer exists onward. Once a scan proves there is no closer
-    // beyond some point, every later opener (pos only advances) is O(1).
-    // Keeps generic-div detection linear on pathological input (many
-    // attrs-only `::: {…}` openers that never match the bare-`:::` closer).
+    // Negative cache for divHasCloser: the smallest line index from which
+    // NO bare colon-fence closer of ANY length exists onward. Once a scan
+    // proves that, every later bare opener (pos only advances) is O(1),
+    // keeping pathological "many unclosed `:::`" input linear.
     divNoCloserFrom = Infinity;
     constructor(source) {
         this.lines = source.replace(/\r\n?/g, '\n').split('\n');
@@ -485,20 +487,22 @@ function parseFootnoteDef(lexer) {
 function parseAdmonition(lexer) {
     const open = lexer.consume();
     const m = RE_ADMONITION_OPEN.exec(open);
-    const kind = m[1];
+    const fence = m[1].length;
+    const kind = m[2];
     // A title is recognized ONLY when the tail after the type opens with a
     // double-quoted string (grammar quoted_title; PART 9 §12), optionally
     // followed by an attribute block. The quotes are delimiters and are
     // stripped — not part of the rendered title text. An explicitly empty
     // `""` still counts as a supplied (empty) title. Unquoted trailing
     // text is ignored (not a title).
-    const tail = m[2]?.trim() ?? '';
+    const tail = m[3]?.trim() ?? '';
     const quoted = /^"([^"]*)"\s*(?:\{[^}]*\})?$/.exec(tail);
     const titleText = quoted ? quoted[1] : undefined;
     const inner = [];
     while (!lexer.eof()) {
         const ln = lexer.peek();
-        if (RE_ADMONITION_CLOSE.test(ln)) {
+        const c = RE_ADMONITION_CLOSE.exec(ln);
+        if (c && c[1].length >= fence) {
             lexer.consume();
             break;
         }
@@ -529,23 +533,37 @@ function parseAdmonition(lexer) {
  * grammar: a div requires a closer).
  */
 function divHasCloser(lexer) {
+    // A bare-`:::`+ div opens only when a bare closer of equal-or-greater
+    // colon length exists ahead (otherwise a lone `:::` is literal — and a
+    // longer fence must be matched by a longer closer).
     const start = lexer.pos + 1;
     if (start >= lexer.divNoCloserFrom)
-        return false; // memoized: none ahead
+        return false; // memo: no closer ahead
+    const fence = /^(:{3,})/.exec(lexer.peek())[1].length;
+    let sawAnyCloser = false;
     for (let i = start; i < lexer.lines.length; i++) {
-        if (RE_ADMONITION_CLOSE.test(lexer.lines[i]))
-            return true;
+        const c = RE_ADMONITION_CLOSE.exec(lexer.lines[i]);
+        if (c) {
+            sawAnyCloser = true;
+            if (c[1].length >= fence)
+                return true;
+        }
     }
-    // No closer from `start` onward; pos only advances, so cache it.
-    lexer.divNoCloserFrom = start;
+    // No closer of length >= fence ahead. If there is NO bare closer at all
+    // from here on, cache it (pos only advances) so later openers are O(1).
+    if (!sawAnyCloser)
+        lexer.divNoCloserFrom = start;
     return false;
 }
 function parseDiv(lexer) {
-    const attrSrc = RE_DIV_OPEN.exec(lexer.consume())[1];
+    const m = RE_DIV_OPEN.exec(lexer.consume());
+    const fence = m[1].length;
+    const attrSrc = m[2];
     const inner = [];
     while (!lexer.eof()) {
         const ln = lexer.peek();
-        if (RE_ADMONITION_CLOSE.test(ln)) {
+        const c = RE_ADMONITION_CLOSE.exec(ln);
+        if (c && c[1].length >= fence) {
             lexer.consume();
             break;
         }

@@ -43,7 +43,7 @@ A feature should remain an **extension** if:
 | **Captions** | `^ caption` after block | `^ caption` | Already in _djot-extra.md. Universally useful. |
 | **Abbreviations** | `*[ABBR]: expansion` | `*[ABBR]: expansion` | Essential for technical docs. |
 | **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `:kbd[text]` | Use extension syntax for consistency. |
-| **Autolinks** | Bare URLs | Bare URLs auto-link | Already implied in spec (4.3). |
+| **Autolinks** | `<url>` / `<email>` | Angle-bracket autolinks only | Bare URLs are *not* auto-linked (djot-aligned, §4.3). |
 | **Inline footnotes** | `[content]{.fn}` | `[^inline content]` | Already in spec, confirm syntax. |
 | **Table alignment** | `:--`, `--:`, `:--:` | `\|=<` / `\|=>` / `\|=~` markers | Already in spec (4.8). |
 | **Rowspan/colspan** | `^` and `<` markers | `^` and `<` markers | Already in _multiline-table-proposal.md. |
@@ -151,7 +151,7 @@ This fits the `:type[content]{attrs}` pattern already in the spec.
 
 **Already native, confirm in spec:**
 1. Semantic elements via `:type[content]` extension syntax
-2. Autolinks for bare URLs
+2. Angle-bracket autolinks (`<url>` / `<email>`) — bare URLs stay literal
 
 **Keep as implementation extensions:**
 - External link attributes
@@ -180,8 +180,8 @@ feature-level boundary.
   `<aside class="admonition …">` / custom `<div class="…">`, §12),
   figures/captions, abbreviation definitions, raw blocks, comments.
 - **Inline:** emphasis family (`/ * _ ~ ^ ,, ==` + `/* */`, §9), code
-  spans, links (inline / reference / collapsed), autolinks + bare-URL
-  autolinking, images, spans (§14), math (djot form, §18), footnotes
+  spans, links (inline / reference / collapsed), angle-bracket autolinks
+  (`<url>` / `<email>`), images, spans (§14), math (djot form, §18), footnotes
   (reference form, §16), abbreviations, editorial markup, crossrefs
   (`</#id>`, markup-preserving §19), hard/soft breaks.
 - **Semantics:** automatic heading ids (ASCII slug), id de-duplication,
