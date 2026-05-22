@@ -86,12 +86,12 @@ fenced_code_block = code_fence_open, [language_info], [attributes], newline,
                     code_fence_close, newline ;
 
 code_fence_open = backtick_fence | tilde_fence ;
-code_fence_close = backtick_fence | tilde_fence ;  (* must match opener length *)
+code_fence_close = backtick_fence | tilde_fence ;  (* same fence char; length >= opener (PART 9 §2) *)
 
 backtick_fence = '`', '`', '`', {'`'} ;
 tilde_fence = '~', '~', '~', {'~'} ;
 
-language_info = identifier ;
+language_info = (letter | digit | '-' | '_')+ ;  (* may start with a digit, e.g. `123abc` *)
 code_content = (* any text until matching fence, preserved literally *) ;
 
 (* --- Blockquotes --- *)
@@ -224,6 +224,7 @@ literal_special = special_char ;
 inline_element = escaped_char
                | code_span
                | autolink
+               | auto_text_link
                | link
                | inline_span
                | image
@@ -259,17 +260,21 @@ ascii_punctuation = '!' | '"' | '#' | '$' | '%' | '&' | "'" | '(' | ')'
                   | '^' | '_' | '`' | '{' | '|' | '}' | '~' ;
 
 (* --- Code Spans --- *)
-code_span = backtick_run, code_span_content, backtick_run, [language_hint] ;
+code_span = backtick_run, code_span_content, backtick_run, [attributes] ;
 backtick_run = '`'+ ;  (* matching count *)
 code_span_content = (* any chars except matching backtick run *) ;
-language_hint = '{', identifier, '}' ;
+(* A trailing `{…}` on a code span is the generic inline-attribute
+   block, NOT a language tag. Both impls consume it; carve-js then drops
+   the attributes and carve-php applies them (an impl divergence). *)
 
 (* --- Links --- *)
-link = inline_link | reference_link | collapsed_reference_link | autolink | auto_text_link ;
+link = inline_link | reference_link | collapsed_reference_link ;
+(* autolink and auto_text_link (crossref) are listed directly in
+   inline_element, not here. *)
 
-inline_link = '[', link_text, ']', '(', link_destination, [link_title], ')' ;
-reference_link = '[', link_text, ']', '[', reference_label, ']' ;
-collapsed_reference_link = '[', link_text, ']', '[', ']' ;
+inline_link = '[', link_text, ']', '(', link_destination, [link_title], ')', [attributes] ;
+reference_link = '[', link_text, ']', '[', reference_label, ']', [attributes] ;
+collapsed_reference_link = '[', link_text, ']', '[', ']', [attributes] ;
 
 link_text = inline_content - ']' ;
 link_destination = url | ('<', url, '>') ;
@@ -294,7 +299,7 @@ email_autolink = {email_char}+, '@', {email_char}+, '.', {letter}+ ;
 auto_text_link = "</#", identifier, '>' ;  (* cross-reference with auto text *)
 
 url = scheme, ':', {url_char}+ ;
-scheme = letter, {letter | digit | '+' | '-' | '.'}+ ;
+scheme = letter, {letter | digit | '+' | '-' | '.'} ;  (* 1+ chars; single-letter schemes ok *)
 url_char = letter | digit | '-' | '.' | '_' | '~' | ':' | '/' | '?'
          | '#' | '[' | ']' | '@' | '!' | '$' | '&' | "'" | '(' | ')'
          | '*' | '+' | ',' | ';' | '=' | '%' ;
@@ -733,8 +738,8 @@ EOF = (* end of file *) ;
       PART 2 and the renderer; matches djot, see `jgm/djot` official
       `headings.test`). Every heading emits a `<section id="{id}">`
       wrapper around itself and the following content up to the next
-      same-or-shallower heading. The slug-derivation rule (§4.1 plus
-      ASCII transliteration, see PART 9 §0 / syntax.md §4.1) computes
+      same-or-shallower heading. The slug-derivation rule (ASCII
+      transliteration etc., see syntax.md §4.1) computes
       the id; the id lives on the `<section>` element, NOT on the
       `<h*>` element. This shifts the existing carve behavior
       (id-on-h*, no section wrapper) to match djot's structural model.
@@ -759,8 +764,8 @@ EOF = (* end of file *) ;
         or 5/6). The structure mirrors djot's behavior; carve does NOT
         synthesize intermediate <h2>/<section> nodes.
       - Explicit `{#id}` on a heading: the id still lives on the
-        `<section>`, not on the `<h*>`. The dedup namespace (PART 9 §1
-        / heading-id-tracker rules) is unchanged -- explicit ids are
+        `<section>`, not on the `<h*>`. The dedup namespace (syntax.md
+        §4.1 / heading-id-tracker rules) is unchanged -- explicit ids are
         reserved before auto-ids in document order.
       - Empty document or doc with no headings: zero <section> elements
         are emitted.
