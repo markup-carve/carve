@@ -485,10 +485,9 @@ Or with indentation:
 Use the `print()` function.
 ```
 
-With language hint:
-```
-The `SELECT * FROM users`{sql} query returns all users.
-```
+Code spans have no language hint. A trailing `{…}` is the generic
+inline-attribute block (not a language tag); use a fenced block with a
+language info string when you need highlighting.
 
 #### Blocks
 
