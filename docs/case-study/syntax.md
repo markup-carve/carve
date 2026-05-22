@@ -192,10 +192,16 @@ The `/italic/` syntax comes from Org-mode, where it has worked well for decades.
 See the [documentation](https://docs.example.com) for more.
 ```
 
-**With title:**
+**With title:** titles accept double **or** single quotes (a deliberate
+enhancement over djot, which has no single-quote titles and would fold
+`'…'` into the URL). The two forms are equivalent:
 ```
 Visit [Google](https://google.com "Search engine") today.
+Visit [Google](https://google.com 'Search engine') today.
 ```
+Each quote style may contain the other (`"it's"`, `'say "hi"'`); a
+literal quote in the rendered `title`/`alt` is escaped (`&apos;`,
+`&quot;`). The same applies to image titles: `![alt](img.png 'caption')`.
 
 **Reference style:**
 ```
