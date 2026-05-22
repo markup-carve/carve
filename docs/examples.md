@@ -526,11 +526,11 @@ A blank line between items produces a loose list — each item wraps in a paragr
 
 :::
 
-A hard-wrapped prose line may begin with `-`, `*`, `+`, `>` or `|` as an
-operator, not a marker. A lone marker line directly under prose stays prose —
-it only starts a block when it forms a real one (two or more markers, an
-indented continuation, or a blank line before it). This keeps paragraph
-wrapping from changing interpretation (Design Principle 7).
+A paragraph ends only at a blank line. A continuation line that begins with a
+block marker — `-`, `*`, `+`, `>`, `|`, a heading `#`, a fence, even a decimal
+`1.` — is treated as paragraph text, so hard-wrapping prose never silently
+creates a block (Design Principle 7; this matches djot). Leave a blank line to
+start the block.
 
 ::: compare
 
@@ -546,7 +546,8 @@ Die Frage ist x = 5
 
 :::
 
-Two or more markers are an unambiguous list and do interrupt the paragraph.
+Without a blank line the markers stay paragraph text — even two or more of
+them (the same is true of a heading or a decimal list under prose).
 
 ::: compare
 
@@ -557,11 +558,9 @@ Liste:
 ```
 
 ```html
-<p>Liste:</p>
-<ul>
-  <li>eins</li>
-  <li>zwei</li>
-</ul>
+<p>Liste:
+- eins
+- zwei</p>
 ```
 
 :::
@@ -607,13 +606,14 @@ marker still starts a block, so a one-child nested list still nests.
 
 :::
 
-A single-line block followed by its caption still interrupts prose — the
-caption line is itself a real-block signal.
+A blockquote needs a blank line before it like any block; its caption line
+then attaches and the pair renders as a figure.
 
 ::: compare
 
 ```carve
 Intro
+
 > Stay hungry
 ^ Steve Jobs
 ```
@@ -1817,8 +1817,8 @@ Carve has footnotes.[^fn]
 
 :::
 
-A definition right after prose still ends the paragraph (it does not leak
-into it), and indented lines continue the note body.
+A reference definition is invisible metadata, so it still ends the paragraph
+even with no blank line (§10); indented lines continue the note body.
 
 ::: compare
 

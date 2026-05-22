@@ -210,7 +210,5 @@ feature-level boundary.
   supports the decimal/alpha/roman dialects and the `.` and `)` delimiters,
   which cover the practical need. The `(1)` form is the most prose-ambiguous
   marker (a wrapped line beginning `(1) …` reads as a parenthetical aside),
-  and accepting it would force the clean §10 interruption rule (decimal
-  always interrupts; letter/roman are ambiguous) to instead branch on
-  delimiter style. Refusing it keeps Carve's bias toward literal prose
-  interpretation. The rendered paren glyph is a CSS `list-style` concern.
+  and supporting it adds leading-paren marker detection for no real gain.
+  The rendered paren glyph is a CSS `list-style` concern.

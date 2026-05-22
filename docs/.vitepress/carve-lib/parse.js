@@ -69,11 +69,11 @@ class Lexer {
     // body (def line + indented continuation), set by parseFootnoteDef.
     footnoteDefs = new Map();
     // True for sub-lexers over already-nested block content (list item /
-    // blockquote / admonition bodies). The lone-marker paragraph-interruption
-    // guard applies only at the document top level; inside nested content a
-    // marker interrupts as before, so `- a\n  - b` (single nested child) still
-    // nests. Mirrors djot-php #180's scoping (guard only on the top-level
-    // paragraph path).
+    // blockquote / admonition bodies). The §10 paragraph-interruption guard
+    // (a visible block needs a blank line to interrupt) applies at the document
+    // top level; inside nested content a marker still interrupts, so
+    // `- a\n  - b` (single nested child) still nests. Mirrors djot-php #180's
+    // scoping (guard only on the top-level paragraph path).
     nested = false;
     // Negative cache for divHasCloser: the smallest line index from which
     // NO bare colon-fence closer of ANY length exists onward. Once a scan
@@ -138,10 +138,23 @@ export function normalizeRefLabel(label) {
     return label.trim().replace(/\s+/g, ' ').toLowerCase();
 }
 /**
- * Strip leading block-container prefixes (blockquote `>`, list/task
- * markers, indentation) so a definition or fence nested at any depth is
- * seen by the single first pass. RE_LINK_DEF is specific enough that
- * stripping a list marker off ordinary prose cannot fabricate a def.
+ * Strip leading block-container prefixes (blockquote `>`, bullet/task and
+ * decimal list markers, indentation) so a definition nested inside a real
+ * container (introduced after a blank line) is seen by the single
+ * forward-reference pass.
+ *
+ * KNOWN LIMITATION (§10): this pass is line-based and has no block context,
+ * so it strips a container marker even when, at the document top level, that
+ * marker is really a hard-wrapped prose line (full-djot: a lone marker under
+ * prose with no blank line is paragraph text, not a block). A definition
+ * jammed directly onto such a line — `1. [r]: /u` or `> [r]: /u` immediately
+ * under prose — is therefore still collected, so the prose line resolves the
+ * reference even though it renders literally. This over-collection is limited
+ * to that pathological no-blank input; real definitions sit after a blank
+ * line, where this pass and the block parser agree. Alpha/roman markers are
+ * deliberately NOT stripped (a def directly on an `a.`/`i.` line is the same
+ * near-impossible input, and skipping the strip avoids the more common false
+ * positive of fabricating a def from ordinary prose).
  */
 function stripContainerPrefixes(raw) {
     let line = raw;
@@ -150,15 +163,6 @@ function stripContainerPrefixes(raw) {
         prev = line;
         line = line
             .replace(/^\s*>\s?/, '') // blockquote
-            // Only decimal ordered markers strip here. Decimal is unambiguously
-            // a list, but a leading `a.`/`i.` may be prose (§10) and this
-            // line-by-line pre-pass has no block context to tell them apart.
-            // Stripping alpha/roman would fabricate link definitions out of
-            // paragraph text (silent wrong links) — the worse failure. The
-            // trade-off: a def placed *directly on* an alpha/roman marker line
-            // is not seen by this forward-reference pass (a near-impossible
-            // input); the common case — a def on an indented continuation line
-            // under a list item — is still found via the residual indent strip.
             .replace(/^\s*(?:[-*+]|\d+[.)])\s+(?:\[[ xX\-_>?]\]\s+)?/, ''); // list/task
     } while (line !== prev);
     return line.replace(/^\s+/, ''); // residual indentation
@@ -1126,15 +1130,27 @@ function parseParagraph(lexer) {
         const ln = lexer.peek();
         if (ln.trim() === '')
             break;
-        // A bare/attrs-only `:::` (generic div opener) never interrupts a
-        // paragraph: djot opens a fenced div only after a blank line / at a
-        // block start, so a `:::` reached mid-paragraph is literal text.
-        // (This also avoids a non-terminating retry on an unclosed `:::`,
-        // which has no parseBlock handler once divHasCloser is false.)
+        // Paragraph interruption (grammar PART 9 §10): at the document top level a
+        // VISIBLE block (list, quote, table, heading, fence, thematic break,
+        // admonition/div, image, …) does NOT interrupt a paragraph — it needs a
+        // blank line before it (full djot), so hard-wrapped prose never silently
+        // becomes a block. INVISIBLE constructs — reference definitions
+        // (link/footnote/abbr) and comments — still interrupt, so they are
+        // recognized next to prose rather than rendering as literal text. Inside
+        // nested content a marker still interrupts too, so `- a\n  - b` keeps
+        // nesting a sublist.
         const isDivOpener = RE_DIV_OPEN.test(ln) && !RE_ADMONITION_OPEN.test(ln);
-        if (!isDivOpener &&
-            isBlockStart(ln) &&
-            (lexer.nested || interruptsParagraph(lexer, ln)))
+        const isInvisible = RE_LINK_DEF.test(ln) ||
+            RE_FOOTNOTE_DEF.test(ln) ||
+            RE_ABBR_DEF.test(ln) ||
+            RE_COMMENT_LINE.test(ln) ||
+            RE_COMMENT_BLOCK.test(ln);
+        // A bare/attrs `:::` opener never interrupts at the top level (a generic
+        // div is a visible block needing a blank line, and skipping it also avoids
+        // a non-terminating retry on an unclosed `:::`). When nested it interrupts
+        // like any other marker — but only once it actually has a closer.
+        const divOk = !isDivOpener || (lexer.nested && divHasCloser(lexer));
+        if (divOk && isBlockStart(ln) && (lexer.nested || isInvisible))
             break;
         lexer.consume();
         lines.push(ln);
@@ -1143,66 +1159,6 @@ function parseParagraph(lexer) {
         type: 'paragraph',
         children: parseInline(lines.join('\n'), lexer.abbrDefs, lexer.linkDefs),
     };
-}
-// Hard-wrap friendliness (Design Principle 7): a hard-wrapped prose line that
-// happens to begin with an operator/marker (`* 3`, `- 3`, `> 5`, `| x`) must
-// not silently become a list/quote/table. An ambiguous marker line only
-// interrupts a paragraph when it forms a *real* block: 2+ consecutive markers
-// of the same kind, or an indented continuation (multi-line first item). The
-// blank-line-preceded case never reaches here — a blank line ends the
-// paragraph earlier, and the block is then parsed fresh. Unambiguous starts
-// (heading, fence, hr, admonition, image, abbr def, ordered list) always
-// interrupt. Mirrors djot-php #180.
-function interruptsParagraph(lexer, ln) {
-    const isBullet = RE_UNORDERED.test(ln) || RE_TASK.test(ln);
-    // Decimal ordered markers are unambiguous (they interrupt); letter and
-    // roman markers are ambiguous like bullets, so a lone `a.`/`i.` line in
-    // prose does NOT start a list (§10 anti-prose-collision).
-    const om = RE_ORDERED.exec(ln);
-    const isAmbigOrdered = om !== null && !/^[0-9]+$/.test(om[2]);
-    const isQuote = RE_BLOCKQUOTE.test(ln);
-    const isTable = RE_TABLE_ROW.test(ln);
-    if (!isBullet && !isAmbigOrdered && !isQuote && !isTable)
-        return true; // unambiguous block
-    const next = lexer.peek(1);
-    if (next === undefined || next.trim() === '')
-        return false;
-    if (isAmbigOrdered) {
-        // A same-dialect, same-delimiter sibling next (2+ markers) or an
-        // indented continuation confirms a real list; otherwise it stays prose.
-        const kind = olKindOf(om[2], RE_ORDERED.exec(next)?.[2] ?? null);
-        if (orderedContinues(next, kind, om[3]))
-            return true;
-        if (leadingWhitespace(next) > 0)
-            return true;
-        return false;
-    }
-    if (isBullet) {
-        // parseList merges adjacent items only when BOTH the marker
-        // character (§11: `-`/`*`/`+`) and the task-vs-plain kind match, so
-        // only such a next marker is real "2+ markers" evidence. A task line
-        // followed by a plain bullet, or `-` followed by `+`, is two single
-        // markers — each would split into its own one-item list — so it
-        // stays prose.
-        const nextBullet = RE_UNORDERED.test(next) || RE_TASK.test(next);
-        const sameKind = RE_TASK.test(ln) === RE_TASK.test(next);
-        const sameChar = unorderedMarkerChar(ln) === unorderedMarkerChar(next);
-        if (nextBullet && sameKind && sameChar)
-            return true;
-        if (leadingWhitespace(next) > 0)
-            return true; // indented continuation
-        return false;
-    }
-    // A following caption line (`^ ...`) is also a real-block signal: a
-    // single-line quote/table directly under prose can still be a captioned
-    // figure (parseBlockQuote/parseTable support `> q` / `|= h |` + `^ cap`).
-    if (isQuote)
-        return RE_BLOCKQUOTE.test(next) || RE_CAPTION.test(next);
-    // A second `|` row, a `+` continuation row, or a caption all confirm
-    // the ambiguous `| … |` line really opens a table.
-    return (RE_TABLE_ROW.test(next) ||
-        RE_TABLE_CONT.test(next) ||
-        RE_CAPTION.test(next));
 }
 function isBlockStart(line) {
     return (RE_HEADING.test(line) ||
