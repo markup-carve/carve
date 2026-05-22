@@ -365,9 +365,15 @@ markers in the source.
 3. Third item
 ```
 
-Ordered lists use **digits + `.`** only. Djot's letter (`a.`) and roman
-(`i.`) dialects and the `)` delimiter (`1)`) are a known gap — not yet
-implemented in Carve (see PART 9 §11).
+Ordered lists support **decimal, alphabetic (`a.`/`A.`), and roman
+(`i.`/`I.`)** markers, with either the `.` or `)` delimiter. The first item
+fixes the dialect, the `<ol type>`, and `start`; a marker outside that
+dialect (or the other delimiter) starts a new list (PART 9 §11).
+
+Letter and roman markers are *ambiguous* with prose: a lone `a.` or `i.` in
+a hard-wrapped paragraph stays text — it starts a list only with a blank
+line before it, a sibling marker, or an indented continuation (the §10
+gate). Decimal markers (`1.`) are unambiguous and always start a list.
 
 **Auto-numbering:**
 ```

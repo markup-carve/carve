@@ -1973,8 +1973,7 @@ Great :rocket: and :kbd[Ctrl] is an extension.
 ## Ordered list start and delimiter
 
 An ordered list that begins above 1 emits `start`; the `)` delimiter is
-accepted (and a delimiter change starts a new list). Letter/roman
-dialects are a known gap.
+accepted (and a delimiter change starts a new list).
 
 ::: compare
 
@@ -2004,6 +2003,63 @@ dialects are a known gap.
   <li>one</li>
   <li>two</li>
 </ol>
+```
+
+:::
+
+## Ordered list dialects
+
+Alphabetic (`a.`/`A.`) and roman (`i.`/`I.`) markers set the `<ol type>`;
+the first item fixes the dialect and `start`.
+
+::: compare
+
+```carve
+a. apple
+b. banana
+```
+
+```html
+<ol type="a">
+  <li>apple</li>
+  <li>banana</li>
+</ol>
+```
+
+:::
+
+::: compare
+
+```carve
+iv. four
+v. five
+vi. six
+```
+
+```html
+<ol type="i" start="4">
+  <li>four</li>
+  <li>five</li>
+  <li>six</li>
+</ol>
+```
+
+:::
+
+## Ordered marker vs prose
+
+Letter and roman markers are ambiguous: a lone `a.` in running prose stays
+text (it would need a blank line before, a sibling marker, or indentation
+to start a list). Decimal markers always start a list.
+
+::: compare
+
+```carve
+Pick option a. it is the best one here.
+```
+
+```html
+<p>Pick option a. it is the best one here.</p>
 ```
 
 :::

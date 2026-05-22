@@ -107,10 +107,13 @@ bullet_marker = '-' | '*' | '+' ;
 
 ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, space, list_item_content ;
-(* Digits + '.' only. Djot's letter/roman dialects and the ')' delimiter
-   (`1)`, `a.`, `i.`) are a KNOWN GAP, deliberately not yet in Carve --
-   see PART 9 §11. *)
-ordered_marker = digit+, '.' ;
+(* The first item fixes the dialect (decimal / alpha / roman) and the
+   delimiter (`.` or `)`); classification and the ambiguous-letter
+   tie-break are in PART 9 §11, and the paragraph-interruption gate for
+   letter/roman markers is PART 9 §10. *)
+ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')') ;
+roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
+              | ('I' | 'V' | 'X' | 'L' | 'C' | 'D' | 'M')+ ;
 
 list_item_content = inline_content, newline, {list_continuation | nested_list} ;
 list_continuation = indent, inline_content, newline ;
@@ -661,8 +664,12 @@ EOF = (* end of file *) ;
       (corpus 05-lists-6..8). A single marker line with no blank line before
       it and no continuation does NOT start a one-item list.
       Unambiguous starts (heading, fence, thematic break, admonition, bare
-      image, abbreviation definition, ordered list) always interrupt on a
-      single line -- they cannot be confused with prose operators.
+      image, abbreviation definition, DECIMAL ordered list) always interrupt
+      on a single line -- they cannot be confused with prose operators.
+      LETTER and ROMAN ordered markers (`a.`, `i.`) ARE ambiguous (a lone
+      `a.`/`i.` in running prose is text) and obey the same gate as the
+      unordered markers above: a single such line with no blank line before
+      and no sibling/continuation stays paragraph text.
 
    11. LIST MARKER CHANGE STARTS A NEW LIST -- NORMATIVE (governs `list`
       in PART 2). §10 decides FIRST whether a sequence of marker lines
@@ -684,12 +691,17 @@ EOF = (* end of file *) ;
       Same axis for plain-vs-task: `- a` followed by `- [x] b` is two
       lists (matches djot). Parser stateless w.r.t. marker history -- the
       rule looks one line back.
-      ORDERED LISTS ARE DIGITS-ONLY (`digit+ '.'`). Djot's letter and
-      roman dialects and the `)` delimiter (`a.`, `i.`, `1)`) are a
-      KNOWN GAP -- deliberately not implemented in Carve yet, so there is
-      no letter-vs-roman ambiguity to resolve. If those dialects are
-      added later, the split rule extends to "same `ordered_marker`
-      dialect", and an `i.`/`v.`/`x.` tie-breaker must be specified then.
+      ORDERED DIALECTS. An ordered list's dialect (decimal / lower- or
+      upper-alpha / lower- or upper-roman) and delimiter (`.` or `)`) are
+      fixed by its FIRST item; a later item whose marker is outside that
+      dialect, or uses the other delimiter, starts a new sibling list. The
+      first item also sets the `<ol>` `type` (a/A/i/I; decimal omits it)
+      and `start` (the marker's value; omitted when 1).
+      AMBIGUOUS-LETTER TIE-BREAK: a single roman-letter first marker
+      (i/v/x/l/c/d/m) is ROMAN when the next sibling is the consecutive
+      roman numeral (`iv.`+`v.`, `i.`+`ii.`) and ALPHA when the next is the
+      consecutive letter (`c.`+`d.`, `v.`+`w.`); a lone `i`/`I` defaults to
+      roman, any other lone letter to alpha.
 
    12. FENCED ":::" BLOCK RENDERING -- NORMATIVE (governs `admonition`
       and `div` in PART 2; cross-references syntax.md §4.20 "Block

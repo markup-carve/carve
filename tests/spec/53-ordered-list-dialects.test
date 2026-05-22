@@ -1,0 +1,23 @@
+Ordered list dialects
+
+```
+a. apple
+b. banana
+.
+<ol type="a">
+  <li>apple</li>
+  <li>banana</li>
+</ol>
+```
+
+```
+iv. four
+v. five
+vi. six
+.
+<ol type="i" start="4">
+  <li>four</li>
+  <li>five</li>
+  <li>six</li>
+</ol>
+```
