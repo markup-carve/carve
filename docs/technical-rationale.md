@@ -238,6 +238,129 @@ What it should not need to do:
 - rescan earlier inline content because a later definition appeared
 - use document-end knowledge to decide whether earlier punctuation was even a token
 
+## Why these things are bad
+
+This matters because parser ambiguity is not just an implementer inconvenience.
+It leaks outward into author experience, tooling quality, and cross-implementation
+consistency.
+
+### 1. Earlier text becomes provisional
+
+If a parser may later rewind and reinterpret what it already saw, then the
+meaning of earlier punctuation is unstable until more of the document has been
+read. That makes the language harder to reason about, because the user cannot
+reliably say "this character sequence means X here" from local context alone.
+
+### 2. Tooling gets worse
+
+Editors, syntax highlighters, linters, and incremental parsers work best when
+they can assign a stable local interpretation without needing to speculate about
+ distant future input.
+
+If earlier text may later be reclassified, tooling either:
+
+- becomes more complex because it must model the parser's speculative behavior
+- becomes less accurate because it settles for heuristics
+- or becomes less responsive because it waits for more context than should be necessary
+
+### 3. Independent implementations diverge more easily
+
+Once a language depends on subtle reparsing behavior, edge cases multiply.
+Implementers start making slightly different decisions about:
+
+- when to treat something as literal first
+- how much lookahead is allowed
+- which alternative interpretation wins
+- when a failed interpretation should trigger reparsing
+
+That is one of the main ways a language turns into a family of near-compatible
+flavors instead of a stable shared format.
+
+### 4. Performance guarantees get weaker or less obvious
+
+The problem is not only raw speed. The larger issue is that complexity becomes
+harder to explain and harder to trust.
+
+A deterministic single-pass delimiter model is easy to reason about. A parser
+that may revisit earlier regions based on later discoveries is harder to bound,
+harder to optimize, and harder to explain precisely in a spec.
+
+### 5. User-facing rules become harder to teach
+
+When a syntax rule depends on distant context or parser fallback behavior, the
+human explanation gets ugly fast. Instead of saying:
+
+- "this delimiter opens here because these local conditions hold"
+
+you end up saying things more like:
+
+- "it usually means this, unless a later structure causes the parser to reinterpret it"
+
+That is exactly the kind of rule that expert users eventually internalize and
+everyone else mistrusts.
+
+## What Carve does better
+
+Carve's improvement is not just "different syntax." It is a tighter contract
+between source text, parser behavior, and user expectation.
+
+### 1. Block structure is fixed before inline parsing
+
+Carve decides whether something is a heading, list, table, quote, fence, or
+paragraph before inline parsing starts. That reduces the chance that inline
+details can destabilize block interpretation later.
+
+### 2. Inline tokenization is local and stable
+
+Delimiter validity is decided from bounded local context. Once the parser has
+classified the token stream, it does not keep alternative inline parse trees in
+reserve waiting for later input to choose among them.
+
+### 3. Later definitions resolve meaning without changing tokenization
+
+References, abbreviations, and cross-reference targets may depend on definitions
+that appear later, but that later information affects semantic resolution, not
+whether the earlier characters counted as tokens in the first place.
+
+That is the important separation:
+
+- earlier text is tokenized once
+- later tables of definitions enrich it
+- earlier punctuation is not retroactively reclassified
+
+### 4. Some ambiguous legacy forms are removed instead of accommodated
+
+Carve does not try to preserve every historically familiar spelling when that
+spelling damages parser clarity. Setext headings are the clearest example:
+removing them is simpler and cleaner than inventing another layer of conflict
+resolution around `---`.
+
+### 5. Carve further biases toward literal interpretation in technical prose
+
+Djot already improves the parser architecture. Carve goes further by choosing
+surface rules that reduce accidental markup in everyday technical writing.
+
+Examples:
+
+- stricter boundary rules for `/` and `_`
+- explicit caption placement rules
+- explicit disambiguation of `^` in captions, superscripts, and tables
+- clearer separation between headings and tags
+
+### 6. The language is easier to implement and easier to trust
+
+The goal is not merely elegance. The goal is that a second implementation can
+read the spec and corpus and reach the same result without importing a pile of
+historical parser folklore.
+
+That improves:
+
+- conformance
+- editor support
+- parser portability
+- explainability to users
+- long-term maintainability of the language
+
 ## Why Carve still exists if Djot already fixes the parser
 
 Djot solves the parser architecture well. Carve's claim is that parser rigor is
