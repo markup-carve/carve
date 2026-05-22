@@ -1,6 +1,8 @@
 import type { Document } from './ast.js';
 export interface RenderOptions {
+    /** URL template for mentions. Without this, mentions render as non-link spans. */
     mentionUrl?: string;
+    /** URL template for tags. Without this, tags render as non-link spans. */
     tagUrl?: string;
     /** Emoji shortcode -> glyph map. `:name:` with no entry renders literally. */
     emoji?: Record<string, string>;

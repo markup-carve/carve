@@ -1180,8 +1180,8 @@ These are **opt-in** per document or processor config:
 ```
 ---
 extensions:
-  mentions: github    # @user links to GitHub
-  tags: true          # #tag creates tag links
+  mentions: github    # renderer may map @user to GitHub
+  tags: true          # renderer may map #tag to application routes
   emoji: true         # :smile: converts
 ---
 ```

@@ -49,3 +49,20 @@ for (const slug of slugs) {
     assert.equal(carveToHtml(crv).trim(), expected.trim())
   })
 }
+
+test('mentions and tags render as non-link spans by default', () => {
+  assert.equal(
+    carveToHtml('Hey @alice, see #release-1.0.').trim(),
+    '<p>Hey <span class="mention"><strong>@alice</strong></span>, see <span class="tag"><strong>#release-1.0</strong></span>.</p>',
+  )
+})
+
+test('mentions and tags render as links when URL templates are configured', () => {
+  assert.equal(
+    carveToHtml('Hey @alice, see #release-1.0.', {
+      mentionUrl: 'https://github.com/{user}',
+      tagUrl: '/topics/{name}',
+    }).trim(),
+    '<p>Hey <a class="mention" href="https://github.com/alice">@alice</a>, see <a class="tag" href="/topics/release-1.0">#release-1.0</a>.</p>',
+  )
+})

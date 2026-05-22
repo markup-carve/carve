@@ -3,5 +3,5 @@ Tag requires a word boundary
 ```
 A #tag here, but not in foo#bar.
 .
-<p>A <a class="tag" href="/tags/tag">#tag</a> here, but not in foo#bar.</p>
+<p>A <span class="tag"><strong>#tag</strong></span> here, but not in foo#bar.</p>
 ```
