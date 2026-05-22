@@ -162,6 +162,7 @@ Carve inherits and extends Djot's rationale:
 | Feature | Djot | Carve |
 |---------|------|------|
 | Definition lists | `: term` + indented def | `:: term` / `:  def` |
+| Ordered list dialects | decimal/alpha/roman; `.` `)` `(1)` delimiters | decimal/alpha/roman; `.` `)` delimiters (`(1)` deliberately omitted — prose-ambiguity) |
 | Table headers | `\|---\|` separator | `\|=` prefix |
 | Table alignment | `:--` / `--:` separator | `\|=<` / `\|=>` / `\|=~` (column), `\|<` / `\|>` / `\|~` (cell) |
 | Headerless tables | N/A (header + separator required) | omit `\|=` |
@@ -180,7 +181,7 @@ Carve inherits and extends Djot's rationale:
 | Inline spans | `[text]{.c}` (→ `<span>`) | `[text]{.c}` (→ `<span>`) |
 | Editorial markup | `{+ +}` `{- -}` `{= =}` | `{+ +}` `{- -}` `{~ ~> ~}` `{= =}` `{# #}` |
 | Comments | `{% … %}` | `%%` line / `%%%` block |
-| Raw / passthrough | `` `…`{=html} `` | ` ```raw html ` fenced block |
+| Raw / passthrough | inline `` `…`{=html} `` + ` ```=html ` block | inline `` `…`{=html} `` + ` ```raw html ` block |
 | Includes | N/A | `{{ path/to/file }}` |
 | Abbreviations | N/A | `*[ABBR]: ...` |
 | Attributes | `{.class}` | `{.class}` |

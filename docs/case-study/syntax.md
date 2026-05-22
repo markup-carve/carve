@@ -1021,6 +1021,16 @@ Useful for:
 ```
 ~~~
 
+Inline raw passthrough is the inline parallel of the `raw` block: a code
+span tagged with `{=format}`. The verbatim content is emitted unescaped
+when the format matches the output, and dropped otherwise. Any *other*
+trailing `{…}` on a code span is a generic attribute block, not raw
+passthrough (PART 9 §20).
+
+```
+Use `<br>`{=html} to force a break, and `\foo`{=latex} is dropped in HTML.
+```
+
 ### 4.16 Includes
 
 Includes are a **processor-level** directive, not part of the core
