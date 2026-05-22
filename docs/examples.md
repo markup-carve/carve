@@ -2156,3 +2156,19 @@ A delimiter pair with no content is literal text, not emphasis.
 ```
 
 :::
+
+## Bare URLs stay literal
+
+A bare URL is not auto-linked (matching djot); wrap it in `<…>` to link.
+
+::: compare
+
+```carve
+see https://example.com now
+```
+
+```html
+<p>see https://example.com now</p>
+```
+
+:::

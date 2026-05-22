@@ -204,9 +204,11 @@ Read the [introduction][intro] first.
 [intro]: https://example.com/intro "Introduction"
 ```
 
-**Bare URLs (auto-linked):**
+**Bare URLs are not auto-linked** (matching djot and the reference
+implementations). A plain `https://example.com` in text stays literal;
+wrap it in angle brackets for an explicit autolink:
 ```
-Check out https://example.com for details.
+See <https://example.com> for details.
 ```
 
 **Email:**
