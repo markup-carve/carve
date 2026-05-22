@@ -88,6 +88,26 @@ Djot and Carve take the second route, but with different goals.
 Djot is the technical foundation Carve builds on. The central move is not
 "more features"; it is a cleaner parser contract.
 
+## What "no backtracking" means here
+
+In this context, **backtracking** means:
+
+- the parser commits to one interpretation
+- later input shows that interpretation was wrong or incomplete
+- the parser rewinds earlier input or parser state
+- it then reparses the same region under a different interpretation
+
+That is the thing Carve and Djot are trying to avoid.
+
+By contrast, these are still allowed:
+
+- bounded local lookahead to decide whether a delimiter can open or close
+- a first pass that collects definitions and block structure
+- a later resolution pass that attaches meanings using data already collected
+
+Those operations do not require speculative parse branches or reparsing earlier
+inline text under a different tokenization.
+
 ## Block-first, then inline
 
 Carve follows Djot's two-stage model:
@@ -125,6 +145,9 @@ left-to-right pass. In Carve's grammar the rule is explicit:
 - do not allow same-type spans to nest
 
 That yields deterministic behavior without repeatedly revisiting earlier input.
+More precisely: the parser may inspect nearby characters to decide whether a
+delimiter is valid, but once it has classified the token stream, it does not
+rewind and try a second parse tree for the same delimiter sequence.
 
 A useful example is:
 
@@ -153,6 +176,17 @@ what lets mixed delimiters nest cleanly:
 /italic *bold*/
 ```
 
+A backtracking-oriented design would be more like:
+
+1. treat the first `/` as an opener
+2. try the next `/` as its closer
+3. discover that this breaks the larger structure you want
+4. rewind and try a later `/` instead
+
+Carve's rule avoids that whole class of parser behavior. Same-type delimiters
+inside the span are literal content, so there is no alternate same-type parse
+tree to explore.
+
 ## Two-pass reference resolution without backtracking
 
 Some constructs depend on definitions that may appear later:
@@ -168,11 +202,41 @@ resolving references later. That is still linear-time parsing. It is not
 backtracking, because inline token recognition does not need to keep rewinding
 when it discovers a later definition.
 
+The distinction is important:
+
+- **not backtracking:** classify `[intro][]` as a collapsed reference form, then
+  later fill in its target from the collected definition table
+- **would be backtracking:** initially treat `[intro][]` as plain text, then
+  after seeing a later definition, rewind and reinterpret the earlier brackets
+  as link syntax
+
+Carve and Djot do the first, not the second.
+
 This distinction matters for tooling:
 
 - syntax highlighting can stay local
 - parsers stay predictable
 - later definitions still work
+
+Another way to say it: later definitions affect **semantic resolution**, not
+earlier **lexing/tokenization**.
+
+## What the parser is allowed to do
+
+The contract is intentionally narrow:
+
+- decide block structure before inline parsing
+- use local context to validate delimiters
+- maintain a delimiter stack during inline parsing
+- collect reference-like definitions before semantic expansion
+- resolve references, abbreviations, and cross-references from the collected table
+
+What it should not need to do:
+
+- reinterpret block structure after inline parsing has started
+- try multiple competing parse trees for the same emphasis run
+- rescan earlier inline content because a later definition appeared
+- use document-end knowledge to decide whether earlier punctuation was even a token
 
 ## Why Carve still exists if Djot already fixes the parser
 
@@ -295,7 +359,7 @@ Carve's answer is not "slashes are never risky." It is:
 
 - intraword slashes stay literal
 - whitespace-sensitive boundary rules decide whether a slash can open or close
-- paths in code position should still be written as code
+- paths in code position should still be written as `/fenced/path/`
 
 Examples:
 
