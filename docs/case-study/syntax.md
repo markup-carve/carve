@@ -376,10 +376,11 @@ Ordered lists support **decimal, alphabetic (`a.`/`A.`), and roman
 fixes the dialect, the `<ol type>`, and `start`; a marker outside that
 dialect (or the other delimiter) starts a new list (PART 9 §11).
 
-Letter and roman markers are *ambiguous* with prose: a lone `a.` or `i.` in
-a hard-wrapped paragraph stays text — it starts a list only with a blank
-line before it, a sibling marker, or an indented continuation (the §10
-gate). Decimal markers (`1.`) are unambiguous and always start a list.
+At the document top level any ordered list — including decimal `1.` — starts
+only after a blank line; a marker on the line directly under prose is
+paragraph text, so hard-wrapping never turns "step 1." into a list (the §10
+paragraph rule, matching djot). Inside an existing list item, indentation
+alone still nests a sublist.
 
 **Auto-numbering:**
 ```
