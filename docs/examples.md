@@ -2007,3 +2007,34 @@ dialects are a known gap.
 ```
 
 :::
+
+## Footnote with multiple blocks
+
+A footnote definition's body is parsed as full block content — multiple
+paragraphs (or lists, etc.) indented under the definition. The backlink
+is appended to the last block.
+
+::: compare
+
+```carve
+See the note.[^n]
+
+[^n]: First paragraph of the note.
+
+    Second paragraph, indented under the definition.
+```
+
+```html
+<p>See the note.<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>First paragraph of the note.</p>
+      <p>Second paragraph, indented under the definition.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
