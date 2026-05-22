@@ -52,6 +52,8 @@ export interface List extends BaseNode {
     type: 'list';
     ordered: boolean;
     start?: number;
+    /** Ordered-list type attribute: a/A (alpha) or i/I (roman); absent = decimal. */
+    olType?: 'a' | 'A' | 'i' | 'I';
     tight: boolean;
     items: ListItem[];
 }
