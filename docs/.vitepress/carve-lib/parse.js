@@ -8,10 +8,8 @@ const RE_HEADING = /^(#{1,6})\s+(.+?)(?:\s+\{([^}\n]+)\})?\s*$/;
 const RE_HR = /^-{3,}\s*$/;
 const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_-]*)\s*$/;
 const RE_UNORDERED = /^(\s*)[-*+]\s+(.*)$/;
-const RE_ORDERED = /^(\s*)(\d+)\.\s+(.*)$/;
-// Task states (matches djot-php): `x`/`X` are checked; ` `, `-`, `_`,
-// `>`, `?` are all accepted and render as an unchecked checkbox.
-const RE_TASK = /^(\s*)[-*+]\s+\[([ xX\-_>?])\]\s+(.*)$/;
+const RE_ORDERED = /^(\s*)(\d+)([.)])\s+(.*)$/;
+const RE_TASK = /^(\s*)[-*+]\s+\[([ xX])\]\s+(.*)$/;
 const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 const RE_ADMONITION_OPEN = /^:::\s*([a-zA-Z][\w-]*)\s*(.*)$/;
 const RE_ADMONITION_CLOSE = /^:::\s*$/;
@@ -143,7 +141,7 @@ function stripContainerPrefixes(raw) {
         prev = line;
         line = line
             .replace(/^\s*>\s?/, '') // blockquote
-            .replace(/^\s*(?:[-*+]|\d+\.)\s+(?:\[[ xX\-_>?]\]\s+)?/, ''); // list/task
+            .replace(/^\s*(?:[-*+]|\d+[.)])\s+(?:\[[ xX]\]\s+)?/, ''); // list/task
     } while (line !== prev);
     return line.replace(/^\s+/, ''); // residual indentation
 }
@@ -716,11 +714,15 @@ function parseList(lexer) {
     const baseIndent = leadingWhitespace(first);
     const isTask = RE_TASK.test(first);
     const isOrdered = !isTask && RE_ORDERED.test(first);
-    // A change of unordered marker character (`-` vs `*` vs `+`) starts a
-    // new list (grammar PART 9 §11). Capture the first item's marker so a
-    // differing sibling marker terminates this list instead of merging.
-    // Ordered lists only have the digit `.` dialect here, so no split.
+    // A change of unordered marker character (`-` vs `*` vs `+`), or of
+    // ordered delimiter (`.` vs `)`), starts a new list (grammar PART 9
+    // §11). Capture the first item's marker so a differing sibling marker
+    // terminates this list instead of merging. (Letter/roman ordered
+    // dialects are a known gap; ordered markers are decimal only here.)
     const firstMarkerChar = isOrdered ? '' : unorderedMarkerChar(first);
+    const firstOrdered = isOrdered ? RE_ORDERED.exec(first) : null;
+    const orderedDelim = firstOrdered ? firstOrdered[3] : '';
+    const orderedStart = firstOrdered ? parseInt(firstOrdered[2], 10) : 1;
     const items = [];
     let loose = false;
     while (!lexer.eof()) {
@@ -735,8 +737,11 @@ function parseList(lexer) {
         const m = matchListMarker(line, isTask, isOrdered);
         if (!m)
             break;
-        // §11: a sibling with a different marker character is a new list.
+        // §11: a sibling with a different marker character (unordered) or a
+        // different delimiter (ordered) is a new list.
         if (!isOrdered && unorderedMarkerChar(line) !== firstMarkerChar)
+            break;
+        if (isOrdered && RE_ORDERED.exec(line)[3] !== orderedDelim)
             break;
         let content;
         let checked;
@@ -745,7 +750,7 @@ function parseList(lexer) {
             content = m[3];
         }
         else if (isOrdered) {
-            content = m[3];
+            content = m[4];
         }
         else {
             content = m[2];
@@ -783,7 +788,9 @@ function parseList(lexer) {
             const nextLine = lexer.peek();
             if (leadingWhitespace(nextLine) === baseIndent &&
                 matchListMarker(nextLine, isTask, isOrdered) &&
-                (isOrdered || unorderedMarkerChar(nextLine) === firstMarkerChar)) {
+                (isOrdered
+                    ? RE_ORDERED.exec(nextLine)[3] === orderedDelim
+                    : unorderedMarkerChar(nextLine) === firstMarkerChar)) {
                 loose = true;
             }
         }
@@ -807,7 +814,10 @@ function parseList(lexer) {
             item.checked = checked;
         items.push(item);
     }
-    return { type: 'list', ordered: isOrdered, tight: !loose, items };
+    const list = { type: 'list', ordered: isOrdered, tight: !loose, items };
+    if (isOrdered && orderedStart !== 1)
+        list.start = orderedStart;
+    return list;
 }
 /**
  * Parse a table cell's leading markers from its raw between-pipe text.
@@ -1128,14 +1138,11 @@ function smartToken(text, i, prev) {
         return { out: isQuoteOpenContext(prev) ? '“' : '”', len: 1 };
     }
     if (c === "'") {
-        // Contextual single quote (matches djot): an apostrophe / closing
-        // quote `’` when the previous char is alphanumeric (`it's`,
-        // `John's`) OR the next char is a digit (decade elision `'70s`, and
-        // `'24'` -> `’24’` as djot does); an opening quote `‘` in an open
-        // context (`'word'`, `rock 'n' roll`); otherwise `’`.
-        const next = text[i + 1] ?? '';
-        const apostrophe = isAlnum(prev) || /[0-9]/.test(next) || !isQuoteOpenContext(prev);
-        return { out: apostrophe ? '’' : '‘', len: 1 };
+        // Spec §4.18 defines only the paired `'text'` -> ‘text’ form; it
+        // does not mandate decade-elision (`'90s`). The contextual rule
+        // (apostrophe/closing after a word, opening otherwise) is faithful
+        // and avoids regressing genuinely quoted numbers like `'24'`.
+        return { out: isAlnum(prev) || !isQuoteOpenContext(prev) ? '’' : '‘', len: 1 };
     }
     return null;
 }

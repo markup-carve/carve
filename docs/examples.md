@@ -1969,3 +1969,41 @@ Great :rocket: and :kbd[Ctrl] is an extension.
 ```
 
 :::
+
+## Ordered list start and delimiter
+
+An ordered list that begins above 1 emits `start`; the `)` delimiter is
+accepted (and a delimiter change starts a new list). Letter/roman
+dialects are a known gap.
+
+::: compare
+
+```carve
+3. third
+4. fourth
+```
+
+```html
+<ol start="3">
+  <li>third</li>
+  <li>fourth</li>
+</ol>
+```
+
+:::
+
+::: compare
+
+```carve
+1) one
+2) two
+```
+
+```html
+<ol>
+  <li>one</li>
+  <li>two</li>
+</ol>
+```
+
+:::
