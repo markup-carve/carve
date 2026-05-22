@@ -230,6 +230,7 @@ inline_content = {inline_element | text_run | literal_special}+ ;
 literal_special = special_char ;
 
 inline_element = escaped_char
+               | raw_inline
                | code_span
                | autolink
                | auto_text_link
@@ -272,8 +273,17 @@ code_span = backtick_run, code_span_content, backtick_run, [attributes] ;
 backtick_run = '`'+ ;  (* matching count *)
 code_span_content = (* any chars except matching backtick run *) ;
 (* A trailing `{…}` on a code span is the generic inline-attribute
-   block, NOT a language tag. Both impls consume it; carve-js then drops
-   the attributes and carve-php applies them (an impl divergence). *)
+   block, NOT a language tag -- EXCEPT the exact form `{=format}`, which is
+   raw inline passthrough (raw_inline below, PART 9 §20). For any OTHER
+   `{…}`: both impls consume it; carve-js then drops the attributes and
+   carve-php applies them (an impl divergence). *)
+
+(* --- Raw Inline (inline parallel of raw_block; PART 9 §20) --- *)
+(* A code span whose trailing attribute block is EXACTLY `{=format}` is raw
+   inline passthrough: the verbatim span content is emitted unescaped when
+   `format` matches the output, else dropped. Any OTHER trailing `{…}` is a
+   generic attributed code span (above), NOT raw inline. *)
+raw_inline = backtick_run, code_span_content, backtick_run, '{=', format_name, '}' ;
 
 (* --- Links --- *)
 link = inline_link | reference_link | collapsed_reference_link ;
@@ -935,6 +945,18 @@ EOF = (* end of file *) ;
         of the core parser; a conformant core MAY leave `{{ … }}` literal.
         An implementing processor MUST forbid path traversal outside the
         project root, bound recursion depth, and treat includes as opt-in.
+
+   20. RAW INLINE -- NORMATIVE (governs `raw_inline` in PART 3; the inline
+      parallel of `raw_block`). A code span whose trailing attribute block
+      is EXACTLY `{=format}` (a single `=`-prefixed format name, with no
+      other classes/ids/keys) is raw passthrough: the verbatim span content
+      is emitted UNESCAPED when `format` matches the output format (`html`),
+      and DROPPED otherwise. The `{=format}` tag is consumed, not rendered.
+      A code span with any OTHER trailing `{…}` is a generic attributed code
+      span (PART 3 `code_span` note), not raw inline. The corpus pins this
+      (tests/corpus/50-raw-inline):
+        `<br>`{=html}   -> <br>            (emitted verbatim)
+        `\foo`{=latex}  ->                (dropped in HTML output)
 *)
 
 (* ============================================================================

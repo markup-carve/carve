@@ -174,13 +174,15 @@ feature-level boundary.
 ### MUST (core) — pinned by the corpus, identical across implementations
 
 - **Blocks:** headings (+ `<section>` wrapping, §13), paragraphs,
-  thematic breaks, fenced code, blockquotes, lists (ordered digits-only,
+  thematic breaks, fenced code, blockquotes, lists (ordered
+  decimal/alpha/roman with `.` and `)` delimiters + `start`, §10/§11;
   unordered, task; tight/loose §17), tables (`|=` headers, alignment,
   rowspan/colspan/multi-line), the two-tier `:::` model (canonical
   `<aside class="admonition …">` / custom `<div class="…">`, §12),
   figures/captions, abbreviation definitions, raw blocks, comments.
 - **Inline:** emphasis family (`/ * _ ~ ^ ,, ==` + `/* */`, §9), code
-  spans, links (inline / reference / collapsed), angle-bracket autolinks
+  spans, raw inline (`` `…`{=format} `` passthrough, §20), links
+  (inline / reference / collapsed), angle-bracket autolinks
   (`<url>` / `<email>`), images, spans (§14), math (djot form, §18), footnotes
   (reference form, §16), abbreviations, editorial markup, crossrefs
   (`</#id>`, markup-preserving §19), hard/soft breaks.
@@ -200,5 +202,15 @@ feature-level boundary.
 ### Deferred (reserved syntax, not yet implemented)
 
 - Inline footnotes (`[^content]`) and sidenotes (`[>content]`).
-- Ordered-list letter/roman dialects and the `)` delimiter.
 - Setext (underline) headings — intentionally excluded (matches djot).
+
+### Deliberate gaps (will not implement)
+
+- Djot's both-parens ordered-list delimiter `(1)` / `(a)` / `(i)`. Carve
+  supports the decimal/alpha/roman dialects and the `.` and `)` delimiters,
+  which cover the practical need. The `(1)` form is the most prose-ambiguous
+  marker (a wrapped line beginning `(1) …` reads as a parenthetical aside),
+  and accepting it would force the clean §10 interruption rule (decimal
+  always interrupts; letter/roman are ambiguous) to instead branch on
+  delimiter style. Refusing it keeps Carve's bias toward literal prose
+  interpretation. The rendered paren glyph is a CSS `list-style` concern.
