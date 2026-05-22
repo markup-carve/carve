@@ -193,7 +193,7 @@ feature-level boundary.
 
 ### MAY / out of core (processor-level)
 
-- Includes (`{{ … }}`, §19, with the security requirements there).
+- Includes (<code v-pre>{{ … }}</code>, §19, with the security requirements there).
 - The `:type[content]` extension *registry* beyond the generic fallback.
 - Everything under "Keep as implementation extensions" above.
 
