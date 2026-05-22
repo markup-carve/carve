@@ -128,7 +128,7 @@ admonition content
 
 ## Status
 
-Carve is a design exploration. The specification lives in the [Case Study](./case-study/). Reference material covers [parsing edge cases](./edge-cases), [native features](./native-features-analysis), and the [broader markup landscape](./markup-languages).
+Carve is a design exploration. The specification lives in the [Case Study](./case-study/). Reference material covers the new [technical rationale](./technical-rationale), [parsing edge cases](./edge-cases), [native features](./native-features-analysis), and the [broader markup landscape](./markup-languages).
 
 **File extension:** `.crv`
 

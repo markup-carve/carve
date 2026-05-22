@@ -975,7 +975,7 @@ Useful for:
 ### 4.16 Includes
 
 Includes are a **processor-level** directive, not part of the core
-parser. A conformant core MAY leave `{{ … }}` as literal text; a
+parser. A conformant core MAY leave `&#123;&#123; … &#125;&#125;` as literal text; a
 processor that implements them MUST forbid path traversal outside the
 project root, bound recursion depth, and treat includes as opt-in
 (PART 9 §19).
@@ -1393,7 +1393,7 @@ tags: [tutorial, beginner]
 Frontmatter provides document metadata for processors. That's it.
 
 **Explicitly NOT in scope:**
-- Variable substitution (`{{name}}`)
+- Variable substitution (`&#123;&#123;name&#125;&#125;`)
 - Conditionals (`{% if %}`)
 - Loops (`{% for %}`)
 
@@ -1415,4 +1415,3 @@ example carve-php) can match the corpus without copying the reference
 renderer byte-for-byte. The corpus wins on any disagreement.
 
 ---
-

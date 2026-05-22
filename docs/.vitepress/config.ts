@@ -199,6 +199,7 @@ export default defineConfig({
       {
         text: 'Reference',
         items: [
+          { text: 'Technical Rationale', link: '/technical-rationale' },
           { text: 'Formal Grammar', link: '/grammar' },
           { text: 'Edge Cases', link: '/edge-cases' },
           { text: 'Native Features', link: '/native-features-analysis' },
@@ -221,6 +222,7 @@ export default defineConfig({
       {
         text: 'Reference',
         items: [
+          { text: 'Technical Rationale', link: '/technical-rationale' },
           { text: 'Formal Grammar', link: '/grammar' },
           { text: 'Edge Cases', link: '/edge-cases' },
           { text: 'Native Features', link: '/native-features-analysis' },
