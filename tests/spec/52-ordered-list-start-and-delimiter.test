@@ -1,0 +1,21 @@
+Ordered list start and delimiter
+
+```
+3. third
+4. fourth
+.
+<ol start="3">
+  <li>third</li>
+  <li>fourth</li>
+</ol>
+```
+
+```
+1) one
+2) two
+.
+<ol>
+  <li>one</li>
+  <li>two</li>
+</ol>
+```

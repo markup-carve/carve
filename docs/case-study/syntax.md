@@ -406,6 +406,14 @@ text directly (`<li>text</li>`); a loose item wraps each paragraph in
 - `::` (double colon) marks terms
 - `:  ` (colon + 2 spaces) marks definitions
 
+> **`::` vs `:::`.** A term is *exactly two* colons; *three* colons is a
+> div/admonition (§4.12). The parser keys on the colon count with no
+> lookahead — `:: x` is always a term, `::: x` always a fenced block —
+> so the one-keystroke visual difference is never ambiguous to the
+> parser. (Carve keeps the explicit `::` term marker rather than djot's
+> bare-line-plus-`:` form precisely to avoid the setext-style lookahead
+> Carve dropped in §4.1.)
+
 **Multiple terms sharing a definition:**
 ```
 :: color
@@ -877,6 +885,16 @@ delimiters and are stripped — they never appear in the rendered title,
 and the title is never folded into the class. Carve does **not**
 synthesize a default title from the type name; `::: note` without `"…"`
 produces no title element at all.
+
+> **Design note — a conscious exception.** Whether `::: x` renders as an
+> `<aside>` (Tier 1) or a `<div>` (Tier 2) depends on whether `x` is in
+> the canonical set — i.e. the *meaning* of the construct is
+> context-dependent, in mild tension with Design Principle 1 ("one
+> syntax, one meaning"). This is deliberate: both tiers share the same
+> `<div>`-shaped fenced-container primitive, and the canonical names are
+> a curated styling convention layered on top, not a separate syntax.
+> The *parse* is never ambiguous (every `::: word` is a fenced block);
+> only the wrapper element/class differs by name.
 
 #### Generic divs (no type word)
 

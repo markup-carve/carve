@@ -107,6 +107,21 @@ export interface Div extends BaseNode {
     type: 'div';
     children: BlockNode[];
 }
+/**
+ * Definition list (§4.5): `:: term` lines (one or more) followed by
+ * `:  definition` lines (one or more) form an entry; entries render to a
+ * `<dl>` of `<dt>` (terms) then `<dd>` (definitions). `::` is exactly two
+ * colons (three is a div/admonition); a definition line is colon + two
+ * spaces; deeper-indented lines continue a definition.
+ */
+export interface DefinitionItem {
+    terms: InlineNode[][];
+    definitions: BlockNode[][];
+}
+export interface DefinitionList extends BaseNode {
+    type: 'definition-list';
+    items: DefinitionItem[];
+}
 export interface Figure extends BaseNode {
     type: 'figure';
     target: Image | BlockQuote | Table;
@@ -127,7 +142,7 @@ export interface Comment extends BaseNode {
     block: boolean;
     content: string;
 }
-export type BlockNode = Heading | Paragraph | BlockQuote | List | CodeBlock | ThematicBreak | Table | Admonition | Div | Figure | Image | AbbreviationDef | RawBlock | Comment;
+export type BlockNode = Heading | Paragraph | BlockQuote | List | CodeBlock | ThematicBreak | Table | Admonition | Div | DefinitionList | Figure | Image | AbbreviationDef | RawBlock | Comment;
 export interface Text extends BaseNode {
     type: 'text';
     value: string;
@@ -191,6 +206,25 @@ export interface Math extends BaseNode {
     type: 'math';
     display: boolean;
     content: string;
+}
+/**
+ * Raw inline passthrough (djot `` `…`{=format} ``): a verbatim span tagged
+ * with an output format. Emitted verbatim when `format` matches the
+ * renderer's output (html), dropped otherwise.
+ */
+export interface RawInline extends BaseNode {
+    type: 'raw-inline';
+    format: string;
+    content: string;
+}
+/**
+ * Emoji shortcode `:name:` (djot symbols). Resolved against a
+ * processor-supplied name->glyph map at render time; an unmapped name
+ * renders literally as `:name:`.
+ */
+export interface Emoji extends BaseNode {
+    type: 'emoji';
+    name: string;
 }
 export interface AutoLink extends BaseNode {
     type: 'autolink';
@@ -256,6 +290,6 @@ export interface CriticComment extends BaseNode {
     type: 'critic-comment';
     text: string;
 }
-export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | AutoLink | CrossRef | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticHighlight | CriticComment;
+export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | Emoji | AutoLink | CrossRef | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticHighlight | CriticComment;
 export type AnyNode = Document | BlockNode | InlineNode;
 //# sourceMappingURL=ast.d.ts.map

@@ -1,0 +1,9 @@
+Raw blocks
+
+````
+```raw html
+<custom-el>Verbatim HTML</custom-el>
+```
+.
+<custom-el>Verbatim HTML</custom-el>
+````

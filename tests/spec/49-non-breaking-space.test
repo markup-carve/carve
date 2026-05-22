@@ -1,0 +1,7 @@
+Non-breaking space
+
+```
+10\ kg
+.
+<p>10&nbsp;kg</p>
+```

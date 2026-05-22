@@ -1,0 +1,7 @@
+Raw inline
+
+```
+Use `<br>`{=html} to break, and `\foo`{=latex} is dropped.
+.
+<p>Use <br> to break, and  is dropped.</p>
+```

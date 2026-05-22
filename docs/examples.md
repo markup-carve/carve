@@ -1829,3 +1829,330 @@ A div with attributes.
 ```
 
 :::
+
+## Definition lists
+
+`:: term` (one or more) then `:  definition` (one or more) form an entry,
+rendered as a `<dl>` of `<dt>` then `<dd>`. Two colons is a term; three
+is a div/admonition.
+
+::: compare
+
+```carve
+:: color
+:: colour
+:  The visual property of objects.
+:  A pigment or paint.
+```
+
+```html
+<dl>
+  <dt>color</dt>
+  <dt>colour</dt>
+  <dd>The visual property of objects.</dd>
+  <dd>A pigment or paint.</dd>
+</dl>
+```
+
+:::
+
+## Comments
+
+`%%` starts a line comment and a `%%%` fence a block comment; neither is
+rendered.
+
+::: compare
+
+```carve
+Visible.
+
+%% this line is a comment
+
+%%%
+a hidden
+block
+%%%
+
+Also visible.
+```
+
+```html
+<p>Visible.</p>
+<p>Also visible.</p>
+```
+
+:::
+
+## Raw blocks
+
+A ` ```raw FORMAT ` block passes its content through verbatim when FORMAT
+matches the output; other formats are dropped.
+
+::: compare
+
+````carve
+```raw html
+<custom-el>Verbatim HTML</custom-el>
+```
+````
+
+````html
+<custom-el>Verbatim HTML</custom-el>
+````
+
+:::
+
+## Hard line breaks
+
+A backslash at the end of a line forces a `<br>`.
+
+::: compare
+
+```carve
+line one\
+line two
+```
+
+```html
+<p>line one<br>
+line two</p>
+```
+
+:::
+
+## Non-breaking space
+
+A backslash before a space produces a non-breaking space.
+
+::: compare
+
+```carve
+10\ kg
+```
+
+```html
+<p>10&nbsp;kg</p>
+```
+
+:::
+
+## Raw inline
+
+A verbatim span tagged `{=format}` passes through when the format
+matches the output; otherwise it is dropped.
+
+::: compare
+
+```carve
+Use `<br>`{=html} to break, and `\foo`{=latex} is dropped.
+```
+
+```html
+<p>Use <br> to break, and  is dropped.</p>
+```
+
+:::
+
+## Emoji
+
+`:name:` is an emoji shortcode resolved against a processor-supplied map;
+with no map it renders literally. `:type[…]` is still an extension.
+
+::: compare
+
+```carve
+Great :rocket: and :kbd[Ctrl] is an extension.
+```
+
+```html
+<p>Great :rocket: and <kbd>Ctrl</kbd> is an extension.</p>
+```
+
+:::
+
+## Ordered list start and delimiter
+
+An ordered list that begins above 1 emits `start`; the `)` delimiter is
+accepted (and a delimiter change starts a new list). Letter/roman
+dialects are a known gap.
+
+::: compare
+
+```carve
+3. third
+4. fourth
+```
+
+```html
+<ol start="3">
+  <li>third</li>
+  <li>fourth</li>
+</ol>
+```
+
+:::
+
+::: compare
+
+```carve
+1) one
+2) two
+```
+
+```html
+<ol>
+  <li>one</li>
+  <li>two</li>
+</ol>
+```
+
+:::
+
+## Footnote with multiple blocks
+
+A footnote definition's body is parsed as full block content — multiple
+paragraphs (or lists, etc.) indented under the definition. The backlink
+is appended to the last block.
+
+::: compare
+
+```carve
+See the note.[^n]
+
+[^n]: First paragraph of the note.
+
+    Second paragraph, indented under the definition.
+```
+
+```html
+<p>See the note.<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>First paragraph of the note.</p>
+      <p>Second paragraph, indented under the definition.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## Editorial markup
+
+CriticMarkup-style review marks: insert, delete, substitute, highlight,
+and an inline comment.
+
+::: compare
+
+```carve
+a {+ins+} {-del-} {~old~>new~} {=hl=} b{# note #}
+```
+
+```html
+<p>a <ins>ins</ins> <del>del</del> <del>old</del><ins>new</ins> <mark>hl</mark> b<span class="critic-comment"> note </span></p>
+```
+
+:::
+
+## Thematic breaks
+
+A line of three or more `-`, `*`, or `_` is a thematic break.
+
+::: compare
+
+```carve
+a
+
+---
+
+b
+
+***
+
+c
+
+___
+```
+
+```html
+<p>a</p>
+<hr>
+<p>b</p>
+<hr>
+<p>c</p>
+<hr>
+```
+
+:::
+
+## Cross-reference
+
+`</#id>` links to a heading and fills in its text (here, standalone).
+
+::: compare
+
+```carve
+# Getting Started
+
+See </#getting-started>.
+```
+
+```html
+<section id="getting-started">
+  <h1>Getting Started</h1>
+  <p>See <a href="#getting-started">Getting Started</a>.</p>
+</section>
+```
+
+:::
+
+## Autolinks
+
+A `<url>` or `<email>` in angle brackets becomes a self-titled link;
+email gets a `mailto:` scheme.
+
+::: compare
+
+```carve
+<https://example.com> and <a@b.com>
+```
+
+```html
+<p><a href="https://example.com">https://example.com</a> and <a href="mailto:a@b.com">a@b.com</a></p>
+```
+
+:::
+
+## Escapes
+
+A backslash before ASCII punctuation makes it literal.
+
+::: compare
+
+```carve
+\*lit\* \[x\] \#h \@u
+```
+
+```html
+<p>*lit* [x] #h @u</p>
+```
+
+:::
+
+## Empty delimiters
+
+A delimiter pair with no content is literal text, not emphasis.
+
+::: compare
+
+```carve
+** and // and ^^
+```
+
+```html
+<p>** and // and ^^</p>
+```
+
+:::

@@ -71,6 +71,15 @@ function walkBlockInlines(node, visit) {
         case 'div':
             node.children.forEach((c) => walkBlockInlines(c, visit));
             break;
+        case 'definition-list':
+            for (const it of node.items) {
+                for (const t of it.terms)
+                    visit(t);
+                for (const d of it.definitions)
+                    for (const b of d)
+                        walkBlockInlines(b, visit);
+            }
+            break;
         case 'table':
             if (node.caption)
                 visit(node.caption);
@@ -272,6 +281,24 @@ function renderBlock(node, opts, level) {
             const body = node.children.map((c) => renderBlock(c, opts, level + 1)).join('\n');
             return `${open}\n${body}\n${pad}</div>`;
         }
+        case 'definition-list': {
+            const lines = [`${pad}<dl>`];
+            for (const it of node.items) {
+                for (const t of it.terms)
+                    lines.push(`${pad}  <dt>${renderInlines(t, opts)}</dt>`);
+                for (const d of it.definitions) {
+                    if (d.length === 1 && d[0].type === 'paragraph') {
+                        lines.push(`${pad}  <dd>${renderInlines(d[0].children, opts)}</dd>`);
+                    }
+                    else {
+                        const body = d.map((b) => renderBlock(b, opts, level + 2)).join('\n');
+                        lines.push(`${pad}  <dd>\n${body}\n${pad}  </dd>`);
+                    }
+                }
+            }
+            lines.push(`${pad}</dl>`);
+            return lines.join('\n');
+        }
         case 'figure':
             return renderFigure(node, opts, level);
         case 'abbreviation-def':
@@ -279,7 +306,8 @@ function renderBlock(node, opts, level) {
         case 'raw-block':
             return node.format === 'html' ? node.content : '';
         case 'comment':
-            return `${pad}<!-- ${node.content} -->`;
+            // Comments are not rendered (§4.13).
+            return '';
         default: {
             const t = node;
             throw new Error(`renderHtml: unknown block ${t.type}`);
@@ -300,10 +328,15 @@ function renderBlockQuote(node, opts, level) {
 function renderList(node, opts, level) {
     const pad = indent(level);
     const tag = node.ordered ? 'ol' : 'ul';
+    // An ordered list starting at n != 1 emits `start="n"` (the `)` vs `.`
+    // delimiter affects list-splitting, not the rendered <ol>).
+    const startAttr = node.ordered && node.start !== undefined && node.start !== 1
+        ? ` start="${node.start}"`
+        : '';
     const items = node.items
         .map((it) => renderListItem(it, opts, level + 1, node.tight))
         .join('\n');
-    return `${pad}<${tag}${renderAttrs(node.attrs)}>\n${items}\n${pad}</${tag}>`;
+    return `${pad}<${tag}${startAttr}${renderAttrs(node.attrs)}>\n${items}\n${pad}</${tag}>`;
 }
 function renderListItem(item, opts, level, tight) {
     const pad = indent(level);
@@ -561,6 +594,11 @@ function renderInline(node, opts) {
                 : `\\(${escapeHtml(node.content)}\\)`;
             return `<span${renderAttrs2(node.attrs, { baseClass: base })}>${body}</span>`;
         }
+        case 'raw-inline':
+            // Verbatim only when the format matches this output; else dropped.
+            return node.format === 'html' ? node.content : '';
+        case 'emoji':
+            return opts.emoji?.[node.name] ?? escapeHtml(`:${node.name}:`);
         case 'autolink': {
             const display = node.href.startsWith('mailto:') ? node.href.slice(7) : node.href;
             return `<a href="${escapeAttr(node.href)}">${escapeHtml(display)}</a>`;
@@ -623,9 +661,10 @@ const HTML_ESCAPE = {
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
+    '\u00a0': '&nbsp;',
 };
 function escapeHtml(s) {
-    return s.replace(/[&<>]/g, (c) => HTML_ESCAPE[c]);
+    return s.replace(/[&<>\u00a0]/g, (c) => HTML_ESCAPE[c]);
 }
 function escapeAttr(s) {
     return s.replace(/[&<>"]/g, (c) => (c === '"' ? '&quot;' : HTML_ESCAPE[c]));

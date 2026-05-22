@@ -1,0 +1,10 @@
+Visible.
+
+%% this line is a comment
+
+%%%
+a hidden
+block
+%%%
+
+Also visible.
