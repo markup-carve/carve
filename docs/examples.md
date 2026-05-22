@@ -2172,3 +2172,31 @@ see https://example.com now
 ```
 
 :::
+
+## Nested containers
+
+A longer colon fence nests: `::::` contains `:::` blocks, and only a bare
+closer of equal-or-greater length closes a block.
+
+::: compare
+
+```carve
+:::: note
+Outer.
+
+::: tip
+Nested.
+:::
+::::
+```
+
+```html
+<aside class="admonition note">
+  <p>Outer.</p>
+  <aside class="admonition tip">
+    <p>Nested.</p>
+  </aside>
+</aside>
+```
+
+:::

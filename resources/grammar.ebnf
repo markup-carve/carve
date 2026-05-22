@@ -159,12 +159,17 @@ cell_content = inline_content - '|' ;  (* no unescaped pipes *)
 caption = '^', space, inline_content, newline ;
 
 (* --- Admonitions --- *)
+(* A fence is a run of 3+ colons. A longer opener nests shorter blocks; a
+   block is closed only by a bare fence of equal-or-greater length, so a
+   `:::` inside a `::::` block is content (PART 9 §12). *)
+colon_fence = ":::", {":"} ;
+
 admonition = admonition_open, newline,
              {block - admonition_close}+,
              admonition_close, newline ;
 
-admonition_open = ":::", space, admonition_type, [space, quoted_title], [attributes] ;
-admonition_close = ":::" ;
+admonition_open = colon_fence, space, admonition_type, [space, quoted_title], [attributes] ;
+admonition_close = colon_fence ;
 
 admonition_type = "note" | "tip" | "warning" | "danger" | "info"
                 | "success" | "example" | "quote"  (* Tier 1 canonical *)
@@ -177,10 +182,10 @@ quoted_title = '"', {character - '"'}, '"' ;
 (* --- Generic Divs (djot generic container; PART 9 §12) --- *)
 (* A `:::` opener with NO type word -- bare `:::` or an attributes-only
    `::: {…}` -- is a generic div, NOT an admonition. It carries only its
-   own attributes (no class added). Shares the `:::` closer; no
-   length-based nesting (closes at the first bare `:::`). *)
+   own attributes (no class added). Shares the colon-fence closer and the
+   same fence-length nesting rule (PART 9 §12). *)
 div = div_open, newline, {block - admonition_close}, admonition_close, newline ;
-div_open = ":::", [space, attributes] ;
+div_open = colon_fence, [space, attributes] ;
 
 (* --- Comments --- *)
 comment_line = "%%", {character}, newline ;
@@ -693,7 +698,16 @@ EOF = (* end of file *) ;
       bare `:::` or an attributes-only `::: {…}` -- is a GENERIC DIV: a
       plain `<div>` carrying ONLY the opener's attributes (no class
       added; an empty div is `<div></div>`), i.e. djot's generic
-      container. The two tiers for a typed block:
+      container.
+
+      FENCE LENGTH & NESTING: a fence is a run of 3+ colons; the same rule
+      governs both admonitions and generic divs. A block is closed only by
+      a bare fence of EQUAL-OR-GREATER colon length, so a longer opener
+      nests shorter blocks (a `:::` inside a `::::` block is content, not a
+      closer). Equal-length fences do not nest. A bare opener with no
+      matching closer ahead is literal text.
+
+      The two tiers for a typed block:
 
       Tier 1 -- CANONICAL ADMONITION TYPES render as a semantic
         `<aside>` with the `admonition` marker class:
