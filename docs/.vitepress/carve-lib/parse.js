@@ -1138,16 +1138,19 @@ function parseParagraph(lexer) {
         // (link/footnote/abbr) and comments — still interrupt, so they are
         // recognized next to prose rather than rendering as literal text. Inside
         // nested content a marker still interrupts too, so `- a\n  - b` keeps
-        // nesting a sublist. A bare `:::` never interrupts (it opens a div only at
-        // a block start; mid-paragraph it is literal, avoiding a non-terminating
-        // retry on an unclosed `:::`).
+        // nesting a sublist.
         const isDivOpener = RE_DIV_OPEN.test(ln) && !RE_ADMONITION_OPEN.test(ln);
         const isInvisible = RE_LINK_DEF.test(ln) ||
             RE_FOOTNOTE_DEF.test(ln) ||
             RE_ABBR_DEF.test(ln) ||
             RE_COMMENT_LINE.test(ln) ||
             RE_COMMENT_BLOCK.test(ln);
-        if (!isDivOpener && isBlockStart(ln) && (lexer.nested || isInvisible))
+        // A bare/attrs `:::` opener never interrupts at the top level (a generic
+        // div is a visible block needing a blank line, and skipping it also avoids
+        // a non-terminating retry on an unclosed `:::`). When nested it interrupts
+        // like any other marker — but only once it actually has a closer.
+        const divOk = !isDivOpener || (lexer.nested && divHasCloser(lexer));
+        if (divOk && isBlockStart(ln) && (lexer.nested || isInvisible))
             break;
         lexer.consume();
         lines.push(ln);
