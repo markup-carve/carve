@@ -1219,28 +1219,33 @@ const RE_LINK_TAIL = /^\(([^)\s]*)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{((?:[^}"'
 const RE_REF_TAIL = /^\[([^\]]*)\](?:\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\})?/;
 const RE_SPAN_TAIL = /^\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\}/;
 /**
- * Index in `s` of the `]` that balances the `[` at index `open`, allowing
- * nested balanced `[...]` (djot link/image/span text). A backslash-escaped
- * bracket is skipped, not counted. Returns -1 when unbalanced.
+ * Map each `[` in `s` to the index of its balancing `]` (innermost pairing,
+ * allowing nested `[...]`; a backslash-escaped bracket is skipped, not
+ * counted), computed in a single O(n) stack pass. The link/image/span
+ * branches look the close `]` up in O(1) rather than re-scanning to end of
+ * input for every `[`, which would be O(n^2) on adversarial input like
+ * `[[[[...` (with or without a trailing `]`). Unbalanced `[` are absent from
+ * the map.
  */
-function matchBracket(s, open) {
-    let depth = 0;
-    for (let j = open; j < s.length; j++) {
+function buildBracketMap(s) {
+    const map = {};
+    const stack = [];
+    for (let j = 0; j < s.length; j++) {
         const ch = s[j];
         if (ch === '\\') {
             j++;
             continue;
         }
         if (ch === '[') {
-            depth++;
+            stack.push(j);
         }
         else if (ch === ']') {
-            depth--;
-            if (depth === 0)
-                return j;
+            const open = stack.pop();
+            if (open !== undefined)
+                map[open] = j;
         }
     }
-    return -1;
+    return map;
 }
 const RE_CRITIC_INS = /^\{\+([^}]*)\+\}/;
 const RE_CRITIC_DEL = /^\{-([^}]*)-\}/;
@@ -1333,6 +1338,9 @@ function scanInline(text) {
     const out = [];
     let i = 0;
     let buf = '';
+    // Precompute each `[`'s balancing `]` once (O(n)) so the link/image/span
+    // branches resolve the close bracket in O(1); see buildBracketMap.
+    const bracketClose = text.includes('[') ? buildBracketMap(text) : {};
     const flush = () => {
         if (buf) {
             out.push({ type: 'text', value: buf });
@@ -1426,7 +1434,8 @@ function scanInline(text) {
         // close `]` is found by balance, not a [^\]]* regex that would mis-split
         // a nested bracket (e.g. `![a [b] c](/u)`). Alt is raw text, not inline.
         if (c === '!' && text[i + 1] === '[') {
-            const close = matchBracket(rest, 1);
+            const closeAbs = bracketClose[i + 1];
+            const close = closeAbs === undefined ? -1 : closeAbs - i;
             if (close > 1) {
                 const ml = RE_LINK_TAIL.exec(rest.slice(close + 1));
                 if (ml) {
@@ -1449,7 +1458,8 @@ function scanInline(text) {
         // mis-split at the first inner `]`. The (url) / [ref] / {attrs} tail is
         // then parsed by the same sub-patterns the old fast-path regexes used.
         if (c === '[') {
-            const close = matchBracket(rest, 0);
+            const closeAbs = bracketClose[i];
+            const close = closeAbs === undefined ? -1 : closeAbs - i;
             if (close > 0) {
                 const innerText = rest.slice(1, close);
                 const tail = rest.slice(close + 1);
