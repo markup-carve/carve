@@ -2331,6 +2331,21 @@ A quoted value keeps its spaces.
 
 :::
 
+A `}` inside a quoted value is part of the value — the closing `}` is the
+first one outside quotes.
+
+::: compare
+
+```carve
+[x]{data-x="{y}"}
+```
+
+```html
+<p><span data-x="{y}">x</span></p>
+```
+
+:::
+
 ## Escape coverage
 
 A backslash escapes any ASCII punctuation to its literal character.

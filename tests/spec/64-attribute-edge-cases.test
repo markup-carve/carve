@@ -11,3 +11,9 @@ Attribute edge cases
 .
 <p><span title="a b">x</span></p>
 ```
+
+```
+[x]{data-x="{y}"}
+.
+<p><span data-x="{y}">x</span></p>
+```
