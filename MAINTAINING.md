@@ -50,18 +50,24 @@ in each impl repo — weekly + manual dispatch, idempotent on a single
 
 ## Known cross-impl divergences
 
-Verified differences between carve-js and carve-php that are **not yet pinned in
-the corpus** because each needs a canonical decision. "Recommended" is the
-grammar-aligned or reference-aligned resolution; none are settled until pinned.
+### Resolved (now pinned in the corpus)
 
-| # | Input | carve-js | carve-php | Recommended canonical |
-|---|-------|----------|-----------|------------------------|
-| 1 | Mention URL template | placeholder `{user}`, value `encodeURIComponent`d | placeholder `{name}`, value **not** encoded | Unify on `{name}` for mentions *and* tags, and URL-encode the value. (carve-js `{user}`→`{name}` is a breaking API change; carve-php gains encoding.) |
-| 2 | `[x]{title="a\"b"}` — escaped quote in a quoted value | `\"` is literal, so the value ends at the first `"`; the block is invalid → literal text | `\"` is an escape → value is `a"b` | Grammar `quoted_value = '"', {character - '"'}, '"'` has **no** escape; carve-js is grammar-aligned. Either drop carve-php's escape support or add an escape rule to the grammar. |
-| 3 | `[x]{"{y}"}` — span attr block with no valid attribute | falls through to literal `[x]{"{y}"}` | emits an empty `<span>x</span>` | carve-js. An attribute block yielding no id/class/key is not a span (already documented for carve-js spans); carve-php should fall through to literal. |
-| 4 | `# H {???}` — heading attr block with no valid attribute | drops the block → `<h1>H</h1>` (content loss) | keeps it as heading text → `<h1>H {???}</h1>` | carve-php. Grammar `attribute_list` requires ≥ 1 attribute, so an attribute-less block is inline content; carve-js should keep it literal. |
-| 5 | `text\n[^f]: note` — footnote defined but never referenced | emits nothing | emits an empty `<section role="doc-endnotes">` with an empty `<ol>` | carve-js. Omit the endnotes section when no footnote is referenced. |
+These were verified carve-js ↔ carve-php differences; both impls now agree and
+the behavior is pinned in `docs/examples.md`:
 
-When one of these is resolved, add the agreed output as a `docs/examples.md`
-pair so it becomes part of the conformance contract, and update or remove its row
-here.
+| Input | Resolution |
+|-------|------------|
+| `[x]{title="a\"b"}` — escaped quote in a quoted value | A backslash escapes ASCII punctuation in a quoted value (grammar `quoted_value` + `escaped_char`); value is `a"b`. carve-js gained escape support to match carve-php. *(64-attribute-edge-cases)* |
+| `# H {???}` — heading attr block with no valid attribute | Grammar `attribute_list` needs ≥ 1 attribute, so the block is heading text. carve-js stopped dropping it. *(64-attribute-edge-cases)* |
+| `text\n[^f]: note` — footnote defined but never referenced | No endnotes section is emitted. carve-php stopped leaking an empty `<ol>`. *(43-footnotes)* |
+| Mention URL template | Canonical placeholder `{name}` for mentions and tags, value URL-encoded. carve-js accepts `{name}` (with `{user}` as a legacy alias); carve-php encodes the value. Config-only, so not corpus-testable. |
+
+### Intentional divergences (kept on purpose)
+
+| Input | carve-js | carve-php | Why |
+|-------|----------|-----------|-----|
+| `[x]{}` / `[x]{"{y}"}` — bracket + attribute-less block | literal text | materializes an empty `<span>` | carve-php's `DefaultAttributesExtension` decorates spans post-parse, so the span must exist even with no author attribute. carve-js has no such extension. |
+
+When a new divergence is found, verify it on both impls, decide the canonical,
+and either pin it as a `docs/examples.md` pair (and move it to *Resolved*) or
+record it as *Intentional* with the reason.

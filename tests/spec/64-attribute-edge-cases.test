@@ -65,3 +65,25 @@ body
 .
 <p><kbd class="foo">x</kbd></p>
 ```
+
+```
+[x]{title="a\"b"}
+.
+<p><span title="a&quot;b">x</span></p>
+```
+
+```
+# H {title="a\"b"}
+.
+<section id="h">
+  <h1 title="a&quot;b">H</h1>
+</section>
+```
+
+```
+# H {???}
+.
+<section id="h">
+  <h1>H {???}</h1>
+</section>
+```

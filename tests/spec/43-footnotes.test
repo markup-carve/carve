@@ -32,3 +32,10 @@ and a continuation line.<a href="#fnref1" role="doc-backlink">↩</a></p>
   </ol>
 </section>
 ```
+
+```
+text
+[^f]: note
+.
+<p>text</p>
+```
