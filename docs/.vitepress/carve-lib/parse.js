@@ -4,7 +4,7 @@
  * Block lexer reads line by line; inline parser does a single scan
  * over each block's text content. No backtracking.
  */
-const RE_HEADING = /^(#{1,6})\s+(.+?)(?:\s+\{([^}\n]+)\})?\s*$/;
+const RE_HEADING = /^(#{1,6})\s+(.+?)(?:\s+\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\})?\s*$/;
 // Thematic break: a line of 3+ of the same `-`, `*`, or `_` (grammar
 // thematic_break). A run alone on a line can't be emphasis (no content).
 const RE_HR = /^(?:-{3,}|\*{3,}|_{3,})\s*$/;
@@ -26,7 +26,7 @@ const RE_ADMONITION_CLOSE = /^(:{3,})\s*$/;
 // Generic fenced div: a `:::` opener with NO type word -- bare `:::` or
 // an attributes-only `::: {.class}` (djot's generic container). A typed
 // `::: word` routes to parseAdmonition instead. Shares the `:::` closer.
-const RE_DIV_OPEN = /^(:{3,})\s*(?:\{([^}\n]+)\})?\s*$/;
+const RE_DIV_OPEN = /^(:{3,})\s*(?:\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\})?\s*$/;
 // Definition list (§4.5). A TERM line is exactly two colons + space(s)
 // + text — the `(?!:)` keeps it distinct from a `:::` div/admonition. A
 // DEFINITION line is a colon + two-or-more spaces + text.
@@ -49,7 +49,7 @@ const RE_TABLE_ROW = /^\|/;
 // it from a `+ ` list item (which never ends with `|`). Only consumed
 // inside parseTable, after a standard `|` row has opened the table.
 const RE_TABLE_CONT = /^\+.*\|\s*$/;
-const RE_BARE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)"|\s+'([^']*)')?\)\s*(?:\{([^}]+)\})?\s*$/;
+const RE_BARE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)"|\s+'([^']*)')?\)\s*(?:\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\})?\s*$/;
 const RE_FRONTMATTER_FENCE = /^---\s*$/;
 // Raw passthrough block: ```raw FORMAT … ``` (§4.15). The info string has
 // two tokens ("raw FORMAT"), so this never collides with RE_FENCE (which
@@ -1193,9 +1193,9 @@ function leadingWhitespace(line) {
 // a deliberate enhancement over djot, which has no single-quote titles).
 // The double- and single-quoted titles are separate capture groups so
 // the other quote may appear inside (`"it's"`, `'say "hi"'`).
-const RE_LINK = /^(\[)([^\]]*)\]\(([^)\s]*)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{([^}]+)\})?/;
-const RE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]*)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{([^}]+)\})?/;
-const RE_REF_LINK = /^\[([^\]]+)\]\[([^\]]*)\](?:\{([^}\n]+)\})?/;
+const RE_LINK = /^(\[)([^\]]*)\]\(([^)\s]*)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\})?/;
+const RE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]*)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\})?/;
+const RE_REF_LINK = /^\[([^\]]+)\]\[([^\]]*)\](?:\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\})?/;
 // Inline span: a bracketed run directly followed by an attribute block
 // (PART 9 §14). The `{` must abut `]`; an empty `{}` is not a valid
 // attribute block, so the inner group requires at least one character.
@@ -1204,7 +1204,7 @@ const RE_REF_LINK = /^\[([^\]]+)\]\[([^\]]*)\](?:\{([^}\n]+)\})?/;
 const RE_SPAN = /^\[([^\]]*)\]\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\}/;
 // Footnote reference `[^label]` (no `]` in the label).
 const RE_FOOTNOTE_REF = /^\[\^([^\]]+)\]/;
-const RE_EXTENSION = /^:([a-zA-Z][\w-]*)\[([^\]]*)\](?:\{([^}]+)\})?/;
+const RE_EXTENSION = /^:([a-zA-Z][\w-]*)\[([^\]]*)\](?:\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\})?/;
 // Raw inline passthrough tag, follows a verbatim span: `` `…`{=html} ``.
 const RE_RAW_INLINE = /^\{=([a-zA-Z][\w-]*)\}/;
 // Emoji shortcode `:name:` (after extension, which needs `[`).
@@ -1325,7 +1325,9 @@ function scanInline(text) {
             i += 2;
             continue;
         }
-        // Escape
+        // Escape: a backslash before any ASCII punctuation yields that literal
+        // character (djot / grammar `ascii_punctuation` — the full set, including
+        // `& : ; ?`).
         if (c === '\\' && i + 1 < text.length) {
             const nxt = text[i + 1];
             if (/[\\`*_{}\[\]()#+\-.!~^/<>@%|=,"'$&:;?]/.test(nxt)) {
@@ -1848,7 +1850,10 @@ export function parseAttrs(src) {
         if (!order.includes(slot))
             order.push(slot);
     };
-    const re = /(?:#([\w-]+))|(?:\.([\w-]+))|(?:([\w-]+)=(?:"([^"]*)"|(\S+)))/g;
+    // A key/value's value is double-quoted, single-quoted, or a bare run
+    // (grammar `quoted_value = '"' … '"' | "'" … "'"`). Both quote forms
+    // strip their delimiters, so `k='{y}'` yields the literal `{y}`.
+    const re = /(?:#([\w-]+))|(?:\.([\w-]+))|(?:([\w-]+)=(?:"([^"]*)"|'([^']*)'|(\S+)))/g;
     let m;
     while ((m = re.exec(src))) {
         if (m[1]) {
@@ -1860,7 +1865,7 @@ export function parseAttrs(src) {
             note('.class');
         }
         else if (m[3]) {
-            const val = m[4] ?? m[5] ?? '';
+            const val = m[4] ?? m[5] ?? m[6] ?? '';
             attrs.keyValues = { ...(attrs.keyValues ?? {}), [m[3]]: val };
             note(m[3]);
         }

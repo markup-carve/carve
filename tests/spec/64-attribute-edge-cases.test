@@ -17,3 +17,51 @@ Attribute edge cases
 .
 <p><span data-x="{y}">x</span></p>
 ```
+
+```
+[t](u){k="{y}"}
+.
+<p><a href="u" k="{y}">t</a></p>
+```
+
+```
+![a](u){k="{y}"}
+.
+<img src="u" alt="a" k="{y}">
+```
+
+```
+# H {k="{y}"}
+.
+<section id="h">
+  <h1 k="{y}">H</h1>
+</section>
+```
+
+```
+:::{k="{y}"}
+body
+:::
+.
+<div k="{y}">
+  <p>body</p>
+</div>
+```
+
+```
+:kbd[x]{k="{y}"}
+.
+<p><kbd k="{y}">x</kbd></p>
+```
+
+```
+[x]{k='{y}'}
+.
+<p><span k="{y}">x</span></p>
+```
+
+```
+:kbd[x]{.foo}
+.
+<p><kbd class="foo">x</kbd></p>
+```
