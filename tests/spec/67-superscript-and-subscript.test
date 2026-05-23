@@ -1,0 +1,7 @@
+Superscript and subscript
+
+```
+H,,2,,O and E=mc^2^
+.
+<p>H<sub>2</sub>O and E=mc<sup>2</sup></p>
+```

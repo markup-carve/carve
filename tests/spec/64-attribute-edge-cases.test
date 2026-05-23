@@ -1,0 +1,19 @@
+Attribute edge cases
+
+```
+[note]{.a .b #n key=val}
+.
+<p><span class="a b" id="n" key="val">note</span></p>
+```
+
+```
+[x]{title="a b"}
+.
+<p><span title="a b">x</span></p>
+```
+
+```
+[x]{data-x="{y}"}
+.
+<p><span data-x="{y}">x</span></p>
+```

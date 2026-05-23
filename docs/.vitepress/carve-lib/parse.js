@@ -1199,7 +1199,9 @@ const RE_REF_LINK = /^\[([^\]]+)\]\[([^\]]*)\](?:\{([^}\n]+)\})?/;
 // Inline span: a bracketed run directly followed by an attribute block
 // (PART 9 §14). The `{` must abut `]`; an empty `{}` is not a valid
 // attribute block, so the inner group requires at least one character.
-const RE_SPAN = /^\[([^\]]*)\]\{([^}\n]+)\}/;
+// The attribute body allows `}` inside a quoted value, so the close `}` is
+// only the first one outside quotes (djot "don't mind braces in quotes").
+const RE_SPAN = /^\[([^\]]*)\]\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\}/;
 // Footnote reference `[^label]` (no `]` in the label).
 const RE_FOOTNOTE_REF = /^\[\^([^\]]+)\]/;
 const RE_EXTENSION = /^:([a-zA-Z][\w-]*)\[([^\]]*)\](?:\{([^}]+)\})?/;
@@ -1209,7 +1211,7 @@ const RE_RAW_INLINE = /^\{=([a-zA-Z][\w-]*)\}/;
 const RE_EMOJI = /^:([a-zA-Z0-9][\w+-]*):/;
 const RE_AUTOLINK = /^<([a-zA-Z][a-zA-Z0-9+.\-]*:[^>\s]+|[^\s>@]+@[^\s>]+)>/;
 const RE_CROSSREF = /^<\/#([^>\s]+)>/;
-const RE_INLINE_ATTR = /^\{([^}\n]+)\}/;
+const RE_INLINE_ATTR = /^\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\}/;
 const RE_CRITIC_INS = /^\{\+([^}]*)\+\}/;
 const RE_CRITIC_DEL = /^\{-([^}]*)-\}/;
 const RE_CRITIC_SUB = /^\{~([^}]*)~>([^}]*)~\}/;
@@ -1326,7 +1328,7 @@ function scanInline(text) {
         // Escape
         if (c === '\\' && i + 1 < text.length) {
             const nxt = text[i + 1];
-            if (/[\\`*_{}\[\]()#+\-.!~^/<>@%|=,"'$]/.test(nxt)) {
+            if (/[\\`*_{}\[\]()#+\-.!~^/<>@%|=,"'$&:;?]/.test(nxt)) {
                 buf += nxt;
                 i += 2;
                 continue;
