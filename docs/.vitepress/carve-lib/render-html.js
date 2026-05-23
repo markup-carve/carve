@@ -621,7 +621,10 @@ function renderInline(node, opts) {
             const text = `@${escapeHtml(node.user)}`;
             if (!opts.mentionUrl)
                 return `<span class="mention"><strong>${text}</strong></span>`;
-            const href = opts.mentionUrl.replaceAll('{user}', encodeURIComponent(node.user));
+            // Canonical placeholder is `{name}` (matching tags and carve-php);
+            // `{user}` stays as a legacy alias.
+            const enc = encodeURIComponent(node.user);
+            const href = opts.mentionUrl.replaceAll('{name}', enc).replaceAll('{user}', enc);
             return `<a class="mention" href="${escapeAttr(href)}">${text}</a>`;
         }
         case 'tag': {
