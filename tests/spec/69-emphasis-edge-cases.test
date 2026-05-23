@@ -1,0 +1,25 @@
+Emphasis edge cases
+
+```
+*a* and *b*
+.
+<p><strong>a</strong> and <strong>b</strong></p>
+```
+
+```
+*a `x` b*
+.
+<p><strong>a <code>x</code> b</strong></p>
+```
+
+```
+~old~ ==new==
+.
+<p><s>old</s> <mark>new</mark></p>
+```
+
+```
+*a, b*!
+.
+<p><strong>a, b</strong>!</p>
+```
