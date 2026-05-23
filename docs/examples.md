@@ -2346,6 +2346,113 @@ first one outside quotes.
 
 :::
 
+The same quoted-`}` rule holds for every attribute-bearing construct, not
+just spans. On an inline link:
+
+::: compare
+
+```carve
+[t](u){k="{y}"}
+```
+
+```html
+<p><a href="u" k="{y}">t</a></p>
+```
+
+:::
+
+On an image:
+
+::: compare
+
+```carve
+![a](u){k="{y}"}
+```
+
+```html
+<img src="u" alt="a" k="{y}">
+```
+
+:::
+
+On a heading (the attributes attach to the `<h1>`):
+
+::: compare
+
+```carve
+# H {k="{y}"}
+```
+
+```html
+<section id="h">
+  <h1 k="{y}">H</h1>
+</section>
+```
+
+:::
+
+On a generic div:
+
+::: compare
+
+```carve
+:::{k="{y}"}
+body
+:::
+```
+
+```html
+<div k="{y}">
+  <p>body</p>
+</div>
+```
+
+:::
+
+On an inline extension (the attributes attach to its output element):
+
+::: compare
+
+```carve
+:kbd[x]{k="{y}"}
+```
+
+```html
+<p><kbd k="{y}">x</kbd></p>
+```
+
+:::
+
+A value may be single-quoted as well as double-quoted; either form strips
+its delimiters (grammar `quoted_value`).
+
+::: compare
+
+```carve
+[x]{k='{y}'}
+```
+
+```html
+<p><span k="{y}">x</span></p>
+```
+
+:::
+
+Author attributes on an inline extension attach to its rendered element —
+a class on a semantic shorthand lands on its tag.
+
+::: compare
+
+```carve
+:kbd[x]{.foo}
+```
+
+```html
+<p><kbd class="foo">x</kbd></p>
+```
+
+:::
+
 ## Escape coverage
 
 A backslash escapes any ASCII punctuation character to its literal form. This

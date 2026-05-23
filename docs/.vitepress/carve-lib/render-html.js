@@ -632,7 +632,7 @@ function renderInline(node, opts) {
             return `<a class="tag" href="${escapeAttr(href)}">${text}</a>`;
         }
         case 'extension':
-            return renderExtension(node.name, node.content, opts);
+            return renderExtension(node.name, node.content, node.attrs, opts);
         case 'abbreviation':
             return `<abbr title="${escapeAttr(node.expansion)}">${escapeHtml(node.abbr)}</abbr>`;
         case 'footnote':
@@ -663,14 +663,16 @@ function renderInline(node, opts) {
         }
     }
 }
-function renderExtension(name, content, opts) {
+function renderExtension(name, content, attrs, opts) {
     const inner = renderInlines(content, opts);
+    // Author attributes on the extension (grammar §415 `extension_inline …
+    // [attributes]`) attach to its output element, e.g. `:kbd[x]{.foo}`.
     // Handle common semantic shorthands
     const semanticTags = new Set(['kbd', 'dfn', 'abbr', 'cite', 'samp', 'var', 'code', 'mark', 'time']);
     if (semanticTags.has(name)) {
-        return `<${name}>${inner}</${name}>`;
+        return `<${name}${renderAttrs2(attrs)}>${inner}</${name}>`;
     }
-    return `<span class="ext-${name}">${inner}</span>`;
+    return `<span${renderAttrs2(attrs, { baseClass: `ext-${name}` })}>${inner}</span>`;
 }
 // ============================================================================
 // Escaping
