@@ -27,6 +27,14 @@ PART 9 §9; in summary, for `/` and `_`:
   by `b`)
 - inner `/` characters become literal content (same-type spans do not nest)
 
+The **same-delimiter adjacency** part of that rule — a delimiter adjacent to
+another of the same delimiter (before or after) does not open — is *not*
+`/`-and-`_`-only; it applies to all five single-character delimiters. So a
+doubled delimiter is always literal: `**x**`, `~~x~~`, and `^^x^^` render
+verbatim, exactly like `//x//` and `__x__` (corpus
+`71-doubled-emphasis-delimiters`). Only the alphanumeric/`_` word-boundary
+conditions remain specific to `/` and `_`.
+
 **This means a path in an emphasizing position still italicizes:**
 `/usr/local/` → `<em>usr/local</em>` (verified — corpus `01-emphasis-6`),
 because the opening `/` is at line start and the inner slashes are literal

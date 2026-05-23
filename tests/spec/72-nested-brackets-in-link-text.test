@@ -1,0 +1,7 @@
+Nested brackets in link text
+
+```
+[a [b] c](/u)
+.
+<p><a href="/u">a [b] c</a></p>
+```

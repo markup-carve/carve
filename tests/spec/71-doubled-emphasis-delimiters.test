@@ -1,0 +1,7 @@
+Doubled emphasis delimiters
+
+```
+**a** ~~b~~ ^^c^^
+.
+<p>**a** ~~b~~ ^^c^^</p>
+```

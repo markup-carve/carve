@@ -1,0 +1,9 @@
+Reference labels are case-sensitive
+
+```
+[Text][REF]
+
+[ref]: /u
+.
+<p>[Text][REF]</p>
+```
