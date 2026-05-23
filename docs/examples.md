@@ -2431,3 +2431,130 @@ with a prose parenthetical), so it stays literal text.
 ```
 
 :::
+
+## Emphasis edge cases
+
+Two emphasis spans of the same kind sit side by side without merging.
+
+::: compare
+
+```carve
+*a* and *b*
+```
+
+```html
+<p><strong>a</strong> and <strong>b</strong></p>
+```
+
+:::
+
+A code span inside emphasis is preserved.
+
+::: compare
+
+```carve
+*a `x` b*
+```
+
+```html
+<p><strong>a <code>x</code> b</strong></p>
+```
+
+:::
+
+Different-kind delimiters sit adjacent without interfering.
+
+::: compare
+
+```carve
+~old~ ==new==
+```
+
+```html
+<p><s>old</s> <mark>new</mark></p>
+```
+
+:::
+
+Trailing punctuation after a closer is literal.
+
+::: compare
+
+```carve
+*a, b*!
+```
+
+```html
+<p><strong>a, b</strong>!</p>
+```
+
+:::
+
+## List nesting and looseness
+
+A more-indented marker nests a sublist inside the item.
+
+::: compare
+
+```carve
+- a
+  - b
+  - c
+- d
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+      <li>c</li>
+    </ul>
+  </li>
+  <li>d</li>
+</ul>
+```
+
+:::
+
+A blank line between items makes the list loose (each item wraps in `<p>`).
+
+::: compare
+
+```carve
+- a
+
+- b
+```
+
+```html
+<ul>
+  <li><p>a</p></li>
+  <li><p>b</p></li>
+</ul>
+```
+
+:::
+
+An item with a second paragraph is loose; the continuation is indented
+under the marker.
+
+::: compare
+
+```carve
+- a
+
+  more
+- b
+```
+
+```html
+<ul>
+  <li><p>a</p>
+    <p>more</p>
+  </li>
+  <li><p>b</p></li>
+</ul>
+```
+
+:::
