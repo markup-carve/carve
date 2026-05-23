@@ -1328,7 +1328,7 @@ function scanInline(text) {
         // Escape
         if (c === '\\' && i + 1 < text.length) {
             const nxt = text[i + 1];
-            if (/[\\`*_{}\[\]()#+\-.!~^/<>@%|=,"'$]/.test(nxt)) {
+            if (/[\\`*_{}\[\]()#+\-.!~^/<>@%|=,"'$&:;?]/.test(nxt)) {
                 buf += nxt;
                 i += 2;
                 continue;

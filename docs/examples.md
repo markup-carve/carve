@@ -2348,16 +2348,18 @@ first one outside quotes.
 
 ## Escape coverage
 
-A backslash escapes any ASCII punctuation to its literal character.
+A backslash escapes any ASCII punctuation character to its literal form. This
+pins the full `ascii_punctuation` matrix (`&`, `:`, `;`, `?` included); `<`,
+`>`, `&` are then HTML-escaped in the output.
 
 ::: compare
 
 ```carve
-\*\_\[\]\{\}\(\)\#\!\.\`\~\^\=\@\| done
+\!\"\#\$\%\&\'\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\\\]\^\_\`\{\|\}\~ done
 ```
 
 ```html
-<p>*_[]{}()#!.`~^=@| done</p>
+<p>!"#$%&amp;'()*+,-./:;&lt;=&gt;?@[\]^_`{|}~ done</p>
 ```
 
 :::
