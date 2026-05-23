@@ -2299,3 +2299,118 @@ Nested.
 ```
 
 :::
+
+## Attribute edge cases
+
+Classes accumulate; `#id` and `key=value` (bare or quoted) attach in
+source order on the `<span>`.
+
+::: compare
+
+```carve
+[note]{.a .b #n key=val}
+```
+
+```html
+<p><span class="a b" id="n" key="val">note</span></p>
+```
+
+:::
+
+A quoted value keeps its spaces.
+
+::: compare
+
+```carve
+[x]{title="a b"}
+```
+
+```html
+<p><span title="a b">x</span></p>
+```
+
+:::
+
+## Escape coverage
+
+A backslash escapes any ASCII punctuation to its literal character.
+
+::: compare
+
+```carve
+\*\_\[\]\{\}\(\)\#\!\.\`\~\^\=\@\| done
+```
+
+```html
+<p>*_[]{}()#!.`~^=@| done</p>
+```
+
+:::
+
+A backslash before a non-ASCII character or a letter is literal; `\\` is a
+single backslash.
+
+::: compare
+
+```carve
+\a and \« and a\\b
+```
+
+```html
+<p>\a and \« and a\b</p>
+```
+
+:::
+
+## Inline span
+
+A bracketed run followed by an attribute block is a `<span>`.
+
+::: compare
+
+```carve
+A [styled run]{.hl} here.
+```
+
+```html
+<p>A <span class="hl">styled run</span> here.</p>
+```
+
+:::
+
+## Superscript and subscript
+
+`^x^` is superscript and `,,x,,` is subscript (intraword, no word-boundary
+restriction).
+
+::: compare
+
+```carve
+H,,2,,O and E=mc^2^
+```
+
+```html
+<p>H<sub>2</sub>O and E=mc<sup>2</sup></p>
+```
+
+:::
+
+## Parenthesized ordered marker
+
+Carve's ordered markers use the `.` and `)` delimiters only; a
+parenthesized `(1)` is **not** a list marker (it is too easily confused
+with a prose parenthetical), so it stays literal text.
+
+::: compare
+
+```carve
+(1) First
+(2) Second
+```
+
+```html
+<p>(1) First
+(2) Second</p>
+```
+
+:::

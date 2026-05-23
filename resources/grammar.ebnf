@@ -111,7 +111,11 @@ ordered_item = ordered_marker, space, list_item_content ;
    delimiter (`.` or `)`); classification and the ambiguous-letter
    tie-break are in PART 9 §11. A top-level ordered list of any dialect
    needs a blank line before it to interrupt a paragraph -- the
-   paragraph-interruption rule is PART 9 §10. *)
+   paragraph-interruption rule is PART 9 §10.
+   The two delimiters are the trailing `.` and `)` only. djot's
+   parenthesized `(1)` / `(a)` form is INTENTIONALLY NOT a marker -- it is
+   too easily confused with a prose parenthetical -- so `(1) text` stays
+   literal paragraph text (pinned by corpus parenthesized-ordered-marker). *)
 ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')') ;
 roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
               | ('I' | 'V' | 'X' | 'L' | 'C' | 'D' | 'M')+ ;
