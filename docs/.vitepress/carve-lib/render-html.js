@@ -574,21 +574,21 @@ function renderInline(node, opts) {
         case 'text':
             return escapeHtml(node.value);
         case 'italic':
-            return `<em>${renderInlines(node.children, opts)}</em>`;
+            return `<em${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</em>`;
         case 'strong':
-            return `<strong>${renderInlines(node.children, opts)}</strong>`;
+            return `<strong${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</strong>`;
         case 'underline':
-            return `<u>${renderInlines(node.children, opts)}</u>`;
+            return `<u${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</u>`;
         case 'strike':
-            return `<s>${renderInlines(node.children, opts)}</s>`;
+            return `<s${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</s>`;
         case 'super':
-            return `<sup>${renderInlines(node.children, opts)}</sup>`;
+            return `<sup${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</sup>`;
         case 'sub':
-            return `<sub>${renderInlines(node.children, opts)}</sub>`;
+            return `<sub${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</sub>`;
         case 'highlight':
-            return `<mark>${renderInlines(node.children, opts)}</mark>`;
+            return `<mark${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</mark>`;
         case 'bold-italic':
-            return `<strong><em>${renderInlines(node.children, opts)}</em></strong>`;
+            return `<strong${renderAttrs(node.attrs)}><em>${renderInlines(node.children, opts)}</em></strong>`;
         case 'code':
             return `<code>${escapeHtml(node.value)}</code>`;
         case 'link': {
@@ -634,8 +634,22 @@ function renderInline(node, opts) {
             const href = opts.tagUrl.replaceAll('{name}', encodeURIComponent(node.name));
             return `<a class="tag" href="${escapeAttr(href)}">${text}</a>`;
         }
-        case 'extension':
+        case 'extension': {
+            const renderer = opts.extensions
+                ?.flatMap((e) => (e.renderers ? [e.renderers] : []))
+                .map((r) => r[node.name])
+                .find((fn) => fn !== undefined);
+            if (renderer) {
+                const ctx = {
+                    renderInlines: (nodes) => renderInlines(nodes, opts),
+                    escapeHtml,
+                    escapeAttr,
+                    renderAttrs,
+                };
+                return renderer(node, ctx);
+            }
             return renderExtension(node.name, node.content, node.attrs, opts);
+        }
         case 'abbreviation':
             return `<abbr title="${escapeAttr(node.expansion)}">${escapeHtml(node.abbr)}</abbr>`;
         case 'footnote':

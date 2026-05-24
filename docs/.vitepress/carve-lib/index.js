@@ -50,6 +50,14 @@ export function resolve(doc) {
 }
 /** Convenience: parse + resolve + render in one call. */
 export function carveToHtml(source, opts = {}) {
-    return renderHtml(resolve(parse(source, opts)), opts);
+    let doc = resolve(parse(source, opts));
+    const exts = opts.extensions ?? [];
+    for (const ext of exts)
+        if (ext.afterParse)
+            doc = ext.afterParse(doc);
+    for (const ext of exts)
+        if (ext.beforeRender)
+            doc = ext.beforeRender(doc);
+    return renderHtml(doc, opts);
 }
 //# sourceMappingURL=index.js.map

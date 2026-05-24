@@ -1,0 +1,19 @@
+Trailing attribute block edge cases
+
+```
+*x*{.real}
+.
+<p><strong class="real">x</strong></p>
+```
+
+```
+![a](/i){=hl=}
+.
+<p><img src="/i" alt="a">{=hl=}</p>
+```
+
+```
+![a](/i){ }
+.
+<p><img src="/i" alt="a">{ }</p>
+```
