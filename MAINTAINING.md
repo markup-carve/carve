@@ -24,6 +24,10 @@ automated by the `Bump spec corpus` workflow (`.github/workflows/bump-spec.yml`)
 in each impl repo — weekly + manual dispatch, idempotent on a single
 `automation/bump-spec` branch.
 
+The feature taxonomy (Core / Standard-recommended / App) and the normative
+extension contract live in [`docs/extensions.md`](docs/extensions.md). App-level
+behavior must ride the extension system there, not the core parser.
+
 ### Order for a cross-cutting behavior change
 
 1. **carve-js first.** Land the behavior in the reference impl with unit tests.
