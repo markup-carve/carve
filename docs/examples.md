@@ -2834,3 +2834,36 @@ doubled single-char rule. (`==x==` and `,,y,,` still mark and subscript.)
 ```
 
 :::
+
+## Trailing attribute block edge cases
+
+A trailing attribute block applies to an emphasis span, like any other inline
+node.
+
+::: compare
+
+```carve
+*x*{.real}
+```
+
+```html
+<p><strong class="real">x</strong></p>
+```
+
+:::
+
+A line-leading image is a standalone block image only when a trailing `{…}`
+is a valid attribute block. An invalid block falls through to a paragraph and
+stays literal.
+
+::: compare
+
+```carve
+![a](/i){=hl=}
+```
+
+```html
+<p><img src="/i" alt="a">{=hl=}</p>
+```
+
+:::

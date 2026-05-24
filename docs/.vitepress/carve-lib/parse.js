@@ -386,7 +386,7 @@ function parseBlock(lexer) {
         return parseList(lexer);
     if (RE_TABLE_ROW.test(line))
         return parseTable(lexer);
-    if (RE_BARE_IMAGE.test(line))
+    if (isBlockImageLine(line))
         return parseBlockImage(lexer);
     return parseParagraph(lexer);
 }
@@ -712,6 +712,16 @@ function parseBlockQuote(lexer) {
         }
     }
     return bq;
+}
+/**
+ * True when `line` is a standalone block image: `![…](…)` optionally followed
+ * by a VALID attribute block. An invalid trailing block (e.g. `{=hl=}`) means
+ * it isn't a clean block image, so it falls through to a paragraph and the
+ * `{…}` renders literally — matching the inline span/attr behavior.
+ */
+function isBlockImageLine(line) {
+    const m = RE_BARE_IMAGE.exec(line);
+    return m !== null && (m[5] === undefined || isValidAttrPayload(m[5]));
 }
 function parseBlockImage(lexer) {
     const line = lexer.consume();
@@ -1188,7 +1198,7 @@ function isBlockStart(line) {
         RE_ADMONITION_OPEN.test(line) ||
         RE_DIV_OPEN.test(line) ||
         RE_DEFLIST_TERM.test(line) ||
-        RE_BARE_IMAGE.test(line) ||
+        isBlockImageLine(line) ||
         RE_ABBR_DEF.test(line) ||
         RE_FOOTNOTE_DEF.test(line) ||
         RE_LINK_DEF.test(line));
