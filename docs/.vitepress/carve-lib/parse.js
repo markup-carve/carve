@@ -715,13 +715,14 @@ function parseBlockQuote(lexer) {
 }
 /**
  * True when `line` is a standalone block image: `![…](…)` optionally followed
- * by a VALID attribute block. An invalid trailing block (e.g. `{=hl=}`) means
- * it isn't a clean block image, so it falls through to a paragraph and the
- * `{…}` renders literally — matching the inline span/attr behavior.
+ * by a trailing attribute block that yields REAL attributes. An empty or
+ * whitespace block (`{ }`) or an invalid one (`{=hl=}`) is not consumed — the
+ * line falls through to a paragraph and the `{…}` renders literally, matching
+ * the inline trailing-attribute rule (and carve-php).
  */
 function isBlockImageLine(line) {
     const m = RE_BARE_IMAGE.exec(line);
-    return m !== null && (m[5] === undefined || isValidAttrPayload(m[5]));
+    return m !== null && (m[5] === undefined || !isEmptyAttrs(parseAttrs(m[5])));
 }
 function parseBlockImage(lexer) {
     const line = lexer.consume();

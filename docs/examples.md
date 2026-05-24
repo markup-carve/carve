@@ -2853,8 +2853,8 @@ node.
 :::
 
 A line-leading image is a standalone block image only when a trailing `{…}`
-is a valid attribute block. An invalid block falls through to a paragraph and
-stays literal.
+yields real attributes. An empty/whitespace or invalid block falls through to
+a paragraph and stays literal.
 
 ::: compare
 
@@ -2864,6 +2864,18 @@ stays literal.
 
 ```html
 <p><img src="/i" alt="a">{=hl=}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+![a](/i){ }
+```
+
+```html
+<p><img src="/i" alt="a">{ }</p>
 ```
 
 :::

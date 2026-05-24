@@ -11,3 +11,9 @@ Trailing attribute block edge cases
 .
 <p><img src="/i" alt="a">{=hl=}</p>
 ```
+
+```
+![a](/i){ }
+.
+<p><img src="/i" alt="a">{ }</p>
+```
