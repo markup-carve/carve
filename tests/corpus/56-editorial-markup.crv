@@ -1,1 +1,1 @@
-a {+ins+} {-del-} {~old~>new~} {=hl=} b{# note #}
+a {+ins+} {-del-} {~old~>new~} b{# note #}

@@ -417,13 +417,16 @@ extension_name = identifier ;
 extension_content = {character - ']'} ;
 
 (* --- Editorial Markup (CriticMarkup-inspired) --- *)
-editorial_markup = addition | deletion | substitution | editorial_highlight | editorial_comment ;
+editorial_markup = addition | deletion | substitution | editorial_comment ;
 
 addition = "{+", inline_content, "+}" ;
 deletion = "{-", inline_content, "-}" ;
 substitution = "{~", inline_content, "~>", inline_content, "~}" ;
-editorial_highlight = "{=", inline_content, "=}" ;
 editorial_comment = "{#", inline_content, "#}" ;
+(* Highlight is the `==text==` production only. The djot `{=text=}` form is
+   intentionally NOT an editorial mark in Carve -- it duplicated <mark> and is
+   flagged for migration to `==` (carve-js djot-migrate djot-highlight-braces).
+   So `{=text=}` is literal text. *)
 
 (* --- Mentions and Tags --- *)
 mention = '@', mention_name ;
@@ -666,6 +669,11 @@ EOF = (* end of file *) ;
         therefore literal text, never nested same-type emphasis (§3): `**x**`,
         `~~x~~`, `^^x^^` stay literal exactly like `//x//` and `__x__`
         (corpus 71-doubled-emphasis-delimiters, 01-emphasis-11).
+        The two-char delimiters `==` (highlight) and `,,` (subscript) are
+        atomic tokens, so the same rule applies one character out: a `==`/`,,`
+        opener adjacent to a third `=`/`,` (a run of 3+) does not open and
+        stays literal -- `====x====`, `,,,,y,,,,` literal; `==x==`, `,,y,,`
+        still mark/subscript (corpus 74-two-char-delimiter-runs).
       - WORD BOUNDARY (`/` and `_` ONLY; `*`, `~`, `^`, `==`, `,,` allow
         intraword emphasis). An italic/underline delimiter opens only if NOT
         followed by whitespace AND preceded by whitespace, start, or

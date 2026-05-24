@@ -88,7 +88,6 @@ export function inlineText(nodes) {
             case 'span':
             case 'critic-insert':
             case 'critic-delete':
-            case 'critic-highlight':
                 out += inlineText(n.children);
                 break;
             case 'extension':
@@ -199,7 +198,6 @@ export function resolveHeadingIds(doc) {
                 case 'span':
                 case 'critic-insert':
                 case 'critic-delete':
-                case 'critic-highlight':
                     resolveRefs(n.children);
                     break;
                 case 'extension':
@@ -246,7 +244,6 @@ export function resolveHeadingIds(doc) {
                 case 'span':
                 case 'critic-insert':
                 case 'critic-delete':
-                case 'critic-highlight':
                     resolveCrossrefs(n.children);
                     break;
                 case 'extension':

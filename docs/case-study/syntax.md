@@ -1008,9 +1008,12 @@ This block can contain %%% markers.
 This is {+added+} text.
 This is {-removed-} text.
 This is {~old~>new~} replacement.
-This is {=highlighted=} text.
 This is text{# with a comment #}.
 ```
+
+Highlight is `==text==` (§4.2), not an editorial mark — the djot `{=text=}`
+form is intentionally not supported (it duplicated `<mark>`; it renders
+literally and is flagged for migration to `==`).
 
 Useful for:
 - Document review workflows

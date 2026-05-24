@@ -1256,7 +1256,6 @@ function buildBracketMap(s) {
 const RE_CRITIC_INS = /^\{\+([^}]*)\+\}/;
 const RE_CRITIC_DEL = /^\{-([^}]*)-\}/;
 const RE_CRITIC_SUB = /^\{~([^}]*)~>([^}]*)~\}/;
-const RE_CRITIC_HL = /^\{=([^}]*)=\}/;
 const RE_CRITIC_CMT = /^\{#([^}]*)#\}/;
 // Names can include version-style dots between alnum runs (e.g. `#release-1.0`)
 // but a trailing period is treated as sentence punctuation, not part of the name.
@@ -1630,13 +1629,6 @@ function scanInline(text) {
                 i += del[0].length;
                 continue;
             }
-            const hl = RE_CRITIC_HL.exec(rest);
-            if (hl) {
-                flush();
-                out.push({ type: 'critic-highlight', children: scanInline(hl[1]) });
-                i += hl[0].length;
-                continue;
-            }
             const cmt = RE_CRITIC_CMT.exec(rest);
             if (cmt) {
                 flush();
@@ -1710,8 +1702,11 @@ function matchEmphasis(text, i) {
             };
         }
     }
-    // ,,sub,, (priority over single , — n/a, just match double)
-    if (c === ',' && text[i + 1] === ',') {
+    // ,,sub,, (priority over single , — n/a, just match double). A run of 3+
+    // commas does not open: the doubling IS the delimiter token, so an adjacent
+    // third `,` (before or after the pair) makes it literal, consistent with
+    // the single-char same-delimiter adjacency rule (`**` etc.).
+    if (c === ',' && text[i + 1] === ',' && text[i - 1] !== ',' && text[i + 2] !== ',') {
         const close = findClose(text, i + 2, ',,');
         if (close !== -1 && close > i + 2) {
             const inner = text.slice(i + 2, close);
@@ -1723,8 +1718,9 @@ function matchEmphasis(text, i) {
             }
         }
     }
-    // ==highlight== (priority over single =)
-    if (c === '=' && text[i + 1] === '=') {
+    // ==highlight== (priority over single =). Likewise a run of 3+ `=` does not
+    // open -- `====x====` stays literal, like `**x**`.
+    if (c === '=' && text[i + 1] === '=' && text[i - 1] !== '=' && text[i + 2] !== '=') {
         const close = findClose(text, i + 2, '==');
         if (close !== -1 && close > i + 2) {
             const inner = text.slice(i + 2, close);
