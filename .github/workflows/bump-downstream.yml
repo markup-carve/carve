@@ -1,0 +1,84 @@
+name: Bump downstream corpora
+
+# When carve's corpus moves, bump the spec submodule in each implementation
+# repo to this exact commit and open (or update) a single automation/bump-spec
+# PR there. The PR is created with a fine-grained PAT (secret BUMP_TOKEN), so
+# it is NOT subject to the "Allow Actions to create PRs" setting and it DOES
+# trigger the downstream repo's own CI — which validates conformance on the PR.
+#
+# Setup: create a fine-grained PAT with access to markup-carve/carve-js and
+# markup-carve/carve-php (Contents: read & write, Pull requests: read & write)
+# and store it as the BUMP_TOKEN secret on this repo.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/corpus/**'
+      - 'tests/spec/**'
+      - 'docs/examples.md'
+      - 'resources/grammar.ebnf'
+  workflow_dispatch:
+
+concurrency:
+  group: bump-downstream
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - repo: markup-carve/carve-js
+            submodule: spec
+          - repo: markup-carve/carve-php
+            submodule: tests/spec
+    steps:
+      - name: Bump ${{ matrix.repo }}
+        env:
+          GH_TOKEN: ${{ secrets.BUMP_TOKEN }}
+          REPO: ${{ matrix.repo }}
+          SUB: ${{ matrix.submodule }}
+        run: |
+          set -euo pipefail
+
+          # Resolve carve's current main HEAD (not github.sha, which on a
+          # manual dispatch would be the dispatched branch's tip). Always
+          # converging on main also self-heals if main moved since the push.
+          CARVE_SHA="$(git ls-remote "https://github.com/${{ github.repository }}.git" refs/heads/main | cut -f1)"
+          short="${CARVE_SHA:0:7}"
+          echo "Bumping $REPO to carve main $short"
+
+          gh auth setup-git
+          gh repo clone "$REPO" work -- --depth 1
+          cd work
+
+          git submodule update --init "$SUB"
+          # Fetch the main branch (always served), then check out the resolved
+          # commit from it -- more portable than fetching a bare SHA.
+          git -C "$SUB" fetch origin main
+          git -C "$SUB" checkout "$CARVE_SHA"
+
+          if git diff --quiet -- "$SUB"; then
+            echo "$REPO already pins carve $short; nothing to do."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B automation/bump-spec
+          git add "$SUB"
+          git commit -m "chore: bump spec corpus submodule to carve $short"
+          git push -f origin automation/bump-spec
+
+          existing="$(gh pr list --repo "$REPO" --head automation/bump-spec --state open --json number --jq '.[0].number // empty')"
+          if [ -z "$existing" ]; then
+            gh pr create --repo "$REPO" \
+              --base main --head automation/bump-spec \
+              --title "chore: bump spec corpus to carve $short" \
+              --body "Automated bump of the \`$SUB\` submodule to carve main (\`$short\`). Conformance runs via this repo's own CI on this PR. New categories an impl does not yet implement surface here for promotion."
+          else
+            echo "Updated existing PR #$existing on $REPO."
+          fi
