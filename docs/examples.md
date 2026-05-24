@@ -2155,17 +2155,33 @@ See the note.[^n]
 
 ## Editorial markup
 
-CriticMarkup-style review marks: insert, delete, substitute, highlight,
-and an inline comment.
+CriticMarkup-style review marks: insert, delete, substitute, and an inline
+comment. (Highlight is `==text==`, not an editorial mark — see below.)
 
 ::: compare
 
 ```carve
-a {+ins+} {-del-} {~old~>new~} {=hl=} b{# note #}
+a {+ins+} {-del-} {~old~>new~} b{# note #}
 ```
 
 ```html
-<p>a <ins>ins</ins> <del>del</del> <del>old</del><ins>new</ins> <mark>hl</mark> b<span class="critic-comment"> note </span></p>
+<p>a <ins>ins</ins> <del>del</del> <del>old</del><ins>new</ins> b<span class="critic-comment"> note </span></p>
+```
+
+:::
+
+The djot `{=text=}` highlight form is not supported; it renders literally,
+even directly adjacent to another inline node (a `{…}` that yields no
+attribute is not consumed). Highlight is `==text==`.
+
+::: compare
+
+```carve
+==x=={=hl=}
+```
+
+```html
+<p><mark>x</mark>{=hl=}</p>
 ```
 
 :::
@@ -2781,6 +2797,25 @@ literally, like any other unresolved reference.
 
 ```html
 <p>[Text][REF]</p>
+```
+
+:::
+
+## Two-char delimiter runs
+
+The two-char delimiters `==` (highlight) and `,,` (subscript) are atomic
+tokens, so a run that extends them with a third same character does not open
+— `====x====` and `,,,,y,,,,` stay literal, consistent with the
+doubled single-char rule. (`==x==` and `,,y,,` still mark and subscript.)
+
+::: compare
+
+```carve
+====x==== ,,,,y,,,,
+```
+
+```html
+<p>====x==== ,,,,y,,,,</p>
 ```
 
 :::

@@ -284,14 +284,10 @@ export interface CriticSubstitute extends BaseNode {
     oldText: string;
     newText: string;
 }
-export interface CriticHighlight extends BaseNode {
-    type: 'critic-highlight';
-    children: InlineNode[];
-}
 export interface CriticComment extends BaseNode {
     type: 'critic-comment';
     text: string;
 }
-export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | Emoji | AutoLink | CrossRef | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticHighlight | CriticComment;
+export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | Emoji | AutoLink | CrossRef | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment;
 export type AnyNode = Document | BlockNode | InlineNode;
 //# sourceMappingURL=ast.d.ts.map

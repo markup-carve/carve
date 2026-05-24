@@ -1,7 +1,13 @@
 Editorial markup
 
 ```
-a {+ins+} {-del-} {~old~>new~} {=hl=} b{# note #}
+a {+ins+} {-del-} {~old~>new~} b{# note #}
 .
-<p>a <ins>ins</ins> <del>del</del> <del>old</del><ins>new</ins> <mark>hl</mark> b<span class="critic-comment"> note </span></p>
+<p>a <ins>ins</ins> <del>del</del> <del>old</del><ins>new</ins> b<span class="critic-comment"> note </span></p>
+```
+
+```
+==x=={=hl=}
+.
+<p><mark>x</mark>{=hl=}</p>
 ```
