@@ -185,6 +185,17 @@ The `/italic/` syntax comes from Org-mode, where it has worked well for decades.
 /This *does* nest/        --> Valid: italic with bold inside
 ```
 
+A direct consequence: a **doubled** bare delimiter never opens nested
+same-type emphasis, so it stays literal text — uniformly across all five
+single-character delimiters.
+```
+**x**   --> **x**     (literal, not nested bold)
+~~x~~   --> ~~x~~     (literal)
+^^x^^   --> ^^x^^     (literal)
+//x//   --> //x//     (literal)
+__x__   --> __x__     (literal)
+```
+
 ### 4.3 Links
 
 **Standard form:**

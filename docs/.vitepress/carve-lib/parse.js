@@ -133,9 +133,16 @@ function collectAbbrDefs(lexer) {
             lexer.abbrDefs.set(m[1], m[2]);
     }
 }
-/** Reference labels are matched case-insensitively, whitespace-collapsed. */
+/**
+ * Normalize an explicit `[label]: url` reference label for matching:
+ * whitespace-collapsed but case-SENSITIVE. Djot does "no case normalization
+ * on reference definitions" (links_and_images spec), and Carve keeps a
+ * case-mismatched reference unresolved -> literal (corpus 36). Implicit
+ * heading references match heading TEXT and are fuzzier (case-insensitive);
+ * they wrap this in heading-ids.ts rather than fold case here.
+ */
 export function normalizeRefLabel(label) {
-    return label.trim().replace(/\s+/g, ' ').toLowerCase();
+    return label.trim().replace(/\s+/g, ' ');
 }
 /**
  * Strip leading block-container prefixes (blockquote `>`, bullet/task and
@@ -1195,19 +1202,6 @@ function leadingWhitespace(line) {
 // ============================================================================
 // Inline parsing
 // ============================================================================
-// Link/image titles accept double OR single quotes (grammar link_title;
-// a deliberate enhancement over djot, which has no single-quote titles).
-// The double- and single-quoted titles are separate capture groups so
-// the other quote may appear inside (`"it's"`, `'say "hi"'`).
-const RE_LINK = /^(\[)([^\]]*)\]\(([^)\s]*)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
-const RE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]*)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
-const RE_REF_LINK = /^\[([^\]]+)\]\[([^\]]*)\](?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
-// Inline span: a bracketed run directly followed by an attribute block
-// (PART 9 §14). The `{` must abut `]`; an empty `{}` is not a valid
-// attribute block, so the inner group requires at least one character.
-// The attribute body allows `}` inside a quoted value, so the close `}` is
-// only the first one outside quotes (djot "don't mind braces in quotes").
-const RE_SPAN = /^\[([^\]]*)\]\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\}/;
 // Footnote reference `[^label]` (no `]` in the label).
 const RE_FOOTNOTE_REF = /^\[\^([^\]]+)\]/;
 const RE_EXTENSION = /^:([a-zA-Z][\w-]*)\[([^\]]*)\](?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
@@ -1218,6 +1212,47 @@ const RE_EMOJI = /^:([a-zA-Z0-9][\w+-]*):/;
 const RE_AUTOLINK = /^<([a-zA-Z][a-zA-Z0-9+.\-]*:[^>\s]+|[^\s>@]+@[^\s>]+)>/;
 const RE_CROSSREF = /^<\/#([^>\s]+)>/;
 const RE_INLINE_ATTR = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\}/;
+// Tail patterns parsed after a `[…]` (or `![…]`) whose close bracket was
+// found by balance (buildBracketMap), so the inner text may hold nested
+// brackets the [^\]]* regexes can't span. Link/image titles accept double OR
+// single quotes (grammar link_title; an enhancement over djot, which has no
+// single-quote titles); the two title groups are separate so the other quote
+// may appear inside (`"it's"`, `'say "hi"'`). The {attrs} body allows `}`
+// inside a quoted value and an escaped quote inside that value, so the close
+// `}` is the first one outside quotes (djot "don't mind braces in quotes").
+// RE_SPAN_TAIL's body is `+` (an empty `{}` is not a valid attribute block).
+const RE_LINK_TAIL = /^\(([^)\s]*)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
+const RE_REF_TAIL = /^\[([^\]]*)\](?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
+const RE_SPAN_TAIL = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\}/;
+/**
+ * Map each `[` in `s` to the index of its balancing `]` (innermost pairing,
+ * allowing nested `[...]`; a backslash-escaped bracket is skipped, not
+ * counted), computed in a single O(n) stack pass. The link/image/span
+ * branches look the close `]` up in O(1) rather than re-scanning to end of
+ * input for every `[`, which would be O(n^2) on adversarial input like
+ * `[[[[...` (with or without a trailing `]`). Unbalanced `[` are absent from
+ * the map.
+ */
+function buildBracketMap(s) {
+    const map = {};
+    const stack = [];
+    for (let j = 0; j < s.length; j++) {
+        const ch = s[j];
+        if (ch === '\\') {
+            j++;
+            continue;
+        }
+        if (ch === '[') {
+            stack.push(j);
+        }
+        else if (ch === ']') {
+            const open = stack.pop();
+            if (open !== undefined)
+                map[open] = j;
+        }
+    }
+    return map;
+}
 const RE_CRITIC_INS = /^\{\+([^}]*)\+\}/;
 const RE_CRITIC_DEL = /^\{-([^}]*)-\}/;
 const RE_CRITIC_SUB = /^\{~([^}]*)~>([^}]*)~\}/;
@@ -1309,6 +1344,9 @@ function scanInline(text) {
     const out = [];
     let i = 0;
     let buf = '';
+    // Precompute each `[`'s balancing `]` once (O(n)) so the link/image/span
+    // branches resolve the close bracket in O(1); see buildBracketMap.
+    const bracketClose = text.includes('[') ? buildBracketMap(text) : {};
     const flush = () => {
         if (buf) {
             out.push({ type: 'text', value: buf });
@@ -1398,64 +1436,78 @@ function scanInline(text) {
                 }
             }
         }
-        // Image
+        // Image ![alt](src) — the alt text allows nested balanced [...], so the
+        // close `]` is found by balance, not a [^\]]* regex that would mis-split
+        // a nested bracket (e.g. `![a [b] c](/u)`). Alt is raw text, not inline.
         if (c === '!' && text[i + 1] === '[') {
-            const m = RE_IMAGE.exec(rest);
-            if (m) {
-                flush();
-                const img = { type: 'image', src: m[2], alt: m[1] };
-                const title = m[3] ?? m[4];
-                if (title)
-                    img.title = title;
-                if (m[5])
-                    img.attrs = parseAttrs(m[5]);
-                out.push(img);
-                i += m[0].length;
-                continue;
+            const closeAbs = bracketClose[i + 1];
+            const close = closeAbs === undefined ? -1 : closeAbs - i;
+            if (close > 1) {
+                const ml = RE_LINK_TAIL.exec(rest.slice(close + 1));
+                if (ml) {
+                    flush();
+                    const img = { type: 'image', src: ml[1], alt: rest.slice(2, close) };
+                    const title = ml[2] ?? ml[3];
+                    if (title)
+                        img.title = title;
+                    if (ml[4])
+                        img.attrs = parseAttrs(ml[4]);
+                    out.push(img);
+                    i += close + 1 + ml[0].length;
+                    continue;
+                }
             }
         }
-        // Link (inline)
+        // Link / reference link / footnote / span. The bracket text may contain
+        // nested balanced [...] (djot: `[a [b] c](/u)`, `[[x](y)](z)`), so the
+        // matching close `]` is found by balance — not a [^\]]* regex that would
+        // mis-split at the first inner `]`. The (url) / [ref] / {attrs} tail is
+        // then parsed by the same sub-patterns the old fast-path regexes used.
         if (c === '[') {
-            const m = RE_LINK.exec(rest);
-            if (m) {
-                flush();
-                const link = {
-                    type: 'link',
-                    href: m[3],
-                    children: scanInline(m[2]),
-                };
-                const title = m[4] ?? m[5];
-                if (title)
-                    link.title = title;
-                if (m[6])
-                    link.attrs = parseAttrs(m[6]);
-                out.push(link);
-                i += m[0].length;
-                continue;
-            }
-            const mr = RE_REF_LINK.exec(rest);
-            if (mr) {
-                flush();
-                // Collapsed `[text][]` uses the text as the label.
-                const label = mr[2] !== '' ? mr[2] : mr[1];
-                const refLink = {
-                    type: 'link',
-                    href: '',
-                    children: scanInline(mr[1]),
-                    ref: label,
-                    // rawRef includes any trailing {attrs} so the literal
-                    // fallback for an unresolved ref preserves the full source.
-                    rawRef: mr[0],
-                };
-                if (mr[3])
-                    refLink.attrs = parseAttrs(mr[3]);
-                out.push(refLink);
-                i += mr[0].length;
-                continue;
+            const closeAbs = bracketClose[i];
+            const close = closeAbs === undefined ? -1 : closeAbs - i;
+            if (close > 0) {
+                const innerText = rest.slice(1, close);
+                const tail = rest.slice(close + 1);
+                // Inline link [text](url "title"){attrs}
+                const ml = RE_LINK_TAIL.exec(tail);
+                if (ml) {
+                    flush();
+                    const link = { type: 'link', href: ml[1], children: scanInline(innerText) };
+                    const title = ml[2] ?? ml[3];
+                    if (title)
+                        link.title = title;
+                    if (ml[4])
+                        link.attrs = parseAttrs(ml[4]);
+                    out.push(link);
+                    i += close + 1 + ml[0].length;
+                    continue;
+                }
+                // Reference link [text][ref]{attrs}; collapsed [text][] reuses the
+                // text as the label. Text must be non-empty (djot).
+                const mref = RE_REF_TAIL.exec(tail);
+                if (mref && innerText !== '') {
+                    flush();
+                    const refLink = {
+                        type: 'link',
+                        href: '',
+                        children: scanInline(innerText),
+                        ref: mref[1] !== '' ? mref[1] : innerText,
+                        // rawRef includes any trailing {attrs} so the literal fallback
+                        // for an unresolved ref preserves the full source.
+                        rawRef: rest.slice(0, close + 1 + mref[0].length),
+                    };
+                    if (mref[2])
+                        refLink.attrs = parseAttrs(mref[2]);
+                    out.push(refLink);
+                    i += close + 1 + mref[0].length;
+                    continue;
+                }
             }
             // Footnote reference [^label] — before span, so `[^x]{.c}` stays a
             // footnote ref (the `{.c}` then attaches via the inline-attr pass)
-            // rather than becoming a <span> of `^x`.
+            // rather than becoming a <span> of `^x`. Footnote labels hold no
+            // nested brackets, so its own regex stays authoritative.
             const mfn = RE_FOOTNOTE_REF.exec(rest);
             if (mfn) {
                 flush();
@@ -1463,20 +1515,22 @@ function scanInline(text) {
                 i += mfn[0].length;
                 continue;
             }
-            // Inline span `[text]{attrs}` (PART 9 §14). Checked after links so
-            // `[t](u)` / `[t][r]` win; the `{` must directly abut `]`. The
-            // attribute block is the ONLY thing distinguishing a span from
-            // literal bracketed text, so a block that yields no real attribute
-            // (`{ }`, `{???}`) is not a valid span -- fall through to literal.
-            const ms = RE_SPAN.exec(rest);
-            if (ms) {
-                const attrs = parseAttrs(ms[2]);
-                if (!isEmptyAttrs(attrs)) {
-                    flush();
-                    const span = { type: 'span', children: scanInline(ms[1]), attrs };
-                    out.push(span);
-                    i += ms[0].length;
-                    continue;
+            // Inline span `[text]{attrs}` (PART 9 §14). After links so `[t](u)` /
+            // `[t][r]` win; the `{` must directly abut `]`. The attribute block is
+            // the ONLY thing distinguishing a span from literal bracketed text, so
+            // a block that yields no real attribute (`{ }`, `{???}`) is not a valid
+            // span -- fall through to literal.
+            if (close > 0) {
+                const innerText = rest.slice(1, close);
+                const ms = RE_SPAN_TAIL.exec(rest.slice(close + 1));
+                if (ms) {
+                    const attrs = parseAttrs(ms[1]);
+                    if (!isEmptyAttrs(attrs)) {
+                        flush();
+                        out.push({ type: 'span', children: scanInline(innerText), attrs });
+                        i += close + 1 + ms[0].length;
+                        continue;
+                    }
                 }
             }
         }
@@ -1692,17 +1746,21 @@ function matchEmphasis(text, i) {
     ];
     for (const [delim, type] of pairs) {
         if (c === delim) {
-            // Opener must be followed by non-space and not be at end
             const after = text[i + 1];
-            if (!after || after === ' ' || after === '\n' || after === delim)
+            const before = text[i - 1];
+            // Opener must be followed by a non-space character.
+            if (!after || after === ' ' || after === '\n')
                 continue;
-            // For italic/strong, avoid mid-word: previous char must not be word char
-            // (Djot rule)
-            if (delim === '/' || delim === '_') {
-                const prev = text[i - 1];
-                if (prev && /[A-Za-z0-9_/_]/.test(prev))
-                    continue;
-            }
+            // No same-type nesting (spec §4.2): a bare delimiter adjacent to the
+            // same delimiter (before OR after) does not open, so a doubled
+            // delimiter is literal text. `**x**`, `~~x~~`, `^^x^^` stay literal,
+            // uniformly with `//x//` and `__x__`. Applies to all five types.
+            if (after === delim || before === delim)
+                continue;
+            // Italic/underline additionally can't open after a word char or `/`,
+            // keeping paths/identifiers literal (a/b/c, foo_bar, snake_/case/).
+            if ((delim === '/' || delim === '_') && before && /[A-Za-z0-9_/]/.test(before))
+                continue;
             // Find closer that's not preceded by space
             const close = findEmphasisClose(text, i + 1, delim);
             if (close !== -1) {

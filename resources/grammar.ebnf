@@ -593,12 +593,18 @@ EOF = (* end of file *) ;
 
 (*
    1. WORD BOUNDARIES FOR EMPHASIS (summary -- §9 below is NORMATIVE).
-      Applies to `/` and `_` ONLY; `*`, `~`, `^`, `==`, `,,` allow intraword.
-      - Opener: NOT followed by whitespace AND preceded by whitespace, start,
-        or punctuation but NOT by an alphanumeric, `_`, or the same delimiter
+      - SAME-DELIMITER ADJACENCY applies to ALL FIVE single-char delimiters
+        `/ * _ ~ ^`: a delimiter adjacent to another of the same delimiter
+        (before or after) never opens, so a doubled delimiter is literal
+        (`**x**`, `~~x~~`, `^^x^^` literal, like `//x//`, `__x__`).
+      - The remaining word-boundary conditions apply to `/` and `_` ONLY;
+        `*`, `~`, `^`, `==`, `,,` allow intraword emphasis.
+      - Opener (`/`, `_`): NOT followed by whitespace AND preceded by
+        whitespace, start, or punctuation but NOT by an alphanumeric or `_`
         (left word boundary)
-      - Closer: NOT preceded by whitespace AND NOT followed by an alphanumeric
-        (right word boundary)
+      - Closer (`/`, `_`): NOT preceded by whitespace AND NOT followed by an
+        alphanumeric (right word boundary). All delimiters: a closer is NOT
+        preceded by whitespace.
       - Example: "/ not italic /" is literal (whitespace after opener);
         "a/b/c" is literal (opener / has no left boundary, see corpus
         01-emphasis-2); "/usr/local/" -> <em>usr/local</em> (01-emphasis-6)
@@ -612,6 +618,11 @@ EOF = (* end of file *) ;
    3. NO SAME-TYPE NESTING
       - /nested /italic/ here/ is invalid
       - /nested *bold* here/ is valid
+      - A consequence (§9 SAME-DELIMITER ADJACENCY): a doubled bare delimiter
+        never opens nested same-type emphasis -- it is literal text. So `**x**`
+        -> `**x**`, `~~x~~` -> `~~x~~`, `^^x^^` -> `^^x^^`, uniform with the
+        already-literal `//x//` and `__x__` (corpus 71-doubled-emphasis-
+        delimiters).
 
    4. CAPTION PLACEMENT
       - ^ caption must immediately follow image, blockquote, or table
@@ -648,24 +659,31 @@ EOF = (* end of file *) ;
         symbols (`(c)`,`(r)`,`(tm)`).
 
    9. EMPHASIS SPAN BOUNDARY -- NORMATIVE (governs *_content productions in
-      PART 3; §1 above is a summary of this section). Applies to `/` and `_`
-      ONLY; `*`, `~`, `^`, `==`, `,,` allow intraword emphasis.
-      - A delimiter opens only if NOT followed by whitespace AND preceded by
-        whitespace, start, or punctuation -- but NOT by an alphanumeric, by
-        `_`, or by the same delimiter (left word boundary). So (/x/) ->
-        (<em>x</em>) and a./b/ ->
-        a.<em>b</em> (corpus 01-emphasis-8), while foo_bar_baz, snake_case
-        and snake_/case/ stay literal (01-emphasis-10, 01-emphasis-11).
-      - A delimiter closes only if NOT preceded by whitespace AND NOT followed
-        by an alphanumeric (right word boundary). "/ not italic /" stays
-        literal (ws after opener); "x /a/b y" stays literal because the
-        candidate closer is followed by `b` (corpus 01-emphasis-9).
-      - The span runs from the opener to its matched closer; any same-type
-        delimiter in between is LITERAL content (no same-type nesting, §3).
-        Hence /usr/local/ -> <em>usr/local</em> (01-emphasis-6) and
-        the/path/here is literal (first / has no left boundary). Delimiter
-        runs adjacent to a same-type delimiter (e.g. //a/) are pinned by the
-        conformance corpus rather than restated here. See edge-cases.md §1.
+      PART 3; §1 above is a summary of this section).
+      - SAME-DELIMITER ADJACENCY (ALL FIVE single-char delimiters `/ * _ ~ ^`).
+        A bare delimiter immediately adjacent -- before OR after -- to another
+        of the SAME delimiter never opens a span. A doubled delimiter is
+        therefore literal text, never nested same-type emphasis (§3): `**x**`,
+        `~~x~~`, `^^x^^` stay literal exactly like `//x//` and `__x__`
+        (corpus 71-doubled-emphasis-delimiters, 01-emphasis-11).
+      - WORD BOUNDARY (`/` and `_` ONLY; `*`, `~`, `^`, `==`, `,,` allow
+        intraword emphasis). An italic/underline delimiter opens only if NOT
+        followed by whitespace AND preceded by whitespace, start, or
+        punctuation -- but NOT by an alphanumeric or `_` (left word boundary).
+        So (/x/) -> (<em>x</em>) and a./b/ -> a.<em>b</em> (corpus
+        01-emphasis-8), while foo_bar_baz, snake_case and snake_/case/ stay
+        literal (01-emphasis-10, 01-emphasis-11).
+      - A delimiter closes only if NOT preceded by whitespace AND -- for `/`
+        and `_` -- NOT followed by an alphanumeric (right word boundary).
+        "/ not italic /" stays literal (ws after opener); "x /a/b y" stays
+        literal because the candidate closer is followed by `b` (corpus
+        01-emphasis-9).
+      - The span runs from the opener to its NEAREST valid closer; any
+        same-type delimiter in between is LITERAL content (no same-type
+        nesting, §3). Hence /usr/local/ -> <em>usr/local</em> (01-emphasis-6)
+        and the/path/here is literal (first / has no left boundary). The
+        trailing delimiter of an unbalanced run stays literal, so /b// ->
+        <em>b</em>/ and *x** -> <strong>x</strong>*. See edge-cases.md §1.
       - Resolution uses a delimiter stack, single left-to-right pass, no
         backtracking (Design Principle 1).
 

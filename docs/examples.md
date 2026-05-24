@@ -2728,3 +2728,59 @@ under the marker.
 ```
 
 :::
+
+## Doubled emphasis delimiters
+
+A bare single-character emphasis delimiter immediately adjacent to the same
+delimiter does not open a span, so a doubled delimiter is literal text. This
+"no nesting of same type" rule is uniform across all five single-character
+delimiters: `**`, `~~`, and `^^` stay literal exactly like `//` and `__`.
+
+::: compare
+
+```carve
+**a** ~~b~~ ^^c^^
+```
+
+```html
+<p>**a** ~~b~~ ^^c^^</p>
+```
+
+:::
+
+## Nested brackets in link text
+
+Link, image, and span text may contain balanced nested brackets; the closing
+`]` is found by balance, not at the first inner `]`.
+
+::: compare
+
+```carve
+[a [b] c](/u)
+```
+
+```html
+<p><a href="/u">a [b] c</a></p>
+```
+
+:::
+
+## Reference labels are case-sensitive
+
+Reference labels are matched case-sensitively (no case normalization). A
+label whose case does not match its definition stays unresolved and renders
+literally, like any other unresolved reference.
+
+::: compare
+
+```carve
+[Text][REF]
+
+[ref]: /u
+```
+
+```html
+<p>[Text][REF]</p>
+```
+
+:::
