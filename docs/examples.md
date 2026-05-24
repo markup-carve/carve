@@ -1843,6 +1843,21 @@ and a continuation line.<a href="#fnref1" role="doc-backlink">↩</a></p>
 
 :::
 
+A footnote definition that is never referenced produces no endnotes section.
+
+::: compare
+
+```carve
+text
+[^f]: note
+```
+
+```html
+<p>text</p>
+```
+
+:::
+
 ## Generic divs
 
 A `:::` opener with no type word — bare `:::` or an attributes-only
@@ -2449,6 +2464,54 @@ a class on a semantic shorthand lands on its tag.
 
 ```html
 <p><kbd class="foo">x</kbd></p>
+```
+
+:::
+
+A backslash escapes ASCII punctuation inside a quoted value, so the value
+can contain a literal quote.
+
+::: compare
+
+```carve
+[x]{title="a\"b"}
+```
+
+```html
+<p><span title="a&quot;b">x</span></p>
+```
+
+:::
+
+The same escape applies on a heading's attribute block.
+
+::: compare
+
+```carve
+# H {title="a\"b"}
+```
+
+```html
+<section id="h">
+  <h1 title="a&quot;b">H</h1>
+</section>
+```
+
+:::
+
+A trailing brace block that yields no attribute is not an attribute block —
+on a heading it stays part of the heading text rather than being dropped.
+
+::: compare
+
+```carve
+# H {???}
+```
+
+```html
+<section id="h">
+  <h1>H {???}</h1>
+</section>
 ```
 
 :::

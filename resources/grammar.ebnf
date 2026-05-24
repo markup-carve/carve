@@ -480,8 +480,11 @@ key_value_attribute = identifier, '=', attribute_value ;
 
 attribute_value = unquoted_value | quoted_value ;
 unquoted_value = (letter | digit | '-' | '_')+ ;
-quoted_value = '"', {character - '"'}, '"'
-             | "'", {character - "'"}, "'" ;
+(* A backslash escapes ASCII punctuation inside a quoted value (same
+   `escaped_char` rule as inline text), so a value can contain a literal
+   quote: `"a\"b"` -> the value `a"b`. *)
+quoted_value = '"', { escaped_char | (character - '"' - '\') }, '"'
+             | "'", { escaped_char | (character - "'" - '\') }, "'" ;
 
 (* Block-level attributes appear on their own line(s) preceding a block.
    A single attribute block may span multiple physical lines (the `}`

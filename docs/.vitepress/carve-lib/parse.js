@@ -4,7 +4,7 @@
  * Block lexer reads line by line; inline parser does a single scan
  * over each block's text content. No backtracking.
  */
-const RE_HEADING = /^(#{1,6})\s+(.+?)(?:\s+\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\})?\s*$/;
+const RE_HEADING = /^(#{1,6})\s+(.+?)(?:\s+\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
 // Thematic break: a line of 3+ of the same `-`, `*`, or `_` (grammar
 // thematic_break). A run alone on a line can't be emphasis (no content).
 const RE_HR = /^(?:-{3,}|\*{3,}|_{3,})\s*$/;
@@ -26,7 +26,7 @@ const RE_ADMONITION_CLOSE = /^(:{3,})\s*$/;
 // Generic fenced div: a `:::` opener with NO type word -- bare `:::` or
 // an attributes-only `::: {.class}` (djot's generic container). A typed
 // `::: word` routes to parseAdmonition instead. Shares the `:::` closer.
-const RE_DIV_OPEN = /^(:{3,})\s*(?:\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\})?\s*$/;
+const RE_DIV_OPEN = /^(:{3,})\s*(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
 // Definition list (§4.5). A TERM line is exactly two colons + space(s)
 // + text — the `(?!:)` keeps it distinct from a `:::` div/admonition. A
 // DEFINITION line is a colon + two-or-more spaces + text.
@@ -49,7 +49,7 @@ const RE_TABLE_ROW = /^\|/;
 // it from a `+ ` list item (which never ends with `|`). Only consumed
 // inside parseTable, after a standard `|` row has opened the table.
 const RE_TABLE_CONT = /^\+.*\|\s*$/;
-const RE_BARE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)"|\s+'([^']*)')?\)\s*(?:\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\})?\s*$/;
+const RE_BARE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)"|\s+'([^']*)')?\)\s*(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
 const RE_FRONTMATTER_FENCE = /^---\s*$/;
 // Raw passthrough block: ```raw FORMAT … ``` (§4.15). The info string has
 // two tokens ("raw FORMAT"), so this never collides with RE_FENCE (which
@@ -394,15 +394,21 @@ function parseHeading(lexer) {
     const line = lexer.consume();
     const m = RE_HEADING.exec(line);
     const level = m[1].length;
-    const text = m[2];
     const attrSrc = m[3];
-    const node = {
-        type: 'heading',
-        level,
-        children: parseInline(text, lexer.abbrDefs, lexer.linkDefs),
-    };
-    if (attrSrc)
-        node.attrs = parseAttrs(attrSrc);
+    let text = m[2];
+    const node = { type: 'heading', level, children: [] };
+    if (attrSrc) {
+        const attrs = parseAttrs(attrSrc);
+        if (isEmptyAttrs(attrs)) {
+            // Not a valid attribute block (grammar `attribute_list` needs >= 1
+            // attribute); the brace block is part of the heading text, not dropped.
+            text = line.replace(/^#{1,6}\s+/, '').replace(/\s+$/, '');
+        }
+        else {
+            node.attrs = attrs;
+        }
+    }
+    node.children = parseInline(text, lexer.abbrDefs, lexer.linkDefs);
     return node;
 }
 function parseFence(lexer) {
@@ -1198,26 +1204,26 @@ function leadingWhitespace(line) {
 // ============================================================================
 // Footnote reference `[^label]` (no `]` in the label).
 const RE_FOOTNOTE_REF = /^\[\^([^\]]+)\]/;
-const RE_EXTENSION = /^:([a-zA-Z][\w-]*)\[([^\]]*)\](?:\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\})?/;
+const RE_EXTENSION = /^:([a-zA-Z][\w-]*)\[([^\]]*)\](?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
 // Raw inline passthrough tag, follows a verbatim span: `` `…`{=html} ``.
 const RE_RAW_INLINE = /^\{=([a-zA-Z][\w-]*)\}/;
 // Emoji shortcode `:name:` (after extension, which needs `[`).
 const RE_EMOJI = /^:([a-zA-Z0-9][\w+-]*):/;
 const RE_AUTOLINK = /^<([a-zA-Z][a-zA-Z0-9+.\-]*:[^>\s]+|[^\s>@]+@[^\s>]+)>/;
 const RE_CROSSREF = /^<\/#([^>\s]+)>/;
-const RE_INLINE_ATTR = /^\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\}/;
+const RE_INLINE_ATTR = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\}/;
 // Tail patterns parsed after a `[…]` (or `![…]`) whose close bracket was
-// found by balance (matchBracket), so the inner text may hold nested
+// found by balance (buildBracketMap), so the inner text may hold nested
 // brackets the [^\]]* regexes can't span. Link/image titles accept double OR
 // single quotes (grammar link_title; an enhancement over djot, which has no
 // single-quote titles); the two title groups are separate so the other quote
 // may appear inside (`"it's"`, `'say "hi"'`). The {attrs} body allows `}`
-// inside a quoted value, so the close `}` is the first one outside quotes
-// (djot "don't mind braces in quotes"). RE_SPAN_TAIL's body is `+` (an empty
-// `{}` is not a valid attribute block).
-const RE_LINK_TAIL = /^\(([^)\s]*)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\})?/;
-const RE_REF_TAIL = /^\[([^\]]*)\](?:\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\})?/;
-const RE_SPAN_TAIL = /^\{((?:[^}"'\n]|"[^"]*"|'[^']*')+)\}/;
+// inside a quoted value and an escaped quote inside that value, so the close
+// `}` is the first one outside quotes (djot "don't mind braces in quotes").
+// RE_SPAN_TAIL's body is `+` (an empty `{}` is not a valid attribute block).
+const RE_LINK_TAIL = /^\(([^)\s]*)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
+const RE_REF_TAIL = /^\[([^\]]*)\](?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
+const RE_SPAN_TAIL = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\}/;
 /**
  * Map each `[` in `s` to the index of its balancing `]` (innermost pairing,
  * allowing nested `[...]`; a backslash-escaped bracket is skipped, not
@@ -1892,7 +1898,11 @@ function applyLinkDefs(nodes, defs) {
  * block-attribute line or literal text (PART 9 §15).
  */
 function isValidAttrPayload(inner) {
-    const stripped = inner.replace(/(?:#[\w-]+)|(?:\.[\w-]+)|(?:[\w-]+=(?:"[^"]*"|\S+))|\s+/g, '');
+    // The quoted value alternatives are escape-aware (and single-quoted as
+    // well as double-quoted) so the same payloads parseAttrs accepts validate
+    // as block attributes — otherwise `"a\"b"` strips only to `"a\"` and the
+    // rest leaks, falsely rejecting the block.
+    const stripped = inner.replace(/(?:#[\w-]+)|(?:\.[\w-]+)|(?:[\w-]+=(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\S+))|\s+/g, '');
     return stripped === '';
 }
 /** True when an attribute block parsed to no id, classes, or key=values. */
@@ -1900,6 +1910,12 @@ function isEmptyAttrs(attrs) {
     return (attrs.id === undefined &&
         (attrs.classes === undefined || attrs.classes.length === 0) &&
         (attrs.keyValues === undefined || Object.keys(attrs.keyValues).length === 0));
+}
+// Backslash before ASCII punctuation yields that character; any other
+// backslash is kept literal. Mirrors the inline text-escape rule and the
+// carve-php AttributeParser, applied to quoted attribute values.
+function unescapeAttrValue(v) {
+    return v.replace(/\\(.)/g, (whole, c) => /[\\`*_{}\[\]()#+\-.!~^/<>@%|=,"'$&:;?]/.test(c) ? c : whole);
 }
 export function parseAttrs(src) {
     const attrs = {};
@@ -1910,8 +1926,10 @@ export function parseAttrs(src) {
     };
     // A key/value's value is double-quoted, single-quoted, or a bare run
     // (grammar `quoted_value = '"' … '"' | "'" … "'"`). Both quote forms
-    // strip their delimiters, so `k='{y}'` yields the literal `{y}`.
-    const re = /(?:#([\w-]+))|(?:\.([\w-]+))|(?:([\w-]+)=(?:"([^"]*)"|'([^']*)'|(\S+)))/g;
+    // strip their delimiters, so `k='{y}'` yields the literal `{y}`. A
+    // backslash escapes ASCII punctuation inside a quoted value, so
+    // `k="a\"b"` yields the literal `a"b`.
+    const re = /(?:#([\w-]+))|(?:\.([\w-]+))|(?:([\w-]+)=(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'|(\S+)))/g;
     let m;
     while ((m = re.exec(src))) {
         if (m[1]) {
@@ -1923,7 +1941,9 @@ export function parseAttrs(src) {
             note('.class');
         }
         else if (m[3]) {
-            const val = m[4] ?? m[5] ?? m[6] ?? '';
+            const val = m[4] !== undefined ? unescapeAttrValue(m[4])
+                : m[5] !== undefined ? unescapeAttrValue(m[5])
+                    : (m[6] ?? '');
             attrs.keyValues = { ...(attrs.keyValues ?? {}), [m[3]]: val };
             note(m[3]);
         }
