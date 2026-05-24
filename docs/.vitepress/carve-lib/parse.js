@@ -1220,10 +1220,11 @@ const RE_INLINE_ATTR = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\}
 // may appear inside (`"it's"`, `'say "hi"'`). The {attrs} body allows `}`
 // inside a quoted value and an escaped quote inside that value, so the close
 // `}` is the first one outside quotes (djot "don't mind braces in quotes").
-// RE_SPAN_TAIL's body is `+` (an empty `{}` is not a valid attribute block).
+// RE_SPAN_TAIL's body is `*` so an empty `{}` matches; isValidAttrPayload then
+// decides span (valid block, possibly empty) vs literal (invalid content).
 const RE_LINK_TAIL = /^\(([^)\s]*)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
 const RE_REF_TAIL = /^\[([^\]]*)\](?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
-const RE_SPAN_TAIL = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\}/;
+const RE_SPAN_TAIL = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\}/;
 /**
  * Map each `[` in `s` to the index of its balancing `]` (innermost pairing,
  * allowing nested `[...]`; a backslash-escaped bracket is skipped, not
@@ -1539,21 +1540,22 @@ function scanInline(text) {
                 continue;
             }
             // Inline span `[text]{attrs}` (PART 9 §14). After links so `[t](u)` /
-            // `[t][r]` win; the `{` must directly abut `]`. The attribute block is
-            // the ONLY thing distinguishing a span from literal bracketed text, so
-            // a block that yields no real attribute (`{ }`, `{???}`) is not a valid
-            // span -- fall through to literal.
+            // `[t][r]` win; the `{` must directly abut `]`. A bracket followed by a
+            // VALID attribute block forms a span -- including an empty one (`[x]{}`,
+            // `[x]{ }` -> empty <span>, matching djot). An INVALID block (`{???}`,
+            // `{=y=}`) is not an attribute block, so it stays literal.
             if (close > 0) {
                 const innerText = rest.slice(1, close);
                 const ms = RE_SPAN_TAIL.exec(rest.slice(close + 1));
-                if (ms) {
-                    const attrs = parseAttrs(ms[1]);
-                    if (!isEmptyAttrs(attrs)) {
-                        flush();
-                        out.push({ type: 'span', children: scanInline(innerText), attrs });
-                        i += close + 1 + ms[0].length;
-                        continue;
-                    }
+                if (ms && isValidAttrPayload(ms[1])) {
+                    flush();
+                    out.push({
+                        type: 'span',
+                        children: scanInline(innerText),
+                        attrs: parseAttrs(ms[1]),
+                    });
+                    i += close + 1 + ms[0].length;
+                    continue;
                 }
             }
         }

@@ -2581,6 +2581,21 @@ A [styled run]{.hl} here.
 
 :::
 
+A valid attribute block forms a span even when it is empty — an empty `{}` is
+the explicit "make this a span" hook (it can be decorated by a processor).
+
+::: compare
+
+```carve
+[x]{}
+```
+
+```html
+<p><span>x</span></p>
+```
+
+:::
+
 ## Superscript and subscript
 
 `^x^` is superscript and `,,x,,` is subscript (intraword, no word-boundary

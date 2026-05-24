@@ -61,12 +61,17 @@ the behavior is pinned in `docs/examples.md`:
 | `# H {???}` — heading attr block with no valid attribute | Grammar `attribute_list` needs ≥ 1 attribute, so the block is heading text. carve-js stopped dropping it. *(64-attribute-edge-cases)* |
 | `text\n[^f]: note` — footnote defined but never referenced | No endnotes section is emitted. carve-php stopped leaking an empty `<ol>`. *(43-footnotes)* |
 | Mention URL template | Canonical placeholder `{name}` for mentions and tags, value URL-encoded. carve-js accepts `{name}` (with `{user}` as a legacy alias); carve-php encodes the value. Config-only, so not corpus-testable. |
+| `[x]{}` — bracket + empty attribute block | A valid attribute block forms a span even when empty; both emit `<span>x</span>` (carve-js now materializes the empty span, matching carve-php/djot). *(66-inline-span)* |
 
 ### Intentional divergences (kept on purpose)
 
-| Input | carve-js | carve-php | Why |
-|-------|----------|-----------|-----|
-| `[x]{}` / `[x]{"{y}"}` — bracket + attribute-less block | literal text | materializes an empty `<span>` | carve-php's `DefaultAttributesExtension` decorates spans post-parse, so the span must exist even with no author attribute. carve-js has no such extension. |
+_None currently._
+
+### Open (tracked)
+
+| Input | carve-js | carve-php | Status |
+|-------|----------|-----------|--------|
+| `[x]{ }` / `[x]{???}` — bracket + whitespace/invalid attr block | `<span>x</span>` (whitespace) / literal (invalid) | leaks the block (`<span>x</span>{ }`) | carve-php bug — should treat a valid (incl. whitespace) block as the span and an invalid block as literal. Tracked: markup-carve/carve-php#37 |
 
 When a new divergence is found, verify it on both impls, decide the canonical,
 and either pin it as a `docs/examples.md` pair (and move it to *Resolved*) or
