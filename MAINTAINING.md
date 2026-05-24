@@ -24,10 +24,6 @@ automated by the `Bump spec corpus` workflow (`.github/workflows/bump-spec.yml`)
 in each impl repo — weekly + manual dispatch, idempotent on a single
 `automation/bump-spec` branch.
 
-The feature taxonomy (Core / Standard-recommended / App) and the normative
-extension contract live in [`docs/extensions.md`](docs/extensions.md). App-level
-behavior must ride the extension system there, not the core parser.
-
 ### Order for a cross-cutting behavior change
 
 1. **carve-js first.** Land the behavior in the reference impl with unit tests.
@@ -75,8 +71,9 @@ _None currently._
 
 | Input | carve-js | carve-php | Status |
 |-------|----------|-----------|--------|
-| `[x]{ }` / `[x]{???}` — bracket + whitespace/invalid attr block | `<span>x</span>` (whitespace) / literal (invalid) | leaks the block (`<span>x</span>{ }`) | carve-php bug — should treat a valid (incl. whitespace) block as the span and an invalid block as literal. Tracked: markup-carve/carve-php#37 |
+| `[x]{ }` / `[x]{???}` / `[x]{"{y}"}` — bracket + whitespace/invalid attr block | `<span>x</span>` (whitespace) / literal (invalid) | leaks the block after materializing the span | carve-php bug — should treat a valid (incl. whitespace) block as the span and an invalid block as literal. Tracked: markup-carve/carve-php#37 |
 
 When a new divergence is found, verify it on both impls, decide the canonical,
 and either pin it as a `docs/examples.md` pair (and move it to *Resolved*) or
-record it as *Intentional* with the reason.
+record it as *Intentional* with the reason, or under *Open (tracked)* if it is
+an implementation bug still being worked through.
