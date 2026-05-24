@@ -6,6 +6,12 @@ name: Bump downstream corpora
 # it is NOT subject to the "Allow Actions to create PRs" setting and it DOES
 # trigger the downstream repo's own CI — which validates conformance on the PR.
 #
+# Draft signal: before opening the PR, the job runs the impl's own corpus
+# conformance against the bumped submodule. If it FAILS (a new category the
+# impl does not yet implement, or a behavior change), the PR is opened as a
+# DRAFT — "implement me", not ready to merge. If it passes, the PR is opened
+# ready. Re-runs keep an existing PR's draft state in sync with conformance.
+#
 # Setup: create a fine-grained PAT with access to markup-carve/carve-js and
 # markup-carve/carve-php (Contents: read & write, Pull requests: read & write)
 # and store it as the BUMP_TOKEN secret on this repo.
@@ -33,14 +39,36 @@ jobs:
         include:
           - repo: markup-carve/carve-js
             submodule: spec
+            lang: node
+            test: npm ci && npx vitest run test/corpus.test.ts
           - repo: markup-carve/carve-php
             submodule: tests/spec
+            lang: php
+            test: composer install --prefer-dist --no-progress && vendor/bin/phpunit --group corpus
     steps:
+      # Toolchain to run the impl's corpus conformance (mirrors each repo's
+      # own CI), so the bump can decide draft-vs-ready.
+      - name: Set up Node
+        if: matrix.lang == 'node'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Set up PHP
+        if: matrix.lang == 'php'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
       - name: Bump ${{ matrix.repo }}
         env:
           GH_TOKEN: ${{ secrets.BUMP_TOKEN }}
           REPO: ${{ matrix.repo }}
           SUB: ${{ matrix.submodule }}
+          TEST_CMD: ${{ matrix.test }}
+          # Optional: set the CODEX_API_KEY secret to let codex attempt the
+          # implementation when a bump fails conformance. Dormant if unset.
+          CODEX_API_KEY: ${{ secrets.CODEX_API_KEY }}
         run: |
           set -euo pipefail
 
@@ -66,19 +94,62 @@ jobs:
             exit 0
           fi
 
+          # Does the impl conform to the bumped corpus? A failure -> draft PR.
+          # Wrapped in `if` so a non-zero exit doesn't trip `set -e`.
+          draft=""
+          note="Conforms to the bumped corpus — ready to merge."
+          if bash -c "$TEST_CMD"; then
+            echo "$REPO conforms to carve $short -> ready PR"
+          else
+            echo "$REPO does NOT conform to carve $short -> draft PR (needs impl)"
+            draft="--draft"
+            note="Does NOT yet conform — opened as a draft (implement, then mark ready)."
+
+            # Optional auto-attempt: if CODEX_API_KEY is set, let codex try the
+            # implementation against the bumped corpus. Its output is unreviewed
+            # AI code, so the PR stays a DRAFT for human review even if it then
+            # passes. PROTOTYPE: tune the install / auth / flags to your codex
+            # CLI version; gated so the workflow is unchanged when the key is
+            # unset.
+            if [ -n "${CODEX_API_KEY:-}" ]; then
+              echo "CODEX_API_KEY present -> attempting implementation with codex"
+              npm install -g @openai/codex >/dev/null 2>&1 || true
+              OPENAI_API_KEY="$CODEX_API_KEY" codex exec --full-auto \
+                "The git submodule '$SUB' (the Carve spec corpus) was just bumped to a newer version. Implement the minimal parser/renderer changes in THIS repository so that the command '$TEST_CMD' passes. Do not edit anything under '$SUB'. Match existing code style." \
+                || true
+              if bash -c "$TEST_CMD"; then
+                note="codex produced a passing implementation — review its non-bump commits, then mark ready."
+              else
+                note="codex attempted an implementation but the corpus still fails — needs human work."
+              fi
+            fi
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B automation/bump-spec
-          git add "$SUB"
-          git commit -m "chore: bump spec corpus submodule to carve $short"
+          # Stage the submodule bump plus any files codex changed.
+          git add -A
+          git commit -m "chore: bump spec corpus submodule to carve $short${draft:+ (+ impl attempt)}"
           git push -f origin automation/bump-spec
+
+          body="$(printf '%s\n\n%s' \
+            "Automated bump of the \`$SUB\` submodule to carve main (\`$short\`)." \
+            "$note The downstream repo's own CI re-validates conformance on this PR.")"
 
           existing="$(gh pr list --repo "$REPO" --head automation/bump-spec --state open --json number --jq '.[0].number // empty')"
           if [ -z "$existing" ]; then
             gh pr create --repo "$REPO" \
-              --base main --head automation/bump-spec \
+              --base main --head automation/bump-spec $draft \
               --title "chore: bump spec corpus to carve $short" \
-              --body "Automated bump of the \`$SUB\` submodule to carve main (\`$short\`). Conformance runs via this repo's own CI on this PR. New categories an impl does not yet implement surface here for promotion."
+              --body "$body"
           else
-            echo "Updated existing PR #$existing on $REPO."
+            # Keep the existing PR's draft state in sync with conformance.
+            if [ -n "$draft" ]; then
+              gh pr ready "$existing" --repo "$REPO" --undo 2>/dev/null || true
+            else
+              gh pr ready "$existing" --repo "$REPO" 2>/dev/null || true
+            fi
+            gh pr edit "$existing" --repo "$REPO" --body "$body" 2>/dev/null || true
+            echo "Updated existing PR #$existing on $REPO (draft=${draft:+yes})."
           fi
