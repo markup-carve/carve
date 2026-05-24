@@ -2170,6 +2170,22 @@ a {+ins+} {-del-} {~old~>new~} b{# note #}
 
 :::
 
+The djot `{=text=}` highlight form is not supported; it renders literally,
+even directly adjacent to another inline node (a `{…}` that yields no
+attribute is not consumed). Highlight is `==text==`.
+
+::: compare
+
+```carve
+==x=={=hl=}
+```
+
+```html
+<p><mark>x</mark>{=hl=}</p>
+```
+
+:::
+
 ## Thematic breaks
 
 A line of three or more `-`, `*`, or `_` is a thematic break.

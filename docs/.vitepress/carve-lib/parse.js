@@ -1449,10 +1449,17 @@ function scanInline(text) {
                     const title = ml[2] ?? ml[3];
                     if (title)
                         img.title = title;
-                    if (ml[4])
-                        img.attrs = parseAttrs(ml[4]);
+                    let len = close + 1 + ml[0].length;
+                    if (ml[4]) {
+                        const a = parseAttrs(ml[4]);
+                        // An empty-attr trailing `{…}` is literal, not consumed.
+                        if (isEmptyAttrs(a))
+                            len -= ml[4].length + 2;
+                        else
+                            img.attrs = a;
+                    }
                     out.push(img);
-                    i += close + 1 + ml[0].length;
+                    i += len;
                     continue;
                 }
             }
@@ -1476,10 +1483,17 @@ function scanInline(text) {
                     const title = ml[2] ?? ml[3];
                     if (title)
                         link.title = title;
-                    if (ml[4])
-                        link.attrs = parseAttrs(ml[4]);
+                    let len = close + 1 + ml[0].length;
+                    if (ml[4]) {
+                        const a = parseAttrs(ml[4]);
+                        // An empty-attr trailing `{…}` is literal, not consumed.
+                        if (isEmptyAttrs(a))
+                            len -= ml[4].length + 2;
+                        else
+                            link.attrs = a;
+                    }
                     out.push(link);
-                    i += close + 1 + ml[0].length;
+                    i += len;
                     continue;
                 }
                 // Reference link [text][ref]{attrs}; collapsed [text][] reuses the
@@ -1487,19 +1501,29 @@ function scanInline(text) {
                 const mref = RE_REF_TAIL.exec(tail);
                 if (mref && innerText !== '') {
                     flush();
+                    let len = close + 1 + mref[0].length;
+                    let attrs;
+                    if (mref[2]) {
+                        const a = parseAttrs(mref[2]);
+                        // An empty-attr trailing `{…}` is literal, not consumed.
+                        if (isEmptyAttrs(a))
+                            len -= mref[2].length + 2;
+                        else
+                            attrs = a;
+                    }
                     const refLink = {
                         type: 'link',
                         href: '',
                         children: scanInline(innerText),
                         ref: mref[1] !== '' ? mref[1] : innerText,
-                        // rawRef includes any trailing {attrs} so the literal fallback
-                        // for an unresolved ref preserves the full source.
-                        rawRef: rest.slice(0, close + 1 + mref[0].length),
+                        // rawRef includes any consumed trailing {attrs} so the literal
+                        // fallback for an unresolved ref preserves the full source.
+                        rawRef: rest.slice(0, len),
                     };
-                    if (mref[2])
-                        refLink.attrs = parseAttrs(mref[2]);
+                    if (attrs)
+                        refLink.attrs = attrs;
                     out.push(refLink);
-                    i += close + 1 + mref[0].length;
+                    i += len;
                     continue;
                 }
             }
@@ -1640,9 +1664,14 @@ function scanInline(text) {
             const attr = RE_INLINE_ATTR.exec(rest);
             if (attr && out.length) {
                 const prev = out[out.length - 1];
-                if (prev.type !== 'text') {
+                const parsed = parseAttrs(attr[1]);
+                // A `{...}` that yields no real attribute is literal text (PART 9
+                // §15), not an empty attribute block to attach. Without this guard a
+                // payload like `{=hl=}`, `{ }`, or `{???}` after a non-text node is
+                // silently consumed and dropped.
+                if (prev.type !== 'text' && !isEmptyAttrs(parsed)) {
                     ;
-                    prev.attrs = mergeAttrs(prev.attrs, parseAttrs(attr[1]));
+                    prev.attrs = mergeAttrs(prev.attrs, parsed);
                     i += attr[0].length;
                     continue;
                 }
