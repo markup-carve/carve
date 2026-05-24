@@ -36,7 +36,7 @@ jobs:
           - repo: markup-carve/carve-php
             submodule: tests/spec
     steps:
-      - name: Bump ${{ matrix.repo }} to carve ${{ github.sha }}
+      - name: Bump ${{ matrix.repo }}
         env:
           GH_TOKEN: ${{ secrets.BUMP_TOKEN }}
           REPO: ${{ matrix.repo }}
@@ -49,13 +49,16 @@ jobs:
           # converging on main also self-heals if main moved since the push.
           CARVE_SHA="$(git ls-remote "https://github.com/${{ github.repository }}.git" refs/heads/main | cut -f1)"
           short="${CARVE_SHA:0:7}"
+          echo "Bumping $REPO to carve main $short"
 
           gh auth setup-git
           gh repo clone "$REPO" work -- --depth 1
           cd work
 
           git submodule update --init "$SUB"
-          git -C "$SUB" fetch origin "$CARVE_SHA"
+          # Fetch the main branch (always served), then check out the resolved
+          # commit from it -- more portable than fetching a bare SHA.
+          git -C "$SUB" fetch origin main
           git -C "$SUB" checkout "$CARVE_SHA"
 
           if git diff --quiet -- "$SUB"; then
