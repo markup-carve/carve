@@ -1149,7 +1149,7 @@ defines how browsers render <abbr title="World Wide Web">WWW</abbr> content.</p>
 ### 4.20 Extensions (Custom Elements)
 
 > Non-normative narrative. The normative taxonomy + extension contract are in
-> [`../extensions.md`](../extensions.md).
+> [`../extensions`](../extensions).
 
 Carve needs a generic extension mechanism for domain-specific elements that
 don't belong in core (embeds, mentions, custom widgets, etc.).

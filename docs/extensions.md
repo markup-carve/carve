@@ -1,4 +1,4 @@
-# Carve extensions (NORMATIVE)
+# Carve extensions contract (NORMATIVE)
 
 This document is normative. The conformance corpus (`tests/corpus`) remains the
 authority for Tier-1 output; this document defines the feature taxonomy and the
@@ -8,7 +8,7 @@ extension mechanism every implementation realizes.
 
 | Tier | Definition | Default | Conformance |
 |------|------------|---------|-------------|
-| 1 · Core | Normative syntax in grammar.ebnf + the corpus; identical output everywhere. | Always on | Mandatory (corpus) |
+| 1 · Core | Normative syntax in `resources/grammar.ebnf` + the corpus; identical output everywhere. | Always on | Mandatory (corpus) |
 | 2 · Standard-recommended | Spec-listed behaviors every impl SHOULD offer but ship off/passthrough. | Off / passthrough | Optional corpus when enabled |
 | 3 · App extension | Not in the spec, not conformance-tested, may exist in one impl only. | Off | Never |
 
