@@ -1,8 +1,10 @@
 # Carve extensions contract (NORMATIVE)
 
 This document is normative. The conformance corpus (`tests/corpus`) remains the
-authority for Tier-1 output; this document defines the feature taxonomy and the
-extension mechanism every implementation realizes.
+authority for Tier-1 output; the optional Tier-2 corpus
+(`tests/corpus-optional`) pins configuration-dependent outputs per feature id.
+This document defines the feature taxonomy and the extension mechanism every
+implementation realizes.
 
 ## 1. Feature taxonomy
 
@@ -65,5 +67,6 @@ An extension is a named unit contributing any subset of four things, run as:
 
 - This document is the normative home for the taxonomy + contract.
 - syntax.md §4.20 is the non-normative narrative.
-- Conformance: Tier-1 = existing corpus (mandatory); Tier-2 = optional corpus
-  subset, run per enabled feature; Tier-3 = never in any corpus.
+- Conformance: Tier-1 = existing corpus (mandatory); Tier-2 =
+  `tests/corpus-optional` + `manifest.json`, run per enabled feature; Tier-3 =
+  never in any corpus.

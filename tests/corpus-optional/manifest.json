@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "slug": "01-social-link-templates",
+      "feature": "social-link-templates",
+      "description": "Mention and tag rendering with configured URL templates."
+    },
+    {
+      "slug": "02-emoji-map",
+      "feature": "emoji-map",
+      "description": "Emoji shortcode rendering against a supplied glyph map."
+    },
+    {
+      "slug": "03-smart-quotes-locale-de",
+      "feature": "smart-quotes-locale-de",
+      "description": "Locale-specific smart quotes using German quote characters."
+    },
+    {
+      "slug": "04-bare-url-autolink",
+      "feature": "bare-url-autolink",
+      "description": "Bare URLs become links when autolinking is explicitly enabled."
+    }
+  ]
+}
