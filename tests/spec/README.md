@@ -32,3 +32,7 @@ For a reference runner that walks fenced examples, see [`markup-carve/carve-php`
 ## Canonical format
 
 For implementations starting fresh, the paired-file format at [`../corpus/`](../corpus/) is simpler to consume (one input file, one expected file, both named by basename). Either format is fine — pick whichever fits your test runner.
+
+Tier-2 optional coverage lives separately at [`../corpus-optional/`](../corpus-optional/).
+Those fixtures are feature-tagged via `manifest.json` and are consumed only by
+implementations that explicitly enable the corresponding feature.
