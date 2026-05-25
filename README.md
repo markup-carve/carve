@@ -11,6 +11,7 @@ Carve builds on Markdown's basics and Djot's technical rigor while adding:
 - **Visual mnemonics** - Syntax resembles its output
 - **Human factors research** - Based on how non-technical users naturally mark up text
 - **Progressive disclosure** - Basic usage is trivial, power features exist when needed
+- **Extendable by design** - Core syntax stays small while standard and app-level extensions fit a defined contract
 - **Social conventions** - `@mentions` and `#tags` are recognized as first-class inline tokens
 
 ## Quick Reference
