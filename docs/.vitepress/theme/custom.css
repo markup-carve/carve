@@ -72,3 +72,85 @@ html.dark .vp-code span[data-carve-highlight] {
     grid-template-columns: 1fr;
   }
 }
+
+/*
+ * Implementation comparison dashboard blocks.
+ */
+.impl-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.impl-summary-card {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  padding: 0.9rem;
+  background: var(--vp-c-bg-soft);
+}
+
+.impl-summary-card strong {
+  display: block;
+  color: var(--vp-c-brand-1);
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.impl-summary-card span {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--vp-c-text-2);
+  font-size: 0.9rem;
+}
+
+.impl-chart {
+  display: grid;
+  gap: 0.7rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.impl-chart-row {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr) 5.5rem;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.impl-chart-row > span {
+  font-weight: 600;
+}
+
+.impl-chart-row > div {
+  height: 0.85rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+}
+
+.impl-chart-row i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--vp-c-brand-1);
+}
+
+.impl-chart-row code {
+  justify-self: end;
+}
+
+@media (max-width: 768px) {
+  .impl-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .impl-chart-row {
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+  }
+
+  .impl-chart-row code {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
