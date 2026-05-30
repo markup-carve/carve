@@ -9,6 +9,7 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "corpus:build": "node scripts/generate-corpus.mjs",
+    "compare:impls": "node scripts/compare-impls.mjs",
     "sync-carve-lib": "node scripts/sync-carve-lib.mjs",
     "test": "node --test tests/corpus.test.mjs tests/optional-corpus.test.mjs tests/normativity.test.mjs",
     "test:conformance": "npm run corpus:build && npm test"
