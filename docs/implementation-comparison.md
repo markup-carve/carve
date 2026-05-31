@@ -2,12 +2,13 @@
 
 The shared comparison runner lives in `scripts/compare-impls.mjs` because this
 repo owns the corpus. It compares sibling implementation checkouts against the
-same `.crv` / `.html` pairs and reports default conformance, rough CLI timing,
-and the extension hook surface each implementation exposes.
+same `.crv` / `.html` pairs and reports default conformance, optional Tier-2
+adapter coverage, rough CLI timing, and the extension hook surface each
+implementation exposes.
 
 ## Current Snapshot
 
-Run date: 2026-05-30
+Run date: 2026-05-31
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
@@ -30,11 +31,32 @@ Run date: 2026-05-30
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `b7cdda4` | `154 / 154` | `0` | `0` | `42.81` |
-| JS | `48c45e0` | `154 / 154` | `0` | `0` | `76.53` |
-| PHP | `b1fa677` | `154 / 154` | `0` | `0` | `100.10` |
+| Rust | `07ea8ea` | `154 / 154` | `0` | `0` | `33.83` |
+| JS | `48c45e0` | `154 / 154` | `0` | `0` | `58.92` |
+| PHP | `b1fa677` | `154 / 154` | `0` | `0` | `73.96` |
 
-Spec commit: `f3f138a`
+Spec commit: `840b64f`
+
+## Optional Tier-2 Profile
+
+The optional profile enables a shared adapter per feature where each
+implementation exposes one. Unsupported feature/implementation combinations are
+reported as skipped, not failures.
+
+| Feature | Rust | JS | PHP |
+|---------|------|----|-----|
+| Social link templates | pass | pass | pass |
+| Emoji map | pass | pass | skipped |
+| German smart quotes | skipped | skipped | pass |
+| Bare URL autolink | skipped | skipped | pass |
+
+| Implementation | Optional pass | Skipped | Mismatches | Errors | Avg CLI ms/file |
+|----------------|---------------|---------|------------|--------|-----------------|
+| Rust | `2 / 2` | `2` | `0` | `0` | `63.93` |
+| JS | `2 / 2` | `2` | `0` | `0` | `94.26` |
+| PHP | `3 / 3` | `1` | `0` | `0` | `103.30` |
+
+Optional cross-implementation diffs: `0`
 
 ## CLI Timing
 
@@ -44,18 +66,18 @@ performance, not parser microbenchmarks.
 <div class="impl-chart" aria-label="Average CLI milliseconds per corpus file">
   <div class="impl-chart-row">
     <span>Rust</span>
-    <div><i style="width: 42.8%"></i></div>
-    <code>42.81 ms</code>
+    <div><i style="width: 45.7%"></i></div>
+    <code>33.83 ms</code>
   </div>
   <div class="impl-chart-row">
     <span>JS</span>
-    <div><i style="width: 76.5%"></i></div>
-    <code>76.53 ms</code>
+    <div><i style="width: 79.7%"></i></div>
+    <code>58.92 ms</code>
   </div>
   <div class="impl-chart-row">
     <span>PHP</span>
     <div><i style="width: 100%"></i></div>
-    <code>100.10 ms</code>
+    <code>73.96 ms</code>
   </div>
 </div>
 
@@ -79,6 +101,7 @@ available in each implementation today.
 
 ```bash
 npm run compare:impls
+npm run compare:impls -- --corpus=optional
 npm run compare:impls -- --limit=20 --bench
 ```
 
@@ -99,34 +122,51 @@ CARVE_PHP_DIR=/media/mark/data/work/git/carve-php \
 node scripts/compare-impls.mjs
 ```
 
-Raw output:
+Default raw output:
 
 ```text
 Implementation summary
 profile=default/no-opt-in corpus=core corpus_pairs=154
-rust: pass=154/154 mismatch=0 error=0 avg_ms=42.81
-js: pass=154/154 mismatch=0 error=0 avg_ms=76.53
-php: pass=154/154 mismatch=0 error=0 avg_ms=100.10
+rust: pass=154/154 mismatch=0 error=0 skipped=0 avg_ms=33.83
+js: pass=154/154 mismatch=0 error=0 skipped=0 avg_ms=58.92
+php: pass=154/154 mismatch=0 error=0 skipped=0 avg_ms=73.96
 cross_impl_diffs=0
 
 Extension capability matrix
 rust: inline matcher, block matcher, after_parse, before_render, inline extension renderer, block extension renderer
 js: afterParse, beforeRender, inline extension renderer
 php: inline matcher, block matcher, parsed-document hook, before-render hook, render listeners, converter registration
-extension_profile_note=this run compares default/no-opt-in output. Optional Tier-2 and app-extension max profiles need per-language adapter fixtures.
+extension_profile_note=this run compares default/no-opt-in output. Use --corpus=optional for Tier-2 opt-in adapters.
+```
+
+Optional raw output:
+
+```text
+Implementation summary
+profile=optional/opt-in corpus=optional corpus_pairs=4
+rust: pass=2/2 mismatch=0 error=0 skipped=2 avg_ms=63.93
+js: pass=2/2 mismatch=0 error=0 skipped=2 avg_ms=94.26
+php: pass=3/3 mismatch=0 error=0 skipped=1 avg_ms=103.30
+cross_impl_diffs=0
+
+Optional feature coverage
+social-link-templates: rust, js, php
+emoji-map: rust, js
+smart-quotes-locale-de: php
+bare-url-autolink: php
 ```
 
 ## Scope
 
-The current tool is the minimum/default profile:
+The tool has two profiles:
 
 - It runs the mandatory Tier-1 corpus in `tests/corpus`.
+- It runs optional Tier-2 adapters in `tests/corpus-optional` with
+  `--corpus=optional`.
 - It compares byte-identical output after trimming.
 - It reports CLI-level average time per corpus file.
-- It reports extension system surface area, not behavior under every possible
-  extension configuration.
+- It reports extension system surface area.
 
-The maximum/opt-in profile still needs language-specific adapter fixtures. That
-means a small runner per implementation that enables the same Tier-2 features
-or test extension in each language, then feeds those through the same comparison
-loop.
+Tier-3 app-extension max profiles still need language-specific adapter fixtures.
+That means a small runner per implementation that enables the same test
+extension in each language, then feeds those through the same comparison loop.
