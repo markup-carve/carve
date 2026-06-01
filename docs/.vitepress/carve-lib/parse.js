@@ -1154,27 +1154,23 @@ function parseParagraph(lexer) {
         const ln = lexer.peek();
         if (ln.trim() === '')
             break;
-        // Paragraph interruption (grammar PART 9 §10): at the document top level a
-        // VISIBLE block (list, quote, table, heading, fence, thematic break,
-        // admonition/div, image, …) does NOT interrupt a paragraph — it needs a
-        // blank line before it (full djot), so hard-wrapped prose never silently
-        // becomes a block. INVISIBLE constructs — reference definitions
-        // (link/footnote/abbr) and comments — still interrupt, so they are
-        // recognized next to prose rather than rendering as literal text. Inside
-        // nested content a marker still interrupts too, so `- a\n  - b` keeps
-        // nesting a sublist.
-        const isDivOpener = RE_DIV_OPEN.test(ln) && !RE_ADMONITION_OPEN.test(ln);
+        // Paragraph interruption (grammar PART 9 §10): a paragraph is interrupted
+        // only by INVISIBLE constructs — reference definitions (link/footnote/abbr)
+        // and comments — in any context, PLUS, inside nested content only, a LIST
+        // MARKER (the one Carve deviation: `- a\n  - b` nests a sublist with no
+        // blank line; parseList re-parses item content as nested, so the marker
+        // breaks the lead paragraph and dispatches the sublist). No OTHER visible
+        // block (quote, table, heading, fence, thematic break, admonition/div,
+        // image, …) interrupts a paragraph without a blank line, at the top level
+        // OR nested (full djot), so hard-wrapped prose never silently becomes a
+        // block.
         const isInvisible = RE_LINK_DEF.test(ln) ||
             RE_FOOTNOTE_DEF.test(ln) ||
             RE_ABBR_DEF.test(ln) ||
             RE_COMMENT_LINE.test(ln) ||
             RE_COMMENT_BLOCK.test(ln);
-        // A bare/attrs `:::` opener never interrupts at the top level (a generic
-        // div is a visible block needing a blank line, and skipping it also avoids
-        // a non-terminating retry on an unclosed `:::`). When nested it interrupts
-        // like any other marker — but only once it actually has a closer.
-        const divOk = !isDivOpener || (lexer.nested && divHasCloser(lexer));
-        if (divOk && isBlockStart(ln) && (lexer.nested || isInvisible))
+        const isListMarker = RE_TASK.test(ln) || RE_UNORDERED.test(ln) || RE_ORDERED.test(ln);
+        if (isInvisible || (lexer.nested && isListMarker))
             break;
         lexer.consume();
         lines.push(ln);
@@ -1183,26 +1179,6 @@ function parseParagraph(lexer) {
         type: 'paragraph',
         children: parseInline(lines.join('\n'), lexer.abbrDefs, lexer.linkDefs),
     };
-}
-function isBlockStart(line) {
-    return (RE_HEADING.test(line) ||
-        RE_FENCE.test(line) ||
-        RE_RAW_FENCE.test(line) ||
-        RE_COMMENT_BLOCK.test(line) ||
-        RE_COMMENT_LINE.test(line) ||
-        RE_HR.test(line.trim()) ||
-        RE_BLOCKQUOTE.test(line) ||
-        RE_TASK.test(line) ||
-        RE_UNORDERED.test(line) ||
-        RE_ORDERED.test(line) ||
-        RE_TABLE_ROW.test(line) ||
-        RE_ADMONITION_OPEN.test(line) ||
-        RE_DIV_OPEN.test(line) ||
-        RE_DEFLIST_TERM.test(line) ||
-        isBlockImageLine(line) ||
-        RE_ABBR_DEF.test(line) ||
-        RE_FOOTNOTE_DEF.test(line) ||
-        RE_LINK_DEF.test(line));
 }
 function leadingWhitespace(line) {
     let n = 0;

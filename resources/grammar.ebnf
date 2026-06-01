@@ -716,12 +716,18 @@ EOF = (* end of file *) ;
       the comment. (Small deviation from djot, which keeps such a line as
       paragraph text.)
 
-      SCOPING CARVE-OUT. The visible-block rule applies only at the document
-      top level. Inside already-nested block content (a list item, block
-      quote, or admonition body) a marker still interrupts, so an
-      indentation-only nested sublist nests with no blank line
-      ("- a \n   - b" -> a list whose first item holds a sublist). djot
-      requires a blank line before a nested sublist; Carve does not.
+      SCOPING CARVE-OUT -- LIST MARKERS ONLY. The single visible block that
+      may interrupt a paragraph without a blank line is a LIST MARKER, and
+      only inside already-nested block content (a list item, block quote, or
+      admonition body): an indentation-only nested sublist nests with no
+      blank line ("- a \n   - b" -> a list whose first item holds a sublist).
+      This is the SOLE Carve deviation from djot's blank-line requirement
+      (djot needs a blank line before a nested sublist; Carve does not).
+      EVERY OTHER visible block -- heading, fence, thematic break,
+      admonition/div, table, block quote, bare image -- never interrupts a
+      paragraph without a blank line, at the top level OR nested (matching
+      djot). So a heading after a prose line inside a block quote
+      ("> text \n > # H") is ONE paragraph, not a paragraph plus a heading.
 
    11. LIST MARKER CHANGE STARTS A NEW LIST -- NORMATIVE (governs `list`
       in PART 2). §10 decides FIRST whether a sequence of marker lines

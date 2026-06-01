@@ -2924,3 +2924,277 @@ a paragraph and stays literal.
 ```
 
 :::
+
+## Paragraph interruption
+
+At the document top level a visible block does **not** interrupt a paragraph
+without a blank line (Design Principle 7, hard-wrap friendly). A line that
+begins with a block opener is paragraph text; a block opener parsed as prose
+follows the inline rules (a fence becomes an inline code span, `---` becomes a
+smart em-dash). Leave a blank line to start the block. Two carve-outs interrupt
+with no blank line: invisible constructs (reference definitions, comments) and
+markers inside already-nested content.
+
+A heading marker after a prose line stays literal.
+
+::: compare
+
+```carve
+text
+# H
+```
+
+```html
+<p>text
+# H</p>
+```
+
+:::
+
+A fence run after a prose line is an inline code span, not a code block.
+
+::: compare
+
+````carve
+text
+```
+code
+```
+````
+
+```html
+<p>text
+<code>
+code
+</code></p>
+```
+
+:::
+
+A thematic break after a prose line is a smart em-dash.
+
+::: compare
+
+```carve
+text
+---
+more
+```
+
+```html
+<p>text
+—
+more</p>
+```
+
+:::
+
+A block quote marker after a prose line stays literal.
+
+::: compare
+
+```carve
+text
+> q
+```
+
+```html
+<p>text
+&gt; q</p>
+```
+
+:::
+
+An unordered list marker after a prose line stays paragraph text.
+
+::: compare
+
+```carve
+text
+- a
+- b
+```
+
+```html
+<p>text
+- a
+- b</p>
+```
+
+:::
+
+An ordered list marker after a prose line stays paragraph text.
+
+::: compare
+
+```carve
+text
+1. x
+2. y
+```
+
+```html
+<p>text
+1. x
+2. y</p>
+```
+
+:::
+
+A table row after a prose line stays paragraph text.
+
+::: compare
+
+```carve
+text
+| a | b |
+```
+
+```html
+<p>text
+| a | b |</p>
+```
+
+:::
+
+A bare image after a prose line renders inline, in the same paragraph.
+
+::: compare
+
+```carve
+text
+![a](u)
+```
+
+```html
+<p>text
+<img src="u" alt="a"></p>
+```
+
+:::
+
+Invisible constructs still interrupt with no blank line. A comment line is
+consumed.
+
+::: compare
+
+```carve
+para
+%% c
+```
+
+```html
+<p>para</p>
+```
+
+:::
+
+A reference definition is collected, leaving only the paragraph.
+
+::: compare
+
+```carve
+a[r]
+[r]: http://x
+```
+
+```html
+<p>a[r]</p>
+```
+
+:::
+
+A blank line ends the paragraph; the block then parses fresh.
+
+::: compare
+
+```carve
+text
+
+# H
+```
+
+```html
+<p>text</p>
+<section id="h">
+  <h1>H</h1>
+</section>
+```
+
+:::
+
+::: compare
+
+````carve
+text
+
+```
+c
+```
+````
+
+```html
+<p>text</p>
+<pre><code>c
+</code></pre>
+```
+
+:::
+
+Inside already-nested content the same rule holds: a non-list block opener
+after prose stays paragraph text. A heading in a block quote does not
+interrupt without a blank line.
+
+::: compare
+
+```carve
+> text
+> # H
+```
+
+```html
+<blockquote><p>text
+# H</p></blockquote>
+```
+
+:::
+
+The one exception is a list marker: a nested sublist still nests with no
+blank line (the sole Carve deviation from djot).
+
+::: compare
+
+```carve
+- a
+   - b
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+A non-list block after lead text in a list item also stays paragraph text.
+
+::: compare
+
+```carve
+- text
+  # H
+```
+
+```html
+<ul>
+  <li>text
+# H</li>
+</ul>
+```
+
+:::
