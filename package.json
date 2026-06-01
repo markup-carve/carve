@@ -15,6 +15,7 @@
     "test:conformance": "npm run corpus:build && npm test"
   },
   "devDependencies": {
+    "@markup-carve/vite-plugin-carve": "file:../vite-plugin-carve",
     "markdown-it-container": "^4.0.0",
     "vitepress": "^1.5.0"
   }

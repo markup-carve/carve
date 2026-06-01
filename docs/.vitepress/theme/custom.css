@@ -73,6 +73,45 @@ html.dark .vp-code span[data-carve-highlight] {
   }
 }
 
+.dogfood-carve {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+
+.dogfood-carve h3 {
+  margin-top: 0;
+}
+
+.dogfood-carve pre,
+.dogfood-carve-output {
+  min-height: 8rem;
+  margin: 0;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  padding: 1rem;
+  background: var(--vp-c-bg-soft);
+}
+
+.dogfood-carve pre {
+  overflow: auto;
+}
+
+.dogfood-carve-output > :first-child {
+  margin-top: 0;
+}
+
+.dogfood-carve-output > :last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .dogfood-carve {
+    grid-template-columns: 1fr;
+  }
+}
+
 /*
  * Implementation comparison dashboard blocks.
  */

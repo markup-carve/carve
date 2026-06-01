@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import githubLight from 'shiki/themes/github-light.mjs'
 import githubDark from 'shiki/themes/github-dark.mjs'
 import container from 'markdown-it-container'
+import carve from '@markup-carve/vite-plugin-carve'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const loadGrammar = (file: string) =>
@@ -160,6 +161,10 @@ export default defineConfig({
   lang: 'en-US',
   cleanUrls: true,
   lastUpdated: true,
+
+  vite: {
+    plugins: [carve()],
+  },
 
   markdown: {
     languages: [carveGrammar, ebnfGrammar, orgGrammar, textileGrammar],

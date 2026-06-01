@@ -9,6 +9,13 @@ Type Carve on the left, see the rendered HTML on the right (and the raw HTML bel
 
 <Playground />
 
+## Vite Plugin Dogfood
+
+The docs build also imports a `.crv` file through `@markup-carve/vite-plugin-carve`
+and renders the generated HTML during the VitePress build.
+
+<DogfoodCarve />
+
 ## What this proves
 
 - Every construct in the [Quick Reference](/) and every pair in the [Examples](./examples) flows through the same parser → AST → renderer pipeline you see here.
