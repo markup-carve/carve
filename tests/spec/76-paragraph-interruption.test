@@ -1,0 +1,143 @@
+Paragraph interruption
+
+```
+text
+# H
+.
+<p>text
+# H</p>
+```
+
+````
+text
+```
+code
+```
+.
+<p>text
+<code>
+code
+</code></p>
+````
+
+```
+text
+---
+more
+.
+<p>text
+—
+more</p>
+```
+
+```
+text
+> q
+.
+<p>text
+&gt; q</p>
+```
+
+```
+text
+- a
+- b
+.
+<p>text
+- a
+- b</p>
+```
+
+```
+text
+1. x
+2. y
+.
+<p>text
+1. x
+2. y</p>
+```
+
+```
+text
+| a | b |
+.
+<p>text
+| a | b |</p>
+```
+
+```
+text
+![a](u)
+.
+<p>text
+<img src="u" alt="a"></p>
+```
+
+```
+para
+%% c
+.
+<p>para</p>
+```
+
+```
+a[r]
+[r]: http://x
+.
+<p>a[r]</p>
+```
+
+```
+text
+
+# H
+.
+<p>text</p>
+<section id="h">
+  <h1>H</h1>
+</section>
+```
+
+````
+text
+
+```
+c
+```
+.
+<p>text</p>
+<pre><code>c
+</code></pre>
+````
+
+```
+> text
+> # H
+.
+<blockquote><p>text
+# H</p></blockquote>
+```
+
+```
+- a
+   - b
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- text
+  # H
+.
+<ul>
+  <li>text
+# H</li>
+</ul>
+```
