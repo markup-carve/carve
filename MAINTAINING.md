@@ -62,6 +62,7 @@ the behavior is pinned in `docs/examples.md`:
 | `text\n[^f]: note` — footnote defined but never referenced | No endnotes section is emitted. carve-php stopped leaking an empty `<ol>`. *(43-footnotes)* |
 | Mention URL template | Canonical placeholder `{name}` for mentions and tags, value URL-encoded. carve-js accepts `{name}` (with `{user}` as a legacy alias); carve-php encodes the value. Config-only, so not corpus-testable. |
 | `[x]{}` — bracket + empty attribute block | A valid attribute block forms a span even when empty; both emit `<span>x</span>` (carve-js now materializes the empty span, matching carve-php/djot). *(66-inline-span)* |
+| `[x]{ }` / `[x]{???}` / `[x]{=y=}` — bracket + whitespace/invalid attr block | A whitespace-only block is a valid empty block → `<span>x</span>` (both impls); an invalid block is not an attribute block → the `]` and `{...}` stay literal, inner content still inline-parsed (`[*x*]{???}` → `[<strong>x</strong>]{???}`). carve-php stopped leaking the block (markup-carve/carve-php#43). Normative behavior in grammar §14; not corpus-pinned (impls still diverge at the margins — booleans, colon keys, comment-only blocks). |
 
 ### Intentional divergences (kept on purpose)
 
@@ -69,9 +70,7 @@ _None currently._
 
 ### Open (tracked)
 
-| Input | carve-js | carve-php | Status |
-|-------|----------|-----------|--------|
-| `[x]{ }` / `[x]{???}` / `[x]{"{y}"}` — bracket + whitespace/invalid attr block | `<span>x</span>` (whitespace) / literal (invalid) | leaks the block after materializing the span | carve-php bug — should treat a valid (incl. whitespace) block as the span and an invalid block as literal. Tracked: markup-carve/carve-php#37 |
+_None currently._
 
 When a new divergence is found, verify it on both impls, decide the canonical,
 and either pin it as a `docs/examples.md` pair (and move it to *Resolved*) or
