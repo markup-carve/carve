@@ -2596,6 +2596,51 @@ the explicit "make this a span" hook (it can be decorated by a processor).
 
 :::
 
+A whitespace-only block (`{ }`) is also a valid empty block and forms the
+same bare span.
+
+::: compare
+
+```carve
+[x]{ }
+```
+
+```html
+<p><span>x</span></p>
+```
+
+:::
+
+A block whose content is not a recognized attribute (`{???}`, `{=y=}`) is not
+an attribute block at all: the brackets and the block render literally.
+
+::: compare
+
+```carve
+[x]{???}
+```
+
+```html
+<p>[x]{???}</p>
+```
+
+:::
+
+The bracket content is still inline-parsed even when the trailing block is
+invalid, so emphasis inside the brackets is rendered.
+
+::: compare
+
+```carve
+[*x*]{???}
+```
+
+```html
+<p>[<strong>x</strong>]{???}</p>
+```
+
+:::
+
 ## Superscript and subscript
 
 `^x^` is superscript and `,,x,,` is subscript (intraword, no word-boundary

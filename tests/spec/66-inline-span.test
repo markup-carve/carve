@@ -11,3 +11,21 @@ A [styled run]{.hl} here.
 .
 <p><span>x</span></p>
 ```
+
+```
+[x]{ }
+.
+<p><span>x</span></p>
+```
+
+```
+[x]{???}
+.
+<p>[x]{???}</p>
+```
+
+```
+[*x*]{???}
+.
+<p>[<strong>x</strong>]{???}</p>
+```
