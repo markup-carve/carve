@@ -2,30 +2,9 @@
 import { ref, computed } from 'vue'
 // @ts-expect-error - vendored ESM module without TS resolution context
 import { carveToHtml } from '../../carve-lib/index.js'
-
-const DEFAULT_SOURCE = `# Hello, Carve
-
-This is a *bold* claim, /italic/ truth, and a [link](https://example.com).
-
-- one
-- two
-- [ ] todo
-- [x] done
-
-> The best markup is the one you don't have to think about.
-^ — anonymous
-
-|= Item |= Price |
-| Apple | $1     |
-| Pear  | $2     |
-^ Two fruits and their prices.
-
-Press :kbd[Ctrl+C] to copy. See @alice for the #release-1.0 thread.
-
-*[HTML]: HyperText Markup Language
-
-The HTML spec covers it all.
-`
+// The canonical feature-demo document (also used by the VS Code extension),
+// loaded as raw Carve source via vite-plugin-carve.
+import { source as DEFAULT_SOURCE } from '../../examples/demo.crv'
 
 const source = ref(DEFAULT_SOURCE)
 
@@ -51,7 +30,7 @@ function escapeHtml(s: string): string {
     </div>
     <div class="pane">
       <label>Rendered HTML</label>
-      <div class="output" v-html="html" />
+      <div class="output vp-doc carve-render" v-html="html" />
     </div>
     <div class="pane pane-full">
       <label>HTML source</label>
