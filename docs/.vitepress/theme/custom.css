@@ -319,3 +319,23 @@ html.dark .vp-code span[data-carve-highlight] {
   text-align: center;
   margin: 1rem 0;
 }
+
+/*
+ * Demo styling for a generic attributed div. Carve's `::: {#id .class}` (no
+ * admonition type) emits a plain <div class="…"> that carries no styling of
+ * its own — the author targets it with their own CSS. The feature demo uses
+ * `.highlight`, so style it here to show the hook actually working.
+ */
+.carve-render div.highlight {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--vp-c-brand-1);
+  border-radius: 8px;
+  background: var(--vp-c-brand-soft);
+}
+.carve-render div.highlight > :first-child {
+  margin-top: 0;
+}
+.carve-render div.highlight > :last-child {
+  margin-bottom: 0;
+}
