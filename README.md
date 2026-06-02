@@ -37,7 +37,8 @@ CAPTIONS (images, quotes, tables)
 LISTS
   - unordered item
   1. ordered item
-  - [ ] task  - [x] done
+  - [ ] task
+  - [x] done
 
 CODE
   `inline code`
