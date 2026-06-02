@@ -193,3 +193,149 @@ html.dark .vp-code span[data-carve-highlight] {
     justify-self: start;
   }
 }
+
+/*
+ * Carve rendered output (Playground + dogfood). The container also carries
+ * `vp-doc`, so prose (headings, lists, tables, code, blockquotes) inherits the
+ * VitePress document styling. These rules add the Carve-specific constructs
+ * VitePress has no styling for: admonitions, kbd keycaps, mentions/tags,
+ * figure captions, table captions, and inline/display math.
+ */
+
+/* Admonitions: <aside class="admonition {type}"> with optional title <p>. */
+.carve-render .admonition {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--vp-c-default-1);
+  background: var(--vp-c-default-soft);
+}
+.carve-render .admonition > :first-child {
+  margin-top: 0;
+}
+.carve-render .admonition > :last-child {
+  margin-bottom: 0;
+}
+.carve-render .admonition-title {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.8rem;
+  margin-bottom: 0.4rem;
+}
+.carve-render .admonition.note,
+.carve-render .admonition.info {
+  border-left-color: var(--vp-c-note-1, var(--vp-c-brand-1));
+  background: var(--vp-c-note-soft, var(--vp-c-brand-soft));
+}
+.carve-render .admonition.tip,
+.carve-render .admonition.success {
+  border-left-color: var(--vp-c-green-1);
+  background: var(--vp-c-green-soft);
+}
+.carve-render .admonition.warning {
+  border-left-color: var(--vp-c-yellow-1);
+  background: var(--vp-c-yellow-soft);
+}
+.carve-render .admonition.danger {
+  border-left-color: var(--vp-c-red-1);
+  background: var(--vp-c-red-soft);
+}
+.carve-render .admonition.example {
+  border-left-color: var(--vp-c-purple-1);
+  background: var(--vp-c-purple-soft);
+}
+.carve-render .admonition.quote {
+  border-left-color: var(--vp-c-default-1);
+  background: var(--vp-c-default-soft);
+}
+
+/* Keyboard keys: a subtle keycap. */
+.carve-render kbd {
+  display: inline-block;
+  padding: 0.15em 0.45em;
+  font-family: var(--vp-font-family-mono, ui-monospace, monospace);
+  font-size: 0.82em;
+  line-height: 1.2;
+  color: var(--vp-c-text-1);
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Mentions and tags: a flat, colored pill. */
+.carve-render .mention,
+.carve-render .tag {
+  display: inline-block;
+  padding: 0.05em 0.5em;
+  border-radius: 999px;
+  font-size: 0.9em;
+  font-weight: 500;
+  line-height: 1.4;
+  text-decoration: none;
+}
+.carve-render .mention,
+.carve-render .mention strong {
+  color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+  font-weight: 500;
+}
+.carve-render .tag,
+.carve-render .tag strong {
+  color: var(--vp-c-green-1, var(--vp-c-brand-1));
+  background: var(--vp-c-green-soft, var(--vp-c-brand-soft));
+  font-weight: 500;
+}
+
+/* Figure caption (blockquote / image with `^ caption`). */
+.carve-render figure {
+  margin: 1rem 0;
+}
+.carve-render figcaption {
+  margin-top: 0.4rem;
+  color: var(--vp-c-text-2);
+  font-size: 0.88rem;
+  font-style: italic;
+}
+
+/* Table caption. */
+.carve-render table caption {
+  caption-side: bottom;
+  margin-top: 0.5rem;
+  color: var(--vp-c-text-2);
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+/* Inline / display math (KaTeX not loaded — show the TeX legibly). */
+.carve-render .math {
+  font-family: var(--vp-font-family-mono, ui-monospace, monospace);
+  font-size: 0.95em;
+}
+.carve-render .math.display {
+  display: block;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+/*
+ * Demo styling for a generic attributed div. Carve's `::: {#id .class}` (no
+ * admonition type) emits a plain <div class="…"> that carries no styling of
+ * its own — the author targets it with their own CSS. The feature demo uses
+ * `.highlight`, so style it here to show the hook actually working.
+ */
+.carve-render div.highlight {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--vp-c-brand-1);
+  border-radius: 8px;
+  background: var(--vp-c-brand-soft);
+}
+.carve-render div.highlight > :first-child {
+  margin-top: 0;
+}
+.carve-render div.highlight > :last-child {
+  margin-bottom: 0;
+}

@@ -1,0 +1,195 @@
+---
+title: Carve Feature Demo
+date: 2026-06-02
+author: Carve
+tags: [demo, reference]
+---
+
+%% This file exercises the Carve markup constructs supported by the grammar.
+%% Lines beginning with %% are comments and do not render.
+
+# Carve Feature Demo {#top}
+
+A single document touching every core construct, plus a few renderer-dependent
+extensions at the end. Open it with **Carve: Open Preview** to see it rendered.
+
+## Headings and attributes {#headings .featured}
+
+# Level 1
+## Level 2
+### Level 3
+#### Level 4
+##### Level 5
+###### Level 6
+
+A heading can carry an explicit id and classes: `## Setup {#install .lead}`.
+
+## Inline formatting {#inline}
+
+/italic/, *bold*, /*bold italic*/, _underline_, ~strikethrough~, ==highlight==,
+super^script^ and sub,,script,,. Inline `code span`, and raw inline passthrough
+`<abbr>HTML</abbr>`{=html} emitted verbatim.
+
+Editorial markup: {+ added text +}, {- deleted text -},
+{~ old phrase ~> new phrase ~}, and an {# editorial note #}.
+
+Escapes keep specials literal: \*not bold\*, \/not italic\/, \#not-a-tag.
+
+## Links and images {#links}
+
+Inline [link](https://example.com), titled
+[link](https://example.com "Hover title"), autolink <https://example.com>,
+email autolink <hello@example.com>, and a reference [link][site].
+
+A collapsed reference [site][] reuses the label as the reference.
+
+Cross-reference to a heading by id: jump to </#top>.
+
+[site]: https://example.com "Reference definition"
+
+![A descriptive alt text](images/diagram.png)
+^ Figure 1: images may carry a caption line.
+
+## Lists {#lists}
+
+Unordered:
+
+- apples
+- oranges
+  - clementines
+  - blood oranges
+- pears
+
+Ordered:
+
+1. clone the repo
+2. install dependencies
+   - run the build
+   - run the tests
+3. ship it
+
+Tasks:
+
+- [x] write the grammar
+- [x] write the corpus
+- [ ] write more demos
+
+Definition list:
+
+:: Carve
+:  A post-Djot lightweight markup language.
+:: Djot
+:  The markup language Carve evolves from.
+
+## Blockquotes {#quotes}
+
+> The best way to predict the future is to invent it.
+^ Alan Kay
+
+## Tables {#tables}
+
+|= Fruit       |=> Price |=~ Stock |
+| Apple        |    1.20 |   In     |
+| Banana       |    0.50 |   In     |
+| Dragon fruit |    4.00 |   Out    |
+^ Table 1: column alignment - left, right, center.
+
+## Code and raw blocks {#code}
+
+A fenced code block with a language:
+
+```python
+def greet(name: str) -> str:
+    return f"Hello, {name}!"
+```
+
+A tilde fence works too:
+
+~~~yaml
+key: value
+list:
+  - one
+  - two
+~~~
+
+A raw block passes content through to a named format unchanged:
+
+```raw html
+<details><summary>Native HTML</summary>Rendered as-is.</details>
+```
+
+## Math {#math}
+
+Inline math uses a dollar before a code span: $`e = mc^2`.
+
+Display math uses a double dollar:
+
+$$`\int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}`
+
+## Admonitions and divs {#admonitions}
+
+::: note
+A plain note callout.
+:::
+
+::: tip "With a title"
+Admonitions accept an optional quoted title.
+:::
+
+::: warning
+Heed this warning.
+:::
+
+::: danger
+Critical information.
+:::
+
+A bare `:::` fence with only `{#id .class}` and no admonition type is a
+generic styled container, not a colored callout:
+
+::: {#callout .highlight}
+This block has only an id and classes, so it renders as a plain
+`<div id="callout" class="highlight">` wrapper you can target with your own CSS.
+:::
+
+## Mentions, tags, and inline extensions {#tokens}
+
+Mention a person with @alice and reference a tag like #release-1.0.
+An inline extension names a role: press :kbd[Ctrl+C] to copy.
+
+## Footnotes {#footnotes}
+
+Carve supports footnotes[^note] with definitions collected anywhere.[^second]
+
+[^note]: The reference and its definition are linked by label.
+[^second]: Definitions can appear in any order.
+
+## Smart typography {#typography}
+
+Dashes and ellipsis: an em dash --- an en range 10--20 ... and so on.
+Arrows and comparisons: -> <- <-> => , != <= >= , (c) (r) (tm).
+
+---
+
+## Mermaid (Tier-3 extension) {#mermaid}
+
+%% Mermaid is a third-party extension, not core Carve. It is written as a
+%% fenced code block tagged `mermaid`. It only renders as a diagram when the
+%% renderer enables the Mermaid extension; otherwise it shows as a code block.
+
+```mermaid
+graph TD
+    A[Write Carve] --> B{LSP diagnostics}
+    B -->|clean| C[Preview]
+    B -->|warnings| D[Quick fix]
+    D --> A
+    C --> E[Publish]
+```
+
+```mermaid
+sequenceDiagram
+    Author->>Editor: type Carve
+    Editor->>LSP: textDocument/didChange
+    LSP-->>Editor: diagnostics + semantic tokens
+    Editor-->>Author: live preview
+```
