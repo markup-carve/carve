@@ -70,16 +70,26 @@ _None currently._
 
 ### Open (tracked)
 
-Both found June 2026 while building the Markdown→Carve converters
-(markup-carve/carve-js#62, markup-carve/carve-php#50). In both, **carve-js
-matches the grammar and carve-php diverges**; canonical = carve-js.
+Two carve-php ↔ carve-js differences found June 2026 while building the
+Markdown→Carve converters (markup-carve/carve-js#62, markup-carve/carve-php#50).
+**Both are deliberate carve-php behaviors, not bugs** — carve-php is the broader
+(more CommonMark-/feature-compatible) implementation and carve-js follows the
+narrow core grammar. The open question for each is *which should be canonical*:
+widen the grammar and bring carve-js up, or narrow carve-php. **Do not "fix"
+carve-php to the grammar without that decision** — each behavior is load-bearing
+(see the carve-php tests noted below). The Markdown→Carve converters already
+cope: each targets its own parser, so no converter change is blocked on this.
 
-| Input | Divergence | Canonical (grammar) | Proposed fix |
-|-------|------------|---------------------|--------------|
-| `` ```c++ ``, `` ```js title="x" `` — fence with a non-`[A-Za-z0-9_-]` info string | carve-js: not a valid fence → parsed as an inline code span. carve-php: accepts the whole trimmed info string as the language (`class="language-c++"`). | `language_info = (letter \| digit \| '-' \| '_')+` (`resources/grammar.ebnf:94`), optionally followed by `[attributes]`. A non-conforming info string is not a fence. So carve-js is correct. | 1. Restrict the carve-php fence opener to `language_info [attributes]`; reject anything else as a non-fence. 2. Then realign carve-php `MarkdownToCarve` to normalize an extended Markdown info string to its first token (the carve-js converter already does this). 3. Pin a corpus pair (e.g. `` ```c++ `` body → inline code). |
-| `> quoted`<br>`continued` — a non-`>` line after a blockquote line | carve-js: blockquote ends at the non-`>` line → separate `<p>continued</p>`. carve-php: folds `continued` into the quote (CommonMark-style lazy continuation). | `blockquote = blockquote_line+`, `blockquote_line = '>', [' '], inline_content` (`resources/grammar.ebnf:98-99`) — every quoted line must begin with `>`; there is no lazy continuation. So carve-js is correct. | 1. Make the carve-php blockquote parser end the quote at the first non-`>` line. 2. Markdown's lazy continuation then stays a documented converter limitation in both `MarkdownToCarve` impls (it cannot be expressed in Carve); no separating blank is needed since both impls split. 3. Pin a corpus pair. |
+| Behavior | carve-js | carve-php | Notes / why it is not a simple bug |
+|----------|----------|-----------|------------------------------------|
+| Fenced code info string | Single optional `[A-Za-z0-9_-]*` token, anchored (`RE_FENCE` in `src/parse.ts`). `` ```c++ ``, `` ```js title="x" `` are **not** fences → inline code span. | Accepts a rich info string: punctuated languages (`c++`, `c#`) and a `[Label]` token for code groups / tabs. | carve-php's permissiveness is required by `CodeGroupExtension` and is asserted by `CodeGroupExtensionTest::testLanguageWithSpecialChars`. The grammar's `language_info = [A-Za-z0-9_-]+` (`resources/grammar.ebnf:94`) is narrower than what carve-php deliberately supports, so the grammar — not carve-php — is the thing that is incomplete here. |
+| Lazy blockquote continuation | A non-`>` line ends the quote → separate `<p>` (matches `blockquote = blockquote_line+`, `resources/grammar.ebnf:98-99`). | A non-`>` line that does not start a new block folds into the quote (CommonMark-style). | Explicit, commented "Lazy continuation" branch in `BlockParser::tryParseBlockQuote`. Intentional CommonMark compatibility, not an accident. |
 
-When fixed, move each to *Resolved* and pin the corpus pair in `docs/examples.md`.
+Decision needed from the maintainer per behavior: either (a) widen `grammar.ebnf`
+(and `docs/examples.md`) to bless the carve-php behavior and bring carve-js up to
+it, or (b) declare the narrow grammar canonical and remove the carve-php feature.
+Until then, leave both impls as-is. When decided, pin a `docs/examples.md` pair
+and move the row to *Resolved* (or to *Intentional* if the split is kept).
 
 When a new divergence is found, verify it on both impls, decide the canonical,
 and either pin it as a `docs/examples.md` pair (and move it to *Resolved*) or
