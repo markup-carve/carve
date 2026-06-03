@@ -33,6 +33,25 @@ features:
 
 ## Quick Reference
 
+### Frontmatter
+
+```carve
+---
+title: My Document
+tags: [carve, markup]
+---
+```
+
+A leading `---` fenced block holds document metadata. Add a format token to the opening fence for non-YAML metadata (`---toml`, `---json`, or any label); a bare `---` uses the configurable default format (`yaml` unless the host sets `defaultFrontmatterFormat`):
+
+```carve
+---toml
+title = "My Document"
+---
+```
+
+Carve holds the content **raw** - the verbatim text plus the format label - and does not parse it; your application interprets the declared format. The block is leading-only and never rendered as body content.
+
 ### Emphasis
 
 ```carve
@@ -83,6 +102,13 @@ _underline_   ~strikethrough~
 code block
 ```
 ````
+
+### Math
+
+```carve
+Inline: $`e^{i\pi} + 1 = 0`
+Display: $$`\int_0^1 x \, dx`
+```
 
 ### Quotes & admonitions
 
