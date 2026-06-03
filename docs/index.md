@@ -42,7 +42,7 @@ tags: [carve, markup]
 ---
 ```
 
-A leading `---` fenced block holds document metadata. Add a format token to the opening fence for non-YAML metadata (`---toml`, `---json`, or any label); a bare `---` defaults to `yaml`:
+A leading `---` fenced block holds document metadata. Add a format token to the opening fence for non-YAML metadata (`---toml`, `---json`, or any label); a bare `---` uses the configurable default format (`yaml` unless the host sets `defaultFrontmatterFormat`):
 
 ```carve
 ---toml
