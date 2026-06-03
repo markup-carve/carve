@@ -95,8 +95,21 @@ language_info = (letter | digit | '-' | '_')+ ;  (* may start with a digit, e.g.
 code_content = (* any text until matching fence, preserved literally *) ;
 
 (* --- Blockquotes --- *)
-blockquote = blockquote_line+, [caption] ;
+blockquote = blockquote_line+, {lazy_continuation_line}, [caption] ;
 blockquote_line = '>', [' '], inline_content, newline ;
+
+(* LAZY CONTINUATION -- NORMATIVE (CommonMark-compatible). After one or more
+   blockquote_lines, a line that does NOT carry the '>' marker still continues
+   the blockquote -- exactly as if it carried '>' -- provided it is:
+     - not blank (a blank line ends the blockquote), and
+     - not an "invisible" interrupter: a reference, footnote or abbreviation
+       definition, or a comment (these end the blockquote, matching the
+       paragraph-interruption rule in PART 9 §10), and
+     - not a caption ('^ ' ...), which attaches to the blockquote instead.
+   The lazy line's text is appended to the blockquote's inner content before
+   that content is block-parsed, so a hard-wrapped quoted paragraph need not
+   repeat '>' on every line. *)
+lazy_continuation_line = inline_content, newline ;  (* see the NORMATIVE note above for which lines qualify *)
 
 (* --- Lists --- *)
 list = unordered_list | ordered_list | definition_list ;

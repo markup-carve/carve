@@ -72,24 +72,42 @@ _None currently._
 
 Two carve-php ↔ carve-js differences found June 2026 while building the
 Markdown→Carve converters (markup-carve/carve-js#62, markup-carve/carve-php#50).
-**Both are deliberate carve-php behaviors, not bugs** — carve-php is the broader
+Both are deliberate carve-php behaviors, not bugs — carve-php is the broader
 (more CommonMark-/feature-compatible) implementation and carve-js follows the
-narrow core grammar. The open question for each is *which should be canonical*:
-widen the grammar and bring carve-js up, or narrow carve-php. **Do not "fix"
-carve-php to the grammar without that decision** — each behavior is load-bearing
-(see the carve-php tests noted below). The Markdown→Carve converters already
-cope: each targets its own parser, so no converter change is blocked on this.
+narrow core grammar. The Markdown→Carve converters already cope (each targets
+its own parser), so no converter change is blocked on either.
 
-| Behavior | carve-js | carve-php | Notes / why it is not a simple bug |
-|----------|----------|-----------|------------------------------------|
-| Fenced code info string | Single optional `[A-Za-z0-9_-]*` token, anchored (`RE_FENCE` in `src/parse.ts`). `` ```c++ ``, `` ```js title="x" `` are **not** fences → inline code span. | Accepts a rich info string: punctuated languages (`c++`, `c#`) and a `[Label]` token for code groups / tabs. | carve-php's permissiveness is required by `CodeGroupExtension` and is asserted by `CodeGroupExtensionTest::testLanguageWithSpecialChars`. The grammar's `language_info = [A-Za-z0-9_-]+` (`resources/grammar.ebnf:94`) is narrower than what carve-php deliberately supports, so the grammar — not carve-php — is the thing that is incomplete here. |
-| Lazy blockquote continuation | A non-`>` line ends the quote → separate `<p>` (matches `blockquote = blockquote_line+`, `resources/grammar.ebnf:98-99`). | A non-`>` line that does not start a new block folds into the quote (CommonMark-style). | Explicit, commented "Lazy continuation" branch in `BlockParser::tryParseBlockQuote`. Intentional CommonMark compatibility, not an accident. |
+**Lazy blockquote continuation — DECIDED: carve-php is canonical.** A non-`>`
+line that follows a blockquote line, is not blank, and is not an invisible
+interrupter (reference/footnote/abbreviation definition or comment) or a caption
+continues the quote (CommonMark-style), as carve-php's commented "Lazy
+continuation" branch in `BlockParser::tryParseBlockQuote` already did. The
+grammar is now explicit (`resources/grammar.ebnf`, blockquote section). In
+progress: carve-js gains the behavior in markup-carve/carve-js#63; once merged,
+add a `docs/examples.md` pair + regenerated corpus and confirm carve-php still
+matches, then move this to *Resolved*. (Independent, still-open sub-difference:
+a quoted **heading** followed by a lazy line — carve-php folds it into the
+heading text, carve-js keeps it as a following paragraph; this reproduces with
+no blockquote at all, `# Title\noutside`, so it is a separate heading-parsing
+divergence to track on its own.)
 
-Decision needed from the maintainer per behavior: either (a) widen `grammar.ebnf`
-(and `docs/examples.md`) to bless the carve-php behavior and bring carve-js up to
-it, or (b) declare the narrow grammar canonical and remove the carve-php feature.
-Until then, leave both impls as-is. When decided, pin a `docs/examples.md` pair
-and move the row to *Resolved* (or to *Intentional* if the split is kept).
+**Fenced code info string — OPEN (maintainer decision needed).**
+
+| carve-js | carve-php | Why it is not a simple bug |
+|----------|-----------|----------------------------|
+| Single optional `[A-Za-z0-9_-]*` token, anchored (`RE_FENCE` in `src/parse.ts`). `` ```c++ ``, `` ```js title="x" `` are **not** fences → inline code span. | Accepts a rich info string: punctuated languages (`c++`, `c#`) and a `[Label]` token for code groups / tabs. | carve-php's permissiveness is required by `CodeGroupExtension` and asserted by `CodeGroupExtensionTest::testLanguageWithSpecialChars`. The grammar's `language_info = [A-Za-z0-9_-]+` (`resources/grammar.ebnf:94`) is narrower than what carve-php deliberately supports — so the grammar, not carve-php, is the incomplete thing here. |
+
+Recommended resolution: **widen the core `language_info`** to a single
+no-whitespace info token over a real-language charset (add `+ # .`, e.g.
+`(letter | digit | '-' | '_' | '+' | '#' | '.')+`) so `c++`/`c#`/`f#` become
+valid fences, and bring carve-js's `RE_FENCE` up to match (`` ```c++ `` becomes
+a code block in both). Keep a trailing `[Label]` / `{attributes}` as separate
+optional tokens handled by the code-group extension / attribute parser, not as
+part of `language_info` — i.e. do **not** bless carve-php's "whole rest of the
+line becomes the language" (which yields a broken `class="language-js title=…"`).
+A genuinely multiword info (`js title="x"`) then stays a non-fence in both. When
+decided, update `grammar.ebnf`, pin a `docs/examples.md` pair, and move this to
+*Resolved*.
 
 When a new divergence is found, verify it on both impls, decide the canonical,
 and either pin it as a `docs/examples.md` pair (and move it to *Resolved*) or
