@@ -33,6 +33,17 @@ features:
 
 ## Quick Reference
 
+### Frontmatter
+
+```carve
+---
+title: My Document
+tags: [carve, markup]
+---
+```
+
+A leading `---` fenced block holds YAML metadata. It is parsed into the document's `frontmatter` and never rendered as body content.
+
 ### Emphasis
 
 ```carve
@@ -83,6 +94,13 @@ _underline_   ~strikethrough~
 code block
 ```
 ````
+
+### Math
+
+```carve
+Inline: $`e^{i\pi} + 1 = 0`
+Display: $$`\int_0^1 x \, dx`
+```
 
 ### Quotes & admonitions
 

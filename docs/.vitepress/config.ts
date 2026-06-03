@@ -211,6 +211,7 @@ export default defineConfig({
           { text: 'Edge Cases', link: '/edge-cases' },
           { text: 'Native Features', link: '/native-features-analysis' },
           { text: 'Markup Language Comparison', link: '/markup-languages' },
+          { text: 'Security', link: '/security' },
         ],
       },
       { text: 'Case Study', link: '/case-study/' },
@@ -236,6 +237,7 @@ export default defineConfig({
           { text: 'Edge Cases', link: '/edge-cases' },
           { text: 'Native Features', link: '/native-features-analysis' },
           { text: 'Markup Language Comparison', link: '/markup-languages' },
+          { text: 'Security', link: '/security' },
         ],
       },
       {
