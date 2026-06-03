@@ -70,7 +70,16 @@ _None currently._
 
 ### Open (tracked)
 
-_None currently._
+Both found June 2026 while building the Markdown→Carve converters
+(markup-carve/carve-js#62, markup-carve/carve-php#50). In both, **carve-js
+matches the grammar and carve-php diverges**; canonical = carve-js.
+
+| Input | Divergence | Canonical (grammar) | Proposed fix |
+|-------|------------|---------------------|--------------|
+| `` ```c++ ``, `` ```js title="x" `` — fence with a non-`[A-Za-z0-9_-]` info string | carve-js: not a valid fence → parsed as an inline code span. carve-php: accepts the whole trimmed info string as the language (`class="language-c++"`). | `language_info = (letter \| digit \| '-' \| '_')+` (`resources/grammar.ebnf:94`), optionally followed by `[attributes]`. A non-conforming info string is not a fence. So carve-js is correct. | 1. Restrict the carve-php fence opener to `language_info [attributes]`; reject anything else as a non-fence. 2. Then realign carve-php `MarkdownToCarve` to normalize an extended Markdown info string to its first token (the carve-js converter already does this). 3. Pin a corpus pair (e.g. `` ```c++ `` body → inline code). |
+| `> quoted`<br>`continued` — a non-`>` line after a blockquote line | carve-js: blockquote ends at the non-`>` line → separate `<p>continued</p>`. carve-php: folds `continued` into the quote (CommonMark-style lazy continuation). | `blockquote = blockquote_line+`, `blockquote_line = '>', [' '], inline_content` (`resources/grammar.ebnf:98-99`) — every quoted line must begin with `>`; there is no lazy continuation. So carve-js is correct. | 1. Make the carve-php blockquote parser end the quote at the first non-`>` line. 2. Markdown's lazy continuation then stays a documented converter limitation in both `MarkdownToCarve` impls (it cannot be expressed in Carve); no separating blank is needed since both impls split. 3. Pin a corpus pair. |
+
+When fixed, move each to *Resolved* and pin the corpus pair in `docs/examples.md`.
 
 When a new divergence is found, verify it on both impls, decide the canonical,
 and either pin it as a `docs/examples.md` pair (and move it to *Resolved*) or
