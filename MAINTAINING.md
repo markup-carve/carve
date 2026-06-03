@@ -63,6 +63,8 @@ the behavior is pinned in `docs/examples.md`:
 | Mention URL template | Canonical placeholder `{name}` for mentions and tags, value URL-encoded. carve-js accepts `{name}` (with `{user}` as a legacy alias); carve-php encodes the value. Config-only, so not corpus-testable. |
 | `[x]{}` — bracket + empty attribute block | A valid attribute block forms a span even when empty; both emit `<span>x</span>` (carve-js now materializes the empty span, matching carve-php/djot). *(66-inline-span)* |
 | `[x]{ }` / `[x]{???}` / `[x]{=y=}` — bracket + whitespace/invalid attr block | A whitespace-only block is a valid empty block → `<span>x</span>` (all impls); an invalid block is not an attribute block → the `]` and `{...}` stay literal, inner content still inline-parsed (`[*x*]{???}` → `[<strong>x</strong>]{???}`). carve-php stopped leaking the block (markup-carve/carve-php#43). Normative in grammar §14 and pinned across all three impls *(66-inline-span)*. The boundary of "yields an attribute" still diverges at the margins (carve-php-only: booleans, colon keys, comment-only blocks), so those are deliberately not pinned. |
+| `> quoted`<br>`continued` — lazy blockquote continuation | A non-`>` line that is not blank and not an invisible interrupter (reference/footnote/abbreviation definition or comment) or a caption continues the quote (CommonMark-style). carve-php already did this; carve-js gained it (markup-carve/carve-js#63). Grammar blockquote section made explicit. Matches Djot upstream. *(77-blockquote-lazy-continuation)* |
+| `` ```c++ `` — fenced language tag with punctuation | `language_info` widened to allow `+ # .` so `c++`/`c#`/`f#`/`asp.net` are code blocks; the token stays single, so a multiword/quoted info (`` ```js title="x" ``) is still a non-fence. carve-js widened `RE_FENCE` (markup-carve/carve-js#64); carve-php already accepted these. *(78-fenced-code-language-with-punctuation)* |
 
 ### Intentional divergences (kept on purpose)
 
@@ -70,44 +72,18 @@ _None currently._
 
 ### Open (tracked)
 
-Two carve-php ↔ carve-js differences found June 2026 while building the
-Markdown→Carve converters (markup-carve/carve-js#62, markup-carve/carve-php#50).
-Both are deliberate carve-php behaviors, not bugs — carve-php is the broader
-(more CommonMark-/feature-compatible) implementation and carve-js follows the
-narrow core grammar. The Markdown→Carve converters already cope (each targets
-its own parser), so no converter change is blocked on either.
-
-**Lazy blockquote continuation — DECIDED: carve-php is canonical.** A non-`>`
-line that follows a blockquote line, is not blank, and is not an invisible
-interrupter (reference/footnote/abbreviation definition or comment) or a caption
-continues the quote (CommonMark-style), as carve-php's commented "Lazy
-continuation" branch in `BlockParser::tryParseBlockQuote` already did. The
-grammar is now explicit (`resources/grammar.ebnf`, blockquote section). In
-progress: carve-js gains the behavior in markup-carve/carve-js#63; once merged,
-add a `docs/examples.md` pair + regenerated corpus and confirm carve-php still
-matches, then move this to *Resolved*. (Independent, still-open sub-difference:
-a quoted **heading** followed by a lazy line — carve-php folds it into the
-heading text, carve-js keeps it as a following paragraph; this reproduces with
-no blockquote at all, `# Title\noutside`, so it is a separate heading-parsing
-divergence to track on its own.)
-
-**Fenced code info string — OPEN (maintainer decision needed).**
-
-| carve-js | carve-php | Why it is not a simple bug |
-|----------|-----------|----------------------------|
-| Single optional `[A-Za-z0-9_-]*` token, anchored (`RE_FENCE` in `src/parse.ts`). `` ```c++ ``, `` ```js title="x" `` are **not** fences → inline code span. | Accepts a rich info string: punctuated languages (`c++`, `c#`) and a `[Label]` token for code groups / tabs. | carve-php's permissiveness is required by `CodeGroupExtension` and asserted by `CodeGroupExtensionTest::testLanguageWithSpecialChars`. The grammar's `language_info = [A-Za-z0-9_-]+` (`resources/grammar.ebnf:94`) is narrower than what carve-php deliberately supports — so the grammar, not carve-php, is the incomplete thing here. |
-
-Recommended resolution: **widen the core `language_info`** to a single
-no-whitespace info token over a real-language charset (add `+ # .`, e.g.
-`(letter | digit | '-' | '_' | '+' | '#' | '.')+`) so `c++`/`c#`/`f#` become
-valid fences, and bring carve-js's `RE_FENCE` up to match (`` ```c++ `` becomes
-a code block in both). Keep a trailing `[Label]` / `{attributes}` as separate
-optional tokens handled by the code-group extension / attribute parser, not as
-part of `language_info` — i.e. do **not** bless carve-php's "whole rest of the
-line becomes the language" (which yields a broken `class="language-js title=…"`).
-A genuinely multiword info (`js title="x"`) then stays a non-fence in both. When
-decided, update `grammar.ebnf`, pin a `docs/examples.md` pair, and move this to
-*Resolved*.
+**Multi-line headings — carve-php diverges from the grammar.** For
+`# Title`<br>`outside` (a non-blank line after a heading, no blank between),
+Djot upstream folds the line into the heading (Djot headings spill across
+lines), and carve-php does the same. But Carve's grammar specifies SINGLE-line
+ATX headings (`atx_heading = heading_marker, space, inline_content,
+[attributes], newline`; setext is intentionally excluded), so carve-js
+(single-line, `outside` becomes a following paragraph) matches the grammar and
+**carve-php is the diverger** — it carried over Djot's multi-line headings. This
+reproduces with no blockquote at all (`# Title\noutside`). Resolution: bring
+carve-php to single-line headings, then pin a `docs/examples.md` pair. Found
+June 2026 while fixing the lazy-blockquote case (markup-carve/carve-js#63); not
+yet implemented.
 
 When a new divergence is found, verify it on both impls, decide the canonical,
 and either pin it as a `docs/examples.md` pair (and move it to *Resolved*) or

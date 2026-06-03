@@ -3198,3 +3198,40 @@ A non-list block after lead text in a list item also stays paragraph text.
 ```
 
 :::
+
+## Blockquote lazy continuation
+
+A line that follows a `>` line, is not blank, and does not begin its own block continues the blockquote — the `>` may be omitted on continuation lines (CommonMark-style). A blank line ends the quote.
+
+::: compare
+
+```carve
+> quoted
+continued
+```
+
+```html
+<blockquote><p>quoted
+continued</p></blockquote>
+```
+
+:::
+
+## Fenced code language with punctuation
+
+A language tag may contain punctuation (`c++`, `c#`, `f#`, `asp.net`). The info string is still a single token, so a multiword or quoted info (e.g. `js title="x"`) is not a fence.
+
+::: compare
+
+````carve
+```c++
+int main() {}
+```
+````
+
+```html
+<pre><code class="language-c++">int main() {}
+</code></pre>
+```
+
+:::

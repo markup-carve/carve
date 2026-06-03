@@ -91,7 +91,7 @@ code_fence_close = backtick_fence | tilde_fence ;  (* same fence char; length >=
 backtick_fence = '`', '`', '`', {'`'} ;
 tilde_fence = '~', '~', '~', {'~'} ;
 
-language_info = (letter | digit | '-' | '_')+ ;  (* may start with a digit, e.g. `123abc` *)
+language_info = (letter | digit | '-' | '_' | '+' | '#' | '.')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net. May start with a digit. A multiword/quoted info (```js title="x") is NOT a fence. *)
 code_content = (* any text until matching fence, preserved literally *) ;
 
 (* --- Blockquotes --- *)

@@ -1,8 +1,10 @@
 import type { Attrs, Document } from './ast.js';
 export interface ParseOptions {
     positions?: boolean;
+    /** Format label applied to a bare `---` frontmatter fence. Default 'yaml'. */
+    defaultFrontmatterFormat?: string;
 }
-export declare function parse(source: string, _opts?: ParseOptions): Document;
+export declare function parse(source: string, opts?: ParseOptions): Document;
 /**
  * Normalize an explicit `[label]: url` reference label for matching:
  * whitespace-collapsed but case-SENSITIVE. Djot does "no case normalization

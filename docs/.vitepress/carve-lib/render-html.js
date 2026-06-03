@@ -6,6 +6,40 @@
  * structures (table, blockquote, figure, admonition) get two-space
  * indented children for readability.
  */
+/** Schemes allowed on links/images by default when sanitizing is on. */
+const DEFAULT_URL_SCHEMES = ['http', 'https', 'mailto'];
+/**
+ * Neutralize a URL whose scheme is not allowlisted, defeating
+ * `javascript:` / `data:` style injection on link `href` and image `src`.
+ *
+ * A URL with no scheme (relative path, query, fragment, protocol-relative
+ * `//host`) is always allowed. A URL whose scheme is in the allowlist is
+ * passed through unchanged. Anything else collapses to an empty string so
+ * the emitted `href`/`src` is inert while the surrounding text remains.
+ *
+ * Scheme detection ignores leading C0 control characters and whitespace,
+ * which browsers strip before parsing a scheme - so `\tjavascript:` and
+ * ` javascript:` are caught, not bypassed. The returned value is still
+ * passed through `escapeAttr` by the caller.
+ */
+function sanitizeUrl(url, opts) {
+    if (opts.sanitizeUrls === false)
+        return url;
+    // Browsers ignore C0 controls and whitespace when reading the scheme;
+    // strip them for detection so obfuscated schemes can't slip through.
+    const probe = url.replace(/^[\u0000-\u0020]+/, '').replace(/[\t\n\r]/g, '');
+    const scheme = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(probe);
+    if (!scheme)
+        return url;
+    const allowed = opts.allowedUrlSchemes ?? DEFAULT_URL_SCHEMES;
+    return allowed.some((s) => s.toLowerCase() === scheme[1].toLowerCase()) ? url : '';
+}
+/** Inject `data-source-line` into the first opening tag of a rendered block. */
+function withSourceLine(html, line) {
+    if (line === undefined)
+        return html;
+    return html.replace(/^(\s*<[A-Za-z][A-Za-z0-9]*)/, `$1 data-source-line="${line}"`);
+}
 export function renderHtml(ast, opts = {}) {
     const out = [];
     // Section-wrapping pass (grammar PART 9 §13): every top-level heading
@@ -35,10 +69,16 @@ export function renderHtml(ast, opts = {}) {
             sectionStack.push(node.level);
             const headingAttrs = stripId(node.attrs);
             const inner = renderInlines(node.children, opts);
-            out.push(`${indent(depth + 1)}<h${node.level}${renderAttrs(headingAttrs)}>${inner}</h${node.level}>`);
+            const slAttr = opts.sourceLine && node.pos ? ` data-source-line="${node.pos.startLine}"` : '';
+            out.push(`${indent(depth + 1)}<h${node.level}${slAttr}${renderAttrs(headingAttrs)}>${inner}</h${node.level}>`);
             continue;
         }
-        const rendered = renderBlock(node, opts, sectionStack.length);
+        let rendered = renderBlock(node, opts, sectionStack.length);
+        // Raw HTML blocks emit author markup verbatim, so there is no reliable
+        // opening tag to annotate; leave them untouched.
+        if (opts.sourceLine && node.type !== 'raw-block') {
+            rendered = withSourceLine(rendered, node.pos?.startLine);
+        }
         if (rendered !== '')
             out.push(rendered);
     }
@@ -173,12 +213,22 @@ function stripId(attrs) {
 }
 /** Copy attrs without a given key-value (e.g. a structural `href`). */
 function stripKeyValue(attrs, key) {
-    if (!attrs?.keyValues || attrs.keyValues[key] === undefined)
+    if (!attrs?.keyValues)
         return attrs;
-    const { [key]: _omit, ...kv } = attrs.keyValues;
+    // HTML attribute names are case-insensitive, so a `{HREF=...}` override
+    // must be dropped just like `{href=...}` - otherwise it slips past the
+    // structural-URL sanitization as a second, unsanitized attribute.
+    const lower = key.toLowerCase();
+    const matches = (k) => k.toLowerCase() === lower;
+    if (!Object.keys(attrs.keyValues).some(matches))
+        return attrs;
+    const kv = {};
+    for (const [k, v] of Object.entries(attrs.keyValues))
+        if (!matches(k))
+            kv[k] = v;
     const result = { ...attrs, keyValues: kv };
     if (attrs.order)
-        result.order = attrs.order.filter((s) => s !== key);
+        result.order = attrs.order.filter((s) => !matches(s));
     return result;
 }
 function indent(level) {
@@ -559,9 +609,12 @@ function renderFigure(node, opts, level) {
     }
     return `${pad}<figure${renderAttrs(node.attrs)}>\n${inner}\n${pad}  <figcaption>${renderInlines(node.caption, opts)}</figcaption>\n${pad}</figure>`;
 }
-function renderImage(img, _opts) {
+function renderImage(img, opts) {
     const titleAttr = img.title ? ` title="${escapeAttr(img.title)}"` : '';
-    return `<img src="${escapeAttr(img.src)}" alt="${escapeAttr(img.alt)}"${titleAttr}${renderAttrs(img.attrs)}>`;
+    const src = escapeAttr(sanitizeUrl(img.src, opts));
+    // The sanitized structural src wins; never re-emit an author-supplied
+    // `src` from an attribute block, which would bypass sanitization.
+    return `<img src="${src}" alt="${escapeAttr(img.alt)}"${titleAttr}${renderAttrs(stripKeyValue(img.attrs, 'src'))}>`;
 }
 // ============================================================================
 // Inline rendering
@@ -593,7 +646,10 @@ function renderInline(node, opts) {
             return `<code>${escapeHtml(node.value)}</code>`;
         case 'link': {
             const titleAttr = node.title ? ` title="${escapeAttr(node.title)}"` : '';
-            return `<a href="${escapeAttr(node.href)}"${titleAttr}${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</a>`;
+            const href = escapeAttr(sanitizeUrl(node.href, opts));
+            // The sanitized structural href wins; never re-emit an author-supplied
+            // `href` from an attribute block, which would bypass sanitization.
+            return `<a href="${href}"${titleAttr}${renderAttrs(stripKeyValue(node.attrs, 'href'))}>${renderInlines(node.children, opts)}</a>`;
         }
         case 'image':
             return renderImage(node, opts);
@@ -615,7 +671,8 @@ function renderInline(node, opts) {
             const display = node.href.startsWith('mailto:') ? node.href.slice(7) : node.href;
             // The structural href always wins; never re-emit an author-supplied
             // `href` from an attribute block (it would duplicate the attribute).
-            return `<a href="${escapeAttr(node.href)}"${renderAttrs(stripKeyValue(node.attrs, 'href'))}>${escapeHtml(display)}</a>`;
+            const href = escapeAttr(sanitizeUrl(node.href, opts));
+            return `<a href="${href}"${renderAttrs(stripKeyValue(node.attrs, 'href'))}>${escapeHtml(display)}</a>`;
         }
         case 'mention': {
             const text = `@${escapeHtml(node.user)}`;
