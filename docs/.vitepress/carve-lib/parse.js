@@ -438,26 +438,50 @@ function attachBlockPos(lexer, node, startLineIndex, endLineIndexExclusive) {
         endOffset: lexer.lineOffset(endLineIndex) + endLine.length,
     };
 }
+// Trailing `{…}` attribute block on a (possibly multi-line) heading. Quote-
+// and escape-aware so a `}` inside a quoted value does not end it early.
+const RE_HEADING_TRAIL_ATTR = /^([\s\S]*?)[ \t]*\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\}$/;
 function parseHeading(lexer) {
     const lineIndex = lexer.pos;
     const line = lexer.consume();
     const m = RE_HEADING.exec(line);
     const level = m[1].length;
-    const attrSrc = m[3];
-    let text = m[2];
-    const node = { type: 'heading', level, children: [] };
-    if (attrSrc) {
-        const attrs = parseAttrs(attrSrc);
-        if (isEmptyAttrs(attrs)) {
-            // Not a valid attribute block (grammar `attribute_list` needs >= 1
-            // attribute); the brace block is part of the heading text, not dropped.
-            text = line.replace(/^#{1,6}\s+/, '').replace(/\s+$/, '');
+    // Carve headings are multi-line, like Djot (and like blockquotes): the text
+    // spills onto following lines until a blank line. A continuation line may
+    // carry the same-or-lower number of `#` (stripped) or none; a higher/other
+    // heading marker starts a NEW heading, and a caption (`^ …`) or fenced
+    // comment (`%%%`) ends the heading. Per §10 no other block interrupts it.
+    let text = line.replace(/^#{1,6}[ \t]+/, '');
+    const sameOrLower = new RegExp(`^#{1,${level}}[ \\t]+(.+)$`);
+    while (!lexer.eof()) {
+        const next = lexer.peek();
+        if (next.trim() === '')
+            break;
+        const cont = sameOrLower.exec(next);
+        if (cont) {
+            text += '\n' + cont[1];
+            lexer.consume();
+            continue;
         }
-        else {
+        if (/^#{1,6}([ \t]|$)/.test(next) || RE_CAPTION.test(next) || RE_COMMENT_BLOCK.test(next)) {
+            break;
+        }
+        text += '\n' + next;
+        lexer.consume();
+    }
+    const node = { type: 'heading', level, children: [] };
+    // A trailing `{…}` attribute block applies to the whole heading. It is only
+    // consumed when it yields >= 1 real attribute; otherwise it stays text.
+    const am = RE_HEADING_TRAIL_ATTR.exec(text);
+    if (am) {
+        const attrs = parseAttrs(am[2]);
+        if (!isEmptyAttrs(attrs)) {
             node.attrs = attrs;
+            text = am[1].replace(/[ \t]+$/, '');
         }
     }
-    const textColumn = line.indexOf(text) + 1;
+    // Column where the content starts on the first line (the marker + spaces).
+    const textColumn = line.length - line.replace(/^#{1,6}[ \t]+/, '').length + 1;
     node.children = parseInline(text, lexer.abbrDefs, lexer.linkDefs, {
         baseOffset: lexer.lineOffset(lineIndex) + textColumn - 1,
         startLine: lineIndex + 1,

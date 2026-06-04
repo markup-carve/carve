@@ -1,0 +1,11 @@
+Multi-line headings
+
+```
+# Title
+outside
+.
+<section id="title-outside">
+  <h1>Title
+outside</h1>
+</section>
+```

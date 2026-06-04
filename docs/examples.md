@@ -3236,9 +3236,9 @@ int main() {}
 
 :::
 
-## Single-line headings
+## Multi-line headings
 
-A heading is a single line (Carve's grammar ends `atx_heading` at the newline; setext is intentionally excluded). Unlike Djot, a following non-blank line does not spill into the heading — it is a separate block (here, a paragraph inside the section).
+A heading spills onto following lines (like Djot, and like blockquotes), until a blank line. A continuation line may carry the same-or-lower number of `#` (stripped) or none; a higher/other heading marker starts a new heading, and a caption (`^ …`) or fenced comment (`%%%`) ends it. The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
 
 ::: compare
 
@@ -3248,9 +3248,9 @@ outside
 ```
 
 ```html
-<section id="title">
-  <h1>Title</h1>
-  <p>outside</p>
+<section id="title-outside">
+  <h1>Title
+outside</h1>
 </section>
 ```
 
