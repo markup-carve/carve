@@ -8,7 +8,10 @@ const RE_HEADING = /^(#{1,6})\s+(.+?)(?:\s+\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:
 // Thematic break: a line of 3+ of the same `-`, `*`, or `_` (grammar
 // thematic_break). A run alone on a line can't be emphasis (no content).
 const RE_HR = /^(?:-{3,}|\*{3,}|_{3,})\s*$/;
-const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_-]*)\s*$/;
+// Info string is a single language token. The charset covers real-world tags
+// with punctuation (c++, c#, f#, asp.net); a multiword/quoted info (e.g.
+// `js title="x"`) is still not a fence (anchored, no whitespace allowed).
+const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_+#.-]*)\s*$/;
 const RE_UNORDERED = /^(\s*)[-*+]\s+(.*)$/;
 // Ordered marker: decimal, a single letter (alpha), or a roman-numeral
 // run, then `.` or `)`. The dialect is fixed by the FIRST item (see
@@ -50,7 +53,12 @@ const RE_TABLE_ROW = /^\|/;
 // inside parseTable, after a standard `|` row has opened the table.
 const RE_TABLE_CONT = /^\+.*\|\s*$/;
 const RE_BARE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)"|\s+'([^']*)')?\)\s*(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
-const RE_FRONTMATTER_FENCE = /^---\s*$/;
+// Frontmatter open fence: `---` with an optional attached format token
+// (`---toml`, `---json`); bare `---` uses the default format. A token's
+// trailing letters keep it distinct from a thematic break (`-{3,}`).
+const RE_FRONTMATTER_OPEN = /^---(\w*)\s*$/;
+// Frontmatter close fence: bare `---` only.
+const RE_FRONTMATTER_CLOSE = /^---\s*$/;
 // Raw passthrough block: ```raw FORMAT … ``` (§4.15). The info string has
 // two tokens ("raw FORMAT"), so this never collides with RE_FENCE (which
 // allows only a single info token).
@@ -61,8 +69,11 @@ const RE_COMMENT_BLOCK = /^%{3,}\s*$/;
 const RE_COMMENT_LINE = /^%%/;
 class Lexer {
     lines;
+    lineOffsets;
     pos = 0;
     frontmatter;
+    /** Format applied to a bare `---` fence; set from ParseOptions. */
+    defaultFrontmatterFormat = 'yaml';
     abbrDefs = new Map();
     linkDefs = new Map();
     // Footnote definitions keyed by raw label; value is the parsed note
@@ -80,23 +91,34 @@ class Lexer {
     // proves that, every later bare opener (pos only advances) is O(1),
     // keeping pathological "many unclosed `:::`" input linear.
     divNoCloserFrom = Infinity;
-    constructor(source) {
+    constructor(source, opts = {}) {
+        this.defaultFrontmatterFormat = opts.defaultFrontmatterFormat ?? 'yaml';
         this.lines = source.replace(/\r\n?/g, '\n').split('\n');
         // Drop trailing empty line introduced by terminal newline
         if (this.lines.length && this.lines[this.lines.length - 1] === '') {
             this.lines.pop();
         }
-        this.consumeFrontmatter();
+        this.lineOffsets = [];
+        let offset = 0;
+        for (const line of this.lines) {
+            this.lineOffsets.push(offset);
+            offset += line.length + 1;
+        }
+        // Frontmatter is document-leading only; the root lexer consumes it
+        // explicitly in parse(). Sub-lexers (list items, divs, admonitions)
+        // must NOT, or nested `---`-fenced content would be swallowed.
     }
     consumeFrontmatter() {
         if (this.lines.length < 2)
             return;
-        if (!RE_FRONTMATTER_FENCE.test(this.lines[0]))
+        const open = RE_FRONTMATTER_OPEN.exec(this.lines[0]);
+        if (!open)
             return;
         for (let i = 1; i < this.lines.length; i++) {
-            if (RE_FRONTMATTER_FENCE.test(this.lines[i])) {
-                const yaml = this.lines.slice(1, i).join('\n');
-                this.frontmatter = parseYaml(yaml);
+            if (RE_FRONTMATTER_CLOSE.test(this.lines[i])) {
+                const content = this.lines.slice(1, i).join('\n');
+                const format = open[1] !== '' ? open[1] : this.defaultFrontmatterFormat;
+                this.frontmatter = { format, content };
                 this.pos = i + 1;
                 return;
             }
@@ -111,9 +133,15 @@ class Lexer {
     eof() {
         return this.pos >= this.lines.length;
     }
+    lineOffset(lineIndex) {
+        return this.lineOffsets[lineIndex] ?? 0;
+    }
 }
-export function parse(source, _opts = {}) {
-    const lexer = new Lexer(source);
+export function parse(source, opts = {}) {
+    const lexer = new Lexer(source, opts);
+    // Consume leading frontmatter first so `lexer.pos` marks the end of the
+    // metadata region; the def passes and parseBlocks all start from there.
+    lexer.consumeFrontmatter();
     // First pass: collect abbreviation and reference-link definitions so
     // they can be resolved regardless of document order (grammar §6).
     collectAbbrDefs(lexer);
@@ -127,8 +155,11 @@ export function parse(source, _opts = {}) {
     return doc;
 }
 function collectAbbrDefs(lexer) {
-    for (const line of lexer.lines) {
-        const m = RE_ABBR_DEF.exec(line);
+    for (let idx = 0; idx < lexer.lines.length; idx++) {
+        // Skip leading frontmatter (opaque metadata); see collectLinkDefs.
+        if (idx < lexer.pos)
+            continue;
+        const m = RE_ABBR_DEF.exec(lexer.lines[idx]);
         if (m)
             lexer.abbrDefs.set(m[1], m[2]);
     }
@@ -201,16 +232,14 @@ function stripContainerPrefixes(raw) {
  */
 function collectLinkDefs(lexer) {
     let fence = null;
-    // Skip leading YAML frontmatter — it is opaque metadata, never
-    // document content, so a `[ref]: ...` line there is not a definition.
-    let inFront = lexer.lines.length > 0 && RE_FRONTMATTER_FENCE.test(lexer.lines[0]);
     for (let idx = 0; idx < lexer.lines.length; idx++) {
-        const raw = lexer.lines[idx];
-        if (inFront) {
-            if (idx > 0 && RE_FRONTMATTER_FENCE.test(raw))
-                inFront = false;
+        // Skip leading frontmatter — `lexer.pos` is its end (0 when there is
+        // none, including an unclosed opener that is NOT frontmatter), so a
+        // `[ref]: ...` inside it is not collected, while content after an
+        // unclosed opener still is.
+        if (idx < lexer.pos)
             continue;
-        }
+        const raw = lexer.lines[idx];
         const line = stripContainerPrefixes(raw);
         if (fence) {
             const close = line.match(/^ {0,3}([`~]{3,})\s*$/);
@@ -335,6 +364,13 @@ function tryCollectBlockAttributes(lexer) {
     return attrs;
 }
 function parseBlock(lexer) {
+    const startLine = lexer.pos;
+    const node = parseBlockInner(lexer);
+    if (node)
+        attachBlockPos(lexer, node, startLine, lexer.pos);
+    return node;
+}
+function parseBlockInner(lexer) {
     const line = lexer.peek();
     // Block-level constructs in priority order
     if (RE_RAW_FENCE.test(line))
@@ -390,25 +426,67 @@ function parseBlock(lexer) {
         return parseBlockImage(lexer);
     return parseParagraph(lexer);
 }
+function attachBlockPos(lexer, node, startLineIndex, endLineIndexExclusive) {
+    const endLineIndex = Math.max(startLineIndex, endLineIndexExclusive - 1);
+    const endLine = lexer.lines[endLineIndex] ?? '';
+    node.pos = {
+        startLine: startLineIndex + 1,
+        endLine: endLineIndex + 1,
+        startColumn: 1,
+        endColumn: endLine.length + 1,
+        startOffset: lexer.lineOffset(startLineIndex),
+        endOffset: lexer.lineOffset(endLineIndex) + endLine.length,
+    };
+}
+// Trailing `{…}` attribute block on a (possibly multi-line) heading. Quote-
+// and escape-aware so a `}` inside a quoted value does not end it early.
+const RE_HEADING_TRAIL_ATTR = /^([\s\S]*?)[ \t]*\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\}$/;
 function parseHeading(lexer) {
+    const lineIndex = lexer.pos;
     const line = lexer.consume();
     const m = RE_HEADING.exec(line);
     const level = m[1].length;
-    const attrSrc = m[3];
-    let text = m[2];
-    const node = { type: 'heading', level, children: [] };
-    if (attrSrc) {
-        const attrs = parseAttrs(attrSrc);
-        if (isEmptyAttrs(attrs)) {
-            // Not a valid attribute block (grammar `attribute_list` needs >= 1
-            // attribute); the brace block is part of the heading text, not dropped.
-            text = line.replace(/^#{1,6}\s+/, '').replace(/\s+$/, '');
+    // Carve headings are multi-line, like Djot (and like blockquotes): the text
+    // spills onto following lines until a blank line. A continuation line may
+    // carry the same-or-lower number of `#` (stripped) or none; a higher/other
+    // heading marker starts a NEW heading, and a caption (`^ …`) or fenced
+    // comment (`%%%`) ends the heading. Per §10 no other block interrupts it.
+    let text = line.replace(/^#{1,6}[ \t]+/, '');
+    const sameOrLower = new RegExp(`^#{1,${level}}[ \\t]+(.+)$`);
+    while (!lexer.eof()) {
+        const next = lexer.peek();
+        if (next.trim() === '')
+            break;
+        const cont = sameOrLower.exec(next);
+        if (cont) {
+            text += '\n' + cont[1];
+            lexer.consume();
+            continue;
         }
-        else {
+        if (/^#{1,6}([ \t]|$)/.test(next) || RE_CAPTION.test(next) || RE_COMMENT_BLOCK.test(next)) {
+            break;
+        }
+        text += '\n' + next;
+        lexer.consume();
+    }
+    const node = { type: 'heading', level, children: [] };
+    // A trailing `{…}` attribute block applies to the whole heading. It is only
+    // consumed when it yields >= 1 real attribute; otherwise it stays text.
+    const am = RE_HEADING_TRAIL_ATTR.exec(text);
+    if (am) {
+        const attrs = parseAttrs(am[2]);
+        if (!isEmptyAttrs(attrs)) {
             node.attrs = attrs;
+            text = am[1].replace(/[ \t]+$/, '');
         }
     }
-    node.children = parseInline(text, lexer.abbrDefs, lexer.linkDefs);
+    // Column where the content starts on the first line (the marker + spaces).
+    const textColumn = line.length - line.replace(/^#{1,6}[ \t]+/, '').length + 1;
+    node.children = parseInline(text, lexer.abbrDefs, lexer.linkDefs, {
+        baseOffset: lexer.lineOffset(lineIndex) + textColumn - 1,
+        startLine: lineIndex + 1,
+        startColumn: textColumn,
+    });
     return node;
 }
 function parseFence(lexer) {
@@ -679,10 +757,25 @@ function parseBlockQuote(lexer) {
         if (m) {
             lexer.consume();
             inner.push(m[1] ?? '');
+            continue;
         }
-        else {
+        // Lazy continuation: a non-`>` line that does not itself start a block
+        // folds into the quote (CommonMark-style; matches carve-php, which is the
+        // canonical here). A blank line ends the quote. The only non-blank lines
+        // that end it are the ones that interrupt a paragraph anywhere — the
+        // "invisible" reference/footnote/abbr definitions and comments — plus a
+        // caption `^ …`, which attaches to the quote rather than folding in.
+        if (ln.trim() === '' ||
+            RE_LINK_DEF.test(ln) ||
+            RE_FOOTNOTE_DEF.test(ln) ||
+            RE_ABBR_DEF.test(ln) ||
+            RE_COMMENT_LINE.test(ln) ||
+            RE_COMMENT_BLOCK.test(ln) ||
+            RE_CAPTION.test(ln)) {
             break;
         }
+        lexer.consume();
+        inner.push(ln);
     }
     const subLexer = new Lexer(inner.join('\n'));
     subLexer.abbrDefs = lexer.abbrDefs;
@@ -1150,6 +1243,7 @@ function splitTableRow(line) {
 }
 function parseParagraph(lexer) {
     const lines = [];
+    const startLineIndex = lexer.pos;
     while (!lexer.eof()) {
         const ln = lexer.peek();
         if (ln.trim() === '')
@@ -1177,7 +1271,11 @@ function parseParagraph(lexer) {
     }
     return {
         type: 'paragraph',
-        children: parseInline(lines.join('\n'), lexer.abbrDefs, lexer.linkDefs),
+        children: parseInline(lines.join('\n'), lexer.abbrDefs, lexer.linkDefs, {
+            baseOffset: lexer.lineOffset(startLineIndex),
+            startLine: startLineIndex + 1,
+            startColumn: 1,
+        }),
     };
 }
 function leadingWhitespace(line) {
@@ -1323,22 +1421,35 @@ function smartToken(text, i, prev) {
     }
     return null;
 }
-function parseInline(text, abbrDefs, linkDefs = new Map()) {
-    const nodes = applyAbbreviations(scanInline(text), abbrDefs);
+function parseInline(text, abbrDefs, linkDefs = new Map(), source = inlineSource()) {
+    const nodes = applyAbbreviations(scanInline(text, source), abbrDefs);
     return applyLinkDefs(nodes, linkDefs);
 }
-function scanInline(text) {
+function inlineSource(overrides = {}) {
+    return {
+        baseOffset: overrides.baseOffset ?? 0,
+        startLine: overrides.startLine ?? 1,
+        startColumn: overrides.startColumn ?? 1,
+    };
+}
+function scanInline(text, source = inlineSource()) {
     const out = [];
     let i = 0;
     let buf = '';
+    let bufStart = 0;
     // Precompute each `[`'s balancing `]` once (O(n)) so the link/image/span
     // branches resolve the close bracket in O(1); see buildBracketMap.
     const bracketClose = text.includes('[') ? buildBracketMap(text) : {};
     const flush = () => {
         if (buf) {
-            out.push({ type: 'text', value: buf });
+            out.push(withPos({ type: 'text', value: buf }, source, text, bufStart, i));
             buf = '';
         }
+    };
+    const append = (value) => {
+        if (!buf)
+            bufStart = i;
+        buf += value;
     };
     while (i < text.length) {
         const c = text[i];
@@ -1346,13 +1457,13 @@ function scanInline(text) {
         // Hard line break: a backslash at end of line (before a newline).
         if (c === '\\' && text[i + 1] === '\n') {
             flush();
-            out.push({ type: 'hard-break' });
+            out.push(withPos({ type: 'hard-break' }, source, text, i, i + 2));
             i += 2;
             continue;
         }
         // Non-breaking space: a backslash followed by a space (djot).
         if (c === '\\' && text[i + 1] === ' ') {
-            buf += '\u00a0';
+            append('\u00a0');
             i += 2;
             continue;
         }
@@ -1362,7 +1473,7 @@ function scanInline(text) {
         if (c === '\\' && i + 1 < text.length) {
             const nxt = text[i + 1];
             if (/[\\`*_{}\[\]()#+\-.!~^/<>@%|=,"'$&:;?]/.test(nxt)) {
-                buf += nxt;
+                append(nxt);
                 i += 2;
                 continue;
             }
@@ -1383,7 +1494,7 @@ function scanInline(text) {
                     : '';
             const st = smartToken(text, i, prevForQuote);
             if (st) {
-                buf += st.out;
+                append(st.out);
                 i += st.len;
                 continue;
             }
@@ -1397,11 +1508,12 @@ function scanInline(text) {
                 // A verbatim span tagged `{=format}` is raw inline passthrough.
                 const raw = RE_RAW_INLINE.exec(text.slice(i + m[0].length));
                 if (raw) {
-                    out.push({ type: 'raw-inline', format: raw[1], content: inner });
-                    i += m[0].length + raw[0].length;
+                    const len = m[0].length + raw[0].length;
+                    out.push(withPos({ type: 'raw-inline', format: raw[1], content: inner }, source, text, i, i + len));
+                    i += len;
                 }
                 else {
-                    out.push({ type: 'code', value: inner });
+                    out.push(withPos({ type: 'code', value: inner }, source, text, i, i + m[0].length));
                     i += m[0].length;
                 }
                 continue;
@@ -1417,8 +1529,9 @@ function scanInline(text) {
                 if (mm) {
                     flush();
                     const content = mm[2].replace(/^ (.*) $/, '$1');
-                    out.push({ type: 'math', display, content });
-                    i += dollarLen + mm[0].length;
+                    const len = dollarLen + mm[0].length;
+                    out.push(withPos({ type: 'math', display, content }, source, text, i, i + len));
+                    i += len;
                     continue;
                 }
             }
@@ -1446,7 +1559,7 @@ function scanInline(text) {
                         else
                             img.attrs = a;
                     }
-                    out.push(img);
+                    out.push(withPos(img, source, text, i, i + len));
                     i += len;
                     continue;
                 }
@@ -1467,7 +1580,11 @@ function scanInline(text) {
                 const ml = RE_LINK_TAIL.exec(tail);
                 if (ml) {
                     flush();
-                    const link = { type: 'link', href: ml[1], children: scanInline(innerText) };
+                    const link = {
+                        type: 'link',
+                        href: ml[1],
+                        children: scanInline(innerText, shiftSource(source, text, i + 1)),
+                    };
                     const title = ml[2] ?? ml[3];
                     if (title)
                         link.title = title;
@@ -1480,7 +1597,7 @@ function scanInline(text) {
                         else
                             link.attrs = a;
                     }
-                    out.push(link);
+                    out.push(withPos(link, source, text, i, i + len));
                     i += len;
                     continue;
                 }
@@ -1502,7 +1619,7 @@ function scanInline(text) {
                     const refLink = {
                         type: 'link',
                         href: '',
-                        children: scanInline(innerText),
+                        children: scanInline(innerText, shiftSource(source, text, i + 1)),
                         ref: mref[1] !== '' ? mref[1] : innerText,
                         // rawRef includes any consumed trailing {attrs} so the literal
                         // fallback for an unresolved ref preserves the full source.
@@ -1510,7 +1627,7 @@ function scanInline(text) {
                     };
                     if (attrs)
                         refLink.attrs = attrs;
-                    out.push(refLink);
+                    out.push(withPos(refLink, source, text, i, i + len));
                     i += len;
                     continue;
                 }
@@ -1522,7 +1639,7 @@ function scanInline(text) {
             const mfn = RE_FOOTNOTE_REF.exec(rest);
             if (mfn) {
                 flush();
-                out.push({ type: 'footnote', id: mfn[1].trim() });
+                out.push(withPos({ type: 'footnote', id: mfn[1].trim() }, source, text, i, i + mfn[0].length));
                 i += mfn[0].length;
                 continue;
             }
@@ -1538,8 +1655,9 @@ function scanInline(text) {
                     flush();
                     out.push({
                         type: 'span',
-                        children: scanInline(innerText),
+                        children: scanInline(innerText, shiftSource(source, text, i + 1)),
                         attrs: parseAttrs(ms[1]),
+                        pos: sourcePos(source, text, i, i + close + 1 + ms[0].length),
                     });
                     i += close + 1 + ms[0].length;
                     continue;
@@ -1554,11 +1672,11 @@ function scanInline(text) {
                 const ext = {
                     type: 'extension',
                     name: m[1],
-                    content: scanInline(m[2]),
+                    content: scanInline(m[2], shiftSource(source, text, i + m[0].indexOf('[') + 1)),
                 };
                 if (m[3])
                     ext.attrs = parseAttrs(m[3]);
-                out.push(ext);
+                out.push(withPos(ext, source, text, i, i + m[0].length));
                 i += m[0].length;
                 continue;
             }
@@ -1566,7 +1684,7 @@ function scanInline(text) {
             const em = RE_EMOJI.exec(rest);
             if (em) {
                 flush();
-                out.push({ type: 'emoji', name: em[1] });
+                out.push(withPos({ type: 'emoji', name: em[1] }, source, text, i, i + em[0].length));
                 i += em[0].length;
                 continue;
             }
@@ -1577,6 +1695,7 @@ function scanInline(text) {
             if (cr) {
                 flush();
                 const cref = { type: 'crossref', target: cr[1] };
+                cref.pos = sourcePos(source, text, i, i + cr[0].length);
                 out.push(cref);
                 i += cr[0].length;
                 continue;
@@ -1610,7 +1729,7 @@ function scanInline(text) {
                         consumed += am[0].length;
                     }
                 }
-                out.push(auto);
+                out.push(withPos(auto, source, text, i, i + consumed));
                 i += consumed;
                 continue;
             }
@@ -1624,6 +1743,7 @@ function scanInline(text) {
                     type: 'critic-substitute',
                     oldText: sub[1],
                     newText: sub[2],
+                    pos: sourcePos(source, text, i, i + sub[0].length),
                 });
                 i += sub[0].length;
                 continue;
@@ -1631,21 +1751,21 @@ function scanInline(text) {
             const ins = RE_CRITIC_INS.exec(rest);
             if (ins) {
                 flush();
-                out.push({ type: 'critic-insert', children: scanInline(ins[1]) });
+                out.push(withPos({ type: 'critic-insert', children: scanInline(ins[1], shiftSource(source, text, i + 2)) }, source, text, i, i + ins[0].length));
                 i += ins[0].length;
                 continue;
             }
             const del = RE_CRITIC_DEL.exec(rest);
             if (del) {
                 flush();
-                out.push({ type: 'critic-delete', children: scanInline(del[1]) });
+                out.push(withPos({ type: 'critic-delete', children: scanInline(del[1], shiftSource(source, text, i + 2)) }, source, text, i, i + del[0].length));
                 i += del[0].length;
                 continue;
             }
             const cmt = RE_CRITIC_CMT.exec(rest);
             if (cmt) {
                 flush();
-                out.push({ type: 'critic-comment', text: cmt[1] });
+                out.push(withPos({ type: 'critic-comment', text: cmt[1] }, source, text, i, i + cmt[0].length));
                 i += cmt[0].length;
                 continue;
             }
@@ -1671,7 +1791,7 @@ function scanInline(text) {
             const m = RE_MENTION.exec(rest);
             if (m) {
                 flush();
-                out.push({ type: 'mention', user: m[1] });
+                out.push(withPos({ type: 'mention', user: m[1] }, source, text, i, i + m[0].length));
                 i += m[0].length;
                 continue;
             }
@@ -1681,33 +1801,33 @@ function scanInline(text) {
             const m = RE_TAG.exec(rest);
             if (m) {
                 flush();
-                out.push({ type: 'tag', name: m[1] });
+                out.push(withPos({ type: 'tag', name: m[1] }, source, text, i, i + m[0].length));
                 i += m[0].length;
                 continue;
             }
         }
         // Emphasis-family delimiters
-        const em = matchEmphasis(text, i);
+        const em = matchEmphasis(text, i, source);
         if (em) {
             flush();
-            out.push(em.node);
+            out.push(withPos(em.node, source, text, i, em.end));
             i = em.end;
             continue;
         }
         // Soft break (single newline inside paragraph)
         if (c === '\n') {
             flush();
-            out.push({ type: 'soft-break' });
+            out.push(withPos({ type: 'soft-break' }, source, text, i, i + 1));
             i++;
             continue;
         }
-        buf += c;
+        append(c);
         i++;
     }
     flush();
     return out;
 }
-function matchEmphasis(text, i) {
+function matchEmphasis(text, i, source) {
     const c = text[i];
     // Bold-italic /*...*/  (priority over /italic/ and *bold*)
     if (c === '/' && text[i + 1] === '*') {
@@ -1715,7 +1835,7 @@ function matchEmphasis(text, i) {
         if (close !== -1) {
             const inner = text.slice(i + 2, close);
             return {
-                node: { type: 'bold-italic', children: scanInline(inner) },
+                node: { type: 'bold-italic', children: scanInline(inner, shiftSource(source, text, i + 2)) },
                 end: close + 2,
             };
         }
@@ -1730,7 +1850,7 @@ function matchEmphasis(text, i) {
             const inner = text.slice(i + 2, close);
             if (inner.trim() && !inner.startsWith(' ') && !inner.endsWith(' ')) {
                 return {
-                    node: { type: 'sub', children: scanInline(inner) },
+                    node: { type: 'sub', children: scanInline(inner, shiftSource(source, text, i + 2)) },
                     end: close + 2,
                 };
             }
@@ -1744,7 +1864,7 @@ function matchEmphasis(text, i) {
             const inner = text.slice(i + 2, close);
             if (inner.trim() && !inner.startsWith(' ') && !inner.endsWith(' ')) {
                 return {
-                    node: { type: 'highlight', children: scanInline(inner) },
+                    node: { type: 'highlight', children: scanInline(inner, shiftSource(source, text, i + 2)) },
                     end: close + 2,
                 };
             }
@@ -1780,7 +1900,7 @@ function matchEmphasis(text, i) {
             if (close !== -1) {
                 const inner = text.slice(i + 1, close);
                 return {
-                    node: { type, children: scanInline(inner) },
+                    node: { type, children: scanInline(inner, shiftSource(source, text, i + 1)) },
                     end: close + 1,
                 };
             }
@@ -1791,6 +1911,44 @@ function matchEmphasis(text, i) {
 function findClose(text, from, marker) {
     // Search forward for marker, simple substring match
     return text.indexOf(marker, from);
+}
+function withPos(node, source, text, start, end) {
+    node.pos = sourcePos(source, text, start, end);
+    return node;
+}
+function sourcePos(source, text, start, end) {
+    const startPoint = pointAt(source, text, start);
+    const endPoint = pointAt(source, text, end);
+    return {
+        startLine: startPoint.line,
+        endLine: endPoint.line,
+        startColumn: startPoint.column,
+        endColumn: endPoint.column,
+        startOffset: source.baseOffset + start,
+        endOffset: source.baseOffset + end,
+    };
+}
+function shiftSource(source, text, by) {
+    const point = pointAt(source, text, by);
+    return {
+        baseOffset: source.baseOffset + by,
+        startLine: point.line,
+        startColumn: point.column,
+    };
+}
+function pointAt(source, text, offset) {
+    let line = source.startLine;
+    let column = source.startColumn;
+    for (let i = 0; i < offset; i++) {
+        if (text[i] === '\n') {
+            line++;
+            column = 1;
+        }
+        else {
+            column++;
+        }
+    }
+    return { line, column };
 }
 function findEmphasisClose(text, from, delim) {
     let depth = 0;
@@ -2000,47 +2158,5 @@ function attrOrder(a) {
         for (const k of Object.keys(a.keyValues))
             o.push(k);
     return o;
-}
-// ============================================================================
-// Minimal flat YAML parser (key: value, one per line; values are unquoted
-// strings, bare ints, [array literals], or dates)
-// ============================================================================
-function parseYaml(src) {
-    const out = {};
-    for (const raw of src.split('\n')) {
-        const line = raw.trim();
-        if (line === '' || line.startsWith('#'))
-            continue;
-        const m = /^([A-Za-z_][\w-]*)\s*:\s*(.*)$/.exec(line);
-        if (!m)
-            continue;
-        out[m[1]] = parseYamlValue(m[2]);
-    }
-    return out;
-}
-function parseYamlValue(s) {
-    const v = s.trim();
-    if (v === '')
-        return '';
-    if (v === 'true')
-        return true;
-    if (v === 'false')
-        return false;
-    if (v === 'null')
-        return null;
-    if (/^-?\d+$/.test(v))
-        return Number(v);
-    if (/^-?\d+\.\d+$/.test(v))
-        return Number(v);
-    if (v.startsWith('[') && v.endsWith(']')) {
-        return v
-            .slice(1, -1)
-            .split(',')
-            .map((x) => parseYamlValue(x.trim()));
-    }
-    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
-        return v.slice(1, -1);
-    }
-    return v;
 }
 //# sourceMappingURL=parse.js.map

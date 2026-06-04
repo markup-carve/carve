@@ -87,10 +87,10 @@ function maskCode(src) {
             return blanks(line);
         }
         // Mirror Carve's RE_FENCE exactly (src/parse.ts): a fence opener is
-        // a >=3 run with at most a single `[A-Za-z0-9_-]` info token. A
+        // a >=3 run with at most a single `[A-Za-z0-9_+#.-]` info token. A
         // multiword / attribute info string (```ts title=demo) is NOT a
         // Carve fence — Carve parses it as prose, so we must not mask it.
-        const open = line.match(/^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_-]*)\s*$/);
+        const open = line.match(/^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_+#.-]*)\s*$/);
         if (open) {
             fence = { ch: open[2][0], len: open[2].length };
             return blanks(line);

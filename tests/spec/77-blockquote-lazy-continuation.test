@@ -1,0 +1,9 @@
+Blockquote lazy continuation
+
+```
+> quoted
+continued
+.
+<blockquote><p>quoted
+continued</p></blockquote>
+```

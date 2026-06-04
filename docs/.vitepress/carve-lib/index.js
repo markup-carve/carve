@@ -23,6 +23,7 @@ import { resolveHeadingIds } from './heading-ids.js';
 import { renderHtml as renderHtmlImpl } from './render-html.js';
 export * from './ast.js';
 export { djotMigrationWarnings, formatMigrationWarnings, } from './djot-migrate.js';
+export { markdownToCarve } from './markdown-migrate.js';
 /**
  * Parse Carve source into a typed AST.
  *
@@ -50,7 +51,9 @@ export function resolve(doc) {
 }
 /** Convenience: parse + resolve + render in one call. */
 export function carveToHtml(source, opts = {}) {
-    let doc = resolve(parse(source, opts));
+    // `sourceLine` rendering needs block positions, so enable parsing them.
+    const parseOpts = opts.sourceLine ? { ...opts, positions: true } : opts;
+    let doc = resolve(parse(source, parseOpts));
     const exts = opts.extensions ?? [];
     for (const ext of exts)
         if (ext.afterParse)

@@ -1,0 +1,10 @@
+Fenced code language with punctuation
+
+````
+```c++
+int main() {}
+```
+.
+<pre><code class="language-c++">int main() {}
+</code></pre>
+````

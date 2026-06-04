@@ -3198,3 +3198,60 @@ A non-list block after lead text in a list item also stays paragraph text.
 ```
 
 :::
+
+## Blockquote lazy continuation
+
+A line that follows a `>` line, is not blank, and does not begin its own block continues the blockquote — the `>` may be omitted on continuation lines (CommonMark-style). A blank line ends the quote.
+
+::: compare
+
+```carve
+> quoted
+continued
+```
+
+```html
+<blockquote><p>quoted
+continued</p></blockquote>
+```
+
+:::
+
+## Fenced code language with punctuation
+
+A language tag may contain punctuation (`c++`, `c#`, `f#`, `asp.net`). The info string is still a single token, so a multiword or quoted info (e.g. `js title="x"`) is not a fence.
+
+::: compare
+
+````carve
+```c++
+int main() {}
+```
+````
+
+```html
+<pre><code class="language-c++">int main() {}
+</code></pre>
+```
+
+:::
+
+## Multi-line headings
+
+A heading spills onto following lines (like Djot, and like blockquotes), until a blank line. A continuation line may carry the same-or-lower number of `#` (stripped) or none; a higher/other heading marker starts a new heading, and a caption (`^ …`) or fenced comment (`%%%`) ends it. The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
+
+::: compare
+
+```carve
+# Title
+outside
+```
+
+```html
+<section id="title-outside">
+  <h1>Title
+outside</h1>
+</section>
+```
+
+:::

@@ -3,6 +3,14 @@ export interface Position {
     startLine: number;
     /** 1-based line number, inclusive */
     endLine: number;
+    /** 1-based column number, inclusive */
+    startColumn?: number;
+    /** 1-based column number, exclusive */
+    endColumn?: number;
+    /** 0-based UTF-16 source offset, inclusive */
+    startOffset?: number;
+    /** 0-based UTF-16 source offset, exclusive */
+    endOffset?: number;
 }
 export interface Attrs {
     id?: string;
@@ -24,7 +32,15 @@ export interface BaseNode {
 }
 export interface Document extends BaseNode {
     type: 'document';
-    frontmatter?: Record<string, unknown>;
+    /**
+     * Raw, uninterpreted frontmatter. `content` is the verbatim text between
+     * the fences; `format` is the fence token (default `'yaml'`). Carve does
+     * not parse it - the application interprets the declared format.
+     */
+    frontmatter?: {
+        format: string;
+        content: string;
+    };
     children: BlockNode[];
     /**
      * Footnote definitions collected during parsing, keyed by raw label

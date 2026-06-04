@@ -72,8 +72,21 @@ blank_line = {whitespace}, newline ;
    meaning"). *)
 heading = atx_heading ;
 
-atx_heading = heading_marker, space, inline_content, [attributes], newline ;
+atx_heading = heading_marker, space, inline_content, {heading_continuation_line}, [attributes], newline ;
 heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
+
+(* MULTI-LINE HEADINGS -- NORMATIVE (like Djot; consistent with lazy blockquote
+   continuation and §10 hard-wrap-friendly paragraphs). A heading's text spills
+   onto following lines until a blank line. A continuation line:
+     - may carry the SAME-or-LOWER number of `#` markers (stripped) or none,
+       and its text is appended to the heading;
+     - a HIGHER/other heading marker starts a NEW heading (ends this one);
+     - a caption (`^ ` ...) or a fenced comment (`%%%`) ends the heading;
+     - a blank line ends it.
+   Per §10 no other block (list/quote/fence marker, etc.) interrupts it. The
+   heading id is derived from the full folded text; a trailing [attributes]
+   block on the final line applies to the whole heading. *)
+heading_continuation_line = inline_content, newline ;  (* see the NORMATIVE note above *)
 
 (* --- Thematic Breaks --- *)
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
@@ -91,12 +104,25 @@ code_fence_close = backtick_fence | tilde_fence ;  (* same fence char; length >=
 backtick_fence = '`', '`', '`', {'`'} ;
 tilde_fence = '~', '~', '~', {'~'} ;
 
-language_info = (letter | digit | '-' | '_')+ ;  (* may start with a digit, e.g. `123abc` *)
+language_info = (letter | digit | '-' | '_' | '+' | '#' | '.')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net. May start with a digit. A multiword/quoted info (```js title="x") is NOT a fence. *)
 code_content = (* any text until matching fence, preserved literally *) ;
 
 (* --- Blockquotes --- *)
-blockquote = blockquote_line+, [caption] ;
+blockquote = blockquote_line+, {lazy_continuation_line}, [caption] ;
 blockquote_line = '>', [' '], inline_content, newline ;
+
+(* LAZY CONTINUATION -- NORMATIVE (CommonMark-compatible). After one or more
+   blockquote_lines, a line that does NOT carry the '>' marker still continues
+   the blockquote -- exactly as if it carried '>' -- provided it is:
+     - not blank (a blank line ends the blockquote), and
+     - not an "invisible" interrupter: a reference, footnote or abbreviation
+       definition, or a comment (these end the blockquote, matching the
+       paragraph-interruption rule in PART 9 §10), and
+     - not a caption ('^ ' ...), which attaches to the blockquote instead.
+   The lazy line's text is appended to the blockquote's inner content before
+   that content is block-parsed, so a hard-wrapped quoted paragraph need not
+   repeat '>' on every line. *)
+lazy_continuation_line = inline_content, newline ;  (* see the NORMATIVE note above for which lines qualify *)
 
 (* --- Lists --- *)
 list = unordered_list | ordered_list | definition_list ;
