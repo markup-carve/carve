@@ -3235,3 +3235,23 @@ int main() {}
 ```
 
 :::
+
+## Single-line headings
+
+A heading is a single line (Carve's grammar ends `atx_heading` at the newline; setext is intentionally excluded). Unlike Djot, a following non-blank line does not spill into the heading — it is a separate block (here, a paragraph inside the section).
+
+::: compare
+
+```carve
+# Title
+outside
+```
+
+```html
+<section id="title">
+  <h1>Title</h1>
+  <p>outside</p>
+</section>
+```
+
+:::

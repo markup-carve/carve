@@ -65,6 +65,7 @@ the behavior is pinned in `docs/examples.md`:
 | `[x]{ }` / `[x]{???}` / `[x]{=y=}` — bracket + whitespace/invalid attr block | A whitespace-only block is a valid empty block → `<span>x</span>` (all impls); an invalid block is not an attribute block → the `]` and `{...}` stay literal, inner content still inline-parsed (`[*x*]{???}` → `[<strong>x</strong>]{???}`). carve-php stopped leaking the block (markup-carve/carve-php#43). Normative in grammar §14 and pinned across all three impls *(66-inline-span)*. The boundary of "yields an attribute" still diverges at the margins (carve-php-only: booleans, colon keys, comment-only blocks), so those are deliberately not pinned. |
 | `> quoted`<br>`continued` — lazy blockquote continuation | A non-`>` line that is not blank and not an invisible interrupter (reference/footnote/abbreviation definition or comment) or a caption continues the quote (CommonMark-style). carve-php already did this; carve-js gained it (markup-carve/carve-js#63). Grammar blockquote section made explicit. Matches Djot upstream. *(77-blockquote-lazy-continuation)* |
 | `` ```c++ `` — fenced language tag with punctuation | `language_info` widened to allow `+ # .` so `c++`/`c#`/`f#`/`asp.net` are code blocks; the token stays single, so a multiword/quoted info (`` ```js title="x" ``) is still a non-fence. carve-js widened `RE_FENCE` (markup-carve/carve-js#64); carve-php already accepted these. *(78-fenced-code-language-with-punctuation)* |
+| `# Title`<br>`outside` — single-line headings | A heading is one line (grammar `atx_heading` ends at the newline; setext excluded). A following non-blank line is a separate block, not heading text — unlike Djot, which folds it. carve-js already did this; carve-php stopped folding (markup-carve/carve-php#51). *(79-single-line-headings)* |
 
 ### Intentional divergences (kept on purpose)
 
@@ -72,18 +73,7 @@ _None currently._
 
 ### Open (tracked)
 
-**Multi-line headings — carve-php diverges from the grammar.** For
-`# Title`<br>`outside` (a non-blank line after a heading, no blank between),
-Djot upstream folds the line into the heading (Djot headings spill across
-lines), and carve-php does the same. But Carve's grammar specifies SINGLE-line
-ATX headings (`atx_heading = heading_marker, space, inline_content,
-[attributes], newline`; setext is intentionally excluded), so carve-js
-(single-line, `outside` becomes a following paragraph) matches the grammar and
-**carve-php is the diverger** — it carried over Djot's multi-line headings. This
-reproduces with no blockquote at all (`# Title\noutside`). Resolution: bring
-carve-php to single-line headings, then pin a `docs/examples.md` pair. Found
-June 2026 while fixing the lazy-blockquote case (markup-carve/carve-js#63); not
-yet implemented.
+_None currently._
 
 When a new divergence is found, verify it on both impls, decide the canonical,
 and either pin it as a `docs/examples.md` pair (and move it to *Resolved*) or
