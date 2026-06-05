@@ -231,6 +231,12 @@ comment_block = comment_block_open, newline,
 comment_block_open = "%%%", {'%'} ;  (* 3+ percent signs *)
 comment_block_close = "%%%", {'%'} ;  (* must match opener length *)
 
+(* trailing (inline) line comment: from a %% marker to end of line, content
+   not rendered. The marker requires whitespace or start-of-run before it and
+   is not formed inside code spans / inline-raw, nor when the first % is
+   escaped -- a semantic constraint stated in PART 9, not context-free. *)
+inline_comment = "%%", {character - newline} ;
+
 (* --- Raw Blocks --- *)
 raw_block = "```raw", space, format_name, newline,
             raw_content,
@@ -284,6 +290,7 @@ inline_element = escaped_char
                | mention
                | tag
                | smart_typography
+               | inline_comment
                | hard_break
                | soft_break ;
 
@@ -598,7 +605,8 @@ EOF = (* end of file *) ;
    8. Extensions (:type[content])
    9. Mentions and tags (@user, #tag)
    10. Smart typography (--, ---, etc.)
-   11. Plain text
+   11. Trailing line comments (%%, PART 9 §21)
+   12. Plain text
 
    Disambiguation rule:
    - Prefer literal text over markup: a delimiter that has no valid match
@@ -1038,7 +1046,23 @@ EOF = (* end of file *) ;
       (tests/corpus/50-raw-inline):
         `<br>`{=html}   -> <br>            (emitted verbatim)
         `\foo`{=latex}  ->                (dropped in HTML output)
+
+   21. TRAILING LINE COMMENTS -- NORMATIVE (governs `inline_comment` in PART 3).
+      - A `%%` token is a trailing comment marker only when the character
+        immediately before it is whitespace (space or tab) or it starts the
+        inline run (beginning of paragraph content after leading whitespace).
+      - When recognized, the `%%` and ALL remaining characters up to (but not
+        including) the line break are consumed and produce no output.
+      - `%%` is NEVER recognized inside a code span or raw inline (PART 9 §20);
+        those contexts pass both `%` characters through verbatim.
+      - `\%%` (escaped first percent) is literal -- `%%` is literal text, not a
+        comment marker.
+      - Without preceding whitespace (e.g. `50%%` or `a%%b`) the `%%` is
+        literal -- percentages and doubled-percent tokens in prose are safe.
+      - The comment does NOT cross a line break; a soft-wrapped continuation on
+        the next line of the same paragraph is unaffected (corpus 46-comments-6).
 *)
+
 
 (* ============================================================================
    PART 10: HTML SERIALIZATION CONVENTIONS (NORMATIVE)

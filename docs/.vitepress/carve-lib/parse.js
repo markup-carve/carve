@@ -1499,6 +1499,31 @@ function scanInline(text, source = inlineSource()) {
                 continue;
             }
         }
+        // Trailing (inline) line comment: `%%` preceded by whitespace or at the
+        // start of the run consumes to the next newline (or end of input). The
+        // preceding whitespace is absorbed so the visible text keeps no trailing
+        // space; the terminating newline stays and becomes a soft break. `%%`
+        // inside a code span never reaches here (code is consumed opaquely), and
+        // `\%%` is already handled by the escape branch. (§4.13, grammar
+        // inline_comment.)
+        if (c === '%' && text[i + 1] === '%' && (i === 0 || /[ \t]/.test(text[i - 1]))) {
+            // Absorb the whitespace run immediately before `%%` so the visible text
+            // keeps no trailing space. Flush the trimmed buffer with a source span
+            // that ends where that whitespace begins, and start the comment node
+            // there too, keeping inline source spans contiguous.
+            const trimmed = buf.replace(/[ \t]+$/, '');
+            const commentStart = i - (buf.length - trimmed.length);
+            if (trimmed) {
+                out.push(withPos({ type: 'text', value: trimmed }, source, text, bufStart, commentStart));
+            }
+            buf = '';
+            const nl = text.indexOf('\n', i);
+            const end = nl === -1 ? text.length : nl;
+            const content = text.slice(i + 2, end).replace(/^[ \t]/, '');
+            out.push(withPos({ type: 'comment', block: false, content }, source, text, commentStart, end));
+            i = end;
+            continue;
+        }
         // Inline code spans first (opaque)
         if (c === '`') {
             const m = /^(`+)([\s\S]*?[^`])(\1)(?!`)/.exec(rest);

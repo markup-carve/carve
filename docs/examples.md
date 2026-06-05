@@ -1941,6 +1941,82 @@ Also visible.
 
 :::
 
+A trailing `%%` (preceded by a space or at the start of the line) comments out
+the rest of the physical line. The visible prefix is kept; the comment is not
+rendered.
+
+::: compare
+
+```carve
+Also visible. %% this tail is a comment
+```
+
+```html
+<p>Also visible.</p>
+```
+
+:::
+
+Without a space before it, `%%` is literal - so percentages and `a%%b` are safe.
+
+::: compare
+
+```carve
+50%% off and a%%b stay literal.
+```
+
+```html
+<p>50%% off and a%%b stay literal.</p>
+```
+
+:::
+
+`%%` inside a code span is verbatim.
+
+::: compare
+
+```carve
+Run `a %% b` then done. %% gone
+```
+
+```html
+<p>Run <code>a %% b</code> then done.</p>
+```
+
+:::
+
+A trailing comment works in a heading; it does not affect the generated id.
+
+::: compare
+
+```carve
+# Title %% editor note
+```
+
+```html
+<section id="title">
+  <h1>Title</h1>
+</section>
+```
+
+:::
+
+A trailing comment ends at the line break; the next line of the paragraph stays.
+
+::: compare
+
+```carve
+foo %% note
+bar
+```
+
+```html
+<p>foo
+bar</p>
+```
+
+:::
+
 ## Raw blocks
 
 A ` ```raw FORMAT ` block passes its content through verbatim when FORMAT
