@@ -152,6 +152,16 @@ admonition content
 @username   #tagname
 ```
 
+### Comments
+
+```carve
+%% whole-line comment
+text %% trailing comment
+%%%
+block comment
+%%%
+```
+
 ## Status
 
 Carve is a design exploration. The specification lives in the [Case Study](./case-study/). Reference material covers the normative [extensions contract](./extensions), the [technical rationale](./technical-rationale), [parsing edge cases](./edge-cases), [native features](./native-features-analysis), and the [broader markup landscape](./markup-languages).

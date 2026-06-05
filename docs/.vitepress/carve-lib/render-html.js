@@ -729,6 +729,9 @@ function renderInline(node, opts) {
             return `<span class="critic-comment">${escapeHtml(node.text)}</span>`;
         case 'crossref':
             return `&lt;/#${escapeHtml(node.target)}&gt;`;
+        case 'comment':
+            // Comments are not rendered (§4.13); inline form mirrors the block one.
+            return '';
         default: {
             const t = node;
             throw new Error(`renderHtml: unknown inline ${t.type}`);

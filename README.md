@@ -77,6 +77,13 @@ ATTRIBUTES
 EXTENSIONS
   :youtube[VIDEO_ID]
   @username  #tagname
+
+COMMENTS
+  %% whole-line comment
+  text %% trailing comment
+  %%%
+  block comment
+  %%%
 ````
 
 ## Design Principles

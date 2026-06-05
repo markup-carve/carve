@@ -15,3 +15,37 @@ Also visible.
 <p>Visible.</p>
 <p>Also visible.</p>
 ```
+
+```
+Also visible. %% this tail is a comment
+.
+<p>Also visible.</p>
+```
+
+```
+50%% off and a%%b stay literal.
+.
+<p>50%% off and a%%b stay literal.</p>
+```
+
+```
+Run `a %% b` then done. %% gone
+.
+<p>Run <code>a %% b</code> then done.</p>
+```
+
+```
+# Title %% editor note
+.
+<section id="title">
+  <h1>Title</h1>
+</section>
+```
+
+```
+foo %% note
+bar
+.
+<p>foo
+bar</p>
+```

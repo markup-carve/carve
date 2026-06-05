@@ -304,6 +304,6 @@ export interface CriticComment extends BaseNode {
     type: 'critic-comment';
     text: string;
 }
-export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | Emoji | AutoLink | CrossRef | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment;
+export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | Emoji | AutoLink | CrossRef | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment | Comment;
 export type AnyNode = Document | BlockNode | InlineNode;
 //# sourceMappingURL=ast.d.ts.map
