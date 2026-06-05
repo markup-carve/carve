@@ -14,6 +14,11 @@ Carve builds on Markdown's basics and Djot's technical rigor while adding:
 - **Extendable by design** - Core syntax stays small while standard and app-level extensions fit a defined contract
 - **Social conventions** - `@mentions` and `#tags` are recognized as first-class inline tokens
 
+## Demo
+
+- [Interactive Playground](https://markup-carve.github.io/carve/playground) - Type Carve, see the rendered HTML live in your browser
+- [Examples](https://markup-carve.github.io/carve/examples) - Side-by-side Carve source and output
+
 ## Quick Reference
 
 ````
