@@ -77,6 +77,10 @@
       "match": "^\\s*%%(?!%).*$",
       "name": "comment.line.percent.carve"
     },
+    "trailing_comment": {
+      "match": "(?<=[ \\t])%%.*$",
+      "name": "comment.line.percent.carve"
+    },
     "admonition": {
       "match": "^(:::)\\s*([a-zA-Z][\\w-]*)?\\s*(.*)$",
       "captures": {
@@ -171,6 +175,7 @@
     "inline": {
       "patterns": [
         { "include": "#code_inline" },
+        { "include": "#trailing_comment" },
         { "include": "#image" },
         { "include": "#link_inline" },
         { "include": "#link_ref" },
