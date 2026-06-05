@@ -194,7 +194,7 @@ Carve inherits and extends Djot's rationale:
 | Generic divs | `:::` (→ `<div>`) | bare `:::` / `::: {…}` → plain `<div>`; `::: word` two-tier (canonical → `<aside>`, custom → `<div class=word>`) |
 | Inline spans | `[text]{.c}` (→ `<span>`) | `[text]{.c}` (→ `<span>`) |
 | Editorial markup | `{+ +}` `{- -}` `{= =}` | `{+ +}` `{- -}` `{~ ~> ~}` `{= =}` `{# #}` |
-| Comments | `{% … %}` | `%%` line / `%%%` block |
+| Comments | `{% … %}` | `%%` line / `text %% trailing` / `%%%` block |
 | Raw / passthrough | inline `` `…`{=html} `` + ` ```=html ` block | inline `` `…`{=html} `` + ` ```raw html ` block |
 | Includes | N/A | `{{ path/to/file }}` |
 | Abbreviations | N/A | `*[ABBR]: ...` |
