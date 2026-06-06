@@ -35,24 +35,34 @@ function transliterate(s) {
         out += TRANSLIT_MAP[ch] ?? ch;
     return out;
 }
-/** The automatic-identifier rule. Pure, context-free, no dedup. */
-export function slugify(plainText) {
+/**
+ * jgm/djot#393 slug step: replace each maximal run of non-alphanumeric ASCII with a
+ * single '-' and trim. Non-ASCII characters and letter case are preserved.
+ */
+function slugRun(s) {
+    return s.replace(/[^0-9A-Za-z\u{80}-\u{10FFFF}]+/gu, '-').replace(/^-+|-+$/gu, '');
+}
+/**
+ * The automatic-identifier rule. Pure, context-free, no dedup.
+ *
+ * Default follows jgm/djot#393 (case + non-ASCII preserved). With `asciiFold`
+ * (opt-in via the `asciiHeadingIds` parse option) the slug is transliterated to
+ * ASCII for URL/CSS-fragment portability and re-slugged.
+ */
+export function slugify(plainText, asciiFold = false) {
     // NFC first so a decomposed `résumé` (macOS copy-paste,
     // some editors) slugs identically to its precomposed `résumé` form.
     // Without this, the map would only catch precomposed letters and
     // NFD inputs would emit different ids for visually identical text.
-    let s = plainText.normalize('NFC');
-    s = transliterate(s);
-    s = s.toLowerCase();
-    s = s.trim();
-    s = s.replace(/['";:]/gu, '');
-    s = s.replace(/[^\p{L}\p{N}_-]+/gu, '-');
-    s = s.replace(/-{2,}/gu, '-');
-    s = s.replace(/^-+|-+$/gu, '');
+    let s = slugRun(plainText.normalize('NFC'));
+    if (asciiFold) {
+        s = slugRun(transliterate(s));
+    }
+    // A leading digit is a valid HTML id but an invalid bare CSS selector, so prefix.
     if (/^\p{N}/u.test(s))
-        s = `section-${s}`;
+        s = `s-${s}`;
     if (s === '')
-        s = 'section';
+        s = 's';
     return s;
 }
 /**
@@ -122,7 +132,7 @@ export function inlineText(nodes) {
  * crossrefs (first-occurrence target, link text cloned from the target
  * heading; unresolved -> literal text). Mutates and returns `doc`.
  */
-export function resolveHeadingIds(doc) {
+export function resolveHeadingIds(doc, asciiFold = false) {
     const used = new Set();
     const targets = new Map();
     // Implicit-reference index: normalized visible heading text -> heading id.
@@ -139,7 +149,7 @@ export function resolveHeadingIds(doc) {
             used.add(id);
         }
         else {
-            const base = slugify(inlineText(block.children));
+            const base = slugify(inlineText(block.children), asciiFold);
             if (!used.has(base)) {
                 id = base;
             }

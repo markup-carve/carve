@@ -25,7 +25,9 @@ export declare function renderHtml(ast: Document, opts?: RenderOptions): string;
  * (no explicit `[label]: url` def and no matching heading) to its
  * literal source text.
  */
-export declare function resolve(doc: Document): Document;
+export declare function resolve(doc: Document, opts?: {
+    asciiHeadingIds?: boolean;
+}): Document;
 /** Convenience: parse + resolve + render in one call. */
 export declare function carveToHtml(source: string, opts?: ParseOptions & RenderOptions): string;
 //# sourceMappingURL=index.d.ts.map

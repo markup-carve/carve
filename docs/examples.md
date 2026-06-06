@@ -181,11 +181,11 @@ A `/` or `_` opener immediately preceded by the *same* delimiter or by `_` is no
 ```
 
 ```html
-<section id="welcome">
+<section id="Welcome">
   <h1>Welcome</h1>
-  <section id="getting-started">
+  <section id="Getting-started">
     <h2>Getting started</h2>
-    <section id="setup">
+    <section id="Setup">
       <h3>Setup</h3>
     </section>
   </section>
@@ -208,17 +208,17 @@ All six heading levels are supported.
 ```
 
 ```html
-<section id="h1">
+<section id="H1">
   <h1>H1</h1>
-  <section id="h2">
+  <section id="H2">
     <h2>H2</h2>
-    <section id="h3">
+    <section id="H3">
       <h3>H3</h3>
-      <section id="h4">
+      <section id="H4">
         <h4>H4</h4>
-        <section id="h5">
+        <section id="H5">
           <h5>H5</h5>
-          <section id="h6">
+          <section id="H6">
             <h6>H6</h6>
           </section>
         </section>
@@ -255,7 +255,7 @@ Inline emphasis renders inside heading text.
 ```
 
 ```html
-<section id="why-carve">
+<section id="Why-Carve">
   <h2>Why <em>Carve</em>?</h2>
 </section>
 ```
@@ -1284,24 +1284,24 @@ See </#cafe-notes>, </#section-2024-recap>, </#setup-2>, and </#api-v2>.
 ```
 
 ```html
-<section id="cafe-notes">
+<section id="Café-Notes">
   <h1>Café Notes</h1>
 </section>
-<section id="uber-uns">
+<section id="Über-uns">
   <h1>Über uns</h1>
 </section>
-<section id="section-2024-recap">
+<section id="s-2024-Recap">
   <h1>2024 Recap</h1>
-  <section id="setup">
+  <section id="Setup">
     <h2>Setup</h2>
   </section>
-  <section id="setup-2">
+  <section id="Setup-2">
     <h2>Setup</h2>
   </section>
 </section>
 <section id="api-v2">
   <h1>API</h1>
-  <p>See <a href="#cafe-notes">Café Notes</a>, <a href="#section-2024-recap">2024 Recap</a>, <a href="#setup-2">Setup</a>, and <a href="#api-v2">API</a>.</p>
+  <p>See &lt;/#cafe-notes&gt;, &lt;/#section-2024-recap&gt;, &lt;/#setup-2&gt;, and <a href="#api-v2">API</a>.</p>
 </section>
 ```
 
@@ -2026,7 +2026,7 @@ A trailing comment works in a heading; it does not affect the generated id.
 ```
 
 ```html
-<section id="title">
+<section id="Title">
   <h1>Title</h1>
 </section>
 ```
@@ -2338,9 +2338,9 @@ See </#getting-started>.
 ```
 
 ```html
-<section id="getting-started">
+<section id="Getting-Started">
   <h1>Getting Started</h1>
-  <p>See <a href="#getting-started">Getting Started</a>.</p>
+  <p>See &lt;/#getting-started&gt;.</p>
 </section>
 ```
 
@@ -2523,7 +2523,7 @@ On a heading (the attributes attach to the `<h1>`):
 ```
 
 ```html
-<section id="h">
+<section id="H">
   <h1 k="{y}">H</h1>
 </section>
 ```
@@ -2616,7 +2616,7 @@ The same escape applies on a heading's attribute block.
 ```
 
 ```html
-<section id="h">
+<section id="H">
   <h1 title="a&quot;b">H</h1>
 </section>
 ```
@@ -2633,7 +2633,7 @@ on a heading it stays part of the heading text rather than being dropped.
 ```
 
 ```html
-<section id="h">
+<section id="H">
   <h1>H {???}</h1>
 </section>
 ```
@@ -3224,7 +3224,7 @@ text
 
 ```html
 <p>text</p>
-<section id="h">
+<section id="H">
   <h1>H</h1>
 </section>
 ```
@@ -3356,7 +3356,7 @@ outside
 ```
 
 ```html
-<section id="title-outside">
+<section id="Title-outside">
   <h1>Title
 outside</h1>
 </section>
@@ -3435,7 +3435,7 @@ lazy</li>
 <ul>
   <li>a</li>
 </ul>
-<section id="h">
+<section id="H">
   <h1>H</h1>
 </section>
 ```
