@@ -1034,6 +1034,32 @@ function orderedContinues(line, kind, delim) {
     const o = RE_ORDERED.exec(line);
     return o !== null && o[3] === delim && olKindMatches(o[2], kind);
 }
+/**
+ * A non-indented line following a list item is lazy continuation (folds into the
+ * item's paragraph) UNLESS it starts a block, in which case the list ends - the
+ * djot/CommonMark lazy-continuation rule. Mirrors the block dispatch in
+ * `parseBlock`, minus the `%%` inline comment (which is paragraph text, not a
+ * block) and the paragraph fallthrough.
+ */
+function lazyContinuationEndsList(line, lexer) {
+    return (RE_RAW_FENCE.test(line) ||
+        RE_FENCE.test(line) ||
+        RE_COMMENT_BLOCK.test(line) ||
+        (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line)) ||
+        (RE_DIV_OPEN.test(line) && divHasCloser(lexer)) ||
+        RE_ABBR_DEF.test(line) ||
+        RE_FOOTNOTE_DEF.test(line) ||
+        RE_LINK_DEF.test(line) ||
+        RE_HR.test(line.trim()) ||
+        RE_HEADING.test(line) ||
+        RE_DEFLIST_TERM.test(line) ||
+        RE_BLOCKQUOTE.test(line) ||
+        RE_TASK.test(line) ||
+        RE_UNORDERED.test(line) ||
+        RE_ORDERED.test(line) ||
+        RE_TABLE_ROW.test(line) ||
+        isBlockImageLine(line));
+}
 function parseList(lexer) {
     const first = lexer.peek();
     const baseIndent = leadingWhitespace(first);
@@ -1117,6 +1143,13 @@ function parseList(lexer) {
                     nested.push('');
                 pendingBlanks = 0;
                 nested.push(l.slice(contentCol));
+                lexer.consume();
+            }
+            else if (pendingBlanks === 0 && !lazyContinuationEndsList(l, lexer)) {
+                // Lazy continuation: a non-indented line with no blank before it that
+                // starts no block folds into the item's lead paragraph (djot rule). A
+                // block-starting line or a blank line instead ends the list.
+                nested.push(l);
                 lexer.consume();
             }
             else {

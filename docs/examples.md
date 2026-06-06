@@ -3403,3 +3403,41 @@ lazy</code></p></blockquote>
 ````
 
 :::
+
+## List lazy continuation
+
+A non-indented line that follows a list item folds into the item's lead paragraph when it is plain paragraph text and has no blank line before it. A blank line, or a line that starts a block (heading, blockquote, fenced code, thematic break, table, div, a definition), ends the list instead.
+
+::: compare
+
+```carve
+- item
+lazy
+```
+
+```html
+<ul>
+  <li>item
+lazy</li>
+</ul>
+```
+
+:::
+
+::: compare
+
+```carve
+- a
+# H
+```
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+<section id="h">
+  <h1>H</h1>
+</section>
+```
+
+:::
