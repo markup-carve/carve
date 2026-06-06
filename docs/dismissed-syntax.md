@@ -263,6 +263,55 @@ This is {~~old~>new~~} replacement.
 
 ---
 
+## Headings: `=` prefix instead of `#`
+
+**Proposed (AsciiDoc-style prefix):**
+```
+= Title       → <h1>
+== Section    → <h2>
+=== Sub       → <h3>
+```
+Count of markers = depth, same as `#`. This is a prefix marker, *not* setext
+underline (`Title` / `=====`); setext is dismissed separately, see the rationale
+on `---` overloading in `technical-rationale.md`.
+
+**Rationale for proposal:**
+- Frees `#` to be the unambiguous tag sigil. Today `#` is dual-purpose: `# x`
+  (with a space) is a heading, `#x` is a tag, disambiguated only by the space.
+  `= heading` + `#tag` gives "`#` always means tag" — matching how every social
+  platform trains the reader.
+- The heading/non-heading collision becomes rarer: a line that *starts* with a
+  highlight (`==hot==`) is far less common than a line that starts with a tag.
+- `=` is unshifted (faster than Shift+3 for `#`); `=` reads as a title/underline
+  bar pulled to the front.
+- Aligns with AsciiDoc, a stated influence.
+
+**Why rejected:**
+- **Breaks the most universal lightweight-markup convention.** `#` headings are
+  the one token every Markdown user knows, and Carve explicitly builds on
+  Markdown's basics — this is the single largest adoption tax available.
+- **It moves the ambiguity, it doesn't remove it.** `==text==` is highlight, so
+  `== heading` vs `==highlight==` falls back on the same space-after rule that
+  `#`/`#tag` already uses. The `#`/tag collision is *already* resolved
+  deterministically by that rule.
+- **`=` is the most overloaded glyph in Carve** (`==highlight==`, `key=value`
+  attributes, `|=` table-header marker). `#` at line start is comparatively
+  uncluttered.
+- **AsciiDoc level-offset trap:** in AsciiDoc `==` renders as `<h2>` (levels are
+  offset by one), so borrowing the syntax invites off-by-one mistakes against
+  the very language it came from.
+- Pure churn: the heading marker is special-cased in the grammar, both parsers,
+  the corpus, and all four highlighters (tree-sitter, vscode, zed, carve-lsp).
+- Parsing cost is *not* a factor either way — prefix `=` is O(n) and
+  lookahead-free, exactly like `#`. The decision is mnemonics/familiarity, not
+  parser architecture.
+
+**Decision:** Keep `#` for headings. If the `#heading` vs `#tag` ambiguity needs
+addressing, the higher-ROI path is a lint/warning on a line-leading `#Word`
+(likely a heading typo), not a syntax swap.
+
+---
+
 ## Summary
 
 Most rejected ideas fall into these categories:
