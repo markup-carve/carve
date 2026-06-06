@@ -2,9 +2,11 @@ import type { Document, InlineNode } from './ast.js';
 /**
  * The automatic-identifier rule. Pure, context-free, no dedup.
  *
- * Default follows jgm/djot#393 (case + non-ASCII preserved). With `asciiFold`
- * (opt-in via the `asciiHeadingIds` parse option) the slug is transliterated to
- * ASCII for URL/CSS-fragment portability and re-slugged.
+ * Uses the jgm/djot#393 run-replacement, then **lowercases** (GitHub/SSG style):
+ * non-ASCII characters are preserved (only their case is folded). Lowercasing makes
+ * ids and cross-references case-insensitive without special lookup logic. With
+ * `asciiFold` (opt-in via `asciiHeadingIds`) the slug is transliterated to ASCII and
+ * re-slugged.
  */
 export declare function slugify(plainText: string, asciiFold?: boolean): string;
 /**

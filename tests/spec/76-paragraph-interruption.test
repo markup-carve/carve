@@ -94,7 +94,7 @@ text
 # H
 .
 <p>text</p>
-<section id="H">
+<section id="h">
   <h1>H</h1>
 </section>
 ```
