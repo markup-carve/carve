@@ -46,14 +46,14 @@ export function renderHtml(ast, opts = {}) {
  * (no explicit `[label]: url` def and no matching heading) to its
  * literal source text.
  */
-export function resolve(doc) {
-    return resolveHeadingIds(doc);
+export function resolve(doc, opts = {}) {
+    return resolveHeadingIds(doc, opts.asciiHeadingIds ?? false);
 }
 /** Convenience: parse + resolve + render in one call. */
 export function carveToHtml(source, opts = {}) {
     // `sourceLine` rendering needs block positions, so enable parsing them.
     const parseOpts = opts.sourceLine ? { ...opts, positions: true } : opts;
-    let doc = resolve(parse(source, parseOpts));
+    let doc = resolve(parse(source, parseOpts), { asciiHeadingIds: opts.asciiHeadingIds ?? false });
     const exts = opts.extensions ?? [];
     for (const ext of exts)
         if (ext.afterParse)

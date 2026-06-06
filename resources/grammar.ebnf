@@ -88,6 +88,22 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    block on the final line applies to the whole heading. *)
 heading_continuation_line = inline_content, newline ;  (* see the NORMATIVE note above *)
 
+(* HEADING IDENTIFIERS -- NORMATIVE (follows jgm/djot#393). A heading without an
+   explicit {#id} gets an automatic identifier from its folded plain text (symbols
+   `:name:` and footnote references excluded):
+     - replace each maximal run of non-alphanumeric ASCII characters with a single
+       `-` (covers spaces, punctuation, `_`, and runs of `-`);
+     - trim leading/trailing `-`;
+     - letter CASE and all NON-ASCII characters are PRESERVED (no lowercasing, no
+       transliteration);
+     - a leading-digit result is prefixed `s-` (a bare leading digit is a valid HTML
+       id but an invalid CSS selector); an empty result becomes a generated `s-N`;
+     - duplicates within a document get a numeric `-2`, `-3`, ... suffix.
+   An explicit {#id} is used verbatim. Implementations MAY offer an OPT-IN mode that
+   ASCII-folds the identifier for URL/CSS-fragment portability (carve-js
+   `asciiHeadingIds` parse option; carve-php `AsciiHeadingIdsExtension`); ASCII
+   folding is never the default. *)
+
 (* --- Thematic Breaks --- *)
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
 

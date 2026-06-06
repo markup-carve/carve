@@ -5,11 +5,11 @@ Headings
 ## Getting started
 ### Setup
 .
-<section id="welcome">
+<section id="Welcome">
   <h1>Welcome</h1>
-  <section id="getting-started">
+  <section id="Getting-started">
     <h2>Getting started</h2>
-    <section id="setup">
+    <section id="Setup">
       <h3>Setup</h3>
     </section>
   </section>
@@ -24,17 +24,17 @@ Headings
 ##### H5
 ###### H6
 .
-<section id="h1">
+<section id="H1">
   <h1>H1</h1>
-  <section id="h2">
+  <section id="H2">
     <h2>H2</h2>
-    <section id="h3">
+    <section id="H3">
       <h3>H3</h3>
-      <section id="h4">
+      <section id="H4">
         <h4>H4</h4>
-        <section id="h5">
+        <section id="H5">
           <h5>H5</h5>
-          <section id="h6">
+          <section id="H6">
             <h6>H6</h6>
           </section>
         </section>
@@ -55,7 +55,7 @@ Headings
 ```
 ## Why /Carve/?
 .
-<section id="why-carve">
+<section id="Why-Carve">
   <h2>Why <em>Carve</em>?</h2>
 </section>
 ```
