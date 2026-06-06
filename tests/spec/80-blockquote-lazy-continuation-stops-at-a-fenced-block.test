@@ -1,0 +1,25 @@
+Blockquote lazy continuation stops at a fenced block
+
+````
+> ```
+> a
+b
+> c
+.
+<blockquote>
+  <pre><code>a
+</code></pre>
+</blockquote>
+<p>b
+&gt; c</p>
+````
+
+````
+> text
+> ```
+lazy
+.
+<blockquote><p>text
+```
+lazy</p></blockquote>
+````
