@@ -1407,31 +1407,31 @@ const RE_SPAN_TAIL = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\}/;
  * `[[[[...` (with or without a trailing `]`). Unbalanced `[` are absent from
  * the map.
  */
-// Index just past a verbatim (code) span opening at `i` (a backtick). The
-// opener is the MAXIMAL run of backticks; it closes on a run of EXACTLY that
+// Resolve the verbatim (code) span opening at `i` (a backtick). The opener is
+// the MAXIMAL run of backticks (`openLen`); it closes on a run of EXACTLY that
 // length. An opener with no equal-length closer is opaque to the end of the
-// string. Returned `end` is text.length when unclosed; `closed` flags which.
-// Shared by scanInline's tokenizer, findEmphasisClose, and buildBracketMap so
-// all three agree on what a verbatim span hides.
+// string. `end` is the index just past the closing run, or text.length when
+// unclosed; `closed` flags which. Shared by scanInline's tokenizer,
+// findEmphasisClose, and buildBracketMap so all three agree on what a span hides.
 function verbatimSpanEnd(text, i) {
-    let n = 1;
-    while (text[i + n] === '`')
-        n++;
-    let k = i + n;
+    let openLen = 1;
+    while (text[i + openLen] === '`')
+        openLen++;
+    let k = i + openLen;
     while (k < text.length) {
         if (text[k] === '`') {
             let m = 1;
             while (text[k + m] === '`')
                 m++;
-            if (m === n)
-                return { end: k + n, closed: true };
+            if (m === openLen)
+                return { end: k + openLen, closed: true, openLen };
             k += m;
         }
         else {
             k++;
         }
     }
-    return { end: text.length, closed: false };
+    return { end: text.length, closed: false, openLen };
 }
 function buildBracketMap(s) {
     const map = {};
@@ -1648,42 +1648,32 @@ function scanInline(text, source = inlineSource()) {
         // backticks; it closes only on a run of EXACTLY the same length (a shorter
         // OR longer run is content). An opener with no equal-length closer still
         // opens a verbatim span that runs to the END of the block — matches djot
-        // upstream + carve-php; grammar code_span only spells the closed form.
+        // upstream + carve-php (grammar code_span, "UNCLOSED RUN"). Uses the shared
+        // verbatimSpanEnd helper so the tokenizer, findEmphasisClose, and
+        // buildBracketMap stay in lockstep on span boundaries.
         if (c === '`') {
-            const n = /^`+/.exec(rest)[0].length;
-            const body = rest.slice(n);
-            // First maximal backtick run of length exactly n closes the span.
-            let closeStart = -1;
-            const closeRe = /`+/g;
-            let cm;
-            while ((cm = closeRe.exec(body)) !== null) {
-                if (cm[0].length === n) {
-                    closeStart = cm.index;
-                    break;
-                }
-            }
+            const { end, closed, openLen } = verbatimSpanEnd(text, i);
             flush();
-            if (closeStart === -1) {
+            if (!closed) {
                 // Unclosed: verbatim to end of block, with the block's trailing
                 // whitespace stripped (no surrounding single-space strip — that applies
                 // only to a closed span).
-                const value = body.replace(/\s+$/, '');
+                const value = text.slice(i + openLen).replace(/\s+$/, '');
                 out.push(withPos({ type: 'code', value }, source, text, i, text.length));
                 i = text.length;
                 continue;
             }
-            const inner = body.slice(0, closeStart).replace(/^ (.*) $/, '$1');
-            const spanLen = n + closeStart + n;
+            const inner = text.slice(i + openLen, end - openLen).replace(/^ (.*) $/, '$1');
             // A verbatim span tagged `{=format}` is raw inline passthrough.
-            const raw = RE_RAW_INLINE.exec(text.slice(i + spanLen));
+            const raw = RE_RAW_INLINE.exec(text.slice(end));
             if (raw) {
-                const len = spanLen + raw[0].length;
+                const len = end - i + raw[0].length;
                 out.push(withPos({ type: 'raw-inline', format: raw[1], content: inner }, source, text, i, i + len));
                 i += len;
             }
             else {
-                out.push(withPos({ type: 'code', value: inner }, source, text, i, i + spanLen));
-                i += spanLen;
+                out.push(withPos({ type: 'code', value: inner }, source, text, i, end));
+                i = end;
             }
             continue;
         }
