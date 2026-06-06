@@ -3331,3 +3331,43 @@ outside</h1>
 ```
 
 :::
+
+## Blockquote lazy continuation stops at a fenced block
+
+Lazy continuation only extends an open paragraph. A non-`>` line that lands inside an open fenced code block ends the quote instead of being swallowed into the code (and the `>` of a following quoted line is kept literal). A fence never interrupts an open paragraph, so a fence-looking line mid-paragraph stays paragraph text and the lazy line still folds in.
+
+::: compare
+
+````carve
+> ```
+> a
+b
+> c
+````
+
+```html
+<blockquote>
+  <pre><code>a
+</code></pre>
+</blockquote>
+<p>b
+&gt; c</p>
+```
+
+:::
+
+::: compare
+
+````carve
+> text
+> ```
+lazy
+````
+
+````html
+<blockquote><p>text
+```
+lazy</p></blockquote>
+````
+
+:::

@@ -67,10 +67,19 @@ const RE_RAW_FENCE = /^(`{3,}|~{3,})\s*raw\s+([a-zA-Z][\w-]*)\s*$/;
 // by length); a `%%` line is a line comment. Neither is rendered.
 const RE_COMMENT_BLOCK = /^%{3,}\s*$/;
 const RE_COMMENT_LINE = /^%%/;
+// Maximum block-container nesting depth. Each level of blockquote / div / list /
+// footnote recurses parseBlocks -> parseBlock -> parseContainer -> parseBlocks,
+// so unbounded nesting (e.g. `> ` repeated thousands of times) overflows the
+// call stack. Past this depth, container openers degrade to literal paragraph
+// text instead of crashing. Far above any real document; only adversarial input
+// reaches it.
+const MAX_NESTING_DEPTH = 200;
 class Lexer {
     lines;
     lineOffsets;
     pos = 0;
+    // Block-container nesting depth of this (sub-)lexer; 0 at the document top.
+    depth = 0;
     frontmatter;
     /** Format applied to a bare `---` fence; set from ParseOptions. */
     defaultFrontmatterFormat = 'yaml';
@@ -138,6 +147,7 @@ class Lexer {
     }
 }
 export function parse(source, opts = {}) {
+    newlineIndexCache.clear();
     const lexer = new Lexer(source, opts);
     // Consume leading frontmatter first so `lexer.pos` marks the end of the
     // metadata region; the def passes and parseBlocks all start from there.
@@ -372,6 +382,11 @@ function parseBlock(lexer) {
 }
 function parseBlockInner(lexer) {
     const line = lexer.peek();
+    // Past the nesting limit, stop opening recursive containers and treat the
+    // line as paragraph text. Prevents a call-stack overflow on pathologically
+    // nested input (e.g. thousands of `> `); see MAX_NESTING_DEPTH.
+    if (lexer.depth >= MAX_NESTING_DEPTH)
+        return parseParagraph(lexer);
     // Block-level constructs in priority order
     if (RE_RAW_FENCE.test(line))
         return parseRawBlock(lexer);
@@ -587,6 +602,7 @@ function parseFootnoteDef(lexer) {
         sub.linkDefs = lexer.linkDefs;
         sub.footnoteDefs = lexer.footnoteDefs;
         sub.nested = true;
+        sub.depth = lexer.depth + 1;
         lexer.footnoteDefs.set(label, parseBlocks(sub, 0));
     }
     return null;
@@ -621,6 +637,7 @@ function parseAdmonition(lexer) {
     subLexer.linkDefs = lexer.linkDefs;
     subLexer.footnoteDefs = lexer.footnoteDefs;
     subLexer.nested = true;
+    subLexer.depth = lexer.depth + 1;
     const children = parseBlocks(subLexer, 0);
     const node = { type: 'admonition', kind, children };
     // `!== undefined` (not truthiness): an explicitly empty quoted title
@@ -682,6 +699,7 @@ function parseDiv(lexer) {
     subLexer.linkDefs = lexer.linkDefs;
     subLexer.footnoteDefs = lexer.footnoteDefs;
     subLexer.nested = true;
+    subLexer.depth = lexer.depth + 1;
     const node = { type: 'div', children: parseBlocks(subLexer, 0) };
     if (attrSrc)
         node.attrs = parseAttrs(attrSrc);
@@ -709,6 +727,7 @@ function parseDefinitionList(lexer) {
         sub.linkDefs = lexer.linkDefs;
         sub.footnoteDefs = lexer.footnoteDefs;
         sub.nested = true;
+        sub.depth = lexer.depth + 1;
         return parseBlocks(sub, 0);
     };
     while (!lexer.eof() && RE_DEFLIST_TERM.test(lexer.peek())) {
@@ -749,22 +768,84 @@ function parseAbbrDef(lexer) {
     const m = RE_ABBR_DEF.exec(line);
     return { type: 'abbreviation-def', abbr: m[1], expansion: m[2] };
 }
+/**
+ * Track verbatim/paragraph state across a blockquote's collected inner lines so a
+ * non-`>` lazy line only extends an OPEN paragraph (the djot/CommonMark rule).
+ * Inside an open code fence/comment, or after a structural line that leaves no open
+ * paragraph (a just-opened div, a closed fence), such a line must terminate the
+ * quote rather than be swallowed into the fence/div. Carve has no
+ * paragraph-interrupting block mode, so a fence/comment/div opener starts a block
+ * only when no paragraph is already open — a fence-looking line mid-paragraph is
+ * plain paragraph text.
+ */
+function trackBlockQuoteLazyState(content, state) {
+    if (state.inComment) {
+        const c = /^(%{3,})\s*$/.exec(content);
+        if (c && c[1].length >= state.commentLen)
+            state.inComment = false;
+        state.paragraphOpen = false;
+        return;
+    }
+    if (state.inFence) {
+        if (state.fenceClose.test(content))
+            state.inFence = false;
+        state.paragraphOpen = false;
+        return;
+    }
+    if (content.trim() === '') {
+        state.paragraphOpen = false;
+        return;
+    }
+    if (!state.paragraphOpen) {
+        const fence = RE_FENCE.exec(content);
+        if (fence) {
+            const marker = fence[2];
+            state.inFence = true;
+            state.fenceClose = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
+            state.paragraphOpen = false;
+            return;
+        }
+        const comment = /^(%{3,})\s*$/.exec(content);
+        if (comment) {
+            state.inComment = true;
+            state.commentLen = comment[1].length;
+            state.paragraphOpen = false;
+            return;
+        }
+        if (RE_DIV_OPEN.test(content) || RE_ADMONITION_OPEN.test(content)) {
+            // Div / admonition opener (`:::`, `::: {…}`, or `::: type`) is structural;
+            // it opens no paragraph itself.
+            state.paragraphOpen = false;
+            return;
+        }
+    }
+    state.paragraphOpen = true;
+}
 function parseBlockQuote(lexer) {
     const inner = [];
+    const state = {
+        inFence: false,
+        fenceClose: null,
+        inComment: false,
+        commentLen: 0,
+        paragraphOpen: false,
+    };
     while (!lexer.eof()) {
         const ln = lexer.peek();
         const m = RE_BLOCKQUOTE.exec(ln);
         if (m) {
             lexer.consume();
-            inner.push(m[1] ?? '');
+            const content = m[1] ?? '';
+            inner.push(content);
+            trackBlockQuoteLazyState(content, state);
             continue;
         }
-        // Lazy continuation: a non-`>` line that does not itself start a block
-        // folds into the quote (CommonMark-style; matches carve-php, which is the
-        // canonical here). A blank line ends the quote. The only non-blank lines
-        // that end it are the ones that interrupt a paragraph anywhere — the
-        // "invisible" reference/footnote/abbr definitions and comments — plus a
-        // caption `^ …`, which attaches to the quote rather than folding in.
+        // Lazy continuation: a non-`>` line folds into the quote ONLY when it
+        // continues an open paragraph (CommonMark-style; matches carve-php). A blank
+        // line ends the quote. The only non-blank lines that end it are the ones that
+        // interrupt a paragraph anywhere — the "invisible" reference/footnote/abbr
+        // definitions and comments — plus a caption `^ …`, which attaches to the quote
+        // rather than folding in.
         if (ln.trim() === '' ||
             RE_LINK_DEF.test(ln) ||
             RE_FOOTNOTE_DEF.test(ln) ||
@@ -774,14 +855,20 @@ function parseBlockQuote(lexer) {
             RE_CAPTION.test(ln)) {
             break;
         }
+        // A non-`>` line inside an open fence/comment, or after a block that left no
+        // open paragraph, terminates the quote instead of being swallowed.
+        if (!state.paragraphOpen)
+            break;
         lexer.consume();
         inner.push(ln);
+        trackBlockQuoteLazyState(ln, state);
     }
     const subLexer = new Lexer(inner.join('\n'));
     subLexer.abbrDefs = lexer.abbrDefs;
     subLexer.linkDefs = lexer.linkDefs;
     subLexer.footnoteDefs = lexer.footnoteDefs;
     subLexer.nested = true;
+    subLexer.depth = lexer.depth + 1;
     const children = parseBlocks(subLexer, 0);
     const bq = { type: 'blockquote', children };
     // Optional caption with ^
@@ -1065,6 +1152,7 @@ function parseList(lexer) {
         sub.linkDefs = lexer.linkDefs;
         sub.footnoteDefs = lexer.footnoteDefs;
         sub.nested = true;
+        sub.depth = lexer.depth + 1;
         const children = parseBlocks(sub, 0);
         const item = { type: 'list-item', children };
         if (checked !== undefined)
@@ -1961,18 +2049,47 @@ function shiftSource(source, text, by) {
         startColumn: point.column,
     };
 }
+// Per-document cache of newline offsets for each inline text. pointAt() used to
+// rescan `text` from 0 to `offset` on every token, which is O(offset) per call
+// and O(n^2) across a token-dense or many-line paragraph. Caching the sorted
+// newline indices once per distinct text and binary-searching makes each lookup
+// O(log n). Cleared at the start of every parse() so it never outlives a
+// document.
+const newlineIndexCache = new Map();
+function newlineIndices(text) {
+    let indices = newlineIndexCache.get(text);
+    if (indices === undefined) {
+        indices = [];
+        for (let i = 0; i < text.length; i++) {
+            if (text[i] === '\n')
+                indices.push(i);
+        }
+        newlineIndexCache.set(text, indices);
+    }
+    return indices;
+}
 function pointAt(source, text, offset) {
-    let line = source.startLine;
-    let column = source.startColumn;
-    for (let i = 0; i < offset; i++) {
-        if (text[i] === '\n') {
-            line++;
-            column = 1;
+    const indices = newlineIndices(text);
+    // Count newlines strictly before `offset` (binary search for the insertion
+    // point of `offset` in the sorted indices).
+    let lo = 0;
+    let hi = indices.length;
+    while (lo < hi) {
+        const mid = (lo + hi) >> 1;
+        if (indices[mid] < offset) {
+            lo = mid + 1;
         }
         else {
-            column++;
+            hi = mid;
         }
     }
+    const newlinesBefore = lo;
+    const line = source.startLine + newlinesBefore;
+    // Column resets to 1 right after the most recent newline; with none, it
+    // continues from the source's starting column.
+    const column = newlinesBefore === 0
+        ? source.startColumn + offset
+        : offset - indices[newlinesBefore - 1];
     return { line, column };
 }
 function findEmphasisClose(text, from, delim) {
