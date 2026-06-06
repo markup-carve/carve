@@ -12,14 +12,17 @@ const RE_HR = /^(?:-{3,}|\*{3,}|_{3,})\s*$/;
 // with punctuation (c++, c#, f#, asp.net); a multiword/quoted info (e.g.
 // `js title="x"`) is still not a fence (anchored, no whitespace allowed).
 const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_+#.-]*)\s*$/;
-const RE_UNORDERED = /^(\s*)[-*+]\s+(.*)$/;
+// Bullets are `-` and `*` only. Carve drops djot's `+` bullet so a lone `+`
+// can serve as the list-continuation marker (PART 9 §17); a `+ ` line is now
+// ordinary paragraph text.
+const RE_UNORDERED = /^(\s*)[-*]\s+(.*)$/;
 // Ordered marker: decimal, a single letter (alpha), or a roman-numeral
 // run, then `.` or `)`. The dialect is fixed by the FIRST item (see
 // olKindOf); letter/roman markers are ambiguous w.r.t. paragraphs (§10).
 const RE_ORDERED = /^(\s*)([0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])([.)])\s+(.*)$/;
 // Task states (matches djot-php): `x`/`X` are checked; ` `, `-`, `_`,
 // `>`, `?` are all accepted and render as an unchecked checkbox.
-const RE_TASK = /^(\s*)[-*+]\s+\[([ xX\-_>?])\]\s+(.*)$/;
+const RE_TASK = /^(\s*)[-*]\s+\[([ xX\-_>?])\]\s+(.*)$/;
 const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 // Fences are a run of 3+ colons (group 1). A longer opener nests: a
 // `::::` block contains `:::` blocks, and only a bare closer of equal-or-
@@ -211,7 +214,7 @@ function stripContainerPrefixes(raw) {
         prev = line;
         line = line
             .replace(/^\s*>\s?/, '') // blockquote
-            .replace(/^\s*(?:[-*+]|\d+[.)])\s+(?:\[[ xX\-_>?]\]\s+)?/, ''); // list/task
+            .replace(/^\s*(?:[-*]|\d+[.)])\s+(?:\[[ xX\-_>?]\]\s+)?/, ''); // list/task
     } while (line !== prev);
     return line.replace(/^\s+/, ''); // residual indentation
 }

@@ -3490,7 +3490,7 @@ A genuine second prose paragraph still makes the list loose (and so does a blank
 
 ## List continuation marker
 
-A lone `+` at the list marker column attaches the following flush-left block to the current item, with no blank line, keeping the list tight — useful for code blocks or tables you would rather not indent. A bare `+` is never a bullet (a bullet needs `+ ` plus content), so it does not collide with `+` lists, and outside a list it is literal text.
+A lone `+` at the list marker column attaches the following flush-left block to the current item, with no blank line, keeping the list tight — useful for code blocks or tables you would rather not indent. Carve drops `+` as a bullet (only `-` and `*` are bullets), so the marker is unambiguous; a `+ x` line is ordinary paragraph text.
 
 ::: compare
 
@@ -3533,6 +3533,22 @@ A quote or table attaches the same way.
   </li>
   <li>next</li>
 </ul>
+```
+
+:::
+
+Because `+` is not a bullet, a `+ x` line is paragraph text (use `-` or `*` for bullets).
+
+::: compare
+
+```carve
++ one
++ two
+```
+
+```html
+<p>+ one
++ two</p>
 ```
 
 :::

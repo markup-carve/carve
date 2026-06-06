@@ -147,7 +147,9 @@ list = unordered_list | ordered_list | definition_list ;
 
 unordered_list = unordered_item+ ;
 unordered_item = bullet_marker, space, list_item_content ;
-bullet_marker = '-' | '*' | '+' ;
+bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
+                                continuation marker (PART 9 §17); a `+ ` line is
+                                ordinary paragraph text. Deviates from djot. *)
 
 ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, space, list_item_content ;
