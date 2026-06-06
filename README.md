@@ -142,20 +142,24 @@ Carve inherits and extends Djot's rationale:
 
 20. **Extension system** - `:type[content]{attrs}` for custom inline elements
 
-## Comparison with Djot
+## Comparison with Markdown and Djot
+
+> **"Markdown" here** = CommonMark plus widely-supported GitHub-Flavored Markdown
+> (GFM). `n/a` means there is no standard Markdown syntax for the feature; some
+> flavors or Pandoc may add one.
 
 ### Inline emphasis
 
-| Feature | Djot | Carve |
-|---------|------|------|
-| Italic | `_text_` | `/text/` |
-| Bold | `*text*` | `*text*` |
-| Bold italic | `_*text*_` | `/*text*/` |
-| Underline | `{+text+}` (→ `<ins>`) | `_text_` |
-| Strikethrough | `{-text-}` (→ `<del>`) | `~text~` (→ `<s>`) |
-| Highlight | `{=text=}` | `==text==` |
-| Superscript | `^text^` | `^text^` |
-| Subscript | `~text~` | `,,text,,` |
+| Feature | Markdown | Djot | Carve |
+|---------|----------|------|------|
+| Italic | `*text*` / `_text_` | `_text_` | `/text/` |
+| Bold | `**text**` | `*text*` | `*text*` |
+| Bold italic | `***text***` | `_*text*_` | `/*text*/` |
+| Underline | n/a | `{+text+}` (→ `<ins>`) | `_text_` |
+| Strikethrough | `~~text~~` (GFM, → `<del>`) | `{-text-}` (→ `<del>`) | `~text~` (→ `<s>`) |
+| Highlight | n/a | `{=text=}` | `==text==` |
+| Superscript | n/a | `^text^` | `^text^` |
+| Subscript | n/a | `~text~` | `,,text,,` |
 
 > **Heads-up for Djot users:** `~text~` is *subscript* in Djot but
 > *strikethrough* in Carve, and Carve writes subscript as `,,text,,`. This is
@@ -163,50 +167,50 @@ Carve inherits and extends Djot's rationale:
 
 ### Links & references
 
-| Feature | Djot | Carve |
-|---------|------|------|
-| Links | `[text](url)` | `[text](url)` |
-| Wiki-style links | `[Page Name][]` (reference link; needs a `[Page Name]: url` definition) | `[Page Name][]` (auto-resolves, no definition) |
-| Cross-references | N/A (manual `[](#id)`) | `</#id>` (auto-fills link text from the target heading) |
-| Heading IDs | Auto-generated (Unicode, case-preserving) | Auto-generated (ASCII-safe transliteration, lowercase, CSS-selector-safe) |
-| Heading structure | `<section id="…"><h*>…</h*></section>` with level-aware nesting | `<section id="…"><h*>…</h*></section>` with level-aware nesting (matches djot — id on `<section>`, not on `<h*>`) |
+| Feature | Markdown | Djot | Carve |
+|---------|----------|------|------|
+| Links | `[text](url)` | `[text](url)` | `[text](url)` |
+| Wiki-style links | `[text][ref]` (needs a `[ref]: url` definition) | `[Page Name][]` (reference link; needs a `[Page Name]: url` definition) | `[Page Name][]` (auto-resolves, no definition) |
+| Cross-references | n/a (manual `[](#id)`) | N/A (manual `[](#id)`) | `</#id>` (auto-fills link text from the target heading) |
+| Heading IDs | n/a (auto only on some renderers, e.g. GitHub) | Auto-generated (Unicode, case-preserving) | Auto-generated (ASCII-safe transliteration, lowercase, CSS-selector-safe) |
+| Heading structure | n/a (flat `<h1>`–`<h6>`, no wrappers) | `<section id="…"><h*>…</h*></section>` with level-aware nesting | `<section id="…"><h*>…</h*></section>` with level-aware nesting (matches djot — id on `<section>`, not on `<h*>`) |
 
 ### Lists & tables
 
-| Feature | Djot | Carve |
-|---------|------|------|
-| Definition lists | `: term` + indented def | `:: term` / `:  def` |
-| Ordered list dialects | decimal/alpha/roman; `.` `)` `(1)` delimiters | decimal/alpha/roman; `.` `)` delimiters (`(1)` deliberately omitted — prose-ambiguity) |
-| Table headers | `\|---\|` separator | `\|=` prefix |
-| Table alignment | `:--` / `--:` separator | `\|=<` / `\|=>` / `\|=~` (column), `\|<` / `\|>` / `\|~` (cell) |
-| Headerless tables | N/A (header + separator required) | omit `\|=` |
-| Table rowspan | N/A (raw HTML only) | `^` marker |
-| Table colspan | N/A (raw HTML only) | `<` marker |
-| Multi-line cells | N/A (raw HTML only) | `+` continuation |
-| Captions | Tables only (`^ caption`) | `^ caption` (images, quotes, tables) |
+| Feature | Markdown | Djot | Carve |
+|---------|----------|------|------|
+| Definition lists | n/a | `: term` + indented def | `:: term` / `:  def` |
+| Ordered list dialects | `1.` / `1)` (decimal only) | decimal/alpha/roman; `.` `)` `(1)` delimiters | decimal/alpha/roman; `.` `)` delimiters (`(1)` deliberately omitted — prose-ambiguity) |
+| Table headers | `\|---\|` separator (GFM) | `\|---\|` separator | `\|=` prefix |
+| Table alignment | `:--` / `--:` (GFM) | `:--` / `--:` separator | `\|=<` / `\|=>` / `\|=~` (column), `\|<` / `\|>` / `\|~` (cell) |
+| Headerless tables | n/a (header + separator required) | N/A (header + separator required) | omit `\|=` |
+| Table rowspan | n/a (raw HTML only) | N/A (raw HTML only) | `^` marker |
+| Table colspan | n/a (raw HTML only) | N/A (raw HTML only) | `<` marker |
+| Multi-line cells | n/a (raw HTML only) | N/A (raw HTML only) | `+` continuation |
+| Captions | n/a | Tables only (`^ caption`) | `^ caption` (images, quotes, tables) |
 
 ### Blocks & structure
 
-| Feature | Djot | Carve |
-|---------|------|------|
-| Footnotes | `[^ref]` + `[^ref]: def` | `[^ref]` + `[^ref]: def` (inline/sidenote deferred) |
-| Math | `` $`…` `` / `` $$`…` `` | `` $`…` `` / `` $$`…` `` (djot form) |
-| Generic divs | `:::` (→ `<div>`) | bare `:::` / `::: {…}` → plain `<div>`; `::: word` two-tier (canonical → `<aside>`, custom → `<div class=word>`) |
-| Inline spans | `[text]{.c}` (→ `<span>`) | `[text]{.c}` (→ `<span>`) |
-| Editorial markup | `{+ +}` `{- -}` `{= =}` | `{+ +}` `{- -}` `{~ ~> ~}` `{= =}` `{# #}` |
-| Comments | `{% … %}` | `%%` line / `text %% trailing` / `%%%` block |
-| Raw / passthrough | inline `` `…`{=html} `` + ` ```=html ` block | inline `` `…`{=html} `` + ` ```raw html ` block |
-| Includes | N/A | `{{ path/to/file }}` |
-| Abbreviations | N/A | `*[ABBR]: ...` |
-| Attributes | `{.class}` | `{.class}` |
+| Feature | Markdown | Djot | Carve |
+|---------|----------|------|------|
+| Footnotes | `[^ref]` + `[^ref]: def` (GitHub / Pandoc ext) | `[^ref]` + `[^ref]: def` | `[^ref]` + `[^ref]: def` (inline/sidenote deferred) |
+| Math | `$…$` / `$$…$$` (GitHub) | `` $`…` `` / `` $$`…` `` | `` $`…` `` / `` $$`…` `` (djot form) |
+| Generic divs | n/a | `:::` (→ `<div>`) | bare `:::` / `::: {…}` → plain `<div>`; `::: word` two-tier (canonical → `<aside>`, custom → `<div class=word>`) |
+| Inline spans | n/a | `[text]{.c}` (→ `<span>`) | `[text]{.c}` (→ `<span>`) |
+| Editorial markup | n/a | `{+ +}` `{- -}` `{= =}` | `{+ +}` `{- -}` `{~ ~> ~}` `{= =}` `{# #}` |
+| Comments | `<!-- … -->` (HTML) | `{% … %}` | `%%` line / `text %% trailing` / `%%%` block |
+| Raw / passthrough | inline / block HTML | inline `` `…`{=html} `` + ` ```=html ` block | inline `` `…`{=html} `` + ` ```raw html ` block |
+| Includes | n/a | N/A | `{{ path/to/file }}` |
+| Abbreviations | n/a (PHP-Markdown ext: `*[ABBR]: ...`) | N/A | `*[ABBR]: ...` |
+| Attributes | n/a | `{.class}` | `{.class}` |
 
 ### Social & extensibility
 
-| Feature | Djot | Carve |
-|---------|------|------|
-| Extensions | Fenced divs | `:type[content]{attrs}` |
-| Mentions | N/A | `@user` |
-| Tags | N/A | `#tag` |
+| Feature | Markdown | Djot | Carve |
+|---------|----------|------|------|
+| Extensions | n/a | Fenced divs | `:type[content]{attrs}` |
+| Mentions | n/a (auto-linked on GitHub only) | N/A | `@user` |
+| Tags | n/a | N/A | `#tag` |
 
 ### Mention and tag rendering
 
