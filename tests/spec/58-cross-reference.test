@@ -5,8 +5,8 @@ Cross-reference
 
 See </#getting-started>.
 .
-<section id="getting-started">
+<section id="Getting-Started">
   <h1>Getting Started</h1>
-  <p>See <a href="#getting-started">Getting Started</a>.</p>
+  <p>See &lt;/#getting-started&gt;.</p>
 </section>
 ```
