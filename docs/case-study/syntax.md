@@ -98,42 +98,46 @@ heading text by the following algorithm, applied in order:
 3. Replace each maximal run of **non-alphanumeric ASCII** characters
    (spaces, punctuation, `_`, and runs of `-`) with a single `-`.
 4. Trim leading and trailing `-`.
-5. **Letter case and all non-ASCII characters are preserved** — no
-   lowercasing, no transliteration. `Über café` → `Über-café`, `日本語`
-   stays `日本語`.
+5. **Lowercase** it (Unicode-aware): non-ASCII characters are preserved,
+   only their case is folded. `Über café` → `über-café`, `日本語` stays
+   `日本語`. (GitHub/SSG style — makes ids and the common cross-reference
+   case-insensitive.)
 6. If the result starts with a digit, prefix `s-` (a bare leading digit
    is a valid HTML id but an invalid CSS selector). If the result is
    empty, the identifier is `s`.
 7. Deduplicate against the document's identifier namespace. Explicit
-   `{#id}` values are reserved first, in document order; generated IDs
-   are reserved as headings are processed. The first use is kept bare;
-   each later collision takes the next numeric suffix (`-2`, `-3`).
-   Matching is case-sensitive, so `intro` and `Intro` do not collide.
+   `{#id}` values are reserved first (verbatim, case preserved), in
+   document order; generated IDs are reserved as headings are processed.
+   The first use is kept bare; each later collision takes the next
+   numeric suffix (`-2`, `-3`).
 
 | Heading | Identifier |
 |---|---|
-| `# Getting Started` | `Getting-Started` |
-| `# Café & Crème` | `Café-Crème` |
-| `# Über uns` | `Über-uns` |
-| `# Привет мир` | `Привет-мир` |
-| `# RFC 2119: Key Words` | `RFC-2119-Key-Words` |
-| `# 2024 Recap` | `s-2024-Recap` |
-| `# What's New?` | `What’s-New` (the apostrophe smart-quotes to `’`, a non-ASCII char, then is preserved) |
+| `# Getting Started` | `getting-started` |
+| `# Café & Crème` | `café-crème` |
+| `# Über uns` | `über-uns` |
+| `# Привет мир` | `привет-мир` |
+| `# RFC 2119: Key Words` | `rfc-2119-key-words` |
+| `# 2024 Recap` | `s-2024-recap` |
+| `# What's New?` | `what’s-new` (the `'` smart-quotes to `’`, a non-ASCII char, then is preserved) |
 | `# user_id field` | `user-id-field` |
 | `# 日本語の見出し` | `日本語の見出し` |
-| `# Καλημέρα` | `Καλημέρα` |
+| `# Καλημέρα` | `καλημέρα` |
 | `# !!!` | `s` |
-| `# Setup` then `# Setup` | `Setup`, then `Setup-2` |
-| `# Introduction {#intro}` then `# Intro` | `intro`, then `Intro` (case-sensitive, no collision) |
+| `# Setup` then `# Setup` | `setup`, then `setup-2` |
+| `# Introduction {#intro}` then `# Intro` | `intro`, then `intro-2` |
 
-Identifiers **preserve case and non-ASCII characters**, matching the settled djot
-spec ([jgm/djot#393](https://github.com/jgm/djot/pull/393)). The rendered `id` is
-consumed by anchor highlighting, `:target` rules,
-`document.querySelector('#' + id)`, and URL fragments. A leading digit gets the `s-`
-prefix so the id is always a valid bare CSS selector.
+Identifiers are **lowercase, with non-ASCII characters preserved** — the
+GitHub/static-site-generator convention authors expect for anchors. carve lowercases
+**by design**, deliberately diverging from djot.js / djot-php (which preserve case per
+[jgm/djot#393](https://github.com/jgm/djot/pull/393)); lowercasing makes ids and the
+common `</#id>` cross-reference case-insensitive. The rendered `id` is consumed by
+anchor highlighting, `:target` rules, `document.querySelector('#' + id)`, and URL
+fragments; a leading digit gets the `s-` prefix so it is always a valid bare CSS
+selector.
 
 Non-ASCII ids are valid HTML5 and resolve in browsers (the fragment is
-percent-encoded when shared, e.g. `…/page#%C3%9Cber-uns`). For **ASCII-only**
+percent-encoded when shared, e.g. `…/page#%C3%BCber-uns`). For **ASCII-only**
 anchors — no percent-encoding, friendlier to legacy autolinkers — implementations
 offer an opt-in fold: carve-js's `asciiHeadingIds` parse option and carve-php's
 `AsciiHeadingIdsExtension`, which transliterate the id (`Über uns` → `uber-uns`). It

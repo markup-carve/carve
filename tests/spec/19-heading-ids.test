@@ -15,23 +15,23 @@ Heading IDs
 
 See </#cafe-notes>, </#section-2024-recap>, </#setup-2>, and </#api-v2>.
 .
-<section id="Café-Notes">
+<section id="café-notes">
   <h1>Café Notes</h1>
 </section>
-<section id="Über-uns">
+<section id="über-uns">
   <h1>Über uns</h1>
 </section>
-<section id="s-2024-Recap">
+<section id="s-2024-recap">
   <h1>2024 Recap</h1>
-  <section id="Setup">
+  <section id="setup">
     <h2>Setup</h2>
   </section>
-  <section id="Setup-2">
+  <section id="setup-2">
     <h2>Setup</h2>
   </section>
 </section>
 <section id="api-v2">
   <h1>API</h1>
-  <p>See &lt;/#cafe-notes&gt;, &lt;/#section-2024-recap&gt;, &lt;/#setup-2&gt;, and <a href="#api-v2">API</a>.</p>
+  <p>See &lt;/#cafe-notes&gt;, &lt;/#section-2024-recap&gt;, <a href="#setup-2">Setup</a>, and <a href="#api-v2">API</a>.</p>
 </section>
 ```
