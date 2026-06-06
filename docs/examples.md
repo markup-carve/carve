@@ -3441,3 +3441,98 @@ lazy</li>
 ```
 
 :::
+
+## Compact list blocks
+
+A blank line is still required to start a block inside a list item, but it no longer makes the list *loose* when the indented content opens a block (sub-list, block quote, fenced code, fenced div, heading, table). The item stays **tight** — lead text inline, the block attached — so a checklist with notes or steps with code stay compact. (A Carve deviation: canonical djot renders these loose. Only the tight/loose rendering changes, not the block structure.)
+
+::: compare
+
+```carve
+- item
+
+  > note
+- next
+```
+
+```html
+<ul>
+  <li>item
+    <blockquote><p>note</p></blockquote>
+  </li>
+  <li>next</li>
+</ul>
+```
+
+:::
+
+A genuine second prose paragraph still makes the list loose (and so does a blank line between items).
+
+::: compare
+
+```carve
+- item
+
+  second para
+- next
+```
+
+```html
+<ul>
+  <li><p>item</p>
+    <p>second para</p>
+  </li>
+  <li><p>next</p></li>
+</ul>
+```
+
+:::
+
+## List continuation marker
+
+A lone `+` at the list marker column attaches the following flush-left block to the current item, with no blank line, keeping the list tight — useful for code blocks or tables you would rather not indent. A bare `+` is never a bullet (a bullet needs `+ ` plus content), so it does not collide with `+` lists, and outside a list it is literal text.
+
+::: compare
+
+````carve
+- Build the image
++
+```sh
+docker build -t app .
+```
+- Push it
+````
+
+```html
+<ul>
+  <li>Build the image
+    <pre><code class="language-sh">docker build -t app .
+</code></pre>
+  </li>
+  <li>Push it</li>
+</ul>
+```
+
+:::
+
+A quote or table attaches the same way.
+
+::: compare
+
+```carve
+- item
++
+> note
+- next
+```
+
+```html
+<ul>
+  <li>item
+    <blockquote><p>note</p></blockquote>
+  </li>
+  <li>next</li>
+</ul>
+```
+
+:::

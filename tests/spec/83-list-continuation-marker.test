@@ -1,0 +1,32 @@
+List continuation marker
+
+````
+- Build the image
++
+```sh
+docker build -t app .
+```
+- Push it
+.
+<ul>
+  <li>Build the image
+    <pre><code class="language-sh">docker build -t app .
+</code></pre>
+  </li>
+  <li>Push it</li>
+</ul>
+````
+
+```
+- item
++
+> note
+- next
+.
+<ul>
+  <li>item
+    <blockquote><p>note</p></blockquote>
+  </li>
+  <li>next</li>
+</ul>
+```

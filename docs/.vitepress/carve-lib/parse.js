@@ -1041,6 +1041,31 @@ function orderedContinues(line, kind, delim) {
  * `parseBlock`, minus the `%%` inline comment (which is paragraph text, not a
  * block) and the paragraph fallthrough.
  */
+/**
+ * Does this line OPEN a block (vs being plain prose)? Used by the compact-list
+ * rule: a blank line inside a list item loosens the list only when the content
+ * after it is a plain paragraph; a blank followed by a block opener keeps the
+ * item tight. Lexer-free (no `:::` closer lookahead — for the loose decision a
+ * `:::`-shaped opener counts as a block regardless).
+ */
+function lineOpensBlock(line) {
+    return (RE_RAW_FENCE.test(line) ||
+        RE_FENCE.test(line) ||
+        RE_COMMENT_BLOCK.test(line) ||
+        RE_ABBR_DEF.test(line) ||
+        RE_FOOTNOTE_DEF.test(line) ||
+        RE_LINK_DEF.test(line) ||
+        RE_HR.test(line.trim()) ||
+        RE_HEADING.test(line) ||
+        RE_DEFLIST_TERM.test(line) ||
+        RE_BLOCKQUOTE.test(line) ||
+        RE_TASK.test(line) ||
+        RE_UNORDERED.test(line) ||
+        RE_ORDERED.test(line) ||
+        RE_TABLE_ROW.test(line) ||
+        (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line)) ||
+        RE_DIV_OPEN.test(line));
+}
 function lazyContinuationEndsList(line, lexer) {
     return (RE_RAW_FENCE.test(line) ||
         RE_FENCE.test(line) ||
@@ -1138,6 +1163,36 @@ function parseList(lexer) {
                 lexer.consume();
                 continue;
             }
+            // List-continuation marker (Carve): a lone `+` at the marker column
+            // attaches the FOLLOWING flush-left block to this item without indenting
+            // it. A bare `+` is never a bullet (a bullet needs `+ ` + content). It
+            // injects a blank separator so the block parses on its own; the
+            // compact-list rule above then keeps the item tight.
+            if (leadingWhitespace(l) === baseIndent && l.trim() === '+') {
+                lexer.consume();
+                pendingBlanks = 0;
+                nested.push('');
+                while (!lexer.eof()) {
+                    const a = lexer.peek();
+                    if (a.trim() === '')
+                        break;
+                    const ind = leadingWhitespace(a);
+                    if (ind < baseIndent)
+                        break;
+                    if (ind === baseIndent) {
+                        const am = matchListMarker(a, isTask, isOrdered);
+                        const sibling = am &&
+                            (isOrdered
+                                ? orderedContinues(a, orderedKind, orderedDelim)
+                                : unorderedMarkerChar(a) === firstMarkerChar);
+                        if (sibling || a.trim() === '+')
+                            break;
+                    }
+                    nested.push(a.slice(baseIndent));
+                    lexer.consume();
+                }
+                continue;
+            }
             if (leadingWhitespace(l) >= contentCol) {
                 for (let k = 0; k < pendingBlanks; k++)
                     nested.push('');
@@ -1171,11 +1226,23 @@ function parseList(lexer) {
                 loose = true;
             }
         }
-        // An internal blank line (one kept inside `nested`, i.e. followed by
-        // more item content) splits the item into multiple blocks, which by
-        // the Djot/CommonMark rule makes the whole list loose.
-        if (nested.includes(''))
-            loose = true;
+        // Compact list blocks (Carve): an internal blank line loosens the item only
+        // when the content after it is a plain paragraph (a real second paragraph).
+        // A blank followed by a block opener (sub-list, quote, fence, div, heading,
+        // table) keeps the item tight, so an item can carry a sub-block without the
+        // list going loose. Only the tight/loose RENDERING changes; block structure
+        // is unchanged. (Canonical djot renders these loose; Carve deviates here.)
+        for (let k = 0; k < nested.length; k++) {
+            if (nested[k] !== '')
+                continue;
+            let j = k + 1;
+            while (j < nested.length && nested[j] === '')
+                j++;
+            if (j < nested.length && !lineOpensBlock(nested[j])) {
+                loose = true;
+                break;
+            }
+        }
         // Parse the lead text together with its continuation/nested lines as
         // one block sequence. Lazy continuation (an indented line with no
         // blank before it) then merges into the lead paragraph instead of

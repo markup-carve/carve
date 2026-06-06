@@ -405,10 +405,24 @@ Inspired by Org-mode TODO states but simplified.
 
 #### Tight vs loose
 
-A list is **tight** unless a blank line separates its items (or an item
-holds a second block); then it is **loose**. A tight item renders its
-text directly (`<li>text</li>`); a loose item wraps each paragraph in
-`<p>` — matching djot/CommonMark (PART 9 §17).
+A list is **tight** unless a blank line separates its items, or an item
+holds a second *paragraph*; then it is **loose**. A tight item renders its
+text directly (`<li>text</li>`); a loose item wraps each paragraph in `<p>`
+(PART 9 §17).
+
+**Compact list blocks** (Carve deviation from djot): a blank line before an
+item's sub-*block* — a sub-list, block quote, fenced code, fenced div,
+heading or table — does **not** loosen the list. The item stays tight with the
+block attached, so checklists-with-notes and steps-with-code stay compact. Only
+a real second paragraph (or a blank between items) loosens. The blank line is
+still required to start the block, so block structure and the uniformity
+principle are unchanged — only the tight/loose rendering differs from djot.
+
+**List continuation marker** (Carve addition): a lone `+` at the marker column
+attaches the following flush-left block to the current item with no blank line,
+keeping the list tight — handy for code/tables you would rather not indent. A
+bare `+` is never a bullet, so it does not collide with `+` lists. See the
+[examples](/examples) and PART 9 §17.
 
 #### Definition Lists
 
