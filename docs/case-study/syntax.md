@@ -339,25 +339,28 @@ The `^` prefix on the following line creates a `<figure>` with `<figcaption>`.
 - Back to top
 ```
 
-**Alternative bullets:**
+**Alternative bullet:**
 ```
 * Also works
-+ And this
 ```
 
-Use whichever marker you prefer for a given list. The three markers are
+Carve bullets are `-` and `*` only. Unlike Markdown and Djot, `+` is **not**
+a bullet in Carve — it is the list-continuation marker (PART 9 §17), so a
+`+ x` line is paragraph text, never a list item.
+
+Use whichever of `-`/`*` you prefer for a given list. The two markers are
 **not interchangeable within one list**: changing the marker character
 starts a new list (matching djot, see PART 9 §11). So
 
 ```
 - a
 - b
-+ c
-+ d
+* c
+* d
 ```
 
 renders as two separate `<ul>`s, not one merged list. The same rule
-applies to task-list markers: a `- [ ] x` line followed by a `+ [ ] y`
+applies to task-list markers: a `- [ ] x` line followed by a `* [ ] y`
 line produces two single-item task lists, not one. This keeps the
 parser stateless about "which marker came first" and matches the
 reader's intuition that the visual change signals a structural break.
@@ -420,9 +423,10 @@ principle are unchanged — only the tight/loose rendering differs from djot.
 
 **List continuation marker** (Carve addition): a lone `+` at the marker column
 attaches the following flush-left block to the current item with no blank line,
-keeping the list tight — handy for code/tables you would rather not indent. A
-bare `+` is never a bullet, so it does not collide with `+` lists. See the
-[examples](/examples) and PART 9 §17.
+keeping the list tight — handy for code/tables you would rather not indent.
+Because `+` is not a Carve bullet (unlike Markdown/djot, which treat `+` as a
+list marker), this is unambiguous: there is no `+` list it could be mistaken
+for. See the [examples](/examples) and PART 9 §17.
 
 #### Definition Lists
 

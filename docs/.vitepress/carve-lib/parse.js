@@ -12,9 +12,9 @@ const RE_HR = /^(?:-{3,}|\*{3,}|_{3,})\s*$/;
 // with punctuation (c++, c#, f#, asp.net); a multiword/quoted info (e.g.
 // `js title="x"`) is still not a fence (anchored, no whitespace allowed).
 const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_+#.-]*)\s*$/;
-// Bullets are `-` and `*` only. Carve drops djot's `+` bullet so a lone `+`
-// can serve as the list-continuation marker (PART 9 §17); a `+ ` line is now
-// ordinary paragraph text.
+// Bullets are `-` and `*` only. Unlike Markdown/djot, `+` is not a Carve bullet
+// -- it is reserved as the list-continuation marker (PART 9 §17), so a lone `+`
+// is unambiguous and a `+ x` line is ordinary paragraph text.
 const RE_UNORDERED = /^(\s*)[-*]\s+(.*)$/;
 // Ordered marker: decimal, a single letter (alpha), or a roman-numeral
 // run, then `.` or `)`. The dialect is fixed by the FIRST item (see

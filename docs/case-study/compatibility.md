@@ -24,6 +24,10 @@ Line 15: Double-asterisk bold **text** detected
 
 Line 23: Single-asterisk emphasis *text* detected
          Suggestion: /text/
+
+Line 31: `+` bullet detected — not a Carve bullet (it is the
+         list-continuation marker), so this line renders as a paragraph
+         Suggestion: -
 ```
 
 ### 7.3 Auto-Migration Tool
@@ -50,9 +54,11 @@ carve migrate input.md --from markdown --to carve > output.crv
 | Table headers    | `---`       | `---`       | underline     | `|===`       | `\|---+`    | `\|=`        |
 | Admonitions      | N/A         | `::: class` | `.. type::`   | `TYPE:`      | N/A         | `:::type`    |
 | Code fence       | ``` ` ```   | ``` ` ```   | `::`          | `----`       | `#+BEGIN`   | ``` ` ```    |
+| Bullet markers   | `-`/`*`/`+` | `-`/`*`/`+` | `-`/`*`/`+`   | `*`          | `-`/`+`     | `-`/`*`      |
 
 **Notes on the Djot column:**
 
+- **Bullet markers:** Markdown, Djot and rST all accept `+` as a bullet; Carve does **not**. Carve bullets are `-` and `*` only — `+` is reserved as the list-continuation marker (a lone `+` attaches a following block to the current item). A Markdown/Djot `+` bullet therefore renders as a paragraph in Carve; the auto-migration tool rewrites it to `-`, and `djotMigrationWarnings` flags it.
 - **Underline:** Djot has no underline element; `{+ +}` is *insert* (`<ins>`), browser-underlined by default.
 - **Strikethrough:** Djot has no strikethrough. `~t~` is Djot *subscript*; the closest struck-out element is *delete* `{-t-}` (`<del>`). Carve's `~t~` strikethrough therefore collides with Djot subscript — see migration warnings.
 - **Admonitions:** Djot has only generic divs (`:::` + a class). Named/styled admonition *types* are renderer-defined, not built into the Djot spec.
