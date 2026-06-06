@@ -193,7 +193,7 @@ Carve inherits and extends Djot's rationale:
 
 | Feature | Markdown | Djot | Carve |
 |---------|----------|------|------|
-| Footnotes | `[^ref]` + `[^ref]: def` (GFM) | `[^ref]` + `[^ref]: def` | `[^ref]` + `[^ref]: def` (inline/sidenote deferred) |
+| Footnotes | `[^ref]` + `[^ref]: def` (GitHub / Pandoc ext) | `[^ref]` + `[^ref]: def` | `[^ref]` + `[^ref]: def` (inline/sidenote deferred) |
 | Math | `$…$` / `$$…$$` (GitHub) | `` $`…` `` / `` $$`…` `` | `` $`…` `` / `` $$`…` `` (djot form) |
 | Generic divs | n/a | `:::` (→ `<div>`) | bare `:::` / `::: {…}` → plain `<div>`; `::: word` two-tier (canonical → `<aside>`, custom → `<div class=word>`) |
 | Inline spans | n/a | `[text]{.c}` (→ `<span>`) | `[text]{.c}` (→ `<span>`) |
