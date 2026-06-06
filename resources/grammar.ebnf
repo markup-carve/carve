@@ -308,9 +308,20 @@ ascii_punctuation = '!' | '"' | '#' | '$' | '%' | '&' | "'" | '(' | ')'
                   | '^' | '_' | '`' | '{' | '|' | '}' | '~' ;
 
 (* --- Code Spans --- *)
-code_span = backtick_run, code_span_content, backtick_run, [attributes] ;
-backtick_run = '`'+ ;  (* matching count *)
-code_span_content = (* any chars except matching backtick run *) ;
+code_span = backtick_run, code_span_content, [backtick_run], [attributes] ;
+   (* the closing backtick_run is OPTIONAL: an unclosed run runs to end of
+      block -- see UNCLOSED RUN below *)
+backtick_run = '`'+ ;  (* the OPENER is a MAXIMAL run; the CLOSER is a run of
+   the SAME count, also maximal (not part of a longer run) *)
+code_span_content = (* any chars except a closing backtick_run of equal count *) ;
+(* UNCLOSED RUN. An opener with no equal-length closer ahead is NOT literal
+   text: it opens a verbatim span that runs to END_OF_BLOCK (the block's
+   trailing whitespace is stripped; no surrounding single-space strip, which
+   applies only to a closed span). Such an unclosed run is OPAQUE -- an
+   emphasis delimiter or link tail after it is verbatim content, so the
+   surrounding construct never closes. Matches djot upstream and carve-php.
+   (Pinned as the "Inline verbatim ..." corpus pair; was a carve-js
+   divergence, resolved.) *)
 (* A trailing `{…}` on a code span is the generic inline-attribute
    block, NOT a language tag -- EXCEPT the exact form `{=format}`, which is
    raw inline passthrough (raw_inline below, PART 9 §20). For any OTHER

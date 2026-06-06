@@ -1407,6 +1407,32 @@ const RE_SPAN_TAIL = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\}/;
  * `[[[[...` (with or without a trailing `]`). Unbalanced `[` are absent from
  * the map.
  */
+// Resolve the verbatim (code) span opening at `i` (a backtick). The opener is
+// the MAXIMAL run of backticks (`openLen`); it closes on a run of EXACTLY that
+// length. An opener with no equal-length closer is opaque to the end of the
+// string. `end` is the index just past the closing run, or text.length when
+// unclosed; `closed` flags which. Shared by scanInline's tokenizer,
+// findEmphasisClose, and buildBracketMap so all three agree on what a span hides.
+function verbatimSpanEnd(text, i) {
+    let openLen = 1;
+    while (text[i + openLen] === '`')
+        openLen++;
+    let k = i + openLen;
+    while (k < text.length) {
+        if (text[k] === '`') {
+            let m = 1;
+            while (text[k + m] === '`')
+                m++;
+            if (m === openLen)
+                return { end: k + openLen, closed: true, openLen };
+            k += m;
+        }
+        else {
+            k++;
+        }
+    }
+    return { end: text.length, closed: false, openLen };
+}
 function buildBracketMap(s) {
     const map = {};
     const stack = [];
@@ -1414,6 +1440,12 @@ function buildBracketMap(s) {
         const ch = s[j];
         if (ch === '\\') {
             j++;
+            continue;
+        }
+        // A `[` or `]` inside a verbatim span is literal text, not a bracket — skip
+        // the whole span (to its end when unclosed) so it never enters the map.
+        if (ch === '`') {
+            j = verbatimSpanEnd(s, j).end - 1;
             continue;
         }
         if (ch === '[') {
@@ -1612,25 +1644,38 @@ function scanInline(text, source = inlineSource()) {
             i = end;
             continue;
         }
-        // Inline code spans first (opaque)
+        // Inline verbatim (code span). The opening run is the MAXIMAL run of
+        // backticks; it closes only on a run of EXACTLY the same length (a shorter
+        // OR longer run is content). An opener with no equal-length closer still
+        // opens a verbatim span that runs to the END of the block — matches djot
+        // upstream + carve-php (grammar code_span, "UNCLOSED RUN"). Uses the shared
+        // verbatimSpanEnd helper so the tokenizer, findEmphasisClose, and
+        // buildBracketMap stay in lockstep on span boundaries.
         if (c === '`') {
-            const m = /^(`+)([\s\S]*?[^`])(\1)(?!`)/.exec(rest);
-            if (m) {
-                flush();
-                const inner = m[2].replace(/^ (.*) $/, '$1');
-                // A verbatim span tagged `{=format}` is raw inline passthrough.
-                const raw = RE_RAW_INLINE.exec(text.slice(i + m[0].length));
-                if (raw) {
-                    const len = m[0].length + raw[0].length;
-                    out.push(withPos({ type: 'raw-inline', format: raw[1], content: inner }, source, text, i, i + len));
-                    i += len;
-                }
-                else {
-                    out.push(withPos({ type: 'code', value: inner }, source, text, i, i + m[0].length));
-                    i += m[0].length;
-                }
+            const { end, closed, openLen } = verbatimSpanEnd(text, i);
+            flush();
+            if (!closed) {
+                // Unclosed: verbatim to end of block, with the block's trailing
+                // whitespace stripped (no surrounding single-space strip — that applies
+                // only to a closed span).
+                const value = text.slice(i + openLen).replace(/\s+$/, '');
+                out.push(withPos({ type: 'code', value }, source, text, i, text.length));
+                i = text.length;
                 continue;
             }
+            const inner = text.slice(i + openLen, end - openLen).replace(/^ (.*) $/, '$1');
+            // A verbatim span tagged `{=format}` is raw inline passthrough.
+            const raw = RE_RAW_INLINE.exec(text.slice(end));
+            if (raw) {
+                const len = end - i + raw[0].length;
+                out.push(withPos({ type: 'raw-inline', format: raw[1], content: inner }, source, text, i, i + len));
+                i += len;
+            }
+            else {
+                out.push(withPos({ type: 'code', value: inner }, source, text, i, end));
+                i = end;
+            }
+            continue;
         }
         // Math (djot form): inline $`x`, display $$`x`. A bare `$` not
         // followed by a backtick run (e.g. currency `$5`) stays literal.
@@ -2101,13 +2146,14 @@ function findEmphasisClose(text, from, delim) {
             j++;
             continue;
         }
-        // Skip code spans
+        // Skip verbatim (code) spans. An unclosed run is opaque to the end of the
+        // block, so no emphasis closer can follow it — the opener cannot close.
         if (ch === '`') {
-            const close = text.indexOf('`', j + 1);
-            if (close !== -1) {
-                j = close;
-                continue;
-            }
+            const span = verbatimSpanEnd(text, j);
+            if (!span.closed)
+                return -1;
+            j = span.end - 1;
+            continue;
         }
         if (ch === delim) {
             // Closer must not be preceded by whitespace

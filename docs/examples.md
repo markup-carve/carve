@@ -985,6 +985,38 @@ Use `ls | grep foo` to filter.
 
 :::
 
+The opener is a maximal run of backticks and closes only on a run of the same length. A run with no matching closer is not literal text: it opens a verbatim span that runs to the end of the block. (A fence-looking ` ``` ` mid-paragraph is the common case.)
+
+::: compare
+
+````carve
+text
+```
+code
+````
+
+````html
+<p>text
+<code>
+code</code></p>
+````
+
+:::
+
+An unclosed run is opaque: an emphasis delimiter or link tail after it is verbatim content, so the surrounding construct never closes.
+
+::: compare
+
+```carve
+*a ` b*
+```
+
+```html
+<p>*a <code> b*</code></p>
+```
+
+:::
+
 ## Admonitions
 
 ::: compare
@@ -3334,7 +3366,7 @@ outside</h1>
 
 ## Blockquote lazy continuation stops at a fenced block
 
-Lazy continuation only extends an open paragraph. A non-`>` line that lands inside an open fenced code block ends the quote instead of being swallowed into the code (and the `>` of a following quoted line is kept literal). A fence never interrupts an open paragraph, so a fence-looking line mid-paragraph stays paragraph text and the lazy line still folds in.
+Lazy continuation only extends an open paragraph. A non-`>` line that lands inside an open fenced code block ends the quote instead of being swallowed into the code (and the `>` of a following quoted line is kept literal). A fence never interrupts an open paragraph, so a fence-looking line mid-paragraph stays paragraph text and the lazy line still folds in. That mid-paragraph ` ``` ` is an unclosed inline verbatim run, so it renders as a `<code>` span to the end of the block (matching djot and carve-php).
 
 ::: compare
 
@@ -3366,8 +3398,8 @@ lazy
 
 ````html
 <blockquote><p>text
-```
-lazy</p></blockquote>
+<code>
+lazy</code></p></blockquote>
 ````
 
 :::
