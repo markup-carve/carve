@@ -387,11 +387,12 @@ Ordered lists support **decimal, alphabetic (`a.`/`A.`), and roman
 fixes the dialect, the `<ol type>`, and `start`; a marker outside that
 dialect (or the other delimiter) starts a new list (PART 9 §11).
 
-At the document top level any ordered list — including decimal `1.` — starts
-only after a blank line; a marker on the line directly under prose is
-paragraph text, so hard-wrapping never turns "step 1." into a list (the §10
-paragraph rule, matching djot). Inside an existing list item, indentation
-alone still nests a sublist.
+At the document top level a `1.` (or `1)`) marker on the line directly under
+prose interrupts the paragraph and starts a list (the §10 paragraph rule,
+Markdown-like). The ordered guard keeps the common cases safe: a higher number,
+a letter, or a roman marker (`2.`, `1985.`, `a.`, `i.`) under prose stays
+paragraph text, so hard-wrapping never turns "step 2." or "version 1985." into
+a list. Inside an existing list item, indentation alone still nests a sublist.
 
 **Auto-numbering:**
 ```
