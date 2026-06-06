@@ -20,6 +20,6 @@ b
 lazy
 .
 <blockquote><p>text
-```
-lazy</p></blockquote>
+<code>
+lazy</code></p></blockquote>
 ````

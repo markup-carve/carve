@@ -23,3 +23,19 @@ Use `ls | grep foo` to filter.
 .
 <p>Use <code>ls | grep foo</code> to filter.</p>
 ```
+
+````
+text
+```
+code
+.
+<p>text
+<code>
+code</code></p>
+````
+
+```
+*a ` b*
+.
+<p>*a <code> b*</code></p>
+```
