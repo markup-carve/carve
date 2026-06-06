@@ -1,0 +1,23 @@
+List lazy continuation
+
+```
+- item
+lazy
+.
+<ul>
+  <li>item
+lazy</li>
+</ul>
+```
+
+```
+- a
+# H
+.
+<ul>
+  <li>a</li>
+</ul>
+<section id="h">
+  <h1>H</h1>
+</section>
+```
