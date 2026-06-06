@@ -387,12 +387,14 @@ Ordered lists support **decimal, alphabetic (`a.`/`A.`), and roman
 fixes the dialect, the `<ol type>`, and `start`; a marker outside that
 dialect (or the other delimiter) starts a new list (PART 9 §11).
 
-At the document top level a `1.` (or `1)`) marker on the line directly under
-prose interrupts the paragraph and starts a list (the §10 paragraph rule,
-Markdown-like). The ordered guard keeps the common cases safe: a higher number,
-a letter, or a roman marker (`2.`, `1985.`, `a.`, `i.`) under prose stays
-paragraph text, so hard-wrapping never turns "step 2." or "version 1985." into
-a list. Inside an existing list item, indentation alone still nests a sublist.
+Unlike the other blocks, an ordered-list marker does **not** interrupt a
+paragraph (the §10 paragraph rule): an ordered list — `1.`, `2.`, `1985.`, `a.`,
+`i.`, any value — needs a blank line before it. An ordered marker is too common
+in prose ("step 2.", "version 1985.", "upgrade to 1. today"), and the only way
+to allow it would be the CommonMark `1.`-only heuristic Djot removed; Carve
+keeps ordered lists on the blank-line rule instead. (Bullets `- `/`* `/`+ `,
+being unambiguous, do interrupt.) Inside an existing list item, indentation
+alone still nests a sublist.
 
 **Auto-numbering:**
 ```

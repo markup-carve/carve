@@ -56,11 +56,9 @@ text
 1. x
 2. y
 .
-<p>text</p>
-<ol>
-  <li>x</li>
-  <li>y</li>
-</ol>
+<p>text
+1. x
+2. y</p>
 ```
 
 ```

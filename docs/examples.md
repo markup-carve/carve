@@ -3142,7 +3142,8 @@ text
 
 :::
 
-A `1.` ordered list interrupts.
+An ordered-list marker does **not** interrupt — it needs a blank line (the one
+visible block kept on the Djot rule; see the carve-out below).
 
 ::: compare
 
@@ -3153,11 +3154,9 @@ text
 ```
 
 ```html
-<p>text</p>
-<ol>
-  <li>x</li>
-  <li>y</li>
-</ol>
+<p>text
+1. x
+2. y</p>
 ```
 
 :::
@@ -3202,8 +3201,10 @@ body
 
 :::
 
-**Carve-out — ordered guard.** Only `1.` / `1)` interrupts; a higher number or
-a year is too common in prose, so it stays paragraph text.
+**Carve-out — ordered lists never interrupt.** An ordered marker is too common
+in prose ("see step 2.", "version 1985.", "upgrade to 1. today"), and the only
+way to allow it would be the CommonMark `1.`-only heuristic Djot removed. So no
+ordered value — `1.`, `2.`, a year — interrupts; all stay paragraph text.
 
 ::: compare
 

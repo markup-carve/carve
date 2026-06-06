@@ -424,9 +424,10 @@ backslash-escape the marker (`\* 3 + 17`), to keep it prose.
 
 **Three carve-outs** keep common prose safe:
 
-1. **Ordered guard** — only `1.` / `1)` interrupts. A higher decimal (`2.`,
-   `1985.`), a single letter (`a.`), or a roman marker (`i.`) does NOT
-   interrupt; it still starts a list after a blank line. (Matches CommonMark.)
+1. **Ordered lists never interrupt** — no ordered marker (`1.`, `2.`, `1985.`,
+   `a.`, `i.`) interrupts; an ordered list needs a blank line before it. Allowing
+   it would require the CommonMark `1.`-only heuristic Djot removed, so Carve
+   keeps ordered lists on the blank-line rule and drops the heuristic entirely.
 2. **Closer lookahead** — a fence (`` ``` ``/`~~~`) or `:::` interrupts only
    when a matching closer exists ahead. An unterminated opener stays paragraph
    text, so a stray marker never swallows the rest of the block.
@@ -445,8 +446,7 @@ produce no block of their own, so they are collected/consumed.
 | `Text` / `` ``` `` / `code` | one paragraph | unterminated fence — no closer |
 | `Text` / `---` / `more` | paragraph + `<hr>` + paragraph | thematic break interrupts |
 | `x = 5` / `* 3 + 17` | paragraph + list | accepted false positive |
-| `Text` / `1. a` | paragraph + list | `1.` interrupts |
-| `Text` / `2. a` / `Text` / `1985. a` | one paragraph | ordered guard (not `1.`) |
+| `Text` / `1. a` (or `2. a`, `1985. a`) | one paragraph | ordered lists never interrupt |
 | `Text` / `![a](u)` | one paragraph (inline image) | image excluded |
 | `See[^m].` / `[^m]: note` | paragraph + endnotes | invisible construct |
 | `> text` / `> # H` | quote: paragraph + heading | interrupts inside the quote |

@@ -70,10 +70,6 @@ const RE_COMMENT_LINE = /^%%/;
 // A bare fence-closer line (` ``` ` / `~~~`, no info), used only by the
 // paragraph-interruption closer lookahead's negative cache (§10).
 const RE_FENCE_CLOSER = /^\s{0,3}(`{3,}|~{3,})\s*$/;
-// Ordered marker that may INTERRUPT a paragraph: only a `1.` or `1)`
-// (§10 ordered-list guard). A higher/letter/roman marker is too common in
-// prose to break a hard-wrapped line, so it does not interrupt.
-const RE_INTERRUPT_ORDERED = /^\s*1[.)]\s/;
 // Maximum block-container nesting depth. Each level of blockquote / div / list /
 // footnote recurses parseBlocks -> parseBlock -> parseContainer -> parseBlocks,
 // so unbounded nesting (e.g. `> ` repeated thousands of times) overflows the
@@ -1465,9 +1461,11 @@ function startsInterruptingBlock(lexer) {
             // line or block comment (invisible)
             return RE_COMMENT_LINE.test(ln) || RE_COMMENT_BLOCK.test(ln);
         default:
-            // Ordered list: only `1.`/`1)` interrupts (§10 ordered-list guard —
-            // `2.`, `1985.`, `a.`, `i.` do not). A bare image is inline, not a block.
-            return RE_INTERRUPT_ORDERED.test(ln);
+            // An ordered-list marker does NOT interrupt a paragraph (it needs a blank
+            // line, matching Djot): allowing it would require the CommonMark `1.`-only
+            // heuristic to keep `2.`, `1985.`, `a.`, `i.` as prose, which Carve avoids.
+            // A bare image is inline, not a block, so it does not interrupt either.
+            return false;
     }
 }
 function parseParagraph(lexer) {

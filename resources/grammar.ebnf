@@ -135,10 +135,10 @@ ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, space, list_item_content ;
 (* The first item fixes the dialect (decimal / alpha / roman) and the
    delimiter (`.` or `)`); classification and the ambiguous-letter
-   tie-break are in PART 9 §11. An ordered list interrupts a paragraph with
-   no blank line ONLY through a `1.` / `1)` marker; every other dialect/value
-   (`2.`, `1985.`, `a.`, `i.`) needs a blank line first -- the
-   paragraph-interruption rule and its ordered-list guard are PART 9 §10.
+   tie-break are in PART 9 §11. An ordered list does NOT interrupt a paragraph
+   in any dialect/value (`1.`, `2.`, `1985.`, `a.`, `i.`); it needs a blank
+   line before it (matching Djot, avoiding the CommonMark `1.`-only heuristic)
+   -- the paragraph-interruption rule is PART 9 §10.
    The two delimiters are the trailing `.` and `)` only. djot's
    parenthesized `(1)` / `(a)` form is INTENTIONALLY NOT a marker -- it is
    too easily confused with a prose parenthetical -- so `(1) text` stays
@@ -755,7 +755,6 @@ EOF = (* end of file *) ;
         - thematic break     a lone `---` / `***` / `___` line;
         - block quote        `>`;
         - unordered / task   `- ` / `* ` / `+ ` (bullet + space; `- [x] ` task);
-        - ordered list       ONLY a `1.` or `1)` marker (see GUARD below);
         - table row          a `|`...`|` line that is a valid table row
                              (a stray `|` in prose is NOT -- see §<table>);
         - fenced code        a ``` / ~~~ opener that HAS a matching closer
@@ -763,18 +762,21 @@ EOF = (* end of file *) ;
         - admonition / div   a `:::` opener that HAS a matching closer ahead.
       So "Liste: \n - eins \n - zwei" is now <p>Liste:</p> + a <ul>; "intro
       \n # H" is <p>intro</p> + <h1>; "x = 5 \n * 3 + 17" is <p>x = 5</p> +
-      <ul><li>3 + 17</li></ul> (corpus 05-lists-6, 05-lists-7, 02-interrupt-*).
+      <ul><li>3 + 17</li></ul> (corpus 05-lists-6, 05-lists-7, and the
+      Paragraph interruption section).
       That last case is the ACCEPTED COST of the relaxed rule: a hard-wrapped
-      prose line that happens to begin with a bullet-plus-space (or `1.` / `>`
-      / `#` / a valid table row) now starts a block. Insert a blank line, or
+      prose line that happens to begin with a bullet-plus-space (or `>` / `#` /
+      a valid table row) now starts a block. Insert a blank line, or
       backslash-escape the marker ("\* 3 + 17"), to keep such a line as prose.
 
-      ORDERED-LIST GUARD. Only the decimal marker `1.` or `1)` interrupts a
-      paragraph. A higher decimal (`2.`, `1985.`), a single letter (`a.`), or
-      a roman marker (`i.`) does NOT interrupt -- those are too common in prose
-      ("see step 2.", "version 1985.", "option a."). They still START an
-      ordered list after a blank line. (Matches CommonMark, where only `1.` /
-      `1)` may interrupt a paragraph; corpus 54-ordered-marker-vs-prose.)
+      ORDERED LISTS DO NOT INTERRUPT. An ordered-list marker -- decimal,
+      letter, or roman, in any value -- never interrupts a paragraph; it needs a
+      blank line before it (matching Djot). This is deliberate: unlike a bullet
+      (`- `/`* `/`+ ` is unambiguous), an ordered marker is too common in prose
+      ("see step 2.", "version 1985.", "upgrade to 1. today"), and the only way
+      to allow it would be the CommonMark `1.`-only heuristic -- the exact wart
+      Djot removed. Carve drops the heuristic by not interrupting on ordered
+      markers at all (corpus 54-ordered-marker-vs-prose, Paragraph interruption).
 
       IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)") does NOT
       interrupt: an image is not a block of its own in Carve, so it stays an
