@@ -12,14 +12,18 @@ const RE_HR = /^(?:-{3,}|\*{3,}|_{3,})\s*$/;
 // with punctuation (c++, c#, f#, asp.net); a multiword/quoted info (e.g.
 // `js title="x"`) is still not a fence (anchored, no whitespace allowed).
 const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_+#.-]*)\s*$/;
-const RE_UNORDERED = /^(\s*)[-*+]\s+(.*)$/;
+// A marker is a list item only with non-empty content: a content-less marker
+// (`-`, `- `, `-   ` — bare or trailing whitespace only) is NOT a list, it is
+// paragraph text. Requiring content avoids a trailing space being load-bearing
+// (editors strip it) and keeps a lone dash as prose. Stricter than CommonMark.
+const RE_UNORDERED = /^(\s*)[-*+]\s+(\S.*)$/;
 // Ordered marker: decimal, a single letter (alpha), or a roman-numeral
 // run, then `.` or `)`. The dialect is fixed by the FIRST item (see
 // olKindOf); letter/roman markers are ambiguous w.r.t. paragraphs (§10).
-const RE_ORDERED = /^(\s*)([0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])([.)])\s+(.*)$/;
+const RE_ORDERED = /^(\s*)([0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])([.)])\s+(\S.*)$/;
 // Task states (matches djot-php): `x`/`X` are checked; ` `, `-`, `_`,
 // `>`, `?` are all accepted and render as an unchecked checkbox.
-const RE_TASK = /^(\s*)[-*+]\s+\[([ xX\-_>?])\]\s+(.*)$/;
+const RE_TASK = /^(\s*)[-*+]\s+\[([ xX\-_>?])\]\s+(\S.*)$/;
 const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 // Fences are a run of 3+ colons (group 1). A longer opener nests: a
 // `::::` block contains `:::` blocks, and only a bare closer of equal-or-

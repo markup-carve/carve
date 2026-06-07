@@ -1,3 +1,4 @@
-~~~yaml
-key: value
-~~~
+{.fancy #x}
+```php
+code
+```

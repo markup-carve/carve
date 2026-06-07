@@ -18,6 +18,16 @@ plain text
 </code></pre>
 ````
 
+````
+{.fancy #x}
+```php
+code
+```
+.
+<pre class="fancy" id="x"><code class="language-php">code
+</code></pre>
+````
+
 ```
 ~~~yaml
 key: value
