@@ -437,6 +437,22 @@ Span content is parsed recursively, and an inline link still wins over a span.
 
 :::
 
+A bullet (or ordered) marker is a list item only when followed by a space. A **bare** marker — `-` with no space and no content — is not a list; it stays paragraph text. (A marker followed by a space but no content, `- `, is a valid empty item.) Carve is stricter than CommonMark here, where a bare `-` line is an empty item; requiring the space keeps a lone dash from silently becoming a list.
+
+::: compare
+
+```carve
+-
+not a list
+```
+
+```html
+<p>-
+not a list</p>
+```
+
+:::
+
 Ordered lists use `N.` prefixes — numbering starts from the first marker.
 
 ::: compare

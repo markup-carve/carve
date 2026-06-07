@@ -148,6 +148,14 @@ list = unordered_list | ordered_list | definition_list ;
 unordered_list = unordered_item+ ;
 unordered_item = bullet_marker, space, list_item_content ;
 bullet_marker = '-' | '*' | '+' ;
+(* MARKER REQUIRES A SPACE -- NORMATIVE. A bullet (or ordered) marker is a list
+   item only when followed by a space. A BARE marker line (`-` / `*` / `1.` with
+   no trailing space and no content) is NOT a list -- it is paragraph text. A
+   marker followed by a space but no content (`- ` with a trailing space) is a
+   valid EMPTY item. Carve is stricter than CommonMark here, which treats a bare
+   `-` line as an empty item; requiring the space keeps a lone `-` (a common
+   prose dash / placeholder) from silently becoming a list. Pinned by corpus
+   bare-marker-is-not-a-list. *)
 
 ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, space, list_item_content ;
