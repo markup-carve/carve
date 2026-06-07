@@ -14,6 +14,46 @@ Carve builds on Markdown's basics and Djot's technical rigor while adding:
 - **Extendable by design** - Core syntax stays small while standard and app-level extensions fit a defined contract
 - **Social conventions** - `@mentions` and `#tags` are recognized as first-class inline tokens
 
+## Why Carve?
+
+Markdown's reach, Djot's consistency, web-native features by default - without
+turning your content into a JavaScript program. What sets Carve apart:
+
+- **Cross-references that just work** - `</#id>` auto-fills its link text from the
+  target heading, and `[[Heading]]` resolves to a heading with no separate
+  definition. Neither Markdown nor Djot offers this natively.
+- **GitHub-style heading ids by default** - lowercase, Unicode-preserving anchors
+  that make ids and cross-references case-insensitive with zero configuration.
+  ASCII-folding is available opt-in for share-safe URL fragments.
+- **Batteries in core, not plugin soup** - math, footnotes, admonitions,
+  definition lists, frontmatter, smart typography, editorial markup, and tables
+  with rowspan/colspan/captions are all part of one spec - not a dozen plugins
+  to discover, install, and keep in sync.
+- **Opinionated, author-safe defaults** - a stray `-` never becomes a list (a
+  marker requires content), there is no invisible/whitespace-significant syntax,
+  and visual mnemonics mean the syntax looks like its output.
+- **Predictable output across implementations** - php, js, and rust impls are
+  tested against one shared spec corpus, so the same input produces the same
+  output everywhere. Markdown has many divergent parsers; Djot has essentially one.
+- **Safe with untrusted input** - raw HTML is off by default and a safe mode is
+  built in. Carve never executes embedded code (unlike MDX).
+
+### Extension system, built for many targets
+
+Carve's core syntax stays small; everything else is an extension behind a defined
+contract. Crucially, **rendering is target-aware** - the same parsed document can
+be emitted to different endpoints by swapping the renderer:
+
+- **HTML** for the web (the default),
+- **ANSI** for terminal / CLI output,
+- **Markdown** for interop and round-tripping,
+- **plain text** for search indexes, previews, and notifications.
+
+Extensions hook into this pipeline per target, so an extension can render rich
+HTML for the web while degrading cleanly to plain text elsewhere - one source,
+many endpoints. See the [Extensions Contract](https://markup-carve.github.io/carve/extensions)
+and the [Carve vs Markdown, Djot & MDX comparison](https://markup-carve.github.io/carve/comparison).
+
 ## Demo
 
 - [Interactive Playground](https://markup-carve.github.io/carve/playground) - Type Carve, see the rendered HTML live in your browser
@@ -175,7 +215,7 @@ Carve inherits and extends Djot's rationale:
 | Links | `[text](url)` | `[text](url)` | `[text](url)` |
 | Wiki-style links | n/a (no auto wiki links) | `[Page Name][]` (reference link; needs a `[Page Name]: url` definition) | `[Page Name][]` (auto-resolves, no definition) |
 | Cross-references | n/a (manual `[](#id)`) | N/A (manual `[](#id)`) | `</#id>` (auto-fills link text from the target heading) |
-| Heading IDs | n/a (auto only on some renderers, e.g. GitHub) | Auto-generated (Unicode, case-preserving) | Auto-generated (ASCII-safe transliteration, lowercase, CSS-selector-safe) |
+| Heading IDs | n/a (auto only on some renderers, e.g. GitHub) | Auto-generated (Unicode, case-preserving) | Auto-generated (lowercase, Unicode-preserving, CSS-selector-safe; opt-in ASCII fold) |
 | Heading structure | n/a (flat `<h1>`–`<h6>`, no wrappers) | `<section id="…"><h*>…</h*></section>` with level-aware nesting | `<section id="…"><h*>…</h*></section>` with level-aware nesting (matches djot — id on `<section>`, not on `<h*>`) |
 
 ### Lists & tables
