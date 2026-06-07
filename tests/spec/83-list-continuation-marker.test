@@ -32,6 +32,25 @@ docker build -t app .
 ```
 
 ```
+- +
+| a | b |
+| c | d |
+- next
+.
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a</td><td>b</td></tr>
+        <tr><td>c</td><td>d</td></tr>
+      </tbody>
+    </table>
+  </li>
+  <li>next</li>
+</ul>
+```
+
+```
 + one
 + two
 .

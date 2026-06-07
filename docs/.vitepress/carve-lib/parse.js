@@ -1157,6 +1157,45 @@ function parseList(lexer) {
         // this item (continuation paragraphs or nested lists).
         const contentCol = m[0].length - content.length;
         lexer.consume();
+        // First-block item (Carve): `- +` opens an item whose body is the
+        // flush-left block that follows, with no indentation. A lone `+` as the
+        // sole item content is the continuation marker, not literal text
+        // (`- + text` keeps `+ text` as literal content). Lets an item start
+        // directly with a table, code block, quote or div at column 0.
+        if (content.trim() === '+') {
+            const attached = [];
+            while (!lexer.eof()) {
+                const a = lexer.peek();
+                if (a.trim() === '')
+                    break;
+                const ind = leadingWhitespace(a);
+                if (ind < baseIndent)
+                    break;
+                if (ind === baseIndent) {
+                    const am = matchListMarker(a, isTask, isOrdered);
+                    const sibling = am &&
+                        (isOrdered
+                            ? orderedContinues(a, orderedKind, orderedDelim)
+                            : unorderedMarkerChar(a) === firstMarkerChar);
+                    if (sibling || a.trim() === '+')
+                        break;
+                }
+                attached.push(a.slice(baseIndent));
+                lexer.consume();
+            }
+            const sub = new Lexer(attached.join('\n'));
+            sub.abbrDefs = lexer.abbrDefs;
+            sub.linkDefs = lexer.linkDefs;
+            sub.footnoteDefs = lexer.footnoteDefs;
+            sub.nested = true;
+            sub.depth = lexer.depth + 1;
+            const fbChildren = parseBlocks(sub, 0);
+            const fbItem = { type: 'list-item', children: fbChildren };
+            if (checked !== undefined)
+                fbItem.checked = checked;
+            items.push(fbItem);
+            continue;
+        }
         const nested = [];
         let pendingBlanks = 0;
         while (!lexer.eof()) {
