@@ -3539,6 +3539,34 @@ A quote or table attaches the same way.
 
 :::
 
+### Equivalent to the blank-line form
+
+The continuation marker and the compact blank-line form (above) produce **identical** output — they are two spellings of the same thing. These are equivalent:
+
+```carve
+- One
+
+  > Quote
+```
+
+```carve
+- One
++
+> Quote
+```
+
+Both render:
+
+```html
+<ul>
+  <li>One
+    <blockquote><p>Quote</p></blockquote>
+  </li>
+</ul>
+```
+
+Pick whichever reads better. The blank-line form indents the block under the item; the `+` form marks the attach point with a flush-left marker and keeps the block flush-left — handy for wide code or tables you would rather not indent. The marker must be a lone `+` at the list marker column with the block flush-left; an indented `+` is ordinary text, not a continuation marker.
+
 Since `+` is not a Carve bullet (use `-` or `*`), the lines below are a single paragraph, not a two-item list — the same input is a bullet list in Markdown and Djot, but not in Carve.
 
 ::: compare
