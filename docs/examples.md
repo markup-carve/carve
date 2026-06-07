@@ -871,6 +871,23 @@ print("hi")
 
 :::
 
+Literal tabs in code content are preserved verbatim (a tab is not the same as spaces; display width is a CSS `tab-size` concern). Opt in to tab→space expansion with a tab-normalize extension.
+
+::: compare
+
+````carve
+```
+	indented with a tab
+```
+````
+
+```html
+<pre><code>	indented with a tab
+</code></pre>
+```
+
+:::
+
 A fenced block with no info string renders without a language class.
 
 ::: compare

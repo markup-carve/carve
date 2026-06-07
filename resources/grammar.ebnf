@@ -150,6 +150,12 @@ tilde_fence = '~', '~', '~', {'~'} ;
 
 language_info = (letter | digit | '-' | '_' | '+' | '#' | '.')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net. May start with a digit. A multiword/quoted info (```js title="x") is NOT a fence. *)
 code_content = (* any text until matching fence, preserved literally *) ;
+(* TABS IN CODE -- NORMATIVE. Literal tab characters in code content (fenced
+   code blocks and inline code spans) are PRESERVED verbatim; a tab and N spaces
+   are not interchangeable. Tab display width is a presentation concern (CSS
+   `tab-size`). Tab-to-space expansion is NOT a default behavior -- it is opt-in
+   via a tab-normalize extension (flat replacement, default 2 spaces, content
+   only). Matches djot / CommonMark. Pinned by corpus tabs-in-code-preserved. *)
 
 (* --- Blockquotes --- *)
 blockquote = blockquote_line+, {lazy_continuation_line}, [caption] ;

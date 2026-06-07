@@ -1,4 +1,3 @@
-{.fancy #x}
-```php
-code
+```
+plain text
 ```

@@ -11,6 +11,15 @@ print("hi")
 
 ````
 ```
+	indented with a tab
+```
+.
+<pre><code>	indented with a tab
+</code></pre>
+````
+
+````
+```
 plain text
 ```
 .
