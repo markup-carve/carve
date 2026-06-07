@@ -1502,9 +1502,14 @@ function parseParagraph(lexer) {
         lexer.consume();
         lines.push(ln);
     }
+    // Continuation lines (every line after the first) are left-trimmed (djot /
+    // CommonMark + carve-php); the first is positioned by the block dispatcher.
+    const text = lines
+        .map((ln, idx) => (idx === 0 ? ln : ln.replace(/^[ \t]+/, '')))
+        .join('\n');
     return {
         type: 'paragraph',
-        children: parseInline(lines.join('\n'), lexer.abbrDefs, lexer.linkDefs, {
+        children: parseInline(text, lexer.abbrDefs, lexer.linkDefs, {
             baseOffset: lexer.lineOffset(startLineIndex),
             startLine: startLineIndex + 1,
             startColumn: 1,
