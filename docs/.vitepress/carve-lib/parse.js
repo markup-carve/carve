@@ -53,10 +53,12 @@ const RE_TABLE_ROW = /^\|/;
 // inside parseTable, after a standard `|` row has opened the table.
 const RE_TABLE_CONT = /^\+.*\|\s*$/;
 const RE_BARE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)"|\s+'([^']*)')?\)\s*(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
-// Frontmatter open fence: `---` with an optional attached format token
-// (`---toml`, `---json`); bare `---` uses the default format. A token's
-// trailing letters keep it distinct from a thematic break (`-{3,}`).
-const RE_FRONTMATTER_OPEN = /^---(\w*)\s*$/;
+// Frontmatter open fence: `---` with an optional format token (`---toml`,
+// `---json`); bare `---` uses the default format. The space before the token is
+// optional (lenient input: both `---toml` and `--- toml` are accepted; the
+// no-space form is canonical). The token keeps it distinct from a thematic
+// break (`-{3,}`).
+const RE_FRONTMATTER_OPEN = /^---[ \t]*(\w*)\s*$/;
 // Frontmatter close fence: bare `---` only.
 const RE_FRONTMATTER_CLOSE = /^---\s*$/;
 // Raw passthrough block: ```raw FORMAT … ``` (§4.15). The info string has

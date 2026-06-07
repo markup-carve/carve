@@ -36,9 +36,16 @@
 
 document = [frontmatter], {block}, EOF ;
 
-frontmatter = frontmatter_delimiter, yaml_content, frontmatter_delimiter, newline ;
-frontmatter_delimiter = "---", newline ;
-yaml_content = (* valid YAML content, parsed by YAML parser *) ;
+frontmatter = frontmatter_open, frontmatter_content, frontmatter_close, newline ;
+(* The opening delimiter may carry a format token (yaml | json | toml | neon |
+   ...); a bare `---` defaults to `yaml`. The space before the token is OPTIONAL
+   (lenient: both `---yaml` and `--- yaml` are accepted; `---yaml` is canonical).
+   The closing delimiter is always a bare `---`. The token distinguishes a typed
+   opener from a thematic break. *)
+frontmatter_open = "---", [space], [frontmatter_format], newline ;
+frontmatter_close = "---", newline ;
+frontmatter_format = (letter | digit)+ ;
+frontmatter_content = (* metadata in the named format, parsed by that parser *) ;
 
 block = heading
       | thematic_break
@@ -112,9 +119,13 @@ thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '
 (* --- Code Blocks --- *)
 code_block = fenced_code_block ;
 
-fenced_code_block = code_fence_open, [language_info], [attributes], newline,
+fenced_code_block = code_fence_open, [space], [language_info], [attributes], newline,
                     code_content,
                     code_fence_close, newline ;
+(* The space between the fence and the info string is OPTIONAL (lenient: both
+   ```php and ``` php are accepted; Markdown writes no space, Djot writes the
+   space). The no-space form (```php) is canonical and is what the X->Carve
+   converters emit. *)
 
 code_fence_open = backtick_fence | tilde_fence ;
 code_fence_close = backtick_fence | tilde_fence ;  (* same fence char; length >= opener (PART 9 §2) *)

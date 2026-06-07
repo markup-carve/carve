@@ -11,3 +11,23 @@ Content begins here.
 .
 <p>Content begins here.</p>
 ```
+
+```
+---json
+{"title": "My Document"}
+---
+
+Content begins here.
+.
+<p>Content begins here.</p>
+```
+
+```
+--- toml
+title = "My Document"
+---
+
+Content begins here.
+.
+<p>Content begins here.</p>
+```
