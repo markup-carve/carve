@@ -473,12 +473,15 @@ Ordered lists use `N.` prefixes — numbering starts from the first marker.
 
 :::
 
-Nested lists indent two spaces under the parent item.
+Nested lists indent two spaces under the parent item, with a blank line before
+the sublist (a sublist is a block, and every block inside an item needs a blank
+line — without it the indented marker is lazy continuation text).
 
 ::: compare
 
 ```carve
 - fruit
+
   - apples
   - oranges
 - vegetables
@@ -504,6 +507,7 @@ Lists can mix markers — an ordered list may contain a nested unordered list (a
 
 ```carve
 1. setup
+
    - clone
    - install
 2. build
@@ -600,8 +604,9 @@ Text hier
 
 :::
 
-The guard is scoped to the top level: inside an already-nested block a single
-marker still starts a block, so a one-child nested list still nests.
+The rule is uniform, with no exception for sublists: without a blank line an
+indented marker is lazy continuation text of the item, not a nested list. (Add a
+blank line to nest, as in the fruit example above.)
 
 ::: compare
 
@@ -613,10 +618,7 @@ marker still starts a block, so a one-child nested list still nests.
 ```html
 <ul>
   <li>parent
-    <ul>
-      <li>child</li>
-    </ul>
-  </li>
+- child</li>
 </ul>
 ```
 
@@ -2916,12 +2918,14 @@ Trailing punctuation after a closer is literal.
 
 ## List nesting and looseness
 
-A more-indented marker nests a sublist inside the item.
+A more-indented marker after a blank line nests a sublist inside the item
+(the blank line is required — a sublist is a block).
 
 ::: compare
 
 ```carve
 - a
+
   - b
   - c
 - d
@@ -3337,8 +3341,9 @@ interrupt without a blank line.
 
 :::
 
-The one exception is a list marker: a nested sublist still nests with no
-blank line (the sole Carve deviation from djot).
+There is no exception for list markers either: an indented sublist marker with
+no blank line is the item's lazy continuation text, not a nested list (matches
+djot). A blank line before it nests, like any block.
 
 ::: compare
 
@@ -3350,10 +3355,7 @@ blank line (the sole Carve deviation from djot).
 ```html
 <ul>
   <li>a
-    <ul>
-      <li>b</li>
-    </ul>
-  </li>
+ - b</li>
 </ul>
 ```
 

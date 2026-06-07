@@ -125,10 +125,7 @@ c
 .
 <ul>
   <li>a
-    <ul>
-      <li>b</li>
-    </ul>
-  </li>
+ - b</li>
 </ul>
 ```
 

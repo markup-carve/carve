@@ -1497,8 +1497,7 @@ function parseParagraph(lexer) {
             RE_ABBR_DEF.test(ln) ||
             RE_COMMENT_LINE.test(ln) ||
             RE_COMMENT_BLOCK.test(ln);
-        const isListMarker = RE_TASK.test(ln) || RE_UNORDERED.test(ln) || RE_ORDERED.test(ln);
-        if (isInvisible || (lexer.nested && isListMarker))
+        if (isInvisible)
             break;
         lexer.consume();
         lines.push(ln);

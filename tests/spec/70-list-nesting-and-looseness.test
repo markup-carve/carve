@@ -2,6 +2,7 @@ List nesting and looseness
 
 ```
 - a
+
   - b
   - c
 - d

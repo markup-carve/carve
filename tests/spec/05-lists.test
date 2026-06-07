@@ -34,6 +34,7 @@ not a list</p>
 
 ```
 - fruit
+
   - apples
   - oranges
 - vegetables
@@ -51,6 +52,7 @@ not a list</p>
 
 ```
 1. setup
+
    - clone
    - install
 2. build
@@ -112,10 +114,7 @@ Text hier
 .
 <ul>
   <li>parent
-    <ul>
-      <li>child</li>
-    </ul>
-  </li>
+- child</li>
 </ul>
 ```
 
