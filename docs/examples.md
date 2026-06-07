@@ -3349,13 +3349,13 @@ djot). A blank line before it nests, like any block.
 
 ```carve
 - a
-   - b
+  - b
 ```
 
 ```html
 <ul>
   <li>a
- - b</li>
+- b</li>
 </ul>
 ```
 
