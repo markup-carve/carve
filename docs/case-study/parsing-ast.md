@@ -9,7 +9,7 @@
 3. Thematic breaks (`---`, `***`, `___`)
 4. Code blocks (``` ` ``` ` ``` or `~~~` fenced)
 5. Block quotes (`>` prefix)
-6. Lists (`-`, `*`, `+`, or `1.` prefix)
+6. Lists (`-`, `*`, or `1.` prefix; `+` is the list-continuation marker, not a bullet)
 7. Tables (`|` prefix)
 8. Special blocks (`:::` delimited)
 9. Paragraphs (everything else)

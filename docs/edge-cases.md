@@ -340,20 +340,25 @@ Some other text
 
 ---
 
-## 13. Multi-line Cell `+` Ambiguity
+## 13. The Three Faces of `+`
 
-**Problem:** `+` is also a list marker.
+**Note:** `+` is **not** a Carve bullet (unlike Markdown/Djot). Carve bullets are `-` and `*` only; `+` is reserved for two unrelated continuation roles plus plain text.
 
 ```carve
-+ List item                    # List (+ at line start, space, content)
+- item
++                              # List-continuation marker (lone +): attaches
+> note                         #   the following flush-left block to `item`
 
 | Cell |
-+ cont |                       # Table continuation (+ line, pipe structure)
++ cont |                       # Table continuation (+ line WITH pipe structure)
+
++ not a bullet                 # Plain paragraph text (+ then content, no pipe)
 ```
 
 **Resolution:**
-- If line has table pipe structure (`| ... |`), it's a continuation
-- Otherwise, it's a list item
+- A **lone** `+` at the list marker column is the list-continuation marker
+- A `+ ... |` line (pipe structure) is a table continuation
+- Any other `+ x` line is ordinary paragraph text — `+` never starts a list
 
 ---
 
@@ -407,7 +412,7 @@ Inside code spans, backslash is literal:
 ## 17. Hard-Wrapped Prose vs. Block Openers (Paragraph Interruption)
 
 **Problem:** A hard-wrapped sentence can wrap onto a line that begins with a
-block opener — a list marker `-`/`*`/`+`, block quote `>`, table `|`, a fence,
+block opener — a list marker `-`/`*`, block quote `>`, table `|`, a fence,
 a heading `#`, a thematic break `---`, an admonition `:::`, or an image. If
 that line silently became a block, paragraph wrapping would change
 interpretation, violating Design Principle 7 (hard-wrap friendly).

@@ -40,10 +40,13 @@ CAPTIONS (images, quotes, tables)
   ^ Figure 1: Caption text
 
 LISTS
-  - unordered item
+  - unordered item            (bullets: - or *; + is NOT a bullet)
   1. ordered item
   - [ ] task
   - [x] done
+  - step                       (+ on its own line = list-continuation
+  +                             marker: attaches the next flush-left
+  > note                        block to the item, keeping it tight)
 
 CODE
   `inline code`

@@ -60,6 +60,17 @@ const RULES = [
         message: () => 'Djot highlight `{=x=}` is written `==x==` in Carve.',
         suggestion: (m) => `==${m[1]}==`,
     },
+    // Block-level (line-anchored): a leading `+ content` is a bullet in
+    // Djot/Markdown but NOT in Carve — `+` is the list-continuation marker, so
+    // the line renders as a paragraph. A lone `+` (no content) is excluded: that
+    // IS the Carve continuation marker and is intentional.
+    {
+        id: 'djot-plus-bullet',
+        family: 'plus-bullet',
+        pattern: /(?<=^[ \t]*)(\+)(?=[ \t]+\S)/gm,
+        message: () => 'Djot/Markdown `+` bullet is not a Carve bullet (`+` is the list-continuation marker) — this line renders as a paragraph.',
+        suggestion: () => '-',
+    },
     // NOTE: full Djot reference links `[text][ref]` are NOT flagged — Carve
     // resolves them identically against a `[ref]: url` definition (corpus
     // 34-reference-link), so there is no silent mis-render. Math (`$`x``)

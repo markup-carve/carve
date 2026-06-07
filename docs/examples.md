@@ -3511,3 +3511,175 @@ lazy</li>
 ```
 
 :::
+
+## Compact list blocks
+
+A blank line is still required to start a block inside a list item, but it no longer makes the list *loose* when the indented content opens a block (sub-list, block quote, fenced code, fenced div, heading, table). The item stays **tight** — lead text inline, the block attached — so a checklist with notes or steps with code stay compact. (A Carve deviation: canonical djot renders these loose. Only the tight/loose rendering changes, not the block structure.)
+
+::: compare
+
+```carve
+- item
+
+  > note
+- next
+```
+
+```html
+<ul>
+  <li>item
+    <blockquote><p>note</p></blockquote>
+  </li>
+  <li>next</li>
+</ul>
+```
+
+:::
+
+A genuine second prose paragraph still makes the list loose (and so does a blank line between items).
+
+::: compare
+
+```carve
+- item
+
+  second para
+- next
+```
+
+```html
+<ul>
+  <li><p>item</p>
+    <p>second para</p>
+  </li>
+  <li><p>next</p></li>
+</ul>
+```
+
+:::
+
+## List continuation marker
+
+A lone `+` at the list marker column attaches the following flush-left block to the current item, with no blank line, keeping the list tight — useful for code blocks or tables you would rather not indent.
+
+Carve's bullet markers are `-` and `*` only. Unlike Markdown and Djot, `+` is **not** a bullet in Carve and never has been — it is reserved as the list-continuation marker. This is what makes a lone `+` unambiguous: there is no `+` list it could belong to. A `+ x` line is therefore ordinary paragraph text, not a list item.
+
+::: compare
+
+````carve
+- Build the image
++
+```sh
+docker build -t app .
+```
+- Push it
+````
+
+```html
+<ul>
+  <li>Build the image
+    <pre><code class="language-sh">docker build -t app .
+</code></pre>
+  </li>
+  <li>Push it</li>
+</ul>
+```
+
+:::
+
+A quote or table attaches the same way.
+
+::: compare
+
+```carve
+- item
++
+> note
+- next
+```
+
+```html
+<ul>
+  <li>item
+    <blockquote><p>note</p></blockquote>
+  </li>
+  <li>next</li>
+</ul>
+```
+
+:::
+
+### Equivalent to the blank-line form
+
+The continuation marker and the compact blank-line form (above) produce **identical** output — they are two spellings of the same thing. These are equivalent:
+
+```carve
+- One
+
+  > Quote
+```
+
+```carve
+- One
++
+> Quote
+```
+
+Both render:
+
+```html
+<ul>
+  <li>One
+    <blockquote><p>Quote</p></blockquote>
+  </li>
+</ul>
+```
+
+Pick whichever reads better. The blank-line form indents the block under the item; the `+` form marks the attach point with a flush-left marker and keeps the block flush-left — handy for wide code or tables you would rather not indent. The marker must be a lone `+` at the list marker column with the block flush-left; an indented `+` is ordinary text, not a continuation marker.
+
+### First block of an item
+
+Put the marker and a lone `+` on the same line — `- +` — to start an item directly with a block, with the block body flush-left (no indentation). The item has no lead text; its whole content is the following block.
+
+::: compare
+
+````carve
+- +
+| a | b |
+| c | d |
+- next
+````
+
+```html
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a</td><td>b</td></tr>
+        <tr><td>c</td><td>d</td></tr>
+      </tbody>
+    </table>
+  </li>
+  <li>next</li>
+</ul>
+```
+
+:::
+
+A lone `+` after the marker is the continuation marker, not text. `- + text` (with content after the `+`) keeps `+ text` as literal item text — only a *bare* `+` triggers the first-block form.
+
+Since `+` is not a Carve bullet (use `-` or `*`), the lines below are a single paragraph, not a two-item list — the same input is a bullet list in Markdown and Djot, but not in Carve.
+
+::: compare
+
+```carve
++ one
++ two
+```
+
+```html
+<p>+ one
++ two</p>
+```
+
+:::

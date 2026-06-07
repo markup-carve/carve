@@ -1,0 +1,29 @@
+Compact list blocks
+
+```
+- item
+
+  > note
+- next
+.
+<ul>
+  <li>item
+    <blockquote><p>note</p></blockquote>
+  </li>
+  <li>next</li>
+</ul>
+```
+
+```
+- item
+
+  second para
+- next
+.
+<ul>
+  <li><p>item</p>
+    <p>second para</p>
+  </li>
+  <li><p>next</p></li>
+</ul>
+```

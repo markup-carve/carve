@@ -173,7 +173,9 @@ list = unordered_list | ordered_list | definition_list ;
 
 unordered_list = unordered_item+ ;
 unordered_item = bullet_marker, space, list_item_content ;
-bullet_marker = '-' | '*' | '+' ;
+bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
+                                continuation marker (PART 9 §17); a `+ ` line is
+                                ordinary paragraph text. Deviates from djot. *)
 (* MARKER REQUIRES CONTENT -- NORMATIVE. A bullet or ordered marker is a list
    item only when followed by a space AND non-empty content. A content-less
    marker line -- bare (`-`) or with trailing whitespace only (`- `, `-   `) --
@@ -199,10 +201,22 @@ ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')') ;
 roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
               | ('I' | 'V' | 'X' | 'L' | 'C' | 'D' | 'M')+ ;
 
-list_item_content = inline_content, newline, {list_continuation | nested_list} ;
+list_item_content = first_block_content
+                  | (inline_content, newline, {list_continuation | nested_list | continuation_marker_block}) ;
 list_continuation = indent, inline_content, newline ;
 nested_list = indent, list ;
 indent = space, space, {space} ;  (* 2+ spaces *)
+(* List continuation marker (Carve addition; see PART 9 §17): a lone `+` at
+   the item's marker column attaches the following flush-left block to the
+   item with no blank line, keeping the list tight. *)
+continuation_marker = '+', newline ;
+continuation_marker_block = continuation_marker, block ;
+(* First-block item (Carve addition; see PART 9 §17): a lone `+` as the sole
+   content right after the marker (`- +`) opens an item whose body is the
+   flush-left block(s) that follow, with no inline lead and no indentation.
+   `- + text` keeps `+ text` as literal inline content -- only a bare `+`
+   triggers this. *)
+first_block_content = continuation_marker, {block} ;
 
 (* Task lists are unordered lists with special markers *)
 task_marker = '[', task_state, ']', space ;
@@ -1069,12 +1083,33 @@ EOF = (* end of file *) ;
         or inside a heading later cloned by a `</#id>` crossref nests an
         <a> in an <a>; avoid footnotes in those positions.
 
-   17. TIGHT vs LOOSE LISTS -- NORMATIVE (governs `list` rendering;
-      matches djot/CommonMark). A list is LOOSE if any item is followed
-      by a blank line before the next sibling marker, OR any item holds a
-      blank-line-separated second block; otherwise TIGHT. A tight item's
-      paragraph renders WITHOUT a `<p>` (`<li>text</li>`); a loose item's
-      paragraphs ARE wrapped (`<li><p>text</p></li>`).
+   17. TIGHT vs LOOSE LISTS -- NORMATIVE (governs `list` rendering). A list is
+      LOOSE if any item is followed by a blank line before the next sibling
+      marker, OR any item holds a blank-line-separated second PARAGRAPH;
+      otherwise TIGHT. A tight item's paragraph renders WITHOUT a `<p>`
+      (`<li>text</li>`); a loose item's paragraphs ARE wrapped
+      (`<li><p>text</p></li>`).
+
+      COMPACT LIST BLOCKS -- Carve deviation from djot/CommonMark. A blank line
+      before an item's sub-BLOCK (sub-list, block quote, fenced code, fenced
+      div, heading, table) does NOT loosen the list: the item stays tight, lead
+      text inline, block attached. Only a genuine second PARAGRAPH (blank +
+      indented plain prose), or a blank line between items, loosens. The blank
+      line is still required to START the block, so block recognition and the
+      uniformity principle are unchanged -- only the tight/loose RENDERING
+      differs. djot renders these loose; Carve renders them tight. Pinned by
+      corpus compact-list-blocks.
+
+      LIST CONTINUATION MARKER -- Carve addition. A line whose only content is
+      `+`, at the item's marker column, attaches the FOLLOWING flush-left block
+      to the current item with no blank line, keeping the list tight (useful for
+      code/tables you would rather not indent). `+` is not a Carve bullet (PART 9
+      §11), so a lone `+` is unambiguous; outside a list a lone `+` is literal
+      text. It attaches one block, up to the next blank line, sibling item, or a
+      further `+`. The same marker may sit on the marker line itself (`- +`) to
+      open an item whose body is the flush-left block(s) that follow, with no
+      inline lead -- the FIRST-BLOCK form (a bare `+`; `- + text` keeps `+ text`
+      as literal text). Pinned by corpus list-continuation-marker.
 
    18. MATH -- NORMATIVE (governs `math` in PART 3; djot form). Inline
       `$` + verbatim backtick span; display `$$` + verbatim backtick
