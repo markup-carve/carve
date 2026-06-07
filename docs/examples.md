@@ -1263,6 +1263,42 @@ Content begins here.
 
 :::
 
+The opening delimiter may name the metadata format (`---yaml`, `---json`, `---toml`, `---neon`, …); a bare `---` defaults to YAML. Either way the frontmatter is metadata, not rendered. The closing delimiter is always a bare `---`.
+
+::: compare
+
+```carve
+---json
+{"title": "My Document"}
+---
+
+Content begins here.
+```
+
+```html
+<p>Content begins here.</p>
+```
+
+:::
+
+The space between `---` and the format token is optional — `---toml` and `--- toml` are both accepted (the no-space form is canonical), matching the optional space on a code fence (` ```php ` / ` ``` php `).
+
+::: compare
+
+```carve
+--- toml
+title = "My Document"
+---
+
+Content begins here.
+```
+
+```html
+<p>Content begins here.</p>
+```
+
+:::
+
 ## Heading IDs
 
 ::: compare
