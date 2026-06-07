@@ -8,10 +8,13 @@ const RE_HEADING = /^(#{1,6})\s+(.+?)(?:\s+\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:
 // Thematic break: a line of 3+ of the same `-`, `*`, or `_` (grammar
 // thematic_break). A run alone on a line can't be emphasis (no content).
 const RE_HR = /^(?:-{3,}|\*{3,}|_{3,})\s*$/;
-// Info string is a single language token. The charset covers real-world tags
-// with punctuation (c++, c#, f#, asp.net); a multiword/quoted info (e.g.
-// `js title="x"`) is still not a fence (anchored, no whitespace allowed).
-const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_+#.-]*)\s*$/;
+// Info string is a single language token, optionally followed by a bracketed
+// `[label]` (structured metadata; e.g. ```php [NPM] or ```[NPM]). The charset
+// covers real-world tags with punctuation (c++, c#, f#, asp.net). Anything else
+// after the token -- a bare second word, a quoted value, `key=val` -- is NOT a
+// fence (e.g. `js title="x"`): the bracket is the only allowed delimiter, so
+// such a line falls back to inline parsing.
+const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_+#.-]*)\s*(\[[^\]]*\])?\s*$/;
 // Bullets are `-` and `*` only. Unlike Markdown/djot, `+` is not a Carve bullet
 // -- it is reserved as the list-continuation marker (PART 9 §17), so a lone `+`
 // is unambiguous and a `+ x` line is ordinary paragraph text. A marker is a list
@@ -517,6 +520,8 @@ function parseFence(lexer) {
     const indent = m[1].length;
     const marker = m[2];
     const lang = m[3] || undefined;
+    // m[4] is `[label]` including the brackets; strip them for the metadata.
+    const label = m[4] ? m[4].slice(1, -1) : undefined;
     const closeRe = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
     const lines = [];
     while (!lexer.eof()) {
@@ -532,6 +537,8 @@ function parseFence(lexer) {
     const cb = { type: 'code-block', content: lines.join('\n') };
     if (lang)
         cb.lang = lang;
+    if (label !== undefined)
+        cb.label = label;
     return cb;
 }
 // Raw passthrough block: ```raw FORMAT … ``` . Content is verbatim; the
@@ -1503,9 +1510,17 @@ function parseParagraph(lexer) {
         lexer.consume();
         lines.push(ln);
     }
+    // A paragraph's continuation lines have their leading whitespace stripped
+    // (djot / CommonMark): `a\n   b` renders as `a\nb`, and an over-indented lazy
+    // continuation in a list item (`- a\n   - b` -> item text `a\n- b`) does not
+    // keep residual indent. The first line is already positioned by the block
+    // dispatcher, so only lines 2+ are trimmed.
+    const text = lines
+        .map((ln, idx) => (idx === 0 ? ln : ln.replace(/^[ \t]+/, '')))
+        .join('\n');
     return {
         type: 'paragraph',
-        children: parseInline(lines.join('\n'), lexer.abbrDefs, lexer.linkDefs, {
+        children: parseInline(text, lexer.abbrDefs, lexer.linkDefs, {
             baseOffset: lexer.lineOffset(startLineIndex),
             startLine: startLineIndex + 1,
             startColumn: 1,

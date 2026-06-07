@@ -119,28 +119,31 @@ thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '
 (* --- Code Blocks --- *)
 code_block = fenced_code_block ;
 
-fenced_code_block = code_fence_open, [space], [language_info], newline,
+fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
                     code_content,
                     code_fence_close, newline ;
 (* The space between the fence and the info string is OPTIONAL (lenient: both
    ```php and ``` php are accepted; Markdown writes no space, Djot writes the
    space). The no-space form (```php) is canonical and is what the X->Carve
    converters emit. *)
-(* CODE-BLOCK ATTRIBUTES + INVALID-FENCE FALLBACK -- NORMATIVE.
-   A code fence carries NO inline attributes: the info string is a SINGLE
-   language_info token and nothing else. Attributes on a code block use the
-   standard PRECEDING block-attribute line (PART 9 §15):
+(* CODE-FENCE INFO STRING -- NORMATIVE. The info string is a single
+   language_info token, optionally followed by a bracketed [label], or a bare
+   [label] (no language). The label is structured metadata: it is NOT part of
+   the language/class; the core renderer ignores it, an extension (e.g.
+   code-group) may use it. A code fence carries NO inline attributes -- use the
+   PRECEDING block-attribute line for those (PART 9 §15):
        {.fancy #x}
        ```php
        ...
        ```
    which renders on the <pre> (language stays `language-…` on the <code>).
-   When the text after the fence is NOT a single token -- a second word, a
-   quoted value, or an inline `{...}` block (```js title="x", ``` php {.x}) --
-   the line is NOT a fenced code block; it falls back to ordinary inline parsing
-   (the backtick run typically opens an inline code span). The multi-token raw
-   passthrough opener (```raw FORMAT, PART 9 §20) and extension openers are
-   SEPARATE productions matched before this one; they are not code fences. *)
+   INVALID-FENCE FALLBACK: when the text after the language token is anything
+   other than a [label] -- a bare second word, a quoted value, an inline `{...}`
+   block (```js title="x", ``` php {.x}) -- the line is NOT a fenced code block;
+   it falls back to ordinary inline parsing (the backtick run typically opens an
+   inline code span). The bracket is the only delimiter that admits structured
+   metadata. The multi-token raw passthrough opener (```raw FORMAT, PART 9 §20)
+   is a SEPARATE production matched before this one. *)
 
 code_fence_open = backtick_fence | tilde_fence ;
 code_fence_close = backtick_fence | tilde_fence ;  (* same fence char; length >= opener (PART 9 §2) *)
@@ -148,7 +151,9 @@ code_fence_close = backtick_fence | tilde_fence ;  (* same fence char; length >=
 backtick_fence = '`', '`', '`', {'`'} ;
 tilde_fence = '~', '~', '~', {'~'} ;
 
-language_info = (letter | digit | '-' | '_' | '+' | '#' | '.')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net. May start with a digit. A multiword/quoted info (```js title="x") is NOT a fence. *)
+code_fence_info = (language_info, [space+, label]) | label ;
+language_info = (letter | digit | '-' | '_' | '+' | '#' | '.')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net. May start with a digit. carve-php additionally accepts `=` and `/` in the token (djot ```=html raw, ```text/html); carve-js restricts to this charset. *)
+label = '[', { any_char - ']' }, ']' ;  (* structured metadata, e.g. [Installation]; not part of the class *)
 code_content = (* any text until matching fence, preserved literally *) ;
 (* TABS IN CODE -- NORMATIVE. Literal tab characters in code content (fenced
    code blocks and inline code spans) are PRESERVED verbatim; a tab and N spaces

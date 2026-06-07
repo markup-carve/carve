@@ -37,6 +37,25 @@ code
 </code></pre>
 ````
 
+````
+```php [NPM]
+npm install x
+```
+.
+<pre><code class="language-php">npm install x
+</code></pre>
+````
+
+````
+```js title="x"
+code
+```
+.
+<p><code>js title="x"
+code
+</code></p>
+````
+
 ```
 ~~~yaml
 key: value
