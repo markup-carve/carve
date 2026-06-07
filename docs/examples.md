@@ -437,6 +437,22 @@ Span content is parsed recursively, and an inline link still wins over a span.
 
 :::
 
+A marker is a list item only when followed by a space **and** content. A content-less marker — bare (`-`) or trailing whitespace only (`- `) — is not a list; it stays paragraph text. The rule ignores trailing whitespace, so `-` and `- ` behave the same (an editor stripping the space can't change the meaning). Carve is stricter than CommonMark, where a bare `-` is an empty item.
+
+::: compare
+
+```carve
+-
+not a list
+```
+
+```html
+<p>-
+not a list</p>
+```
+
+:::
+
 Ordered lists use `N.` prefixes — numbering starts from the first marker.
 
 ::: compare
@@ -867,6 +883,24 @@ plain text
 
 ```html
 <pre><code>plain text
+</code></pre>
+```
+
+:::
+
+A code fence carries no inline attributes — the info string is just the language. Attributes on a code block use the standard preceding `{…}` block-attribute line; they render on the `<pre>` (the language stays `language-…` on the `<code>`).
+
+::: compare
+
+````carve
+{.fancy #x}
+```php
+code
+```
+````
+
+```html
+<pre class="fancy" id="x"><code class="language-php">code
 </code></pre>
 ```
 

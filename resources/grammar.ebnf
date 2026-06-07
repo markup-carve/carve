@@ -119,13 +119,28 @@ thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '
 (* --- Code Blocks --- *)
 code_block = fenced_code_block ;
 
-fenced_code_block = code_fence_open, [space], [language_info], [attributes], newline,
+fenced_code_block = code_fence_open, [space], [language_info], newline,
                     code_content,
                     code_fence_close, newline ;
 (* The space between the fence and the info string is OPTIONAL (lenient: both
    ```php and ``` php are accepted; Markdown writes no space, Djot writes the
    space). The no-space form (```php) is canonical and is what the X->Carve
    converters emit. *)
+(* CODE-BLOCK ATTRIBUTES + INVALID-FENCE FALLBACK -- NORMATIVE.
+   A code fence carries NO inline attributes: the info string is a SINGLE
+   language_info token and nothing else. Attributes on a code block use the
+   standard PRECEDING block-attribute line (PART 9 §15):
+       {.fancy #x}
+       ```php
+       ...
+       ```
+   which renders on the <pre> (language stays `language-…` on the <code>).
+   When the text after the fence is NOT a single token -- a second word, a
+   quoted value, or an inline `{...}` block (```js title="x", ``` php {.x}) --
+   the line is NOT a fenced code block; it falls back to ordinary inline parsing
+   (the backtick run typically opens an inline code span). The multi-token raw
+   passthrough opener (```raw FORMAT, PART 9 §20) and extension openers are
+   SEPARATE productions matched before this one; they are not code fences. *)
 
 code_fence_open = backtick_fence | tilde_fence ;
 code_fence_close = backtick_fence | tilde_fence ;  (* same fence char; length >= opener (PART 9 §2) *)
@@ -159,6 +174,15 @@ list = unordered_list | ordered_list | definition_list ;
 unordered_list = unordered_item+ ;
 unordered_item = bullet_marker, space, list_item_content ;
 bullet_marker = '-' | '*' | '+' ;
+(* MARKER REQUIRES CONTENT -- NORMATIVE. A bullet or ordered marker is a list
+   item only when followed by a space AND non-empty content. A content-less
+   marker line -- bare (`-`) or with trailing whitespace only (`- `, `-   `) --
+   is NOT a list: it is paragraph text. The rule ignores trailing whitespace, so
+   `-` and `- ` behave identically (an editor stripping the trailing space cannot
+   change the meaning). Carve is stricter than CommonMark, which treats a bare
+   `-` as an empty item; requiring content keeps a lone dash (a prose dash /
+   placeholder) from silently becoming a list. Pinned by corpus
+   content-less-marker-is-not-a-list. *)
 
 ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, space, list_item_content ;
