@@ -1,4 +1,5 @@
+````markdown
+```python
+print("hi")
 ```
-# not a heading
-/not italic/  *not bold*  #notatag
-```
+````

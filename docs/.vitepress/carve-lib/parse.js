@@ -14,15 +14,17 @@ const RE_HR = /^(?:-{3,}|\*{3,}|_{3,})\s*$/;
 const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_+#.-]*)\s*$/;
 // Bullets are `-` and `*` only. Unlike Markdown/djot, `+` is not a Carve bullet
 // -- it is reserved as the list-continuation marker (PART 9 §17), so a lone `+`
-// is unambiguous and a `+ x` line is ordinary paragraph text.
-const RE_UNORDERED = /^(\s*)[-*]\s+(.*)$/;
+// is unambiguous and a `+ x` line is ordinary paragraph text. A marker is a list
+// item only with non-empty content: a content-less marker (`-`, `- `, `-   ` --
+// bare or trailing whitespace only) is NOT a list, it is paragraph text.
+const RE_UNORDERED = /^(\s*)[-*]\s+(\S.*)$/;
 // Ordered marker: decimal, a single letter (alpha), or a roman-numeral
 // run, then `.` or `)`. The dialect is fixed by the FIRST item (see
 // olKindOf); letter/roman markers are ambiguous w.r.t. paragraphs (§10).
-const RE_ORDERED = /^(\s*)([0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])([.)])\s+(.*)$/;
+const RE_ORDERED = /^(\s*)([0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])([.)])\s+(\S.*)$/;
 // Task states (matches djot-php): `x`/`X` are checked; ` `, `-`, `_`,
 // `>`, `?` are all accepted and render as an unchecked checkbox.
-const RE_TASK = /^(\s*)[-*]\s+\[([ xX\-_>?])\]\s+(.*)$/;
+const RE_TASK = /^(\s*)[-*]\s+\[([ xX\-_>?])\]\s+(\S.*)$/;
 const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 // Fences are a run of 3+ colons (group 1). A longer opener nests: a
 // `::::` block contains `:::` blocks, and only a bare closer of equal-or-
@@ -56,10 +58,12 @@ const RE_TABLE_ROW = /^\|/;
 // inside parseTable, after a standard `|` row has opened the table.
 const RE_TABLE_CONT = /^\+.*\|\s*$/;
 const RE_BARE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)"|\s+'([^']*)')?\)\s*(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
-// Frontmatter open fence: `---` with an optional attached format token
-// (`---toml`, `---json`); bare `---` uses the default format. A token's
-// trailing letters keep it distinct from a thematic break (`-{3,}`).
-const RE_FRONTMATTER_OPEN = /^---(\w*)\s*$/;
+// Frontmatter open fence: `---` with an optional format token (`---toml`,
+// `---json`); bare `---` uses the default format. The space before the token is
+// optional (lenient input: both `---toml` and `--- toml` are accepted; the
+// no-space form is canonical). The token keeps it distinct from a thematic
+// break (`-{3,}`).
+const RE_FRONTMATTER_OPEN = /^---[ \t]*(\w*)\s*$/;
 // Frontmatter close fence: bare `---` only.
 const RE_FRONTMATTER_CLOSE = /^---\s*$/;
 // Raw passthrough block: ```raw FORMAT … ``` (§4.15). The info string has

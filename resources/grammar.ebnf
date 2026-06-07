@@ -36,9 +36,16 @@
 
 document = [frontmatter], {block}, EOF ;
 
-frontmatter = frontmatter_delimiter, yaml_content, frontmatter_delimiter, newline ;
-frontmatter_delimiter = "---", newline ;
-yaml_content = (* valid YAML content, parsed by YAML parser *) ;
+frontmatter = frontmatter_open, frontmatter_content, frontmatter_close, newline ;
+(* The opening delimiter may carry a format token (yaml | json | toml | neon |
+   ...); a bare `---` defaults to `yaml`. The space before the token is OPTIONAL
+   (lenient: both `---yaml` and `--- yaml` are accepted; `---yaml` is canonical).
+   The closing delimiter is always a bare `---`. The token distinguishes a typed
+   opener from a thematic break. *)
+frontmatter_open = "---", [space], [frontmatter_format], newline ;
+frontmatter_close = "---", newline ;
+frontmatter_format = (letter | digit)+ ;
+frontmatter_content = (* metadata in the named format, parsed by that parser *) ;
 
 block = heading
       | thematic_break
@@ -112,9 +119,28 @@ thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '
 (* --- Code Blocks --- *)
 code_block = fenced_code_block ;
 
-fenced_code_block = code_fence_open, [language_info], [attributes], newline,
+fenced_code_block = code_fence_open, [space], [language_info], newline,
                     code_content,
                     code_fence_close, newline ;
+(* The space between the fence and the info string is OPTIONAL (lenient: both
+   ```php and ``` php are accepted; Markdown writes no space, Djot writes the
+   space). The no-space form (```php) is canonical and is what the X->Carve
+   converters emit. *)
+(* CODE-BLOCK ATTRIBUTES + INVALID-FENCE FALLBACK -- NORMATIVE.
+   A code fence carries NO inline attributes: the info string is a SINGLE
+   language_info token and nothing else. Attributes on a code block use the
+   standard PRECEDING block-attribute line (PART 9 §15):
+       {.fancy #x}
+       ```php
+       ...
+       ```
+   which renders on the <pre> (language stays `language-…` on the <code>).
+   When the text after the fence is NOT a single token -- a second word, a
+   quoted value, or an inline `{...}` block (```js title="x", ``` php {.x}) --
+   the line is NOT a fenced code block; it falls back to ordinary inline parsing
+   (the backtick run typically opens an inline code span). The multi-token raw
+   passthrough opener (```raw FORMAT, PART 9 §20) and extension openers are
+   SEPARATE productions matched before this one; they are not code fences. *)
 
 code_fence_open = backtick_fence | tilde_fence ;
 code_fence_close = backtick_fence | tilde_fence ;  (* same fence char; length >= opener (PART 9 §2) *)
@@ -150,6 +176,15 @@ unordered_item = bullet_marker, space, list_item_content ;
 bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
                                 continuation marker (PART 9 §17); a `+ ` line is
                                 ordinary paragraph text. Deviates from djot. *)
+(* MARKER REQUIRES CONTENT -- NORMATIVE. A bullet or ordered marker is a list
+   item only when followed by a space AND non-empty content. A content-less
+   marker line -- bare (`-`) or with trailing whitespace only (`- `, `-   `) --
+   is NOT a list: it is paragraph text. The rule ignores trailing whitespace, so
+   `-` and `- ` behave identically (an editor stripping the trailing space cannot
+   change the meaning). Carve is stricter than CommonMark, which treats a bare
+   `-` as an empty item; requiring content keeps a lone dash (a prose dash /
+   placeholder) from silently becoming a list. Pinned by corpus
+   content-less-marker-is-not-a-list. *)
 
 ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, space, list_item_content ;
