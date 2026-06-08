@@ -25,16 +25,16 @@ A feature should remain an **extension** if:
 | Feature | Carve Syntax | Status |
 |---------|-------------|--------|
 | Smart typography | `--`, `---`, `...`, quotes | ✅ In spec (4.18) |
-| @mentions | `@username` | ✅ In spec (4.19) |
-| #tags | `#tagname` | ✅ In spec (4.19) |
+| @mentions | `@username` | ✅ In spec (4.20) |
+| #tags | `#tagname` | ✅ In spec (4.20) |
 | Admonitions | `::: note`, `::: warning` | ✅ In spec (4.12) |
-| Frontmatter | `---` YAML block | ✅ In spec (4.21) |
+| Frontmatter | `---` YAML block | ✅ In spec (4.23) |
 | Footnotes | `[^ref]` | ✅ In spec (4.11) |
 | Definition lists | `:: term` / `:  definition` | ✅ In spec (4.5) |
 | Task lists | `- [ ]`, `- [x]` | ✅ In spec (4.5) |
-| Profiles | Feature restriction | ✅ In spec (4.20) |
+| Profiles | Feature restriction | ✅ In spec (4.21) |
 | Attributes | `{#id .class key=value}` | ✅ In spec (4.10) |
-| Extensions | `:type[content]{attrs}` | ✅ In spec (4.19) |
+| Extensions | `:type[content]{attrs}` | ✅ In spec (4.20) |
 
 ### Added to Carve Spec
 
@@ -45,7 +45,7 @@ Grammar references point at `resources/grammar.ebnf`.
 |---------|-----------------|-------------|--------|
 | **Captions** | `^ caption` after block | `^ caption` | ✅ In grammar (caption rule; image/blockquote/table placement). |
 | **Abbreviations** | `*[ABBR]: expansion` | `*[ABBR]: expansion` | ✅ In grammar (PART 5: Abbreviations). |
-| **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `:kbd[text]` | ✅ Via `:type[content]` extension syntax (4.19). |
+| **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `:kbd[text]` | ✅ Via `:type[content]` extension syntax (4.20). |
 | **Autolinks** | `<url>` / `<email>` | Angle-bracket autolinks only | ✅ In spec (4.3). Bare URLs are *not* auto-linked (djot-aligned). |
 | **Inline footnotes** | `[content]{.fn}` | `[^inline content]` | Deferred (reserved syntax, see Conformance Core). |
 | **Table alignment** | `:--`, `--:`, `:--:` | `\|=<` / `\|=>` / `\|=~` markers | ✅ In spec (4.8). |
@@ -166,6 +166,25 @@ These should remain implementation-specific, not part of Carve syntax:
 - Mermaid/diagram support
 - Tabbed UI components
 - Wiki-style links (context-dependent)
+
+---
+
+## Disabling / Restricting Features
+
+Can a processor turn native features off? It depends on the tier (see
+Conformance Core below for the full split):
+
+| Tier | Features | Disableable? |
+|------|----------|--------------|
+| **Core (MUST)** | captions, abbreviations, tables (rowspan/colspan/multi-line), autolinks, emphasis family, links, math, footnotes, crossrefs, the `:type[content]` extension *syntax* | **No.** Corpus-pinned; identical across implementations. Disabling one means the processor is no longer Carve-conformant. |
+| **Default-on (SHOULD)** | `@mention`, `#tag`, smart typography | **Yes.** On by default in the conformant core; a processor MAY disable them. Normative: `resources/grammar.ebnf` PART 19. |
+| **Out of core (MAY)** | includes (`{{ … }}`), the extension *registry* beyond the generic fallback, all "implementation extensions" above | **Yes / opt-in.** Processor-level; a conformant core MAY omit them entirely (e.g. leave `{{ … }}` literal). |
+
+Separately, **Profiles** (case-study spec §4.21) restrict which features are
+*allowed* in a given context rather than disabling output globally. A profile
+(`Profile::comment()`, `Profile::article()`, …) marks node types as
+disallowed and applies a `STRIP` / `TO_TEXT` / `ERROR` action. This is a
+processor-level mechanism; it is not encoded in `resources/grammar.ebnf`.
 
 ---
 
