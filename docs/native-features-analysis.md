@@ -36,18 +36,21 @@ A feature should remain an **extension** if:
 | Attributes | `{#id .class key=value}` | ✅ In spec (4.10) |
 | Extensions | `:type[content]{attrs}` | ✅ In spec (4.19) |
 
-### Should Add to Carve Spec
+### Added to Carve Spec
 
-| Feature | djot-php Syntax | Proposed Carve Syntax | Rationale |
-|---------|-----------------|---------------------|-----------|
-| **Captions** | `^ caption` after block | `^ caption` | Already in _djot-extra.md. Universally useful. |
-| **Abbreviations** | `*[ABBR]: expansion` | `*[ABBR]: expansion` | Essential for technical docs. |
-| **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `:kbd[text]` | Use extension syntax for consistency. |
-| **Autolinks** | `<url>` / `<email>` | Angle-bracket autolinks only | Bare URLs are *not* auto-linked (djot-aligned, §4.3). |
-| **Inline footnotes** | `[content]{.fn}` | `[^inline content]` | Already in spec, confirm syntax. |
-| **Table alignment** | `:--`, `--:`, `:--:` | `\|=<` / `\|=>` / `\|=~` markers | Already in spec (4.8). |
-| **Rowspan/colspan** | `^` and `<` markers | `^` and `<` markers | Already in _multiline-table-proposal.md. |
-| **Multi-line cells** | `+` continuation | `+` continuation | Already in _multiline-table-proposal.md. |
+These were proposed during this analysis and have since landed in the spec.
+Grammar references point at `resources/grammar.ebnf`.
+
+| Feature | djot-php Syntax | Carve Syntax | Status |
+|---------|-----------------|-------------|--------|
+| **Captions** | `^ caption` after block | `^ caption` | ✅ In grammar (caption rule; image/blockquote/table placement). |
+| **Abbreviations** | `*[ABBR]: expansion` | `*[ABBR]: expansion` | ✅ In grammar (PART 5: Abbreviations). |
+| **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `:kbd[text]` | ✅ Via `:type[content]` extension syntax (4.19). |
+| **Autolinks** | `<url>` / `<email>` | Angle-bracket autolinks only | ✅ In spec (4.3). Bare URLs are *not* auto-linked (djot-aligned). |
+| **Inline footnotes** | `[content]{.fn}` | `[^inline content]` | Deferred (reserved syntax, see Conformance Core). |
+| **Table alignment** | `:--`, `--:`, `:--:` | `\|=<` / `\|=>` / `\|=~` markers | ✅ In spec (4.8). |
+| **Rowspan/colspan** | `^` and `<` markers | `^` and `<` markers | ✅ In grammar (span_cell / rowspan_marker / colspan_marker). |
+| **Multi-line cells** | `+` continuation | `+` continuation | ✅ In grammar (table multi-line cells). |
 
 ---
 
@@ -70,7 +73,10 @@ These should remain implementation-specific, not part of Carve syntax:
 
 ---
 
-## Proposed Additions to Carve Spec
+## Native Additions (now in spec)
+
+The features below were the concrete proposals from this analysis. All are now
+part of Carve syntax; the examples remain as a feature-level reference.
 
 ### 1. Captions (`^`)
 
@@ -144,14 +150,14 @@ This fits the `:type[content]{attrs}` pattern already in the spec.
 
 ## Summary
 
-**Add to Carve native syntax:**
+**Added to Carve native syntax:**
 1. Captions (`^`)
 2. Abbreviations (`*[ABBR]: ...`)
 3. Table multi-line (`+`), rowspan (`^`), colspan (`<`)
 
-**Already native, confirm in spec:**
+**Native, confirmed in spec:**
 1. Semantic elements via `:type[content]` extension syntax
-2. Angle-bracket autolinks (`<url>` / `<email>`) — bare URLs stay literal
+2. Angle-bracket autolinks (`<url>` / `<email>`) - bare URLs stay literal
 
 **Keep as implementation extensions:**
 - External link attributes
