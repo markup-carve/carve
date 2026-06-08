@@ -54,26 +54,7 @@ Grammar references point at `resources/grammar.ebnf`.
 
 ---
 
-## Implementation Extensions (Not Native)
-
-These should remain implementation-specific, not part of Carve syntax:
-
-| djot-php Extension | Why Not Native |
-|--------------------|----------------|
-| **ExternalLinksExtension** | HTML attribute concern (`target`, `rel`) |
-| **DefaultAttributesExtension** | Implementation convenience |
-| **HeadingPermalinksExtension** | Rendering/UI concern |
-| **TableOfContentsExtension** | Derived content, not source syntax |
-| **MermaidExtension** | Third-party tool integration |
-| **CodeGroupExtension** | UI/framework concern (tabs) |
-| **TabsExtension** | UI/framework concern |
-| **SmartQuotesExtension** | Locale config, not syntax |
-| **WikilinksExtension** | Context-dependent (wiki software) |
-| **HeadingReferenceExtension** | Implementation of `</#id>` resolution |
-
----
-
-## Native Additions (now in spec)
+## Native Additions (in spec)
 
 The features below were the concrete proposals from this analysis. All are now
 part of Carve syntax; the examples remain as a feature-level reference.
@@ -145,6 +126,25 @@ This fits the `:type[content]{attrs}` pattern already in the spec.
 |-------|-------------------|-------|
 | Alice | alice@example.com | x5234 |
 ```
+
+---
+
+## Implementation Extensions (Not Native)
+
+These should remain implementation-specific, not part of Carve syntax:
+
+| djot-php Extension | Why Not Native |
+|--------------------|----------------|
+| **ExternalLinksExtension** | HTML attribute concern (`target`, `rel`) |
+| **DefaultAttributesExtension** | Implementation convenience |
+| **HeadingPermalinksExtension** | Rendering/UI concern |
+| **TableOfContentsExtension** | Derived content, not source syntax |
+| **MermaidExtension** | Third-party tool integration |
+| **CodeGroupExtension** | UI/framework concern (tabs) |
+| **TabsExtension** | UI/framework concern |
+| **SmartQuotesExtension** | Locale config, not syntax |
+| **WikilinksExtension** | Context-dependent (wiki software) |
+| **HeadingReferenceExtension** | Implementation of `</#id>` resolution |
 
 ---
 
