@@ -923,6 +923,41 @@ code
 
 :::
 
+The info string may carry a bracketed `[label]` after the language (or a bare `[label]` with no language). The label is structured metadata — it is **not** part of the language class; the core renderer ignores it, and an extension (e.g. a code-group) may use it.
+
+::: compare
+
+````carve
+```php [NPM]
+npm install x
+```
+````
+
+```html
+<pre><code class="language-php">npm install x
+</code></pre>
+```
+
+:::
+
+Anything else after the language token — a bare second word, a quoted value, or an inline `{…}` block — is **not** a fenced code block. There is no error: the backtick run falls back to ordinary inline parsing (an inline code span). The bracket is the only delimiter that admits metadata.
+
+::: compare
+
+`````carve
+```js title="x"
+code
+```
+`````
+
+```html
+<p><code>js title="x"
+code
+</code></p>
+```
+
+:::
+
 Tildes are an alternative fence — useful when the body contains backtick fences.
 
 ::: compare
