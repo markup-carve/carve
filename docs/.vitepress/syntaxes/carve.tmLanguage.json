@@ -18,6 +18,7 @@
     { "include": "#table_row" },
     { "include": "#multiline_cell" },
     { "include": "#task_item" },
+    { "include": "#list_continuation" },
     { "include": "#list_item" },
     { "include": "#numbered_item" },
     { "include": "#inline" }
@@ -152,7 +153,7 @@
       }
     },
     "task_item": {
-      "match": "^(\\s*)([-*+])\\s+(\\[)([ xX])(\\])\\s+",
+      "match": "^(\\s*)([-*])\\s+(\\[)([ xX])(\\])\\s+",
       "captures": {
         "2": { "name": "punctuation.definition.list.carve" },
         "3": { "name": "punctuation.definition.checkbox.carve" },
@@ -160,8 +161,15 @@
         "5": { "name": "punctuation.definition.checkbox.carve" }
       }
     },
+    "list_continuation": {
+      "comment": "A lone `+` at the list-marker column is the list-continuation marker (not a bullet -- `+` is never a bullet in Carve); it attaches the following flush-left block to the item.",
+      "match": "^(\\s*)(\\+)(\\s*)$",
+      "captures": {
+        "2": { "name": "punctuation.definition.list.continuation.carve" }
+      }
+    },
     "list_item": {
-      "match": "^(\\s*)([-*+])(\\s+)",
+      "match": "^(\\s*)([-*])(\\s+)",
       "captures": {
         "2": { "name": "punctuation.definition.list.unnumbered.carve" }
       }
