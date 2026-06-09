@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: Carve
-  text: A post-Djot markup language
+  text: A post-Markdown markup language
   tagline: Visual mnemonics, human-centered design — markup you can feel.
   image:
     src: /logo.svg
@@ -19,7 +19,7 @@ hero:
 features:
   - title: Visual Mnemonics
     details: "/italic/ slashes lean, *bold* asterisks are heavy, _underline_ sits below, ~strikethrough~ runs through. Syntax that looks like its output."
-  - title: Post-Djot Rigor
+  - title: Linear-Time Rigor
     details: Djot-style linear-time parsing with no backtracking, unambiguous rules — extended with captions, abbreviations, and social conventions.
   - title: Five-Second Rule
     details: Learnable in 5 seconds for basic use. Memorable after 5 days without practice. Unambiguous within 5 characters of context.

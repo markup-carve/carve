@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Documentation site for Carve, a post-Djot markup language",
+  "description": "Documentation site for Carve, a post-Markdown markup language",
   "scripts": {
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",

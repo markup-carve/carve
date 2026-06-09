@@ -77,6 +77,9 @@ const RE_RAW_FENCE = /^(`{3,}|~{3,})\s*raw\s+([a-zA-Z][\w-]*)\s*$/;
 // by length); a `%%` line is a line comment. Neither is rendered.
 const RE_COMMENT_BLOCK = /^%{3,}\s*$/;
 const RE_COMMENT_LINE = /^%%/;
+// A bare fence-closer line (` ``` ` / `~~~`, no info), used only by the
+// paragraph-interruption closer lookahead's negative cache (§10).
+const RE_FENCE_CLOSER = /^\s{0,3}(`{3,}|~{3,})\s*$/;
 // Maximum block-container nesting depth. Each level of blockquote / div / list /
 // footnote recurses parseBlocks -> parseBlock -> parseContainer -> parseBlocks,
 // so unbounded nesting (e.g. `> ` repeated thousands of times) overflows the
@@ -99,17 +102,21 @@ class Lexer {
     // body (def line + indented continuation), set by parseFootnoteDef.
     footnoteDefs = new Map();
     // True for sub-lexers over already-nested block content (list item /
-    // blockquote / admonition bodies). The §10 paragraph-interruption guard
-    // (a visible block needs a blank line to interrupt) applies at the document
-    // top level; inside nested content a marker still interrupts, so
-    // `- a\n  - b` (single nested child) still nests. Mirrors djot-php #180's
-    // scoping (guard only on the top-level paragraph path).
+    // blockquote / admonition bodies). Informational only: under the §10
+    // Markdown-like rule a visible block interrupts a paragraph at EVERY level
+    // (top and nested) — startsInterruptingBlock no longer branches on this —
+    // but sub-lexers still set it to mark their context.
     nested = false;
     // Negative cache for divHasCloser: the smallest line index from which
     // NO bare colon-fence closer of ANY length exists onward. Once a scan
     // proves that, every later bare opener (pos only advances) is O(1),
     // keeping pathological "many unclosed `:::`" input linear.
     divNoCloserFrom = Infinity;
+    // Negative cache for fenceHasCloser (paragraph-interruption closer
+    // lookahead): the smallest line index from which NO bare fence-closer
+    // line exists onward. Once proven, every later fence opener (pos only
+    // advances) short-circuits, keeping "many unclosed fences" input linear.
+    noFenceCloserFrom = Infinity;
     constructor(source, opts = {}) {
         this.defaultFrontmatterFormat = opts.defaultFrontmatterFormat ?? 'yaml';
         this.lines = source.replace(/\r\n?/g, '\n').split('\n');
@@ -1482,6 +1489,105 @@ function splitTableRow(line) {
         cells.push(buf);
     return cells;
 }
+/**
+ * From a fence opener (` ``` ` / `~~~` / raw) at peek(0), is there a matching
+ * closing fence ahead? Used by startsInterruptingBlock so an UNTERMINATED
+ * fence does NOT interrupt a paragraph (§10 CLOSER LOOKAHEAD): a stray ``` in
+ * prose stays paragraph text instead of swallowing the rest of the block. The
+ * negative cache (noFenceCloserFrom) keeps "many unclosed fences" input linear.
+ */
+function fenceHasCloser(lexer, marker) {
+    const start = lexer.pos + 1;
+    if (start >= lexer.noFenceCloserFrom)
+        return false; // memo: no closer ahead
+    const closeRe = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
+    let sawAnyCloser = false;
+    for (let i = start; i < lexer.lines.length; i++) {
+        const l = lexer.lines[i];
+        if (closeRe.test(l))
+            return true;
+        if (RE_FENCE_CLOSER.test(l))
+            sawAnyCloser = true;
+    }
+    // No closer for this marker ahead. If there is NO bare fence-closer line at
+    // all from here on, cache it (pos only advances) so later openers are O(1).
+    if (!sawAnyCloser)
+        lexer.noFenceCloserFrom = start;
+    return false;
+}
+/**
+ * Does the line at peek(0) begin a block that INTERRUPTS an open paragraph
+ * (grammar PART 9 §10, Markdown-like)? Mirrors parseBlock's detection battery
+ * with the §10 carve-outs: a bare image does NOT interrupt; an ordered marker
+ * interrupts only as `1.`/`1)`; a fence/`:::` interrupts only with a closer
+ * ahead; a `|` line interrupts only when it is a valid table row.
+ */
+function startsInterruptingBlock(lexer) {
+    const ln = lexer.peek();
+    if (ln === undefined)
+        return false;
+    // Dispatch on the first non-whitespace character, so a line costs one or two
+    // regex tests instead of the whole battery — this is the per-line cost on
+    // dense interrupt text. Each regex keeps its own anchor, so leading-whitespace
+    // handling is unchanged: a `^`-anchored pattern (heading, quote, table, `:::`,
+    // raw fence, defs, comments) still fails on an indented line, and the
+    // `^\s*`-anchored ones (fence, list, link-def) still match it. The boolean
+    // result is identical to testing every pattern in order.
+    let i = 0;
+    while (i < ln.length && (ln.charCodeAt(i) === 32 || ln.charCodeAt(i) === 9))
+        i++;
+    switch (ln[i]) {
+        case '#':
+            return RE_HEADING.test(ln);
+        case '>':
+            return RE_BLOCKQUOTE.test(ln);
+        case '|':
+            // A valid `|…|` row (a stray leading `|` in prose is not a row).
+            return RE_TABLE_ROW.test(ln) && /\|\s*$/.test(ln);
+        case '`':
+        case '~':
+            // Raw passthrough / fenced code: interrupt only with a matching closer.
+            if (RE_RAW_FENCE.test(ln))
+                return fenceHasCloser(lexer, RE_RAW_FENCE.exec(ln)[1]);
+            if (RE_FENCE.test(ln))
+                return fenceHasCloser(lexer, RE_FENCE.exec(ln)[2]);
+            return false;
+        case '-':
+            // thematic break, task or unordered list
+            return RE_HR.test(ln.trim()) || RE_TASK.test(ln) || RE_UNORDERED.test(ln);
+        case '+':
+            // task or unordered list (`+` is not a thematic-break char)
+            return RE_TASK.test(ln) || RE_UNORDERED.test(ln);
+        case '*':
+            // abbreviation definition (invisible), thematic break, task or unordered
+            return (RE_ABBR_DEF.test(ln) ||
+                RE_HR.test(ln.trim()) ||
+                RE_TASK.test(ln) ||
+                RE_UNORDERED.test(ln));
+        case '_':
+            return RE_HR.test(ln.trim());
+        case ':':
+            // definition-list term, or an admonition/div that has a `:::` closer ahead
+            if (RE_DEFLIST_TERM.test(ln))
+                return true;
+            if ((RE_ADMONITION_OPEN.test(ln) && !RE_ADMONITION_CLOSE.test(ln)) ||
+                RE_DIV_OPEN.test(ln))
+                return divHasCloser(lexer);
+            return false;
+        case '[':
+            // link or footnote reference definition (invisible)
+            return RE_LINK_DEF.test(ln) || RE_FOOTNOTE_DEF.test(ln);
+        case '%':
+            // line or block comment (invisible)
+            return RE_COMMENT_LINE.test(ln) || RE_COMMENT_BLOCK.test(ln);
+        default:
+            // An ordered-list marker does NOT interrupt a paragraph (it needs a blank
+            // line, matching Djot): allowing it would require the CommonMark `1.`-only
+            // heuristic to keep `2.`, `1985.`, `a.`, `i.` as prose, which Carve avoids.
+            // A bare image is inline, not a block, so it does not interrupt either.
+            return false;
+    }
+}
 function parseParagraph(lexer) {
     const lines = [];
     const startLineIndex = lexer.pos;
@@ -1489,23 +1595,14 @@ function parseParagraph(lexer) {
         const ln = lexer.peek();
         if (ln.trim() === '')
             break;
-        // Paragraph interruption (grammar PART 9 §10): a paragraph is interrupted
-        // only by INVISIBLE constructs — reference definitions (link/footnote/abbr)
-        // and comments — in any context, PLUS, inside nested content only, a LIST
-        // MARKER (the one Carve deviation: `- a\n  - b` nests a sublist with no
-        // blank line; parseList re-parses item content as nested, so the marker
-        // breaks the lead paragraph and dispatches the sublist). No OTHER visible
-        // block (quote, table, heading, fence, thematic break, admonition/div,
-        // image, …) interrupts a paragraph without a blank line, at the top level
-        // OR nested (full djot), so hard-wrapped prose never silently becomes a
-        // block.
-        const isInvisible = RE_LINK_DEF.test(ln) ||
-            RE_FOOTNOTE_DEF.test(ln) ||
-            RE_ABBR_DEF.test(ln) ||
-            RE_COMMENT_LINE.test(ln) ||
-            RE_COMMENT_BLOCK.test(ln);
-        const isListMarker = RE_TASK.test(ln) || RE_UNORDERED.test(ln) || RE_ORDERED.test(ln);
-        if (isInvisible || (lexer.nested && isListMarker))
+        // Paragraph interruption (grammar PART 9 §10): a VISIBLE block (heading,
+        // list, quote, table, fence, thematic break, admonition/div) interrupts
+        // an open paragraph with no blank line before it, at the top level AND
+        // nested — the Markdown-like rule. Invisible constructs (reference
+        // definitions, comments) interrupt too. A bare image does not interrupt,
+        // an ordered marker interrupts only as `1.`/`1)`, and a fence/`:::` only
+        // when it has a matching closer ahead. See startsInterruptingBlock.
+        if (startsInterruptingBlock(lexer))
             break;
         lexer.consume();
         lines.push(ln);

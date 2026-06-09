@@ -16,6 +16,7 @@ turning your content into a JavaScript program.
 | Consistent inline rules         | ❌ |  ✅   | ❌ | ✅ |
 | No-backtracking parse guarantee | ❌ |  ✅   | ❌ | ✅ |
 | Markdown-familiar syntax        | ✅ |  ⚠️  | ✅ | ⚠️ |
+| Paragraph interruption (no blank line) | ✅ | ❌ | ✅ | ✅ |
 | Feature completeness/consistency | ❌ | ❌ | ❌ | ✅ |
 
 ## Authoring features

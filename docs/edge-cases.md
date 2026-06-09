@@ -409,55 +409,60 @@ Inside code spans, backslash is literal:
 
 ---
 
-## 17. Hard-Wrapped Prose vs. Block Openers (Paragraph Interruption)
+## 17. Block Openers Interrupt Paragraphs (Paragraph Interruption)
 
-**Problem:** A hard-wrapped sentence can wrap onto a line that begins with a
-block opener — a list marker `-`/`*`, block quote `>`, table `|`, a fence,
-a heading `#`, a thematic break `---`, an admonition `:::`, or an image. If
-that line silently became a block, paragraph wrapping would change
-interpretation, violating Design Principle 7 (hard-wrap friendly).
+**Rule:** a **visible** block interrupts an open paragraph with no blank line
+before it, at the document top level **and** inside nested content (list item,
+block quote, admonition/div body). A continuation line that begins a block is
+parsed as that block; the paragraph ends on the line before it. This is the
+Markdown-like rule (CommonMark "a paragraph can be interrupted"), and the key
+block-level divergence from Djot: in Djot an open paragraph runs until a blank
+line, so a `-` / `#` / `>` / `|` line stays paragraph text; in Carve that line
+starts the block.
 
 ```carve
 Die Frage ist x = 5
 * 3 + 17 wahr.
 ```
 
-This is **one paragraph**, not a paragraph plus a list.
+This is a **paragraph plus a list** (`* 3 + 17 wahr.` begins with a
+bullet-plus-space). That is the accepted trade-off: a hard-wrapped prose line
+that happens to start with a marker becomes a block. Insert a blank line, or
+backslash-escape the marker (`\* 3 + 17`), to keep it prose.
 
-**Rule (top level):** at the document top level **no visible block interrupts a
-paragraph** without a blank line. A continuation line that begins with any
-block opener is paragraph text, not a new block. To start a block, leave a
-blank line before it — the blank line ends the paragraph and the block parses
-fresh. This matches djot.
+**Three carve-outs** keep common prose safe:
 
-Two carve-outs interrupt with no blank line:
+1. **Ordered lists never interrupt** — no ordered marker (`1.`, `2.`, `1985.`,
+   `a.`, `i.`) interrupts; an ordered list needs a blank line before it. Allowing
+   it would require the CommonMark `1.`-only heuristic Djot removed, so Carve
+   keeps ordered lists on the blank-line rule and drops the heuristic entirely.
+2. **Closer lookahead** — a fence (`` ``` ``/`~~~`) or `:::` interrupts only
+   when a matching closer exists ahead. An unterminated opener stays paragraph
+   text, so a stray marker never swallows the rest of the block.
+3. **Image excluded** — a bare image `![alt](url)` is inline content, not a
+   block, so it renders inside the paragraph.
 
-1. **Invisible constructs** — link/footnote/abbreviation reference definitions
-   and comments (`%%`, `%%%`). They produce no block of their own, so they are
-   collected/consumed rather than left as literal text.
-2. **A nested list marker** — inside a list item, block quote, or admonition
-   body a LIST MARKER still interrupts, so an indentation-only nested sublist
-   nests with no blank line (`- a` / `  - b`). This is the SOLE Carve deviation
-   from djot. Every other block opener (heading, fence, `---`, `:::`, …) still
-   needs a blank line, nested OR top level.
+**Invisible constructs** (link/footnote/abbreviation reference definitions,
+`%%`/`%%%` comments) interrupt with no blank line, as they always have — they
+produce no block of their own, so they are collected/consumed.
 
 | Input | Result | Reason |
 |-------|--------|--------|
-| `Text` / `- a` / `- b` | one paragraph | top level, no blank line |
-| `Text` / (blank) / `- a` | paragraph + list | blank line before marker |
-| `Text` / `# H` | one paragraph (`# H` literal) | top level, no blank line |
-| `Text` / `` ``` `` / `code` / `` ``` `` | one paragraph, inline code span | fence is prose at top level |
-| `Text` / `---` / `more` | `Text — more` (em-dash) | `---` is inline at top level |
-| `x = 5` / `* 3 + 17` | one paragraph | operator, not a block |
-| `See[^m].` / `[^m]: note` | paragraph + endnotes | invisible construct interrupts |
-| `> text` / `> # H` | one paragraph in the quote | nested, but `#` is not a list marker |
-| `- a` / `  - b` | nested sublist | nested list marker (the one deviation) |
-| `- text` / `  # H` | one paragraph in the item | nested, but `#` is not a list marker |
+| `Text` / `- a` / `- b` | paragraph + list | bullet interrupts |
+| `Text` / `# H` | paragraph + heading | heading interrupts |
+| `Text` / `` ``` `` / `code` / `` ``` `` | paragraph + code block | fence with a closer interrupts |
+| `Text` / `` ``` `` / `code` | one paragraph | unterminated fence — no closer |
+| `Text` / `---` / `more` | paragraph + `<hr>` + paragraph | thematic break interrupts |
+| `x = 5` / `* 3 + 17` | paragraph + list | accepted false positive |
+| `Text` / `1. a` (or `2. a`, `1985. a`) | one paragraph | ordered lists never interrupt |
+| `Text` / `![a](u)` | one paragraph (inline image) | image excluded |
+| `See[^m].` / `[^m]: note` | paragraph + endnotes | invisible construct |
+| `> text` / `> # H` | quote: paragraph + heading | interrupts inside the quote |
+| `- a` / `  - b` | nested sublist | indented sublist still nests |
+| `- text` / `  # H` | item: text + heading | interrupts inside the item |
 
-Because a block opener directly after prose is parsed as inline text, a fence
-becomes an inline code span and `---` becomes a smart em-dash. Use a blank line
-to start the block. Normative statement: `resources/grammar.ebnf` PART 9 §10.
-Verified by corpus `05-lists-6..8` and `76-paragraph-interruption`.
+Normative statement: `resources/grammar.ebnf` PART 9 §10. Verified by corpus
+`05-lists-6`, `05-lists-7`, and the `Paragraph interruption` section.
 
 ---
 

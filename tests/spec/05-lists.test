@@ -81,8 +81,10 @@ not a list</p>
 Die Frage ist x = 5
 * 3 + 17 wahr.
 .
-<p>Die Frage ist x = 5
-* 3 + 17 wahr.</p>
+<p>Die Frage ist x = 5</p>
+<ul>
+  <li>3 + 17 wahr.</li>
+</ul>
 ```
 
 ```
@@ -90,9 +92,11 @@ Liste:
 - eins
 - zwei
 .
-<p>Liste:
-- eins
-- zwei</p>
+<p>Liste:</p>
+<ul>
+  <li>eins</li>
+  <li>zwei</li>
+</ul>
 ```
 
 ```

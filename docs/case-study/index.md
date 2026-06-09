@@ -1,6 +1,6 @@
 ---
 title: Case Study
-description: A case study in post-Djot markup design.
+description: A case study in post-Markdown markup design.
 ---
 
 # Case Study

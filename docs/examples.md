@@ -542,11 +542,14 @@ A blank line between items produces a loose list — each item wraps in a paragr
 
 :::
 
-A paragraph ends only at a blank line. A continuation line that begins with a
-block marker — `-`, `*`, `+`, `>`, `|`, a heading `#`, a fence, even a decimal
-`1.` — is treated as paragraph text, so hard-wrapping prose never silently
-creates a block (Design Principle 7; this matches djot). Leave a blank line to
-start the block.
+A paragraph ends at a blank line — or at a line that begins a block. A
+continuation line that starts with a block marker — `-`, `*`, `+`, `>`, a
+valid `|…|` table row, a heading `#`, a fence with a closer, or a decimal
+`1.` / `1)` — interrupts the paragraph and starts that block, with no blank
+line required (the Markdown-like rule; §10). The trade-off is that a
+hard-wrapped prose line that happens to begin with such a marker becomes a
+block — insert a blank line, or backslash-escape the marker (`\* 3`), to keep
+it prose.
 
 ::: compare
 
@@ -556,14 +559,16 @@ Die Frage ist x = 5
 ```
 
 ```html
-<p>Die Frage ist x = 5
-* 3 + 17 wahr.</p>
+<p>Die Frage ist x = 5</p>
+<ul>
+  <li>3 + 17 wahr.</li>
+</ul>
 ```
 
 :::
 
-Without a blank line the markers stay paragraph text — even two or more of
-them (the same is true of a heading or a decimal list under prose).
+The same applies to any number of marker lines, and to every block type — a
+heading or a `1.` list under a prose line interrupts it just the same.
 
 ::: compare
 
@@ -574,9 +579,11 @@ Liste:
 ```
 
 ```html
-<p>Liste:
-- eins
-- zwei</p>
+<p>Liste:</p>
+<ul>
+  <li>eins</li>
+  <li>zwei</li>
+</ul>
 ```
 
 :::
@@ -600,8 +607,8 @@ Text hier
 
 :::
 
-The guard is scoped to the top level: inside an already-nested block a single
-marker still starts a block, so a one-child nested list still nests.
+Interruption applies inside nested content too: a single marker in a list item
+or block quote starts a block, so a one-child nested list still nests.
 
 ::: compare
 
@@ -3157,15 +3164,15 @@ a paragraph and stays literal.
 
 ## Paragraph interruption
 
-At the document top level a visible block does **not** interrupt a paragraph
-without a blank line (Design Principle 7, hard-wrap friendly). A line that
-begins with a block opener is paragraph text; a block opener parsed as prose
-follows the inline rules (a fence becomes an inline code span, `---` becomes a
-smart em-dash). Leave a blank line to start the block. Two carve-outs interrupt
-with no blank line: invisible constructs (reference definitions, comments) and
-markers inside already-nested content.
+A paragraph ends at a blank line — or at a line that begins a block. Under the
+Markdown-like rule (§10) a **visible** block interrupts an open paragraph with
+no blank line before it, at the top level and inside nested content. Three
+carve-outs keep common prose safe: an ordered marker interrupts only as `1.` /
+`1)`; a fence or `:::` interrupts only when it has a matching closer ahead; and
+a bare image is never a block. Invisible constructs (reference definitions,
+comments) interrupt as they always have.
 
-A heading marker after a prose line stays literal.
+A heading marker after a prose line interrupts.
 
 ::: compare
 
@@ -3175,13 +3182,15 @@ text
 ```
 
 ```html
-<p>text
-# H</p>
+<p>text</p>
+<section id="h">
+  <h1>H</h1>
+</section>
 ```
 
 :::
 
-A fence run after a prose line is an inline code span, not a code block.
+A fenced code block with a closer interrupts (an inline span no longer).
 
 ::: compare
 
@@ -3193,15 +3202,15 @@ code
 ````
 
 ```html
-<p>text
-<code>
-code
-</code></p>
+<p>text</p>
+<pre><code>code
+</code></pre>
 ```
 
 :::
 
-A thematic break after a prose line is a smart em-dash.
+A thematic break interrupts; the line after it parses fresh (not a smart
+em-dash any more).
 
 ::: compare
 
@@ -3212,14 +3221,14 @@ more
 ```
 
 ```html
-<p>text
-—
-more</p>
+<p>text</p>
+<hr>
+<p>more</p>
 ```
 
 :::
 
-A block quote marker after a prose line stays literal.
+A block quote marker interrupts.
 
 ::: compare
 
@@ -3229,13 +3238,13 @@ text
 ```
 
 ```html
-<p>text
-&gt; q</p>
+<p>text</p>
+<blockquote><p>q</p></blockquote>
 ```
 
 :::
 
-An unordered list marker after a prose line stays paragraph text.
+An unordered list interrupts.
 
 ::: compare
 
@@ -3246,14 +3255,17 @@ text
 ```
 
 ```html
-<p>text
-- a
-- b</p>
+<p>text</p>
+<ul>
+  <li>a</li>
+  <li>b</li>
+</ul>
 ```
 
 :::
 
-An ordered list marker after a prose line stays paragraph text.
+An ordered-list marker does **not** interrupt — it needs a blank line (the one
+visible block kept on the Djot rule; see the carve-out below).
 
 ::: compare
 
@@ -3271,7 +3283,7 @@ text
 
 :::
 
-A table row after a prose line stays paragraph text.
+A valid table row interrupts.
 
 ::: compare
 
@@ -3281,13 +3293,93 @@ text
 ```
 
 ```html
-<p>text
-| a | b |</p>
+<p>text</p>
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
 ```
 
 :::
 
-A bare image after a prose line renders inline, in the same paragraph.
+An admonition (or generic div) with a closer interrupts.
+
+::: compare
+
+```carve
+text
+:::note
+body
+:::
+```
+
+```html
+<p>text</p>
+<aside class="admonition note">
+  <p>body</p>
+</aside>
+```
+
+:::
+
+**Carve-out — ordered lists never interrupt.** An ordered marker is too common
+in prose ("see step 2.", "version 1985.", "upgrade to 1. today"), and the only
+way to allow it would be the CommonMark `1.`-only heuristic Djot removed. So no
+ordered value — `1.`, `2.`, a year — interrupts; all stay paragraph text.
+
+::: compare
+
+```carve
+text
+2. y
+3. z
+```
+
+```html
+<p>text
+2. y
+3. z</p>
+```
+
+:::
+
+::: compare
+
+```carve
+text
+1985. was the year
+```
+
+```html
+<p>text
+1985. was the year</p>
+```
+
+:::
+
+**Carve-out — closer lookahead.** A `:::` block (or a fence) with no matching
+closer ahead does not interrupt; it stays paragraph text, so a stray marker
+never swallows the rest of the block.
+
+::: compare
+
+```carve
+text
+:::note
+body
+```
+
+```html
+<p>text
+:::note
+body</p>
+```
+
+:::
+
+**Carve-out — image excluded.** A bare image is inline content, so it renders
+in the same paragraph, never as its own block.
 
 ::: compare
 
@@ -3303,94 +3395,28 @@ text
 
 :::
 
-Invisible constructs still interrupt with no blank line. A comment line is
-consumed.
+**Nested content.** Interruption applies inside a block quote too: a list
+marker after a prose line interrupts within the quote.
 
 ::: compare
 
 ```carve
-para
-%% c
+> p one
+> - item
 ```
 
 ```html
-<p>para</p>
+<blockquote>
+  <p>p one</p>
+  <ul>
+    <li>item</li>
+  </ul>
+</blockquote>
 ```
 
 :::
 
-A reference definition is collected, leaving only the paragraph.
-
-::: compare
-
-```carve
-a[r]
-[r]: http://x
-```
-
-```html
-<p>a[r]</p>
-```
-
-:::
-
-A blank line ends the paragraph; the block then parses fresh.
-
-::: compare
-
-```carve
-text
-
-# H
-```
-
-```html
-<p>text</p>
-<section id="h">
-  <h1>H</h1>
-</section>
-```
-
-:::
-
-::: compare
-
-````carve
-text
-
-```
-c
-```
-````
-
-```html
-<p>text</p>
-<pre><code>c
-</code></pre>
-```
-
-:::
-
-Inside already-nested content the same rule holds: a non-list block opener
-after prose stays paragraph text. A heading in a block quote does not
-interrupt without a blank line.
-
-::: compare
-
-```carve
-> text
-> # H
-```
-
-```html
-<blockquote><p>text
-# H</p></blockquote>
-```
-
-:::
-
-The one exception is a list marker: a nested sublist still nests with no
-blank line (the sole Carve deviation from djot).
+An indented sublist still nests with no blank line (unchanged).
 
 ::: compare
 
@@ -3411,20 +3437,53 @@ blank line (the sole Carve deviation from djot).
 
 :::
 
-A non-list block after lead text in a list item also stays paragraph text.
+**Invisible constructs** still interrupt with no blank line: a comment line is
+consumed,
 
 ::: compare
 
 ```carve
-- text
-  # H
+para
+%% c
 ```
 
 ```html
-<ul>
-  <li>text
-# H</li>
-</ul>
+<p>para</p>
+```
+
+:::
+
+and a reference definition is collected, leaving only the paragraph.
+
+::: compare
+
+```carve
+a[r]
+[r]: http://x
+```
+
+```html
+<p>a[r]</p>
+```
+
+:::
+
+A blank line still ends the paragraph and the block parses fresh, exactly as
+before.
+
+::: compare
+
+```carve
+text
+
+# H
+```
+
+```html
+<p>text</p>
+<section id="h">
+  <h1>H</h1>
+</section>
 ```
 
 :::
@@ -3488,7 +3547,7 @@ outside</h1>
 
 ## Blockquote lazy continuation stops at a fenced block
 
-Lazy continuation only extends an open paragraph. A non-`>` line that lands inside an open fenced code block ends the quote instead of being swallowed into the code (and the `>` of a following quoted line is kept literal). A fence never interrupts an open paragraph, so a fence-looking line mid-paragraph stays paragraph text and the lazy line still folds in. That mid-paragraph ` ``` ` is an unclosed inline verbatim run, so it renders as a `<code>` span to the end of the block (matching djot and carve-php).
+Lazy continuation only extends an open paragraph. A non-`>` line that lands inside an open fenced code block ends the quote instead of being swallowed into the code. After the quote ends, `b` starts a paragraph and the trailing `> c` interrupts it into a fresh block quote (§10 — a `>` marker interrupts a paragraph). In the second example the mid-paragraph ` ``` ` has no closer, so it does not interrupt (§10 closer lookahead); it is then an unclosed inline verbatim run that renders as a `<code>` span to the end of the block (matching djot and carve-php), and the lazy line still folds in.
 
 ::: compare
 
@@ -3504,8 +3563,8 @@ b
   <pre><code>a
 </code></pre>
 </blockquote>
-<p>b
-&gt; c</p>
+<p>b</p>
+<blockquote><p>c</p></blockquote>
 ```
 
 :::

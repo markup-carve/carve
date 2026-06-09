@@ -2,7 +2,7 @@
    Carve Markup Language - EBNF Grammar
    Version: 0.1-draft
 
-   This grammar defines the syntax of Carve, a post-Djot lightweight markup
+   This grammar defines the syntax of Carve, a post-Markdown lightweight markup
    language with visual mnemonics and human-centered design.
 
    Notation:
@@ -201,9 +201,10 @@ ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, space, list_item_content ;
 (* The first item fixes the dialect (decimal / alpha / roman) and the
    delimiter (`.` or `)`); classification and the ambiguous-letter
-   tie-break are in PART 9 §11. A top-level ordered list of any dialect
-   needs a blank line before it to interrupt a paragraph -- the
-   paragraph-interruption rule is PART 9 §10.
+   tie-break are in PART 9 §11. An ordered list does NOT interrupt a paragraph
+   in any dialect/value (`1.`, `2.`, `1985.`, `a.`, `i.`); it needs a blank
+   line before it (matching Djot, avoiding the CommonMark `1.`-only heuristic)
+   -- the paragraph-interruption rule is PART 9 §10.
    The two delimiters are the trailing `.` and `)` only. djot's
    parenthesized `(1)` / `(a)` form is INTENTIONALLY NOT a marker -- it is
    too easily confused with a prose parenthetical -- so `(1) text` stays
@@ -324,10 +325,12 @@ format_name = "html" | "latex" | identifier ;
 raw_content = (* any content until closing fence *) ;
 
 (* --- Paragraphs --- *)
-(* At the top level a VISIBLE block needs a blank line to interrupt a
-   paragraph (matches djot); invisible constructs (reference definitions,
-   comments) and nested content still interrupt. This is the semantic
-   constraint PART 9 §10, not a context-free one. *)
+(* A VISIBLE block (heading, list, quote, table, fence, thematic break,
+   admonition/div) interrupts a paragraph with no blank line before it
+   (Markdown-like); invisible constructs (reference definitions, comments)
+   interrupt too. This is the semantic constraint PART 9 §10, not a
+   context-free one -- the trailing blank_line here is the paragraph's own
+   terminator, not a precondition for the NEXT block. *)
 paragraph = inline_content+, blank_line ;
 
 
@@ -818,39 +821,73 @@ EOF = (* end of file *) ;
       - Resolution uses a delimiter stack, single left-to-right pass, no
         backtracking (Design Principle 1).
 
-   10. PARAGRAPH INTERRUPTION -- NORMATIVE (governs `paragraph` in PART 2;
-      Design Principle 7, hard-wrap friendly). At the document top level a
-      VISIBLE block does NOT interrupt a paragraph: a continuation line that
-      begins with an unordered/task marker `- * +`, block quote `>`, table
-      row `|`, heading `#`, fence, thematic break, admonition/div `:::`, bare
-      image, or a DECIMAL or letter/roman ordered marker is paragraph text,
-      not a new block. A hard-wrapped prose line therefore never silently
-      becomes a block: "x = 5 \n * 3 + 17", "Liste: \n - a \n - b", and
-      "text \n # H" are each ONE paragraph (corpus 05-lists-6..10). To start a
-      visible block, leave a blank line before it -- the blank line ends the
-      paragraph and the block is parsed fresh. This matches djot.
+   10. PARAGRAPH INTERRUPTION -- NORMATIVE (governs `paragraph` in PART 2).
+      A VISIBLE block INTERRUPTS an open paragraph with NO blank line before
+      it, at the document top level AND inside nested content (list item,
+      block quote, admonition/div body). A continuation line that begins a
+      block is parsed as that block; the paragraph ends on the preceding line.
+      This is the Markdown-like rule (CommonMark "a paragraph can be
+      interrupted") and the key block-level divergence from Djot, where an open
+      paragraph runs until a blank line so a marker line stays paragraph text.
+      The interrupting blocks:
+        - heading            `#`..`######` + space;
+        - thematic break     a lone `---` / `***` / `___` line;
+        - block quote        `>`;
+        - unordered / task   `- ` / `* ` (bullet + space; `- [x] ` task; `+` is
+                             NOT a bullet -- it is the continuation marker, §17);
+        - table row          a `|`...`|` line that is a valid table row
+                             (a stray `|` in prose is NOT -- see §<table>);
+        - fenced code        a ``` / ~~~ opener that HAS a matching closer
+                             ahead (see CLOSER LOOKAHEAD);
+        - admonition / div   a `:::` opener that HAS a matching closer ahead.
+      So "Liste: \n - eins \n - zwei" is <p>Liste:</p> + a <ul>; "intro
+      \n # H" is <p>intro</p> + <h1>; "x = 5 \n * 3 + 17" is <p>x = 5</p> +
+      <ul><li>3 + 17</li></ul> (corpus 05-lists-6, 05-lists-7, and the
+      Paragraph interruption section).
+      That last case is the ACCEPTED COST of paragraph interruption: a
+      hard-wrapped prose line that happens to begin with a bullet-plus-space
+      (or `>` / `#` / a valid table row) starts a block. Insert a blank line, or
+      backslash-escape the marker ("\* 3 + 17"), to keep such a line as prose.
 
-      INVISIBLE CONSTRUCTS (carve-out). A construct that produces no rendered
-      block of its own -- a reference definition (link `[r]: url`, footnote
+      ORDERED LISTS DO NOT INTERRUPT. An ordered-list marker -- decimal,
+      letter, or roman, in any value -- never interrupts a paragraph; it needs a
+      blank line before it (matching Djot). This is deliberate: unlike a bullet
+      (`- `/`* ` is unambiguous), an ordered marker is too common in prose
+      ("see step 2.", "version 1985.", "upgrade to 1. today"), and the only way
+      to allow it would be the CommonMark `1.`-only heuristic -- the exact wart
+      Djot removed. Carve drops the heuristic by not interrupting on ordered
+      markers at all (corpus 54-ordered-marker-vs-prose, Paragraph interruption).
+
+      IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)") does NOT
+      interrupt: an image is not a block of its own in Carve, so it stays an
+      inline image inside the paragraph.
+
+      CLOSER LOOKAHEAD (fenced code, admonition, div). A fence / `:::` opener
+      interrupts ONLY when a matching closer exists ahead in the same context.
+      An UNTERMINATED opener does NOT interrupt -- the line stays paragraph
+      text -- so a stray ``` or `:::` in prose never swallows the rest of the
+      block. (This unterminated-opener case is deliberately NOT pinned in the
+      corpus yet; tracked in MAINTAINING "Open".)
+
+      INVISIBLE CONSTRUCTS. A reference definition (link `[r]: url`, footnote
       `[^r]: …`, abbreviation `*[A]: …`) or a comment (`%%` line, `%%%` block)
-      -- DOES still interrupt a paragraph with no blank line: it is parsed and
-      consumed/collected, rather than left as literal text in the paragraph.
-      So "See[^m].\n[^m]: note" resolves the footnote, and "para\n%% x" drops
-      the comment. (Small deviation from djot, which keeps such a line as
-      paragraph text.)
+      also interrupts a paragraph with no blank line: it is parsed and
+      consumed/collected, rather than left as literal text. So "See[^m].\n[^m]:
+      note" resolves the footnote and "para\n%% x" drops the comment.
+      (Unchanged from the prior rule; a small deviation from djot, which keeps
+      such a line as paragraph text.)
 
-      SCOPING CARVE-OUT -- LIST MARKERS ONLY. The single visible block that
-      may interrupt a paragraph without a blank line is a LIST MARKER, and
-      only inside already-nested block content (a list item, block quote, or
-      admonition body): an indentation-only nested sublist nests with no
-      blank line ("- a \n   - b" -> a list whose first item holds a sublist).
-      This is the SOLE Carve deviation from djot's blank-line requirement
-      (djot needs a blank line before a nested sublist; Carve does not).
-      EVERY OTHER visible block -- heading, fence, thematic break,
-      admonition/div, table, block quote, bare image -- never interrupts a
-      paragraph without a blank line, at the top level OR nested (matching
-      djot). So a heading after a prose line inside a block quote
-      ("> text \n > # H") is ONE paragraph, not a paragraph plus a heading.
+      NESTING. Interruption applies inside nested content too: a `# H` after a
+      prose line in a block quote ("> text \n > # H") is a heading, and an
+      indented sublist still nests with no blank line ("- a \n   - b" -> a list
+      whose first item holds a sublist). A col-0 marker with no `>` inside a
+      block quote terminates the quote (the marker is a sibling block), per the
+      block-quote lazy-continuation rule (see `blockquote`). HEADING
+      CONTINUATION is the one exception that is NOT governed here: once a
+      heading is open, its own continuation rule (see `heading`) decides what
+      folds in or ends it -- a following bare-prose or same/lower `#` line
+      folds into the heading text rather than starting a paragraph that §10
+      could interrupt.
 
    11. LIST MARKER CHANGE STARTS A NEW LIST -- NORMATIVE (governs `list`
       in PART 2). §10 decides FIRST whether a sequence of marker lines

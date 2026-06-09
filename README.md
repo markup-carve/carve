@@ -150,7 +150,7 @@ Carve inherits and extends Djot's rationale:
 4. **No expressive blind spots** - All outputs achievable without workarounds
 5. **Simple list indentation** - Indented content belongs to the list item
 6. **Reduced parser complexity** - No HTML recognition, entity parsing, or case-folding
-7. **Hard-wrap friendly** - Paragraph wrapping doesn't change interpretation
+7. **Markdown-like interruption** - A block opener on a new line starts a block, no blank line required (§10)
 8. **Uniform composition** - Content meaning consistent inside/outside containers
 9. **Arbitrary attributes** - `{#id .class key=value}` on any element
 10. **Generic containers** - Fenced divs (`:::`) for extensibility

@@ -4,8 +4,10 @@ Paragraph interruption
 text
 # H
 .
-<p>text
-# H</p>
+<p>text</p>
+<section id="h">
+  <h1>H</h1>
+</section>
 ```
 
 ````
@@ -14,10 +16,9 @@ text
 code
 ```
 .
-<p>text
-<code>
-code
-</code></p>
+<p>text</p>
+<pre><code>code
+</code></pre>
 ````
 
 ```
@@ -25,17 +26,17 @@ text
 ---
 more
 .
-<p>text
-—
-more</p>
+<p>text</p>
+<hr>
+<p>more</p>
 ```
 
 ```
 text
 > q
 .
-<p>text
-&gt; q</p>
+<p>text</p>
+<blockquote><p>q</p></blockquote>
 ```
 
 ```
@@ -43,9 +44,11 @@ text
 - a
 - b
 .
-<p>text
-- a
-- b</p>
+<p>text</p>
+<ul>
+  <li>a</li>
+  <li>b</li>
+</ul>
 ```
 
 ```
@@ -62,8 +65,52 @@ text
 text
 | a | b |
 .
+<p>text</p>
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+text
+:::note
+body
+:::
+.
+<p>text</p>
+<aside class="admonition note">
+  <p>body</p>
+</aside>
+```
+
+```
+text
+2. y
+3. z
+.
 <p>text
-| a | b |</p>
+2. y
+3. z</p>
+```
+
+```
+text
+1985. was the year
+.
+<p>text
+1985. was the year</p>
+```
+
+```
+text
+:::note
+body
+.
+<p>text
+:::note
+body</p>
 ```
 
 ```
@@ -72,6 +119,31 @@ text
 .
 <p>text
 <img src="u" alt="a"></p>
+```
+
+```
+> p one
+> - item
+.
+<blockquote>
+  <p>p one</p>
+  <ul>
+    <li>item</li>
+  </ul>
+</blockquote>
+```
+
+```
+- a
+   - b
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
 ```
 
 ```
@@ -97,47 +169,4 @@ text
 <section id="h">
   <h1>H</h1>
 </section>
-```
-
-````
-text
-
-```
-c
-```
-.
-<p>text</p>
-<pre><code>c
-</code></pre>
-````
-
-```
-> text
-> # H
-.
-<blockquote><p>text
-# H</p></blockquote>
-```
-
-```
-- a
-   - b
-.
-<ul>
-  <li>a
-    <ul>
-      <li>b</li>
-    </ul>
-  </li>
-</ul>
-```
-
-```
-- text
-  # H
-.
-<ul>
-  <li>text
-# H</li>
-</ul>
 ```

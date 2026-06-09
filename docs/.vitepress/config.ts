@@ -156,7 +156,7 @@ const carveStylingTransformer = {
 // `markup-carve.github.io`, change `base` to '/'.
 export default defineConfig({
   title: 'Carve',
-  description: 'A post-Djot markup language with visual mnemonics and human-centered design.',
+  description: 'A post-Markdown markup language with visual mnemonics and human-centered design.',
   base: '/carve/',
   lang: 'en-US',
   cleanUrls: true,
@@ -187,12 +187,12 @@ export default defineConfig({
     ['meta', { name: 'theme-color', content: '#3c8772' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'Carve' }],
-    ['meta', { property: 'og:description', content: 'A post-Djot markup language with visual mnemonics.' }],
+    ['meta', { property: 'og:description', content: 'A post-Markdown markup language with visual mnemonics.' }],
     ['meta', { property: 'og:url', content: 'https://markup-carve.github.io/carve/' }],
     ['meta', { property: 'og:image', content: 'https://markup-carve.github.io/carve/og-image.svg' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'Carve' }],
-    ['meta', { name: 'twitter:description', content: 'A post-Djot markup language with visual mnemonics.' }],
+    ['meta', { name: 'twitter:description', content: 'A post-Markdown markup language with visual mnemonics.' }],
     ['meta', { name: 'twitter:image', content: 'https://markup-carve.github.io/carve/og-image.svg' }],
   ],
 
@@ -277,7 +277,7 @@ export default defineConfig({
 
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Carve — a post-Djot markup language.',
+      copyright: 'Carve — a post-Markdown markup language.',
     },
 
     search: {
