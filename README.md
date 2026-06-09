@@ -187,17 +187,19 @@ Carve takes its rationale from Djot and Markdown, and extends both:
 
 20. **Captions** - `^` prefix adds captions to images, blockquotes, and tables
 
-21. **Admonitions** - two-tier fenced divs (`::: word`): canonical names render to `<aside>`, custom to `<div class=word>`
+21. **List continuation** - a lone `+` attaches a flush-left block (code, table, quote) to the current list item with no indentation, keeping the item tight; `+` is the continuation marker, not a bullet
 
-22. **Abbreviations** - `*[ABBR]: expansion` for automatic `<abbr>` tags
+22. **Admonitions** - two-tier fenced divs (`::: word`): canonical names render to `<aside>`, custom to `<div class=word>`
 
-23. **Comments** - visible `%%` line, `text %% trailing`, and `%%%` block comments (not HTML comments)
+23. **Abbreviations** - `*[ABBR]: expansion` for automatic `<abbr>` tags
 
-24. **Social integration** - `@mentions` and `#tags` are built into the syntax
+24. **Comments** - visible `%%` line, `text %% trailing`, and `%%%` block comments (not HTML comments)
 
-25. **Extension system** - `:type[content]{attrs}` for custom inline elements
+25. **Social integration** - `@mentions` and `#tags` are built into the syntax
 
-26. **Target-aware rendering** - one parsed document emits to HTML, ANSI, Markdown, or plain text by swapping the renderer
+26. **Extension system** - `:type[content]{attrs}` for custom inline elements
+
+27. **Target-aware rendering** - one parsed document emits to HTML, ANSI, Markdown, or plain text by swapping the renderer
 
 ## Comparison with Markdown and Djot
 
