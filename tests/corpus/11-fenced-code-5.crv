@@ -1,4 +1,3 @@
-```
-# not a heading
-/not italic/  *not bold*  #notatag
+```php [NPM]
+npm install x
 ```

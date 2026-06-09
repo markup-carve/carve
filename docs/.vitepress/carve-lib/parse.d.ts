@@ -3,6 +3,12 @@ export interface ParseOptions {
     positions?: boolean;
     /** Format label applied to a bare `---` frontmatter fence. Default 'yaml'. */
     defaultFrontmatterFormat?: string;
+    /**
+     * Fold auto-generated heading ids to ASCII (Über -> uber) for URL/CSS-fragment
+     * portability. Default false: ids are lowercased (GitHub-style) but keep non-ASCII
+     * verbatim. See markup-carve/carve#73.
+     */
+    asciiHeadingIds?: boolean;
 }
 export declare function parse(source: string, opts?: ParseOptions): Document;
 /**

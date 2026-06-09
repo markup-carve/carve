@@ -1,6 +1,14 @@
 import type { Document, InlineNode } from './ast.js';
-/** The automatic-identifier rule. Pure, context-free, no dedup. */
-export declare function slugify(plainText: string): string;
+/**
+ * The automatic-identifier rule. Pure, context-free, no dedup.
+ *
+ * Uses the jgm/djot#393 run-replacement, then **lowercases** (GitHub/SSG style):
+ * non-ASCII characters are preserved (only their case is folded). Lowercasing makes
+ * ids and cross-references case-insensitive without special lookup logic. With
+ * `asciiFold` (opt-in via `asciiHeadingIds`) the slug is transliterated to ASCII and
+ * re-slugged.
+ */
+export declare function slugify(plainText: string, asciiFold?: boolean): string;
 /**
  * Visible plain text of an inline run (markup stripped).
  *
@@ -18,5 +26,5 @@ export declare function inlineText(nodes: InlineNode[]): string;
  * crossrefs (first-occurrence target, link text cloned from the target
  * heading; unresolved -> literal text). Mutates and returns `doc`.
  */
-export declare function resolveHeadingIds(doc: Document): Document;
+export declare function resolveHeadingIds(doc: Document, asciiFold?: boolean): Document;
 //# sourceMappingURL=heading-ids.d.ts.map

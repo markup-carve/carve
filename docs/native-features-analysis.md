@@ -25,52 +25,39 @@ A feature should remain an **extension** if:
 | Feature | Carve Syntax | Status |
 |---------|-------------|--------|
 | Smart typography | `--`, `---`, `...`, quotes | ✅ In spec (4.18) |
-| @mentions | `@username` | ✅ In spec (4.19) |
-| #tags | `#tagname` | ✅ In spec (4.19) |
+| @mentions | `@username` | ✅ In spec (4.20) |
+| #tags | `#tagname` | ✅ In spec (4.20) |
 | Admonitions | `::: note`, `::: warning` | ✅ In spec (4.12) |
-| Frontmatter | `---` YAML block | ✅ In spec (4.21) |
+| Frontmatter | `---` YAML block | ✅ In spec (4.23) |
 | Footnotes | `[^ref]` | ✅ In spec (4.11) |
 | Definition lists | `:: term` / `:  definition` | ✅ In spec (4.5) |
 | Task lists | `- [ ]`, `- [x]` | ✅ In spec (4.5) |
-| Profiles | Feature restriction | ✅ In spec (4.20) |
+| Profiles | Feature restriction | ✅ In spec (4.21) |
 | Attributes | `{#id .class key=value}` | ✅ In spec (4.10) |
-| Extensions | `:type[content]{attrs}` | ✅ In spec (4.19) |
+| Extensions | `:type[content]{attrs}` | ✅ In spec (4.20) |
 
-### Should Add to Carve Spec
+### Added to Carve Spec
 
-| Feature | djot-php Syntax | Proposed Carve Syntax | Rationale |
-|---------|-----------------|---------------------|-----------|
-| **Captions** | `^ caption` after block | `^ caption` | Already in _djot-extra.md. Universally useful. |
-| **Abbreviations** | `*[ABBR]: expansion` | `*[ABBR]: expansion` | Essential for technical docs. |
-| **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `:kbd[text]` | Use extension syntax for consistency. |
-| **Autolinks** | `<url>` / `<email>` | Angle-bracket autolinks only | Bare URLs are *not* auto-linked (djot-aligned, §4.3). |
-| **Inline footnotes** | `[content]{.fn}` | `[^inline content]` | Already in spec, confirm syntax. |
-| **Table alignment** | `:--`, `--:`, `:--:` | `\|=<` / `\|=>` / `\|=~` markers | Already in spec (4.8). |
-| **Rowspan/colspan** | `^` and `<` markers | `^` and `<` markers | Already in _multiline-table-proposal.md. |
-| **Multi-line cells** | `+` continuation | `+` continuation | Already in _multiline-table-proposal.md. |
+These were proposed during this analysis and have since landed in the spec.
+Grammar references point at `resources/grammar.ebnf`.
 
----
-
-## Implementation Extensions (Not Native)
-
-These should remain implementation-specific, not part of Carve syntax:
-
-| djot-php Extension | Why Not Native |
-|--------------------|----------------|
-| **ExternalLinksExtension** | HTML attribute concern (`target`, `rel`) |
-| **DefaultAttributesExtension** | Implementation convenience |
-| **HeadingPermalinksExtension** | Rendering/UI concern |
-| **TableOfContentsExtension** | Derived content, not source syntax |
-| **MermaidExtension** | Third-party tool integration |
-| **CodeGroupExtension** | UI/framework concern (tabs) |
-| **TabsExtension** | UI/framework concern |
-| **SmartQuotesExtension** | Locale config, not syntax |
-| **WikilinksExtension** | Context-dependent (wiki software) |
-| **HeadingReferenceExtension** | Implementation of `</#id>` resolution |
+| Feature | djot-php Syntax | Carve Syntax | Status |
+|---------|-----------------|-------------|--------|
+| **Captions** | `^ caption` after block | `^ caption` | ✅ In grammar (caption rule; image/blockquote/table placement). |
+| **Abbreviations** | `*[ABBR]: expansion` | `*[ABBR]: expansion` | ✅ In grammar (PART 5: Abbreviations). |
+| **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `:kbd[text]` | ✅ Via `:type[content]` extension syntax (4.20). |
+| **Autolinks** | `<url>` / `<email>` | Angle-bracket autolinks only | ✅ In spec (4.3). Bare URLs are *not* auto-linked (djot-aligned). |
+| **Inline footnotes** | `[content]{.fn}` | `[^inline content]` | Deferred (reserved syntax, see Conformance Core). |
+| **Table alignment** | `:--`, `--:`, `:--:` | `\|=<` / `\|=>` / `\|=~` markers | ✅ In spec (4.8). |
+| **Rowspan/colspan** | `^` and `<` markers | `^` and `<` markers | ✅ In grammar (span_cell / rowspan_marker / colspan_marker). |
+| **Multi-line cells** | `+` continuation | `+` continuation | ✅ In grammar (table multi-line cells). |
 
 ---
 
-## Proposed Additions to Carve Spec
+## Native Additions (in spec)
+
+The features below were the concrete proposals from this analysis. All are now
+part of Carve syntax; the examples remain as a feature-level reference.
 
 ### 1. Captions (`^`)
 
@@ -142,16 +129,35 @@ This fits the `:type[content]{attrs}` pattern already in the spec.
 
 ---
 
+## Implementation Extensions (Not Native)
+
+These should remain implementation-specific, not part of Carve syntax:
+
+| djot-php Extension | Why Not Native |
+|--------------------|----------------|
+| **ExternalLinksExtension** | HTML attribute concern (`target`, `rel`) |
+| **DefaultAttributesExtension** | Implementation convenience |
+| **HeadingPermalinksExtension** | Rendering/UI concern |
+| **TableOfContentsExtension** | Derived content, not source syntax |
+| **MermaidExtension** | Third-party tool integration |
+| **CodeGroupExtension** | UI/framework concern (tabs) |
+| **TabsExtension** | UI/framework concern |
+| **SmartQuotesExtension** | Locale config, not syntax |
+| **WikilinksExtension** | Context-dependent (wiki software) |
+| **HeadingReferenceExtension** | Implementation of `</#id>` resolution |
+
+---
+
 ## Summary
 
-**Add to Carve native syntax:**
+**Added to Carve native syntax:**
 1. Captions (`^`)
 2. Abbreviations (`*[ABBR]: ...`)
 3. Table multi-line (`+`), rowspan (`^`), colspan (`<`)
 
-**Already native, confirm in spec:**
+**Native, confirmed in spec:**
 1. Semantic elements via `:type[content]` extension syntax
-2. Angle-bracket autolinks (`<url>` / `<email>`) — bare URLs stay literal
+2. Angle-bracket autolinks (`<url>` / `<email>`) - bare URLs stay literal
 
 **Keep as implementation extensions:**
 - External link attributes
@@ -160,6 +166,25 @@ This fits the `:type[content]{attrs}` pattern already in the spec.
 - Mermaid/diagram support
 - Tabbed UI components
 - Wiki-style links (context-dependent)
+
+---
+
+## Disabling / Restricting Features
+
+Can a processor turn native features off? It depends on the tier (see
+Conformance Core below for the full split):
+
+| Tier | Features | Disableable? |
+|------|----------|--------------|
+| **Core (MUST)** | captions, abbreviations, tables (rowspan/colspan/multi-line), autolinks, emphasis family, links, math, footnotes, crossrefs, the `:type[content]` extension *syntax* | **No.** Corpus-pinned; identical across implementations. Disabling one means the processor is no longer Carve-conformant. |
+| **Default-on (SHOULD)** | `@mention`, `#tag`, smart typography | **Yes.** On by default in the conformant core; a processor MAY disable them. Normative: `resources/grammar.ebnf` PART 19. |
+| **Out of core (MAY)** | includes (`{{ … }}`), the extension *registry* beyond the generic fallback, all "implementation extensions" above | **Yes / opt-in.** Processor-level; a conformant core MAY omit them entirely (e.g. leave `{{ … }}` literal). |
+
+Separately, **Profiles** (case-study spec §4.21) restrict which features are
+*allowed* in a given context rather than disabling output globally. A profile
+(`Profile::comment()`, `Profile::article()`, …) marks node types as
+disallowed and applies a `STRIP` / `TO_TEXT` / `ERROR` action. This is a
+processor-level mechanism; it is not encoded in `resources/grammar.ebnf`.
 
 ---
 
@@ -186,7 +211,7 @@ feature-level boundary.
   (`<url>` / `<email>`), images, spans (§14), math (djot form, §18), footnotes
   (reference form, §16), abbreviations, editorial markup, crossrefs
   (`</#id>`, markup-preserving §19), hard/soft breaks.
-- **Semantics:** automatic heading ids (ASCII slug), id de-duplication,
+- **Semantics:** automatic heading ids (jgm/djot#393 run-replacement, lowercased, non-ASCII preserved; opt-in ASCII fold), id de-duplication,
   order-independent reference/abbreviation/footnote resolution.
 
 ### SHOULD / configurable (on by default, a processor MAY disable)

@@ -8,18 +8,26 @@ const RE_HEADING = /^(#{1,6})\s+(.+?)(?:\s+\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:
 // Thematic break: a line of 3+ of the same `-`, `*`, or `_` (grammar
 // thematic_break). A run alone on a line can't be emphasis (no content).
 const RE_HR = /^(?:-{3,}|\*{3,}|_{3,})\s*$/;
-// Info string is a single language token. The charset covers real-world tags
-// with punctuation (c++, c#, f#, asp.net); a multiword/quoted info (e.g.
-// `js title="x"`) is still not a fence (anchored, no whitespace allowed).
-const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_+#.-]*)\s*$/;
-const RE_UNORDERED = /^(\s*)[-*+]\s+(.*)$/;
+// Info string is a single language token, optionally followed by a bracketed
+// `[label]` (structured metadata; e.g. ```php [NPM] or ```[NPM]). The charset
+// covers real-world tags with punctuation (c++, c#, f#, asp.net). Anything else
+// after the token -- a bare second word, a quoted value, `key=val` -- is NOT a
+// fence (e.g. `js title="x"`): the bracket is the only allowed delimiter, so
+// such a line falls back to inline parsing.
+const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_+#.-]*)\s*(\[[^\]]*\])?\s*$/;
+// Bullets are `-` and `*` only. Unlike Markdown/djot, `+` is not a Carve bullet
+// -- it is reserved as the list-continuation marker (PART 9 §17), so a lone `+`
+// is unambiguous and a `+ x` line is ordinary paragraph text. A marker is a list
+// item only with non-empty content: a content-less marker (`-`, `- `, `-   ` --
+// bare or trailing whitespace only) is NOT a list, it is paragraph text.
+const RE_UNORDERED = /^(\s*)[-*]\s+(\S.*)$/;
 // Ordered marker: decimal, a single letter (alpha), or a roman-numeral
 // run, then `.` or `)`. The dialect is fixed by the FIRST item (see
 // olKindOf); letter/roman markers are ambiguous w.r.t. paragraphs (§10).
-const RE_ORDERED = /^(\s*)([0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])([.)])\s+(.*)$/;
+const RE_ORDERED = /^(\s*)([0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])([.)])\s+(\S.*)$/;
 // Task states (matches djot-php): `x`/`X` are checked; ` `, `-`, `_`,
 // `>`, `?` are all accepted and render as an unchecked checkbox.
-const RE_TASK = /^(\s*)[-*+]\s+\[([ xX\-_>?])\]\s+(.*)$/;
+const RE_TASK = /^(\s*)[-*]\s+\[([ xX\-_>?])\]\s+(\S.*)$/;
 const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 // Fences are a run of 3+ colons (group 1). A longer opener nests: a
 // `::::` block contains `:::` blocks, and only a bare closer of equal-or-
@@ -53,10 +61,12 @@ const RE_TABLE_ROW = /^\|/;
 // inside parseTable, after a standard `|` row has opened the table.
 const RE_TABLE_CONT = /^\+.*\|\s*$/;
 const RE_BARE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)"|\s+'([^']*)')?\)\s*(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
-// Frontmatter open fence: `---` with an optional attached format token
-// (`---toml`, `---json`); bare `---` uses the default format. A token's
-// trailing letters keep it distinct from a thematic break (`-{3,}`).
-const RE_FRONTMATTER_OPEN = /^---(\w*)\s*$/;
+// Frontmatter open fence: `---` with an optional format token (`---toml`,
+// `---json`); bare `---` uses the default format. The space before the token is
+// optional (lenient input: both `---toml` and `--- toml` are accepted; the
+// no-space form is canonical). The token keeps it distinct from a thematic
+// break (`-{3,}`).
+const RE_FRONTMATTER_OPEN = /^---[ \t]*(\w*)\s*$/;
 // Frontmatter close fence: bare `---` only.
 const RE_FRONTMATTER_CLOSE = /^---\s*$/;
 // Raw passthrough block: ```raw FORMAT … ``` (§4.15). The info string has
@@ -218,7 +228,7 @@ function stripContainerPrefixes(raw) {
         prev = line;
         line = line
             .replace(/^\s*>\s?/, '') // blockquote
-            .replace(/^\s*(?:[-*+]|\d+[.)])\s+(?:\[[ xX\-_>?]\]\s+)?/, ''); // list/task
+            .replace(/^\s*(?:[-*]|\d+[.)])\s+(?:\[[ xX\-_>?]\]\s+)?/, ''); // list/task
     } while (line !== prev);
     return line.replace(/^\s+/, ''); // residual indentation
 }
@@ -517,6 +527,8 @@ function parseFence(lexer) {
     const indent = m[1].length;
     const marker = m[2];
     const lang = m[3] || undefined;
+    // m[4] is `[label]` including the brackets; strip them for the metadata.
+    const label = m[4] ? m[4].slice(1, -1) : undefined;
     const closeRe = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
     const lines = [];
     while (!lexer.eof()) {
@@ -532,6 +544,8 @@ function parseFence(lexer) {
     const cb = { type: 'code-block', content: lines.join('\n') };
     if (lang)
         cb.lang = lang;
+    if (label !== undefined)
+        cb.label = label;
     return cb;
 }
 // Raw passthrough block: ```raw FORMAT … ``` . Content is verbatim; the
@@ -1048,6 +1062,31 @@ function orderedContinues(line, kind, delim) {
  * `parseBlock`, minus the `%%` inline comment (which is paragraph text, not a
  * block) and the paragraph fallthrough.
  */
+/**
+ * Does this line OPEN a block (vs being plain prose)? Used by the compact-list
+ * rule: a blank line inside a list item loosens the list only when the content
+ * after it is a plain paragraph; a blank followed by a block opener keeps the
+ * item tight. Lexer-free (no `:::` closer lookahead — for the loose decision a
+ * `:::`-shaped opener counts as a block regardless).
+ */
+function lineOpensBlock(line) {
+    return (RE_RAW_FENCE.test(line) ||
+        RE_FENCE.test(line) ||
+        RE_COMMENT_BLOCK.test(line) ||
+        RE_ABBR_DEF.test(line) ||
+        RE_FOOTNOTE_DEF.test(line) ||
+        RE_LINK_DEF.test(line) ||
+        RE_HR.test(line.trim()) ||
+        RE_HEADING.test(line) ||
+        RE_DEFLIST_TERM.test(line) ||
+        RE_BLOCKQUOTE.test(line) ||
+        RE_TASK.test(line) ||
+        RE_UNORDERED.test(line) ||
+        RE_ORDERED.test(line) ||
+        RE_TABLE_ROW.test(line) ||
+        (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line)) ||
+        RE_DIV_OPEN.test(line));
+}
 function lazyContinuationEndsList(line, lexer) {
     return (RE_RAW_FENCE.test(line) ||
         RE_FENCE.test(line) ||
@@ -1136,6 +1175,45 @@ function parseList(lexer) {
         // this item (continuation paragraphs or nested lists).
         const contentCol = m[0].length - content.length;
         lexer.consume();
+        // First-block item (Carve): `- +` opens an item whose body is the
+        // flush-left block that follows, with no indentation. A lone `+` as the
+        // sole item content is the continuation marker, not literal text
+        // (`- + text` keeps `+ text` as literal content). Lets an item start
+        // directly with a table, code block, quote or div at column 0.
+        if (content.trim() === '+') {
+            const attached = [];
+            while (!lexer.eof()) {
+                const a = lexer.peek();
+                if (a.trim() === '')
+                    break;
+                const ind = leadingWhitespace(a);
+                if (ind < baseIndent)
+                    break;
+                if (ind === baseIndent) {
+                    const am = matchListMarker(a, isTask, isOrdered);
+                    const sibling = am &&
+                        (isOrdered
+                            ? orderedContinues(a, orderedKind, orderedDelim)
+                            : unorderedMarkerChar(a) === firstMarkerChar);
+                    if (sibling || a.trim() === '+')
+                        break;
+                }
+                attached.push(a.slice(baseIndent));
+                lexer.consume();
+            }
+            const sub = new Lexer(attached.join('\n'));
+            sub.abbrDefs = lexer.abbrDefs;
+            sub.linkDefs = lexer.linkDefs;
+            sub.footnoteDefs = lexer.footnoteDefs;
+            sub.nested = true;
+            sub.depth = lexer.depth + 1;
+            const fbChildren = parseBlocks(sub, 0);
+            const fbItem = { type: 'list-item', children: fbChildren };
+            if (checked !== undefined)
+                fbItem.checked = checked;
+            items.push(fbItem);
+            continue;
+        }
         const nested = [];
         let pendingBlanks = 0;
         while (!lexer.eof()) {
@@ -1143,6 +1221,36 @@ function parseList(lexer) {
             if (l.trim() === '') {
                 pendingBlanks++;
                 lexer.consume();
+                continue;
+            }
+            // List-continuation marker (Carve): a lone `+` at the marker column
+            // attaches the FOLLOWING flush-left block to this item without indenting
+            // it. A bare `+` is never a bullet (a bullet needs `+ ` + content). It
+            // injects a blank separator so the block parses on its own; the
+            // compact-list rule above then keeps the item tight.
+            if (leadingWhitespace(l) === baseIndent && l.trim() === '+') {
+                lexer.consume();
+                pendingBlanks = 0;
+                nested.push('');
+                while (!lexer.eof()) {
+                    const a = lexer.peek();
+                    if (a.trim() === '')
+                        break;
+                    const ind = leadingWhitespace(a);
+                    if (ind < baseIndent)
+                        break;
+                    if (ind === baseIndent) {
+                        const am = matchListMarker(a, isTask, isOrdered);
+                        const sibling = am &&
+                            (isOrdered
+                                ? orderedContinues(a, orderedKind, orderedDelim)
+                                : unorderedMarkerChar(a) === firstMarkerChar);
+                        if (sibling || a.trim() === '+')
+                            break;
+                    }
+                    nested.push(a.slice(baseIndent));
+                    lexer.consume();
+                }
                 continue;
             }
             if (leadingWhitespace(l) >= contentCol) {
@@ -1178,11 +1286,23 @@ function parseList(lexer) {
                 loose = true;
             }
         }
-        // An internal blank line (one kept inside `nested`, i.e. followed by
-        // more item content) splits the item into multiple blocks, which by
-        // the Djot/CommonMark rule makes the whole list loose.
-        if (nested.includes(''))
-            loose = true;
+        // Compact list blocks (Carve): an internal blank line loosens the item only
+        // when the content after it is a plain paragraph (a real second paragraph).
+        // A blank followed by a block opener (sub-list, quote, fence, div, heading,
+        // table) keeps the item tight, so an item can carry a sub-block without the
+        // list going loose. Only the tight/loose RENDERING changes; block structure
+        // is unchanged. (Canonical djot renders these loose; Carve deviates here.)
+        for (let k = 0; k < nested.length; k++) {
+            if (nested[k] !== '')
+                continue;
+            let j = k + 1;
+            while (j < nested.length && nested[j] === '')
+                j++;
+            if (j < nested.length && !lineOpensBlock(nested[j])) {
+                loose = true;
+                break;
+            }
+        }
         // Parse the lead text together with its continuation/nested lines as
         // one block sequence. Lazy continuation (an indented line with no
         // blank before it) then merges into the lead paragraph instead of
@@ -1487,9 +1607,17 @@ function parseParagraph(lexer) {
         lexer.consume();
         lines.push(ln);
     }
+    // A paragraph's continuation lines have their leading whitespace stripped
+    // (djot / CommonMark): `a\n   b` renders as `a\nb`, and an over-indented lazy
+    // continuation in a list item (`- a\n   - b` -> item text `a\n- b`) does not
+    // keep residual indent. The first line is already positioned by the block
+    // dispatcher, so only lines 2+ are trimmed.
+    const text = lines
+        .map((ln, idx) => (idx === 0 ? ln : ln.replace(/^[ \t]+/, '')))
+        .join('\n');
     return {
         type: 'paragraph',
-        children: parseInline(lines.join('\n'), lexer.abbrDefs, lexer.linkDefs, {
+        children: parseInline(text, lexer.abbrDefs, lexer.linkDefs, {
             baseOffset: lexer.lineOffset(startLineIndex),
             startLine: startLineIndex + 1,
             startColumn: 1,

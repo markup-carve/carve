@@ -91,65 +91,57 @@ Every heading has an identifier. If the heading carries an explicit
 (no normalization). Otherwise the identifier is generated from the
 heading text by the following algorithm, applied in order:
 
-1. Take the heading's rendered plain text (inline markup removed:
-   `# *Setup* guide` yields `Setup guide`).
-2. NFC-normalize, then **transliterate non-ASCII to ASCII** via a baked
-   Unicode→ASCII map covering Latin / IPA / combining marks / Cyrillic /
-   Latin-Extended-Additional / punctuation / super- and sub-script /
-   currency / letterlike ranges. Code points not in the map — Greek
-   (context-sensitive in ICU, deliberately excluded), CJK, Arabic — pass
-   through unchanged.
-3. Lowercase it (Unicode-aware; only matters for any letters that
-   survived step 2 unmapped).
-4. Trim leading and trailing whitespace.
-5. Delete every CSS-unsafe punctuation character: `'` `"` `;` `:`
-   (so `What's New` becomes `whats-new`, not `what-s-new`).
-6. Replace each maximal run of characters that are not Unicode letters,
-   Unicode digits, `_`, or `-` — spaces included — with a single `-`.
-7. Unicode letters, Unicode digits, `_` and `-` are preserved. `_` and
-   `-` are valid CSS identifier characters and meaningful in technical
-   headings, so they are kept rather than folded into `-`.
-8. Collapse runs of `-`, then trim leading and trailing `-`.
-9. If the result starts with a digit, prefix `section-`
-   (`2024 Recap` becomes `section-2024-recap`). A CSS identifier may not
-   start with a digit, and generated IDs must be usable as CSS selectors
-   and `querySelector` arguments, not only as URL fragments.
-10. If the result is empty, the identifier is `section`.
-11. Deduplicate against the document's identifier namespace. Explicit
-    `{#id}` values are reserved first, in document order; generated IDs
-    are reserved as headings are processed. The first use of an
-    identifier is kept bare; each later collision takes the next numeric
-    suffix, 1-based (the second is `-2`, the third `-3`). Explicit and
-    generated identifiers share one namespace.
+1. Take the heading's rendered plain text (inline markup removed; symbols
+   `:name:` and footnote references excluded): `# *Setup* guide` yields
+   `Setup guide`.
+2. NFC-normalize.
+3. Replace each maximal run of **non-alphanumeric ASCII** characters
+   (spaces, punctuation, `_`, and runs of `-`) with a single `-`.
+4. Trim leading and trailing `-`.
+5. **Lowercase** it (Unicode-aware): non-ASCII characters are preserved,
+   only their case is folded. `Über café` → `über-café`, `日本語` stays
+   `日本語`. (GitHub/SSG style — makes ids and the common cross-reference
+   case-insensitive.)
+6. If the result starts with a digit, prefix `s-` (a bare leading digit
+   is a valid HTML id but an invalid CSS selector). If the result is
+   empty, the identifier is `s`.
+7. Deduplicate against the document's identifier namespace. Explicit
+   `{#id}` values are reserved first (verbatim, case preserved), in
+   document order; generated IDs are reserved as headings are processed.
+   The first use is kept bare; each later collision takes the next
+   numeric suffix (`-2`, `-3`).
 
 | Heading | Identifier |
 |---|---|
 | `# Getting Started` | `getting-started` |
-| `# Café & Crème` | `cafe-creme` |
-| `# Über uns` | `uber-uns` |
-| `# Привет мир` | `privet-mir` |
+| `# Café & Crème` | `café-crème` |
+| `# Über uns` | `über-uns` |
+| `# Привет мир` | `привет-мир` |
 | `# RFC 2119: Key Words` | `rfc-2119-key-words` |
-| `# 2024 Recap` | `section-2024-recap` |
-| `# What's New?` | `whats-new` |
-| `# user_id field` | `user_id-field` |
-| `# 日本語の見出し` | `日本語の見出し` (unmapped script — pass-through) |
-| `# Καλημέρα` | `καλημέρα` (Greek pass-through, deliberately) |
-| `# !!!` | `section` |
+| `# 2024 Recap` | `s-2024-recap` |
+| `# What's New?` | `what’s-new` (the `'` smart-quotes to `’`, a non-ASCII char, then is preserved) |
+| `# user_id field` | `user-id-field` |
+| `# 日本語の見出し` | `日本語の見出し` |
+| `# Καλημέρα` | `καλημέρα` |
+| `# !!!` | `s` |
 | `# Setup` then `# Setup` | `setup`, then `setup-2` |
 | `# Introduction {#intro}` then `# Intro` | `intro`, then `intro-2` |
 
-Identifiers are lowercased, ASCII-safe, and CSS-selector-safe by design.
-The rendered `id` is consumed by code Carve does not control: anchor
-highlighting, `:target` rules, `document.querySelector('#' + id)`, and
-crucially **URL-fragment autolinkers in chat / email / aggregators that
-routinely truncate or mis-encode non-ASCII fragments**. The ASCII step
-makes the slug survive being shared as `https://…/page#some-id`. A
-predictable lowercase ASCII slug is also what an author must be able to
-guess when writing a `</#id>` cross-reference.
+Identifiers are **lowercase, with non-ASCII characters preserved** — the
+GitHub/static-site-generator convention authors expect for anchors. carve lowercases
+**by design**, deliberately diverging from djot.js / djot-php (which preserve case per
+[jgm/djot#393](https://github.com/jgm/djot/pull/393)); lowercasing makes ids and the
+common `</#id>` cross-reference case-insensitive. The rendered `id` is consumed by
+anchor highlighting, `:target` rules, `document.querySelector('#' + id)`, and URL
+fragments; a leading digit gets the `s-` prefix so it is always a valid bare CSS
+selector.
 
-For scripts the baked map does not cover (CJK, Arabic, Greek), the slug
-keeps the Unicode letters. If a share-safe slug is required for those
-headings, attach an explicit `{#share-safe-id}`.
+Non-ASCII ids are valid HTML5 and resolve in browsers (the fragment is
+percent-encoded when shared, e.g. `…/page#%C3%BCber-uns`). For **ASCII-only**
+anchors — no percent-encoding, friendlier to legacy autolinkers — implementations
+offer an opt-in fold: carve-js's `asciiHeadingIds` parse option and carve-php's
+`AsciiHeadingIdsExtension`, which transliterate the id (`Über uns` → `uber-uns`). It
+is never the default; attach an explicit `{#id}` to pin any specific anchor.
 
 ### 4.2 Inline Formatting
 
@@ -347,25 +339,28 @@ The `^` prefix on the following line creates a `<figure>` with `<figcaption>`.
 - Back to top
 ```
 
-**Alternative bullets:**
+**Alternative bullet:**
 ```
 * Also works
-+ And this
 ```
 
-Use whichever marker you prefer for a given list. The three markers are
+Carve bullets are `-` and `*` only. Unlike Markdown and Djot, `+` is **not**
+a bullet in Carve — it is the list-continuation marker (PART 9 §17), so a
+`+ x` line is paragraph text, never a list item.
+
+Use whichever of `-`/`*` you prefer for a given list. The two markers are
 **not interchangeable within one list**: changing the marker character
 starts a new list (matching djot, see PART 9 §11). So
 
 ```
 - a
 - b
-+ c
-+ d
+* c
+* d
 ```
 
 renders as two separate `<ul>`s, not one merged list. The same rule
-applies to task-list markers: a `- [ ] x` line followed by a `+ [ ] y`
+applies to task-list markers: a `- [ ] x` line followed by a `* [ ] y`
 line produces two single-item task lists, not one. This keeps the
 parser stateless about "which marker came first" and matches the
 reader's intuition that the visual change signals a structural break.
@@ -416,10 +411,25 @@ Inspired by Org-mode TODO states but simplified.
 
 #### Tight vs loose
 
-A list is **tight** unless a blank line separates its items (or an item
-holds a second block); then it is **loose**. A tight item renders its
-text directly (`<li>text</li>`); a loose item wraps each paragraph in
-`<p>` — matching djot/CommonMark (PART 9 §17).
+A list is **tight** unless a blank line separates its items, or an item
+holds a second *paragraph*; then it is **loose**. A tight item renders its
+text directly (`<li>text</li>`); a loose item wraps each paragraph in `<p>`
+(PART 9 §17).
+
+**Compact list blocks** (Carve deviation from djot): a blank line before an
+item's sub-*block* — a sub-list, block quote, fenced code, fenced div,
+heading or table — does **not** loosen the list. The item stays tight with the
+block attached, so checklists-with-notes and steps-with-code stay compact. Only
+a real second paragraph (or a blank between items) loosens. The blank line is
+still required to start the block, so block structure and the uniformity
+principle are unchanged — only the tight/loose rendering differs from djot.
+
+**List continuation marker** (Carve addition): a lone `+` at the marker column
+attaches the following flush-left block to the current item with no blank line,
+keeping the list tight — handy for code/tables you would rather not indent.
+Because `+` is not a Carve bullet (unlike Markdown/djot, which treat `+` as a
+list marker), this is unambiguous: there is no `+` list it could be mistaken
+for. See the [examples](/examples) and PART 9 §17.
 
 #### Definition Lists
 

@@ -36,9 +36,16 @@
 
 document = [frontmatter], {block}, EOF ;
 
-frontmatter = frontmatter_delimiter, yaml_content, frontmatter_delimiter, newline ;
-frontmatter_delimiter = "---", newline ;
-yaml_content = (* valid YAML content, parsed by YAML parser *) ;
+frontmatter = frontmatter_open, frontmatter_content, frontmatter_close, newline ;
+(* The opening delimiter may carry a format token (yaml | json | toml | neon |
+   ...); a bare `---` defaults to `yaml`. The space before the token is OPTIONAL
+   (lenient: both `---yaml` and `--- yaml` are accepted; `---yaml` is canonical).
+   The closing delimiter is always a bare `---`. The token distinguishes a typed
+   opener from a thematic break. *)
+frontmatter_open = "---", [space], [frontmatter_format], newline ;
+frontmatter_close = "---", newline ;
+frontmatter_format = (letter | digit)+ ;
+frontmatter_content = (* metadata in the named format, parsed by that parser *) ;
 
 block = heading
       | thematic_break
@@ -88,15 +95,55 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    block on the final line applies to the whole heading. *)
 heading_continuation_line = inline_content, newline ;  (* see the NORMATIVE note above *)
 
+(* HEADING IDENTIFIERS -- NORMATIVE. A heading without an explicit {#id} gets an
+   automatic identifier from its folded plain text (symbols `:name:` and footnote
+   references excluded), GitHub/SSG-style:
+     - replace each maximal run of non-alphanumeric ASCII characters with a single
+       `-` (covers spaces, punctuation, `_`, and runs of `-`) -- the jgm/djot#393 rule;
+     - trim leading/trailing `-`;
+     - LOWERCASE (Unicode-aware): NON-ASCII characters are PRESERVED, only their case
+       is folded (`Café` -> `café`, `日本語` unchanged). Lowercasing makes ids and the
+       common cross-reference case-insensitive, matching author expectation;
+     - a leading-digit result is prefixed `s-` (a bare leading digit is a valid HTML
+       id but an invalid CSS selector); an empty result becomes a generated `s-N`;
+     - duplicates within a document get a numeric `-2`, `-3`, ... suffix.
+   An explicit {#id} is used verbatim (case preserved). Implementations MAY offer an
+   OPT-IN mode that ASCII-folds the identifier for URL/CSS-fragment portability
+   (carve-js `asciiHeadingIds` parse option; carve-php `AsciiHeadingIdsExtension`);
+   ASCII folding is never the default. NOTE: carve lowercases by design, deliberately
+   diverging from djot.js / djot-php which preserve case per #393. *)
+
 (* --- Thematic Breaks --- *)
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
 
 (* --- Code Blocks --- *)
 code_block = fenced_code_block ;
 
-fenced_code_block = code_fence_open, [language_info], [attributes], newline,
+fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
                     code_content,
                     code_fence_close, newline ;
+(* The space between the fence and the info string is OPTIONAL (lenient: both
+   ```php and ``` php are accepted; Markdown writes no space, Djot writes the
+   space). The no-space form (```php) is canonical and is what the X->Carve
+   converters emit. *)
+(* CODE-FENCE INFO STRING -- NORMATIVE. The info string is a single
+   language_info token, optionally followed by a bracketed [label], or a bare
+   [label] (no language). The label is structured metadata: it is NOT part of
+   the language/class; the core renderer ignores it, an extension (e.g.
+   code-group) may use it. A code fence carries NO inline attributes -- use the
+   PRECEDING block-attribute line for those (PART 9 §15):
+       {.fancy #x}
+       ```php
+       ...
+       ```
+   which renders on the <pre> (language stays `language-…` on the <code>).
+   INVALID-FENCE FALLBACK: when the text after the language token is anything
+   other than a [label] -- a bare second word, a quoted value, an inline `{...}`
+   block (```js title="x", ``` php {.x}) -- the line is NOT a fenced code block;
+   it falls back to ordinary inline parsing (the backtick run typically opens an
+   inline code span). The bracket is the only delimiter that admits structured
+   metadata. The multi-token raw passthrough opener (```raw FORMAT, PART 9 §20)
+   is a SEPARATE production matched before this one. *)
 
 code_fence_open = backtick_fence | tilde_fence ;
 code_fence_close = backtick_fence | tilde_fence ;  (* same fence char; length >= opener (PART 9 §2) *)
@@ -104,8 +151,16 @@ code_fence_close = backtick_fence | tilde_fence ;  (* same fence char; length >=
 backtick_fence = '`', '`', '`', {'`'} ;
 tilde_fence = '~', '~', '~', {'~'} ;
 
-language_info = (letter | digit | '-' | '_' | '+' | '#' | '.')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net. May start with a digit. A multiword/quoted info (```js title="x") is NOT a fence. *)
+code_fence_info = (language_info, [space+, label]) | label ;
+language_info = (letter | digit | '-' | '_' | '+' | '#' | '.')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net. May start with a digit. carve-php additionally accepts `=` and `/` in the token (djot ```=html raw, ```text/html); carve-js restricts to this charset. *)
+label = '[', { any_char - ']' }, ']' ;  (* structured metadata, e.g. [Installation]; not part of the class *)
 code_content = (* any text until matching fence, preserved literally *) ;
+(* TABS IN CODE -- NORMATIVE. Literal tab characters in code content (fenced
+   code blocks and inline code spans) are PRESERVED verbatim; a tab and N spaces
+   are not interchangeable. Tab display width is a presentation concern (CSS
+   `tab-size`). Tab-to-space expansion is NOT a default behavior -- it is opt-in
+   via a tab-normalize extension (flat replacement, default 2 spaces, content
+   only). Matches djot / CommonMark. Pinned by corpus tabs-in-code-preserved. *)
 
 (* --- Blockquotes --- *)
 blockquote = blockquote_line+, {lazy_continuation_line}, [caption] ;
@@ -129,7 +184,18 @@ list = unordered_list | ordered_list | definition_list ;
 
 unordered_list = unordered_item+ ;
 unordered_item = bullet_marker, space, list_item_content ;
-bullet_marker = '-' | '*' | '+' ;
+bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
+                                continuation marker (PART 9 §17); a `+ ` line is
+                                ordinary paragraph text. Deviates from djot. *)
+(* MARKER REQUIRES CONTENT -- NORMATIVE. A bullet or ordered marker is a list
+   item only when followed by a space AND non-empty content. A content-less
+   marker line -- bare (`-`) or with trailing whitespace only (`- `, `-   `) --
+   is NOT a list: it is paragraph text. The rule ignores trailing whitespace, so
+   `-` and `- ` behave identically (an editor stripping the trailing space cannot
+   change the meaning). Carve is stricter than CommonMark, which treats a bare
+   `-` as an empty item; requiring content keeps a lone dash (a prose dash /
+   placeholder) from silently becoming a list. Pinned by corpus
+   content-less-marker-is-not-a-list. *)
 
 ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, space, list_item_content ;
@@ -147,10 +213,22 @@ ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')') ;
 roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
               | ('I' | 'V' | 'X' | 'L' | 'C' | 'D' | 'M')+ ;
 
-list_item_content = inline_content, newline, {list_continuation | nested_list} ;
+list_item_content = first_block_content
+                  | (inline_content, newline, {list_continuation | nested_list | continuation_marker_block}) ;
 list_continuation = indent, inline_content, newline ;
 nested_list = indent, list ;
 indent = space, space, {space} ;  (* 2+ spaces *)
+(* List continuation marker (Carve addition; see PART 9 §17): a lone `+` at
+   the item's marker column attaches the following flush-left block to the
+   item with no blank line, keeping the list tight. *)
+continuation_marker = '+', newline ;
+continuation_marker_block = continuation_marker, block ;
+(* First-block item (Carve addition; see PART 9 §17): a lone `+` as the sole
+   content right after the marker (`- +`) opens an item whose body is the
+   flush-left block(s) that follow, with no inline lead and no indentation.
+   `- + text` keeps `+ text` as literal inline content -- only a bare `+`
+   triggers this. *)
+first_block_content = continuation_marker, {block} ;
 
 (* Task lists are unordered lists with special markers *)
 task_marker = '[', task_state, ']', space ;
@@ -1051,12 +1129,33 @@ EOF = (* end of file *) ;
         or inside a heading later cloned by a `</#id>` crossref nests an
         <a> in an <a>; avoid footnotes in those positions.
 
-   17. TIGHT vs LOOSE LISTS -- NORMATIVE (governs `list` rendering;
-      matches djot/CommonMark). A list is LOOSE if any item is followed
-      by a blank line before the next sibling marker, OR any item holds a
-      blank-line-separated second block; otherwise TIGHT. A tight item's
-      paragraph renders WITHOUT a `<p>` (`<li>text</li>`); a loose item's
-      paragraphs ARE wrapped (`<li><p>text</p></li>`).
+   17. TIGHT vs LOOSE LISTS -- NORMATIVE (governs `list` rendering). A list is
+      LOOSE if any item is followed by a blank line before the next sibling
+      marker, OR any item holds a blank-line-separated second PARAGRAPH;
+      otherwise TIGHT. A tight item's paragraph renders WITHOUT a `<p>`
+      (`<li>text</li>`); a loose item's paragraphs ARE wrapped
+      (`<li><p>text</p></li>`).
+
+      COMPACT LIST BLOCKS -- Carve deviation from djot/CommonMark. A blank line
+      before an item's sub-BLOCK (sub-list, block quote, fenced code, fenced
+      div, heading, table) does NOT loosen the list: the item stays tight, lead
+      text inline, block attached. Only a genuine second PARAGRAPH (blank +
+      indented plain prose), or a blank line between items, loosens. The blank
+      line is still required to START the block, so block recognition and the
+      uniformity principle are unchanged -- only the tight/loose RENDERING
+      differs. djot renders these loose; Carve renders them tight. Pinned by
+      corpus compact-list-blocks.
+
+      LIST CONTINUATION MARKER -- Carve addition. A line whose only content is
+      `+`, at the item's marker column, attaches the FOLLOWING flush-left block
+      to the current item with no blank line, keeping the list tight (useful for
+      code/tables you would rather not indent). `+` is not a Carve bullet (PART 9
+      §11), so a lone `+` is unambiguous; outside a list a lone `+` is literal
+      text. It attaches one block, up to the next blank line, sibling item, or a
+      further `+`. The same marker may sit on the marker line itself (`- +`) to
+      open an item whose body is the flush-left block(s) that follow, with no
+      inline lead -- the FIRST-BLOCK form (a bare `+`; `- + text` keeps `+ text`
+      as literal text). Pinned by corpus list-continuation-marker.
 
    18. MATH -- NORMATIVE (governs `math` in PART 3; djot form). Inline
       `$` + verbatim backtick span; display `$$` + verbatim backtick

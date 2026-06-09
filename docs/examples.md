@@ -437,6 +437,22 @@ Span content is parsed recursively, and an inline link still wins over a span.
 
 :::
 
+A marker is a list item only when followed by a space **and** content. A content-less marker — bare (`-`) or trailing whitespace only (`- `) — is not a list; it stays paragraph text. The rule ignores trailing whitespace, so `-` and `- ` behave the same (an editor stripping the space can't change the meaning). Carve is stricter than CommonMark, where a bare `-` is an empty item.
+
+::: compare
+
+```carve
+-
+not a list
+```
+
+```html
+<p>-
+not a list</p>
+```
+
+:::
+
 Ordered lists use `N.` prefixes — numbering starts from the first marker.
 
 ::: compare
@@ -862,6 +878,23 @@ print("hi")
 
 :::
 
+Literal tabs in code content are preserved verbatim (a tab is not the same as spaces; display width is a CSS `tab-size` concern). Opt in to tab→space expansion with a tab-normalize extension.
+
+::: compare
+
+````carve
+```
+	indented with a tab
+```
+````
+
+```html
+<pre><code>	indented with a tab
+</code></pre>
+```
+
+:::
+
 A fenced block with no info string renders without a language class.
 
 ::: compare
@@ -875,6 +908,59 @@ plain text
 ```html
 <pre><code>plain text
 </code></pre>
+```
+
+:::
+
+A code fence carries no inline attributes — the info string is just the language. Attributes on a code block use the standard preceding `{…}` block-attribute line; they render on the `<pre>` (the language stays `language-…` on the `<code>`).
+
+::: compare
+
+````carve
+{.fancy #x}
+```php
+code
+```
+````
+
+```html
+<pre class="fancy" id="x"><code class="language-php">code
+</code></pre>
+```
+
+:::
+
+The info string may carry a bracketed `[label]` after the language (or a bare `[label]` with no language). The label is structured metadata — it is **not** part of the language class; the core renderer ignores it, and an extension (e.g. a code-group) may use it.
+
+::: compare
+
+````carve
+```php [NPM]
+npm install x
+```
+````
+
+```html
+<pre><code class="language-php">npm install x
+</code></pre>
+```
+
+:::
+
+Anything else after the language token — a bare second word, a quoted value, or an inline `{…}` block — is **not** a fenced code block. There is no error: the backtick run falls back to ordinary inline parsing (an inline code span). The bracket is the only delimiter that admits metadata.
+
+::: compare
+
+`````carve
+```js title="x"
+code
+```
+`````
+
+```html
+<p><code>js title="x"
+code
+</code></p>
 ```
 
 :::
@@ -1270,6 +1356,42 @@ Content begins here.
 
 :::
 
+The opening delimiter may name the metadata format (`---yaml`, `---json`, `---toml`, `---neon`, …); a bare `---` defaults to YAML. Either way the frontmatter is metadata, not rendered. The closing delimiter is always a bare `---`.
+
+::: compare
+
+```carve
+---json
+{"title": "My Document"}
+---
+
+Content begins here.
+```
+
+```html
+<p>Content begins here.</p>
+```
+
+:::
+
+The space between `---` and the format token is optional — `---toml` and `--- toml` are both accepted (the no-space form is canonical), matching the optional space on a code fence (` ```php ` / ` ``` php `).
+
+::: compare
+
+```carve
+--- toml
+title = "My Document"
+---
+
+Content begins here.
+```
+
+```html
+<p>Content begins here.</p>
+```
+
+:::
+
 ## Heading IDs
 
 ::: compare
@@ -1291,13 +1413,13 @@ See </#cafe-notes>, </#section-2024-recap>, </#setup-2>, and </#api-v2>.
 ```
 
 ```html
-<section id="cafe-notes">
+<section id="café-notes">
   <h1>Café Notes</h1>
 </section>
-<section id="uber-uns">
+<section id="über-uns">
   <h1>Über uns</h1>
 </section>
-<section id="section-2024-recap">
+<section id="s-2024-recap">
   <h1>2024 Recap</h1>
   <section id="setup">
     <h2>Setup</h2>
@@ -1308,7 +1430,7 @@ See </#cafe-notes>, </#section-2024-recap>, </#setup-2>, and </#api-v2>.
 </section>
 <section id="api-v2">
   <h1>API</h1>
-  <p>See <a href="#cafe-notes">Café Notes</a>, <a href="#section-2024-recap">2024 Recap</a>, <a href="#setup-2">Setup</a>, and <a href="#api-v2">API</a>.</p>
+  <p>See &lt;/#cafe-notes&gt;, &lt;/#section-2024-recap&gt;, <a href="#setup-2">Setup</a>, and <a href="#api-v2">API</a>.</p>
 </section>
 ```
 
@@ -3497,6 +3619,178 @@ lazy</li>
 <section id="h">
   <h1>H</h1>
 </section>
+```
+
+:::
+
+## Compact list blocks
+
+A blank line is still required to start a block inside a list item, but it no longer makes the list *loose* when the indented content opens a block (sub-list, block quote, fenced code, fenced div, heading, table). The item stays **tight** — lead text inline, the block attached — so a checklist with notes or steps with code stay compact. (A Carve deviation: canonical djot renders these loose. Only the tight/loose rendering changes, not the block structure.)
+
+::: compare
+
+```carve
+- item
+
+  > note
+- next
+```
+
+```html
+<ul>
+  <li>item
+    <blockquote><p>note</p></blockquote>
+  </li>
+  <li>next</li>
+</ul>
+```
+
+:::
+
+A genuine second prose paragraph still makes the list loose (and so does a blank line between items).
+
+::: compare
+
+```carve
+- item
+
+  second para
+- next
+```
+
+```html
+<ul>
+  <li><p>item</p>
+    <p>second para</p>
+  </li>
+  <li><p>next</p></li>
+</ul>
+```
+
+:::
+
+## List continuation marker
+
+A lone `+` at the list marker column attaches the following flush-left block to the current item, with no blank line, keeping the list tight — useful for code blocks or tables you would rather not indent.
+
+Carve's bullet markers are `-` and `*` only. Unlike Markdown and Djot, `+` is **not** a bullet in Carve and never has been — it is reserved as the list-continuation marker. This is what makes a lone `+` unambiguous: there is no `+` list it could belong to. A `+ x` line is therefore ordinary paragraph text, not a list item.
+
+::: compare
+
+````carve
+- Build the image
++
+```sh
+docker build -t app .
+```
+- Push it
+````
+
+```html
+<ul>
+  <li>Build the image
+    <pre><code class="language-sh">docker build -t app .
+</code></pre>
+  </li>
+  <li>Push it</li>
+</ul>
+```
+
+:::
+
+A quote or table attaches the same way.
+
+::: compare
+
+```carve
+- item
++
+> note
+- next
+```
+
+```html
+<ul>
+  <li>item
+    <blockquote><p>note</p></blockquote>
+  </li>
+  <li>next</li>
+</ul>
+```
+
+:::
+
+### Equivalent to the blank-line form
+
+The continuation marker and the compact blank-line form (above) produce **identical** output — they are two spellings of the same thing. These are equivalent:
+
+```carve
+- One
+
+  > Quote
+```
+
+```carve
+- One
++
+> Quote
+```
+
+Both render:
+
+```html
+<ul>
+  <li>One
+    <blockquote><p>Quote</p></blockquote>
+  </li>
+</ul>
+```
+
+Pick whichever reads better. The blank-line form indents the block under the item; the `+` form marks the attach point with a flush-left marker and keeps the block flush-left — handy for wide code or tables you would rather not indent. The marker must be a lone `+` at the list marker column with the block flush-left; an indented `+` is ordinary text, not a continuation marker.
+
+### First block of an item
+
+Put the marker and a lone `+` on the same line — `- +` — to start an item directly with a block, with the block body flush-left (no indentation). The item has no lead text; its whole content is the following block.
+
+::: compare
+
+````carve
+- +
+| a | b |
+| c | d |
+- next
+````
+
+```html
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a</td><td>b</td></tr>
+        <tr><td>c</td><td>d</td></tr>
+      </tbody>
+    </table>
+  </li>
+  <li>next</li>
+</ul>
+```
+
+:::
+
+A lone `+` after the marker is the continuation marker, not text. `- + text` (with content after the `+`) keeps `+ text` as literal item text — only a *bare* `+` triggers the first-block form.
+
+Since `+` is not a Carve bullet (use `-` or `*`), the lines below are a single paragraph, not a two-item list — the same input is a bullet list in Markdown and Djot, but not in Carve.
+
+::: compare
+
+```carve
++ one
++ two
+```
+
+```html
+<p>+ one
++ two</p>
 ```
 
 :::

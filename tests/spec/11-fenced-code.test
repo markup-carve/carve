@@ -11,11 +11,49 @@ print("hi")
 
 ````
 ```
+	indented with a tab
+```
+.
+<pre><code>	indented with a tab
+</code></pre>
+````
+
+````
+```
 plain text
 ```
 .
 <pre><code>plain text
 </code></pre>
+````
+
+````
+{.fancy #x}
+```php
+code
+```
+.
+<pre class="fancy" id="x"><code class="language-php">code
+</code></pre>
+````
+
+````
+```php [NPM]
+npm install x
+```
+.
+<pre><code class="language-php">npm install x
+</code></pre>
+````
+
+````
+```js title="x"
+code
+```
+.
+<p><code>js title="x"
+code
+</code></p>
 ````
 
 ```

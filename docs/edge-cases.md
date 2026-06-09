@@ -340,20 +340,25 @@ Some other text
 
 ---
 
-## 13. Multi-line Cell `+` Ambiguity
+## 13. The Three Faces of `+`
 
-**Problem:** `+` is also a list marker.
+**Note:** `+` is **not** a Carve bullet (unlike Markdown/Djot). Carve bullets are `-` and `*` only; `+` is reserved for two unrelated continuation roles plus plain text.
 
 ```carve
-+ List item                    # List (+ at line start, space, content)
+- item
++                              # List-continuation marker (lone +): attaches
+> note                         #   the following flush-left block to `item`
 
 | Cell |
-+ cont |                       # Table continuation (+ line, pipe structure)
++ cont |                       # Table continuation (+ line WITH pipe structure)
+
++ not a bullet                 # Plain paragraph text (+ then content, no pipe)
 ```
 
 **Resolution:**
-- If line has table pipe structure (`| ... |`), it's a continuation
-- Otherwise, it's a list item
+- A **lone** `+` at the list marker column is the list-continuation marker
+- A `+ ... |` line (pipe structure) is a table continuation
+- Any other `+ x` line is ordinary paragraph text — `+` never starts a list
 
 ---
 
@@ -410,7 +415,9 @@ Inside code spans, backslash is literal:
 before it, at the document top level **and** inside nested content (list item,
 block quote, admonition/div body). A continuation line that begins a block is
 parsed as that block; the paragraph ends on the line before it. This is the
-Markdown-like rule (CommonMark "a paragraph can be interrupted").
+Markdown-like rule (CommonMark "a paragraph can be interrupted"). It replaces
+the former hard-wrap-safe rule, under which only a blank line could start a
+visible block.
 
 ```carve
 Die Frage ist x = 5
