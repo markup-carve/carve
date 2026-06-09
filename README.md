@@ -131,7 +131,7 @@ COMMENTS
 
 ## Design Principles
 
-Carve inherits and extends Djot's rationale:
+Carve takes its rationale from Djot and Markdown, and extends both:
 
 ### From Djot
 
@@ -149,16 +149,20 @@ Carve inherits and extends Djot's rationale:
 3. **Simple emphasis** - Single characters, no complex disambiguation rules
 4. **No expressive blind spots** - All outputs achievable without workarounds
 5. **Simple list indentation** - Indented content belongs to the list item
-6. **Reduced parser complexity** - No HTML recognition, entity parsing, or case-folding
-7. **Markdown-like interruption** - A block opener on a new line starts a block, no blank line required (§10)
-8. **Uniform composition** - Content meaning consistent inside/outside containers
-9. **Arbitrary attributes** - `{#id .class key=value}` on any element
-10. **Generic containers** - Fenced divs (`:::`) for extensibility
-11. **Syntax simplicity** - One way to do things, no redundant syntax
+6. **Reduced parser complexity** - No HTML recognition, entity parsing, or case-folding during tokenization (heading-id slugs and reference matching are case-insensitive, but that is a resolve-time transform, not parsing)
+7. **Uniform composition** - Content meaning consistent inside/outside containers
+8. **Arbitrary attributes** - `{#id .class key=value}` on any element
+9. **Generic containers** - Fenced divs (`:::`) for extensibility
+10. **Syntax simplicity** - One way to do things, no redundant syntax
+11. **No invisible syntax** - No trailing-space hard breaks (Djot uses a visible end-of-line backslash) and no significant-whitespace tricks
+
+### From Markdown
+
+12. **Paragraph interruption** - A block opener on a new line starts a block, no blank line required (§10). Djot requires a blank line here; Carve follows Markdown instead.
 
 ### Carve Additions
 
-12. **Visual mnemonics** - Syntax characters suggest their output:
+13. **Visual mnemonics** - Syntax characters suggest their output:
     - `/italic/` - slashes lean like italic text
     - `*bold*` - asterisks are heavy/bold
     - `_underline_` - underscore is literally underneath
@@ -166,24 +170,36 @@ Carve inherits and extends Djot's rationale:
     - `^super^` - caret points up
     - `,,sub,,` - commas pull down
 
-13. **Five-Second Rule** - Syntax should be:
+14. **Five-Second Rule** - Syntax should be:
     - Learnable in 5 seconds for basic use
     - Memorable after 5 days without use
     - Unambiguous within 5 characters of context
 
-14. **No invisible syntax** - No trailing spaces, no significant whitespace tricks
+15. **Cross-references** - `</#id>` auto-fills its link text from the target heading (neither Markdown nor Djot offers this natively)
 
-15. **Simpler tables** - `|=` marks headers (from Creole), no separator row required
+16. **Auto-resolving wiki links** - `[Page Name][]` resolves to a heading with no separate `[Page Name]: url` definition
 
-16. **Table spanning** - `^` for rowspan, `<` for colspan, `+` for multi-line cells
+17. **GitHub-style heading ids** - lowercase, Unicode-preserving, case-insensitive anchors by default; opt-in ASCII fold for share-safe URL fragments
 
-17. **Captions** - `^` prefix adds captions to images, blockquotes, and tables
+18. **Simpler tables** - `|=` marks headers (from Creole), no separator row required
 
-18. **Abbreviations** - `*[ABBR]: expansion` for automatic `<abbr>` tags
+19. **Table spanning** - `^` for rowspan, `<` for colspan, `+` for multi-line cells
 
-19. **Social integration** - `@mentions` and `#tags` are built into the syntax
+20. **Captions** - `^` prefix adds captions to images, blockquotes, and tables
 
-20. **Extension system** - `:type[content]{attrs}` for custom inline elements
+21. **List continuation** - a lone `+` attaches a flush-left block (code, table, quote) to the current list item with no indentation, keeping the item tight; `+` is the continuation marker, not a bullet
+
+22. **Admonitions** - two-tier fenced divs (`::: word`): canonical names render to `<aside>`, custom to `<div class=word>`
+
+23. **Abbreviations** - `*[ABBR]: expansion` for automatic `<abbr>` tags
+
+24. **Comments** - visible `%%` line, `text %% trailing`, and `%%%` block comments (not HTML comments)
+
+25. **Social integration** - `@mentions` and `#tags` are built into the syntax
+
+26. **Extension system** - `:type[content]{attrs}` for custom inline elements
+
+27. **Target-aware rendering** - one parsed document emits to HTML, ANSI, Markdown, or plain text by swapping the renderer
 
 ## Comparison with Markdown and Djot
 
@@ -214,7 +230,7 @@ Carve inherits and extends Djot's rationale:
 |---------|----------|------|------|
 | Links | `[text](url)` | `[text](url)` | `[text](url)` |
 | Wiki-style links | n/a (no auto wiki links) | `[Page Name][]` (reference link; needs a `[Page Name]: url` definition) | `[Page Name][]` (auto-resolves, no definition) |
-| Cross-references | n/a (manual `[](#id)`) | N/A (manual `[](#id)`) | `</#id>` (auto-fills link text from the target heading) |
+| Cross-references | n/a (manual `[](#id)`) | n/a (manual `[](#id)`) | `</#id>` (auto-fills link text from the target heading) |
 | Heading IDs | n/a (auto only on some renderers, e.g. GitHub) | Auto-generated (Unicode, case-preserving) | Auto-generated (lowercase, Unicode-preserving, CSS-selector-safe; opt-in ASCII fold) |
 | Heading structure | n/a (flat `<h1>`–`<h6>`, no wrappers) | `<section id="…"><h*>…</h*></section>` with level-aware nesting | `<section id="…"><h*>…</h*></section>` with level-aware nesting (matches djot — id on `<section>`, not on `<h*>`) |
 
@@ -226,10 +242,10 @@ Carve inherits and extends Djot's rationale:
 | Ordered list dialects | `1.` / `1)` (decimal only) | decimal/alpha/roman; `.` `)` `(1)` delimiters | decimal/alpha/roman; `.` `)` delimiters (`(1)` deliberately omitted — prose-ambiguity) |
 | Table headers | `\|---\|` separator (GFM) | `\|---\|` separator | `\|=` prefix |
 | Table alignment | `:--` / `--:` (GFM) | `:--` / `--:` separator | `\|=<` / `\|=>` / `\|=~` (column), `\|<` / `\|>` / `\|~` (cell) |
-| Headerless tables | n/a (header + separator required) | N/A (header + separator required) | omit `\|=` |
-| Table rowspan | n/a (raw HTML only) | N/A (raw HTML only) | `^` marker |
-| Table colspan | n/a (raw HTML only) | N/A (raw HTML only) | `<` marker |
-| Multi-line cells | n/a (raw HTML only) | N/A (raw HTML only) | `+` continuation |
+| Headerless tables | n/a (header + separator required) | n/a (header + separator required) | omit `\|=` |
+| Table rowspan | n/a (raw HTML only) | n/a (raw HTML only) | `^` marker |
+| Table colspan | n/a (raw HTML only) | n/a (raw HTML only) | `<` marker |
+| Multi-line cells | n/a (raw HTML only) | n/a (raw HTML only) | `+` continuation |
 | Captions | n/a | Tables only (`^ caption`) | `^ caption` (images, quotes, tables) |
 
 ### Blocks & structure
@@ -243,8 +259,8 @@ Carve inherits and extends Djot's rationale:
 | Editorial markup | n/a | `{+ +}` `{- -}` `{= =}` | `{+ +}` `{- -}` `{~ ~> ~}` `{= =}` `{# #}` |
 | Comments | `<!-- … -->` (HTML) | `{% … %}` | `%%` line / `text %% trailing` / `%%%` block |
 | Raw / passthrough | inline / block HTML | inline `` `…`{=html} `` + ` ```=html ` block | inline `` `…`{=html} `` + ` ```raw html ` block |
-| Includes | n/a | N/A | `{{ path/to/file }}` |
-| Abbreviations | n/a (PHP-Markdown ext: `*[ABBR]: ...`) | N/A | `*[ABBR]: ...` |
+| Includes | n/a | n/a | `{{ path/to/file }}` |
+| Abbreviations | n/a (PHP-Markdown ext: `*[ABBR]: ...`) | n/a | `*[ABBR]: ...` |
 | Attributes | n/a | `{.class}` | `{.class}` |
 
 ### Social & extensibility
@@ -252,8 +268,8 @@ Carve inherits and extends Djot's rationale:
 | Feature | Markdown | Djot | Carve |
 |---------|----------|------|------|
 | Extensions | n/a | Fenced divs | `:type[content]{attrs}` |
-| Mentions | n/a (auto-linked on GitHub only) | N/A | `@user` |
-| Tags | n/a | N/A | `#tag` |
+| Mentions | n/a (auto-linked on GitHub only) | n/a | `@user` |
+| Tags | n/a | n/a | `#tag` |
 
 ### Mention and tag rendering
 
