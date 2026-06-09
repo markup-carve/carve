@@ -175,17 +175,29 @@ Carve takes its rationale from Djot and Markdown, and extends both:
     - Memorable after 5 days without use
     - Unambiguous within 5 characters of context
 
-15. **Simpler tables** - `|=` marks headers (from Creole), no separator row required
+15. **Cross-references** - `</#id>` auto-fills its link text from the target heading (neither Markdown nor Djot offers this natively)
 
-16. **Table spanning** - `^` for rowspan, `<` for colspan, `+` for multi-line cells
+16. **Auto-resolving wiki links** - `[Page Name][]` resolves to a heading with no separate `[Page Name]: url` definition
 
-17. **Captions** - `^` prefix adds captions to images, blockquotes, and tables
+17. **GitHub-style heading ids** - lowercase, Unicode-preserving, case-insensitive anchors by default; opt-in ASCII fold for share-safe URL fragments
 
-18. **Abbreviations** - `*[ABBR]: expansion` for automatic `<abbr>` tags
+18. **Simpler tables** - `|=` marks headers (from Creole), no separator row required
 
-19. **Social integration** - `@mentions` and `#tags` are built into the syntax
+19. **Table spanning** - `^` for rowspan, `<` for colspan, `+` for multi-line cells
 
-20. **Extension system** - `:type[content]{attrs}` for custom inline elements
+20. **Captions** - `^` prefix adds captions to images, blockquotes, and tables
+
+21. **Admonitions** - two-tier fenced divs (`::: word`): canonical names render to `<aside>`, custom to `<div class=word>`
+
+22. **Abbreviations** - `*[ABBR]: expansion` for automatic `<abbr>` tags
+
+23. **Comments** - visible `%%` line, `text %% trailing`, and `%%%` block comments (not HTML comments)
+
+24. **Social integration** - `@mentions` and `#tags` are built into the syntax
+
+25. **Extension system** - `:type[content]{attrs}` for custom inline elements
+
+26. **Target-aware rendering** - one parsed document emits to HTML, ANSI, Markdown, or plain text by swapping the renderer
 
 ## Comparison with Markdown and Djot
 
