@@ -12,9 +12,10 @@ name: Bump downstream corpora
 # DRAFT — "implement me", not ready to merge. If it passes, the PR is opened
 # ready. Re-runs keep an existing PR's draft state in sync with conformance.
 #
-# Setup: create a fine-grained PAT with access to markup-carve/carve-js and
-# markup-carve/carve-php (Contents: read & write, Pull requests: read & write)
-# and store it as the BUMP_TOKEN secret on this repo.
+# Setup: create a fine-grained PAT with access to markup-carve/carve-js,
+# markup-carve/carve-php and markup-carve/carve-rs (Contents: read & write,
+# Pull requests: read & write) and store it as the BUMP_TOKEN secret on this
+# repo.
 
 on:
   push:
@@ -45,6 +46,10 @@ jobs:
             submodule: tests/spec
             lang: php
             test: composer install --prefer-dist --no-progress && vendor/bin/phpunit --group corpus
+          - repo: markup-carve/carve-rs
+            submodule: tests/spec
+            lang: rust
+            test: cargo test --test corpus
     steps:
       # Toolchain to run the impl's corpus conformance (mirrors each repo's
       # own CI), so the bump can decide draft-vs-ready.
@@ -53,6 +58,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Set up Rust
+        if: matrix.lang == 'rust'
+        uses: dtolnay/rust-toolchain@stable
       - name: Set up PHP
         if: matrix.lang == 'php'
         uses: shivammathur/setup-php@v2
