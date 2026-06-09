@@ -415,16 +415,17 @@ Inside code spans, backslash is literal:
 before it, at the document top level **and** inside nested content (list item,
 block quote, admonition/div body). A continuation line that begins a block is
 parsed as that block; the paragraph ends on the line before it. This is the
-Markdown-like rule (CommonMark "a paragraph can be interrupted"). It replaces
-the former hard-wrap-safe rule, under which only a blank line could start a
-visible block.
+Markdown-like rule (CommonMark "a paragraph can be interrupted"), and the key
+block-level divergence from Djot: in Djot an open paragraph runs until a blank
+line, so a `-` / `#` / `>` / `|` line stays paragraph text; in Carve that line
+starts the block.
 
 ```carve
 Die Frage ist x = 5
 * 3 + 17 wahr.
 ```
 
-This is now a **paragraph plus a list** (`* 3 + 17 wahr.` begins with a
+This is a **paragraph plus a list** (`* 3 + 17 wahr.` begins with a
 bullet-plus-space). That is the accepted trade-off: a hard-wrapped prose line
 that happens to start with a marker becomes a block. Insert a blank line, or
 backslash-escape the marker (`\* 3 + 17`), to keep it prose.

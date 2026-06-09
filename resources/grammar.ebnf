@@ -827,30 +827,32 @@ EOF = (* end of file *) ;
       block quote, admonition/div body). A continuation line that begins a
       block is parsed as that block; the paragraph ends on the preceding line.
       This is the Markdown-like rule (CommonMark "a paragraph can be
-      interrupted"); it REPLACES the former hard-wrap-safe rule, under which
-      only a blank line could start a visible block. The interrupting blocks:
+      interrupted") and the key block-level divergence from Djot, where an open
+      paragraph runs until a blank line so a marker line stays paragraph text.
+      The interrupting blocks:
         - heading            `#`..`######` + space;
         - thematic break     a lone `---` / `***` / `___` line;
         - block quote        `>`;
-        - unordered / task   `- ` / `* ` / `+ ` (bullet + space; `- [x] ` task);
+        - unordered / task   `- ` / `* ` (bullet + space; `- [x] ` task; `+` is
+                             NOT a bullet -- it is the continuation marker, §17);
         - table row          a `|`...`|` line that is a valid table row
                              (a stray `|` in prose is NOT -- see §<table>);
         - fenced code        a ``` / ~~~ opener that HAS a matching closer
                              ahead (see CLOSER LOOKAHEAD);
         - admonition / div   a `:::` opener that HAS a matching closer ahead.
-      So "Liste: \n - eins \n - zwei" is now <p>Liste:</p> + a <ul>; "intro
+      So "Liste: \n - eins \n - zwei" is <p>Liste:</p> + a <ul>; "intro
       \n # H" is <p>intro</p> + <h1>; "x = 5 \n * 3 + 17" is <p>x = 5</p> +
       <ul><li>3 + 17</li></ul> (corpus 05-lists-6, 05-lists-7, and the
       Paragraph interruption section).
-      That last case is the ACCEPTED COST of the relaxed rule: a hard-wrapped
-      prose line that happens to begin with a bullet-plus-space (or `>` / `#` /
-      a valid table row) now starts a block. Insert a blank line, or
+      That last case is the ACCEPTED COST of paragraph interruption: a
+      hard-wrapped prose line that happens to begin with a bullet-plus-space
+      (or `>` / `#` / a valid table row) starts a block. Insert a blank line, or
       backslash-escape the marker ("\* 3 + 17"), to keep such a line as prose.
 
       ORDERED LISTS DO NOT INTERRUPT. An ordered-list marker -- decimal,
       letter, or roman, in any value -- never interrupts a paragraph; it needs a
       blank line before it (matching Djot). This is deliberate: unlike a bullet
-      (`- `/`* `/`+ ` is unambiguous), an ordered marker is too common in prose
+      (`- `/`* ` is unambiguous), an ordered marker is too common in prose
       ("see step 2.", "version 1985.", "upgrade to 1. today"), and the only way
       to allow it would be the CommonMark `1.`-only heuristic -- the exact wart
       Djot removed. Carve drops the heuristic by not interrupting on ordered
@@ -876,7 +878,7 @@ EOF = (* end of file *) ;
       such a line as paragraph text.)
 
       NESTING. Interruption applies inside nested content too: a `# H` after a
-      prose line in a block quote ("> text \n > # H") is now a heading, and an
+      prose line in a block quote ("> text \n > # H") is a heading, and an
       indented sublist still nests with no blank line ("- a \n   - b" -> a list
       whose first item holds a sublist). A col-0 marker with no `>` inside a
       block quote terminates the quote (the marker is a sibling block), per the

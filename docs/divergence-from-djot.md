@@ -129,6 +129,34 @@ surprise lists.
 **Why.** `%%` is faster to type, reads like a comment in many config formats, and
 needs no closing delimiter for the common single-line case.
 
+## 7. Block openers interrupt paragraphs (Markdown-like)
+
+**Djot:** an open paragraph runs until a blank line. A line that begins with a
+block marker - a `-`/`*` bullet, `>` quote, `#` heading, a `|` table row, or a
+fence - stays part of the paragraph; the block needs a blank line before it.
+
+**Carve:** a **visible** block interrupts an open paragraph with no blank line
+before it - the Markdown / CommonMark rule. Ordered lists are the one exception:
+they still need a blank line (see §5 for why an ordered marker in prose is too
+common to treat as a list).
+
+```
+intro
+- item
+
+Djot:   <p>intro\n- item</p>                    (one paragraph)
+Carve:  <p>intro</p><ul><li>item</li></ul>      (paragraph + list)
+```
+
+**Why.** Djot's blank-line rule is hard-wrap-safe, but it surprises authors
+coming from Markdown more often than it helps: a list or heading written
+directly under a line of prose silently stayed prose. Carve follows the
+near-universal Markdown expectation and accepts the cost - a hard-wrapped prose
+line that happens to begin with a marker becomes a block. Escape the marker
+(`\- item`) or add a blank line to keep it prose. This is Carve's largest
+block-level break from Djot, and the reason the project frames itself as
+post-Markdown rather than post-Djot.
+
 ## What Carve adds on top (not breaks)
 
 These aren't divergences - Djot has no equivalent - but they're why Carve exists
@@ -153,6 +181,9 @@ Most Djot source needs only mechanical changes:
 3. Replace `+` bullets with `-` or `*`.
 4. `{% comment %}` → `%%`.
 5. Heading anchors are now lowercase - update any hand-written `</#Anchor>` links.
+6. A marker line (`- `, `> `, `# `, a table row, a fence) directly under a line
+   of prose now starts a block. Where you relied on Djot keeping it in the
+   paragraph, add a blank line or escape the marker.
 
 The bundled `markdownToCarve` helper and Djot migration warnings flag most of
 these automatically.
