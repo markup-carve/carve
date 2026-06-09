@@ -47,3 +47,28 @@ jobs:
       # `npm run sync-carve-lib`) or the spec changed.
       - name: Conformance
         run: npm test
+
+  docs-build:
+    name: docs build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Prefer HTTPS for Git dependencies
+        run: |
+          git config --global url."https://github.com/".insteadOf ssh://git@github.com/
+          git config --global url."https://github.com/".insteadOf git@github.com:
+
+      - run: npm ci
+
+      # Build the VitePress site so a broken doc (e.g. unescaped Vue
+      # interpolation) fails the PR instead of only the Pages deploy.
+      - run: npm run docs:build
