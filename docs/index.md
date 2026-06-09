@@ -166,6 +166,8 @@ block comment
 
 Carve is a design exploration. The specification lives in the [Case Study](./case-study/). Reference material covers the normative [extensions contract](./extensions), the [technical rationale](./technical-rationale), [parsing edge cases](./edge-cases), [native features](./native-features-analysis), and the [broader markup landscape](./markup-languages).
 
+Looking for a parser, editor plugin, or framework integration? See the [Ecosystem](./ecosystem). Want to write your own? Start with [Build Your Own Implementation](./implementing-carve).
+
 **File extension:** `.crv`
 
 ## Influences
