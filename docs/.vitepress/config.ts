@@ -216,6 +216,13 @@ export default defineConfig({
           { text: 'Security', link: '/security' },
         ],
       },
+      {
+        text: 'Ecosystem',
+        items: [
+          { text: 'Implementations & Tooling', link: '/ecosystem' },
+          { text: 'Build Your Own', link: '/implementing-carve' },
+        ],
+      },
       { text: 'Case Study', link: '/case-study/' },
       { text: 'Design Notes', link: '/dismissed-syntax' },
     ],
@@ -242,6 +249,13 @@ export default defineConfig({
           { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
           { text: 'Markup Language Comparison', link: '/markup-languages' },
           { text: 'Security', link: '/security' },
+        ],
+      },
+      {
+        text: 'Ecosystem',
+        items: [
+          { text: 'Implementations & Tooling', link: '/ecosystem' },
+          { text: 'Build Your Own', link: '/implementing-carve' },
         ],
       },
       {
