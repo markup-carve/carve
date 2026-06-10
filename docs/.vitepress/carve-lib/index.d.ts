@@ -4,11 +4,12 @@ import { type RenderOptions } from './render-html.js';
 export * from './ast.js';
 export type { ParseOptions } from './parse.js';
 export type { RenderOptions } from './render-html.js';
-export type { CarveExtension, ExtensionRenderer, ExtensionRenderContext, } from './extension.js';
+export type { CarveExtension, ExtensionRenderer, ExtensionRenderContext, BlockExtensionRenderer, BlockExtensionRenderContext, } from './extension.js';
 export { djotMigrationWarnings, formatMigrationWarnings, applyMigrationFixes, type MigrationWarning, type MigrationFixResult, } from './djot-migrate.js';
 export { markdownToCarve } from './markdown-migrate.js';
 export { lintCarve, formatLintWarnings, type LintWarning, } from './lint.js';
 export { tabNormalize } from './tab-normalize.js';
+export { details } from './details.js';
 /**
  * Parse Carve source into a typed AST.
  *

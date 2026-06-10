@@ -12,6 +12,12 @@ A paragraph with [a styled link](url){.btn .primary}.
 ```
 
 ```
+`code`{.cls}
+.
+<p><code class="cls">code</code></p>
+```
+
+```
 {.note}
 This paragraph gets the class.
 .
