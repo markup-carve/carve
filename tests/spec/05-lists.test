@@ -67,6 +67,19 @@ not a list</p>
 ```
 
 ```
+1. outer
+   1. inner
+.
+<ol>
+  <li>outer
+    <ol>
+      <li>inner</li>
+    </ol>
+  </li>
+</ol>
+```
+
+```
 - apples
 
 - oranges
