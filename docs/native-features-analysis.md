@@ -47,7 +47,7 @@ Grammar references point at `resources/grammar.ebnf`.
 | **Abbreviations** | `*[ABBR]: expansion` | `*[ABBR]: expansion` | ✅ In grammar (PART 5: Abbreviations). |
 | **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `:kbd[text]` | ✅ Via `:type[content]` extension syntax (4.20). |
 | **Autolinks** | `<url>` / `<email>` | Angle-bracket autolinks only | ✅ In spec (4.3). Bare URLs are *not* auto-linked (djot-aligned). |
-| **Inline footnotes** | `[content]{.fn}` | `[^inline content]` | Deferred (reserved syntax, see Conformance Core). |
+| **Inline footnotes** | `[content]{.fn}` | `^[content]` | ✅ In grammar (§16). A carve extension beyond djot; pandoc-style `^[content]`, numbered into the shared endnotes. |
 | **Table alignment** | `:--`, `--:`, `:--:` | `\|=<` / `\|=>` / `\|=~` markers | ✅ In spec (4.8). |
 | **Rowspan/colspan** | `^` and `<` markers | `^` and `<` markers | ✅ In grammar (span_cell / rowspan_marker / colspan_marker). |
 | **Multi-line cells** | `+` continuation | `+` continuation | ✅ In grammar (table multi-line cells). |
@@ -226,7 +226,7 @@ feature-level boundary.
 
 ### Deferred (reserved syntax, not yet implemented)
 
-- Inline footnotes (`[^content]`) and sidenotes (`[>content]`).
+- Sidenotes (`[>content]`). (Inline footnotes `^[content]` are now implemented — §16.)
 - Setext (underline) headings — intentionally excluded (matches djot).
 
 ### Deliberate gaps (will not implement)

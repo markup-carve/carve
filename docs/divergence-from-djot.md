@@ -168,6 +168,9 @@ as more than restyled Djot:
 - **Tables with rowspan / colspan / multi-line cells** and captions on images,
   quotes, and tables.
 - **Native admonitions**, editorial/critic markup, `@mentions`, and `#tags`.
+- **Inline footnotes** - `^[content]` carries a note in place (pandoc-style),
+  numbered into the same endnotes as a reference `[^label]`. Canonical djot has
+  only reference footnotes; `^[…]` is a carve addition (grammar §16).
 - **Target-aware rendering** - one parsed document, multiple renderers (HTML,
   ANSI, Markdown, plain text) behind a single extension contract.
 

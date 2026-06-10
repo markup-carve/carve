@@ -26,6 +26,7 @@ export { djotMigrationWarnings, formatMigrationWarnings, applyMigrationFixes, } 
 export { markdownToCarve } from './markdown-migrate.js';
 export { lintCarve, formatLintWarnings, } from './lint.js';
 export { tabNormalize } from './tab-normalize.js';
+export { details } from './details.js';
 /**
  * Parse Carve source into a typed AST.
  *

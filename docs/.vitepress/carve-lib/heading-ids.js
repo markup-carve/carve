@@ -217,6 +217,12 @@ export function resolveHeadingIds(doc, asciiFold = false) {
                 case 'extension':
                     resolveRefs(n.content);
                     break;
+                case 'footnote':
+                    // Inline footnote content (`^[…]`) lives in `.inline`; resolve refs
+                    // there too so an implicit/reference link inside a note is finalized.
+                    if (n.inline)
+                        resolveRefs(n.inline);
+                    break;
                 default:
                     break;
             }
@@ -262,6 +268,10 @@ export function resolveHeadingIds(doc, asciiFold = false) {
                     break;
                 case 'extension':
                     resolveCrossrefs(n.content);
+                    break;
+                case 'footnote':
+                    if (n.inline)
+                        resolveCrossrefs(n.inline);
                     break;
                 default:
                     break;
