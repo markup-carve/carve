@@ -28,37 +28,42 @@ const RULES = [
     {
         id: 'markdown-strong-double-star',
         family: '*',
-        pattern: /\*\*(?!\s)((?:(?!\n[ \t]*\n)[^*])+?)(?<!\s)\*\*/g,
+        pattern: /\*\*(?!\s)((?:(?!\n[ \t]*\n)[^*])+?)(?<!\s)\*\*/gd,
         message: () => 'Djot/Markdown `**strong**` is not Carve bold — Carve bold is a single `*`, so this renders with literal asterisks.',
         suggestion: (m) => `*${m[1]}*`,
+        delims: ['*', '*'],
     },
     {
         id: 'markdown-strikethrough-double-tilde',
         family: '~',
-        pattern: /~~(?!\s)((?:(?!\n[ \t]*\n)[^~])+?)(?<!\s)~~/g,
+        pattern: /~~(?!\s)((?:(?!\n[ \t]*\n)[^~])+?)(?<!\s)~~/gd,
         message: () => 'Markdown `~~strikethrough~~` is not Carve — Carve strikethrough is a single `~`.',
         suggestion: (m) => `~${m[1]}~`,
+        delims: ['~', '~'],
     },
     {
         id: 'djot-subscript-tilde',
         family: '~',
-        pattern: /~(?!\s)((?:(?!\n[ \t]*\n)[^~])+?)(?<!\s)~/g,
+        pattern: /~(?!\s)((?:(?!\n[ \t]*\n)[^~])+?)(?<!\s)~/gd,
         message: () => 'Djot subscript `~x~` renders as *strikethrough* in Carve.',
         suggestion: (m) => `,,${m[1]},,`,
+        delims: [',,', ',,'],
     },
     {
         id: 'djot-emphasis-underscore',
         family: '_',
-        pattern: /(?<![A-Za-z0-9_])_(?!\s)((?:(?!\n[ \t]*\n)[^_])+?)(?<!\s)_(?![A-Za-z0-9_])/g,
+        pattern: /(?<![A-Za-z0-9_])_(?!\s)((?:(?!\n[ \t]*\n)[^_])+?)(?<!\s)_(?![A-Za-z0-9_])/gd,
         message: () => 'Djot emphasis `_x_` renders as *underline* in Carve.',
         suggestion: (m) => `/${m[1]}/`,
+        delims: ['/', '/'],
     },
     {
         id: 'djot-highlight-braces',
         family: '{',
-        pattern: /\{=(?!\s)((?:(?!\n[ \t]*\n)[\s\S])+?)(?<!\s)=\}/g,
+        pattern: /\{=(?!\s)((?:(?!\n[ \t]*\n)[\s\S])+?)(?<!\s)=\}/gd,
         message: () => 'Djot highlight `{=x=}` is written `==x==` in Carve.',
         suggestion: (m) => `==${m[1]}==`,
+        delims: ['==', '=='],
     },
     // Block-level (line-anchored): a leading `+ content` is a bullet in
     // Djot/Markdown but NOT in Carve — `+` is the list-continuation marker, so
@@ -67,7 +72,7 @@ const RULES = [
     {
         id: 'djot-plus-bullet',
         family: 'plus-bullet',
-        pattern: /(?<=^[ \t]*)(\+)(?=[ \t]+\S)/gm,
+        pattern: /(?<=^[ \t]*)(\+)(?=[ \t]+\S)/gmd,
         message: () => 'Djot/Markdown `+` bullet is not a Carve bullet (`+` is the list-continuation marker) — this line renders as a paragraph.',
         suggestion: () => '-',
     },
@@ -153,19 +158,39 @@ function maskCode(src) {
     masked = masked.replace(/(?<=\])\([^()\n]*\)/g, (g) => blanks(g));
     return masked;
 }
+/** Project a ScanHit down to the public warning shape (drop `edits`). */
+function stripHit(h) {
+    return {
+        line: h.line,
+        column: h.column,
+        rule: h.rule,
+        message: h.message,
+        suggestion: h.suggestion,
+        start: h.start,
+        end: h.end,
+    };
+}
 /**
  * Scan Djot/Carve source and return warnings for constructs that silently
  * change meaning under Carve. Empty array means the source is free of the
  * known Djot/Carve delimiter collisions.
  */
 export function djotMigrationWarnings(source) {
+    return scanHits(source).map(stripHit);
+}
+/** The full scan, carrying the fix edits used by `applyMigrationFixes`. */
+function scanHits(source) {
     const out = [];
     // Code (fenced + inline, multi-line) is masked to spaces so no rule
     // can match through or into it. Positions are preserved 1:1. The scan
     // runs over the whole text (not per line) so delimiter pairs that
     // cross a soft line break are still caught. Normalize line endings
     // first, exactly as parse() does, so results don't depend on CRLF.
-    const masked = maskCode(source.replace(/\r\n?/g, '\n'));
+    // `norm` keeps the real characters (incl. code) at the same offsets as
+    // `masked`, so the captured content for a suggestion is sliced from
+    // `norm` — masking only ever blanks the *content*, never the delimiters.
+    const norm = source.replace(/\r\n?/g, '\n');
+    const masked = maskCode(norm);
     // index -> {line, column} (both 1-based), via newline prefix sums.
     const nlAt = [];
     for (let k = 0; k < masked.length; k++)
@@ -210,17 +235,76 @@ export function djotMigrationWarnings(source) {
                 continue;
             taken.push([start, end, rule.family]);
             const { line, column } = posOf(start);
+            // Build the suggestion from the ORIGINAL captured content, not the
+            // code-masked one, so `*a `code` b*` round-trips instead of losing
+            // the backticked run to spaces. `m.indices` is present because every
+            // pattern carries the `d` flag; group 1 always participates.
+            const span = m.indices?.[1];
+            const orig = span ? norm.slice(span[0], span[1]) : m[1];
+            const origM = m.slice();
+            origM[1] = orig;
+            // Fix edits. A wrapping rule rewrites only its delimiters (the slices
+            // before/after the captured content), leaving content verbatim, so
+            // nested fixes compose. A whole-span rule (the `+` bullet) replaces
+            // its single match with the suggestion.
+            const suggestion = rule.suggestion(origM);
+            const edits = rule.delims && span
+                ? [
+                    { start, end: span[0], text: rule.delims[0] },
+                    { start: span[1], end, text: rule.delims[1] },
+                ]
+                : [{ start, end, text: suggestion }];
             out.push({
                 line,
                 column,
                 rule: rule.id,
                 message: rule.message(m),
-                suggestion: rule.suggestion(m),
+                suggestion,
+                start,
+                end,
+                edits,
             });
         }
     }
     out.sort((a, b) => a.line - b.line || a.column - b.column);
     return out;
+}
+/**
+ * Apply the auto-fixable Djot/Carve migration collisions to `source`,
+ * returning the rewritten text. This is the autocorrect companion to
+ * {@link djotMigrationWarnings}.
+ *
+ * Each fix is expressed as edits to its delimiters only, never its content,
+ * so strictly nested collisions compose in one pass: the outer strong
+ * delimiters and the inner emphasis delimiters sit at distinct offsets, so
+ * `**_x_**` fixes to single-star bold wrapping a slash emphasis. Only
+ * *crossing* collisions - partial overlaps where neither span contains the
+ * other - are skipped, since that source is genuinely ambiguous. The scan is
+ * not re-run on the output, so a fixed `~~x~~` -> `~x~` is never re-flagged
+ * as a subscript.
+ */
+export function applyMigrationFixes(source) {
+    const hits = scanHits(source);
+    const overlaps = (a, b) => a.start < b.end && b.start < a.end;
+    const contains = (a, b) => a.start <= b.start && b.end <= a.end;
+    const crosses = (a, b) => overlaps(a, b) && !contains(a, b) && !contains(b, a);
+    const applied = [];
+    const skipped = [];
+    for (const h of hits) {
+        if (hits.some((o) => o !== h && crosses(h, o)))
+            skipped.push(h);
+        else
+            applied.push(h);
+    }
+    // No two applied hits cross, so their delimiter edits are pairwise
+    // non-overlapping. Splice from the end so each edit leaves earlier
+    // offsets valid.
+    const edits = applied.flatMap((h) => h.edits).sort((a, b) => b.start - a.start);
+    let output = source.replace(/\r\n?/g, '\n');
+    for (const e of edits) {
+        output = output.slice(0, e.start) + e.text + output.slice(e.end);
+    }
+    return { output, applied: applied.map(stripHit), skipped: skipped.map(stripHit) };
 }
 /** Format warnings as `file:line:col rule — message (use: suggestion)`. */
 export function formatMigrationWarnings(warnings, file = '<stdin>') {

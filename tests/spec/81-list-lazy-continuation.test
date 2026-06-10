@@ -21,3 +21,54 @@ lazy</li>
   <h1>H</h1>
 </section>
 ```
+
+```
+- a
+  - b
+ c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+c</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - b
+    - c
+   d
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <ul>
+          <li>c
+d</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - b
+
+ c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+<p>c</p>
+```

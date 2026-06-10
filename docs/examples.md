@@ -3623,6 +3623,77 @@ lazy</li>
 
 :::
 
+An under-indented continuation line after a *nested* sublist still folds into the **deepest** open paragraph (CommonMark lazy continuation); its indentation does not place it at an intermediate level. A blank line before it makes it a fresh paragraph instead.
+
+::: compare
+
+```carve
+- a
+  - b
+ c
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+c</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+```carve
+- a
+  - b
+    - c
+   d
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <ul>
+          <li>c
+d</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+```carve
+- a
+  - b
+
+ c
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+<p>c</p>
+```
+
+:::
+
 ## Compact list blocks
 
 A blank line is still required to start a block inside a list item, but it no longer makes the list *loose* when the indented content opens a block (sub-list, block quote, fenced code, fenced div, heading, table). The item stays **tight** — lead text inline, the block attached — so a checklist with notes or steps with code stay compact. (A Carve deviation: canonical djot renders these loose. Only the tight/loose rendering changes, not the block structure.)
