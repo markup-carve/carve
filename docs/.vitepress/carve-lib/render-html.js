@@ -460,17 +460,19 @@ function renderTable(node, opts, level) {
         }
         grid.push(gridRow);
     }
+    // Per column, the last row index (above the current one) whose cell is not
+    // skipped. This is exactly what the previous `while (grid[up][c].skip) up--`
+    // scan found, but maintained incrementally so a '^' resolves in O(1) instead
+    // of walking up every prior row (an all-'^' table was O(rows^2)).
+    const lastNonSkip = [];
     for (let r = 0; r < grid.length; r++) {
         for (let c = 0; c < grid[r].length; c++) {
             const entry = grid[r][c];
             if (entry.skip)
                 continue;
             if (entry.cell.span === 'rowspan' && r > 0) {
-                // Find the source cell above (handling possibly stacked '^')
-                let up = r - 1;
-                while (up >= 0 && grid[up][c] && grid[up][c].skip)
-                    up--;
-                const src = grid[up]?.[c];
+                const up = lastNonSkip[c];
+                const src = up !== undefined ? grid[up]?.[c] : undefined;
                 if (src) {
                     src.rowspan++;
                     entry.skip = true;
@@ -486,6 +488,10 @@ function renderTable(node, opts, level) {
                     entry.skip = true;
                 }
             }
+            // A cell that ends up non-skipped becomes the nearest source for the
+            // cells below it in this column.
+            if (!entry.skip)
+                lastNonSkip[c] = r;
         }
     }
     // Detect header section: leading consecutive rows where all cells are headers
@@ -643,7 +649,7 @@ function renderInline(node, opts) {
         case 'bold-italic':
             return `<strong${renderAttrs(node.attrs)}><em>${renderInlines(node.children, opts)}</em></strong>`;
         case 'code':
-            return `<code>${escapeHtml(node.value)}</code>`;
+            return `<code${renderAttrs(node.attrs)}>${escapeHtml(node.value)}</code>`;
         case 'link': {
             const titleAttr = node.title ? ` title="${escapeAttr(node.title)}"` : '';
             const href = escapeAttr(sanitizeUrl(node.href, opts));

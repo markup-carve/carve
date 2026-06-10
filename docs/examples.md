@@ -550,6 +550,27 @@ Lists can mix markers — an ordered list may contain a nested unordered list (a
 
 :::
 
+An ordered list nests the same way — a child indented to the parent's content column (three spaces under `1. `) is a sub-list, even though an ordered marker does not interrupt a paragraph (§10).
+
+::: compare
+
+```carve
+1. outer
+   1. inner
+```
+
+```html
+<ol>
+  <li>outer
+    <ol>
+      <li>inner</li>
+    </ol>
+  </li>
+</ol>
+```
+
+:::
+
 A blank line between items produces a loose list — each item wraps in a paragraph.
 
 ::: compare
@@ -1295,6 +1316,20 @@ A paragraph with [a styled link](url){.btn .primary}.
   <h1 class="large">Title</h1>
   <p>A paragraph with <a href="url" class="btn primary">a styled link</a>.</p>
 </section>
+```
+
+:::
+
+An inline `{...}` attaches to the preceding inline node — including an inline code span. (The `{=html}` / `{=latex}` raw-inline form is a separate rule.)
+
+::: compare
+
+```carve
+`code`{.cls}
+```
+
+```html
+<p><code class="cls">code</code></p>
 ```
 
 :::
