@@ -1,0 +1,7 @@
+{#id}
+{key=val}
+{.foo .bar}
+{key=val2}
+{.baz}
+{#id2}
+Okay

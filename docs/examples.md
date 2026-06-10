@@ -277,6 +277,33 @@ default it renders as a styled inline token, not an invented link target.
 
 :::
 
+A heading that skips an intermediate level still nests by section: `# H1`
+followed by `### H3` places H3's `<section>` inside H1's, and Carve does not
+synthesize an intervening `<h2>`/`<section>` (§13 — the stack closes only
+sections at level `>= N`).
+
+::: compare
+
+```carve
+# H1
+
+### H3
+
+content
+```
+
+```html
+<section id="h1">
+  <h1>H1</h1>
+  <section id="h3">
+    <h3>H3</h3>
+    <p>content</p>
+  </section>
+</section>
+```
+
+:::
+
 ## Links
 
 ::: compare
@@ -3488,6 +3515,47 @@ text
 
 :::
 
+An **unterminated** fence opener does not interrupt a paragraph (§10 closer
+lookahead): with no matching closer ahead, the ` ``` ` line stays paragraph
+text. It is then an unclosed inline verbatim run, which renders as a `<code>`
+span to the end of the block (matching the `code_span` maximal-run rule).
+
+::: compare
+
+````carve
+Text
+```
+code
+````
+
+```html
+<p>Text
+<code>
+code</code></p>
+```
+
+:::
+
+Likewise an unterminated `:::` opener does not interrupt: with no matching
+closer ahead it is literal text, so a stray `:::` in prose never swallows the
+rest of the block.
+
+::: compare
+
+```carve
+Text
+:::
+stuff
+```
+
+```html
+<p>Text
+:::
+stuff</p>
+```
+
+:::
+
 ## Blockquote lazy continuation
 
 A line that follows a `>` line, is not blank, and does not begin its own block continues the blockquote — the `>` may be omitted on continuation lines (CommonMark-style). A blank line ends the quote.
@@ -3582,6 +3650,30 @@ lazy
 <code>
 lazy</code></p></blockquote>
 ````
+
+:::
+
+When the fence opener is immediately followed by a non-`>` line — with no
+marked content line in between — the fence is never closed (an empty code
+block), and the non-`>` line ends the quote. The trailing `> still` then opens
+a fresh block quote.
+
+::: compare
+
+````carve
+> ```
+code no marker
+> still
+````
+
+```html
+<blockquote>
+  <pre><code>
+</code></pre>
+</blockquote>
+<p>code no marker</p>
+<blockquote><p>still</p></blockquote>
+```
 
 :::
 
@@ -3862,6 +3954,65 @@ Since `+` is not a Carve bullet (use `-` or `*`), the lines below are a single p
 ```html
 <p>+ one
 + two</p>
+```
+
+:::
+
+## Block attribute lines
+
+A `{...}` attribute block on its own line attaches to the **next** block
+element and floats forward across intervening blank lines (§15 — reach).
+
+::: compare
+
+```carve
+{#id}
+
+Text
+```
+
+```html
+<p id="id">Text</p>
+```
+
+:::
+
+Consecutive attribute blocks targeting the same element accumulate in source
+order: the last `id` wins, the last value for a given key wins, and classes
+accumulate with no de-duplication (§15 — accumulation; the djot canonical
+case).
+
+::: compare
+
+```carve
+{#id}
+{key=val}
+{.foo .bar}
+{key=val2}
+{.baz}
+{#id2}
+Okay
+```
+
+```html
+<p id="id2" key="val2" class="foo bar baz">Okay</p>
+```
+
+:::
+
+A single attribute block may wrap across lines — the closing `}` need not sit
+on the opening line (§15 — multi-line block).
+
+::: compare
+
+```carve
+{#id
+ .foo}
+Text
+```
+
+```html
+<p id="id" class="foo">Text</p>
 ```
 
 :::

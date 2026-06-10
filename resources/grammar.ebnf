@@ -866,8 +866,10 @@ EOF = (* end of file *) ;
       interrupts ONLY when a matching closer exists ahead in the same context.
       An UNTERMINATED opener does NOT interrupt -- the line stays paragraph
       text -- so a stray ``` or `:::` in prose never swallows the rest of the
-      block. (This unterminated-opener case is deliberately NOT pinned in the
-      corpus yet; tracked in MAINTAINING "Open".)
+      block. An unterminated ``` is then an unclosed inline verbatim run that
+      renders as a `<code>` span to the end of the block (the `code_span`
+      maximal-run rule). Pinned by corpus 76-paragraph-interruption (the
+      unterminated-fence and unterminated-`:::` pairs).
 
       INVISIBLE CONSTRUCTS. A reference definition (link `[r]: url`, footnote
       `[^r]: …`, abbreviation `*[A]: …`) or a comment (`%%` line, `%%%` block)
@@ -1098,9 +1100,10 @@ EOF = (* end of file *) ;
       - The target block's OWN trailing attributes (e.g. a heading's
         `# H {#x}`, PART 9 §13/§12 carriers) merge with the leading
         block attributes under the same rules.
-      Implementation status: carve-php implements §15 in full; carve-js
-      does not yet parse leading block-attribute lines (they currently
-      render as literal text). Tracked as a carve-js follow-up.
+      Implementation status: both carve-php and carve-js implement §15 in
+      full -- leading block-attribute lines, float-forward across blank
+      lines, accumulation, and multi-line blocks. Pinned by corpus
+      84-block-attribute-lines.
 
    16. FOOTNOTES -- NORMATIVE (governs `footnote` / `footnote_definition`
       in PART 3). Only the reference form `[^label]` + `[^label]: body`

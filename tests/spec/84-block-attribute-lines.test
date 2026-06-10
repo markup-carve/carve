@@ -1,0 +1,29 @@
+Block attribute lines
+
+```
+{#id}
+
+Text
+.
+<p id="id">Text</p>
+```
+
+```
+{#id}
+{key=val}
+{.foo .bar}
+{key=val2}
+{.baz}
+{#id2}
+Okay
+.
+<p id="id2" key="val2" class="foo bar baz">Okay</p>
+```
+
+```
+{#id
+ .foo}
+Text
+.
+<p id="id" class="foo">Text</p>
+```
