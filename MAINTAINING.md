@@ -75,7 +75,19 @@ _None currently._
 
 ### Open (tracked)
 
-_None currently._
+Decided canonical behavior. The **Pin** column says whether the conformance
+pair is already in `docs/examples.md` (green against the canonical impl) or is
+**held** until the listed impl PR lands; the corpus has no xfail, so a pin that
+the vendored carve-js fails cannot land until carve-js implements it (lockstep
+order: carve-js first, then the carve pin). A row moves to *Resolved* once both
+impls agree and the pin is in the corpus.
+
+| Input | Canonical | Impl(s) to change | Pin |
+|-------|-----------|-------------------|-----|
+| `-{.c} text` / `1.{#x} text` (list-item attributes, NEW Carve syntax) | An attribute block **abutting** the marker (no space before `{`) attributes the `<li>`; the marker's required space follows the block. A **space** before `{` makes it ordinary content (a leading inline `{…}` with no preceding node is literal), NOT a li-attribute. The whitespace is the discriminator. The carve-php lazy-continuation accident (trailing `{…}` line folded onto a tight item) is rejected as the mechanism. Grammar `item_attributes` (extends §15) is normative now. | BOTH: neither implements it. carve-js drops/literalizes; carve-php makes an inline span / swallows the leading block. | HELD (grammar landed; pin waits for both impls) |
+| `{.glossary}` line before a definition list | carve-js: a preceding block-attribute line floats onto the `<dl>` (§15), like every other block. carve-php already does this. | carve-js must stop dropping it. | HELD (waits for carve-js) |
+| `![a](x){.img}` + caption (figure/image attributes) | carve-js: a **trailing** attribute is the image's and stays on `<img>` even when wrapped in a `<figure>` (same target as a standalone block image); a **preceding** block-attribute line targets the `<figure>` (§15). carve-php is inconsistent: it moves the trailing attr to the `<figure>` (so the same `![a](x){.img}` hits a different element depending on whether a caption follows) and drops the preceding block-attr line. | carve-php must keep the image's trailing attr on `<img>` and float a preceding block-attr line onto `<figure>`. | **PINNED** *(08-image-with-caption-2/3)*, green on carve-js; carve-php red until fixed |
+| `` $`x`{.c} `` / `` $$`x`{.c} `` (trailing attribute on math) | UNDECIDED. Divergence found: carve-js applies it (merges into the math span class, `class="math inline c"`); carve-php drops it (`class="math inline"`). math reuses `code_span`, which carries the generic `[attributes]` slot. Grammar math note flags it. | TBD once canonical is chosen. | none |
 
 ### Extension API surface (parity beyond corpus output)
 

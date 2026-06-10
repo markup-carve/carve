@@ -9,3 +9,24 @@ Image with caption
   <figcaption>Figure 1: First moon landing</figcaption>
 </figure>
 ```
+
+```
+![Apollo 11](apollo.jpg){.hero}
+^ Figure 1: First moon landing
+.
+<figure>
+  <img src="apollo.jpg" alt="Apollo 11" class="hero">
+  <figcaption>Figure 1: First moon landing</figcaption>
+</figure>
+```
+
+```
+{.gallery}
+![Apollo 11](apollo.jpg)
+^ Figure 1: First moon landing
+.
+<figure class="gallery">
+  <img src="apollo.jpg" alt="Apollo 11">
+  <figcaption>Figure 1: First moon landing</figcaption>
+</figure>
+```
