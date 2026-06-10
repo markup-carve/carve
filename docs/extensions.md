@@ -24,8 +24,12 @@ core-and-default-on everywhere and its default output is corpus-pinned.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, emoji glyph map,
   locale smart-quote sets, bare-URL autolinking.
 - Tier 3: Mermaid, Tabs, CodeGroup, TableOfContents, HeadingPermalinks,
-  HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks, InlineFootnotes
-  (`.fn`), SemanticSpan.
+  HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks, SemanticSpan.
+
+Inline and sidenote footnotes are **not** Tier 3. They are deferred core
+reserved syntax (`[^…]` inline, `[>…]` sidenote; `resources/grammar.ebnf`
+PART 9 §16), not an app extension. The djot-php `[…]{.fn}` form maps onto
+carve's `[^…]`; see `native-features-analysis.md`.
 
 ## 2. Extension system
 
