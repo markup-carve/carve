@@ -20,7 +20,7 @@ Markdown's reach, Djot's consistency, web-native features by default - without
 turning your content into a JavaScript program. What sets Carve apart:
 
 - **Cross-references that just work** - `</#id>` auto-fills its link text from the
-  target heading, and `[[Heading]]` resolves to a heading with no separate
+  target heading, and `[Heading][]` resolves to a heading with no separate
   definition. Neither Markdown nor Djot offers this natively.
 - **GitHub-style heading ids by default** - lowercase, Unicode-preserving anchors
   that make ids and cross-references case-insensitive with zero configuration.

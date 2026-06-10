@@ -2,20 +2,7 @@
 
 ## Part 7: Compatibility and Migration
 
-### 7.1 Compatibility Modes
-
-```
----
-carve-compat: markdown
----
-```
-
-Modes:
-- `strict` - Only Carve syntax (default)
-- `markdown` - Accept Markdown syntax with warnings
-- `djot` - Accept Djot syntax with warnings
-
-### 7.2 Migration Warnings
+### 7.1 Migration Warnings
 
 Parser can emit warnings for Markdown-specific syntax:
 ```
@@ -30,11 +17,27 @@ Line 31: `+` bullet detected — not a Carve bullet (it is the
          Suggestion: -
 ```
 
-### 7.3 Auto-Migration Tool
+### 7.2 Auto-Migration Tool
 
 ```bash
 carve migrate input.md --from markdown --to carve > output.crv
 ```
+
+### 7.3 Compatibility Modes (proposed)
+
+> Design proposal — `carve-compat` is not part of the current grammar or
+> corpus; it is sketched here as a possible future direction.
+
+```
+---
+carve-compat: markdown
+---
+```
+
+Modes:
+- `strict` - Only Carve syntax (default)
+- `markdown` - Accept Markdown syntax with warnings
+- `djot` - Accept Djot syntax with warnings
 
 ---
 

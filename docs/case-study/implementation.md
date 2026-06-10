@@ -13,13 +13,15 @@
 4. **AST Builder**: Constructs typed AST nodes
 5. **Renderer**: Transforms AST to output format
 
-### 9.2 Reference Implementation Priorities
+### 9.2 Reference Implementations
 
-1. JavaScript/TypeScript (web, Node.js ubiquity)
-2. Rust (performance, WASM compilation)
-3. Python (data science, docs communities)
-4. Go (modern backend systems)
-5. PHP (existing Djot-PHP could be adapted)
+JavaScript/TypeScript, Rust, and PHP implementations now exist (carve-js,
+carve-rs, carve-php), tested against the shared corpus. 
+
+Still wanted:
+
+1. Python (data science, docs communities)
+2. Go (modern backend systems)
 
 ### 9.3 Editor Support Essentials
 
@@ -62,10 +64,11 @@ Carve succeeds if:
 
 ---
 
-*This is a design exploration, not a finished specification. Real-world testing
-with diverse users would be essential before finalizing syntax decisions.*
+*This case study captures Carve's original design exploration. Carve now has a
+normative grammar, a conformance corpus, and multiple implementations; real-world
+testing with diverse users continues to inform syntax decisions.*
 
-*Feedback welcome at [hypothetical GitHub repo].*
+*Feedback and contributions welcome at <https://github.com/markup-carve>.*
 
 ---
 

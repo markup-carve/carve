@@ -230,7 +230,7 @@ All six heading levels are supported.
 
 :::
 
-Attributes attach to the heading via a trailing `{…}` block. The rendered attribute order is alphabetical.
+Attributes attach to the heading via a trailing `{…}` block. The rendered attribute order matches the source order.
 
 ::: compare
 
@@ -1149,7 +1149,7 @@ Save early, save often.
 
 :::
 
-A custom (Tier-2) type renders as a generic `<div>` with the literal type as its class.
+A custom type renders as a generic `<div>` with the literal type as its class.
 
 ::: compare
 

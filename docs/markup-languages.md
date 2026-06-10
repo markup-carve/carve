@@ -7,19 +7,20 @@ A comparison of lightweight markup languages available today.
 The overview below is chronological. Later comparison tables group related
 syntaxes together instead.
 
-| Language | Author | Year | Focus |
-|----------|--------|------|-------|
-| AsciiDoc | Stuart Rackham | 2002 | Technical documentation |
-| reStructuredText (reST) | David Goodger | 2002 | Python documentation |
-| Textile | Dean Allen | 2002 | Web publishing |
-| MediaWiki | Magnus Manske | 2002 | Wikipedia |
-| Org Mode | Carsten Dominik | 2003 | Emacs, outlining |
-| Markdown | John Gruber | 2004 | Simplicity, email-style |
-| Creole | WikiCreole | 2007 | Wiki standardization |
-| CommonMark | John MacFarlane et al. | 2014 | Standardized Markdown |
-| GitHub Flavored Markdown (GFM) | GitHub | 2017 | Extended CommonMark |
-| Gemtext | Solderpunk | 2019 | Minimalism (Gemini protocol) |
-| Djot | John MacFarlane | 2022 | Predictable parsing |
+| Language                       | Author                 | Year | Focus                        |
+|--------------------------------|------------------------|------|------------------------------|
+| AsciiDoc                       | Stuart Rackham         | 2002 | Technical documentation      |
+| reStructuredText (reST)        | David Goodger          | 2002 | Python documentation         |
+| Textile                        | Dean Allen             | 2002 | Web publishing               |
+| MediaWiki                      | Magnus Manske          | 2002 | Wikipedia                    |
+| Org Mode                       | Carsten Dominik        | 2003 | Emacs, outlining             |
+| Markdown                       | John Gruber            | 2004 | Simplicity, email-style      |
+| Creole                         | WikiCreole             | 2007 | Wiki standardization         |
+| CommonMark                     | John MacFarlane et al. | 2014 | Standardized Markdown        |
+| GitHub Flavored Markdown (GFM) | GitHub                 | 2017 | Extended CommonMark          |
+| Gemtext                        | Solderpunk             | 2019 | Minimalism (Gemini protocol) |
+| Djot                           | John MacFarlane        | 2022 | Predictable parsing          |
+| Carve                          | Mark Scherer           | 2026 | Simple & predictable parsing |
 
 ## Feature Comparison
 
@@ -28,7 +29,7 @@ syntaxes together instead.
 | Strong | `**text**` | `**text**` | `**text**` | `*text*` | `*text*` | `**text**` |
 | Emphasis | `*text*` | `*text*` | `*text*` | `_text_` | `_text_` | `*text*` |
 | Code inline | `` `code` `` | `` `code` `` | `` `code` `` | `` `code` `` | `` `+code+` `` | ``` ``code`` ``` |
-| Strikethrough | - | - | `~~text~~` | N/A | `[.line-through]#text#` | - |
+| Strikethrough | - | - | `~~text~~` | - | `[.line-through]#text#` | - |
 | Highlight | - | - | - | `{=text=}` | `#text#` | - |
 | Subscript | - | - | - | `{~text~}` | `~text~` | - |
 | Superscript | - | - | - | `{^text^}` | `^text^` | - |

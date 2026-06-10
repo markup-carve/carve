@@ -265,7 +265,7 @@ converts this to the appropriate URL (e.g., `other-page.html`).
 
 For custom display text, use regular link syntax:
 ```
-See [click here](Other Page) for details.
+See [click here](other-page.html) for details.
 ```
 
 **Why not `[[...]]`?** It conflicts with valid nested spans:
@@ -387,8 +387,9 @@ paragraph (the §10 paragraph rule): an ordered list — `1.`, `2.`, `1985.`, `a
 `i.`, any value — needs a blank line before it. An ordered marker is too common
 in prose ("step 2.", "version 1985.", "upgrade to 1. today"), and the only way
 to allow it would be the CommonMark `1.`-only heuristic Djot removed; Carve
-keeps ordered lists on the blank-line rule instead. (Bullets `- `/`* `/`+ `,
-being unambiguous, do interrupt.) Inside an existing list item, indentation
+keeps ordered lists on the blank-line rule instead. (Bullets `- `/`* `,
+being unambiguous, do interrupt; `+` is the continuation marker, not a bullet.)
+Inside an existing list item, indentation
 alone still nests a sublist.
 
 **Auto-numbering:**
@@ -402,12 +403,13 @@ alone still nests a sublist.
 ```
 - [ ] Unchecked task
 - [x] Completed task
-- [-] Cancelled task
-- [>] Deferred task
-- [?] Question/uncertain
 ```
 
-Inspired by Org-mode TODO states but simplified.
+The marker holds exactly one character (PART 9 `task_state`). `x` / `X` render a
+**checked** box; ` `, `-`, `_`, `>`, `?` all render an **unchecked** box. The
+non-space markers are recognized (for author conventions like cancelled/
+deferred) but produce the same output as `[ ]` — there is no distinct rendering,
+and a character outside that set is not a task marker at all.
 
 #### Tight vs loose
 
@@ -551,9 +553,12 @@ Keep triple backtick - it's universal and well-established:
 - Syntax highlighting support is ubiquitous
 - No reason to change what works
 
-**With attributes:**
+**With a label:** the fence info string is a single language token plus an
+optional bracketed label (PART 9 §11). A multiword or `{…}` info string is
+**not** a fence — it falls back to an inline code span — so attributes go in a
+label, not braces:
 ~~~
-```python {linenos=true highlight="3,5-7"}
+```python [Example 1]
 def hello():
     print("Hello!")
 ```
@@ -682,7 +687,6 @@ same output as djot-php.
 The `<` marker means "this cell belongs to the cell on the left":
 ```
 |= Name  |= Contact Info       |  <    |
-|--------|---------------------|-------|
 | Alice  | alice@example.com   | x5234 |
 ```
 
@@ -1246,7 +1250,7 @@ Standard extensions that processors SHOULD support:
 | `embed`        | -                          | `::: embed URL`    | Generic oEmbed   |
 | `iframe`       | -                          | `::: iframe`       | Iframe embed     |
 | `diagram`      | -                          | `::: mermaid`      | Mermaid diagrams |
-| `math`         | `$...$`                    | `$$...$$`          | LaTeX math       |
+| `math`         | `` $`...` ``               | `` $$`...` ``      | LaTeX math       |
 
 #### Unknown Extensions
 
@@ -1298,10 +1302,10 @@ Different contexts need different feature sets:
 
 ```php
 // Built-in profiles
-$converter = new DjotConverter(profile: Profile::full());      // Everything
-$converter = new DjotConverter(profile: Profile::article());   // No raw HTML
-$converter = new DjotConverter(profile: Profile::comment());   // Basic only
-$converter = new DjotConverter(profile: Profile::minimal());   // Text + emphasis
+$converter = new CarveConverter(profile: Profile::full());      // Everything
+$converter = new CarveConverter(profile: Profile::article());   // No raw HTML
+$converter = new CarveConverter(profile: Profile::comment());   // Basic only
+$converter = new CarveConverter(profile: Profile::minimal());   // Text + emphasis
 
 // Custom profile
 $profile = new Profile()
@@ -1430,10 +1434,10 @@ class ProfileFilter
 
 ```php
 // Backend: full power
-$html = DjotConverter::convert($userDoc);
+$html = CarveConverter::convert($userDoc);
 
 // Frontend comments: restricted
-$converter = new DjotConverter(profile: Profile::comment());
+$converter = new CarveConverter(profile: Profile::comment());
 $html = $converter->convert($userComment);
 
 // API with custom rules
@@ -1442,7 +1446,7 @@ $profile = Profile::create()
     ->allowBlock(['paragraph'])
     ->setLinkPolicy(LinkPolicy::allowlist(['docs.example.com']));
 
-$converter = new DjotConverter(profile: $profile);
+$converter = new CarveConverter(profile: $profile);
 ```
 
 #### Combining with SafeMode
@@ -1450,7 +1454,7 @@ $converter = new DjotConverter(profile: $profile);
 `Profile` (feature restriction) and `SafeMode` (XSS prevention) are complementary:
 
 ```php
-$converter = new DjotConverter(
+$converter = new CarveConverter(
     profile: Profile::comment(),    // Feature restriction
     safeMode: SafeMode::strict(),   // Security sanitization
 );
