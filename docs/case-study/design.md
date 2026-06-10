@@ -20,7 +20,7 @@ _Both the affirmative case (what we chose) and the negative case (why we didn't 
 - Asymmetric syntax (`[text](url)` vs `![alt](url)`)
 - Significant trailing whitespace
 - Context-dependent parsing
-- Same character for different purposes (`*` for lists AND emphasis)
+- Same delimiter, count-dependent meaning (`*` vs `**` for emphasis vs strong)
 
 ---
 

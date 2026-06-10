@@ -7,7 +7,7 @@ description: A case study in post-Markdown markup design.
 
 How Carve was designed: the landscape it grew out of, the principles that guided it, the syntax it ended up with, and the parsing / implementation considerations that fall out of those choices.
 
-The full case study runs about 1,800 lines in total — it was split into themed chapters so each one stands on its own.
+The full case study was split into themed chapters so each one stands on its own.
 
 ## Chapters
 

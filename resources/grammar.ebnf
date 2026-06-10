@@ -681,7 +681,7 @@ EOF = (* end of file *) ;
    4. Headings (# prefix)
    5. Thematic breaks (---, ***, ___)
    6. Block quotes (> prefix)
-   7. Lists (-, *, +, 1. prefix)
+   7. Lists (-, *, 1. prefix)
    8. Tables (| prefix)
    9. Admonitions (::: delimited)
    10. Paragraphs (everything else)
@@ -1255,8 +1255,8 @@ EOF = (* end of file *) ;
       alignment emits NO style attribute. `rowspan`/`colspan` are emitted
       only when their count is > 1.
 
-   8. STABLE STRINGS. Mentions default to `/users/{user}` and tags to
-      `/tags/{name}` when no URL template is configured. The footnote
+   8. STABLE STRINGS. Mentions and tags render as inert `<span>`s (no link)
+      when no URL template is configured; a configured template links to them. The footnote
       backlink glyph is `↩` (§16). Math wraps content in `\(…\)` /
       `\[…\]` inside `<span class="math inline|display">` (§18).
 *)

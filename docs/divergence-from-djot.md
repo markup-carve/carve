@@ -94,7 +94,7 @@ used `+` as a bullet (most don't).
 | Italic | `_text_` | `/text/` (slashes lean) |
 | Bold | `*text*` | `*text*` (heavy) |
 | Bold italic | `_*text*_` | `/*text*/` |
-| Underline | `{+text+}` | `_text_` (line underneath) |
+| Underline | (none; `{+text+}` is insert → `<ins>`) | `_text_` (line underneath) |
 | Highlight | `{=text=}` | `==text==` |
 | Subscript | `~text~` | `,,text,,` (commas pull down) |
 
@@ -136,9 +136,9 @@ block marker - a `-`/`*` bullet, `>` quote, `#` heading, a `|` table row, or a
 fence - stays part of the paragraph; the block needs a blank line before it.
 
 **Carve:** a **visible** block interrupts an open paragraph with no blank line
-before it - the Markdown / CommonMark rule. Ordered lists are the one exception:
-they still need a blank line (see §5 for why an ordered marker in prose is too
-common to treat as a list).
+before it - the Markdown / CommonMark rule. Ordered lists are the main exception:
+they still need a blank line (an ordered marker in prose is too common to treat
+as a list); fence and `:::` closers and bare images are also excluded (PART 9 §10).
 
 ```
 intro

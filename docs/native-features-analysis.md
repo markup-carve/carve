@@ -216,7 +216,7 @@ feature-level boundary.
 
 ### SHOULD / configurable (on by default, a processor MAY disable)
 
-- `@mention` and `#tag` shorthands, smart typography (§19).
+- `@mention` and `#tag` shorthands, smart typography (grammar PART 19).
 
 ### MAY / out of core (processor-level)
 

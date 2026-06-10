@@ -42,7 +42,7 @@ turning your content into a JavaScript program.
 |---|:---:|:---:|:---:|:---:|
 | Automatic heading ids | ⚠️ tooling | ✅ | 🧩 | ✅ lowercase, GitHub-style |
 | Cross-references `</#id>` | ❌ | ❌ | ❌ | ✅ |
-| Implicit heading refs `[[Heading]]` | 🧩 (Obsidian) | ❌ | ❌ | ✅ |
+| Implicit heading refs `[Heading][]` | 🧩 (Obsidian uses `[[…]]`) | ❌ | ❌ | ✅ |
 
 ## Safety & ecosystem
 

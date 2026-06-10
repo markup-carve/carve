@@ -6,9 +6,11 @@ same `.crv` / `.html` pairs and reports default conformance, optional Tier-2
 adapter coverage, rough CLI timing, and the extension hook surface each
 implementation exposes.
 
-## Current Snapshot
+## Snapshot (2026-05-31)
 
-Run date: 2026-05-31
+> Historical run from 2026-05-31, when the corpus held 154 pairs. The corpus
+> has since grown (now ~200 pairs); regenerate with `npm run compare:impls`
+> for current figures. The numbers below are from that dated run.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">

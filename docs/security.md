@@ -6,8 +6,10 @@ tighten the policy.
 
 ## HTML is text, not markup
 
-Carve has no raw-HTML passthrough. Angle brackets carry no special meaning, so
-authored `<` and `>` are escaped on output rather than interpreted:
+Carve has no *implicit* raw-HTML passthrough. Authored bare `<` and `>` carry no
+special meaning and are escaped on output rather than interpreted. (Explicit,
+opt-in raw passthrough — `` ```raw html `` blocks and `` `…`{=html} `` inline —
+does emit verbatim HTML and must be disabled for untrusted input; see Profiles.)
 
 ```carve
 <script>alert(1)</script>

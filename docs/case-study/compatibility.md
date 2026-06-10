@@ -2,7 +2,10 @@
 
 ## Part 7: Compatibility and Migration
 
-### 7.1 Compatibility Modes
+### 7.1 Compatibility Modes (proposed)
+
+> Design proposal — `carve-compat` is not part of the current grammar or
+> corpus; it is sketched here as a possible future direction.
 
 ```
 ---

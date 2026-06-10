@@ -17,9 +17,10 @@ implementation realizes.
 Invariant: a feature's tier is identical in every language; a Tier-1 feature is
 core-and-default-on everywhere and its default output is corpus-pinned.
 
-- Tier 1: corpus categories 01–73 (incl. admonitions, footnotes, smart
-  typography, cross-references, `<…>` autolinks, the `:name[…]` / `::: name`
-  extension syntax, and `@mention` / `#tag` / `:emoji:` parsing).
+- Tier 1: corpus categories 01–83 (admonitions, footnotes, cross-references,
+  `<…>` autolinks, the `:name[…]` / `::: name` extension syntax). Smart
+  typography and `@mention` / `#tag` / `:emoji:` parsing are also default-on and
+  corpus-pinned, but per grammar PART 19 a processor MAY disable them.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, emoji glyph map,
   locale smart-quote sets, bare-URL autolinking.
 - Tier 3: Mermaid, Tabs, CodeGroup, TableOfContents, HeadingPermalinks,

@@ -252,7 +252,7 @@ This is {++added++} and {--removed--} text.
 This is {~~old~>new~~} replacement.
 ```
 
-**Status:** Included in spec (section 4.14) but as optional editorial markup.
+**Status:** Included in spec (section 4.14), but with **single**-character markers (`{+added+}`, `{-removed-}`, `{~old~>new~}`); the doubled-marker form shown above was not adopted.
 
 **Considerations:**
 - Useful for document review workflows
