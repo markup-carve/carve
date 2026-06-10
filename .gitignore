@@ -3,3 +3,6 @@ node_modules/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
 docs/.vitepress/.temp/
+
+# Scratch files and working plans (underscore-prefixed) - never versioned
+_*
