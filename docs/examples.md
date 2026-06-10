@@ -4208,3 +4208,36 @@ An escaped `\#` is a literal number sign, never a placeholder.
 ```
 
 :::
+
+## Inline footnotes
+
+An inline footnote `^[content]` carries its note text in place (pandoc-style),
+with no separate definition. It is numbered into the same endnotes section as a
+reference footnote, interleaved by document order, and its content is inline
+(§16). A caret immediately before `[` opens the note; `^[x]^` is therefore a
+note plus a literal `^`, `^^[x]` is suppressed, and `\^[x]` is literal.
+
+::: compare
+
+```carve
+A note^[see *later*] inline. And a ref[^a].
+
+[^a]: reference body.
+```
+
+```html
+<p>A note<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> inline. And a ref<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a>.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <strong>later</strong><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>reference body.<a href="#fnref2" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
