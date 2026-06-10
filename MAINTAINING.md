@@ -77,6 +77,29 @@ _None currently._
 
 _None currently._
 
+### Extension API surface (parity beyond corpus output)
+
+The conformance corpus pins *output*, not the *extension API*. Two
+implementations can produce identical corpus output while exposing different
+extension contracts, so that axis is tracked here separately.
+
+The normative contract (`docs/extensions.md` section 2.1) has four parse/render
+contribution points: an inline matcher, a block matcher, the `afterParse` and
+`beforeRender` transforms, plus per-node renderers. Status:
+
+| Impl | matchers (inline/block) | transforms | renderers |
+|------|:---:|:---:|:---:|
+| carve-php | ✅ | ✅ | ✅ |
+| carve-rs | ✅ | ✅ | ✅ |
+| carve-js | ✅ (markup-carve/carve-js#112) | ✅ | ✅ |
+
+Resolved: carve-js originally shipped only transforms + renderers (matchers
+were deferred), so the *portable* half of the contract (matchers + transforms)
+was only half-portable. carve-js#112 added `matchInline` / `matchBlock` with a
+`MatcherContext` that resolves the document's link/abbreviation/footnote
+definitions, matching carve-php and carve-rs. All three impls now realize the
+full four-point contract.
+
 When a new divergence is found, verify it on both impls, decide the canonical,
 and either pin it as a `docs/examples.md` pair (and move it to *Resolved*) or
 record it as *Intentional* with the reason, or under *Open (tracked)* if it is
