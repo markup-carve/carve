@@ -271,6 +271,20 @@ cell_content = inline_content - '|' ;  (* no unescaped pipes *)
 (* --- Captions --- *)
 caption = '^', space, inline_content, newline ;
 
+(* CAPTION NUMBER PLACEHOLDER -- NORMATIVE.
+   The FIRST bare `#` in a caption's TOP-LEVEL inline_content is a number
+   placeholder. "Bare" = a `#` that does NOT begin a tag (a `#`
+   followed by whitespace, `:`, `.`, end-of-caption, or any
+   non-tag-name character). `#word` stays a tag (PART 9 §19). `\#` is
+   a literal `#`, never a placeholder. Only the first bare `#` is a
+   placeholder; later bare `#` render literally. A `#` INSIDE inline
+   markup (emphasis, link, span) is NOT a placeholder -- put it in the
+   caption's top-level text (`^ *Figure* #:`, not `^ *Figure #*:`).
+   The LABEL is the inline_content before the placeholder, trailing
+   whitespace trimmed; the counter BUCKET KEY is that label's plain
+   text. Numbering is per-bucket, 1-based, in document order, assigned
+   in the resolution pass. A caption with no bare `#` is unchanged. *)
+
 (* --- Admonitions --- *)
 (* A fence is a run of 3+ colons. A longer opener nests shorter blocks; a
    block is closed only by a bare fence of equal-or-greater length, so a
@@ -1177,6 +1191,11 @@ EOF = (* end of file *) ;
       - `</#id>` clones the target heading's full inline children, so a
         heading with markup (`# *Setup*`) yields a link that KEEPS the
         markup (`<a href="#…"><strong>Setup</strong> …</a>`).
+      - `</#id>` to a NUMBERED CAPTION (a figure / table / listing whose
+        caption carries a number placeholder and an `{#id}`) yields the
+        caption's LABEL + NUMBER ("Figure 1"), markup preserved, NOT the
+        caption prose. A `</#id>` to an id that is neither a heading nor a
+        numbered caption stays unresolved (renders literal), as today.
       - Mentions (`@user`), tags (`#tag`) and smart typography are ON by
         default in the conformant core; a processor MAY disable them. The
         corpus pins the default-on behavior.
