@@ -54,10 +54,15 @@ export function resolve(doc, opts = {}) {
 }
 /** Convenience: parse + resolve + render in one call. */
 export function carveToHtml(source, opts = {}) {
-    // `sourceLine` rendering needs block positions, so enable parsing them.
-    const parseOpts = opts.sourceLine ? { ...opts, positions: true } : opts;
-    let doc = resolve(parse(source, parseOpts), { asciiHeadingIds: opts.asciiHeadingIds ?? false });
     const exts = opts.extensions ?? [];
+    // `sourceLine` rendering needs block positions, so enable parsing them.
+    // Extensions are forwarded to the parse so their matchers add syntax.
+    const parseOpts = {
+        ...opts,
+        extensions: exts,
+        ...(opts.sourceLine ? { positions: true } : {}),
+    };
+    let doc = resolve(parse(source, parseOpts), { asciiHeadingIds: opts.asciiHeadingIds ?? false });
     for (const ext of exts)
         if (ext.afterParse)
             doc = ext.afterParse(doc);

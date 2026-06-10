@@ -426,6 +426,36 @@ alone still nests a sublist.
 1. Third
 ```
 
+#### Indentation and nesting
+
+Every list item has a **content column**: where its content begins, after the
+marker: `- ` / `* ` → column 2, `1. ` → 3, `10. ` → 4. A **task** item's checkbox
+is content, not marker, so its content column is the **bullet width (2)**, not
+the full `- [x] ` width.
+
+How a deeper marker is read follows the §10 interrupt rule:
+
+- **Unordered and task markers interrupt**, so an indented one always opens a
+  sub-list, at any indent past the parent's base:
+  ```
+  - a
+    - b          →  nested
+  ```
+- **Ordered markers do not interrupt**, so they are gated by the content column.
+  One **at or past** it opens a sub-list; one **below** it is lazy paragraph text
+  that folds into the item:
+  ```
+  1. a
+     1. b         →  nested  (column 3 = content column)
+
+  1. a
+    1. b          →  "1. b" is lazy text of item a  (column 2, below it)
+  ```
+
+Carve does not require a blank line before a sub-list (unlike djot); indentation
+alone nests it. Structure comes from indentation only; the literal marker numbers
+are auto-renumbered and never create nesting.
+
 #### Task Lists
 ```
 - [ ] Unchecked task

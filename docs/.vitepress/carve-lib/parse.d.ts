@@ -1,4 +1,5 @@
 import type { Attrs, Document } from './ast.js';
+import type { CarveExtension } from './extension.js';
 export interface ParseOptions {
     positions?: boolean;
     /** Format label applied to a bare `---` frontmatter fence. Default 'yaml'. */
@@ -9,6 +10,12 @@ export interface ParseOptions {
      * verbatim. See markup-carve/carve#73.
      */
     asciiHeadingIds?: boolean;
+    /**
+     * Extensions whose parse-stage matchers (`matchInline` / `matchBlock`) add
+     * syntax to the parse. Extensions with only render/transform hooks need not
+     * be passed here; `carveToHtml` forwards them automatically.
+     */
+    extensions?: CarveExtension[];
 }
 export declare function parse(source: string, opts?: ParseOptions): Document;
 /**
