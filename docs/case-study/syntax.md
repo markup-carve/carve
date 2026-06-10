@@ -405,9 +405,11 @@ alone still nests a sublist.
 - [x] Completed task
 ```
 
-Checked (`[x]`) and unchecked (`[ ]`) only; any other character between the
-brackets renders as an unchecked box (the grammar distinguishes just the two
-states).
+The marker holds exactly one character (PART 9 `task_state`). `x` / `X` render a
+**checked** box; ` `, `-`, `_`, `>`, `?` all render an **unchecked** box. The
+non-space markers are recognized (for author conventions like cancelled/
+deferred) but produce the same output as `[ ]` — there is no distinct rendering,
+and a character outside that set is not a task marker at all.
 
 #### Tight vs loose
 
