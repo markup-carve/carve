@@ -123,6 +123,10 @@ export function inlineText(nodes) {
             case 'hard-break':
                 out += ' ';
                 break;
+            case 'caption-number':
+                // Contributes its assigned number (nothing while unresolved).
+                out += n.n === undefined ? '' : String(n.n);
+                break;
             // image, autolink, footnote, crossref, critic-comment: no slug text
             default:
                 break;
@@ -217,6 +221,12 @@ export function resolveHeadingIds(doc, asciiFold = false) {
                 case 'extension':
                     resolveRefs(n.content);
                     break;
+                case 'footnote':
+                    // Inline footnote content (`^[…]`) lives in `.inline`; resolve refs
+                    // there too so an implicit/reference link inside a note is finalized.
+                    if (n.inline)
+                        resolveRefs(n.inline);
+                    break;
                 default:
                     break;
             }
@@ -262,6 +272,10 @@ export function resolveHeadingIds(doc, asciiFold = false) {
                     break;
                 case 'extension':
                     resolveCrossrefs(n.content);
+                    break;
+                case 'footnote':
+                    if (n.inline)
+                        resolveCrossrefs(n.inline);
                     break;
                 default:
                     break;
@@ -319,12 +333,86 @@ export function resolveHeadingIds(doc, asciiFold = false) {
     // doc.children, so they need the same two passes — otherwise a
     // `[Heading][]` or `</#id>` inside a note renders literally. All refs
     // finalize before any crossref cloning (same invariant as above).
+    // Caption numbering pass (#87): walk captioned elements in document
+    // order, assign a per-label number where a caption carries a `#`
+    // placeholder, fill the placeholder, and register the element id as a
+    // crossref target whose auto-text is "label + number". Runs BEFORE
+    // crossref resolution so a `</#id>` (including a forward reference) to a
+    // numbered caption resolves.
     const footnoteBodies = doc.footnoteDefs ? Object.values(doc.footnoteDefs) : [];
+    const counters = new Map();
+    const numberCaption = (caption, attrs) => {
+        const idx = caption.findIndex((n) => n.type === 'caption-number');
+        if (idx === -1)
+            return;
+        const labelNodes = caption.slice(0, idx);
+        const label = inlineText(labelNodes).replace(/\s+$/, '');
+        const next = (counters.get(label) ?? 0) + 1;
+        counters.set(label, next);
+        caption[idx].n = next;
+        const id = attrs?.id;
+        if (id !== undefined && !targets.has(id)) {
+            // Clean "Label N" auto-text: clone the label inlines, trim trailing
+            // whitespace on the final text node, then append " N". Markup in the
+            // label is preserved.
+            const autoNodes = labelNodes.map((n) => ({ ...n }));
+            const last = autoNodes[autoNodes.length - 1];
+            if (last && last.type === 'text') {
+                last.value = last.value.replace(/\s+$/, '');
+            }
+            autoNodes.push({ type: 'text', value: ` ${next}` });
+            targets.set(id, autoNodes);
+        }
+    };
+    const numberBlocks = (blocks) => {
+        for (const b of blocks) {
+            if (b.type === 'figure') {
+                numberCaption(b.caption, b.attrs);
+            }
+            else if (b.type === 'table' && b.caption) {
+                numberCaption(b.caption, b.attrs);
+            }
+            switch (b.type) {
+                case 'blockquote':
+                case 'admonition':
+                case 'div':
+                    numberBlocks(b.children);
+                    break;
+                case 'list':
+                    for (const it of b.items)
+                        numberBlocks(it.children);
+                    break;
+                case 'definition-list':
+                    for (const it of b.items)
+                        for (const d of it.definitions)
+                            numberBlocks(d);
+                    break;
+                case 'figure':
+                    // A figure wraps an image / blockquote / table; descend into a
+                    // blockquote or table target so a nested captioned element is
+                    // numbered too (mirrors walkBlock's figure-target descent).
+                    if (b.target.type === 'blockquote')
+                        numberBlocks(b.target.children);
+                    else if (b.target.type === 'table' && b.target.caption)
+                        numberCaption(b.target.caption, b.target.attrs);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
     for (const block of doc.children)
         walkBlock(block, resolveRefs);
     for (const body of footnoteBodies)
         for (const b of body)
             walkBlock(b, resolveRefs);
+    // Number captions AFTER ref resolution so a label that contains an
+    // implicit heading reference (`^ [Setup][] #: …`) is cloned into the
+    // crossref auto-text already resolved (no dangling href=""), and BEFORE
+    // crossref resolution so a `</#id>` to a numbered caption resolves.
+    numberBlocks(doc.children);
+    for (const body of footnoteBodies)
+        numberBlocks(body);
     for (const block of doc.children)
         walkBlock(block, resolveCrossrefs);
     for (const body of footnoteBodies)

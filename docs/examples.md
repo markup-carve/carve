@@ -4051,3 +4051,160 @@ Text
 ```
 
 :::
+
+## Numbered cross-references
+
+A `#` in a caption is a number placeholder: the label is the text before it,
+the number is injected in its place, and `</#id>` to the element resolves to
+"label + number".
+
+::: compare
+
+```carve
+{#fig-sun}
+![A sunset](sun.jpg)
+^ Figure #: A sunset
+```
+
+```html
+<figure id="fig-sun">
+  <img src="sun.jpg" alt="A sunset">
+  <figcaption>Figure 1: A sunset</figcaption>
+</figure>
+```
+
+:::
+
+Numbers run per label, in document order.
+
+::: compare
+
+```carve
+![one](a.jpg)
+^ Figure #: one
+
+![two](b.jpg)
+^ Figure #: two
+```
+
+```html
+<figure>
+  <img src="a.jpg" alt="one">
+  <figcaption>Figure 1: one</figcaption>
+</figure>
+<figure>
+  <img src="b.jpg" alt="two">
+  <figcaption>Figure 2: two</figcaption>
+</figure>
+```
+
+:::
+
+A `</#id>` to a numbered caption fills its text with the label and number.
+
+::: compare
+
+```carve
+{#fig-sun}
+![A sunset](sun.jpg)
+^ Figure #: A sunset
+
+See </#fig-sun> for the colors.
+```
+
+```html
+<figure id="fig-sun">
+  <img src="sun.jpg" alt="A sunset">
+  <figcaption>Figure 1: A sunset</figcaption>
+</figure>
+<p>See <a href="#fig-sun">Figure 1</a> for the colors.</p>
+```
+
+:::
+
+Tables use the same placeholder; the number lands in the `<caption>`.
+
+::: compare
+
+```carve
+{#tbl-r}
+|= Item |= Qty |
+| Apple | 3 |
+^ Table #: Stock
+
+See </#tbl-r>.
+```
+
+```html
+<table id="tbl-r">
+  <caption>Table 1: Stock</caption>
+  <thead><tr><th>Item</th><th>Qty</th></tr></thead>
+  <tbody>
+    <tr><td>Apple</td><td>3</td></tr>
+  </tbody>
+</table>
+<p>See <a href="#tbl-r">Table 1</a>.</p>
+```
+
+:::
+
+Labels bucket independently, so other languages number on their own.
+
+::: compare
+
+```carve
+![a](a.jpg)
+^ Abbildung #: erstes
+
+![b](b.jpg)
+^ Figure #: first
+```
+
+```html
+<figure>
+  <img src="a.jpg" alt="a">
+  <figcaption>Abbildung 1: erstes</figcaption>
+</figure>
+<figure>
+  <img src="b.jpg" alt="b">
+  <figcaption>Figure 1: first</figcaption>
+</figure>
+```
+
+:::
+
+A `#word` stays a tag, never a number placeholder.
+
+::: compare
+
+```carve
+![chart](c.jpg)
+^ See #data for details
+```
+
+```html
+<figure>
+  <img src="c.jpg" alt="chart">
+  <figcaption>See <span class="tag"><strong>#data</strong></span> for details</figcaption>
+</figure>
+```
+
+:::
+
+An escaped `\#` is a literal number sign, never a placeholder.
+
+::: compare
+
+```carve
+![price](p.jpg)
+^ Costs \# units
+```
+
+```html
+<figure>
+  <img src="p.jpg" alt="price">
+  <figcaption>Costs # units</figcaption>
+</figure>
+```
+
+:::

@@ -254,6 +254,33 @@ identifier is ambiguous because of duplicate headings, it resolves to
 the first occurrence; target a later one explicitly with its numeric
 suffix (`</#setup-2>`).
 
+#### Numbered Cross-References
+
+A `#` placeholder in a caption turns it into a numbered figure, table, or
+listing. The label is the text before the `#`; the number is injected in its
+place and runs per label, 1-based, in document order:
+
+```
+{#fig-sun}
+![A sunset](sun.jpg)
+^ Figure #: A sunset
+→ <figcaption>Figure 1: A sunset</figcaption>
+
+See </#fig-sun> for the colors.
+→ See <a href="#fig-sun">Figure 1</a> for the colors.
+```
+
+A `</#id>` to a numbered caption auto-fills "label + number" ("Figure 1"),
+markup preserved, not the caption prose. Notes:
+
+- The label is your own text, so other languages number independently:
+  `^ Abbildung #: …` produces "Abbildung 1" in its own counter.
+- A `#word` stays a tag, `\#` is a literal number sign, and only the first
+  bare `#` in the caption's top-level text is a placeholder. A `#` inside
+  inline markup (`^ *Figure #*:`) is literal; write `^ *Figure* #:` instead.
+- Numbering is independent of referencing: a `#`-caption is numbered whether
+  or not anything links to it; an `{#id}` only makes it a target.
+
 #### Wiki-Style Links
 For internal documents, use collapsed reference links:
 ```

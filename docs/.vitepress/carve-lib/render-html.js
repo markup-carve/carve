@@ -148,33 +148,48 @@ function visitInlineTree(nodes, fn) {
 function collectFootnotes(ast) {
     const defs = ast.footnoteDefs ?? {};
     const order = [];
-    const backrefs = {};
     const seen = {};
     const onNode = (n) => {
-        if (n.type !== 'footnote' || !n.id || !defs[n.id])
+        if (n.type !== 'footnote')
             return;
-        let idx = order.indexOf(n.id);
+        // Inline footnote (`^[content]`): always a fresh, anonymous number.
+        if (n.inline) {
+            const number = order.length + 1;
+            const refId = `fnref${number}`;
+            order.push({ inline: n.inline, backrefs: [refId] });
+            n.number = number;
+            n.refId = refId;
+            return;
+        }
+        // Reference footnote (`[^label]`): numbered at first resolved reference.
+        if (!n.id || !defs[n.id])
+            return;
+        let idx = order.findIndex((e) => e.label === n.id);
         if (idx === -1) {
-            order.push(n.id);
+            order.push({ label: n.id, backrefs: [] });
             idx = order.length - 1;
-            backrefs[n.id] = [];
         }
         const number = idx + 1;
         const occ = (seen[n.id] = (seen[n.id] ?? 0) + 1);
         const refId = occ === 1 ? `fnref${number}` : `fnref${number}-${occ}`;
         n.number = number;
         n.refId = refId;
-        backrefs[n.id].push(refId);
+        order[idx].backrefs.push(refId);
     };
     for (const b of ast.children)
         walkBlockInlines(b, (xs) => visitInlineTree(xs, onNode));
-    // Footnote bodies may reference further footnotes; walk referenced
-    // bodies in discovery order (the queue grows as onNode appends labels).
+    // Reference bodies may cite further reference footnotes; walk them in
+    // discovery order (the queue grows as onNode appends entries). Inline-note
+    // content lives in `.inline`, which visitInlineTree does not descend, so it
+    // is never walked for footnotes (design §3.1: no footnotes inside notes).
     for (let k = 0; k < order.length; k++) {
-        for (const b of defs[order[k]] ?? [])
+        const label = order[k].label;
+        if (label === undefined)
+            continue;
+        for (const b of defs[label] ?? [])
             walkBlockInlines(b, (xs) => visitInlineTree(xs, onNode));
     }
-    return { order, backrefs };
+    return { order };
 }
 /**
  * Endnotes section, djot-compatible roles. The backlink glyph is the
@@ -184,10 +199,12 @@ function collectFootnotes(ast) {
 function renderFootnoteSection(ast, st, opts) {
     const defs = ast.footnoteDefs ?? {};
     const lines = ['<section role="doc-endnotes">', `${indent(1)}<hr>`, `${indent(1)}<ol>`];
-    st.order.forEach((label, idx) => {
+    st.order.forEach((entry, idx) => {
         const number = idx + 1;
-        const body = (defs[label] ?? []).map((b) => renderBlock(b, opts, 3));
-        const blink = (st.backrefs[label] ?? [])
+        const body = entry.inline
+            ? [`${indent(3)}<p>${renderInlines(entry.inline, opts)}</p>`]
+            : (defs[entry.label] ?? []).map((b) => renderBlock(b, opts, 3));
+        const blink = entry.backrefs
             .map((rid) => `<a href="#${rid}" role="doc-backlink">↩</a>`)
             .join('');
         const last = body.length - 1;
@@ -308,6 +325,26 @@ function renderAttrs2(attrs, opts = {}) {
 }
 function renderBlock(node, opts, level) {
     const pad = indent(level);
+    // Extension block renderers (keyed by node type) get first claim; one may
+    // return undefined to defer back to the core renderer below.
+    const blockRenderer = opts.extensions
+        ?.flatMap((e) => (e.blockRenderers ? [e.blockRenderers] : []))
+        .map((r) => r[node.type])
+        .find((fn) => fn !== undefined);
+    if (blockRenderer) {
+        const ctx = {
+            level,
+            indent,
+            renderChildren: (nodes, lvl) => nodes.map((c) => renderBlock(c, opts, lvl)).join('\n'),
+            renderInlines: (nodes) => renderInlines(nodes, opts),
+            escapeHtml,
+            escapeAttr,
+            renderAttrs,
+        };
+        const out = blockRenderer(node, ctx);
+        if (out !== undefined)
+            return out;
+    }
     switch (node.type) {
         case 'heading': {
             const inner = renderInlines(node.children, opts);
@@ -735,6 +772,9 @@ function renderInline(node, opts) {
             return `<span class="critic-comment">${escapeHtml(node.text)}</span>`;
         case 'crossref':
             return `&lt;/#${escapeHtml(node.target)}&gt;`;
+        case 'caption-number':
+            // Filled by resolve(); an unresolved placeholder renders empty.
+            return node.n === undefined ? '' : String(node.n);
         case 'comment':
             // Comments are not rendered (§4.13); inline form mirrors the block one.
             return '';

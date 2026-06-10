@@ -1,0 +1,98 @@
+Numbered cross-references
+
+```
+{#fig-sun}
+![A sunset](sun.jpg)
+^ Figure #: A sunset
+.
+<figure id="fig-sun">
+  <img src="sun.jpg" alt="A sunset">
+  <figcaption>Figure 1: A sunset</figcaption>
+</figure>
+```
+
+```
+![one](a.jpg)
+^ Figure #: one
+
+![two](b.jpg)
+^ Figure #: two
+.
+<figure>
+  <img src="a.jpg" alt="one">
+  <figcaption>Figure 1: one</figcaption>
+</figure>
+<figure>
+  <img src="b.jpg" alt="two">
+  <figcaption>Figure 2: two</figcaption>
+</figure>
+```
+
+```
+{#fig-sun}
+![A sunset](sun.jpg)
+^ Figure #: A sunset
+
+See </#fig-sun> for the colors.
+.
+<figure id="fig-sun">
+  <img src="sun.jpg" alt="A sunset">
+  <figcaption>Figure 1: A sunset</figcaption>
+</figure>
+<p>See <a href="#fig-sun">Figure 1</a> for the colors.</p>
+```
+
+```
+{#tbl-r}
+|= Item |= Qty |
+| Apple | 3 |
+^ Table #: Stock
+
+See </#tbl-r>.
+.
+<table id="tbl-r">
+  <caption>Table 1: Stock</caption>
+  <thead><tr><th>Item</th><th>Qty</th></tr></thead>
+  <tbody>
+    <tr><td>Apple</td><td>3</td></tr>
+  </tbody>
+</table>
+<p>See <a href="#tbl-r">Table 1</a>.</p>
+```
+
+```
+![a](a.jpg)
+^ Abbildung #: erstes
+
+![b](b.jpg)
+^ Figure #: first
+.
+<figure>
+  <img src="a.jpg" alt="a">
+  <figcaption>Abbildung 1: erstes</figcaption>
+</figure>
+<figure>
+  <img src="b.jpg" alt="b">
+  <figcaption>Figure 1: first</figcaption>
+</figure>
+```
+
+```
+![chart](c.jpg)
+^ See #data for details
+.
+<figure>
+  <img src="c.jpg" alt="chart">
+  <figcaption>See <span class="tag"><strong>#data</strong></span> for details</figcaption>
+</figure>
+```
+
+```
+![price](p.jpg)
+^ Costs \# units
+.
+<figure>
+  <img src="p.jpg" alt="price">
+  <figcaption>Costs # units</figcaption>
+</figure>
+```

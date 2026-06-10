@@ -259,6 +259,16 @@ export interface CrossRef extends BaseNode {
     /** Raw id between `</#` and `>`. */
     target: string;
 }
+/**
+ * Caption number placeholder (the bare `#` in `^ Figure #: …`). Emitted
+ * only in caption context; `resolve()` fills `n` with the assigned number.
+ * Renders as the number text.
+ */
+export interface CaptionNumber extends BaseNode {
+    type: 'caption-number';
+    /** Assigned during resolve; undefined until then. */
+    n?: number;
+}
 export interface Mention extends BaseNode {
     type: 'mention';
     user: string;
@@ -310,6 +320,6 @@ export interface CriticComment extends BaseNode {
     type: 'critic-comment';
     text: string;
 }
-export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | Emoji | AutoLink | CrossRef | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment | Comment;
+export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | Emoji | AutoLink | CrossRef | CaptionNumber | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment | Comment;
 export type AnyNode = Document | BlockNode | InlineNode;
 //# sourceMappingURL=ast.d.ts.map
