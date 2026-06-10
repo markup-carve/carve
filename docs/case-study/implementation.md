@@ -16,7 +16,9 @@
 ### 9.2 Reference Implementations
 
 JavaScript/TypeScript, Rust, and PHP implementations now exist (carve-js,
-carve-rs, carve-php), tested against the shared corpus. Still wanted:
+carve-rs, carve-php), tested against the shared corpus. 
+
+Still wanted:
 
 1. Python (data science, docs communities)
 2. Go (modern backend systems)
