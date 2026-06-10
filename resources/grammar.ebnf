@@ -704,15 +704,17 @@ EOF = (* end of file *) ;
    1. Escaped characters (\x)
    2. Code spans (`...`)
    3. Autolinks (<url>)
-   4. Links and images ([text](url), ![alt](src))
-   5. Math ($`…`, $$`…`)
-   6. Emphasis markers (/, *, _, ~, ^, ==, ,,)
-   7. Editorial markup ({+...+}, etc.)
-   8. Extensions (:type[content])
-   9. Mentions and tags (@user, #tag)
-   10. Smart typography (--, ---, etc.)
-   11. Trailing line comments (%%, PART 9 §21)
-   12. Plain text
+   4. Inline footnotes (^[content]) -- above emphasis, so `^[` is a note,
+      not superscript; see PART 9 §16
+   5. Links and images ([text](url), ![alt](src))
+   6. Math ($`…`, $$`…`)
+   7. Emphasis markers (/, *, _, ~, ^, ==, ,,)
+   8. Editorial markup ({+...+}, etc.)
+   9. Extensions (:type[content])
+   10. Mentions and tags (@user, #tag)
+   11. Smart typography (--, ---, etc.)
+   12. Trailing line comments (%%, PART 9 §21)
+   13. Plain text
 
    Disambiguation rule:
    - Prefer literal text over markup: a delimiter that has no valid match
@@ -1120,8 +1122,9 @@ EOF = (* end of file *) ;
       84-block-attribute-lines.
 
    16. FOOTNOTES -- NORMATIVE (governs `footnote` / `footnote_definition`
-      in PART 3). Only the reference form `[^label]` + `[^label]: body`
-      is implemented (inline-footnote and sidenote are deferred).
+      in PART 3). The reference form `[^label]` + `[^label]: body` and the
+      INLINE form `^[content]` are implemented; the sidenote (`[>content]`)
+      remains deferred.
       - A `[^label]` reference with a matching definition is NUMBERED by
         document reference order (first referenced = 1); the same label
         referenced again reuses its number.
@@ -1144,9 +1147,30 @@ EOF = (* end of file *) ;
         repeat uses `fnref{n}-{k}` and adds another backlink. The
         backlink glyph is the plain return arrow `↩` (Carve's choice;
         djot appends a variation selector).
-      - LIMITATION: a footnote reference inside link text (`[t[^1]](u)`)
-        or inside a heading later cloned by a `</#id>` crossref nests an
-        <a> in an <a>; avoid footnotes in those positions.
+      - INLINE FOOTNOTE `^[content]` (pandoc form; a deliberate carve
+        extension -- canonical djot has no inline footnotes). A `^`
+        IMMEDIATELY before `[` opens an anonymous note whose content is the
+        balanced bracket span (escape- and code-span-aware close, same as link
+        text). Properties:
+          * Content is INLINE-only, parsed recursively with footnote
+            recognition DISABLED inside it (no `^[…]` or `[^ref]` nested in a
+            note, either direction).
+          * Numbered in the SAME document-order sequence as reference notes
+            (an inline note always takes a fresh anonymous number; it cannot
+            be re-referenced). Renders the same noteref + an `<li id="fn{n}">`
+            in the one endnotes section, content as one `<p>` + backlink.
+          * A trailing `{attrs}` attaches to the noteref `<a>` (like a
+            reference note).
+          * Empty or whitespace-only (`^[]`, `^[ ]`) is literal; an unclosed
+            `^[…` is literal.
+        PRECEDENCE (PART 8): `^[` is ranked ABOVE superscript. Consequences:
+        `^[x]^` is a note then a literal `^` (no longer superscript-of-`[x]`;
+        escape `\^[x]^` to keep superscript); `^^[x]` is suppressed by
+        same-delimiter `^` adjacency (literal); `\^[x]` is literal; a `^` not
+        immediately followed by `[` is superscript as before.
+      - LIMITATION: a footnote (reference `[^1]` or inline `^[…]`) inside link
+        text (`[t[^1]](u)`) or inside a heading later cloned by a `</#id>`
+        crossref nests an <a> in an <a>; avoid footnotes in those positions.
 
    17. TIGHT vs LOOSE LISTS -- NORMATIVE (governs `list` rendering). A list is
       LOOSE if any item is followed by a blank line before the next sibling
