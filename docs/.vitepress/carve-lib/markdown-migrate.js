@@ -316,6 +316,10 @@ export function markdownToCarve(markdown) {
         // Strip an ATX heading's optional closing `#` run (Carve keeps it as text).
         if (isHeading)
             body = body.replace(/[ \t]+#+[ \t]*$/, '');
+        // Carve has no `+` bullet (it is the list-continuation marker); normalize a
+        // Markdown `+` bullet to `-` so the converted list survives.
+        if (isList)
+            body = body.replace(/^(\s*)\+(\s)/, '$1-$2');
         out.push(convertInline(body));
         if (isHeading && i + 1 < lines.length) {
             const next = lines[i + 1].trim();

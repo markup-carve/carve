@@ -22,8 +22,10 @@ import { parse as parseImpl } from './parse.js';
 import { resolveHeadingIds } from './heading-ids.js';
 import { renderHtml as renderHtmlImpl } from './render-html.js';
 export * from './ast.js';
-export { djotMigrationWarnings, formatMigrationWarnings, } from './djot-migrate.js';
+export { djotMigrationWarnings, formatMigrationWarnings, applyMigrationFixes, } from './djot-migrate.js';
 export { markdownToCarve } from './markdown-migrate.js';
+export { lintCarve, formatLintWarnings, } from './lint.js';
+export { tabNormalize } from './tab-normalize.js';
 /**
  * Parse Carve source into a typed AST.
  *
