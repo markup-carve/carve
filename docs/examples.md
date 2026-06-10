@@ -571,6 +571,45 @@ An ordered list nests the same way — a child indented to the parent's content 
 
 :::
 
+An ordered child *below* the content column does not nest: an ordered marker does not interrupt a paragraph (§10), so it folds into the item as lazy text.
+
+::: compare
+
+```carve
+1. outer
+  1. inner
+```
+
+```html
+<ol>
+  <li>outer
+1. inner</li>
+</ol>
+```
+
+:::
+
+A task item's content column is the bullet width (2), since the checkbox is content, not marker, so a child indented to column 2 nests. (Unordered and task markers interrupt, §10, so they nest at any indent past the base, regardless of the content column.)
+
+::: compare
+
+```carve
+- [ ] outer
+  - inner
+```
+
+```html
+<ul>
+  <li><input type="checkbox" disabled> outer
+    <ul>
+      <li>inner</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
 A blank line between items produces a loose list — each item wraps in a paragraph.
 
 ::: compare

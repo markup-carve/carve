@@ -80,6 +80,29 @@ not a list</p>
 ```
 
 ```
+1. outer
+  1. inner
+.
+<ol>
+  <li>outer
+1. inner</li>
+</ol>
+```
+
+```
+- [ ] outer
+  - inner
+.
+<ul>
+  <li><input type="checkbox" disabled> outer
+    <ul>
+      <li>inner</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
 - apples
 
 - oranges
