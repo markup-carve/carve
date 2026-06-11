@@ -546,32 +546,27 @@ math_display = "$$", code_span ;
 math_content = (* verbatim LaTeX, taken from the code_span *) ;
 
 (* --- Emphasis (left/right word-boundary rule; PART 9 §9 is normative).
-   DESIGN A (uniform word boundary). The word-boundary restriction that
-   formerly applied to `/` and `_` ONLY now applies to EVERY bare emphasis
-   delimiter (`/`, `*`, `_`, `~`, `^`, `=`, `,`). No bare delimiter opens or
-   closes intraword: `foo*bar*baz`, `foo~bar~baz`, `snake_case`, `a/b/c` all
-   stay literal. One rule, no per-character carve-outs. EVERY bare delimiter is
-   single-char -- there is no two-char delimiter. This is STRICTER than both
-   Djot (whitespace-only) and the previous Carve rule.
-   BREAKING: bare intraword `*`, `~`, `^`, `=` (and the `==` / `,,` forms, see
-   below) that emphasized under the old rule are now literal.
+   The word-boundary restriction applies to EVERY bare emphasis delimiter
+   (`/`, `*`, `_`, `~`, `^`, `=`, `,`). No bare delimiter opens or closes
+   intraword: `foo*bar*baz`, `foo~bar~baz`, `snake_case`, `a/b/c` all stay
+   literal. One rule, no per-character carve-outs. Every bare delimiter is
+   single-char -- there is no two-char delimiter. This is STRICTER than Djot,
+   whose rule is whitespace-only.
 
    FORCED INTRAWORD -- the brace-pair `{X … X}` family (PART 9 §22) is the
    explicit escape hatch: it opens a span regardless of word boundary, so
    `x{*bold*}y`, `x{/italic/}y`, `x{_under_}y` emphasize intraword. It is
    ADDITIVE -- bare delimiters at a word boundary are unchanged; the braces are
-   only needed to force a span where a bare delimiter would now stay literal.
+   only needed to force a span where a bare delimiter would otherwise stay
+   literal.
 
-   HIGHLIGHT and SUBSCRIPT are now the single-char `=` and `,` delimiters (were
-   the two-char `==` and `,,`). Uniform word boundary makes single `=` and `,`
-   safe: `x = 5`, `key=value`, `a=b`, `=>`, `1,2,3`, `a,b,c`, `x, y, z`,
-   `$1,000` all stay literal -- the opener is followed by whitespace, or
-   preceded/followed by an alphanumeric, so the word-boundary rule rejects it.
-   Consequently `==x==` and `,,x,,` are DOUBLED bare delimiters and, by the
-   same-delimiter-adjacency rule (PART 9 §9), are LITERAL: the old
-   `==highlight==` / `,,sub,,` no longer mark and are migrated `==` -> `=` and
-   `,,` -> `,` (carve-js djot-migrate). With subscript single-char, NO two-char
-   bare delimiter remains -- the delimiter set is fully uniform. --- *)
+   HIGHLIGHT and SUBSCRIPT are the single-char `=` and `,` delimiters. Uniform
+   word boundary makes single `=` and `,` safe: `x = 5`, `key=value`, `a=b`,
+   `=>`, `1,2,3`, `a,b,c`, `x, y, z`, `$1,000` all stay literal -- the opener is
+   followed by whitespace, or preceded/followed by an alphanumeric, so the
+   word-boundary rule rejects it. A DOUBLED bare delimiter (`==x==`, `,,x,,`)
+   is literal by the same-delimiter-adjacency rule (PART 9 §9), like `**x**` or
+   `//x//`. The delimiter set is fully uniform: all single-char. --- *)
 
 (* For EVERY bare delimiter (`/`, `*`, `_`, `~`, `^`, `=`, `,` -- all single-char):
    Opener: NOT followed by whitespace, AND preceded by start, whitespace, or
@@ -604,8 +599,8 @@ forced_sub        = "{,", forced_content, ",}", [attributes] ;   (* sub       *)
 (* `{~ … ~}` is forced strikethrough UNLESS it contains a top-level `~>`, in
    which case it is editorial substitution (PART 9 §22 disambiguation). *)
 forced_strike     = "{~", forced_content, "~}", [attributes] ;
-(* `{= … =}` is forced highlight. This RECLAIMS the form that was previously
-   reserved/literal-and-flagged-for-migration (see Editorial Markup below). *)
+(* `{= … =}` is forced highlight (see Editorial Markup below for the
+   distinction from the raw-inline `{=format}` attribute). *)
 forced_highlight  = "{=", forced_content, "=}", [attributes] ;
 forced_content    = (inline_element | text_run | literal_special)+ ;
 
@@ -634,8 +629,8 @@ sub_content = (inline_element | text_run | literal_special)+ ;
 highlight_content = (inline_element | text_run | literal_special)+ ;
 
 (* Word boundary rule for emphasis openers/closers (normative: PART 9 §9).
-   Applies to EVERY bare delimiter under Design A, not just `/` and `_`.
-   Forced `{X … X}` spans (PART 9 §22) are exempt. *)
+   Applies to EVERY bare delimiter. Forced `{X … X}` spans (PART 9 §22) are
+   exempt. *)
 emphasis_open_condition = (* preceding char is whitespace, start, or punctuation but NOT alphanumeric or '_'; following char is non-whitespace *) ;
 emphasis_close_condition = (* preceding char is non-whitespace; following char is NOT alphanumeric *) ;
 
@@ -670,12 +665,10 @@ editorial_comment = "{#", inline_content, "#}" ;
    contains a top-level `~>`, and forced STRIKETHROUGH otherwise. `{# … #}`
    stays editorial comment (`#` is not an emphasis delimiter, no collision). *)
 
-(* HIGHLIGHT under Design A is the single-char `=` delimiter, and `{=text=}` is
-   its FORCED intraword form (forced_highlight, PART 9 §22). This REVERSES the
-   previous decision that `{=text=}` is literal-and-flagged-for-migration: the
-   form is reclaimed and now renders <mark>. The old two-char `==text==`
-   highlight is migrated `==` -> `=` (carve-js djot-migrate; the
-   djot-highlight-braces pass that rewrote `{=text=}` -> `==text==` is retired). *)
+(* HIGHLIGHT is the single-char `=` delimiter, and `{=text=}` is its FORCED
+   intraword form (forced_highlight, PART 9 §22), rendering <mark>. It is
+   distinct from the raw-inline `{=format}` attribute on a code span (e.g.
+   `` `x`{=html} ``), which has no trailing `=` before the `}`. *)
 
 (* --- Mentions and Tags --- *)
 mention = '@', mention_name ;
@@ -848,16 +841,15 @@ EOF = (* end of file *) ;
 
 (*
    1. WORD BOUNDARIES FOR EMPHASIS (summary -- §9 below is NORMATIVE).
-      DESIGN A: the word-boundary conditions apply to EVERY bare delimiter
-      (`/ * _ ~ ^ = ,` -- all single-char), not just `/` and `_`. No bare
-      delimiter emphasizes intraword. The forced `{X … X}` family (§22) is the
-      escape hatch for deliberate intraword emphasis.
+      The word-boundary conditions apply to EVERY bare delimiter
+      (`/ * _ ~ ^ = ,` -- all single-char). No bare delimiter emphasizes
+      intraword. The forced `{X … X}` family (§22) is the escape hatch for
+      deliberate intraword emphasis.
       - SAME-DELIMITER ADJACENCY applies to ALL SEVEN single-char delimiters
         `/ * _ ~ ^ = ,`: a delimiter adjacent to another of the same delimiter
         (before or after) never opens, so a doubled delimiter is literal
         (`**x**`, `~~x~~`, `^^x^^`, `==x==`, `,,x,,` literal, like `//x//`,
-        `__x__`). `==x==` / `,,x,,` literal are the migration triggers: old
-        highlight `==` -> `=` and old subscript `,,` -> `,`.
+        `__x__`).
       - Opener (all bare): NOT followed by whitespace AND preceded by
         whitespace, start, or punctuation but NOT by an alphanumeric or `_`
         (left word boundary)
@@ -868,9 +860,7 @@ EOF = (* end of file *) ;
         (opener has no left boundary, or is followed by whitespace);
         "/usr/local/" -> <em>usr/local</em> (01-emphasis-6); "x{*y*}z" ->
         x<strong>y</strong>z (forced, §22).
-      - This is STRICTER than Djot (whitespace-only) and stricter than the
-        previous Carve rule, which allowed intraword `* ~ ^` and the old
-        two-char `== ,,`.
+      - This is STRICTER than Djot, whose rule is whitespace-only.
 
    2. MATCHING FENCES
       - Code fence closer must have same character and >= same length as opener
@@ -926,12 +916,10 @@ EOF = (* end of file *) ;
         of the SAME delimiter never opens a span. A doubled delimiter is
         therefore literal text, never nested same-type emphasis (§3): `**x**`,
         `~~x~~`, `^^x^^`, `==x==`, `,,x,,` stay literal exactly like `//x//` and
-        `__x__` (corpus 71-doubled-emphasis-delimiters, 01-emphasis-11). `==x==`
-        and `,,x,,` literal are the DESIGN-A migration triggers -- the old
-        two-char highlight / subscript are now doubled `=` / `,` and must be
-        rewritten `==` -> `=` and `,,` -> `,`. A longer run (`,,,y,,,`, `===y===`)
-        is likewise all-literal (corpus 74-two-char-delimiter-runs).
-      - WORD BOUNDARY (DESIGN A: ALL bare delimiters `/ * _ ~ ^ = ,`; no
+        `__x__` (corpus 71-doubled-emphasis-delimiters, 01-emphasis-11). A
+        longer run (`,,,y,,,`, `===y===`) is likewise all-literal (corpus
+        74-two-char-delimiter-runs).
+      - WORD BOUNDARY (ALL bare delimiters `/ * _ ~ ^ = ,`; no
         bare intraword emphasis). A delimiter opens only if NOT followed by
         whitespace AND preceded by whitespace, start, or punctuation -- but NOT
         by an alphanumeric or `_` (left word boundary). So (/x/) -> (<em>x</em>)
@@ -1373,8 +1361,8 @@ EOF = (* end of file *) ;
         the next line of the same paragraph is unaffected (corpus 46-comments-6).
 
    22. FORCED INTRAWORD EMPHASIS -- NORMATIVE (governs the forced_* productions
-      in PART 3). The brace-pair family is the Design-A escape hatch for
-      emphasis where a bare delimiter would now stay literal (§9 word boundary).
+      in PART 3). The brace-pair family is the escape hatch for emphasis where a
+      bare delimiter would otherwise stay literal (§9 word boundary).
       - FORMS. Each emphasis mark has a forced form that renders the SAME
         element as its bare delimiter:
           {/x/}   -> <em>x</em>        {*x*}   -> <strong>x</strong>
@@ -1384,7 +1372,7 @@ EOF = (* end of file *) ;
       - NO WORD BOUNDARY. A forced span opens and closes regardless of the
         surrounding characters, so it emphasizes intraword: foo{*bar*}baz ->
         foo<strong>bar</strong>baz; my{_path_}name -> my<u>path</u>name. This
-        is the ONLY way to emphasize intraword under Design A.
+        is the ONLY way to emphasize intraword.
       - BOUNDS = THE BRACES. The closing `X}` ends the span; a bare delimiter
         of the same kind INSIDE is literal content, like the bare-span rule
         (§9): {/a/b/} -> <em>a/b</em>. Inner content otherwise parses normally,
@@ -1394,10 +1382,9 @@ EOF = (* end of file *) ;
         it contains a top-level `~>` ({~old~>new~} -> <del>old</del><ins>new
         </ins>, §16-style), and forced STRIKETHROUGH otherwise ({~old~} ->
         <s>old</s>). The `~>` test is the discriminator.
-      - `{= … =}` RECLAIM. `{=x=}` is forced highlight (<mark>). This REVERSES
-        the prior rule that `{=text=}` is literal; the djot-migrate
-        djot-highlight-braces pass (which rewrote `{=text=}` -> `==text==`) is
-        retired, since `==text==` is itself now migrated to `=text=`.
+      - `{= … =}` is forced highlight (<mark>), distinct from the raw-inline
+        `{=format}` attribute on a code span (`` `x`{=html} ``), which has no
+        trailing `=` before the `}`.
       - ESCAPING. A literal `{/` (etc.) is written `\{/` -- one backslash on the
         brace is enough; the inner delimiter need not be escaped.
       - ATTRIBUTES. A forced span MAY carry a trailing `[attributes]` block like

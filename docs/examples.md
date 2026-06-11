@@ -25,12 +25,12 @@ _underline_  ~strikethrough~
 
 :::
 
-Under **Design A** the word-boundary rule applies to *every* bare delimiter (`/ * _ ~ ^ = ,` — all single-char), not just `/` and `_`. No bare delimiter emphasizes intraword: `foo*bar*baz`, `foo~bar~baz`, `snake_case`, `a/b/c`, `x = 5`, `key=value`, `1,2,3` all stay literal. For deliberate intraword emphasis, use the forced `{X … X}` family (below). For any bare delimiter:
+The word-boundary rule applies to *every* bare delimiter (`/ * _ ~ ^ = ,` — all single-char). No bare delimiter emphasizes intraword: `foo*bar*baz`, `foo~bar~baz`, `snake_case`, `a/b/c`, `x = 5`, `key=value`, `1,2,3` all stay literal. For deliberate intraword emphasis, use the forced `{X … X}` family (below). For any bare delimiter:
 
 - an **opener** is recognized only if it is *not* followed by whitespace **and** is preceded by the start of the line/block, whitespace, or a punctuation character (not by an alphanumeric, `_`, or the same delimiter) — so `a/b/c`, `foo_bar_baz`, `snake_case`, and `//a/` stay literal, while `(/x/)` and `a./b/` open after punctuation;
 - a **closer** is recognized only if it is *not* preceded by whitespace **and** *not* followed by an alphanumeric character — so `x /a/b y` stays literal.
 
-Highlight and subscript are the single-char `=` and `,` delimiters; the uniform word boundary keeps `x = 5`, `key=value`, `1,2,3`, `a,b,c`, `x, y, z` literal. Consequently the old two-char `==highlight==` and `,,sub,,` are *doubled* `=` / `,` and render literal — migrate `==` → `=` and `,,` → `,`. With subscript single-char, no two-char bare delimiter remains. This is *stricter* than Djot (whose `_`/`*` rule is purely whitespace-flanking) and stricter than the previous Carve rule that allowed intraword `* ~ ^` and the old two-char `== ,,`. The boundary rule still allows `/usr/local/` → `<em>usr/local</em>`: the opening `/` sits at line start and the inner same-type `/` characters are literal content (Carve does not nest same-type emphasis). The normative rule lives in `resources/grammar.ebnf` PART 9 §9 and §22.
+Highlight and subscript are the single-char `=` and `,` delimiters; the uniform word boundary keeps `x = 5`, `key=value`, `1,2,3`, `a,b,c`, `x, y, z` literal. Every bare delimiter is single-char, so a *doubled* delimiter (`==x==`, `,,x,,`) is literal by the same-delimiter-adjacency rule, just like `**x**` or `//x//`. This is *stricter* than Djot, whose `_`/`*` rule is purely whitespace-flanking. The boundary rule still allows `/usr/local/` → `<em>usr/local</em>`: the opening `/` sits at line start and the inner same-type `/` characters are literal content (Carve does not nest same-type emphasis). The normative rule lives in `resources/grammar.ebnf` PART 9 §9 and §22.
 
 ::: compare
 
@@ -142,7 +142,7 @@ x /a/b y
 
 :::
 
-Under Design A *no* bare delimiter produces intraword emphasis — `*` now behaves like `/` and `_`.
+*No* bare delimiter produces intraword emphasis — `*` behaves like `/` and `_`.
 
 ::: compare
 
@@ -172,7 +172,7 @@ A `/` or `_` opener immediately preceded by the *same* delimiter or by `_` is no
 
 ### Forced intraword emphasis
 
-Wrapping a bare delimiter in a brace pair — `{/.../}`, `{*...*}`, `{_..._}`, `{~...~}`, `{^...^}`, `{,...,}`, `{=...=}` — forces a span with no word-boundary condition, so it emphasizes *intraword*. This is the Design-A escape hatch for the cases bare delimiters no longer cover.
+Wrapping a bare delimiter in a brace pair — `{/.../}`, `{*...*}`, `{_..._}`, `{~...~}`, `{^...^}`, `{,...,}`, `{=...=}` — forces a span with no word-boundary condition, so it emphasizes *intraword*. This is the escape hatch for the cases a bare delimiter leaves literal.
 
 ::: compare
 
@@ -200,16 +200,16 @@ The braces bound the span: a bare same-kind delimiter inside is literal, and cro
 
 :::
 
-Highlight is now single-char `=`; the old two-char `==highlight==` is a doubled delimiter and renders literal (migrate `==` → `=`).
+Highlight is the single-char `=`; a doubled `==…==` is literal by the same-delimiter-adjacency rule.
 
 ::: compare
 
 ```carve
-=marked= here, but ==old== is literal now.
+=marked= here, but ==doubled== is literal.
 ```
 
 ```html
-<p><mark>marked</mark> here, but ==old== is literal now.</p>
+<p><mark>marked</mark> here, but ==doubled== is literal.</p>
 ```
 
 :::
@@ -2623,10 +2623,10 @@ a {+ins+} {-del-} {~old~>new~} b{# note #}
 
 :::
 
-Under Design A `{=text=}` is reclaimed as forced highlight (`<mark>`), and bare
-highlight is single-char `=`. The raw-inline format attribute keeps its own
-shape — `{=html}` (no trailing `=` before `}`) on a code span is raw
-passthrough, distinct from the forced-highlight `{=text=}`.
+`{=text=}` is forced highlight (`<mark>`), and bare highlight is single-char
+`=`. The raw-inline format attribute has its own shape — `{=html}` (no trailing
+`=` before `}`) on a code span is raw passthrough, distinct from the
+forced-highlight `{=text=}`.
 
 ::: compare
 
@@ -3097,10 +3097,9 @@ invalid, so emphasis inside the brackets is rendered.
 
 ## Superscript and subscript
 
-`^x^` is superscript and `,x,` is subscript. Under Design A both are single-char
-bare delimiters under the uniform word-boundary rule, so they mark only at a
-word boundary; for the common intraword cases (H₂O, mc²) use the forced
-`{^…^}` / `{,…,}` family.
+`^x^` is superscript and `,x,` is subscript — both single-char bare delimiters
+under the uniform word-boundary rule, so they mark only at a word boundary; for
+the common intraword cases (H₂O, mc²) use the forced `{^…^}` / `{,…,}` family.
 
 ::: compare
 
@@ -3265,8 +3264,9 @@ under the marker.
 
 A bare single-character emphasis delimiter immediately adjacent to the same
 delimiter does not open a span, so a doubled delimiter is literal text. This
-"no nesting of same type" rule is uniform across all five single-character
-delimiters: `**`, `~~`, and `^^` stay literal exactly like `//` and `__`.
+"no nesting of same type" rule is uniform across all seven single-character
+delimiters: `**`, `~~`, `^^`, `==`, and `,,` stay literal exactly like `//` and
+`__`.
 
 ::: compare
 
@@ -3319,11 +3319,10 @@ literally, like any other unresolved reference.
 
 ## Two-char delimiter runs
 
-Under Design A every bare delimiter is single-char — there is no two-char
-delimiter. A doubled (or longer) run of any delimiter is literal by the
-same-delimiter-adjacency rule, so the old two-char highlight `==x==` and
-subscript `,,y,,` are now doubled `=` / `,` and render literal (migrate
-`==` → `=` and `,,` → `,`). The single-char forms `=z=` and `,w,` mark.
+Every bare delimiter is single-char. A doubled (or longer) run of any delimiter
+is literal by the same-delimiter-adjacency rule, so `==x==` and `,,y,,` are
+doubled `=` / `,` and render literal, while the single-char `=z=` and `,w,`
+mark.
 
 ::: compare
 

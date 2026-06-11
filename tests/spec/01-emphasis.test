@@ -83,9 +83,9 @@ foo{*bar*}baz and my{_path_}name and a{/b/}c
 ```
 
 ```
-=marked= here, but ==old== is literal now.
+=marked= here, but ==doubled== is literal.
 .
-<p><mark>marked</mark> here, but ==old== is literal now.</p>
+<p><mark>marked</mark> here, but ==doubled== is literal.</p>
 ```
 
 ```

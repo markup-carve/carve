@@ -178,12 +178,14 @@ The `/italic/` syntax comes from Org-mode, where it has worked well for decades.
 ```
 
 A direct consequence: a **doubled** bare delimiter never opens nested
-same-type emphasis, so it stays literal text — uniformly across all five
+same-type emphasis, so it stays literal text — uniformly across all seven
 single-character delimiters.
 ```
 **x**   --> **x**     (literal, not nested bold)
 ~~x~~   --> ~~x~~     (literal)
 ^^x^^   --> ^^x^^     (literal)
+==x==   --> ==x==     (literal)
+,,x,,   --> ,,x,,     (literal)
 //x//   --> //x//     (literal)
 __x__   --> __x__     (literal)
 ```
@@ -1085,10 +1087,9 @@ This is {~old~>new~} replacement.
 This is text{# with a comment #}.
 ```
 
-Highlight is the single-char `=text=` (§4.2) under Design A (the old two-char
-`==text==` is now a doubled delimiter and renders literally — migrate `==` →
-`=`). The brace form `{=text=}` is reclaimed as forced intraword highlight
-(PART 9 §22), the same escape hatch every emphasis mark gets.
+Highlight is the single-char `=text=` (§4.2); a doubled `==text==` is literal by
+the same-delimiter-adjacency rule. The brace form `{=text=}` is forced intraword
+highlight (PART 9 §22), the same escape hatch every emphasis mark gets.
 
 Useful for:
 - Document review workflows
