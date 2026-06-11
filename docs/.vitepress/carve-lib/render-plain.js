@@ -80,7 +80,10 @@ function renderFigure(node) {
         : node.target.type === 'table'
             ? renderTable(node.target).trim()
             : renderBlock(node.target).trim();
-    return `${target}${renderInlines(node.caption)}`;
+    // A block-level target (e.g. a code-block listing) keeps the caption on its
+    // own line; an inline image target stays adjacent.
+    const sep = node.target.type === 'code-block' ? '\n' : '';
+    return `${target}${sep}${renderInlines(node.caption)}`;
 }
 function renderFootnoteDefs(ast) {
     if (!ast.footnoteDefs)
