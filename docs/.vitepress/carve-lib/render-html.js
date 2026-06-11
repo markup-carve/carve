@@ -67,6 +67,14 @@ export function renderHtml(ast, opts = {}) {
             const sectionId = id ? ` id="${escapeAttr(id)}"` : '';
             out.push(`${indent(depth)}<section${sectionId}>`);
             sectionStack.push(node.level);
+            // An extension may render the <h*> element itself (e.g. heading
+            // permalinks); the <section> wrapper above stays core. Returns undefined
+            // to fall through to the default heading rendering.
+            const custom = renderHeadingElement(node, opts, depth + 1);
+            if (custom !== undefined) {
+                out.push(opts.sourceLine ? withSourceLine(custom, node.pos?.startLine) : custom);
+                continue;
+            }
             const headingAttrs = stripId(node.attrs);
             const inner = renderInlines(node.children, opts);
             const slAttr = opts.sourceLine && node.pos ? ` data-source-line="${node.pos.startLine}"` : '';
@@ -323,15 +331,50 @@ function renderAttrs2(attrs, opts = {}) {
     }
     return renderAttrs(a);
 }
+// Let an extension render a top-level heading's <h*> element via a
+// `blockRenderers.heading` renderer (the <section> wrapper stays core), tried
+// in registration order like other block renderers. Returns undefined when no
+// extension claims it, so core renders the default heading.
+function renderHeadingElement(node, opts, level) {
+    const headingRenderers = opts.extensions?.flatMap((e) => {
+        const fn = e.blockRenderers?.heading;
+        return fn ? [fn] : [];
+    });
+    if (!headingRenderers || !headingRenderers.length)
+        return undefined;
+    const ctx = {
+        level,
+        indent,
+        renderChildren: (nodes, lvl) => nodes.map((c) => renderBlock(c, opts, lvl)).join('\n'),
+        renderInlines: (nodes) => renderInlines(nodes, opts),
+        escapeHtml,
+        escapeAttr,
+        renderAttrs,
+    };
+    for (const r of headingRenderers) {
+        const out = r(node, ctx);
+        if (out !== undefined)
+            return out;
+    }
+    return undefined;
+}
 function renderBlock(node, opts, level) {
     const pad = indent(level);
-    // Extension block renderers (keyed by node type) get first claim; one may
-    // return undefined to defer back to the core renderer below.
-    const blockRenderer = opts.extensions
-        ?.flatMap((e) => (e.blockRenderers ? [e.blockRenderers] : []))
-        .map((r) => r[node.type])
-        .find((fn) => fn !== undefined);
-    if (blockRenderer) {
+    // Extension block renderers (keyed by node type) get first claim, tried in
+    // registration order: each may return undefined to defer to the next
+    // extension's renderer (so one extension can claim only some nodes of a
+    // type, e.g. mermaid claims only `mermaid` code blocks), then to core.
+    // Headings are excluded here: a top-level heading is rendered by the
+    // section-wrapping pass (renderHeadingElement), where the id lives on the
+    // <section>. A heading nested in a container keeps its id on the <h*> and is
+    // rendered by core below, so heading renderers do not apply to it.
+    const blockRenderers = node.type === 'heading'
+        ? undefined
+        : opts.extensions?.flatMap((e) => {
+            const fn = e.blockRenderers?.[node.type];
+            return fn ? [fn] : [];
+        });
+    if (blockRenderers && blockRenderers.length) {
         const ctx = {
             level,
             indent,
@@ -341,9 +384,11 @@ function renderBlock(node, opts, level) {
             escapeAttr,
             renderAttrs,
         };
-        const out = blockRenderer(node, ctx);
-        if (out !== undefined)
-            return out;
+        for (const r of blockRenderers) {
+            const out = r(node, ctx);
+            if (out !== undefined)
+                return out;
+        }
     }
     switch (node.type) {
         case 'heading': {
@@ -379,7 +424,7 @@ function renderBlock(node, opts, level) {
             return `${open}\n${body}\n${pad}</div>`;
         }
         case 'definition-list': {
-            const lines = [`${pad}<dl>`];
+            const lines = [`${pad}<dl${renderAttrs(node.attrs)}>`];
             for (const it of node.items) {
                 for (const t of it.terms)
                     lines.push(`${pad}  <dt>${renderInlines(t, opts)}</dt>`);
@@ -455,12 +500,12 @@ function renderListItem(item, opts, level, tight) {
     };
     // Single paragraph: stays on the <li> line. Tight omits <p>, loose keeps it.
     if (item.children.length === 1 && item.children[0].type === 'paragraph') {
-        return `${pad}<li>${checkbox}${wrapPara(item.children[0])}</li>`;
+        return `${pad}<li${renderAttrs(item.attrs)}>${checkbox}${wrapPara(item.children[0])}</li>`;
     }
     // Mixed content (e.g. a lead paragraph followed by a nested list): the
     // first paragraph sits on the <li> line; remaining blocks go below,
     // indented one level deeper, with the closing </li> back at item indent.
-    let head = `${pad}<li>${checkbox}`;
+    let head = `${pad}<li${renderAttrs(item.attrs)}>${checkbox}`;
     const body = [];
     item.children.forEach((child, i) => {
         if (child.type === 'paragraph') {
