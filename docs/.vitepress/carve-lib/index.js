@@ -27,6 +27,10 @@ export { markdownToCarve } from './markdown-migrate.js';
 export { lintCarve, formatLintWarnings, } from './lint.js';
 export { tabNormalize } from './tab-normalize.js';
 export { details } from './details.js';
+export { mermaid } from './mermaid.js';
+export { wikilinks } from './wikilinks.js';
+export { autolink } from './autolink.js';
+export { externalLinks } from './external-links.js';
 /**
  * Parse Carve source into a typed AST.
  *
