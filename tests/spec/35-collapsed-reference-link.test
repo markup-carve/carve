@@ -7,3 +7,11 @@ See [Other Page][] for details.
 .
 <p>See <a href="/other-page">Other Page</a> for details.</p>
 ```
+
+```
+See [Other][]{.ext} for details.
+
+[Other]: /other
+.
+<p>See <a href="/other" class="ext">Other</a> for details.</p>
+```

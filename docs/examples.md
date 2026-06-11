@@ -1935,6 +1935,23 @@ Read the [introduction][intro] first.
 
 :::
 
+A trailing attribute block attaches to the resolved `<a>`, the same slot an
+inline link uses (grammar `reference_link`).
+
+::: compare
+
+```carve
+Read the [intro][x]{.ext} first.
+
+[x]: /intro
+```
+
+```html
+<p>Read the <a href="/intro" class="ext">intro</a> first.</p>
+```
+
+:::
+
 ## Collapsed reference link
 
 `[text][]` uses the link text as the label.
@@ -1949,6 +1966,23 @@ See [Other Page][] for details.
 
 ```html
 <p>See <a href="/other-page">Other Page</a> for details.</p>
+```
+
+:::
+
+A trailing attribute block attaches to the resolved `<a>` here too
+(grammar `collapsed_reference_link`).
+
+::: compare
+
+```carve
+See [Other][]{.ext} for details.
+
+[Other]: /other
+```
+
+```html
+<p>See <a href="/other" class="ext">Other</a> for details.</p>
 ```
 
 :::
@@ -2207,6 +2241,32 @@ text
 
 ```html
 <p>text</p>
+```
+
+:::
+
+A trailing attribute block on a reference attaches to the noteref `<a>`
+(grammar PART 9 §note). Only the reference where the author wrote the block
+carries it.
+
+::: compare
+
+```carve
+Text[^a]{.ref}.
+
+[^a]: note.
+```
+
+```html
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref" class="ref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 :::
@@ -4182,6 +4242,43 @@ Text
 
 :::
 
+The next block can be any container, not just a paragraph. A block-attribute
+line before a table attaches to the `<table>`:
+
+::: compare
+
+```carve
+{.data}
+|= A |= B |
+| 1  | 2  |
+```
+
+```html
+<table class="data">
+  <thead><tr><th>A</th><th>B</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+…and before a blockquote it attaches to the `<blockquote>`:
+
+::: compare
+
+```carve
+{.epigraph}
+> To be or not to be.
+```
+
+```html
+<blockquote class="epigraph"><p>To be or not to be.</p></blockquote>
+```
+
+:::
+
 ## Numbered cross-references
 
 A `#` in a caption is a number placeholder: the label is the text before it,
@@ -4365,6 +4462,29 @@ A note^[see *later*] inline. And a ref[^a].
     </li>
     <li id="fn2">
       <p>reference body.<a href="#fnref2" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+A trailing attribute block attaches to the noteref `<a>`, like a reference
+footnote (§16).
+
+::: compare
+
+```carve
+Text^[note]{.ref}.
+```
+
+```html
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref" class="ref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
     </li>
   </ol>
 </section>
