@@ -183,7 +183,7 @@ lazy_continuation_line = inline_content, newline ;  (* see the NORMATIVE note ab
 list = unordered_list | ordered_list | definition_list ;
 
 unordered_list = unordered_item+ ;
-unordered_item = bullet_marker, space, list_item_content ;
+unordered_item = bullet_marker, [item_attributes], space, list_item_content ;
 bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
                                 continuation marker (PART 9 §17); a `+ ` line is
                                 ordinary paragraph text. Deviates from djot. *)
@@ -198,7 +198,7 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    content-less-marker-is-not-a-list. *)
 
 ordered_list = ordered_item+ ;
-ordered_item = ordered_marker, space, list_item_content ;
+ordered_item = ordered_marker, [item_attributes], space, list_item_content ;
 (* The first item fixes the dialect (decimal / alpha / roman) and the
    delimiter (`.` or `)`); classification and the ambiguous-letter
    tie-break are in PART 9 §11. An ordered list does NOT interrupt a paragraph
@@ -212,6 +212,38 @@ ordered_item = ordered_marker, space, list_item_content ;
 ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')') ;
 roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
               | ('I' | 'V' | 'X' | 'L' | 'C' | 'D' | 'M')+ ;
+
+(* LIST-ITEM ATTRIBUTES (Carve addition; NORMATIVE -- extends PART 9 §15). An
+   attribute block ABUTTING the marker (no space between marker and `{`)
+   attaches its attributes to the `<li>` itself; the marker's required space
+   follows the block:
+     `-{.c} text`     -> `<li class="c">text</li>`
+     `3.{#x k=v} text`-> `<li id="x" k="v">text</li>`
+   For task items the block abuts the marker, before the task marker:
+     `-{.c} [ ] text` -> `<li class="c"><input ...> text</li>`.
+   WHITESPACE IS THE DISCRIMINATOR -- NORMATIVE:
+   - `-{.c} text` (attr ABUTS marker) -> the `{.c}` is part of the MARKER and
+     attributes the `<li>`. This is the ONLY way to attribute the `<li>`.
+   - `- {.c} text` (a space BEFORE `{`) -> the `{.c}` is ordinary item CONTENT,
+     NOT a li-attribute. It then follows the normal inline/block rules: a
+     same-line `{.c}` is leading inline content; a `{.c}` alone on its own line
+     (inside the item) is a block-attribute line that floats to the next block
+     within the item -- e.g. a `{.blue}` line preceding an indented `> quote`
+     puts `.blue` on the `<blockquote>` (§15), NOT on the `<li>`. This keeps
+     li-attributes and block-attributes cleanly separated.
+   - DISAMBIGUATION of the abutting block mirrors the inline-span rule (§14):
+     it is consumed as li-attributes only if it yields >= 1 attribute (`#id`,
+     `.class`, `key=value`) OR is the blessed empty block (`-{} text` -> bare
+     `<li>`). Otherwise (`-{+a+}`, `-{not attrs}`) the `-{` is not a marker and
+     the line stays ordinary paragraph/inline text.
+   - Free slot: `-{` and `1.{` / `1){` are NOT list markers today (bullet and
+     ordered both require the space), so no existing input changes meaning.
+   - Diverges from djot (which has no li-attribute form); deliberate Carve
+     extension. The lazy-continuation accident -- a trailing `{…}` line folded
+     onto a tight item, which carve-php attached to the `<li>` and carve-js
+     dropped -- is REJECTED as the mechanism: it was position-dependent (broke
+     once a sub-list intervened) and is not normative. *)
+item_attributes = attributes ;
 
 list_item_content = first_block_content
                   | (inline_content, newline, {list_continuation | nested_list | continuation_marker_block}) ;

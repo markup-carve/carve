@@ -814,6 +814,44 @@ Only `[x]`/`[X]` render a checked box; every other state (`[ ]`, `[-]`, `[_]`, `
 
 :::
 
+A trailing attribute block is the **image's** attribute, so it stays on the
+`<img>` even when the image is wrapped in a `<figure>`, the same target as a
+standalone block image. To attribute the `<figure>` instead, use a preceding
+block-attribute line, which floats onto the outer block (§15).
+
+::: compare
+
+```carve
+![Apollo 11](apollo.jpg){.hero}
+^ Figure 1: First moon landing
+```
+
+```html
+<figure>
+  <img src="apollo.jpg" alt="Apollo 11" class="hero">
+  <figcaption>Figure 1: First moon landing</figcaption>
+</figure>
+```
+
+:::
+
+::: compare
+
+```carve
+{.gallery}
+![Apollo 11](apollo.jpg)
+^ Figure 1: First moon landing
+```
+
+```html
+<figure class="gallery">
+  <img src="apollo.jpg" alt="Apollo 11">
+  <figcaption>Figure 1: First moon landing</figcaption>
+</figure>
+```
+
+:::
+
 ## Tables
 
 ::: compare
