@@ -31,6 +31,7 @@ export { mermaid } from './mermaid.js';
 export { wikilinks } from './wikilinks.js';
 export { autolink } from './autolink.js';
 export { externalLinks } from './external-links.js';
+export { tableOfContents } from './table-of-contents.js';
 export { headingPermalinks } from './heading-permalinks.js';
 /**
  * Parse Carve source into a typed AST.

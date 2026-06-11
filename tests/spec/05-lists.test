@@ -103,6 +103,26 @@ not a list</p>
 ```
 
 ```
+text
+  - item
+.
+<p>text</p>
+<ul>
+  <li>item</li>
+</ul>
+```
+
+```
+  - a
+  - b
+.
+<ul>
+  <li>a</li>
+  <li>b</li>
+</ul>
+```
+
+```
 - apples
 
 - oranges

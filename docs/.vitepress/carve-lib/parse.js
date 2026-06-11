@@ -1417,13 +1417,19 @@ function parseList(lexer) {
                 for (let k = 0; k < pendingBlanks; k++)
                     nested.push('');
                 pendingBlanks = 0;
-                const dedented = sliceColumns(l, contentCol);
-                if (firstBlockIdx === -1 &&
-                    RE_ORDERED.test(dedented) &&
-                    !RE_TASK.test(dedented)) {
+                // A sub-list marker (ordered, unordered, or task) at or past the content
+                // column starts the item's block stream. A sub-list MARKER line is
+                // dedented residual-aware so tab+space-aligned siblings keep the same
+                // visual column (the recursive parse re-derives the child base from it).
+                // Every other line -- lead text, and block openers (quotes, headings)
+                // before OR after a sub-list -- uses whole-tab dedent so it reaches
+                // column 0 and parses / interrupts; carry the residual only on markers.
+                const isMarker = RE_ORDERED.test(l) || RE_UNORDERED.test(l) || RE_TASK.test(l);
+                if (firstBlockIdx === -1 && isMarker) {
                     firstBlockIdx = nested.length;
                 }
-                nested.push(dedented);
+                const keepResidual = firstBlockIdx !== -1 && isMarker;
+                nested.push(sliceColumns(l, contentCol, keepResidual));
                 lexer.consume();
             }
             else if (pendingBlanks === 0 &&
@@ -1847,12 +1853,14 @@ function indentColumns(line) {
     return col;
 }
 // Dedent counterpart of indentColumns(): drop leading whitespace up to `cols`
-// columns. A tab straddling the boundary is consumed whole rather than
-// re-emitting residual columns as spaces -- Carve has no indent-sensitive block
-// where the leftover column would change meaning, and indentColumns() re-measures
-// the remainder on each nested parse, so a clean dedent keeps tab-indented
-// sub-blocks nesting. For space-only indentation this equals line.slice(cols).
-function sliceColumns(line, cols) {
+// columns. By default a tab straddling the boundary is consumed whole, so a
+// block opener (quote, heading) dedents flush to column 0 and parses -- Carve
+// has no indent-sensitive block where a leftover column would change meaning.
+// With keepResidual (used only for sub-list marker lines), the unconsumed
+// columns of a straddling tab are re-emitted as spaces so tab+space-aligned
+// sibling markers keep the same visual column and the recursive parse re-derives
+// the child base from it. For space-only indentation this equals line.slice(cols).
+function sliceColumns(line, cols, keepResidual = false) {
     let col = 0;
     let i = 0;
     while (i < line.length && col < cols) {
@@ -1868,6 +1876,13 @@ function sliceColumns(line, cols) {
             break;
         }
     }
+    // When dedenting a sub-list block stream, a tab straddling the boundary leaves
+    // residual columns; reinsert them as spaces so tab+space-aligned sibling
+    // markers stay at the same visual column and the recursive parse re-derives
+    // correctly. Lead content uses whole-tab consumption (keepResidual=false) so a
+    // block opener reaches column 0. (Space-only indentation has no residual.)
+    if (keepResidual && col > cols)
+        return ' '.repeat(col - cols) + line.slice(i);
     return line.slice(i);
 }
 // ============================================================================
