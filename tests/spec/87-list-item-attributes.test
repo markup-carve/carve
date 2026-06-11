@@ -47,3 +47,17 @@ a.{.c} An alpha item.
 .
 <p>-<ins>a</ins> text</p>
 ```
+
+```
+- {.c} text
+.
+<ul>
+  <li>{.c} text</li>
+</ul>
+```
+
+```
+para {.c} more
+.
+<p>para {.c} more</p>
+```
