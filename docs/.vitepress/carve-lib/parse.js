@@ -26,20 +26,20 @@ const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_+#.-]*)\s*(\[[^\]]*\])?\s*$/
 // is unambiguous and a `+ x` line is ordinary paragraph text. A marker is a list
 // item only with non-empty content: a content-less marker (`-`, `- `, `-   ` --
 // bare or trailing whitespace only) is NOT a list, it is paragraph text.
-const RE_UNORDERED = /^(\s*)[-*]\s+(\S.*)$/;
+const RE_UNORDERED = /^(\s*)[-*] +(\S.*)$/;
 // Ordered marker: decimal, a single letter (alpha), or a roman-numeral
 // run, then `.` or `)`. The dialect is fixed by the FIRST item (see
 // olKindOf); letter/roman markers are ambiguous w.r.t. paragraphs (§10).
-const RE_ORDERED = /^(\s*)([0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])([.)])\s+(\S.*)$/;
+const RE_ORDERED = /^(\s*)([0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])([.)]) +(\S.*)$/;
 // Task states (matches djot-php): `x`/`X` are checked; ` `, `-`, `_`,
 // `>`, `?` are all accepted and render as an unchecked checkbox.
-const RE_TASK = /^(\s*)[-*]\s+\[([ xX\-_>?])\]\s+(\S.*)$/;
+const RE_TASK = /^(\s*)[-*] +\[([ xX\-_>?])\] +(\S.*)$/;
 // A list-item attribute block ABUTTING the marker: a bullet (`-`/`*`) or an
 // ordered marker directly followed by `{...}` (no space), then the marker's
 // required space and content. The brace attaches its attributes to the <li>
 // (Carve addition, grammar `item_attributes`). The brace body uses the same
 // quote-aware subpattern as the inline span tail (RE_SPAN_TAIL).
-const RE_ITEM_ATTR = /^(\s*)((?:[-*])|(?:[0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])[.)])\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\}(\s+\S.*)$/;
+const RE_ITEM_ATTR = /^(\s*)((?:[-*])|(?:[0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])[.)])\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\}( +\S.*)$/;
 // Strip a valid abutting `{...}` from a marker line so the bare marker regexes
 // match, returning the stripped line plus the parsed attributes. Returns null
 // when there is no abutting brace or the brace is not a valid attribute payload
@@ -1413,17 +1413,51 @@ function parseList(lexer) {
                 }
                 continue;
             }
-            if (indentColumns(l) >= contentCol) {
+            // A block opener (block quote, heading, fence, div, table) indented past
+            // the base but BELOW the content column still interrupts the item's lead
+            // paragraph and nests as a child block (matching carve-php) -- only ordered
+            // MARKERS fold below the content column, since they do not interrupt. The
+            // opener regexes key off column 0, so test the line dedented to column 0,
+            // and exclude list markers (their fold/nest is handled in the else-branch).
+            const lw = indentColumns(l);
+            let belowColBlockOpener = false;
+            if (lw > baseIndent && lw < contentCol) {
+                const d0 = sliceColumns(l, lw);
+                // A block opener indented past the base but below the content column
+                // interrupts the item's lead paragraph and nests (matching carve-php).
+                // Restricted to NON-container openers (block quote, heading, thematic
+                // break, table, defs): these need no closing fence, so the single line
+                // dedented to column 0 is enough. Fenced/`:::` containers are excluded --
+                // their verbatim/closer-sensitive bodies are only handled cleanly AT the
+                // content column; below it they keep the existing behavior. List markers
+                // are excluded too (their fold/nest is decided in the else-branch).
+                belowColBlockOpener =
+                    !RE_ORDERED.test(d0) &&
+                        !RE_UNORDERED.test(d0) &&
+                        !RE_TASK.test(d0) &&
+                        !RE_FENCE.test(d0) &&
+                        !RE_RAW_FENCE.test(d0) &&
+                        !RE_DIV_OPEN.test(d0) &&
+                        !RE_ADMONITION_OPEN.test(d0) &&
+                        lineOpensBlock(d0);
+            }
+            if (lw >= contentCol || belowColBlockOpener) {
                 for (let k = 0; k < pendingBlanks; k++)
                     nested.push('');
                 pendingBlanks = 0;
-                const dedented = sliceColumns(l, contentCol);
-                if (firstBlockIdx === -1 &&
-                    RE_ORDERED.test(dedented) &&
-                    !RE_TASK.test(dedented)) {
+                // A sub-list marker (ordered, unordered, or task) at or past the content
+                // column starts the item's block stream. A sub-list MARKER line is
+                // dedented residual-aware so tab+space-aligned siblings keep the same
+                // visual column (the recursive parse re-derives the child base from it).
+                // Every other line -- lead text, and block openers (quotes, headings)
+                // before OR after a sub-list -- uses whole-tab dedent so it reaches
+                // column 0 and parses / interrupts; carry the residual only on markers.
+                const isMarker = RE_ORDERED.test(l) || RE_UNORDERED.test(l) || RE_TASK.test(l);
+                if (firstBlockIdx === -1 && isMarker) {
                     firstBlockIdx = nested.length;
                 }
-                nested.push(dedented);
+                const keepResidual = firstBlockIdx !== -1 && isMarker;
+                nested.push(sliceColumns(l, contentCol, keepResidual));
                 lexer.consume();
             }
             else if (pendingBlanks === 0 &&
@@ -1610,6 +1644,34 @@ function parseTable(lexer) {
         });
         rawRows.push(raw);
         lastRaw = raw;
+    }
+    // GFM-style header separator: when the SECOND row is a delimiter row -- every
+    // cell a run of dashes with optional alignment colons (`---`, `:--`, `--:`,
+    // `:-:`) -- the first row becomes the header (rendered in <thead>) and the
+    // colons set per-column alignment for the whole column. The delimiter row is
+    // dropped. This is in addition to Carve's tight per-cell markers `|=`/`|<`; a
+    // delimiter row anywhere else is an ordinary data row.
+    const isDelimCell = (c) => !c.span && /^:?-+:?$/.test(c.raw.trim());
+    if (rawRows.length >= 2 &&
+        rawRows[1].length > 0 &&
+        rawRows[1].every(isDelimCell) &&
+        !rawRows[0].every(isDelimCell)) {
+        const aligns = rawRows[1].map((c) => {
+            const t = c.raw.trim();
+            const left = t.startsWith(':');
+            const right = t.endsWith(':');
+            return left && right ? 'center' : right ? 'right' : left ? 'left' : undefined;
+        });
+        rawRows.splice(1, 1);
+        for (const c of rawRows[0])
+            c.header = true;
+        for (const rc of rawRows) {
+            rc.forEach((c, i) => {
+                const a = aligns[i];
+                if (a && !c.align)
+                    c.align = a;
+            });
+        }
     }
     const rows = rawRows.map((rc) => ({
         type: 'table-row',
@@ -1847,12 +1909,14 @@ function indentColumns(line) {
     return col;
 }
 // Dedent counterpart of indentColumns(): drop leading whitespace up to `cols`
-// columns. A tab straddling the boundary is consumed whole rather than
-// re-emitting residual columns as spaces -- Carve has no indent-sensitive block
-// where the leftover column would change meaning, and indentColumns() re-measures
-// the remainder on each nested parse, so a clean dedent keeps tab-indented
-// sub-blocks nesting. For space-only indentation this equals line.slice(cols).
-function sliceColumns(line, cols) {
+// columns. By default a tab straddling the boundary is consumed whole, so a
+// block opener (quote, heading) dedents flush to column 0 and parses -- Carve
+// has no indent-sensitive block where a leftover column would change meaning.
+// With keepResidual (used only for sub-list marker lines), the unconsumed
+// columns of a straddling tab are re-emitted as spaces so tab+space-aligned
+// sibling markers keep the same visual column and the recursive parse re-derives
+// the child base from it. For space-only indentation this equals line.slice(cols).
+function sliceColumns(line, cols, keepResidual = false) {
     let col = 0;
     let i = 0;
     while (i < line.length && col < cols) {
@@ -1868,6 +1932,13 @@ function sliceColumns(line, cols) {
             break;
         }
     }
+    // When dedenting a sub-list block stream, a tab straddling the boundary leaves
+    // residual columns; reinsert them as spaces so tab+space-aligned sibling
+    // markers stay at the same visual column and the recursive parse re-derives
+    // correctly. Lead content uses whole-tab consumption (keepResidual=false) so a
+    // block opener reaches column 0. (Space-only indentation has no residual.)
+    if (keepResidual && col > cols)
+        return ' '.repeat(col - cols) + line.slice(i);
     return line.slice(i);
 }
 // ============================================================================

@@ -1,4 +1,2 @@
-|= Style    |= Sample      |
-| italic    | /soft/        |
-| strong    | *firm*        |
-| code      | `literal`     |
+|= A |= B |= C |
+| 1  |    | 3  |

@@ -21,6 +21,9 @@
 import { parse as parseImpl } from './parse.js';
 import { resolveHeadingIds } from './heading-ids.js';
 import { renderHtml as renderHtmlImpl } from './render-html.js';
+import { renderMarkdown as renderMarkdownImpl, } from './render-markdown.js';
+import { renderPlainText as renderPlainTextImpl, } from './render-plain.js';
+import { renderAnsi as renderAnsiImpl } from './render-ansi.js';
 export * from './ast.js';
 export { djotMigrationWarnings, formatMigrationWarnings, applyMigrationFixes, } from './djot-migrate.js';
 export { markdownToCarve } from './markdown-migrate.js';
@@ -31,6 +34,8 @@ export { mermaid } from './mermaid.js';
 export { wikilinks } from './wikilinks.js';
 export { autolink } from './autolink.js';
 export { externalLinks } from './external-links.js';
+export { tableOfContents } from './table-of-contents.js';
+export { headingPermalinks } from './heading-permalinks.js';
 /**
  * Parse Carve source into a typed AST.
  *
@@ -45,6 +50,18 @@ export function parse(source, opts = {}) {
 /** Render a Carve AST to HTML matching the spec corpus. */
 export function renderHtml(ast, opts = {}) {
     return renderHtmlImpl(ast, opts);
+}
+/** Render a resolved Carve AST to Markdown. */
+export function renderMarkdown(ast, opts = {}) {
+    return renderMarkdownImpl(ast, opts);
+}
+/** Render a resolved Carve AST to plain text. */
+export function renderPlainText(ast, opts = {}) {
+    return renderPlainTextImpl(ast, opts);
+}
+/** Render a resolved Carve AST to ANSI terminal text. */
+export function renderAnsi(ast, opts = {}) {
+    return renderAnsiImpl(ast, opts);
 }
 /**
  * Post-parse semantic resolution: heading ids, `</#id>` crossrefs,
@@ -74,5 +91,20 @@ export function carveToHtml(source, opts = {}) {
         if (ext.beforeRender)
             doc = ext.beforeRender(doc);
     return renderHtml(doc, opts);
+}
+/** Convenience: parse + resolve + render Markdown in one call. */
+export function carveToMarkdown(source, opts = {}) {
+    const doc = resolve(parse(source, opts), { asciiHeadingIds: opts.asciiHeadingIds ?? false });
+    return renderMarkdown(doc, opts);
+}
+/** Convenience: parse + resolve + render plain text in one call. */
+export function carveToPlainText(source, opts = {}) {
+    const doc = resolve(parse(source, opts), { asciiHeadingIds: opts.asciiHeadingIds ?? false });
+    return renderPlainText(doc, opts);
+}
+/** Convenience: parse + resolve + render ANSI terminal text in one call. */
+export function carveToAnsi(source, opts = {}) {
+    const doc = resolve(parse(source, opts), { asciiHeadingIds: opts.asciiHeadingIds ?? false });
+    return renderAnsi(doc, opts);
 }
 //# sourceMappingURL=index.js.map

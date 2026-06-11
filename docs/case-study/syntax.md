@@ -676,7 +676,28 @@ The `^` prefix creates a `<figure>` wrapper with `<figcaption>` for attribution.
 | Bob       | 34   | London    |
 ```
 
-`|=` marks header cells (from Creole). No separator row needed.
+`|=` marks header cells (from Creole). No separator row is required - `|=` is the
+canonical Carve header, and what migration tooling (`MarkdownToCarve`) emits.
+
+#### GFM Header Separator
+
+For compatibility with imported Markdown, a **GFM-style separator row is also
+accepted**: when the **second** row of a table is a *delimiter row* - every cell
+a run of dashes with optional alignment colons (`---`, `:--`, `--:`, `:-:`) - the
+first row becomes the header and the colons set per-column alignment for the
+whole column (`:--` left, `--:` right, `:-:` center). The separator row is
+dropped.
+
+```
+| Name | Age |
+|:-----|----:|
+| Alice | 28  |
+```
+
+The separator is recognized **only as the second row**. A delimiter row anywhere
+else - leading, or after the body - is an ordinary data row, so its dashes render
+as literal content (smart-punctuation may turn `---` into an em dash). The `|=`
+form and the separator form are equivalent; `|=` is preferred for new content.
 
 #### With Caption
 ```
