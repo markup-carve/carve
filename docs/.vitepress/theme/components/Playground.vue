@@ -7,8 +7,42 @@ import { carveToHtml } from '../../carve-lib/index.js'
 // loaded as raw Carve source via vite-plugin-carve.
 import { source as DEFAULT_SOURCE } from '../../examples/demo.crv'
 
+// Hosted sandbox for the PHP reference implementation (carve-php). PHP cannot
+// run in the browser, so this engine opens out to the sandbox instead of
+// rendering in-page like the JS and Rust engines.
+const PHP_SANDBOX_URL = 'https://sandbox.dereuromark.de/sandbox/carve'
+
 const source = ref(DEFAULT_SOURCE)
 const fullscreen = ref(false)
+
+// --- Engine selection: JS (default, in-page) or Rust/WASM (in-page, lazy). ---
+type Engine = 'js' | 'rust'
+const engine = ref<Engine>('js')
+
+// The Rust engine is the carve-rs parser compiled to WASM (vendored under
+// ../../carve-wasm). It is loaded lazily on first selection so the JS-only
+// experience never pays for the ~250 KB module download.
+let wasmToHtml: ((source: string) => string) | null = null
+const wasmReady = ref(false)
+const wasmError = ref<string | null>(null)
+
+async function ensureWasm(): Promise<void> {
+  if (wasmToHtml || typeof window === 'undefined') return
+  try {
+    // @ts-expect-error - vendored WASM glue without TS resolution context
+    const mod = await import('../../carve-wasm/carve_wasm.js')
+    await mod.default() // instantiate the WASM module (resolves its own .wasm)
+    wasmToHtml = mod.toHtml as (source: string) => string
+    wasmReady.value = true
+  } catch (err) {
+    wasmError.value = err instanceof Error ? err.message : String(err)
+  }
+}
+
+watch(engine, (e) => {
+  if (e === 'rust') void ensureWasm()
+})
+
 const outputEl = ref<HTMLElement | null>(null)
 const sourceEl = ref<HTMLTextAreaElement | null>(null)
 
@@ -32,17 +66,51 @@ function onOutputScroll(): void {
   if (sourceEl.value && outputEl.value) syncScroll(outputEl.value, sourceEl.value)
 }
 
-const html = computed<string>(() => {
+// Render result plus the wall-clock time the parse+render took, so the UI can
+// surface how fast each engine is. `ms` is null while the result is a status
+// placeholder (WASM still loading or failed) rather than a real render.
+const rendered = computed<{ html: string; ms: number | null }>(() => {
+  // Rust engine: render in-page once the WASM module has instantiated.
+  if (engine.value === 'rust') {
+    if (wasmError.value) {
+      return {
+        html: `<pre class="carve-playground-error">Failed to load the Rust (WASM) engine: ${escapeHtml(wasmError.value)}</pre>`,
+        ms: null,
+      }
+    }
+    if (!wasmReady.value) {
+      return {
+        html: `<pre class="carve-playground-note">Loading the Rust (WASM) engine…</pre>`,
+        ms: null,
+      }
+    }
+  }
   try {
-    let out = carveToHtml(source.value) as string
+    const render = engine.value === 'rust' && wasmToHtml ? wasmToHtml : carveToHtml
+    const t0 = performance.now()
+    let out = render(source.value) as string
+    const ms = performance.now() - t0
     // The demo references images with a doc-relative path; resolve it against
     // the site base so it loads from /public regardless of the page URL shape.
     out = out.replace(/src="images\//g, `src="${withBase('/images/')}`)
-    return out
+    return { html: out, ms }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
-    return `<pre class="carve-playground-error">${escapeHtml(message)}</pre>`
+    return { html: `<pre class="carve-playground-error">${escapeHtml(message)}</pre>`, ms: null }
   }
+})
+
+const html = computed<string>(() => rendered.value.html)
+
+// One-line status for the toolbar: the active engine and its last render time.
+const renderStatus = computed<string>(() => {
+  if (engine.value === 'rust') {
+    if (wasmError.value) return 'Rust (WASM): load failed'
+    if (!wasmReady.value) return 'Rust (WASM): loading…'
+  }
+  const label = engine.value === 'rust' ? 'Rust (WASM)' : 'JavaScript'
+  const ms = rendered.value.ms
+  return ms === null ? label : `${label}: ${ms < 1 ? ms.toFixed(3) : ms.toFixed(2)} ms`
 })
 
 function escapeHtml(s: string): string {
@@ -116,10 +184,42 @@ void mermaidInit
 <template>
   <div class="carve-playground" :class="{ fullscreen }">
     <div class="pg-toolbar">
-      <span class="pg-hint">Live Carve → HTML — edit on the left.</span>
-      <button class="pg-btn" type="button" @click="toggleFullscreen">
-        {{ fullscreen ? 'Exit full screen (Esc)' : 'Full screen' }}
-      </button>
+      <div class="pg-engines" role="group" aria-label="Rendering engine">
+        <span class="pg-engines-label">Engine</span>
+        <button
+          class="pg-engine"
+          type="button"
+          :class="{ active: engine === 'js' }"
+          :aria-pressed="engine === 'js'"
+          @click="engine = 'js'"
+        >
+          JavaScript
+        </button>
+        <button
+          class="pg-engine"
+          type="button"
+          :class="{ active: engine === 'rust' }"
+          :aria-pressed="engine === 'rust'"
+          @click="engine = 'rust'"
+        >
+          Rust (WASM)
+        </button>
+        <a
+          class="pg-engine pg-engine-link"
+          :href="PHP_SANDBOX_URL"
+          target="_blank"
+          rel="noopener"
+          title="Open the PHP sandbox in a new tab"
+        >
+          PHP ↗
+        </a>
+      </div>
+      <div class="pg-toolbar-right">
+        <span class="pg-status" aria-live="polite">{{ renderStatus }}</span>
+        <button class="pg-btn" type="button" @click="toggleFullscreen">
+          {{ fullscreen ? 'Exit full screen (Esc)' : 'Full screen' }}
+        </button>
+      </div>
     </div>
     <div class="pg-grid">
       <div class="pane">
@@ -160,9 +260,54 @@ void mermaidInit
   gap: 1rem;
   margin-bottom: 0.6rem;
 }
-.pg-hint {
-  font-size: 0.85rem;
+.pg-engines {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.pg-engines-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   color: var(--vp-c-text-2);
+  margin-right: 0.2rem;
+}
+.pg-engine {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.pg-engine:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+.pg-engine.active {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+}
+.pg-engine-link {
+  color: var(--vp-c-text-2);
+}
+.pg-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.pg-status {
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--vp-c-text-2);
+  white-space: nowrap;
 }
 .pg-btn {
   font-size: 0.8rem;
@@ -268,6 +413,12 @@ textarea:focus {
 }
 .carve-playground :deep(.carve-playground-error) {
   color: var(--vp-c-danger-1, #d73a49);
+  background: var(--vp-c-bg-soft);
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+.carve-playground :deep(.carve-playground-note) {
+  color: var(--vp-c-text-2);
   background: var(--vp-c-bg-soft);
   padding: 0.5rem;
   border-radius: 4px;
