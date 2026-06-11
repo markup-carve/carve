@@ -3,7 +3,7 @@ Emphasis
 ```
 /italic/  *bold*  /*bold italic*/
 _underline_  ~strikethrough~
-^super^  ,,sub,,  =highlight=
+^super^  ,sub,  =highlight=
 .
 <p><em>italic</em>  <strong>bold</strong>  <strong><em>bold italic</em></strong>
 <u>underline</u>  <s>strikethrough</s>

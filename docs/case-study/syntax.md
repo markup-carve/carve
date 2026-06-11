@@ -153,7 +153,7 @@ This is _underline_ text.
 This is ~strikethrough~ text.
 This is `code` text.
 This is ^superscript^ text.
-This is ,,subscript,, text.
+This is ,subscript, text.
 This is =highlighted= text.
 ```
 
@@ -166,8 +166,8 @@ This is =highlighted= text.
 | `_text_` | Underscore is literally underneath           |
 | `~text~` | Tilde looks like a strikethrough             |
 | `^text^` | Caret points up                              |
-| `,,t,,`  | Commas pull down                             |
-| `==t==`  | Double equals like highlighter on both sides |
+| `,t,`    | Comma pulls down                             |
+| `=t=`    | Equals like a highlighter                    |
 
 The `/italic/` syntax comes from Org-mode, where it has worked well for decades.
 

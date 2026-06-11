@@ -17,7 +17,7 @@ This document analyzes potentially ambiguous or tricky parsing scenarios in Carv
 than Djot (Djot's `_`/`*` rule is purely whitespace-flanking; Carve adds
 word-boundary conditions so intraword `a/b/c`, `foo_bar_baz`, and `snake_case`
 stay literal). Under **Design A** this rule applies to *every* bare delimiter
-(`/ * _ ~ ^ =` and the two-char `,,`), not just `/` and `_`, so `foo*bar*baz`
+(`/ * _ ~ ^ = ,` — all single-char), not just `/` and `_`, so `foo*bar*baz`
 and `foo~bar~baz` are now literal too. For deliberate intraword emphasis use
 the forced `{X … X}` family (PART 9 §22), e.g. `foo{*bar*}baz`. The normative
 statement lives in `resources/grammar.ebnf` PART 9 §9 and §22; in summary, for

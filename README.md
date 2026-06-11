@@ -67,7 +67,7 @@ and the [Carve vs Markdown, Djot & MDX comparison](https://markup-carve.github.i
 EMPHASIS
   /italic/  *bold*  /*bold italic*/
   _underline_  ~strikethrough~
-  ^super^  ,,sub,,  ==highlight==
+  ^super^  ,sub,  =highlight=
 
 HEADINGS
   # H1  ## H2  ### H3  #### H4
@@ -170,7 +170,7 @@ Carve takes its rationale from Djot and Markdown, and extends both:
     - `_underline_` - underscore is literally underneath
     - `~strikethrough~` - tilde resembles a line through text
     - `^super^` - caret points up
-    - `,,sub,,` - commas pull down
+    - `,sub,` - comma pulls down
 
 14. **Five-Second Rule** - Syntax should be:
     - Learnable in 5 seconds for basic use
@@ -218,12 +218,12 @@ Carve takes its rationale from Djot and Markdown, and extends both:
 | Bold italic | `***text***` | `_*text*_` | `/*text*/` |
 | Underline | n/a | `{+text+}` (→ `<ins>`) | `_text_` |
 | Strikethrough | `~~text~~` (GFM, → `<del>`) | `{-text-}` (→ `<del>`) | `~text~` (→ `<s>`) |
-| Highlight | n/a | `{=text=}` | `==text==` |
+| Highlight | n/a | `{=text=}` | `=text=` |
 | Superscript | n/a | `^text^` | `^text^` |
-| Subscript | n/a | `~text~` | `,,text,,` |
+| Subscript | n/a | `~text~` | `,text,` |
 
 > **Heads-up for Djot users:** `~text~` is *subscript* in Djot but
-> *strikethrough* in Carve, and Carve writes subscript as `,,text,,`. This is
+> *strikethrough* in Carve, and Carve writes subscript as `,text,`. This is
 > the one inline delimiter whose meaning flips between the two languages.
 
 ### Links & references
