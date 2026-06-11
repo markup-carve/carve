@@ -34,6 +34,25 @@ const RE_ORDERED = /^(\s*)([0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])([.)])\s+(\S
 // Task states (matches djot-php): `x`/`X` are checked; ` `, `-`, `_`,
 // `>`, `?` are all accepted and render as an unchecked checkbox.
 const RE_TASK = /^(\s*)[-*]\s+\[([ xX\-_>?])\]\s+(\S.*)$/;
+// A list-item attribute block ABUTTING the marker: a bullet (`-`/`*`) or an
+// ordered marker directly followed by `{...}` (no space), then the marker's
+// required space and content. The brace attaches its attributes to the <li>
+// (Carve addition, grammar `item_attributes`). The brace body uses the same
+// quote-aware subpattern as the inline span tail (RE_SPAN_TAIL).
+const RE_ITEM_ATTR = /^(\s*)((?:[-*])|(?:[0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])[.)])\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\}(\s+\S.*)$/;
+// Strip a valid abutting `{...}` from a marker line so the bare marker regexes
+// match, returning the stripped line plus the parsed attributes. Returns null
+// when there is no abutting brace or the brace is not a valid attribute payload
+// (then `-{...}` is not a marker and the line stays ordinary text, mirroring the
+// inline-span disambiguation, grammar §14).
+function extractItemAttr(line) {
+    const m = RE_ITEM_ATTR.exec(line);
+    if (!m)
+        return null;
+    if (!isValidAttrPayload(m[3]))
+        return null;
+    return { stripped: m[1] + m[2] + m[4], attrs: parseAttrs(m[3]) };
+}
 const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 // Fences are a run of 3+ colons (group 1). A longer opener nests: a
 // `::::` block contains `:::` blocks, and only a bare closer of equal-or-
@@ -547,7 +566,10 @@ function parseBlockInner(lexer) {
         return parseDefinitionList(lexer);
     if (RE_BLOCKQUOTE.test(line))
         return parseBlockQuote(lexer);
-    if (RE_TASK.test(line) || RE_UNORDERED.test(line) || RE_ORDERED.test(line))
+    if (RE_TASK.test(line) ||
+        RE_UNORDERED.test(line) ||
+        RE_ORDERED.test(line) ||
+        extractItemAttr(line) !== null)
         return parseList(lexer);
     if (RE_TABLE_ROW.test(line))
         return parseTable(lexer);
@@ -1187,6 +1209,7 @@ function lineOpensBlock(line) {
         RE_TASK.test(line) ||
         RE_UNORDERED.test(line) ||
         RE_ORDERED.test(line) ||
+        extractItemAttr(line) !== null ||
         RE_TABLE_ROW.test(line) ||
         (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line)) ||
         RE_DIV_OPEN.test(line));
@@ -1207,21 +1230,25 @@ function lazyContinuationEndsList(line, lexer) {
         RE_TASK.test(line) ||
         RE_UNORDERED.test(line) ||
         RE_ORDERED.test(line) ||
+        extractItemAttr(line) !== null ||
         RE_TABLE_ROW.test(line) ||
         isBlockImageLine(line));
 }
 function parseList(lexer) {
     const first = lexer.peek();
-    const baseIndent = leadingWhitespace(first);
-    const isTask = RE_TASK.test(first);
-    const isOrdered = !isTask && RE_ORDERED.test(first);
+    const baseIndent = indentColumns(first);
+    // Classify on the marker after stripping any abutting `{...}` attribute block.
+    const firstAttr = extractItemAttr(first);
+    const firstStripped = firstAttr ? firstAttr.stripped : first;
+    const isTask = RE_TASK.test(firstStripped);
+    const isOrdered = !isTask && RE_ORDERED.test(firstStripped);
     // A change of unordered marker character (`-` vs `*` vs `+`), or of
     // ordered dialect/delimiter (decimal/alpha/roman, `.` vs `)`), starts a
     // new list (grammar PART 9 §11). The first item fixes the ordered
     // dialect; the second item's marker (if a sibling) tie-breaks an
     // ambiguous single roman letter.
-    const firstMarkerChar = isOrdered ? '' : unorderedMarkerChar(first);
-    const firstOrdered = isOrdered ? RE_ORDERED.exec(first) : null;
+    const firstMarkerChar = isOrdered ? '' : unorderedMarkerChar(firstStripped);
+    const firstOrdered = isOrdered ? RE_ORDERED.exec(firstStripped) : null;
     const orderedDelim = firstOrdered ? firstOrdered[3] : '';
     let orderedKind = 'dec';
     let orderedStart = 1;
@@ -1233,12 +1260,15 @@ function parseList(lexer) {
         let k = 1;
         for (; lexer.peek(k) !== undefined; k++) {
             const ln = lexer.peek(k);
-            if (ln.trim() !== '' && leadingWhitespace(ln) <= baseIndent)
+            if (ln.trim() !== '' && indentColumns(ln) <= baseIndent)
                 break;
         }
         const nextLine = lexer.peek(k);
-        const nm = nextLine !== undefined && leadingWhitespace(nextLine) === baseIndent
-            ? RE_ORDERED.exec(nextLine)
+        const nextStripped = nextLine !== undefined
+            ? (extractItemAttr(nextLine)?.stripped ?? nextLine)
+            : undefined;
+        const nm = nextStripped !== undefined && indentColumns(nextLine) === baseIndent
+            ? RE_ORDERED.exec(nextStripped)
             : null;
         orderedKind = olKindOf(firstOrdered[2], nm ? nm[2] : null);
         orderedStart = olStartOf(firstOrdered[2], orderedKind);
@@ -1252,16 +1282,20 @@ function parseList(lexer) {
             // below; a stray leading blank just ends the list.
             break;
         }
-        if (leadingWhitespace(line) !== baseIndent)
+        if (indentColumns(line) !== baseIndent)
             break;
-        const m = matchListMarker(line, isTask, isOrdered);
+        // Strip an abutting `{...}` attribute block off the marker so the bare
+        // marker regexes match; remember its attributes to attach to the <li>.
+        const la = extractItemAttr(line);
+        const mline = la ? la.stripped : line;
+        const m = matchListMarker(mline, isTask, isOrdered);
         if (!m)
             break;
         // §11: a sibling with a different marker character (unordered) or a
         // different delimiter (ordered) is a new list.
-        if (!isOrdered && unorderedMarkerChar(line) !== firstMarkerChar)
+        if (!isOrdered && unorderedMarkerChar(mline) !== firstMarkerChar)
             break;
-        if (isOrdered && !orderedContinues(line, orderedKind, orderedDelim))
+        if (isOrdered && !orderedContinues(mline, orderedKind, orderedDelim))
             break;
         let content;
         let checked;
@@ -1275,12 +1309,21 @@ function parseList(lexer) {
         else {
             content = m[2];
         }
-        // Column where item content begins; deeper-indented lines belong to this
-        // item (continuation paragraphs or nested lists). For a TASK item the
-        // checkbox is content, not marker, so the content column is the bullet width
-        // (`- `/`* ` = 2), matching the spec's task attribute/continuation
-        // convention (`- [x] x` / `  {.c}`) -- not the full `- [x] ` width.
-        const contentCol = isTask ? baseIndent + 2 : m[0].length - content.length;
+        const itemAttrs = la ? la.attrs : undefined;
+        // item (continuation paragraphs or nested lists). Visual content column:
+        // baseIndent (tab-aware columns) plus the marker width in characters. The
+        // marker (`- `, `1. `) and any abutting `{...}` attr block contain no tabs,
+        // so their column width equals their character count; the leading
+        // whitespace may be a tab, so it is measured in columns (baseIndent) rather
+        // than characters. The marker/attr width is taken from the ORIGINAL line so
+        // an abutting `{...}` block widens it correctly. For a TASK item the
+        // checkbox is content, not marker, so the content column is the bullet
+        // width (`- `/`* ` = 2) plus any abutting attr width -- not the full
+        // `- [x] ` width (matching the spec's task attribute/continuation
+        // convention `- [x] x` / `  {.c}`).
+        const contentCol = isTask
+            ? baseIndent + 2 + (la ? line.length - mline.length : 0)
+            : baseIndent + (line.length - leadingWhitespace(line) - content.length);
         lexer.consume();
         // First-block item (Carve): `- +` opens an item whose body is the
         // flush-left block that follows, with no indentation. A lone `+` as the
@@ -1293,7 +1336,7 @@ function parseList(lexer) {
                 const a = lexer.peek();
                 if (a.trim() === '')
                     break;
-                const ind = leadingWhitespace(a);
+                const ind = indentColumns(a);
                 if (ind < baseIndent)
                     break;
                 if (ind === baseIndent) {
@@ -1305,7 +1348,7 @@ function parseList(lexer) {
                     if (sibling || a.trim() === '+')
                         break;
                 }
-                attached.push(a.slice(baseIndent));
+                attached.push(sliceColumns(a, baseIndent));
                 lexer.consume();
             }
             const sub = new Lexer(attached.join('\n'));
@@ -1318,6 +1361,8 @@ function parseList(lexer) {
             const fbItem = { type: 'list-item', children: fbChildren };
             if (checked !== undefined)
                 fbItem.checked = checked;
+            if (itemAttrs)
+                fbItem.attrs = itemAttrs;
             items.push(fbItem);
             continue;
         }
@@ -1343,7 +1388,7 @@ function parseList(lexer) {
             // it. A bare `+` is never a bullet (a bullet needs `+ ` + content). It
             // injects a blank separator so the block parses on its own; the
             // compact-list rule above then keeps the item tight.
-            if (leadingWhitespace(l) === baseIndent && l.trim() === '+') {
+            if (indentColumns(l) === baseIndent && l.trim() === '+') {
                 lexer.consume();
                 pendingBlanks = 0;
                 nested.push('');
@@ -1351,7 +1396,7 @@ function parseList(lexer) {
                     const a = lexer.peek();
                     if (a.trim() === '')
                         break;
-                    const ind = leadingWhitespace(a);
+                    const ind = indentColumns(a);
                     if (ind < baseIndent)
                         break;
                     if (ind === baseIndent) {
@@ -1363,16 +1408,16 @@ function parseList(lexer) {
                         if (sibling || a.trim() === '+')
                             break;
                     }
-                    nested.push(a.slice(baseIndent));
+                    nested.push(sliceColumns(a, baseIndent));
                     lexer.consume();
                 }
                 continue;
             }
-            if (leadingWhitespace(l) >= contentCol) {
+            if (indentColumns(l) >= contentCol) {
                 for (let k = 0; k < pendingBlanks; k++)
                     nested.push('');
                 pendingBlanks = 0;
-                const dedented = l.slice(contentCol);
+                const dedented = sliceColumns(l, contentCol);
                 if (firstBlockIdx === -1 &&
                     RE_ORDERED.test(dedented) &&
                     !RE_TASK.test(dedented)) {
@@ -1383,12 +1428,15 @@ function parseList(lexer) {
             }
             else if (pendingBlanks === 0 &&
                 (!lazyContinuationEndsList(l, lexer) ||
-                    // An ordered marker indented past the base column but below the
-                    // content column is lazy continuation, not a new block: ordered
-                    // markers do not interrupt a paragraph (§10). At the base column it
-                    // can still start a new list (a dialect change, §11), so only an
-                    // indented one folds.
-                    (leadingWhitespace(l) > baseIndent && RE_ORDERED.test(l) && !RE_TASK.test(l)))) {
+                    // A list marker indented past the base column (but below the content
+                    // column) folds into the lead text rather than ending the list; the
+                    // recursive reparse then applies §10: an ordered marker does not
+                    // interrupt a paragraph so it stays folded (`1. a` / `  1. b`), while
+                    // an unordered/task marker interrupts and nests (`- a` / ` - b`). At
+                    // the base column a marker can still start a new list (a dialect
+                    // change, §11), so only an indented one folds.
+                    (indentColumns(l) > baseIndent &&
+                        (RE_TASK.test(l) || RE_UNORDERED.test(l) || RE_ORDERED.test(l))))) {
                 // Lazy continuation: a line with no blank before it that starts no block
                 // (or is the indented ordered marker above) folds into the item's lead
                 // paragraph (djot rule). A block-starting line or a blank ends the list.
@@ -1406,11 +1454,12 @@ function parseList(lexer) {
         // (§11), so it must not loosen this one.
         if (pendingBlanks > 0 && !lexer.eof()) {
             const nextLine = lexer.peek();
-            if (leadingWhitespace(nextLine) === baseIndent &&
-                matchListMarker(nextLine, isTask, isOrdered) &&
+            const nextStripped = extractItemAttr(nextLine)?.stripped ?? nextLine;
+            if (indentColumns(nextLine) === baseIndent &&
+                matchListMarker(nextStripped, isTask, isOrdered) &&
                 (isOrdered
-                    ? orderedContinues(nextLine, orderedKind, orderedDelim)
-                    : unorderedMarkerChar(nextLine) === firstMarkerChar)) {
+                    ? orderedContinues(nextStripped, orderedKind, orderedDelim)
+                    : unorderedMarkerChar(nextStripped) === firstMarkerChar)) {
                 loose = true;
             }
         }
@@ -1453,6 +1502,8 @@ function parseList(lexer) {
         const item = { type: 'list-item', children };
         if (checked !== undefined)
             item.checked = checked;
+        if (itemAttrs)
+            item.attrs = itemAttrs;
         items.push(item);
     }
     const list = { type: 'list', ordered: isOrdered, tight: !loose, items };
@@ -1689,8 +1740,11 @@ function startsInterruptingBlock(lexer) {
                 return fenceHasCloser(lexer, RE_FENCE.exec(ln)[2]);
             return false;
         case '-':
-            // thematic break, task or unordered list
-            return RE_HR.test(ln.trim()) || RE_TASK.test(ln) || RE_UNORDERED.test(ln);
+            // thematic break, task or unordered list (incl. abutting-attr marker)
+            return (RE_HR.test(ln.trim()) ||
+                RE_TASK.test(ln) ||
+                RE_UNORDERED.test(ln) ||
+                extractItemAttr(ln) !== null);
         case '+':
             // task or unordered list (`+` is not a thematic-break char)
             return RE_TASK.test(ln) || RE_UNORDERED.test(ln);
@@ -1699,7 +1753,8 @@ function startsInterruptingBlock(lexer) {
             return (RE_ABBR_DEF.test(ln) ||
                 RE_HR.test(ln.trim()) ||
                 RE_TASK.test(ln) ||
-                RE_UNORDERED.test(ln));
+                RE_UNORDERED.test(ln) ||
+                extractItemAttr(ln) !== null);
         case '_':
             return RE_HR.test(ln.trim());
         case ':':
@@ -1774,6 +1829,46 @@ function leadingWhitespace(line) {
     while (n < line.length && (line[n] === ' ' || line[n] === '\t'))
         n++;
     return n;
+}
+// Visual column of the leading whitespace, expanding tabs to the next
+// CommonMark tab stop (a multiple of 4). This is the column model used for list
+// nesting comparisons: a space advances one column, a tab advances to the next
+// tab stop. For space-only indentation it equals leadingWhitespace().
+function indentColumns(line) {
+    let col = 0;
+    for (let i = 0; i < line.length; i++) {
+        if (line[i] === ' ')
+            col++;
+        else if (line[i] === '\t')
+            col += 4 - (col % 4);
+        else
+            break;
+    }
+    return col;
+}
+// Dedent counterpart of indentColumns(): drop leading whitespace up to `cols`
+// columns. A tab straddling the boundary is consumed whole rather than
+// re-emitting residual columns as spaces -- Carve has no indent-sensitive block
+// where the leftover column would change meaning, and indentColumns() re-measures
+// the remainder on each nested parse, so a clean dedent keeps tab-indented
+// sub-blocks nesting. For space-only indentation this equals line.slice(cols).
+function sliceColumns(line, cols) {
+    let col = 0;
+    let i = 0;
+    while (i < line.length && col < cols) {
+        if (line[i] === ' ') {
+            col++;
+            i++;
+        }
+        else if (line[i] === '\t') {
+            col += 4 - (col % 4);
+            i++;
+        }
+        else {
+            break;
+        }
+    }
+    return line.slice(i);
 }
 // ============================================================================
 // Inline parsing

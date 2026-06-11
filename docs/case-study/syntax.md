@@ -419,6 +419,24 @@ being unambiguous, do interrupt; `+` is the continuation marker, not a bullet.)
 Inside an existing list item, indentation
 alone still nests a sublist.
 
+A bullet opens a list at **any indentation**, not only at column 0: a `- `/`* `
+marker is always a bullet, so an indented one opens a list (at the top level) or
+interrupts an open paragraph just like a column-0 marker. The leading indentation
+becomes the new list's base column. This keeps the bullet rule uniform across
+contexts - an indented bullet opens a list whether it follows a paragraph, stands
+at the top level, or nests inside an existing item.
+
+```
+text
+  - item       →  a paragraph, then a list (the bullet interrupts)
+
+  - a           →  a list (no column-0 requirement)
+```
+
+Ordered markers, by contrast, never interrupt a paragraph at any indentation
+(they keep the blank-line rule above); a marker requires a single space after it
+(`- x`, not a tab), since the space is a syntax delimiter, not indentation.
+
 **Auto-numbering:**
 ```
 1. First

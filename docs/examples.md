@@ -610,6 +610,42 @@ A task item's content column is the bullet width (2), since the checkbox is cont
 
 :::
 
+A bullet opens a list at any indentation (Rule B), so an indented bullet interrupts an open paragraph just like a column-0 one.
+
+::: compare
+
+```carve
+text
+  - item
+```
+
+```html
+<p>text</p>
+<ul>
+  <li>item</li>
+</ul>
+```
+
+:::
+
+With no preceding paragraph, an indented bullet simply opens a list whose base column is the indentation.
+
+::: compare
+
+```carve
+  - a
+  - b
+```
+
+```html
+<ul>
+  <li>a</li>
+  <li>b</li>
+</ul>
+```
+
+:::
+
 A blank line between items produces a loose list — each item wraps in a paragraph.
 
 ::: compare
