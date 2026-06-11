@@ -59,6 +59,7 @@ const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 // greater length closes it (djot fence-length rule).
 const RE_ADMONITION_OPEN = /^(:{3,})\s*([a-zA-Z][\w-]*)\s*(.*)$/;
 const RE_ADMONITION_CLOSE = /^(:{3,})\s*$/;
+const RE_LINE_BLOCK_OPEN = /^(:{3,})[ \t]+line-block(?:[ \t]*\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?[ \t]*$/;
 // Generic fenced div: a `:::` opener with NO type word -- bare `:::` or
 // an attributes-only `::: {.class}` (djot's generic container). A typed
 // `::: word` routes to parseAdmonition instead. Shares the `:::` closer.
@@ -532,6 +533,8 @@ function parseBlockInner(lexer) {
         const l = lexer.consume();
         return { type: 'comment', block: false, content: l.slice(2).replace(/^\s/, '') };
     }
+    if (RE_LINE_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer))
+        return parseLineBlock(lexer);
     if (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line))
         return parseAdmonition(lexer);
     // Bare `:::` or attributes-only `::: {…}` opens a generic div (the
@@ -759,15 +762,19 @@ function parseAdmonition(lexer) {
     const m = RE_ADMONITION_OPEN.exec(open);
     const fence = m[1].length;
     const kind = m[2];
-    // A title is recognized ONLY when the tail after the type opens with a
-    // double-quoted string (grammar quoted_title; PART 9 §12), optionally
-    // followed by an attribute block. The quotes are delimiters and are
-    // stripped — not part of the rendered title text. An explicitly empty
-    // `""` still counts as a supplied (empty) title. Unquoted trailing
-    // text is ignored (not a title).
+    // The tail after the type word may carry an optional quoted title
+    // (grammar quoted_title; PART 9 §12) and an optional trailing attribute
+    // block (grammar admonition_open [attributes]). The block needs no
+    // leading space, so it may abut the type or the title (`::: note{.x}`,
+    // `::: note "T"{.x}`). The quotes delimit the title and are stripped
+    // (not part of the rendered text); an explicitly empty `""` still counts
+    // as a supplied (empty) title. A quoted title may itself contain braces,
+    // so the attribute block is only the `{...}` after the closing quote.
+    // Unquoted trailing text is ignored (not a title, not attributes).
     const tail = m[3]?.trim() ?? '';
-    const quoted = /^"([^"]*)"\s*(?:\{[^}]*\})?$/.exec(tail);
-    const titleText = quoted ? quoted[1] : undefined;
+    const tm = /^(?:"([^"]*)"\s*)?(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\})?$/.exec(tail);
+    const titleText = tm ? tm[1] : undefined;
+    const attrSrc = tm?.[2];
     const inner = [];
     while (!lexer.eof()) {
         const ln = lexer.peek();
@@ -792,7 +799,80 @@ function parseAdmonition(lexer) {
     if (titleText !== undefined) {
         node.title = parseInline(titleText, lexer.abbrDefs, lexer.linkDefs);
     }
+    // The opener's own trailing attributes (`::: note {.x}`). A leading
+    // block-attribute line merges with these in parseBlocks (pending first,
+    // opener attrs win on conflict), the same path parseDiv uses. An invalid
+    // payload (`{.x junk}`) is not an attribute block (no silent partial
+    // apply, matching block-attribute lines and grammar §14); the trailing
+    // text is ignored.
+    if (attrSrc && isValidAttrPayload(attrSrc))
+        node.attrs = parseAttrs(attrSrc);
     return node;
+}
+function lineBlockHasCloser(lexer) {
+    const start = lexer.pos + 1;
+    const fence = RE_LINE_BLOCK_OPEN.exec(lexer.peek())[1].length;
+    for (let i = start; i < lexer.lines.length; i++) {
+        const c = RE_ADMONITION_CLOSE.exec(lexer.lines[i]);
+        if (c && c[1].length >= fence)
+            return true;
+    }
+    return false;
+}
+function parseLineBlock(lexer) {
+    const open = lexer.consume();
+    const m = RE_LINE_BLOCK_OPEN.exec(open);
+    const fence = m[1].length;
+    const attrSrc = m[2];
+    const stanzas = [];
+    let stanza = [];
+    while (!lexer.eof()) {
+        const ln = lexer.peek();
+        const c = RE_ADMONITION_CLOSE.exec(ln);
+        if (c && c[1].length >= fence) {
+            lexer.consume();
+            break;
+        }
+        lexer.consume();
+        if (ln.trim() === '') {
+            if (stanza.length) {
+                stanzas.push(stanza);
+                stanza = [];
+            }
+            continue;
+        }
+        stanza.push(expandLineBlockLeadingWhitespace(ln));
+    }
+    if (stanza.length)
+        stanzas.push(stanza);
+    const children = stanzas.map((lines) => ({
+        type: 'paragraph',
+        children: parseInline(lines.join('\n'), lexer.abbrDefs, lexer.linkDefs).map((node) => node.type === 'soft-break' ? { type: 'hard-break' } : node),
+    }));
+    const node = {
+        type: 'div',
+        attrs: { classes: ['line-block'], order: ['.class'] },
+        children,
+    };
+    if (attrSrc && isValidAttrPayload(attrSrc)) {
+        node.attrs = mergeAttrs(node.attrs, parseAttrs(attrSrc));
+    }
+    return node;
+}
+function expandLineBlockLeadingWhitespace(line) {
+    let i = 0;
+    let columns = 0;
+    while (i < line.length) {
+        const ch = line[i];
+        if (ch === ' ')
+            columns++;
+        else if (ch === '\t')
+            columns += 4 - (columns % 4);
+        else
+            break;
+        i++;
+    }
+    return '\u00a0'.repeat(columns) + line.slice(i);
 }
 // Generic div: same body collection as an admonition, but emits a plain
 // <div> carrying the opener's attributes (no class added). Like
@@ -848,7 +928,9 @@ function parseDiv(lexer) {
     subLexer.nested = true;
     subLexer.depth = lexer.depth + 1;
     const node = { type: 'div', children: parseBlocks(subLexer, 0) };
-    if (attrSrc)
+    // An invalid payload (`:::{.x junk}`) is not an attribute block: no
+    // silent partial apply, matching block-attribute lines and grammar §14.
+    if (attrSrc && isValidAttrPayload(attrSrc))
         node.attrs = parseAttrs(attrSrc);
     return node;
 }
