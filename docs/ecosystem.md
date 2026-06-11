@@ -16,7 +16,7 @@ the bar for "a Carve implementation" is **Tier-1 core** (native syntax) - see
 |---|---|---|
 | [carve-js](https://github.com/markup-carve/carve-js) | TypeScript | Reference implementation. Tier-1 corpus passing. |
 | [carve-rs](https://github.com/markup-carve/carve-rs) | Rust | Parser + HTML renderer with a `carve` CLI. Tier-1 corpus passing. |
-| [carve-php](https://github.com/markup-carve/carve-php) | PHP | Forked from djot-php; syntax migration in progress. *Alpha.* |
+| [carve-php](https://github.com/markup-carve/carve-php) | PHP | Forked from djot-php; Carve syntax implemented, corpus passing. Powers the [PHP sandbox](https://sandbox.dereuromark.de/sandbox/carve) and wp-carve. |
 | [carve-wasm](https://github.com/markup-carve/carve-wasm) | WASM | Browser/Node bindings for carve-rs. *Early.* |
 
 ## Editor support
