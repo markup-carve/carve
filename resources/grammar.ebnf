@@ -452,8 +452,10 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
 (* A trailing `{…}` on a code span is the generic inline-attribute
    block, NOT a language tag -- EXCEPT the exact form `{=format}`, which is
    raw inline passthrough (raw_inline below, PART 9 §20). For any OTHER
-   `{…}`: both impls consume it; carve-js then drops the attributes and
-   carve-php applies them (an impl divergence). *)
+   `{…}`: both impls consume AND apply it -- `\`c\`{.x}` ->
+   `<code class="x">c</code>`, and `#id`/`key=value` likewise. (Was an impl
+   divergence where carve-js dropped the attributes; RESOLVED -- both now
+   apply them identically.) *)
 
 (* --- Raw Inline (inline parallel of raw_block; PART 9 §20) --- *)
 (* A code span whose trailing attribute block is EXACTLY `{=format}` is raw
@@ -490,7 +492,11 @@ reference_definition = '[', reference_label, ']', ':', space, url, [link_title],
    has no shortcut reference links). See PART 9 §14. *)
 inline_span = '[', inline_content, ']', attributes ;
 
-autolink = '<', (url_autolink | email_autolink), '>' ;
+autolink = '<', (url_autolink | email_autolink), '>', [attributes] ;
+(* A trailing `[attributes]` block attaches to the autolink (generic
+   inline-attribute carrier, examples.md): `<https://example.com>{.ext}`
+   -> `<a href="https://example.com" class="ext">https://example.com</a>`.
+   Same slot as every other inline carrier; both reference impls agree. *)
 url_autolink = scheme, ':', {url_char}+ ;
 email_autolink = {email_char}+, '@', {email_char}+, '.', {letter}+ ;
 
@@ -521,6 +527,15 @@ image_with_caption = image, newline, caption ;
 math = math_inline | math_display ;
 math_inline = '$', code_span ;
 math_display = "$$", code_span ;
+(* TRAILING ATTRIBUTES on math -- NORMATIVE: math reuses `code_span`, which
+   carries the generic `[attributes]` slot, so `$\`x\`{.c}` / `$$\`x\`{.c}`
+   parse a trailing attribute block and APPLY it to the math span, merging
+   classes into the existing `math inline` / `math display` class
+   (`<span class="math inline c">`); `#id` / `key=value` are applied too.
+   Canonical = carve-js / djot.js (pinned, corpus Math section). The
+   `{=format}` raw form is code-span-ONLY and is NOT inherited by math:
+   `$\`x\`{=html}` leaves the `{=html}` literal (both impls already agree).
+   carve-php currently DROPS valid math attributes -- to be fixed. *)
 math_content = (* verbatim LaTeX, taken from the code_span *) ;
 
 (* --- Emphasis (left/right word-boundary rule; PART 9 §9 is normative).
@@ -539,14 +554,23 @@ math_content = (* verbatim LaTeX, taken from the code_span *) ;
    Exact disambiguation of delimiter runs is pinned by the conformance corpus
    (tests/corpus/01-emphasis*); see PART 9 §9. *)
 
-emphasis = '/', emphasis_content, '/' ;  (* italic *)
-strong = '*', strong_content, '*' ;       (* bold *)
-bold_italic = "/*", bi_content, "*/" ;    (* combined *)
-underline = '_', underline_content, '_' ;
-strikethrough = '~', strike_content, '~' ;
-superscript = '^', super_content, '^' ;
-subscript = ",,", sub_content, ",," ;
-highlight = "==", highlight_content, "==" ;
+emphasis = '/', emphasis_content, '/', [attributes] ;  (* italic *)
+strong = '*', strong_content, '*', [attributes] ;       (* bold *)
+bold_italic = "/*", bi_content, "*/", [attributes] ;    (* combined *)
+underline = '_', underline_content, '_', [attributes] ;
+strikethrough = '~', strike_content, '~', [attributes] ;
+superscript = '^', super_content, '^', [attributes] ;
+subscript = ",,", sub_content, ",,", [attributes] ;
+highlight = "==", highlight_content, "==", [attributes] ;
+
+(* TRAILING ATTRIBUTES -- each emphasis-family span MAY carry a trailing
+   `[attributes]` block: the generic inline-attribute carrier that attaches
+   to the immediately-preceding inline node (the general rule, examples.md
+   "Trailing attribute block edge cases"). `*x*{.real}` ->
+   `<strong class="real">x</strong>`. It is the SAME `[attributes]` slot
+   every other inline carrier uses (code_span, link, image, inline_span,
+   extension_inline, autolink). Pinned by corpus
+   75-trailing-attribute-block-edge-cases; both reference impls agree. *)
 
 (* Content MAY contain the delimiter character: a delimiter that does not
    satisfy the close condition (PART 9 §1) is literal content, not the span

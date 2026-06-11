@@ -2089,6 +2089,23 @@ $$`\int_0^1 x\,dx`
 
 :::
 
+A trailing attribute block applies to the math span, merging classes into the
+existing `math inline` / `math display` class (math reuses the code-span
+attribute slot). The `{=format}` raw form is code-span-only and is not inherited
+by math: `` $`x`{=html} `` leaves the `{=html}` literal.
+
+::: compare
+
+```carve
+$`a^2`{.boxed #eq1 data-k=v}
+```
+
+```html
+<p><span class="math inline boxed" id="eq1" data-k="v">\(a^2\)</span></p>
+```
+
+:::
+
 ## Footnotes
 
 A `[^label]` reference is numbered by document order; its `[^label]: …`

@@ -8,3 +8,9 @@ $$`\int_0^1 x\,dx`
 <p>Inline <span class="math inline">\(E = mc^2\)</span> and currency $5 stays literal.</p>
 <p><span class="math display">\[\int_0^1 x\,dx\]</span></p>
 ```
+
+```
+$`a^2`{.boxed #eq1 data-k=v}
+.
+<p><span class="math inline boxed" id="eq1" data-k="v">\(a^2\)</span></p>
+```
