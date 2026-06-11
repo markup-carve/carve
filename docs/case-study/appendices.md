@@ -8,7 +8,7 @@ CARVE QUICK REFERENCE
 EMPHASIS
   /italic/  *bold*  /*bold italic*/
   _underline_  ~strikethrough~
-  ^super^  ,,sub,,  ==highlight==
+  ^super^  ,sub,  =highlight=
 
 HEADINGS
   # H1  ## H2  ### H3  #### H4

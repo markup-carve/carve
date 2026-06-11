@@ -416,8 +416,8 @@ Carve uses:
 _underline_
 ~strikethrough~
 ^super^
-,,sub,,
-==highlight==
+,sub,
+=highlight=
 ```
 
 The goal is not novelty for its own sake. The goal is that the delimiter gives
@@ -428,7 +428,7 @@ the user a cue about the output:
 - `_` sits below the baseline
 - `~` reads as a strike line
 - `^` points upward
-- `,,` pulls downward
+- `,` pulls downward
 
 That makes the syntax easier to recover after time away from the language.
 

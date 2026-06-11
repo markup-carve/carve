@@ -153,8 +153,8 @@ This is _underline_ text.
 This is ~strikethrough~ text.
 This is `code` text.
 This is ^superscript^ text.
-This is ,,subscript,, text.
-This is ==highlighted== text.
+This is ,subscript, text.
+This is =highlighted= text.
 ```
 
 #### Rationale
@@ -166,8 +166,8 @@ This is ==highlighted== text.
 | `_text_` | Underscore is literally underneath           |
 | `~text~` | Tilde looks like a strikethrough             |
 | `^text^` | Caret points up                              |
-| `,,t,,`  | Commas pull down                             |
-| `==t==`  | Double equals like highlighter on both sides |
+| `,t,`    | Comma pulls down                             |
+| `=t=`    | Equals like a highlighter                    |
 
 The `/italic/` syntax comes from Org-mode, where it has worked well for decades.
 
@@ -178,12 +178,14 @@ The `/italic/` syntax comes from Org-mode, where it has worked well for decades.
 ```
 
 A direct consequence: a **doubled** bare delimiter never opens nested
-same-type emphasis, so it stays literal text — uniformly across all five
+same-type emphasis, so it stays literal text — uniformly across all seven
 single-character delimiters.
 ```
 **x**   --> **x**     (literal, not nested bold)
 ~~x~~   --> ~~x~~     (literal)
 ^^x^^   --> ^^x^^     (literal)
+==x==   --> ==x==     (literal)
+,,x,,   --> ,,x,,     (literal)
 //x//   --> //x//     (literal)
 __x__   --> __x__     (literal)
 ```
@@ -1124,9 +1126,9 @@ This is {~old~>new~} replacement.
 This is text{# with a comment #}.
 ```
 
-Highlight is `==text==` (§4.2), not an editorial mark — the djot `{=text=}`
-form is intentionally not supported (it duplicated `<mark>`; it renders
-literally and is flagged for migration to `==`).
+Highlight is the single-char `=text=` (§4.2); a doubled `==text==` is literal by
+the same-delimiter-adjacency rule. The brace form `{=text=}` is forced intraword
+highlight (PART 9 §22), the same escape hatch every emphasis mark gets.
 
 Useful for:
 - Document review workflows

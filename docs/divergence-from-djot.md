@@ -95,8 +95,8 @@ used `+` as a bullet (most don't).
 | Bold | `*text*` | `*text*` (heavy) |
 | Bold italic | `_*text*_` | `/*text*/` |
 | Underline | (none; `{+text+}` is insert → `<ins>`) | `_text_` (line underneath) |
-| Highlight | `{=text=}` | `==text==` |
-| Subscript | `~text~` | `,,text,,` (commas pull down) |
+| Highlight | `{=text=}` | `=text=` |
+| Subscript | `~text~` | `,text,` (comma pulls down) |
 
 **Why.** Carve targets non-technical authors too. Syntax that resembles its
 output is learnable in seconds and memorable after weeks away - the "five-second
@@ -104,7 +104,7 @@ rule." It is a source-compatibility break with Djot, but a small, teachable one.
 
 ::: warning One delimiter flips meaning
 `~text~` is **subscript** in Djot but **strikethrough** in Carve (the tilde looks
-like a line through text). Carve writes subscript as `,,text,,`. This is the one
+like a line through text). Carve writes subscript as `,text,`. This is the one
 inline delimiter whose meaning differs between the two languages - worth knowing
 when porting Djot source.
 :::
@@ -179,7 +179,7 @@ as more than restyled Djot:
 Most Djot source needs only mechanical changes:
 
 1. `_italic_` → `/italic/`, and check every `*…*` (Djot strong stays `*…*`).
-2. `~sub~` → `,,sub,,`; if you used `~` for strikethrough-by-convention, it's now
+2. `~sub~` → `,sub,`; if you used `~` for strikethrough-by-convention, it's now
    native.
 3. Replace `+` bullets with `-` or `*`.
 4. `{% comment %}` → `%%`.

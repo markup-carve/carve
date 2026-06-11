@@ -2032,6 +2032,23 @@ const RE_CRITIC_INS = /^\{\+([^}]*)\+\}/;
 const RE_CRITIC_DEL = /^\{-([^}]*)-\}/;
 const RE_CRITIC_SUB = /^\{~([^}]*)~>([^}]*)~\}/;
 const RE_CRITIC_CMT = /^\{#([^}]*)#\}/;
+// Forced intraword emphasis (§22): a brace pair around a bare delimiter forces
+// a span with no word-boundary condition. Group 1 is the delimiter; the
+// backreference closes it before `}`, non-greedy so the nearest `delim}` wins.
+// Matched AFTER RE_CRITIC_SUB, so `{~…~>…~}` is substitution and a bare
+// `{~…~}` (no `~>`) is forced strikethrough. The `=` form requires a trailing
+// `=` before `}`, so the raw-inline `{=format}` attribute (no trailing `=`,
+// e.g. `{=html}`) does not match here.
+const RE_FORCED_EMPHASIS = /^\{([/*_^,~=])([\s\S]+?)\1\}/;
+const FORCED_TYPE = {
+    '/': 'italic',
+    '*': 'strong',
+    _: 'underline',
+    '^': 'super',
+    ',': 'sub',
+    '~': 'strike',
+    '=': 'highlight',
+};
 // Names can include version-style dots between alnum runs (e.g. `#release-1.0`)
 // but a trailing period is treated as sentence punctuation, not part of the name.
 const RE_MENTION = /^@([a-zA-Z][\w-]*(?:\.\w+)*)/;
@@ -2526,6 +2543,15 @@ function scanInline(text, source = inlineSource(), inFootnote = false, captionCo
                 i += cmt[0].length;
                 continue;
             }
+            // Forced intraword emphasis `{X…X}` (§22) — emits the same node as the
+            // bare delimiter, but with no word-boundary condition.
+            const forced = RE_FORCED_EMPHASIS.exec(rest);
+            if (forced) {
+                flush();
+                out.push(withPos({ type: FORCED_TYPE[forced[1]], children: scanInline(forced[2], shiftSource(source, text, i + 2), inFootnote) }, source, text, i, i + forced[0].length));
+                i += forced[0].length;
+                continue;
+            }
             // Inline attribute block — attaches to preceding node
             const attr = RE_INLINE_ATTR.exec(rest);
             if (attr && out.length) {
@@ -2617,43 +2643,17 @@ function matchEmphasis(text, i, source, inFootnote = false) {
             };
         }
     }
-    // ,,sub,, (priority over single , — n/a, just match double). A run of 3+
-    // commas does not open: the doubling IS the delimiter token, so an adjacent
-    // third `,` (before or after the pair) makes it literal, consistent with
-    // the single-char same-delimiter adjacency rule (`**` etc.).
-    if (c === ',' && text[i + 1] === ',' && text[i - 1] !== ',' && text[i + 2] !== ',') {
-        const close = findClose(text, i + 2, ',,');
-        if (close !== -1 && close > i + 2) {
-            const inner = text.slice(i + 2, close);
-            if (inner.trim() && !inner.startsWith(' ') && !inner.endsWith(' ')) {
-                return {
-                    node: { type: 'sub', children: scanInline(inner, shiftSource(source, text, i + 2), inFootnote) },
-                    end: close + 2,
-                };
-            }
-        }
-    }
-    // ==highlight== (priority over single =). Likewise a run of 3+ `=` does not
-    // open -- `====x====` stays literal, like `**x**`.
-    if (c === '=' && text[i + 1] === '=' && text[i - 1] !== '=' && text[i + 2] !== '=') {
-        const close = findClose(text, i + 2, '==');
-        if (close !== -1 && close > i + 2) {
-            const inner = text.slice(i + 2, close);
-            if (inner.trim() && !inner.startsWith(' ') && !inner.endsWith(' ')) {
-                return {
-                    node: { type: 'highlight', children: scanInline(inner, shiftSource(source, text, i + 2), inFootnote) },
-                    end: close + 2,
-                };
-            }
-        }
-    }
-    // Single-char delimiters
+    // Single-char delimiters. Highlight `=` and subscript `,` are single-char
+    // like the rest; a doubled `==`/`,,` is therefore literal by same-delimiter
+    // adjacency (handled below), exactly like `**x**`.
     const pairs = [
         ['/', 'italic'],
         ['*', 'strong'],
         ['_', 'underline'],
         ['~', 'strike'],
         ['^', 'super'],
+        ['=', 'highlight'],
+        [',', 'sub'],
     ];
     for (const [delim, type] of pairs) {
         if (c === delim) {
@@ -2664,13 +2664,19 @@ function matchEmphasis(text, i, source, inFootnote = false) {
                 continue;
             // No same-type nesting (spec §4.2): a bare delimiter adjacent to the
             // same delimiter (before OR after) does not open, so a doubled
-            // delimiter is literal text. `**x**`, `~~x~~`, `^^x^^` stay literal,
-            // uniformly with `//x//` and `__x__`. Applies to all five types.
+            // delimiter is literal text. `**x**`, `~~x~~`, `^^x^^`, `==x==`, `,,x,,`
+            // stay literal, uniformly with `//x//` and `__x__`. Applies to all seven.
             if (after === delim || before === delim)
                 continue;
-            // Italic/underline additionally can't open after a word char or `/`,
-            // keeping paths/identifiers literal (a/b/c, foo_bar, snake_/case/).
-            if ((delim === '/' || delim === '_') && before && /[A-Za-z0-9_/]/.test(before))
+            // Word-boundary opener (spec §9): every bare delimiter can't open after
+            // an alphanumeric or `_`, keeping paths/identifiers/numbers literal
+            // (a/b/c, foo*bar*baz, snake_case, x = 5, key=value, 1,2,3). Use the
+            // forced `{X…X}` family for deliberate intraword emphasis.
+            if (before && /[A-Za-z0-9_]/.test(before))
+                continue;
+            // Italic/underline additionally can't open after `/` (path protection,
+            // e.g. snake_/case/).
+            if ((delim === '/' || delim === '_') && before === '/')
                 continue;
             // Find closer that's not preceded by space
             const close = findEmphasisClose(text, i + 1, delim);
@@ -2780,8 +2786,9 @@ function findEmphasisClose(text, from, delim) {
             if (prev === ' ' || prev === '\n' || prev === undefined)
                 continue;
             const next = text[j + 1];
-            // Closer must not be followed by alphanumeric for / and _
-            if ((delim === '/' || delim === '_') && next && /[A-Za-z0-9]/.test(next))
+            // Word-boundary closer (spec §9): no bare delimiter closes when followed
+            // by an alphanumeric. Applies to every delimiter, not just / and _.
+            if (next && /[A-Za-z0-9]/.test(next))
                 continue;
             if (depth === 0)
                 return j;

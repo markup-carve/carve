@@ -13,7 +13,7 @@ Emphasis edge cases
 ```
 
 ```
-~old~ ==new==
+~old~ =new=
 .
 <p><s>old</s> <mark>new</mark></p>
 ```

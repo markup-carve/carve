@@ -22,7 +22,7 @@ Parse in this precedence order:
 3. Autolinks (`<url>`)
 4. Links, images, spans (`[text](url)`, `![alt](src)`, `[text]{attrs}`)
 5. Math (`` $`…` ``, `` $$`…` ``)
-6. Emphasis markers (`/`, `*`, `_`, `~`, `^`, `,,`, `==`)
+6. Emphasis markers (`/`, `*`, `_`, `~`, `^`, `,`, `=`)
 7. Smart typography
 
 ### 5.3 The Disambiguation Rule
@@ -76,8 +76,8 @@ Inline
 ├── Underline { content }          // _text_
 ├── Strikethrough { content }      // ~text~
 ├── Superscript { content }        // ^text^
-├── Subscript { content }          // ,,text,,
-├── Highlight { content }          // ==text==
+├── Subscript { content }          // ,text,
+├── Highlight { content }          // =text=
 ├── Code { content, language? }
 ├── Math { content, display }
 ├── Link { content, url, title? }

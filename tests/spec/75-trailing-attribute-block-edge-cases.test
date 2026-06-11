@@ -7,9 +7,9 @@ Trailing attribute block edge cases
 ```
 
 ```
-![a](/i){=hl=}
+![a](/i){???}
 .
-<p><img src="/i" alt="a">{=hl=}</p>
+<p><img src="/i" alt="a">{???}</p>
 ```
 
 ```
