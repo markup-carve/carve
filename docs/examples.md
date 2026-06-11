@@ -934,6 +934,27 @@ Single-column tables follow the same rules — one `|=` cell yields the header r
 
 :::
 
+A GFM-style separator row (the second row, all dashes with optional alignment colons) is also accepted: it makes the first row the header and sets per-column alignment.
+
+::: compare
+
+```carve
+| Name | Age |
+|:-----|----:|
+| Alice | 28  |
+```
+
+```html
+<table>
+  <thead><tr><th style="text-align: left;">Name</th><th style="text-align: right;">Age</th></tr></thead>
+  <tbody>
+    <tr><td style="text-align: left;">Alice</td><td style="text-align: right;">28</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
 An escaped pipe inside cell content (`\|`) renders as a literal `|` and does not split the cell.
 
 ::: compare
