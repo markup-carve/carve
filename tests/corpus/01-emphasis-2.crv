@@ -1,1 +1,1 @@
-foo*bar*baz works but a/b/c does not.
+foo*bar*baz and a/b/c stay literal.

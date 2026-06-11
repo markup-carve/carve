@@ -154,7 +154,7 @@ This is ~strikethrough~ text.
 This is `code` text.
 This is ^superscript^ text.
 This is ,,subscript,, text.
-This is ==highlighted== text.
+This is =highlighted= text.
 ```
 
 #### Rationale
@@ -1085,9 +1085,10 @@ This is {~old~>new~} replacement.
 This is text{# with a comment #}.
 ```
 
-Highlight is `==text==` (§4.2), not an editorial mark — the djot `{=text=}`
-form is intentionally not supported (it duplicated `<mark>`; it renders
-literally and is flagged for migration to `==`).
+Highlight is the single-char `=text=` (§4.2) under Design A (the old two-char
+`==text==` is now a doubled delimiter and renders literally — migrate `==` →
+`=`). The brace form `{=text=}` is reclaimed as forced intraword highlight
+(PART 9 §22), the same escape hatch every emphasis mark gets.
 
 Useful for:
 - Document review workflows

@@ -7,7 +7,7 @@ a {+ins+} {-del-} {~old~>new~} b{# note #}
 ```
 
 ```
-==x=={=hl=}
+=x= and {=y=} both mark.
 .
-<p><mark>x</mark>{=hl=}</p>
+<p><mark>x</mark> and <mark>y</mark> both mark.</p>
 ```
