@@ -1,0 +1,49 @@
+List item attributes
+
+```
+-{.c} A classed item.
+-{#intro} An item with an id.
+.
+<ul>
+  <li class="c">A classed item.</li>
+  <li id="intro">An item with an id.</li>
+</ul>
+```
+
+```
+3.{#x k=v} A numbered item with id and key-value.
+.
+<ol start="3">
+  <li id="x" k="v">A numbered item with id and key-value.</li>
+</ol>
+```
+
+```
+a.{.c} An alpha item.
+.
+<ol type="a">
+  <li class="c">An alpha item.</li>
+</ol>
+```
+
+```
+-{.c} [ ] A classed task item.
+.
+<ul>
+  <li class="c"><input type="checkbox" disabled> A classed task item.</li>
+</ul>
+```
+
+```
+-{} A bare item via the empty block.
+.
+<ul>
+  <li>A bare item via the empty block.</li>
+</ul>
+```
+
+```
+-{+a+} text
+.
+<p>-<ins>a</ins> text</p>
+```
