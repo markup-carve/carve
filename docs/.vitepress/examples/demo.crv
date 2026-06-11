@@ -26,8 +26,8 @@ A heading can carry an explicit id and classes: `## Setup {#install .lead}`.
 
 ## Inline formatting {#inline}
 
-/italic/, *bold*, /*bold italic*/, _underline_, ~strikethrough~, ==highlight==,
-super^script^ and sub,,script,,. Inline `code span`, and raw inline passthrough
+/italic/, *bold*, /*bold italic*/, _underline_, ~strikethrough~, =highlight=,
+super{^script^} and sub{,script,}. Inline `code span`, and raw inline passthrough
 `<abbr>HTML</abbr>`{=html} emitted verbatim.
 
 Editorial markup: {+ added text +}, {- deleted text -},

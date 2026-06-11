@@ -3,7 +3,7 @@ Emphasis
 ```
 /italic/  *bold*  /*bold italic*/
 _underline_  ~strikethrough~
-^super^  ,,sub,,  ==highlight==
+^super^  ,sub,  =highlight=
 .
 <p><em>italic</em>  <strong>bold</strong>  <strong><em>bold italic</em></strong>
 <u>underline</u>  <s>strikethrough</s>
@@ -11,9 +11,9 @@ _underline_  ~strikethrough~
 ```
 
 ```
-foo*bar*baz works but a/b/c does not.
+foo*bar*baz and a/b/c stay literal.
 .
-<p>foo<strong>bar</strong>baz works but a/b/c does not.</p>
+<p>foo*bar*baz and a/b/c stay literal.</p>
 ```
 
 ```
@@ -68,4 +68,28 @@ foo_bar_baz and snake_case stay literal
 //a/ and snake_/case/
 .
 <p>//a/ and snake_/case/</p>
+```
+
+```
+foo{*bar*}baz and my{_path_}name and a{/b/}c
+.
+<p>foo<strong>bar</strong>baz and my<u>path</u>name and a<em>b</em>c</p>
+```
+
+```
+{/a/b/} and {/italic *bold*/}
+.
+<p><em>a/b</em> and <em>italic <strong>bold</strong></em></p>
+```
+
+```
+=marked= here, but ==doubled== is literal.
+.
+<p><mark>marked</mark> here, but ==doubled== is literal.</p>
+```
+
+```
+re{~view~} it, then {~old~>new~}, and {=mark=} it.
+.
+<p>re<s>view</s> it, then <del>old</del><ins>new</ins>, and <mark>mark</mark> it.</p>
 ```

@@ -16,8 +16,11 @@ This document analyzes potentially ambiguous or tricky parsing scenarios in Carv
 **Resolution:** Carve uses a word-boundary emphasis rule that is *stricter*
 than Djot (Djot's `_`/`*` rule is purely whitespace-flanking; Carve adds
 word-boundary conditions so intraword `a/b/c`, `foo_bar_baz`, and `snake_case`
-stay literal). The normative statement lives in `resources/grammar.ebnf`
-PART 9 §9; in summary, for `/` and `_`:
+stay literal). This rule applies to *every* bare delimiter
+(`/ * _ ~ ^ = ,` — all single-char), so `foo*bar*baz` and `foo~bar~baz` are
+literal too. For deliberate intraword emphasis use the forced `{X … X}` family
+(PART 9 §22), e.g. `foo{*bar*}baz`. The normative statement lives in
+`resources/grammar.ebnf` PART 9 §9 and §22; in summary, for any bare delimiter:
 - **opens** only if *not* followed by whitespace **and** preceded by the start
   of the line/block, whitespace, or punctuation — but not by an alphanumeric,
   `_`, or the same delimiter (so `(/x/)` and `a./b/` open, while `snake_/case/`
@@ -28,12 +31,10 @@ PART 9 §9; in summary, for `/` and `_`:
 - inner `/` characters become literal content (same-type spans do not nest)
 
 The **same-delimiter adjacency** part of that rule — a delimiter adjacent to
-another of the same delimiter (before or after) does not open — is *not*
-`/`-and-`_`-only; it applies to all five single-character delimiters. So a
-doubled delimiter is always literal: `**x**`, `~~x~~`, and `^^x^^` render
-verbatim, exactly like `//x//` and `__x__` (corpus
-`71-doubled-emphasis-delimiters`). Only the alphanumeric/`_` word-boundary
-conditions remain specific to `/` and `_`.
+another of the same delimiter (before or after) does not open — applies to all
+seven single-character delimiters. So a doubled delimiter is always literal:
+`**x**`, `~~x~~`, `^^x^^`, `==x==`, and `,,x,,` render verbatim, exactly like
+`//x//` and `__x__` (corpus `71-doubled-emphasis-delimiters`).
 
 **This means a path in an emphasizing position still italicizes:**
 `/usr/local/` → `<em>usr/local</em>` (verified — corpus `01-emphasis-6`),

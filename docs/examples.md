@@ -14,7 +14,7 @@ Each pair shows the Carve source on the left and the HTML it produces on the rig
 ```carve
 /italic/  *bold*  /*bold italic*/
 _underline_  ~strikethrough~
-^super^  ,,sub,,  ==highlight==
+^super^  ,sub,  =highlight=
 ```
 
 ```html
@@ -25,21 +25,21 @@ _underline_  ~strikethrough~
 
 :::
 
-Only `/` and `_` are word-boundary–restricted; every other delimiter (`*`, `~`, `^`, `==`, `,,`) supports intraword emphasis (e.g. `foo*bar*baz` → `foo<strong>bar</strong>baz`, `foo~bar~baz` → `foo<s>bar</s>baz`). For `/` and `_`:
+The word-boundary rule applies to *every* bare delimiter (`/ * _ ~ ^ = ,` — all single-char). No bare delimiter emphasizes intraword: `foo*bar*baz`, `foo~bar~baz`, `snake_case`, `a/b/c`, `x = 5`, `key=value`, `1,2,3` all stay literal. For deliberate intraword emphasis, use the forced `{X … X}` family (below). For any bare delimiter:
 
 - an **opener** is recognized only if it is *not* followed by whitespace **and** is preceded by the start of the line/block, whitespace, or a punctuation character (not by an alphanumeric, `_`, or the same delimiter) — so `a/b/c`, `foo_bar_baz`, `snake_case`, and `//a/` stay literal, while `(/x/)` and `a./b/` open after punctuation;
 - a **closer** is recognized only if it is *not* preceded by whitespace **and** *not* followed by an alphanumeric character — so `x /a/b y` stays literal.
 
-This is a Carve restriction that is *stricter* than Djot: Djot's `_`/`*` rule is purely whitespace-flanking (open if not directly followed by whitespace, close if not directly preceded by whitespace), with no alphanumeric/punctuation condition, so Djot would treat `foo_bar_baz` as emphasis where Carve does not. The boundary rule still allows `/usr/local/` → `<em>usr/local</em>`: the opening `/` sits at line start and the inner same-type `/` characters are literal content (Carve does not nest same-type emphasis). Exact disambiguation of delimiter runs is pinned by the corpus pairs below; the normative rule lives in `resources/grammar.ebnf` PART 9 §9.
+Highlight and subscript are the single-char `=` and `,` delimiters; the uniform word boundary keeps `x = 5`, `key=value`, `1,2,3`, `a,b,c`, `x, y, z` literal. Every bare delimiter is single-char, so a *doubled* delimiter (`==x==`, `,,x,,`) is literal by the same-delimiter-adjacency rule, just like `**x**` or `//x//`. This is *stricter* than Djot, whose `_`/`*` rule is purely whitespace-flanking. The boundary rule still allows `/usr/local/` → `<em>usr/local</em>`: the opening `/` sits at line start and the inner same-type `/` characters are literal content (Carve does not nest same-type emphasis). The normative rule lives in `resources/grammar.ebnf` PART 9 §9 and §22.
 
 ::: compare
 
 ```carve
-foo*bar*baz works but a/b/c does not.
+foo*bar*baz and a/b/c stay literal.
 ```
 
 ```html
-<p>foo<strong>bar</strong>baz works but a/b/c does not.</p>
+<p>foo*bar*baz and a/b/c stay literal.</p>
 ```
 
 :::
@@ -142,7 +142,7 @@ x /a/b y
 
 :::
 
-Unlike `*`, the `/` and `_` delimiters never produce intraword emphasis.
+*No* bare delimiter produces intraword emphasis — `*` behaves like `/` and `_`.
 
 ::: compare
 
@@ -166,6 +166,64 @@ A `/` or `_` opener immediately preceded by the *same* delimiter or by `_` is no
 
 ```html
 <p>//a/ and snake_/case/</p>
+```
+
+:::
+
+### Forced intraword emphasis
+
+Wrapping a bare delimiter in a brace pair — `{/.../}`, `{*...*}`, `{_..._}`, `{~...~}`, `{^...^}`, `{,...,}`, `{=...=}` — forces a span with no word-boundary condition, so it emphasizes *intraword*. This is the escape hatch for the cases a bare delimiter leaves literal.
+
+::: compare
+
+```carve
+foo{*bar*}baz and my{_path_}name and a{/b/}c
+```
+
+```html
+<p>foo<strong>bar</strong>baz and my<u>path</u>name and a<em>b</em>c</p>
+```
+
+:::
+
+The braces bound the span: a bare same-kind delimiter inside is literal, and cross-type marks nest normally.
+
+::: compare
+
+```carve
+{/a/b/} and {/italic *bold*/}
+```
+
+```html
+<p><em>a/b</em> and <em>italic <strong>bold</strong></em></p>
+```
+
+:::
+
+Highlight is the single-char `=`; a doubled `==…==` is literal by the same-delimiter-adjacency rule.
+
+::: compare
+
+```carve
+=marked= here, but ==doubled== is literal.
+```
+
+```html
+<p><mark>marked</mark> here, but ==doubled== is literal.</p>
+```
+
+:::
+
+`{~ … ~}` is editorial substitution when it contains a top-level `~>`, and forced strikethrough otherwise. `{= … =}` is forced highlight.
+
+::: compare
+
+```carve
+re{~view~} it, then {~old~>new~}, and {=mark=} it.
+```
+
+```html
+<p>re<s>view</s> it, then <del>old</del><ins>new</ins>, and <mark>mark</mark> it.</p>
 ```
 
 :::
@@ -2666,7 +2724,9 @@ See the note.[^n]
 ## Editorial markup
 
 CriticMarkup-style review marks: insert, delete, substitute, and an inline
-comment. (Highlight is `==text==`, not an editorial mark — see below.)
+comment. The `{~ … ~}` pair is substitution only when it contains a top-level
+`~>`; without it, it is forced strikethrough (see Forced intraword emphasis).
+`{# … #}` is the comment (no collision — `#` is not an emphasis delimiter).
 
 ::: compare
 
@@ -2680,18 +2740,19 @@ a {+ins+} {-del-} {~old~>new~} b{# note #}
 
 :::
 
-The djot `{=text=}` highlight form is not supported; it renders literally,
-even directly adjacent to another inline node (a `{…}` that yields no
-attribute is not consumed). Highlight is `==text==`.
+`{=text=}` is forced highlight (`<mark>`), and bare highlight is single-char
+`=`. The raw-inline format attribute has its own shape — `{=html}` (no trailing
+`=` before `}`) on a code span is raw passthrough, distinct from the
+forced-highlight `{=text=}`.
 
 ::: compare
 
 ```carve
-==x=={=hl=}
+=x= and {=y=} both mark.
 ```
 
 ```html
-<p><mark>x</mark>{=hl=}</p>
+<p><mark>x</mark> and <mark>y</mark> both mark.</p>
 ```
 
 :::
@@ -3121,7 +3182,7 @@ same bare span.
 
 :::
 
-A block whose content is not a recognized attribute (`{???}`, `{=y=}`) is not
+A block whose content is not a recognized attribute (e.g. `{???}`) is not
 an attribute block at all: the brackets and the block render literally.
 
 ::: compare
@@ -3153,13 +3214,14 @@ invalid, so emphasis inside the brackets is rendered.
 
 ## Superscript and subscript
 
-`^x^` is superscript and `,,x,,` is subscript (intraword, no word-boundary
-restriction).
+`^x^` is superscript and `,x,` is subscript — both single-char bare delimiters
+under the uniform word-boundary rule, so they mark only at a word boundary; for
+the common intraword cases (H₂O, mc²) use the forced `{^…^}` / `{,…,}` family.
 
 ::: compare
 
 ```carve
-H,,2,,O and E=mc^2^
+H{,2,}O and E=mc{^2^}
 ```
 
 ```html
@@ -3223,7 +3285,7 @@ Different-kind delimiters sit adjacent without interfering.
 ::: compare
 
 ```carve
-~old~ ==new==
+~old~ =new=
 ```
 
 ```html
@@ -3319,8 +3381,9 @@ under the marker.
 
 A bare single-character emphasis delimiter immediately adjacent to the same
 delimiter does not open a span, so a doubled delimiter is literal text. This
-"no nesting of same type" rule is uniform across all five single-character
-delimiters: `**`, `~~`, and `^^` stay literal exactly like `//` and `__`.
+"no nesting of same type" rule is uniform across all seven single-character
+delimiters: `**`, `~~`, `^^`, `==`, and `,,` stay literal exactly like `//` and
+`__`.
 
 ::: compare
 
@@ -3373,19 +3436,19 @@ literally, like any other unresolved reference.
 
 ## Two-char delimiter runs
 
-The two-char delimiters `==` (highlight) and `,,` (subscript) are atomic
-tokens, so a run that extends them with a third same character does not open
-— `====x====` and `,,,,y,,,,` stay literal, consistent with the
-doubled single-char rule. (`==x==` and `,,y,,` still mark and subscript.)
+Every bare delimiter is single-char. A doubled (or longer) run of any delimiter
+is literal by the same-delimiter-adjacency rule, so `==x==` and `,,y,,` are
+doubled `=` / `,` and render literal, while the single-char `=z=` and `,w,`
+mark.
 
 ::: compare
 
 ```carve
-====x==== ,,,,y,,,,
+==x== ,,y,, =z= ,w,
 ```
 
 ```html
-<p>====x==== ,,,,y,,,,</p>
+<p>==x== ,,y,, <mark>z</mark> <sub>w</sub></p>
 ```
 
 :::
@@ -3414,11 +3477,11 @@ a paragraph and stays literal.
 ::: compare
 
 ```carve
-![a](/i){=hl=}
+![a](/i){???}
 ```
 
 ```html
-<p><img src="/i" alt="a">{=hl=}</p>
+<p><img src="/i" alt="a">{???}</p>
 ```
 
 :::
