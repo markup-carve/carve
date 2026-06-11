@@ -45,6 +45,7 @@ Carve embedded in another tool or framework.
 | Project | Description |
 |---|---|
 | [awesome-carve](https://github.com/markup-carve/awesome-carve) | Curated list of Carve tools, libraries, and resources. |
+| [PHP Sandbox](https://sandbox.dereuromark.de/sandbox/carve) | Powerful live sandbox on the carve-php engine - explore syntax and extensions, inspect output, and share snippets via pastebin-style links. |
 
 ---
 
