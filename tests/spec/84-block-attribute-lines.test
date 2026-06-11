@@ -27,3 +27,23 @@ Text
 .
 <p id="id" class="foo">Text</p>
 ```
+
+```
+{.data}
+|= A |= B |
+| 1  | 2  |
+.
+<table class="data">
+  <thead><tr><th>A</th><th>B</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+```
+{.epigraph}
+> To be or not to be.
+.
+<blockquote class="epigraph"><p>To be or not to be.</p></blockquote>
+```
