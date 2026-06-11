@@ -4608,3 +4608,33 @@ The abutting block is consumed as list-item attributes only when it yields at le
 ```
 
 :::
+
+A **space** before the brace makes the block ordinary item content, not a list-item attribute. Because no inline element abuts it, the block is not an attribute block at all: the braces stay literal (grammar PART 9 §14, `inline_span` requires a `[...]` host):
+
+::: compare
+
+```carve
+- {.c} text
+```
+
+```html
+<ul>
+  <li>{.c} text</li>
+</ul>
+```
+
+:::
+
+The same rule holds anywhere in inline content: a `{...}` block with no abutting host (at the start of the content, or after whitespace) is literal text, never silently dropped:
+
+::: compare
+
+```carve
+para {.c} more
+```
+
+```html
+<p>para {.c} more</p>
+```
+
+:::
