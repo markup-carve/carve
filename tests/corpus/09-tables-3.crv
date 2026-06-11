@@ -1,2 +1,3 @@
-|= Symbol |= Meaning  |
-| \|      | pipe char |
+| Name | Age |
+|:-----|----:|
+| Alice | 28  |

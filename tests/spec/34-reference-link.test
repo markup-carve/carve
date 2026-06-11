@@ -7,3 +7,11 @@ Read the [introduction][intro] first.
 .
 <p>Read the <a href="https://example.com/intro" title="Introduction">introduction</a> first.</p>
 ```
+
+```
+Read the [intro][x]{.ext} first.
+
+[x]: /intro
+.
+<p>Read the <a href="/intro" class="ext">intro</a> first.</p>
+```

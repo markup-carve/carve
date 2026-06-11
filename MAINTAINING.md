@@ -1,12 +1,24 @@
 # Maintaining the Carve ecosystem
 
-Three repositories move in lockstep:
+The spec and three implementations move in lockstep:
 
 | Repo | Role |
 |------|------|
 | [`carve`](https://github.com/markup-carve/carve) | Specification. `resources/grammar.ebnf` is **normative**; `docs/examples.md` generates the `tests/corpus/*.crv` + `*.html` pairs that are the **cross-impl conformance contract**. |
 | [`carve-js`](https://github.com/markup-carve/carve-js) | Reference implementation (TypeScript). Its compiled output is vendored into `carve` to render the docs and validate the corpus. |
 | [`carve-php`](https://github.com/markup-carve/carve-php) | PHP implementation. Conforms to the same corpus. |
+| [`carve-rs`](https://github.com/markup-carve/carve-rs) | Rust implementation. Conforms to the same corpus. |
+
+### Output renderers
+
+All three implementations (`carve-js`, `carve-php`, `carve-rs`) are **multi-target
+renderers**: besides the corpus-validated **HTML**, each emits **Markdown**,
+**plain text**, and **ANSI**. Only HTML has a cross-impl corpus contract; the
+non-HTML renderers have no spec corpus, so they are kept **byte-identical to
+`carve-php`** (the reference for non-HTML output) via golden fixtures — a battery
+of carve inputs rendered by carve-php, asserted byte-for-byte by `carve-js` and
+`carve-rs` test suites. When changing a non-HTML renderer, update that golden
+battery and keep all three in agreement.
 
 ## The lockstep
 
@@ -88,6 +100,7 @@ impls agree and the pin is in the corpus.
 | `{.glossary}` line before a definition list | carve-js: a preceding block-attribute line floats onto the `<dl>` (§15), like every other block. carve-php already does this. | carve-js must stop dropping it. | HELD (waits for carve-js) |
 | `![a](x){.img}` + caption (figure/image attributes) | carve-js: a **trailing** attribute is the image's and stays on `<img>` even when wrapped in a `<figure>` (same target as a standalone block image); a **preceding** block-attribute line targets the `<figure>` (§15). carve-php is inconsistent: it moves the trailing attr to the `<figure>` (so the same `![a](x){.img}` hits a different element depending on whether a caption follows) and drops the preceding block-attr line. | carve-php must keep the image's trailing attr on `<img>` and float a preceding block-attr line onto `<figure>`. | **PINNED** *(08-image-with-caption-2/3)*, green on carve-js; carve-php red until fixed |
 | `` $`x`{.c} `` / `` $$`x`{.c} `` (trailing attribute on math) | carve-js / djot.js: applies it, merging classes into the existing `math inline` / `math display` class; `#id` / `key=value` applied too. `{=html}` stays literal (both impls already agree; the `{=format}` raw form is code-span-only, not inherited). math reuses `code_span`, which carries the generic `[attributes]` slot. carve-php drops valid attrs. | carve-php must apply the math trailing attribute (merge into the math span class). | **PINNED** *(Math section)*, green on carve-js; carve-php red until fixed |
+| `::: note {.x}` (trailing attribute on a TYPED colon-fence opener) | The trailing `[attributes]` block applies to the div/aside: classes accumulate after the type class (`class="admonition note x"`), `#id` / `key=value` set on the element. Grammar `admonition_open` carries the `[attributes]` slot after the type word and optional quoted title. A bare `::: {…}` (no type word) and a preceding block-attribute line already work everywhere; only the same-line typed form diverges. carve-php applies it (markup-carve/carve-php); carve-js parses the block off but drops it. | carve-js must apply the opener's trailing attribute instead of dropping it. | HELD (waits for carve-js) |
 
 ### Extension API surface (parity beyond corpus output)
 

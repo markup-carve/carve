@@ -992,6 +992,27 @@ Single-column tables follow the same rules — one `|=` cell yields the header r
 
 :::
 
+A GFM-style separator row (the second row, all dashes with optional alignment colons) is also accepted: it makes the first row the header and sets per-column alignment.
+
+::: compare
+
+```carve
+| Name | Age |
+|:-----|----:|
+| Alice | 28  |
+```
+
+```html
+<table>
+  <thead><tr><th style="text-align: left;">Name</th><th style="text-align: right;">Age</th></tr></thead>
+  <tbody>
+    <tr><td style="text-align: left;">Alice</td><td style="text-align: right;">28</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
 An escaped pipe inside cell content (`\|`) renders as a literal `|` and does not split the cell.
 
 ::: compare
@@ -1993,6 +2014,23 @@ Read the [introduction][intro] first.
 
 :::
 
+A trailing attribute block attaches to the resolved `<a>`, the same slot an
+inline link uses (grammar `reference_link`).
+
+::: compare
+
+```carve
+Read the [intro][x]{.ext} first.
+
+[x]: /intro
+```
+
+```html
+<p>Read the <a href="/intro" class="ext">intro</a> first.</p>
+```
+
+:::
+
 ## Collapsed reference link
 
 `[text][]` uses the link text as the label.
@@ -2007,6 +2045,23 @@ See [Other Page][] for details.
 
 ```html
 <p>See <a href="/other-page">Other Page</a> for details.</p>
+```
+
+:::
+
+A trailing attribute block attaches to the resolved `<a>` here too
+(grammar `collapsed_reference_link`).
+
+::: compare
+
+```carve
+See [Other][]{.ext} for details.
+
+[Other]: /other
+```
+
+```html
+<p>See <a href="/other" class="ext">Other</a> for details.</p>
 ```
 
 :::
@@ -2265,6 +2320,32 @@ text
 
 ```html
 <p>text</p>
+```
+
+:::
+
+A trailing attribute block on a reference attaches to the noteref `<a>`
+(grammar PART 9 §note). Only the reference where the author wrote the block
+carries it.
+
+::: compare
+
+```carve
+Text[^a]{.ref}.
+
+[^a]: note.
+```
+
+```html
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref" class="ref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 :::
@@ -4245,6 +4326,43 @@ Text
 
 :::
 
+The next block can be any container, not just a paragraph. A block-attribute
+line before a table attaches to the `<table>`:
+
+::: compare
+
+```carve
+{.data}
+|= A |= B |
+| 1  | 2  |
+```
+
+```html
+<table class="data">
+  <thead><tr><th>A</th><th>B</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+…and before a blockquote it attaches to the `<blockquote>`:
+
+::: compare
+
+```carve
+{.epigraph}
+> To be or not to be.
+```
+
+```html
+<blockquote class="epigraph"><p>To be or not to be.</p></blockquote>
+```
+
+:::
+
 ## Numbered cross-references
 
 A `#` in a caption is a number placeholder: the label is the text before it,
@@ -4435,6 +4553,29 @@ A note^[see *later*] inline. And a ref[^a].
 
 :::
 
+A trailing attribute block attaches to the noteref `<a>`, like a reference
+footnote (§16).
+
+::: compare
+
+```carve
+Text^[note]{.ref}.
+```
+
+```html
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref" class="ref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
 ## List item attributes
 
 An attribute block that *abuts* a list marker (no space between the marker and `{`) attaches its attributes to the `<li>` itself. The marker's required space follows the block (grammar `item_attributes`, PART 9 §15). This works for bullet and ordered markers alike:
@@ -4527,6 +4668,36 @@ The abutting block is consumed as list-item attributes only when it yields at le
 
 ```html
 <p>-<ins>a</ins> text</p>
+```
+
+:::
+
+A **space** before the brace makes the block ordinary item content, not a list-item attribute. Because no inline element abuts it, the block is not an attribute block at all: the braces stay literal (grammar PART 9 §14, `inline_span` requires a `[...]` host):
+
+::: compare
+
+```carve
+- {.c} text
+```
+
+```html
+<ul>
+  <li>{.c} text</li>
+</ul>
+```
+
+:::
+
+The same rule holds anywhere in inline content: a `{...}` block with no abutting host (at the start of the content, or after whitespace) is literal text, never silently dropped:
+
+::: compare
+
+```carve
+para {.c} more
+```
+
+```html
+<p>para {.c} more</p>
 ```
 
 :::

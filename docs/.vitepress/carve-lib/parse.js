@@ -1413,7 +1413,35 @@ function parseList(lexer) {
                 }
                 continue;
             }
-            if (indentColumns(l) >= contentCol) {
+            // A block opener (block quote, heading, fence, div, table) indented past
+            // the base but BELOW the content column still interrupts the item's lead
+            // paragraph and nests as a child block (matching carve-php) -- only ordered
+            // MARKERS fold below the content column, since they do not interrupt. The
+            // opener regexes key off column 0, so test the line dedented to column 0,
+            // and exclude list markers (their fold/nest is handled in the else-branch).
+            const lw = indentColumns(l);
+            let belowColBlockOpener = false;
+            if (lw > baseIndent && lw < contentCol) {
+                const d0 = sliceColumns(l, lw);
+                // A block opener indented past the base but below the content column
+                // interrupts the item's lead paragraph and nests (matching carve-php).
+                // Restricted to NON-container openers (block quote, heading, thematic
+                // break, table, defs): these need no closing fence, so the single line
+                // dedented to column 0 is enough. Fenced/`:::` containers are excluded --
+                // their verbatim/closer-sensitive bodies are only handled cleanly AT the
+                // content column; below it they keep the existing behavior. List markers
+                // are excluded too (their fold/nest is decided in the else-branch).
+                belowColBlockOpener =
+                    !RE_ORDERED.test(d0) &&
+                        !RE_UNORDERED.test(d0) &&
+                        !RE_TASK.test(d0) &&
+                        !RE_FENCE.test(d0) &&
+                        !RE_RAW_FENCE.test(d0) &&
+                        !RE_DIV_OPEN.test(d0) &&
+                        !RE_ADMONITION_OPEN.test(d0) &&
+                        lineOpensBlock(d0);
+            }
+            if (lw >= contentCol || belowColBlockOpener) {
                 for (let k = 0; k < pendingBlanks; k++)
                     nested.push('');
                 pendingBlanks = 0;
@@ -1616,6 +1644,34 @@ function parseTable(lexer) {
         });
         rawRows.push(raw);
         lastRaw = raw;
+    }
+    // GFM-style header separator: when the SECOND row is a delimiter row -- every
+    // cell a run of dashes with optional alignment colons (`---`, `:--`, `--:`,
+    // `:-:`) -- the first row becomes the header (rendered in <thead>) and the
+    // colons set per-column alignment for the whole column. The delimiter row is
+    // dropped. This is in addition to Carve's tight per-cell markers `|=`/`|<`; a
+    // delimiter row anywhere else is an ordinary data row.
+    const isDelimCell = (c) => !c.span && /^:?-+:?$/.test(c.raw.trim());
+    if (rawRows.length >= 2 &&
+        rawRows[1].length > 0 &&
+        rawRows[1].every(isDelimCell) &&
+        !rawRows[0].every(isDelimCell)) {
+        const aligns = rawRows[1].map((c) => {
+            const t = c.raw.trim();
+            const left = t.startsWith(':');
+            const right = t.endsWith(':');
+            return left && right ? 'center' : right ? 'right' : left ? 'left' : undefined;
+        });
+        rawRows.splice(1, 1);
+        for (const c of rawRows[0])
+            c.header = true;
+        for (const rc of rawRows) {
+            rc.forEach((c, i) => {
+                const a = aligns[i];
+                if (a && !c.align)
+                    c.align = a;
+            });
+        }
     }
     const rows = rawRows.map((rc) => ({
         type: 'table-row',
