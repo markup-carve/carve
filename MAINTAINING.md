@@ -1,12 +1,24 @@
 # Maintaining the Carve ecosystem
 
-Three repositories move in lockstep:
+The spec and three implementations move in lockstep:
 
 | Repo | Role |
 |------|------|
 | [`carve`](https://github.com/markup-carve/carve) | Specification. `resources/grammar.ebnf` is **normative**; `docs/examples.md` generates the `tests/corpus/*.crv` + `*.html` pairs that are the **cross-impl conformance contract**. |
 | [`carve-js`](https://github.com/markup-carve/carve-js) | Reference implementation (TypeScript). Its compiled output is vendored into `carve` to render the docs and validate the corpus. |
 | [`carve-php`](https://github.com/markup-carve/carve-php) | PHP implementation. Conforms to the same corpus. |
+| [`carve-rs`](https://github.com/markup-carve/carve-rs) | Rust implementation. Conforms to the same corpus. |
+
+### Output renderers
+
+All three implementations (`carve-js`, `carve-php`, `carve-rs`) are **multi-target
+renderers**: besides the corpus-validated **HTML**, each emits **Markdown**,
+**plain text**, and **ANSI**. Only HTML has a cross-impl corpus contract; the
+non-HTML renderers have no spec corpus, so they are kept **byte-identical to
+`carve-php`** (the reference for non-HTML output) via golden fixtures — a battery
+of carve inputs rendered by carve-php, asserted byte-for-byte by `carve-js` and
+`carve-rs` test suites. When changing a non-HTML renderer, update that golden
+battery and keep all three in agreement.
 
 ## The lockstep
 
