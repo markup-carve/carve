@@ -1380,7 +1380,7 @@ A `::: name` opener's behavior keys off the **type word** (not a class). Only th
 | `line-block` | `<div class="line-block">` | Preserves the author's per-line layout / soft breaks (PART 9 §23). Distinct from `::: {.line-block}`, which is an ordinary div with no whitespace handling. |
 | *(any other word)* | `<div class="{word}">` | None in core — generic fenced div; meaning supplied by a Tier-3 extension (e.g. `tabs`, `code-group`, `mermaid`). |
 
-Because the behavior is keyed to the bare word, prefer the class form (`::: {.mybox}`) for purely presentational containers so you never collide with a recognized type word.
+Because the behavior keys to the bare type word, give a purely presentational container a class on an **attribute line before the opener** — `{.mybox}` then `:::` — so you never collide with a recognized type word. (An inline `::: {.mybox}` on the opener also works, but the attribute-line form keeps the rendered `class` clean.)
 
 A quoted title on a canonical type renders inside the `<aside>`:
 
