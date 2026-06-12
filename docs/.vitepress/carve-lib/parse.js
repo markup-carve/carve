@@ -57,13 +57,19 @@ const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 // Fences are a run of 3+ colons (group 1). A longer opener nests: a
 // `::::` block contains `:::` blocks, and only a bare closer of equal-or-
 // greater length closes it (djot fence-length rule).
-const RE_ADMONITION_OPEN = /^(:{3,})\s*([a-zA-Z][\w-]*)\s*(.*)$/;
+// A `:::` opener carries NO inline attributes (strict djot): the fence line
+// is `colon_fence [space type [space "title"]]` and nothing else. Any
+// trailing `{...}` (or other non-title text) makes it not a fence, so the
+// line is an ordinary paragraph. Attributes attach via a PRECEDING `{...}`
+// block-attribute line.
+const RE_ADMONITION_OPEN = /^(:{3,})\s*([a-zA-Z][\w-]*)\s*("[^"]*")?\s*$/;
 const RE_ADMONITION_CLOSE = /^(:{3,})\s*$/;
-const RE_LINE_BLOCK_OPEN = /^(:{3,})[ \t]+line-block(?:[ \t]*\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?[ \t]*$/;
-// Generic fenced div: a `:::` opener with NO type word -- bare `:::` or
-// an attributes-only `::: {.class}` (djot's generic container). A typed
-// `::: word` routes to parseAdmonition instead. Shares the `:::` closer.
-const RE_DIV_OPEN = /^(:{3,})\s*(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
+const RE_LINE_BLOCK_OPEN = /^(:{3,})[ \t]+line-block[ \t]*$/;
+// Generic fenced div: a bare `:::` opener with NO type word (djot's generic
+// container). A typed `::: word` routes to parseAdmonition. An inline
+// `::: {.class}` is NOT a div (strict djot) -- use a preceding attribute
+// line. Shares the `:::` closer.
+const RE_DIV_OPEN = /^(:{3,})\s*$/;
 // Definition list (§4.5). A TERM line is exactly two colons + space(s)
 // + text — the `(?!:)` keeps it distinct from a `:::` div/admonition. A
 // DEFINITION line is a colon + two-or-more spaces + text.
@@ -873,19 +879,12 @@ function parseAdmonition(lexer) {
     const m = RE_ADMONITION_OPEN.exec(open);
     const fence = m[1].length;
     const kind = m[2];
-    // The tail after the type word may carry an optional quoted title
-    // (grammar quoted_title; PART 9 §12) and an optional trailing attribute
-    // block (grammar admonition_open [attributes]). The block needs no
-    // leading space, so it may abut the type or the title (`::: note{.x}`,
-    // `::: note "T"{.x}`). The quotes delimit the title and are stripped
-    // (not part of the rendered text); an explicitly empty `""` still counts
-    // as a supplied (empty) title. A quoted title may itself contain braces,
-    // so the attribute block is only the `{...}` after the closing quote.
-    // Unquoted trailing text is ignored (not a title, not attributes).
-    const tail = m[3]?.trim() ?? '';
-    const tm = /^(?:"([^"]*)"\s*)?(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\})?$/.exec(tail);
-    const titleText = tm ? tm[1] : undefined;
-    const attrSrc = tm?.[2];
+    // The opener carries an optional quoted title only (grammar
+    // quoted_title; PART 9 §12). The quotes delimit the title and are
+    // stripped (not part of the rendered text); an explicitly empty `""`
+    // still counts as a supplied (empty) title. No inline attributes -- the
+    // opener regex already rejected any trailing `{...}`.
+    const titleText = m[3] !== undefined ? m[3].slice(1, -1) : undefined;
     const inner = [];
     while (!lexer.eof()) {
         const ln = lexer.peek();
@@ -910,14 +909,9 @@ function parseAdmonition(lexer) {
     if (titleText !== undefined) {
         node.title = parseInline(titleText, lexer.abbrDefs, lexer.linkDefs);
     }
-    // The opener's own trailing attributes (`::: note {.x}`). A leading
-    // block-attribute line merges with these in parseBlocks (pending first,
-    // opener attrs win on conflict), the same path parseDiv uses. An invalid
-    // payload (`{.x junk}`) is not an attribute block (no silent partial
-    // apply, matching block-attribute lines and grammar §14); the trailing
-    // text is ignored.
-    if (attrSrc && isValidAttrPayload(attrSrc))
-        node.attrs = parseAttrs(attrSrc);
+    // No inline opener attributes (strict djot): a preceding block-attribute
+    // line is the only way to attribute an admonition, and parseBlocks
+    // applies it to the returned node.
     return node;
 }
 function lineBlockHasCloser(lexer) {
@@ -934,7 +928,6 @@ function parseLineBlock(lexer) {
     const open = lexer.consume();
     const m = RE_LINE_BLOCK_OPEN.exec(open);
     const fence = m[1].length;
-    const attrSrc = m[2];
     const stanzas = [];
     let stanza = [];
     while (!lexer.eof()) {
@@ -960,14 +953,13 @@ function parseLineBlock(lexer) {
         type: 'paragraph',
         children: parseInline(lines.join('\n'), lexer.abbrDefs, lexer.linkDefs).map((node) => node.type === 'soft-break' ? { type: 'hard-break' } : node),
     }));
+    // No inline opener attributes (strict djot); a preceding block-attribute
+    // line merges onto this div in parseBlocks.
     const node = {
         type: 'div',
         attrs: { classes: ['line-block'], order: ['.class'] },
         children,
     };
-    if (attrSrc && isValidAttrPayload(attrSrc)) {
-        node.attrs = mergeAttrs(node.attrs, parseAttrs(attrSrc));
-    }
     return node;
 }
 function expandLineBlockLeadingWhitespace(line) {
@@ -1020,7 +1012,6 @@ function divHasCloser(lexer) {
 function parseDiv(lexer) {
     const m = RE_DIV_OPEN.exec(lexer.consume());
     const fence = m[1].length;
-    const attrSrc = m[2];
     const inner = [];
     while (!lexer.eof()) {
         const ln = lexer.peek();
@@ -1038,11 +1029,9 @@ function parseDiv(lexer) {
     subLexer.footnoteDefs = lexer.footnoteDefs;
     subLexer.nested = true;
     subLexer.depth = lexer.depth + 1;
+    // No inline opener attributes (strict djot): a bare `:::` carries none;
+    // a preceding block-attribute line attaches them in parseBlocks.
     const node = { type: 'div', children: parseBlocks(subLexer, 0) };
-    // An invalid payload (`:::{.x junk}`) is not an attribute block: no
-    // silent partial apply, matching block-attribute lines and grammar §14.
-    if (attrSrc && isValidAttrPayload(attrSrc))
-        node.attrs = parseAttrs(attrSrc);
     return node;
 }
 // Definition list (§4.5). An entry is 1+ `:: term` lines followed by 1+

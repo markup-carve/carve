@@ -39,7 +39,8 @@ Attribute edge cases
 ```
 
 ```
-:::{k="{y}"}
+{k="{y}"}
+:::
 body
 :::
 .
