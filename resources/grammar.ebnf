@@ -787,10 +787,17 @@ editorial_comment = "{#", inline_content, "#}" ;
 
 (* --- Mentions and Tags --- *)
 mention = '@', mention_name ;
-mention_name = (letter | digit | '_' | '-')+ ;
+mention_name = name_word, {'.', name_word} ;
 
 tag = '#', tag_name ;
-tag_name = (letter | digit | '_' | '-')+ ;
+tag_name = name_word, {'.', name_word} ;
+
+name_word = (letter | digit | '_' | '-')+ ;
+(* Dots are INTERIOR-only by construction: a dot followed by another name
+   character continues the name (`@john.doe`, `#release-1.0`); a dot at the
+   end of the run is sentence punctuation, never part of the name
+   (`ping @markus.` -> mention `markus` + literal `.`). Pinned by corpus
+   89-mention-and-tag-name-boundaries / 31-mention-ignores-email-addresses. *)
 
 (* Boundary rules (PSEUDO-PRODUCTIONS -- prose conditions on `mention` /
    `tag`, normative in PART 9 §7, not reachable grammar symbols):
@@ -1075,6 +1082,10 @@ EOF = (* end of file *) ;
    7. MENTION/TAG BOUNDARIES
       - @ and # only start mentions/tags at word boundaries
       - email@domain.com is NOT a mention
+      - The name runs over letters, digits, `_`, `-`, and INTERIOR dots
+        (a dot followed by another name character: `@john.doe`,
+        `#release-1.0`); a trailing dot is sentence punctuation, not part
+        of the name
 
    8. SMART TYPOGRAPHY CONTEXT
       - Only applies outside code spans/blocks
