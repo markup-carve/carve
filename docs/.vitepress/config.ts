@@ -198,23 +198,41 @@ export default defineConfig({
 
   themeConfig: {
     nav: [
-      { text: 'Home', link: '/' },
+      { text: 'Get Started', link: '/get-started' },
       { text: 'Playground', link: '/playground' },
-      { text: 'Examples', link: '/examples' },
       {
         text: 'Reference',
         items: [
-          { text: 'Technical Rationale', link: '/technical-rationale' },
-          { text: 'Divergence from Djot', link: '/divergence-from-djot' },
-          { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
-          { text: 'Extensions Contract', link: '/extensions' },
-          { text: 'Implementation Comparison', link: '/implementation-comparison' },
-          { text: 'Formal Grammar', link: '/grammar' },
-          { text: 'Edge Cases', link: '/edge-cases' },
-          { text: 'Native Features', link: '/native-features-analysis' },
-          { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
-          { text: 'Markup Language Comparison', link: '/markup-languages' },
-          { text: 'Security', link: '/security' },
+          {
+            text: 'Syntax',
+            items: [
+              { text: 'Cheat Sheet', link: '/cheatsheet' },
+              { text: 'Examples', link: '/examples' },
+              { text: 'Formal Grammar', link: '/grammar' },
+              { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
+              { text: 'Extensions Contract', link: '/extensions' },
+              { text: 'Edge Cases', link: '/edge-cases' },
+            ],
+          },
+          {
+            text: 'Design',
+            items: [
+              { text: 'Case Study', link: '/case-study/' },
+              { text: 'Technical Rationale', link: '/technical-rationale' },
+              { text: 'Native Features', link: '/native-features-analysis' },
+              { text: 'Design Notes', link: '/dismissed-syntax' },
+              { text: 'Security', link: '/security' },
+            ],
+          },
+          {
+            text: 'Compare',
+            items: [
+              { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
+              { text: 'Markup Language Comparison', link: '/markup-languages' },
+              { text: 'Divergence from Djot', link: '/divergence-from-djot' },
+              { text: 'Implementation Comparison', link: '/implementation-comparison' },
+            ],
+          },
         ],
       },
       {
@@ -224,16 +242,15 @@ export default defineConfig({
           { text: 'Build Your Own', link: '/implementing-carve' },
         ],
       },
-      { text: 'Case Study', link: '/case-study/' },
-      { text: 'Design Notes', link: '/dismissed-syntax' },
     ],
 
     sidebar: [
       {
         text: 'Introduction',
         items: [
-          { text: 'Overview', link: '/' },
+          { text: 'Get Started', link: '/get-started' },
           { text: 'Playground', link: '/playground' },
+          { text: 'Cheat Sheet', link: '/cheatsheet' },
           { text: 'Examples', link: '/examples' },
         ],
       },
