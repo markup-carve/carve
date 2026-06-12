@@ -40,6 +40,8 @@ Read this first.
 
 renders the heading as `<h2 id="install" class="featured">` and the admonition as `<aside class="admonition note callout">`.
 
+This is uniform across every block - headings, block quotes, lists, code blocks, divs/admonitions, line-blocks, tables. They all take their attributes on the preceding line; none take a trailing attribute on the block's own line. (A code block is no exception: its opening line is the info string, so a `{…}` after the language word is info-string text, not an attribute - put the attributes on the line above the fence like any other block.)
+
 ## Inline elements
 
 An inline element lives inside a line of text.
@@ -74,11 +76,9 @@ The same `{…}` block is used in both positions:
 - `key=value` / `key="value"` - arbitrary attribute; quote when the value has spaces
 - `boolean` - a bare word becomes a value-less attribute
 
-## Special cases (the outliers)
+## The one outlier: list items
 
-A few elements don't follow the plain block rule, because the plain rule can't express what they need. These are the only exceptions - learn them once.
-
-### List items - attribute block abuts the marker
+Every block takes its attributes on the preceding line and every inline takes them trailing - with a single exception: a list item's attribute block **abuts its marker**.
 
 A `{…}` on the line before a list attaches to the **list**, not to an item. To attribute an individual `<li>` the attribute block must **abut the marker with no space** (`-{…}`), and the marker's required space follows it:
 
@@ -94,34 +94,7 @@ A `{…}` on the line before a list attaches to the **list**, not to an item. To
 
 This is a Carve addition (djot cannot attribute list items at all) and is the **only** way to target the `<li>` element itself. For task items the block abuts the marker before the checkbox: `-{.c} [ ] text`.
 
-### Code fences - leading line only
-
-A code fence's opening line is its **info string** (the language). An attribute block there would be parsed as part of that string, so code-block attributes must go on the **preceding** line:
-
-````carve
-{.numbered #snippet}
-``` js
-const x = 1;
-```
-````
-
-A `{…}` after the language word does **not** attach - it is treated as info-string content.
-
-### `:::` openers - type word vs class
-
-A `:::` opener is steered by a bare **type word**, not by a class:
-
-- `::: note` → an admonition (`<aside class="admonition note">`) for the eight canonical types; any other word → a generic `<div class="word">`.
-- For a purely presentational container, use the type-less form with a **preceding** attribute line:
-
-  ```carve
-  {.sidebar #s}
-  :::
-  Aside content.
-  :::
-  ```
-
-See [Examples → Admonitions](/examples#admonitions) for the recognized type words.
+(Aside: the `:::` *type word* that picks an admonition vs a generic div - e.g. `::: note` - is about block type, not attributes; a div takes its attributes on the preceding line like any block. See [Examples → Admonitions](/examples#admonitions).)
 
 ## Quick reference
 
