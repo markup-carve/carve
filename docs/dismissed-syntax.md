@@ -281,7 +281,7 @@ on `---` overloading in `technical-rationale.md`.
   `= heading` + `#tag` gives "`#` always means tag" — matching how every social
   platform trains the reader.
 - The heading/non-heading collision becomes rarer: a line that *starts* with a
-  highlight (`==hot==`) is far less common than a line that starts with a tag.
+  highlight (`=hot=`) is far less common than a line that starts with a tag.
 - `=` is unshifted (faster than Shift+3 for `#`); `=` reads as a title/underline
   bar pulled to the front.
 - Aligns with AsciiDoc, a stated influence.
@@ -290,11 +290,11 @@ on `---` overloading in `technical-rationale.md`.
 - **Breaks the most universal lightweight-markup convention.** `#` headings are
   the one token every Markdown user knows, and Carve explicitly builds on
   Markdown's basics — this is the single largest adoption tax available.
-- **It moves the ambiguity, it doesn't remove it.** `==text==` is highlight, so
-  `== heading` vs `==highlight==` falls back on the same space-after rule that
+- **It moves the ambiguity, it doesn't remove it.** `=text=` is highlight, so
+  `= heading` vs `=highlight=` falls back on the same space-after rule that
   `#`/`#tag` already uses. The `#`/tag collision is *already* resolved
   deterministically by that rule.
-- **`=` is the most overloaded glyph in Carve** (`==highlight==`, `key=value`
+- **`=` is the most overloaded glyph in Carve** (`=highlight=`, `key=value`
   attributes, `|=` table-header marker). `#` at line start is comparatively
   uncluttered.
 - **AsciiDoc level-offset trap:** in AsciiDoc `==` renders as `<h2>` (levels are

@@ -59,6 +59,7 @@ const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 // greater length closes it (djot fence-length rule).
 const RE_ADMONITION_OPEN = /^(:{3,})\s*([a-zA-Z][\w-]*)\s*(.*)$/;
 const RE_ADMONITION_CLOSE = /^(:{3,})\s*$/;
+const RE_LINE_BLOCK_OPEN = /^(:{3,})[ \t]+line-block(?:[ \t]*\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?[ \t]*$/;
 // Generic fenced div: a `:::` opener with NO type word -- bare `:::` or
 // an attributes-only `::: {.class}` (djot's generic container). A typed
 // `::: word` routes to parseAdmonition instead. Shares the `:::` closer.
@@ -461,6 +462,40 @@ function parseBlocks(lexer, baseIndent) {
  * attribute is not a block-attribute line — it falls through to normal
  * block parsing (literal text). Grammar PART 9 §15.
  */
+/**
+ * Non-consuming check: is the lexer positioned on a standalone block-attribute
+ * line? Mirrors tryCollectBlockAttributes' recognition without consuming, so
+ * startsInterruptingBlock can break an open paragraph on a trailing `{...}`
+ * line (which then floats forward via parseBlocks).
+ */
+function peekBlockAttributes(lexer) {
+    if (!/^\s*\{/.test(lexer.peek()))
+        return false;
+    let collected = '';
+    let n = 0;
+    let closed = false;
+    for (;;) {
+        const ln = lexer.peek(n);
+        if (ln === undefined)
+            break;
+        if (n > 0 && ln.trim() === '')
+            break;
+        collected += (n === 0 ? '' : '\n') + ln;
+        n++;
+        if (ln.includes('}')) {
+            closed = true;
+            break;
+        }
+    }
+    if (!closed)
+        return false;
+    const m = /^\s*\{([\s\S]*)\}\s*$/.exec(collected);
+    if (!m)
+        return false;
+    if (!isValidAttrPayload(m[1]))
+        return false;
+    return !isEmptyAttrs(parseAttrs(m[1]));
+}
 function tryCollectBlockAttributes(lexer) {
     if (!/^\s*\{/.test(lexer.peek()))
         return null;
@@ -532,6 +567,8 @@ function parseBlockInner(lexer) {
         const l = lexer.consume();
         return { type: 'comment', block: false, content: l.slice(2).replace(/^\s/, '') };
     }
+    if (RE_LINE_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer))
+        return parseLineBlock(lexer);
     if (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line))
         return parseAdmonition(lexer);
     // Bare `:::` or attributes-only `::: {…}` opens a generic div (the
@@ -882,6 +919,71 @@ function parseAdmonition(lexer) {
     if (attrSrc && isValidAttrPayload(attrSrc))
         node.attrs = parseAttrs(attrSrc);
     return node;
+}
+function lineBlockHasCloser(lexer) {
+    const start = lexer.pos + 1;
+    const fence = RE_LINE_BLOCK_OPEN.exec(lexer.peek())[1].length;
+    for (let i = start; i < lexer.lines.length; i++) {
+        const c = RE_ADMONITION_CLOSE.exec(lexer.lines[i]);
+        if (c && c[1].length >= fence)
+            return true;
+    }
+    return false;
+}
+function parseLineBlock(lexer) {
+    const open = lexer.consume();
+    const m = RE_LINE_BLOCK_OPEN.exec(open);
+    const fence = m[1].length;
+    const attrSrc = m[2];
+    const stanzas = [];
+    let stanza = [];
+    while (!lexer.eof()) {
+        const ln = lexer.peek();
+        const c = RE_ADMONITION_CLOSE.exec(ln);
+        if (c && c[1].length >= fence) {
+            lexer.consume();
+            break;
+        }
+        lexer.consume();
+        if (ln.trim() === '') {
+            if (stanza.length) {
+                stanzas.push(stanza);
+                stanza = [];
+            }
+            continue;
+        }
+        stanza.push(expandLineBlockLeadingWhitespace(ln));
+    }
+    if (stanza.length)
+        stanzas.push(stanza);
+    const children = stanzas.map((lines) => ({
+        type: 'paragraph',
+        children: parseInline(lines.join('\n'), lexer.abbrDefs, lexer.linkDefs).map((node) => node.type === 'soft-break' ? { type: 'hard-break' } : node),
+    }));
+    const node = {
+        type: 'div',
+        attrs: { classes: ['line-block'], order: ['.class'] },
+        children,
+    };
+    if (attrSrc && isValidAttrPayload(attrSrc)) {
+        node.attrs = mergeAttrs(node.attrs, parseAttrs(attrSrc));
+    }
+    return node;
+}
+function expandLineBlockLeadingWhitespace(line) {
+    let i = 0;
+    let columns = 0;
+    while (i < line.length) {
+        const ch = line[i];
+        if (ch === ' ')
+            columns++;
+        else if (ch === '\t')
+            columns += 4 - (columns % 4);
+        else
+            break;
+        i++;
+    }
+    return '\u00a0'.repeat(columns) + line.slice(i);
 }
 // Generic div: same body collection as an admonition, but emits a plain
 // <div> carrying the opener's attributes (no class added). Like
@@ -1924,6 +2026,11 @@ function startsInterruptingBlock(lexer) {
         case '%':
             // line or block comment (invisible)
             return RE_COMMENT_LINE.test(ln) || RE_COMMENT_BLOCK.test(ln);
+        case '{':
+            // A standalone block-attribute line (invisible): it floats forward to
+            // the next block (or is dropped when none follows, §15), so it must
+            // interrupt the paragraph rather than fold in as literal text.
+            return peekBlockAttributes(lexer);
         default:
             // An ordered-list marker does NOT interrupt a paragraph (it needs a blank
             // line, matching Djot): allowing it would require the CommonMark `1.`-only

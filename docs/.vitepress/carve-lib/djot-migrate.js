@@ -46,8 +46,10 @@ const RULES = [
         family: '~',
         pattern: /~(?!\s)((?:(?!\n[ \t]*\n)[^~])+?)(?<!\s)~/gd,
         message: () => 'Djot subscript `~x~` renders as *strikethrough* in Carve.',
-        suggestion: (m) => `,,${m[1]},,`,
-        delims: [',,', ',,'],
+        // Forced brace form: a Djot `~x~` is often intraword (e.g. H~2~O), where a
+        // bare `,x,` would be literal in Carve; `{,x,}` renders in every position.
+        suggestion: (m) => `{,${m[1]},}`,
+        delims: ['{,', ',}'],
     },
     {
         id: 'djot-emphasis-underscore',
@@ -61,9 +63,12 @@ const RULES = [
         id: 'djot-highlight-braces',
         family: '{',
         pattern: /\{=(?!\s)((?:(?!\n[ \t]*\n)[\s\S])+?)(?<!\s)=\}/gd,
-        message: () => 'Djot highlight `{=x=}` is written `==x==` in Carve.',
-        suggestion: (m) => `==${m[1]}==`,
-        delims: ['==', '=='],
+        message: () => 'Djot highlight `{=x=}` is also Carve highlight (`{=x=}`).',
+        // Identity: the braced highlight form is valid Carve as-is and renders in
+        // every position, so it is kept rather than reduced to a bare `=x=` (which
+        // would be literal intraword).
+        suggestion: (m) => `{=${m[1]}=}`,
+        delims: ['{=', '=}'],
     },
     // Block-level (line-anchored): a leading `+ content` is a bullet in
     // Djot/Markdown but NOT in Carve — `+` is the list-continuation marker, so

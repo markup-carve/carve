@@ -165,9 +165,9 @@ function cleanEscapedText(node) {
     const span = node.pos?.startOffset !== undefined && node.pos.endOffset !== undefined
         ? node.pos.endOffset - node.pos.startOffset
         : undefined;
-    return span !== undefined && span > node.value.length
+    return (span !== undefined && span > node.value.length
         ? node.value.replace(/[*#_]/g, '')
-        : node.value;
+        : node.value).replace(/\u00a0/g, ' ');
 }
 function isLegacyDefinitionParagraph(node) {
     return (node.children.length === 3 &&

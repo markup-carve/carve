@@ -1220,6 +1220,16 @@ EOF = (* end of file *) ;
         element, across intervening blank lines. `{#id}\n\nText` yields
         `<p id="id">Text</p>`. A run with no following block element
         (e.g. at end of document) is dropped, producing no output.
+      - TRAILING A PARAGRAPH -- NORMATIVE. A `{...}` line directly after
+        paragraph content (no blank line) is still a leading block-attribute
+        line: it INTERRUPTS the paragraph (§10) and floats FORWARD like any
+        other. It does NOT attach backward to the paragraph it follows, and
+        does NOT fold into the paragraph as literal text. `Para\n{.class}`
+        yields `<p>Para</p>` (dropped -- no following block); and
+        `Para\n{.class}\n\nNext` yields `<p>Para</p>` then
+        `<p class="class">Next</p>`. (A trailing SAME-LINE `{...}` with no
+        abutting host is not a block-attribute line at all -- it stays literal
+        inline content, §14: `Para {.x}` -> `<p>Para {.x}</p>`.)
       - ACCUMULATION across consecutive blocks: when several attribute
         blocks precede the same target (adjacent or blank-separated),
         they merge in source order with these rules --
@@ -1247,10 +1257,10 @@ EOF = (* end of file *) ;
       - The target block's OWN trailing attributes (e.g. a heading's
         `# H {#x}`, PART 9 §13/§12 carriers) merge with the leading
         block attributes under the same rules.
-      Implementation status: both carve-php and carve-js implement §15 in
-      full -- leading block-attribute lines, float-forward across blank
-      lines, accumulation, and multi-line blocks. Pinned by corpus
-      84-block-attribute-lines.
+      Implementation status: carve-php, carve-js, and carve-rs implement §15
+      in full -- leading block-attribute lines, float-forward across blank
+      lines (including a line that trails a paragraph), accumulation, and
+      multi-line blocks. Pinned by corpus 84-block-attribute-lines.
 
    16. FOOTNOTES -- NORMATIVE (governs `footnote` / `footnote_definition`
       in PART 3). The reference form `[^label]` + `[^label]: body` and the
