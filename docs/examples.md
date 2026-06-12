@@ -4880,6 +4880,26 @@ Violets are blue.</p>
 
 ::::
 
+`::: |` is a language-neutral alias for `::: line-block`: the pipe is the block's type token on the opener (not a per-line prefix, so there is no pipe/table ambiguity), for authors who prefer a symbol over an English keyword. It behaves identically.
+
+:::: compare
+
+```carve
+::: |
+Roses are red,
+Violets are blue.
+:::
+```
+
+```html
+<div class="line-block">
+  <p>Roses are red,<br>
+Violets are blue.</p>
+</div>
+```
+
+::::
+
 Leading whitespace is preserved; each leading space becomes a non-breaking space so the indentation is visible without extra CSS.
 
 :::: compare

@@ -1,4 +1,4 @@
-::: {.line-block}
-one
-two
+::: line-block
+*Bold* and /italic/,
+plain line.
 :::

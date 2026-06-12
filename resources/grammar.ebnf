@@ -357,10 +357,14 @@ div_open = colon_fence, [space, attributes] ;
    break into a hard break. The `:::` trigger (vs Pandoc/djot's `|`) avoids the
    pipe/table ambiguity (jgm/djot#29). The attribute-only form
    `::: {.line-block}` is an ORDINARY generic div (no whitespace handling) --
-   the behavior keys off the `line-block` type word, not the class. Normative
+   the behavior keys off the `line-block` type word, not the class. A bare pipe
+   `|` is a language-neutral ALIAS for the `line-block` type word: `::: |` is
+   identical to `::: line-block` (still rendering `<div class="line-block">`).
+   The pipe is the type token on the opener -- not a per-line prefix -- so it
+   keeps the `:::` form's freedom from the pipe/table ambiguity. Normative
    rendering: PART 9 §23. *)
 line_block = line_block_open, newline, line_block_body, admonition_close, newline ;
-line_block_open = colon_fence, space, "line-block", [attributes] ;
+line_block_open = colon_fence, space, ("line-block" | "|"), [attributes] ;
 (* The body is a sequence of stanzas separated by blank lines; each stanza is
    a run of consecutive non-blank lines. Inline content parses normally; the
    per-line leading whitespace is retained and the intra-stanza newlines are

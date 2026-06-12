@@ -59,7 +59,7 @@ const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 // greater length closes it (djot fence-length rule).
 const RE_ADMONITION_OPEN = /^(:{3,})\s*([a-zA-Z][\w-]*)\s*(.*)$/;
 const RE_ADMONITION_CLOSE = /^(:{3,})\s*$/;
-const RE_LINE_BLOCK_OPEN = /^(:{3,})[ \t]+line-block(?:[ \t]*\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?[ \t]*$/;
+const RE_LINE_BLOCK_OPEN = /^(:{3,})[ \t]+(?:line-block|\|)(?:[ \t]*\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?[ \t]*$/;
 // Generic fenced div: a `:::` opener with NO type word -- bare `:::` or
 // an attributes-only `::: {.class}` (djot's generic container). A typed
 // `::: word` routes to parseAdmonition instead. Shares the `:::` closer.

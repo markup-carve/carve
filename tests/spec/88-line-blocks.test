@@ -13,6 +13,18 @@ Violets are blue.</p>
 ```
 
 ```
+::: |
+Roses are red,
+Violets are blue.
+:::
+.
+<div class="line-block">
+  <p>Roses are red,<br>
+Violets are blue.</p>
+</div>
+```
+
+```
 ::: line-block
 Roses are red,
   Violets are blue.
