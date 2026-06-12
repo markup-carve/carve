@@ -27,3 +27,13 @@ not a div
 not a div
 :::</p>
 ```
+
+```
+::: _box
+content
+:::
+.
+<div class="_box">
+  <p>content</p>
+</div>
+```

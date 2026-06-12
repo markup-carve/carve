@@ -62,8 +62,17 @@ const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 // trailing `{...}` (or other non-title text) makes it not a fence, so the
 // line is an ordinary paragraph. Attributes attach via a PRECEDING `{...}`
 // block-attribute line.
-const RE_ADMONITION_OPEN = /^(:{3,})\s*([a-zA-Z][\w-]*)\s*("[^"]*")?\s*$/;
+// The type word is a grammar `identifier`: `(letter | '_'), {letter | digit
+// | '_' | '-'}`, so it may start with an underscore (matches carve-php /
+// carve-rs).
+const RE_ADMONITION_OPEN = /^(:{3,})\s*([a-zA-Z_][\w-]*)\s*("[^"]*")?\s*$/;
 const RE_ADMONITION_CLOSE = /^(:{3,})\s*$/;
+// Line block: the opener is `::: |` ONLY (a bare pipe type token). The old
+// `::: line-block` keyword is no longer special -- it falls through to the
+// admonition branch and renders as an ordinary `<div class="line-block">`
+// with NO hard-break / stanza / leading-whitespace handling. Output of the
+// pipe form is unchanged (`<div class="line-block">` with `<br>` breaks).
+// Mirrors carve#119 / carve-php#124.
 const RE_LINE_BLOCK_OPEN = /^(:{3,})[ \t]+\|[ \t]*$/;
 // Generic fenced div: a bare `:::` opener with NO type word (djot's generic
 // container). A typed `::: word` routes to parseAdmonition. An inline
@@ -975,7 +984,11 @@ function expandLineBlockLeadingWhitespace(line) {
             break;
         i++;
     }
-    return '\u00a0'.repeat(columns) + line.slice(i);
+    // Use the internal non-breaking-space placeholder (U+E000) - the same
+    // private-use sentinel as an escaped space - so the indent never collides
+    // with a literal U+00A0 in the author's text and is converted per renderer
+    // (HTML &nbsp;, Markdown U+00A0, plain/ANSI an ordinary space).
+    return '\ue000'.repeat(columns) + line.slice(i);
 }
 // Generic div: same body collection as an admonition, but emits a plain
 // <div> carrying the opener's attributes (no class added). Like
@@ -1141,9 +1154,11 @@ function trackBlockQuoteLazyState(content, state) {
             state.paragraphOpen = false;
             return;
         }
-        if (RE_DIV_OPEN.test(content) || RE_ADMONITION_OPEN.test(content)) {
-            // Div / admonition opener (`:::`, `::: {…}`, or `::: type`) is structural;
-            // it opens no paragraph itself.
+        if (RE_DIV_OPEN.test(content) ||
+            RE_ADMONITION_OPEN.test(content) ||
+            RE_LINE_BLOCK_OPEN.test(content)) {
+            // Div / admonition / line-block opener (`:::`, `::: type`, or `::: |`)
+            // is structural; it opens no paragraph itself.
             state.paragraphOpen = false;
             return;
         }
@@ -1394,7 +1409,8 @@ function lineOpensBlock(line) {
         extractItemAttr(line) !== null ||
         RE_TABLE_ROW.test(line) ||
         (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line)) ||
-        RE_DIV_OPEN.test(line));
+        RE_DIV_OPEN.test(line) ||
+        RE_LINE_BLOCK_OPEN.test(line));
 }
 function lazyContinuationEndsList(line, lexer) {
     return (RE_RAW_FENCE.test(line) ||
@@ -1402,6 +1418,7 @@ function lazyContinuationEndsList(line, lexer) {
         RE_COMMENT_BLOCK.test(line) ||
         (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line)) ||
         (RE_DIV_OPEN.test(line) && divHasCloser(lexer)) ||
+        (RE_LINE_BLOCK_OPEN.test(line) && divHasCloser(lexer)) ||
         RE_ABBR_DEF.test(line) ||
         RE_FOOTNOTE_DEF.test(line) ||
         RE_LINK_DEF.test(line) ||
@@ -2002,11 +2019,13 @@ function startsInterruptingBlock(lexer) {
         case '_':
             return RE_HR.test(ln.trim());
         case ':':
-            // definition-list term, or an admonition/div that has a `:::` closer ahead
+            // definition-list term, or an admonition/div/line-block that has a `:::`
+            // closer ahead (the `::: |` line-block shares the bare `:::` closer)
             if (RE_DEFLIST_TERM.test(ln))
                 return true;
             if ((RE_ADMONITION_OPEN.test(ln) && !RE_ADMONITION_CLOSE.test(ln)) ||
-                RE_DIV_OPEN.test(ln))
+                RE_DIV_OPEN.test(ln) ||
+                RE_LINE_BLOCK_OPEN.test(ln))
                 return divHasCloser(lexer);
             return false;
         case '[':
@@ -2364,9 +2383,12 @@ function scanInline(text, source = inlineSource(), inFootnote = false, captionCo
             i += 2;
             continue;
         }
-        // Non-breaking space: a backslash followed by a space (djot).
+        // Non-breaking space: a backslash followed by a space (djot). Emit the
+        // internal placeholder (U+E000) rather than a literal U+00A0 so it is
+        // converted per renderer (HTML &nbsp;, Markdown U+00A0, plain/ANSI a
+        // space) and never confused with an author's literal non-breaking space.
         if (c === '\\' && text[i + 1] === ' ') {
-            append('\u00a0');
+            append('\ue000');
             i += 2;
             continue;
         }

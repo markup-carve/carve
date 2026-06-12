@@ -851,9 +851,11 @@ const HTML_ESCAPE = {
     '<': '&lt;',
     '>': '&gt;',
     '\u00a0': '&nbsp;',
+    // Internal non-breaking-space placeholder (line-block indent / escaped space).
+    '\ue000': '&nbsp;',
 };
 function escapeHtml(s) {
-    return s.replace(/[&<>\u00a0]/g, (c) => HTML_ESCAPE[c]);
+    return s.replace(/[&<>\u00a0\ue000]/g, (c) => HTML_ESCAPE[c]);
 }
 function escapeAttr(s) {
     return s.replace(/[&<>"']/g, (c) => c === '"' ? '&quot;' : c === "'" ? '&apos;' : HTML_ESCAPE[c]);
