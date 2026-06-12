@@ -78,27 +78,32 @@ The same `{…}` block is used in both positions:
 
 A few elements don't follow the plain block rule, because the plain rule can't express what they need. These are the only exceptions - learn them once.
 
-### List items - attributes go after the marker
+### List items - attribute block abuts the marker
 
-A `{…}` on the line before a list attaches to the **list**, not to an item. To attribute an individual `<li>` you put the attribute block **right after the marker**:
+A `{…}` on the line before a list attaches to the **list**, not to an item. To attribute an individual `<li>` the attribute block must **abut the marker with no space** (`-{…}`), and the marker's required space follows it:
 
 ```carve
-- {#first .done} finished item
+-{#first .done} finished item
 - ordinary item
 ```
 
-This is a Carve addition (djot cannot attribute list items at all) and is the **only** way to target the `<li>` element itself. The marker's space still follows the attribute block (`- {…} text`).
+**Whitespace is the discriminator** (normative):
+
+- `-{.c} text` - the `{.c}` abuts the marker, so it is part of the marker and attributes the `<li>` -> `<li class="c">text</li>`.
+- `- {.c} text` - a space before `{`, so the `{.c}` is ordinary item **content** (literal), not a li-attribute -> `<li>{.c} text</li>`.
+
+This is a Carve addition (djot cannot attribute list items at all) and is the **only** way to target the `<li>` element itself. For task items the block abuts the marker before the checkbox: `-{.c} [ ] text`.
 
 ### Code fences - leading line only
 
 A code fence's opening line is its **info string** (the language). An attribute block there would be parsed as part of that string, so code-block attributes must go on the **preceding** line:
 
-```carve
+````carve
 {.numbered #snippet}
 ``` js
 const x = 1;
 ```
-```
+````
 
 A `{…}` after the language word does **not** attach - it is treated as info-string content.
 
@@ -120,16 +125,16 @@ See [Examples → Admonitions](/examples#admonitions) for the recognized type wo
 
 ## Quick reference
 
-```carve
+````carve
 {#id .class}          ← block: line BEFORE the block
 # Heading
 
 text [span]{.c}       ← inline: directly AFTER, no space
 
-- {#item} list item   ← list item: after the marker
+-{#item} list item    ← list item: abuts the marker (no space!)
 
 {.x}                  ← code block: line BEFORE the fence
 ``` lang
 code
 ```
-```
+````
