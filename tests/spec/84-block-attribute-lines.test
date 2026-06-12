@@ -47,3 +47,20 @@ Text
 .
 <blockquote class="epigraph"><p>To be or not to be.</p></blockquote>
 ```
+
+```
+Para
+{.class}
+.
+<p>Para</p>
+```
+
+```
+Para
+{.class}
+
+Next
+.
+<p>Para</p>
+<p class="class">Next</p>
+```
