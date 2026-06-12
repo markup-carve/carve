@@ -200,7 +200,7 @@ List requires `* ` (asterisk + space). Bold opener requires `*` + non-whitespace
 
 Check out #project-x           # Tag
 
-Issue #123                     # Literal (digit-only; a tag needs a leading letter)
+Issue #123                     # Tag (#123 — digit-only tags are valid)
 
 #notaheading                   # Tag (no space after #)
 ```
