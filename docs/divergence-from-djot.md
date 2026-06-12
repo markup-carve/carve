@@ -172,6 +172,10 @@ as more than restyled Djot:
 - **Inline footnotes** - `^[content]` carries a note in place (pandoc-style),
   numbered into the same endnotes as a reference `[^label]`. Canonical djot has
   only reference footnotes; `^[…]` is a carve addition (grammar §16).
+- **Boolean attributes** - a bare word in `{…}` (`[Tab]{kbd}`, `{.note open}`)
+  is a value-less attribute rendered `name=""`. Canonical djot rejects bare
+  words (the whole block stays literal); carve accepts them, following djot-php
+  (grammar §14).
 - **Target-aware rendering** - one parsed document, multiple renderers (HTML,
   ANSI, Markdown, plain text) behind a single extension contract.
 

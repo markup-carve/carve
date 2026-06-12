@@ -74,7 +74,7 @@ The same `{…}` block is used in both positions:
 - `#id` - element id (one per element)
 - `.class` - add a class (repeatable)
 - `key=value` / `key="value"` - arbitrary attribute; quote when the value has spaces
-- `boolean` - a bare word becomes a value-less attribute
+- `boolean` - a bare word (no `#`/`.`/`=`) becomes a value-less attribute, rendered `name=""` (e.g. `[Tab]{kbd}` → `<span kbd="">Tab</span>`)
 
 ## The one outlier: list items
 

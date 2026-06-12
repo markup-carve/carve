@@ -855,11 +855,17 @@ attribute_list = attribute, {whitespace+, attribute} ;
    each slot at its first-appearance position; values are last-wins,
    PART 9 §15.) *)
 
-attribute = id_attribute | class_attribute | key_value_attribute ;
+attribute = id_attribute | class_attribute | key_value_attribute
+          | boolean_attribute ;
 
 id_attribute = '#', identifier ;
 class_attribute = '.', identifier ;
 key_value_attribute = identifier, '=', attribute_value ;
+(* A bare identifier with no value is a BOOLEAN (value-less) attribute,
+   rendered `name=""` (a carve extension beyond canonical djot, matching
+   djot-php; matched after key_value_attribute so `k=v` is not read as a bare
+   `k`). It mixes freely with the other forms. See PART 9 §14. *)
+boolean_attribute = identifier ;
 
 attribute_value = unquoted_value | quoted_value ;
 unquoted_value = (letter | digit | '-' | '_')+ ;
@@ -1396,11 +1402,19 @@ EOF = (* end of file *) ;
           literal. (Deliberate strictness beyond djot, which accepts
           digit-first identifiers / `class="123"`; see jgm/djot issue 399.)
           A digit/`-`/`_` AFTER the first character is valid (`{.a1}`).
+      BOOLEAN (value-less) ATTRIBUTES -- NORMATIVE. A bare identifier with no
+      value (`[text]{kbd}`, `{.note open}`, `{disabled}` on a block line) is a
+      boolean attribute, rendered `name=""`. It is matched after the
+      `key_value_attribute` form (so `k=v` stays a key/value) and mixes freely
+      with id/class/key=value in source order; multiple are allowed; a
+      digit-first bare word is not a valid name (the block stays literal, as for
+      any digit-first identifier). All impls support it (a carve extension
+      beyond canonical djot, matching djot-php; corpus 95-boolean-attributes).
       The boundary of "yields an attribute" still differs at the margins:
-      carve-php additionally accepts bareword booleans (`[text]{kbd}`),
-      colon-bearing keys/classes (`{xml:lang="en"}`, `{.sm:hover}`) and
-      comment-only blocks (`{% c %}`) as spans, where carve-js treats those as
-      literal. Use a plain `.class` / `#id` / `key=value` for a portable span.
+      carve-php additionally accepts colon-bearing keys/classes
+      (`{xml:lang="en"}`, `{.sm:hover}`) and comment-only blocks (`{% c %}`) as
+      spans, where carve-js treats those as literal. Use a plain
+      `.class` / `#id` / `key=value` / bare word for a portable span.
 
    15. BLOCK ATTRIBUTE LINES -- NORMATIVE (governs `block_attributes`
       in PART 2; matches djot). A `{...}` attribute block on its own
