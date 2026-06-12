@@ -59,7 +59,6 @@ const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 // greater length closes it (djot fence-length rule).
 const RE_ADMONITION_OPEN = /^(:{3,})\s*([a-zA-Z][\w-]*)\s*(.*)$/;
 const RE_ADMONITION_CLOSE = /^(:{3,})\s*$/;
-const RE_LINE_BLOCK_OPEN = /^(:{3,})[ \t]+line-block(?:[ \t]*\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?[ \t]*$/;
 // Generic fenced div: a `:::` opener with NO type word -- bare `:::` or
 // an attributes-only `::: {.class}` (djot's generic container). A typed
 // `::: word` routes to parseAdmonition instead. Shares the `:::` closer.
@@ -533,8 +532,6 @@ function parseBlockInner(lexer) {
         const l = lexer.consume();
         return { type: 'comment', block: false, content: l.slice(2).replace(/^\s/, '') };
     }
-    if (RE_LINE_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer))
-        return parseLineBlock(lexer);
     if (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line))
         return parseAdmonition(lexer);
     // Bare `:::` or attributes-only `::: {…}` opens a generic div (the
@@ -585,7 +582,64 @@ function parseBlockInner(lexer) {
         if (matched)
             return matched;
     }
+    // A line that is nothing but a display-math span (`$$`…``) standalone on its
+    // block is a candidate EQUATION; when a caption follows it is numbered like a
+    // figure/table/listing (#87). Diverted here, before the paragraph fallback,
+    // because parseParagraph would otherwise fold the caption line into the math
+    // paragraph.
+    if (line.trimStart().startsWith('$$`')) {
+        const eq = parseEquationBlock(lexer);
+        if (eq)
+            return eq;
+    }
     return parseParagraph(lexer);
+}
+// Parse a standalone display-math line, optionally wrapping it in a figure when
+// a caption follows (a numbered equation). Returns null when the line is not
+// solely display math, or when non-blank prose follows with no blank line (so
+// the line belongs to a normal multi-line paragraph instead).
+function parseEquationBlock(lexer) {
+    // Mirror parseParagraph's leading-whitespace strip + base-position folding so
+    // an indented standalone equation is still recognized and the math span keeps
+    // its true source offset.
+    const lineIndex = lexer.pos;
+    const raw = lexer.peek();
+    const firstLead = raw.match(/^[ \t]+/)?.[0].length ?? 0;
+    const inline = parseInline(raw.replace(/^[ \t]+/, ''), lexer.abbrDefs, lexer.linkDefs, {
+        baseOffset: lexer.lineOffset(lineIndex) + firstLead,
+        startLine: lineIndex + 1,
+        startColumn: 1 + firstLead,
+    });
+    if (inline.length !== 1)
+        return null;
+    const only = inline[0];
+    if (only.type !== 'math' || !only.display)
+        return null;
+    // First non-blank line after the math line, and how many blanks precede it.
+    let la = 1;
+    while (lexer.peek(la)?.trim() === '')
+        la++;
+    const after = lexer.peek(la);
+    const blanks = la - 1;
+    const cap = after !== undefined ? RE_CAPTION.exec(after) : null;
+    const para = { type: 'paragraph', children: inline };
+    // §4: a caption attaches across at most one blank line.
+    if (cap && blanks <= 1) {
+        for (let i = 0; i <= la; i++)
+            lexer.consume();
+        return {
+            type: 'figure',
+            target: para,
+            caption: parseInline(cap[1], lexer.abbrDefs, lexer.linkDefs, undefined, true),
+        };
+    }
+    // Non-blank, non-caption text immediately follows: let parseParagraph fold
+    // the math and that text into one paragraph (preserve existing behavior).
+    if (after !== undefined && blanks === 0)
+        return null;
+    // Standalone display math with no caption: a plain single-math paragraph.
+    lexer.consume();
+    return para;
 }
 function attachBlockPos(lexer, node, startLineIndex, endLineIndexExclusive) {
     const endLineIndex = Math.max(startLineIndex, endLineIndexExclusive - 1);
@@ -675,6 +729,26 @@ function parseFence(lexer) {
         cb.lang = lang;
     if (label !== undefined)
         cb.label = label;
+    // Optional caption (`^ …`): a captioned code block is a numbered LISTING,
+    // wrapped in a figure exactly like a captioned image/blockquote/table.
+    let lookahead = 0;
+    while (!lexer.eof() && lexer.peek(lookahead)?.trim() === '')
+        lookahead++;
+    const next = lexer.peek(lookahead);
+    if (next) {
+        const cap = RE_CAPTION.exec(next);
+        // §4: a caption attaches only when it immediately follows the block
+        // or is separated by at most ONE blank line.
+        if (cap && lookahead <= 1) {
+            for (let i = 0; i <= lookahead; i++)
+                lexer.consume();
+            return {
+                type: 'figure',
+                target: cb,
+                caption: parseInline(cap[1], lexer.abbrDefs, lexer.linkDefs, undefined, true),
+            };
+        }
+    }
     return cb;
 }
 // Raw passthrough block: ```raw FORMAT … ``` . Content is verbatim; the
@@ -808,71 +882,6 @@ function parseAdmonition(lexer) {
     if (attrSrc && isValidAttrPayload(attrSrc))
         node.attrs = parseAttrs(attrSrc);
     return node;
-}
-function lineBlockHasCloser(lexer) {
-    const start = lexer.pos + 1;
-    const fence = RE_LINE_BLOCK_OPEN.exec(lexer.peek())[1].length;
-    for (let i = start; i < lexer.lines.length; i++) {
-        const c = RE_ADMONITION_CLOSE.exec(lexer.lines[i]);
-        if (c && c[1].length >= fence)
-            return true;
-    }
-    return false;
-}
-function parseLineBlock(lexer) {
-    const open = lexer.consume();
-    const m = RE_LINE_BLOCK_OPEN.exec(open);
-    const fence = m[1].length;
-    const attrSrc = m[2];
-    const stanzas = [];
-    let stanza = [];
-    while (!lexer.eof()) {
-        const ln = lexer.peek();
-        const c = RE_ADMONITION_CLOSE.exec(ln);
-        if (c && c[1].length >= fence) {
-            lexer.consume();
-            break;
-        }
-        lexer.consume();
-        if (ln.trim() === '') {
-            if (stanza.length) {
-                stanzas.push(stanza);
-                stanza = [];
-            }
-            continue;
-        }
-        stanza.push(expandLineBlockLeadingWhitespace(ln));
-    }
-    if (stanza.length)
-        stanzas.push(stanza);
-    const children = stanzas.map((lines) => ({
-        type: 'paragraph',
-        children: parseInline(lines.join('\n'), lexer.abbrDefs, lexer.linkDefs).map((node) => node.type === 'soft-break' ? { type: 'hard-break' } : node),
-    }));
-    const node = {
-        type: 'div',
-        attrs: { classes: ['line-block'], order: ['.class'] },
-        children,
-    };
-    if (attrSrc && isValidAttrPayload(attrSrc)) {
-        node.attrs = mergeAttrs(node.attrs, parseAttrs(attrSrc));
-    }
-    return node;
-}
-function expandLineBlockLeadingWhitespace(line) {
-    let i = 0;
-    let columns = 0;
-    while (i < line.length) {
-        const ch = line[i];
-        if (ch === ' ')
-            columns++;
-        else if (ch === '\t')
-            columns += 4 - (columns % 4);
-        else
-            break;
-        i++;
-    }
-    return '\u00a0'.repeat(columns) + line.slice(i);
 }
 // Generic div: same body collection as an admonition, but emits a plain
 // <div> carrying the opener's attributes (no class added). Like

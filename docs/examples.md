@@ -4520,6 +4520,61 @@ An escaped `\#` is a literal number sign, never a placeholder.
 
 :::
 
+A caption after a fenced code block makes it a numbered **listing**: the block
+is wrapped in a `<figure>`, and `</#id>` resolves to "Listing N" on the same
+per-label counter as figures and tables.
+
+::: compare
+
+````carve
+{#lst-greet}
+```python
+def greet():
+    return 1
+```
+^ Listing #: a greeting
+
+See </#lst-greet>.
+````
+
+```html
+<figure id="lst-greet">
+  <pre><code class="language-python">def greet():
+    return 1
+</code></pre>
+  <figcaption>Listing 1: a greeting</figcaption>
+</figure>
+<p>See <a href="#lst-greet">Listing 1</a>.</p>
+```
+
+:::
+
+A caption after a standalone display-math block makes it a numbered
+**equation**: the math is wrapped in a `<figure>`, and `</#id>` resolves to
+"Equation N" on its own per-label counter. Only a block whose sole content is
+the display-math span qualifies; inline math, or display math with trailing
+prose, is untouched.
+
+::: compare
+
+```carve
+{#eq-emc}
+$$`E = mc^2`
+^ Equation #: mass-energy
+
+See </#eq-emc>.
+```
+
+```html
+<figure id="eq-emc">
+  <p><span class="math display">\[E = mc^2\]</span></p>
+  <figcaption>Equation 1: mass-energy</figcaption>
+</figure>
+<p>See <a href="#eq-emc">Equation 1</a>.</p>
+```
+
+:::
+
 ## Inline footnotes
 
 An inline footnote `^[content]` carries its note text in place (pandoc-style),

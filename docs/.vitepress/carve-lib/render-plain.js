@@ -80,7 +80,10 @@ function renderFigure(node) {
         : node.target.type === 'table'
             ? renderTable(node.target).trim()
             : renderBlock(node.target).trim();
-    return `${target}${renderInlines(node.caption)}`;
+    // A block-level target (a code-block listing or a display-math equation)
+    // keeps the caption on its own line; an inline image target stays adjacent.
+    const sep = node.target.type === 'code-block' || node.target.type === 'paragraph' ? '\n' : '';
+    return `${target}${sep}${renderInlines(node.caption)}`;
 }
 function renderFootnoteDefs(ast) {
     if (!ast.footnoteDefs)
@@ -162,9 +165,9 @@ function cleanEscapedText(node) {
     const span = node.pos?.startOffset !== undefined && node.pos.endOffset !== undefined
         ? node.pos.endOffset - node.pos.startOffset
         : undefined;
-    return (span !== undefined && span > node.value.length
+    return span !== undefined && span > node.value.length
         ? node.value.replace(/[*#_]/g, '')
-        : node.value).replace(/\u00a0/g, ' ');
+        : node.value;
 }
 function isLegacyDefinitionParagraph(node) {
     return (node.children.length === 3 &&
