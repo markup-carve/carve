@@ -10,8 +10,8 @@ hero:
     alt: Carve logo
   actions:
     - theme: brand
-      text: Read the Case Study
-      link: /case-study/
+      text: Try Carve →
+      link: /playground
     - theme: alt
       text: View on GitHub
       link: https://github.com/markup-carve
