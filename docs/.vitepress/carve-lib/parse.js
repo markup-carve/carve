@@ -3099,7 +3099,11 @@ function isValidAttrPayload(inner) {
     // well as double-quoted) so the same payloads parseAttrs accepts validate
     // as block attributes — otherwise `"a\"b"` strips only to `"a\"` and the
     // rest leaks, falsely rejecting the block.
-    const stripped = inner.replace(/(?:#[\w-]+)|(?:\.[\w-]+)|(?:[\w-]+=(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\S+))|\s+/g, '');
+    // An attribute name (id, class, key) is a grammar identifier:
+    // `(letter | '_'), {letter | digit | '_' | '-'}` -- it may NOT start with a
+    // digit. A digit-first name (`.123`, `#1`, `2=v`) makes the whole block an
+    // invalid attribute block, so it stays literal (§14) -- stricter than djot.
+    const stripped = inner.replace(/(?:#[a-zA-Z_][\w-]*)|(?:\.[a-zA-Z_][\w-]*)|(?:[a-zA-Z_][\w-]*=(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|\S+))|\s+/g, '');
     return stripped === '';
 }
 /** True when an attribute block parsed to no id, classes, or key=values. */
@@ -3126,7 +3130,11 @@ export function parseAttrs(src) {
     // strip their delimiters, so `k='{y}'` yields the literal `{y}`. A
     // backslash escapes ASCII punctuation inside a quoted value, so
     // `k="a\"b"` yields the literal `a"b`.
-    const re = /(?:#([\w-]+))|(?:\.([\w-]+))|(?:([\w-]+)=(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'|(\S+)))/g;
+    // An attribute name is a grammar identifier (letter or `_` first, then
+    // letters / digits / `_` / `-`); a digit-first token is not a valid
+    // attribute and is skipped here (the payload is rejected as invalid
+    // upstream by isValidAttrPayload, so the block stays literal).
+    const re = /(?:#([a-zA-Z_][\w-]*))|(?:\.([a-zA-Z_][\w-]*))|(?:([a-zA-Z_][\w-]*)=(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'|(\S+)))/g;
     let m;
     while ((m = re.exec(src))) {
         if (m[1]) {
