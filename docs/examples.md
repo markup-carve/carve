@@ -5221,3 +5221,38 @@ Check if (x < 5) holds, and 3<4 too.
 ```
 
 :::
+
+## Boolean attributes
+
+A bare word in a `{…}` block (no `#` / `.` / `=`) is a value-less (boolean)
+attribute, rendered `name=""`. It works in any attribute position and mixes
+with id / class / key=value. A carve extension beyond canonical djot, matching
+djot-php.
+
+::: compare
+
+```carve
+Press [Tab]{kbd} to indent.
+```
+
+```html
+<p>Press <span kbd="">Tab</span> to indent.</p>
+```
+
+:::
+
+A leading block-attribute line carries booleans too (here onto a paragraph),
+alongside a class:
+
+::: compare
+
+```carve
+{.callout open}
+Details here.
+```
+
+```html
+<p class="callout" open="">Details here.</p>
+```
+
+:::

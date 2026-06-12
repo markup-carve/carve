@@ -1,0 +1,14 @@
+Boolean attributes
+
+```
+Press [Tab]{kbd} to indent.
+.
+<p>Press <span kbd="">Tab</span> to indent.</p>
+```
+
+```
+{.callout open}
+Details here.
+.
+<p class="callout" open="">Details here.</p>
+```
