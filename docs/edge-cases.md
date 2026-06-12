@@ -170,8 +170,10 @@ AND a valid closer ahead.
 
 **Resolution rules:**
 1. Starts with `@` followed by alphanumeric
-2. Continues with alphanumeric, `_`, `-`
-3. Ends at whitespace, punctuation (except `_-`), or end of line
+2. Continues with alphanumeric, `_`, `-`, and *interior* dots (a dot followed
+   by another name character)
+3. Ends at whitespace, other punctuation, or end of line; a *trailing* dot is
+   sentence punctuation, not part of the name
 
 **Examples:**
 | Input | Mention | Remainder |
@@ -179,10 +181,14 @@ AND a valid closer ahead.
 | `@john` | `@john` | - |
 | `@john-doe` | `@john-doe` | - |
 | `@john_doe` | `@john_doe` | - |
+| `@john.doe` | `@john.doe` | - |
 | `@john.` | `@john` | `.` |
 | `@john's` | `@john` | `'s` |
 | `@john!` | `@john` | `!` |
 | `email@domain.com` | - | (not a mention, no word boundary before @) |
+
+The same name rule applies to `#tags` (`#release-1.0` is one tag). Pinned by
+corpus `89-mention-and-tag-name-boundaries`.
 
 ---
 
