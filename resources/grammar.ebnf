@@ -117,7 +117,10 @@ heading_continuation_line = inline_content, newline ;  (* see the NORMATIVE note
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
 
 (* --- Code Blocks --- *)
-code_block = fenced_code_block ;
+code_block = fenced_code_block, [caption] ;
+(* A trailing caption (PART 8 §4) wraps the code block in a figure: a
+   numbered LISTING. The caption may carry a `#` number placeholder, and a
+   `</#id>` to the block resolves to "Listing N" (PART 9 §19). *)
 
 fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
                     code_content,
@@ -876,7 +879,10 @@ EOF = (* end of file *) ;
         delimiters).
 
    4. CAPTION PLACEMENT
-      - ^ caption must immediately follow image, blockquote, or table
+      - ^ caption must immediately follow image, blockquote, table, a fenced
+        code block (a captioned code block is a numbered LISTING), or a
+        standalone display-math block (a captioned equation is a numbered
+        EQUATION; its block must be solely the `$$`…`` span)
       - One blank line allowed between block and caption
 
    5. TABLE CELL CONTENT
@@ -1312,7 +1318,10 @@ EOF = (* end of file *) ;
         inline  -> <span class="math inline">\(content\)</span>
         display -> <span class="math display">\[content\]</span>
       `content` is the verbatim span text, HTML-escaped (`&`,`<`,`>`).
-      Display math alone on a line renders inside its own paragraph.
+      Display math alone on a line renders inside its own paragraph. A
+      standalone display-math block carrying a trailing caption (PART 8 §4)
+      is a numbered EQUATION: the math paragraph is wrapped in a figure and a
+      `</#id>` to it resolves to "Equation N" (§19).
       Author `{attrs}` after the span merge onto the <span> (the base
       `math …` class is kept; see PART 10 §1).
 
@@ -1320,8 +1329,8 @@ EOF = (* end of file *) ;
       - `</#id>` clones the target heading's full inline children, so a
         heading with markup (`# *Setup*`) yields a link that KEEPS the
         markup (`<a href="#…"><strong>Setup</strong> …</a>`).
-      - `</#id>` to a NUMBERED CAPTION (a figure / table / listing whose
-        caption carries a number placeholder and an `{#id}`) yields the
+      - `</#id>` to a NUMBERED CAPTION (a figure / table / listing / equation
+        whose caption carries a number placeholder and an `{#id}`) yields the
         caption's LABEL + NUMBER ("Figure 1"), markup preserved, NOT the
         caption prose. A `</#id>` to an id that is neither a heading nor a
         numbered caption stays unresolved (renders literal), as today.

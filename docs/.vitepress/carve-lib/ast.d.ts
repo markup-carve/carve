@@ -148,7 +148,7 @@ export interface DefinitionList extends BaseNode {
 }
 export interface Figure extends BaseNode {
     type: 'figure';
-    target: Image | BlockQuote | Table;
+    target: Image | BlockQuote | Table | CodeBlock | Paragraph;
     caption: InlineNode[];
 }
 export interface AbbreviationDef extends BaseNode {

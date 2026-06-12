@@ -582,7 +582,64 @@ function parseBlockInner(lexer) {
         if (matched)
             return matched;
     }
+    // A line that is nothing but a display-math span (`$$`…``) standalone on its
+    // block is a candidate EQUATION; when a caption follows it is numbered like a
+    // figure/table/listing (#87). Diverted here, before the paragraph fallback,
+    // because parseParagraph would otherwise fold the caption line into the math
+    // paragraph.
+    if (line.trimStart().startsWith('$$`')) {
+        const eq = parseEquationBlock(lexer);
+        if (eq)
+            return eq;
+    }
     return parseParagraph(lexer);
+}
+// Parse a standalone display-math line, optionally wrapping it in a figure when
+// a caption follows (a numbered equation). Returns null when the line is not
+// solely display math, or when non-blank prose follows with no blank line (so
+// the line belongs to a normal multi-line paragraph instead).
+function parseEquationBlock(lexer) {
+    // Mirror parseParagraph's leading-whitespace strip + base-position folding so
+    // an indented standalone equation is still recognized and the math span keeps
+    // its true source offset.
+    const lineIndex = lexer.pos;
+    const raw = lexer.peek();
+    const firstLead = raw.match(/^[ \t]+/)?.[0].length ?? 0;
+    const inline = parseInline(raw.replace(/^[ \t]+/, ''), lexer.abbrDefs, lexer.linkDefs, {
+        baseOffset: lexer.lineOffset(lineIndex) + firstLead,
+        startLine: lineIndex + 1,
+        startColumn: 1 + firstLead,
+    });
+    if (inline.length !== 1)
+        return null;
+    const only = inline[0];
+    if (only.type !== 'math' || !only.display)
+        return null;
+    // First non-blank line after the math line, and how many blanks precede it.
+    let la = 1;
+    while (lexer.peek(la)?.trim() === '')
+        la++;
+    const after = lexer.peek(la);
+    const blanks = la - 1;
+    const cap = after !== undefined ? RE_CAPTION.exec(after) : null;
+    const para = { type: 'paragraph', children: inline };
+    // §4: a caption attaches across at most one blank line.
+    if (cap && blanks <= 1) {
+        for (let i = 0; i <= la; i++)
+            lexer.consume();
+        return {
+            type: 'figure',
+            target: para,
+            caption: parseInline(cap[1], lexer.abbrDefs, lexer.linkDefs, undefined, true),
+        };
+    }
+    // Non-blank, non-caption text immediately follows: let parseParagraph fold
+    // the math and that text into one paragraph (preserve existing behavior).
+    if (after !== undefined && blanks === 0)
+        return null;
+    // Standalone display math with no caption: a plain single-math paragraph.
+    lexer.consume();
+    return para;
 }
 function attachBlockPos(lexer, node, startLineIndex, endLineIndexExclusive) {
     const endLineIndex = Math.max(startLineIndex, endLineIndexExclusive - 1);
@@ -672,6 +729,26 @@ function parseFence(lexer) {
         cb.lang = lang;
     if (label !== undefined)
         cb.label = label;
+    // Optional caption (`^ …`): a captioned code block is a numbered LISTING,
+    // wrapped in a figure exactly like a captioned image/blockquote/table.
+    let lookahead = 0;
+    while (!lexer.eof() && lexer.peek(lookahead)?.trim() === '')
+        lookahead++;
+    const next = lexer.peek(lookahead);
+    if (next) {
+        const cap = RE_CAPTION.exec(next);
+        // §4: a caption attaches only when it immediately follows the block
+        // or is separated by at most ONE blank line.
+        if (cap && lookahead <= 1) {
+            for (let i = 0; i <= lookahead; i++)
+                lexer.consume();
+            return {
+                type: 'figure',
+                target: cb,
+                caption: parseInline(cap[1], lexer.abbrDefs, lexer.linkDefs, undefined, true),
+            };
+        }
+    }
     return cb;
 }
 // Raw passthrough block: ```raw FORMAT … ``` . Content is verbatim; the
@@ -759,15 +836,19 @@ function parseAdmonition(lexer) {
     const m = RE_ADMONITION_OPEN.exec(open);
     const fence = m[1].length;
     const kind = m[2];
-    // A title is recognized ONLY when the tail after the type opens with a
-    // double-quoted string (grammar quoted_title; PART 9 §12), optionally
-    // followed by an attribute block. The quotes are delimiters and are
-    // stripped — not part of the rendered title text. An explicitly empty
-    // `""` still counts as a supplied (empty) title. Unquoted trailing
-    // text is ignored (not a title).
+    // The tail after the type word may carry an optional quoted title
+    // (grammar quoted_title; PART 9 §12) and an optional trailing attribute
+    // block (grammar admonition_open [attributes]). The block needs no
+    // leading space, so it may abut the type or the title (`::: note{.x}`,
+    // `::: note "T"{.x}`). The quotes delimit the title and are stripped
+    // (not part of the rendered text); an explicitly empty `""` still counts
+    // as a supplied (empty) title. A quoted title may itself contain braces,
+    // so the attribute block is only the `{...}` after the closing quote.
+    // Unquoted trailing text is ignored (not a title, not attributes).
     const tail = m[3]?.trim() ?? '';
-    const quoted = /^"([^"]*)"\s*(?:\{[^}]*\})?$/.exec(tail);
-    const titleText = quoted ? quoted[1] : undefined;
+    const tm = /^(?:"([^"]*)"\s*)?(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\})?$/.exec(tail);
+    const titleText = tm ? tm[1] : undefined;
+    const attrSrc = tm?.[2];
     const inner = [];
     while (!lexer.eof()) {
         const ln = lexer.peek();
@@ -792,6 +873,14 @@ function parseAdmonition(lexer) {
     if (titleText !== undefined) {
         node.title = parseInline(titleText, lexer.abbrDefs, lexer.linkDefs);
     }
+    // The opener's own trailing attributes (`::: note {.x}`). A leading
+    // block-attribute line merges with these in parseBlocks (pending first,
+    // opener attrs win on conflict), the same path parseDiv uses. An invalid
+    // payload (`{.x junk}`) is not an attribute block (no silent partial
+    // apply, matching block-attribute lines and grammar §14); the trailing
+    // text is ignored.
+    if (attrSrc && isValidAttrPayload(attrSrc))
+        node.attrs = parseAttrs(attrSrc);
     return node;
 }
 // Generic div: same body collection as an admonition, but emits a plain
@@ -848,7 +937,9 @@ function parseDiv(lexer) {
     subLexer.nested = true;
     subLexer.depth = lexer.depth + 1;
     const node = { type: 'div', children: parseBlocks(subLexer, 0) };
-    if (attrSrc)
+    // An invalid payload (`:::{.x junk}`) is not an attribute block: no
+    // silent partial apply, matching block-attribute lines and grammar §14.
+    if (attrSrc && isValidAttrPayload(attrSrc))
         node.attrs = parseAttrs(attrSrc);
     return node;
 }

@@ -1,0 +1,8 @@
+{#lst-greet}
+```python
+def greet():
+    return 1
+```
+^ Listing #: a greeting
+
+See </#lst-greet>.

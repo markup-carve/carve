@@ -96,3 +96,36 @@ See </#tbl-r>.
   <figcaption>Costs # units</figcaption>
 </figure>
 ```
+
+````
+{#lst-greet}
+```python
+def greet():
+    return 1
+```
+^ Listing #: a greeting
+
+See </#lst-greet>.
+.
+<figure id="lst-greet">
+  <pre><code class="language-python">def greet():
+    return 1
+</code></pre>
+  <figcaption>Listing 1: a greeting</figcaption>
+</figure>
+<p>See <a href="#lst-greet">Listing 1</a>.</p>
+````
+
+```
+{#eq-emc}
+$$`E = mc^2`
+^ Equation #: mass-energy
+
+See </#eq-emc>.
+.
+<figure id="eq-emc">
+  <p><span class="math display">\[E = mc^2\]</span></p>
+  <figcaption>Equation 1: mass-energy</figcaption>
+</figure>
+<p>See <a href="#eq-emc">Equation 1</a>.</p>
+```
