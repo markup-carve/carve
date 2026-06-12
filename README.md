@@ -22,7 +22,7 @@ turning your content into a JavaScript program. What sets Carve apart:
 - **Cross-references that just work** - `</#id>` auto-fills its link text from the
   target heading, and `[Heading][]` resolves to a heading with no separate
   definition. A `#` placeholder in a caption (`^ Figure #: …`) auto-numbers
-  figures, tables, and listings, and `</#id>` to one fills in "Figure 1".
+  figures, tables, listings, and equations, and `</#id>` to one fills in "Figure 1".
   Neither Markdown nor Djot offers this natively.
 - **GitHub-style heading ids by default** - lowercase, Unicode-preserving anchors
   that make ids and cross-references case-insensitive with zero configuration.

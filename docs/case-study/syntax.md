@@ -258,9 +258,9 @@ suffix (`</#setup-2>`).
 
 #### Numbered Cross-References
 
-A `#` placeholder in a caption turns it into a numbered figure, table, or
-listing. The label is the text before the `#`; the number is injected in its
-place and runs per label, 1-based, in document order:
+A `#` placeholder in a caption turns it into a numbered figure, table,
+listing, or equation. The label is the text before the `#`; the number is
+injected in its place and runs per label, 1-based, in document order:
 
 ```
 {#fig-sun}

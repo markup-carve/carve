@@ -582,7 +582,64 @@ function parseBlockInner(lexer) {
         if (matched)
             return matched;
     }
+    // A line that is nothing but a display-math span (`$$`…``) standalone on its
+    // block is a candidate EQUATION; when a caption follows it is numbered like a
+    // figure/table/listing (#87). Diverted here, before the paragraph fallback,
+    // because parseParagraph would otherwise fold the caption line into the math
+    // paragraph.
+    if (line.trimStart().startsWith('$$`')) {
+        const eq = parseEquationBlock(lexer);
+        if (eq)
+            return eq;
+    }
     return parseParagraph(lexer);
+}
+// Parse a standalone display-math line, optionally wrapping it in a figure when
+// a caption follows (a numbered equation). Returns null when the line is not
+// solely display math, or when non-blank prose follows with no blank line (so
+// the line belongs to a normal multi-line paragraph instead).
+function parseEquationBlock(lexer) {
+    // Mirror parseParagraph's leading-whitespace strip + base-position folding so
+    // an indented standalone equation is still recognized and the math span keeps
+    // its true source offset.
+    const lineIndex = lexer.pos;
+    const raw = lexer.peek();
+    const firstLead = raw.match(/^[ \t]+/)?.[0].length ?? 0;
+    const inline = parseInline(raw.replace(/^[ \t]+/, ''), lexer.abbrDefs, lexer.linkDefs, {
+        baseOffset: lexer.lineOffset(lineIndex) + firstLead,
+        startLine: lineIndex + 1,
+        startColumn: 1 + firstLead,
+    });
+    if (inline.length !== 1)
+        return null;
+    const only = inline[0];
+    if (only.type !== 'math' || !only.display)
+        return null;
+    // First non-blank line after the math line, and how many blanks precede it.
+    let la = 1;
+    while (lexer.peek(la)?.trim() === '')
+        la++;
+    const after = lexer.peek(la);
+    const blanks = la - 1;
+    const cap = after !== undefined ? RE_CAPTION.exec(after) : null;
+    const para = { type: 'paragraph', children: inline };
+    // §4: a caption attaches across at most one blank line.
+    if (cap && blanks <= 1) {
+        for (let i = 0; i <= la; i++)
+            lexer.consume();
+        return {
+            type: 'figure',
+            target: para,
+            caption: parseInline(cap[1], lexer.abbrDefs, lexer.linkDefs, undefined, true),
+        };
+    }
+    // Non-blank, non-caption text immediately follows: let parseParagraph fold
+    // the math and that text into one paragraph (preserve existing behavior).
+    if (after !== undefined && blanks === 0)
+        return null;
+    // Standalone display math with no caption: a plain single-math paragraph.
+    lexer.consume();
+    return para;
 }
 function attachBlockPos(lexer, node, startLineIndex, endLineIndexExclusive) {
     const endLineIndex = Math.max(startLineIndex, endLineIndexExclusive - 1);
