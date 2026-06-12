@@ -1077,6 +1077,48 @@ Inline emphasis applies inside cells just like in paragraphs.
 
 :::
 
+A `|=` cell in a body row is a row header: it renders as `<th>` inside `<tbody>` while the row stays a body row. This expresses row headers (a leading first-column `<th>` per data row), which a separator row cannot. The thead is still only the leading all-header rows.
+
+::: compare
+
+```carve
+|=         |= Diameter (km) |= Size vs Earth |
+|= Mercury | 4,879.4         | 38%            |
+|= Venus   | 12,104          | 95%            |
+```
+
+```html
+<table>
+  <thead><tr><th></th><th>Diameter (km)</th><th>Size vs Earth</th></tr></thead>
+  <tbody>
+    <tr><th>Mercury</th><td>4,879.4</td><td>38%</td></tr>
+    <tr><th>Venus</th><td>12,104</td><td>95%</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+With no leading header row, every first cell can still be a row header — the table has no `<thead>` at all.
+
+::: compare
+
+```carve
+|= Mercury | 4,879 |
+|= Venus   | 12,104 |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><th>Mercury</th><td>4,879</td></tr>
+    <tr><th>Venus</th><td>12,104</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
 ## Tables with rowspan and colspan
 
 ::: compare
