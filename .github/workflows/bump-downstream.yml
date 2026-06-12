@@ -151,6 +151,7 @@ jobs:
               --base main --head automation/bump-spec $draft \
               --title "chore: bump spec corpus to carve $short" \
               --body "$body"
+            existing="$(gh pr list --repo "$REPO" --head automation/bump-spec --state open --json number --jq '.[0].number // empty')"
           else
             # Keep the existing PR's draft state in sync with conformance.
             if [ -n "$draft" ]; then
@@ -160,4 +161,17 @@ jobs:
             fi
             gh pr edit "$existing" --repo "$REPO" --body "$body" 2>/dev/null || true
             echo "Updated existing PR #$existing on $REPO (draft=${draft:+yes})."
+          fi
+
+          # A conforming (non-draft) bump is mechanical: enable squash
+          # auto-merge so it lands once the downstream repo's own CI passes.
+          # Draft PRs (non-conforming) are left for a human to implement first.
+          # Requires "Allow auto-merge" enabled on the downstream repo, and a
+          # required status check on main (else --auto merges immediately).
+          if [ -z "$draft" ] && [ -n "$existing" ]; then
+            if gh pr merge "$existing" --repo "$REPO" --squash --auto 2>/dev/null; then
+              echo "Auto-merge (squash) enabled on $REPO PR #$existing."
+            else
+              echo "Could not enable auto-merge on $REPO PR #$existing (check 'Allow auto-merge' + branch protection)."
+            fi
           fi
