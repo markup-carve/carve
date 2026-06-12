@@ -1,0 +1,14 @@
+Nested comment fences
+
+```
+before
+
+%%%%
+hidden %%% inner fence stays hidden
+%%%%
+
+after
+.
+<p>before</p>
+<p>after</p>
+```

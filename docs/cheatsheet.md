@@ -21,31 +21,60 @@ The whole syntax, one page. Carve's mnemonic: **the markup looks like its output
 | `=highlight=` | highlight | like a highlighter pen |
 | `` `code` `` | `code` | backticks |
 | `[text](url)` | link | |
-| `[Page Name][]` | wiki-style link | |
+| `[Page Name][]` | wiki-style link | resolves to a heading |
+| `<https://url>` | autolink | |
+| `</#section-id>` | cross-reference | link text cloned from the target |
 | `![alt](img.jpg)` | image | |
+| `[^1]` / `^[inline note]` | footnote | reference / inline form |
+| `[span]{.class}` | attributed span | |
 | `:youtube[ID]` | extension | `:type[content]{attrs}` |
 | `@user` `#tag` | mention / tag | social conventions |
+| `\*literal\*` | escape | backslash + any ASCII punctuation |
+| `--` `---` `...` `->` `(c)` | – — … → © | smart typography |
+| `\` at end of line | hard break | `\ ` (backslash-space) = no-break space |
+| `` `<br>`{=html} `` | raw inline | emitted only for that output format |
 
 Bare delimiters work only at word boundaries; force one intraword with the brace form, e.g. `H{,2,}O`, `mc{^2^}`.
 
 ## Blocks
 
 ````carve
-# H1   ## H2   ### H3        (ATX headings)
+# H1   ## H2   ### H3        (ATX headings; blank line after - text on
+                              the next line folds INTO the heading)
 
-- unordered      1. ordered
-- [ ] task        - [x] done
+---                          (thematic break: --- *** ___)
+
+- unordered      1. ordered  (dialects: a. A. i. I. and the ) delimiter;
+- [ ] task        - [x] done  more task states: [-] [_] [>] [?])
+-{.c} styled item            (attrs abutting the marker target the <li>)
+
+- step one                   (lone + attaches the next flush-left block
++                             to the item - no deep indenting)
+> note for step one
+
+:: term                      (definition list)
+:  definition
 
 > blockquote
 ^ Attribution                (caption / attribution: ^ prefix)
 
-```language
+```language [Label]
 code block
 ```
 
+```raw html
+<div>passed through when the output format matches</div>
+```
+
 ::: note                     (admonition: note tip warning danger
-body                          info success example quote)
+body                          info success example quote;
+:::                           any other word = <div class="word">)
+
+:::: outer                   (longer fences nest shorter ones)
+::: note
+inner
 :::
+::::
 
 ::: |                        (preserves per-line layout)
 Roses are red,
@@ -56,9 +85,16 @@ Roses are red,
 ## Tables
 
 ```carve
-|= Header |= Header |        (|= marks a header cell)
-| Cell    | Cell    |
+|= Header |= Header |        (|= marks a header cell; also works in body
+| Cell    | Cell    |         rows for ROW headers)
 ^ Table caption
+
+|= Name |=> Age |=~ City |   (column alignment glued to |=: < ~ >;
+| Sum    |< 12   | NYC    |   a data-cell marker overrides per cell)
+
+| Name  | Age |              (GFM separator row accepted as a
+|-------|----:|               compatibility alias: marks the header
+| Alice |  30 |               row + column alignment)
 
 | ^      | spanned |         (^ = rowspan)
 | Header | <       |         (< = colspan)
@@ -70,6 +106,11 @@ Roses are red,
 ```carve
 ![Photo](img.jpg)
 ^ Figure 1: Caption text      (one ^ adds a semantic <figcaption>)
+
+{#fig-sun}
+![A sunset](sun.jpg)
+^ Figure #: A sunset          (# = auto number; </#fig-sun> then renders
+                               as "Figure 1")
 ```
 
 A `^` caption after a fenced code block makes a numbered *listing*; after a
@@ -99,7 +140,7 @@ text %% trailing comment
 block comment
 %%%
 
-{+inserted+}  {-deleted-}  {~old~>new~}   (CriticMarkup)
+{+inserted+}  {-deleted-}  {~old~>new~}  {#a comment#}   (CriticMarkup)
 ```
 
 ## Next

@@ -481,6 +481,42 @@ Normative statement: `resources/grammar.ebnf` PART 9 §10. Verified by corpus
 
 ---
 
+## 18. Multi-Line Headings (Text Folds INTO an Open Heading)
+
+**Rule (normative, grammar PART 2):** a heading's text spills onto following
+lines until a blank line - like Djot, and consistent with lazy blockquote
+continuation. While a heading is open:
+
+- a plain text line **folds into the heading text** (it does *not* start a
+  paragraph);
+- a continuation line with the **same or fewer** `#` markers folds in (markers
+  stripped);
+- a marker with **more** `#` than the open heading starts a *new* heading;
+- a blank line, a caption (`^ `), or a fenced comment (`%%%`) ends it;
+- **nothing else interrupts it** - §17's interruption rules do not apply inside
+  an open heading.
+
+The heading id derives from the **full folded text**.
+
+```carve
+# Title
+outside
+```
+
+This is **one** heading - `<h1>Title␤outside</h1>` with id `title-outside` -
+NOT a heading plus a paragraph. The biggest authoring trap in the heading syntax: always put
+a blank line after a heading. (Corpus `79-multi-line-headings`.)
+
+```carve
+# Title
+
+outside
+```
+
+Heading + paragraph, as intended.
+
+---
+
 ## Summary: Parser Priority
 
 When multiple interpretations are possible, use this order:

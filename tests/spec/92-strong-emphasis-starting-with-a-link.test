@@ -1,0 +1,7 @@
+Strong emphasis starting with a link
+
+```
+See *[the docs](url) for more* info.
+.
+<p>See <strong><a href="url">the docs</a> for more</strong> info.</p>
+```
