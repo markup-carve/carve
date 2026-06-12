@@ -99,7 +99,10 @@ Decided canonical behavior, pinned in the corpus, where at least one
 implementation still diverges (lockstep order: carve-js first, then the carve
 pin; the corpus has no xfail). A row moves to *Resolved* once all impls agree.
 
-_None currently._
+| Input | Canonical | Impl(s) to change | Pin |
+|-------|-----------|-------------------|-----|
+| `d => e; x != y` in emphasis-opening position | A delimiter that begins a multi-char smart-typography pattern is consumed by it: `=>` is the arrow, never a `=` highlight opener (grammar PART 8 / PART 9 §8). carve-js and carve-php conform. | carve-rs opens a `<mark>` span between the two `=`s instead. | **PINNED** *(38-smart-typography-arrows-and-symbols)*, green on carve-js + carve-php; carve-rs red — found by the carve-rs registry sweep (carve-rs#41), family left unregistered there until fixed |
+| `::: \|` line block (verse) | A bare-pipe type token on the opener preserves per-line layout: `<div class="line-block">`, leading whitespace as NBSP, soft breaks hard (grammar PART 9 §23). carve-js and carve-php conform. | carve-rs does not implement the line-block container (the opener parses as a paragraph); only the strict-opener fallback pair passes. | **PINNED** *(88-line-blocks)*, green on carve-js + carve-php; carve-rs red — family unregistered in carve-rs until implemented |
 
 ### Extension API surface (parity beyond corpus output)
 
