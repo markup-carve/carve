@@ -31,7 +31,8 @@ Attribute edge cases
 ```
 
 ```
-# H {k="{y}"}
+{k="{y}"}
+# H
 .
 <section id="h">
   <h1 k="{y}">H</h1>
@@ -74,7 +75,8 @@ body
 ```
 
 ```
-# H {title="a\"b"}
+{title="a\"b"}
+# H
 .
 <section id="h">
   <h1 title="a&quot;b">H</h1>

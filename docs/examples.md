@@ -156,7 +156,7 @@ foo_bar_baz and snake_case stay literal
 
 :::
 
-A `/` or `_` opener immediately preceded by the *same* delimiter or by `_` is not valid (this does not affect different-delimiter combinations like `/*bold italic*/`).
+An emphasis opener (any bare delimiter) immediately preceded by the *same* delimiter or by a literal `_` is not valid (this does not affect different-delimiter combinations like `/*bold italic*/`, and a `_` that itself opens an underline span does not block a following opener).
 
 ::: compare
 
@@ -288,17 +288,34 @@ All six heading levels are supported.
 
 :::
 
-Attributes attach to the heading via a trailing `{…}` block. The rendered attribute order matches the source order.
+Attributes attach to the heading via a block-attribute line on the line above (the uniform block rule, §15) — a heading line carries no trailing `{…}` block. The rendered attribute order matches the source order. An explicit `#id` hoists to the `<section>` wrapper.
 
 ::: compare
 
 ```carve
-## Setup {#install .featured}
+{#install .featured}
+## Setup
 ```
 
 ```html
 <section id="install">
   <h2 class="featured">Setup</h2>
+</section>
+```
+
+:::
+
+A `{…}` at the end of a heading line is ordinary inline text, not an attribute block (djot-strict; same as a trailing `{…}` after paragraph text). The heading id derives from the full literal text.
+
+::: compare
+
+```carve
+## Setup {.featured}
+```
+
+```html
+<section id="setup-featured">
+  <h2>Setup {.featured}</h2>
 </section>
 ```
 
@@ -724,13 +741,14 @@ A blank line between items produces a loose list — each item wraps in a paragr
 :::
 
 A paragraph ends at a blank line — or at a line that begins a block. A
-continuation line that starts with a block marker — `-`, `*`, `+`, `>`, a
-valid `|…|` table row, a heading `#`, a fence with a closer, or a decimal
-`1.` / `1)` — interrupts the paragraph and starts that block, with no blank
-line required (the Markdown-like rule; §10). The trade-off is that a
-hard-wrapped prose line that happens to begin with such a marker becomes a
-block — insert a blank line, or backslash-escape the marker (`\* 3`), to keep
-it prose.
+continuation line that starts with a block marker — a bullet `- ` / `* `
+(at any indentation), `>`, a valid `|…|` table row, a heading `#`, or a
+fence with a closer — interrupts the paragraph and starts that block, with
+no blank line required (the Markdown-like rule; §10). Ordered markers
+(`1.`, `1)`, `a.`, …) never interrupt, and `+` is not a bullet. The
+trade-off is that a hard-wrapped prose line that happens to begin with an
+interrupting marker becomes a block — insert a blank line, or
+backslash-escape the marker (`\* 3`), to keep it prose.
 
 ::: compare
 
@@ -748,8 +766,9 @@ Die Frage ist x = 5
 
 :::
 
-The same applies to any number of marker lines, and to every block type — a
-heading or a `1.` list under a prose line interrupts it just the same.
+The same applies to any number of marker lines, and to every interrupting
+block type — a heading under a prose line interrupts it just the same
+(ordered lists do not; they need a blank line).
 
 ::: compare
 
@@ -1552,7 +1571,8 @@ Press :kbd[Ctrl+C] to copy.
 ::: compare
 
 ```carve
-# Title {.large #intro}
+{.large #intro}
+# Title
 
 A paragraph with [a styled link](url){.btn .primary}.
 ```
@@ -1715,7 +1735,8 @@ Content begins here.
 
 ## Setup
 
-# API {#api-v2}
+{#api-v2}
+# API
 
 See </#cafe-notes>, </#section-2024-recap>, </#setup-2>, and </#api-v2>.
 ```
@@ -3104,12 +3125,14 @@ On an image:
 
 :::
 
-On a heading (the attributes attach to the `<h1>`):
+On a heading (via a preceding block-attribute line; the attributes attach
+to the `<h1>`):
 
 ::: compare
 
 ```carve
-# H {k="{y}"}
+{k="{y}"}
+# H
 ```
 
 ```html
@@ -3199,12 +3222,14 @@ can contain a literal quote.
 
 :::
 
-The same escape applies on a heading's attribute block.
+The same escape applies on a heading's attribute block (a preceding
+block-attribute line, §15).
 
 ::: compare
 
 ```carve
-# H {title="a\"b"}
+{title="a\"b"}
+# H
 ```
 
 ```html
@@ -3632,10 +3657,11 @@ a paragraph and stays literal.
 A paragraph ends at a blank line — or at a line that begins a block. Under the
 Markdown-like rule (§10) a **visible** block interrupts an open paragraph with
 no blank line before it, at the top level and inside nested content. Three
-carve-outs keep common prose safe: an ordered marker interrupts only as `1.` /
-`1)`; a fence or `:::` interrupts only when it has a matching closer ahead; and
-a bare image is never a block. Invisible constructs (reference definitions,
-comments) interrupt as they always have.
+carve-outs keep common prose safe: ordered markers never interrupt (in any
+dialect or value); a fence or `:::` interrupts only when it has a matching
+closer ahead; and a bare image is never a block. Invisible constructs
+(reference definitions, comments, block-attribute lines) interrupt as they
+always have.
 
 A heading marker after a prose line interrupts.
 

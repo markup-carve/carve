@@ -26,7 +26,7 @@ A block owns a rectangle of the document: it starts on its own line and is separ
 
 ### Attributing a block
 
-Put the attribute block on the line directly above it (no blank line in between):
+Put the attribute block on a line above it (it floats forward across blank lines to the next block, matching djot - PART 9 §15):
 
 ```carve
 {#install .featured}
@@ -38,9 +38,9 @@ Read this first.
 :::
 ```
 
-renders the heading as `<h2 id="install" class="featured">` and the admonition as `<aside class="admonition note callout">`.
+renders the heading as `<h2 class="featured">` inside `<section id="install">` (an explicit heading id hoists to the `<section>` wrapper, PART 9 §13) and the admonition as `<aside class="admonition note callout">`.
 
-This is uniform across every block - headings, block quotes, lists, code blocks, divs/admonitions, line-blocks, tables. They all take their attributes on the preceding line; none take a trailing attribute on the block's own line. (A code block is no exception: its opening line is the info string, so a `{…}` after the language word is info-string text, not an attribute - put the attributes on the line above the fence like any other block.)
+This is uniform across every block - headings, block quotes, lists, code blocks, divs/admonitions, line-blocks, tables. They all take their attributes on the preceding line; none take a trailing attribute on the block's own line. (For a code block the fence line accepts only `lang [label]` - a `{…}` after the language word makes the line *not a fence at all*; the backticks then fall back to ordinary inline parsing. For a heading, a trailing `{…}` is ordinary inline text. Put the attributes on the line above, like any other block.)
 
 ## Inline elements
 

@@ -237,7 +237,8 @@ Contact [support](mailto:help@example.com) for help.
 #### Cross-References (Auto-Text Links)
 
 ```
-# Introduction {#intro}
+{#intro}
+# Introduction
 
 ...later in the document...
 
@@ -869,12 +870,16 @@ Any of these, at least 3 characters, alone on a line.
 Use Djot-style `{...}` syntax - it's proven and keeps `@` free for mentions:
 
 ```
-# Heading {#intro .important}
+{#intro .important}
+# Heading
 
-This paragraph {lang=en} has inline attributes.
+[This phrase]{lang=en} has inline attributes.
 
 ![](image.jpg){width=500 .float-right}
 ```
+
+A heading line carries no trailing `{…}` block (djot-strict): block
+attributes always come from a preceding attribute line.
 
 **Syntax:**
 ```
