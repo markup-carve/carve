@@ -4375,6 +4375,39 @@ line before a table attaches to the `<table>`:
 
 :::
 
+A `{...}` line that directly *trails* a paragraph (no blank line) is still a leading block-attribute line: it interrupts the paragraph and floats forward. With no following block it is dropped:
+
+::: compare
+
+```carve
+Para
+{.class}
+```
+
+```html
+<p>Para</p>
+```
+
+:::
+
+…and it floats across the blank line to the next block, never attaching backward to the paragraph it follows:
+
+::: compare
+
+```carve
+Para
+{.class}
+
+Next
+```
+
+```html
+<p>Para</p>
+<p class="class">Next</p>
+```
+
+:::
+
 ## Numbered cross-references
 
 A `#` in a caption is a number placeholder: the label is the text before it,
