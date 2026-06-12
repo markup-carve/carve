@@ -126,6 +126,7 @@ admonition content
 ```carve
 |= Header |= Header |      (|= for headers)
 | Cell    | Cell    |
+|= Row    | Cell    |      (|= in a body row = row header)
 ^ Table caption
 
 | ^       | spanned |      (^ rowspan)

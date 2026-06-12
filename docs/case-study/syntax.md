@@ -681,6 +681,24 @@ The `^` prefix creates a `<figure>` wrapper with `<figcaption>` for attribution.
 `|=` marks header cells (from Creole). No separator row is required - `|=` is the
 canonical Carve header, and what migration tooling (`MarkdownToCarve`) emits.
 
+#### Row Headers
+
+Because `|=` marks a *cell*, it is honored in any row, not only in an all-header
+row. A `|=` cell in a body row is a **row header**: it renders as `<th>` inside
+`<tbody>` while the row itself stays a body row. This expresses a leading
+first-column header per data row - something a separator row cannot describe.
+
+```
+|=         |= Diameter (km) |= Size vs Earth |
+|= Mercury | 4,879.4         | 38%            |
+|= Venus   | 12,104          | 95%            |
+```
+
+Header-section detection is unchanged: only the *leading* run of all-header rows
+forms `<thead>`. A later row that merely contains a row header is not pulled into
+the header section, and a table whose first cell of every row is a `|=` row
+header has no `<thead>` at all.
+
 #### GFM Header Separator
 
 For compatibility with imported Markdown, a **GFM-style separator row is also

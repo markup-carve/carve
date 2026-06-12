@@ -136,6 +136,9 @@ This is _italic_ text.
 - Extra row adds noise
 - Alignment markers (`:--:`) are cryptic
 - Creole's `|=` is cleaner and more explicit
+- A separator row can only describe a single top header band; because `|=` marks
+  a *cell*, it also expresses **row headers** (a `<th>` in a body row) - which a
+  separator row cannot. See [Tables → Row Headers](./case-study/syntax#row-headers).
 
 **Decision:** `|=` prefix marks header cells directly, no separator row needed.
 

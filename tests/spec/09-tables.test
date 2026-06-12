@@ -82,3 +82,29 @@ Tables
   </tbody>
 </table>
 ```
+
+```
+|=         |= Diameter (km) |= Size vs Earth |
+|= Mercury | 4,879.4         | 38%            |
+|= Venus   | 12,104          | 95%            |
+.
+<table>
+  <thead><tr><th></th><th>Diameter (km)</th><th>Size vs Earth</th></tr></thead>
+  <tbody>
+    <tr><th>Mercury</th><td>4,879.4</td><td>38%</td></tr>
+    <tr><th>Venus</th><td>12,104</td><td>95%</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|= Mercury | 4,879 |
+|= Venus   | 12,104 |
+.
+<table>
+  <tbody>
+    <tr><th>Mercury</th><td>4,879</td></tr>
+    <tr><th>Venus</th><td>12,104</td></tr>
+  </tbody>
+</table>
+```
