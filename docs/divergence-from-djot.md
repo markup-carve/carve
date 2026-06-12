@@ -29,7 +29,7 @@ opt-in for share-safe URL fragments.
 **Why.** We first mirrored Djot's case-preserving rule. It broke cross-references:
 `# Getting Started` produced the id `Getting-Started`, so a `</#getting-started>`
 reference no longer resolved - the reference and the id differed only in case.
-Lowercasing makes ids and the common `</#id>` / `[[Heading]]` references
+Lowercasing makes ids and the common `</#id>` / `[Heading][]` references
 case-insensitive with **no special lookup logic** - the universal
 GitHub / Hugo / Jekyll / MDN convention authors already expect for anchors.
 
@@ -163,8 +163,9 @@ These aren't divergences - Djot has no equivalent - but they're why Carve exists
 as more than restyled Djot:
 
 - **Cross-references** - `</#id>` auto-fills its link text from the target heading.
-- **Implicit heading references** - `[[Heading]]` resolves to a heading with no
-  separate `[label]: url` definition.
+- **Implicit heading references** - `[Heading][]` resolves to a heading with no
+  separate `[label]: url` definition (the wiki-style `[[Heading]]` form is a
+  separate opt-in extension, not core syntax).
 - **Tables with rowspan / colspan / multi-line cells** and captions on images,
   quotes, and tables.
 - **Native admonitions**, editorial/critic markup, `@mentions`, and `#tags`.

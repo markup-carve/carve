@@ -14,10 +14,18 @@ turning your content into a JavaScript program.
 |---------------------------------|:---:|:----:|:---:|:---:|
 | Formal, normative grammar       | ⚠️ spec, ambiguous edges |  ✅   | ❌ (md + JSX) | ✅ EBNF |
 | Consistent inline rules         | ❌ |  ✅   | ❌ | ✅ |
-| No-backtracking parse guarantee | ❌ |  ✅   | ❌ | ✅ |
+| No-backtracking parse guarantee | ❌ |  ✅   | ❌ | ✅ \* |
 | Markdown-familiar syntax        | ✅ |  ⚠️  | ✅ | ⚠️ |
-| Paragraph interruption (no blank line) | ✅ | ❌ | ✅ | ✅ |
+| Paragraph interruption (no blank line) | ✅ | ❌ | ✅ | ✅ \*\* |
 | Feature completeness/consistency | ❌ | ❌ | ❌ | ✅ |
+
+\* Inline parsing is single-pass with a delimiter stack; at the block level a
+fence / `:::` opener uses a bounded forward scan for a matching closer
+(closer lookahead, not backtracking) - see
+[Technical Rationale](/technical-rationale).
+\*\* Like Markdown for bullets, quotes, headings, tables and closed fences;
+ordered-list markers deliberately never interrupt (no CommonMark `1.`-only
+heuristic).
 
 ## Authoring features
 
@@ -29,12 +37,12 @@ turning your content into a JavaScript program.
 | Math | 🧩 | ✅ | 🧩 | ✅ |
 | Definition lists | 🧩 | ✅ | 🧩 | ✅ |
 | Admonitions / callouts | 🧩 | ⚠️ via div | 🧩 component | ✅ native |
-| Attributes `{.class #id}` | ❌ | ✅ | ⚠️ JSX props | ✅ |
-| Generic divs / spans | ❌ | ✅ | ⚠️ components | ✅ |
+| Attributes `{.class #id}` | 🧩 (Pandoc, markdown-it-attrs) | ✅ | ⚠️ JSX props | ✅ |
+| Generic divs / spans | 🧩 (Pandoc fenced divs / spans) | ✅ | ⚠️ components | ✅ |
 | Smart typography | 🧩 | ✅ | 🧩 | ✅ |
 | Editorial / critic markup | ❌ | ❌ | ❌ | ✅ |
 | Frontmatter | ⚠️ tooling | ❌ | 🧩 | ✅ |
-| Emoji `:name:` | 🧩 | ⚠️ | 🧩 | ✅ |
+| Emoji shortcodes | 🧩 | ⚠️ | 🧩 | 🧩 `:emoji[…]` extension |
 
 ## Docs & cross-referencing
 
@@ -48,9 +56,9 @@ turning your content into a JavaScript program.
 
 | | Markdown | Djot | MDX | **Carve** |
 |---|:---:|:---:|:---:|:---:|
-| Safe with untrusted input | ❌ raw HTML | ✅ | ❌ executes JS | ✅ raw off by default |
+| Safe with untrusted input | ⚠️ raw HTML on by default (sanitize modes exist) | ✅ | ❌ executes JS | ✅ raw off by default |
 | Embeds live components / JS | ❌ | ❌ | ✅ (its purpose) | ❌ by design |
-| Independent implementations | many, divergent | 1 reference + ports | JS-only | **php · js · rs, conformance-tested** |
+| Independent implementations | many, divergent | several (js, lua, rust, go) | JS-only | **php · js · rs, conformance-tested** |
 | Shared spec test corpus | ❌ | ⚠️ | ❌ | ✅ |
 
 ## When to pick which
