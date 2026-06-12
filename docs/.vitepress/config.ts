@@ -243,55 +243,64 @@ export default defineConfig({
       },
     ],
 
-    sidebar: [
-      {
-        text: 'Introduction',
-        items: [
-          { text: 'Get Started', link: '/get-started' },
-          { text: 'Playground', link: '/playground' },
-          { text: 'Cheat Sheet', link: '/cheatsheet' },
-          { text: 'Examples', link: '/examples' },
-        ],
-      },
-      {
-        text: 'Reference',
-        items: [
-          { text: 'Technical Rationale', link: '/technical-rationale' },
-          { text: 'Divergence from Djot', link: '/divergence-from-djot' },
-          { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
-          { text: 'Extensions Contract', link: '/extensions' },
-          { text: 'Implementation Comparison', link: '/implementation-comparison' },
-          { text: 'Formal Grammar', link: '/grammar' },
-          { text: 'Edge Cases', link: '/edge-cases' },
-          { text: 'Native Features', link: '/native-features-analysis' },
-          { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
-          { text: 'Markup Language Comparison', link: '/markup-languages' },
-          { text: 'Security', link: '/security' },
-        ],
-      },
-      {
-        text: 'Ecosystem',
-        items: [
-          { text: 'Implementations & Tooling', link: '/ecosystem' },
-          { text: 'Build Your Own', link: '/implementing-carve' },
-        ],
-      },
-      {
-        text: 'Case Study',
-        collapsed: false,
-        items: [
-          { text: 'Overview', link: '/case-study/' },
-          { text: 'Background', link: '/case-study/background' },
-          { text: 'Design', link: '/case-study/design' },
-          { text: 'Syntax Specification', link: '/case-study/syntax' },
-          { text: 'Parsing & AST', link: '/case-study/parsing-ast' },
-          { text: 'Compatibility & Open Questions', link: '/case-study/compatibility' },
-          { text: 'Implementation & Reflection', link: '/case-study/implementation' },
-          { text: 'Dismissed Syntax', link: '/dismissed-syntax' },
-          { text: 'Appendices', link: '/case-study/appendices' },
-        ],
-      },
-    ],
+    // Path-keyed (multi) sidebar so each page's sub-nav lists only its own
+    // section, not the whole site. Case Study has many pages, so it gets its
+    // own sidebar and is dropped from the main one — keeping the sidebar on
+    // every other page short enough to avoid overflow/scroll on small screens.
+    sidebar: {
+      '/case-study/': [
+        {
+          text: 'Case Study',
+          items: [
+            { text: 'Overview', link: '/case-study/' },
+            { text: 'Background', link: '/case-study/background' },
+            { text: 'Design', link: '/case-study/design' },
+            { text: 'Syntax Specification', link: '/case-study/syntax' },
+            { text: 'Parsing & AST', link: '/case-study/parsing-ast' },
+            { text: 'Compatibility & Open Questions', link: '/case-study/compatibility' },
+            { text: 'Implementation & Reflection', link: '/case-study/implementation' },
+            { text: 'Dismissed Syntax', link: '/dismissed-syntax' },
+            { text: 'Appendices', link: '/case-study/appendices' },
+          ],
+        },
+        { text: '← Back to docs', link: '/get-started' },
+      ],
+      '/': [
+        {
+          text: 'Introduction',
+          items: [
+            { text: 'Get Started', link: '/get-started' },
+            { text: 'Playground', link: '/playground' },
+            { text: 'Cheat Sheet', link: '/cheatsheet' },
+            { text: 'Examples', link: '/examples' },
+          ],
+        },
+        {
+          text: 'Reference',
+          items: [
+            { text: 'Technical Rationale', link: '/technical-rationale' },
+            { text: 'Divergence from Djot', link: '/divergence-from-djot' },
+            { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
+            { text: 'Extensions Contract', link: '/extensions' },
+            { text: 'Implementation Comparison', link: '/implementation-comparison' },
+            { text: 'Formal Grammar', link: '/grammar' },
+            { text: 'Edge Cases', link: '/edge-cases' },
+            { text: 'Native Features', link: '/native-features-analysis' },
+            { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
+            { text: 'Markup Language Comparison', link: '/markup-languages' },
+            { text: 'Security', link: '/security' },
+          ],
+        },
+        {
+          text: 'Ecosystem',
+          items: [
+            { text: 'Implementations & Tooling', link: '/ecosystem' },
+            { text: 'Build Your Own', link: '/implementing-carve' },
+            { text: 'Case Study', link: '/case-study/' },
+          ],
+        },
+      ],
+    },
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/markup-carve' },
