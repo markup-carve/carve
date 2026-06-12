@@ -1,0 +1,10 @@
+Mention name boundaries
+
+```
+Ping @john-doe, @john_doe and @john.doe today.
+
+Reach @john. That is @john's idea, @john!
+.
+<p>Ping <span class="mention"><strong>@john-doe</strong></span>, <span class="mention"><strong>@john_doe</strong></span> and <span class="mention"><strong>@john.doe</strong></span> today.</p>
+<p>Reach <span class="mention"><strong>@john</strong></span>. That is <span class="mention"><strong>@john</strong></span>’s idea, <span class="mention"><strong>@john</strong></span>!</p>
+```

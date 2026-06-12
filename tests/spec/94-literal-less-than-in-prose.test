@@ -1,0 +1,7 @@
+Literal less-than in prose
+
+```
+Check if (x < 5) holds, and 3<4 too.
+.
+<p>Check if (x &lt; 5) holds, and 3&lt;4 too.</p>
+```
