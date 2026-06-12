@@ -268,6 +268,7 @@ export default defineConfig({
       '/': [
         {
           text: 'Introduction',
+          collapsed: true,
           items: [
             { text: 'Get Started', link: '/get-started' },
             { text: 'Playground', link: '/playground' },
@@ -277,6 +278,10 @@ export default defineConfig({
         },
         {
           text: 'Reference',
+          // Collapsed by default so the sidebar fits on small screens without
+          // relying on scroll (a fixed overflow:auto drawer is unreliable on
+          // iOS). VitePress auto-expands the group of the current page.
+          collapsed: true,
           items: [
             { text: 'Technical Rationale', link: '/technical-rationale' },
             { text: 'Divergence from Djot', link: '/divergence-from-djot' },
@@ -293,6 +298,7 @@ export default defineConfig({
         },
         {
           text: 'Ecosystem',
+          collapsed: true,
           items: [
             { text: 'Implementations & Tooling', link: '/ecosystem' },
             { text: 'Build Your Own', link: '/implementing-carve' },

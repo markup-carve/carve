@@ -339,3 +339,15 @@ html.dark .vp-code span[data-carve-highlight] {
 .carve-render div.highlight > :last-child {
   margin-bottom: 0;
 }
+
+/*
+ * Mobile sidebar drawer scroll safety net. The sidebar is a position:fixed
+ * overflow:auto panel; when its content does exceed the viewport, touch
+ * (momentum) scrolling inside such a panel is unreliable on iOS without this.
+ * The collapsed sidebar groups (see config `sidebar`) usually keep it short
+ * enough to need no scroll at all.
+ */
+.VPSidebar {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
