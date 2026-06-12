@@ -220,7 +220,6 @@ export default defineConfig({
               { text: 'Case Study', link: '/case-study/' },
               { text: 'Technical Rationale', link: '/technical-rationale' },
               { text: 'Native Features', link: '/native-features-analysis' },
-              { text: 'Design Notes', link: '/dismissed-syntax' },
               { text: 'Security', link: '/security' },
             ],
           },
@@ -288,13 +287,8 @@ export default defineConfig({
           { text: 'Parsing & AST', link: '/case-study/parsing-ast' },
           { text: 'Compatibility & Open Questions', link: '/case-study/compatibility' },
           { text: 'Implementation & Reflection', link: '/case-study/implementation' },
-          { text: 'Appendices', link: '/case-study/appendices' },
-        ],
-      },
-      {
-        text: 'Design Notes',
-        items: [
           { text: 'Dismissed Syntax', link: '/dismissed-syntax' },
+          { text: 'Appendices', link: '/case-study/appendices' },
         ],
       },
     ],
