@@ -351,3 +351,18 @@ html.dark .vp-code span[data-carve-highlight] {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
+
+/*
+ * The sidebar groups are marked `collapsed` in config ONLY to keep the mobile
+ * drawer short (it fits without scrolling — a fixed overflow:auto panel is
+ * unreliable to touch-scroll on iOS). On desktop (>=960px, where the sidebar
+ * is a normal fixed column) show every group fully, as before.
+ */
+@media (min-width: 960px) {
+  .VPSidebar .VPSidebarItem.level-0.collapsed > .items {
+    display: block !important;
+  }
+  .VPSidebar .VPSidebarItem.level-0 > .item .caret {
+    display: none !important;
+  }
+}
