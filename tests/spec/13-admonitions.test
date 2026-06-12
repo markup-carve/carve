@@ -58,3 +58,24 @@ Quick steps:
   </ul>
 </aside>
 ```
+
+```
+::: warning {#w data-k=v}
+Mind the gap.
+:::
+.
+<aside class="admonition warning" id="w" data-k="v">
+  <p>Mind the gap.</p>
+</aside>
+```
+
+```
+{.lead}
+::: note {.x}
+Body.
+:::
+.
+<aside class="admonition note lead x">
+  <p>Body.</p>
+</aside>
+```

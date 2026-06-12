@@ -1461,6 +1461,43 @@ Quick steps:
 
 ::::
 
+A trailing attribute block on the opener applies to the wrapper (grammar `admonition_open` `[attributes]`): extra classes accumulate after the type class, and an id or key-value attaches to the element. The block may follow the type with or without a space (`::: note{.x}`), and a quoted title still comes first.
+
+:::: compare
+
+```carve
+::: warning {#w data-k=v}
+Mind the gap.
+:::
+```
+
+```html
+<aside class="admonition warning" id="w" data-k="v">
+  <p>Mind the gap.</p>
+</aside>
+```
+
+::::
+
+A preceding block-attribute line (§15) merges with the opener's own block: the leading classes come first, and the opener wins on an id or key conflict.
+
+:::: compare
+
+```carve
+{.lead}
+::: note {.x}
+Body.
+:::
+```
+
+```html
+<aside class="admonition note lead x">
+  <p>Body.</p>
+</aside>
+```
+
+::::
+
 ## Abbreviations
 
 ::: compare
