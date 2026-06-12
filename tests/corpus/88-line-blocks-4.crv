@@ -1,6 +1,4 @@
-::: line-block
-Stanza one,
-still one.
-
-Stanza two.
+::: |
+*Bold* and /italic/,
+plain line.
 :::

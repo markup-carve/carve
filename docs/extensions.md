@@ -18,7 +18,7 @@ Invariant: a feature's tier is identical in every language; a Tier-1 feature is
 core-and-default-on everywhere and its default output is corpus-pinned.
 
 - Tier 1: corpus categories 01–88 (admonitions, footnotes, cross-references,
-  list-item attributes, `::: line-block` verse, `<…>` autolinks, the
+  list-item attributes, `::: |` verse, `<…>` autolinks, the
   `:name[…]` / `::: name` extension syntax). Recognized `:::` type words
   (the eight admonitions + `line-block`) are catalogued in `examples.md`. Smart
   typography and `@mention` / `#tag` / `:emoji:` parsing are also default-on and
