@@ -84,3 +84,44 @@ test('the conformance contract exists and is non-empty', () => {
   )
   assert.ok(crv.length > 0, 'tests/corpus has no .crv fixtures')
 })
+
+// markdown-it-container (used by the docs `::: compare` blocks in VitePress)
+// pre-scans for its closing marker and does NOT skip code fences, so a `:::`
+// inside an example body closes the container early and the rest of the block
+// leaks as literal text. Guard: every `compare` container's colon marker must
+// be LONGER than the longest `:`-run anywhere in its body.
+test('every ::: compare container marker exceeds its body colon-run (VitePress render safety)', () => {
+  const lines = readFileSync(resolve(repo, 'docs/examples.md'), 'utf8').split('\n')
+  const fenceRe = /^(`{3,}|~{3,})/
+  const offenders = []
+  for (let i = 0; i < lines.length; i++) {
+    const open = /^(:{3,})\s+compare$/.exec(lines[i].trim())
+    if (!open) continue
+    const marker = open[1]
+    let fence = null
+    let maxBody = 0
+    let j = i + 1
+    for (; j < lines.length; j++) {
+      const l = lines[j]
+      if (fence) {
+        if (l.startsWith(fence) && l.slice(fence.length).trim() === '') fence = null
+        const m = /^(:{3,})/.exec(l)
+        if (m) maxBody = Math.max(maxBody, m[1].length)
+        continue
+      }
+      const fm = fenceRe.exec(l)
+      if (fm) { fence = fm[1]; continue }
+      if (l.trim() === marker) break // matching closer
+      const m = /^(:{3,})/.exec(l)
+      if (m) maxBody = Math.max(maxBody, m[1].length)
+    }
+    if (marker.length <= maxBody) {
+      offenders.push(`line ${i + 1}: container '${marker}' (${marker.length}) <= body colon-run ${maxBody}`)
+    }
+  }
+  assert.equal(
+    offenders.length,
+    0,
+    `compare containers that would break the VitePress render:\n${offenders.join('\n')}`,
+  )
+})

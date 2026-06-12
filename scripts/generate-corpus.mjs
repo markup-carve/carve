@@ -17,6 +17,7 @@ let mode = 'scanning'
 let pendingBlocks = { carve: null, html: null }
 let currentLang = null
 let fenceMarker = null
+let compareMarker = null
 let blockLines = []
 
 const finalizePair = () => {
@@ -33,14 +34,17 @@ for (const line of lines) {
     pendingBlocks = { carve: null, html: null }
     continue
   }
-  if (mode === 'scanning' && line.trim() === '::: compare') {
+  const compareOpen = mode === 'scanning' && /^:{3,}\s+compare$/.test(line.trim())
+  if (compareOpen) {
+    compareMarker = line.trim().match(/^(:{3,})/)[1]
     mode = 'in_compare'
     continue
   }
   if (mode === 'in_compare') {
-    if (line.trim() === ':::') {
+    if (line.trim() === compareMarker) {
       finalizePair()
       mode = 'scanning'
+      compareMarker = null
       continue
     }
     const fenceOpen = line.match(/^(`{3,})(carve|html)\s*$/)

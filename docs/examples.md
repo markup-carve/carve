@@ -1352,7 +1352,7 @@ An unclosed run is opaque: an emphasis delimiter or link tail after it is verbat
 
 ## Admonitions
 
-::: compare
+:::: compare
 
 ```carve
 ::: note
@@ -1366,7 +1366,7 @@ Heads up — this is important.
 </aside>
 ```
 
-:::
+::::
 
 Carve renders `:::` blocks by a two-tier rule (PART 9 §12). The eight canonical types — `note`, `tip`, `warning`, `danger`, `info`, `success`, `example`, `quote` — render as `<aside class="admonition {type}">`. Any other identifier (`hint`, `tabs`, `mermaid`, `details`, …) renders as a generic `<div class="{type}">`, the fenced-div primitive the block-extension mechanism builds on. A quoted title after the type becomes a `<p class="admonition-title">` in either tier; the quotes are stripped and never folded into the class.
 
@@ -1384,7 +1384,7 @@ Because the behavior keys to the bare type word, give a purely presentational co
 
 A quoted title on a canonical type renders inside the `<aside>`:
 
-::: compare
+:::: compare
 
 ```carve
 ::: tip "Pro Tip"
@@ -1399,11 +1399,11 @@ Save early, save often.
 </aside>
 ```
 
-:::
+::::
 
 A custom type renders as a generic `<div>` with the literal type as its class.
 
-::: compare
+:::: compare
 
 ```carve
 ::: hint "Heads up"
@@ -1418,9 +1418,9 @@ Custom call-out.
 </div>
 ```
 
-:::
+::::
 
-::: compare
+:::: compare
 
 ```carve
 ::: warning
@@ -1434,11 +1434,11 @@ Mind the gap.
 </aside>
 ```
 
-:::
+::::
 
 An admonition may contain multiple block-level children, including lists and code blocks.
 
-::: compare
+:::: compare
 
 ````carve
 ::: tip
@@ -1459,7 +1459,7 @@ Quick steps:
 </aside>
 ```
 
-:::
+::::
 
 ## Abbreviations
 
@@ -2369,7 +2369,7 @@ A `:::` opener with no type word — bare `:::` or an attributes-only
 the opener's attributes (a typed `::: word` is a two-tier admonition/div
 instead).
 
-::: compare
+:::: compare
 
 ```carve
 :::
@@ -2390,7 +2390,7 @@ A div with attributes.
 </div>
 ```
 
-:::
+::::
 
 ## Definition lists
 
@@ -2891,7 +2891,7 @@ see https://example.com now
 A longer colon fence nests: `::::` contains `:::` blocks, and only a bare
 closer of equal-or-greater length closes a block.
 
-::: compare
+::::: compare
 
 ```carve
 :::: note
@@ -2912,7 +2912,7 @@ Nested.
 </aside>
 ```
 
-:::
+:::::
 
 ## Attribute edge cases
 
@@ -3007,7 +3007,7 @@ On a heading (the attributes attach to the `<h1>`):
 
 On a generic div:
 
-::: compare
+:::: compare
 
 ```carve
 :::{k="{y}"}
@@ -3021,7 +3021,7 @@ body
 </div>
 ```
 
-:::
+::::
 
 On an inline extension (the attributes attach to its output element):
 
@@ -3653,7 +3653,7 @@ text
 
 An admonition (or generic div) with a closer interrupts.
 
-::: compare
+:::: compare
 
 ```carve
 text
@@ -3669,7 +3669,7 @@ body
 </aside>
 ```
 
-:::
+::::
 
 **Carve-out — ordered lists never interrupt.** An ordered marker is too common
 in prose ("see step 2.", "version 1985.", "upgrade to 1. today"), and the only
@@ -3710,7 +3710,7 @@ text
 closer ahead does not interrupt; it stays paragraph text, so a stray marker
 never swallows the rest of the block.
 
-::: compare
+:::: compare
 
 ```carve
 text
@@ -3724,7 +3724,7 @@ body
 body</p>
 ```
 
-:::
+::::
 
 **Carve-out — image excluded.** A bare image is inline content, so it renders
 in the same paragraph, never as its own block.
@@ -3861,7 +3861,7 @@ Likewise an unterminated `:::` opener does not interrupt: with no matching
 closer ahead it is literal text, so a stray `:::` in prose never swallows the
 rest of the block.
 
-::: compare
+:::: compare
 
 ```carve
 Text
@@ -3875,7 +3875,7 @@ stuff
 stuff</p>
 ```
 
-:::
+::::
 
 ## Blockquote lazy continuation
 
@@ -4806,7 +4806,7 @@ para {.c} more
 
 A `::: line-block` block preserves the author's line layout: each soft line break becomes a hard break (`<br>`), a blank line starts a new stanza (`<p>`), and per-line leading whitespace is kept (each leading space serializes as `&nbsp;` in HTML). It renders as a generic `<div class="line-block">`. The `:::` trigger avoids the pipe/table ambiguity of the Pandoc `|` form.
 
-::: compare
+:::: compare
 
 ```carve
 ::: line-block
@@ -4822,11 +4822,11 @@ Violets are blue.</p>
 </div>
 ```
 
-:::
+::::
 
 Leading whitespace is preserved; each leading space becomes a non-breaking space so the indentation is visible without extra CSS.
 
-::: compare
+:::: compare
 
 ```carve
 ::: line-block
@@ -4842,11 +4842,11 @@ Roses are red,
 </div>
 ```
 
-:::
+::::
 
 A blank line separates stanzas; each stanza is its own paragraph inside the block.
 
-::: compare
+:::: compare
 
 ```carve
 ::: line-block
@@ -4865,11 +4865,11 @@ still one.</p>
 </div>
 ```
 
-:::
+::::
 
 Inline markup inside a line block parses normally; only whitespace and line breaks are special.
 
-::: compare
+:::: compare
 
 ```carve
 ::: line-block
@@ -4885,11 +4885,11 @@ plain line.</p>
 </div>
 ```
 
-:::
+::::
 
 The behavior keys off the `line-block` type word. The attribute-only form `::: {.line-block}` is an ordinary generic div: no hard breaks, no whitespace preservation.
 
-::: compare
+:::: compare
 
 ```carve
 ::: {.line-block}
@@ -4905,4 +4905,4 @@ two</p>
 </div>
 ```
 
-:::
+::::
