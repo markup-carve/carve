@@ -331,7 +331,12 @@ admonition = admonition_open, newline,
              {block - admonition_close}+,
              admonition_close, newline ;
 
-admonition_open = colon_fence, space, admonition_type, [space, quoted_title], [attributes] ;
+(* STRICT (djot): the opener line carries NO inline attributes -- it is
+   colon_fence, type, and an optional quoted title, and NOTHING else. A
+   trailing `{...}` (or any other non-title text) makes the line an
+   ordinary paragraph, not a fence. Attributes attach via a PRECEDING
+   block-attribute line, which floats onto the admonition (§15). *)
+admonition_open = colon_fence, space, admonition_type, [space, quoted_title] ;
 admonition_close = colon_fence ;
 
 admonition_type = "note" | "tip" | "warning" | "danger" | "info"
@@ -343,24 +348,27 @@ admonition_type = "note" | "tip" | "warning" | "danger" | "info"
 quoted_title = '"', {character - '"'}, '"' ;
 
 (* --- Generic Divs (djot generic container; PART 9 §12) --- *)
-(* A `:::` opener with NO type word -- bare `:::` or an attributes-only
-   `::: {…}` -- is a generic div, NOT an admonition. It carries only its
-   own attributes (no class added). Shares the colon-fence closer and the
-   same fence-length nesting rule (PART 9 §12). *)
+(* A BARE `:::` opener with NO type word is a generic div, NOT an
+   admonition (no class added). STRICT (djot): the opener carries NO inline
+   attributes -- an inline `::: {…}` is a paragraph, not a div. Attributes
+   attach via a PRECEDING block-attribute line, which floats onto the div
+   (§15). Shares the colon-fence closer and the fence-length nesting rule
+   (PART 9 §12). *)
 div = div_open, newline, {block - admonition_close}, admonition_close, newline ;
-div_open = colon_fence, [space, attributes] ;
+div_open = colon_fence ;
 
 (* --- Line block (verse) -- a RECOGNIZED `:::` type that preserves the
    author's per-line layout. `::: line-block` renders as a generic
    `<div class="line-block">` (NOT an `<aside>`), but unlike an ordinary div
    its body keeps each line's LEADING WHITESPACE and turns each soft line
    break into a hard break. The `:::` trigger (vs Pandoc/djot's `|`) avoids the
-   pipe/table ambiguity (jgm/djot#29). The attribute-only form
-   `::: {.line-block}` is an ORDINARY generic div (no whitespace handling) --
-   the behavior keys off the `line-block` type word, not the class. Normative
+   pipe/table ambiguity (jgm/djot#29). The behavior keys off the
+   `line-block` TYPE WORD; the inline `::: {.line-block}` form is a
+   PARAGRAPH (strict djot, no inline fence attributes), not a line block.
+   Extra attributes attach via a PRECEDING block-attribute line. Normative
    rendering: PART 9 §23. *)
 line_block = line_block_open, newline, line_block_body, admonition_close, newline ;
-line_block_open = colon_fence, space, "line-block", [attributes] ;
+line_block_open = colon_fence, space, "line-block" ;
 (* The body is a sequence of stanzas separated by blank lines; each stanza is
    a run of consecutive non-blank lines. Inline content parses normally; the
    per-line leading whitespace is retained and the intra-stanza newlines are
@@ -1073,11 +1081,20 @@ EOF = (* end of file *) ;
    12. FENCED ":::" BLOCK RENDERING -- NORMATIVE (governs `admonition`
       and `div` in PART 2; cross-references syntax.md §4.20 "Block
       Extensions"). A TYPED `::: word` block renders by a TWO-TIER rule
-      on the type identifier (below). A `:::` opener with NO type word --
-      bare `:::` or an attributes-only `::: {…}` -- is a GENERIC DIV: a
-      plain `<div>` carrying ONLY the opener's attributes (no class
-      added; an empty div is `<div></div>`), i.e. djot's generic
-      container.
+      on the type identifier (below). A BARE `:::` opener with NO type
+      word is a GENERIC DIV: a plain `<div>` (no class added; an empty div
+      is `<div></div>`), i.e. djot's generic container.
+
+      INLINE OPENER ATTRIBUTES -- STRICT (djot). The opener line carries NO
+      inline attributes: it is the colon fence, an optional type word, and
+      an optional quoted title, and NOTHING else. Any trailing `{...}` (or
+      other non-title text after the type) makes the line an ORDINARY
+      PARAGRAPH, not a fence -- so `::: note {.x}`, `::: {.x}`, and
+      `:::{k=v}` are all paragraphs. To attribute a div or admonition, use
+      a PRECEDING block-attribute line, which floats onto the block (§15):
+      `{.x #id}` then `::: note` yields `<aside class="admonition note x"
+      id="id">`. This matches canonical djot, which rejects any non-class
+      text on the fence line.
 
       FENCE LENGTH & NESTING: a fence is a run of 3+ colons; the same rule
       governs both admonitions and generic divs. A block is closed only by
@@ -1432,12 +1449,13 @@ EOF = (* end of file *) ;
 
    23. LINE BLOCK (VERSE) -- NORMATIVE (governs `line_block` in PART 2). A
       `::: line-block` fenced block preserves the author's per-line layout.
-      - TRIGGER. The `line-block` TYPE WORD on the opener (`::: line-block`,
-        optionally with a trailing attribute block) selects this behavior. The
-        attribute-only form `::: {.line-block}` is an ORDINARY generic div with
-        NO line-block handling -- the class alone does not trigger it.
+      - TRIGGER. The `line-block` TYPE WORD on the opener (`::: line-block`)
+        selects this behavior. STRICT (djot): the opener carries no inline
+        attributes, so the `::: {.line-block}` class form is an ordinary
+        PARAGRAPH, not a line block -- the class alone does not trigger it.
       - WRAPPER. Renders as `<div class="line-block">` (a generic div, never an
-        `<aside>`); a trailing `{…}` merges extra classes / id as on any div.
+        `<aside>`); extra classes / id attach via a PRECEDING block-attribute
+        line, which floats onto the div (§15).
       - LINE BREAKS. Each soft line break inside a stanza becomes a HARD break
         (`<br>`). So consecutive non-blank body lines render as one paragraph
         with `<br>` between them.
