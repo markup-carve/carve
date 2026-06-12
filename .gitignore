@@ -9,3 +9,6 @@ _*
 
 # Superpowers working docs (specs/plans) - never versioned
 docs/superpowers/
+
+# Claude Code local artifacts
+.claude/

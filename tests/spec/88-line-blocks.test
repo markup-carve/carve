@@ -1,0 +1,64 @@
+Line blocks
+
+```
+::: line-block
+Roses are red,
+Violets are blue.
+:::
+.
+<div class="line-block">
+  <p>Roses are red,<br>
+Violets are blue.</p>
+</div>
+```
+
+```
+::: line-block
+Roses are red,
+  Violets are blue.
+:::
+.
+<div class="line-block">
+  <p>Roses are red,<br>
+&nbsp;&nbsp;Violets are blue.</p>
+</div>
+```
+
+```
+::: line-block
+Stanza one,
+still one.
+
+Stanza two.
+:::
+.
+<div class="line-block">
+  <p>Stanza one,<br>
+still one.</p>
+  <p>Stanza two.</p>
+</div>
+```
+
+```
+::: line-block
+*Bold* and /italic/,
+plain line.
+:::
+.
+<div class="line-block">
+  <p><strong>Bold</strong> and <em>italic</em>,<br>
+plain line.</p>
+</div>
+```
+
+```
+::: {.line-block}
+one
+two
+:::
+.
+<div class="line-block">
+  <p>one
+two</p>
+</div>
+```

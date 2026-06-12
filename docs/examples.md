@@ -1370,6 +1370,18 @@ Heads up — this is important.
 
 Carve renders `:::` blocks by a two-tier rule (PART 9 §12). The eight canonical types — `note`, `tip`, `warning`, `danger`, `info`, `success`, `example`, `quote` — render as `<aside class="admonition {type}">`. Any other identifier (`hint`, `tabs`, `mermaid`, `details`, …) renders as a generic `<div class="{type}">`, the fenced-div primitive the block-extension mechanism builds on. A quoted title after the type becomes a `<p class="admonition-title">` in either tier; the quotes are stripped and never folded into the class.
 
+### Recognized `:::` type words
+
+A `::: name` opener's behavior keys off the **type word** (not a class). Only these words are recognized by core; every other word is an ordinary generic `<div class="{word}">` that an extension may give meaning to.
+
+| Type word | Renders as | Special behavior |
+|-----------|-----------|------------------|
+| `note` `tip` `warning` `danger` `info` `success` `example` `quote` | `<aside class="admonition {type}">` | Admonition (PART 9 §12); optional quoted title → `<p class="admonition-title">` |
+| `line-block` | `<div class="line-block">` | Preserves the author's per-line layout / soft breaks (PART 9 §23). Distinct from `::: {.line-block}`, which is an ordinary div with no whitespace handling. |
+| *(any other word)* | `<div class="{word}">` | None in core — generic fenced div; meaning supplied by a Tier-3 extension (e.g. `tabs`, `code-group`, `mermaid`). |
+
+Because the behavior is keyed to the bare word, prefer the class form (`::: {.mybox}`) for purely presentational containers so you never collide with a recognized type word.
+
 A quoted title on a canonical type renders inside the `<aside>`:
 
 ::: compare
@@ -4753,6 +4765,111 @@ para {.c} more
 
 ```html
 <p>para {.c} more</p>
+```
+
+:::
+
+## Line blocks
+
+A `::: line-block` block preserves the author's line layout: each soft line break becomes a hard break (`<br>`), a blank line starts a new stanza (`<p>`), and per-line leading whitespace is kept (each leading space serializes as `&nbsp;` in HTML). It renders as a generic `<div class="line-block">`. The `:::` trigger avoids the pipe/table ambiguity of the Pandoc `|` form.
+
+::: compare
+
+```carve
+::: line-block
+Roses are red,
+Violets are blue.
+:::
+```
+
+```html
+<div class="line-block">
+  <p>Roses are red,<br>
+Violets are blue.</p>
+</div>
+```
+
+:::
+
+Leading whitespace is preserved; each leading space becomes a non-breaking space so the indentation is visible without extra CSS.
+
+::: compare
+
+```carve
+::: line-block
+Roses are red,
+  Violets are blue.
+:::
+```
+
+```html
+<div class="line-block">
+  <p>Roses are red,<br>
+&nbsp;&nbsp;Violets are blue.</p>
+</div>
+```
+
+:::
+
+A blank line separates stanzas; each stanza is its own paragraph inside the block.
+
+::: compare
+
+```carve
+::: line-block
+Stanza one,
+still one.
+
+Stanza two.
+:::
+```
+
+```html
+<div class="line-block">
+  <p>Stanza one,<br>
+still one.</p>
+  <p>Stanza two.</p>
+</div>
+```
+
+:::
+
+Inline markup inside a line block parses normally; only whitespace and line breaks are special.
+
+::: compare
+
+```carve
+::: line-block
+*Bold* and /italic/,
+plain line.
+:::
+```
+
+```html
+<div class="line-block">
+  <p><strong>Bold</strong> and <em>italic</em>,<br>
+plain line.</p>
+</div>
+```
+
+:::
+
+The behavior keys off the `line-block` type word. The attribute-only form `::: {.line-block}` is an ordinary generic div: no hard breaks, no whitespace preservation.
+
+::: compare
+
+```carve
+::: {.line-block}
+one
+two
+:::
+```
+
+```html
+<div class="line-block">
+  <p>one
+two</p>
+</div>
 ```
 
 :::

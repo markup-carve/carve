@@ -53,6 +53,7 @@ block = heading
       | blockquote
       | list
       | table
+      | line_block
       | admonition
       | div
       | comment_block
@@ -348,6 +349,25 @@ quoted_title = '"', {character - '"'}, '"' ;
    same fence-length nesting rule (PART 9 §12). *)
 div = div_open, newline, {block - admonition_close}, admonition_close, newline ;
 div_open = colon_fence, [space, attributes] ;
+
+(* --- Line block (verse) -- a RECOGNIZED `:::` type that preserves the
+   author's per-line layout. `::: line-block` renders as a generic
+   `<div class="line-block">` (NOT an `<aside>`), but unlike an ordinary div
+   its body keeps each line's LEADING WHITESPACE and turns each soft line
+   break into a hard break. The `:::` trigger (vs Pandoc/djot's `|`) avoids the
+   pipe/table ambiguity (jgm/djot#29). The attribute-only form
+   `::: {.line-block}` is an ORDINARY generic div (no whitespace handling) --
+   the behavior keys off the `line-block` type word, not the class. Normative
+   rendering: PART 9 §23. *)
+line_block = line_block_open, newline, line_block_body, admonition_close, newline ;
+line_block_open = colon_fence, space, "line-block", [attributes] ;
+(* The body is a sequence of stanzas separated by blank lines; each stanza is
+   a run of consecutive non-blank lines. Inline content parses normally; the
+   per-line leading whitespace is retained and the intra-stanza newlines are
+   hard breaks (PART 9 §23). *)
+line_block_body = stanza, {blank_line, stanza} ;
+stanza = line_block_line, {line_block_line} ;
+line_block_line = [leading_whitespace], inline_content, newline ;
 
 (* --- Comments --- *)
 comment_line = "%%", {character}, newline ;
@@ -1399,6 +1419,35 @@ EOF = (* end of file *) ;
       - ATTRIBUTES. A forced span MAY carry a trailing `[attributes]` block like
         any bare span: {*x*}{.c} -> <strong class="c">x</strong>.
       (corpus 01-emphasis-12 forced-intraword, 01-emphasis-13 forced-nesting.)
+
+   23. LINE BLOCK (VERSE) -- NORMATIVE (governs `line_block` in PART 2). A
+      `::: line-block` fenced block preserves the author's per-line layout.
+      - TRIGGER. The `line-block` TYPE WORD on the opener (`::: line-block`,
+        optionally with a trailing attribute block) selects this behavior. The
+        attribute-only form `::: {.line-block}` is an ORDINARY generic div with
+        NO line-block handling -- the class alone does not trigger it.
+      - WRAPPER. Renders as `<div class="line-block">` (a generic div, never an
+        `<aside>`); a trailing `{…}` merges extra classes / id as on any div.
+      - LINE BREAKS. Each soft line break inside a stanza becomes a HARD break
+        (`<br>`). So consecutive non-blank body lines render as one paragraph
+        with `<br>` between them.
+      - STANZAS. A blank line ends a stanza; each stanza is its own `<p>` inside
+        the single `<div class="line-block">`.
+      - LEADING WHITESPACE. Each body line's leading whitespace is PRESERVED
+        (unlike ordinary paragraph content, which is trimmed). In HTML each
+        leading space serializes as a NBSP (`&nbsp;`, U+00A0), so indentation is
+        visible with no external CSS (matching Pandoc). Plain-text / ANSI
+        renderers emit the literal spaces. A tab in the leading run follows the
+        existing tab-width rule (PART 9 §1 tab handling).
+      - REFERENCE COLUMN. Leading whitespace is measured RELATIVE TO THE FENCE
+        indent, not absolute column 0: a `line-block` nested in a list has the
+        container's structural indent stripped first (the list dedents to its
+        content column), so only the author's intra-verse indent survives. The
+        `+` first-block form (fence at column 0) is the canonical way to nest a
+        `line-block` without the container consuming indentation.
+      - INLINE CONTENT parses normally (emphasis, links, code, ...); only the
+        whitespace and soft-break handling differ from an ordinary div.
+      (corpus 88-line-blocks*.)
 *)
 
 
