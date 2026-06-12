@@ -17,28 +17,28 @@ syntaxes together instead.
 | Markdown                       | John Gruber            | 2004 | Simplicity, email-style      |
 | Creole                         | WikiCreole             | 2007 | Wiki standardization         |
 | CommonMark                     | John MacFarlane et al. | 2014 | Standardized Markdown        |
-| GitHub Flavored Markdown (GFM) | GitHub                 | 2017 | Extended CommonMark          |
+| GitHub Flavored Markdown (GFM) | GitHub                 | 2017 (formal spec; the flavor dates to ~2009) | Extended CommonMark |
 | Gemtext                        | Solderpunk             | 2019 | Minimalism (Gemini protocol) |
 | Djot                           | John MacFarlane        | 2022 | Predictable parsing          |
 | Carve                          | Mark Scherer           | 2026 | Simple & predictable parsing |
 
 ## Feature Comparison
 
-| Feature | Markdown | CommonMark | GFM | Djot | AsciiDoc | reST |
-|---------|----------|------------|-----|------|----------|------|
-| Strong | `**text**` | `**text**` | `**text**` | `*text*` | `*text*` | `**text**` |
-| Emphasis | `*text*` | `*text*` | `*text*` | `_text_` | `_text_` | `*text*` |
-| Code inline | `` `code` `` | `` `code` `` | `` `code` `` | `` `code` `` | `` `+code+` `` | ``` ``code`` ``` |
-| Strikethrough | - | - | `~~text~~` | - | `[.line-through]#text#` | - |
-| Highlight | - | - | - | `{=text=}` | `#text#` | - |
-| Subscript | - | - | - | `{~text~}` | `~text~` | - |
-| Superscript | - | - | - | `{^text^}` | `^text^` | - |
-| Tables | varies | - | `\| col \|` | `\| col \|` | `\|===` | directives |
-| Task lists | - | - | `- [x]` | `- [x]` | `* [x]` | - |
-| Footnotes | varies | - | - | `[^1]` | `footnote:[]` | `[1]_` |
-| Attributes | - | - | - | `{.class #id}` | `[.class]` | `:class:` |
-| Divs/Admonitions | - | - | - | `:::` | `====` | `.. note::` |
-| Smart quotes | varies | - | - | auto | auto | - |
+| Feature | Markdown | CommonMark | GFM | Djot | AsciiDoc | reST | **Carve** |
+|---------|----------|------------|-----|------|----------|------|-----------|
+| Strong | `**text**` | `**text**` | `**text**` | `*text*` | `*text*` | `**text**` | `*text*` |
+| Emphasis | `*text*` | `*text*` | `*text*` | `_text_` | `_text_` | `*text*` | `/text/` |
+| Code inline | `` `code` `` | `` `code` `` | `` `code` `` | `` `code` `` | `` `code` `` | ``` ``code`` ``` | `` `code` `` |
+| Strikethrough | - | - | `~~text~~` | - | `[.line-through]#text#` | - | `~text~` |
+| Highlight | - | - | - | `{=text=}` | `#text#` | - | `=text=` |
+| Subscript | - | - | - | `{~text~}` | `~text~` | - | `,text,` |
+| Superscript | - | - | - | `{^text^}` | `^text^` | - | `^text^` |
+| Tables | varies | - | `\| col \|` | `\| col \|` | `\|===` | directives | `\| col \|` + spans |
+| Task lists | - | - | `- [x]` | `- [x]` | `* [x]` | - | `- [x]` |
+| Footnotes | varies | - | `[^1]` (deployed; not in the formal spec) | `[^1]` | `footnote:[]` | `[1]_` | `[^1]`, `^[inline]` |
+| Attributes | - | - | - | `{.class #id}` | `[.class]` | `:class:` | `{.class #id}` |
+| Divs/Admonitions | - | - | - | `:::` | `====` | `.. note::` | `::: note` |
+| Smart quotes | varies | - | - | auto | explicit (`` "`text`" ``) | - | auto |
 
 **Notes on the Djot column:**
 
@@ -50,7 +50,7 @@ syntaxes together instead.
 ### Headings
 
 ```
-# Markdown/CommonMark/GFM/Djot
+# Markdown/CommonMark/GFM/Djot/Carve
 
 = AsciiDoc Level 1
 == AsciiDoc Level 2
@@ -65,12 +65,12 @@ Title
 ### Links
 
 ```
-[text](url)                    # Markdown/CommonMark/GFM/Djot
+[text](url)                    # Markdown/CommonMark/GFM/Djot/Carve
 https://url[text]              # AsciiDoc
 `text <url>`_                  # reST
 [[url][text]]                  # Org Mode
 "text":url                     # Textile
-[[url|text]]                   # MediaWiki
+[[Page|text]] / [url text]     # MediaWiki (internal page / external URL)
 [[url|text]]                   # Creole
 => url text                    # Gemtext
 ```
@@ -78,7 +78,7 @@ https://url[text]              # AsciiDoc
 ### Images
 
 ```
-![alt](src)                    # Markdown/CommonMark/GFM/Djot
+![alt](src)                    # Markdown/CommonMark/GFM/Djot/Carve
 image::src[alt]                # AsciiDoc
 .. image:: src                 # reST
    :alt: alt text
@@ -91,7 +91,7 @@ image::src[alt]                # AsciiDoc
 ### Code Blocks
 
 ````
-```language                    # Markdown/GFM/Djot
+```language                    # Markdown/GFM/Djot/Carve
 code
 ```
 
@@ -111,7 +111,7 @@ code
 ### Lists
 
 ```
-- item                         # Markdown/CommonMark/GFM/Djot
+- item                         # Markdown/CommonMark/GFM/Djot/Carve
 * item                         # AsciiDoc/Org Mode
 - item                         # reST (with blank lines)
 * item                         # Textile/MediaWiki/Creole
@@ -183,12 +183,13 @@ code
 |----------|-------------------|-----------|
 | Gemtext | Trivial | ~1 page |
 | Creole | Simple | ~10 pages |
-| Markdown | Ambiguous | ~1 page (original) |
-| CommonMark | Complex | ~600 rules |
-| Djot | Moderate | ~200 rules |
+| Markdown | Ambiguous | informal syntax essay, no formal spec |
+| CommonMark | Complex | large prose spec, ~650 conformance examples |
+| Djot | Moderate | compact prose spec + reference implementation |
 | GFM | Complex | CommonMark + extensions |
 | AsciiDoc | Complex | Large spec |
 | reST | Complex | Large spec |
+| Carve | Moderate | EBNF grammar + semantic constraints + executable corpus |
 
 ## Recommendations
 

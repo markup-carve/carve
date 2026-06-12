@@ -66,7 +66,7 @@ See [[https://example.com/intro | the introduction]] for details.
 - URL-first order is less natural for reading
 - Would need special handling to avoid conflicts
 
-**Decision:** For wiki-style internal links, use collapsed reference syntax `[Page Name][]` instead, which is unambiguous.
+**Decision:** For wiki-style internal links, use collapsed reference syntax `[Page Name][]` instead, which is unambiguous. (A `[[Page Name]]` *heading-reference* form - text-first, no URL - exists as a separate opt-in extension; the rejection here is the URL-first `[[url | text]]` core syntax.)
 
 ---
 
@@ -132,7 +132,7 @@ This is _italic_ text.
 | Alice | 30  |
 ```
 
-**Why rejected:**
+**Why rejected as the primary mechanism:**
 - Extra row adds noise
 - Alignment markers (`:--:`) are cryptic
 - Creole's `|=` is cleaner and more explicit
@@ -140,7 +140,12 @@ This is _italic_ text.
   a *cell*, it also expresses **row headers** (a `<th>` in a body row) - which a
   separator row cannot. See [Tables → Row Headers](./case-study/syntax#row-headers).
 
-**Decision:** `|=` prefix marks header cells directly, no separator row needed.
+**Decision:** `|=` prefix marks header cells directly; no separator row is
+*needed*. **Later amendment:** the GFM separator row *is* accepted as a
+compatibility alias - a delimiter row as the second line of a table marks the
+first row as the header and sets column alignment (pinned by corpus
+`09-tables-3`), so pasted Markdown tables keep working. `|=` remains the
+canonical Carve form and the only way to express row headers.
 
 ---
 
