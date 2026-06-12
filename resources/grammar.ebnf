@@ -1377,6 +1377,14 @@ EOF = (* end of file *) ;
           an attribute block: the `]` and the `{...}` render literally. The
           inner bracket content is still inline-parsed, so `[*x*]{???}` ->
           `[<strong>x</strong>]{???}`.
+        - a name (id, class, or key) that is not a grammar `identifier` (line
+          905) is also unrecognized: a DIGIT-FIRST name (`{.123}`, `{#1}`,
+          `{2=v}`) or a name with a non-identifier character (`{.a!b}`).
+          ONE invalid name makes the WHOLE block not an attribute block, even
+          when mixed with valid attributes (`{.ok .1}`), so the run stays
+          literal. (Deliberate strictness beyond djot, which accepts
+          digit-first identifiers / `class="123"`; see jgm/djot issue 399.)
+          A digit/`-`/`_` AFTER the first character is valid (`{.a1}`).
       The boundary of "yields an attribute" still differs at the margins:
       carve-php additionally accepts bareword booleans (`[text]{kbd}`),
       colon-bearing keys/classes (`{xml:lang="en"}`, `{.sm:hover}`) and

@@ -3257,6 +3257,65 @@ on a heading it stays part of the heading text rather than being dropped.
 
 :::
 
+An attribute name (id, class, or key) is a grammar `identifier`, so it may
+not start with a digit. A name that violates this makes the whole `{…}` not
+an attribute block, so it stays literal. (A deliberate divergence from djot,
+which accepts digit-first identifiers and `class="123"`; see jgm/djot issue
+399.)
+
+::: compare
+
+```carve
+[x]{.123} and [y]{12=v}
+```
+
+```html
+<p>[x]{.123} and [y]{12=v}</p>
+```
+
+:::
+
+A non-identifier character anywhere in the name is just as invalid, and one
+bad name leaves the whole block literal even alongside a valid class.
+
+::: compare
+
+```carve
+[x]{.a!b}
+```
+
+```html
+<p>[x]{.a!b}</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[x]{.ok .1}
+```
+
+```html
+<p>[x]{.ok .1}</p>
+```
+
+:::
+
+A digit, hyphen, or underscore after the first identifier character is fine.
+
+::: compare
+
+```carve
+[x]{.a1 #b2 k3=v}
+```
+
+```html
+<p><span class="a1" id="b2" k3="v">x</span></p>
+```
+
+:::
+
 ## Escape coverage
 
 A backslash escapes any ASCII punctuation character to its literal form. This
