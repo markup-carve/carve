@@ -37,3 +37,13 @@ content
   <p>content</p>
 </div>
 ```
+
+```
+::: 123
+not a div
+:::
+.
+<p>::: 123
+not a div
+:::</p>
+```

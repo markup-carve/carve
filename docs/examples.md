@@ -2486,6 +2486,27 @@ content
 
 ::::
 
+A grammar identifier cannot start with a digit, so a digit-first token is
+not a valid type word: the opener is an ordinary paragraph (a `class="123"`
+would also be invalid CSS). This is a deliberate divergence from djot,
+which would accept it.
+
+:::: compare
+
+```carve
+::: 123
+not a div
+:::
+```
+
+```html
+<p>::: 123
+not a div
+:::</p>
+```
+
+::::
+
 ## Definition lists
 
 `:: term` (one or more) then `:  definition` (one or more) form an entry,
