@@ -206,6 +206,7 @@ export default defineConfig({
         items: [
           { text: 'Technical Rationale', link: '/technical-rationale' },
           { text: 'Divergence from Djot', link: '/divergence-from-djot' },
+          { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
           { text: 'Extensions Contract', link: '/extensions' },
           { text: 'Implementation Comparison', link: '/implementation-comparison' },
           { text: 'Formal Grammar', link: '/grammar' },
@@ -241,6 +242,7 @@ export default defineConfig({
         items: [
           { text: 'Technical Rationale', link: '/technical-rationale' },
           { text: 'Divergence from Djot', link: '/divergence-from-djot' },
+          { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
           { text: 'Extensions Contract', link: '/extensions' },
           { text: 'Implementation Comparison', link: '/implementation-comparison' },
           { text: 'Formal Grammar', link: '/grammar' },
