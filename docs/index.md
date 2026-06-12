@@ -13,6 +13,9 @@ hero:
       text: Try Carve →
       link: /playground
     - theme: alt
+      text: Get Started
+      link: /get-started
+    - theme: alt
       text: View on GitHub
       link: https://github.com/markup-carve
 
