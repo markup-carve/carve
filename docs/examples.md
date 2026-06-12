@@ -1370,6 +1370,18 @@ Heads up — this is important.
 
 Carve renders `:::` blocks by a two-tier rule (PART 9 §12). The eight canonical types — `note`, `tip`, `warning`, `danger`, `info`, `success`, `example`, `quote` — render as `<aside class="admonition {type}">`. Any other identifier (`hint`, `tabs`, `mermaid`, `details`, …) renders as a generic `<div class="{type}">`, the fenced-div primitive the block-extension mechanism builds on. A quoted title after the type becomes a `<p class="admonition-title">` in either tier; the quotes are stripped and never folded into the class.
 
+### Recognized `:::` type words
+
+A `::: name` opener's behavior keys off the **type word** (not a class). Only these words are recognized by core; every other word is an ordinary generic `<div class="{word}">` that an extension may give meaning to.
+
+| Type word | Renders as | Special behavior |
+|-----------|-----------|------------------|
+| `note` `tip` `warning` `danger` `info` `success` `example` `quote` | `<aside class="admonition {type}">` | Admonition (PART 9 §12); optional quoted title → `<p class="admonition-title">` |
+| `line-block` | `<div class="line-block">` | Preserves the author's per-line layout / soft breaks (PART 9 §23). Distinct from `::: {.line-block}`, which is an ordinary div with no whitespace handling. |
+| *(any other word)* | `<div class="{word}">` | None in core — generic fenced div; meaning supplied by a Tier-3 extension (e.g. `tabs`, `code-group`, `mermaid`). |
+
+Because the behavior is keyed to the bare word, prefer the class form (`::: {.mybox}`) for purely presentational containers so you never collide with a recognized type word.
+
 A quoted title on a canonical type renders inside the `<aside>`:
 
 ::: compare
