@@ -159,7 +159,11 @@ function renderInline(node) {
     }
 }
 function normalize(text) {
-    return `${text.replace(/\n{3,}/g, '\n\n').trim()}\n`;
+    // The internal non-breaking-space placeholder (U+E000) collapses to an
+    // ordinary space in plain text. Done after trimming so placeholder-derived
+    // leading indentation (e.g. in a line block) survives; a literal U+00A0 in
+    // the author's text is left intact.
+    return `${text.replace(/\n{3,}/g, '\n\n').trim()}\n`.replace(/\ue000/g, ' ');
 }
 function cleanEscapedText(node) {
     const span = node.pos?.startOffset !== undefined && node.pos.endOffset !== undefined
@@ -167,7 +171,7 @@ function cleanEscapedText(node) {
         : undefined;
     return (span !== undefined && span > node.value.length
         ? node.value.replace(/[*#_]/g, '')
-        : node.value).replace(/\u00a0/g, ' ');
+        : node.value);
 }
 function isLegacyDefinitionParagraph(node) {
     return (node.children.length === 3 &&

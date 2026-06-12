@@ -271,7 +271,7 @@ function cleanEscapedText(node) {
         : undefined;
     return (span !== undefined && span > node.value.length
         ? node.value.replace(/[*#_]/g, '')
-        : node.value).replace(/\u00a0/g, ' ');
+        : node.value);
 }
 function isLegacyDefinitionParagraph(node) {
     return (node.children.length === 3 &&
@@ -287,7 +287,13 @@ function legacyDefinitionParts(node) {
     ];
 }
 function normalize(text) {
-    return `${text.replace(/\n{3,}/g, '\n\n').trim()}\n`;
+    // The internal non-breaking-space placeholder (U+E000) becomes a literal
+    // non-breaking space (U+00A0). Markdown is a re-parseable round-trip format,
+    // so unlike the display renderers it keeps the real nbsp: it survives a
+    // re-render as `&nbsp;` and is never mistaken for an indented code-block
+    // prefix the way ordinary leading spaces would be. Done after trimming so
+    // placeholder-derived leading indentation survives.
+    return `${text.replace(/\n{3,}/g, '\n\n').trim()}\n`.replace(/\ue000/g, '\u00a0');
 }
 function walkBlocks(blocks, visit) {
     for (const block of blocks) {

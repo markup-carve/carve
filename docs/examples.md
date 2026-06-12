@@ -2468,6 +2468,24 @@ not a div
 
 ::::
 
+The type word is a grammar identifier, so it may start with an underscore.
+
+:::: compare
+
+```carve
+::: _box
+content
+:::
+```
+
+```html
+<div class="_box">
+  <p>content</p>
+</div>
+```
+
+::::
+
 ## Definition lists
 
 `:: term` (one or more) then `:  definition` (one or more) form an entry,
