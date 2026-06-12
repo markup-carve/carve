@@ -5,7 +5,8 @@ Generic divs
 A plain box.
 :::
 
-::: {#s .sidebar}
+{#s .sidebar}
+:::
 A div with attributes.
 :::
 .
@@ -15,4 +16,14 @@ A div with attributes.
 <div id="s" class="sidebar">
   <p>A div with attributes.</p>
 </div>
+```
+
+```
+::: {.sidebar}
+not a div
+:::
+.
+<p>::: {.sidebar}
+not a div
+:::</p>
 ```

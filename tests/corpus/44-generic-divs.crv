@@ -2,6 +2,7 @@
 A plain box.
 :::
 
-::: {#s .sidebar}
+{#s .sidebar}
+:::
 A div with attributes.
 :::

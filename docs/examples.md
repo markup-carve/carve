@@ -1419,10 +1419,10 @@ A `::: name` opener's behavior keys off the **type word** (not a class). Only th
 | Type word | Renders as | Special behavior |
 |-----------|-----------|------------------|
 | `note` `tip` `warning` `danger` `info` `success` `example` `quote` | `<aside class="admonition {type}">` | Admonition (PART 9 §12); optional quoted title → `<p class="admonition-title">` |
-| `\|` (pipe) | `<div class="line-block">` | Line block - preserves the author's per-line layout / soft breaks (PART 9 §23). The token is the pipe, not a word; the class alone (`::: {.line-block}`) does not trigger it. |
-| *(any other word)* | `<div class="{word}">` | None in core — generic fenced div; meaning supplied by a Tier-3 extension (e.g. `tabs`, `code-group`, `mermaid`). |
+| `\|` (pipe) | `<div class="line-block">` | Line block - preserves the author's per-line layout / soft breaks (PART 9 §23). The token is the pipe, not a word; an inline `::: {.line-block}` is not a fence at all (strict djot) but an ordinary paragraph. |
+| *(any other word)* | `<div class="{word}">` | None in core, a generic fenced div; meaning supplied by a Tier-3 extension (e.g. `tabs`, `code-group`, `mermaid`). |
 
-Because the behavior keys to the bare type word, give a purely presentational container a class on an **attribute line before the opener** — `{.mybox}` then `:::` — so you never collide with a recognized type word. (An inline `::: {.mybox}` on the opener also works, but the attribute-line form keeps the rendered `class` clean.)
+Because the behavior keys to the bare type word, give a purely presentational container a class on an **attribute line before the opener** (`{.mybox}` then `:::`) so you never collide with a recognized type word. The `:::` fence takes no inline attributes (strict djot), so an inline `::: {.mybox}` is a paragraph, not a div.
 
 A quoted title on a canonical type renders inside the `<aside>`:
 
@@ -2420,10 +2420,10 @@ Text[^a]{.ref}.
 
 ## Generic divs
 
-A `:::` opener with no type word — bare `:::` or an attributes-only
-`::: {…}` — is djot's generic container: a plain `<div>` carrying only
-the opener's attributes (a typed `::: word` is a two-tier admonition/div
-instead).
+A bare `:::` opener with no type word is djot's generic container: a plain
+`<div>` (a typed `::: word` is a two-tier admonition/div instead). The
+fence line carries no inline attributes (strict djot); to attribute a div,
+put a `{…}` block-attribute line before the opener, which floats onto it.
 
 :::: compare
 
@@ -2432,7 +2432,8 @@ instead).
 A plain box.
 :::
 
-::: {#s .sidebar}
+{#s .sidebar}
+:::
 A div with attributes.
 :::
 ```
@@ -2444,6 +2445,25 @@ A div with attributes.
 <div id="s" class="sidebar">
   <p>A div with attributes.</p>
 </div>
+```
+
+::::
+
+An inline attribute block on the fence line is **not** a div: the opener is
+an ordinary paragraph (matching canonical djot).
+
+:::: compare
+
+```carve
+::: {.sidebar}
+not a div
+:::
+```
+
+```html
+<p>::: {.sidebar}
+not a div
+:::</p>
 ```
 
 ::::
@@ -3061,12 +3081,14 @@ On a heading (the attributes attach to the `<h1>`):
 
 :::
 
-On a generic div:
+On a generic div (via a preceding block-attribute line; the `:::` fence
+itself takes no inline attributes):
 
 :::: compare
 
 ```carve
-:::{k="{y}"}
+{k="{y}"}
+:::
 body
 :::
 ```
@@ -4943,7 +4965,7 @@ plain line.</p>
 
 ::::
 
-The behavior keys off the `|` type token on the opener, not the class. The attribute-only form `::: {.line-block}` is an ordinary generic div: no hard breaks, no whitespace preservation.
+The behavior keys off the `|` type token on the opener, not the class. The inline `::: {.line-block}` class form is not a fence at all (strict djot: no inline attributes on the opener), so it renders as an ordinary paragraph (no div, no hard breaks).
 
 :::: compare
 
@@ -4955,10 +4977,10 @@ two
 ```
 
 ```html
-<div class="line-block">
-  <p>one
-two</p>
-</div>
+<p>::: {.line-block}
+one
+two
+:::</p>
 ```
 
 ::::

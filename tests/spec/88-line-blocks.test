@@ -57,8 +57,8 @@ one
 two
 :::
 .
-<div class="line-block">
-  <p>one
-two</p>
-</div>
+<p>::: {.line-block}
+one
+two
+:::</p>
 ```
