@@ -1419,7 +1419,7 @@ A `::: name` opener's behavior keys off the **type word** (not a class). Only th
 | Type word | Renders as | Special behavior |
 |-----------|-----------|------------------|
 | `note` `tip` `warning` `danger` `info` `success` `example` `quote` | `<aside class="admonition {type}">` | Admonition (PART 9 §12); optional quoted title → `<p class="admonition-title">` |
-| `line-block` | `<div class="line-block">` | Preserves the author's per-line layout / soft breaks (PART 9 §23). Distinct from `::: {.line-block}`, which is not a fence at all (strict djot) but an ordinary paragraph. |
+| `\|` (pipe) | `<div class="line-block">` | Line block - preserves the author's per-line layout / soft breaks (PART 9 §23). The token is the pipe, not a word; an inline `::: {.line-block}` is not a fence at all (strict djot) but an ordinary paragraph. |
 | *(any other word)* | `<div class="{word}">` | None in core, a generic fenced div; meaning supplied by a Tier-3 extension (e.g. `tabs`, `code-group`, `mermaid`). |
 
 Because the behavior keys to the bare type word, give a purely presentational container a class on an **attribute line before the opener** (`{.mybox}` then `:::`) so you never collide with a recognized type word. The `:::` fence takes no inline attributes (strict djot), so an inline `::: {.mybox}` is a paragraph, not a div.
@@ -4882,12 +4882,12 @@ para {.c} more
 
 ## Line blocks
 
-A `::: line-block` block preserves the author's line layout: each soft line break becomes a hard break (`<br>`), a blank line starts a new stanza (`<p>`), and per-line leading whitespace is kept (each leading space serializes as `&nbsp;` in HTML). It renders as a generic `<div class="line-block">`. The `:::` trigger avoids the pipe/table ambiguity of the Pandoc `|` form.
+A `::: |` block preserves the author's line layout: each soft line break becomes a hard break (`<br>`), a blank line starts a new stanza (`<p>`), and per-line leading whitespace is kept (each leading space serializes as `&nbsp;` in HTML). It renders as a generic `<div class="line-block">`. The pipe is the block's type token on the `:::` opener - not a per-line prefix - so it is free of the pipe/table ambiguity of the Pandoc per-line `|` form, with no English keyword.
 
 :::: compare
 
 ```carve
-::: line-block
+::: |
 Roses are red,
 Violets are blue.
 :::
@@ -4907,7 +4907,7 @@ Leading whitespace is preserved; each leading space becomes a non-breaking space
 :::: compare
 
 ```carve
-::: line-block
+::: |
 Roses are red,
   Violets are blue.
 :::
@@ -4927,7 +4927,7 @@ A blank line separates stanzas; each stanza is its own paragraph inside the bloc
 :::: compare
 
 ```carve
-::: line-block
+::: |
 Stanza one,
 still one.
 
@@ -4950,7 +4950,7 @@ Inline markup inside a line block parses normally; only whitespace and line brea
 :::: compare
 
 ```carve
-::: line-block
+::: |
 *Bold* and /italic/,
 plain line.
 :::
@@ -4965,7 +4965,7 @@ plain line.</p>
 
 ::::
 
-The behavior keys off the `line-block` type word. The inline `::: {.line-block}` class form is not a fence at all (strict djot: no inline attributes on the opener), so it renders as an ordinary paragraph (no div, no hard breaks).
+The behavior keys off the `|` type token on the opener, not the class. The inline `::: {.line-block}` class form is not a fence at all (strict djot: no inline attributes on the opener), so it renders as an ordinary paragraph (no div, no hard breaks).
 
 :::: compare
 

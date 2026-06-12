@@ -64,7 +64,7 @@ const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 // block-attribute line.
 const RE_ADMONITION_OPEN = /^(:{3,})\s*([a-zA-Z][\w-]*)\s*("[^"]*")?\s*$/;
 const RE_ADMONITION_CLOSE = /^(:{3,})\s*$/;
-const RE_LINE_BLOCK_OPEN = /^(:{3,})[ \t]+line-block[ \t]*$/;
+const RE_LINE_BLOCK_OPEN = /^(:{3,})[ \t]+\|[ \t]*$/;
 // Generic fenced div: a bare `:::` opener with NO type word (djot's generic
 // container). A typed `::: word` routes to parseAdmonition. An inline
 // `::: {.class}` is NOT a div (strict djot) -- use a preceding attribute

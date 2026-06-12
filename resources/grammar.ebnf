@@ -358,17 +358,18 @@ div = div_open, newline, {block - admonition_close}, admonition_close, newline ;
 div_open = colon_fence ;
 
 (* --- Line block (verse) -- a RECOGNIZED `:::` type that preserves the
-   author's per-line layout. `::: line-block` renders as a generic
+   author's per-line layout. `::: |` renders as a generic
    `<div class="line-block">` (NOT an `<aside>`), but unlike an ordinary div
    its body keeps each line's LEADING WHITESPACE and turns each soft line
-   break into a hard break. The `:::` trigger (vs Pandoc/djot's `|`) avoids the
-   pipe/table ambiguity (jgm/djot#29). The behavior keys off the
-   `line-block` TYPE WORD; the inline `::: {.line-block}` form is a
-   PARAGRAPH (strict djot, no inline fence attributes), not a line block.
-   Extra attributes attach via a PRECEDING block-attribute line. Normative
-   rendering: PART 9 §23. *)
+   break into a hard break. The type token is a bare pipe `|` on the opener --
+   NOT a per-line prefix -- so it is free of the pipe/table ambiguity of the
+   Pandoc/djot per-line `|` form, and uses no English keyword (jgm/djot#29).
+   The behavior keys off the `|` token. STRICT (djot): the opener carries no
+   inline attributes, so the inline `::: {.line-block}` form is a PARAGRAPH, not
+   a line block; extra attributes attach via a PRECEDING block-attribute line.
+   Normative rendering: PART 9 §23. *)
 line_block = line_block_open, newline, line_block_body, admonition_close, newline ;
-line_block_open = colon_fence, space, "line-block" ;
+line_block_open = colon_fence, space, "|" ;
 (* The body is a sequence of stanzas separated by blank lines; each stanza is
    a run of consecutive non-blank lines. Inline content parses normally; the
    per-line leading whitespace is retained and the intra-stanza newlines are
@@ -1448,11 +1449,11 @@ EOF = (* end of file *) ;
       (corpus 01-emphasis-12 forced-intraword, 01-emphasis-13 forced-nesting.)
 
    23. LINE BLOCK (VERSE) -- NORMATIVE (governs `line_block` in PART 2). A
-      `::: line-block` fenced block preserves the author's per-line layout.
-      - TRIGGER. The `line-block` TYPE WORD on the opener (`::: line-block`)
-        selects this behavior. STRICT (djot): the opener carries no inline
-        attributes, so the `::: {.line-block}` class form is an ordinary
-        PARAGRAPH, not a line block -- the class alone does not trigger it.
+      `::: |` fenced block preserves the author's per-line layout.
+      - TRIGGER. A bare pipe `|` TYPE TOKEN on the opener (`::: |`) selects this
+        behavior. The token is a pipe, not a word. STRICT (djot): the opener
+        carries no inline attributes, so the `::: {.line-block}` class form is an
+        ordinary PARAGRAPH, not a line block -- the class alone does not trigger it.
       - WRAPPER. Renders as `<div class="line-block">` (a generic div, never an
         `<aside>`); extra classes / id attach via a PRECEDING block-attribute
         line, which floats onto the div (§15).

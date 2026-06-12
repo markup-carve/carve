@@ -47,7 +47,7 @@ code block
 body                          info success example quote)
 :::
 
-::: line-block               (preserves per-line layout)
+::: |                        (preserves per-line layout)
 Roses are red,
   Violets are blue.
 :::

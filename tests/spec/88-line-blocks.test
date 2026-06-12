@@ -1,7 +1,7 @@
 Line blocks
 
 ```
-::: line-block
+::: |
 Roses are red,
 Violets are blue.
 :::
@@ -13,7 +13,7 @@ Violets are blue.</p>
 ```
 
 ```
-::: line-block
+::: |
 Roses are red,
   Violets are blue.
 :::
@@ -25,7 +25,7 @@ Roses are red,
 ```
 
 ```
-::: line-block
+::: |
 Stanza one,
 still one.
 
@@ -40,7 +40,7 @@ still one.</p>
 ```
 
 ```
-::: line-block
+::: |
 *Bold* and /italic/,
 plain line.
 :::
