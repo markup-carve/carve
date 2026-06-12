@@ -172,10 +172,10 @@ Carve takes its rationale from Djot and Markdown, and extends both:
     - `^super^` - caret points up
     - `,sub,` - comma pulls down
 
-14. **Five-Second Rule** - Syntax should be:
-    - Learnable in 5 seconds for basic use
-    - Memorable after 5 days without use
-    - Unambiguous within 5 characters of context
+14. **Ten-Second Rule** - Syntax should be:
+    - Learnable in 10 seconds for basic use
+    - Memorable after 10 days without use
+    - Unambiguous within 10 characters of context
 
 15. **Cross-references** - `</#id>` auto-fills its link text from the target heading (neither Markdown nor Djot offers this natively)
 

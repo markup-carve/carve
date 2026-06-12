@@ -24,8 +24,8 @@ features:
     details: "/italic/ slashes lean, *bold* asterisks are heavy, _underline_ sits below, ~strikethrough~ runs through. Syntax that looks like its output."
   - title: Linear-Time Rigor
     details: Djot-style linear-time parsing with no backtracking, unambiguous rules — extended with captions, abbreviations, and social conventions.
-  - title: Five-Second Rule
-    details: Learnable in 5 seconds for basic use. Memorable after 5 days without practice. Unambiguous within 5 characters of context.
+  - title: Ten-Second Rule
+    details: Learnable in 10 seconds for basic use. Memorable after 10 days without practice. Unambiguous within 10 characters of context.
   - title: Captions Everywhere
     details: One ^ prefix adds captions to images, blockquotes, and tables — emitting semantic figure / figcaption / caption HTML.
   - title: Friendly Tables

@@ -224,12 +224,12 @@ From teaching Markdown to non-programmers:
 5. **Emphasis** - "Do I use one or two asterisks?"
 6. **Escaping** - Not knowing why their `*` became italic
 
-### 2.3 The "Five-Second Rule"
+### 2.3 The "Ten-Second Rule"
 
 A good syntax should be:
-- **Learnable in 5 seconds** for basic use
-- **Memorable after 5 days** without use
-- **Unambiguous within 5 characters** of context
+- **Learnable in 10 seconds** for basic use
+- **Memorable after 10 days** without use
+- **Unambiguous within 10 characters** of context
 
 ---
 

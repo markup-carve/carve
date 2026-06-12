@@ -99,7 +99,7 @@ used `+` as a bullet (most don't).
 | Subscript | `~text~` | `,text,` (comma pulls down) |
 
 **Why.** Carve targets non-technical authors too. Syntax that resembles its
-output is learnable in seconds and memorable after weeks away - the "five-second
+output is learnable in seconds and memorable after weeks away - the "ten-second
 rule." It is a source-compatibility break with Djot, but a small, teachable one.
 
 ::: warning One delimiter flips meaning
