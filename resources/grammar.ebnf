@@ -14,6 +14,8 @@
    - [x]     = optional (0 or 1)
    - {x}     = repetition (0 or more)
    - x+      = repetition (1 or more)
+   - {x}+    = repetition (1 or more) -- same as x+, used where the repeated
+               unit is a group
    - x - y   = exception (x but not y)
    - (x)     = grouping
 
@@ -41,7 +43,10 @@ frontmatter = frontmatter_open, frontmatter_content, frontmatter_close, newline 
    ...); a bare `---` defaults to `yaml`. The space before the token is OPTIONAL
    (lenient: both `---yaml` and `--- yaml` are accepted; `---yaml` is canonical).
    The closing delimiter is always a bare `---`. The token distinguishes a typed
-   opener from a thematic break. *)
+   opener from a thematic break. A BARE `---` at document start is frontmatter
+   only when a closing `---` line exists ahead (closer lookahead, same model as
+   PART 9 §10); with no closer the line is an ordinary thematic break and the
+   following lines are ordinary blocks. *)
 frontmatter_open = "---", [space], [frontmatter_format], newline ;
 frontmatter_close = "---", newline ;
 frontmatter_format = (letter | digit)+ ;
@@ -57,14 +62,23 @@ block = heading
       | admonition
       | div
       | comment_block
+      | comment_line
       | raw_block
+      | reference_definition
+      | footnote_definition
+      | abbreviation_definition
       | paragraph
       | block_attributes
       | blank_line ;
 (* `block_attributes` is a standalone block-level line that renders
    nothing on its own; it attaches to a following block. Its precise
    reach (floating across blank lines), accumulation, and drop-if-dangling
-   semantics are NOT context-free -- they are pinned in PART 9 §15. *)
+   semantics are NOT context-free -- they are pinned in PART 9 §15.
+   `comment_line`, `reference_definition`, `footnote_definition` and
+   `abbreviation_definition` are the INVISIBLE blocks: they are parsed and
+   consumed (collected into the definition table / dropped) and emit no
+   output; like `block_attributes` they also interrupt an open paragraph
+   (PART 9 §10, INVISIBLE CONSTRUCTS). *)
 
 blank_line = {whitespace}, newline ;
 
@@ -80,21 +94,32 @@ blank_line = {whitespace}, newline ;
    meaning"). *)
 heading = atx_heading ;
 
-atx_heading = heading_marker, space, inline_content, {heading_continuation_line}, [attributes], newline ;
+atx_heading = heading_first_line, {heading_continuation_line} ;
+heading_first_line = heading_marker, space, inline_content, newline ;
 heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
 
 (* MULTI-LINE HEADINGS -- NORMATIVE (like Djot; consistent with lazy blockquote
    continuation and §10 hard-wrap-friendly paragraphs). A heading's text spills
    onto following lines until a blank line. A continuation line:
-     - may carry the SAME-or-LOWER number of `#` markers (stripped) or none,
+     - may carry SAME-or-LOWER number of `#` markers (stripped) or none,
        and its text is appended to the heading;
-     - a HIGHER/other heading marker starts a NEW heading (ends this one);
+     - a heading marker with MORE `#` than the open heading starts a NEW
+       heading (ends this one);
      - a caption (`^ ` ...) or a fenced comment (`%%%`) ends the heading;
      - a blank line ends it.
    Per §10 no other block (list/quote/fence marker, etc.) interrupts it. The
-   heading id is derived from the full folded text; a trailing [attributes]
-   block on the final line applies to the whole heading. *)
-heading_continuation_line = inline_content, newline ;  (* see the NORMATIVE note above *)
+   heading id is derived from the full folded text.
+   NO TRAILING ATTRIBUTES (djot-strict). A heading line carries NO trailing
+   `{...}` attribute block: a `{...}` at the end of a heading line is ordinary
+   inline content (literal text unless it forms an inline construct), and the
+   id derives from the full literal text. Attributes attach via a PRECEDING
+   block-attribute line (PART 9 §15), the uniform block rule; an explicit
+   `#id` from that line lives on the `<section>` wrapper (PART 9 §13).
+   Pinned by corpus 02-headings (the preceding-line and literal-trailing
+   pairs). *)
+heading_continuation_line = [heading_marker, space], inline_content, newline ;
+   (* the optional marker must be same-or-lower than the open heading's --
+      see the NORMATIVE note above *)
 
 (* HEADING IDENTIFIERS -- NORMATIVE. A heading without an explicit {#id} gets an
    automatic identifier from its folded plain text (symbols `:name:` and footnote
@@ -119,7 +144,7 @@ thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '
 
 (* --- Code Blocks --- *)
 code_block = fenced_code_block, [caption] ;
-(* A trailing caption (PART 8 §4) wraps the code block in a figure: a
+(* A trailing caption (PART 9 §4) wraps the code block in a figure: a
    numbered LISTING. The caption may carry a `#` number placeholder, and a
    `</#id>` to the block resolves to "Listing N" (PART 9 §19). *)
 
@@ -167,7 +192,8 @@ code_content = (* any text until matching fence, preserved literally *) ;
    only). Matches djot / CommonMark. Pinned by corpus tabs-in-code-preserved. *)
 
 (* --- Blockquotes --- *)
-blockquote = blockquote_line+, {lazy_continuation_line}, [caption] ;
+blockquote = blockquote_line, {blockquote_line | lazy_continuation_line}, [caption] ;
+(* marked and lazy lines may interleave: `> a` / lazy / `> b` is ONE quote *)
 blockquote_line = '>', [' '], inline_content, newline ;
 
 (* LAZY CONTINUATION -- NORMATIVE (CommonMark-compatible). After one or more
@@ -187,7 +213,9 @@ lazy_continuation_line = inline_content, newline ;  (* see the NORMATIVE note ab
 list = unordered_list | ordered_list | definition_list ;
 
 unordered_list = unordered_item+ ;
-unordered_item = bullet_marker, [item_attributes], space, list_item_content ;
+unordered_item = bullet_marker, [item_attributes], space, [task_marker], list_item_content ;
+(* the optional task_marker makes the item a TASK item (checkbox); the
+   plain-vs-task axis is a §11 same-list criterion *)
 bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
                                 continuation marker (PART 9 §17); a `+ ` line is
                                 ordinary paragraph text. Deviates from djot. *)
@@ -253,7 +281,10 @@ list_item_content = first_block_content
                   | (inline_content, newline, {list_continuation | nested_list | continuation_marker_block}) ;
 list_continuation = indent, inline_content, newline ;
 nested_list = indent, list ;
-indent = space, space, {space} ;  (* 2+ spaces *)
+indent = whitespace, {whitespace} ;
+(* Indentation is measured in VISUAL COLUMNS (a tab advances to the next
+   multiple of 4 -- CommonMark tab stops); how much indent nests what is NOT
+   a fixed character count -- the content-column rules are PART 9 §24. *)
 (* List continuation marker (Carve addition; see PART 9 §17): a lone `+` at
    the item's marker column attaches the following flush-left block to the
    item with no blank line, keeping the list tight. *)
@@ -281,7 +312,9 @@ definition_continuation = (space, space, space, inline_content, newline)
                         | (backslash, newline, space, space, space, inline_content, newline) ;
 
 (* --- Tables --- *)
-table = table_row+, [caption] ;
+table = standard_row, {table_row}, [caption] ;
+(* a table BEGINS with a standard row; a continuation row only ever follows
+   an existing row (its cells append to the row above -- PART 9 §5) *)
 
 table_row = standard_row | continuation_row ;
 
@@ -302,7 +335,10 @@ colspan_marker = {whitespace}, '<', {whitespace} ;
 
 alignment_marker = '<' | '>' | '~' ;  (* left, right, center *)
 
-cell_content = inline_content - '|' ;  (* no unescaped pipes *)
+cell_content = inline_content ;
+(* SEMANTIC CONSTRAINT (PART 9 §5): cell content may not contain an
+   unescaped `|` outside a code span -- the pipe is the cell separator;
+   the exception is not expressible context-free. *)
 
 (* --- Captions --- *)
 caption = '^', space, inline_content, newline ;
@@ -328,8 +364,9 @@ caption = '^', space, inline_content, newline ;
 colon_fence = ":::", {":"} ;
 
 admonition = admonition_open, newline,
-             {block - admonition_close}+,
+             {block - admonition_close},
              admonition_close, newline ;
+(* the body may be EMPTY, like the generic div's (PART 9 §12) *)
 
 (* STRICT (djot): the opener line carries NO inline attributes -- it is
    colon_fence, type, and an optional quoted title, and NOTHING else. A
@@ -346,6 +383,9 @@ admonition_type = "note" | "tip" | "warning" | "danger" | "info"
                                    rendering rule *)
 
 quoted_title = '"', {character - '"'}, '"' ;
+(* there is NO escape mechanism inside a quoted title -- a title cannot
+   contain a `"`; a line whose title is malformed is an ordinary paragraph
+   (deliberate strictness, unlike `quoted_value` which accepts escapes) *)
 
 (* --- Generic Divs (djot generic container; PART 9 §12) --- *)
 (* A BARE `:::` opener with NO type word is a generic div, NOT an
@@ -376,7 +416,8 @@ line_block_open = colon_fence, space, "|" ;
    hard breaks (PART 9 §23). *)
 line_block_body = stanza, {blank_line, stanza} ;
 stanza = line_block_line, {line_block_line} ;
-line_block_line = [leading_whitespace], inline_content, newline ;
+line_block_line = {whitespace}, inline_content, newline ;
+(* the leading whitespace is PRESERVED in output -- PART 9 §23 *)
 
 (* --- Comments --- *)
 comment_line = "%%", {character}, newline ;
@@ -395,9 +436,16 @@ comment_block_close = "%%%", {'%'} ;  (* must match opener length *)
 inline_comment = "%%", {character - newline} ;
 
 (* --- Raw Blocks --- *)
-raw_block = "```raw", space, format_name, newline,
+raw_block = code_fence_open, "raw", space, format_name, newline,
             raw_content,
-            "```", newline ;
+            code_fence_close, newline ;
+(* The opener is a code fence (backticks or tildes) whose info string is the
+   literal token `raw`, a MANDATORY space, and a format name -- the space
+   separates `raw` from the format (```rawhtml is an ordinary code block with
+   language `rawhtml`). The closer follows the PART 9 §2 rule: same fence
+   character, length >= opener. Content is verbatim; it is emitted UNESCAPED
+   when the format matches the output format (html) and DROPPED otherwise --
+   the block parallel of raw inline (PART 9 §20). *)
 
 format_name = "html" | "latex" | identifier ;
 raw_content = (* any content until closing fence *) ;
@@ -405,11 +453,13 @@ raw_content = (* any content until closing fence *) ;
 (* --- Paragraphs --- *)
 (* A VISIBLE block (heading, list, quote, table, fence, thematic break,
    admonition/div) interrupts a paragraph with no blank line before it
-   (Markdown-like); invisible constructs (reference definitions, comments)
-   interrupt too. This is the semantic constraint PART 9 §10, not a
-   context-free one -- the trailing blank_line here is the paragraph's own
-   terminator, not a precondition for the NEXT block. *)
-paragraph = inline_content+, blank_line ;
+   (Markdown-like); invisible constructs (reference definitions, comments,
+   block-attribute lines) interrupt too. This is the semantic constraint
+   PART 9 §10, not a context-free one. A paragraph is terminated by a blank
+   line, an interrupting block (§10), or end of file -- the optional trailing
+   blank_line here is the paragraph's own terminator, not a precondition for
+   the NEXT block. *)
+paragraph = inline_content+, [blank_line] ;
 
 
 (* ============================================================================
@@ -464,7 +514,12 @@ text_run = (character - special_char)+ ;
 
 special_char = '/' | '*' | '_' | '~' | '^' | '`' | '[' | ']'
              | '!' | '$' | '{' | '}' | '<' | '>' | '@' | '#'
-             | ',' | '=' | ':' | '%' | '\' ;
+             | ',' | '=' | ':' | '%' | '\'
+             | '-' | '.' | '"' | "'" | '(' | '+' ;
+(* the second group are the smart-typography trigger characters (dashes,
+   ellipsis, quotes, `(c)`-family symbols, `+-`): they must be excluded
+   from text_run so the smart_typography productions are reachable; when
+   no pattern matches they are literal_special like any other special *)
 
 (* --- Escaped Characters --- *)
 escaped_char = '\', ascii_punctuation ;
@@ -512,8 +567,21 @@ inline_link = '[', link_text, ']', '(', link_destination, [link_title], ')', [at
 reference_link = '[', link_text, ']', '[', reference_label, ']', [attributes] ;
 collapsed_reference_link = '[', link_text, ']', '[', ']', [attributes] ;
 
-link_text = inline_content - ']' ;
-link_destination = url | ('<', url, '>') ;
+link_text = inline_content ;
+(* SEMANTIC CONSTRAINT: the link text ends at the matching `]` -- the close
+   is balanced-bracket, escape- and code-span-aware (PART 9 §16's rule for
+   inline notes is the same scan); an unescaped bare `]` inside plain text
+   closes it. Not expressible context-free. *)
+link_destination = {(url_char - ')') | unicode_url_char}+ ;
+(* The destination is ANY run of URL characters: absolute (`https://…`),
+   relative (`/path`, `./file`), or a bare fragment (`#section`) -- there is
+   no scheme requirement. It ends at the first whitespace (a following
+   quoted run is the title) or at the first `)`; there is NO balanced-paren
+   rule and NO escape inside the destination (`[x](http://a/b(c))` links to
+   `http://a/b(c` and leaves the second `)` literal) -- percent-encode a
+   literal `)` as `%29`. There is NO angle-bracket-wrapped destination
+   form. *)
+unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
 (* Titles accept double OR single quotes -- a deliberate enhancement
    over djot (which has no single-quote titles; it would fold `'...'`
    into the URL). The non-delimiting quote may appear inside the title. *)
@@ -521,7 +589,7 @@ link_title = space, ('"', {character - '"'}, '"')
            | space, ("'", {character - "'"}, "'") ;
 
 reference_label = {character - ']'}+ ;
-reference_definition = '[', reference_label, ']', ':', space, url, [link_title], newline ;
+reference_definition = '[', reference_label, ']', ':', space, link_destination, [link_title], newline ;
 
 (* --- Inline Spans --- *)
 (* A bracketed inline run immediately followed by an attribute block
@@ -539,7 +607,15 @@ autolink = '<', (url_autolink | email_autolink), '>', [attributes] ;
 url_autolink = scheme, ':', {url_char}+ ;
 email_autolink = {email_char}+, '@', {email_char}+, '.', {letter}+ ;
 
-auto_text_link = "</#", identifier, '>' ;  (* cross-reference with auto text *)
+auto_text_link = "</#", crossref_id, '>' ;  (* cross-reference with auto text *)
+crossref_id = {character - ('>' | whitespace | newline)}+ ;
+(* The crossref id token accepts NON-ASCII characters: automatic heading ids
+   PRESERVE Unicode (`# Café Notes` -> `café-notes`), so `</#café-notes>`
+   must be writable. Resolution is exact (case-sensitive against the id
+   table); an ASCII-folded spelling of a Unicode id does NOT resolve
+   (corpus 19-heading-ids). EXPLICIT ids (`{#id}`) remain ASCII
+   `identifier`s -- the asymmetry is deliberate: authors control explicit
+   ids, auto ids follow the heading text. *)
 
 url = scheme, ':', {url_char}+ ;
 scheme = letter, {letter | digit | '+' | '-' | '.'} ;  (* 1+ chars; single-letter schemes ok *)
@@ -550,11 +626,12 @@ url_char = letter | digit | '-' | '.' | '_' | '~' | ':' | '/' | '?'
 (* --- Images --- *)
 image = '!', '[', alt_text, ']', '(', image_source, [image_title], ')', [attributes] ;
 alt_text = {character - ']'} ;
-image_source = url ;
+image_source = link_destination ;  (* absolute or relative, like links *)
 image_title = link_title ;
 
-(* image with caption follows on next line *)
-image_with_caption = image, newline, caption ;
+(* A caption (`^ ` line) may follow a standalone image paragraph on the
+   next line, wrapping it in a <figure> -- caption placement is PART 9 §4;
+   there is no separate grammar production for the pair. *)
 
 (* --- Math (djot form; PART 9 §18) --- *)
 (* Inline `$` + a verbatim (backtick) span; display `$$` + a verbatim
@@ -574,8 +651,8 @@ math_display = "$$", code_span ;
    Canonical = carve-js / djot.js (pinned, corpus Math section). The
    `{=format}` raw form is code-span-ONLY and is NOT inherited by math:
    `$\`x\`{=html}` leaves the `{=html}` literal (both impls already agree).
-   carve-php currently DROPS valid math attributes -- to be fixed. *)
-math_content = (* verbatim LaTeX, taken from the code_span *) ;
+   carve-php currently DROPS valid math attributes -- to be fixed.
+   The math content is the verbatim text of the reused code_span. *)
 
 (* --- Emphasis (left/right word-boundary rule; PART 9 §9 is normative).
    The word-boundary restriction applies to EVERY bare emphasis delimiter
@@ -662,24 +739,30 @@ highlight_content = (inline_element | text_run | literal_special)+ ;
 
 (* Word boundary rule for emphasis openers/closers (normative: PART 9 §9).
    Applies to EVERY bare delimiter. Forced `{X … X}` spans (PART 9 §22) are
-   exempt. *)
+   exempt. PSEUDO-PRODUCTIONS -- prose conditions, not reachable grammar
+   symbols. *)
 emphasis_open_condition = (* preceding char is whitespace, start, or punctuation but NOT alphanumeric or '_'; following char is non-whitespace *) ;
 emphasis_close_condition = (* preceding char is non-whitespace; following char is NOT alphanumeric *) ;
 
 (* --- Footnotes (PART 9 §16) --- *)
-(* Reference footnotes are implemented: `[^label]` references a
-   `[^label]: body` definition. Numbering (by document reference order)
-   and endnotes rendering are PART 9 §16. The inline-footnote and
-   sidenote forms are DEFERRED -- reserved syntax, not yet implemented. *)
-footnote = reference_footnote ;
+(* Both implemented forms: the REFERENCE form `[^label]` resolving against a
+   `[^label]: body` definition, and the INLINE form `^[content]` (pandoc
+   form; a deliberate carve extension over djot). Numbering (one shared
+   document-order sequence), endnotes rendering, and the inline form's
+   balanced-bracket close are PART 9 §16. PART 8 ranks `^[` ABOVE
+   superscript. Only the sidenote form remains deferred. *)
+footnote = reference_footnote | inline_footnote ;
 reference_footnote = "[^", footnote_label, ']' ;
 footnote_label = {character - ']'}+ ;
+inline_footnote = "^[", inline_content, ']' ;
+(* the closing `]` is the balanced, escape- and code-span-aware close
+   (PART 9 §16); footnote recognition is DISABLED inside the content *)
 
 footnote_definition = "[^", footnote_label, "]:", space, inline_content, newline ;
+(* the body extends to following lines indented by >= 2 spaces -- PART 9 §16 *)
 
 (* DEFERRED (reserved, not implemented):
-   inline_footnote = "[^", inline_content, ']' ;
-   sidenote        = "[>", inline_content, ']' ; *)
+   sidenote = "[>", inline_content, ']' ; *)
 
 (* --- Extensions --- *)
 extension_inline = ':', extension_name, '[', extension_content, ']', [attributes] ;
@@ -709,7 +792,9 @@ mention_name = (letter | digit | '_' | '-')+ ;
 tag = '#', tag_name ;
 tag_name = (letter | digit | '_' | '-')+ ;
 
-(* Boundary rules: must be preceded by whitespace or start of content *)
+(* Boundary rules (PSEUDO-PRODUCTIONS -- prose conditions on `mention` /
+   `tag`, normative in PART 9 §7, not reachable grammar symbols):
+   must be preceded by whitespace or start of content *)
 mention_boundary = (* @name must have word boundary before @ *) ;
 tag_boundary = (* #name must have word boundary before # *) ;
 
@@ -722,10 +807,21 @@ smart_typography = em_dash | en_dash | ellipsis | smart_quote
 em_dash = "---" ;     (* → — *)
 en_dash = "--" ;      (* → – *)
 ellipsis = "..." ;    (* → … *)
+(* HYPHEN RUNS -- a run of 2+ hyphens between non-hyphen characters
+   decomposes djot-style: length divisible by 3 -> all em dashes;
+   else divisible by 2 -> all en dashes; else one em dash (3) and the
+   remainder by the same rule. So `--`=–, `---`=—, `----`=––,
+   `-----`=—–, `------`=——, `-------`=—–– (PART 9 §8). *)
 
-smart_quote = smart_double_quote | smart_single_quote ;
-smart_double_quote = '"', {character - '"'}, '"' ;
-smart_single_quote = "'", {character - "'"}, "'" ;
+smart_quote = '"' | "'" ;
+(* Smart quotes are PER-CHARACTER contextual substitution, NOT a paired
+   span: each `"` / `'` is independently mapped to a left or right
+   typographic quote by its FLANKING characters -- preceded by whitespace
+   or start-of-content -> left (opening) quote; otherwise -> right
+   (closing) quote. An apostrophe (`don't`) is therefore a right single
+   quote; an unpaired quote still converts; the substitution never spans
+   or pairs across other inline constructs. `\"` / `\'` escape to the
+   straight character (PART 9 §8). *)
 
 arrow = "->" | "<-" | "<->" | "=>" ;
 comparison = "!=" | "<=" | ">=" ;
@@ -739,8 +835,11 @@ soft_break = newline ;        (* regular line ending within paragraph *)
    PART 4: ATTRIBUTES
    ============================================================================ *)
 
-attributes = '{', attribute_list, '}' ;
-attribute_list = attribute, {whitespace, attribute} ;
+attributes = '{', opt_ws, attribute_list, opt_ws, '}' ;
+attribute_list = attribute, {whitespace+, attribute} ;
+(* interior padding is accepted: `{ .a }` and `{.a  .b}` are valid inline
+   attribute blocks, same whitespace handling as block_attributes (minus
+   the line-continuation, which is block-level only) *)
 (* RENDER ORDER -- NORMATIVE: attributes are emitted in the order they
    appear in the source, with all classes merged into a single `class`
    attribute placed at the position of the FIRST class. So `{.a #b k=c}`
@@ -782,16 +881,22 @@ continuation = newline, opt_ws ;         (* a single line break + indent; NOT a 
 
 abbreviation_definition = "*[", abbreviation_term, "]:", space, abbreviation_expansion, newline ;
 abbreviation_term = (letter | digit)+ ;
+(* a term is a SINGLE alphanumeric word -- a bracketed term containing
+   punctuation or spaces (`*[e.g.]:`, `*[HTTP API]:`) is NOT a definition;
+   the line stays ordinary paragraph text *)
 abbreviation_expansion = {character - newline}+ ;
 
 (* ============================================================================
    PART 6: INCLUDES
    ============================================================================ *)
 
+(* PROCESSOR-LEVEL (PART 9 §19): includes are NOT part of the core parser
+   and the directive is deliberately NOT reachable from `block`/`inline` --
+   a conformant core may leave `{{ … }}` literal. *)
 include_directive = "{{", space, include_path, [include_section], [include_options], space, "}}" ;
 include_path = {character - ('#' | '@' | '}' | ' ')}+ ;
 include_section = '#', identifier ;
-include_options = {space, '@', identifier, ':', value}+ ;
+include_options = {space, '@', identifier, ':', attribute_value}+ ;
 
 (* ============================================================================
    PART 7: LEXICAL ELEMENTS
@@ -826,24 +931,38 @@ EOF = (* end of file *) ;
    Block parsing precedence (first pass):
    1. Frontmatter (--- delimited at document start)
    2. Comments (%% line, %%% block)
-   3. Code blocks (``` or ~~~ fenced)
+   3. Raw blocks (```raw FORMAT -- matched before ordinary fences),
+      then code blocks (``` or ~~~ fenced)
    4. Headings (# prefix)
    5. Thematic breaks (---, ***, ___)
    6. Block quotes (> prefix)
-   7. Lists (-, *, 1. prefix)
-   8. Tables (| prefix)
-   9. Admonitions (::: delimited)
-   10. Paragraphs (everything else)
+   7. Definitions (link/footnote/abbreviation definition lines) and
+      block-attribute lines ({...} alone on a line, PART 9 §15)
+   8. Lists (-, * bullets at any indent; ordered markers; :: definition
+      lists)
+   9. Tables (| prefix)
+   10. Colon fences (::: -- admonition with type word, line block with |,
+       generic div when bare; longest-token wins: a `::: x` line is never
+       a `:: ` definition term)
+   11. Paragraphs (everything else)
+   Recognition order is NOT interruption: which of these may interrupt an
+   open paragraph is PART 9 §10 (ordered markers, for one, never do).
 
    Inline parsing precedence (second pass):
    1. Escaped characters (\x)
    2. Code spans (`...`)
-   3. Autolinks (<url>)
+   3. Autolinks (<url>) and crossrefs (</#id>)
    4. Inline footnotes (^[content]) -- above emphasis, so `^[` is a note,
       not superscript; see PART 9 §16
-   5. Links and images ([text](url), ![alt](src))
+   5. Links, images, reference footnotes, inline spans
+      ([text](url), ![alt](src), [^label], [text]{attrs} -- the
+      single-char lookahead after `]` selects among them, PART 9 §14;
+      a `[^` run is a footnote reference before bracket scanning)
    6. Math ($`…`, $$`…`)
    7. Emphasis markers (/, *, _, ~, ^, =, ,) and forced spans ({/.../} etc.)
+      -- EXCEPT a delimiter that begins a multi-char smart-typography
+      pattern: `=>` is the arrow, never a highlight opener (the pattern
+      is consumed first; PART 9 §8)
    8. Editorial markup ({+...+}, etc.; {~...~} with `~>` = substitution)
    9. Extensions (:type[content])
    10. Mentions and tags (@user, #tag)
@@ -914,12 +1033,34 @@ EOF = (* end of file *) ;
         EQUATION; its block must be solely the `$$`…`` span)
       - One blank line allowed between block and caption
 
-   5. TABLE CELL CONTENT
-      - Pipes must be escaped (\|) or inside code spans
-      - Span markers (^ <) must be sole cell content
+   5. TABLE CELL CONTENT, ROW VALIDITY, CONTINUATION ROWS
+      - Pipes must be escaped (\|) or inside code spans. Escape processing
+        is cell-splitting-aware: an unescaped `|` outside a code span
+        separates cells; `\|` and a `|` inside a code span are content.
+      - Span markers (^ <) must be sole cell content. A leading `=` on a
+        cell (glued to the `|`) marks a HEADER cell; escape it (`\=`) for a
+        data cell whose text starts with `=`.
+      - VALID TABLE ROW (the §10 interruption test): a line whose first
+        non-indent character is `|` AND whose last non-whitespace character
+        is `|`, with at least one cell between them. A line-initial `|`
+        without the trailing `|` does NOT interrupt a paragraph (it stays
+        prose); at BLOCK START (after a blank line) the trailing `|` is
+        lenient -- a `| a | b` line still opens a table.
+      - CONTINUATION ROWS (`+` first column instead of `|`): a continuation
+        row appends to the row ABOVE it -- each of its non-empty cells is
+        joined onto the corresponding cell of that row (separated by a
+        single space, as a soft wrap); empty cells append nothing. It adds
+        no `<tr>`. Works under rowspan: the joined content belongs to the
+        spanning cell (corpus 40, 41). A table cannot BEGIN with a
+        continuation row (PART 2 `table`).
 
    6. REFERENCE RESOLUTION
       - Reference links [text][ref] resolved to [ref]: url definitions
+      - LABEL MATCHING is EXACT: case-sensitive, no whitespace folding
+        (corpus 73-reference-labels-are-case-sensitive). When the same
+        label is defined twice, the LAST definition wins for links --
+        note the deliberate asymmetry with footnote definitions, where
+        the FIRST wins (§16).
       - Collapsed references [text][] use text as reference label
       - Abbreviations matched at word boundaries only
       - All definitions (link/footnote/abbreviation references, heading IDs)
@@ -988,18 +1129,24 @@ EOF = (* end of file *) ;
       The interrupting blocks:
         - heading            `#`..`######` + space;
         - thematic break     a lone `---` / `***` / `___` line;
-        - block quote        `>`;
+        - block quote        `>` (NOTE: a line-initial `>` is ALWAYS a quote
+                             marker, so a prose line starting `>= 5` becomes a
+                             quote -- escape it, `\>= 5`, to keep it prose);
         - unordered / task   `- ` / `* ` (bullet + space; `- [x] ` task; `+` is
-                             NOT a bullet -- it is the continuation marker, §17);
+                             NOT a bullet -- it is the continuation marker, §17).
+                             A bullet interrupts at ANY INDENTATION (Rule B,
+                             §24): an indented `  - item` line interrupts
+                             exactly like a column-0 one;
         - table row          a `|`...`|` line that is a valid table row
-                             (a stray `|` in prose is NOT -- see §<table>);
+                             (a stray `|` in prose is NOT -- see VALID TABLE
+                             ROW in §5);
         - fenced code        a ``` / ~~~ opener that HAS a matching closer
                              ahead (see CLOSER LOOKAHEAD);
         - admonition / div   a `:::` opener that HAS a matching closer ahead.
       So "Liste: \n - eins \n - zwei" is <p>Liste:</p> + a <ul>; "intro
       \n # H" is <p>intro</p> + <h1>; "x = 5 \n * 3 + 17" is <p>x = 5</p> +
-      <ul><li>3 + 17</li></ul> (corpus 05-lists-6, 05-lists-7, and the
-      Paragraph interruption section).
+      <ul><li>3 + 17</li></ul> (corpus 05-lists-12 and the
+      76-paragraph-interruption family).
       That last case is the ACCEPTED COST of paragraph interruption: a
       hard-wrapped prose line that happens to begin with a bullet-plus-space
       (or `>` / `#` / a valid table row) starts a block. Insert a blank line, or
@@ -1028,10 +1175,13 @@ EOF = (* end of file *) ;
       unterminated-fence and unterminated-`:::` pairs).
 
       INVISIBLE CONSTRUCTS. A reference definition (link `[r]: url`, footnote
-      `[^r]: …`, abbreviation `*[A]: …`) or a comment (`%%` line, `%%%` block)
-      also interrupts a paragraph with no blank line: it is parsed and
-      consumed/collected, rather than left as literal text. So "See[^m].\n[^m]:
-      note" resolves the footnote and "para\n%% x" drops the comment.
+      `[^r]: …`, abbreviation `*[A]: …`), a comment (`%%` line, `%%%` block),
+      or a block-attribute line (`{…}` alone on a line, §15) also interrupts
+      a paragraph with no blank line: it is parsed and consumed/collected,
+      rather than left as literal text. So "See[^m].\n[^m]:
+      note" resolves the footnote, "para\n%% x" drops the comment, and
+      "Para\n{.x}" ends the paragraph with the attribute line floating
+      forward (§15; corpus 84-block-attribute-lines-7).
       (Unchanged from the prior rule; a small deviation from djot, which keeps
       such a line as paragraph text.)
 
@@ -1054,19 +1204,22 @@ EOF = (* end of file *) ;
       adjacent sibling lists. The rules layer; §11 never overrides §10.
       Given two adjacent list items at the same indent that both passed
       §10, they belong to the SAME list only when their marker matches:
-        - same character within `-`, `*`, `+` for unordered;
+        - same character within `-`, `*` for unordered (`+` is NOT a
+          bullet in Carve -- it is the continuation marker, §17);
         - same `ordered_marker` alternative for ordered;
         - same plain-vs-task classification.
       A line whose marker differs from the immediately-preceding item
       on any of those axes starts a new sibling list at the same indent.
-      Matches djot. Example:
+      Matches djot (minus djot's `+` bullet). Example:
         - a              produces:    <ul><li>a</li><li>b</li></ul>
         - b                            <ul><li>c</li><li>d</li></ul>
-        + c
-        + d
+        * c
+        * d
       Same axis for plain-vs-task: `- a` followed by `- [x] b` is two
-      lists (matches djot). Parser stateless w.r.t. marker history -- the
-      rule looks one line back.
+      lists (matches djot). The marker-match rule itself looks only one
+      item back; the ordered DIALECT below additionally carries the
+      first item's classification (and its one-item-forward tie-break)
+      for the rest of the list.
       ORDERED DIALECTS. An ordered list's dialect (decimal / lower- or
       upper-alpha / lower- or upper-roman) and delimiter (`.` or `)`) are
       fixed by its FIRST item; a later item whose marker is outside that
@@ -1272,9 +1425,15 @@ EOF = (* end of file *) ;
         block_attributes). A quoted value containing a literal `}` that
         spans lines is not supported by the reference impls
         (pathological).
-      - The target block's OWN trailing attributes (e.g. a heading's
-        `# H {#x}`, PART 9 §13/§12 carriers) merge with the leading
-        block attributes under the same rules.
+      - NOT AN ATTRIBUTE LIST -> NOT AN ATTRIBUTE LINE: a `{…}` line whose
+        braces do not parse as an attribute list is ordinary paragraph
+        content and follows the normal inline rules (e.g. a `{#a #}` line
+        is an editorial comment, §22 family, not a block-attribute line).
+      - NO block construct takes a trailing `{…}` on its own line
+        (djot-strict; headings, fences and `:::` openers included) --
+        the preceding block-attribute line is the ONLY block-level
+        attribute channel. A trailing `{…}` on a heading line is literal
+        inline content (PART 2, headings).
       Implementation status: carve-php, carve-js, and carve-rs implement §15
       in full -- leading block-attribute lines, float-forward across blank
       lines (including a line that trails a paragraph), accumulation, and
@@ -1367,7 +1526,7 @@ EOF = (* end of file *) ;
         display -> <span class="math display">\[content\]</span>
       `content` is the verbatim span text, HTML-escaped (`&`,`<`,`>`).
       Display math alone on a line renders inside its own paragraph. A
-      standalone display-math block carrying a trailing caption (PART 8 §4)
+      standalone display-math block carrying a trailing caption (PART 9 §4)
       is a numbered EQUATION: the math paragraph is wrapped in a figure and a
       `</#id>` to it resolves to "Equation N" (§19).
       Author `{attrs}` after the span merge onto the <span> (the base
@@ -1390,8 +1549,11 @@ EOF = (* end of file *) ;
         An implementing processor MUST forbid path traversal outside the
         project root, bound recursion depth, and treat includes as opt-in.
 
-   20. RAW INLINE -- NORMATIVE (governs `raw_inline` in PART 3; the inline
-      parallel of `raw_block`). A code span whose trailing attribute block
+   20. RAW PASSTHROUGH -- NORMATIVE (governs `raw_inline` in PART 3 and the
+      semantics of `raw_block` in PART 2). The BLOCK form (```raw FORMAT
+      fence, PART 2) emits its verbatim content UNESCAPED when FORMAT
+      matches the output format and drops it otherwise; the inline form
+      follows. A code span whose trailing attribute block
       is EXACTLY `{=format}` (a single `=`-prefixed format name, with no
       other classes/ids/keys) is raw passthrough: the verbatim span content
       is emitted UNESCAPED when `format` matches the output format (`html`),
@@ -1437,7 +1599,7 @@ EOF = (* end of file *) ;
         <strong>bold</strong></em>.
       - `{~ … ~}` DISAMBIGUATION. The brace pair is editorial SUBSTITUTION when
         it contains a top-level `~>` ({~old~>new~} -> <del>old</del><ins>new
-        </ins>, §16-style), and forced STRIKETHROUGH otherwise ({~old~} ->
+        </ins>), and forced STRIKETHROUGH otherwise ({~old~} ->
         <s>old</s>). The `~>` test is the discriminator.
       - `{= … =}` is forced highlight (<mark>), distinct from the raw-inline
         `{=format}` attribute on a code span (`` `x`{=html} ``), which has no
@@ -1467,7 +1629,7 @@ EOF = (* end of file *) ;
         leading space serializes as a NBSP (`&nbsp;`, U+00A0), so indentation is
         visible with no external CSS (matching Pandoc). Plain-text / ANSI
         renderers emit the literal spaces. A tab in the leading run follows the
-        existing tab-width rule (PART 9 §1 tab handling).
+        tab-stop rule (PART 9 §24).
       - REFERENCE COLUMN. Leading whitespace is measured RELATIVE TO THE FENCE
         indent, not absolute column 0: a `line-block` nested in a list has the
         container's structural indent stripped first (the list dedents to its
@@ -1477,6 +1639,36 @@ EOF = (* end of file *) ;
       - INLINE CONTENT parses normally (emphasis, links, code, ...); only the
         whitespace and soft-break handling differ from an ordinary div.
       (corpus 88-line-blocks*.)
+
+   24. TABS AND INDENTATION -- NORMATIVE (governs `indent` in PART 2 and all
+      indentation-sensitive comparisons). Adjudicated with the tab-stop work
+      (carve #99 / Rule B carve #103); shipped in all three implementations.
+      - COLUMNS, NOT CHARACTERS. Indentation is measured in VISUAL COLUMNS:
+        a tab advances to the next multiple of 4 (CommonMark tab stops), a
+        space advances by 1. A leading tab therefore indents to column 4.
+        Outside indentation (code content, inline text) tabs are PRESERVED
+        verbatim and never expanded (PART 2, TABS IN CODE).
+      - MARKER SEPARATOR IS A SPACE. The required separator after a list
+        marker is a single SPACE character -- a syntax delimiter, not
+        indentation. `-<TAB>a` is NOT a list item (paragraph text).
+      - CONTENT COLUMN. An item's content column is the visual column where
+        its content starts (marker width + separator: `- ` -> 2, `1. ` -> 3,
+        `10. ` -> 4). An ORDERED child marker must reach the parent item's
+        content column to nest; below it, the line folds as lazy item text
+        (ordered markers never interrupt, §10). UNORDERED/TASK bullets and
+        every other block opener (quote, heading, fence, table, ...) nest at
+        ANY indent past the parent item's base column.
+      - RULE B (BULLETS AT ANY INDENT). A bullet (`-`/`*` + space + content)
+        opens a list at ANY indentation, uniformly in every context: at the
+        top level, interrupting an open paragraph (§10), and nested in a
+        list item. There is no column-0 restriction.
+      - DEDENT. When nested content is re-parsed, the container's structural
+        indent is stripped by columns. A tab straddling the dedent boundary
+        is consumed WHOLE on non-marker lines (Carve has no indent-sensitive
+        block below list nesting, so the residual columns never matter);
+        on a LIST-MARKER line the straddling tab's unconsumed columns are
+        re-inserted as spaces, so sibling markers aligned with mixed
+        tab/space indentation keep the same visual column and stay siblings.
 *)
 
 

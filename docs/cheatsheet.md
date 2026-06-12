@@ -65,12 +65,15 @@ Roses are red,
 + continuation cell |        (+ = multi-line cell)
 ```
 
-## Captions (images, quotes, tables)
+## Captions (images, quotes, tables, code listings, equations)
 
 ```carve
 ![Photo](img.jpg)
 ^ Figure 1: Caption text      (one ^ adds a semantic <figcaption>)
 ```
+
+A `^` caption after a fenced code block makes a numbered *listing*; after a
+standalone `$$`-math block, a numbered *equation*.
 
 ## Attributes & metadata
 

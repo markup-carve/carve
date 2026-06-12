@@ -75,7 +75,7 @@ The `^` character has three meanings:
 | Line start after block | Caption | `^ Figure 1` |
 
 **Resolution rules:**
-1. **Caption:** `^` at line start, immediately after image/quote/table
+1. **Caption:** `^` at line start, immediately after image/quote/table/code block/display math
 2. **Rowspan:** `^` as sole content of a table cell (with optional whitespace)
 3. **Superscript:** `^text^` inline with content on both sides
 
@@ -153,11 +153,14 @@ if (x < 5)                     # Literal <
 **Edge case - bold at line start:**
 ```carve
 *This whole line is bold*
-*This is also bold, no closing needed
+*This is NOT bold - no closing delimiter, stays literal
 ```
-Both are bold, not list items, because `*` is NOT followed by whitespace.
+The first line is bold, not a list item, because `*` is NOT followed by
+whitespace. The second stays literal text: an opener without a matching
+closer never emphasizes (corpus `01-emphasis-3`).
 
-List requires `* ` (asterisk + space). Bold opener requires `*` + non-whitespace.
+List requires `* ` (asterisk + space). Bold opener requires `*` + non-whitespace
+AND a valid closer ahead.
 
 ---
 
@@ -277,9 +280,15 @@ stack in a single left-to-right pass: linear time, no backtracking.
 ## 10. Comments (`%%` and `%%%`)
 
 **Line comments:**
-- `%%` must be at **line start** (possibly indented)
-- Rest of line is ignored
-- Inline `%%` in text is literal: `The value is 50%% increase` → literal text
+- `%%` is a comment marker when **preceded by whitespace or at the start of
+  the inline run** (line start counts) — including a *trailing* comment after
+  text: `Visible. %% this tail is a comment` keeps only `Visible.`
+  (corpus `46-comments-2`)
+- The comment runs to the end of the line; it never crosses a line break
+  (corpus `46-comments-6`)
+- Without preceding whitespace `%%` is literal: `The value is 50%% increase`
+  stays literal text — percentages are safe
+- `\%%` (escaped first percent) is literal
 
 **Block comments:**
 - `%%%` must be on **its own line** to open/close
@@ -290,7 +299,9 @@ stack in a single left-to-right pass: linear time, no backtracking.
 ```carve
 %% This is a comment
 
-Text with 50%% is not a comment (not at line start).
+Text with 50%% is not a comment (no whitespace before %%).
+
+Visible text. %% trailing comment, consumed to end of line
 
 %%%
 Block comment with %% inside is fine.
@@ -323,7 +334,9 @@ Inline `*not bold*` and `/not/italic/` are literal.
 
 **Rules:**
 1. Caption `^` must be at **line start**
-2. Must **immediately follow** an image, blockquote, or table
+2. Must **immediately follow** an image, blockquote, table, fenced code block
+   (a captioned code block is a numbered *listing*), or standalone display-math
+   block (a numbered *equation*)
 3. Blank line allowed between block and caption (for readability)
 
 ```carve
@@ -444,8 +457,9 @@ backslash-escape the marker (`\* 3 + 17`), to keep it prose.
    block, so it renders inside the paragraph.
 
 **Invisible constructs** (link/footnote/abbreviation reference definitions,
-`%%`/`%%%` comments) interrupt with no blank line, as they always have — they
-produce no block of their own, so they are collected/consumed.
+`%%`/`%%%` comments, and `{…}` block-attribute lines) interrupt with no blank
+line, as they always have — they produce no block of their own, so they are
+collected/consumed (an attribute line floats forward to the next block, §15).
 
 | Input | Result | Reason |
 |-------|--------|--------|
@@ -463,7 +477,7 @@ produce no block of their own, so they are collected/consumed.
 | `- text` / `  # H` | item: text + heading | interrupts inside the item |
 
 Normative statement: `resources/grammar.ebnf` PART 9 §10. Verified by corpus
-`05-lists-6`, `05-lists-7`, and the `Paragraph interruption` section.
+`05-lists-12` and the `76-paragraph-interruption` family.
 
 ---
 
