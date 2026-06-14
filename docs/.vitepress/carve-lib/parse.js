@@ -153,6 +153,12 @@ class Lexer {
     // proves that, every later bare opener (pos only advances) is O(1),
     // keeping pathological "many unclosed `:::`" input linear.
     divNoCloserFrom = Infinity;
+    // Negative cache for divHasCloser keyed by fence length: fenceLen → smallest
+    // line index from which no bare closer of >= that length exists onward. Keeps
+    // "many `:::: word` openers + one too-short closer" input linear instead of
+    // O(n²) (the any-length cache above never trips when a too-short closer is
+    // present). pos only advances, so the stored start is a monotone frontier.
+    divNoCloserOfLenFrom = new Map();
     // Negative cache for fenceHasCloser (paragraph-interruption closer
     // lookahead): the smallest line index from which NO bare fence-closer
     // line exists onward. Once proven, every later fence opener (pos only
@@ -584,7 +590,13 @@ function parseBlockInner(lexer) {
     }
     if (RE_LINE_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer))
         return parseLineBlock(lexer);
-    if (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line))
+    // A typed `::: word` admonition, like a bare `:::` div, opens ONLY when a
+    // matching closer exists ahead (PART 9 §12 / grammar: `admonition = open …
+    // close`). Without this guard an unterminated `::: note` swallows the rest
+    // of the document into an aside.
+    if (RE_ADMONITION_OPEN.test(line) &&
+        !RE_ADMONITION_CLOSE.test(line) &&
+        divHasCloser(lexer))
         return parseAdmonition(lexer);
     // Bare `:::` or attributes-only `::: {…}` opens a generic div (the
     // admonition branch above already claimed the `::: word` form) — but
@@ -710,11 +722,12 @@ function parseHeading(lexer) {
     const line = lexer.consume();
     const m = RE_HEADING.exec(line);
     const level = m[1].length;
-    // Carve headings are multi-line, like Djot (and like blockquotes): the text
-    // spills onto following lines until a blank line. A continuation line may
-    // carry the same-or-lower number of `#` (stripped) or none; a higher/other
-    // heading marker starts a NEW heading, and a caption (`^ …`) or fenced
-    // comment (`%%%`) ends the heading. Per §10 no other block interrupts it.
+    // Carve headings are multi-line: the text spills onto following lines until a
+    // blank line. A continuation line may carry the same-or-lower number of `#`
+    // (stripped) or none; a higher/other heading marker starts a NEW heading, and
+    // a caption (`^ …`) or fenced comment (`%%%`) ends the heading. A block-opener
+    // (list/quote/table/fence/div/thematic break) ALSO ends it and starts that
+    // block, exactly as it interrupts a paragraph (§10) -- only plain text folds.
     let text = line.replace(/^#{1,6}[ \t]+/, '');
     const sameOrLower = new RegExp(`^#{1,${level}}[ \\t]+(.+)$`);
     while (!lexer.eof()) {
@@ -730,6 +743,10 @@ function parseHeading(lexer) {
         if (/^#{1,6}([ \t]|$)/.test(next) || RE_CAPTION.test(next) || RE_COMMENT_BLOCK.test(next)) {
             break;
         }
+        // A block-opener ends the heading and starts that block (§10), so only
+        // plain text continuation lines fold into the heading.
+        if (startsInterruptingBlock(lexer))
+            break;
         text += '\n' + next;
         lexer.consume();
     }
@@ -990,13 +1007,19 @@ function expandLineBlockLeadingWhitespace(line) {
  * grammar: a div requires a closer).
  */
 function divHasCloser(lexer) {
-    // A bare-`:::`+ div opens only when a bare closer of equal-or-greater
-    // colon length exists ahead (otherwise a lone `:::` is literal — and a
-    // longer fence must be matched by a longer closer).
+    // A bare-`:::`+ div (or typed `::: word` admonition) opens only when a bare
+    // closer of equal-or-greater colon length exists ahead (otherwise the opener
+    // is literal — and a longer fence must be matched by a longer closer).
     const start = lexer.pos + 1;
     if (start >= lexer.divNoCloserFrom)
-        return false; // memo: no closer ahead
+        return false; // memo: no closer at all ahead
     const fence = /^(:{3,})/.exec(lexer.peek())[1].length;
+    // memo: no closer of >= this fence length from here on. Without this, input
+    // like thousands of `:::: word` openers followed by a single too-short `:::`
+    // rescans to EOF for every opener (the "no closer at all" cache never trips
+    // because a closer *is* seen, just too short) → O(n²).
+    if (start >= (lexer.divNoCloserOfLenFrom.get(fence) ?? Infinity))
+        return false;
     let sawAnyCloser = false;
     for (let i = start; i < lexer.lines.length; i++) {
         const c = RE_ADMONITION_CLOSE.exec(lexer.lines[i]);
@@ -1006,8 +1029,12 @@ function divHasCloser(lexer) {
                 return true;
         }
     }
-    // No closer of length >= fence ahead. If there is NO bare closer at all
-    // from here on, cache it (pos only advances) so later openers are O(1).
+    // No closer of length >= fence ahead. Cache it per fence length (pos only
+    // advances, so the smallest such start is a monotone frontier); also cache
+    // the stronger "no bare closer at all" when that holds.
+    const prev = lexer.divNoCloserOfLenFrom.get(fence) ?? Infinity;
+    if (start < prev)
+        lexer.divNoCloserOfLenFrom.set(fence, start);
     if (!sawAnyCloser)
         lexer.divNoCloserFrom = start;
     return false;
@@ -1174,19 +1201,16 @@ function parseBlockQuote(lexer) {
             trackBlockQuoteLazyState(content, state);
             continue;
         }
-        // Lazy continuation: a non-`>` line folds into the quote ONLY when it
-        // continues an open paragraph (CommonMark-style; matches carve-php). A blank
-        // line ends the quote. The only non-blank lines that end it are the ones that
-        // interrupt a paragraph anywhere — the "invisible" reference/footnote/abbr
-        // definitions and comments — plus a caption `^ …`, which attaches to the quote
-        // rather than folding in.
+        // Lazy continuation: a non-`>` line folds into the quote ONLY when it is
+        // plain text continuing an open paragraph (CommonMark-style; matches
+        // carve-php). A blank line ends the quote. ANY block-opener ends it and
+        // starts that block OUTSIDE the quote, exactly as it interrupts a paragraph
+        // (§10) -- this covers visible blocks (list/quote/table/fence/div/thematic)
+        // and the "invisible" reference/footnote/abbr definitions and comments. A
+        // caption `^ …` attaches to the quote rather than folding in.
         if (ln.trim() === '' ||
-            RE_LINK_DEF.test(ln) ||
-            RE_FOOTNOTE_DEF.test(ln) ||
-            RE_ABBR_DEF.test(ln) ||
-            RE_COMMENT_LINE.test(ln) ||
-            RE_COMMENT_BLOCK.test(ln) ||
-            RE_CAPTION.test(ln)) {
+            RE_CAPTION.test(ln) ||
+            startsInterruptingBlock(lexer)) {
             break;
         }
         // A non-`>` line inside an open fence/comment, or after a block that left no
@@ -1406,7 +1430,12 @@ function lazyContinuationEndsList(line, lexer) {
     return (RE_RAW_FENCE.test(line) ||
         RE_FENCE.test(line) ||
         RE_COMMENT_BLOCK.test(line) ||
-        (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line)) ||
+        // A typed admonition ends the list only when it actually opens one — i.e.
+        // a closer exists ahead (same guard as the block dispatch + the bare div).
+        // An unterminated `::: note` is not a block, so it folds as lazy text.
+        (RE_ADMONITION_OPEN.test(line) &&
+            !RE_ADMONITION_CLOSE.test(line) &&
+            divHasCloser(lexer)) ||
         (RE_DIV_OPEN.test(line) && divHasCloser(lexer)) ||
         (RE_LINE_BLOCK_OPEN.test(line) && divHasCloser(lexer)) ||
         RE_ABBR_DEF.test(line) ||
@@ -2247,8 +2276,12 @@ const FORCED_TYPE = {
 };
 // Names can include version-style dots between alnum runs (e.g. `#release-1.0`)
 // but a trailing period is treated as sentence punctuation, not part of the name.
-const RE_MENTION = /^@([a-zA-Z][\w-]*(?:\.\w+)*)/;
-const RE_TAG = /^#([\w][\w-]*(?:\.\w+)*)/;
+// Mention / tag name = name_word ('.' name_word)*, name_word = (letter | digit
+// | '_' | '-')+ (grammar PART 9 §7). Interior dots only (a trailing dot stays
+// punctuation — the non-greedy dotted-segment match leaves it); each segment
+// allows digits, `_` and `-` in any position. Matches carve-php / carve-rs.
+const RE_MENTION = /^@([a-zA-Z0-9_-]+(?:\.[a-zA-Z0-9_-]+)*)/;
+const RE_TAG = /^#([a-zA-Z0-9_-]+(?:\.[a-zA-Z0-9_-]+)*)/;
 // Fixed multi-character smart-typography tokens, longest first so
 // `<->` beats `<-`, `---` beats `--`, `(tm)` beats `(c)`.
 const SMART_TOKENS = [
@@ -2334,7 +2367,27 @@ function inlineSource(overrides = {}) {
         startColumn: overrides.startColumn ?? 1,
     };
 }
+// Inline recursion depth, bounding the same nesting the block side caps with
+// MAX_NESTING_DEPTH. scanInline recurses one frame per nested link / span /
+// emphasis / critic level; without a cap a deeply nested run (e.g.
+// `[[[[…x]]]]`) overflows the call stack and throws RangeError. JS is
+// single-threaded, so a module-level counter with try/finally is sufficient
+// (and far less invasive than threading a depth arg through every recursive
+// call site). Over the cap the run stays literal text instead of recursing.
+let inlineDepth = 0;
 function scanInline(text, source = inlineSource(), inFootnote = false, captionContext = false) {
+    if (inlineDepth >= MAX_NESTING_DEPTH) {
+        return [withPos({ type: 'text', value: text }, source, text, 0, text.length)];
+    }
+    inlineDepth++;
+    try {
+        return scanInlineInner(text, source, inFootnote, captionContext);
+    }
+    finally {
+        inlineDepth--;
+    }
+}
+function scanInlineInner(text, source, inFootnote, captionContext) {
     const out = [];
     let i = 0;
     let buf = '';

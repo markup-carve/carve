@@ -26,7 +26,14 @@ function renderBlock(node) {
             return '---\n\n';
         case 'table':
             return renderTable(node);
-        case 'admonition':
+        case 'admonition': {
+            const body = renderBlocks(node.children);
+            const title = node.title !== undefined ? renderInlines(node.title) : '';
+            if (title !== '') {
+                return `${title}\n\n${body}`;
+            }
+            return body;
+        }
         case 'div':
             return renderBlocks(node.children);
         case 'definition-list':
@@ -143,7 +150,8 @@ function renderInline(node) {
         case 'hard-break':
             return '\n';
         case 'critic-substitute':
-            return node.newText;
+            // Keep both sides (old struck like critic-delete, then new).
+            return `~${node.oldText}~${node.newText}`;
         case 'critic-comment':
             return '';
         case 'crossref':

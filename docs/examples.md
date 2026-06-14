@@ -4097,6 +4097,24 @@ continued</p></blockquote>
 
 :::
 
+A block-opener (list, table, fenced code, heading, `:::` div, thematic break) is not a lazy continuation: it ends the quote and starts that block outside it, exactly as it interrupts a paragraph (§10).
+
+::: compare
+
+```carve
+> quoted
+- item
+```
+
+```html
+<blockquote><p>quoted</p></blockquote>
+<ul>
+  <li>item</li>
+</ul>
+```
+
+:::
+
 ## Fenced code language with punctuation
 
 A language tag may contain punctuation (`c++`, `c#`, `f#`, `asp.net`). The info string is still a single token, so a multiword or quoted info (e.g. `js title="x"`) is not a fence.
@@ -4118,7 +4136,7 @@ int main() {}
 
 ## Multi-line headings
 
-A heading spills onto following lines (like Djot, and like blockquotes), until a blank line. A continuation line may carry the same-or-lower number of `#` (stripped) or none; a higher/other heading marker starts a new heading, and a caption (`^ …`) or fenced comment (`%%%`) ends it. The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
+A heading spills onto following lines until a blank line. A continuation line may carry the same-or-lower number of `#` (stripped) or none; a higher/other heading marker starts a new heading, and a caption (`^ …`) or fenced comment (`%%%`) ends it. Only plain text folds in: a block-opener (list, quote, table, fenced code, `:::` div, thematic break) ends the heading and starts that block, exactly as it interrupts a paragraph (§10). An ordered marker still folds (it never interrupts, §10/§11). The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
 
 ::: compare
 
@@ -4131,6 +4149,44 @@ outside
 <section id="title-outside">
   <h1>Title
 outside</h1>
+</section>
+```
+
+:::
+
+A block-opener ends the heading and starts that block (§10), the same way it interrupts a paragraph.
+
+::: compare
+
+```carve
+# Title
+- item
+```
+
+```html
+<section id="title">
+  <h1>Title</h1>
+  <ul>
+    <li>item</li>
+  </ul>
+</section>
+```
+
+:::
+
+An ordered marker is not an interrupter, so it folds into the heading text instead.
+
+::: compare
+
+```carve
+# Title
+1. one
+```
+
+```html
+<section id="title-1-one">
+  <h1>Title
+1. one</h1>
 </section>
 ```
 

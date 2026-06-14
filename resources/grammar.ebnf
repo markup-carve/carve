@@ -98,17 +98,21 @@ atx_heading = heading_first_line, {heading_continuation_line} ;
 heading_first_line = heading_marker, space, inline_content, newline ;
 heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
 
-(* MULTI-LINE HEADINGS -- NORMATIVE (like Djot; consistent with lazy blockquote
-   continuation and §10 hard-wrap-friendly paragraphs). A heading's text spills
-   onto following lines until a blank line. A continuation line:
+(* MULTI-LINE HEADINGS -- NORMATIVE (like Djot; consistent with §10 paragraph
+   interruption). A heading's text spills onto following lines until a blank
+   line. A continuation line:
      - may carry SAME-or-LOWER number of `#` markers (stripped) or none,
        and its text is appended to the heading;
      - a heading marker with MORE `#` than the open heading starts a NEW
        heading (ends this one);
      - a caption (`^ ` ...) or a fenced comment (`%%%`) ends the heading;
-     - a blank line ends it.
-   Per §10 no other block (list/quote/fence marker, etc.) interrupts it. The
-   heading id is derived from the full folded text.
+     - a blank line ends it;
+     - a block-opener (list, quote, table, fenced code, `:::` div, thematic
+       break) ends the heading and starts that block, exactly as it interrupts
+       a paragraph (§10).
+   Only PLAIN text folds into the heading; an ordered marker still folds (it
+   never interrupts a paragraph either, §10/§11). The heading id is derived from
+   the full folded text.
    NO TRAILING ATTRIBUTES (djot-strict). A heading line carries NO trailing
    `{...}` attribute block: a `{...}` at the end of a heading line is ordinary
    inline content (literal text unless it forms an inline construct), and the
@@ -200,13 +204,15 @@ blockquote_line = '>', [' '], inline_content, newline ;
    blockquote_lines, a line that does NOT carry the '>' marker still continues
    the blockquote -- exactly as if it carried '>' -- provided it is:
      - not blank (a blank line ends the blockquote), and
-     - not an "invisible" interrupter: a reference, footnote or abbreviation
-       definition, or a comment (these end the blockquote, matching the
-       paragraph-interruption rule in PART 9 §10), and
+     - not a block-opener that would interrupt a paragraph (§10): a heading,
+       list, table, fenced code, `:::` div, thematic break, OR an "invisible"
+       reference / footnote / abbreviation definition or comment -- each ends
+       the blockquote and starts that block OUTSIDE it, and
      - not a caption ('^ ' ...), which attaches to the blockquote instead.
-   The lazy line's text is appended to the blockquote's inner content before
-   that content is block-parsed, so a hard-wrapped quoted paragraph need not
-   repeat '>' on every line. *)
+   Only PLAIN text (continuing an open paragraph) folds in; an ordered marker
+   folds too (it never interrupts, §10/§11). The lazy line's text is appended to
+   the blockquote's inner content before that content is block-parsed, so a
+   hard-wrapped quoted paragraph need not repeat '>' on every line. *)
 lazy_continuation_line = inline_content, newline ;  (* see the NORMATIVE note above for which lines qualify *)
 
 (* --- Lists --- *)
@@ -1208,11 +1214,10 @@ EOF = (* end of file *) ;
       whose first item holds a sublist). A col-0 marker with no `>` inside a
       block quote terminates the quote (the marker is a sibling block), per the
       block-quote lazy-continuation rule (see `blockquote`). HEADING
-      CONTINUATION is the one exception that is NOT governed here: once a
-      heading is open, its own continuation rule (see `heading`) decides what
-      folds in or ends it -- a following bare-prose or same/lower `#` line
-      folds into the heading text rather than starting a paragraph that §10
-      could interrupt.
+      CONTINUATION follows the same principle (see `heading`): a block-opener
+      interrupts an open heading and starts that block, exactly as it interrupts
+      a paragraph; a bare-prose or same/lower `#` continuation line folds into
+      the heading text instead.
 
    11. LIST MARKER CHANGE STARTS A NEW LIST -- NORMATIVE (governs `list`
       in PART 2). §10 decides FIRST whether a sequence of marker lines
