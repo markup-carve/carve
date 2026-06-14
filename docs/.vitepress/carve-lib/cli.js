@@ -47,9 +47,13 @@ constructs that otherwise silently mis-render under Carve (e.g. **bold**
   to stdout. Crossing collisions that cannot be auto-fixed are reported on
   stderr for manual review.
 
-lint - report delimiter collisions AND semantic problems (broken </#id>
-cross-references, duplicate heading ids) as \`file:line:col rule - message\`.
-Reads files or stdin; exits 1 if anything is reported, 0 if clean.
+lint - report delimiter collisions AND silent-failure problems as
+\`file:line:col rule - message\`: broken </#id> cross-references, unresolved
+reference links, duplicate heading ids, missing/duplicate/unused footnotes,
+trailing {…} attribute blocks on headings (literal, not attributes), legacy
+\`\`\`raw FORMAT fences (use \`\`\`=FORMAT), and lines that open like a block
+(\`:::\`, \`{#\`) but parsed as plain text. Reads files or stdin; exits 1 if
+anything is reported, 0 if clean.
 
   -h, --help     Show this help
 `;
