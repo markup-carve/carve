@@ -64,7 +64,8 @@ function attrsToHtml(attrs, ctx) {
     if (!attrs)
         return '';
     const slots = [];
-    const id = () => (attrs.id ? ` id="${ctx.escapeAttr(attrs.id)}"` : '');
+    // `!== undefined` so an explicit empty id (`{id}` / `{id=""}`) renders id="".
+    const id = () => (attrs.id !== undefined ? ` id="${ctx.escapeAttr(attrs.id)}"` : '');
     const cls = () => attrs.classes?.length ? ` class="${ctx.escapeAttr(attrs.classes.join(' '))}"` : '';
     const kv = (key) => {
         const v = attrs.keyValues?.[key];
@@ -74,7 +75,7 @@ function attrsToHtml(attrs, ctx) {
     const seen = new Set(order);
     const fullOrder = [
         ...order,
-        ...(attrs.id && !seen.has('#id') ? ['#id'] : []),
+        ...(attrs.id !== undefined && !seen.has('#id') ? ['#id'] : []),
         ...(attrs.classes?.length && !seen.has('.class') ? ['.class'] : []),
         ...Object.keys(attrs.keyValues ?? {}).filter((k) => !seen.has(k)),
     ];

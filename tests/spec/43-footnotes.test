@@ -55,3 +55,19 @@ Text[^a]{.ref}.
   </ol>
 </section>
 ```
+
+```
+See[^m] and again[^m].
+
+[^m]: One note, two refs.
+.
+<p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and again<a id="fnref1-2" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>One note, two refs.<a href="#fnref1" role="doc-backlink">↩<sup>1</sup></a> <a href="#fnref1-2" role="doc-backlink">↩<sup>2</sup></a></p>
+    </li>
+  </ol>
+</section>
+```

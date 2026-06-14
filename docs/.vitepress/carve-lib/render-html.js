@@ -64,7 +64,9 @@ export function renderHtml(ast, opts = {}) {
             // The id moves to <section>; any other heading attrs (classes,
             // key-values) stay on the <h*>.
             const id = node.attrs?.id;
-            const sectionId = id ? ` id="${escapeAttr(id)}"` : '';
+            // `!== undefined` so an explicit empty `id=""` renders `id=""` on the
+            // <section> (it already suppressed the auto-slug in resolveHeadingIds).
+            const sectionId = id !== undefined ? ` id="${escapeAttr(id)}"` : '';
             out.push(`${indent(depth)}<section${sectionId}>`);
             sectionStack.push(node.level);
             // An extension may render the <h*> element itself (e.g. heading
@@ -212,9 +214,13 @@ function renderFootnoteSection(ast, st, opts) {
         const body = entry.inline
             ? [`${indent(3)}<p>${renderInlines(entry.inline, opts)}</p>`]
             : (defs[entry.label] ?? []).map((b) => renderBlock(b, opts, 3));
+        // A note referenced once gets a plain `↩`; a note referenced N>1 times gets
+        // one numbered backlink per reference (`↩<sup>k</sup>`, space-separated) so
+        // each return arrow is distinct (matches carve-php + pandoc).
+        const multiRef = entry.backrefs.length > 1;
         const blink = entry.backrefs
-            .map((rid) => `<a href="#${rid}" role="doc-backlink">↩</a>`)
-            .join('');
+            .map((rid, k) => `<a href="#${rid}" role="doc-backlink">↩${multiRef ? `<sup>${k + 1}</sup>` : ''}</a>`)
+            .join(multiRef ? ' ' : '');
         const last = body.length - 1;
         if (last >= 0 && /<\/p>\s*$/.test(body[last])) {
             body[last] = body[last].replace(/<\/p>(\s*)$/, `${blink}</p>$1`);

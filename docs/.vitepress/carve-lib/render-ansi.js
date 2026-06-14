@@ -383,12 +383,10 @@ function normalize(text) {
     return `${text.replace(/\n{3,}/g, '\n\n').trim()}\n`.replace(/\ue000/g, ' ');
 }
 function cleanEscapedText(node) {
-    const span = node.pos?.startOffset !== undefined && node.pos.endOffset !== undefined
-        ? node.pos.endOffset - node.pos.startOffset
-        : undefined;
-    return (span !== undefined && span > node.value.length
-        ? node.value.replace(/[*#_]/g, '')
-        : node.value);
+    // The value is the literal text (the parser already resolved backslash
+    // escapes), so a `\*` reaches here as `*`. Return it verbatim -- dropping the
+    // character would lose data.
+    return node.value;
 }
 function isLegacyDefinitionParagraph(node) {
     return (node.children.length === 3 &&
