@@ -9,3 +9,25 @@ outside
 outside</h1>
 </section>
 ```
+
+```
+# Title
+- item
+.
+<section id="title">
+  <h1>Title</h1>
+  <ul>
+    <li>item</li>
+  </ul>
+</section>
+```
+
+```
+# Title
+1. one
+.
+<section id="title-1-one">
+  <h1>Title
+1. one</h1>
+</section>
+```

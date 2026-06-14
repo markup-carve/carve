@@ -7,3 +7,13 @@ continued
 <blockquote><p>quoted
 continued</p></blockquote>
 ```
+
+```
+> quoted
+- item
+.
+<blockquote><p>quoted</p></blockquote>
+<ul>
+  <li>item</li>
+</ul>
+```

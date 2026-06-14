@@ -58,7 +58,18 @@ function renderBlock(node, ctx) {
             return `${style('─'.repeat(40), DIM)}\n\n`;
         case 'table':
             return renderTable(node, ctx);
-        case 'admonition':
+        case 'admonition': {
+            const body = renderBlocks(node.children, ctx);
+            const title = node.title !== undefined ? renderInlines(node.title, ctx) : '';
+            if (title !== '') {
+                // Carry the blockquote `│` prefix onto the title line too, matching how
+                // the paragraph renderer prefixes body content in a quote.
+                const prefix = blockQuotePrefix(ctx);
+                const titleLine = prefix ? prefixLines(style(title, BOLD), prefix) : style(title, BOLD);
+                return `${titleLine}\n\n${body}`;
+            }
+            return body;
+        }
         case 'div':
             return renderBlocks(node.children, ctx);
         case 'definition-list':
@@ -226,8 +237,11 @@ function renderInline(node, ctx) {
         case 'underline':
             return style(renderInlines(node.children, ctx), UNDERLINE);
         case 'strike':
-        case 'sub':
             return style(renderInlines(node.children, ctx), STRIKE);
+        case 'sub':
+            // Subscript is NOT strikethrough; map to Unicode subscripts (mirrors
+            // super), unmapped chars pass through.
+            return toSubscript(renderInlines(node.children, ctx));
         case 'super':
             return toSuperscript(renderInlines(node.children, ctx));
         case 'highlight':
@@ -277,7 +291,9 @@ function renderInline(node, ctx) {
         case 'critic-delete':
             return style(renderInlines(node.children, ctx), STRIKE + '\x1b[31m');
         case 'critic-substitute':
-            return node.newText;
+            // Show BOTH sides; dropping oldText loses content.
+            return (style(node.oldText, STRIKE + '\x1b[31m') +
+                style(node.newText, FG_GREEN + UNDERLINE));
         case 'critic-comment':
             return '';
         case 'crossref':
@@ -321,7 +337,44 @@ function toSuperscript(text) {
         n: 'ⁿ',
         i: 'ⁱ',
     };
-    return Array.from(text).map((ch) => map[ch] ?? ch).join('');
+    return mapOutsideAnsi(text, map);
+}
+// Apply a per-character map, but leave ANSI escape sequences (e.g. `\x1b[4m`
+// from a styled inline child) untouched — mapping their digits would corrupt
+// the control codes and the terminal output.
+function mapOutsideAnsi(text, map) {
+    return text
+        .split(/(\x1b\[[0-9;]*m)/)
+        .map((seg, i) => i % 2 === 1 // odd segments are the captured escape sequences
+        ? seg
+        : Array.from(seg)
+            .map((ch) => map[ch] ?? ch)
+            .join(''))
+        .join('');
+}
+function toSubscript(text) {
+    const map = {
+        '0': '₀',
+        '1': '₁',
+        '2': '₂',
+        '3': '₃',
+        '4': '₄',
+        '5': '₅',
+        '6': '₆',
+        '7': '₇',
+        '8': '₈',
+        '9': '₉',
+        '+': '₊',
+        '-': '₋',
+        '=': '₌',
+        '(': '₍',
+        ')': '₎',
+        a: 'ₐ',
+        e: 'ₑ',
+        o: 'ₒ',
+        x: 'ₓ',
+    };
+    return mapOutsideAnsi(text, map);
 }
 function normalize(text) {
     // The internal non-breaking-space placeholder (U+E000) collapses to an

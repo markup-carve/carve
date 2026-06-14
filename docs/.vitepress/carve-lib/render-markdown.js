@@ -52,7 +52,16 @@ function renderBlock(node, ctx) {
             return '---\n\n';
         case 'table':
             return renderTable(node, ctx);
-        case 'admonition':
+        case 'admonition': {
+            // Markdown has no admonition; preserve the title (otherwise lost) as a
+            // leading bold line, then the body.
+            const body = renderBlocks(node.children, ctx);
+            const title = node.title !== undefined ? renderInlines(node.title, ctx) : '';
+            if (title !== '') {
+                return `**${title}**\n\n${body}`;
+            }
+            return body;
+        }
         case 'div':
             return renderBlocks(node.children, ctx);
         case 'definition-list':
@@ -169,8 +178,10 @@ function renderInline(node, ctx) {
         case 'underline':
             return `<u>${renderInlines(node.children, ctx)}</u>`;
         case 'strike':
-        case 'sub':
             return `~~${renderInlines(node.children, ctx)}~~`;
+        case 'sub':
+            // Subscript is NOT strikethrough; mirror super's inline-HTML fallback.
+            return `<sub>${renderInlines(node.children, ctx)}</sub>`;
         case 'super':
             return `<sup>${renderInlines(node.children, ctx)}</sup>`;
         case 'highlight':
@@ -212,7 +223,8 @@ function renderInline(node, ctx) {
         case 'critic-delete':
             return `~~${renderInlines(node.children, ctx)}~~`;
         case 'critic-substitute':
-            return `<ins>${escapeText(node.newText)}</ins>`;
+            // Emit BOTH sides like the HTML renderer; dropping oldText loses content.
+            return `<del>${escapeText(node.oldText)}</del><ins>${escapeText(node.newText)}</ins>`;
         case 'critic-comment':
             return '';
         case 'crossref':
