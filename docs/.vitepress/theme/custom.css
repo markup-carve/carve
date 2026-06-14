@@ -195,6 +195,92 @@ html.dark .vp-code span[data-carve-highlight] {
 }
 
 /*
+ * Wide comparison tables. VitePress keeps prose narrow, which is good for
+ * paragraphs but cramped for matrix-style comparisons. Match Sugar's docs
+ * pattern: tables stay in flow, but become touch-friendly horizontal scrollers
+ * and allow long inline code fragments to wrap instead of forcing unreadable
+ * columns.
+ */
+.vp-doc table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.vp-doc th,
+.vp-doc td {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.vp-doc th code,
+.vp-doc td code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.vp-doc h2#feature-comparison + table {
+  font-size: 0.88rem;
+  transition:
+    width 160ms ease,
+    max-width 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.vp-doc h2#feature-comparison + table th:first-child,
+.vp-doc h2#feature-comparison + table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 8.5rem;
+  background: var(--vp-c-bg);
+}
+
+.vp-doc h2#feature-comparison + table th:first-child {
+  z-index: 2;
+  background: var(--vp-c-bg-soft);
+}
+
+.vp-doc h2#feature-comparison + table code {
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+@media (min-width: 960px) {
+  .vp-doc h2#feature-comparison + table:hover,
+  .vp-doc h2#feature-comparison + table:focus-within {
+    --feature-table-width: min(1040px, calc(100vw - var(--vp-sidebar-width, 272px) - 128px));
+    position: relative;
+    z-index: 20;
+    width: var(--feature-table-width);
+    max-width: var(--feature-table-width);
+    border-radius: 8px;
+    background: var(--vp-c-bg);
+    outline: 1px solid var(--vp-c-divider);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14);
+  }
+
+  .vp-doc h2#feature-comparison + table:hover td,
+  .vp-doc h2#feature-comparison + table:focus-within td {
+    background: var(--vp-c-bg);
+  }
+
+  .vp-doc h2#feature-comparison + table:hover tbody tr:nth-child(2n) td,
+  .vp-doc h2#feature-comparison + table:focus-within tbody tr:nth-child(2n) td {
+    background: var(--vp-c-bg-soft);
+  }
+
+  .vp-doc h2#feature-comparison + table:hover th,
+  .vp-doc h2#feature-comparison + table:focus-within th {
+    background: var(--vp-c-bg-soft);
+  }
+}
+
+/*
  * Carve rendered output (Playground + dogfood). The container also carries
  * `vp-doc`, so prose (headings, lists, tables, code, blockquotes) inherits the
  * VitePress document styling. These rules add the Carve-specific constructs
