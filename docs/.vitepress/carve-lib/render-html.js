@@ -266,7 +266,14 @@ function renderAttrs(attrs) {
     const classAttr = () => attrs.classes && attrs.classes.length
         ? `class="${attrs.classes.join(' ')}"`
         : '';
-    const idAttr = () => (attrs.id ? `id="${attrs.id}"` : '');
+    // Escape the id value: an `#id` is identifier-restricted (escaping is a
+    // no-op), but `id=value` (which now also feeds this slot, last-wins §15) can
+    // carry arbitrary quoted text and must not inject markup.
+    // `!== undefined`, not truthiness: an explicit `id=""` is a real (empty) id
+    // and must render `id=""` (matches carve-php), the same last-wins slot as
+    // `#id`/`id=value`. Escape the value: `#id` is identifier-restricted (escape
+    // is a no-op), but `id=value` can carry arbitrary quoted text.
+    const idAttr = () => (attrs.id !== undefined ? `id="${escapeAttr(attrs.id)}"` : '');
     const kvAttr = (k) => {
         const v = attrs.keyValues?.[k];
         return v !== undefined ? `${k}="${escapeAttr(v)}"` : '';
@@ -516,7 +523,12 @@ function renderListItem(item, opts, level, tight) {
                 body.push(`${indent(level + 1)}${rendered}`);
         }
         else {
-            body.push(renderBlock(child, opts, level + 1));
+            // Skip blocks that render to nothing (a comment, an abbreviation def, a
+            // non-HTML raw block): pushing `''` would leave stray blank lines inside
+            // the <li> (`<p>a</p>\n\n  </li>`). Matches carve-rs.
+            const rendered = renderBlock(child, opts, level + 1);
+            if (rendered !== '')
+                body.push(rendered);
         }
     });
     if (body.length === 0)

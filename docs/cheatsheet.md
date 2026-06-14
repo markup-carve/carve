@@ -62,7 +62,7 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 code block
 ```
 
-```raw html
+```=html
 <div>passed through when the output format matches</div>
 ```
 

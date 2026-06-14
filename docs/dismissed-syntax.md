@@ -241,11 +241,13 @@ This has <span class="special">inline HTML</span> embedded.
 - Security concerns (XSS vectors)
 - Breaks output format independence (HTML-specific)
 - Makes parsing more complex
-- Raw blocks with explicit format are cleaner
+- Raw blocks with an explicit format are cleaner
 
-**Decision:** Use raw blocks with format specifier:
+**Decision:** Use a raw block with a format specifier (djot's `=FORMAT`
+syntax — symbol-based, no English keyword, symmetric with the inline
+`{=format}` form):
 ~~~
-```raw html
+```=html
 <div class="custom">content</div>
 ```
 ~~~
