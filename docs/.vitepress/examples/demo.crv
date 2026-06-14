@@ -8,12 +8,14 @@ tags: [demo, reference]
 %% This file exercises the Carve markup constructs supported by the grammar.
 %% Lines beginning with %% are comments and do not render.
 
-# Carve Feature Demo {#top}
+{#top}
+# Carve Feature Demo
 
 A single document touching every core construct, plus a few renderer-dependent
 extensions at the end. Open it with **Carve: Open Preview** to see it rendered.
 
-## Headings and attributes {#headings .featured}
+{#headings .featured}
+## Headings and attributes
 
 # Level 1
 ## Level 2
@@ -22,9 +24,15 @@ extensions at the end. Open it with **Carve: Open Preview** to see it rendered.
 ##### Level 5
 ###### Level 6
 
-A heading can carry an explicit id and classes: `## Setup {#install .lead}`.
+A heading carries an explicit id and classes from a block-attribute line on
+the line directly above it:
 
-## Inline formatting {#inline}
+```carve
+{#install .lead}
+## Setup
+```
+
+## Inline formatting
 
 /italic/, *bold*, /*bold italic*/, _underline_, ~strikethrough~, =highlight=,
 super{^script^} and sub{,script,}. Inline `code span`, and raw inline passthrough
@@ -35,7 +43,7 @@ Editorial markup: {+ added text +}, {- deleted text -},
 
 Escapes keep specials literal: \*not bold\*, \/not italic\/, \#not-a-tag.
 
-## Links and images {#links}
+## Links and images
 
 Inline [link](https://example.com), titled
 [link](https://example.com "Hover title"), autolink <https://example.com>,
@@ -50,7 +58,7 @@ Cross-reference to a heading by id: jump to </#top>.
 ![A descriptive alt text](images/diagram.png)
 ^ Figure 1: images may carry a caption line.
 
-## Lists {#lists}
+## Lists
 
 Unordered:
 
@@ -81,12 +89,12 @@ Definition list:
 :: Djot
 :  The markup language Carve evolves from.
 
-## Blockquotes {#quotes}
+## Blockquotes
 
 > The best way to predict the future is to invent it.
 ^ Alan Kay
 
-## Tables {#tables}
+## Tables
 
 |= Fruit       |=> Price |=~ Stock |
 | Apple        |    1.20 |   In     |
@@ -94,7 +102,7 @@ Definition list:
 | Dragon fruit |    4.00 |   Out    |
 ^ Table 1: column alignment - left, right, center.
 
-## Code and raw blocks {#code}
+## Code and raw blocks
 
 A fenced code block with a language:
 
@@ -114,11 +122,11 @@ list:
 
 A raw block passes content through to a named format unchanged:
 
-```raw html
+```=html
 <details><summary>Native HTML</summary>Rendered as-is.</details>
 ```
 
-## Math {#math}
+## Math
 
 Inline math uses a dollar before a code span: $`e = mc^2`.
 
@@ -126,7 +134,7 @@ Display math uses a double dollar:
 
 $$`\int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}`
 
-## Admonitions and divs {#admonitions}
+## Admonitions and divs
 
 ::: note
 A plain note callout.
@@ -144,34 +152,36 @@ Heed this warning.
 Critical information.
 :::
 
-A bare `:::` fence with only `{#id .class}` and no admonition type is a
-generic styled container, not a colored callout:
+A bare `:::` fence with no admonition type is a generic styled container, not a
+colored callout. Its id and classes go on a block-attribute line directly above
+the fence:
 
-::: {#callout .highlight}
+{#callout .highlight}
+:::
 This block has only an id and classes, so it renders as a plain
 `<div id="callout" class="highlight">` wrapper you can target with your own CSS.
 :::
 
-## Mentions, tags, and inline extensions {#tokens}
+## Mentions, tags, and inline extensions
 
 Mention a person with @alice and reference a tag like #release-1.0.
 An inline extension names a role: press :kbd[Ctrl+C] to copy.
 
-## Footnotes {#footnotes}
+## Footnotes
 
 Carve supports footnotes[^note] with definitions collected anywhere.[^second]
 
 [^note]: The reference and its definition are linked by label.
 [^second]: Definitions can appear in any order.
 
-## Smart typography {#typography}
+## Smart typography
 
 Dashes and ellipsis: an em dash --- an en range 10--20 ... and so on.
 Arrows and comparisons: -> <- <-> => , != <= >= , (c) (r) (tm).
 
 ---
 
-## Mermaid (Tier-3 extension) {#mermaid}
+## Mermaid (Tier-3 extension)
 
 %% Mermaid is a third-party extension, not core Carve. It is written as a
 %% fenced code block tagged `mermaid`. It only renders as a diagram when the

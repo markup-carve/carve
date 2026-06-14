@@ -1,0 +1,195 @@
+<section id="top">
+  <h1>Carve Feature Demo</h1>
+  <p>A single document touching every core construct, plus a few renderer-dependent
+extensions at the end. Open it with **Carve: Open Preview** to see it rendered.</p>
+  <section id="headings">
+    <h2 class="featured">Headings and attributes</h2>
+  </section>
+</section>
+<section id="level-1">
+  <h1>Level 1</h1>
+  <section id="level-2">
+    <h2>Level 2</h2>
+    <section id="level-3">
+      <h3>Level 3</h3>
+      <section id="level-4">
+        <h4>Level 4</h4>
+        <section id="level-5">
+          <h5>Level 5</h5>
+          <section id="level-6">
+            <h6>Level 6</h6>
+            <p>A heading carries an explicit id and classes from a block-attribute line on
+the line directly above it:</p>
+            <pre><code class="language-carve">{#install .lead}
+## Setup
+</code></pre>
+          </section>
+        </section>
+      </section>
+    </section>
+  </section>
+  <section id="inline-formatting">
+    <h2>Inline formatting</h2>
+    <p><em>italic</em>, <strong>bold</strong>, <strong><em>bold italic</em></strong>, <u>underline</u>, <s>strikethrough</s>, <mark>highlight</mark>,
+super<sup>script</sup> and sub<sub>script</sub>. Inline <code>code span</code>, and raw inline passthrough
+<abbr>HTML</abbr> emitted verbatim.</p>
+    <p>Editorial markup: <ins> added text </ins>, <del> deleted text </del>,
+<del> old phrase </del><ins> new phrase </ins>, and an <span class="critic-comment"> editorial note </span>.</p>
+    <p>Escapes keep specials literal: *not bold*, /not italic/, #not-a-tag.</p>
+  </section>
+  <section id="links-and-images">
+    <h2>Links and images</h2>
+    <p>Inline <a href="https://example.com">link</a>, titled
+<a href="https://example.com" title="Hover title">link</a>, autolink <a href="https://example.com">https://example.com</a>,
+email autolink <a href="mailto:hello@example.com">hello@example.com</a>, and a reference <a href="https://example.com" title="Reference definition">link</a>.</p>
+    <p>A collapsed reference <a href="https://example.com" title="Reference definition">site</a> reuses the label as the reference.</p>
+    <p>Cross-reference to a heading by id: jump to <a href="#top">Carve Feature Demo</a>.</p>
+    <figure>
+      <img src="images/diagram.png" alt="A descriptive alt text">
+      <figcaption>Figure 1: images may carry a caption line.</figcaption>
+    </figure>
+  </section>
+  <section id="lists">
+    <h2>Lists</h2>
+    <p>Unordered:</p>
+    <ul>
+      <li>apples</li>
+      <li>oranges
+        <ul>
+          <li>clementines</li>
+          <li>blood oranges</li>
+        </ul>
+      </li>
+      <li>pears</li>
+    </ul>
+    <p>Ordered:</p>
+    <ol>
+      <li>clone the repo</li>
+      <li>install dependencies
+        <ul>
+          <li>run the build</li>
+          <li>run the tests</li>
+        </ul>
+      </li>
+      <li>ship it</li>
+    </ol>
+    <p>Tasks:</p>
+    <ul>
+      <li><input type="checkbox" checked disabled> write the grammar</li>
+      <li><input type="checkbox" checked disabled> write the corpus</li>
+      <li><input type="checkbox" disabled> write more demos</li>
+    </ul>
+    <p>Definition list:</p>
+    <dl>
+      <dt>Carve</dt>
+      <dd>A post-Markdown lightweight markup language.</dd>
+      <dt>Djot</dt>
+      <dd>The markup language Carve evolves from.</dd>
+    </dl>
+  </section>
+  <section id="blockquotes">
+    <h2>Blockquotes</h2>
+    <figure>
+      <blockquote><p>The best way to predict the future is to invent it.</p></blockquote>
+      <figcaption>Alan Kay</figcaption>
+    </figure>
+  </section>
+  <section id="tables">
+    <h2>Tables</h2>
+    <table>
+      <caption>Table 1: column alignment - left, right, center.</caption>
+      <thead><tr><th>Fruit</th><th style="text-align: right;">Price</th><th style="text-align: center;">Stock</th></tr></thead>
+      <tbody>
+        <tr><td>Apple</td><td style="text-align: right;">1.20</td><td style="text-align: center;">In</td></tr>
+        <tr><td>Banana</td><td style="text-align: right;">0.50</td><td style="text-align: center;">In</td></tr>
+        <tr><td>Dragon fruit</td><td style="text-align: right;">4.00</td><td style="text-align: center;">Out</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section id="code-and-raw-blocks">
+    <h2>Code and raw blocks</h2>
+    <p>A fenced code block with a language:</p>
+    <pre><code class="language-python">def greet(name: str) -&gt; str:
+    return f"Hello, {name}!"
+</code></pre>
+    <p>A tilde fence works too:</p>
+    <pre><code class="language-yaml">key: value
+list:
+  - one
+  - two
+</code></pre>
+    <p>A raw block passes content through to a named format unchanged:</p>
+<details><summary>Native HTML</summary>Rendered as-is.</details>
+  </section>
+  <section id="math">
+    <h2>Math</h2>
+    <p>Inline math uses a dollar before a code span: <span class="math inline">\(e = mc^2\)</span>.</p>
+    <p>Display math uses a double dollar:</p>
+    <p><span class="math display">\[\int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}\]</span></p>
+  </section>
+  <section id="admonitions-and-divs">
+    <h2>Admonitions and divs</h2>
+    <aside class="admonition note">
+      <p>A plain note callout.</p>
+    </aside>
+    <aside class="admonition tip">
+      <p class="admonition-title">With a title</p>
+      <p>Admonitions accept an optional quoted title.</p>
+    </aside>
+    <aside class="admonition warning">
+      <p>Heed this warning.</p>
+    </aside>
+    <aside class="admonition danger">
+      <p>Critical information.</p>
+    </aside>
+    <p>A bare <code>:::</code> fence with no admonition type is a generic styled container, not a
+colored callout. Its id and classes go on a block-attribute line directly above
+the fence:</p>
+    <div id="callout" class="highlight">
+      <p>This block has only an id and classes, so it renders as a plain
+<code>&lt;div id="callout" class="highlight"&gt;</code> wrapper you can target with your own CSS.</p>
+    </div>
+  </section>
+  <section id="mentions-tags-and-inline-extensions">
+    <h2>Mentions, tags, and inline extensions</h2>
+    <p>Mention a person with <span class="mention"><strong>@alice</strong></span> and reference a tag like <span class="tag"><strong>#release-1.0</strong></span>.
+An inline extension names a role: press <kbd>Ctrl+C</kbd> to copy.</p>
+  </section>
+  <section id="footnotes">
+    <h2>Footnotes</h2>
+    <p>Carve supports footnotes<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> with definitions collected anywhere.<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+  </section>
+  <section id="smart-typography">
+    <h2>Smart typography</h2>
+    <p>Dashes and ellipsis: an em dash — an en range 10–20 … and so on.
+Arrows and comparisons: → ← ↔ ⇒ , ≠ ≤ ≥ , © ® ™.</p>
+    <hr>
+  </section>
+  <section id="mermaid-tier-3-extension">
+    <h2>Mermaid (Tier-3 extension)</h2>
+    <pre><code class="language-mermaid">graph TD
+    A[Write Carve] --&gt; B{LSP diagnostics}
+    B --&gt;|clean| C[Preview]
+    B --&gt;|warnings| D[Quick fix]
+    D --&gt; A
+    C --&gt; E[Publish]
+</code></pre>
+    <pre><code class="language-mermaid">sequenceDiagram
+    Author-&gt;&gt;Editor: type Carve
+    Editor-&gt;&gt;LSP: textDocument/didChange
+    LSP--&gt;&gt;Editor: diagnostics + semantic tokens
+    Editor--&gt;&gt;Author: live preview
+</code></pre>
+  </section>
+</section>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>The reference and its definition are linked by label.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>Definitions can appear in any order.<a href="#fnref2" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>

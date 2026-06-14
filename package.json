@@ -12,8 +12,9 @@
     "compare:impls": "node scripts/compare-impls.mjs",
     "sync-carve-lib": "node scripts/sync-carve-lib.mjs",
     "sync-carve-wasm": "node scripts/sync-carve-wasm.mjs",
-    "test": "node --test tests/corpus.test.mjs tests/optional-corpus.test.mjs tests/normativity.test.mjs",
-    "test:conformance": "npm run corpus:build && npm test"
+    "test": "node --test tests/corpus.test.mjs tests/optional-corpus.test.mjs tests/normativity.test.mjs tests/examples.test.mjs",
+    "test:conformance": "npm run corpus:build && npm test",
+    "examples:snapshot": "UPDATE_EXAMPLES=1 node --test tests/examples.test.mjs"
   },
   "devDependencies": {
     "@markup-carve/vite-plugin-carve": "git+https://github.com/markup-carve/vite-plugin-carve.git",
