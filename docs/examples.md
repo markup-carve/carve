@@ -305,22 +305,6 @@ Attributes attach to the heading via a block-attribute line on the line above (t
 
 :::
 
-A `{…}` at the end of a heading line is ordinary inline text, not an attribute block (djot-strict; same as a trailing `{…}` after paragraph text). The heading id derives from the full literal text.
-
-::: compare
-
-```carve
-## Setup {.featured}
-```
-
-```html
-<section id="setup-featured">
-  <h2>Setup {.featured}</h2>
-</section>
-```
-
-:::
-
 Inline emphasis renders inside heading text.
 
 ::: compare
