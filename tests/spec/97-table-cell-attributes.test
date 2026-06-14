@@ -1,0 +1,14 @@
+Table cell attributes
+
+```
+|{.highlight} Total | 99 |
+|---|---|
+| a | b |
+.
+<table>
+  <thead><tr><th class="highlight">Total</th><th>99</th></tr></thead>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```

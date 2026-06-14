@@ -5346,3 +5346,29 @@ renders as an empty cell rather than being dropped.
 ```
 
 :::
+
+## Table cell attributes
+
+A `{…}` attribute block glued to a cell's opening `|` (no space) sets that
+cell's attributes; the rest, after optional whitespace, is the cell content. A
+space before the brace keeps it literal, and a cell carrying attributes is never
+a bare span marker.
+
+::: compare
+
+```carve
+|{.highlight} Total | 99 |
+|---|---|
+| a | b |
+```
+
+```html
+<table>
+  <thead><tr><th class="highlight">Total</th><th>99</th></tr></thead>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+:::
