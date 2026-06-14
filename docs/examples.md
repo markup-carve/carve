@@ -2554,6 +2554,23 @@ is a div/admonition.
 
 :::
 
+A SINGLE colon is not a definition-list term (the term marker is `::`), so a `: term` line is ordinary paragraph text. The two-space-indented line after the blank is its own paragraph (Carve has no indented-content blocks).
+
+::: compare
+
+```carve
+: term
+
+  def
+```
+
+```html
+<p>: term</p>
+<p>def</p>
+```
+
+:::
+
 ## Comments
 
 `%%` starts a line comment and a `%%%` fence a block comment; neither is

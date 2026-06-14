@@ -13,3 +13,12 @@ Definition lists
   <dd>A pigment or paint.</dd>
 </dl>
 ```
+
+```
+: term
+
+  def
+.
+<p>: term</p>
+<p>def</p>
+```

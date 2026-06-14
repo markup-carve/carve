@@ -11,9 +11,11 @@
 let activeMatchers = [];
 let activeMatcherCtx = null;
 const RE_HEADING = /^(#{1,6})\s+(.+?)(?:\s+\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
-// Thematic break: a line of 3+ of the same `-`, `*`, or `_` (grammar
-// thematic_break). A run alone on a line can't be emphasis (no content).
-const RE_HR = /^(?:-{3,}|\*{3,}|_{3,})\s*$/;
+// Thematic break: a line of 3+ of the same `-`, `*`, or `_`, optionally
+// separated by spaces/tabs (`---`, `- - -`, `* * *`); nothing else on the line
+// (grammar thematic_break). A run alone on a line can't be emphasis (no
+// content). The chars must all match, so a mixed `-*-` is not a break.
+const RE_HR = /^[ \t]*([-*_])(?:[ \t]*\1){2,}[ \t]*$/;
 // Info string is a single language token, optionally followed by a bracketed
 // `[label]` (structured metadata; e.g. ```php [NPM] or ```[NPM]). The charset
 // covers real-world tags with punctuation (c++, c#, f#, asp.net). Anything else
@@ -96,6 +98,11 @@ const RE_LINK_DEF = /^\s*\[([^\]]+)\]:\s+(\S+)(?:\s+(?:"([^"]*)"|'([^']*)'))?\s*
 const RE_FOOTNOTE_DEF = /^\[\^([^\]]+)\]:\s+(.+)$/;
 const RE_CAPTION = /^\^\s+(.+)$/;
 const RE_TABLE_ROW = /^\|/;
+// A complete standard table row opens AND closes with `|` (grammar
+// standard_row). A stray leading `|` with no closing `|` (`| a`) is ordinary
+// paragraph text, not a table -- so a table opener / interrupter must have the
+// trailing pipe, not just a leading one.
+const isTableRow = (line) => RE_TABLE_ROW.test(line) && /\|\s*$/.test(line);
 // A `+`-prefixed continuation row (multi-line cell). Like the grammar's
 // continuation_row it ends with `|`; that trailing pipe distinguishes
 // it from a `+ ` list item (which never ends with `|`). Only consumed
@@ -635,7 +642,7 @@ function parseBlockInner(lexer) {
         RE_ORDERED.test(line) ||
         extractItemAttr(line) !== null)
         return parseList(lexer);
-    if (RE_TABLE_ROW.test(line))
+    if (isTableRow(line))
         return parseTable(lexer);
     if (isBlockImageLine(line))
         return parseBlockImage(lexer);
@@ -1421,7 +1428,7 @@ function lineOpensBlock(line) {
         RE_UNORDERED.test(line) ||
         RE_ORDERED.test(line) ||
         extractItemAttr(line) !== null ||
-        RE_TABLE_ROW.test(line) ||
+        isTableRow(line) ||
         (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line)) ||
         RE_DIV_OPEN.test(line) ||
         RE_LINE_BLOCK_OPEN.test(line));
@@ -1449,7 +1456,7 @@ function lazyContinuationEndsList(line, lexer) {
         RE_UNORDERED.test(line) ||
         RE_ORDERED.test(line) ||
         extractItemAttr(line) !== null ||
-        RE_TABLE_ROW.test(line) ||
+        isTableRow(line) ||
         isBlockImageLine(line));
 }
 function parseList(lexer) {
@@ -2010,7 +2017,7 @@ function startsInterruptingBlock(lexer) {
             return RE_BLOCKQUOTE.test(ln);
         case '|':
             // A valid `|…|` row (a stray leading `|` in prose is not a row).
-            return RE_TABLE_ROW.test(ln) && /\|\s*$/.test(ln);
+            return isTableRow(ln);
         case '`':
         case '~':
             // Raw passthrough / fenced code: interrupt only with a matching closer.
@@ -2038,10 +2045,10 @@ function startsInterruptingBlock(lexer) {
         case '_':
             return RE_HR.test(ln.trim());
         case ':':
-            // definition-list term, or an admonition/div/line-block that has a `:::`
-            // closer ahead (the `::: |` line-block shares the bare `:::` closer)
-            if (RE_DEFLIST_TERM.test(ln))
-                return true;
+            // An admonition/div/line-block that has a `:::` closer ahead (the `::: |`
+            // line-block shares the bare `:::` closer). A definition-list term (`::`)
+            // is NOT in the §10 interrupter set (like an ordered list), so it does
+            // not interrupt a paragraph or heading -- it folds as lazy text.
             if ((RE_ADMONITION_OPEN.test(ln) && !RE_ADMONITION_CLOSE.test(ln)) ||
                 RE_DIV_OPEN.test(ln) ||
                 RE_LINE_BLOCK_OPEN.test(ln))
