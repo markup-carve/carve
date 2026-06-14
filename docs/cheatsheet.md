@@ -26,7 +26,7 @@ The whole syntax, one page. Carve's mnemonic: **the markup looks like its output
 | `</#section-id>` | cross-reference | link text cloned from the target |
 | `![alt](img.jpg)` | image | |
 | `[^1]` / `^[inline note]` | footnote | reference / inline form |
-| `[span]{.class}` | attributed span | |
+| `[span]{.class}` | span | `{…}` adds class, id, or attributes |
 | `:youtube[ID]` | extension | `:type[content]{attrs}` |
 | `@user` `#tag` | mention / tag | social conventions |
 | `\*literal\*` | escape | backslash + any ASCII punctuation |
