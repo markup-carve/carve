@@ -8,7 +8,7 @@ tighten the policy.
 
 Carve has no *implicit* raw-HTML passthrough. Authored bare `<` and `>` carry no
 special meaning and are escaped on output rather than interpreted. (Explicit,
-opt-in raw passthrough — `` ```raw html `` blocks and `` `…`{=html} `` inline —
+opt-in raw passthrough — `` ```=html `` blocks and `` `…`{=html} `` inline —
 does emit verbatim HTML and must be disabled for untrusted input; see Profiles.)
 
 ```carve

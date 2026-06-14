@@ -2676,13 +2676,14 @@ bar</p>
 
 ## Raw blocks
 
-A ` ```raw FORMAT ` block passes its content through verbatim when FORMAT
-matches the output; other formats are dropped.
+A ` ```=FORMAT ` block (a code fence whose info string is `=FORMAT`) passes its
+content through verbatim when FORMAT matches the output; other formats are
+dropped. This is the block parallel of the inline raw `{=format}` attribute.
 
 ::: compare
 
 ````carve
-```raw html
+```=html
 <custom-el>Verbatim HTML</custom-el>
 ```
 ````

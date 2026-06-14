@@ -1,7 +1,7 @@
 Raw blocks
 
 ````
-```raw html
+```=html
 <custom-el>Verbatim HTML</custom-el>
 ```
 .

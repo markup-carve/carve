@@ -175,8 +175,8 @@ fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
    block (```js title="x", ``` php {.x}) -- the line is NOT a fenced code block;
    it falls back to ordinary inline parsing (the backtick run typically opens an
    inline code span). The bracket is the only delimiter that admits structured
-   metadata. The multi-token raw passthrough opener (```raw FORMAT, PART 9 §20)
-   is a SEPARATE production matched before this one. *)
+   metadata. The raw passthrough opener (```=FORMAT, PART 9 §20) is a SEPARATE
+   production matched before this one (a leading `=` is never a language). *)
 
 code_fence_open = backtick_fence | tilde_fence ;
 code_fence_close = backtick_fence | tilde_fence ;  (* same fence char; length >= opener (PART 9 §2) *)
@@ -185,7 +185,7 @@ backtick_fence = '`', '`', '`', {'`'} ;
 tilde_fence = '~', '~', '~', {'~'} ;
 
 code_fence_info = (language_info, [space+, label]) | label ;
-language_info = (letter | digit | '-' | '_' | '+' | '#' | '.')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net. May start with a digit. carve-php additionally accepts `=` and `/` in the token (djot ```=html raw, ```text/html); carve-js restricts to this charset. *)
+language_info = (letter | digit | '-' | '_' | '+' | '#' | '.' | '/')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net, text/html. May start with a digit. The `/` is normative across all impls (so `text/html`, `image/svg` are language tokens, not split). A token MUST NOT start with `=`: a leading `=` is the raw_block opener (above), not a language. *)
 label = '[', { any_char - ']' }, ']' ;  (* structured metadata, e.g. [Installation]; not part of the class *)
 code_content = (* any text until matching fence, preserved literally *) ;
 (* TABS IN CODE -- NORMATIVE. Literal tab characters in code content (fenced
@@ -446,16 +446,22 @@ comment_block_close = "%%%", {'%'} ;  (* must match opener length *)
 inline_comment = "%%", {character - newline} ;
 
 (* --- Raw Blocks --- *)
-raw_block = code_fence_open, "raw", space, format_name, newline,
+raw_block = code_fence_open, [space], "=", format_name, newline,
             raw_content,
             code_fence_close, newline ;
-(* The opener is a code fence (backticks or tildes) whose info string is the
-   literal token `raw`, a MANDATORY space, and a format name -- the space
-   separates `raw` from the format (```rawhtml is an ordinary code block with
-   language `rawhtml`). The closer follows the PART 9 §2 rule: same fence
-   character, length >= opener. Content is verbatim; it is emitted UNESCAPED
-   when the format matches the output format (html) and DROPPED otherwise --
-   the block parallel of raw inline (PART 9 §20). *)
+(* The opener is a code fence (backticks or tildes) whose info string is `=`
+   immediately followed by a format name (```=html). The leading `=` is the
+   block parallel of the inline raw `{=format}` attribute; it never starts a
+   language token (a code fence's language charset excludes `=`), so this is
+   unambiguous against an ordinary code block. The `=` and format name must be
+   adjacent -- ```= html (space after `=`) is NOT a raw block. Leading
+   whitespace before the `=` is permitted (```=html and ``` =html both open
+   raw). The closer follows the PART 9 §2 rule: same fence character, length
+   >= opener. Content is verbatim; it is emitted UNESCAPED when the format
+   matches the output format (html) and DROPPED otherwise -- the block parallel
+   of raw inline (PART 9 §20). This adopts djot's raw-block syntax; the earlier
+   ```raw FORMAT keyword form was removed (no English keyword; symbol-based and
+   symmetric with inline `{=format}`). *)
 
 format_name = "html" | "latex" | identifier ;
 raw_content = (* any content until closing fence *) ;
@@ -954,7 +960,7 @@ EOF = (* end of file *) ;
    Block parsing precedence (first pass):
    1. Frontmatter (--- delimited at document start)
    2. Comments (%% line, %%% block)
-   3. Raw blocks (```raw FORMAT -- matched before ordinary fences),
+   3. Raw blocks (```=FORMAT -- matched before ordinary fences),
       then code blocks (``` or ~~~ fenced)
    4. Headings (# prefix)
    5. Thematic breaks (---, ***, ___)
@@ -1592,10 +1598,11 @@ EOF = (* end of file *) ;
         project root, bound recursion depth, and treat includes as opt-in.
 
    20. RAW PASSTHROUGH -- NORMATIVE (governs `raw_inline` in PART 3 and the
-      semantics of `raw_block` in PART 2). The BLOCK form (```raw FORMAT
+      semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT
       fence, PART 2) emits its verbatim content UNESCAPED when FORMAT
       matches the output format and drops it otherwise; the inline form
-      follows. A code span whose trailing attribute block
+      follows. Block and inline raw share the `=FORMAT` spelling (```=html
+      / `…`{=html}); the former ```raw FORMAT keyword form was removed. A code span whose trailing attribute block
       is EXACTLY `{=format}` (a single `=`-prefixed format name, with no
       other classes/ids/keys) is raw passthrough: the verbatim span content
       is emitted UNESCAPED when `format` matches the output format (`html`),
