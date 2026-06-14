@@ -13,8 +13,10 @@ export interface LintWarning {
     end: number;
 }
 /**
- * Lint a Carve document for semantic problems that render as literal text:
- * duplicate heading ids and `</#id>` cross-references with no target.
+ * Lint a Carve document for silent-failure problems: duplicate heading ids,
+ * `</#id>` cross-references with no target, unresolved reference links,
+ * missing/duplicate/unused footnotes, trailing heading attribute blocks,
+ * legacy `raw FORMAT` fences, and block markers that leaked as paragraph text.
  *
  * `asciiHeadingIds` must match the value passed to `resolve()`, since it
  * changes how heading slugs (and therefore the valid id set) are computed.
