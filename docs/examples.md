@@ -2439,6 +2439,30 @@ Text[^a]{.ref}.
 
 :::
 
+A note referenced more than once gets a distinct `fnref` id per reference and one numbered backlink per reference (`↩` with a superscript), so each return arrow points back to its own reference. (A note referenced once keeps a plain `↩`.)
+
+::: compare
+
+```carve
+See[^m] and again[^m].
+
+[^m]: One note, two refs.
+```
+
+```html
+<p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and again<a id="fnref1-2" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>One note, two refs.<a href="#fnref1" role="doc-backlink">↩<sup>1</sup></a> <a href="#fnref1-2" role="doc-backlink">↩<sup>2</sup></a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
 ## Generic divs
 
 A bare `:::` opener with no type word is djot's generic container: a plain

@@ -152,7 +152,10 @@ export function resolveHeadingIds(doc, asciiFold = false) {
         if (block.type !== 'heading')
             continue;
         let id;
-        if (block.attrs?.id) {
+        if (block.attrs?.id !== undefined) {
+            // An explicit id wins verbatim, INCLUDING an explicit empty `id=""`
+            // (`{id=""}` then `# T` -> `<section id="">`): it suppresses the auto
+            // slug rather than being treated as absent.
             id = block.attrs.id;
             used.add(id);
         }

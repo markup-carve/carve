@@ -229,6 +229,10 @@ export function parse(source, opts = {}) {
     // literal (`> ﻿# T` stays a quoted paragraph), matching carve-php / carve-rs.
     if (source.charCodeAt(0) === 0xfeff)
         source = source.slice(1);
+    // Replace any NUL (U+0000) with the U+FFFD replacement character so a control
+    // byte never reaches output (decided cross-impl behavior; WHATWG-style).
+    if (source.includes('\0'))
+        source = source.replace(/\0/g, '�');
     const lexer = new Lexer(source, opts);
     // Consume leading frontmatter first so `lexer.pos` marks the end of the
     // metadata region; the def passes and parseBlocks all start from there.
@@ -2206,7 +2210,7 @@ const RE_INLINE_ATTR = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\}
 // `}` is the first one outside quotes (djot "don't mind braces in quotes").
 // RE_SPAN_TAIL's body is `*` so an empty `{}` matches; isValidAttrPayload then
 // decides span (valid block, possibly empty) vs literal (invalid content).
-const RE_LINK_TAIL = /^\(([^)\s]*)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
+const RE_LINK_TAIL = /^\(([^)\s]*)(?:\s+"((?:[^"\\]|\\.)*)"|\s+'((?:[^'\\]|\\.)*)')?\)(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
 const RE_REF_TAIL = /^\[([^\]]*)\](?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
 const RE_SPAN_TAIL = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\}/;
 /**
@@ -2576,7 +2580,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                     const img = { type: 'image', src: ml[1], alt: rest.slice(2, close) };
                     const title = ml[2] ?? ml[3];
                     if (title)
-                        img.title = title;
+                        img.title = unescapeAttrValue(title);
                     let len = close + 1 + ml[0].length;
                     if (ml[4]) {
                         const a = parseAttrs(ml[4]);
@@ -2632,7 +2636,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                     };
                     const title = ml[2] ?? ml[3];
                     if (title)
-                        link.title = title;
+                        link.title = unescapeAttrValue(title);
                     let len = close + 1 + ml[0].length;
                     if (ml[4]) {
                         const a = parseAttrs(ml[4]);
@@ -3245,9 +3249,18 @@ export function parseAttrs(src) {
             }
         }
         else if (m[7]) {
-            // Boolean attribute: a bare word with no value.
-            attrs.keyValues = { ...(attrs.keyValues ?? {}), [m[7]]: '' };
-            note(m[7]);
+            if (m[7] === 'id') {
+                // A bare boolean `id` also feeds the id slot (value ''), last-wins and
+                // single -- `{id id=j}` -> `id="j"`, `{id}` -> `id=""` -- so `id` never
+                // enters keyValues and no duplicate `id` attribute can be produced.
+                attrs.id = '';
+                note('#id');
+            }
+            else {
+                // Boolean attribute: a bare word with no value.
+                attrs.keyValues = { ...(attrs.keyValues ?? {}), [m[7]]: '' };
+                note(m[7]);
+            }
         }
     }
     if (order.length)

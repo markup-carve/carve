@@ -210,8 +210,14 @@ function renderInline(node, ctx) {
             return escapeText(`#${node.name}`);
         case 'extension':
             return renderInlines(node.content, ctx);
-        case 'abbreviation':
-            return node.abbr;
+        case 'abbreviation': {
+            // Markdown has no abbreviation syntax; emit an HTML `<abbr>` so the title
+            // survives (markdown allows inline HTML), matching carve-php. Dropping it
+            // to plain text would lose the expansion.
+            const title = node.expansion.replace(/[&<>"]/g, (c) => c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : '&quot;');
+            const text = node.abbr.replace(/[&<>]/g, (c) => c === '&' ? '&amp;' : c === '<' ? '&lt;' : '&gt;');
+            return `<abbr title="${title}">${text}</abbr>`;
+        }
         case 'footnote':
             return node.inline ? `^[${renderInlines(node.inline, ctx)}]` : `[^${node.id ?? ''}]`;
         case 'soft-break':
@@ -278,12 +284,11 @@ function escapeText(text) {
     return text.replace(/[\\`*_[\]#]/g, '\\$&');
 }
 function cleanEscapedText(node) {
-    const span = node.pos?.startOffset !== undefined && node.pos.endOffset !== undefined
-        ? node.pos.endOffset - node.pos.startOffset
-        : undefined;
-    return (span !== undefined && span > node.value.length
-        ? node.value.replace(/[*#_]/g, '')
-        : node.value);
+    // The value is the literal text (the parser already resolved backslash
+    // escapes), so a `\*` reaches here as `*`. Return it verbatim -- dropping the
+    // character would lose data. Markdown re-escapes specials via escapeText;
+    // plain/ansi need no escaping.
+    return node.value;
 }
 function isLegacyDefinitionParagraph(node) {
     return (node.children.length === 3 &&
