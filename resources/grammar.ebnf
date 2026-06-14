@@ -316,6 +316,10 @@ definition_term = "::", space, inline_content, newline ;
 definition_body = ':', space, space, inline_content, newline, {definition_continuation} ;
 definition_continuation = (space, space, space, inline_content, newline)
                         | (backslash, newline, space, space, space, inline_content, newline) ;
+(* The term marker is TWO colons. A single-colon `: term` line is NOT a
+   definition list -- it is ordinary paragraph text. (Deliberate: djot uses a
+   single colon, but `::` keeps the term marker distinct from the `:::` div
+   fence and from a stray `:` in prose; all three reference impls agree.) *)
 
 (* --- Tables --- *)
 table = standard_row, {table_row}, [caption] ;
