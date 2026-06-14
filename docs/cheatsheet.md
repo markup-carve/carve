@@ -39,8 +39,8 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 ## Blocks
 
 ````carve
-# H1   ## H2   ### H3        (ATX headings; blank line after - text on
-                              the next line folds INTO the heading)
+# H1   ## H2   ### H3        (ATX headings 1-6; put attributes on the
+                              line above: {#id .class})
 
 ---                          (thematic break: --- *** ___)
 

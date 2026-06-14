@@ -929,9 +929,10 @@ element. Several rules apply (PART 9 §15):
   Text
   ```
 
-> Cross-impl status: carve-php implements block-attribute lines in full;
-> carve-js does not yet (a tracked follow-up). Trailing attributes on a
-> block's own syntax (e.g. `# Heading {#x}`) work in both.
+> Cross-impl status: carve-php, carve-js, and carve-rs all implement
+> block-attribute lines. Attributes attach on the line above the block (the
+> uniform rule), so an explicit `#id` on a heading is written `{#id}` on the
+> preceding line.
 
 **Why keep Djot's syntax:**
 - Already familiar to Djot users
