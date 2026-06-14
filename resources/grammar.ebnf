@@ -1068,7 +1068,16 @@ EOF = (* end of file *) ;
         separates cells; `\|` and a `|` inside a code span are content.
       - Span markers (^ <) must be sole cell content. A leading `=` on a
         cell (glued to the `|`) marks a HEADER cell; escape it (`\=`) for a
-        data cell whose text starts with `=`.
+        data cell whose text starts with `=`. Because a span marker must be the
+        WHOLE cell, any other content disqualifies it: a cell like `{.x} <` is
+        NOT a colspan marker -- it is an ordinary cell whose literal text is
+        `{.x} <`. (So a leading attribute block does not attach to a span
+        marker; there is no such thing as an attributed span marker.)
+      - SPAN MARKER WITH NOTHING TO MERGE (NORMATIVE): a rowspan `^` in the
+        FIRST row, or a colspan `<` in the FIRST column, has no cell above /
+        to its left to extend. Such a marker renders as an EMPTY cell (a
+        `<td></td>` / `<th></th>` carrying no content and no span), rather than
+        being dropped. (corpus 96-table-span-marker-in-first-column.)
       - VALID TABLE ROW (the §10 interruption test): a line whose first
         non-indent character is `|` AND whose last non-whitespace character
         is `|`, with at least one cell between them. A line-initial `|`
