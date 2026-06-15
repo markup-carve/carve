@@ -1117,6 +1117,12 @@ EOF = (* end of file *) ;
         to its left to extend. Such a marker renders as an EMPTY cell (a
         `<td></td>` / `<th></th>` carrying no content and no span), rather than
         being dropped. (corpus 96-table-span-marker-in-first-column.)
+      - HEADER CELL ROWSPAN (NORMATIVE): a rowspan `^` extends the cell directly
+        above it even when that cell is a HEADER cell -- the rowspan crosses the
+        header/body boundary, so a header cell can carry a `rowspan` that spans
+        the header row plus the body rows below it (`<th rowspan="N">`). This
+        holds for both a native `|=` header and a GFM-delimiter-promoted header.
+        (corpus 99-table-header-cell-rowspan.)
       - VALID TABLE ROW (the §10 interruption test): a line whose first
         non-indent character is `|` AND whose last non-whitespace character
         is `|`, with at least one cell between them. A line-initial `|`
