@@ -1,0 +1,15 @@
+Table header cell rowspan
+
+```
+|= H |= G |
+| ^ | b |
+| ^ | c |
+.
+<table>
+  <thead><tr><th rowspan="3">H</th><th>G</th></tr></thead>
+  <tbody>
+    <tr><td>b</td></tr>
+    <tr><td>c</td></tr>
+  </tbody>
+</table>
+```
