@@ -1,0 +1,14 @@
+Table row attributes
+
+```
+| Name | Score |{.head}
+|------|-------|
+| Ann  | 9     |{.win}
+.
+<table>
+  <thead><tr class="head"><th>Name</th><th>Score</th></tr></thead>
+  <tbody>
+    <tr class="win"><td>Ann</td><td>9</td></tr>
+  </tbody>
+</table>
+```

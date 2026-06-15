@@ -671,7 +671,9 @@ function stripStructuralAttrs(attrs, emitted) {
     return out;
 }
 function renderTableRowFlat(cells, opts) {
-    const parts = ['<tr>'];
+    // A row attribute block (`| … |{.x}`) lives on the TableRow, shared by every
+    // grid entry in this row.
+    const parts = [`<tr${renderAttrs(cells[0]?.row.attrs)}>`];
     for (const entry of cells) {
         if (entry.skip)
             continue;
