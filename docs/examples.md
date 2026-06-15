@@ -2417,7 +2417,7 @@ text
 :::
 
 A trailing attribute block on a reference attaches to the noteref `<a>`
-(grammar PART 9 §note). Only the reference where the author wrote the block
+(grammar PART 9 §16). Only the reference where the author wrote the block
 carries it.
 
 ::: compare

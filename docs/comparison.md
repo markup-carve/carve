@@ -23,9 +23,9 @@ turning your content into a JavaScript program.
 fence / `:::` opener uses a bounded forward scan for a matching closer
 (closer lookahead, not backtracking) - see
 [Technical Rationale](/technical-rationale).
-\*\* Like Markdown for bullets, quotes, headings, tables and closed fences;
-ordered-list markers deliberately never interrupt (no CommonMark `1.`-only
-heuristic).
+\*\* Like Markdown for quotes, headings, tables and closed fences; list markers
+(both bullet and ordered) deliberately never interrupt a paragraph - a list
+needs a blank line (no CommonMark `1.`-only heuristic).
 
 ## Authoring features
 

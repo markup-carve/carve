@@ -412,33 +412,31 @@ Ordered lists support **decimal, alphabetic (`a.`/`A.`), and roman
 fixes the dialect, the `<ol type>`, and `start`; a marker outside that
 dialect (or the other delimiter) starts a new list (PART 9 §11).
 
-Unlike the other blocks, an ordered-list marker does **not** interrupt a
-paragraph (the §10 paragraph rule): an ordered list — `1.`, `2.`, `1985.`, `a.`,
-`i.`, any value — needs a blank line before it. An ordered marker is too common
-in prose ("step 2.", "version 1985.", "upgrade to 1. today"), and the only way
-to allow it would be the CommonMark `1.`-only heuristic Djot removed; Carve
-keeps ordered lists on the blank-line rule instead. (Bullets `- `/`* `,
-being unambiguous, do interrupt; `+` is the continuation marker, not a bullet.)
-Inside an existing list item, indentation
+Unlike the other blocks, a **list marker does not interrupt a paragraph** (the
+§10 paragraph rule): a list — bullet (`- `/`* `, task) or ordered (`1.`, `2.`,
+`1985.`, `a.`, `i.`, any value) — needs a blank line before it. Both marker
+classes behave identically here. An ordered marker is too common in prose
+("step 2.", "version 1985.", "upgrade to 1. today") to interrupt, and a
+hard-wrapped prose line that happens to begin with a bullet should not silently
+become a list; the only way to allow either would be the CommonMark `1.`-only
+heuristic Djot removed, so Carve keeps both on the blank-line rule. (`+` is the
+continuation marker, not a bullet.) Inside an existing list item, indentation
 alone still nests a sublist.
 
-A bullet opens a list at **any indentation**, not only at column 0: a `- `/`* `
-marker is always a bullet, so an indented one opens a list (at the top level) or
-interrupts an open paragraph just like a column-0 marker. The leading indentation
-becomes the new list's base column. This keeps the bullet rule uniform across
-contexts - an indented bullet opens a list whether it follows a paragraph, stands
-at the top level, or nests inside an existing item.
+A bullet opens a list at **any indentation** at the top level, not only at
+column 0: a `- `/`* ` line is always a bullet, so even an indented one opens a
+list rather than becoming indented code (unlike CommonMark). The leading
+indentation becomes the new list's base column. (Nesting *inside* an existing
+item is gated by the content column - see below.)
 
 ```
-text
-  - item       →  a paragraph, then a list (the bullet interrupts)
-
-  - a           →  a list (no column-0 requirement)
+  - item        →  a list (indented; no column-0 requirement)
 ```
 
-Ordered markers, by contrast, never interrupt a paragraph at any indentation
-(they keep the blank-line rule above); a marker requires a single space after it
-(`- x`, not a tab), since the space is a syntax delimiter, not indentation.
+A marker requires a single space after it (`- x`, not a tab), since the space is
+a syntax delimiter, not indentation. Directly under a line of prose with no
+blank line, though, a bullet does not start a list - it folds into the paragraph
+like any list marker (the §10 rule above).
 
 **Auto-numbering:**
 ```
@@ -454,24 +452,34 @@ marker: `- ` / `* ` → column 2, `1. ` → 3, `10. ` → 4. A **task** item's c
 is content, not marker, so its content column is the **bullet width (2)**, not
 the full `- [x] ` width.
 
-How a deeper marker is read follows the §10 interrupt rule:
+How a deeper marker inside an open list item is read - this is sub-list nesting,
+a different axis from the §10 paragraph rule (no list marker interrupts a
+paragraph; both need a blank line):
 
-- **Unordered and task markers interrupt**, so an indented one always opens a
-  sub-list, at any indent past the parent's base:
-  ```
-  - a
-    - b          →  nested
-  ```
-- **Ordered markers do not interrupt**, so they are gated by the content column.
-  One **at or past** it opens a sub-list; one **below** it is lazy paragraph text
-  that folds into the item:
-  ```
-  1. a
-     1. b         →  nested  (column 3 = content column)
+A **list marker** (bullet or ordered) is **gated by the content column** - and
+bullet and ordered behave identically here. A marker **at or past** the parent's
+content column opens a sub-list; one **below** it is lazy paragraph text that
+folds into the item:
 
-  1. a
-    1. b          →  "1. b" is lazy text of item a  (column 2, below it)
-  ```
+```
+- a
+  - b          →  nested            (column 2 = content column)
+
+- a
+ - b           →  "- b" is lazy text of item a   (column 1, below it)
+
+1. a
+   1. b        →  nested            (column 3 = content column)
+
+1. a
+  1. b         →  "1. b" is lazy text of item a  (column 2, below it)
+```
+
+Every *other* block opener (quote, heading, fence, table) does nest at any
+indent past the parent's base column - those are unambiguous as blocks and never
+fold as lazy text. (Rule B's "a bullet opens a list at any indentation" is about
+the **top level** - no column-0 requirement, unlike CommonMark - not about
+sub-list nesting depth.)
 
 Carve does not require a blank line before a sub-list (unlike djot); indentation
 alone nests it. Structure comes from indentation only; the literal marker numbers
@@ -1162,24 +1170,24 @@ Useful for:
 ### 4.15 Raw/Passthrough Content
 
 ~~~
-```raw html
+```=html
 <div class="custom">
   <p>Raw HTML here</p>
 </div>
 ```
 
-```raw latex
+```=latex
 \begin{equation}
   E = mc^2
 \end{equation}
 ```
 ~~~
 
-Inline raw passthrough is the inline parallel of the `raw` block: a code
-span tagged with `{=format}`. The verbatim content is emitted unescaped
-when the format matches the output, and dropped otherwise. Any *other*
-trailing `{…}` on a code span is a generic attribute block, not raw
-passthrough (PART 9 §20).
+A raw block opens with `=FORMAT` (a leading `=` immediately followed by the
+format name). Inline raw passthrough is its inline parallel: a code span tagged
+with `{=format}`. The verbatim content is emitted unescaped when the format
+matches the output, and dropped otherwise. Any *other* trailing `{…}` on a code
+span is a generic attribute block, not raw passthrough (PART 9 §20).
 
 ```
 Use `<br>`{=html} to force a break, and `\foo`{=latex} is dropped in HTML.

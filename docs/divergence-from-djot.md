@@ -136,25 +136,38 @@ block marker - a `-`/`*` bullet, `>` quote, `#` heading, a `|` table row, or a
 fence - stays part of the paragraph; the block needs a blank line before it.
 
 **Carve:** a **visible** block interrupts an open paragraph with no blank line
-before it - the Markdown / CommonMark rule. Ordered lists are the main exception:
-they still need a blank line (an ordered marker in prose is too common to treat
-as a list); fence and `:::` closers and bare images are also excluded (PART 9 §10).
+before it - the Markdown / CommonMark rule. The exception is **list markers**:
+neither a bullet (`-`/`*`, task) nor an ordered marker interrupts a paragraph -
+a list still needs a blank line before it (matching Djot). Both list-marker
+classes behave identically here; fence and `:::` closers and bare images are
+also excluded (PART 9 §10).
+
+```
+intro
+# Heading
+
+Djot:   <p>intro\n# Heading</p>                  (one paragraph)
+Carve:  <p>intro</p><h1>Heading</h1>             (paragraph + heading)
+```
+
+A list marker is the exception - it does NOT interrupt:
 
 ```
 intro
 - item
 
-Djot:   <p>intro\n- item</p>                    (one paragraph)
-Carve:  <p>intro</p><ul><li>item</li></ul>      (paragraph + list)
+Carve:  <p>intro\n- item</p>                     (one paragraph; add a blank line to start a list)
 ```
 
 **Why.** Djot's blank-line rule is hard-wrap-safe, but it surprises authors
-coming from Markdown more often than it helps: a list or heading written
+coming from Markdown more often than it helps: a heading or quote written
 directly under a line of prose silently stayed prose. Carve follows the
-near-universal Markdown expectation and accepts the cost - a hard-wrapped prose
-line that happens to begin with a marker becomes a block. Escape the marker
-(`\- item`) or add a blank line to keep it prose. This is Carve's largest
-block-level break from Djot, and the reason the project frames itself as
+near-universal Markdown expectation for those blocks. Lists keep Djot's
+blank-line rule on purpose: an ordered marker is common in prose ("see step
+2.") and a hard-wrapped line that happens to begin with a bullet should not
+silently become a list. Escape a marker (`\# H`, `\- item`) or add a blank line
+to control it. This block-interruption rule is one of Carve's larger
+block-level breaks from Djot, and part of why the project frames itself as
 post-Markdown rather than post-Djot.
 
 ## What Carve adds on top (not breaks)
