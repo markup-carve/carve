@@ -44,11 +44,9 @@ text
 - a
 - b
 .
-<p>text</p>
-<ul>
-  <li>a</li>
-  <li>b</li>
-</ul>
+<p>text
+- a
+- b</p>
 ```
 
 ```
@@ -125,12 +123,8 @@ text
 > p one
 > - item
 .
-<blockquote>
-  <p>p one</p>
-  <ul>
-    <li>item</li>
-  </ul>
-</blockquote>
+<blockquote><p>p one
+- item</p></blockquote>
 ```
 
 ```

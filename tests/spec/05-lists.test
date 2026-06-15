@@ -106,10 +106,8 @@ not a list</p>
 text
   - item
 .
-<p>text</p>
-<ul>
-  <li>item</li>
-</ul>
+<p>text
+- item</p>
 ```
 
 ```
@@ -137,10 +135,8 @@ text
 Die Frage ist x = 5
 * 3 + 17 wahr.
 .
-<p>Die Frage ist x = 5</p>
-<ul>
-  <li>3 + 17 wahr.</li>
-</ul>
+<p>Die Frage ist x = 5
+* 3 + 17 wahr.</p>
 ```
 
 ```
@@ -148,11 +144,9 @@ Liste:
 - eins
 - zwei
 .
-<p>Liste:</p>
-<ul>
-  <li>eins</li>
-  <li>zwei</li>
-</ul>
+<p>Liste:
+- eins
+- zwei</p>
 ```
 
 ```

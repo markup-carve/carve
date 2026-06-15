@@ -669,7 +669,7 @@ A task item's content column is the bullet width (2), since the checkbox is cont
 
 :::
 
-A bullet opens a list at any indentation (Rule B), so an indented bullet interrupts an open paragraph just like a column-0 one.
+A list marker does not interrupt an open paragraph — like an ordered marker, a bullet needs a blank line before it. An indented bullet after a prose line folds into the paragraph (lazy continuation).
 
 ::: compare
 
@@ -679,15 +679,13 @@ text
 ```
 
 ```html
-<p>text</p>
-<ul>
-  <li>item</li>
-</ul>
+<p>text
+- item</p>
 ```
 
 :::
 
-With no preceding paragraph, an indented bullet simply opens a list whose base column is the indentation.
+With no preceding paragraph, an indented bullet simply opens a list whose base column is the indentation (Rule B).
 
 ::: compare
 
@@ -724,15 +722,15 @@ A blank line between items produces a loose list — each item wraps in a paragr
 
 :::
 
-A paragraph ends at a blank line — or at a line that begins a block. A
-continuation line that starts with a block marker — a bullet `- ` / `* `
-(at any indentation), `>`, a valid `|…|` table row, a heading `#`, or a
-fence with a closer — interrupts the paragraph and starts that block, with
-no blank line required (the Markdown-like rule; §10). Ordered markers
-(`1.`, `1)`, `a.`, …) never interrupt, and `+` is not a bullet. The
-trade-off is that a hard-wrapped prose line that happens to begin with an
-interrupting marker becomes a block — insert a blank line, or
-backslash-escape the marker (`\* 3`), to keep it prose.
+A paragraph ends at a blank line — or at a line that begins an interrupting
+block. A continuation line that starts with `>`, a valid `|…|` table row, a
+heading `#`, a thematic break, or a fence with a closer interrupts the
+paragraph and starts that block, with no blank line required (the
+Markdown-like rule; §10). A **list marker is the exception**: neither a
+bullet (`- ` / `* `) nor an ordered marker (`1.`, `1)`, `a.`, …) interrupts —
+a list needs a blank line before it (symmetric, Djot-like). So a
+hard-wrapped prose line that happens to begin with a bullet stays prose; the
+bullet lines fold into the paragraph as lazy continuation.
 
 ::: compare
 
@@ -742,17 +740,14 @@ Die Frage ist x = 5
 ```
 
 ```html
-<p>Die Frage ist x = 5</p>
-<ul>
-  <li>3 + 17 wahr.</li>
-</ul>
+<p>Die Frage ist x = 5
+* 3 + 17 wahr.</p>
 ```
 
 :::
 
-The same applies to any number of marker lines, and to every interrupting
-block type — a heading under a prose line interrupts it just the same
-(ordered lists do not; they need a blank line).
+A heading under a prose line still interrupts it; a list — bullet or
+ordered — does not, so these fold into one paragraph.
 
 ::: compare
 
@@ -763,16 +758,14 @@ Liste:
 ```
 
 ```html
-<p>Liste:</p>
-<ul>
-  <li>eins</li>
-  <li>zwei</li>
-</ul>
+<p>Liste:
+- eins
+- zwei</p>
 ```
 
 :::
 
-A blank line before the marker also makes it a list, even with one item.
+A blank line before the marker makes it a list, even with one item.
 
 ::: compare
 
@@ -791,8 +784,9 @@ Text hier
 
 :::
 
-Interruption applies inside nested content too: a single marker in a list item
-or block quote starts a block, so a one-child nested list still nests.
+Tight nesting is unaffected by the paragraph rule: an indented marker inside an
+open list item opens a sublist with no blank line, so a one-child nested list
+still nests.
 
 ::: compare
 
@@ -3722,14 +3716,15 @@ a paragraph and stays literal.
 
 ## Paragraph interruption
 
-A paragraph ends at a blank line — or at a line that begins a block. Under the
-Markdown-like rule (§10) a **visible** block interrupts an open paragraph with
-no blank line before it, at the top level and inside nested content. Three
-carve-outs keep common prose safe: ordered markers never interrupt (in any
-dialect or value); a fence or `:::` interrupts only when it has a matching
-closer ahead; and a bare image is never a block. Invisible constructs
-(reference definitions, comments, block-attribute lines) interrupt as they
-always have.
+A paragraph ends at a blank line — or at a line that begins an interrupting
+block. Under the Markdown-like rule (§10) a **visible** block interrupts an open
+paragraph with no blank line before it, at the top level and inside nested
+content. Three carve-outs keep common prose safe: **list markers never
+interrupt** — neither a bullet (`- `/`* `) nor an ordered marker, in any dialect
+or value, so a list always needs a blank line before it (symmetric, Djot-like);
+a fence or `:::` interrupts only when it has a matching closer ahead; and a bare
+image is never a block. Invisible constructs (reference definitions, comments,
+block-attribute lines) interrupt as they always have.
 
 A heading marker after a prose line interrupts.
 
@@ -3803,7 +3798,8 @@ text
 
 :::
 
-An unordered list interrupts.
+An unordered list does **not** interrupt — like an ordered marker it needs a
+blank line, so the bullet lines fold into the paragraph.
 
 ::: compare
 
@@ -3814,17 +3810,15 @@ text
 ```
 
 ```html
-<p>text</p>
-<ul>
-  <li>a</li>
-  <li>b</li>
-</ul>
+<p>text
+- a
+- b</p>
 ```
 
 :::
 
-An ordered-list marker does **not** interrupt — it needs a blank line (the one
-visible block kept on the Djot rule; see the carve-out below).
+An ordered-list marker does **not** interrupt either — the bullet and the
+ordered marker behave identically at the paragraph boundary.
 
 ::: compare
 
@@ -3882,10 +3876,13 @@ body
 
 ::::
 
-**Carve-out — ordered lists never interrupt.** An ordered marker is too common
-in prose ("see step 2.", "version 1985.", "upgrade to 1. today"), and the only
-way to allow it would be the CommonMark `1.`-only heuristic Djot removed. So no
-ordered value — `1.`, `2.`, a year — interrupts; all stay paragraph text.
+**Carve-out — list markers never interrupt.** Neither a bullet nor an ordered
+marker interrupts a paragraph; both need a blank line. An ordered marker is too
+common in prose ("see step 2.", "version 1985.", "upgrade to 1. today") to
+interrupt, and making the bullet match removes the asymmetry (and the residual
+false positive where a hard-wrapped prose line beginning with a bullet became a
+list). So no ordered value — `1.`, `2.`, a year — and no bullet interrupts; all
+stay paragraph text.
 
 ::: compare
 
@@ -3954,8 +3951,9 @@ text
 
 :::
 
-**Nested content.** Interruption applies inside a block quote too: a list
-marker after a prose line interrupts within the quote.
+**Nested content.** The rule applies inside a block quote too: a list marker
+after a prose line does not interrupt within the quote — it folds into the
+quoted paragraph (a blank line is needed to start the list).
 
 ::: compare
 
@@ -3965,12 +3963,8 @@ marker after a prose line interrupts within the quote.
 ```
 
 ```html
-<blockquote>
-  <p>p one</p>
-  <ul>
-    <li>item</li>
-  </ul>
-</blockquote>
+<blockquote><p>p one
+- item</p></blockquote>
 ```
 
 :::
@@ -4106,7 +4100,7 @@ continued</p></blockquote>
 
 :::
 
-A block-opener (list, table, fenced code, heading, `:::` div, thematic break) is not a lazy continuation: it ends the quote and starts that block outside it, exactly as it interrupts a paragraph (§10).
+A block-opener is not a lazy continuation: it ends the quote and starts that block outside it. A **list marker — bullet or ordered — ends the quote too** and starts a top-level sibling list. (A list marker folds only into an open *paragraph*, §10; a blockquote is ended by it, matching djot.) Only plain text lazily continues the quote.
 
 ::: compare
 
@@ -4145,7 +4139,7 @@ int main() {}
 
 ## Multi-line headings
 
-A heading spills onto following lines until a blank line. A continuation line may carry the same-or-lower number of `#` (stripped) or none; a higher/other heading marker starts a new heading, and a caption (`^ …`) or fenced comment (`%%%`) ends it. Only plain text folds in: a block-opener (list, quote, table, fenced code, `:::` div, thematic break) ends the heading and starts that block, exactly as it interrupts a paragraph (§10). An ordered marker still folds (it never interrupts, §10/§11). The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
+A heading spills onto following lines until a blank line. A continuation line may carry the same-or-lower number of `#` (stripped) or none; a higher/other heading marker starts a new heading, and a caption (`^ …`) or fenced comment (`%%%`) ends it. Only plain text folds in: a block-opener (quote, table, fenced code, `:::` div, thematic break) ends the heading and starts that block. A **list marker — bullet or ordered — ends the heading too** and starts a sibling list. (A list marker folds only into an open *paragraph*, §10; a heading is ended by it, matching djot.) The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
 
 ::: compare
 
@@ -4163,7 +4157,7 @@ outside</h1>
 
 :::
 
-A block-opener ends the heading and starts that block (§10), the same way it interrupts a paragraph.
+A list marker — bullet or ordered — ends the heading and starts a sibling list.
 
 ::: compare
 
@@ -4183,7 +4177,7 @@ A block-opener ends the heading and starts that block (§10), the same way it in
 
 :::
 
-An ordered marker is not an interrupter, so it folds into the heading text instead.
+An ordered marker ends the heading the same way (symmetric with the bullet).
 
 ::: compare
 
@@ -4193,9 +4187,11 @@ An ordered marker is not an interrupter, so it folds into the heading text inste
 ```
 
 ```html
-<section id="title-1-one">
-  <h1>Title
-1. one</h1>
+<section id="title">
+  <h1>Title</h1>
+  <ol>
+    <li>one</li>
+  </ol>
 </section>
 ```
 

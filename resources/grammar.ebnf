@@ -107,12 +107,13 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
        heading (ends this one);
      - a caption (`^ ` ...) or a fenced comment (`%%%`) ends the heading;
      - a blank line ends it;
-     - a block-opener (list, quote, table, fenced code, `:::` div, thematic
-       break) ends the heading and starts that block, exactly as it interrupts
-       a paragraph (§10).
-   Only PLAIN text folds into the heading; an ordered marker still folds (it
-   never interrupts a paragraph either, §10/§11). The heading id is derived from
-   the full folded text.
+     - a block-opener (quote, table, fenced code, `:::` div, thematic break)
+       ends the heading and starts that block;
+     - a LIST MARKER -- bullet OR ordered -- also ends the heading and starts a
+       sibling list (a list marker folds only into a PARAGRAPH, §10; a heading
+       is ended by it, matching djot).
+   Only PLAIN text folds into the heading. The heading id is derived from the
+   full folded text.
    NO TRAILING ATTRIBUTES (djot-strict). A heading line carries NO trailing
    `{...}` attribute block: a `{...}` at the end of a heading line is ordinary
    inline content (literal text unless it forms an inline construct), and the
@@ -204,15 +205,19 @@ blockquote_line = '>', [' '], inline_content, newline ;
    blockquote_lines, a line that does NOT carry the '>' marker still continues
    the blockquote -- exactly as if it carried '>' -- provided it is:
      - not blank (a blank line ends the blockquote), and
-     - not a block-opener that would interrupt a paragraph (§10): a heading,
-       list, table, fenced code, `:::` div, thematic break, OR an "invisible"
-       reference / footnote / abbreviation definition or comment -- each ends
-       the blockquote and starts that block OUTSIDE it, and
+     - not a block-opener: a heading, table, fenced code, `:::` div, thematic
+       break, OR an "invisible" reference / footnote / abbreviation definition
+       or comment -- each ends the blockquote and starts that block OUTSIDE it,
+       and
+     - not a LIST MARKER (bullet or ordered): it also ends the blockquote and
+       starts a top-level sibling list OUTSIDE it. A list marker folds only into
+       an open PARAGRAPH (§10); a blockquote is ended by it, matching djot, so
+       "> quoted \n - item" is a quote PLUS a sibling list, and
      - not a caption ('^ ' ...), which attaches to the blockquote instead.
-   Only PLAIN text (continuing an open paragraph) folds in; an ordered marker
-   folds too (it never interrupts, §10/§11). The lazy line's text is appended to
-   the blockquote's inner content before that content is block-parsed, so a
-   hard-wrapped quoted paragraph need not repeat '>' on every line. *)
+   Only PLAIN text (continuing an open paragraph) folds in. The lazy line's text
+   is appended to the blockquote's inner content before that content is
+   block-parsed, so a hard-wrapped quoted paragraph need not repeat '>' on every
+   line. *)
 lazy_continuation_line = inline_content, newline ;  (* see the NORMATIVE note above for which lines qualify *)
 
 (* --- Lists --- *)
@@ -239,10 +244,11 @@ ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, [item_attributes], space, list_item_content ;
 (* The first item fixes the dialect (decimal / alpha / roman) and the
    delimiter (`.` or `)`); classification and the ambiguous-letter
-   tie-break are in PART 9 §11. An ordered list does NOT interrupt a paragraph
-   in any dialect/value (`1.`, `2.`, `1985.`, `a.`, `i.`); it needs a blank
-   line before it (matching Djot, avoiding the CommonMark `1.`-only heuristic)
-   -- the paragraph-interruption rule is PART 9 §10.
+   tie-break are in PART 9 §11. No list -- ordered OR unordered -- interrupts a
+   paragraph: an ordered marker in any dialect/value (`1.`, `2.`, `1985.`, `a.`,
+   `i.`) and a bullet (`- `/`* `) alike need a blank line before them (matching
+   Djot, avoiding the CommonMark `1.`-only heuristic) -- the symmetric
+   paragraph-interruption rule is PART 9 §10.
    The two delimiters are the trailing `.` and `)` only. djot's
    parenthesized `(1)` / `(a)` form is INTENTIONALLY NOT a marker -- it is
    too easily confused with a prose parenthetical -- so `(1) text` stays
@@ -477,10 +483,12 @@ format_name = "html" | "latex" | identifier ;
 raw_content = (* any content until closing fence *) ;
 
 (* --- Paragraphs --- *)
-(* A VISIBLE block (heading, list, quote, table, fence, thematic break,
+(* A VISIBLE block (heading, quote, table, fence, thematic break,
    admonition/div) interrupts a paragraph with no blank line before it
    (Markdown-like); invisible constructs (reference definitions, comments,
-   block-attribute lines) interrupt too. This is the semantic constraint
+   block-attribute lines) interrupt too. A LIST marker (bullet OR ordered) is
+   the exception: it does NOT interrupt -- a list needs a blank line before it
+   (symmetric, Djot-like; see §10). This is the semantic constraint
    PART 9 §10, not a context-free one. A paragraph is terminated by a blank
    line, an interrupting block (§10), or end of file -- the optional trailing
    blank_line here is the paragraph's own terminator, not a precondition for
@@ -985,7 +993,7 @@ EOF = (* end of file *) ;
        a `:: ` definition term)
    11. Paragraphs (everything else)
    Recognition order is NOT interruption: which of these may interrupt an
-   open paragraph is PART 9 §10 (ordered markers, for one, never do).
+   open paragraph is PART 9 §10 (list markers -- bullet and ordered -- never do).
 
    Inline parsing precedence (second pass):
    1. Escaped characters (\x)
@@ -1171,47 +1179,46 @@ EOF = (* end of file *) ;
         pushed on the same stack; only their word-boundary test is skipped.
 
    10. PARAGRAPH INTERRUPTION -- NORMATIVE (governs `paragraph` in PART 2).
-      A VISIBLE block INTERRUPTS an open paragraph with NO blank line before
-      it, at the document top level AND inside nested content (list item,
-      block quote, admonition/div body). A continuation line that begins a
-      block is parsed as that block; the paragraph ends on the preceding line.
-      This is the Markdown-like rule (CommonMark "a paragraph can be
-      interrupted") and the key block-level divergence from Djot, where an open
-      paragraph runs until a blank line so a marker line stays paragraph text.
+      A VISIBLE block (EXCEPT a list marker) INTERRUPTS an open paragraph with
+      NO blank line before it, at the document top level AND inside nested
+      content (list item, block quote, admonition/div body). A continuation line
+      that begins such a block is parsed as that block; the paragraph ends on
+      the preceding line. This is the Markdown-like rule (CommonMark "a paragraph
+      can be interrupted") for every block EXCEPT lists; list markers follow Djot
+      (a blank line is required, see LIST MARKERS DO NOT INTERRUPT below).
       The interrupting blocks:
         - heading            `#`..`######` + space;
         - thematic break     a lone `---` / `***` / `___` line;
         - block quote        `>` (NOTE: a line-initial `>` is ALWAYS a quote
                              marker, so a prose line starting `>= 5` becomes a
                              quote -- escape it, `\>= 5`, to keep it prose);
-        - unordered / task   `- ` / `* ` (bullet + space; `- [x] ` task; `+` is
-                             NOT a bullet -- it is the continuation marker, §17).
-                             A bullet interrupts at ANY INDENTATION (Rule B,
-                             §24): an indented `  - item` line interrupts
-                             exactly like a column-0 one;
         - table row          a `|`...`|` line that is a valid table row
                              (a stray `|` in prose is NOT -- see VALID TABLE
                              ROW in §5);
         - fenced code        a ``` / ~~~ opener that HAS a matching closer
                              ahead (see CLOSER LOOKAHEAD);
         - admonition / div   a `:::` opener that HAS a matching closer ahead.
-      So "Liste: \n - eins \n - zwei" is <p>Liste:</p> + a <ul>; "intro
-      \n # H" is <p>intro</p> + <h1>; "x = 5 \n * 3 + 17" is <p>x = 5</p> +
-      <ul><li>3 + 17</li></ul> (corpus 05-lists-12 and the
-      76-paragraph-interruption family).
-      That last case is the ACCEPTED COST of paragraph interruption: a
-      hard-wrapped prose line that happens to begin with a bullet-plus-space
-      (or `>` / `#` / a valid table row) starts a block. Insert a blank line, or
-      backslash-escape the marker ("\* 3 + 17"), to keep such a line as prose.
+      So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more" is
+      <p>intro</p> + <hr> + <p>more</p> (corpus 76-paragraph-interruption).
 
-      ORDERED LISTS DO NOT INTERRUPT. An ordered-list marker -- decimal,
-      letter, or roman, in any value -- never interrupts a paragraph; it needs a
-      blank line before it (matching Djot). This is deliberate: unlike a bullet
-      (`- `/`* ` is unambiguous), an ordered marker is too common in prose
-      ("see step 2.", "version 1985.", "upgrade to 1. today"), and the only way
-      to allow it would be the CommonMark `1.`-only heuristic -- the exact wart
-      Djot removed. Carve drops the heuristic by not interrupting on ordered
-      markers at all (corpus 54-ordered-marker-vs-prose, Paragraph interruption).
+      LIST MARKERS DO NOT INTERRUPT (symmetric). NEITHER a bullet (`- `/`* `,
+      `- [x] ` task) NOR an ordered marker (decimal, letter, or roman, in any
+      value) interrupts a paragraph: a list needs a blank line before it
+      (matching Djot). The bullet and the ordered marker behave IDENTICALLY at
+      the paragraph boundary -- one rule, no marker-class carve-out. So
+      "Liste: \n - eins \n - zwei" is a SINGLE paragraph (the bullet lines fold
+      in as lazy continuation), and so is "x = 5 \n * 3 + 17"; a blank line --
+      "Liste: \n\n - eins" -- starts the list. This is a deliberate change from
+      the earlier "a bullet interrupts, an ordered marker does not" asymmetry:
+      an ordered marker is too common in prose ("see step 2.", "version 1985.")
+      to interrupt, and making the bullet match removes both the asymmetry and
+      the residual false positive (a hard-wrapped prose line that happens to
+      begin with a bullet no longer becomes a list). Pinned by corpus
+      05-lists-12/13, 76-paragraph-interruption, 77-blockquote-lazy-continuation,
+      79-multi-line-headings. TIGHT NESTED LISTS ARE UNAFFECTED: this rule
+      governs only a marker that would interrupt an OPEN PARAGRAPH; an indented
+      marker inside an open list item still opens a sublist with no blank line
+      (see NESTING below and §24).
 
       IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)") does NOT
       interrupt: an image is not a block of its own in Carve, so it stays an
@@ -1238,15 +1245,25 @@ EOF = (* end of file *) ;
       such a line as paragraph text.)
 
       NESTING. Interruption applies inside nested content too: a `# H` after a
-      prose line in a block quote ("> text \n > # H") is a heading, and an
-      indented sublist still nests with no blank line ("- a \n   - b" -> a list
-      whose first item holds a sublist). A col-0 marker with no `>` inside a
-      block quote terminates the quote (the marker is a sibling block), per the
-      block-quote lazy-continuation rule (see `blockquote`). HEADING
-      CONTINUATION follows the same principle (see `heading`): a block-opener
-      interrupts an open heading and starts that block, exactly as it interrupts
-      a paragraph; a bare-prose or same/lower `#` continuation line folds into
-      the heading text instead.
+      prose line in a block quote ("> text \n > # H") is a heading. An indented
+      sublist still nests with no blank line ("- a \n   - b" -> a list whose
+      first item holds a sublist): that is NOT paragraph interruption -- the
+      marker opens a sublist inside an OPEN LIST ITEM, governed by §24, not by
+      this rule.
+
+      "Folds into a paragraph" is the WHOLE of the symmetric rule: it applies
+      only to an OPEN PARAGRAPH. A HEADING and a BLOCKQUOTE are ENDED by a list
+      marker (it starts a sibling list OUTSIDE them) -- matching djot:
+        - HEADING CONTINUATION (see `heading`): a block-opener ends an open
+          heading; a LIST MARKER -- bullet or ordered -- also ends it and starts
+          a sibling list, so "# H \n - item" is a heading PLUS a `<ul>`. Only
+          plain text (and a same/lower `#`) folds into the heading.
+        - BLOCKQUOTE LAZY CONTINUATION (see `blockquote`): a col-0 list marker
+          after a quoted line ENDS the quote and starts a top-level sibling
+          list, so "> quoted \n - item" is a quote PLUS a `<ul>`. Only plain
+          text lazily continues the quote. (A QUOTED bullet -- "> p \n > - x" --
+          is paragraph interruption INSIDE the quote and folds, since there the
+          marker meets an open paragraph, not the quote boundary.)
 
    11. LIST MARKER CHANGE STARTS A NEW LIST -- NORMATIVE (governs `list`
       in PART 2). §10 decides FIRST whether a sequence of marker lines
@@ -1728,8 +1745,11 @@ EOF = (* end of file *) ;
         ANY indent past the parent item's base column.
       - RULE B (BULLETS AT ANY INDENT). A bullet (`-`/`*` + space + content)
         opens a list at ANY indentation, uniformly in every context: at the
-        top level, interrupting an open paragraph (§10), and nested in a
-        list item. There is no column-0 restriction.
+        top level and nested in a list item. There is no column-0 restriction.
+        A bullet does NOT, however, interrupt an OPEN PARAGRAPH -- like an
+        ordered marker it needs a blank line before it (the symmetric §10 rule);
+        the "any indent" freedom is about WHERE a list may open, not about
+        breaking running prose.
       - DEDENT. When nested content is re-parsed, the container's structural
         indent is stripped by columns. A tab straddling the dedent boundary
         is consumed WHOLE on non-marker lines (Carve has no indent-sensitive

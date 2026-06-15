@@ -431,35 +431,40 @@ Inside code spans, backslash is literal:
 
 ## 17. Block Openers Interrupt Paragraphs (Paragraph Interruption)
 
-**Rule:** a **visible** block interrupts an open paragraph with no blank line
-before it, at the document top level **and** inside nested content (list item,
-block quote, admonition/div body). A continuation line that begins a block is
-parsed as that block; the paragraph ends on the line before it. This is the
-Markdown-like rule (CommonMark "a paragraph can be interrupted"), and the key
-block-level divergence from Djot: in Djot an open paragraph runs until a blank
-line, so a `-` / `#` / `>` / `|` line stays paragraph text; in Carve that line
-starts the block.
+**Rule:** a **visible** block — *except a list marker* — interrupts an open
+paragraph with no blank line before it, at the document top level **and** inside
+nested content (list item, block quote, admonition/div body). A continuation
+line that begins such a block is parsed as that block; the paragraph ends on the
+line before it. This is the Markdown-like rule (CommonMark "a paragraph can be
+interrupted") for those blocks. **List markers follow Djot:** a list needs a
+blank line before it, so a bullet or ordered marker after a prose line **folds
+into the paragraph** as lazy continuation.
 
 ```carve
 Die Frage ist x = 5
 * 3 + 17 wahr.
 ```
 
-This is a **paragraph plus a list** (`* 3 + 17 wahr.` begins with a
-bullet-plus-space). That is the accepted trade-off: a hard-wrapped prose line
-that happens to start with a marker becomes a block. Insert a blank line, or
-backslash-escape the marker (`\* 3 + 17`), to keep it prose.
+This is **one paragraph** (`Die Frage ist x = 5\n* 3 + 17 wahr.`): a list marker
+does not interrupt a paragraph, so a hard-wrapped prose line beginning with a
+bullet stays prose. Add a blank line before the marker to start a list.
 
-**Three carve-outs** keep common prose safe:
+**Symmetric list rule.** Neither a bullet (`- `/`* `, `- [x]` task) nor an
+ordered marker (`1.`, `2.`, `1985.`, `a.`, `i.`) interrupts a paragraph — they
+behave identically. This avoids the CommonMark `1.`-only heuristic Djot removed,
+and removes the old false positive where a wrapped prose line became a list.
 
-1. **Ordered lists never interrupt** — no ordered marker (`1.`, `2.`, `1985.`,
-   `a.`, `i.`) interrupts; an ordered list needs a blank line before it. Allowing
-   it would require the CommonMark `1.`-only heuristic Djot removed, so Carve
-   keeps ordered lists on the blank-line rule and drops the heuristic entirely.
-2. **Closer lookahead** — a fence (`` ``` ``/`~~~`) or `:::` interrupts only
+**A heading and a blockquote are different:** a list marker **ends** an open
+heading or blockquote and starts a top-level **sibling list** (it folds only
+into a *paragraph*). Plain text folds into a heading/quote; a list marker does
+not. This matches Djot.
+
+**Other carve-outs:**
+
+1. **Closer lookahead** — a fence (`` ``` ``/`~~~`) or `:::` interrupts only
    when a matching closer exists ahead. An unterminated opener stays paragraph
    text, so a stray marker never swallows the rest of the block.
-3. **Image excluded** — a bare image `![alt](url)` is inline content, not a
+2. **Image excluded** — a bare image `![alt](url)` is inline content, not a
    block, so it renders inside the paragraph.
 
 **Invisible constructs** (link/footnote/abbreviation reference definitions,
@@ -469,18 +474,24 @@ collected/consumed (an attribute line floats forward to the next block, §15).
 
 | Input | Result | Reason |
 |-------|--------|--------|
-| `Text` / `- a` / `- b` | paragraph + list | bullet interrupts |
+| `Text` / `- a` / `- b` | one paragraph | list marker folds (no blank line) |
+| `x = 5` / `* 3 + 17` | one paragraph | list marker folds (no false positive) |
+| `Text` / `1. a` (or `2. a`, `1985. a`) | one paragraph | list marker folds |
+| `Text` / (blank) / `- a` | paragraph + list | blank line starts the list |
 | `Text` / `# H` | paragraph + heading | heading interrupts |
 | `Text` / `` ``` `` / `code` / `` ``` `` | paragraph + code block | fence with a closer interrupts |
 | `Text` / `` ``` `` / `code` | one paragraph | unterminated fence — no closer |
 | `Text` / `---` / `more` | paragraph + `<hr>` + paragraph | thematic break interrupts |
-| `x = 5` / `* 3 + 17` | paragraph + list | accepted false positive |
-| `Text` / `1. a` (or `2. a`, `1985. a`) | one paragraph | ordered lists never interrupt |
 | `Text` / `![a](u)` | one paragraph (inline image) | image excluded |
 | `See[^m].` / `[^m]: note` | paragraph + endnotes | invisible construct |
-| `> text` / `> # H` | quote: paragraph + heading | interrupts inside the quote |
-| `- a` / `  - b` | nested sublist | indented sublist still nests |
-| `- text` / `  # H` | item: text + heading | interrupts inside the item |
+| `# H` / `- item` | heading + sibling list | list marker ENDS the heading |
+| `# H` / `1. one` | heading + sibling list | list marker ENDS the heading (ordered too) |
+| `> q` / `- a` | quote + sibling list | list marker ENDS the quote |
+| `> text` / `> # H` | quote: paragraph + heading | heading interrupts inside the quote |
+| `> p` / `> - x` | one quoted paragraph | quoted bullet folds (paragraph interruption inside the quote) |
+| `- a` / `  - b` | nested sublist | indented sublist still nests (content column) |
+| `- a` / ` - b` | one item (folds) | below the content column → lazy continuation |
+| `- text` / `  # H` | item: text + heading | heading interrupts inside the item |
 
 Normative statement: `resources/grammar.ebnf` PART 9 §10. Verified by corpus
 `05-lists-12` and the `76-paragraph-interruption` family.
@@ -499,8 +510,11 @@ continuation. While a heading is open:
   stripped);
 - a marker with **more** `#` than the open heading starts a *new* heading;
 - a blank line, a caption (`^ `), or a fenced comment (`%%%`) ends it;
-- **nothing else interrupts it** - §17's interruption rules do not apply inside
-  an open heading.
+- a **block-opener** (blockquote, table, fence, `:::` div, thematic break)
+  **ends** the heading and starts that block;
+- a **list marker** — bullet *or* ordered — **ends** the heading and starts a
+  top-level sibling list (a list marker folds only into a *paragraph*, §17, not
+  a heading; this matches Djot).
 
 The heading id derives from the **full folded text**.
 
