@@ -336,9 +336,16 @@ table = standard_row, [delimiter_row], {table_row}, [caption] ;
 
 table_row = standard_row | continuation_row ;
 
-standard_row = '|', table_cell, {'|', table_cell}, '|', newline ;
+standard_row = '|', table_cell, {'|', table_cell}, '|', [row_attributes], newline ;
 
 continuation_row = '+', table_cell, {'|', table_cell}, '|', newline ;
+
+(* Row-level attributes: a `{…}` attribute block GLUED to the row's closing `|`
+   (no intervening space) sets the row's `<tr>` attributes -- the row-level twin
+   of a cell's opening-pipe attribute block (cell_attributes). The whole payload
+   must be valid attribute syntax (§15); otherwise the `{` is ordinary content
+   and the line is not a row attribute (see PART 9 §5, ROW ATTRIBUTES). *)
+row_attributes = attributes ;
 
 (* GFM delimiter row (alternative header syntax to the native `|=` header cell).
    Only recognized as the row IMMEDIATELY AFTER the first row of a table; every
@@ -1150,6 +1157,18 @@ EOF = (* end of file *) ;
         alignment is UNSPECIFIED (do not combine the two mechanisms on one
         column). Verified identical across carve-js / carve-php / carve-rs;
         the happy path is pinned by corpus 09-tables-3.
+      - ROW ATTRIBUTES (NORMATIVE) -- a `{…}` attribute block GLUED to a row's
+        closing `|` (no intervening space) sets that row's `<tr>` attributes.
+        It is the row-level twin of a cell's opening-pipe attribute block: the
+        same `{…}` syntax, the same validity rule. The WHOLE payload must be a
+        valid, non-empty attribute block (§15); a space before the brace
+        (`| a | {.x}`), an empty `{}`, or an invalid payload is NOT a row
+        attribute -- the `{` is ordinary content, so the line (ending in `}`,
+        not `|`) is not even a table row. A row attribute block applies to the
+        row's `<tr>` whether the row is a header row (`<tr>` inside `<thead>`)
+        or a body row, and composes with the GFM delimiter row. It also
+        composes with cell attributes: `|{.c} a |{.r}` yields `<tr class="r">`
+        with `<td class="c">`. Pinned by corpus 98-table-row-attributes.
 
    6. REFERENCE RESOLUTION
       - Reference links [text][ref] resolved to [ref]: url definitions

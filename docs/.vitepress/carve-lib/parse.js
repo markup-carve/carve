@@ -103,8 +103,11 @@ const RE_TABLE_ROW = /^\|/;
 // A complete standard table row opens AND closes with `|` (grammar
 // standard_row). A stray leading `|` with no closing `|` (`| a`) is ordinary
 // paragraph text, not a table -- so a table opener / interrupter must have the
-// trailing pipe, not just a leading one.
-const isTableRow = (line) => RE_TABLE_ROW.test(line) && /\|\s*$/.test(line);
+// trailing pipe, not just a leading one. A row may carry an attribute block
+// GLUED to its closing pipe (`| a |{.x}` -> <tr class="x">); rowAttrsFromLine
+// validates and strips it, so the gate allows an optional trailing `{...}`.
+const isTableRow = (line) => RE_TABLE_ROW.test(line) &&
+    (/\|[ \t]*$/.test(line) || rowAttrsFromLine(line).attrs !== undefined);
 // A `+`-prefixed continuation row (multi-line cell). Like the grammar's
 // continuation_row it ends with `|`; that trailing pipe distinguishes
 // it from a `+ ` list item (which never ends with `|`). Only consumed
@@ -1836,7 +1839,11 @@ function parseList(lexer) {
                 // top-level block instead. A blockquote/div trailing paragraph keeps the
                 // fold open (lazyFoldable stays true). The indented-marker special case
                 // below still folds regardless, matching the symmetric §10 behavior.
-                ((lazyState.lazyFoldable && !lazyContinuationEndsList(l, lexer)) ||
+                // An UNTERMINATED fence (inFence still open) is NOT a code block -- it is
+                // an inline-verbatim run that is part of the paragraph, so a dedented
+                // line folds into it (matching the §10 closer-lookahead rule).
+                (((lazyState.lazyFoldable || lazyState.inFence) &&
+                    !lazyContinuationEndsList(l, lexer)) ||
                     // A list marker indented past the base column but BELOW the content
                     // column folds into the lead text rather than ending the list. Under
                     // symmetric §10 no list marker interrupts a paragraph, so on the
@@ -2009,12 +2016,32 @@ function parseCellMarkers(src) {
         return { header: false, span: 'colspan', content: '' };
     return { header: false, content: trimmed };
 }
+// A row attribute block is a valid `{...}` attribute block GLUED to the row's
+// closing `|` and running to end of line -- the row-level twin of a cell's
+// opening-pipe attribute block. It sets the `<tr>` attributes. The whole
+// payload must be valid attribute syntax (same gate as cell / inline / block
+// attributes); otherwise the `{` is ordinary content and there is no row attr.
+function rowAttrsFromLine(line) {
+    const stripped = line.replace(/[ \t]+$/, '');
+    const lastPipe = stripped.lastIndexOf('|');
+    if (lastPipe < 0 || stripped[lastPipe + 1] !== '{')
+        return { body: line };
+    const after = stripped.slice(lastPipe + 1);
+    const m = RE_INLINE_ATTR.exec(after);
+    if (m && m[0].length === after.length && isValidAttrPayload(m[1])) {
+        const attrs = parseAttrs(m[1]);
+        if (!isEmptyAttrs(attrs))
+            return { attrs, body: stripped.slice(0, lastPipe + 1) };
+    }
+    return { body: line };
+}
 function parseTable(lexer) {
     // Collect raw cell source first; a `+` continuation row appends its
     // non-empty fragments to the previous row's *source* so an inline
     // construct spanning the line boundary is one logical cell. Inline
     // parsing happens once, after merging.
     const rawRows = [];
+    const rowAttrsList = [];
     let lastRaw = null;
     while (!lexer.eof() &&
         (RE_TABLE_ROW.test(lexer.peek()) || RE_TABLE_CONT.test(lexer.peek()))) {
@@ -2037,7 +2064,8 @@ function parseTable(lexer) {
             continue;
         }
         lexer.consume();
-        const raw = splitTableRow(line).map((src) => {
+        const { attrs: rowAttrs, body: rowBody } = rowAttrsFromLine(line);
+        const raw = splitTableRow(rowBody).map((src) => {
             const { header, span, align, attrs, content } = parseCellMarkers(src);
             const c = { header, raw: content };
             if (span)
@@ -2049,6 +2077,7 @@ function parseTable(lexer) {
             return c;
         });
         rawRows.push(raw);
+        rowAttrsList.push(rowAttrs);
         lastRaw = raw;
     }
     // GFM-style header separator: when the SECOND row is a delimiter row -- every
@@ -2071,6 +2100,7 @@ function parseTable(lexer) {
             return left && right ? 'center' : right ? 'right' : left ? 'left' : undefined;
         });
         rawRows.splice(1, 1);
+        rowAttrsList.splice(1, 1);
         for (const c of rawRows[0])
             c.header = true;
         for (const rc of rawRows) {
@@ -2081,25 +2111,31 @@ function parseTable(lexer) {
             });
         }
     }
-    const rows = rawRows.map((rc) => ({
-        type: 'table-row',
-        cells: rc.map((c) => {
-            const cell = {
-                type: 'table-cell',
-                header: c.header,
-                children: c.span
-                    ? []
-                    : parseInline(c.raw, lexer.abbrDefs, lexer.linkDefs),
-            };
-            if (c.span)
-                cell.span = c.span;
-            if (c.align)
-                cell.align = c.align;
-            if (c.attrs)
-                cell.attrs = c.attrs;
-            return cell;
-        }),
-    }));
+    const rows = rawRows.map((rc, idx) => {
+        const row = {
+            type: 'table-row',
+            cells: rc.map((c) => {
+                const cell = {
+                    type: 'table-cell',
+                    header: c.header,
+                    children: c.span
+                        ? []
+                        : parseInline(c.raw, lexer.abbrDefs, lexer.linkDefs),
+                };
+                if (c.span)
+                    cell.span = c.span;
+                if (c.align)
+                    cell.align = c.align;
+                if (c.attrs)
+                    cell.attrs = c.attrs;
+                return cell;
+            }),
+        };
+        const ra = rowAttrsList[idx];
+        if (ra)
+            row.attrs = ra;
+        return row;
+    });
     const table = { type: 'table', rows };
     // Optional caption ^ ...
     let lookahead = 0;
