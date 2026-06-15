@@ -1474,6 +1474,83 @@ function lazyContinuationEndsList(line, lexer) {
         isTableRow(line) ||
         isBlockImageLine(line));
 }
+/**
+ * Track verbatim/paragraph state across a list item's collected inner lines so a
+ * dedented non-blank line only lazily continues an OPEN paragraph (the
+ * djot/CommonMark family-D rule, matching carve-php). Each line is passed in its
+ * content-column-dedented form so the block-opener regexes key off column 0.
+ *
+ * Mirrors `trackBlockQuoteLazyState`, but a blockquote line (`>`) keeps the
+ * fold open: the trailing quote paragraph absorbs the dedented line in the
+ * quote's own lazy continuation. After a code fence or a table (no open
+ * trailing paragraph) the dedented line must END the item instead.
+ */
+function trackItemLazyState(content, state) {
+    if (state.inComment) {
+        const c = /^(%{3,})\s*$/.exec(content);
+        if (c && c[1].length >= state.commentLen)
+            state.inComment = false;
+        state.lazyFoldable = false;
+        return;
+    }
+    if (state.inFence) {
+        if (state.fenceClose.test(content))
+            state.inFence = false;
+        state.lazyFoldable = false;
+        return;
+    }
+    if (content.trim() === '') {
+        state.lazyFoldable = false;
+        return;
+    }
+    // A code fence or raw fence opens a verbatim block with no open paragraph.
+    const fence = RE_FENCE.exec(content);
+    if (fence) {
+        const marker = fence[2];
+        state.inFence = true;
+        state.fenceClose = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
+        state.lazyFoldable = false;
+        return;
+    }
+    const raw = RE_RAW_FENCE.exec(content);
+    if (raw) {
+        const marker = raw[1];
+        state.inFence = true;
+        state.fenceClose = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
+        state.lazyFoldable = false;
+        return;
+    }
+    const comment = /^(%{3,})\s*$/.exec(content);
+    if (comment) {
+        state.inComment = true;
+        state.commentLen = comment[1].length;
+        state.lazyFoldable = false;
+        return;
+    }
+    // A table row, heading, or thematic break leaves no open trailing paragraph.
+    if (isTableRow(content) || RE_HEADING.test(content) || RE_HR.test(content.trim())) {
+        state.lazyFoldable = false;
+        return;
+    }
+    // A blockquote line keeps the fold open: the quote's trailing paragraph
+    // absorbs the dedented line via the quote's own lazy continuation.
+    if (RE_BLOCKQUOTE.test(content)) {
+        state.lazyFoldable = true;
+        return;
+    }
+    // A div / admonition / line-block OPENER is structural; it opens no paragraph
+    // itself, but plain text on a later line inside it does (handled by the
+    // fall-through below once the opener line has been seen).
+    if (RE_DIV_OPEN.test(content) ||
+        (RE_ADMONITION_OPEN.test(content) && !RE_ADMONITION_CLOSE.test(content)) ||
+        RE_LINE_BLOCK_OPEN.test(content)) {
+        state.lazyFoldable = false;
+        return;
+    }
+    // Everything else (plain prose, list-marker content, div body text) leaves an
+    // open paragraph the dedented line can continue.
+    state.lazyFoldable = true;
+}
 function parseList(lexer) {
     const first = lexer.peek();
     const baseIndent = indentColumns(first);
@@ -1585,7 +1662,16 @@ function parseList(lexer) {
                         (isOrdered
                             ? orderedContinues(a, orderedKind, orderedDelim)
                             : unorderedMarkerChar(a) === firstMarkerChar);
-                    if (sibling || a.trim() === '+')
+                    // A base-column line that is ANY list marker (a different
+                    // kind/dialect, e.g. an ordered `1.` after this unordered first-block
+                    // item, or an abutting-attribute bullet `-{.x}`) starts a SIBLING
+                    // list (§11), not item content -- stop attaching so it parses as a
+                    // separate top-level list (Bug C, first-block `- +` path).
+                    const anyMarker = RE_ORDERED.test(a) ||
+                        RE_UNORDERED.test(a) ||
+                        RE_TASK.test(a) ||
+                        extractItemAttr(a) !== null;
+                    if (sibling || anyMarker || a.trim() === '+')
                         break;
                 }
                 attached.push(sliceColumns(a, baseIndent));
@@ -1616,6 +1702,18 @@ function parseList(lexer) {
         // the join, so only an indented ordered marker triggers the split.
         let firstBlockIdx = -1;
         let pendingBlanks = 0;
+        // Indices in `nested` that hold a `+`-injected blank separator. These keep
+        // the attached block parsing standalone but never loosen the list (Bug B).
+        const plusSeparators = new Set();
+        // Track whether the item's collected content currently ends in an open
+        // paragraph (family-D lazy continuation). The lead text opens one.
+        const lazyState = {
+            inFence: false,
+            fenceClose: null,
+            inComment: false,
+            commentLen: 0,
+            lazyFoldable: content.trim() !== '',
+        };
         while (!lexer.eof()) {
             const l = lexer.peek();
             if (l.trim() === '') {
@@ -1631,7 +1729,13 @@ function parseList(lexer) {
             if (indentColumns(l) === baseIndent && l.trim() === '+') {
                 lexer.consume();
                 pendingBlanks = 0;
+                // Mark this blank as a `+`-injected separator: it lets the attached
+                // block parse on its own but must NOT loosen the list (Bug B). A real
+                // internal blank before a plain paragraph still loosens; a `+` one
+                // never does, matching carve-php.
+                plusSeparators.add(nested.length);
                 nested.push('');
+                trackItemLazyState('', lazyState);
                 while (!lexer.eof()) {
                     const a = lexer.peek();
                     if (a.trim() === '')
@@ -1645,10 +1749,21 @@ function parseList(lexer) {
                             (isOrdered
                                 ? orderedContinues(a, orderedKind, orderedDelim)
                                 : unorderedMarkerChar(a) === firstMarkerChar);
-                        if (sibling || a.trim() === '+')
+                        // A base-column line that is ANY list marker (even a different
+                        // kind/dialect, e.g. an ordered `1.` after this unordered item, or
+                        // an abutting-attribute bullet `-{.x}`) starts a SIBLING list
+                        // (§11), not item content -- stop attaching so it parses as a
+                        // separate top-level list (Bug C).
+                        const anyMarker = RE_ORDERED.test(a) ||
+                            RE_UNORDERED.test(a) ||
+                            RE_TASK.test(a) ||
+                            extractItemAttr(a) !== null;
+                        if (sibling || anyMarker || a.trim() === '+')
                             break;
                     }
-                    nested.push(sliceColumns(a, baseIndent));
+                    const attached = sliceColumns(a, baseIndent);
+                    nested.push(attached);
+                    trackItemLazyState(attached, lazyState);
                     lexer.consume();
                 }
                 continue;
@@ -1686,8 +1801,10 @@ function parseList(lexer) {
                         lineOpensBlock(d0);
             }
             if (lw >= contentCol || belowColBlockOpener) {
-                for (let k = 0; k < pendingBlanks; k++)
+                for (let k = 0; k < pendingBlanks; k++) {
                     nested.push('');
+                    trackItemLazyState('', lazyState);
+                }
                 pendingBlanks = 0;
                 // A sub-list marker (ordered, unordered, or task) at or past the content
                 // column starts the item's block stream. A sub-list MARKER line is
@@ -1707,11 +1824,19 @@ function parseList(lexer) {
                     firstBlockIdx = nested.length;
                 }
                 const keepResidual = firstBlockIdx !== -1 && isMarker;
-                nested.push(sliceColumns(l, contentCol, keepResidual));
+                const dedented = sliceColumns(l, contentCol, keepResidual);
+                nested.push(dedented);
+                trackItemLazyState(dedented, lazyState);
                 lexer.consume();
             }
             else if (pendingBlanks === 0 &&
-                (!lazyContinuationEndsList(l, lexer) ||
+                // A dedented (below content-column) plain line only lazily continues an
+                // OPEN paragraph (family-D rule). After a code fence or table -- which
+                // leave no open paragraph -- the line ends the item and becomes a
+                // top-level block instead. A blockquote/div trailing paragraph keeps the
+                // fold open (lazyFoldable stays true). The indented-marker special case
+                // below still folds regardless, matching the symmetric §10 behavior.
+                ((lazyState.lazyFoldable && !lazyContinuationEndsList(l, lexer)) ||
                     // A list marker indented past the base column but BELOW the content
                     // column folds into the lead text rather than ending the list. Under
                     // symmetric §10 no list marker interrupts a paragraph, so on the
@@ -1728,6 +1853,7 @@ function parseList(lexer) {
                 // (or is the indented ordered marker above) folds into the item's lead
                 // paragraph (djot rule). A block-starting line or a blank ends the list.
                 nested.push(l);
+                trackItemLazyState(l, lazyState);
                 lexer.consume();
             }
             else {
@@ -1758,6 +1884,11 @@ function parseList(lexer) {
         // is unchanged. (Canonical djot renders these loose; Carve deviates here.)
         for (let k = 0; k < nested.length; k++) {
             if (nested[k] !== '')
+                continue;
+            // A `+`-injected separator never loosens, even when the block it attaches
+            // is a plain paragraph -- it keeps the item tight like a `+`-attached
+            // quote/code/table (Bug B, corpus 83-list-continuation-marker family).
+            if (plusSeparators.has(k))
                 continue;
             let j = k + 1;
             while (j < nested.length && nested[j] === '')

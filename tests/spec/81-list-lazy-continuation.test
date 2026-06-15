@@ -72,3 +72,49 @@ d</li>
 </ul>
 <p>c</p>
 ```
+
+```
+- item
+  > q
+tail
+.
+<ul>
+  <li>item
+    <blockquote><p>q
+tail</p></blockquote>
+  </li>
+</ul>
+```
+
+````
+- item
+  ```
+  c
+  ```
+tail
+.
+<ul>
+  <li>item
+    <pre><code>c
+</code></pre>
+  </li>
+</ul>
+<p>tail</p>
+````
+
+```
+- item
+  | a | b |
+tail
+.
+<ul>
+  <li>item
+    <table>
+      <tbody>
+        <tr><td>a</td><td>b</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+<p>tail</p>
+```

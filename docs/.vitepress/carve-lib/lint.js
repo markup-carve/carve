@@ -114,47 +114,80 @@ export function lintCarve(source, opts = {}) {
     // on every collision along the way.
     const used = new Set();
     const headingRefs = new Map();
-    for (const block of doc.children) {
-        if (block.type !== 'heading')
-            continue;
-        const heading = block;
-        const explicit = heading.attrs?.id;
-        let id;
-        if (explicit !== undefined) {
-            id = explicit;
-            if (used.has(explicit)) {
-                out.push({
-                    ...locate(heading),
-                    rule: 'duplicate-heading-id',
-                    message: `Duplicate heading id "${explicit}": the repeated HTML id is invalid, and cross-references to it resolve to the first occurrence.`,
-                });
+    // Mirror resolveHeadingIds: a heading inside a list/blockquote/div/etc. also
+    // gets an id and is a valid crossref target, so the lint index must walk the
+    // same containers in document order. A blockquote ancestor suppresses the
+    // implicit `[label][]` reference target (matching the resolver / carve-php).
+    const indexHeadings = (blocks, inBlockquote) => {
+        for (const block of blocks) {
+            switch (block.type) {
+                case 'heading': {
+                    const heading = block;
+                    const explicit = heading.attrs?.id;
+                    let id;
+                    if (explicit !== undefined) {
+                        id = explicit;
+                        if (used.has(explicit)) {
+                            out.push({
+                                ...locate(heading),
+                                rule: 'duplicate-heading-id',
+                                message: `Duplicate heading id "${explicit}": the repeated HTML id is invalid, and cross-references to it resolve to the first occurrence.`,
+                            });
+                        }
+                        used.add(explicit);
+                    }
+                    else {
+                        const base = slugify(inlineText(heading.children), asciiFold);
+                        if (used.has(base)) {
+                            let n = 2;
+                            while (used.has(`${base}-${n}`))
+                                n++;
+                            id = `${base}-${n}`;
+                            out.push({
+                                ...locate(heading),
+                                rule: 'duplicate-heading-id',
+                                message: `Heading slug "${base}" collides with an earlier heading; its auto id becomes "${id}", and ambiguous references to "${base}" resolve to the first occurrence.`,
+                            });
+                            used.add(id);
+                        }
+                        else {
+                            id = base;
+                            used.add(base);
+                        }
+                    }
+                    if (!inBlockquote) {
+                        const key = normalizeHeadingRefLabel(inlineText(heading.children));
+                        if (key && !headingRefs.has(key))
+                            headingRefs.set(key, id);
+                    }
+                    break;
+                }
+                case 'blockquote':
+                    indexHeadings(block.children, true);
+                    break;
+                case 'admonition':
+                case 'div':
+                    indexHeadings(block.children, inBlockquote);
+                    break;
+                case 'list':
+                    for (const it of block.items)
+                        indexHeadings(it.children, inBlockquote);
+                    break;
+                case 'definition-list':
+                    for (const it of block.items)
+                        for (const d of it.definitions)
+                            indexHeadings(d, inBlockquote);
+                    break;
+                case 'figure':
+                    if (block.target.type === 'blockquote')
+                        indexHeadings(block.target.children, true);
+                    break;
+                default:
+                    break;
             }
-            used.add(explicit);
         }
-        else {
-            const base = slugify(inlineText(heading.children), asciiFold);
-            if (used.has(base)) {
-                let n = 2;
-                while (used.has(`${base}-${n}`))
-                    n++;
-                id = `${base}-${n}`;
-                out.push({
-                    ...locate(heading),
-                    rule: 'duplicate-heading-id',
-                    message: `Heading slug "${base}" collides with an earlier heading; its auto id becomes "${id}", and ambiguous references to "${base}" resolve to the first occurrence.`,
-                });
-                used.add(id);
-            }
-            else {
-                id = base;
-                used.add(base);
-            }
-        }
-        const plain = inlineText(heading.children);
-        const key = normalizeHeadingRefLabel(plain);
-        if (key && !headingRefs.has(key))
-            headingRefs.set(key, id);
-    }
+    };
+    indexHeadings(doc.children, false);
     // Captioned tables/figures with a `#` caption-number placeholder and an id
     // are also valid cross-reference targets after resolve() numbers captions.
     walkDocument(doc, (node) => {

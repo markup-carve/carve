@@ -148,19 +148,30 @@ export function resolveHeadingIds(doc, asciiFold = false) {
     // from the parsed AST's inlineText so it agrees with the heading slug
     // exactly — no regex pre-pass guesswork.
     const headingRefs = new Map();
-    for (const block of doc.children) {
-        if (block.type !== 'heading')
-            continue;
+    // Assign every heading an id in DOCUMENT ORDER, descending into nested
+    // containers (list items, blockquotes, divs/admonitions, definition lists,
+    // tables, figures) so a heading inside a list item carries its slug id on
+    // the <h*> just like a top-level one (Bug A; carve-php parity). The dedup
+    // counter and the implicit-reference/crossref target index are shared across
+    // top-level and nested headings, matching carve-php's single document-order
+    // pass. The <section> wrapper stays a top-level-only concern in render-html;
+    // nested headings emit just <h* id> with no section.
+    // `inBlockquote`: a heading with ANY blockquote ancestor still gets an id and
+    // is a valid `</#id>` crossref target, but is NOT registered as an implicit
+    // `[label][]` reference target -- matching carve-php, where a blockquote
+    // ancestor (in either nesting order) suppresses the implicit-ref index entry
+    // while list/div/deflist nesting does not.
+    const assignHeadingId = (heading, inBlockquote) => {
         let id;
-        if (block.attrs?.id !== undefined) {
+        if (heading.attrs?.id !== undefined) {
             // An explicit id wins verbatim, INCLUDING an explicit empty `id=""`
             // (`{id=""}` then `# T` -> `<section id="">`): it suppresses the auto
             // slug rather than being treated as absent.
-            id = block.attrs.id;
+            id = heading.attrs.id;
             used.add(id);
         }
         else {
-            const base = slugify(inlineText(block.children), asciiFold);
+            const base = slugify(inlineText(heading.children), asciiFold);
             if (!used.has(base)) {
                 id = base;
             }
@@ -171,15 +182,49 @@ export function resolveHeadingIds(doc, asciiFold = false) {
                 id = `${base}-${n}`;
             }
             used.add(id);
-            block.attrs = { ...block.attrs, id };
+            heading.attrs = { ...heading.attrs, id };
         }
         if (!targets.has(id))
-            targets.set(id, block.children);
-        const plain = inlineText(block.children);
+            targets.set(id, heading.children);
+        if (inBlockquote)
+            return;
+        const plain = inlineText(heading.children);
         const key = normalizeHeadingRefLabel(plain);
         if (key && !headingRefs.has(key))
             headingRefs.set(key, id);
-    }
+    };
+    const assignIds = (blocks, inBlockquote) => {
+        for (const b of blocks) {
+            switch (b.type) {
+                case 'heading':
+                    assignHeadingId(b, inBlockquote);
+                    break;
+                case 'blockquote':
+                    assignIds(b.children, true);
+                    break;
+                case 'admonition':
+                case 'div':
+                    assignIds(b.children, inBlockquote);
+                    break;
+                case 'list':
+                    for (const it of b.items)
+                        assignIds(it.children, inBlockquote);
+                    break;
+                case 'definition-list':
+                    for (const it of b.items)
+                        for (const d of it.definitions)
+                            assignIds(d, inBlockquote);
+                    break;
+                case 'figure':
+                    if (b.target.type === 'blockquote')
+                        assignIds(b.target.children, true);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+    assignIds(doc.children, false);
     // Two-pass resolution: implicit-heading refs must be finalized
     // BEFORE crossref cloning, otherwise a forward `</#id>` could clone
     // a heading's children while they still hold unresolved Link

@@ -4395,6 +4395,76 @@ d</li>
 
 :::
 
+Lazy continuation only ever extends an **open paragraph**. After a block inside an item, a dedented line therefore folds in only when that block leaves a paragraph open. A blockquote's trailing paragraph is open, so the line folds into the quote:
+
+::: compare
+
+```carve
+- item
+  > q
+tail
+```
+
+```html
+<ul>
+  <li>item
+    <blockquote><p>q
+tail</p></blockquote>
+  </li>
+</ul>
+```
+
+:::
+
+A fenced code block leaves no open paragraph, so a dedented line ends the item and starts a top-level block instead of joining the item:
+
+::: compare
+
+````carve
+- item
+  ```
+  c
+  ```
+tail
+````
+
+```html
+<ul>
+  <li>item
+    <pre><code>c
+</code></pre>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+A table is the same — no open paragraph, so the dedented line is a fresh top-level paragraph:
+
+::: compare
+
+```carve
+- item
+  | a | b |
+tail
+```
+
+```html
+<ul>
+  <li>item
+    <table>
+      <tbody>
+        <tr><td>a</td><td>b</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
 ## Compact list blocks
 
 A blank line is still required to start a block inside a list item, but it no longer makes the list *loose* when the indented content opens a block (sub-list, block quote, fenced code, fenced div, heading, table). The item stays **tight** — lead text inline, the block attached — so a checklist with notes or steps with code stay compact. (A Carve deviation: canonical djot renders these loose. Only the tight/loose rendering changes, not the block structure.)

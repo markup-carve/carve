@@ -502,33 +502,45 @@ function renderListItem(item, opts, level, tight) {
         : item.checked
             ? '<input type="checkbox" checked disabled> '
             : '<input type="checkbox" disabled> ';
-    const wrapPara = (p) => {
+    // `isLead` is the item's FIRST paragraph. In a tight item only the lead
+    // paragraph is unwrapped (it sits on the <li> line); a SUBSEQUENT paragraph
+    // -- e.g. one attached via `+` after the lead -- still renders as a real <p>
+    // even though the list is tight (Bug B; carve-php parity).
+    const wrapPara = (p, isLead) => {
         const inner = renderInlines(p.children, opts);
-        // Tight items normally omit the <p>, but a paragraph carrying its
-        // own attributes (e.g. a leading block-attribute line, §15) must
-        // keep the <p> so the attributes survive.
-        if (tight && !p.attrs)
+        // Tight items normally omit the <p> on the lead paragraph, but a paragraph
+        // carrying its own attributes (e.g. a leading block-attribute line, §15)
+        // must keep the <p> so the attributes survive.
+        if (tight && isLead && !p.attrs)
             return inner;
         return `<p${renderAttrs(p.attrs)}>${inner}</p>`;
     };
     // Single paragraph: stays on the <li> line. Tight omits <p>, loose keeps it.
     if (item.children.length === 1 && item.children[0].type === 'paragraph') {
-        return `${pad}<li${renderAttrs(item.attrs)}>${checkbox}${wrapPara(item.children[0])}</li>`;
+        return `${pad}<li${renderAttrs(item.attrs)}>${checkbox}${wrapPara(item.children[0], true)}</li>`;
     }
     // Mixed content (e.g. a lead paragraph followed by a nested list): the
     // first paragraph sits on the <li> line; remaining blocks go below,
     // indented one level deeper, with the closing </li> back at item indent.
     let head = `${pad}<li${renderAttrs(item.attrs)}>${checkbox}`;
     const body = [];
+    // A paragraph that immediately follows the lead paragraph (a consecutive
+    // run from index 0, e.g. a `+`-attached second paragraph -- Bug B) renders as
+    // a real <p> even in a tight item, matching carve-php. Once a non-paragraph
+    // block appears, the lead run ends and later paragraphs fall back to the
+    // tight unwrapped form -- this leaves the DEFERRED "plain text after a
+    // block-in-item" family (`- item` / `+` / fence / tail) unchanged.
+    let inLeadRun = true;
     item.children.forEach((child, i) => {
         if (child.type === 'paragraph') {
-            const rendered = wrapPara(child);
+            const rendered = wrapPara(child, i === 0 || !inLeadRun);
             if (i === 0)
                 head += rendered;
             else
                 body.push(`${indent(level + 1)}${rendered}`);
         }
         else {
+            inLeadRun = false;
             // Skip blocks that render to nothing (a comment, an abbreviation def, a
             // non-HTML raw block): pushing `''` would leave stray blank lines inside
             // the <li> (`<p>a</p>\n\n  </li>`). Matches carve-rs.
