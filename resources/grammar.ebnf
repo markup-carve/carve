@@ -187,7 +187,7 @@ tilde_fence = '~', '~', '~', {'~'} ;
 
 code_fence_info = (language_info, [space+, label]) | label ;
 language_info = (letter | digit | '-' | '_' | '+' | '#' | '.' | '/')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net, text/html. May start with a digit. The `/` is normative across all impls (so `text/html`, `image/svg` are language tokens, not split). A token MUST NOT start with `=`: a leading `=` is the raw_block opener (above), not a language. *)
-label = '[', { any_char - ']' }, ']' ;  (* structured metadata, e.g. [Installation]; not part of the class *)
+label = '[', { character - ']' }, ']' ;  (* structured metadata, e.g. [Installation]; not part of the class *)
 code_content = (* any text until matching fence, preserved literally *) ;
 (* TABS IN CODE -- NORMATIVE. Literal tab characters in code content (fenced
    code blocks and inline code spans) are PRESERVED verbatim; a tab and N spaces
@@ -1445,8 +1445,8 @@ EOF = (* end of file *) ;
           an attribute block: the `]` and the `{...}` render literally. The
           inner bracket content is still inline-parsed, so `[*x*]{???}` ->
           `[<strong>x</strong>]{???}`.
-        - a name (id, class, or key) that is not a grammar `identifier` (line
-          905) is also unrecognized: a DIGIT-FIRST name (`{.123}`, `{#1}`,
+        - a name (id, class, or key) that is not a grammar `identifier` (the
+          `identifier` production) is also unrecognized: a DIGIT-FIRST name (`{.123}`, `{#1}`,
           `{2=v}`) or a name with a non-identifier character (`{.a!b}`).
           ONE invalid name makes the WHOLE block not an attribute block, even
           when mixed with valid attributes (`{.ok .1}`), so the run stays

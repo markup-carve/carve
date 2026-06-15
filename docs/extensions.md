@@ -22,7 +22,7 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   `:name[…]` / `::: name` extension syntax). Recognized `:::` type words
   (the eight admonitions + `line-block`) are catalogued in `examples.md`. Smart
   typography and `@mention` / `#tag` / `:emoji:` parsing are also default-on and
-  corpus-pinned, but per grammar PART 19 a processor MAY disable them.
+  corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, emoji glyph map,
   locale smart-quote sets, bare-URL autolinking.
 - Tier 3: Mermaid, Tabs, CodeGroup, TableOfContents, HeadingPermalinks,
