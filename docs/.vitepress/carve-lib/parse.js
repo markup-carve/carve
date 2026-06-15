@@ -1674,6 +1674,10 @@ function parseList(lexer) {
                     !RE_ORDERED.test(d0) &&
                         !RE_UNORDERED.test(d0) &&
                         !RE_TASK.test(d0) &&
+                        // An abutting-attr bullet (`-{.x} item`) is a list marker too, so it
+                        // folds below the content column like a plain bullet (it does not
+                        // interrupt). Excluded here so it is not treated as a nesting opener.
+                        extractItemAttr(d0) === null &&
                         !RE_FENCE.test(d0) &&
                         !RE_RAW_FENCE.test(d0) &&
                         !RE_DIV_OPEN.test(d0) &&
@@ -1691,7 +1695,13 @@ function parseList(lexer) {
                 // Every other line -- lead text, and block openers (quotes, headings)
                 // before OR after a sub-list -- uses whole-tab dedent so it reaches
                 // column 0 and parses / interrupts; carry the residual only on markers.
-                const isMarker = RE_ORDERED.test(l) || RE_UNORDERED.test(l) || RE_TASK.test(l);
+                const isMarker = RE_ORDERED.test(l) ||
+                    RE_UNORDERED.test(l) ||
+                    RE_TASK.test(l) ||
+                    // An abutting-attr bullet (`-{.x} item`) is a marker too. It no longer
+                    // reaches here via §10 interruption (bullets do not interrupt), so the
+                    // sub-list nesting path must recognize it directly to keep nesting.
+                    extractItemAttr(l) !== null;
                 if (firstBlockIdx === -1 && isMarker) {
                     firstBlockIdx = nested.length;
                 }
@@ -1701,15 +1711,18 @@ function parseList(lexer) {
             }
             else if (pendingBlanks === 0 &&
                 (!lazyContinuationEndsList(l, lexer) ||
-                    // A list marker indented past the base column (but below the content
-                    // column) folds into the lead text rather than ending the list; the
-                    // recursive reparse then applies §10: an ordered marker does not
-                    // interrupt a paragraph so it stays folded (`1. a` / `  1. b`), while
-                    // an unordered/task marker interrupts and nests (`- a` / ` - b`). At
-                    // the base column a marker can still start a new list (a dialect
-                    // change, §11), so only an indented one folds.
+                    // A list marker indented past the base column but BELOW the content
+                    // column folds into the lead text rather than ending the list. Under
+                    // symmetric §10 no list marker interrupts a paragraph, so on the
+                    // recursive reparse it stays folded: `1. a`/`  1. b`, `- a`/` - b`,
+                    // and the abutting-attr form `- a`/` -{.x} b` all fold. (At or past
+                    // the content column the marker nests; at the base column it can start
+                    // a sibling list, §11 -- so only a below-content indented one folds.)
                     (indentColumns(l) > baseIndent &&
-                        (RE_TASK.test(l) || RE_UNORDERED.test(l) || RE_ORDERED.test(l))))) {
+                        (RE_TASK.test(l) ||
+                            RE_UNORDERED.test(l) ||
+                            RE_ORDERED.test(l) ||
+                            extractItemAttr(l) !== null)))) {
                 // Lazy continuation: a line with no blank before it that starts no block
                 // (or is the indented ordered marker above) folds into the item's lead
                 // paragraph (djot rule). A block-starting line or a blank ends the list.
@@ -2067,21 +2080,16 @@ function startsInterruptingBlock(lexer) {
                 return fenceHasCloser(lexer, RE_FENCE.exec(ln)[2]);
             return false;
         case '-':
-            // thematic break, task or unordered list (incl. abutting-attr marker)
-            return (RE_HR.test(ln.trim()) ||
-                RE_TASK.test(ln) ||
-                RE_UNORDERED.test(ln) ||
-                extractItemAttr(ln) !== null);
+            // thematic break only. A bullet/task does NOT interrupt a paragraph
+            // (symmetric with ordered markers; a list needs a blank line, §10).
+            return RE_HR.test(ln.trim());
         case '+':
-            // task or unordered list (`+` is not a thematic-break char)
-            return RE_TASK.test(ln) || RE_UNORDERED.test(ln);
+            // `+` is the list-continuation marker, never an interrupter.
+            return false;
         case '*':
-            // abbreviation definition (invisible), thematic break, task or unordered
-            return (RE_ABBR_DEF.test(ln) ||
-                RE_HR.test(ln.trim()) ||
-                RE_TASK.test(ln) ||
-                RE_UNORDERED.test(ln) ||
-                extractItemAttr(ln) !== null);
+            // abbreviation definition (invisible) or thematic break. A bullet/task
+            // does NOT interrupt (symmetric, §10).
+            return RE_ABBR_DEF.test(ln) || RE_HR.test(ln.trim());
         case '_':
             return RE_HR.test(ln.trim());
         case ':':
