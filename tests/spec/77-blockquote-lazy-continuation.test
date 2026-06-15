@@ -12,8 +12,6 @@ continued</p></blockquote>
 > quoted
 - item
 .
-<blockquote><p>quoted</p></blockquote>
-<ul>
-  <li>item</li>
-</ul>
+<blockquote><p>quoted
+- item</p></blockquote>
 ```
