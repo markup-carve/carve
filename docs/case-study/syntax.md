@@ -423,11 +423,11 @@ heuristic Djot removed, so Carve keeps both on the blank-line rule. (`+` is the
 continuation marker, not a bullet.) Inside an existing list item, indentation
 alone still nests a sublist.
 
-A bullet opens a list at **any indentation**, not only at column 0: a `- `/`* `
-marker is always a bullet, so an indented one opens a list at the top level or
-nests inside an existing item. The leading indentation becomes the new list's
-base column. This keeps the bullet rule uniform - an indented bullet opens a
-list whether it stands at the top level or nests inside an existing item.
+A bullet opens a list at **any indentation** at the top level, not only at
+column 0: a `- `/`* ` line is always a bullet, so even an indented one opens a
+list rather than becoming indented code (unlike CommonMark). The leading
+indentation becomes the new list's base column. (Nesting *inside* an existing
+item is gated by the content column - see below.)
 
 ```
   - item        →  a list (indented; no column-0 requirement)
@@ -456,22 +456,30 @@ How a deeper marker inside an open list item is read - this is sub-list nesting,
 a different axis from the §10 paragraph rule (no list marker interrupts a
 paragraph; both need a blank line):
 
-- **A bullet (unordered/task) opens a sub-list at any indent** past the parent's
-  base:
-  ```
-  - a
-    - b          →  nested
-  ```
-- **An ordered marker is gated by the content column.**
-  One **at or past** it opens a sub-list; one **below** it is lazy paragraph text
-  that folds into the item:
-  ```
-  1. a
-     1. b         →  nested  (column 3 = content column)
+A **list marker** (bullet or ordered) is **gated by the content column** - and
+bullet and ordered behave identically here. A marker **at or past** the parent's
+content column opens a sub-list; one **below** it is lazy paragraph text that
+folds into the item:
 
-  1. a
-    1. b          →  "1. b" is lazy text of item a  (column 2, below it)
-  ```
+```
+- a
+  - b          →  nested            (column 2 = content column)
+
+- a
+ - b           →  "- b" is lazy text of item a   (column 1, below it)
+
+1. a
+   1. b        →  nested            (column 3 = content column)
+
+1. a
+  1. b         →  "1. b" is lazy text of item a  (column 2, below it)
+```
+
+Every *other* block opener (quote, heading, fence, table) does nest at any
+indent past the parent's base column - those are unambiguous as blocks and never
+fold as lazy text. (Rule B's "a bullet opens a list at any indentation" is about
+the **top level** - no column-0 requirement, unlike CommonMark - not about
+sub-list nesting depth.)
 
 Carve does not require a blank line before a sub-list (unlike djot); indentation
 alone nests it. Structure comes from indentation only; the literal marker numbers

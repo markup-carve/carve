@@ -1738,18 +1738,21 @@ EOF = (* end of file *) ;
         indentation. `-<TAB>a` is NOT a list item (paragraph text).
       - CONTENT COLUMN. An item's content column is the visual column where
         its content starts (marker width + separator: `- ` -> 2, `1. ` -> 3,
-        `10. ` -> 4). An ORDERED child marker must reach the parent item's
-        content column to nest; below it, the line folds as lazy item text
-        (ordered markers never interrupt, §10). UNORDERED/TASK bullets and
-        every other block opener (quote, heading, fence, table, ...) nest at
-        ANY indent past the parent item's base column.
-      - RULE B (BULLETS AT ANY INDENT). A bullet (`-`/`*` + space + content)
-        opens a list at ANY indentation, uniformly in every context: at the
-        top level and nested in a list item. There is no column-0 restriction.
-        A bullet does NOT, however, interrupt an OPEN PARAGRAPH -- like an
-        ordered marker it needs a blank line before it (the symmetric §10 rule);
-        the "any indent" freedom is about WHERE a list may open, not about
-        breaking running prose.
+        `10. ` -> 4). A LIST-MARKER child -- a bullet (`-`/`*`, task) OR an
+        ordered marker -- must reach the parent item's content column to open a
+        sublist; below it, the line folds as lazy item text (list markers never
+        interrupt, §10). Bullet and ordered markers are SYMMETRIC here. Every
+        other block opener (quote, heading, fence, table, ...) nests at ANY
+        indent past the parent item's base column (those are unambiguous as
+        blocks and never fold as lazy text).
+      - RULE B (BULLETS AT ANY INDENT -- TOP LEVEL). A bullet (`-`/`*` + space +
+        content) opens a list at ANY indentation at the TOP LEVEL: there is no
+        column-0 restriction (unlike CommonMark, a `    - x` line is a list, not
+        indented code). An ordered marker behaves the same at the top level.
+        This "any indent" freedom is about WHERE a list may open at the top
+        level, NOT about sublist nesting depth (nesting follows the content-
+        column rule above) and NOT about interrupting an OPEN PARAGRAPH (a
+        marker needs a blank line before it -- the symmetric §10 rule).
       - DEDENT. When nested content is re-parsed, the container's structural
         indent is stripped by columns. A tab straddling the dedent boundary
         is consumed WHOLE on non-marker lines (Carve has no indent-sensitive
