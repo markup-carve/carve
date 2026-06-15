@@ -328,15 +328,29 @@ definition_continuation = (space, space, space, inline_content, newline)
    fence and from a stray `:` in prose; all three reference impls agree.) *)
 
 (* --- Tables --- *)
-table = standard_row, {table_row}, [caption] ;
+table = standard_row, [delimiter_row], {table_row}, [caption] ;
 (* a table BEGINS with a standard row; a continuation row only ever follows
-   an existing row (its cells append to the row above -- PART 9 §5) *)
+   an existing row (its cells append to the row above -- PART 9 §5). An optional
+   GFM delimiter row may appear as the SECOND line; it promotes the first row to
+   a header and assigns per-column alignment (PART 9 §5, GFM DELIMITER ROW) *)
 
 table_row = standard_row | continuation_row ;
 
 standard_row = '|', table_cell, {'|', table_cell}, '|', newline ;
 
 continuation_row = '+', table_cell, {'|', table_cell}, '|', newline ;
+
+(* GFM delimiter row (alternative header syntax to the native `|=` header cell).
+   Only recognized as the row IMMEDIATELY AFTER the first row of a table; every
+   cell must be a delimiter_cell. A delimiter-shaped row in any OTHER position
+   (the first line, or any row after the second) is an ordinary standard_row --
+   its `-` runs are inline content (smart typography may render `---` as an em
+   dash). See PART 9 §5 (GFM DELIMITER ROW) for header promotion + alignment. *)
+delimiter_row = '|', delimiter_cell, {'|', delimiter_cell}, '|', newline ;
+delimiter_cell = {whitespace}, [':'], '-', {'-'}, [':'], {whitespace} ;
+(* at least one '-'; only optional leading/trailing ':' and surrounding
+   whitespace. An EMPTY cell is NOT a delimiter_cell, so a row containing one
+   (`|---||`) is not a delimiter row (it is an ordinary row). *)
 
 table_cell = header_cell | data_cell | span_cell ;
 
@@ -1109,6 +1123,33 @@ EOF = (* end of file *) ;
         no `<tr>`. Works under rowspan: the joined content belongs to the
         spanning cell (corpus 40, 41). A table cannot BEGIN with a
         continuation row (PART 2 `table`).
+      - GFM DELIMITER ROW (NORMATIVE) -- an alternative header syntax to the
+        native `|=` header cell. A row is a delimiter row when it appears
+        IMMEDIATELY AFTER the first row of a table AND every cell is a
+        delimiter_cell: optional whitespace, an optional leading `:`, one or
+        more `-`, an optional trailing `:`, optional whitespace (PART 2
+        `delimiter_cell`). At least one `-` is required and only `:`/`-`/
+        whitespace may appear, so an EMPTY cell (`|---||`) or any other content
+        (`|-a-|`, `|:|`) disqualifies the whole row -- it is then an ordinary
+        standard_row. A delimiter row:
+          1. promotes the FIRST row's cells to header cells (`<thead>` / `<th>`);
+          2. sets each column's text alignment from its delimiter cell's colons
+             -- `:--` left, `--:` right, `:-:` center, a bare `---` no alignment
+             -- applied to the WHOLE column (the header cell and every body cell
+             in that column);
+          3. is CONSUMED: it produces no `<tr>`.
+        A column with no corresponding delimiter cell (count mismatch) is
+        promoted with default alignment. POSITION IS STRICT: a delimiter-shaped
+        row that is NOT the second line -- the first line of the table, or any
+        row after the second -- is an ordinary row, and its `-` runs are inline
+        content (smart typography may render `---` as an em dash). So a table
+        cannot begin with a delimiter row, and a second delimiter-shaped row is
+        just data. The native `|=` header cell and `<`/`>`/`~` alignment markers
+        may COEXIST with a delimiter row; but when a single column carries BOTH a
+        native alignment marker AND a delimiter-cell colon, the resulting
+        alignment is UNSPECIFIED (do not combine the two mechanisms on one
+        column). Verified identical across carve-js / carve-php / carve-rs;
+        the happy path is pinned by corpus 09-tables-3.
 
    6. REFERENCE RESOLUTION
       - Reference links [text][ref] resolved to [ref]: url definitions
