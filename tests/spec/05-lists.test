@@ -185,3 +185,20 @@ Intro
   <figcaption>Steve Jobs</figcaption>
 </figure>
 ```
+
+```
+1. outer
+   1. inner
+lazy
+   2. sibling
+.
+<ol>
+  <li>outer
+    <ol>
+      <li>inner
+lazy</li>
+      <li>sibling</li>
+    </ol>
+  </li>
+</ol>
+```

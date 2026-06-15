@@ -829,6 +829,31 @@ Intro
 
 :::
 
+After a lazy continuation line, a marker at the content column resumes the *same* sub-list rather than starting a new one (§10).
+
+::: compare
+
+```carve
+1. outer
+   1. inner
+lazy
+   2. sibling
+```
+
+```html
+<ol>
+  <li>outer
+    <ol>
+      <li>inner
+lazy</li>
+      <li>sibling</li>
+    </ol>
+  </li>
+</ol>
+```
+
+:::
+
 ## Task lists
 
 ::: compare
