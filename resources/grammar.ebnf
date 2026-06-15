@@ -107,12 +107,13 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
        heading (ends this one);
      - a caption (`^ ` ...) or a fenced comment (`%%%`) ends the heading;
      - a blank line ends it;
-     - a block-opener that interrupts a paragraph (quote, table, fenced code,
-       `:::` div, thematic break) ends the heading and starts that block,
-       exactly as it interrupts a paragraph (§10).
-   Only PLAIN text folds into the heading; a LIST MARKER -- bullet OR ordered --
-   folds too (a list marker never interrupts a paragraph, §10/§11). The heading
-   id is derived from the full folded text.
+     - a block-opener (quote, table, fenced code, `:::` div, thematic break)
+       ends the heading and starts that block;
+     - a LIST MARKER -- bullet OR ordered -- also ends the heading and starts a
+       sibling list (a list marker folds only into a PARAGRAPH, §10; a heading
+       is ended by it, matching djot).
+   Only PLAIN text folds into the heading. The heading id is derived from the
+   full folded text.
    NO TRAILING ATTRIBUTES (djot-strict). A heading line carries NO trailing
    `{...}` attribute block: a `{...}` at the end of a heading line is ordinary
    inline content (literal text unless it forms an inline construct), and the
@@ -204,18 +205,19 @@ blockquote_line = '>', [' '], inline_content, newline ;
    blockquote_lines, a line that does NOT carry the '>' marker still continues
    the blockquote -- exactly as if it carried '>' -- provided it is:
      - not blank (a blank line ends the blockquote), and
-     - not a block-opener that would interrupt a paragraph (§10): a heading,
-       table, fenced code, `:::` div, thematic break, OR an "invisible"
-       reference / footnote / abbreviation definition or comment -- each ends
-       the blockquote and starts that block OUTSIDE it (a LIST MARKER is NOT in
-       this set: it never interrupts a paragraph, so it folds in -- see below),
+     - not a block-opener: a heading, table, fenced code, `:::` div, thematic
+       break, OR an "invisible" reference / footnote / abbreviation definition
+       or comment -- each ends the blockquote and starts that block OUTSIDE it,
        and
+     - not a LIST MARKER (bullet or ordered): it also ends the blockquote and
+       starts a top-level sibling list OUTSIDE it. A list marker folds only into
+       an open PARAGRAPH (§10); a blockquote is ended by it, matching djot, so
+       "> quoted \n - item" is a quote PLUS a sibling list, and
      - not a caption ('^ ' ...), which attaches to the blockquote instead.
-   Only PLAIN text (continuing an open paragraph) folds in; a LIST MARKER --
-   bullet OR ordered -- folds too (a list marker never interrupts, §10/§11),
-   so "> quoted \n - item" is one quoted paragraph. The lazy line's text is appended to
-   the blockquote's inner content before that content is block-parsed, so a
-   hard-wrapped quoted paragraph need not repeat '>' on every line. *)
+   Only PLAIN text (continuing an open paragraph) folds in. The lazy line's text
+   is appended to the blockquote's inner content before that content is
+   block-parsed, so a hard-wrapped quoted paragraph need not repeat '>' on every
+   line. *)
 lazy_continuation_line = inline_content, newline ;  (* see the NORMATIVE note above for which lines qualify *)
 
 (* --- Lists --- *)
@@ -1247,14 +1249,21 @@ EOF = (* end of file *) ;
       sublist still nests with no blank line ("- a \n   - b" -> a list whose
       first item holds a sublist): that is NOT paragraph interruption -- the
       marker opens a sublist inside an OPEN LIST ITEM, governed by §24, not by
-      this rule. A col-0 list marker after a prose line in a block quote folds
-      into the quoted paragraph (lazy continuation; a list marker never
-      interrupts), so "> quoted \n - item" is ONE quoted paragraph; a blank line
-      starts the list. HEADING CONTINUATION follows the same principle (see
-      `heading`): a block-opener that interrupts a paragraph also interrupts an
-      open heading and starts that block, but a LIST MARKER -- bullet or ordered
-      -- folds into the heading text instead (it does not interrupt), exactly
-      like a bare-prose or same/lower `#` continuation line.
+      this rule.
+
+      "Folds into a paragraph" is the WHOLE of the symmetric rule: it applies
+      only to an OPEN PARAGRAPH. A HEADING and a BLOCKQUOTE are ENDED by a list
+      marker (it starts a sibling list OUTSIDE them) -- matching djot:
+        - HEADING CONTINUATION (see `heading`): a block-opener ends an open
+          heading; a LIST MARKER -- bullet or ordered -- also ends it and starts
+          a sibling list, so "# H \n - item" is a heading PLUS a `<ul>`. Only
+          plain text (and a same/lower `#`) folds into the heading.
+        - BLOCKQUOTE LAZY CONTINUATION (see `blockquote`): a col-0 list marker
+          after a quoted line ENDS the quote and starts a top-level sibling
+          list, so "> quoted \n - item" is a quote PLUS a `<ul>`. Only plain
+          text lazily continues the quote. (A QUOTED bullet -- "> p \n > - x" --
+          is paragraph interruption INSIDE the quote and folds, since there the
+          marker meets an open paragraph, not the quote boundary.)
 
    11. LIST MARKER CHANGE STARTS A NEW LIST -- NORMATIVE (governs `list`
       in PART 2). §10 decides FIRST whether a sequence of marker lines

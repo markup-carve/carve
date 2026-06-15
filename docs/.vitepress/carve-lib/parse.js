@@ -765,8 +765,9 @@ function parseHeading(lexer) {
             break;
         }
         // A block-opener ends the heading and starts that block (§10), so only
-        // plain text continuation lines fold into the heading.
-        if (startsInterruptingBlock(lexer))
+        // plain text continuation lines fold into the heading. A list marker also
+        // ends the heading (it folds only into a paragraph, not a heading).
+        if (endsHeadingOrQuote(lexer))
             break;
         text += '\n' + next;
         lexer.consume();
@@ -1231,7 +1232,7 @@ function parseBlockQuote(lexer) {
         // caption `^ …` attaches to the quote rather than folding in.
         if (ln.trim() === '' ||
             RE_CAPTION.test(ln) ||
-            startsInterruptingBlock(lexer)) {
+            endsHeadingOrQuote(lexer)) {
             break;
         }
         // A non-`>` line inside an open fence/comment, or after a block that left no
@@ -2120,6 +2121,22 @@ function startsInterruptingBlock(lexer) {
             // A bare image is inline, not a block, so it does not interrupt either.
             return false;
     }
+}
+// Whether the peeked line ENDS an open heading or blockquote (and starts a
+// sibling block). A list marker (bullet, task, ordered, or abutting-attr) ends
+// them and starts a sibling list -- unlike paragraph interruption, where a list
+// marker FOLDS in (symmetric §10): a list folds into a PARAGRAPH but ends a
+// heading/quote, matching djot. Every paragraph-interrupter ends them too.
+function endsHeadingOrQuote(lexer) {
+    const ln = lexer.peek();
+    if (ln !== undefined &&
+        (RE_UNORDERED.test(ln) ||
+            RE_TASK.test(ln) ||
+            RE_ORDERED.test(ln) ||
+            extractItemAttr(ln) !== null)) {
+        return true;
+    }
+    return startsInterruptingBlock(lexer);
 }
 function parseParagraph(lexer) {
     const lines = [];

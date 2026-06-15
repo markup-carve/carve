@@ -4100,7 +4100,7 @@ continued</p></blockquote>
 
 :::
 
-A block-opener that interrupts a paragraph (table, fenced code, heading, `:::` div, thematic break) is not a lazy continuation: it ends the quote and starts that block outside it, exactly as it interrupts a paragraph (§10). A **list marker is the exception**: it never interrupts, so a bullet after a quoted prose line folds into the quoted paragraph (a blank line is needed to start the list).
+A block-opener is not a lazy continuation: it ends the quote and starts that block outside it. A **list marker — bullet or ordered — ends the quote too** and starts a top-level sibling list. (A list marker folds only into an open *paragraph*, §10; a blockquote is ended by it, matching djot.) Only plain text lazily continues the quote.
 
 ::: compare
 
@@ -4110,8 +4110,10 @@ A block-opener that interrupts a paragraph (table, fenced code, heading, `:::` d
 ```
 
 ```html
-<blockquote><p>quoted
-- item</p></blockquote>
+<blockquote><p>quoted</p></blockquote>
+<ul>
+  <li>item</li>
+</ul>
 ```
 
 :::
@@ -4137,7 +4139,7 @@ int main() {}
 
 ## Multi-line headings
 
-A heading spills onto following lines until a blank line. A continuation line may carry the same-or-lower number of `#` (stripped) or none; a higher/other heading marker starts a new heading, and a caption (`^ …`) or fenced comment (`%%%`) ends it. Only plain text folds in: a block-opener that interrupts a paragraph (quote, table, fenced code, `:::` div, thematic break) ends the heading and starts that block, exactly as it interrupts a paragraph (§10). A **list marker — bullet or ordered — folds** into the heading text (it never interrupts, §10/§11). The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
+A heading spills onto following lines until a blank line. A continuation line may carry the same-or-lower number of `#` (stripped) or none; a higher/other heading marker starts a new heading, and a caption (`^ …`) or fenced comment (`%%%`) ends it. Only plain text folds in: a block-opener (quote, table, fenced code, `:::` div, thematic break) ends the heading and starts that block. A **list marker — bullet or ordered — ends the heading too** and starts a sibling list. (A list marker folds only into an open *paragraph*, §10; a heading is ended by it, matching djot.) The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
 
 ::: compare
 
@@ -4155,7 +4157,7 @@ outside</h1>
 
 :::
 
-A list marker — bullet or ordered — is not an interrupter, so it folds into the heading text.
+A list marker — bullet or ordered — ends the heading and starts a sibling list.
 
 ::: compare
 
@@ -4165,15 +4167,17 @@ A list marker — bullet or ordered — is not an interrupter, so it folds into 
 ```
 
 ```html
-<section id="title-item">
-  <h1>Title
-- item</h1>
+<section id="title">
+  <h1>Title</h1>
+  <ul>
+    <li>item</li>
+  </ul>
 </section>
 ```
 
 :::
 
-An ordered marker folds the same way.
+An ordered marker ends the heading the same way (symmetric with the bullet).
 
 ::: compare
 
@@ -4183,9 +4187,11 @@ An ordered marker folds the same way.
 ```
 
 ```html
-<section id="title-1-one">
-  <h1>Title
-1. one</h1>
+<section id="title">
+  <h1>Title</h1>
+  <ol>
+    <li>one</li>
+  </ol>
 </section>
 ```
 
