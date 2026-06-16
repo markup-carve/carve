@@ -141,3 +141,13 @@ Presets: **`unrestricted`** (all schemes/hosts), **`internalOnly`**
   markup.
 - Parity is byte-checked against `carve-php` via golden fixtures (the presets
   and the resolution rule above are the shared source of truth).
+
+## Parity battery
+
+`tests/profile-fixtures.json` is the **shared golden battery**: a set of
+`{carve, profile, html}` fixtures rendered by carve-php (the reference) covering
+the four presets, the disallowed-node actions, and the link policy. carve-js and
+carve-rs assert their own profile output against this file (comparing
+trailing-newline-insensitively, since renderers differ on a trailing `\n`), so a
+profile divergence in any implementation is caught. Regenerate with
+`tests/gen-profile-fixtures.php` from a carve-php checkout.
