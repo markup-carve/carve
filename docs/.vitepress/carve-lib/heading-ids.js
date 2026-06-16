@@ -45,23 +45,28 @@ function slugRun(s) {
 /**
  * The automatic-identifier rule. Pure, context-free, no dedup.
  *
- * Uses the jgm/djot#393 run-replacement, then **lowercases** (GitHub/SSG style):
- * non-ASCII characters are preserved (only their case is folded). Lowercasing makes
- * ids and cross-references case-insensitive without special lookup logic. With
- * `asciiFold` (opt-in via `asciiHeadingIds`) the slug is transliterated to ASCII and
- * re-slugged.
+ * Default is CASE-PRESERVING with no Unicode normalization or case folding:
+ * the jgm/djot#393 run-replacement over the raw code points, keeping non-ASCII
+ * verbatim (e.g. a German heading keeps its umlaut). Zero-dependency and
+ * byte-identical across implementations, matching djot's "no Unicode tables"
+ * identifier model. Cross-reference resolution is case-insensitive (see
+ * resolveHeadingIds), so `</#getting-started>` still resolves to the
+ * case-preserved `Getting-Started` id. Two opt-in, orthogonal transforms:
+ * `lowercase` (GitHub/SSG-style anchors, folded per code point so no
+ * context mapping such as Greek final-sigma applies) and `asciiFold`
+ * (transliterate the slug to ASCII for share-safe URL fragments; combine
+ * with `lowercase` for a fully lowercase ASCII slug).
  */
-export function slugify(plainText, asciiFold = false) {
-    // NFC first so a decomposed `résumé` (macOS copy-paste,
-    // some editors) slugs identically to its precomposed `résumé` form.
-    // Without this, the map would only catch precomposed letters and
-    // NFD inputs would emit different ids for visually identical text.
-    let s = slugRun(plainText.normalize('NFC'));
-    if (asciiFold) {
+export function slugify(plainText, opts = {}) {
+    let s = slugRun(plainText);
+    if (opts.asciiFold) {
         s = slugRun(transliterate(s));
     }
-    // Lowercase (Unicode-aware): GitHub-style anchors, inherently case-insensitive.
-    s = s.toLowerCase();
+    // Per code point (no whole-string context mappings, e.g. final-sigma)
+    // so opt-in lowercasing stays portable across implementations.
+    if (opts.lowercase) {
+        s = Array.from(s, (c) => c.toLowerCase()).join('');
+    }
     // A leading digit is a valid HTML id but an invalid bare CSS selector, so prefix.
     if (/^\p{N}/u.test(s))
         s = `s-${s}`;
@@ -140,9 +145,16 @@ export function inlineText(nodes) {
  * crossrefs (first-occurrence target, link text cloned from the target
  * heading; unresolved -> literal text). Mutates and returns `doc`.
  */
-export function resolveHeadingIds(doc, asciiFold = false) {
+export function resolveHeadingIds(doc, opts = {}) {
     const used = new Set();
     const targets = new Map();
+    // Case-insensitive `</#id>` index: case-folded id -> actual (verbatim) id,
+    // first occurrence wins. Lets `</#getting-started>` resolve to a
+    // case-preserved `Getting-Started` heading (or an explicit `{#MyId}`)
+    // without lowercasing the emitted id. Folded per code point to stay
+    // portable, mirroring slugify's optional lowercase.
+    const foldId = (s) => Array.from(s, (c) => c.toLowerCase()).join('');
+    const foldedTargets = new Map();
     // Implicit-reference index: normalized visible heading text -> heading id.
     // First-occurrence wins (matches `</#id>` ambiguous-ref behavior). Built
     // from the parsed AST's inlineText so it agrees with the heading slug
@@ -171,7 +183,7 @@ export function resolveHeadingIds(doc, asciiFold = false) {
             used.add(id);
         }
         else {
-            const base = slugify(inlineText(heading.children), asciiFold);
+            const base = slugify(inlineText(heading.children), opts);
             if (!used.has(base)) {
                 id = base;
             }
@@ -186,6 +198,9 @@ export function resolveHeadingIds(doc, asciiFold = false) {
         }
         if (!targets.has(id))
             targets.set(id, heading.children);
+        const fk = foldId(id);
+        if (!foldedTargets.has(fk))
+            foldedTargets.set(fk, id);
         if (inBlockquote)
             return;
         const plain = inlineText(heading.children);
@@ -285,11 +300,17 @@ export function resolveHeadingIds(doc, asciiFold = false) {
         for (let i = 0; i < nodes.length; i++) {
             const n = nodes[i];
             if (n.type === 'crossref') {
-                const tgt = targets.get(n.target);
-                if (tgt) {
+                // Exact match first, then case-insensitive (case-folded) fallback so a
+                // lowercase `</#getting-started>` resolves to a case-preserved
+                // `Getting-Started` id. The emitted href uses the ACTUAL id.
+                const tgtId = targets.has(n.target)
+                    ? n.target
+                    : foldedTargets.get(foldId(n.target));
+                const tgt = tgtId !== undefined ? targets.get(tgtId) : undefined;
+                if (tgt && tgtId !== undefined) {
                     const link = {
                         type: 'link',
-                        href: `#${n.target}`,
+                        href: `#${tgtId}`,
                         // structuredClone would need DOM/Node lib typings absent from this
                         // tsconfig; InlineNode is plain JSON-serializable data so a
                         // stringify/parse round-trip is a safe deep clone here.

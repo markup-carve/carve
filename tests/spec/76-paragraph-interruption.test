@@ -5,7 +5,7 @@ text
 # H
 .
 <p>text</p>
-<section id="h">
+<section id="H">
   <h1>H</h1>
 </section>
 ```
@@ -160,7 +160,7 @@ text
 # H
 .
 <p>text</p>
-<section id="h">
+<section id="H">
   <h1>H</h1>
 </section>
 ```

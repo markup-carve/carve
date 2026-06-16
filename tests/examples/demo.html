@@ -6,17 +6,17 @@ extensions at the end. Open it with **Carve: Open Preview** to see it rendered.<
     <h2 class="featured">Headings and attributes</h2>
   </section>
 </section>
-<section id="level-1">
+<section id="Level-1">
   <h1>Level 1</h1>
-  <section id="level-2">
+  <section id="Level-2">
     <h2>Level 2</h2>
-    <section id="level-3">
+    <section id="Level-3">
       <h3>Level 3</h3>
-      <section id="level-4">
+      <section id="Level-4">
         <h4>Level 4</h4>
-        <section id="level-5">
+        <section id="Level-5">
           <h5>Level 5</h5>
-          <section id="level-6">
+          <section id="Level-6">
             <h6>Level 6</h6>
             <p>A heading carries an explicit id and classes from a block-attribute line on
 the line directly above it:</p>
@@ -28,7 +28,7 @@ the line directly above it:</p>
       </section>
     </section>
   </section>
-  <section id="inline-formatting">
+  <section id="Inline-formatting">
     <h2>Inline formatting</h2>
     <p><em>italic</em>, <strong>bold</strong>, <strong><em>bold italic</em></strong>, <u>underline</u>, <s>strikethrough</s>, <mark>highlight</mark>,
 super<sup>script</sup> and sub<sub>script</sub>. Inline <code>code span</code>, and raw inline passthrough
@@ -37,7 +37,7 @@ super<sup>script</sup> and sub<sub>script</sub>. Inline <code>code span</code>, 
 <del> old phrase </del><ins> new phrase </ins>, and an <span class="critic-comment"> editorial note </span>.</p>
     <p>Escapes keep specials literal: *not bold*, /not italic/, #not-a-tag.</p>
   </section>
-  <section id="links-and-images">
+  <section id="Links-and-images">
     <h2>Links and images</h2>
     <p>Inline <a href="https://example.com">link</a>, titled
 <a href="https://example.com" title="Hover title">link</a>, autolink <a href="https://example.com">https://example.com</a>,
@@ -49,7 +49,7 @@ email autolink <a href="mailto:hello@example.com">hello@example.com</a>, and a r
       <figcaption>Figure 1: images may carry a caption line.</figcaption>
     </figure>
   </section>
-  <section id="lists">
+  <section id="Lists">
     <h2>Lists</h2>
     <p>Unordered:</p>
     <ul>
@@ -87,14 +87,14 @@ email autolink <a href="mailto:hello@example.com">hello@example.com</a>, and a r
       <dd>The markup language Carve evolves from.</dd>
     </dl>
   </section>
-  <section id="blockquotes">
+  <section id="Blockquotes">
     <h2>Blockquotes</h2>
     <figure>
       <blockquote><p>The best way to predict the future is to invent it.</p></blockquote>
       <figcaption>Alan Kay</figcaption>
     </figure>
   </section>
-  <section id="tables">
+  <section id="Tables">
     <h2>Tables</h2>
     <table>
       <caption>Table 1: column alignment - left, right, center.</caption>
@@ -106,7 +106,7 @@ email autolink <a href="mailto:hello@example.com">hello@example.com</a>, and a r
       </tbody>
     </table>
   </section>
-  <section id="code-and-raw-blocks">
+  <section id="Code-and-raw-blocks">
     <h2>Code and raw blocks</h2>
     <p>A fenced code block with a language:</p>
     <pre><code class="language-python">def greet(name: str) -&gt; str:
@@ -121,13 +121,13 @@ list:
     <p>A raw block passes content through to a named format unchanged:</p>
 <details><summary>Native HTML</summary>Rendered as-is.</details>
   </section>
-  <section id="math">
+  <section id="Math">
     <h2>Math</h2>
     <p>Inline math uses a dollar before a code span: <span class="math inline">\(e = mc^2\)</span>.</p>
     <p>Display math uses a double dollar:</p>
     <p><span class="math display">\[\int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}\]</span></p>
   </section>
-  <section id="admonitions-and-divs">
+  <section id="Admonitions-and-divs">
     <h2>Admonitions and divs</h2>
     <aside class="admonition note">
       <p>A plain note callout.</p>
@@ -150,22 +150,22 @@ the fence:</p>
 <code>&lt;div id="callout" class="highlight"&gt;</code> wrapper you can target with your own CSS.</p>
     </div>
   </section>
-  <section id="mentions-tags-and-inline-extensions">
+  <section id="Mentions-tags-and-inline-extensions">
     <h2>Mentions, tags, and inline extensions</h2>
     <p>Mention a person with <span class="mention"><strong>@alice</strong></span> and reference a tag like <span class="tag"><strong>#release-1.0</strong></span>.
 An inline extension names a role: press <kbd>Ctrl+C</kbd> to copy.</p>
   </section>
-  <section id="footnotes">
+  <section id="Footnotes">
     <h2>Footnotes</h2>
     <p>Carve supports footnotes<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> with definitions collected anywhere.<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
   </section>
-  <section id="smart-typography">
+  <section id="Smart-typography">
     <h2>Smart typography</h2>
     <p>Dashes and ellipsis: an em dash — an en range 10–20 … and so on.
 Arrows and comparisons: → ← ↔ ⇒ , ≠ ≤ ≥ , © ® ™.</p>
     <hr>
   </section>
-  <section id="mermaid-tier-3-extension">
+  <section id="Mermaid-Tier-3-extension">
     <h2>Mermaid (Tier-3 extension)</h2>
     <pre><code class="language-mermaid">graph TD
     A[Write Carve] --&gt; B{LSP diagnostics}

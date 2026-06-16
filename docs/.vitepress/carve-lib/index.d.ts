@@ -48,6 +48,7 @@ export declare function renderAnsi(ast: Document, opts?: AnsiRenderOptions): str
  */
 export declare function resolve(doc: Document, opts?: {
     asciiHeadingIds?: boolean;
+    lowercaseHeadingIds?: boolean;
 }): Document;
 /** Convenience: parse + resolve + render in one call. */
 export declare function carveToHtml(source: string, opts?: ParseOptions & RenderOptions): string;

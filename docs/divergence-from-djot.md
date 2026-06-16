@@ -17,30 +17,64 @@ see [Technical Rationale](/technical-rationale). For the feature matrix against
 Markdown and MDX too, see [Carve vs Markdown, Djot & MDX](/comparison).
 :::
 
-## 1. Lowercase heading ids (GitHub-style)
+## 1. Case-preserving heading ids with case-insensitive cross-references
 
-**Djot:** heading ids preserve case and non-ASCII (`# Getting Started` →
-`Getting-Started`).
+**Djot:** heading ids preserve case and non-ASCII, with no Unicode
+normalization (`# Getting Started` → `Getting-Started`). Cross-references are
+not a core Djot feature.
 
-**Carve:** ids are lowercased, Unicode-preserving (`# Getting Started` →
-`getting-started`, `# Über uns` → `über-uns`). ASCII-folding is available
-opt-in for share-safe URL fragments.
+**Carve:** the default id is the same shape - **case-preserving, no Unicode
+normalization, non-ASCII kept verbatim** (`# Getting Started` →
+`Getting-Started`, `# Über uns` → `Über-uns`). This is deliberately aligned
+with Djot and is fully portable: the slug is a pure ASCII run-replacement over
+the raw code points, with no case-folding or normalization tables, so every
+implementation (php, js, rust) produces a byte-identical id.
 
-**Why.** We first mirrored Djot's case-preserving rule. It broke cross-references:
-`# Getting Started` produced the id `Getting-Started`, so a `</#getting-started>`
-reference no longer resolved - the reference and the id differed only in case.
-Lowercasing makes ids and the common `</#id>` / `[Heading][]` references
-case-insensitive with **no special lookup logic** - the universal
-GitHub / Hugo / Jekyll / MDN convention authors already expect for anchors.
+Where Carve goes further is **resolution**: `</#id>` and `[Heading][]`
+cross-references match their target **case-insensitively** and link to the
+target's actual (case-preserved) id. So a lowercase reference still resolves
+even though the emitted id keeps its original case:
 
 ```
-# My API Reference        →  id="my-api-reference"
-See </#my-api-reference>  →  resolves, link text cloned from the heading
+# My API Reference        →  id="My-API-Reference"
+See </#my-api-reference>  →  resolves to href="#My-API-Reference",
+                              link text cloned from the heading
 ```
 
-The cost: Carve's id default deliberately differs from Djot's. For a language
-whose headline feature is cross-references, predictable case-insensitive anchors
-are worth it.
+**Why.** Earlier versions of Carve lowercased ids by default to make references
+case-insensitive. That worked, but it forced a Unicode case-folding step into
+every implementation (and the wrong whole-string variant even differed on Greek
+final-sigma). Folding at *resolution* time instead keeps the emitted id
+djot-shaped and the slug algorithm zero-dependency, while still letting authors
+write references in whatever case they like.
+
+**Opt-in transforms.** GitHub/SSG-style lowercase anchors and share-safe
+ASCII fragments remain available as opt-in, orthogonal options
+(`lowercaseHeadingIds`, `asciiHeadingIds` in carve-js; the
+`LowercaseHeadingIdsExtension` / `AsciiHeadingIdsExtension` in carve-php; the
+`lowercase_heading_ids` option in carve-rs):
+
+| `lowercase` | `asciiFold` | `# Über uns` → |
+|:-:|:-:|---|
+| off | off | `Über-uns` (default) |
+| on | off | `über-uns` (GitHub-style) |
+| off | on | `Uber-uns` (ascii, case kept) |
+| on | on | `uber-uns` (share-safe) |
+
+ASCII-folding is not available in carve-rs (it would require a transliteration
+table, which the zero-dependency Rust crate avoids); attach an explicit `{#id}`
+there when an ASCII fragment is required.
+
+## 1b. Heading-id punctuation model
+
+**Djot:** removes a fixed ASCII blocklist of punctuation, so characters such as
+`;` and `:` that are not in the list survive in the id (`# a; b: c` →
+`a;-b:-c`).
+
+**Carve:** keeps only ASCII alphanumerics plus every non-ASCII code point, and
+replaces every other ASCII run with a single `-` (`# a; b: c` → `a-b-c`,
+`# C++ & Rust` → `C-Rust`). An allowlist gives cleaner, more predictable
+anchors than enumerating punctuation to drop.
 
 ## 2. A list marker must have content
 
