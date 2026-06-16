@@ -1,0 +1,57 @@
+{
+    "full-unchanged": {
+        "carve": "Text with *bold* and a [link](/a).",
+        "profile": "full",
+        "html": "<p>Text with <strong>bold</strong> and a <a href=\"/a\">link</a>.</p>\n"
+    },
+    "article-raw-denied": {
+        "carve": "Para.\n\n```=html\n<b>x</b>\n```\n",
+        "profile": "article",
+        "html": "<p>Para.</p>\n<p>&lt;b&gt;x&lt;/b&gt;</p>\n"
+    },
+    "article-raw-inline": {
+        "carve": "A `<b>x</b>`{=html} end.",
+        "profile": "article",
+        "html": "<p>A &lt;b&gt;x&lt;/b&gt; end.</p>\n"
+    },
+    "comment-heading": {
+        "carve": "# Heading\n\nBody text.",
+        "profile": "comment",
+        "html": "<p># Heading</p>\n<p>Body text.</p>\n"
+    },
+    "comment-image": {
+        "carve": "See ![alt text](/pic.png) here.",
+        "profile": "comment",
+        "html": "<p>See [img: alt text] here.</p>\n"
+    },
+    "comment-table": {
+        "carve": "| a | b |\n| c | d |\n",
+        "profile": "comment",
+        "html": "<p>a | b<br>\nc | d</p>\n"
+    },
+    "comment-link-rel": {
+        "carve": "A [site](https://example.com) link.",
+        "profile": "comment",
+        "html": "<p>A <a href=\"https://example.com\" rel=\"nofollow ugc\">site</a> link.</p>\n"
+    },
+    "comment-basic-fmt": {
+        "carve": "*Bold*, _em_, `code`, ~~del~~.",
+        "profile": "comment",
+        "html": "<p><strong>Bold</strong>, <u>em</u>, <code>code</code>, ~~del~~.</p>\n"
+    },
+    "minimal-link-denied": {
+        "carve": "A [site](https://example.com) link.",
+        "profile": "minimal",
+        "html": "<p>A site link.</p>\n"
+    },
+    "minimal-heading": {
+        "carve": "# H\n\nText.",
+        "profile": "minimal",
+        "html": "<p># H</p>\n<p>Text.</p>\n"
+    },
+    "minimal-list": {
+        "carve": "- one\n- two\n",
+        "profile": "minimal",
+        "html": "<ul>\n  <li>one</li>\n  <li>two</li>\n</ul>\n"
+    }
+}
