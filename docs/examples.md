@@ -4465,6 +4465,31 @@ tail
 
 :::
 
+A closed `:::` div or admonition is a complete block with no open paragraph either, so the dedented line ends the item too (only a blockquote, whose trailing paragraph stays open, folds the line in):
+
+::::: compare
+
+```carve
+- item
+  :::note
+  body
+  :::
+tail
+```
+
+```html
+<ul>
+  <li>item
+    <aside class="admonition note">
+      <p>body</p>
+    </aside>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::::
+
 ## Compact list blocks
 
 A blank line is still required to start a block inside a list item, but it no longer makes the list *loose* when the indented content opens a block (sub-list, block quote, fenced code, fenced div, heading, table). The item stays **tight** — lead text inline, the block attached — so a checklist with notes or steps with code stay compact. (A Carve deviation: canonical djot renders these loose. Only the tight/loose rendering changes, not the block structure.)
