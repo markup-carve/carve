@@ -1800,7 +1800,7 @@ ASCII non-alphanumerics collapse to a single hyphen.
 ::: compare
 
 ```carve
-# Café — Résumé
+# Café Crème
 
 # Hello • World
 
@@ -1808,14 +1808,37 @@ ASCII non-alphanumerics collapse to a single hyphen.
 ```
 
 ```html
-<section id="Café-—-Résumé">
-  <h1>Café — Résumé</h1>
+<section id="Café-Crème">
+  <h1>Café Crème</h1>
 </section>
 <section id="Hello-•-World">
   <h1>Hello • World</h1>
 </section>
 <section id="中文、标题">
   <h1>中文、标题</h1>
+</section>
+```
+
+:::
+
+Smart-typography substitutions (curly quotes, dashes, ellipsis, arrows, and
+the like) are reversed to their ASCII source before the id is computed, so an
+id never depends on presentational typography.
+
+::: compare
+
+```carve
+# Don't repeat yourself
+
+# Step 1 -> done...
+```
+
+```html
+<section id="Don-t-repeat-yourself">
+  <h1>Don’t repeat yourself</h1>
+</section>
+<section id="Step-1-done">
+  <h1>Step 1 → done…</h1>
 </section>
 ```
 
