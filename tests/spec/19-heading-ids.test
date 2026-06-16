@@ -49,20 +49,33 @@ Jump to </#getting-started>.
 ```
 
 ```
-# Café — Résumé
+# Café Crème
 
 # Hello • World
 
 # 中文、标题
 .
-<section id="Café-—-Résumé">
-  <h1>Café — Résumé</h1>
+<section id="Café-Crème">
+  <h1>Café Crème</h1>
 </section>
 <section id="Hello-•-World">
   <h1>Hello • World</h1>
 </section>
 <section id="中文、标题">
   <h1>中文、标题</h1>
+</section>
+```
+
+```
+# Don't repeat yourself
+
+# Step 1 -> done...
+.
+<section id="Don-t-repeat-yourself">
+  <h1>Don’t repeat yourself</h1>
+</section>
+<section id="Step-1-done">
+  <h1>Step 1 → done…</h1>
 </section>
 ```
 

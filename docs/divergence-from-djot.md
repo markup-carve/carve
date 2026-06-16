@@ -65,6 +65,12 @@ ASCII-folding is not available in carve-rs (it would require a transliteration
 table, which the zero-dependency Rust crate avoids); attach an explicit `{#id}`
 there when an ASCII fragment is required.
 
+Smart-typography substitutions are also reversed to their ASCII source before
+the id is computed, so an id never depends on presentational typography:
+`# Don't repeat yourself` slugs to `Don-t-repeat-yourself` (not a curly `’`),
+and `# Step 1 -> done...` to `Step-1-done`. A literally-typed em dash is
+likewise normalized; a genuine non-typography symbol such as `•` is kept.
+
 ## 1b. Heading-id punctuation model
 
 **Djot:** removes a fixed ASCII blocklist of punctuation, so characters such as
