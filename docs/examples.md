@@ -648,7 +648,7 @@ An ordered child *below* the content column does not nest: an ordered marker doe
 
 :::
 
-A task item's content column is the bullet width (2), since the checkbox is content, not marker, so a child indented to column 2 nests. (Unordered and task markers interrupt, §10, so they nest at any indent past the base, regardless of the content column.)
+A task item's content column is the bullet width (2), since the checkbox is content, not marker, so a child indented to column 2 nests. A marker indented below the content column folds in as lazy continuation rather than nesting; no list marker interrupts (§10), so only a marker at or past the content column opens a sub-list.
 
 ::: compare
 
