@@ -118,3 +118,20 @@ tail
 </ul>
 <p>tail</p>
 ```
+
+```
+- item
+  :::note
+  body
+  :::
+tail
+.
+<ul>
+  <li>item
+    <aside class="admonition note">
+      <p>body</p>
+    </aside>
+  </li>
+</ul>
+<p>tail</p>
+```
