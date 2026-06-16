@@ -23,6 +23,7 @@ export interface LintWarning {
  */
 export declare function lintCarve(source: string, opts?: {
     asciiHeadingIds?: boolean;
+    lowercaseHeadingIds?: boolean;
 }): LintWarning[];
 /** Format lint warnings as `file:line:col rule — message`. */
 export declare function formatLintWarnings(warnings: LintWarning[], file?: string): string;

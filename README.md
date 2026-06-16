@@ -24,9 +24,12 @@ turning your content into a JavaScript program. What sets Carve apart:
   definition. A `#` placeholder in a caption (`^ Figure #: …`) auto-numbers
   figures, tables, listings, and equations, and `</#id>` to one fills in "Figure 1".
   Neither Markdown nor Djot offers this natively.
-- **GitHub-style heading ids by default** - lowercase, Unicode-preserving anchors
-  that make ids and cross-references case-insensitive with zero configuration.
-  ASCII-folding is available opt-in for share-safe URL fragments.
+- **Case-preserving heading ids, case-insensitive references** - ids keep their
+  original case and Unicode verbatim with zero normalization (a portable,
+  zero-dependency slug), while `</#id>` and `[Heading][]` cross-references
+  resolve case-insensitively, so a lowercase reference still finds a
+  capitalized heading. GitHub-style lowercase anchors and ASCII-folded
+  fragments are available opt-in.
 - **Batteries in core, not plugin soup** - math, footnotes, admonitions,
   definition lists, frontmatter, smart typography, editorial markup, and tables
   with rowspan/colspan/captions are all part of one spec - not a dozen plugins
@@ -151,7 +154,7 @@ Carve takes its rationale from Djot and Markdown, and extends both:
 3. **Simple emphasis** - Single characters, no complex disambiguation rules
 4. **No expressive blind spots** - All outputs achievable without workarounds
 5. **Simple list indentation** - Indented content belongs to the list item
-6. **Reduced parser complexity** - No HTML recognition, entity parsing, or case-folding during tokenization (heading-id slugs and reference matching are case-insensitive, but that is a resolve-time transform, not parsing)
+6. **Reduced parser complexity** - No HTML recognition, entity parsing, or case-folding during tokenization (heading-id slugs are case-preserving with no normalization; cross-reference matching is case-insensitive, but that is a resolve-time transform, not parsing)
 7. **Uniform composition** - Content meaning consistent inside/outside containers
 8. **Arbitrary attributes** - `{#id .class key=value}` on any element
 9. **Generic containers** - Fenced divs (`:::`) for extensibility
@@ -181,7 +184,7 @@ Carve takes its rationale from Djot and Markdown, and extends both:
 
 16. **Auto-resolving wiki links** - `[Page Name][]` resolves to a heading with no separate `[Page Name]: url` definition
 
-17. **GitHub-style heading ids** - lowercase, Unicode-preserving, case-insensitive anchors by default; opt-in ASCII fold for share-safe URL fragments
+17. **Case-preserving heading ids** - Unicode-preserving, zero-normalization anchors by default with case-insensitive cross-reference resolution; opt-in lowercase (GitHub-style) and ASCII fold for share-safe URL fragments
 
 18. **Simpler tables** - `|=` marks headers (from Creole), no separator row required
 
@@ -233,7 +236,7 @@ Carve takes its rationale from Djot and Markdown, and extends both:
 | Links | `[text](url)` | `[text](url)` | `[text](url)` |
 | Wiki-style links | n/a (no auto wiki links) | `[Page Name][]` (reference link; needs a `[Page Name]: url` definition) | `[Page Name][]` (auto-resolves, no definition) |
 | Cross-references | n/a (manual `[](#id)`) | n/a (manual `[](#id)`) | `</#id>` (auto-fills link text from the target heading) |
-| Heading IDs | n/a (auto only on some renderers, e.g. GitHub) | Auto-generated (Unicode, case-preserving) | Auto-generated (lowercase, Unicode-preserving, CSS-selector-safe; opt-in ASCII fold) |
+| Heading IDs | n/a (auto only on some renderers, e.g. GitHub) | Auto-generated (Unicode, case-preserving) | Auto-generated (Unicode, case-preserving, CSS-selector-safe; case-insensitive references; opt-in lowercase + ASCII fold) |
 | Heading structure | n/a (flat `<h1>`–`<h6>`, no wrappers) | `<section id="…"><h*>…</h*></section>` with level-aware nesting | `<section id="…"><h*>…</h*></section>` with level-aware nesting (matches djot — id on `<section>`, not on `<h*>`) |
 
 ### Lists & tables

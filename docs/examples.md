@@ -239,11 +239,11 @@ re{~view~} it, then {~old~>new~}, and {=mark=} it.
 ```
 
 ```html
-<section id="welcome">
+<section id="Welcome">
   <h1>Welcome</h1>
-  <section id="getting-started">
+  <section id="Getting-started">
     <h2>Getting started</h2>
-    <section id="setup">
+    <section id="Setup">
       <h3>Setup</h3>
     </section>
   </section>
@@ -266,17 +266,17 @@ All six heading levels are supported.
 ```
 
 ```html
-<section id="h1">
+<section id="H1">
   <h1>H1</h1>
-  <section id="h2">
+  <section id="H2">
     <h2>H2</h2>
-    <section id="h3">
+    <section id="H3">
       <h3>H3</h3>
-      <section id="h4">
+      <section id="H4">
         <h4>H4</h4>
-        <section id="h5">
+        <section id="H5">
           <h5>H5</h5>
-          <section id="h6">
+          <section id="H6">
             <h6>H6</h6>
           </section>
         </section>
@@ -314,7 +314,7 @@ Inline emphasis renders inside heading text.
 ```
 
 ```html
-<section id="why-carve">
+<section id="Why-Carve">
   <h2>Why <em>Carve</em>?</h2>
 </section>
 ```
@@ -352,9 +352,9 @@ content
 ```
 
 ```html
-<section id="h1">
+<section id="H1">
   <h1>H1</h1>
-  <section id="h3">
+  <section id="H3">
     <h3>H3</h3>
     <p>content</p>
   </section>
@@ -1725,6 +1725,11 @@ Content begins here.
 
 ## Heading IDs
 
+Heading ids are **case-preserving** by default and apply no Unicode
+normalization: a heading keeps its original case and any non-ASCII characters
+verbatim. Cross-references resolve **case-insensitively**, so a lowercase
+`</#getting-started>` still points at a `Getting-Started` heading.
+
 ::: compare
 
 ```carve
@@ -1745,24 +1750,116 @@ See </#cafe-notes>, </#section-2024-recap>, </#setup-2>, and </#api-v2>.
 ```
 
 ```html
-<section id="café-notes">
+<section id="Café-Notes">
   <h1>Café Notes</h1>
 </section>
-<section id="über-uns">
+<section id="Über-uns">
   <h1>Über uns</h1>
 </section>
-<section id="s-2024-recap">
+<section id="s-2024-Recap">
   <h1>2024 Recap</h1>
-  <section id="setup">
+  <section id="Setup">
     <h2>Setup</h2>
   </section>
-  <section id="setup-2">
+  <section id="Setup-2">
     <h2>Setup</h2>
   </section>
 </section>
 <section id="api-v2">
   <h1>API</h1>
-  <p>See &lt;/#cafe-notes&gt;, &lt;/#section-2024-recap&gt;, <a href="#setup-2">Setup</a>, and <a href="#api-v2">API</a>.</p>
+  <p>See &lt;/#cafe-notes&gt;, &lt;/#section-2024-recap&gt;, <a href="#Setup-2">Setup</a>, and <a href="#api-v2">API</a>.</p>
+</section>
+```
+
+:::
+
+A cross-reference matches its target case-insensitively and links to the
+target's actual (case-preserved) id, so the reference can be written in
+lowercase regardless of how the heading is capitalized.
+
+::: compare
+
+```carve
+# Getting Started
+
+Jump to </#getting-started>.
+```
+
+```html
+<section id="Getting-Started">
+  <h1>Getting Started</h1>
+  <p>Jump to <a href="#Getting-Started">Getting Started</a>.</p>
+</section>
+```
+
+:::
+
+Non-ASCII symbols, marks, and punctuation are kept verbatim; only runs of
+ASCII non-alphanumerics collapse to a single hyphen.
+
+::: compare
+
+```carve
+# Café — Résumé
+
+# Hello • World
+
+# 中文、标题
+```
+
+```html
+<section id="Café-—-Résumé">
+  <h1>Café — Résumé</h1>
+</section>
+<section id="Hello-•-World">
+  <h1>Hello • World</h1>
+</section>
+<section id="中文、标题">
+  <h1>中文、标题</h1>
+</section>
+```
+
+:::
+
+A slug that begins with any Unicode number (Arabic-Indic digits, superscripts,
+Roman numerals) is prefixed with `s-`, because a leading digit is a valid HTML
+id but not a bare CSS selector.
+
+::: compare
+
+```carve
+# ١٢٣ heading
+
+# ²super
+
+# Ⅷ chapter
+```
+
+```html
+<section id="s-١٢٣-heading">
+  <h1>١٢٣ heading</h1>
+</section>
+<section id="s-²super">
+  <h1>²super</h1>
+</section>
+<section id="s-Ⅷ-chapter">
+  <h1>Ⅷ chapter</h1>
+</section>
+```
+
+:::
+
+A heading whose text yields no identifier characters falls back to `s`.
+
+::: compare
+
+```carve
+# ( )
+```
+
+```html
+<section id="s">
+  <h1>( )</h1>
 </section>
 ```
 
@@ -2661,7 +2758,7 @@ A trailing comment works in a heading; it does not affect the generated id.
 ```
 
 ```html
-<section id="title">
+<section id="Title">
   <h1>Title</h1>
 </section>
 ```
@@ -2977,9 +3074,9 @@ See </#getting-started>.
 ```
 
 ```html
-<section id="getting-started">
+<section id="Getting-Started">
   <h1>Getting Started</h1>
-  <p>See <a href="#getting-started">Getting Started</a>.</p>
+  <p>See <a href="#Getting-Started">Getting Started</a>.</p>
 </section>
 ```
 
@@ -3164,7 +3261,7 @@ to the `<h1>`):
 ```
 
 ```html
-<section id="h">
+<section id="H">
   <h1 k="{y}">H</h1>
 </section>
 ```
@@ -3261,7 +3358,7 @@ block-attribute line, §15).
 ```
 
 ```html
-<section id="h">
+<section id="H">
   <h1 title="a&quot;b">H</h1>
 </section>
 ```
@@ -3278,7 +3375,7 @@ on a heading it stays part of the heading text rather than being dropped.
 ```
 
 ```html
-<section id="h">
+<section id="H">
   <h1>H {???}</h1>
 </section>
 ```
@@ -3762,7 +3859,7 @@ text
 
 ```html
 <p>text</p>
-<section id="h">
+<section id="H">
   <h1>H</h1>
 </section>
 ```
@@ -4059,7 +4156,7 @@ text
 
 ```html
 <p>text</p>
-<section id="h">
+<section id="H">
   <h1>H</h1>
 </section>
 ```
@@ -4174,7 +4271,7 @@ outside
 ```
 
 ```html
-<section id="title-outside">
+<section id="Title-outside">
   <h1>Title
 outside</h1>
 </section>
@@ -4192,7 +4289,7 @@ A list marker — bullet or ordered — ends the heading and starts a sibling li
 ```
 
 ```html
-<section id="title">
+<section id="Title">
   <h1>Title</h1>
   <ul>
     <li>item</li>
@@ -4212,7 +4309,7 @@ An ordered marker ends the heading the same way (symmetric with the bullet).
 ```
 
 ```html
-<section id="title">
+<section id="Title">
   <h1>Title</h1>
   <ol>
     <li>one</li>
@@ -4317,7 +4414,7 @@ lazy</li>
 <ul>
   <li>a</li>
 </ul>
-<section id="h">
+<section id="H">
   <h1>H</h1>
 </section>
 ```

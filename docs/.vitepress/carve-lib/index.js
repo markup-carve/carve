@@ -71,7 +71,10 @@ export function renderAnsi(ast, opts = {}) {
  * literal source text.
  */
 export function resolve(doc, opts = {}) {
-    return resolveHeadingIds(doc, opts.asciiHeadingIds ?? false);
+    return resolveHeadingIds(doc, {
+        lowercase: opts.lowercaseHeadingIds ?? false,
+        asciiFold: opts.asciiHeadingIds ?? false,
+    });
 }
 /** Convenience: parse + resolve + render in one call. */
 export function carveToHtml(source, opts = {}) {
@@ -83,7 +86,10 @@ export function carveToHtml(source, opts = {}) {
         extensions: exts,
         ...(opts.sourceLine ? { positions: true } : {}),
     };
-    let doc = resolve(parse(source, parseOpts), { asciiHeadingIds: opts.asciiHeadingIds ?? false });
+    let doc = resolve(parse(source, parseOpts), {
+        asciiHeadingIds: opts.asciiHeadingIds ?? false,
+        lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
+    });
     for (const ext of exts)
         if (ext.afterParse)
             doc = ext.afterParse(doc);
@@ -94,17 +100,26 @@ export function carveToHtml(source, opts = {}) {
 }
 /** Convenience: parse + resolve + render Markdown in one call. */
 export function carveToMarkdown(source, opts = {}) {
-    const doc = resolve(parse(source, opts), { asciiHeadingIds: opts.asciiHeadingIds ?? false });
+    const doc = resolve(parse(source, opts), {
+        asciiHeadingIds: opts.asciiHeadingIds ?? false,
+        lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
+    });
     return renderMarkdown(doc, opts);
 }
 /** Convenience: parse + resolve + render plain text in one call. */
 export function carveToPlainText(source, opts = {}) {
-    const doc = resolve(parse(source, opts), { asciiHeadingIds: opts.asciiHeadingIds ?? false });
+    const doc = resolve(parse(source, opts), {
+        asciiHeadingIds: opts.asciiHeadingIds ?? false,
+        lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
+    });
     return renderPlainText(doc, opts);
 }
 /** Convenience: parse + resolve + render ANSI terminal text in one call. */
 export function carveToAnsi(source, opts = {}) {
-    const doc = resolve(parse(source, opts), { asciiHeadingIds: opts.asciiHeadingIds ?? false });
+    const doc = resolve(parse(source, opts), {
+        asciiHeadingIds: opts.asciiHeadingIds ?? false,
+        lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
+    });
     return renderAnsi(doc, opts);
 }
 //# sourceMappingURL=index.js.map

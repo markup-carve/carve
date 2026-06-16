@@ -5,9 +5,15 @@ export interface ParseOptions {
     /** Format label applied to a bare `---` frontmatter fence. Default 'yaml'. */
     defaultFrontmatterFormat?: string;
     /**
-     * Fold auto-generated heading ids to ASCII (Über -> uber) for URL/CSS-fragment
-     * portability. Default false: ids are lowercased (GitHub-style) but keep non-ASCII
-     * verbatim. See markup-carve/carve#73.
+     * Lowercase auto-generated heading ids (GitHub/SSG-style anchors), folded per
+     * code point so it stays portable. Default false: ids are case-preserving.
+     * Cross-references resolve case-insensitively either way.
+     */
+    lowercaseHeadingIds?: boolean;
+    /**
+     * Fold auto-generated heading ids to ASCII (transliterate non-ASCII) for
+     * share-safe URL/CSS-fragment portability. Default false. Orthogonal to
+     * `lowercaseHeadingIds`; combine both for a fully lowercase ASCII slug.
      */
     asciiHeadingIds?: boolean;
     /**

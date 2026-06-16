@@ -4,7 +4,7 @@ Multi-line headings
 # Title
 outside
 .
-<section id="title-outside">
+<section id="Title-outside">
   <h1>Title
 outside</h1>
 </section>
@@ -14,7 +14,7 @@ outside</h1>
 # Title
 - item
 .
-<section id="title">
+<section id="Title">
   <h1>Title</h1>
   <ul>
     <li>item</li>
@@ -26,7 +26,7 @@ outside</h1>
 # Title
 1. one
 .
-<section id="title">
+<section id="Title">
   <h1>Title</h1>
   <ol>
     <li>one</li>
