@@ -169,46 +169,46 @@ surprise lists.
 **Why.** `%%` is faster to type, reads like a comment in many config formats, and
 needs no closing delimiter for the common single-line case.
 
-## 7. Block openers interrupt paragraphs (Markdown-like)
+## 7. Invisible constructs interrupt paragraphs
 
 **Djot:** an open paragraph runs until a blank line. A line that begins with a
 block marker - a `-`/`*` bullet, `>` quote, `#` heading, a `|` table row, or a
 fence - stays part of the paragraph; the block needs a blank line before it.
 
-**Carve:** a **visible** block interrupts an open paragraph with no blank line
-before it - the Markdown / CommonMark rule. The exception is **list markers**:
-neither a bullet (`-`/`*`, task) nor an ordered marker interrupts a paragraph -
-a list still needs a blank line before it (matching Djot). Both list-marker
-classes behave identically here; fence and `:::` closers and bare images are
-also excluded (PART 9 §10).
+**Carve:** carve **matches Djot** for every *visible* block - a heading, quote,
+table row, fenced code, thematic break, or `:::` div directly under a line of
+prose stays part of the paragraph (it folds in as lazy continuation), and so do
+list markers and bare images. A blank line is required to start any of them. The
+**one** remaining deviation: an *invisible* construct - a reference, footnote, or
+abbreviation definition, a comment (`%%`/`%%%`), or a block-attribute line (`{…}`
+alone on a line) - and a **caption** (`^ `) still end a paragraph with no blank
+line (the definitions/attributes are consumed; the caption attaches to the
+preceding block) (PART 9 §10).
 
 ```
 intro
 # Heading
 
 Djot:   <p>intro\n# Heading</p>                  (one paragraph)
-Carve:  <p>intro</p><h1>Heading</h1>             (paragraph + heading)
+Carve:  <p>intro\n# Heading</p>                  (one paragraph; same as Djot)
 ```
 
-A list marker is the exception - it does NOT interrupt:
+An invisible construct is the exception - it still interrupts:
 
 ```
-intro
-- item
+para
+%% comment
 
-Carve:  <p>intro\n- item</p>                     (one paragraph; add a blank line to start a list)
+Carve:  <p>para</p>                              (the comment line ends the paragraph and is consumed)
 ```
 
-**Why.** Djot's blank-line rule is hard-wrap-safe, but it surprises authors
-coming from Markdown more often than it helps: a heading or quote written
-directly under a line of prose silently stayed prose. Carve follows the
-near-universal Markdown expectation for those blocks. Lists keep Djot's
-blank-line rule on purpose: an ordered marker is common in prose ("see step
-2.") and a hard-wrapped line that happens to begin with a bullet should not
-silently become a list. Escape a marker (`\# H`, `\- item`) or add a blank line
-to control it. This block-interruption rule is one of Carve's larger
-block-level breaks from Djot, and part of why the project frames itself as
-post-Markdown rather than post-Djot.
+**Why.** Folding visible blocks restores Djot's hard-wrap-safe paragraph model
+and makes the boundary symmetric - nothing visible interrupts, so authors do not
+have to remember a block-by-block carve-out. Invisible constructs are the lone
+exception because they render nothing on their own: consuming a trailing
+definition or comment line is what authors expect, and a caption must attach to
+the block above it rather than fold into prose. Add a blank line, or escape a
+marker (`\# H`), where you want a visible block to start right under prose.
 
 ## What Carve adds on top (not breaks)
 
@@ -242,9 +242,10 @@ Most Djot source needs only mechanical changes:
 3. Replace `+` bullets with `-` or `*`.
 4. `{% comment %}` → `%%`.
 5. Heading anchors are now lowercase - update any hand-written `</#Anchor>` links.
-6. A marker line (`- `, `> `, `# `, a table row, a fence) directly under a line
-   of prose now starts a block. Where you relied on Djot keeping it in the
-   paragraph, add a blank line or escape the marker.
+6. Visible blocks keep Djot's paragraph rule (they fold in under prose), so no
+   change is needed there. The one boundary difference: a trailing definition,
+   comment, block-attribute line, or caption directly under prose ends the
+   paragraph in Carve - add a blank line if you relied on Djot keeping it inline.
 
 The bundled `markdownToCarve` helper and Djot migration warnings flag most of
 these automatically.

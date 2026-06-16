@@ -80,9 +80,8 @@ tail
 .
 <ul>
   <li>item
-    <blockquote><p>q
-tail</p></blockquote>
-  </li>
+&gt; q
+tail</li>
 </ul>
 ```
 
@@ -95,11 +94,11 @@ tail
 .
 <ul>
   <li>item
-    <pre><code>c
-</code></pre>
-  </li>
+<code>
+c
+</code>
+tail</li>
 </ul>
-<p>tail</p>
 ````
 
 ```
@@ -109,14 +108,9 @@ tail
 .
 <ul>
   <li>item
-    <table>
-      <tbody>
-        <tr><td>a</td><td>b</td></tr>
-      </tbody>
-    </table>
-  </li>
+| a | b |
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 ```
@@ -128,10 +122,9 @@ tail
 .
 <ul>
   <li>item
-    <aside class="admonition note">
-      <p>body</p>
-    </aside>
-  </li>
+:::note
+body
+:::
+tail</li>
 </ul>
-<p>tail</p>
 ```

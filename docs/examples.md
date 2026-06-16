@@ -3861,17 +3861,19 @@ a paragraph and stays literal.
 
 ## Paragraph interruption
 
-A paragraph ends at a blank line — or at a line that begins an interrupting
-block. Under the Markdown-like rule (§10) a **visible** block interrupts an open
-paragraph with no blank line before it, at the top level and inside nested
-content. Three carve-outs keep common prose safe: **list markers never
-interrupt** — neither a bullet (`- `/`* `) nor an ordered marker, in any dialect
-or value, so a list always needs a blank line before it (symmetric, Djot-like);
-a fence or `:::` interrupts only when it has a matching closer ahead; and a bare
-image is never a block. Invisible constructs (reference definitions, comments,
-block-attribute lines) interrupt as they always have.
+A paragraph ends at a blank line (§10). No **visible** block interrupts an open
+paragraph: a heading, thematic break, block quote, table row, fenced code, or
+`:::` div/admonition that follows a prose line with no blank line folds into the
+paragraph as lazy continuation (inline text), at the top level and inside nested
+content. This is fully Djot-like and symmetric — visible blocks and list markers
+behave identically at the paragraph boundary, so a blank line is required to
+start any of them after prose. List markers and bare images fold as before, and
+a nested sublist inside an open list item is unaffected (§24). Only **invisible
+constructs** (reference, footnote and abbreviation definitions, comments,
+block-attribute lines) and a **caption** (`^ `) still end a paragraph with no
+blank line — the former are consumed, the latter attaches to the preceding block.
 
-A heading marker after a prose line interrupts.
+A heading marker after a prose line does **not** interrupt — it folds in.
 
 ::: compare
 
@@ -3881,15 +3883,14 @@ text
 ```
 
 ```html
-<p>text</p>
-<section id="H">
-  <h1>H</h1>
-</section>
+<p>text
+# H</p>
 ```
 
 :::
 
-A fenced code block with a closer interrupts (an inline span no longer).
+A fenced code block does not interrupt either; the fence backticks fold in as an
+inline verbatim span.
 
 ::: compare
 
@@ -3901,15 +3902,16 @@ code
 ````
 
 ```html
-<p>text</p>
-<pre><code>code
-</code></pre>
+<p>text
+<code>
+code
+</code></p>
 ```
 
 :::
 
-A thematic break interrupts; the line after it parses fresh (not a smart
-em-dash any more).
+A thematic break does not interrupt; `---` folds in and renders as a smart
+em-dash.
 
 ::: compare
 
@@ -3920,14 +3922,14 @@ more
 ```
 
 ```html
-<p>text</p>
-<hr>
-<p>more</p>
+<p>text
+—
+more</p>
 ```
 
 :::
 
-A block quote marker interrupts.
+A block quote marker does not interrupt; the `>` folds in as text.
 
 ::: compare
 
@@ -3937,8 +3939,8 @@ text
 ```
 
 ```html
-<p>text</p>
-<blockquote><p>q</p></blockquote>
+<p>text
+&gt; q</p>
 ```
 
 :::
@@ -3981,7 +3983,7 @@ text
 
 :::
 
-A valid table row interrupts.
+A table row does not interrupt; the row folds in as text.
 
 ::: compare
 
@@ -3991,17 +3993,13 @@ text
 ```
 
 ```html
-<p>text</p>
-<table>
-  <tbody>
-    <tr><td>a</td><td>b</td></tr>
-  </tbody>
-</table>
+<p>text
+| a | b |</p>
 ```
 
 :::
 
-An admonition (or generic div) with a closer interrupts.
+An admonition (or generic div) does not interrupt; the `:::` lines fold in.
 
 :::: compare
 
@@ -4013,21 +4011,20 @@ body
 ```
 
 ```html
-<p>text</p>
-<aside class="admonition note">
-  <p>body</p>
-</aside>
+<p>text
+:::note
+body
+:::</p>
 ```
 
 ::::
 
-**Carve-out — list markers never interrupt.** Neither a bullet nor an ordered
-marker interrupts a paragraph; both need a blank line. An ordered marker is too
-common in prose ("see step 2.", "version 1985.", "upgrade to 1. today") to
-interrupt, and making the bullet match removes the asymmetry (and the residual
-false positive where a hard-wrapped prose line beginning with a bullet became a
-list). So no ordered value — `1.`, `2.`, a year — and no bullet interrupts; all
-stay paragraph text.
+**List markers fold too, like every visible block.** Neither a bullet nor an
+ordered marker interrupts a paragraph; both need a blank line. An ordered marker
+is especially common in prose ("see step 2.", "version 1985.", "upgrade to 1.
+today"), so folding it in avoids the false positive where a hard-wrapped prose
+line beginning with a marker became a list. So no ordered value — `1.`, `2.`, a
+year — and no bullet interrupts; all stay paragraph text.
 
 ::: compare
 
@@ -4059,9 +4056,10 @@ text
 
 :::
 
-**Carve-out — closer lookahead.** A `:::` block (or a fence) with no matching
-closer ahead does not interrupt; it stays paragraph text, so a stray marker
-never swallows the rest of the block.
+**A `:::` (or fence) with no closer folds too.** Since no visible block
+interrupts an open paragraph, a `:::` block (or a fence) folds in whether or not
+a matching closer exists ahead — a stray marker never swallows the rest of the
+block.
 
 :::: compare
 
@@ -4079,8 +4077,8 @@ body</p>
 
 ::::
 
-**Carve-out — image excluded.** A bare image is inline content, so it renders
-in the same paragraph, never as its own block.
+**A bare image folds too.** A bare image is inline content, so it renders in the
+same paragraph, never as its own block.
 
 ::: compare
 
@@ -4096,9 +4094,9 @@ text
 
 :::
 
-**Nested content.** The rule applies inside a block quote too: a list marker
-after a prose line does not interrupt within the quote — it folds into the
-quoted paragraph (a blank line is needed to start the list).
+**Nested content.** The rule applies inside a block quote too: a visible block
+or list marker after a prose line does not interrupt within the quote — it folds
+into the quoted paragraph (a blank line is needed to start a new block).
 
 ::: compare
 
@@ -4186,10 +4184,10 @@ text
 
 :::
 
-An **unterminated** fence opener does not interrupt a paragraph (§10 closer
-lookahead): with no matching closer ahead, the ` ``` ` line stays paragraph
-text. It is then an unclosed inline verbatim run, which renders as a `<code>`
-span to the end of the block (matching the `code_span` maximal-run rule).
+A fence opener does not interrupt a paragraph (§10): the ` ``` ` line folds into
+the paragraph as text. With no matching closer ahead it is an unclosed inline
+verbatim run, which renders as a `<code>` span to the end of the block (matching
+the `code_span` maximal-run rule).
 
 ::: compare
 
@@ -4207,9 +4205,8 @@ code</code></p>
 
 :::
 
-Likewise an unterminated `:::` opener does not interrupt: with no matching
-closer ahead it is literal text, so a stray `:::` in prose never swallows the
-rest of the block.
+Likewise a `:::` opener does not interrupt: it folds into the paragraph as
+literal text, so a stray `:::` in prose never swallows the rest of the block.
 
 :::: compare
 
@@ -4344,7 +4341,7 @@ An ordered marker ends the heading the same way (symmetric with the bullet).
 
 ## Blockquote lazy continuation stops at a fenced block
 
-Lazy continuation only extends an open paragraph. A non-`>` line that lands inside an open fenced code block ends the quote instead of being swallowed into the code. After the quote ends, `b` starts a paragraph and the trailing `> c` interrupts it into a fresh block quote (§10 — a `>` marker interrupts a paragraph). In the second example the mid-paragraph ` ``` ` has no closer, so it does not interrupt (§10 closer lookahead); it is then an unclosed inline verbatim run that renders as a `<code>` span to the end of the block (matching djot and carve-php), and the lazy line still folds in.
+Lazy continuation only extends an open paragraph. A non-`>` line that lands inside an open fenced code block ends the quote instead of being swallowed into the code. After the quote ends, `b` starts a paragraph and the trailing `> c` does not interrupt it (§10 — a `>` marker no longer interrupts a paragraph); the `> c` line folds into the paragraph as text. In the second example the mid-paragraph ` ``` ` does not interrupt (§10); it is then an unclosed inline verbatim run that renders as a `<code>` span to the end of the block (matching djot and carve-php), and the lazy line still folds in.
 
 ::: compare
 
@@ -4360,8 +4357,8 @@ b
   <pre><code>a
 </code></pre>
 </blockquote>
-<p>b</p>
-<blockquote><p>c</p></blockquote>
+<p>b
+&gt; c</p>
 ```
 
 :::
@@ -4384,8 +4381,8 @@ lazy</code></p></blockquote>
 
 When the fence opener is immediately followed by a non-`>` line — with no
 marked content line in between — the fence is never closed (an empty code
-block), and the non-`>` line ends the quote. The trailing `> still` then opens
-a fresh block quote.
+block), and the non-`>` line ends the quote. The trailing `> still` then folds
+into the following paragraph (§10 — a `>` marker no longer interrupts).
 
 ::: compare
 
@@ -4400,8 +4397,8 @@ code no marker
   <pre><code>
 </code></pre>
 </blockquote>
-<p>code no marker</p>
-<blockquote><p>still</p></blockquote>
+<p>code no marker
+&gt; still</p>
 ```
 
 :::
@@ -4515,7 +4512,7 @@ d</li>
 
 :::
 
-Lazy continuation only ever extends an **open paragraph**. After a block inside an item, a dedented line therefore folds in only when that block leaves a paragraph open. A blockquote's trailing paragraph is open, so the line folds into the quote:
+An indented **visible block** inside an open list item no longer interrupts the item's lead paragraph (§10) — it folds into that paragraph as inline text, leaving the paragraph open. A following dedented line therefore lazily continues the item in every case. A nested **sublist** (a deeper list marker) still nests with no blank line, unchanged. A block quote marker folds in and the `tail` continues the item:
 
 ::: compare
 
@@ -4528,15 +4525,14 @@ tail
 ```html
 <ul>
   <li>item
-    <blockquote><p>q
-tail</p></blockquote>
-  </li>
+&gt; q
+tail</li>
 </ul>
 ```
 
 :::
 
-A fenced code block leaves no open paragraph, so a dedented line ends the item and starts a top-level block instead of joining the item:
+A fenced code opener folds in too (an unclosed inline verbatim span), and the dedented line still continues the item:
 
 ::: compare
 
@@ -4551,16 +4547,16 @@ tail
 ```html
 <ul>
   <li>item
-    <pre><code>c
-</code></pre>
-  </li>
+<code>
+c
+</code>
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
 
-A table is the same — no open paragraph, so the dedented line is a fresh top-level paragraph:
+A table row folds in as text, so the dedented line continues the item:
 
 ::: compare
 
@@ -4573,19 +4569,14 @@ tail
 ```html
 <ul>
   <li>item
-    <table>
-      <tbody>
-        <tr><td>a</td><td>b</td></tr>
-      </tbody>
-    </table>
-  </li>
+| a | b |
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
 
-A closed `:::` div or admonition is a complete block with no open paragraph either, so the dedented line ends the item too (only a blockquote, whose trailing paragraph stays open, folds the line in):
+A `:::` div or admonition folds in as text the same way, and the dedented line continues the item:
 
 ::::: compare
 
@@ -4600,12 +4591,11 @@ tail
 ```html
 <ul>
   <li>item
-    <aside class="admonition note">
-      <p>body</p>
-    </aside>
-  </li>
+:::note
+body
+:::
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::::

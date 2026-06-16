@@ -98,8 +98,11 @@ atx_heading = heading_first_line, {heading_continuation_line} ;
 heading_first_line = heading_marker, space, inline_content, newline ;
 heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
 
-(* MULTI-LINE HEADINGS -- NORMATIVE (like Djot; consistent with §10 paragraph
-   interruption). A heading's text spills onto following lines until a blank
+(* MULTI-LINE HEADINGS -- NORMATIVE (like Djot). This heading-continuation
+   boundary is SEPARATE from §10 paragraph interruption: a heading is NOT an
+   open paragraph, so a block-opener or list marker ENDS it (below) even though
+   the same opener would fold into an open paragraph under §10.
+   A heading's text spills onto following lines until a blank
    line. A continuation line:
      - may carry SAME-or-LOWER number of `#` markers (stripped) or none,
        and its text is appended to the heading;
@@ -504,16 +507,17 @@ format_name = "html" | "latex" | identifier ;
 raw_content = (* any content until closing fence *) ;
 
 (* --- Paragraphs --- *)
-(* A VISIBLE block (heading, quote, table, fence, thematic break,
-   admonition/div) interrupts a paragraph with no blank line before it
-   (Markdown-like); invisible constructs (reference definitions, comments,
-   block-attribute lines) interrupt too. A LIST marker (bullet OR ordered) is
-   the exception: it does NOT interrupt -- a list needs a blank line before it
-   (symmetric, Djot-like; see §10). This is the semantic constraint
-   PART 9 §10, not a context-free one. A paragraph is terminated by a blank
-   line, an interrupting block (§10), or end of file -- the optional trailing
-   blank_line here is the paragraph's own terminator, not a precondition for
-   the NEXT block. *)
+(* NO VISIBLE block (heading, quote, table, fence, thematic break,
+   admonition/div) interrupts a paragraph -- it FOLDS in as lazy continuation
+   (Djot-like). A LIST marker (bullet OR ordered) folds in the same way; visible
+   blocks and list markers behave identically, so a blank line is required to
+   start any of them after prose. Only INVISIBLE constructs (reference / footnote
+   / abbreviation definitions, comments, block-attribute lines) and a CAPTION
+   still interrupt -- the one deviation from pure djot (see §10). This is the
+   semantic constraint PART 9 §10, not a context-free one. A paragraph is
+   terminated by a blank line, an interrupting (invisible) construct (§10), or
+   end of file -- the optional trailing blank_line here is the paragraph's own
+   terminator, not a precondition for the NEXT block. *)
 paragraph = inline_content+, [blank_line] ;
 
 
@@ -1014,7 +1018,8 @@ EOF = (* end of file *) ;
        a `:: ` definition term)
    11. Paragraphs (everything else)
    Recognition order is NOT interruption: which of these may interrupt an
-   open paragraph is PART 9 §10 (list markers -- bullet and ordered -- never do).
+   open paragraph is PART 9 §10 (no VISIBLE block does -- it folds in; only
+   invisible definitions/comments/block-attribute lines and a caption do).
 
    Inline parsing precedence (second pass):
    1. Escaped characters (\x)
@@ -1123,12 +1128,12 @@ EOF = (* end of file *) ;
         the header row plus the body rows below it (`<th rowspan="N">`). This
         holds for both a native `|=` header and a GFM-delimiter-promoted header.
         (corpus 99-table-header-cell-rowspan.)
-      - VALID TABLE ROW (the §10 interruption test): a line whose first
+      - VALID TABLE ROW (the block-start table test): a line whose first
         non-indent character is `|` AND whose last non-whitespace character
-        is `|`, with at least one cell between them. A line-initial `|`
-        without the trailing `|` does NOT interrupt a paragraph (it stays
-        prose); at BLOCK START (after a blank line) the trailing `|` is
-        lenient -- a `| a | b` line still opens a table.
+        is `|`, with at least one cell between them. A table row never
+        interrupts a paragraph (§10 -- it folds in); this test governs whether
+        a line at BLOCK START opens a table. At block start (after a blank line)
+        the trailing `|` is lenient -- a `| a | b` line still opens a table.
       - CONTINUATION ROWS (`+` first column instead of `|`): a continuation
         row appends to the row ABOVE it -- each of its non-empty cells is
         joined onto the corresponding cell of that row (separated by a
@@ -1245,77 +1250,70 @@ EOF = (* end of file *) ;
         pushed on the same stack; only their word-boundary test is skipped.
 
    10. PARAGRAPH INTERRUPTION -- NORMATIVE (governs `paragraph` in PART 2).
-      A VISIBLE block (EXCEPT a list marker) INTERRUPTS an open paragraph with
-      NO blank line before it, at the document top level AND inside nested
-      content (list item, block quote, admonition/div body). A continuation line
-      that begins such a block is parsed as that block; the paragraph ends on
-      the preceding line. This is the Markdown-like rule (CommonMark "a paragraph
-      can be interrupted") for every block EXCEPT lists; list markers follow Djot
-      (a blank line is required, see LIST MARKERS DO NOT INTERRUPT below).
-      The interrupting blocks:
+      NO VISIBLE block INTERRUPTS an open paragraph. A heading, thematic break,
+      block quote, table row, fenced code, or `:::` admonition/div opener that
+      follows a prose line with NO blank line before it FOLDS into the paragraph
+      as lazy continuation (inline text); the paragraph ends only at a blank line
+      (or end of file). This holds at the document top level AND inside nested
+      content (list item, block quote, admonition/div body). This is fully
+      Djot-like and SYMMETRIC: visible blocks and list markers behave IDENTICALLY
+      at the paragraph boundary -- a blank line is required to start any of them
+      after prose. The previously-interrupting blocks (now folding):
         - heading            `#`..`######` + space;
-        - thematic break     a lone `---` / `***` / `___` line;
-        - block quote        `>` (NOTE: a line-initial `>` is ALWAYS a quote
-                             marker, so a prose line starting `>= 5` becomes a
-                             quote -- escape it, `\>= 5`, to keep it prose);
-        - table row          a `|`...`|` line that is a valid table row
-                             (a stray `|` in prose is NOT -- see VALID TABLE
-                             ROW in §5);
-        - fenced code        a ``` / ~~~ opener that HAS a matching closer
-                             ahead (see CLOSER LOOKAHEAD);
-        - admonition / div   a `:::` opener that HAS a matching closer ahead.
-      So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more" is
-      <p>intro</p> + <hr> + <p>more</p> (corpus 76-paragraph-interruption).
+        - thematic break     a lone `---` / `***` / `___` line (it folds and is
+                             rendered as inline text -- e.g. `---` becomes a
+                             smart em-dash);
+        - block quote        `>` (the marker folds in as a literal `>`);
+        - table row          a `|`...`|` line that is a valid table row;
+        - fenced code        a ``` / ~~~ opener (folds as an inline verbatim
+                             span; an unterminated one runs to end of block,
+                             the `code_span` maximal-run rule);
+        - admonition / div   a `:::` opener (folds as literal `:::` text).
+      So "intro \n # H" is ONE paragraph <p>intro\n# H</p>; "intro \n --- \n
+      more" is ONE paragraph <p>intro\n—\nmore</p> with a folded smart em-dash
+      (corpus 76-paragraph-interruption). A fence / `:::` folds whether or not a
+      matching closer exists ahead -- a stray marker never swallows the rest of
+      the block.
 
       LIST MARKERS DO NOT INTERRUPT (symmetric). NEITHER a bullet (`- `/`* `,
       `- [x] ` task) NOR an ordered marker (decimal, letter, or roman, in any
       value) interrupts a paragraph: a list needs a blank line before it
       (matching Djot). The bullet and the ordered marker behave IDENTICALLY at
-      the paragraph boundary -- one rule, no marker-class carve-out. So
+      the paragraph boundary, and identically to every visible block above --
+      one rule, no marker-class or block-class carve-out. So
       "Liste: \n - eins \n - zwei" is a SINGLE paragraph (the bullet lines fold
       in as lazy continuation), and so is "x = 5 \n * 3 + 17"; a blank line --
-      "Liste: \n\n - eins" -- starts the list. This is a deliberate change from
-      the earlier "a bullet interrupts, an ordered marker does not" asymmetry:
-      an ordered marker is too common in prose ("see step 2.", "version 1985.")
-      to interrupt, and making the bullet match removes both the asymmetry and
-      the residual false positive (a hard-wrapped prose line that happens to
-      begin with a bullet no longer becomes a list). Pinned by corpus
-      05-lists-12/13, 76-paragraph-interruption, 77-blockquote-lazy-continuation,
-      79-multi-line-headings. TIGHT NESTED LISTS ARE UNAFFECTED: this rule
-      governs only a marker that would interrupt an OPEN PARAGRAPH; an indented
-      marker inside an open list item still opens a sublist with no blank line
-      (see NESTING below and §24).
+      "Liste: \n\n - eins" -- starts the list. An ordered marker is too common
+      in prose ("see step 2.", "version 1985.") to interrupt, and folding the
+      bullet to match removes the residual false positive (a hard-wrapped prose
+      line that happens to begin with a bullet no longer becomes a list). Pinned
+      by corpus 05-lists-12/13, 76-paragraph-interruption,
+      77-blockquote-lazy-continuation, 79-multi-line-headings. TIGHT NESTED
+      LISTS ARE UNAFFECTED: an indented marker inside an open list item still
+      opens a sublist with no blank line (see NESTING below and §24).
 
       IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)") does NOT
       interrupt: an image is not a block of its own in Carve, so it stays an
       inline image inside the paragraph.
 
-      CLOSER LOOKAHEAD (fenced code, admonition, div). A fence / `:::` opener
-      interrupts ONLY when a matching closer exists ahead in the same context.
-      An UNTERMINATED opener does NOT interrupt -- the line stays paragraph
-      text -- so a stray ``` or `:::` in prose never swallows the rest of the
-      block. An unterminated ``` is then an unclosed inline verbatim run that
-      renders as a `<code>` span to the end of the block (the `code_span`
-      maximal-run rule). Pinned by corpus 76-paragraph-interruption (the
-      unterminated-fence and unterminated-`:::` pairs).
+      INVISIBLE CONSTRUCTS (the only remaining deviation from pure djot). A
+      reference definition (link `[r]: url`, footnote `[^r]: …`, abbreviation
+      `*[A]: …`), a comment (`%%` line, `%%%` block), or a block-attribute line
+      (`{…}` alone on a line, §15) STILL interrupts a paragraph with no blank
+      line: it is parsed and consumed/collected, rather than left as literal
+      text. So "See[^m].\n[^m]: note" resolves the footnote, "para\n%% x" drops
+      the comment, and "Para\n{.x}" ends the paragraph with the attribute line
+      floating forward (§15; corpus 84-block-attribute-lines-7). A CAPTION
+      (`^ ` line, §4) also STILL interrupts, attaching to the preceding block.
+      (Unchanged from the prior rule; the one deliberate deviation from djot,
+      which keeps such a line as paragraph text.)
 
-      INVISIBLE CONSTRUCTS. A reference definition (link `[r]: url`, footnote
-      `[^r]: …`, abbreviation `*[A]: …`), a comment (`%%` line, `%%%` block),
-      or a block-attribute line (`{…}` alone on a line, §15) also interrupts
-      a paragraph with no blank line: it is parsed and consumed/collected,
-      rather than left as literal text. So "See[^m].\n[^m]:
-      note" resolves the footnote, "para\n%% x" drops the comment, and
-      "Para\n{.x}" ends the paragraph with the attribute line floating
-      forward (§15; corpus 84-block-attribute-lines-7).
-      (Unchanged from the prior rule; a small deviation from djot, which keeps
-      such a line as paragraph text.)
-
-      NESTING. Interruption applies inside nested content too: a `# H` after a
-      prose line in a block quote ("> text \n > # H") is a heading. An indented
-      sublist still nests with no blank line ("- a \n   - b" -> a list whose
-      first item holds a sublist): that is NOT paragraph interruption -- the
-      marker opens a sublist inside an OPEN LIST ITEM, governed by §24, not by
-      this rule.
+      NESTING. Folding applies inside nested content too: a `# H` after a prose
+      line in a block quote ("> text \n > # H") folds into the quoted paragraph.
+      An indented sublist still nests with no blank line ("- a \n   - b" -> a
+      list whose first item holds a sublist): that is NOT paragraph interruption
+      -- the marker opens a sublist inside an OPEN LIST ITEM, governed by §24,
+      not by this rule.
 
       "Folds into a paragraph" is the WHOLE of the symmetric rule: it applies
       only to an OPEN PARAGRAPH. A HEADING and a BLOCKQUOTE are ENDED by a list
@@ -1808,9 +1806,14 @@ EOF = (* end of file *) ;
         ordered marker -- must reach the parent item's content column to open a
         sublist; below it, the line folds as lazy item text (list markers never
         interrupt, §10). Bullet and ordered markers are SYMMETRIC here. Every
-        other block opener (quote, heading, fence, table, ...) nests at ANY
-        indent past the parent item's base column (those are unambiguous as
-        blocks and never fold as lazy text).
+        other block opener (quote, heading, fence, table, `:::` div) nests as a
+        child block ONLY when it does NOT meet an open paragraph -- i.e. after a
+        blank line, or as the item's first content. An opener that directly
+        follows the item's OPEN lead paragraph (no blank line) FOLDS into that
+        paragraph as inline text instead (§10, paragraph interruption no longer
+        applies to visible blocks); a following dedented line then lazily
+        continues the item (corpus 81-list-lazy-continuation-6/7/8/9). A nested
+        SUBLIST is still the §24 content-column case above, unchanged.
       - RULE B (BULLETS AT ANY INDENT -- TOP LEVEL). A bullet (`-`/`*` + space +
         content) opens a list at ANY indentation at the TOP LEVEL: there is no
         column-0 restriction (unlike CommonMark, a `    - x` line is a list, not

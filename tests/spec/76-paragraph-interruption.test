@@ -4,10 +4,8 @@ Paragraph interruption
 text
 # H
 .
-<p>text</p>
-<section id="H">
-  <h1>H</h1>
-</section>
+<p>text
+# H</p>
 ```
 
 ````
@@ -16,9 +14,10 @@ text
 code
 ```
 .
-<p>text</p>
-<pre><code>code
-</code></pre>
+<p>text
+<code>
+code
+</code></p>
 ````
 
 ```
@@ -26,17 +25,17 @@ text
 ---
 more
 .
-<p>text</p>
-<hr>
-<p>more</p>
+<p>text
+—
+more</p>
 ```
 
 ```
 text
 > q
 .
-<p>text</p>
-<blockquote><p>q</p></blockquote>
+<p>text
+&gt; q</p>
 ```
 
 ```
@@ -63,12 +62,8 @@ text
 text
 | a | b |
 .
-<p>text</p>
-<table>
-  <tbody>
-    <tr><td>a</td><td>b</td></tr>
-  </tbody>
-</table>
+<p>text
+| a | b |</p>
 ```
 
 ```
@@ -77,10 +72,10 @@ text
 body
 :::
 .
-<p>text</p>
-<aside class="admonition note">
-  <p>body</p>
-</aside>
+<p>text
+:::note
+body
+:::</p>
 ```
 
 ```
