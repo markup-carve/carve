@@ -24,7 +24,7 @@
  * accounts for.
  */
 import { parse } from './parse.js';
-import { slugify, inlineText } from './heading-ids.js';
+import { slugify, inlineText, headingIdSlugOpts, } from './heading-ids.js';
 import { normalizeRefLabel } from './parse.js';
 function locate(node) {
     const p = node.pos;
@@ -107,10 +107,7 @@ function captionHasNumber(value) {
  */
 export function lintCarve(source, opts = {}) {
     const doc = parse(source, { positions: true });
-    const slugOpts = {
-        lowercase: opts.lowercaseHeadingIds ?? false,
-        asciiFold: opts.asciiHeadingIds ?? false,
-    };
+    const slugOpts = headingIdSlugOpts(opts);
     // Cross-references resolve case-insensitively, so the broken-crossref check
     // folds case the same way resolveHeadingIds does.
     const foldId = (s) => Array.from(s, (c) => c.toLowerCase()).join('');

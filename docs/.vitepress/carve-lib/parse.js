@@ -1226,6 +1226,37 @@ function parseBlockQuote(lexer) {
             trackBlockQuoteLazyState(content, state);
             continue;
         }
+        // Continuation marker (Carve, PART 9 §17): a lone `+` at column 0 after a
+        // quoted line attaches the FOLLOWING flush-left block to the quote -- the
+        // un-prefixed analogue of the list-item form, so a real block (list, fenced
+        // code, table, ...) can join the quote without repeating `>`. Collect the
+        // block's lines (up to a blank line, a `>` line, or a further `+`) and
+        // splice them into the quote body behind a blank-line separator, so they
+        // parse as their own block instead of folding into the quoted paragraph.
+        if (/^\+[ \t]*$/.test(ln)) {
+            lexer.consume();
+            const attached = [];
+            while (!lexer.eof()) {
+                const next = lexer.peek();
+                if (next.trim() === '' || RE_BLOCKQUOTE.test(next) || /^\+[ \t]*$/.test(next)) {
+                    break;
+                }
+                lexer.consume();
+                attached.push(next);
+            }
+            if (attached.length > 0) {
+                // `inner` always holds the quote's first content line, so a leading
+                // blank separates the attached block from it.
+                inner.push('');
+                for (const attachedLine of attached)
+                    inner.push(attachedLine);
+                inner.push('');
+                // The attached block closed any open paragraph: a following unmarked
+                // line no longer lazily continues the quote.
+                state.paragraphOpen = false;
+            }
+            continue;
+        }
         // Lazy continuation: a non-`>` line folds into the quote ONLY when it is
         // plain text continuing an open paragraph (CommonMark-style; matches
         // carve-php). A blank line ends the quote. ANY block-opener ends it and

@@ -62,6 +62,29 @@ function slugRun(s) {
     return s.replace(/[^0-9A-Za-z\u{80}-\u{10FFFF}]+/gu, '-').replace(/^-+|-+$/gu, '');
 }
 /**
+ * Strict variant of slugRun: collapses every run of non-ASCII-alphanumeric -
+ * INCLUDING any non-ASCII code point - to a single '-', then trims. Used by the
+ * strict ASCII heading-id mode for residue that transliterate() cannot map
+ * (Greek, CJK, Arabic, emoji): such code points become separators instead of
+ * surviving verbatim, so the slug is guaranteed to match `[0-9A-Za-z-]`.
+ */
+function slugRunAscii(s) {
+    return s.replace(/[^0-9A-Za-z]+/gu, '-').replace(/^-+|-+$/gu, '');
+}
+/**
+ * Translate the public `asciiHeadingIds` / `lowercaseHeadingIds` options into
+ * the `slugify` flags. Shared by `resolve()` and `lintCarve` so the lint id set
+ * matches the resolver exactly.
+ */
+export function headingIdSlugOpts(opts) {
+    const v = opts.asciiHeadingIds;
+    return {
+        lowercase: opts.lowercaseHeadingIds ?? false,
+        asciiFold: v === true || v === 'fold' || v === 'strict',
+        asciiStrict: v === 'strict',
+    };
+}
+/**
  * The automatic-identifier rule. Pure, context-free, no dedup.
  *
  * Default is CASE-PRESERVING with no Unicode normalization or case folding:
@@ -70,16 +93,22 @@ function slugRun(s) {
  * byte-identical across implementations, matching djot's "no Unicode tables"
  * identifier model. Cross-reference resolution is case-insensitive (see
  * resolveHeadingIds), so `</#getting-started>` still resolves to the
- * case-preserved `Getting-Started` id. Two opt-in, orthogonal transforms:
+ * case-preserved `Getting-Started` id. Three opt-in, orthogonal transforms:
  * `lowercase` (GitHub/SSG-style anchors, folded per code point so no
- * context mapping such as Greek final-sigma applies) and `asciiFold`
- * (transliterate the slug to ASCII for share-safe URL fragments; combine
- * with `lowercase` for a fully lowercase ASCII slug).
+ * context mapping such as Greek final-sigma applies); `asciiFold`
+ * (transliterate the slug to ASCII for share-safe URL fragments, best-effort -
+ * unmappable scripts are kept); and `asciiStrict` (implies `asciiFold`, also
+ * drops the unmappable residue for a guaranteed pure-ASCII slug). Combine with
+ * `lowercase` for a fully lowercase ASCII slug.
  */
 export function slugify(plainText, opts = {}) {
     let s = slugRun(deTypography(plainText));
-    if (opts.asciiFold) {
-        s = slugRun(transliterate(s));
+    if (opts.asciiFold || opts.asciiStrict) {
+        // Transliterate runs in both modes so Latin/Cyrillic become letters rather
+        // than separators. Strict then uses slugRunAscii to drop unmappable
+        // residue; best-effort fold uses slugRun, which keeps it verbatim.
+        s = transliterate(s);
+        s = opts.asciiStrict ? slugRunAscii(s) : slugRun(s);
     }
     // Per code point (no whole-string context mappings, e.g. final-sigma)
     // so opt-in lowercasing stays portable across implementations.

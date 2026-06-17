@@ -5708,3 +5708,49 @@ boundary: a header cell can span into the body rows below, rendering as
 ```
 
 :::
+
+## Block-quote continuation marker
+
+The continuation marker generalizes to block quotes (grammar PART 9 §17): a lone `+` at column 0 immediately after a quoted line attaches the following flush-left block to the quote — the un-prefixed analogue of the list-item form, so a real block joins the quote without repeating `>` on every line.
+
+::: compare
+
+```carve
+> quoted
++
+- item
+```
+
+```html
+<blockquote>
+  <p>quoted</p>
+  <ul>
+    <li>item</li>
+  </ul>
+</blockquote>
+```
+
+:::
+
+It only attaches: a blank line still ends the quote and starts a sibling, and a `+` outside any container is literal text. A `>` line after the attached block resumes the quote.
+
+::: compare
+
+```carve
+> quoted
++
+- item
+> more
+```
+
+```html
+<blockquote>
+  <p>quoted</p>
+  <ul>
+    <li>item</li>
+  </ul>
+  <p>more</p>
+</blockquote>
+```
+
+:::
