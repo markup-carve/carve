@@ -197,8 +197,10 @@ code_content = (* any text until matching fence, preserved literally *) ;
    only). Matches djot / CommonMark. Pinned by corpus tabs-in-code-preserved. *)
 
 (* --- Blockquotes --- *)
-blockquote = blockquote_line, {blockquote_line | lazy_continuation_line}, [caption] ;
-(* marked and lazy lines may interleave: `> a` / lazy / `> b` is ONE quote *)
+blockquote = blockquote_line, {blockquote_line | lazy_continuation_line | continuation_marker_block}, [caption] ;
+(* marked and lazy lines may interleave: `> a` / lazy / `> b` is ONE quote.
+   A `+` continuation_marker_block attaches a flush-left block to the quote -- see
+   the CONTINUATION MARKER note below and PART 9 §17. *)
 blockquote_line = '>', [' '], inline_content, newline ;
 
 (* LAZY CONTINUATION -- NORMATIVE (CommonMark-compatible). After one or more
@@ -217,7 +219,11 @@ blockquote_line = '>', [' '], inline_content, newline ;
    Only PLAIN text (continuing an open paragraph) folds in. The lazy line's text
    is appended to the blockquote's inner content before that content is
    block-parsed, so a hard-wrapped quoted paragraph need not repeat '>' on every
-   line. *)
+   line.
+   CONTINUATION MARKER (PART 9 §17): to attach a real BLOCK (a list, fenced code,
+   table, ...) to the quote without `>`-prefixing every line, put a lone `+` at
+   column 0 right after a quoted line; the following flush-left block joins the
+   quote body. This is the un-prefixed analogue of the list item's `+`. *)
 lazy_continuation_line = inline_content, newline ;  (* see the NORMATIVE note above for which lines qualify *)
 
 (* --- Lists --- *)
@@ -297,9 +303,10 @@ indent = whitespace, {whitespace} ;
 (* Indentation is measured in VISUAL COLUMNS (a tab advances to the next
    multiple of 4 -- CommonMark tab stops); how much indent nests what is NOT
    a fixed character count -- the content-column rules are PART 9 §24. *)
-(* List continuation marker (Carve addition; see PART 9 §17): a lone `+` at
-   the item's marker column attaches the following flush-left block to the
-   item with no blank line, keeping the list tight. *)
+(* Continuation marker (Carve addition; see PART 9 §17): a lone `+` at the
+   current container's marker column attaches the following flush-left block to
+   that container -- a list item OR a block quote -- with no blank line, marker
+   prefix, or indentation, keeping the container tight. *)
 continuation_marker = '+', newline ;
 continuation_marker_block = continuation_marker, block ;
 (* First-block item (Carve addition; see PART 9 §17): a lone `+` as the sole
@@ -1666,16 +1673,49 @@ EOF = (* end of file *) ;
       differs. djot renders these loose; Carve renders them tight. Pinned by
       corpus compact-list-blocks.
 
-      LIST CONTINUATION MARKER -- Carve addition. A line whose only content is
-      `+`, at the item's marker column, attaches the FOLLOWING flush-left block
-      to the current item with no blank line, keeping the list tight (useful for
-      code/tables you would rather not indent). `+` is not a Carve bullet (PART 9
-      §11), so a lone `+` is unambiguous; outside a list a lone `+` is literal
-      text. It attaches one block, up to the next blank line, sibling item, or a
-      further `+`. The same marker may sit on the marker line itself (`- +`) to
-      open an item whose body is the flush-left block(s) that follow, with no
-      inline lead -- the FIRST-BLOCK form (a bare `+`; `- + text` keeps `+ text`
-      as literal text). Pinned by corpus list-continuation-marker.
+      CONTINUATION MARKER -- Carve addition. A line whose only content is `+`,
+      at the current block container's MARKER COLUMN, attaches the FOLLOWING
+      flush-left block to that container with no blank line and no marker prefix
+      or indentation, keeping the container tight. It attaches ONE block of ANY
+      kind (paragraph, list, fenced code, table, block quote, div, ...), up to
+      the next blank line, sibling marker, or a further `+`. `+` is not a Carve
+      bullet (PART 9 §11), so a lone `+` is unambiguous; outside any container a
+      lone `+` is literal text. The marker only ATTACHES, it never SEPARATES: a
+      blank line is the sole way to END a container and start a sibling, so a `+`
+      can never break the following block OUT of the current container -- it adds
+      it IN. Containers that take the marker:
+
+        - LIST ITEM (NORMATIVE; pinned by corpus list-continuation-marker). `+`
+          at the item's marker column attaches the block to the item (useful for
+          code/tables you would rather not indent). The marker may also sit on
+          the marker line itself (`- +`) to open an item whose body is the
+          flush-left block(s) that follow, with no inline lead -- the FIRST-BLOCK
+          form (a bare `+`; `- + text` keeps `+ text` as literal text).
+
+        - BLOCK QUOTE (NORMATIVE). `+` at column 0 immediately after a
+          blockquote line attaches the following flush-left block to the quote
+          -- the un-prefixed alternative to repeating `>` on every line of the
+          block (the quote analogue of the list item's "no indent" convenience).
+          So "> quoted \n + \n - item" is a quote whose body is the paragraph
+          "quoted" PLUS a real <ul> -- not a `>`-prefixed list and not the
+          lazily-folded literal text that "> quoted \n - item" produces. A blank
+          line after the quote still ends it and starts a top-level sibling.
+
+      NOT a continuation container (the `+` keeps its plain meaning -- no gap to
+      fill, so introducing it would only add ambiguity):
+
+        - FENCED CONTAINERS -- admonition / generic `div` (`:::`) and the line
+          block. Their body already holds flush-left blocks directly between the
+          fences, so no marker is needed; a lone `+` inside one is literal text.
+        - TABLE -- a `+` in the first column is already the multi-line-cell
+          CONTINUATION ROW (PART 9 §5, `continuation_row`), a distinct construct,
+          not a block-attach marker.
+        - LEAF blocks -- heading, thematic break, code block, raw block, and
+          paragraph hold no child blocks, so none is ever a `+` container. A
+          heading is a bounded title (see `heading`), not an open body.
+        - FOOTNOTE DEFINITION bodies compose by indentation today; a `+` attach
+          form for them is a possible future extension, deliberately OUT OF SCOPE
+          here.
 
    18. MATH -- NORMATIVE (governs `math` in PART 3; djot form). Inline
       `$` + verbatim backtick span; display `$$` + verbatim backtick

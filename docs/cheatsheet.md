@@ -58,6 +58,10 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 > blockquote
 ^ Attribution                (caption / attribution: ^ prefix)
 
+> quoted                     (+ at col 0 attaches the next flush-left
++                             block to the quote - no > prefixing)
+- list now lives inside the quote
+
 ```language [Label]
 code block
 ```
