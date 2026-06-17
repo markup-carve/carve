@@ -204,23 +204,27 @@ blockquote = blockquote_line, {blockquote_line | lazy_continuation_line}, [capti
 (* marked and lazy lines may interleave: `> a` / lazy / `> b` is ONE quote *)
 blockquote_line = '>', [' '], inline_content, newline ;
 
-(* LAZY CONTINUATION -- NORMATIVE (CommonMark-compatible). After one or more
-   blockquote_lines, a line that does NOT carry the '>' marker still continues
-   the blockquote -- exactly as if it carried '>' -- provided it is:
-     - not blank (a blank line ends the blockquote), and
-     - not a block-opener: a heading, table, fenced code, `:::` div, thematic
-       break, OR an "invisible" reference / footnote / abbreviation definition
-       or comment -- each ends the blockquote and starts that block OUTSIDE it,
-       and
-     - not a LIST MARKER (bullet or ordered): it also ends the blockquote and
-       starts a top-level sibling list OUTSIDE it. A list marker folds only into
-       an open PARAGRAPH (§10); a blockquote is ended by it, matching djot, so
-       "> quoted \n - item" is a quote PLUS a sibling list, and
-     - not a caption ('^ ' ...), which attaches to the blockquote instead.
-   Only PLAIN text (continuing an open paragraph) folds in. The lazy line's text
-   is appended to the blockquote's inner content before that content is
-   block-parsed, so a hard-wrapped quoted paragraph need not repeat '>' on every
-   line. *)
+(* LAZY CONTINUATION -- NORMATIVE. After one or more blockquote_lines, a line
+   that does NOT carry the '>' marker continues the blockquote -- exactly as if
+   it carried '>' -- whenever it would FOLD into the open quoted paragraph under
+   §10. The quoted paragraph obeys the SAME rule as a top-level paragraph:
+     - a block-opener (heading, table, fenced code, `:::` div, thematic break,
+       nested quote) FOLDS in -- it does not end the quote; and
+     - a LIST MARKER (bullet or ordered) FOLDS in too.
+   This matches djot: a paragraph is never interrupted by a block-level element,
+   so the unmarked line is paragraph text and lazily continues the quote. The
+   line ENDS the blockquote only when it would END a paragraph under §10:
+     - a blank line, OR
+     - an "invisible" reference / footnote / abbreviation definition or comment
+       (parsed OUTSIDE the quote), OR
+     - a caption ('^ ' ...), which attaches to the blockquote instead.
+   Lazy folding needs an OPEN paragraph to extend: a line landing inside an open
+   fenced code block / comment, or after a block that left no open paragraph,
+   ends the quote (it is not paragraph text). So "> quoted \n - item" and
+   "> quoted \n # H" are a SINGLE quote whose paragraph reads "quoted\n- item" /
+   "quoted\n# H"; "> quoted \n\n # H" (blank line) is a quote PLUS a heading. The
+   lazy line's text is appended to the blockquote's inner content before
+   block-parsing, so a hard-wrapped quoted paragraph need not repeat '>'. *)
 lazy_continuation_line = inline_content, newline ;  (* see the NORMATIVE note above for which lines qualify *)
 
 (* --- Lists --- *)
@@ -1315,19 +1319,22 @@ EOF = (* end of file *) ;
       -- the marker opens a sublist inside an OPEN LIST ITEM, governed by §24,
       not by this rule.
 
-      "Folds into a paragraph" is the WHOLE of the symmetric rule: it applies
-      only to an OPEN PARAGRAPH. A HEADING and a BLOCKQUOTE are ENDED by a list
-      marker (it starts a sibling list OUTSIDE them) -- matching djot:
+      "Folds into a paragraph" applies to EVERY open paragraph -- including the
+      paragraph inside a blockquote's lazy continuation, so a quote folds the
+      same constructs a top-level paragraph does. A HEADING is the exception: it
+      is a bounded title, NOT an open paragraph, and is ENDED by a block-opener
+      or a list marker -- matching djot (djot headings are single-line):
         - HEADING CONTINUATION (see `heading`): a block-opener ends an open
           heading; a LIST MARKER -- bullet or ordered -- also ends it and starts
           a sibling list, so "# H \n - item" is a heading PLUS a `<ul>`. Only
           plain text (and a same/lower `#`) folds into the heading.
-        - BLOCKQUOTE LAZY CONTINUATION (see `blockquote`): a col-0 list marker
-          after a quoted line ENDS the quote and starts a top-level sibling
-          list, so "> quoted \n - item" is a quote PLUS a `<ul>`. Only plain
-          text lazily continues the quote. (A QUOTED bullet -- "> p \n > - x" --
-          is paragraph interruption INSIDE the quote and folds, since there the
-          marker meets an open paragraph, not the quote boundary.)
+        - BLOCKQUOTE LAZY CONTINUATION (see `blockquote`): NOT a boundary -- a
+          col-0 block-opener OR list marker after a quoted line FOLDS into the
+          open quoted paragraph (the quote's paragraph obeys §10 like any other),
+          so "> quoted \n - item" and "> quoted \n # H" are each a SINGLE quote.
+          A blank line ("> quoted \n\n # H") ends the quote and starts the block.
+          Only an attachment / invisible construct (caption, comment, definition,
+          attribute line) ends the quote with no blank line.
 
    11. LIST MARKER CHANGE STARTS A NEW LIST -- NORMATIVE (governs `list`
       in PART 2). §10 decides FIRST whether a sequence of marker lines

@@ -161,9 +161,9 @@ Carve takes its rationale from Djot and Markdown, and extends both:
 10. **Syntax simplicity** - One way to do things, no redundant syntax
 11. **No invisible syntax** - No trailing-space hard breaks (Djot uses a visible end-of-line backslash) and no significant-whitespace tricks
 
-### From Markdown
+### Block separation (Djot-aligned)
 
-12. **Paragraph interruption** - A block opener on a new line starts a block, no blank line required (§10). Djot requires a blank line here; Carve follows Markdown instead.
+12. **Blank-line block separation** - A *visible* block (heading, thematic break, block quote, table row, fenced code, `:::` div/admonition) does NOT interrupt an open paragraph: a blank line is required to start it after prose, otherwise the line folds into the paragraph (Djot-like, hard-wrap-safe). Lists need a blank line for the same reason. Carve refines this with a clear axis: lines that render no block of their own - reference/footnote/abbreviation definitions, comments, attribute lines - and captions (which attach to the preceding block) are still recognized next to prose. Inline syntax stays Markdown-familiar; only block separation follows Djot. (§10)
 
 ### Carve Additions
 

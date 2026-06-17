@@ -4242,7 +4242,7 @@ continued</p></blockquote>
 
 :::
 
-A block-opener is not a lazy continuation: it ends the quote and starts that block outside it. A **list marker — bullet or ordered — ends the quote too** and starts a top-level sibling list. (A list marker folds only into an open *paragraph*, §10; a blockquote is ended by it, matching djot.) Only plain text lazily continues the quote.
+A col-0 line lazily continues the quote whenever it would fold into a paragraph (§10): a block-opener (heading, thematic break, nested quote, table, fenced code, `:::` div) and a list marker (bullet or ordered) fold into the open quoted paragraph, exactly as at the top level. A blank line is how you end the quote and start a sibling block. Only an attachment or invisible construct (a caption, comment, definition, or attribute line) ends the quote with no blank line.
 
 ::: compare
 
@@ -4252,10 +4252,8 @@ A block-opener is not a lazy continuation: it ends the quote and starts that blo
 ```
 
 ```html
-<blockquote><p>quoted</p></blockquote>
-<ul>
-  <li>item</li>
-</ul>
+<blockquote><p>quoted
+- item</p></blockquote>
 ```
 
 :::
