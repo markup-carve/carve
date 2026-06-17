@@ -627,6 +627,15 @@ link_text = inline_content ;
    is balanced-bracket, escape- and code-span-aware (PART 9 §16's rule for
    inline notes is the same scan); an unescaped bare `]` inside plain text
    closes it. Not expressible context-free. *)
+(* SEMANTIC CONSTRAINT (links never nest): a link MUST NOT contain another
+   link. The link text is inline content, so parsing it may yield a link --
+   written explicitly (`[[x](y)](z)`), as a crossref/auto_text_link, or
+   produced by an extension matcher (e.g. an autolink on a bare URL inside the
+   text). Any such inner link is replaced by its own text content; only the
+   outermost link's destination applies. So `[[x](y)](z)` links `x` to `z`,
+   and `[a https://b c](/u)` (with an autolink extension) links the literal
+   text `a https://b c` to `/u` rather than emitting a nested anchor. Mirrors
+   CommonMark "links may not contain other links". *)
 link_destination = {(url_char - ')') | unicode_url_char}+ ;
 (* The destination is ANY run of URL characters: absolute (`https://…`),
    relative (`/path`, `./file`), or a bare fragment (`#section`) -- there is

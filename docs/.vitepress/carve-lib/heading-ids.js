@@ -506,6 +506,78 @@ export function resolveHeadingIds(doc, opts = {}) {
     for (const body of footnoteBodies)
         for (const b of body)
             walkBlock(b, resolveCrossrefs);
+    // Pass 3: enforce "links never nest" (CommonMark: a link may not contain
+    // another link). This runs AFTER reference and crossref resolution because
+    // both turn into Link nodes only here -- so a `</#id>` crossref or a
+    // resolved reference inside a link's text would otherwise survive as a
+    // nested anchor. A link found inside another link is unwrapped to its text
+    // (only the outermost destination applies); an autolink becomes plain text.
+    // A footnote body renders in the endnotes section, outside any anchor, so
+    // its links are not nested -- the walk re-enters it with insideLink = false.
+    const enforceNoNesting = (nodes, insideLink) => {
+        const out = [];
+        for (const n of nodes) {
+            switch (n.type) {
+                case 'link': {
+                    const children = enforceNoNesting(n.children, true);
+                    if (insideLink) {
+                        out.push(...children);
+                    }
+                    else {
+                        n.children = children;
+                        out.push(n);
+                    }
+                    break;
+                }
+                case 'autolink':
+                    if (insideLink) {
+                        const value = n.href.startsWith('mailto:')
+                            ? n.href.slice('mailto:'.length)
+                            : n.href;
+                        out.push({ type: 'text', value });
+                    }
+                    else {
+                        out.push(n);
+                    }
+                    break;
+                case 'footnote':
+                    if (n.inline)
+                        n.inline = enforceNoNesting(n.inline, false);
+                    out.push(n);
+                    break;
+                case 'italic':
+                case 'strong':
+                case 'underline':
+                case 'strike':
+                case 'super':
+                case 'sub':
+                case 'highlight':
+                case 'bold-italic':
+                case 'span':
+                case 'critic-insert':
+                case 'critic-delete':
+                    n.children = enforceNoNesting(n.children, insideLink);
+                    out.push(n);
+                    break;
+                case 'extension':
+                    n.content = enforceNoNesting(n.content, insideLink);
+                    out.push(n);
+                    break;
+                default:
+                    out.push(n);
+                    break;
+            }
+        }
+        return out;
+    };
+    const applyNoNesting = (xs) => {
+        xs.splice(0, xs.length, ...enforceNoNesting(xs, false));
+    };
+    for (const block of doc.children)
+        walkBlock(block, applyNoNesting);
+    for (const body of footnoteBodies)
+        for (const b of body)
+            walkBlock(b, applyNoNesting);
     return doc;
 }
 //# sourceMappingURL=heading-ids.js.map
