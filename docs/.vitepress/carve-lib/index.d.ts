@@ -1,5 +1,6 @@
 import type { Document } from './ast.js';
 import { type ParseOptions } from './parse.js';
+import { type AsciiHeadingIdMode } from './heading-ids.js';
 import { Profile } from './profile.js';
 import { type RenderOptions } from './render-html.js';
 import { type MarkdownRenderOptions } from './render-markdown.js';
@@ -23,6 +24,11 @@ export { autolink, type AutolinkOptions } from './autolink.js';
 export { externalLinks, type ExternalLinksOptions } from './external-links.js';
 export { tableOfContents, type TableOfContentsOptions } from './table-of-contents.js';
 export { headingPermalinks, type HeadingPermalinksOptions } from './heading-permalinks.js';
+export { codeGroup, type CodeGroupOptions } from './code-group.js';
+export { tabs, type TabsOptions, type TabsMode } from './tabs.js';
+export { headingLevelShift, type HeadingLevelShiftOptions } from './heading-level-shift.js';
+export { headingReference, type HeadingReferenceOptions } from './heading-reference.js';
+export { defaultAttributes, type DefaultAttributesOptions, type DefaultAttributesMap, } from './default-attributes.js';
 export { Profile, LinkPolicy, ProfileViolationError, formatProfileViolation, canonicalType, CANONICAL_BLOCK_TYPES, CANONICAL_INLINE_TYPES, type DisallowedAction, type ProfileViolation, } from './profile.js';
 export { applyProfile, type ProfileFilterResult } from './profile-filter.js';
 /**
@@ -69,7 +75,7 @@ export declare function renderAnsi(ast: Document, opts?: AnsiRenderOptions): str
  * literal source text.
  */
 export declare function resolve(doc: Document, opts?: {
-    asciiHeadingIds?: boolean;
+    asciiHeadingIds?: AsciiHeadingIdMode;
     lowercaseHeadingIds?: boolean;
 }): Document;
 /** Convenience: parse + resolve + render in one call. */

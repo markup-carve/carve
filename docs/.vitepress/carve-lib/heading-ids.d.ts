@@ -1,5 +1,24 @@
 import type { Document, InlineNode } from './ast.js';
 /**
+ * Public opt-in for ASCII heading ids. `true` / `'fold'` is best-effort
+ * transliteration (non-ASCII the map can't handle is kept verbatim); `'strict'`
+ * additionally drops that unmappable residue so the id is guaranteed pure ASCII.
+ */
+export type AsciiHeadingIdMode = boolean | 'fold' | 'strict';
+/**
+ * Translate the public `asciiHeadingIds` / `lowercaseHeadingIds` options into
+ * the `slugify` flags. Shared by `resolve()` and `lintCarve` so the lint id set
+ * matches the resolver exactly.
+ */
+export declare function headingIdSlugOpts(opts: {
+    asciiHeadingIds?: AsciiHeadingIdMode;
+    lowercaseHeadingIds?: boolean;
+}): {
+    lowercase: boolean;
+    asciiFold: boolean;
+    asciiStrict: boolean;
+};
+/**
  * The automatic-identifier rule. Pure, context-free, no dedup.
  *
  * Default is CASE-PRESERVING with no Unicode normalization or case folding:
@@ -8,15 +27,18 @@ import type { Document, InlineNode } from './ast.js';
  * byte-identical across implementations, matching djot's "no Unicode tables"
  * identifier model. Cross-reference resolution is case-insensitive (see
  * resolveHeadingIds), so `</#getting-started>` still resolves to the
- * case-preserved `Getting-Started` id. Two opt-in, orthogonal transforms:
+ * case-preserved `Getting-Started` id. Three opt-in, orthogonal transforms:
  * `lowercase` (GitHub/SSG-style anchors, folded per code point so no
- * context mapping such as Greek final-sigma applies) and `asciiFold`
- * (transliterate the slug to ASCII for share-safe URL fragments; combine
- * with `lowercase` for a fully lowercase ASCII slug).
+ * context mapping such as Greek final-sigma applies); `asciiFold`
+ * (transliterate the slug to ASCII for share-safe URL fragments, best-effort -
+ * unmappable scripts are kept); and `asciiStrict` (implies `asciiFold`, also
+ * drops the unmappable residue for a guaranteed pure-ASCII slug). Combine with
+ * `lowercase` for a fully lowercase ASCII slug.
  */
 export declare function slugify(plainText: string, opts?: {
     lowercase?: boolean;
     asciiFold?: boolean;
+    asciiStrict?: boolean;
 }): string;
 /**
  * Visible plain text of an inline run (markup stripped).
@@ -38,5 +60,6 @@ export declare function inlineText(nodes: InlineNode[]): string;
 export declare function resolveHeadingIds(doc: Document, opts?: {
     lowercase?: boolean;
     asciiFold?: boolean;
+    asciiStrict?: boolean;
 }): Document;
 //# sourceMappingURL=heading-ids.d.ts.map
