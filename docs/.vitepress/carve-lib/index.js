@@ -20,6 +20,7 @@
  */
 import { parse as parseImpl } from './parse.js';
 import { resolveHeadingIds } from './heading-ids.js';
+import { applyProfile as applyProfileImpl } from './profile-filter.js';
 import { renderHtml as renderHtmlImpl } from './render-html.js';
 import { renderMarkdown as renderMarkdownImpl, } from './render-markdown.js';
 import { renderPlainText as renderPlainTextImpl, } from './render-plain.js';
@@ -36,6 +37,29 @@ export { autolink } from './autolink.js';
 export { externalLinks } from './external-links.js';
 export { tableOfContents } from './table-of-contents.js';
 export { headingPermalinks } from './heading-permalinks.js';
+export { Profile, LinkPolicy, ProfileViolationError, formatProfileViolation, canonicalType, CANONICAL_BLOCK_TYPES, CANONICAL_INLINE_TYPES, } from './profile.js';
+export { applyProfile } from './profile-filter.js';
+/**
+ * Apply a profile to a resolved document in the shared pipeline position
+ * (after resolve, before render). Enforces maxLength on the source bytes
+ * first (matching carve-php, which checks the input length pre-parse and
+ * throws). Mutates and returns `doc`.
+ */
+function runProfile(doc, source, opts) {
+    const profile = opts.profile;
+    if (!profile)
+        return doc;
+    const maxLength = profile.getMaxLength();
+    if (maxLength > 0 && byteLength(source) > maxLength) {
+        throw new RangeError(`Input exceeds the profile's maximum length of ${maxLength} bytes ` +
+            `(got ${byteLength(source)} bytes).`);
+    }
+    return applyProfileImpl(doc, profile, opts.profileBaseHost ?? null).doc;
+}
+/** UTF-8 byte length, matching PHP's strlen() on the source string. */
+function byteLength(s) {
+    return new TextEncoder().encode(s).length;
+}
 /**
  * Parse Carve source into a typed AST.
  *
@@ -96,30 +120,34 @@ export function carveToHtml(source, opts = {}) {
     for (const ext of exts)
         if (ext.beforeRender)
             doc = ext.beforeRender(doc);
+    doc = runProfile(doc, source, opts);
     return renderHtml(doc, opts);
 }
 /** Convenience: parse + resolve + render Markdown in one call. */
 export function carveToMarkdown(source, opts = {}) {
-    const doc = resolve(parse(source, opts), {
+    let doc = resolve(parse(source, opts), {
         asciiHeadingIds: opts.asciiHeadingIds ?? false,
         lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
     });
+    doc = runProfile(doc, source, opts);
     return renderMarkdown(doc, opts);
 }
 /** Convenience: parse + resolve + render plain text in one call. */
 export function carveToPlainText(source, opts = {}) {
-    const doc = resolve(parse(source, opts), {
+    let doc = resolve(parse(source, opts), {
         asciiHeadingIds: opts.asciiHeadingIds ?? false,
         lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
     });
+    doc = runProfile(doc, source, opts);
     return renderPlainText(doc, opts);
 }
 /** Convenience: parse + resolve + render ANSI terminal text in one call. */
 export function carveToAnsi(source, opts = {}) {
-    const doc = resolve(parse(source, opts), {
+    let doc = resolve(parse(source, opts), {
         asciiHeadingIds: opts.asciiHeadingIds ?? false,
         lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
     });
+    doc = runProfile(doc, source, opts);
     return renderAnsi(doc, opts);
 }
 //# sourceMappingURL=index.js.map

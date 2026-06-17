@@ -53,3 +53,26 @@ Visit <https://example.com> or write <hello@example.com>.
 .
 <p><span class="x">a <em>b</em> c</span> and <a href="u">t</a></p>
 ```
+
+```
+[[x](y)](z)
+.
+<p><a href="z">x</a></p>
+```
+
+```
+[pre <http://h> post](/u)
+.
+<p><a href="/u">pre http://h post</a></p>
+```
+
+```
+# H
+
+[see </#H>](/outer)
+.
+<section id="H">
+  <h1>H</h1>
+  <p><a href="/outer">see H</a></p>
+</section>
+```

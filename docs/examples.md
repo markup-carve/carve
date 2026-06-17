@@ -489,6 +489,55 @@ Span content is parsed recursively, and an inline link still wins over a span.
 
 :::
 
+Links never nest. When a link's text contains another link, the inner link is replaced by its text and only the outer destination applies, so explicit nesting collapses to a single anchor.
+
+::: compare
+
+```carve
+[[x](y)](z)
+```
+
+```html
+<p><a href="z">x</a></p>
+```
+
+:::
+
+The same rule covers an autolink that lands inside a link's text: the autolink becomes plain text, never a nested anchor.
+
+::: compare
+
+```carve
+[pre <http://h> post](/u)
+```
+
+```html
+<p><a href="/u">pre http://h post</a></p>
+```
+
+:::
+
+It also covers a crossref, which only becomes a link once it resolves: inside a link's text it contributes its resolved text, not a second anchor.
+
+::: compare
+
+```carve
+# H
+
+[see </#H>](/outer)
+```
+
+```html
+<section id="H">
+  <h1>H</h1>
+  <p><a href="/outer">see H</a></p>
+</section>
+```
+
+:::
+
+The rule is about link content in the parsed tree. One renderer-level case is out of scope: a footnote reference inside a link label still renders its own `doc-noteref` anchor inside the outer anchor. Putting a footnote inside a link is unusual, and the footnote body and endnote are unaffected.
+
 ## Images
 
 ::: compare
