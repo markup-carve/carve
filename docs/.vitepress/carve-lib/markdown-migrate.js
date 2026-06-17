@@ -49,17 +49,38 @@
  *  - Image alt text is preserved verbatim, not flattened to plain text as
  *    CommonMark does, so `![*x*](u)` keeps `*x*` in the Carve alt attribute.
  */
+/**
+ * Build a replacer for a single-char inline marker (`^` super, `,` sub, `=`
+ * highlight). Carve's bare markers do not open/close intraword or next to
+ * whitespace, so the bare form (`^x^`) is only used when the tag has a
+ * non-alphanumeric neighbor on each side and its body is not whitespace-padded.
+ * Otherwise the brace form (`{^x^}`) is required — it renders in every position
+ * (e.g. `H<sub>2</sub>O`), at the cost of being noisier. Preferring the bare
+ * form keeps the common, whitespace-separated case clean on a Markdown→Carve
+ * round-trip (corpus 67-superscript-and-subscript).
+ */
+function markerForm(marker) {
+    return (match, body, offset, full) => {
+        const before = full[offset - 1] ?? '';
+        const after = full[offset + match.length] ?? '';
+        const intraword = /[A-Za-z0-9]/.test(before) || /[A-Za-z0-9]/.test(after);
+        const padded = /^\s|\s$/.test(body);
+        return intraword || padded ? `{${marker}${body}${marker}}` : `${marker}${body}${marker}`;
+    };
+}
 const HTML_TAG_RULES = [
-    // Highlight/super/subscript use the forced brace forms: an HTML tag can sit
-    // intraword (e.g. `H<sub>2</sub>O`), where a bare `,2,` / `^2^` / `=2=` is
-    // literal in Carve. The `{,x,}` / `{^x^}` / `{=x=}` forms render in every
-    // position (corpus 67-superscript-and-subscript).
-    [/<mark>([^<]+)<\/mark>/gi, '{=$1=}'],
+    // Highlight/super/subscript use Carve's single-char markers, brace-forced
+    // only when needed: an HTML tag can sit intraword (e.g. `H<sub>2</sub>O`),
+    // where a bare `,2,` / `^2^` / `=2=` is literal in Carve, so `markerForm`
+    // emits `{,x,}` / `{^x^}` / `{=x=}` there and the bare form everywhere else.
+    [/<mark>([^<]+)<\/mark>/gi, markerForm('=')],
+    // `<ins>` has no bare Carve form (insertion is the CriticMarkup `{+x+}`), so
+    // it always uses the brace form — unlike the single-char markers below.
     [/<ins>([^<]+)<\/ins>/gi, '{+$1+}'],
     [/<del>([^<]+)<\/del>/gi, '~$1~'],
     [/<s>([^<]+)<\/s>/gi, '~$1~'],
-    [/<sup>([^<]+)<\/sup>/gi, '{^$1^}'],
-    [/<sub>([^<]+)<\/sub>/gi, '{,$1,}'],
+    [/<sup>([^<]+)<\/sup>/gi, markerForm('^')],
+    [/<sub>([^<]+)<\/sub>/gi, markerForm(',')],
     [/<strong>([^<]+)<\/strong>/gi, '*$1*'],
     [/<b>([^<]+)<\/b>/gi, '*$1*'],
     [/<em>([^<]+)<\/em>/gi, '/$1/'],
@@ -203,7 +224,7 @@ function convertInline(input) {
     // bodies contain no * _ ~ delimiters, so the markup they produce (e.g.
     // <strong>a</strong> -> *a*) is not re-matched and turned into /a/.
     for (const [re, repl] of HTML_TAG_RULES) {
-        line = line.replace(re, repl);
+        line = typeof repl === 'string' ? line.replace(re, repl) : line.replace(re, repl);
     }
     // ^superscript^ is identical in Carve — no change. (Highlight ==x== was
     // converted to =x= above; math was converted and protected before the
@@ -219,6 +240,47 @@ function convertInline(input) {
             .replace(/\x00P(\d+)\x00/g, (_m, i) => protectedSpans[Number(i)]);
     } while (line !== prev);
     return line;
+}
+/** A GFM table delimiter row, e.g. `| --- | :--: |` (at least one column). */
+const RE_TABLE_DELIMITER = /^\|?\s*:?-+:?\s*(?:\|\s*:?-+:?\s*)*\|?$/;
+/**
+ * Split a pipe-delimited table row into trimmed cell texts, honoring `\|`
+ * escapes and dropping the empty cells produced by a leading/trailing pipe.
+ */
+function splitTableRow(row) {
+    const cells = [];
+    let cur = '';
+    for (let i = 0; i < row.length; i++) {
+        const ch = row[i];
+        if (ch === '\\' && i + 1 < row.length) {
+            cur += ch + row[++i];
+            continue;
+        }
+        if (ch === '|') {
+            cells.push(cur);
+            cur = '';
+            continue;
+        }
+        cur += ch;
+    }
+    cells.push(cur);
+    if (cells.length > 1 && cells[0].trim() === '')
+        cells.shift();
+    if (cells.length > 1 && cells[cells.length - 1].trim() === '')
+        cells.pop();
+    return cells.map((c) => c.trim());
+}
+/** Map a GFM delimiter cell to Carve's column-alignment marker (glued to `|=`). */
+function alignMarker(cell) {
+    const left = cell.startsWith(':');
+    const right = cell.endsWith(':');
+    if (left && right)
+        return '~';
+    if (right)
+        return '>';
+    if (left)
+        return '<';
+    return '';
 }
 /** Convert a Markdown document to Carve. */
 export function markdownToCarve(markdown) {
@@ -266,6 +328,34 @@ export function markdownToCarve(markdown) {
                 prevType = 'code';
             }
             continue;
+        }
+        // GFM table header: a `| ... |` row immediately followed by a delimiter
+        // row (`| --- | :--: |`). Carve marks header cells with `|=` (alignment
+        // glued as `<`/`>`/`~`) and needs no delimiter row, so rewrite the header
+        // and drop the delimiter. Body rows are already valid Carve and fall
+        // through as plain text below, so only the header is special-cased here.
+        if (trimmed.includes('|')) {
+            const next = i + 1 < lines.length ? lines[i + 1].trim() : '';
+            if (next.includes('-') && RE_TABLE_DELIMITER.test(next)) {
+                const headerCells = splitTableRow(trimmed);
+                const aligns = splitTableRow(next).map(alignMarker);
+                // GFM requires the delimiter row to have the same column count as the
+                // header; a mismatch (e.g. `a | b` over `---`) is not a table, so leave
+                // it for the setext/thematic-break handling below.
+                if (aligns.length === headerCells.length) {
+                    let header = '';
+                    for (let c = 0; c < headerCells.length; c++) {
+                        header += `|=${aligns[c] ?? ''} ${convertInline(headerCells[c])} `;
+                    }
+                    header += '|';
+                    if (prevType !== 'blank' && out.length > 0)
+                        out.push('');
+                    out.push(header);
+                    i++; // consume the delimiter row
+                    prevType = 'text';
+                    continue;
+                }
+            }
         }
         const isBlank = trimmed === '';
         const isHeading = /^#{1,6}\s/.test(trimmed);
