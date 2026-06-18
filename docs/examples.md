@@ -4294,7 +4294,7 @@ continued</p></blockquote>
 
 :::
 
-A block-opener is not a lazy continuation: it ends the quote and starts that block outside it. A **list marker — bullet or ordered — ends the quote too** and starts a top-level sibling list. (A list marker folds only into an open *paragraph*, §10; a blockquote is ended by it, matching djot.) Only plain text lazily continues the quote.
+A block-opener is not a lazy continuation: it ends the quote and starts that block outside it. A **list marker — bullet or ordered — folds in**, though: a quoted line ends in an open paragraph, and a list marker folds into an open paragraph (§10), exactly as at the top level. So `> quoted` then `- item` is one quote whose paragraph is `quoted` + `- item`, not a quote plus a sibling list. (A heading, a bounded title, is still ended by a list marker; to put a real list in a quote, `>`-prefix it or use the `+` continuation marker.)
 
 ::: compare
 
@@ -4304,10 +4304,8 @@ A block-opener is not a lazy continuation: it ends the quote and starts that blo
 ```
 
 ```html
-<blockquote><p>quoted</p></blockquote>
-<ul>
-  <li>item</li>
-</ul>
+<blockquote><p>quoted
+- item</p></blockquote>
 ```
 
 :::

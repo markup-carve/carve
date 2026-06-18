@@ -1,5 +1,6 @@
 import type { Attrs, Document } from './ast.js';
 import type { CarveExtension } from './extension.js';
+import type { AsciiHeadingIdMode } from './heading-ids.js';
 export interface ParseOptions {
     positions?: boolean;
     /** Format label applied to a bare `---` frontmatter fence. Default 'yaml'. */
@@ -11,11 +12,15 @@ export interface ParseOptions {
      */
     lowercaseHeadingIds?: boolean;
     /**
-     * Fold auto-generated heading ids to ASCII (transliterate non-ASCII) for
-     * share-safe URL/CSS-fragment portability. Default false. Orthogonal to
+     * Fold auto-generated heading ids to ASCII for share-safe URL/CSS-fragment
+     * portability. Default false (off). `true` / `'fold'` is best-effort:
+     * transliterate non-ASCII, but scripts the map can't handle (Greek, CJK,
+     * Arabic, emoji) are kept verbatim. `'strict'` additionally drops that
+     * unmappable residue, guaranteeing a pure-ASCII id (a heading made entirely
+     * of unmappable script then falls back to `s`). Orthogonal to
      * `lowercaseHeadingIds`; combine both for a fully lowercase ASCII slug.
      */
-    asciiHeadingIds?: boolean;
+    asciiHeadingIds?: AsciiHeadingIdMode;
     /**
      * Extensions whose parse-stage matchers (`matchInline` / `matchBlock`) add
      * syntax to the parse. Extensions with only render/transform hooks need not

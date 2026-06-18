@@ -19,7 +19,7 @@
  *     pass can see it.
  */
 import { parse as parseImpl } from './parse.js';
-import { resolveHeadingIds } from './heading-ids.js';
+import { resolveHeadingIds, headingIdSlugOpts, } from './heading-ids.js';
 import { applyProfile as applyProfileImpl } from './profile-filter.js';
 import { renderHtml as renderHtmlImpl } from './render-html.js';
 import { renderMarkdown as renderMarkdownImpl, } from './render-markdown.js';
@@ -37,6 +37,11 @@ export { autolink } from './autolink.js';
 export { externalLinks } from './external-links.js';
 export { tableOfContents } from './table-of-contents.js';
 export { headingPermalinks } from './heading-permalinks.js';
+export { codeGroup } from './code-group.js';
+export { tabs } from './tabs.js';
+export { headingLevelShift } from './heading-level-shift.js';
+export { headingReference } from './heading-reference.js';
+export { defaultAttributes, } from './default-attributes.js';
 export { Profile, LinkPolicy, ProfileViolationError, formatProfileViolation, canonicalType, CANONICAL_BLOCK_TYPES, CANONICAL_INLINE_TYPES, } from './profile.js';
 export { applyProfile } from './profile-filter.js';
 /**
@@ -95,10 +100,7 @@ export function renderAnsi(ast, opts = {}) {
  * literal source text.
  */
 export function resolve(doc, opts = {}) {
-    return resolveHeadingIds(doc, {
-        lowercase: opts.lowercaseHeadingIds ?? false,
-        asciiFold: opts.asciiHeadingIds ?? false,
-    });
+    return resolveHeadingIds(doc, headingIdSlugOpts(opts));
 }
 /** Convenience: parse + resolve + render in one call. */
 export function carveToHtml(source, opts = {}) {
@@ -110,43 +112,57 @@ export function carveToHtml(source, opts = {}) {
         extensions: exts,
         ...(opts.sourceLine ? { positions: true } : {}),
     };
-    let doc = resolve(parse(source, parseOpts), {
+    let doc = applyTransforms(resolve(parse(source, parseOpts), {
         asciiHeadingIds: opts.asciiHeadingIds ?? false,
         lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
-    });
-    for (const ext of exts)
-        if (ext.afterParse)
-            doc = ext.afterParse(doc);
-    for (const ext of exts)
-        if (ext.beforeRender)
-            doc = ext.beforeRender(doc);
+    }), exts);
     doc = runProfile(doc, source, opts);
     return renderHtml(doc, opts);
 }
+/**
+ * Run the renderer-agnostic extension transforms (`afterParse`,
+ * `beforeRender`) over a resolved document. Renderer-specific output (block
+ * renderers, inline renderers) is consulted by the HTML renderer only, but the
+ * transform hooks mutate the AST itself, so they apply to every renderer -
+ * matching carve-php, where a `beforeRender` extension (heading level shift,
+ * default attributes, …) affects Markdown/PlainText/ANSI output too.
+ */
+function applyTransforms(doc, exts) {
+    if (!exts)
+        return doc;
+    let out = doc;
+    for (const ext of exts)
+        if (ext.afterParse)
+            out = ext.afterParse(out);
+    for (const ext of exts)
+        if (ext.beforeRender)
+            out = ext.beforeRender(out);
+    return out;
+}
 /** Convenience: parse + resolve + render Markdown in one call. */
 export function carveToMarkdown(source, opts = {}) {
-    let doc = resolve(parse(source, opts), {
+    let doc = applyTransforms(resolve(parse(source, opts), {
         asciiHeadingIds: opts.asciiHeadingIds ?? false,
         lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
-    });
+    }), opts.extensions);
     doc = runProfile(doc, source, opts);
     return renderMarkdown(doc, opts);
 }
 /** Convenience: parse + resolve + render plain text in one call. */
 export function carveToPlainText(source, opts = {}) {
-    let doc = resolve(parse(source, opts), {
+    let doc = applyTransforms(resolve(parse(source, opts), {
         asciiHeadingIds: opts.asciiHeadingIds ?? false,
         lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
-    });
+    }), opts.extensions);
     doc = runProfile(doc, source, opts);
     return renderPlainText(doc, opts);
 }
 /** Convenience: parse + resolve + render ANSI terminal text in one call. */
 export function carveToAnsi(source, opts = {}) {
-    let doc = resolve(parse(source, opts), {
+    let doc = applyTransforms(resolve(parse(source, opts), {
         asciiHeadingIds: opts.asciiHeadingIds ?? false,
         lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
-    });
+    }), opts.extensions);
     doc = runProfile(doc, source, opts);
     return renderAnsi(doc, opts);
 }
