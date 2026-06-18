@@ -747,18 +747,19 @@ function parseHeading(lexer) {
     const m = RE_HEADING.exec(line);
     const level = m[1].length;
     // Carve headings are multi-line: the text spills onto following lines until a
-    // blank line. A continuation line may carry the same-or-lower number of `#`
-    // (stripped) or none; a higher/other heading marker starts a NEW heading, and
-    // a caption (`^ …`) or fenced comment (`%%%`) ends the heading. A block-opener
-    // (list/quote/table/fence/div/thematic break) ALSO ends it and starts that
-    // block, exactly as it interrupts a paragraph (§10) -- only plain text folds.
+    // blank line. A continuation line may carry the same number of `#` (stripped)
+    // or none; a heading marker with a different count (more OR fewer) starts a
+    // NEW heading, and a caption (`^ …`) or fenced comment (`%%%`) ends the
+    // heading. A block-opener (list/quote/table/fence/div/thematic break) ALSO
+    // ends it and starts that block, exactly as it interrupts a paragraph (§10)
+    // -- only plain text folds.
     let text = line.replace(/^#{1,6}[ \t]+/, '');
-    const sameOrLower = new RegExp(`^#{1,${level}}[ \\t]+(.+)$`);
+    const sameLevel = new RegExp(`^#{${level}}[ \\t]+(.+)$`);
     while (!lexer.eof()) {
         const next = lexer.peek();
         if (next.trim() === '')
             break;
-        const cont = sameOrLower.exec(next);
+        const cont = sameLevel.exec(next);
         if (cont) {
             text += '\n' + cont[1];
             lexer.consume();

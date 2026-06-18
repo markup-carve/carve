@@ -4351,7 +4351,7 @@ int main() {}
 
 ## Multi-line headings
 
-A heading spills onto following lines until a blank line. A continuation line may carry the same-or-lower number of `#` (stripped) or none; a higher/other heading marker starts a new heading, and a caption (`^ …`) or fenced comment (`%%%`) ends it. Only plain text folds in: a block-opener (quote, table, fenced code, `:::` div, thematic break) ends the heading and starts that block. A **list marker — bullet or ordered — ends the heading too** and starts a sibling list. (A list marker folds only into an open *paragraph*, §10; a heading is ended by it, matching djot.) The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
+A heading spills onto following lines until a blank line. Three heading-specific rules: a continuation line carries the **same** number of `#` (stripped) or **none** (djot); a line with a **different** `#` count — more *or* fewer — starts a new heading; and a blank line or a caption (`^ …`, which attaches via §4) ends it. Everything else that ends a heading is *general block structure*, not a heading rule: a heading is a bounded title, so any block-opener (quote, table, fenced code, `:::` div, thematic break, `%%%` comment) ends it and starts that block, and a list marker — with no open paragraph in a title to fold into (§10) — starts a sibling list, exactly as at the top level. The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
 
 ::: compare
 
@@ -4364,6 +4364,28 @@ outside
 <section id="Title-outside">
   <h1>Title
 outside</h1>
+</section>
+```
+
+:::
+
+A continuation line must carry the **same** number of `#` as the opener (or none). A line with a different count starts a new heading: `## still A` folds in, but `# B` (fewer `#`) is a new heading.
+
+::: compare
+
+```carve
+## A
+## still A
+# B
+```
+
+```html
+<section id="A-still-A">
+  <h2>A
+still A</h2>
+</section>
+<section id="B">
+  <h1>B</h1>
 </section>
 ```
 

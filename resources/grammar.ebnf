@@ -98,22 +98,26 @@ atx_heading = heading_first_line, {heading_continuation_line} ;
 heading_first_line = heading_marker, space, inline_content, newline ;
 heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
 
-(* MULTI-LINE HEADINGS -- NORMATIVE (like Djot; consistent with §10 paragraph
-   interruption). A heading's text spills onto following lines until a blank
-   line. A continuation line:
-     - may carry SAME-or-LOWER number of `#` markers (stripped) or none,
-       and its text is appended to the heading;
-     - a heading marker with MORE `#` than the open heading starts a NEW
-       heading (ends this one);
-     - a caption (`^ ` ...) or a fenced comment (`%%%`) ends the heading;
-     - a blank line ends it;
-     - a block-opener (quote, table, fenced code, `:::` div, thematic break)
-       ends the heading and starts that block;
-     - a LIST MARKER -- bullet OR ordered -- also ends the heading and starts a
-       sibling list (a list marker folds only into a PARAGRAPH, §10; a heading
-       is ended by it, matching djot).
-   Only PLAIN text folds into the heading. The heading id is derived from the
-   full folded text.
+(* MULTI-LINE HEADINGS -- NORMATIVE (like Djot). A heading's text spills onto
+   following lines until a blank line. There are THREE heading-specific rules:
+     1. CONTINUATION: a following line carries the SAME number of `#` markers
+        (stripped) or NONE, and its text is appended to the heading -- exactly
+        djot ("preceded by the same number of `#` characters ... can also be
+        left off"). A line with a DIFFERENT `#` count (MORE or FEWER) is NOT a
+        continuation: it starts a NEW heading.
+     2. A blank line ends the heading.
+     3. A caption (`^ ` ...) attaches to it (§4) and so ends the text.
+   Everything else that "ends" a heading is NOT a heading rule -- it is the
+   general block structure (a heading is a bounded title, not an open
+   paragraph): any line that begins a block (quote, table, fenced code, `:::`
+   div, thematic break, a `%%%` comment) ends the heading and starts that
+   block, and a LIST MARKER -- with no open paragraph in a title to fold into
+   (§10) -- starts a sibling list. This is the SAME outcome the top level gives:
+   "# H \n - item" is a heading PLUS a `<ul>`, exactly as "<no open paragraph>
+   \n - item" starts a list. So the heading adds no per-construct enders of its
+   own beyond the three above.
+   Only PLAIN text (and a same-`#` marker line) folds into the heading. The
+   heading id is derived from the full folded text.
    NO TRAILING ATTRIBUTES (djot-strict). A heading line carries NO trailing
    `{...}` attribute block: a `{...}` at the end of a heading line is ordinary
    inline content (literal text unless it forms an inline construct), and the
@@ -123,8 +127,8 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    Pinned by corpus 02-headings (the preceding-line and literal-trailing
    pairs). *)
 heading_continuation_line = [heading_marker, space], inline_content, newline ;
-   (* the optional marker must be same-or-lower than the open heading's --
-      see the NORMATIVE note above *)
+   (* the optional marker must be the SAME count as the open heading's (djot);
+      a different count starts a new heading -- see the NORMATIVE note above *)
 
 (* HEADING IDENTIFIERS -- NORMATIVE. A heading without an explicit {#id} gets an
    automatic identifier from its folded plain text (symbols `:name:` and footnote
@@ -1345,7 +1349,7 @@ EOF = (* end of file *) ;
         - HEADING CONTINUATION (see `heading`): a block-opener ends an open
           heading; a LIST MARKER -- bullet or ordered -- also ends it and starts
           a sibling list, so "# H \n - item" is a heading PLUS a `<ul>`. Only
-          plain text (and a same/lower `#`) folds into the heading.
+          plain text (and a same-`#` marker line) folds into the heading.
         - BLOCKQUOTE LAZY CONTINUATION (see `blockquote`): a col-0 list marker
           after a quoted line FOLDS into the open quoted paragraph (§10, exactly
           as at the top level), so "> quoted \n - item" is ONE quote whose
