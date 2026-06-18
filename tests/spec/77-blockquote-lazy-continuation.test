@@ -12,7 +12,17 @@ continued</p></blockquote>
 > quoted
 - item
 .
-<blockquote><p>quoted</p></blockquote>
+<blockquote><p>quoted
+- item</p></blockquote>
+```
+
+```
+> # h
+- item
+.
+<blockquote>
+  <h1 id="h">h</h1>
+</blockquote>
 <ul>
   <li>item</li>
 </ul>
