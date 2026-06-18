@@ -1,0 +1,29 @@
+Block-quote continuation marker
+
+```
+> quoted
++
+- item
+.
+<blockquote>
+  <p>quoted</p>
+  <ul>
+    <li>item</li>
+  </ul>
+</blockquote>
+```
+
+```
+> quoted
++
+- item
+> more
+.
+<blockquote>
+  <p>quoted</p>
+  <ul>
+    <li>item</li>
+  </ul>
+  <p>more</p>
+</blockquote>
+```
