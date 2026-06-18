@@ -771,15 +771,16 @@ A blank line between items produces a loose list — each item wraps in a paragr
 
 :::
 
-A paragraph ends at a blank line — or at a line that begins an interrupting
-block. A continuation line that starts with `>`, a valid `|…|` table row, a
-heading `#`, a thematic break, or a fence with a closer interrupts the
-paragraph and starts that block, with no blank line required (the
-Markdown-like rule; §10). A **list marker is the exception**: neither a
-bullet (`- ` / `* `) nor an ordered marker (`1.`, `1)`, `a.`, …) interrupts —
-a list needs a blank line before it (symmetric, Djot-like). So a
-hard-wrapped prose line that happens to begin with a bullet stays prose; the
-bullet lines fold into the paragraph as lazy continuation.
+A paragraph ends only at a blank line (or end of file). **Nothing interrupts an
+open paragraph** - one rule, no carve-outs (§10, fully Djot-aligned). A
+continuation line that starts with `>`, a valid `|…|` table row, a heading `#`,
+a thematic break, a fence, or a `:::` admonition/div opener folds into the
+paragraph as lazy continuation (literal inline text); a blank line is required
+to start any of them after prose. A **list marker is not an exception** - neither
+a bullet (`- ` / `* `) nor an ordered marker (`1.`, `1)`, `a.`, …) interrupts; it
+folds in like every other block. So a hard-wrapped prose line that happens to
+begin with a bullet stays prose, and the bullet lines fold into the paragraph as
+lazy continuation.
 
 ::: compare
 
@@ -795,8 +796,8 @@ Die Frage ist x = 5
 
 :::
 
-A heading under a prose line still interrupts it; a list — bullet or
-ordered — does not, so these fold into one paragraph.
+A heading, a list (bullet or ordered), and every other block fold into the open
+paragraph with no blank line, so these read as one paragraph.
 
 ::: compare
 
@@ -2544,13 +2545,15 @@ Carve has footnotes.[^fn]
 
 :::
 
-A reference definition is invisible metadata, so it still ends the paragraph
-even with no blank line (§10); indented lines continue the note body.
+A footnote definition is invisible metadata, but it folds into an open paragraph
+like every other construct (§10), so it needs a blank line before it to be
+recognized; indented lines then continue the note body.
 
 ::: compare
 
 ```carve
 See the note[^m].
+
 [^m]: First line of the note
    and a continuation line.
 ```
@@ -2570,12 +2573,15 @@ and a continuation line.<a href="#fnref1" role="doc-backlink">↩</a></p>
 
 :::
 
-A footnote definition that is never referenced produces no endnotes section.
+A footnote definition that is never referenced produces no endnotes section (a
+blank line before it makes it a definition; with no blank line it would fold into
+the paragraph as text).
 
 ::: compare
 
 ```carve
 text
+
 [^f]: note
 ```
 
@@ -3914,13 +3920,16 @@ A paragraph ends at a blank line (§10). No **visible** block interrupts an open
 paragraph: a heading, thematic break, block quote, table row, fenced code, or
 `:::` div/admonition that follows a prose line with no blank line folds into the
 paragraph as lazy continuation (inline text), at the top level and inside nested
-content. This is fully Djot-like and symmetric — visible blocks and list markers
+content. This is fully Djot-like and symmetric - visible blocks and list markers
 behave identically at the paragraph boundary, so a blank line is required to
 start any of them after prose. List markers and bare images fold as before, and
-a nested sublist inside an open list item is unaffected (§24). Only **invisible
+a nested sublist inside an open list item is unaffected (§24). **Invisible
 constructs** (reference, footnote and abbreviation definitions, comments,
-block-attribute lines) and a **caption** (`^ `) still end a paragraph with no
-blank line — the former are consumed, the latter attaches to the preceding block.
+block-attribute lines) fold in too - one rule, no carve-out, fully Djot-aligned -
+so they also need a blank line to be recognized after prose. The only constructs
+that act with no blank line are not paragraph interruption at all: a **caption**
+(`^ `) attaches to a preceding *captionable* block via §4, and a nested sublist
+nests via §24 - neither acts on an open paragraph.
 
 A heading marker after a prose line does **not** interrupt — it folds in.
 
@@ -4182,8 +4191,12 @@ An indented sublist still nests with no blank line (unchanged).
 
 :::
 
-**Invisible constructs** still interrupt with no blank line: a comment line is
-consumed,
+**Invisible constructs fold too**, with no carve-out. A comment line, a
+reference / footnote / abbreviation definition, or a block-attribute line that
+follows a prose line with no blank line is **not** consumed - it folds into the
+paragraph as literal inline text, exactly like a visible block. A blank line is
+required to recognize it as the invisible construct. So a comment line directly
+under prose stays as text and is **not** dropped:
 
 ::: compare
 
@@ -4193,22 +4206,56 @@ para
 ```
 
 ```html
+<p>para
+%% c</p>
+```
+
+:::
+
+and a reference definition directly under prose folds in - no reference is
+registered and the line is literal text:
+
+::: compare
+
+```carve
+text
+[r]: /url
+```
+
+```html
+<p>text
+[r]: /url</p>
+```
+
+:::
+
+A blank line makes the invisible construct work: the comment is then dropped and
+the reference definition is collected, leaving only the paragraph.
+
+::: compare
+
+```carve
+para
+
+%% c
+```
+
+```html
 <p>para</p>
 ```
 
 :::
 
-and a reference definition is collected, leaving only the paragraph.
-
 ::: compare
 
 ```carve
-a[r]
-[r]: http://x
+See [Other][] for details.
+
+[Other]: /other
 ```
 
 ```html
-<p>a[r]</p>
+<p>See <a href="/other">Other</a> for details.</p>
 ```
 
 :::
@@ -4291,7 +4338,7 @@ continued</p></blockquote>
 
 :::
 
-A col-0 line lazily continues the quote whenever it would fold into a paragraph (§10): a block-opener (heading, thematic break, nested quote, table, fenced code, `:::` div) and a list marker (bullet or ordered) fold into the open quoted paragraph, exactly as at the top level. A blank line is how you end the quote and start a sibling block. Only an attachment or invisible construct (a caption, comment, definition, or attribute line) ends the quote with no blank line.
+A col-0 line lazily continues the quote whenever it would fold into a paragraph (§10): a block-opener (heading, thematic break, nested quote, table, fenced code, `:::` div), a list marker (bullet or ordered), and an invisible construct (comment, reference / footnote / abbreviation definition, attribute line) all fold into the open quoted paragraph, exactly as at the top level. A blank line is how you end the quote and start a sibling block. Only a **caption** (`^ `) ends the quote with no blank line - that is an attachment to the captionable quote (§4), not a §10 interruption.
 
 ::: compare
 
@@ -4915,7 +4962,7 @@ line before a table attaches to the `<table>`:
 
 :::
 
-A `{...}` line that directly *trails* a paragraph (no blank line) is still a leading block-attribute line: it interrupts the paragraph and floats forward. With no following block it is dropped:
+A `{...}` line that directly *trails* a paragraph (no blank line) is **not** a block-attribute line - like every construct it folds into the open paragraph as literal text (§10). A blank line is required for it to be recognized as an attribute line:
 
 ::: compare
 
@@ -4925,17 +4972,19 @@ Para
 ```
 
 ```html
-<p>Para</p>
+<p>Para
+{.class}</p>
 ```
 
 :::
 
-…and it floats across the blank line to the next block, never attaching backward to the paragraph it follows:
+With a blank line before it, the `{...}` line is a leading block-attribute line again; it floats forward to the next block, never attaching backward to the paragraph it follows:
 
 ::: compare
 
 ```carve
 Para
+
 {.class}
 
 Next
@@ -5527,14 +5576,15 @@ See *[the docs](url) for more* info.
 
 :::
 
-## Abbreviation definition interrupts a paragraph
+## Abbreviation definition
 
-An abbreviation definition is an invisible construct (§10): on the line directly after prose it is consumed and applied, with no blank line needed.
+An abbreviation definition is an invisible construct, but like every construct it folds into an open paragraph (§10), so it needs a blank line before it to be recognized. With the blank line it is consumed and applied:
 
 ::: compare
 
 ```carve
 The HTML spec is long.
+
 *[HTML]: HyperText Markup Language
 ```
 
@@ -5543,6 +5593,8 @@ The HTML spec is long.
 ```
 
 :::
+
+With no blank line the definition line is not recognized: it folds into the paragraph as inline text and the abbreviation is not applied (§10).
 
 ## Literal less-than in prose
 

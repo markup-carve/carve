@@ -139,14 +139,32 @@ text
 para
 %% c
 .
+<p>para
+%% c</p>
+```
+
+```
+text
+[r]: /url
+.
+<p>text
+[r]: /url</p>
+```
+
+```
+para
+
+%% c
+.
 <p>para</p>
 ```
 
 ```
-a[r]
-[r]: http://x
+See [Other][] for details.
+
+[Other]: /other
 .
-<p>a[r]</p>
+<p>See <a href="/other">Other</a> for details.</p>
 ```
 
 ```

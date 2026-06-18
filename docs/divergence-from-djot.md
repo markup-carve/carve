@@ -169,21 +169,26 @@ surprise lists.
 **Why.** `%%` is faster to type, reads like a comment in many config formats, and
 needs no closing delimiter for the common single-line case.
 
-## 7. Invisible constructs interrupt paragraphs
+## 7. Paragraph interruption (fully Djot-aligned - no divergence)
+
+This section used to document carve's one remaining paragraph-interruption
+deviation (invisible constructs ended a paragraph with no blank line). That
+carve-out has been **dropped**: carve's paragraph boundary now matches Djot
+exactly. The section is kept at number 7 to avoid renumbering churn, but it now
+records where carve deliberately **aligns** rather than diverges.
 
 **Djot:** an open paragraph runs until a blank line. A line that begins with a
 block marker - a `-`/`*` bullet, `>` quote, `#` heading, a `|` table row, or a
 fence - stays part of the paragraph; the block needs a blank line before it.
 
-**Carve:** carve **matches Djot** for every *visible* block - a heading, quote,
-table row, fenced code, thematic break, or `:::` div directly under a line of
-prose stays part of the paragraph (it folds in as lazy continuation), and so do
-list markers and bare images. A blank line is required to start any of them. The
-**one** remaining deviation: an *invisible* construct - a reference, footnote, or
-abbreviation definition, a comment (`%%`/`%%%`), or a block-attribute line (`{…}`
-alone on a line) - and a **caption** (`^ `) still end a paragraph with no blank
-line (the definitions/attributes are consumed; the caption attaches to the
-preceding block) (PART 9 §10).
+**Carve:** **identical.** One rule, zero carve-outs: **nothing interrupts an open
+paragraph.** Every *visible* block (heading, quote, table row, fenced code,
+thematic break, `:::` div), every list marker (bullet or ordered), bare images,
+**and** every *invisible* construct (reference / footnote / abbreviation
+definition, comment `%%`/`%%%`, block-attribute line `{…}`) folds into the open
+paragraph as lazy continuation - literal inline text - when it follows a prose
+line with no blank line. A blank line is required to start any of them after
+prose (PART 9 §10).
 
 ```
 intro
@@ -193,22 +198,31 @@ Djot:   <p>intro\n# Heading</p>                  (one paragraph)
 Carve:  <p>intro\n# Heading</p>                  (one paragraph; same as Djot)
 ```
 
-An invisible construct is the exception - it still interrupts:
+Invisible constructs now fold too - no exception:
 
 ```
 para
 %% comment
 
-Carve:  <p>para</p>                              (the comment line ends the paragraph and is consumed)
+Djot:   <p>para\n%% comment</p>                  (the comment line is literal text)
+Carve:  <p>para\n%% comment</p>                  (same as Djot)
 ```
 
-**Why.** Folding visible blocks restores Djot's hard-wrap-safe paragraph model
-and makes the boundary symmetric - nothing visible interrupts, so authors do not
-have to remember a block-by-block carve-out. Invisible constructs are the lone
-exception because they render nothing on their own: consuming a trailing
-definition or comment line is what authors expect, and a caption must attach to
-the block above it rather than fold into prose. Add a blank line, or escape a
-marker (`\# H`), where you want a visible block to start right under prose.
+**Why the invisible-interrupt carve-out was dropped.** Keeping invisible
+constructs as the lone exception meant authors still had to remember a
+block-by-block rule, and it broke Djot's hard-wrap-safe model the moment a
+reference or comment line happened to land under prose. Removing it makes the
+boundary fully symmetric and fully Djot-aligned: visible blocks, list markers,
+and invisible constructs all behave identically, so the rule is simply "a blank
+line starts a block." Add a blank line, or escape a marker (`\# H`), where you
+want a block to start right under prose.
+
+**Two mechanics that look like exceptions but are not §10 interruption.** A
+**caption** (`^ ` line, §4) attaches to a preceding *captionable* block (figure,
+table, block quote, equation); after a plain paragraph it has nothing to attach
+to and folds in as text. A **nested sublist** (an indented marker inside an open
+list item, §24) opens with no blank line. Neither acts on an open paragraph -
+they are separate attachment / nesting mechanisms, not paragraph interruption.
 
 ## What Carve adds on top (not breaks)
 
@@ -242,10 +256,9 @@ Most Djot source needs only mechanical changes:
 3. Replace `+` bullets with `-` or `*`.
 4. `{% comment %}` → `%%`.
 5. Heading anchors are now lowercase - update any hand-written `</#Anchor>` links.
-6. Visible blocks keep Djot's paragraph rule (they fold in under prose), so no
-   change is needed there. The one boundary difference: a trailing definition,
-   comment, block-attribute line, or caption directly under prose ends the
-   paragraph in Carve - add a blank line if you relied on Djot keeping it inline.
+6. Paragraph interruption matches Djot exactly - every block (visible or
+   invisible) and every list marker folds in under prose, so no change is needed
+   there. A blank line starts a block in both languages.
 
 The bundled `markdownToCarve` helper and Djot migration warnings flag most of
 these automatically.

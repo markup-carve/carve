@@ -52,11 +52,13 @@ Text
 Para
 {.class}
 .
-<p>Para</p>
+<p>Para
+{.class}</p>
 ```
 
 ```
 Para
+
 {.class}
 
 Next

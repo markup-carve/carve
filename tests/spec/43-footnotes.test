@@ -18,6 +18,7 @@ Carve has footnotes.[^fn]
 
 ```
 See the note[^m].
+
 [^m]: First line of the note
    and a continuation line.
 .
@@ -35,6 +36,7 @@ and a continuation line.<a href="#fnref1" role="doc-backlink">↩</a></p>
 
 ```
 text
+
 [^f]: note
 .
 <p>text</p>

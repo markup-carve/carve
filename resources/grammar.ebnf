@@ -77,8 +77,9 @@ block = heading
    `comment_line`, `reference_definition`, `footnote_definition` and
    `abbreviation_definition` are the INVISIBLE blocks: they are parsed and
    consumed (collected into the definition table / dropped) and emit no
-   output; like `block_attributes` they also interrupt an open paragraph
-   (PART 9 §10, INVISIBLE CONSTRUCTS). *)
+   output. Like `block_attributes`, they do NOT interrupt an open paragraph:
+   after a prose line with no blank line they FOLD in as literal text, and are
+   recognized as blocks only when a blank line precedes them (PART 9 §10). *)
 
 blank_line = {whitespace}, newline ;
 
@@ -217,9 +218,10 @@ blockquote_line = '>', [' '], inline_content, newline ;
    so the unmarked line is paragraph text and lazily continues the quote. The
    line ENDS the blockquote only when it would END a paragraph under §10:
      - a blank line, OR
-     - an "invisible" reference / footnote / abbreviation definition or comment
-       (parsed OUTSIDE the quote), OR
-     - a caption ('^ ' ...), which attaches to the blockquote instead.
+     - a caption ('^ ' ...), which attaches to the blockquote instead (§4).
+   Invisible constructs (reference / footnote / abbreviation definitions,
+   comments, attribute lines) FOLD into the quoted paragraph too -- they need a
+   blank line like everything else, fully djot-aligned.
    Lazy folding needs an OPEN paragraph to extend: a line landing inside an open
    fenced code block / comment, or after a block that left no open paragraph,
    ends the quote (it is not paragraph text). So "> quoted \n - item" and
@@ -514,16 +516,17 @@ format_name = "html" | "latex" | identifier ;
 raw_content = (* any content until closing fence *) ;
 
 (* --- Paragraphs --- *)
-(* NO VISIBLE block (heading, quote, table, fence, thematic break,
-   admonition/div) interrupts a paragraph -- it FOLDS in as lazy continuation
-   (Djot-like). A LIST marker (bullet OR ordered) folds in the same way; visible
-   blocks and list markers behave identically, so a blank line is required to
-   start any of them after prose. Only INVISIBLE constructs (reference / footnote
-   / abbreviation definitions, comments, block-attribute lines) and a CAPTION
-   still interrupt -- the one deviation from pure djot (see §10). This is the
-   semantic constraint PART 9 §10, not a context-free one. A paragraph is
-   terminated by a blank line, an interrupting (invisible) construct (§10), or
-   end of file -- the optional trailing blank_line here is the paragraph's own
+(* NOTHING interrupts an open paragraph -- fully Djot-aligned. Every block
+   (heading, quote, table, fence, thematic break, admonition/div), every list
+   marker (bullet OR ordered), AND every invisible construct (reference /
+   footnote / abbreviation definitions, comments, block-attribute lines) FOLDS
+   in as lazy continuation when it follows a prose line with no blank line. A
+   blank line is required to start ANY of them after prose. This is ONE rule
+   with zero carve-outs (see §10). Captions (§4) and nested sublists (§24) are
+   NOT exceptions -- they are separate attachment / nesting mechanisms that do
+   not act on an open paragraph. This is the semantic constraint PART 9 §10, not
+   a context-free one. A paragraph is terminated only by a blank line or end of
+   file -- the optional trailing blank_line here is the paragraph's own
    terminator, not a precondition for the NEXT block. *)
 paragraph = inline_content+, [blank_line] ;
 
@@ -1034,8 +1037,9 @@ EOF = (* end of file *) ;
        a `:: ` definition term)
    11. Paragraphs (everything else)
    Recognition order is NOT interruption: which of these may interrupt an
-   open paragraph is PART 9 §10 (no VISIBLE block does -- it folds in; only
-   invisible definitions/comments/block-attribute lines and a caption do).
+   open paragraph is PART 9 §10 (NONE does -- every block, visible or invisible,
+   folds in; a caption attaches via §4 and a nested sublist nests via §24, but
+   neither acts on an open paragraph).
 
    Inline parsing precedence (second pass):
    1. Escaped characters (\x)
@@ -1312,24 +1316,29 @@ EOF = (* end of file *) ;
       interrupt: an image is not a block of its own in Carve, so it stays an
       inline image inside the paragraph.
 
-      INVISIBLE CONSTRUCTS (the only remaining deviation from pure djot). A
-      reference definition (link `[r]: url`, footnote `[^r]: …`, abbreviation
-      `*[A]: …`), a comment (`%%` line, `%%%` block), or a block-attribute line
-      (`{…}` alone on a line, §15) STILL interrupts a paragraph with no blank
-      line: it is parsed and consumed/collected, rather than left as literal
-      text. So "See[^m].\n[^m]: note" resolves the footnote, "para\n%% x" drops
-      the comment, and "Para\n{.x}" ends the paragraph with the attribute line
-      floating forward (§15; corpus 84-block-attribute-lines-7). A CAPTION
-      (`^ ` line, §4) also STILL interrupts, attaching to the preceding block.
-      (Unchanged from the prior rule; the one deliberate deviation from djot,
-      which keeps such a line as paragraph text.)
+      INVISIBLE CONSTRUCTS FOLD TOO -- NO CARVE-OUT (fully djot, the final
+      deviation removed). A reference definition (link `[r]: url`, footnote
+      `[^r]: …`, abbreviation `*[A]: …`), a comment (`%%` line, `%%%` block), and
+      a block-attribute line (`{…}` alone on a line, §15) also FOLD into an open
+      paragraph with no blank line -- left as literal inline text, exactly as in
+      pure djot. A blank line is required to start any of them after prose. So
+      "See[^m].\n[^m]: note" is a SINGLE paragraph -- the "[^m]: note" line is
+      literal text and the footnote does NOT resolve -- while
+      "See[^m].\n\n[^m]: note" resolves it; "para\n%% x" keeps "%% x" as text and
+      "para\n\n%% x" drops the comment; "Para\n{.x}" keeps "{.x}" as text and
+      "Para\n\n{.x}" floats the attribute forward (§15). §10 is now a SINGLE
+      rule: nothing -- visible or invisible -- interrupts an open paragraph.
+
+      NOT §10 CONCERNS -- captions and nesting. A CAPTION (`^ ` line, §4)
+      attaches to a preceding CAPTIONABLE block (figure, table, block quote,
+      equation); after a plain paragraph it has nothing to attach to and folds in
+      as text. A nested sublist (an indented marker inside an OPEN LIST ITEM,
+      §24) opens with no blank line ("- a \n   - b" -> a list whose first item
+      holds a sublist). Neither is an exception to this rule -- they are separate
+      attachment / nesting mechanisms that never act on an open paragraph.
 
       NESTING. Folding applies inside nested content too: a `# H` after a prose
       line in a block quote ("> text \n > # H") folds into the quoted paragraph.
-      An indented sublist still nests with no blank line ("- a \n   - b" -> a
-      list whose first item holds a sublist): that is NOT paragraph interruption
-      -- the marker opens a sublist inside an OPEN LIST ITEM, governed by §24,
-      not by this rule.
 
       "Folds into a paragraph" applies to EVERY open paragraph -- including the
       paragraph inside a blockquote's lazy continuation, so a quote folds the
@@ -1345,8 +1354,11 @@ EOF = (* end of file *) ;
           open quoted paragraph (the quote's paragraph obeys §10 like any other),
           so "> quoted \n - item" and "> quoted \n # H" are each a SINGLE quote.
           A blank line ("> quoted \n\n # H") ends the quote and starts the block.
-          Only an attachment / invisible construct (caption, comment, definition,
-          attribute line) ends the quote with no blank line.
+          Invisible constructs (comment, reference / footnote / abbreviation
+          definition, attribute line) FOLD into the quoted paragraph too -- they
+          need a blank line like everything else. Only a CAPTION (`^ `, §4),
+          which attaches to the captionable quote, ends it with no blank line --
+          an attachment (§4), not a §10 interruption.
 
    11. LIST MARKER CHANGE STARTS A NEW LIST -- NORMATIVE (governs `list`
       in PART 2). §10 decides FIRST whether a sequence of marker lines

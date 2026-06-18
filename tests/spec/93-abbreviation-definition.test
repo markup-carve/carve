@@ -1,7 +1,8 @@
-Abbreviation definition interrupts a paragraph
+Abbreviation definition
 
 ```
 The HTML spec is long.
+
 *[HTML]: HyperText Markup Language
 .
 <p>The <abbr title="HyperText Markup Language">HTML</abbr> spec is long.</p>
