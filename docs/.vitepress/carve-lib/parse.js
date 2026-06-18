@@ -747,18 +747,19 @@ function parseHeading(lexer) {
     const m = RE_HEADING.exec(line);
     const level = m[1].length;
     // Carve headings are multi-line: the text spills onto following lines until a
-    // blank line. A continuation line may carry the same-or-lower number of `#`
-    // (stripped) or none; a higher/other heading marker starts a NEW heading, and
-    // a caption (`^ …`) or fenced comment (`%%%`) ends the heading. A block-opener
-    // (list/quote/table/fence/div/thematic break) ALSO ends it and starts that
-    // block, exactly as it interrupts a paragraph (§10) -- only plain text folds.
+    // blank line. A continuation line may carry the same number of `#` (stripped)
+    // or none; a heading marker with a different count (more OR fewer) starts a
+    // NEW heading, and a caption (`^ …`) or fenced comment (`%%%`) ends the
+    // heading. A block-opener (list/quote/table/fence/div/thematic break) ALSO
+    // ends it and starts that block, exactly as it interrupts a paragraph (§10)
+    // -- only plain text folds.
     let text = line.replace(/^#{1,6}[ \t]+/, '');
-    const sameOrLower = new RegExp(`^#{1,${level}}[ \\t]+(.+)$`);
+    const sameLevel = new RegExp(`^#{${level}}[ \\t]+(.+)$`);
     while (!lexer.eof()) {
         const next = lexer.peek();
         if (next.trim() === '')
             break;
-        const cont = sameOrLower.exec(next);
+        const cont = sameLevel.exec(next);
         if (cont) {
             text += '\n' + cont[1];
             lexer.consume();
@@ -1180,10 +1181,34 @@ function trackBlockQuoteLazyState(content, state) {
         state.paragraphOpen = false;
         return;
     }
+    // A heading, table row, or thematic break is an UNCONDITIONAL paragraph
+    // interrupter (no matching-closer dependency), so it leaves no open trailing
+    // paragraph even directly after quoted prose. A following lazy list marker
+    // then ENDS the quote (it has no paragraph to fold into) -- exactly as
+    // `# h\n- item` is a heading plus a sibling list at the top level, and as
+    // `> a\n> # h\n- item` is a quote (para + heading) plus a sibling list.
+    // Mirrors trackItemLazyState.
+    if (RE_HEADING.test(content) || isTableRow(content) || RE_HR.test(content.trim())) {
+        state.paragraphOpen = false;
+        return;
+    }
+    // The remaining structural openers (fence/comment/div) only start a block
+    // when NO paragraph is already open: Carve has no paragraph-interrupting
+    // block mode, so a fence/comment-looking line WHILE a quoted paragraph is
+    // open is plain paragraph text (e.g. a mid-paragraph ``` is an inline
+    // verbatim run, not a code block).
     if (!state.paragraphOpen) {
         const fence = RE_FENCE.exec(content);
         if (fence) {
             const marker = fence[2];
+            state.inFence = true;
+            state.fenceClose = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
+            state.paragraphOpen = false;
+            return;
+        }
+        const raw = RE_RAW_FENCE.exec(content);
+        if (raw) {
+            const marker = raw[1];
             state.inFence = true;
             state.fenceClose = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
             state.paragraphOpen = false;
@@ -1205,6 +1230,9 @@ function trackBlockQuoteLazyState(content, state) {
             return;
         }
     }
+    // Everything else (plain prose, a folded list-marker line, div body text, or
+    // a fence/comment-looking line while a paragraph is open) leaves an open
+    // paragraph that a following list marker or plain text folds into.
     state.paragraphOpen = true;
 }
 function parseBlockQuote(lexer) {
@@ -1226,20 +1254,59 @@ function parseBlockQuote(lexer) {
             trackBlockQuoteLazyState(content, state);
             continue;
         }
+        // Continuation marker (Carve, PART 9 §17): a lone `+` at column 0 after a
+        // quoted line attaches the FOLLOWING flush-left block to the quote -- the
+        // un-prefixed analogue of the list-item form, so a real block (list, fenced
+        // code, table, ...) can join the quote without repeating `>`. Collect the
+        // block's lines (up to a blank line, a `>` line, or a further `+`) and
+        // splice them into the quote body behind a blank-line separator, so they
+        // parse as their own block instead of folding into the quoted paragraph.
+        if (/^\+[ \t]*$/.test(ln)) {
+            lexer.consume();
+            const attached = [];
+            while (!lexer.eof()) {
+                const next = lexer.peek();
+                if (next.trim() === '' || RE_BLOCKQUOTE.test(next) || /^\+[ \t]*$/.test(next)) {
+                    break;
+                }
+                lexer.consume();
+                attached.push(next);
+            }
+            if (attached.length > 0) {
+                // `inner` always holds the quote's first content line, so a leading
+                // blank separates the attached block from it.
+                inner.push('');
+                for (const attachedLine of attached)
+                    inner.push(attachedLine);
+                inner.push('');
+                // The attached block closed any open paragraph: a following unmarked
+                // line no longer lazily continues the quote.
+                state.paragraphOpen = false;
+            }
+            continue;
+        }
         // Lazy continuation: a non-`>` line folds into the quote ONLY when it is
         // plain text continuing an open paragraph (CommonMark-style; matches
-        // carve-php). A blank line ends the quote. ANY block-opener ends it and
-        // starts that block OUTSIDE the quote, exactly as it interrupts a paragraph
-        // (§10) -- this covers visible blocks (list/quote/table/fence/div/thematic)
-        // and the "invisible" reference/footnote/abbr definitions and comments. A
-        // caption `^ …` attaches to the quote rather than folding in.
+        // carve-php). A blank line ends the quote. A block-opener that INTERRUPTS a
+        // paragraph (§10) ends the quote too and starts that block OUTSIDE it --
+        // this covers visible blocks (heading/quote/table/fence/div/thematic) and
+        // the "invisible" reference/footnote/abbr definitions and comments. A bare
+        // list marker is NOT a paragraph interrupter, so it FOLDS into the quoted
+        // paragraph as literal text instead of ending the quote -- but ONLY when an
+        // open paragraph precedes it (the `paragraphOpen` guard below). When the
+        // last quoted block is a heading/table/fence/thematic break/div (no open
+        // paragraph), a list marker has nothing to fold into and ENDS the quote,
+        // mirroring the top level: `text\n- item` folds, `# h\n- item` is a heading
+        // plus a sibling list. A caption `^ …` attaches to the quote.
         if (ln.trim() === '' ||
             RE_CAPTION.test(ln) ||
-            endsHeadingOrQuote(lexer)) {
+            startsInterruptingBlock(lexer)) {
             break;
         }
         // A non-`>` line inside an open fence/comment, or after a block that left no
-        // open paragraph, terminates the quote instead of being swallowed.
+        // open paragraph (heading/table/fence/thematic/div), terminates the quote
+        // instead of being swallowed. This is also what ends the quote on a lazy
+        // list marker when no open paragraph precedes it.
         if (!state.paragraphOpen)
             break;
         lexer.consume();

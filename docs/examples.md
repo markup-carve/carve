@@ -4354,6 +4354,26 @@ A col-0 line lazily continues the quote whenever it would fold into a paragraph 
 
 :::
 
+The fold needs an open paragraph to fold into. When the last quoted line is a heading (or any block that is not an open paragraph), there is nothing to fold into, so the list marker ends the quote and starts a top-level list — exactly as `# h` then `- item` does at the top level.
+
+::: compare
+
+```carve
+> # h
+- item
+```
+
+```html
+<blockquote>
+  <h1 id="h">h</h1>
+</blockquote>
+<ul>
+  <li>item</li>
+</ul>
+```
+
+:::
+
 ## Fenced code language with punctuation
 
 A language tag may contain punctuation (`c++`, `c#`, `f#`, `asp.net`). The info string is still a single token, so a multiword or quoted info (e.g. `js title="x"`) is not a fence.
@@ -4375,7 +4395,7 @@ int main() {}
 
 ## Multi-line headings
 
-A heading spills onto following lines until a blank line. A continuation line may carry the same-or-lower number of `#` (stripped) or none; a higher/other heading marker starts a new heading, and a caption (`^ …`) or fenced comment (`%%%`) ends it. Only plain text folds in: a block-opener (quote, table, fenced code, `:::` div, thematic break) ends the heading and starts that block. A **list marker — bullet or ordered — ends the heading too** and starts a sibling list. (A list marker folds only into an open *paragraph*, §10; a heading is ended by it, matching djot.) The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
+A heading spills onto following lines until a blank line. Three heading-specific rules: a continuation line carries the **same** number of `#` (stripped) or **none** (djot); a line with a **different** `#` count — more *or* fewer — starts a new heading; and a blank line or a caption (`^ …`, which attaches via §4) ends it. Everything else that ends a heading is *general block structure*, not a heading rule: a heading is a bounded title, so any block-opener (quote, table, fenced code, `:::` div, thematic break, `%%%` comment) ends it and starts that block, and a list marker — with no open paragraph in a title to fold into (§10) — starts a sibling list, exactly as at the top level. The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
 
 ::: compare
 
@@ -4388,6 +4408,28 @@ outside
 <section id="Title-outside">
   <h1>Title
 outside</h1>
+</section>
+```
+
+:::
+
+A continuation line must carry the **same** number of `#` as the opener (or none). A line with a different count starts a new heading: `## still A` folds in, but `# B` (fewer `#`) is a new heading.
+
+::: compare
+
+```carve
+## A
+## still A
+# B
+```
+
+```html
+<section id="A-still-A">
+  <h2>A
+still A</h2>
+</section>
+<section id="B">
+  <h1>B</h1>
 </section>
 ```
 
@@ -5743,6 +5785,52 @@ boundary: a header cell can span into the body rows below, rendering as
     <tr><td>c</td></tr>
   </tbody>
 </table>
+```
+
+:::
+
+## Block-quote continuation marker
+
+The continuation marker generalizes to block quotes (grammar PART 9 §17): a lone `+` at column 0 immediately after a quoted line attaches the following flush-left block to the quote — the un-prefixed analogue of the list-item form, so a real block joins the quote without repeating `>` on every line.
+
+::: compare
+
+```carve
+> quoted
++
+- item
+```
+
+```html
+<blockquote>
+  <p>quoted</p>
+  <ul>
+    <li>item</li>
+  </ul>
+</blockquote>
+```
+
+:::
+
+It only attaches: a blank line still ends the quote and starts a sibling, and a `+` outside any container is literal text. A `>` line after the attached block resumes the quote.
+
+::: compare
+
+```carve
+> quoted
++
+- item
+> more
+```
+
+```html
+<blockquote>
+  <p>quoted</p>
+  <ul>
+    <li>item</li>
+  </ul>
+  <p>more</p>
+</blockquote>
 ```
 
 :::

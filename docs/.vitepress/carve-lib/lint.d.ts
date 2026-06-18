@@ -1,3 +1,4 @@
+import { type AsciiHeadingIdMode } from './heading-ids.js';
 export interface LintWarning {
     /** 1-based line number. */
     line: number;
@@ -22,7 +23,7 @@ export interface LintWarning {
  * changes how heading slugs (and therefore the valid id set) are computed.
  */
 export declare function lintCarve(source: string, opts?: {
-    asciiHeadingIds?: boolean;
+    asciiHeadingIds?: AsciiHeadingIdMode;
     lowercaseHeadingIds?: boolean;
 }): LintWarning[];
 /** Format lint warnings as `file:line:col rule — message`. */

@@ -99,25 +99,26 @@ atx_heading = heading_first_line, {heading_continuation_line} ;
 heading_first_line = heading_marker, space, inline_content, newline ;
 heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
 
-(* MULTI-LINE HEADINGS -- NORMATIVE (like Djot). This heading-continuation
-   boundary is SEPARATE from §10 paragraph interruption: a heading is NOT an
-   open paragraph, so a block-opener or list marker ENDS it (below) even though
-   the same opener would fold into an open paragraph under §10.
-   A heading's text spills onto following lines until a blank
-   line. A continuation line:
-     - may carry SAME-or-LOWER number of `#` markers (stripped) or none,
-       and its text is appended to the heading;
-     - a heading marker with MORE `#` than the open heading starts a NEW
-       heading (ends this one);
-     - a caption (`^ ` ...) or a fenced comment (`%%%`) ends the heading;
-     - a blank line ends it;
-     - a block-opener (quote, table, fenced code, `:::` div, thematic break)
-       ends the heading and starts that block;
-     - a LIST MARKER -- bullet OR ordered -- also ends the heading and starts a
-       sibling list (a list marker folds only into a PARAGRAPH, §10; a heading
-       is ended by it, matching djot).
-   Only PLAIN text folds into the heading. The heading id is derived from the
-   full folded text.
+(* MULTI-LINE HEADINGS -- NORMATIVE (like Djot). A heading's text spills onto
+   following lines until a blank line. There are THREE heading-specific rules:
+     1. CONTINUATION: a following line carries the SAME number of `#` markers
+        (stripped) or NONE, and its text is appended to the heading -- exactly
+        djot ("preceded by the same number of `#` characters ... can also be
+        left off"). A line with a DIFFERENT `#` count (MORE or FEWER) is NOT a
+        continuation: it starts a NEW heading.
+     2. A blank line ends the heading.
+     3. A caption (`^ ` ...) attaches to it (§4) and so ends the text.
+   Everything else that "ends" a heading is NOT a heading rule -- it is the
+   general block structure (a heading is a bounded title, not an open
+   paragraph): any line that begins a block (quote, table, fenced code, `:::`
+   div, thematic break, a `%%%` comment) ends the heading and starts that
+   block, and a LIST MARKER -- with no open paragraph in a title to fold into
+   (§10) -- starts a sibling list. NOTE: under this branch's one-rule §10 a
+   list marker and a visible block FOLD into an open paragraph, but a heading
+   is NOT an open paragraph, so they still end it -- the heading is the one
+   bounded construct where §10 folding does not apply.
+   Only PLAIN text (and a same-`#` marker line) folds into the heading. The
+   heading id is derived from the full folded text.
    NO TRAILING ATTRIBUTES (djot-strict). A heading line carries NO trailing
    `{...}` attribute block: a `{...}` at the end of a heading line is ordinary
    inline content (literal text unless it forms an inline construct), and the
@@ -127,8 +128,8 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    Pinned by corpus 02-headings (the preceding-line and literal-trailing
    pairs). *)
 heading_continuation_line = [heading_marker, space], inline_content, newline ;
-   (* the optional marker must be same-or-lower than the open heading's --
-      see the NORMATIVE note above *)
+   (* the optional marker must be the SAME count as the open heading's (djot);
+      a different count starts a new heading -- see the NORMATIVE note above *)
 
 (* HEADING IDENTIFIERS -- NORMATIVE. A heading without an explicit {#id} gets an
    automatic identifier from its folded plain text (symbols `:name:` and footnote
@@ -228,7 +229,11 @@ blockquote_line = '>', [' '], inline_content, newline ;
    "> quoted \n # H" are a SINGLE quote whose paragraph reads "quoted\n- item" /
    "quoted\n# H"; "> quoted \n\n # H" (blank line) is a quote PLUS a heading. The
    lazy line's text is appended to the blockquote's inner content before
-   block-parsing, so a hard-wrapped quoted paragraph need not repeat '>'. *)
+   block-parsing, so a hard-wrapped quoted paragraph need not repeat '>'.
+   CONTINUATION MARKER (PART 9 §17): to attach a real BLOCK (a list, fenced code,
+   table, ...) to the quote without `>`-prefixing every line, put a lone `+` at
+   column 0 right after a quoted line; the following flush-left block joins the
+   quote body. This is the un-prefixed analogue of the list item's `+`. *)
 lazy_continuation_line = inline_content, newline ;  (* see the NORMATIVE note above for which lines qualify *)
 
 (* --- Lists --- *)
@@ -1348,7 +1353,7 @@ EOF = (* end of file *) ;
         - HEADING CONTINUATION (see `heading`): a block-opener ends an open
           heading; a LIST MARKER -- bullet or ordered -- also ends it and starts
           a sibling list, so "# H \n - item" is a heading PLUS a `<ul>`. Only
-          plain text (and a same/lower `#`) folds into the heading.
+          plain text (and a same-`#` marker line) folds into the heading.
         - BLOCKQUOTE LAZY CONTINUATION (see `blockquote`): NOT a boundary -- a
           col-0 block-opener OR list marker after a quoted line FOLDS into the
           open quoted paragraph (the quote's paragraph obeys §10 like any other),
