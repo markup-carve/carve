@@ -4499,7 +4499,7 @@ code no marker
 
 ## List lazy continuation
 
-A non-indented line that follows a list item folds into the item's lead paragraph when it is plain paragraph text and has no blank line before it. A blank line, or a line that starts a block (heading, blockquote, fenced code, thematic break, table, div, a definition), ends the list instead.
+A non-indented line that follows a list item folds into the item's open lead paragraph (one-rule §10, fully Djot-aligned) — plain paragraph text AND a visible block (heading, block quote, fenced code, thematic break, table row, div) alike, with no blank line before it. A blank line ends the item's paragraph (or a caption, a §4 attachment). A dedented list MARKER still ends the item and starts a sibling list; an indented marker still opens a nested sublist (§24). This matches the top level: `text` followed by `# H` is one paragraph, so `- a` followed by `# H` is one item.
 
 ::: compare
 
@@ -4526,11 +4526,9 @@ lazy</li>
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+# H</li>
 </ul>
-<section id="H">
-  <h1>H</h1>
-</section>
 ```
 
 :::
