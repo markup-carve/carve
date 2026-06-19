@@ -1,0 +1,5 @@
+Smith [@smith2020] and others [see @jones2019, p. 4; -@doe2021] agree.
+
+[@smith2020]: {author="Smith" year="2020"} Smith, J. (2020). *A Study*. Pub.
+[@jones2019]: {author="Jones" year="2019"} Jones, A. (2019). *Notes*. Pub.
+[@doe2021]: {author="Doe" year="2021"} Doe, R. (2021). *Work*. Pub.

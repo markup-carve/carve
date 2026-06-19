@@ -269,6 +269,25 @@ export interface CaptionNumber extends BaseNode {
     /** Assigned during resolve; undefined until then. */
     n?: number;
 }
+/** One citation item inside a citation group. */
+export interface Citation {
+    key: string;
+    /** Inline prefix text before the `@` (e.g. "see "). */
+    prefix?: InlineNode[];
+    /** Inline locator after ", " (e.g. "p. 33"). */
+    locator?: InlineNode[];
+    /** `-@key` suppresses the author in author-date mode. */
+    suppressAuthor: boolean;
+    /** Assigned during resolve (numbered mode); undefined if key undefined. */
+    number?: number;
+}
+/** A `[…@key…]` citation, possibly several `;`-separated items (#90, Tier-2). */
+export interface CitationGroup extends BaseNode {
+    type: 'citation-group';
+    items: Citation[];
+    /** Verbatim source `[…]` for the undefined-key literal fallback. */
+    raw: string;
+}
 export interface Mention extends BaseNode {
     type: 'mention';
     user: string;
@@ -320,6 +339,6 @@ export interface CriticComment extends BaseNode {
     type: 'critic-comment';
     text: string;
 }
-export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | Emoji | AutoLink | CrossRef | CaptionNumber | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment | Comment;
+export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | Emoji | AutoLink | CrossRef | CaptionNumber | CitationGroup | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment | Comment;
 export type AnyNode = Document | BlockNode | InlineNode;
 //# sourceMappingURL=ast.d.ts.map

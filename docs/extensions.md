@@ -24,7 +24,7 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   typography and `@mention` / `#tag` / `:emoji:` parsing are also default-on and
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, emoji glyph map,
-  locale smart-quote sets, bare-URL autolinking.
+  locale smart-quote sets, bare-URL autolinking, and citations (§4).
 - Tier 3 (non-exhaustive): Mermaid, Tabs, CodeGroup, TableOfContents,
   HeadingPermalinks, HeadingLevelShift, ExternalLinks, DefaultAttributes,
   Wikilinks, SemanticSpan, and the opt-in heading-id transforms
@@ -79,3 +79,55 @@ An extension is a named unit contributing any subset of four things, run as:
 - Conformance: Tier-1 = existing corpus (mandatory); Tier-2 =
   `tests/corpus-optional` + `manifest.json`, run per enabled feature; Tier-3 =
   never in any corpus.
+
+## 4. Citations (Tier-2)
+
+Bibliographic references (issue #90). Off by default; enable per processor.
+Grammar: `resources/grammar.ebnf` PART 9 §22. Narrative: `case-study/syntax.md`.
+
+### 4.1 Syntax
+
+- A tail-less `[...]` whose content contains a `@key` is a citation group. A
+  bare `@key` stays a core mention; `\@` is literal.
+- Disambiguation against the inline grammar is by the character after `]`:
+  `(` is a link, `[` a reference link, `{` a span. Only a bracket with none of
+  those tails is claimed. This is exactly the gap core leaves (core declines
+  tail-less brackets), so citations never hijack core syntax.
+- Items are `;`-separated; each is `[prefix] [-] @key [, locator]`. The leading
+  `-` suppresses the author in author-date mode.
+- Definitions are in-document, one per line, footnote-style:
+  `[@key]: {author= year=}? entry`. The optional `{author= year=}` feeds
+  author-date output; its quotes may be straight or smart (the typographic
+  pass runs over entry prose). A leading `@` label is reserved from reference
+  definitions in core (parallels `[^...]:` precedence).
+
+### 4.2 Lifecycle
+
+- **Matcher** (inline): claims `[...@key...]` per the rule above, producing a
+  `citation-group` node carrying its verbatim `raw` source.
+- **afterParse**: collects and removes `[@key]:` definition lines; resets
+  per-document state so a reused extension instance does not leak across runs.
+- **beforeRender**: numbers cited+defined keys in first-citation order and
+  places the references list - into an explicit `::: references` div/admonition
+  if present, else appended at document end.
+- **Renderers**: an inline renderer for `citation-group` (numbered `[1]` or
+  author-date `(Author Year)`) and a block renderer that emits the references
+  list (`<ol class="references">` numbered, sorted `<ul class="references">`
+  author-date).
+
+### 4.3 Conformance (pinned in `tests/corpus-optional`)
+
+- `citations-numbered`, `citations-author-date`: the five forms, the references
+  list, and the `{author= year=}` author-date path.
+- Failure modes are pinned too: a group with any undefined key renders verbatim;
+  `[@k]{...}` is a span, not a citation; a `;` inside a locator falls back to
+  literal text.
+
+### 4.4 Undefined (impls MAY differ; NOT corpus-pinned)
+
+- Same-author-year disambiguation letters (`2020a` / `2020b`) are out of scope
+  for v1; the bare year is emitted.
+- An uncited-but-defined entry is dropped from the references list (no
+  `nocite`-style force-include).
+- External bibliographies (`.bib` / CSL-JSON) and narrative form are future
+  issues, not part of this contract.

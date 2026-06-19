@@ -284,6 +284,32 @@ markup preserved, not the caption prose. Notes:
 - Numbering is independent of referencing: a `#`-caption is numbered whether
   or not anything links to it; an `{#id}` only makes it a target.
 
+#### Citations (Tier-2 extension)
+
+A bracket containing a `@key` is a citation; a bare `@key` stays a mention.
+Define entries in-document, like footnote definitions:
+
+```
+Smith [@smith2020] and others [see @jones2019, p. 4] agree.
+
+[@smith2020]: {author="Smith" year="2020"} Smith, J. (2020). *A Study*. Pub.
+[@jones2019]: {author="Jones" year="2019"} Jones, A. (2019). *Notes*. Pub.
+```
+
+- **Forms:** `[@key]`, `[@key, p. 33]` (locator), `[see @key]` (prefix),
+  `[@a; @b]` (multiple), `[-@key]` (suppress author).
+- **Output** is processor-configured: numbered (default) renders `[1]` with an
+  ordered references list; author-date renders `(Smith 2020)`. The `{author=
+  year=}` attributes feed author-date and are optional for numbered.
+- The references list is appended at the end or injected into a `::: references`
+  block. This is a Tier-2 extension (off by default; enable in your processor).
+- **Disambiguation:** the bracket must be tail-less - `[@k](url)` is a link,
+  `[@k][ref]` a reference link, `[@k]{.c}` a span. A `[@key]` whose key has no
+  definition renders as the verbatim source text (no broken reference).
+- **Out of scope (v1):** same-author-year disambiguation letters (`2020a`) are
+  not generated, and a `;` inside a locator is unsupported. See
+  `../extensions.md` for the normative contract.
+
 #### Wiki-Style Links
 For internal documents, use collapsed reference links:
 ```

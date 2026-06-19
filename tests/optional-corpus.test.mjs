@@ -12,7 +12,7 @@ import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToHtml } from '../docs/.vitepress/carve-lib/index.js'
+import { carveToHtml, citations } from '../docs/.vitepress/carve-lib/index.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus-optional')
@@ -37,6 +37,9 @@ const featureRunners = {
         tada: '🎉',
       },
     }),
+  'citations-numbered': (source) => carveToHtml(source, { extensions: [citations()] }),
+  'citations-author-date': (source) =>
+    carveToHtml(source, { extensions: [citations({ mode: 'author-date' })] }),
 }
 
 for (const entry of manifest.cases) {
