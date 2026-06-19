@@ -2407,7 +2407,15 @@ function parseParagraph(lexer) {
     // paragraph. The first line's stripped width is folded into the inline
     // base position so source offsets/columns stay accurate.
     const firstLead = lines[0].match(/^[ \t]+/)?.[0].length ?? 0;
-    const text = lines.map((ln) => ln.replace(/^[ \t]+/, '')).join('\n');
+    // Strip the trailing whitespace at the very END of the paragraph (the final
+    // line's trailing spaces/tabs, with nothing after them). CommonMark / djot /
+    // carve-php all drop a paragraph's final spaces before inline parsing, so
+    // `abc ` is `<p>abc</p>` and a bare `# ` (not a heading) is `<p>#</p>`.
+    // The `$` anchor (no `m` flag) matches only the very end of the joined text,
+    // so interior trailing whitespace before a soft break (`a  \nb`, which carve
+    // keeps verbatim since two trailing spaces are NOT a hard break here) is left
+    // intact, and a backslash hard break is never affected.
+    const text = lines.map((ln) => ln.replace(/^[ \t]+/, '')).join('\n').replace(/[ \t]+$/, '');
     return {
         type: 'paragraph',
         children: parseInline(text, lexer.abbrDefs, lexer.linkDefs, {

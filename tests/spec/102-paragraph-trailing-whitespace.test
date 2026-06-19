@@ -1,0 +1,7 @@
+Paragraph trailing whitespace
+
+```
+abc 
+.
+<p>abc</p>
+```

@@ -97,6 +97,15 @@ heading = atx_heading ;
 atx_heading = heading_first_line, {heading_continuation_line} ;
 heading_first_line = heading_marker, space, inline_content, newline ;
 heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
+(* COLUMN ZERO -- NORMATIVE. A heading_marker sits at COLUMN 0 of its line (no
+   leading spaces or tabs); carve does NOT accept CommonMark's 0-3 space indent.
+   An indented `#`-line is ordinary paragraph text: "   # H" is <p># H</p>, not
+   a heading. This applies to a continuation line too -- an indented
+   heading_marker is not a continuation marker, so it folds into the heading as
+   literal text rather than being stripped. (Within a container the column is
+   measured after the container's own markers are stripped, e.g. "> # H" is a
+   quoted heading.) Matches Djot (which dropped CommonMark's indent fuzz);
+   pinned by corpus 101-heading-marker-column-zero. *)
 
 (* MULTI-LINE HEADINGS -- NORMATIVE (like Djot). A heading's text spills onto
    following lines until a blank line. There are THREE heading-specific rules:
@@ -528,7 +537,15 @@ raw_content = (* any content until closing fence *) ;
    PART 9 §10, not a context-free one. A paragraph is terminated by a blank
    line, an interrupting block (§10), or end of file -- the optional trailing
    blank_line here is the paragraph's own terminator, not a precondition for
-   the NEXT block. *)
+   the NEXT block.
+   TRAILING WHITESPACE -- NORMATIVE. Whitespace at the END of the paragraph's
+   final line (with nothing after it) is STRIPPED before rendering (CommonMark /
+   Djot: "final spaces are stripped"), so "abc " renders <p>abc</p>, not
+   <p>abc </p>. Only this final trailing whitespace is stripped; whitespace
+   before an INTERIOR line break is governed by the line-break rules (PART 3)
+   and is not touched here. (Carve has no two-trailing-space hard break -- a
+   hard break is the backslash form, `\` + newline; see PART 3.) Pinned by
+   corpus 102-paragraph-trailing-whitespace. *)
 paragraph = inline_content+, [blank_line] ;
 
 
