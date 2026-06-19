@@ -5794,3 +5794,49 @@ It only attaches: a blank line still ends the quote and starts a sibling, and a 
 ```
 
 :::
+
+## Heading marker column zero
+
+A heading marker must sit at column 0; an indented `#`-line is paragraph text — carve does not accept CommonMark's 0-3 space indent. (Within a container the column is measured after the container markers, so `> # H` is still a quoted heading.)
+
+::: compare
+
+```carve
+   # H
+```
+
+```html
+<p># H</p>
+```
+
+:::
+
+An indented marker with more hashes is likewise paragraph text, not a heading.
+
+::: compare
+
+```carve
+  ## H
+```
+
+```html
+<p>## H</p>
+```
+
+:::
+
+## Paragraph trailing whitespace
+
+Whitespace at the end of a paragraph's final line is stripped before rendering (CommonMark / Djot): `abc ` renders without the trailing space. An interior two-space hard break is unaffected.
+
+::: compare
+
+```carve
+abc 
+```
+
+```html
+<p>abc</p>
+```
+
+:::
