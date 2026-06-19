@@ -20,6 +20,30 @@ export function toHtml(source) {
 }
 
 /**
+ * Render with every built-in Carve extension enabled (Mermaid, wikilinks,
+ * autolink, external links, heading permalinks, table of contents, citations,
+ * tab normalization). Lets the WASM engine match an extensions-on host (e.g.
+ * the docs Playground) as closely as carve-rs supports, instead of the
+ * core-only `toHtml`.
+ * @param {string} source
+ * @returns {string}
+ */
+export function toHtmlFull(source) {
+    let deferred2_0;
+    let deferred2_1;
+    try {
+        const ptr0 = passStringToWasm0(source, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.toHtmlFull(ptr0, len0);
+        deferred2_0 = ret[0];
+        deferred2_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
+    } finally {
+        wasm.__wbindgen_free(deferred2_0, deferred2_1, 1);
+    }
+}
+
+/**
  * @returns {string}
  */
 export function version() {

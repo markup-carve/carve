@@ -8,8 +8,9 @@ import { carveExtensions } from '../../carve-extensions.js'
 
 // Render the JS engine with every documented extension enabled, so the demo
 // showcases the full feature set (real Mermaid extension, wikilinks, tabs,
-// TOC, permalinks, citations, …). The Rust/WASM engine renders core only:
-// its `toHtml(source)` entry point takes no extension options.
+// TOC, permalinks, citations, …). The Rust/WASM engine renders the extensions
+// carve-rs ships (via its `toHtmlFull` binding) - most of the same set, minus
+// a few JS-only extensions (tabs, code-group, heading-level-shift, …).
 const JS_EXTENSIONS = carveExtensions()
 // The canonical feature-demo document (also used by the VS Code extension),
 // loaded as raw Carve source via vite-plugin-carve.
@@ -40,7 +41,9 @@ async function ensureWasm(): Promise<void> {
     // @ts-expect-error - vendored WASM glue without TS resolution context
     const mod = await import('../../carve-wasm/carve_wasm.js')
     await mod.default() // instantiate the WASM module (resolves its own .wasm)
-    wasmToHtml = mod.toHtml as (source: string) => string
+    // `toHtmlFull` renders with carve-rs's built-in extensions enabled, to
+    // match the JS engine's extensions-on output as closely as carve-rs allows.
+    wasmToHtml = mod.toHtmlFull as (source: string) => string
     wasmReady.value = true
   } catch (err) {
     wasmError.value = err instanceof Error ? err.message : String(err)

@@ -2,6 +2,7 @@
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
 export const toHtml: (a: number, b: number) => [number, number];
+export const toHtmlFull: (a: number, b: number) => [number, number];
 export const version: () => [number, number];
 export const __wbindgen_externrefs: WebAssembly.Table;
 export const __wbindgen_malloc: (a: number, b: number) => number;
