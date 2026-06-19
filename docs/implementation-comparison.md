@@ -6,23 +6,22 @@ same `.crv` / `.html` pairs and reports default conformance, optional Tier-2
 adapter coverage, rough CLI timing, and the extension hook surface each
 implementation exposes.
 
-## Snapshot (2026-05-31)
+## Snapshot (2026-06-19)
 
-> Historical run from 2026-05-31, when the corpus held 154 pairs. The corpus
-> has since grown (now ~200 pairs); regenerate with `npm run compare:impls`
-> for current figures. The numbers below are from that dated run.
+> Run on 2026-06-19 with all three implementations built from their current
+> `main`. Regenerate any time with `npm run compare:impls`.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>154 / 154</strong>
+    <strong>302 / 302</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>154 / 154</strong>
+    <strong>302 / 302</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>154 / 154</strong>
+    <strong>302 / 302</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -33,11 +32,11 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `07ea8ea` | `154 / 154` | `0` | `0` | `33.83` |
-| JS | `48c45e0` | `154 / 154` | `0` | `0` | `58.92` |
-| PHP | `b1fa677` | `154 / 154` | `0` | `0` | `73.96` |
+| Rust | `dd0f150` | `302 / 302` | `0` | `0` | `23.47` |
+| JS | `f54a860` | `302 / 302` | `0` | `0` | `51.22` |
+| PHP | `b8b3e58` | `302 / 302` | `0` | `0` | `53.20` |
 
-Spec commit: `840b64f`
+Spec commit: `7c41ccc`
 
 ## Optional Tier-2 Profile
 
@@ -54,9 +53,9 @@ reported as skipped, not failures.
 
 | Implementation | Optional pass | Skipped | Mismatches | Errors | Avg CLI ms/file |
 |----------------|---------------|---------|------------|--------|-----------------|
-| Rust | `2 / 2` | `2` | `0` | `0` | `63.93` |
-| JS | `2 / 2` | `2` | `0` | `0` | `94.26` |
-| PHP | `3 / 3` | `1` | `0` | `0` | `103.30` |
+| Rust | `2 / 2` | `2` | `0` | `0` | `24.42` |
+| JS | `2 / 2` | `2` | `0` | `0` | `48.94` |
+| PHP | `3 / 3` | `1` | `0` | `0` | `52.87` |
 
 Optional cross-implementation diffs: `0`
 
@@ -68,18 +67,18 @@ performance, not parser microbenchmarks.
 <div class="impl-chart" aria-label="Average CLI milliseconds per corpus file">
   <div class="impl-chart-row">
     <span>Rust</span>
-    <div><i style="width: 45.7%"></i></div>
-    <code>33.83 ms</code>
+    <div><i style="width: 44.1%"></i></div>
+    <code>23.47 ms</code>
   </div>
   <div class="impl-chart-row">
     <span>JS</span>
-    <div><i style="width: 79.7%"></i></div>
-    <code>58.92 ms</code>
+    <div><i style="width: 96.3%"></i></div>
+    <code>51.22 ms</code>
   </div>
   <div class="impl-chart-row">
     <span>PHP</span>
     <div><i style="width: 100%"></i></div>
-    <code>73.96 ms</code>
+    <code>53.20 ms</code>
   </div>
 </div>
 
@@ -128,10 +127,10 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=154
-rust: pass=154/154 mismatch=0 error=0 skipped=0 avg_ms=33.83
-js: pass=154/154 mismatch=0 error=0 skipped=0 avg_ms=58.92
-php: pass=154/154 mismatch=0 error=0 skipped=0 avg_ms=73.96
+profile=default/no-opt-in corpus=core corpus_pairs=302
+rust: pass=302/302 mismatch=0 error=0 skipped=0 avg_ms=23.47
+js: pass=302/302 mismatch=0 error=0 skipped=0 avg_ms=51.22
+php: pass=302/302 mismatch=0 error=0 skipped=0 avg_ms=53.20
 cross_impl_diffs=0
 
 Extension capability matrix
@@ -146,9 +145,9 @@ Optional raw output:
 ```text
 Implementation summary
 profile=optional/opt-in corpus=optional corpus_pairs=4
-rust: pass=2/2 mismatch=0 error=0 skipped=2 avg_ms=63.93
-js: pass=2/2 mismatch=0 error=0 skipped=2 avg_ms=94.26
-php: pass=3/3 mismatch=0 error=0 skipped=1 avg_ms=103.30
+rust: pass=2/2 mismatch=0 error=0 skipped=2 avg_ms=24.42
+js: pass=2/2 mismatch=0 error=0 skipped=2 avg_ms=48.94
+php: pass=3/3 mismatch=0 error=0 skipped=1 avg_ms=52.87
 cross_impl_diffs=0
 
 Optional feature coverage
