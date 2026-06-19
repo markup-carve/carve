@@ -27,6 +27,24 @@ fence / `:::` opener uses a bounded forward scan for a matching closer
 (both bullet and ordered) deliberately never interrupt a paragraph - a list
 needs a blank line (no CommonMark `1.`-only heuristic).
 
+### Paragraph interruption, by rule count
+
+How many distinct rules an author has to remember for "when does a block break
+an open paragraph without a blank line". Fewer and more regular is easier to
+learn and harder to get wrong. (Counts are author-facing rules, not formal
+grammar productions, so they are approximate - the point is the regularity.)
+
+| Model | Interruption rules |
+|---|---|
+| Markdown (CommonMark) | ~8–10, irregular - setext underline, ordered list only if it starts with `1`, indented code *can't* interrupt, HTML-block type 7 *can't*, bullet only if the first item is non-empty, … |
+| MDX | inherits Markdown's (~8–10), plus JSX block handling |
+| Djot | **1** - nothing interrupts; a blank line precedes every block |
+| **Carve** | **3** - visible block-openers interrupt (heading, quote, table row, open fence, thematic break); list markers fold (never interrupt); fence / `:::` closers and bare images don't interrupt |
+
+Carve trades Djot's single uniform rule for Markdown familiarity on the common
+blocks, but keeps it to three regular rules instead of CommonMark's pile of
+special cases.
+
 ## Authoring features
 
 | | Markdown | Djot | MDX | **Carve** |
@@ -48,7 +66,7 @@ needs a blank line (no CommonMark `1.`-only heuristic).
 
 | | Markdown | Djot | MDX | **Carve** |
 |---|:---:|:---:|:---:|:---:|
-| Automatic heading ids | ⚠️ tooling | ✅ | 🧩 | ✅ lowercase, GitHub-style |
+| Automatic heading ids | ⚠️ tooling | ✅ | 🧩 | ✅ case-preserving, case-insensitive refs |
 | Cross-references `</#id>` | ❌ | ❌ | ❌ | ✅ |
 | Implicit heading refs `[Heading][]` | 🧩 (Obsidian uses `[[…]]`) | ❌ | ❌ | ✅ |
 
@@ -71,5 +89,5 @@ needs a blank line (no CommonMark `1.`-only heuristic).
 ::: info Want the full reasoning?
 See [Technical Rationale](/technical-rationale) for the parser contract and
 [Divergence from Djot](/divergence-from-djot) for the specific design calls
-(lowercase heading ids, content-required list markers, the `+` continuation marker).
+(case-preserving heading ids, content-required list markers, the `+` continuation marker).
 :::
