@@ -689,8 +689,13 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
 link_title = space, ('"', {character - '"'}, '"')
            | space, ("'", {character - "'"}, "'") ;
 
-reference_label = {character - ']'}+ ;
+reference_label = (character - ']' - '@'), {character - ']'} ;
 reference_definition = '[', reference_label, ']', ':', space, link_destination, [link_title], newline ;
+(* A leading `@` is reserved: `[@key]: ...` is never a reference definition, it
+   is a citation definition (PART 9 §22, Tier-2). This parallels the `[^...]:`
+   footnote-definition precedence and holds in core whether or not the citation
+   extension is enabled, so a short entry like `[@a]: A.` is not mis-claimed as
+   a link definition. *)
 
 (* --- Inline Spans --- *)
 (* A bracketed inline run immediately followed by an attribute block
@@ -866,6 +871,36 @@ footnote_definition = "[^", footnote_label, "]:", space, inline_content, newline
 
 (* DEFERRED (reserved, not implemented):
    sidenote = "[>", inline_content, ']' ; *)
+
+(* --- Citations (PART 9 §22, Tier-2 extension; issue #90) --- *)
+(* TIER-2, OFF BY DEFAULT. A `[...]` whose content contains a `@key` and which
+   has NO link/ref/span tail (`(url)` / `[ref]` / `{attrs}`) is a citation.
+   Bare `@key` stays a mention (PART 19); `\@` is literal. Items are
+   `;`-separated; each is `[prefix] [-] @key [, locator]` (`-` suppresses the
+   author in author-date mode). Bibliography entries are defined in-document:
+   `[@key]: {author= year=}? entry` (the `{…}` is optional, feeds author-date;
+   a leading `@` label is reserved here, never a link definition - see
+   reference_definition). Numbered output (default) emits `[1]` + an ordered
+   references list; author-date (configuration) emits `(Author Year)` + an
+   alphabetical list. The references list is appended at document end or
+   injected into a `::: references` block.
+   Undefined behavior (impls MAY differ, NOT corpus-pinned): same-author-year
+   disambiguation letters (e.g. `2020a` / `2020b`) are out of scope for v1 -
+   the bare year is emitted. A `;` inside a locator is not supported (it splits
+   items); such a bracket falls back to literal text.
+   Failure-mode handling IS pinned (tests/corpus-optional): a group with any
+   undefined key renders the verbatim source; a `[@k]{...}` is a span, not a
+   citation; a `[@k, a; b]` with a `;` in the locator is literal text.
+   Pinned in tests/corpus-optional (features citations-numbered /
+   citations-author-date and the failure-mode cases). *)
+citation_group = '[', citation_item, {';', citation_item}, ']' ;
+citation_item = [inline_content], ['-'], '@', citation_key, [',', space, inline_content] ;
+citation_key = (letter | digit | '_'), {citation_key_char} ;
+(* Pandoc-compatible key charset (carve-js `KEY`): after the first char, any of
+   these internal punctuation marks are allowed. *)
+citation_key_char = letter | digit | '_' | ':' | '.' | '#' | '$' | '%' | '&'
+                  | '+' | '?' | '<' | '>' | '~' | '/' | '-' ;
+citation_definition = '[@', citation_key, "]:", space, [attributes], inline_content, newline ;
 
 (* --- Extensions --- *)
 extension_inline = ':', extension_name, '[', extension_content, ']', [attributes] ;

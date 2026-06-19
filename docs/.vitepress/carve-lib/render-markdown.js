@@ -237,6 +237,9 @@ function renderInline(node, ctx) {
             return `</#${node.target}>`;
         case 'caption-number':
             return node.n === undefined ? '#' : String(node.n);
+        case 'citation-group':
+            // Tier-2 ext node; the core renderer has no numbering, so emit the source.
+            return node.raw;
         case 'comment':
             return '';
         default: {

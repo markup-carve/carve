@@ -20,6 +20,31 @@
       "slug": "04-bare-url-autolink",
       "feature": "bare-url-autolink",
       "description": "Bare URLs become links when autolinking is explicitly enabled."
+    },
+    {
+      "slug": "05-citations-numbered",
+      "feature": "citations-numbered",
+      "description": "Bracketed [@key] citations with numbered output and a references list."
+    },
+    {
+      "slug": "06-citations-author-date",
+      "feature": "citations-author-date",
+      "description": "Bracketed [@key] citations with author-date output and a sorted references list."
+    },
+    {
+      "slug": "07-citations-undefined-key",
+      "feature": "citations-numbered",
+      "description": "An undefined citation key renders as the verbatim source; defined keys still resolve."
+    },
+    {
+      "slug": "08-citations-attr-span",
+      "feature": "citations-numbered",
+      "description": "A [@key]{.attr} bracket is a span, not a citation (tail disambiguation)."
+    },
+    {
+      "slug": "09-citations-locator-semicolon",
+      "feature": "citations-numbered",
+      "description": "A semicolon inside a locator falls back to literal text (not a citation)."
     }
   ]
 }

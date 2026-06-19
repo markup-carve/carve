@@ -886,6 +886,29 @@ function renderInline(node, opts) {
         case 'caption-number':
             // Filled by resolve(); an unresolved placeholder renders empty.
             return node.n === undefined ? '' : String(node.n);
+        case 'citation-group': {
+            // Extension-produced node: delegate to registered inline renderers in
+            // order; each may return undefined to defer to the next (mirrors the
+            // block-renderer dispatch). Fall back to the verbatim source.
+            const inlineRenderers = opts.extensions?.flatMap((e) => {
+                const fn = e.inlineRenderers?.[node.type];
+                return fn ? [fn] : [];
+            });
+            if (inlineRenderers && inlineRenderers.length) {
+                const ctx = {
+                    renderInlines: (nodes) => renderInlines(nodes, opts),
+                    escapeHtml,
+                    escapeAttr,
+                    renderAttrs,
+                };
+                for (const r of inlineRenderers) {
+                    const out = r(node, ctx);
+                    if (out !== undefined)
+                        return out;
+                }
+            }
+            return escapeHtml(node.raw);
+        }
         case 'comment':
             // Comments are not rendered (§4.13); inline form mirrors the block one.
             return '';

@@ -94,7 +94,9 @@ const RE_ABBR_DEF = /^\*\[([A-Z][A-Z0-9]*)\]:\s+(.+)$/;
 // styles). The destination is a bare token; an angle-bracketed `<url>`
 // is the separate `autolink` production, not a ref-def destination
 // (grammar.ebnf:243,251), so it is intentionally not accepted here.
-const RE_LINK_DEF = /^\s*\[([^\]]+)\]:\s+(\S+)(?:\s+(?:"([^"]*)"|'([^']*)'))?\s*$/;
+// A leading `@` label is reserved for citation defs (`[@key]: entry`, #90),
+// handled by the citations extension — never a link destination.
+const RE_LINK_DEF = /^\s*\[(?!@)([^\]]+)\]:\s+(\S+)(?:\s+(?:"([^"]*)"|'([^']*)'))?\s*$/;
 // Footnote definition `[^label]: body`. Tested before RE_LINK_DEF, which
 // would otherwise capture `^label` as a link reference label.
 const RE_FOOTNOTE_DEF = /^\[\^([^\]]+)\]:\s+(.+)$/;
