@@ -41,11 +41,10 @@ See </#my-api-reference>  →  resolves to href="#My-API-Reference",
                               link text cloned from the heading
 ```
 
-**Why.** Earlier versions of Carve lowercased ids by default to make references
-case-insensitive. That worked, but it forced a Unicode case-folding step into
-every implementation (and the wrong whole-string variant even differed on Greek
-final-sigma). Folding at *resolution* time instead keeps the emitted id
-djot-shaped and the slug algorithm zero-dependency, while still letting authors
+**Why.** Case-preserving ids need no Unicode case-folding in the slug, so the
+algorithm stays zero-dependency and byte-identical across implementations (a
+whole-string lowercase would even diverge on Greek final-sigma). Folding at
+*resolution* time keeps the emitted id Djot-shaped while still letting authors
 write references in whatever case they like.
 
 **Opt-in transforms.** GitHub/SSG-style lowercase anchors and share-safe
@@ -241,7 +240,10 @@ Most Djot source needs only mechanical changes:
    native.
 3. Replace `+` bullets with `-` or `*`.
 4. `{% comment %}` → `%%`.
-5. Heading anchors are now lowercase - update any hand-written `</#Anchor>` links.
+5. Heading anchors are case-preserving (Djot-shaped), so hand-written
+   `</#Anchor>` links work as written - cross-references resolve
+   case-insensitively. For lowercase anchors, enable the opt-in
+   `lowercaseHeadingIds` transform.
 6. A marker line (`- `, `> `, `# `, a table row, a fence) directly under a line
    of prose now starts a block. Where you relied on Djot keeping it in the
    paragraph, add a blank line or escape the marker.

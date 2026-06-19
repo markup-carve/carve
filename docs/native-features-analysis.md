@@ -211,7 +211,7 @@ feature-level boundary.
   (`<url>` / `<email>`), images, spans (§14), math (djot form, §18), footnotes
   (reference form, §16), abbreviations, editorial markup, crossrefs
   (`</#id>`, markup-preserving §19), hard/soft breaks.
-- **Semantics:** automatic heading ids (jgm/djot#393 run-replacement, lowercased, non-ASCII preserved; opt-in ASCII fold), id de-duplication,
+- **Semantics:** automatic heading ids (jgm/djot#393 run-replacement, case-preserving, non-ASCII preserved, smart typography reversed to ASCII before slugging; opt-in lowercase and opt-in ASCII fold; cross-references resolve case-insensitively), id de-duplication,
   order-independent reference/abbreviation/footnote resolution.
 
 ### SHOULD / configurable (on by default, a processor MAY disable)

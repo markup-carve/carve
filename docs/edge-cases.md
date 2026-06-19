@@ -506,9 +506,10 @@ continuation. While a heading is open:
 
 - a plain text line **folds into the heading text** (it does *not* start a
   paragraph);
-- a continuation line with the **same or fewer** `#` markers folds in (markers
-  stripped);
-- a marker with **more** `#` than the open heading starts a *new* heading;
+- a continuation line with the **same** number of `#` markers (or none) folds in
+  (markers stripped);
+- a marker with a **different** number of `#` than the open heading - more *or
+  fewer* - starts a *new* heading;
 - a blank line, a caption (`^ `), or a fenced comment (`%%%`) ends it;
 - a **block-opener** (blockquote, table, fence, `:::` div, thematic break)
   **ends** the heading and starts that block;

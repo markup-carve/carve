@@ -107,7 +107,14 @@ const impls = [
       }
       return null
     },
-    hooks: ['afterParse', 'beforeRender', 'inline extension renderer'],
+    hooks: [
+      'inline matcher',
+      'block matcher',
+      'afterParse',
+      'beforeRender',
+      'inline extension renderer',
+      'block extension renderer',
+    ],
   },
   {
     name: 'php',

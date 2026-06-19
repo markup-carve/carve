@@ -25,8 +25,10 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, emoji glyph map,
   locale smart-quote sets, bare-URL autolinking.
-- Tier 3: Mermaid, Tabs, CodeGroup, TableOfContents, HeadingPermalinks,
-  HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks, SemanticSpan.
+- Tier 3 (non-exhaustive): Mermaid, Tabs, CodeGroup, TableOfContents,
+  HeadingPermalinks, HeadingLevelShift, ExternalLinks, DefaultAttributes,
+  Wikilinks, SemanticSpan, and the opt-in heading-id transforms
+  (LowercaseHeadingIds, AsciiHeadingIds).
 
 Inline and sidenote footnotes are **not** Tier 3. They are deferred core
 reserved syntax (`[^…]` inline, `[>…]` sidenote; `resources/grammar.ebnf`

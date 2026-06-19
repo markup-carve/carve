@@ -142,20 +142,25 @@ heading_continuation_line = [heading_marker, space], inline_content, newline ;
 (* HEADING IDENTIFIERS -- NORMATIVE. A heading without an explicit {#id} gets an
    automatic identifier from its folded plain text (symbols `:name:` and footnote
    references excluded), GitHub/SSG-style:
+     - reverse smart-typography output to its ASCII source first, so the id does
+       not depend on presentation (`Don’t` -> `Don-t`, `Step 1 → 2` -> `Step-1-2`);
      - replace each maximal run of non-alphanumeric ASCII characters with a single
        `-` (covers spaces, punctuation, `_`, and runs of `-`) -- the jgm/djot#393 rule;
      - trim leading/trailing `-`;
-     - LOWERCASE (Unicode-aware): NON-ASCII characters are PRESERVED, only their case
-       is folded (`Café` -> `café`, `日本語` unchanged). Lowercasing makes ids and the
-       common cross-reference case-insensitive, matching author expectation;
+     - PRESERVE CASE (Unicode-aware): NON-ASCII characters AND letter case pass
+       through unchanged (`Café` -> `Café`, `日本語` unchanged). NO Unicode
+       normalization (NFC) is applied, so the slug needs no Unicode tables and is
+       byte-identical across implementations;
      - a leading-digit result is prefixed `s-` (a bare leading digit is a valid HTML
        id but an invalid CSS selector); an empty result becomes a generated `s-N`;
      - duplicates within a document get a numeric `-2`, `-3`, ... suffix.
-   An explicit {#id} is used verbatim (case preserved). Implementations MAY offer an
-   OPT-IN mode that ASCII-folds the identifier for URL/CSS-fragment portability
-   (carve-js `asciiHeadingIds` parse option; carve-php `AsciiHeadingIdsExtension`);
-   ASCII folding is never the default. NOTE: carve lowercases by design, deliberately
-   diverging from djot.js / djot-php which preserve case per #393. *)
+   An explicit {#id} is used verbatim (case preserved). Implementations MAY offer
+   OPT-IN, orthogonal transforms: lowercasing (carve-js `lowercaseHeadingIds`;
+   carve-php `LowercaseHeadingIdsExtension`; carve-rs `lowercase_heading_ids`) and
+   ASCII-folding for URL/CSS-fragment portability (carve-js `asciiHeadingIds`;
+   carve-php `AsciiHeadingIdsExtension`; not available in carve-rs). Neither is the
+   default. NOTE: carve PRESERVES case, matching djot.js / djot-php per #393;
+   cross-references resolve case-insensitively against the case-preserved id table. *)
 
 (* --- Thematic Breaks --- *)
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
@@ -706,10 +711,12 @@ email_autolink = {email_char}+, '@', {email_char}+, '.', {letter}+ ;
 auto_text_link = "</#", crossref_id, '>' ;  (* cross-reference with auto text *)
 crossref_id = {character - ('>' | whitespace | newline)}+ ;
 (* The crossref id token accepts NON-ASCII characters: automatic heading ids
-   PRESERVE Unicode (`# Café Notes` -> `café-notes`), so `</#café-notes>`
-   must be writable. Resolution is exact (case-sensitive against the id
-   table); an ASCII-folded spelling of a Unicode id does NOT resolve
-   (corpus 19-heading-ids). EXPLICIT ids (`{#id}`) remain ASCII
+   PRESERVE Unicode and case (`# Café Notes` -> `Café-Notes`), so `</#Café-Notes>`
+   must be writable. Resolution is CASE-INSENSITIVE: the reference is folded and
+   matched against the case-preserved id table, then the link emits the target's
+   actual id (`</#café-notes>` resolves to `Café-Notes`). Matching is NOT
+   ASCII-folded, so an ASCII spelling of a non-ASCII id (`cafe` vs `Café`) does
+   NOT resolve (corpus 19-heading-ids). EXPLICIT ids (`{#id}`) remain ASCII
    `identifier`s -- the asymmetry is deliberate: authors control explicit
    ids, auto ids follow the heading text. *)
 

@@ -91,12 +91,12 @@ available in each implementation today.
 
 | Capability | Rust | JS | PHP |
 |------------|------|----|-----|
-| Inline matcher | yes | no | yes |
-| Block matcher | yes | no | yes |
+| Inline matcher | yes | yes | yes |
+| Block matcher | yes | yes | yes |
 | After-parse transform | yes | yes | yes |
 | Before-render transform | yes | yes | yes |
 | Inline extension renderer | yes | yes | yes |
-| Block extension renderer / render listener | yes | no | yes |
+| Block extension renderer / render listener | yes | yes | yes |
 | Converter-level registration | no | no | yes |
 
 ## Running It
@@ -136,7 +136,7 @@ cross_impl_diffs=0
 
 Extension capability matrix
 rust: inline matcher, block matcher, after_parse, before_render, inline extension renderer, block extension renderer
-js: afterParse, beforeRender, inline extension renderer
+js: inline matcher, block matcher, afterParse, beforeRender, inline extension renderer, block extension renderer
 php: inline matcher, block matcher, parsed-document hook, before-render hook, render listeners, converter registration
 extension_profile_note=this run compares default/no-opt-in output. Use --corpus=optional for Tier-2 opt-in adapters.
 ```
