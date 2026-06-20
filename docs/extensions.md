@@ -28,7 +28,10 @@ core-and-default-on everywhere and its default output is corpus-pinned.
 - Tier 3 (non-exhaustive): Mermaid, MathBlock (a ` ```math ` fenced block →
   `<div class="math display">`, the GFM-style block form of Carve's `$…$`
   math), ListTable (a `::: list-table` div whose nested list renders as a real
-  HTML `<table>`; carve-php only), Tabs, CodeGroup, Details, TableOfContents,
+  HTML `<table>`, so cells can hold block content the pipe-table syntax cannot;
+  `{header-rows}` / `{header-cols}` take a count or the boolean first-row/column
+  form, and `^` / `<` give pipe-table-parity rowspan / colspan; in carve-php,
+  carve-js and carve-rs), Tabs, CodeGroup, Details, TableOfContents,
   HeadingPermalinks,
   HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks, SemanticSpan,
   and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
