@@ -25,7 +25,12 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, emoji glyph map,
   locale smart-quote sets, bare-URL autolinking, and citations (§4).
-- Tier 3 (non-exhaustive): Mermaid, MathBlock (a ` ```math ` fenced block →
+- Tier 3 (non-exhaustive): Mermaid, FencedRender (the generic client-rendered
+  fenced-block factory Mermaid is a preset of - claims a fenced block by
+  language word and emits one hydration element; text mode → `<pre class="X">`,
+  json mode → `<div class="X"><script type="application/json">`; presets for
+  d2 / graphviz / wavedrom / abc / vega-lite / chart; in carve-php, carve-js and
+  carve-rs), MathBlock (a ` ```math ` fenced block →
   `<div class="math display">`, the GFM-style block form of Carve's `$…$`
   math), ListTable (a `::: list-table` div whose nested list renders as a real
   HTML `<table>`, so cells can hold block content the pipe-table syntax cannot;
@@ -218,3 +223,56 @@ no-cell-row defer, and the thead/tbody rowspan clamp).
 - Deeply ambiguous overlapping-span soup (a marker glued to another, or a `^`
   inside the interior of an existing merged rectangle) resolves however the
   native pipe-table grid walk resolves it; not pinned.
+
+## 6. FencedRender (Tier-3)
+
+A generic client-rendered fenced-block factory (issue #167). One configurable
+extension claims fenced code blocks by language word and emits a single
+hydration element; the body is passed through verbatim (no Carve parsing).
+Mermaid is one preset of it. Shipped in carve-php, carve-js, and carve-rs; off
+by default, enable per processor.
+
+### 6.1 Configuration
+
+- `language` (string or list, required): the fence info word(s) claimed.
+- `cssClass` (default: first language word): class on the output element.
+- `tag` (default: `div` in json mode, else `pre`): wrapper element.
+- `contentMode` (`text` | `json`, default `text`).
+- `wrapInFigure` / `figureClass`: optional `<figure class="{cssClass}-figure">`
+  wrapper.
+
+### 6.2 Content modes
+
+- **text** (Mermaid, D2, Graphviz, WaveDrom, ABC): the body is HTML-escaped (`&`
+  and `<`), but `>` is preserved so arrow syntax (`-->`) survives.
+  ` ```d2 ` `a -> b` → `<pre class="d2">a -> b</pre>`.
+- **json** (Vega-Lite, Chart.js): the body is emitted verbatim inside a
+  `<script type="application/json">`, with `</` rewritten to `<\/` so it cannot
+  close the script element early (byte-equivalent JSON).
+  ` ```vega-lite ` `{"mark":"bar"}` →
+  `<div class="vega-lite"><script type="application/json">{"mark":"bar"}</script></div>`.
+
+### 6.3 Attributes & safety
+
+Author attributes on the fence are copied onto the wrapper, then hardened the
+same way the core renderer hardens every element: event handlers (`on*`),
+`srcdoc`, `formaction` are stripped and dangerous URL / `expression()` values
+neutralized, regardless of safe mode; values are HTML-escaped. So a
+`{onclick="…"}` on a claimed fence can never reach the output. Mermaid, a text
+preset, keeps its historical output unchanged.
+
+### 6.4 Conformance (NOT corpus-pinned)
+
+Tier-3, so not in the mandatory corpus. The parity bar is per-impl test suites
+asserting the same output for a fixed configuration (text/json modes, the
+presets, the `</` guard, attribute hardening, and deferral of an unclaimed
+language). Attribute-ordering edge cases follow each impl's core attribute
+serialization (see the MathBlock note in §1) and are not pinned.
+
+### 6.5 Out of scope (impls MAY differ)
+
+- Server-rendered libraries (PlantUML, Graphviz-server, Ditaa) need a render
+  callback / external infra; a future `render: (body) => html` hook is a
+  separate proposal, not part of this contract.
+- Round-trip (`HtmlToCarve`) of a rendered hydration element is out of scope; a
+  `<pre class="d2">` carries no Carve-specific marker to reverse.
