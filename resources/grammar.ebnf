@@ -325,6 +325,16 @@ indent = whitespace, {whitespace} ;
 (* Indentation is measured in VISUAL COLUMNS (a tab advances to the next
    multiple of 4 -- CommonMark tab stops); how much indent nests what is NOT
    a fixed character count -- the content-column rules are PART 9 §24. *)
+(* MARKER-LINE NESTED LIST -- NORMATIVE. A sub-list whose first marker sits on
+   the PARENT item's marker line (`- - A`) is an ordinary persistent nested_list,
+   identical to writing the sub-marker on its own indented line. It is NOT a
+   one-off lone item: following markers at the sub-list's content column MERGE
+   into the same nested list, and a post-blank block indented to that column is
+   ABSORBED into the open nested item as a lazy continuation. This matches
+   reference djot.js (`@djot/djot`) and CommonMark. It CORRECTS a narrower
+   reading carve inherited from djot-php (which did not persist the nested list);
+   it is a bug fix, NOT a carve divergence. Pinned by corpus
+   marker-line-nested-lists. *)
 (* Continuation marker (Carve addition; see PART 9 §17): a lone `+` at the
    current container's marker column attaches the following flush-left block to
    that container -- a list item OR a block quote -- with no blank line, marker

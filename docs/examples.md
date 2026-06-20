@@ -5840,3 +5840,57 @@ abc
 ```
 
 :::
+
+## Marker-line nested lists
+
+A sub-list opened on a parent item's marker line (`- - A`) is an ordinary persistent nested list, exactly as if the sub-marker sat on its own indented line. It is not a one-off lone item. This matches reference djot.js (`@djot/djot`) and CommonMark; carve previously inherited a narrower reading from djot-php that did not persist the nested list.
+
+Following markers at the sub-list's indent merge into the same nested list, so `- - A` then `  - B` and `  - C` yields one list with three items.
+
+::: compare
+
+```carve
+- - A
+  - B
+  - C
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>A</li>
+      <li>B</li>
+      <li>C</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+A blank line followed by a block indented to the sub-list's content column is absorbed into the open nested item, just like any list item's lazy continuation. Here the first sub-item gains a second paragraph and the list is loose.
+
+::: compare
+
+```carve
+- - A
+
+    second
+  - B
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li><p>A</p>
+        <p>second</p>
+      </li>
+      <li><p>B</p></li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
