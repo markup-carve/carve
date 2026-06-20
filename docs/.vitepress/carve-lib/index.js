@@ -31,6 +31,7 @@ export { markdownToCarve } from './markdown-migrate.js';
 export { lintCarve, formatLintWarnings, } from './lint.js';
 export { tabNormalize } from './tab-normalize.js';
 export { details } from './details.js';
+export { listTable } from './list-table.js';
 export { citations } from './citations.js';
 export { mermaid } from './mermaid.js';
 export { mathBlock } from './math-block.js';
