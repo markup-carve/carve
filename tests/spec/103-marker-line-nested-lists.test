@@ -1,0 +1,35 @@
+Marker-line nested lists
+
+```
+- - A
+  - B
+  - C
+.
+<ul>
+  <li>
+    <ul>
+      <li>A</li>
+      <li>B</li>
+      <li>C</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- - A
+
+    second
+  - B
+.
+<ul>
+  <li>
+    <ul>
+      <li><p>A</p>
+        <p>second</p>
+      </li>
+      <li><p>B</p></li>
+    </ul>
+  </li>
+</ul>
+```
