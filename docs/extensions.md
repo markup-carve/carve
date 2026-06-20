@@ -27,7 +27,9 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   locale smart-quote sets, bare-URL autolinking, and citations (§4).
 - Tier 3 (non-exhaustive): Mermaid, MathBlock (a ` ```math ` fenced block →
   `<div class="math display">`, the GFM-style block form of Carve's `$…$`
-  math), Tabs, CodeGroup, Details, TableOfContents, HeadingPermalinks,
+  math), ListTable (a `::: list-table` div whose nested list renders as a real
+  HTML `<table>`; carve-php only), Tabs, CodeGroup, Details, TableOfContents,
+  HeadingPermalinks,
   HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks, SemanticSpan,
   and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
 
