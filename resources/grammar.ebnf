@@ -1205,11 +1205,34 @@ EOF = (* end of file *) ;
         NOT a colspan marker -- it is an ordinary cell whose literal text is
         `{.x} <`. (So a leading attribute block does not attach to a span
         marker; there is no such thing as an attributed span marker.)
-      - SPAN MARKER WITH NOTHING TO MERGE (NORMATIVE): a rowspan `^` in the
-        FIRST row, or a colspan `<` in the FIRST column, has no cell above /
-        to its left to extend. Such a marker renders as an EMPTY cell (a
-        `<td></td>` / `<th></th>` carrying no content and no span), rather than
-        being dropped. (corpus 96-table-span-marker-in-first-column.)
+      - SPAN MARKER WITH NO VALID ORIGIN (NORMATIVE): a span marker merges into
+        the nearest still-available origin -- a rowspan `^` walks UP its column,
+        a colspan `<` walks LEFT along its row, skipping over cells already
+        consumed by another span until it reaches an available cell to extend.
+        When that walk finds no available cell at all -- it runs off the edge of
+        the table without ever reaching one -- the marker renders as an EMPTY
+        cell (a `<td></td>` / `<th></th>` carrying no content and no span); it is
+        never dropped and never left literal. This covers, uniformly, every
+        degenerate marker:
+          * ORPHAN -- a `^` in the FIRST row, or a `<` in the FIRST column, has
+            no cell above / to its left at all, so the walk runs straight off the
+            edge. (corpus 96-table-span-marker-in-first-column.)
+          * BLOCKED -- every cell between the marker and the edge is already
+            consumed by another span, so the walk skips all of them and runs off
+            the edge with no available origin. For example a `<` in the second
+            column whose only left neighbor (the first column) is occupied by a
+            rowspan reaching down from a row above has nothing left to merge and
+            becomes an empty cell. (A `<` that, after skipping a consumed
+            neighbor, still reaches an available cell farther along DOES extend
+            that cell -- it is not blocked.)
+            (corpus 104-blocked-span-marker-renders-as-empty-cell.)
+        The same walk governs rowspans: a `^` whose entire column up to the top
+        edge is consumed by other spans reaches no available origin and renders
+        as an empty cell, exactly like a BLOCKED `<`. A `^` that DOES reach an
+        available cell above still extends it -- including a HEADER cell, whose
+        rowspan crosses the thead/tbody boundary (see HEADER CELL ROWSPAN below);
+        such a header origin is reachable, not suppressed, so it is not a
+        degenerate marker.
       - HEADER CELL ROWSPAN (NORMATIVE): a rowspan `^` extends the cell directly
         above it even when that cell is a HEADER cell -- the rowspan crosses the
         header/body boundary, so a header cell can carry a `rowspan` that spans

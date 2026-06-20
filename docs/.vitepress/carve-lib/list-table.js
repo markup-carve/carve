@@ -97,8 +97,8 @@ function renderListTable(node, ctx) {
         if (cells.length === 0)
             return null;
     }
-    const headerRows = Math.max(0, toInt(node.attrs?.keyValues?.['header-rows']));
-    const headerCols = Math.max(0, toInt(node.attrs?.keyValues?.['header-cols']));
+    const headerRows = headerCount(node.attrs?.keyValues?.['header-rows']);
+    const headerCols = headerCount(node.attrs?.keyValues?.['header-cols']);
     // Resolve `^`/`<` span markers into a positional grid, mirroring carve-js's
     // pipe-table span model (render-html `renderTable`) so the output is identical
     // to the equivalent pipe table. The header-row count clamps rowspans at the
@@ -444,6 +444,22 @@ function toInt(value) {
         return 0;
     const n = parseInt(value, 10);
     return Number.isNaN(n) ? 0 : n;
+}
+/**
+ * Resolve a `header-rows` / `header-cols` attribute to a count.
+ *
+ * - absent (`undefined`) -> 0 (no header rows/cols)
+ * - present but empty (the boolean form `{header-rows}`, which Carve stores as
+ *   `header-rows=""`) -> 1, i.e. the first row/column is the header - the
+ *   default a table with headers wants, so `{header-rows}` alone suffices
+ * - an explicit number (`{header-rows=2}`) -> that count (clamped at 0)
+ */
+function headerCount(value) {
+    if (value === undefined)
+        return 0;
+    if (value.trim() === '')
+        return 1;
+    return Math.max(0, toInt(value));
 }
 /** Flatten an inline tree to its text content (titles only). */
 function inlineText(nodes) {
