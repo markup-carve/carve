@@ -16,6 +16,7 @@
 import {
   details,
   mermaid,
+  mathBlock,
   wikilinks,
   autolink,
   codeGroup,
@@ -24,5 +25,5 @@ import {
 
 /** Construct a fresh array of the demo-useful extensions (defaults only). */
 export function carveExtensions() {
-  return [details(), mermaid(), wikilinks(), autolink(), codeGroup(), tabs()]
+  return [details(), mermaid(), mathBlock(), wikilinks(), autolink(), codeGroup(), tabs()]
 }

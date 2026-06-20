@@ -25,10 +25,11 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, emoji glyph map,
   locale smart-quote sets, bare-URL autolinking, and citations (§4).
-- Tier 3 (non-exhaustive): Mermaid, Tabs, CodeGroup, Details, TableOfContents,
-  HeadingPermalinks, HeadingLevelShift, ExternalLinks, DefaultAttributes,
-  Wikilinks, SemanticSpan, and the opt-in heading-id transforms
-  (LowercaseHeadingIds, AsciiHeadingIds).
+- Tier 3 (non-exhaustive): Mermaid, MathBlock (a ` ```math ` fenced block →
+  `<div class="math display">`, the GFM-style block form of Carve's `$…$`
+  math), Tabs, CodeGroup, Details, TableOfContents, HeadingPermalinks,
+  HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks, SemanticSpan,
+  and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
 
   `Details` is a pure renderer extension over the existing `:::details`
   admonition (no new syntax): it emits the HTML5 `<details>/<summary>`
