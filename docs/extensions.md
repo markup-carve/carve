@@ -45,17 +45,19 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   div, so documents stay readable. See the per-impl `docs/extensions.md` in
   carve-js / carve-php / carve-rs.
 
-  `MathBlock` renders a ` ```math ` fence as a fixed
-  `<div class="math display">\[ … \]</div>` (body HTML-escaped). It
-  deliberately drops **all** author attributes - neither a fence info-string
-  nor a preceding `{#id .class}` block-attribute line is copied onto the div.
-  The extension emits raw HTML directly, bypassing the core attribute
-  sanitizer, so copying attributes would let `{onclick="…"}` through unfiltered
-  on untrusted input. This differs from `Mermaid`, which carries a block-attr
-  line onto its `<pre>`. Attribute-bearing math is the job of the **core**
-  inline `$…$` / display `$$…$$` forms: those run through the core renderer,
-  where attributes attach to the `<span>` and the always-on attribute hardening
-  drops dangerous handlers while keeping classes and id.
+  `MathBlock` renders a ` ```math ` fence as
+  `<div class="math display">\[ … \]</div>` (body HTML-escaped). A preceding
+  `{#id .class key=val}` block-attribute line merges onto the div exactly as
+  core display `$$` math carries its attributes - the `math display` base class
+  ahead of author classes, then id and other attributes. Those attributes get
+  the same always-on hardening every element gets (event handlers `on*`,
+  `srcdoc`, `formaction` stripped; dangerous URL / `expression()` values
+  neutralized), so a `{onclick="…"}` on the fence can never reach the output.
+  Because MathBlock mirrors each implementation's own core `$$` math, the
+  attribute **order** follows core math per impl: carve-php and carve-rs emit
+  the class first, carve-js emits attributes in author source order. (This is a
+  pre-existing core-math divergence, not specific to MathBlock; the no-attribute
+  output is identical everywhere.)
 
 Inline and sidenote footnotes are **not** Tier 3. They are deferred core
 reserved syntax (`[^…]` inline, `[>…]` sidenote; `resources/grammar.ebnf`
