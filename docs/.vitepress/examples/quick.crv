@@ -1,3 +1,7 @@
 # Plugin Dogfood
 
 This snippet is rendered from a `.crv` import by *vite-plugin-carve*.
+
+Inline math like $`E = mc^2` and a display equation render with KaTeX:
+
+$$`\int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}`

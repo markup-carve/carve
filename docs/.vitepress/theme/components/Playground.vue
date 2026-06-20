@@ -5,6 +5,8 @@ import { withBase } from 'vitepress'
 import { carveToHtml } from '../../carve-lib/index.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { carveExtensions } from '../../carve-extensions.js'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { renderMathIn } from '../../render-math.js'
 
 // Render the JS engine with every documented extension enabled, so the demo
 // showcases the full feature set (real Mermaid extension, wikilinks, tabs,
@@ -233,10 +235,11 @@ async function highlightCode(): Promise<void> {
   }
 }
 
-// Mermaid first (it replaces blocks), then highlight what remains.
+// Mermaid first (it replaces blocks), then highlight code, then render math.
 async function postProcessOutput(): Promise<void> {
   await renderMermaid()
   await highlightCode()
+  await renderMathIn(outputEl.value)
 }
 
 let debounce: ReturnType<typeof setTimeout> | undefined
