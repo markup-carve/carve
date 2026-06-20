@@ -25,10 +25,11 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, emoji glyph map,
   locale smart-quote sets, bare-URL autolinking, and citations (§4).
-- Tier 3 (non-exhaustive): Mermaid, Tabs, CodeGroup, Details, TableOfContents,
-  HeadingPermalinks, HeadingLevelShift, ExternalLinks, DefaultAttributes,
-  Wikilinks, SemanticSpan, and the opt-in heading-id transforms
-  (LowercaseHeadingIds, AsciiHeadingIds).
+- Tier 3 (non-exhaustive): Mermaid, MathBlock (a ` ```math ` fenced block →
+  `<div class="math display">`, the GFM-style block form of Carve's `$…$`
+  math), Tabs, CodeGroup, Details, TableOfContents, HeadingPermalinks,
+  HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks, SemanticSpan,
+  and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
 
   `Details` is a pure renderer extension over the existing `:::details`
   admonition (no new syntax): it emits the HTML5 `<details>/<summary>`
@@ -38,6 +39,18 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   `<details open>`. Disabled, the block renders as the ordinary admonition
   div, so documents stay readable. See the per-impl `docs/extensions.md` in
   carve-js / carve-php / carve-rs.
+
+  `MathBlock` renders a ` ```math ` fence as a fixed
+  `<div class="math display">\[ … \]</div>` (body HTML-escaped). It
+  deliberately drops **all** author attributes - neither a fence info-string
+  nor a preceding `{#id .class}` block-attribute line is copied onto the div.
+  The extension emits raw HTML directly, bypassing the core safe-mode attribute
+  sanitizer, so copying attributes would let `{onclick="…"}` through unfiltered
+  on untrusted input. This differs from `Mermaid`, which carries a block-attr
+  line onto its `<pre>`. Attribute-bearing math is the job of the **core**
+  inline `$…$` / display `$$…$$` forms: those run through the core renderer,
+  where attributes attach to the `<span>` and safe mode filters dangerous
+  handlers while keeping classes and id.
 
 Inline and sidenote footnotes are **not** Tier 3. They are deferred core
 reserved syntax (`[^…]` inline, `[>…]` sidenote; `resources/grammar.ebnf`

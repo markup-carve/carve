@@ -134,6 +134,12 @@ Display math uses a double dollar:
 
 $$`\int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}`
 
+A fenced `math` block is the GFM-style block form (mathBlock extension):
+
+```math
+\sum_{k=1}^{n} k = \frac{n(n+1)}{2}
+```
+
 ## Admonitions and divs
 
 ::: note
