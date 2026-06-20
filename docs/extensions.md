@@ -155,3 +155,61 @@ Grammar: `resources/grammar.ebnf` PART 9 §22. Narrative: `case-study/syntax.md`
   `nocite`-style force-include).
 - External bibliographies (`.bib` / CSL-JSON) and narrative form are future
   issues, not part of this contract.
+
+## 5. ListTable (Tier-3)
+
+Tables whose cells hold block content (multiple paragraphs, lists, code), which
+pipe tables cannot express (issue #162). A `::: list-table` div whose body is a
+nested list renders as a real HTML `<table>`. Shipped in carve-js, carve-php,
+and carve-rs; off by default, enable per processor.
+
+### 5.1 Syntax
+
+- The block type word is `list-table`. A quoted title on the opener
+  (`::: list-table "Quarterly"`) becomes the `<caption>` (the same title parse
+  admonitions use; a bare unquoted title is invalid, per the strict `:::` rule).
+- The body is a single nested list: each outer item is a row, each inner item is
+  a cell, left to right. Because cells are list items, they hold full block
+  content for free.
+- `{header-rows=N}` / `{header-cols=N}` on the preceding attribute line promote
+  the first N rows to `<thead>`/`<th>` and the first N cells of every row to
+  row-header `<th>` (default 0).
+- Spans reuse the pipe-table span markers: a cell whose sole content is a lone
+  `^` merges with the cell above (rowspan); a lone `<` merges with the cell to
+  the left (colspan); continuation-style (`colspan=3` is two `<`, `rowspan=N` is
+  N-1 `^`). A cell carrying its own attributes, or an escaped marker (`\^`), is
+  literal and never a span marker.
+
+### 5.2 Rendering
+
+- A single-paragraph cell collapses to inline content (`<td>text</td>`); a
+  multi-block cell keeps its `<p>`/`<ul>`/... wrappers.
+- Ragged rows pad with empty `<td>` to the widest effective row (spans counted).
+- A rowspan is clamped at the `<thead>`/`<tbody>` boundary - a header-row span
+  does not reach into the body (HTML cannot reliably span across row groups).
+- A cell's own list-item attributes carry onto its `<td>`/`<th>`; a computed
+  `rowspan`/`colspan` wins over an author-written one.
+- The `<table>` output matches the equivalent pipe table's span markup.
+
+### 5.3 Degradation
+
+When the extension is not enabled, or the block is malformed (any row yields no
+cells), it renders as its ordinary `<div class="list-table">` containing the
+literal nested list - no content is ever dropped, and the deferred output is
+byte-identical to the plain div.
+
+### 5.4 Conformance (NOT corpus-pinned)
+
+Tier-3, so not in the mandatory corpus. The contract is cross-impl parity: for a
+given input the three implementations produce the same `<table>`, and spans match
+the equivalent pipe table. Each implementation pins this in its own test suite
+(block cells, caption, header rows/cols, spans, escape, ragged padding, the
+no-cell-row defer, and the thead/tbody rowspan clamp).
+
+### 5.5 Out of scope (impls MAY differ)
+
+- Per-column alignment (an `aligns=`-style attribute) is a future follow-up;
+  there is no alignment marker today.
+- Deeply ambiguous overlapping-span soup (a marker glued to another, or a `^`
+  inside the interior of an existing merged rectangle) resolves however the
+  native pipe-table grid walk resolves it; not pinned.
