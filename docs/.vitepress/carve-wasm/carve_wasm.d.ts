@@ -3,6 +3,15 @@
 
 export function toHtml(source: string): string;
 
+/**
+ * Render with every built-in Carve extension enabled (Mermaid, wikilinks,
+ * autolink, external links, heading permalinks, table of contents, citations,
+ * tab normalization). Lets the WASM engine match an extensions-on host (e.g.
+ * the docs Playground) as closely as carve-rs supports, instead of the
+ * core-only `toHtml`.
+ */
+export function toHtmlFull(source: string): string;
+
 export function version(): string;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
@@ -10,6 +19,7 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
     readonly memory: WebAssembly.Memory;
     readonly toHtml: (a: number, b: number) => [number, number];
+    readonly toHtmlFull: (a: number, b: number) => [number, number];
     readonly version: () => [number, number];
     readonly __wbindgen_externrefs: WebAssembly.Table;
     readonly __wbindgen_malloc: (a: number, b: number) => number;

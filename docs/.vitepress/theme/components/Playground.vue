@@ -3,6 +3,15 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { withBase } from 'vitepress'
 // @ts-expect-error - vendored ESM module without TS resolution context
 import { carveToHtml } from '../../carve-lib/index.js'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { carveExtensions } from '../../carve-extensions.js'
+
+// Render the JS engine with every documented extension enabled, so the demo
+// showcases the full feature set (real Mermaid extension, wikilinks, tabs,
+// TOC, permalinks, citations, …). The Rust/WASM engine renders the extensions
+// carve-rs ships (via its `toHtmlFull` binding) - most of the same set, minus
+// a few JS-only extensions (tabs, code-group, heading-level-shift, …).
+const JS_EXTENSIONS = carveExtensions()
 // The canonical feature-demo document (also used by the VS Code extension),
 // loaded as raw Carve source via vite-plugin-carve.
 import { source as DEFAULT_SOURCE } from '../../examples/demo.crv'
@@ -32,7 +41,9 @@ async function ensureWasm(): Promise<void> {
     // @ts-expect-error - vendored WASM glue without TS resolution context
     const mod = await import('../../carve-wasm/carve_wasm.js')
     await mod.default() // instantiate the WASM module (resolves its own .wasm)
-    wasmToHtml = mod.toHtml as (source: string) => string
+    // `toHtmlFull` renders with carve-rs's built-in extensions enabled, to
+    // match the JS engine's extensions-on output as closely as carve-rs allows.
+    wasmToHtml = mod.toHtmlFull as (source: string) => string
     wasmReady.value = true
   } catch (err) {
     wasmError.value = err instanceof Error ? err.message : String(err)
@@ -86,9 +97,11 @@ const rendered = computed<{ html: string; ms: number | null }>(() => {
     }
   }
   try {
-    const render = engine.value === 'rust' && wasmToHtml ? wasmToHtml : carveToHtml
+    const useWasm = engine.value === 'rust' && wasmToHtml
     const t0 = performance.now()
-    let out = render(source.value) as string
+    let out = (
+      useWasm ? wasmToHtml!(source.value) : carveToHtml(source.value, { extensions: JS_EXTENSIONS })
+    ) as string
     const ms = performance.now() - t0
     // The demo references images with a doc-relative path; resolve it against
     // the site base so it loads from /public regardless of the page URL shape.
@@ -124,7 +137,12 @@ let mermaidSeq = 0
 async function renderMermaid(): Promise<void> {
   const root = outputEl.value
   if (typeof window === 'undefined' || !root) return
-  const blocks = root.querySelectorAll<HTMLElement>('pre > code.language-mermaid')
+  // `pre.mermaid` is the real Mermaid extension's output (JS engine, extensions
+  // on); `pre > code.language-mermaid` is the plain code block the Rust/WASM
+  // engine emits (no extensions). Render both.
+  const blocks = root.querySelectorAll<HTMLElement>(
+    'pre.mermaid, pre > code.language-mermaid',
+  )
   if (!blocks.length) return
   const mermaid = (await import('mermaid')).default
   const dark = document.documentElement.classList.contains('dark')
@@ -135,10 +153,10 @@ async function renderMermaid(): Promise<void> {
     theme: dark ? 'dark' : 'default',
   })
   mermaidInit = true
-  for (const code of Array.from(blocks)) {
-    const pre = code.parentElement
+  for (const el of Array.from(blocks)) {
+    const pre = el.tagName === 'PRE' ? el : el.parentElement
     if (!pre) continue
-    const definition = code.textContent ?? ''
+    const definition = el.textContent ?? ''
     try {
       const { svg } = await mermaid.render(`carve-mermaid-${mermaidSeq++}`, definition)
       const figure = document.createElement('div')
