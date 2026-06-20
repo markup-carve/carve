@@ -187,6 +187,32 @@ Arrows and comparisons: -> <- <-> => , != <= >= , (c) (r) (tm).
 
 ---
 
+## List tables (Tier-3 extension)
+
+%% A `::: list-table` block authors a table as a nested list, so cells can hold
+%% full block content a native pipe table cannot. It only renders as a real
+%% <table> when the renderer enables the listTable extension; otherwise it
+%% degrades to a `<div class="list-table">` holding the literal list.
+
+%% Attributes sit on the PRECEDING line: header-rows=N promotes the first N rows
+%% to <thead>. A cell whose sole content is a lone `^` spans the row above; a
+%% lone `<` spans the cell to the left - the same markers native pipe tables use.
+
+{header-rows=1}
+::: list-table "Quarterly results"
+- - Region
+  - Notes
+- - EMEA
+  - Strong quarter.
+
+    Drivers:
+
+    - new logos
+    - renewals
+- - APAC
+  - <
+:::
+
 ## Mermaid (Tier-3 extension)
 
 %% Mermaid is a third-party extension, not core Carve. It is written as a
