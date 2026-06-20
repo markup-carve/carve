@@ -116,13 +116,18 @@ const rendered = computed<{ html: string; ms: number | null }>(() => {
 const html = computed<string>(() => rendered.value.html)
 
 // One-line status for the toolbar: the active engine and its last render time.
+// Gate the render-time text behind mount: `performance.now()` differs between
+// the server-rendered build and the client, so showing it during SSR causes a
+// Vue hydration mismatch. Pre-mount renders just the engine label (stable on
+// both sides); the timing appears once the client takes over.
+const mounted = ref(false)
 const renderStatus = computed<string>(() => {
   if (engine.value === 'rust') {
     if (wasmError.value) return 'Rust (WASM): load failed'
     if (!wasmReady.value) return 'Rust (WASM): loading…'
   }
   const label = engine.value === 'rust' ? 'Rust (WASM)' : 'JavaScript'
-  const ms = rendered.value.ms
+  const ms = mounted.value ? rendered.value.ms : null
   return ms === null ? label : `${label}: ${ms < 1 ? ms.toFixed(3) : ms.toFixed(2)} ms`
 })
 
@@ -180,6 +185,7 @@ function scheduleMermaid(): void {
 
 watch(html, scheduleMermaid)
 onMounted(() => {
+  mounted.value = true
   void nextTick(renderMermaid)
   window.addEventListener('keydown', onKeydown)
 })

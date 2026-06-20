@@ -452,3 +452,17 @@ html.dark .vp-code span[data-carve-highlight] {
     display: none !important;
   }
 }
+
+/*
+ * Task lists. Carve emits a plain `<ul><li><input type="checkbox">…` with no
+ * wrapper class (unlike VitePress's own `.contains-task-list`), so style the
+ * checkbox items directly: drop the bullet and pull the checkbox into the
+ * marker gutter. Applies in prose and the Playground output (both `.vp-doc`).
+ */
+.vp-doc li:has(> input[type='checkbox']) {
+  list-style: none;
+}
+.vp-doc li > input[type='checkbox'] {
+  margin: 0 0.5em 0 -1.4em;
+  vertical-align: middle;
+}

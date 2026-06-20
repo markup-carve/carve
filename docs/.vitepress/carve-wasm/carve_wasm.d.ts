@@ -4,11 +4,16 @@
 export function toHtml(source: string): string;
 
 /**
- * Render with every built-in Carve extension enabled (Mermaid, wikilinks,
- * autolink, external links, heading permalinks, table of contents, citations,
- * tab normalization). Lets the WASM engine match an extensions-on host (e.g.
- * the docs Playground) as closely as carve-rs supports, instead of the
+ * Render with the demo-useful built-in Carve extensions enabled
+ * (tab-normalize, details, Mermaid, wikilinks, autolink). Lets the WASM engine
+ * match an extensions-on host (e.g. the docs Playground) instead of the
  * core-only `toHtml`.
+ *
+ * Deliberately excludes table-of-contents and heading-permalinks (they
+ * auto-inject a TOC / mutate headings, which clutters a preview), and
+ * external-links / citations (no visible effect without config). This mirrors
+ * the JS Playground's extension set, minus the code-group / tabs extensions
+ * that carve-rs does not implement.
  */
 export function toHtmlFull(source: string): string;
 
