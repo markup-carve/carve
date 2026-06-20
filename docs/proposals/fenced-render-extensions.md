@@ -1,6 +1,6 @@
-# Proposal: generic fenced-render factory + `math` fenced block
+# Proposal: generic fenced-render factory
 
-Status: **Draft / for review.** Two Tier-3 extension specs. Not yet implemented.
+Status: **Draft / for review.** A Tier-3 extension spec. Not yet implemented.
 Companion to [`docs/extensions.md`](../extensions.md) (the extension contract and
 Tier taxonomy).
 
@@ -18,24 +18,20 @@ shape - emit a hint, let a client library hydrate:
 
 The wider ecosystem (MkDocs-Material, Docusaurus, Obsidian, Quarto) puts many
 more tools behind a fenced block - D2, Graphviz/DOT, WaveDrom, Vega-Lite,
-Chart.js, ABC music, GeoJSON, and a GitHub-Flavored `math` block. Almost all of
-them are the **same client-hydration shape** Mermaid already uses; they differ
-only in the keyword, the wrapper element, and whether the body is placed as text
-or as a JSON config.
+Chart.js, ABC music, GeoJSON. Almost all of them are the **same client-hydration
+shape** Mermaid already uses; they differ only in the keyword, the wrapper
+element, and whether the body is placed as text or as a JSON config.
 
-Rather than add one extension per library, this proposal adds:
+Rather than add one extension per library, this proposal adds a single generic
+client-rendered fenced-block factory that Mermaid becomes a preset of, covering
+the whole text/JSON-hydration family in one unit.
 
-1. **A generic client-rendered fenced-block factory** that Mermaid becomes a
-   preset of, covering the whole text/JSON-hydration family in one unit.
-2. **A `math` fenced block** - the one genuine *syntax* gap vs GitHub-Flavored
-   Markdown - reusing Carve's existing math output.
-
-Both are Tier-3 (opt-in, never in the corpus), per the extension taxonomy in
+It is Tier-3 (opt-in, never in the corpus), per the extension taxonomy in
 `extensions.md` section 1.
 
 ---
 
-## Part A: generic fenced-render factory
+## The fenced-render factory
 
 ### Concept
 
@@ -128,61 +124,12 @@ byte-identical across the three impls (the same parity bar Mermaid already
 meets). Golden examples in this doc are the parity reference; per-impl unit
 tests assert them.
 
----
-
-## Part B: `math` fenced block
-
-### Concept
-
-A fenced code block with language `math` renders as **display math**, matching
-GitHub-Flavored Markdown and Pandoc. Carve already has inline `` $`x` `` and
-display `` $$`x` `` math; this adds the block-fence form authors expect from GFM.
-
-### Syntax and output
-
-````
-``` math
-\int_0^1 x^2 \, dx
-```
-````
-->
-```html
-<div class="math display">\[\int_0^1 x^2 \, dx\]</div>
-```
-
-- Output reuses Carve's existing math class + delimiters. Inline/display math
-  today emit `<span class="math display">\[...\]</span>`; the fenced *block* form
-  uses a block-level `<div>` with the same `math display` class so KaTeX /
-  MathJax pick it up identically.
-- The body is the raw fence content (LaTeX). It is HTML-escaped exactly the way
-  the existing math renderer escapes its content (mirror that escaping for
-  parity - do not invent a new rule).
-- When the extension is not enabled, `` ```math `` is an ordinary code block
-  (`<pre><code class="language-math">`), so documents stay readable.
-
-### Tier vs core
-
-Specced here as a Tier-3 opt-in (`mathBlock()`), consistent with "add via
-extension." Because Carve already has math in core, it could instead **graduate
-to core** (always-on, corpus-pinned) for full GFM parity. This is an Open
-Question for review - the extension form is the safe default; promotion is a
-one-line follow-up if desired.
-
-### Per-impl shape
-
-Same as a text-mode `fencedRender` but with a fixed wrapper/transform: claim
-language `math`, emit `<div class="math display">\[BODY\]</div>`. Could even be
-implemented as a `fencedRender` variant whose body is wrapped in the math
-delimiters rather than placed raw - see Open Questions.
-
----
-
 ## Cross-cutting
 
-- **Contract**: both are §2.3 renderer extensions keyed on a fenced *code-block*
-  node by language word. No parser/grammar change (no new syntax) - they
-  reinterpret an existing code block.
-- **Safe mode / profile**: they emit structural HTML like `MermaidExtension`;
+- **Contract**: a §2.3 renderer extension keyed on a fenced *code-block* node by
+  language word. No parser/grammar change (no new syntax) - it reinterprets an
+  existing code block.
+- **Safe mode / profile**: it emits structural HTML like `MermaidExtension`;
   follow its existing safe-mode/profile behavior (do not bypass profile gating).
 - **Round-trip** (`HtmlToCarve`): out of scope for v1. A rendered
   `<pre class="d2">` has no Carve-specific marker, so reversing it is a separate
@@ -203,21 +150,17 @@ a -> b
 ``` vega-lite                  <div class="vega-lite"><script type="application/json">{"mark":"bar"}</script></div>
 {"mark":"bar"}
 ```
-
-``` math                       <div class="math display">\[x^2\]</div>
-x^2
-```
 ````
 
 ## Rollout
 
 1. Land this spec (this PR).
-2. carve-js: implement `fencedRender` + presets + `mathBlock`; re-express
-   `mermaid()` as a preset (alias kept). Reference impl + goldens.
+2. carve-js: implement `fencedRender` + presets; re-express `mermaid()` as a
+   preset (alias kept). Reference impl + goldens.
 3. carve-php, carve-rs: port to byte parity (Mermaid pattern; rs via
    `before_render` -> `RawBlock`).
-4. Add a `Fenced render` + `math` section to each repo's `docs/extensions.md`
-   and to the Tier-3 catalog in this repo's `extensions.md`.
+4. Add a `Fenced render` section to each repo's `docs/extensions.md` and to the
+   Tier-3 catalog in this repo's `extensions.md`.
 
 ## Open questions (for review)
 
@@ -228,10 +171,6 @@ x^2
    `vega-lite` / `chart` ship built-in vs left to the factory?
 4. **Mermaid**: keep `MermaidExtension` as a permanent alias, or deprecate once
    the factory exists?
-5. **`math` block**: Tier-3 extension (proposed) or graduate to core for GFM
-   parity?
-6. **`math` impl**: standalone extension, or a `fencedRender` variant with a
-   `wrap` option (`\[`...`\]`)?
-7. **Server-rendered libs** (PlantUML, Graphviz server, Ditaa): out of scope
+5. **Server-rendered libs** (PlantUML, Graphviz server, Ditaa): out of scope
    here (need a render callback / infra). Separate proposal, or fold a
    `render: (body) => html` callback into this factory later?
