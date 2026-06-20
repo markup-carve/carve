@@ -49,13 +49,13 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   `<div class="math display">\[ … \]</div>` (body HTML-escaped). It
   deliberately drops **all** author attributes - neither a fence info-string
   nor a preceding `{#id .class}` block-attribute line is copied onto the div.
-  The extension emits raw HTML directly, bypassing the core safe-mode attribute
+  The extension emits raw HTML directly, bypassing the core attribute
   sanitizer, so copying attributes would let `{onclick="…"}` through unfiltered
   on untrusted input. This differs from `Mermaid`, which carries a block-attr
   line onto its `<pre>`. Attribute-bearing math is the job of the **core**
   inline `$…$` / display `$$…$$` forms: those run through the core renderer,
-  where attributes attach to the `<span>` and safe mode filters dangerous
-  handlers while keeping classes and id.
+  where attributes attach to the `<span>` and the always-on attribute hardening
+  drops dangerous handlers while keeping classes and id.
 
 Inline and sidenote footnotes are **not** Tier 3. They are deferred core
 reserved syntax (`[^…]` inline, `[>…]` sidenote; `resources/grammar.ebnf`

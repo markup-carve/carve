@@ -71,16 +71,46 @@ carveToHtml(trustedInput, { sanitizeUrls: false })
 | `sanitizeUrls` | `true` | Filter link/image URL schemes. Set `false` only for fully trusted input. |
 | `allowedUrlSchemes` | `['http', 'https', 'mailto']` | Schemes permitted when `sanitizeUrls` is on. Case-insensitive. |
 
+## Attribute hardening (always on)
+
+Authors can attach `{key=value}` attributes to most elements. Independent of
+any option (there is nothing to enable, and no way to disable), the renderer
+strips the attributes that have no legitimate use in a content document and
+neutralizes script-bearing values on every element - not just links and images:
+
+| Input | Rendered |
+|---|---|
+| `[x]{onclick="alert(1)"}` | `<span>x</span>` |
+| `[x]{srcdoc="..." formaction="y"}` | `<span>x</span>` |
+| `[x]{background="javascript:alert(1)"}` | `<span background="">x</span>` |
+| `[x]{style="x:expression(alert(1))"}` | `<span style="">x</span>` |
+| `[x]{style="color:red" title="ok"}` | `<span style="color:red" title="ok">x</span>` |
+
+Specifically, on every rendered element:
+
+- attribute **names** that start with `on` (event handlers) and the injection
+  sinks `srcdoc` / `formaction` are dropped;
+- an attribute **value** whose scheme is `javascript`, `vbscript`, `data`, or
+  `file` is blanked - scheme detection ignores the control/space characters a
+  browser discards, so `java<TAB>script:` does not slip through;
+- a `style` value containing a CSS `expression(...)` is blanked.
+
+All other attributes pass through with their values HTML-escaped (quotes
+included, so a value cannot break out of its attribute). This baseline is
+identical across carve-php, carve-js and carve-rs.
+
 ## What you still own
 
 - **Social-token URLs.** `@mention` and `#tag` render as inert spans unless you
   provide `mentionUrl` / `tagUrl` templates. Those templates are your trusted
   configuration; the token name is URL-encoded into them.
-- **Arbitrary attributes on non-link elements.** Carve escapes attribute values,
-  but it does not run a full HTML sanitizer over attributes you allow authors to
-  attach via `{key=value}` to arbitrary elements. If you accept fully untrusted
-  input and permit arbitrary attributes, run the rendered HTML through a DOM
-  sanitizer (e.g. DOMPurify) as defense in depth.
+- **Arbitrary attributes on non-link elements.** Carve strips event handlers
+  and script-bearing values from every element (see *Attribute hardening*
+  above), but it is not a full HTML sanitizer: it does not allowlist which
+  attributes may appear on which tags, normalize CSS, or police every
+  URL-valued attribute beyond the known dangerous schemes. If you accept fully
+  untrusted input and permit arbitrary attributes, still run the rendered HTML
+  through a DOM sanitizer (e.g. DOMPurify) as defense in depth.
 - **Where the HTML ends up.** Carve produces an HTML string; your application is
   responsible for inserting it into a trusted context and for the surrounding
   Content-Security-Policy.
