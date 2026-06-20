@@ -5930,3 +5930,44 @@ that rowspan, so the leftward walk runs off the edge with nothing to merge and t
 ```
 
 :::
+
+## Colspan marker scans left past a consumed cell
+
+The same leftward walk SUCCEEDS when an available cell sits beyond the consumed
+columns: a `<` skips every column already taken by another span and merges into
+the nearest cell that is still free, only falling back to an empty cell when the
+walk reaches the table edge with nothing to merge.
+
+Here the second body row is `| p | ^ | < | e |`. The `^` (column 2) continues the
+rowspan of `b` directly above it, so column 2 is consumed and `b` gains
+`rowspan="2"`. The `<` (column 3) then walks left, skips that consumed column, and
+merges into `p` (column 1), so `p` gains `colspan="2"`. The trailing `e` follows
+as a plain cell.
+
+The walk counts the consumed column toward the span it grows, so the resulting
+`colspan` can visually overlap the cell occupying that column (here `p`'s
+`colspan="2"` covers the column `b`'s rowspan still holds). That overlap is the
+defined result of the walk-and-merge model, not an error: span markers only ever
+grow an existing cell or, when blocked at the edge, become an empty cell - the
+author chooses the layout by where they place the markers.
+
+::: compare
+
+```carve
+| p | q | r | s |
+|---|---|---|---|
+| a | b | c | d |
+| p | ^ | < | e |
+```
+
+```html
+<table>
+  <thead><tr><th>p</th><th>q</th><th>r</th><th>s</th></tr></thead>
+  <tbody>
+    <tr><td>a</td><td rowspan="2">b</td><td>c</td><td>d</td></tr>
+    <tr><td colspan="2">p</td><td>e</td></tr>
+  </tbody>
+</table>
+```
+
+:::
