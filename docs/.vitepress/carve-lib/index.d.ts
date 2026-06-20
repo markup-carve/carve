@@ -20,6 +20,7 @@ export { tabNormalize } from './tab-normalize.js';
 export { details } from './details.js';
 export { citations, type CitationsOptions } from './citations.js';
 export { mermaid, type MermaidOptions } from './mermaid.js';
+export { mathBlock, type MathBlockOptions } from './math-block.js';
 export { wikilinks, type WikilinksOptions } from './wikilinks.js';
 export { autolink, type AutolinkOptions } from './autolink.js';
 export { externalLinks, type ExternalLinksOptions } from './external-links.js';

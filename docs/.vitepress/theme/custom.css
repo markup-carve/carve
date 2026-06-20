@@ -518,3 +518,20 @@ html.dark .vp-code span[data-carve-highlight] {
 .carve-render summary:hover {
   color: var(--vp-c-brand-1);
 }
+
+/*
+ * Display math (KaTeX `.katex-display`, from `$$…$$` and ` ```math ` blocks)
+ * can be wider than the output pane; KaTeX leaves it `overflow: visible`, which
+ * stretched the rendered pane. Let a wide equation scroll inside its own block
+ * instead, and let the pane shrink (min-width:0) so it never grows past its
+ * column.
+ */
+.carve-render {
+  min-width: 0;
+}
+.carve-render .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
