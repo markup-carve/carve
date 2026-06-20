@@ -466,3 +466,55 @@ html.dark .vp-code span[data-carve-highlight] {
   margin: 0 0.5em 0 -1.4em;
   vertical-align: middle;
 }
+
+/*
+ * Playground output code blocks are highlighted client-side by Shiki with
+ * dual-theme output (each token carries a `--shiki-dark` CSS variable). In
+ * light mode the inline color applies; in dark mode switch to the dark
+ * palette. VitePress's own dark-Shiki rule only targets its
+ * `div[class*='language-']` wrapper, which the client-injected
+ * `<pre class="shiki">` doesn't have, so scope our own rule to the output.
+ */
+.dark .carve-render .shiki,
+.dark .carve-render .shiki span {
+  color: var(--shiki-dark) !important;
+}
+
+/*
+ * Give the injected Shiki blocks VitePress's code-block chrome (its themed
+ * background, padding, rounded corners, spacing, horizontal scroll). Without
+ * the `div[class*='language-']` wrapper VitePress styles, the bare `<pre>`
+ * would sit flush and blend into the page. Use VitePress's own code-block
+ * background (theme-aware) instead of Shiki's inline white/black so the boxes
+ * match the rest of the docs.
+ */
+.carve-render .shiki {
+  margin: 10px 0;
+  padding: 14px 18px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 0.8em;
+  line-height: 1.6;
+  background-color: var(--vp-code-block-bg) !important;
+}
+.carve-render .shiki code {
+  display: block;
+  width: fit-content;
+  min-width: 100%;
+  /* The token colors come from Shiki's inline styles, not the prose color. */
+  padding: 0;
+  background: transparent;
+}
+
+/*
+ * Disclosure summaries (the `details` extension / raw <details>) are
+ * clickable: Carve emits a bare <summary> without VitePress's custom-block
+ * chrome, so a browser shows the default arrow cursor. Restore the pointer
+ * cursor and a hover affordance.
+ */
+.carve-render summary {
+  cursor: pointer;
+}
+.carve-render summary:hover {
+  color: var(--vp-c-brand-1);
+}

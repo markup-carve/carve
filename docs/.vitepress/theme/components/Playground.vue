@@ -174,19 +174,84 @@ async function renderMermaid(): Promise<void> {
   }
 }
 
+// --- Syntax highlighting: Shiki, lazy-loaded, dual-theme. ---
+// The carve-lib renderer emits plain `<code class="language-x">`; highlight it
+// client-side so the Playground output matches the rest of the docs. Shiki is
+// already bundled (VitePress uses it) and loaded lazily here so it costs
+// nothing until the first render. Dual-theme output uses CSS variables, so
+// VitePress's existing `.dark .shiki` styling switches light/dark with no
+// re-highlight.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let highlighterPromise: Promise<any> | null = null
+function getHighlighter(): Promise<unknown> {
+  if (!highlighterPromise) {
+    highlighterPromise = (async () => {
+      const { createHighlighter } = await import('shiki')
+      // The repo's Carve TextMate grammar, so `language-carve` blocks highlight too.
+      const carveGrammar = (await import('../../syntaxes/carve.tmLanguage.json')).default
+      return createHighlighter({
+        themes: ['github-light', 'github-dark'],
+        langs: [
+          'python', 'yaml', 'json', 'bash', 'javascript', 'typescript', 'tsx',
+          'html', 'css', 'rust', 'php', 'markdown', 'sql', 'go', 'c',
+          carveGrammar as never,
+        ],
+      })
+    })()
+  }
+  return highlighterPromise
+}
+
+async function highlightCode(): Promise<void> {
+  const root = outputEl.value
+  if (typeof window === 'undefined' || !root) return
+  const codes = [...root.querySelectorAll<HTMLElement>('pre > code[class*="language-"]')].filter(
+    (c) => !c.classList.contains('language-mermaid'),
+  )
+  if (!codes.length) return
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const hl = (await getHighlighter()) as any
+  const loaded: string[] = hl.getLoadedLanguages()
+  for (const code of codes) {
+    const pre = code.parentElement
+    if (!pre) continue
+    const cls = [...code.classList].find((c) => c.startsWith('language-'))
+    const lang = cls ? cls.slice('language-'.length) : ''
+    if (!loaded.includes(lang)) continue // unknown language: leave the plain block
+    try {
+      const out = hl.codeToHtml(code.textContent ?? '', {
+        lang,
+        themes: { light: 'github-light', dark: 'github-dark' },
+      }) as string
+      const tmp = document.createElement('div')
+      tmp.innerHTML = out
+      const shikiPre = tmp.firstElementChild
+      if (shikiPre) pre.replaceWith(shikiPre)
+    } catch {
+      // Leave the original code block in place on a highlight error.
+    }
+  }
+}
+
+// Mermaid first (it replaces blocks), then highlight what remains.
+async function postProcessOutput(): Promise<void> {
+  await renderMermaid()
+  await highlightCode()
+}
+
 let debounce: ReturnType<typeof setTimeout> | undefined
-function scheduleMermaid(): void {
+function schedulePostProcess(): void {
   if (typeof window === 'undefined') return
   clearTimeout(debounce)
   debounce = setTimeout(() => {
-    void nextTick(renderMermaid)
+    void nextTick(postProcessOutput)
   }, 200)
 }
 
-watch(html, scheduleMermaid)
+watch(html, schedulePostProcess)
 onMounted(() => {
   mounted.value = true
-  void nextTick(renderMermaid)
+  void nextTick(postProcessOutput)
   window.addEventListener('keydown', onKeydown)
 })
 onBeforeUnmount(() => {
