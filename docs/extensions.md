@@ -40,6 +40,18 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   div, so documents stay readable. See the per-impl `docs/extensions.md` in
   carve-js / carve-php / carve-rs.
 
+  `MathBlock` renders a ` ```math ` fence as a fixed
+  `<div class="math display">\[ … \]</div>` (body HTML-escaped). It
+  deliberately drops **all** author attributes - neither a fence info-string
+  nor a preceding `{#id .class}` block-attribute line is copied onto the div.
+  The extension emits raw HTML directly, bypassing the core safe-mode attribute
+  sanitizer, so copying attributes would let `{onclick="…"}` through unfiltered
+  on untrusted input. This differs from `Mermaid`, which carries a block-attr
+  line onto its `<pre>`. Attribute-bearing math is the job of the **core**
+  inline `$…$` / display `$$…$$` forms: those run through the core renderer,
+  where attributes attach to the `<span>` and safe mode filters dangerous
+  handlers while keeping classes and id.
+
 Inline and sidenote footnotes are **not** Tier 3. They are deferred core
 reserved syntax (`[^…]` inline, `[>…]` sidenote; `resources/grammar.ebnf`
 PART 9 §16), not an app extension. The djot-php `[…]{.fn}` form maps onto
