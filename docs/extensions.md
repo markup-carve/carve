@@ -31,20 +31,20 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 
 | Feature | Tier | Default | Disable? |
 |---|---|---|---|
-| Headings, paragraphs, lists, task lists, blockquotes, thematic breaks | <Badge type="tip" text="1 · core" /> | on | no |
-| Tables (incl. rowspan/colspan/alignment), fenced code, inline code | <Badge type="tip" text="1 · core" /> | on | no |
-| Emphasis family (`/` `*` `_` `~` `^` `,` `=`), links, images, `<…>` autolinks | <Badge type="tip" text="1 · core" /> | on | no |
-| Attributes `{.class #id k=v}`, generic divs / spans, captions / figures | <Badge type="tip" text="1 · core" /> | on | no |
-| Admonitions (8 canonical types), definition lists, verse `::: \|` | <Badge type="tip" text="1 · core" /> | on | no |
-| Math `$…$` / `$$…$$`, footnotes `[^id]` + inline `^[…]`, abbreviations | <Badge type="tip" text="1 · core" /> | on | no |
-| Cross-references `</#id>` + numbered cross-refs, editorial / critic markup | <Badge type="tip" text="1 · core" /> | on | no |
-| Frontmatter, comments, raw blocks / inline `=format` | <Badge type="tip" text="1 · core" /> | on | no |
-| The extension **syntax** `:name[…]` (inline) and `::: name` (block) | <Badge type="tip" text="1 · core" /> | on | no — the *handlers* are Tier-2/3 |
-| Smart typography, `@mention`, `#tag`, `:emoji:` parsing | <Badge type="tip" text="1 · core" /> | on | **yes** (§19) |
-| Citations `[@key]`, bare-URL autolinking | <Badge type="info" text="2" /> | off | — |
-| Mention/tag → URL templates, emoji glyph map, locale smart-quote sets | <Badge type="info" text="2" /> | off | — |
-| Mermaid / FencedRender, MathBlock, ListTable, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="3" /> | off | — |
-| TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, SemanticSpan, Lowercase/AsciiHeadingIds | <Badge type="warning" text="3" /> | off | — |
+| Headings, paragraphs, lists, task lists, blockquotes, thematic breaks | <Badge type="tip" text="core" /> | on | no |
+| Tables (incl. rowspan/colspan/alignment), fenced code, inline code | <Badge type="tip" text="core" /> | on | no |
+| Emphasis family (`/` `*` `_` `~` `^` `,` `=`), links, images, `<…>` autolinks | <Badge type="tip" text="core" /> | on | no |
+| Attributes `{.class #id k=v}`, generic divs / spans, captions / figures | <Badge type="tip" text="core" /> | on | no |
+| Admonitions (8 canonical types), definition lists, verse `::: \|` | <Badge type="tip" text="core" /> | on | no |
+| Math `$…$` / `$$…$$`, footnotes `[^id]` + inline `^[…]`, abbreviations | <Badge type="tip" text="core" /> | on | no |
+| Cross-references `</#id>` + numbered cross-refs, editorial / critic markup | <Badge type="tip" text="core" /> | on | no |
+| Frontmatter, comments, raw blocks / inline `=format` | <Badge type="tip" text="core" /> | on | no |
+| The extension **syntax** `:name[…]` (inline) and `::: name` (block) | <Badge type="tip" text="core" /> | on | no — the *handlers* are Tier-2/3 |
+| Smart typography, `@mention`, `#tag`, `:emoji:` parsing | <Badge type="tip" text="core" /> | on | **yes** (§19) |
+| Citations `[@key]`, bare-URL autolinking | <Badge type="info" text="standard" /> | off | — |
+| Mention/tag → URL templates, emoji glyph map, locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
+| Mermaid / FencedRender, MathBlock, ListTable, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
+| TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, SemanticSpan, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
 
 A `:name[…]` / `::: name` whose word has no registered handler renders via the
 generic fallback (`<span>` / `<div class="name">`), so a document using an
