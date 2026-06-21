@@ -33,7 +33,10 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   HTML `<table>`, so cells can hold block content the pipe-table syntax cannot;
   `{header-rows}` / `{header-cols}` take a count or the boolean first-row/column
   form, and `^` / `<` give pipe-table-parity rowspan / colspan; in carve-php,
-  carve-js and carve-rs), Tabs, CodeGroup, Details, TableOfContents,
+  carve-js and carve-rs), Spoiler (the standard hidden-content role - inline
+  `:spoiler[text]` → `<span class="spoiler">` and block `::: spoiler` →
+  `<details class="spoiler">` disclosure; in carve-php, carve-js and carve-rs),
+  Tabs, CodeGroup, Details, TableOfContents,
   HeadingPermalinks,
   HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks, SemanticSpan,
   and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
@@ -73,6 +76,17 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   the class first, carve-js emits attributes in author source order. (This is a
   pre-existing core-math divergence, not specific to MathBlock; the no-attribute
   output is identical everywhere.)
+
+  `Spoiler` is the standard hidden-content role from the Extension Registry, with
+  no new syntax. Inline `:spoiler[text]` → `<span class="spoiler">text</span>`;
+  block `::: spoiler "Title"` → an HTML5 `<details class="spoiler">` disclosure
+  (native, keyboard- and screen-reader-accessible), defaulting to
+  `<summary>Spoiler</summary>` when title-less. Without the extension the inline
+  form stays the generic `<span class="ext-spoiler">` and the block stays a
+  plain `<div class="spoiler">`, so documents remain readable. Carve emits only
+  the marker; the blur + reveal is the host's CSS. Author attributes merge onto
+  the output element (the `spoiler` base class ahead of author classes) with the
+  always-on attribute hardening. In carve-php / carve-js / carve-rs.
 
 Inline and sidenote footnotes are **not** Tier 3. They are deferred core
 reserved syntax (`[^…]` inline, `[>…]` sidenote; `resources/grammar.ebnf`
