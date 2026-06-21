@@ -47,7 +47,7 @@ Grammar references point at `resources/grammar.ebnf`.
 | **Abbreviations** | `*[ABBR]: expansion` | `*[ABBR]: expansion` | ✅ In grammar (PART 5: Abbreviations). |
 | **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `:kbd[text]` | ✅ Via `:type[content]` extension syntax (4.20). |
 | **Autolinks** | `<url>` / `<email>` | Angle-bracket autolinks only | ✅ In spec (4.3). Bare URLs are *not* auto-linked (djot-aligned). |
-| **Inline footnotes** | `[content]{.fn}` | `^[content]` | ✅ In grammar (§16). A carve extension beyond djot; pandoc-style `^[content]`, numbered into the shared endnotes. |
+| **Inline footnotes** | `[content]{.fn}` | `^[content]` | ✅ Tier-1 core, in grammar (§16). A carve addition (not in djot); pandoc-style `^[content]`, numbered into the shared endnotes. |
 | **Table alignment** | `:--`, `--:`, `:--:` | `\|=<` / `\|=>` / `\|=~` markers | ✅ In spec (4.8). |
 | **Rowspan/colspan** | `^` and `<` markers | `^` and `<` markers | ✅ In grammar (span_cell / rowspan_marker / colspan_marker). |
 | **Multi-line cells** | `+` continuation | `+` continuation | ✅ In grammar (table multi-line cells). |
