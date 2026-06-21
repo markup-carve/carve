@@ -16,24 +16,37 @@ export interface RenderOptions {
      */
     sourceLine?: boolean;
     /**
-     * Filter dangerous URL schemes (`javascript:`, `data:`, `vbscript:`, …)
-     * on link `href` and image `src` so authored Carve cannot inject script
-     * via a crafted URL. On by default - this is the safe-by-default posture
-     * the spec's SafeMode describes. A blocked URL renders as an empty value
-     * (`href=""`) so the link text / image alt is still shown but inert.
+     * Filter dangerous URL schemes on link `href` and image `src` so authored
+     * Carve cannot inject script via a crafted URL. On by default (safe by
+     * default). A blocked URL renders as an empty value (`href=""`) so the link
+     * text / image alt is still shown but inert.
      *
-     * Set `false` ONLY for fully trusted input where you want authored URLs
-     * passed through verbatim. Relative URLs (no scheme) and fragments
-     * (`#id`) are always allowed regardless of this setting.
+     * Default policy is a DENYLIST: `javascript:`, `vbscript:`, `data:`, `file:`
+     * are blocked; every other scheme and any scheme-less URL (relative,
+     * fragment, protocol-relative) passes. Set `false` ONLY for fully trusted
+     * input where you want authored URLs passed through verbatim.
      */
     sanitizeUrls?: boolean;
     /**
-     * URL schemes permitted when {@link RenderOptions.sanitizeUrls} is on.
-     * Case-insensitive. Defaults to `['http', 'https', 'mailto']`. Add e.g.
-     * `'tel'` or `'ftp'` here if your application needs them. Has no effect
-     * when `sanitizeUrls` is `false`.
+     * Opt in to a strict ALLOWLIST instead of the default denylist: when set,
+     * ONLY these schemes pass on `href`/`src` (case-insensitive); everything
+     * else is blanked. No effect when `sanitizeUrls` is `false`.
      */
     allowedUrlSchemes?: string[];
+    /**
+     * Customize the default scheme DENYLIST (case-insensitive). Ignored when
+     * `allowedUrlSchemes` is set. Defaults to
+     * `['javascript', 'vbscript', 'data', 'file']`.
+     */
+    deniedUrlSchemes?: string[];
+    /**
+     * Allow raw HTML passthrough (the `` `…`{=html} `` inline and ` ```=html `
+     * block forms) to emit verbatim. On by default, matching the conformance
+     * corpus. Set `false` for UNTRUSTED input: raw-HTML content is then escaped
+     * to text instead of emitted, closing the one author-controlled raw-HTML
+     * injection vector. Non-HTML raw formats are unaffected.
+     */
+    allowRawHtml?: boolean;
 }
 export declare function renderHtml(ast: Document, opts?: RenderOptions): string;
 //# sourceMappingURL=render-html.d.ts.map

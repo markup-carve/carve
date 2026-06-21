@@ -235,3 +235,25 @@ sequenceDiagram
     LSP-->>Editor: diagnostics + semantic tokens
     Editor-->>Author: live preview
 ```
+
+## Charts (Tier-3 extension)
+
+%% A fenced `chart` block carries a Chart.js config as JSON. It renders as a live
+%% chart when the renderer enables the chart preset (and Chart.js is loaded);
+%% otherwise it degrades to an inert `<div class="chart">` hydration marker.
+
+```chart
+{"type":"bar","data":{"labels":["Q1","Q2","Q3","Q4"],"datasets":[{"label":"Revenue","data":[12,19,14,23]}]}}
+```
+
+## Spoilers (Tier-3 extension)
+
+%% Inline :spoiler[…] blurs until you click it; a ::: spoiler block collapses to
+%% just its summary and expands on click. Without the extension they degrade to a
+%% readable span / div so the document still reads.
+
+The killer is :spoiler[the lighthouse keeper] - click the blur to reveal.
+
+::: spoiler "Plot ending"
+Everyone makes it home. The dog lives too.
+:::

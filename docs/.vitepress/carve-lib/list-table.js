@@ -61,6 +61,11 @@ export function listTable() {
         },
     };
 }
+/** DoS guards: span resolution is ~O(rows^2), so cap the dimensions of a
+ *  list-table and defer anything larger to the plain nested-list div. Limits are
+ *  far beyond any legitimate hand-authored table. Kept identical across impls. */
+const MAX_LIST_TABLE_ROWS = 10_000;
+const MAX_LIST_TABLE_CELLS = 100_000;
 /** Render the `<table>` for a `list-table` block, or null to defer. */
 function renderListTable(node, ctx) {
     const pad = ctx.indent(ctx.level);
@@ -97,6 +102,12 @@ function renderListTable(node, ctx) {
         if (cells.length === 0)
             return null;
     }
+    // DoS guard: span resolution rescans prior rows, so a pathologically large
+    // `^`/`<` table is ~O(rows^2). Cap the dimensions and defer an over-large
+    // table to the plain div (content preserved, no quadratic blow-up).
+    const totalCells = rows.reduce((n, cells) => n + cells.length, 0);
+    if (rows.length > MAX_LIST_TABLE_ROWS || totalCells > MAX_LIST_TABLE_CELLS)
+        return null;
     const headerRows = headerCount(node.attrs?.keyValues?.['header-rows']);
     const headerCols = headerCount(node.attrs?.keyValues?.['header-cols']);
     // Resolve `^`/`<` span markers into a positional grid, mirroring carve-js's
