@@ -16,13 +16,14 @@ import {
   details,
   mermaid,
   mathBlock,
+  spoiler,
+  chart,
   wikilinks,
   autolink,
   codeGroup,
   tabs,
   listTable,
   headingPermalinks,
-  tableOfContents,
   citations,
   externalLinks,
 } from './carve-lib/index.js'
@@ -35,32 +36,50 @@ import * as lib from './carve-lib/index.js'
 //   - details, mermaid, mathBlock, codeGroup, tabs: block authoring constructs.
 //   - wikilinks, autolink: inline link sugar.
 //   - listTable: `::: list-table` renders as a real <table> with block cells.
-//   - headingPermalinks, tableOfContents: heading anchors and an auto TOC.
+//   - headingPermalinks: per-heading ¶ anchor (shown on hover, see custom.css).
 //   - citations: `[@key]` citation rendering.
 //   - externalLinks: marks off-site links (adds rel/target).
 const ENABLED = [
   'details',
   'mermaid',
   'mathBlock',
+  'spoiler',
+  'chart',
   'wikilinks',
   'autolink',
   'codeGroup',
   'tabs',
   'listTable',
   'headingPermalinks',
-  'tableOfContents',
   'citations',
   'externalLinks',
 ]
 
-// Each carve-js extension factory that we deliberately do NOT enable, mapped to
-// a short reason. These need configuration or have no visible effect in a
-// zero-config preview, so they would not showcase anything useful.
+// Every carve-js extension factory that we deliberately do NOT enable, each
+// mapped to a short reason. Three reasons keep an extension off, grouped below:
+//
+//   1. DENYLIST — extensions we never want in the inline preview even though
+//      they work, because they clutter or fight the embedded render. This is
+//      the explicit "do not put in the playground" list; add here to ban one.
+//   2. Needs configuration, or has no visible effect in a zero-config preview.
+//   3. A FencedRender preset whose client library the docs don't load (only
+//      `chart` + `mermaid` are wired up).
 const EXCLUDED = {
+  // 1. Denylist — deliberately kept out of the playground.
+  tableOfContents: 'DENY: auto-injects a TOC list that clutters the inline preview',
+
+  // 2. Need config / no zero-config visible effect.
   defaultAttributes: 'needs per-document default-attribute config',
   headingLevelShift: 'needs a shift-amount option',
   headingReference: 'needs config / overlaps core cross-references',
   tabNormalize: 'invisible whitespace transform, nothing to show',
+
+  // 3. FencedRender presets with no client library loaded in the docs.
+  d2: 'needs the D2 client library, not loaded in the docs',
+  graphviz: 'needs a Graphviz/Viz.js client library, not loaded in the docs',
+  wavedrom: 'needs the WaveDrom client library, not loaded in the docs',
+  abc: 'needs the abcjs client library, not loaded in the docs',
+  vegaLite: 'needs the Vega-Lite client library, not loaded in the docs',
 }
 
 // Map of factory name -> imported factory, so the guard can introspect them
@@ -69,13 +88,14 @@ const ENABLED_FACTORIES = {
   details,
   mermaid,
   mathBlock,
+  spoiler,
+  chart,
   wikilinks,
   autolink,
   codeGroup,
   tabs,
   listTable,
   headingPermalinks,
-  tableOfContents,
   citations,
   externalLinks,
 }

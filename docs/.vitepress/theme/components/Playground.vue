@@ -176,6 +176,66 @@ async function renderMermaid(): Promise<void> {
   }
 }
 
+// --- Chart (FencedRender `chart` json preset): render via Chart.js. ---
+// The chart() preset emits a `div.chart` wrapping a
+// `script[type=application/json]` config. Read that config, swap in a
+// <canvas>, and draw it.
+let chartSeq = 0
+async function renderCharts(): Promise<void> {
+  const root = outputEl.value
+  if (typeof window === 'undefined' || !root) return
+  const blocks = root.querySelectorAll<HTMLElement>('div.chart')
+  if (!blocks.length) return
+  const Chart = (await import('chart.js/auto')).default
+  for (const el of Array.from(blocks)) {
+    if (el.dataset.chartDone) continue
+    const script = el.querySelector('script[type="application/json"]')
+    if (!script) continue
+    let config: unknown
+    try {
+      config = JSON.parse(script.textContent ?? '')
+    } catch {
+      continue // leave the raw block on invalid JSON
+    }
+    const canvas = document.createElement('canvas')
+    canvas.id = `carve-chart-${chartSeq++}`
+    el.replaceChildren(canvas)
+    el.dataset.chartDone = '1'
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      new Chart(canvas, config as any)
+    } catch {
+      // leave the empty canvas on a bad config
+    }
+  }
+}
+
+// --- Spoiler (Tier-3): inline `:spoiler[…]` blurs, reveals on click/keyboard.
+// Block `::: spoiler` is a native <details>, so it needs no JS. ---
+function wireSpoilers(): void {
+  const root = outputEl.value
+  if (!root) return
+  for (const el of Array.from(root.querySelectorAll<HTMLElement>('span.spoiler'))) {
+    if (el.dataset.spoilerWired) continue
+    el.dataset.spoilerWired = '1'
+    el.tabIndex = 0
+    el.setAttribute('role', 'button')
+    el.setAttribute('aria-label', 'Spoiler, activate to reveal')
+    el.title = 'Click to reveal'
+    const toggle = (): void => {
+      const revealed = el.classList.toggle('revealed')
+      el.title = revealed ? 'Click to hide' : 'Click to reveal'
+    }
+    el.addEventListener('click', toggle)
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        toggle()
+      }
+    })
+  }
+}
+
 // --- Syntax highlighting: Shiki, lazy-loaded, dual-theme. ---
 // The carve-lib renderer emits plain `<code class="language-x">`; highlight it
 // client-side so the Playground output matches the rest of the docs. Shiki is
@@ -238,6 +298,8 @@ async function highlightCode(): Promise<void> {
 // Mermaid first (it replaces blocks), then highlight code, then render math.
 async function postProcessOutput(): Promise<void> {
   await renderMermaid()
+  await renderCharts()
+  wireSpoilers()
   await highlightCode()
   await renderMathIn(outputEl.value)
 }

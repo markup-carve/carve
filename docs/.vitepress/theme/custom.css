@@ -535,3 +535,153 @@ html.dark .vp-code span[data-carve-highlight] {
   padding-top: 2px;
   padding-bottom: 2px;
 }
+
+/* ---- Spoiler extension (Tier-3) ----
+   Inline `:spoiler[…]` blurs until clicked; block `::: spoiler` is a native
+   <details> collapse. Reveal JS lives in Playground.vue (inline only). */
+.carve-render span.spoiler,
+.carve-playground span.spoiler {
+  filter: blur(0.3em);
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 0 0.15em;
+  background: rgba(127, 127, 127, 0.14);
+  -webkit-user-select: none;
+  user-select: none;
+  transition: filter 0.2s;
+}
+.carve-render span.spoiler.revealed,
+.carve-playground span.spoiler.revealed {
+  filter: none;
+  background: transparent;
+  user-select: text;
+}
+.carve-render details.spoiler,
+.carve-playground details.spoiler {
+  border: 1px solid var(--vp-c-divider);
+  border-left: 4px solid #e0af68;
+  border-radius: 8px;
+  padding: 2px 14px;
+  margin: 10px 0;
+}
+/* Tight vertical rhythm inside an open spoiler. */
+.carve-render details.spoiler[open] > summary,
+.carve-playground details.spoiler[open] > summary {
+  margin-bottom: 4px;
+}
+.carve-render details.spoiler > :last-child,
+.carve-playground details.spoiler > :last-child {
+  margin-bottom: 0;
+}
+
+/* Blurred-panel spoiler: a generic `{.spoiler}` div whose body stays in place
+   but blurred until clicked. Its FIRST child is an always-visible title; the
+   rest is blurred. Reveal wiring (click/keyboard) is in Playground.vue. */
+.carve-render div.spoiler,
+.carve-playground div.spoiler {
+  border: 1px solid var(--vp-c-divider);
+  border-left: 4px solid #e0af68;
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin: 10px 0;
+  cursor: pointer;
+}
+.carve-render div.spoiler > :first-child,
+.carve-playground div.spoiler > :first-child {
+  margin-top: 0;
+  color: #e0af68;
+  font-weight: 600;
+}
+.carve-render div.spoiler > :first-child::before,
+.carve-playground div.spoiler > :first-child::before {
+  content: '👁 ';
+}
+.carve-render div.spoiler > :not(:first-child),
+.carve-playground div.spoiler > :not(:first-child) {
+  filter: blur(0.4em);
+  transition: filter 0.25s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.carve-render div.spoiler.revealed > :not(:first-child),
+.carve-playground div.spoiler.revealed > :not(:first-child) {
+  filter: none;
+  user-select: text;
+}
+.carve-render div.spoiler > :last-child,
+.carve-playground div.spoiler > :last-child {
+  margin-bottom: 0;
+}
+.carve-render details.spoiler > summary,
+.carve-playground details.spoiler > summary {
+  cursor: pointer;
+  color: #e0af68;
+  font-weight: 600;
+  list-style: none;
+  /* Kill the inherited 16px content margin so the summary sits tight (esp. top). */
+  margin: 0;
+}
+.carve-render details.spoiler > summary::-webkit-details-marker,
+.carve-playground details.spoiler > summary::-webkit-details-marker {
+  display: none;
+}
+.carve-render details.spoiler > summary::before,
+.carve-playground details.spoiler > summary::before {
+  content: '👁 ';
+}
+.carve-render details.spoiler > summary::after,
+.carve-playground details.spoiler > summary::after {
+  content: ' (click to reveal)';
+  color: var(--vp-c-text-2);
+  font-weight: 400;
+  font-size: 0.85em;
+}
+.carve-render details.spoiler[open] > summary::after,
+.carve-playground details.spoiler[open] > summary::after {
+  content: '';
+}
+
+/* Chart (FencedRender `chart` json preset) canvas sizing in the playground. */
+.carve-render div.chart,
+.carve-playground div.chart {
+  max-width: 520px;
+  margin: 10px 0;
+}
+
+/* Carve heading permalinks (headingPermalinks extension): show the ¶ anchor
+   only when the heading is hovered or the anchor is focused, not always. */
+.carve-render .permalink,
+.carve-playground .permalink {
+  opacity: 0;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.carve-render :is(h1, h2, h3, h4, h5, h6):hover .permalink,
+.carve-render .permalink:focus,
+.carve-playground :is(h1, h2, h3, h4, h5, h6):hover .permalink,
+.carve-playground .permalink:focus {
+  opacity: 1;
+}
+
+/* Editorial (critic) markup: {+ added +} -> <ins>, {- deleted -} -> <del>,
+   {~ old ~> new ~} -> <del><ins>, {# note #} -> <span class="critic-comment">.
+   Default <ins>/<del> get no color, and .critic-comment is unstyled, so add it. */
+.carve-render ins,
+.carve-playground ins {
+  background: rgba(64, 180, 96, 0.2);
+  text-decoration: none;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+.carve-render del,
+.carve-playground del {
+  background: rgba(220, 84, 84, 0.18);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+.carve-render .critic-comment,
+.carve-playground .critic-comment {
+  color: var(--vp-c-text-2);
+  font-style: italic;
+  border-bottom: 1px dotted var(--vp-c-text-3);
+}

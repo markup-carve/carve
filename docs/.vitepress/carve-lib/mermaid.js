@@ -1,12 +1,7 @@
-// Escape for Mermaid content: encode `&` and `<` but keep `>` so arrow syntax
-// (`A-->B`) survives, matching carve-php's MermaidExtension.
-function escapeMermaid(s) {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-}
+import { fencedRender } from './fenced-render.js';
 /**
  * Render fenced code blocks tagged `mermaid` as `<pre class="mermaid">…</pre>`
- * for client-side Mermaid.js, instead of the default `<pre><code>`. Ported
- * from carve-php's MermaidExtension.
+ * for client-side Mermaid.js, instead of the default `<pre><code>`.
  *
  *     ``` mermaid
  *     graph TD; A-->B
@@ -14,26 +9,17 @@ function escapeMermaid(s) {
  *
  * renders as `<pre class="mermaid">graph TD; A-->B</pre>` (`>` kept for arrows).
  * A non-mermaid code block defers to the core renderer.
+ *
+ * Mermaid is a text-mode preset of {@link fencedRender}; the `name` stays
+ * `'mermaid'` for back-compat.
  */
 export function mermaid(opts = {}) {
-    const cssClass = opts.cssClass ?? 'mermaid';
-    const language = opts.language ?? 'mermaid';
     return {
+        ...fencedRender({
+            language: opts.language ?? 'mermaid',
+            cssClass: opts.cssClass ?? 'mermaid',
+        }),
         name: 'mermaid',
-        blockRenderers: {
-            'code-block': (node, ctx) => {
-                const code = node;
-                if (code.lang !== language)
-                    return undefined;
-                // Preserve the block's own attributes (and their source order) and
-                // merge the mermaid class into the class group.
-                const attrs = {
-                    ...code.attrs,
-                    classes: [cssClass, ...(code.attrs?.classes ?? [])],
-                };
-                return `${ctx.indent(ctx.level)}<pre${ctx.renderAttrs(attrs)}>${escapeMermaid(code.content)}</pre>`;
-            },
-        },
     };
 }
 //# sourceMappingURL=mermaid.js.map
