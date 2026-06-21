@@ -1,6 +1,9 @@
 # Modern Markup Languages Comparison
 
-A comparison of lightweight markup languages available today.
+A broad, neutral survey of the lightweight markup languages available today.
+
+> For a focused, Carve-centric comparison against Markdown, Djot, and MDX, see
+> [Carve vs Markdown, Djot & MDX](./comparison).
 
 ## Overview
 

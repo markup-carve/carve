@@ -23,7 +23,7 @@ features:
   - title: Visual Mnemonics
     details: "/italic/ slashes lean, *bold* asterisks are heavy, _underline_ sits below, ~strikethrough~ runs through. Syntax that looks like its output."
   - title: Linear-Time Rigor
-    details: Djot-style linear-time parsing with no backtracking, unambiguous rules — extended with captions, abbreviations, and social conventions.
+    details: "Djot-style linear-time parsing with no backtracking and unambiguous rules (Djot is the markup Carve builds on), extended with captions, abbreviations, and social conventions."
   - title: Ten-Second Rule
     details: Learnable in 10 seconds for basic use. Memorable after 10 days without practice. Unambiguous within 10 characters of context.
   - title: Captions Everywhere

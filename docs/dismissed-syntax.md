@@ -254,7 +254,11 @@ syntax — symbol-based, no English keyword, symmetric with the inline
 
 ---
 
-## CriticMarkup Integration
+## CriticMarkup: doubled-marker form (`{++added++}`)
+
+> The CriticMarkup *feature* was adopted - it is part of the spec (section 4.14)
+> with single-character markers. Only the **doubled-marker** form proposed
+> below was dismissed. It lives here to record that choice.
 
 **Proposed:**
 ```
@@ -262,7 +266,7 @@ This is {++added++} and {--removed--} text.
 This is {~~old~>new~~} replacement.
 ```
 
-**Status:** Included in spec (section 4.14), but with **single**-character markers (`{+added+}`, `{-removed-}`, `{~old~>new~}`); the doubled-marker form shown above was not adopted.
+**Status:** The feature is in the spec (section 4.14), but with **single**-character markers (`{+added+}`, `{-removed-}`, `{~old~>new~}`); the doubled-marker form shown above was not adopted.
 
 **Considerations:**
 - Useful for document review workflows
