@@ -1,0 +1,43 @@
+Security hardening
+
+```
+[click here](javascript:stealCookies)
+.
+<p><a href="">click here</a></p>
+```
+
+```
+<vbscript:msgbox>
+.
+<p><a href="">vbscript:msgbox</a></p>
+```
+
+```
+![logo](javascript:stealCookies)
+.
+<img src="" alt="logo">
+```
+
+```
+A [danger]{onclick="steal()"} span.
+.
+<p>A <span>danger</span> span.</p>
+```
+
+```
+A [danger]{style="x:expression(steal())"} span.
+.
+<p>A <span style="">danger</span> span.</p>
+```
+
+```
+A [danger]{srcdoc="<script>"} span.
+.
+<p>A <span>danger</span> span.</p>
+```
+
+```
+[safe](https://example.com){href="javascript:steal"}
+.
+<p><a href="https://example.com">safe</a></p>
+```

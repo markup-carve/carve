@@ -97,8 +97,13 @@ differs by processor. The narrative below details each tier.
   Mermaid is one preset of this shape. In carve-php / carve-js / carve-rs; see
   each impl's `docs/extensions.md` for the per-language client libraries.
 
-  Note: json mode emits a `<script type="application/json">`, which an HTML
-  sanitizer run *after* conversion usually strips. Every json-mode type has a
+  Note: json mode emits a `<script type="application/json">`. Because an HTML
+  parser ends *script data* on the literal `</script>` regardless of the
+  script's MIME type, a json-mode renderer **MUST** neutralize script-data
+  terminators in the body (rewrite `</` so `</script>`, `<!--`, and `<script`
+  cannot break out) before emitting -- a Tier-3 requirement mirroring the core
+  attribute hardening (grammar PART 9 §25). Even then, an HTML
+  sanitizer run *after* conversion usually strips the whole element. Every json-mode type has a
   non-script alternative: render that same language in **text mode** instead, so
   the config rides in a `<pre class="lang">` as escaped text and survives
   sanitizing (the host reads it from `textContent` rather than a script tag).

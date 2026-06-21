@@ -1849,8 +1849,14 @@ EOF = (* end of file *) ;
         corpus pins the default-on behavior.
       - Includes (`{{ path }}`) are a PROCESSOR-LEVEL directive, NOT part
         of the core parser; a conformant core MAY leave `{{ … }}` literal.
-        An implementing processor MUST forbid path traversal outside the
-        project root, bound recursion depth, and treat includes as opt-in.
+        An implementing processor MUST treat includes as opt-in (off for
+        untrusted input) and MUST resolve include paths only to files under
+        the configured project root AFTER symlink resolution (rejecting
+        `..`-traversal and absolute paths that escape the root). It MUST NOT
+        fetch remote URLs unless an allowlist is explicitly configured, and
+        MUST bound BOTH recursion depth AND total expanded byte size to
+        prevent include-bomb amplification (a file that includes another N
+        times, transitively). See PART 9 §25 for the general security model.
 
    20. RAW PASSTHROUGH -- NORMATIVE (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT
@@ -1979,6 +1985,68 @@ EOF = (* end of file *) ;
         on a LIST-MARKER line the straddling tab's unconsumed columns are
         re-inserted as spaces, so sibling markers aligned with mixed
         tab/space indentation keep the same visual column and stay siblings.
+
+   25. SECURITY REQUIREMENTS -- NORMATIVE (HTML output target). These rules
+      bind any implementation that emits HTML for UNTRUSTED input. They were
+      previously stated only in docs/security.md (non-normative); they are
+      hoisted here so an implementation written to this grammar + the corpus
+      cannot be conformant yet a trivial XSS vector. The corpus pins
+      representative cases (docs/examples.md "Security hardening").
+      - URL SINK SCHEME DENYLIST. On every clickable URL sink -- link
+        destination (`href`), image source (`src`), and autolink -- an HTML
+        renderer MUST reject any URL whose scheme is `javascript`, `vbscript`,
+        `data`, or `file`, emitting an EMPTY value (`href=""` / `src=""`).
+        Scheme detection MUST first strip leading ASCII control characters,
+        spaces, tabs, and newlines (which browsers ignore when resolving a
+        scheme). A `data:` exception for images, if offered, MUST be opt-in.
+        An attribute-block `href`/`src` override (PART 4) MUST NOT reintroduce
+        a rejected scheme.
+      - ATTRIBUTE NAME/VALUE HARDENING. On EVERY rendered element -- including
+        elements emitted by extensions -- an HTML renderer MUST drop
+        attributes whose name begins with `on` (case-insensitive) and the
+        names `srcdoc` and `formaction`; MUST blank any attribute value whose
+        scheme (control/space-stripped) is `javascript`/`vbscript`/`data`/
+        `file`; and MUST blank any `style` value containing `expression(`,
+        `url(`, `@import`, `behavior:`, or `-moz-binding` (whitespace
+        collapsed first). This applies to author attribute blocks AND to
+        attributes an extension copies onto its wrapper element: an extension
+        MUST route authored attributes through the same hardening and MUST NOT
+        emit them raw.
+      - RAW PASSTHROUGH OPT-OUT. Raw blocks (```=FORMAT, PART 2) and raw
+        inline (`{=format}`, §20) emit verbatim UNESCAPED content. An
+        implementation MUST provide a mode in which raw passthrough is NOT
+        emitted and is instead escaped as literal text. Implementations SHOULD
+        make safe handling the default for untrusted input; a processor that
+        emits raw passthrough by default MUST document that its input is
+        trusted.
+      - URL TEMPLATE ENCODING. Any value taken from document content (mention
+        name, tag, citation key, crossref id) and substituted into a
+        configured URL template MUST be percent-encoded before substitution,
+        and the resulting URL MUST then pass the scheme denylist above.
+      - MATH + CODE are element TEXT, not raw HTML: their verbatim content MUST
+        be HTML-escaped (`&`,`<`,`>`) before wrapping (§18, PART 10 §6). They
+        are NOT a raw-HTML bypass.
+      - FRONTMATTER MUST be parsed with a SAFE loader -- no arbitrary object
+        instantiation and no custom-tag deserialization (e.g. no YAML
+        `!!`-tag object construction). Any frontmatter value later rendered
+        into output MUST be escaped per the output target's rules.
+      - RESOURCE BOUNDS (DoS). An implementation MUST parse and render any
+        input in time and space LINEAR in input size (within a constant
+        factor). It MUST enforce a FINITE nesting-depth cap for block and
+        inline containers (RECOMMENDED 100; an implementation MAY choose a
+        larger fixed cap), beyond which further openers degrade to literal
+        text rather than recursing. It MUST bound abbreviation, reference,
+        footnote, and crossref expansion so total work stays O(n): in
+        particular an empty abbreviation term is rejected, a reference is not
+        resolved by rescanning the whole output per occurrence, and a crossref
+        target is not cloned without bound. Recursive RENDER, RESOLVE, and
+        FILTER passes over a programmatically constructed tree MUST be subject
+        to the same finite ceiling, not only the parse path.
+      - NON-HTML TARGETS. The Markdown, plain-text, and terminal (ANSI)
+        renderers MUST NOT become injection vectors either: text, code, math,
+        AND URL values MUST be stripped of control characters before emission
+        to a terminal, and a Markdown link/image title MUST escape the `"`
+        that would otherwise terminate it.
 *)
 
 
@@ -2004,7 +2072,9 @@ EOF = (* end of file *) ;
    2. ATTRIBUTE QUOTING + ESCAPING. Attribute values are double-quoted.
       In an attribute value escape `&`->&amp;, `<`->&lt;, `>`->&gt;,
       `"`->&quot;, `'`->&apos;. In text/content escape `&`,`<`,`>` (NOT
-      quotes). No other entities are produced.
+      quotes). No other entities are produced. This describes only the
+      QUOTING of values that survive filtering: dangerous attribute names,
+      values, and URL schemes are dropped/blanked FIRST per PART 9 §25.
 
    3. VOID ELEMENTS are written WITHOUT a trailing slash: `<hr>`,
       `<img …>`, `<br>`. A hard break serializes as `<br>` + newline.
