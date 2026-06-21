@@ -124,6 +124,26 @@ is enforced by all three implementations.
 For an explicit input-size ceiling (and broader feature restriction), configure
 a `Profile` / safe mode `maxLength`.
 
+## Non-HTML render targets
+
+The guarantees above are not HTML-only. The Markdown, plain-text, and ANSI
+renderers are hardened too, so converting untrusted Carve to a non-HTML target
+does not launder an attack:
+
+- **Markdown** is treated as a security boundary because it is routinely
+  re-rendered to HTML downstream. Its output escapes embedded HTML (`<`, `>`,
+  `&` in text and in the `<sup>` / `<sub>` / `<mark>` / `<ins>` / `<u>` fallback
+  tags Markdown has no native form for), runs link / image destinations through
+  the same URL-scheme denylist, and **escapes** raw `=html` instead of emitting
+  it. So `carve(untrusted) -> Markdown -> Markdown-to-HTML` cannot inject script.
+- **ANSI** and **plain text** strip C0 / C1 control characters (keeping tab and
+  newline) from author text, code, math, and raw content, so attacker `ESC` /
+  OSC sequences cannot inject into a terminal (cursor / clipboard / output
+  spoofing).
+- **HTML import** (`HtmlToCarve`, where provided) drops all `on*` event-handler
+  attributes and dangerous URL schemes, so round-tripping HTML through Carve
+  cannot smuggle a handler into the output.
+
 ## What you still own
 
 - **Social-token URLs.** `@mention` and `#tag` render as inert spans unless you
