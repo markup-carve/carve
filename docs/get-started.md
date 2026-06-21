@@ -53,6 +53,27 @@ $html = (new CarveConverter())->convert('/italic/, *bold*, and a heading');
 - **[Examples](/examples)** — Carve source next to the exact HTML it produces.
 - **[Case Study](/case-study/)** — the full design rationale and normative spec.
 
+## 4. Core vs extensions
+
+Almost everything you write is **core** (Tier-1): headings, lists, tables,
+links, code, math, footnotes, admonitions, attributes, and the rest of the
+cheat sheet. Core is **on by default** and renders identically across every
+implementation — no configuration, no plugins.
+
+A few things are **opt-in**:
+
+- **Tier-2** — spec-defined but off by default, e.g. citations `[@key]`,
+  bare-URL autolinking, mention/tag → URL templates. Enable them in your
+  processor.
+- **Tier-3** — per-implementation extensions, e.g. Mermaid diagrams, a
+  collapsible `details` widget, `list-table`. Register the ones you want.
+
+The `:name[…]` (inline) and `::: name` (block) **syntax** is core, but whether a
+given `name` does something special depends on whether a handler is registered;
+an unknown one just renders as a plain span/div, so documents always stay
+readable. The full **[feature → tier table](/extensions#feature-tiers-quick-reference)**
+is the place to look up any feature.
+
 ## Build your own parser
 
 Carve's grammar is small and unambiguous. To implement it in another language, start from **[Build Your Own Implementation](/implementing-carve)** and the **[Formal Grammar](/grammar)**.

@@ -1009,10 +1009,11 @@ renders as
 - A label referenced twice keeps one number and gets a backlink per
   reference.
 
-> **Deferred.** The earlier *inline footnote* (`[^content]`) and
-> *sidenote* (`[>content]`) forms are reserved but **not yet
-> implemented** — they are ambiguous against the reference form and have
-> no djot equivalent. Use reference footnotes.
+> **Inline footnotes** (`^[content]` — a caret immediately before `[`) are
+> implemented and corpus-pinned (Tier-1, grammar PART 9 §16; see the *Inline
+> footnotes* examples). The note text is carried in place and numbered into the
+> same endnote pool as reference footnotes. **Sidenotes** (`[>content]`) remain
+> *reserved but not yet implemented* — margin notes with no djot equivalent.
 
 ### 4.12 Special Blocks (Admonitions)
 
@@ -1034,10 +1035,12 @@ This action cannot be undone.
 :::
 ```
 
-Carve renders a `:::` block by a **two-tier rule** on the type
-identifier (PART 9 §12):
+Carve renders a `:::` block by a **two-branch rule** on the type
+identifier (PART 9 §12). (This is a rendering-strategy split *within* the
+core `:::` mechanism — unrelated to the Tier-1/2/3 conformance tiers; both
+branches are Tier-1 core.)
 
-**Tier 1 — canonical admonition types** render as a semantic `<aside>`
+**Canonical admonition types** render as a semantic `<aside>`
 with the `admonition` marker class. The canonical set is `note`, `tip`,
 `warning`, `danger`, `info`, `success`, `example`, `quote`. The carve
 VitePress theme and most third-party themes ship CSS targeting these
@@ -1049,7 +1052,7 @@ exact class names:
 </aside>
 ```
 
-**Tier 2 — any other (custom) type** renders as a generic block-level
+**Custom types — any other type** render as a generic block-level
 `<div>` carrying the verbatim type as its class. This is the carve
 fenced-div primitive that the block-extension mechanism (§4.20) builds
 on (`::: tabs`, `::: mermaid`, `::: codepen` → `<div class="tabs">`
@@ -1086,10 +1089,10 @@ synthesize a default title from the type name; `::: note` without `"…"`
 produces no title element at all.
 
 > **Design note — a conscious exception.** Whether `::: x` renders as an
-> `<aside>` (Tier 1) or a `<div>` (Tier 2) depends on whether `x` is in
+> `<aside>` (canonical) or a `<div>` (custom) depends on whether `x` is in
 > the canonical set — i.e. the *meaning* of the construct is
 > context-dependent, in mild tension with Design Principle 1 ("one
-> syntax, one meaning"). This is deliberate: both tiers share the same
+> syntax, one meaning"). This is deliberate: both branches share the same
 > `<div>`-shaped fenced-container primitive, and the canonical names are
 > a curated styling convention layered on top, not a separate syntax.
 > The *parse* is never ambiguous (every `::: word` is a fenced block);
@@ -1123,7 +1126,7 @@ A div with attributes.
 </div>
 ```
 
-So `::: word` is a typed block (Tier 1 admonition / Tier 2 div); bare
+So `::: word` is a typed block (canonical admonition / custom div); bare
 `:::` or `::: {…}` is a generic `<div>` (PART 9 §12).
 
 **Nesting by fence length.** A fence is a run of three or more colons. A

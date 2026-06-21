@@ -17,6 +17,40 @@ implementation realizes.
 Invariant: a feature's tier is identical in every language; a Tier-1 feature is
 core-and-default-on everywhere and its default output is corpus-pinned.
 
+> The same split is described as MUST / SHOULD / MAY in
+> [`native-features-analysis.md`](./native-features-analysis): **MUST** = Tier-1
+> core (not disableable); **SHOULD** = Tier-1 default-on but a processor MAY
+> turn it off (the four shorthands below); **MAY** = Tier-2 / Tier-3. Same model,
+> two vocabularies.
+
+### Feature tiers (quick reference)
+
+The one place to answer "is feature X core or an extension?". "Disable?" is
+whether a conformant processor may turn a default-on feature off (grammar
+PART 9 §19); Tier-2 / Tier-3 are off until enabled.
+
+| Feature | Tier | Default | Disable? |
+|---|---|---|---|
+| Headings, paragraphs, lists, task lists, blockquotes, thematic breaks | <Badge type="tip" text="core" /> | on | no |
+| Tables (incl. rowspan/colspan/alignment), fenced code, inline code | <Badge type="tip" text="core" /> | on | no |
+| Emphasis family (`/` `*` `_` `~` `^` `,` `=`), links, images, `<…>` autolinks | <Badge type="tip" text="core" /> | on | no |
+| Attributes `{.class #id k=v}`, generic divs / spans, captions / figures | <Badge type="tip" text="core" /> | on | no |
+| Admonitions (8 canonical types), definition lists, verse `::: \|` | <Badge type="tip" text="core" /> | on | no |
+| Math `$…$` / `$$…$$`, footnotes `[^id]` + inline `^[…]`, abbreviations | <Badge type="tip" text="core" /> | on | no |
+| Cross-references `</#id>` + numbered cross-refs, editorial / critic markup | <Badge type="tip" text="core" /> | on | no |
+| Frontmatter, comments, raw blocks / inline `=format` | <Badge type="tip" text="core" /> | on | no |
+| The extension **syntax** `:name[…]` (inline) and `::: name` (block) | <Badge type="tip" text="core" /> | on | no — the *handlers* are Tier-2/3 |
+| Smart typography, `@mention`, `#tag`, `:emoji:` parsing | <Badge type="tip" text="core" /> | on | **yes** (§19) |
+| Citations `[@key]`, bare-URL autolinking | <Badge type="info" text="standard" /> | off | — |
+| Mention/tag → URL templates, emoji glyph map, locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
+| Mermaid / FencedRender, MathBlock, ListTable, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
+| TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, SemanticSpan, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
+
+A `:name[…]` / `::: name` whose word has no registered handler renders via the
+generic fallback (`<span>` / `<div class="name">`), so a document using an
+unknown extension word still parses and stays readable — only its *rendering*
+differs by processor. The narrative below details each tier.
+
 - Tier 1: corpus categories 01–88 (admonitions, footnotes, cross-references,
   list-item attributes, `::: |` verse, `<…>` autolinks, the
   `:name[…]` / `::: name` extension syntax). Recognized `:::` type words
