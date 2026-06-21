@@ -111,6 +111,19 @@ All other attributes pass through with their values HTML-escaped (quotes
 included, so a value cannot break out of its attribute). This baseline is
 identical across carve-php, carve-js and carve-rs.
 
+## Resource limits (denial-of-service)
+
+Pathologically nested input cannot drive super-linear parsing. Both block
+containers (blockquote / div / list / admonition) and inline constructs
+(nested links / spans / emphasis, e.g. a bomb of `[[[…](#)](#)…`) are capped at
+a fixed nesting depth (100). Past the cap, further openers degrade to literal
+text instead of recursing, so a deeply nested document parses in time linear in
+its size rather than the ~O(n^2) a naive nested-link rescan would cost. The cap
+is enforced by all three implementations.
+
+For an explicit input-size ceiling (and broader feature restriction), configure
+a `Profile` / safe mode `maxLength`.
+
 ## What you still own
 
 - **Social-token URLs.** `@mention` and `#tag` render as inert spans unless you
