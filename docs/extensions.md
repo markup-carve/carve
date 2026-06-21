@@ -63,6 +63,15 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   Mermaid is one preset of this shape. In carve-php / carve-js / carve-rs; see
   each impl's `docs/extensions.md` for the per-language client libraries.
 
+  Note: json mode emits a `<script type="application/json">`, which an HTML
+  sanitizer run *after* conversion usually strips. Every json-mode type has a
+  non-script alternative: render that same language in **text mode** instead, so
+  the config rides in a `<pre class="lang">` as escaped text and survives
+  sanitizing (the host reads it from `textContent` rather than a script tag).
+  So `vega-lite`, `chart`, etc. each work either way - json mode for a direct
+  `<script>` config, or text mode for a sanitizer-safe `<pre>`. Consumers that
+  keep json mode should whitelist `<script type="application/json">`.
+
   `MathBlock` renders a ` ```math ` fence as
   `<div class="math display">\[ … \]</div>` (body HTML-escaped). A preceding
   `{#id .class key=val}` block-attribute line merges onto the div exactly as
