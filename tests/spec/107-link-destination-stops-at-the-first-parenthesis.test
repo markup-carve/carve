@@ -1,0 +1,7 @@
+Link destination stops at the first parenthesis
+
+```
+[x](http://a/b(c))
+.
+<p><a href="http://a/b(c">x</a>)</p>
+```

@@ -6081,3 +6081,23 @@ the safe destination is kept and the override is ignored:
 ```
 
 :::
+
+## Link destination stops at the first parenthesis
+
+A `(...)` link destination ends at the **first** `)` -- there is no
+balanced-parenthesis rule (this matches the grammar's `link_destination` and is
+identical across all three implementations). A `)` that must live inside a URL
+is supplied via a reference definition instead, where the destination runs to
+the end of the line.
+
+::: compare
+
+```carve
+[x](http://a/b(c))
+```
+
+```html
+<p><a href="http://a/b(c">x</a>)</p>
+```
+
+:::
