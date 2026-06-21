@@ -4,6 +4,11 @@ How Carve compares to the markup languages you already know. The short version:
 Markdown's reach, Djot's consistency, web-native features by default - without
 turning your content into a JavaScript program.
 
+> This page is **Carve-centric**: a feature-by-feature take against Markdown,
+> Djot, and MDX. For a broader, neutral survey of the wider lightweight-markup
+> landscape (AsciiDoc, reStructuredText, Textile, and more), see
+> [Modern Markup Languages Comparison](./markup-languages).
+
 ::: tip Legend
 ✅ native &nbsp;·&nbsp; 🧩 plugin / extension needed &nbsp;·&nbsp; ⚠️ partial / convention &nbsp;·&nbsp; ❌ not available
 :::

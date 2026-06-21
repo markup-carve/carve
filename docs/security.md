@@ -160,12 +160,13 @@ does not launder an attack:
   responsible for inserting it into a trusted context and for the surrounding
   Content-Security-Policy.
 
-## Relationship to the spec's SafeMode
+## Beyond the baseline: SafeMode and Profiles
 
 The baseline on this page - the URL scheme denylist, the attribute name/value
-hardening, and the raw-HTML escape switch - is enforced by all three
-implementations (carve-php, carve-js, carve-rs) by default. `SafeMode` /
-`Profile` describe a broader, opt-in policy layered ON TOP (scheme allowlists,
+hardening, and the raw-HTML escape switch - is the normative default: enforced
+by all three implementations (carve-php, carve-js, carve-rs) without any
+configuration. `SafeMode` / `Profile` are **optional, implementation-level**
+policy objects that layer a broader surface ON TOP (scheme allowlists,
 domain allow/deny, `rel=nofollow`, feature restriction, nesting / length
 limits); that wider surface is documented in the
 [Syntax Specification](./case-study/syntax) and may land incrementally.
