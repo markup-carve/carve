@@ -213,6 +213,26 @@ Arrows and comparisons: -> <- <-> => , != <= >= , (c) (r) (tm).
   - <
 :::
 
+## Code groups (Tier-3 extension)
+
+%% `::: code-group` turns several fenced blocks - each with a `[label]` tab - into
+%% a tabbed widget (codeGroup extension). Without it, it degrades to a plain div
+%% of sequential code blocks.
+
+::: code-group
+```bash [npm]
+npm install @markup-carve/carve
+```
+
+```bash [pnpm]
+pnpm add @markup-carve/carve
+```
+
+```bash [yarn]
+yarn add @markup-carve/carve
+```
+:::
+
 ## Mermaid (Tier-3 extension)
 
 %% Mermaid is a third-party extension, not core Carve. It is written as a

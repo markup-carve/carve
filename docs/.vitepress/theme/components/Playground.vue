@@ -288,10 +288,53 @@ async function highlightCode(): Promise<void> {
       const tmp = document.createElement('div')
       tmp.innerHTML = out
       const shikiPre = tmp.firstElementChild
-      if (shikiPre) pre.replaceWith(shikiPre)
+      if (shikiPre instanceof HTMLElement) {
+        shikiPre.dataset.lang = lang
+        pre.replaceWith(shikiPre)
+      }
     } catch {
       // Leave the original code block in place on a highlight error.
     }
+  }
+}
+
+// --- Code-block pill: on hover, show a top-right pill with the language and a
+// click-to-copy button. Runs after highlight so it covers Shiki blocks (tagged
+// with data-lang) and any plain `language-x` block left un-highlighted. ---
+function decorateCodeBlocks(): void {
+  const root = outputEl.value
+  if (!root) return
+  for (const pre of Array.from(root.querySelectorAll<HTMLElement>('pre'))) {
+    if (pre.dataset.pill) continue
+    const code = pre.querySelector('code')
+    let lang = pre.dataset.lang ?? ''
+    if (!lang && code) {
+      const cls = [...code.classList].find((c) => c.startsWith('language-'))
+      lang = cls ? cls.slice('language-'.length) : ''
+    }
+    if (!lang || lang === 'mermaid') continue
+    pre.dataset.pill = '1'
+    const pill = document.createElement('div')
+    pill.className = 'code-pill'
+    const label = document.createElement('span')
+    label.className = 'code-pill-lang'
+    label.textContent = lang
+    const btn = document.createElement('button')
+    btn.type = 'button'
+    btn.className = 'code-pill-copy'
+    btn.setAttribute('aria-label', 'Copy code')
+    btn.textContent = '📋'
+    btn.addEventListener('click', () => {
+      const text = (code ?? pre).textContent ?? ''
+      void navigator.clipboard?.writeText(text).then(() => {
+        btn.textContent = '✓'
+        setTimeout(() => {
+          btn.textContent = '📋'
+        }, 1200)
+      })
+    })
+    pill.append(label, btn)
+    pre.appendChild(pill)
   }
 }
 
@@ -301,6 +344,7 @@ async function postProcessOutput(): Promise<void> {
   await renderCharts()
   wireSpoilers()
   await highlightCode()
+  decorateCodeBlocks()
   await renderMathIn(outputEl.value)
 }
 

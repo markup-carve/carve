@@ -685,3 +685,82 @@ html.dark .vp-code span[data-carve-highlight] {
   font-style: italic;
   border-bottom: 1px dotted var(--vp-c-text-3);
 }
+
+/* Code-block pill (playground output): hover shows the language + a copy button
+   in the top-right corner. Decoration wired in Playground.vue. */
+.carve-render pre[data-pill] {
+  position: relative;
+}
+.carve-render .code-pill {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.carve-render pre[data-pill]:hover .code-pill,
+.carve-render .code-pill:focus-within {
+  opacity: 1;
+}
+.carve-render .code-pill-lang {
+  background: rgba(127, 127, 127, 0.2);
+  color: var(--vp-c-text-2);
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+.carve-render .code-pill-copy {
+  cursor: pointer;
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg);
+  border-radius: 6px;
+  padding: 0 5px;
+  font-size: 12px;
+}
+.carve-render .code-pill-copy:hover {
+  border-color: var(--vp-c-brand-1);
+}
+
+/* Code-group (codeGroup extension): CSS-only radio tabs. The render emits
+   all <input.code-group-radio>+<label> first, then the <div.code-group-panel>s,
+   so :checked ~ nth-of-type wires each tab to its label + panel. */
+/* `position: relative` so the visually-hidden radio is contained in the widget;
+   otherwise focusing it on tab click scrolls the page to wherever it landed. */
+.carve-render .code-group { margin: 12px 0; position: relative; }
+.carve-render .code-group-radio { position: absolute; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.carve-render .code-group-label {
+  display: inline-block; cursor: pointer; padding: 4px 12px; font-size: 13px;
+  color: var(--vp-c-text-2); border: 1px solid transparent; border-bottom: none;
+  border-radius: 6px 6px 0 0;
+}
+.carve-render .code-group-panel { display: none; border: 1px solid var(--vp-c-divider); border-radius: 0 6px 6px 6px; }
+.carve-render .code-group-panel > pre,
+.carve-render .code-group-panel > div[class*="language-"] { margin: 0; }
+.carve-render .code-group-radio:nth-of-type(1):checked ~ .code-group-label:nth-of-type(1) {
+  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
+}
+.carve-render .code-group-radio:nth-of-type(1):checked ~ .code-group-panel:nth-of-type(1) { display: block; }
+.carve-render .code-group-radio:nth-of-type(2):checked ~ .code-group-label:nth-of-type(2) {
+  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
+}
+.carve-render .code-group-radio:nth-of-type(2):checked ~ .code-group-panel:nth-of-type(2) { display: block; }
+.carve-render .code-group-radio:nth-of-type(3):checked ~ .code-group-label:nth-of-type(3) {
+  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
+}
+.carve-render .code-group-radio:nth-of-type(3):checked ~ .code-group-panel:nth-of-type(3) { display: block; }
+.carve-render .code-group-radio:nth-of-type(4):checked ~ .code-group-label:nth-of-type(4) {
+  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
+}
+.carve-render .code-group-radio:nth-of-type(4):checked ~ .code-group-panel:nth-of-type(4) { display: block; }
+.carve-render .code-group-radio:nth-of-type(5):checked ~ .code-group-label:nth-of-type(5) {
+  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
+}
+.carve-render .code-group-radio:nth-of-type(5):checked ~ .code-group-panel:nth-of-type(5) { display: block; }
+.carve-render .code-group-radio:nth-of-type(6):checked ~ .code-group-label:nth-of-type(6) {
+  color: var(--vp-c-text-1); background: var(--vp-c-bg-soft); border-color: var(--vp-c-divider);
+}
+.carve-render .code-group-radio:nth-of-type(6):checked ~ .code-group-panel:nth-of-type(6) { display: block; }
