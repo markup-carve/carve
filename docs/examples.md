@@ -5971,3 +5971,113 @@ author chooses the layout by where they place the markers.
 ```
 
 :::
+
+## Security hardening
+
+Carve is safe by default: when it emits HTML for untrusted input, dangerous URL
+schemes, event-handler attributes, and script-bearing CSS are neutralized
+before serialization. These pairs pin that behavior (normative: grammar PART 9
+§25). The HTML renderer is the primary untrusted-output path; the rules below
+are always on and identical across implementations.
+
+A `javascript:` link destination is rejected, leaving an empty `href` (the link
+text is preserved):
+
+::: compare
+
+```carve
+[click here](javascript:stealCookies)
+```
+
+```html
+<p><a href="">click here</a></p>
+```
+
+:::
+
+An autolink with a dangerous scheme is blanked the same way:
+
+::: compare
+
+```carve
+<vbscript:msgbox>
+```
+
+```html
+<p><a href="">vbscript:msgbox</a></p>
+```
+
+:::
+
+An image whose source uses a dangerous scheme keeps its `alt` but drops the
+`src` value:
+
+::: compare
+
+```carve
+![logo](javascript:stealCookies)
+```
+
+```html
+<img src="" alt="logo">
+```
+
+:::
+
+An event-handler attribute (any `on*` name) is dropped entirely:
+
+::: compare
+
+```carve
+A [danger]{onclick="steal()"} span.
+```
+
+```html
+<p>A <span>danger</span> span.</p>
+```
+
+:::
+
+A `style` value containing a CSS `expression(` (or `url(`, `@import`,
+`behavior:`, `-moz-binding`) is blanked, keeping the harmless `style` slot:
+
+::: compare
+
+```carve
+A [danger]{style="x:expression(steal())"} span.
+```
+
+```html
+<p>A <span style="">danger</span> span.</p>
+```
+
+:::
+
+The `srcdoc` and `formaction` attribute names are dropped:
+
+::: compare
+
+```carve
+A [danger]{srcdoc="<script>"} span.
+```
+
+```html
+<p>A <span>danger</span> span.</p>
+```
+
+:::
+
+An attribute-block `href`/`src` override cannot reintroduce a dangerous scheme;
+the safe destination is kept and the override is ignored:
+
+::: compare
+
+```carve
+[safe](https://example.com){href="javascript:steal"}
+```
+
+```html
+<p><a href="https://example.com">safe</a></p>
+```
+
+:::
