@@ -132,7 +132,7 @@ Inline math uses a dollar before a code span: $`e = mc^2`.
 
 Display math uses a double dollar:
 
-$$`\int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}`
+$$`e^{i\pi} + 1 = 0`
 
 A fenced `math` block is the GFM-style block form (mathBlock extension):
 
