@@ -288,7 +288,10 @@ async function highlightCode(): Promise<void> {
       const tmp = document.createElement('div')
       tmp.innerHTML = out
       const shikiPre = tmp.firstElementChild
-      if (shikiPre) pre.replaceWith(shikiPre)
+      if (shikiPre instanceof HTMLElement) {
+        shikiPre.dataset.lang = lang
+        pre.replaceWith(shikiPre)
+      }
     } catch {
       // Leave the original code block in place on a highlight error.
     }
