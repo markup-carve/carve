@@ -7,6 +7,11 @@ description: Every Carve construct on one scannable page.
 
 The whole syntax, one page. Carve's mnemonic: **the markup looks like its output**.
 
+Everything here is **core** (Tier-1) — on by default, identical across every
+implementation — except rows marked **✦**, which are opt-in extensions
+(Tier-2/3) you enable in your processor. Look any feature up in the
+[feature → tier table](/extensions#feature-tiers-quick-reference).
+
 ## Inline
 
 | Write | Get | Mnemonic |
@@ -27,7 +32,7 @@ The whole syntax, one page. Carve's mnemonic: **the markup looks like its output
 | `![alt](img.jpg)` | image | |
 | `[^1]` / `^[inline note]` | footnote | reference / inline form |
 | `[span]{.class}` | span | `{…}` adds class, id, or attributes |
-| `:youtube[ID]` | extension | `:type[content]{attrs}` |
+| `:youtube[ID]` ✦ | extension | `:type[content]{attrs}` — syntax is core; the handler is opt-in |
 | `@user` `#tag` | mention / tag | social conventions |
 | `\*literal\*` | escape | backslash + any ASCII punctuation |
 | `--` `---` `...` `->` `(c)` | – — … → © | smart typography |

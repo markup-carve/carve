@@ -172,7 +172,13 @@ These should remain implementation-specific, not part of Carve syntax:
 ## Disabling / Restricting Features
 
 Can a processor turn native features off? It depends on the tier (see
-Conformance Core below for the full split):
+Conformance Core below for the full split).
+
+> This MUST / SHOULD / MAY split is the same model as the Tier-1/2/3 taxonomy in
+> the normative [extensions contract](./extensions): **MUST** = Tier-1 core
+> (not disableable); **SHOULD** = Tier-1 default-on but a processor MAY disable
+> it; **MAY** = Tier-2 (spec-listed, off by default) / Tier-3 (per-impl). The
+> extensions contract has the consolidated feature → tier table.
 
 | Tier | Features | Disableable? |
 |------|----------|--------------|
