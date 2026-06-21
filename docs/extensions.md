@@ -25,7 +25,9 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, emoji glyph map,
   locale smart-quote sets, bare-URL autolinking, and citations (§4).
-- Tier 3 (non-exhaustive): Mermaid, MathBlock (a ` ```math ` fenced block →
+- Tier 3 (non-exhaustive): FencedRender (a generic fenced-code-block factory
+  with Mermaid, D2, Graphviz, WaveDrom, ABC, Vega-Lite and Chart.js presets),
+  MathBlock (a ` ```math ` fenced block →
   `<div class="math display">`, the GFM-style block form of Carve's `$…$`
   math), ListTable (a `::: list-table` div whose nested list renders as a real
   HTML `<table>`, so cells can hold block content the pipe-table syntax cannot;
@@ -44,6 +46,19 @@ core-and-default-on everywhere and its default output is corpus-pinned.
   `<details open>`. Disabled, the block renders as the ordinary admonition
   div, so documents stay readable. See the per-impl `docs/extensions.md` in
   carve-js / carve-php / carve-rs.
+
+  `FencedRender` is the generic form of the Mermaid pattern: one configurable
+  renderer claims fenced code blocks by language word and emits a single
+  client-hydration element. In **text** mode (Mermaid, D2, Graphviz, WaveDrom,
+  ABC) the body is HTML-escaped inside `<pre class="lang">…</pre>`, with `&` and
+  `<` escaped but `>` preserved so arrow syntax (`-->`) survives; in **json**
+  mode (Vega-Lite, Chart.js) the body is emitted verbatim inside
+  `<div class="lang"><script type="application/json">…</script></div>`. The seven
+  named presets are one-liners, and any other client-rendered language needs no
+  new code - just a new instance with its fence word. Carve only emits the
+  marker element; loading the client library and hydrating it is the host's job.
+  Mermaid is one preset of this shape. In carve-php / carve-js / carve-rs; see
+  each impl's `docs/extensions.md` for the per-language client libraries.
 
   `MathBlock` renders a ` ```math ` fence as
   `<div class="math display">\[ … \]</div>` (body HTML-escaped). A preceding

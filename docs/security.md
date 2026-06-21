@@ -7,9 +7,14 @@ tighten the policy.
 ## HTML is text, not markup
 
 Carve has no *implicit* raw-HTML passthrough. Authored bare `<` and `>` carry no
-special meaning and are escaped on output rather than interpreted. (Explicit,
-opt-in raw passthrough — `` ```=html `` blocks and `` `…`{=html} `` inline —
-does emit verbatim HTML and must be disabled for untrusted input; see Profiles.)
+special meaning and are escaped on output rather than interpreted.
+
+There is one *explicit*, author-opted raw passthrough - `` ```=html `` blocks
+and `` `…`{=html} `` inline - which emits verbatim HTML and is on by default
+(it is corpus-pinned). For UNTRUSTED input you MUST disable it: set
+`allowRawHtml: false` (carve-js) / `Options::with_raw_html(false)` (carve-rs) /
+enable `SafeMode` (carve-php), which escapes the raw content to text instead of
+emitting it.
 
 ```carve
 <script>alert(1)</script>
@@ -19,12 +24,13 @@ renders as the literal, inert text `&lt;script&gt;alert(1)&lt;/script&gt;`.
 This removes the entire class of injection that comes from Markdown/CommonMark
 passing raw HTML through to the output.
 
-## URL scheme sanitization (on by default)
+## URL scheme sanitization (always on)
 
-The HTML renderer filters the URL on every clickable sink - link `href` and
-image `src` - against a scheme allowlist. A URL whose scheme is not allowed
-collapses to an empty value, so the link text or image `alt` stays visible but
-the element is inert:
+The HTML renderer filters the URL on every clickable sink - link `href`, image
+`src`, and autolink - against a scheme **denylist**, unconditionally (no opt-in,
+no safe-mode required). A URL whose scheme is `javascript`, `vbscript`, `data`,
+or `file` collapses to an empty value, so the link text or image `alt` stays
+visible but the element is inert:
 
 | Input | Rendered |
 |---|---|
@@ -34,12 +40,16 @@ the element is inert:
 | `[ok](https://example.com)` | `<a href="https://example.com">ok</a>` |
 | `[rel](/docs/page)` | `<a href="/docs/page">rel</a>` |
 
-What always passes through:
+What passes through (denylist, not allowlist):
 
 - Relative URLs (no scheme), e.g. `/docs/page`, `page.crv`
 - Fragments, e.g. `#section`
 - Protocol-relative URLs, e.g. `//cdn.example.com/x`
-- Any scheme in the allowlist (default: `http`, `https`, `mailto`)
+- Any scheme NOT on the denylist, e.g. `http`, `https`, `mailto`, `tel`, `ftp`
+
+To tighten to a strict allowlist instead, pass `allowedUrlSchemes` (carve-js);
+to customize the denylist, pass `deniedUrlSchemes`. carve-php / carve-rs apply
+the same baseline; their safe-mode / profile layer can tighten it further.
 
 An attribute block cannot reintroduce a dangerous URL: a `{href=...}` or
 `{src=...}` override (in any letter case) is dropped in favor of the sanitized
@@ -93,7 +103,9 @@ Specifically, on every rendered element:
 - an attribute **value** whose scheme is `javascript`, `vbscript`, `data`, or
   `file` is blanked - scheme detection ignores the control/space characters a
   browser discards, so `java<TAB>script:` does not slip through;
-- a `style` value containing a CSS `expression(...)` is blanked.
+- a `style` value containing a script-bearing or fetching CSS construct -
+  `expression(...)`, `url(...)`, `@import`, `behavior:`, or `-moz-binding` - is
+  blanked (whitespace collapsed first to defeat evasion).
 
 All other attributes pass through with their values HTML-escaped (quotes
 included, so a value cannot break out of its attribute). This baseline is
@@ -117,9 +129,10 @@ identical across carve-php, carve-js and carve-rs.
 
 ## Relationship to the spec's SafeMode
 
-The case study describes a broader `SafeMode` / `Profile` link policy (scheme
-allow/deny lists, domain allow/deny, `rel=nofollow`, nesting and length limits).
-The scheme allowlist on this page is the part enforced today by the reference
-JavaScript implementation. The wider feature-restriction surface is documented
-in the [Syntax Specification](./case-study/syntax) and may land in
-implementations incrementally.
+The baseline on this page - the URL scheme denylist, the attribute name/value
+hardening, and the raw-HTML escape switch - is enforced by all three
+implementations (carve-php, carve-js, carve-rs) by default. `SafeMode` /
+`Profile` describe a broader, opt-in policy layered ON TOP (scheme allowlists,
+domain allow/deny, `rel=nofollow`, feature restriction, nesting / length
+limits); that wider surface is documented in the
+[Syntax Specification](./case-study/syntax) and may land incrementally.
