@@ -131,10 +131,12 @@ differs by processor. The narrative below details each tier.
   the output element (the `spoiler` base class ahead of author classes) with the
   always-on attribute hardening. In carve-php / carve-js / carve-rs.
 
-Inline and sidenote footnotes are **not** Tier 3. They are deferred core
-reserved syntax (`[^…]` inline, `[>…]` sidenote; `resources/grammar.ebnf`
-PART 9 §16), not an app extension. The djot-php `[…]{.fn}` form maps onto
-carve's `[^…]`; see `native-features-analysis.md`.
+Footnotes are **not** Tier 3. Reference footnotes `[^id]` and inline footnotes
+`^[content]` are both implemented Tier-1 core (`resources/grammar.ebnf` PART 9
+§16); only the **sidenote** form `[>content]` is deferred core reserved syntax
+(reserved but not yet implemented), not an app extension. The djot-php
+`[…]{.fn}` form maps onto carve's inline `^[content]`; see
+`native-features-analysis.md`.
 
 ## 2. Extension system
 

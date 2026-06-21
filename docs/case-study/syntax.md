@@ -94,14 +94,16 @@ heading text by the following algorithm, applied in order:
 1. Take the heading's rendered plain text (inline markup removed; symbols
    `:name:` and footnote references excluded): `# *Setup* guide` yields
    `Setup guide`.
-2. NFC-normalize.
+2. **No normalization.** Carve applies no Unicode (NFC) normalization, so a
+   slug needs no Unicode tables and is byte-identical across implementations.
 3. Replace each maximal run of **non-alphanumeric ASCII** characters
    (spaces, punctuation, `_`, and runs of `-`) with a single `-`.
 4. Trim leading and trailing `-`.
-5. **Lowercase** it (Unicode-aware): non-ASCII characters are preserved,
-   only their case is folded. `Über café` → `über-café`, `日本語` stays
-   `日本語`. (GitHub/SSG style — makes ids and the common cross-reference
-   case-insensitive.)
+5. **Preserve case and non-ASCII characters** — the slug keeps the heading's
+   original letter case and any non-ASCII characters verbatim
+   (`Über café` → `Über-café`, `日本語` stays `日本語`). This matches
+   djot.js / djot-php. Cross-references resolve **case-insensitively**, so a
+   lowercase `</#über-café>` still finds it.
 6. If the result starts with a digit, prefix `s-` (a bare leading digit
    is a valid HTML id but an invalid CSS selector). If the result is
    empty, the identifier is `s`.
@@ -113,28 +115,25 @@ heading text by the following algorithm, applied in order:
 
 | Heading | Identifier |
 |---|---|
-| `# Getting Started` | `getting-started` |
-| `# Café & Crème` | `café-crème` |
-| `# Über uns` | `über-uns` |
-| `# Привет мир` | `привет-мир` |
-| `# RFC 2119: Key Words` | `rfc-2119-key-words` |
-| `# 2024 Recap` | `s-2024-recap` |
-| `# What's New?` | `what’s-new` (the `'` smart-quotes to `’`, a non-ASCII char, then is preserved) |
+| `# Getting Started` | `Getting-Started` |
+| `# Café & Crème` | `Café-Crème` |
+| `# Über uns` | `Über-uns` |
+| `# Привет мир` | `Привет-мир` |
+| `# RFC 2119: Key Words` | `RFC-2119-Key-Words` |
+| `# 2024 Recap` | `s-2024-Recap` |
 | `# user_id field` | `user-id-field` |
 | `# 日本語の見出し` | `日本語の見出し` |
-| `# Καλημέρα` | `καλημέρα` |
 | `# !!!` | `s` |
-| `# Setup` then `# Setup` | `setup`, then `setup-2` |
-| `# Introduction {#intro}` then `# Intro` | `intro`, then `intro-2` |
+| `# Setup` then `# Setup` | `Setup`, then `Setup-2` |
 
-Identifiers are **lowercase, with non-ASCII characters preserved** — the
-GitHub/static-site-generator convention authors expect for anchors. carve lowercases
-**by design**, deliberately diverging from djot.js / djot-php (which preserve case per
-[jgm/djot#393](https://github.com/jgm/djot/pull/393)); lowercasing makes ids and the
-common `</#id>` cross-reference case-insensitive. The rendered `id` is consumed by
-anchor highlighting, `:target` rules, `document.querySelector('#' + id)`, and URL
-fragments; a leading digit gets the `s-` prefix so it is always a valid bare CSS
-selector.
+Identifiers **preserve case and non-ASCII characters** — matching djot.js /
+djot-php (per [jgm/djot#393](https://github.com/jgm/djot/pull/393)). Cross-references
+resolve **case-insensitively**, so a lowercase `</#id>` still finds a capitalized
+heading and links to the target's actual (case-preserved) id. The rendered `id` is
+consumed by anchor highlighting, `:target` rules, `document.querySelector('#' + id)`,
+and URL fragments; a leading digit gets the `s-` prefix so it is always a valid bare
+CSS selector. Processors MAY apply the opt-in `lowercaseHeadingIds` /
+`asciiHeadingIds` transforms for lowercase or ASCII-folded fragment portability.
 
 Non-ASCII ids are valid HTML5 and resolve in browsers (the fragment is
 percent-encoded when shared, e.g. `…/page#%C3%BCber-uns`). For **ASCII-only**
