@@ -10,9 +10,9 @@ implementation realizes.
 
 | Tier | Definition | Default | Conformance |
 |------|------------|---------|-------------|
-| 1 · Core | Normative syntax in `resources/grammar.ebnf` + the corpus; identical output everywhere. | Always on | Mandatory (corpus) |
-| 2 · Standard-recommended | Spec-listed behaviors every impl SHOULD offer but ship off/passthrough. | Off / passthrough | Optional corpus when enabled |
-| 3 · App extension | Not in the spec, not conformance-tested, may exist in one impl only. | Off | Never |
+| 1&nbsp;·&nbsp;<Badge type="tip" text="core" /> | Normative syntax in `resources/grammar.ebnf` + the corpus; identical output everywhere. | Always on | Mandatory (corpus) |
+| 2&nbsp;·&nbsp;<Badge type="info" text="standard" /> | Spec-listed behaviors every impl SHOULD offer but ship off/passthrough ("standard-recommended"). | Off / passthrough | Optional corpus when enabled |
+| 3&nbsp;·&nbsp;<Badge type="warning" text="extension" /> | Not in the spec, not conformance-tested, may exist in one impl only (app extension). | Off | Never |
 
 Invariant: a feature's tier is identical in every language; a Tier-1 feature is
 core-and-default-on everywhere and its default output is corpus-pinned.
