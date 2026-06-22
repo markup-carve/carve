@@ -46,7 +46,7 @@ export function details() {
                 const innerPad = ctx.indent(ctx.level + 1);
                 const title = adm.title ? inlineText(adm.title) : '';
                 const summary = title.trim() === '' ? 'Details' : title;
-                const open = `<details${attrsToHtml(adm.attrs, ctx)}>`;
+                const open = `<details${ctx.renderAttrs(adm.attrs)}>`;
                 const body = ctx.renderChildren(adm.children, ctx.level + 1);
                 return (`${pad}${open}\n` +
                     `${innerPad}<summary>${ctx.escapeHtml(summary)}</summary>\n` +
@@ -55,39 +55,6 @@ export function details() {
             },
         },
     };
-}
-/** Emit `id`/`class`/`key=value` attributes in source order, then append any
- *  populated attrs the order list misses (it can be stale after another
- *  extension mutates attrs). The auto `details` class is dropped — the
- *  `<details>` tag is already the styling hook. */
-function attrsToHtml(attrs, ctx) {
-    if (!attrs)
-        return '';
-    const slots = [];
-    // `!== undefined` so an explicit empty id (`{id}` / `{id=""}`) renders id="".
-    const id = () => (attrs.id !== undefined ? ` id="${ctx.escapeAttr(attrs.id)}"` : '');
-    const cls = () => attrs.classes?.length ? ` class="${ctx.escapeAttr(attrs.classes.join(' '))}"` : '';
-    const kv = (key) => {
-        const v = attrs.keyValues?.[key];
-        return v === undefined ? '' : ` ${key}="${ctx.escapeAttr(v)}"`;
-    };
-    const order = attrs.order ?? [];
-    const seen = new Set(order);
-    const fullOrder = [
-        ...order,
-        ...(attrs.id !== undefined && !seen.has('#id') ? ['#id'] : []),
-        ...(attrs.classes?.length && !seen.has('.class') ? ['.class'] : []),
-        ...Object.keys(attrs.keyValues ?? {}).filter((k) => !seen.has(k)),
-    ];
-    for (const slot of fullOrder) {
-        if (slot === '#id')
-            slots.push(id());
-        else if (slot === '.class')
-            slots.push(cls());
-        else
-            slots.push(kv(slot));
-    }
-    return slots.join('');
 }
 /** Flatten an inline tree to its text content (titles only). */
 function inlineText(nodes) {

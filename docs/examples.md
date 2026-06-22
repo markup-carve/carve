@@ -6101,3 +6101,53 @@ the end of the line.
 ```
 
 :::
+
+## Empty link and image titles are preserved
+
+An explicit empty title (`""`) is kept as `title=""` rather than dropped -- the
+grammar permits an empty `link_title`, and all three implementations emit it
+identically.
+
+::: compare
+
+```carve
+[x](u "")
+```
+
+```html
+<p><a href="u" title="">x</a></p>
+```
+
+:::
+
+## Cross-references resolve inside footnote bodies
+
+A footnote definition is full block content, so a `</#id>` cross-reference (and
+reference links) inside a footnote body resolve against document-level targets.
+
+::: compare
+
+```carve
+# H
+
+Body[^n]
+
+[^n]: see </#h>
+```
+
+```html
+<section id="H">
+  <h1>H</h1>
+  <p>Body<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+</section>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <a href="#H">H</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::

@@ -1,47 +1,57 @@
+const MAX_RENDER_DEPTH = 200;
 export function renderPlainText(ast, _opts = {}) {
-    const out = renderBlocks(ast.children);
-    const footnotes = renderFootnoteDefs(ast);
+    const ctx = { blockDepth: 0, inlineDepth: 0 };
+    const out = renderBlocks(ast.children, ctx);
+    const footnotes = renderFootnoteDefs(ast, ctx);
     return normalize(`${out}${footnotes}`);
 }
-function renderBlocks(blocks) {
-    return blocks.map(renderBlock).join('');
+function renderBlocks(blocks, ctx) {
+    if (ctx.blockDepth >= MAX_RENDER_DEPTH)
+        return '';
+    ctx.blockDepth++;
+    try {
+        return blocks.map((b) => renderBlock(b, ctx)).join('');
+    }
+    finally {
+        ctx.blockDepth--;
+    }
 }
-function renderBlock(node) {
+function renderBlock(node, ctx) {
     switch (node.type) {
         case 'heading':
-            return `${renderInlines(node.children)}\n\n`;
+            return `${renderInlines(node.children, ctx)}\n\n`;
         case 'paragraph':
             if (isLegacyDefinitionParagraph(node)) {
                 const [term, def] = legacyDefinitionParts(node);
-                return `${term}\n  ${def}\n\n`;
+                return `${stripControls(term)}\n  ${stripControls(def)}\n\n`;
             }
-            return `${renderInlines(node.children)}\n\n`;
+            return `${renderInlines(node.children, ctx)}\n\n`;
         case 'code-block':
-            return `${node.content}\n\n`;
+            return `${stripControls(node.content)}\n\n`;
         case 'blockquote':
-            return `"${renderBlocks(node.children).trim()}"\n\n`;
+            return `"${renderBlocks(node.children, ctx).trim()}"\n\n`;
         case 'list':
-            return renderList(node);
+            return renderList(node, ctx);
         case 'thematic-break':
             return '---\n\n';
         case 'table':
-            return renderTable(node);
+            return renderTable(node, ctx);
         case 'admonition': {
-            const body = renderBlocks(node.children);
-            const title = node.title !== undefined ? renderInlines(node.title) : '';
+            const body = renderBlocks(node.children, ctx);
+            const title = node.title !== undefined ? renderInlines(node.title, ctx) : '';
             if (title !== '') {
                 return `${title}\n\n${body}`;
             }
             return body;
         }
         case 'div':
-            return renderBlocks(node.children);
+            return renderBlocks(node.children, ctx);
         case 'definition-list':
-            return renderDefinitionList(node.items, true);
+            return renderDefinitionList(node.items, ctx, true);
         case 'figure':
-            return renderFigure(node);
+            return renderFigure(node, ctx);
         case 'image':
-            return node.alt;
+            return stripControls(node.alt);
         case 'raw-block':
         case 'abbreviation-def':
         case 'comment':
@@ -52,59 +62,67 @@ function renderBlock(node) {
         }
     }
 }
-function renderList(node) {
+function renderList(node, ctx) {
     let out = '';
     let counter = node.start ?? 1;
     for (const item of node.items) {
         out += node.ordered ? `${counter}. ` : '- ';
         counter++;
-        out += `${renderBlocks(item.children).trim()}\n`;
+        out += `${renderBlocks(item.children, ctx).trim()}\n`;
     }
     return `${out}\n`;
 }
-function renderDefinitionList(items, trailingBlank) {
+function renderDefinitionList(items, ctx, trailingBlank) {
     let out = '';
     for (const item of items) {
         for (const term of item.terms)
-            out += `${renderInlines(term)}\n`;
+            out += `${renderInlines(term, ctx)}\n`;
         for (const def of item.definitions)
-            out += `  ${renderBlocks(def).trim()}\n`;
+            out += `  ${renderBlocks(def, ctx).trim()}\n`;
     }
     return trailingBlank ? `${out}\n` : out;
 }
-function renderTable(node) {
+function renderTable(node, ctx) {
     let out = '';
     for (const row of node.rows) {
-        out += `${row.cells.map((cell) => renderInlines(cell.children).trim()).join(' | ')}\n`;
+        out += `${row.cells.map((cell) => renderInlines(cell.children, ctx).trim()).join(' | ')}\n`;
     }
     if (node.caption)
-        out = `${out.trimEnd()}\n${renderInlines(node.caption)}\n`;
+        out = `${out.trimEnd()}\n${renderInlines(node.caption, ctx)}\n`;
     return `${out}\n`;
 }
-function renderFigure(node) {
+function renderFigure(node, ctx) {
     const target = node.target.type === 'image'
-        ? node.target.alt
+        ? stripControls(node.target.alt)
         : node.target.type === 'table'
-            ? renderTable(node.target).trim()
-            : renderBlock(node.target).trim();
+            ? renderTable(node.target, ctx).trim()
+            : renderBlock(node.target, ctx).trim();
     // A block-level target (a code-block listing or a display-math equation)
     // keeps the caption on its own line; an inline image target stays adjacent.
     const sep = node.target.type === 'code-block' || node.target.type === 'paragraph' ? '\n' : '';
-    return `${target}${sep}${renderInlines(node.caption)}`;
+    return `${target}${sep}${renderInlines(node.caption, ctx)}`;
 }
-function renderFootnoteDefs(ast) {
+function renderFootnoteDefs(ast, ctx) {
     if (!ast.footnoteDefs)
         return '';
     let out = '';
     for (const [label, blocks] of Object.entries(ast.footnoteDefs)) {
-        out += `[${label}]: ${renderBlocks(blocks).trim()}\n`;
+        out += `[${stripControls(label)}]: ${renderBlocks(blocks, ctx).trim()}\n`;
     }
     return out;
 }
-function renderInlines(nodes) {
-    return nodes.map(renderInline).join('');
+function renderInlines(nodes, ctx) {
+    if (ctx.inlineDepth >= MAX_RENDER_DEPTH)
+        return '';
+    ctx.inlineDepth++;
+    try {
+        return nodes.map((node) => renderInline(node, ctx)).join('');
+    }
+    finally {
+        ctx.inlineDepth--;
+    }
 }
-function renderInline(node) {
+function renderInline(node, ctx) {
     switch (node.type) {
         case 'text':
             return cleanEscapedText(node);
@@ -118,49 +136,49 @@ function renderInline(node) {
         case 'span':
         case 'critic-insert':
         case 'strike':
-            return renderInlines(node.children);
+            return renderInlines(node.children, ctx);
         case 'critic-delete':
-            return `~${renderInlines(node.children)}~`;
+            return `~${renderInlines(node.children, ctx)}~`;
         case 'code':
-            return node.value;
+            return stripControls(node.value);
         case 'link':
-            return node.href.startsWith('#') ? renderInlines(node.children) : node.href;
+            return node.href.startsWith('#') ? renderInlines(node.children, ctx) : stripControls(node.href);
         case 'image':
-            return node.alt;
+            return stripControls(node.alt);
         case 'math':
-            return node.content;
+            return stripControls(node.content);
         case 'raw-inline':
             return '';
         case 'emoji':
-            return `:${node.name}:`;
+            return `:${stripControls(node.name)}:`;
         case 'autolink':
-            return node.href.startsWith('mailto:') ? node.href.slice(7) : node.href;
+            return stripControls(node.href.startsWith('mailto:') ? node.href.slice(7) : node.href);
         case 'mention':
-            return `@${node.user}`;
+            return `@${stripControls(node.user)}`;
         case 'tag':
-            return `#${node.name}`;
+            return `#${stripControls(node.name)}`;
         case 'extension':
-            return renderInlines(node.content);
+            return renderInlines(node.content, ctx);
         case 'abbreviation':
-            return node.abbr;
+            return stripControls(node.abbr);
         case 'footnote':
-            return node.inline ? `(${renderInlines(node.inline)})` : `[${node.id ?? ''}]`;
+            return node.inline ? `(${renderInlines(node.inline, ctx)})` : `[${stripControls(node.id ?? '')}]`;
         case 'soft-break':
             return ' ';
         case 'hard-break':
             return '\n';
         case 'critic-substitute':
             // Keep both sides (old struck like critic-delete, then new).
-            return `~${node.oldText}~${node.newText}`;
+            return `~${stripControls(node.oldText)}~${stripControls(node.newText)}`;
         case 'critic-comment':
             return '';
         case 'crossref':
-            return `</#${node.target}>`;
+            return `</#${stripControls(node.target)}>`;
         case 'caption-number':
             return node.n === undefined ? '#' : String(node.n);
         case 'citation-group':
             // Tier-2 ext node; the core renderer has no numbering, so emit the source.
-            return node.raw;
+            return stripControls(node.raw);
         case 'comment':
             return '';
         default: {
@@ -178,9 +196,14 @@ function normalize(text) {
 }
 function cleanEscapedText(node) {
     // The value is the literal text (the parser already resolved backslash
-    // escapes), so a `\*` reaches here as `*`. Return it verbatim -- dropping the
-    // character would lose data.
-    return node.value;
+    // escapes), so a `\*` reaches here as `*`. Strip control bytes so attacker
+    // text cannot inject terminal escape sequences (see stripControls).
+    return stripControls(node.value);
+}
+/** Drop C0/C1 control characters (keeping tab and newline) from author content
+ *  so attacker ESC / OSC sequences cannot inject into terminal output. */
+function stripControls(s) {
+    return s.replace(/\p{Cc}/gu, (c) => (c === '\t' || c === '\n' ? c : ''));
 }
 function isLegacyDefinitionParagraph(node) {
     return (node.children.length === 3 &&
