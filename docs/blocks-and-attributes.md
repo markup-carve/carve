@@ -143,7 +143,7 @@ text [span]{.c}       ← inline: directly AFTER, no space
 -{#item} list item    ← list item: abuts the marker (no space!)
 
 {.x}                  ← code block: line BEFORE the fence
-``` lang
+```lang
 code
 ```
 ````
