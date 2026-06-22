@@ -42,6 +42,36 @@ renders the heading as `<h2 class="featured">` inside `<section id="install">` (
 
 This is uniform across every block - headings, block quotes, lists, code blocks, divs/admonitions, line-blocks, tables. They all take their attributes on the preceding line; none take a trailing attribute on the block's own line. (For a code block the fence line accepts only `lang [label]` - a `{…}` after the language word makes the line *not a fence at all*; the backticks then fall back to ordinary inline parsing. For a heading, a trailing `{…}` is ordinary inline text. Put the attributes on the line above, like any other block.)
 
+### Code blocks: line numbers, titles, and highlighting
+
+Because a code block takes its attributes on the preceding line, those attributes flow straight onto the rendered `<pre>`. A renderer can use them to switch on line numbers, a title, or highlighted lines - no special fence syntax is needed (and none exists: the fence word is a single token).
+
+````carve
+{.line-numbers title="src/app.php"}
+``` php
+$x = compute();
+return $x;
+```
+````
+
+- `.line-numbers` asks the renderer for a line-number gutter.
+- `data-line-start="42"` (a plain `data-*` attribute) starts numbering at 42.
+- `title="…"` names the block; renderers typically surface it as a caption.
+
+How *highlighting*, *diff*, and *focus* are expressed is a renderer concern, not Carve syntax. Renderers built on Torchlight read in-code annotations, so the signal lives in the code body and the single-token fence stays untouched:
+
+````carve
+``` php
+$safe = clean($in);   // [tl! highlight]
+$old  = legacy();     // [tl! --]
+$new  = modern();     // [tl! ++]
+```
+````
+
+::: warning Not supported: the `lang #` info-string convention
+Markdown/djot tooling often writes `` ```php # `` or `` ```php {1,3-5} `` on the fence line to mark line numbers or ranges. In Carve that line is **not a fence** - the fence word is a single token, so a space and anything after it falls back to inline parsing. Use the preceding attribute line (and, for highlighting, in-code annotations) instead.
+:::
+
 ## Inline elements
 
 An inline element lives inside a line of text.
