@@ -1300,7 +1300,7 @@ npm install x
 
 :::
 
-A quoted `"header"` after the language (and before any `[label]`) sets a human-visible title for the block. Because a code block's `<pre><code>` holds atomic preformatted text, the header cannot be a child element the way an admonition title is — core carries it as the `title` attribute on the `<pre>`, and the host decides whether to render a filename bar or leave it as the native mouseover tooltip. The text is flattened and HTML-escaped, like an admonition header.
+A quoted `"header"` after the language (and before any `[label]`) sets a human-visible title for the block. Because a code block's `<pre><code>` holds atomic preformatted text, the header cannot be a child element the way an admonition title is — core carries it as the `title` attribute on the `<pre>`, and the host decides whether to render a filename bar or leave it as the native mouseover tooltip. It uses the same quoted-title token as an admonition header, but because it targets an attribute the text is literal (not inline-parsed), only HTML-escaped — so markup-like characters in a filename survive.
 
 ::: compare
 
@@ -1346,6 +1346,23 @@ remember the milk
 
 ```html
 <pre title="notes.txt"><code>remember the milk
+</code></pre>
+```
+
+:::
+
+The header text is literal — markup-like characters (a glob `*`, an underscore) are not parsed, so a filename survives intact in the `title`.
+
+::: compare
+
+````carve
+```js "*.config.js"
+export default {}
+```
+````
+
+```html
+<pre title="*.config.js"><code class="language-js">export default {}
 </code></pre>
 ```
 
@@ -1643,6 +1660,24 @@ A typeless generic div may carry a label too (a tab member with no semantic type
 
 ```carve
 ::: [First]
+First panel.
+:::
+```
+
+```html
+<div>
+  <p>First panel.</p>
+</div>
+```
+
+::::
+
+As the first token after the fence, the bare `[label]` may sit directly against it (`:::[First]`), the same allowance a code fence makes for `` ```[NPM] ``.
+
+:::: compare
+
+```carve
+:::[First]
 First panel.
 :::
 ```

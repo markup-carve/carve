@@ -54,6 +54,16 @@ First panel.
 ```
 
 ```
+:::[First]
+First panel.
+:::
+.
+<div>
+  <p>First panel.</p>
+</div>
+```
+
+```
 ::: warning
 Mind the gap.
 :::

@@ -488,6 +488,9 @@ function renderBlock(node, opts, level) {
         case 'thematic-break':
             return `${pad}<hr${renderAttrs(node.attrs)}>`;
         case 'code-block': {
+            // The opener "header" is resolved to a `title` attribute at parse time
+            // (see parseBlocks), so it renders here AND wherever else a code block is
+            // emitted (e.g. inside a code-group).
             const langAttr = node.lang ? ` class="language-${node.lang}"` : '';
             const escaped = escapeHtml(node.content);
             return `${pad}<pre${renderAttrs(node.attrs)}><code${langAttr}>${escaped}\n</code></pre>`;
@@ -688,6 +691,7 @@ function renderTable(node, opts, level) {
     // Detect header section: leading consecutive rows where all cells are headers
     let headerEnd = 0;
     while (headerEnd < grid.length &&
+        grid[headerEnd].some((e) => !e.skip) &&
         grid[headerEnd].every((e) => e.cell.header || e.skip)) {
         headerEnd++;
     }
