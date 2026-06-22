@@ -78,10 +78,6 @@ $new  = modern();     // [tl! ++]
 ```
 ````
 
-::: warning Not supported: the `lang #` info-string convention
-Markdown/djot tooling often writes `` ```php # `` or `` ```php {1,3-5} `` on the fence line to mark line numbers or ranges. In Carve that line is **not a fence** - after the language token, only an optional `"header"` and then an optional `[label]` are admitted. Use the preceding attribute line for renderer attributes and in-code annotations for highlighting.
-:::
-
 ## Inline elements
 
 An inline element lives inside a line of text.
