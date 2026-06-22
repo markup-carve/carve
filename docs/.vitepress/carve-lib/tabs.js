@@ -30,10 +30,13 @@ export function tabs(opts = {}) {
     // Per-document counters, reset in beforeRender (matches carve-php clear()).
     let tabSetCounter = 0;
     let labelCounter = 0;
+    // An explicit label is the opener `[label]` (canonical) or a `{label="..."}`
+    // attribute (deprecated). When present, an inner heading stays as content.
+    const explicitLabel = (tab) => tab.label ?? tab.attrs?.keyValues?.label;
     const extractLabel = (tab) => {
-        const labelAttr = tab.attrs?.keyValues?.label;
-        if (labelAttr !== undefined)
-            return labelAttr;
+        const label = explicitLabel(tab);
+        if (label !== undefined)
+            return label;
         for (const child of tab.children) {
             if (child.type === 'heading')
                 return inlineText(child.children);
@@ -41,7 +44,7 @@ export function tabs(opts = {}) {
         return `Tab ${++labelCounter}`;
     };
     const renderTabContent = (tab, ctx) => {
-        const skipFirstHeading = tab.attrs?.keyValues?.label === undefined;
+        const skipFirstHeading = explicitLabel(tab) === undefined;
         let skipped = false;
         let html = '';
         for (const child of tab.children) {

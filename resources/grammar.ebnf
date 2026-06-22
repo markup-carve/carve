@@ -178,24 +178,41 @@ fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
    ```php and ``` php are accepted; Markdown writes no space, Djot writes the
    space). The no-space form (```php) is canonical and is what the X->Carve
    converters emit. *)
-(* CODE-FENCE INFO STRING -- NORMATIVE. The info string is a single
-   language_info token, optionally followed by a bracketed [label], or a bare
-   [label] (no language). The label is structured metadata: it is NOT part of
-   the language/class; the core renderer ignores it, an extension (e.g.
-   code-group) may use it. A code fence carries NO inline attributes -- use the
-   PRECEDING block-attribute line for those (PART 9 §15):
+(* CODE-FENCE INFO STRING -- NORMATIVE. After the optional language_info
+   token the opener admits, in this fixed order, an optional "header" (a
+   quoted_title -- the SAME token as the admonition header, PART 9 §12) and an
+   optional bracketed [label]. Both are STRUCTURED METADATA -- neither is part
+   of the language/class:
+     - HEADER ("...") -- a human-visible title for the block. Carried by core
+       as the `title` attribute on the <pre> (rendering choice A: code's
+       <pre><code> is atomic preformatted text, so the title cannot be a child
+       element the way an admonition title is -- it rides as an attribute, and
+       the host CSS/JS decides whether to draw a filename bar or leave it as the
+       native mouseover tooltip). The header uses the same quoted_title TOKEN as
+       the admonition header, but because it targets an HTML attribute the text
+       is LITERAL (not inline-parsed) -- only HTML-escaped -- so markup-like
+       characters in a filename (`*.config.js`, `a_b.py`) survive intact. An
+       empty "" is a supplied empty title (`title=""`).
+     - LABEL ([...]) -- a short grouping identifier. The core renderer ignores
+       it; a group extension (e.g. code-group) uses it as the tab label.
+   A code fence still carries NO inline {...} attributes -- use the PRECEDING
+   block-attribute line for class/id/data-* (PART 9 §15):
        {.fancy #x}
-       ```php
+       ```php "src/Auth.php"
        ...
        ```
-   which renders on the <pre> (language stays `language-…` on the <code>).
+   which renders on the <pre> (language stays `language-…` on the <code>). If
+   the preceding line ALSO sets `title`, the preceding line wins (the explicit
+   attribute channel overrides the opener-header sugar).
    INVALID-FENCE FALLBACK: when the text after the language token is anything
-   other than a [label] -- a bare second word, a quoted value, an inline `{...}`
-   block (```js title="x", ``` php {.x}) -- the line is NOT a fenced code block;
-   it falls back to ordinary inline parsing (the backtick run typically opens an
-   inline code span). The bracket is the only delimiter that admits structured
-   metadata. The raw passthrough opener (```=FORMAT, PART 9 §20) is a SEPARATE
-   production matched before this one (a leading `=` is never a language). *)
+   other than an optional "header" then an optional [label] in that order -- a
+   bare second word, a key="value" pair (```js title="x"), an inline `{...}`
+   block (``` php {.x}), or the wrong order (```php [l] "h") -- the line is NOT
+   a fenced code block; it falls back to ordinary inline parsing (the backtick
+   run typically opens an inline code span). Quotes and brackets are the only
+   delimiters that admit metadata. The raw passthrough opener (```=FORMAT,
+   PART 9 §20) is a SEPARATE production matched before this one (a leading `=`
+   is never a language, and a raw block takes no header). *)
 
 code_fence_open = backtick_fence | tilde_fence ;
 code_fence_close = backtick_fence | tilde_fence ;  (* same fence char; length >= opener (PART 9 §2) *)
@@ -203,7 +220,13 @@ code_fence_close = backtick_fence | tilde_fence ;  (* same fence char; length >=
 backtick_fence = '`', '`', '`', {'`'} ;
 tilde_fence = '~', '~', '~', {'~'} ;
 
-code_fence_info = (language_info, [space+, label]) | label ;
+code_fence_info = ( language_info, [space+, quoted_title], [space+, label] )
+                | ( quoted_title, [space+, label] )
+                | label ;
+(* fixed order: language, then "header", then [label]; each optional, but a
+   non-empty info string matches one of these three shapes or it is an
+   INVALID-FENCE FALLBACK (see the NORMATIVE note above). quoted_title is the
+   shared header token defined under Admonitions. *)
 language_info = (letter | digit | '-' | '_' | '+' | '#' | '.' | '/')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net, text/html. May start with a digit. The `/` is normative across all impls (so `text/html`, `image/svg` are language tokens, not split). A token MUST NOT start with `=`: a leading `=` is the raw_block opener (above), not a language. *)
 label = '[', { character - ']' }, ']' ;  (* structured metadata, e.g. [Installation]; not part of the class *)
 code_content = (* any text until matching fence, preserved literally *) ;
@@ -454,12 +477,25 @@ admonition = admonition_open, newline,
              admonition_close, newline ;
 (* the body may be EMPTY, like the generic div's (PART 9 §12) *)
 
-(* STRICT (djot): the opener line carries NO inline attributes -- it is
-   colon_fence, type, and an optional quoted title, and NOTHING else. A
-   trailing `{...}` (or any other non-title text) makes the line an
-   ordinary paragraph, not a fence. Attributes attach via a PRECEDING
-   block-attribute line, which floats onto the admonition (§15). *)
-admonition_open = colon_fence, space, admonition_type, [space, quoted_title] ;
+(* STRICT (djot): the opener line carries NO inline `{...}` attributes -- it
+   is colon_fence, type, an optional quoted "header", an optional [label],
+   and NOTHING else. A trailing `{...}` (or any other text not matching the
+   header/label shape) makes the line an ordinary paragraph, not a fence.
+   Class/id/data-* attach via a PRECEDING block-attribute line, which floats
+   onto the admonition (§15).
+   The "header" and [label] are the SAME two metadata tokens a code fence
+   takes (PART 9 §2), in the same fixed order:
+     - HEADER ("...") -- the visible admonition title (`<p
+       class="admonition-title">`, or `<summary>` under the details
+       extension). Unchanged role.
+     - LABEL ([...]) -- a short grouping identifier; core ignores it standalone,
+       a group extension (e.g. tabs) uses it as the tab label. This is the
+       canonical replacement for the tabs `{label="..."}` / inner-heading
+       convention (those stay supported, deprecated). The `selected`
+       default-tab marker is NOT a label -- it remains a boolean attribute on
+       the preceding `{...}` line. *)
+admonition_open = colon_fence, space, admonition_type,
+                  [space+, quoted_title], [space+, label] ;
 admonition_close = colon_fence ;
 
 admonition_type = "note" | "tip" | "warning" | "danger" | "info"
@@ -476,12 +512,17 @@ quoted_title = '"', {character - '"'}, '"' ;
 (* --- Generic Divs (djot generic container; PART 9 §12) --- *)
 (* A BARE `:::` opener with NO type word is a generic div, NOT an
    admonition (no class added). STRICT (djot): the opener carries NO inline
-   attributes -- an inline `::: {…}` is a paragraph, not a div. Attributes
-   attach via a PRECEDING block-attribute line, which floats onto the div
-   (§15). Shares the colon-fence closer and the fence-length nesting rule
-   (PART 9 §12). *)
+   `{...}` attributes -- an inline `::: {…}` is a paragraph, not a div.
+   Class/id/data-* attach via a PRECEDING block-attribute line, which floats
+   onto the div (§15). A typeless div MAY still carry a [label] (e.g.
+   `::: [First]` for a tab member with no semantic type); a header without a
+   type is not meaningful, so `::: "x"` is a paragraph. As the FIRST token after
+   the fence the [label] may sit directly against it (`:::[First]`), exactly as
+   a code fence admits a bare `[label]` (a label AFTER a type word still needs a
+   space -- admonition_open). Shares the colon-fence closer and the fence-length
+   nesting rule (PART 9 §12). *)
 div = div_open, newline, {block - admonition_close}, admonition_close, newline ;
-div_open = colon_fence ;
+div_open = colon_fence, [[space], label] ;
 
 (* --- Line block (verse) -- a RECOGNIZED `:::` type that preserves the
    author's per-line layout. `::: |` renders as a generic

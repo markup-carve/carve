@@ -19,12 +19,18 @@ const RE_HR = /^[ \t]*([-*_])(?:[ \t]*\1){2,}[ \t]*$/;
 // Info string is a single language token, optionally followed by a bracketed
 // `[label]` (structured metadata; e.g. ```php [NPM] or ```[NPM]). The charset
 // covers real-world tags with punctuation (c++, c#, f#, asp.net, text/html).
-// Anything else after the token -- a bare second word, a quoted value,
-// `key=val` -- is NOT a fence (e.g. `js title="x"`): the bracket is the only
-// allowed delimiter, so such a line falls back to inline parsing. An info
-// string of the form `=FORMAT` is a raw passthrough block (RE_RAW_FENCE),
-// matched before this; a leading `=` therefore never starts a language token.
-const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*([a-zA-Z0-9_+#/.-]*)\s*(\[[^\]]*\])?\s*$/;
+// After the language the opener admits, in this fixed order, an optional quoted
+// "header" (carried to the `title` attribute on the <pre>; PART 9 §2) and an
+// optional bracketed [label] (structured metadata a group extension may use).
+// The header/label must be whitespace-separated from the preceding token; a
+// glued quote/bracket (```php"x", ```php "x"[y]) or wrong order (```php [l] "h")
+// is NOT a fence and falls back to inline parsing. A key="value" pair
+// (```js title="x") is likewise not a fence. The first token may sit directly
+// against the fence (```php / ``` php / ```[NPM] / ```"notes"). An info string
+// of the form `=FORMAT` is a raw passthrough block (RE_RAW_FENCE), matched
+// before this; a leading `=` therefore never starts a language token.
+// Groups: 3 lang, 4|6 header (quoted, incl. quotes), 5|7|8 label (incl. brackets).
+const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*(?:([a-zA-Z0-9_+#/.-]+)(?:\s+("[^"]*"))?(?:\s+(\[[^\]]*\]))?|("[^"]*")(?:\s+(\[[^\]]*\]))?|(\[[^\]]*\]))?\s*$/;
 // Bullets are `-` and `*` only. Unlike Markdown/djot, `+` is not a Carve bullet
 // -- it is reserved as the list-continuation marker (PART 9 §17), so a lone `+`
 // is unambiguous and a `+ x` line is ordinary paragraph text. A marker is a list
@@ -61,15 +67,19 @@ const RE_BLOCKQUOTE = /^>\s?(.*)$/;
 // Fences are a run of 3+ colons (group 1). A longer opener nests: a
 // `::::` block contains `:::` blocks, and only a bare closer of equal-or-
 // greater length closes it (djot fence-length rule).
-// A `:::` opener carries NO inline attributes (strict djot): the fence line
-// is `colon_fence [space type [space "title"]]` and nothing else. Any
-// trailing `{...}` (or other non-title text) makes it not a fence, so the
-// line is an ordinary paragraph. Attributes attach via a PRECEDING `{...}`
-// block-attribute line.
+// A `:::` opener carries NO inline `{...}` attributes (strict djot): the fence
+// line is `colon_fence [space type [space "header"] [space [label]]]` and
+// nothing else. Any trailing `{...}` (or other text not matching that shape)
+// makes it not a fence, so the line is an ordinary paragraph. Class/id attach
+// via a PRECEDING `{...}` block-attribute line.
+// The "header" keeps its role (admonition title / summary). The [label] is an
+// inert grouping id a group extension (tabs) consumes -- the canonical
+// replacement for the tabs `{label="..."}` / heading convention. Both must be
+// whitespace-separated from the preceding token (PART 9 §12).
 // The type word is a grammar `identifier`: `(letter | '_'), {letter | digit
 // | '_' | '-'}`, so it may start with an underscore (matches carve-php /
-// carve-rs).
-const RE_ADMONITION_OPEN = /^(:{3,})\s*([a-zA-Z_][\w-]*)\s*("[^"]*")?\s*$/;
+// carve-rs). Groups: 2 kind, 3 header (quoted), 4 label (bracketed).
+const RE_ADMONITION_OPEN = /^(:{3,})\s*([a-zA-Z_][\w-]*)(?:\s+("[^"]*"))?(?:\s+(\[[^\]]*\]))?\s*$/;
 const RE_ADMONITION_CLOSE = /^(:{3,})\s*$/;
 // Line block: the opener is `::: |` ONLY (a bare pipe type token). The old
 // `::: line-block` keyword is no longer special -- it falls through to the
@@ -81,8 +91,13 @@ const RE_LINE_BLOCK_OPEN = /^(:{3,})[ \t]+\|[ \t]*$/;
 // Generic fenced div: a bare `:::` opener with NO type word (djot's generic
 // container). A typed `::: word` routes to parseAdmonition. An inline
 // `::: {.class}` is NOT a div (strict djot) -- use a preceding attribute
-// line. Shares the `:::` closer.
-const RE_DIV_OPEN = /^(:{3,})\s*$/;
+// line. A bare opener MAY carry an inert `[label]` (a typeless tab member,
+// `::: [First]`) which a group extension consumes. As the FIRST token after
+// the fence the label may sit directly against it (`:::[First]`), exactly as a
+// code fence allows ```[NPM]; a label after a TYPE word needs a space and is
+// handled by RE_ADMONITION_OPEN. Shares the `:::` closer.
+// Groups: 2 label (bracketed).
+const RE_DIV_OPEN = /^(:{3,})\s*(\[[^\]]*\])?\s*$/;
 // Definition list (§4.5). A TERM line is exactly two colons + space(s)
 // + text — the `(?!:)` keeps it distinct from a `:::` div/admonition. A
 // DEFINITION line is a colon + two-or-more spaces + text.
@@ -109,7 +124,8 @@ const RE_TABLE_ROW = /^\|/;
 // GLUED to its closing pipe (`| a |{.x}` -> <tr class="x">); rowAttrsFromLine
 // validates and strips it, so the gate allows an optional trailing `{...}`.
 const isTableRow = (line) => RE_TABLE_ROW.test(line) &&
-    (/\|[ \t]*$/.test(line) || rowAttrsFromLine(line).attrs !== undefined);
+    (/\|[ \t]*$/.test(line) || rowAttrsFromLine(line).attrs !== undefined) &&
+    splitTableRow(rowAttrsFromLine(line).body).some((cell) => cell.length > 0);
 // A `+`-prefixed continuation row (multi-line cell). Like the grammar's
 // continuation_row it ends with `|`; that trailing pipe distinguishes
 // it from a `+ ` list item (which never ends with `|`). Only consumed
@@ -494,6 +510,26 @@ function parseBlocks(lexer, baseIndent) {
                 // attrs win on conflict (id/key last), classes accumulate (§15).
                 node.attrs = mergeAttrs(pending, node.attrs ?? {});
             }
+            // A code fence's opener "header" becomes the `title` attribute on the
+            // <pre>. Resolved here (after the pending merge) so a preceding
+            // {title=...} line wins, and so the title lives on the node attrs --
+            // rendered by every code-block path, including inside a code-group or a
+            // caption figure (where parseFence returns a Figure wrapping the block).
+            const cb = node.type === 'code-block'
+                ? node
+                : node.type === 'figure' && node.target.type === 'code-block'
+                    ? node.target
+                    : undefined;
+            // An explicit {title=} wins: for a captioned block it merged onto the
+            // wrapping Figure (node.attrs), otherwise onto the block itself.
+            if (cb?.header !== undefined &&
+                node.attrs?.keyValues?.title === undefined &&
+                cb.attrs?.keyValues?.title === undefined) {
+                cb.attrs = {
+                    ...(cb.attrs ?? {}),
+                    keyValues: { ...(cb.attrs?.keyValues ?? {}), title: cb.header },
+                };
+            }
             out.push(node);
         }
         // The block absorbs any pending attrs -- including a non-rendering
@@ -801,8 +837,12 @@ function parseFence(lexer) {
     const indent = m[1].length;
     const marker = m[2];
     const lang = m[3] || undefined;
-    // m[4] is `[label]` including the brackets; strip them for the metadata.
-    const label = m[4] ? m[4].slice(1, -1) : undefined;
+    // Header is the quoted group (with or without a language); label is the
+    // bracketed group from whichever alternative matched. Strip the delimiters.
+    const headerRaw = m[4] ?? m[6];
+    const labelRaw = m[5] ?? m[7] ?? m[8];
+    const header = headerRaw ? headerRaw.slice(1, -1) : undefined;
+    const label = labelRaw ? labelRaw.slice(1, -1) : undefined;
     const closeRe = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
     const lines = [];
     while (!lexer.eof()) {
@@ -818,6 +858,8 @@ function parseFence(lexer) {
     const cb = { type: 'code-block', content: lines.join('\n') };
     if (lang)
         cb.lang = lang;
+    if (header !== undefined)
+        cb.header = header;
     if (label !== undefined)
         cb.label = label;
     // Optional caption (`^ …`): a captioned code block is a numbered LISTING,
@@ -933,6 +975,9 @@ function parseAdmonition(lexer) {
     // still counts as a supplied (empty) title. No inline attributes -- the
     // opener regex already rejected any trailing `{...}`.
     const titleText = m[3] !== undefined ? m[3].slice(1, -1) : undefined;
+    // Optional inert grouping `[label]` (PART 9 §12): a group extension (tabs)
+    // uses it as the tab name; core does not render it.
+    const label = m[4] !== undefined ? m[4].slice(1, -1) : undefined;
     const inner = [];
     while (!lexer.eof()) {
         const ln = lexer.peek();
@@ -956,6 +1001,9 @@ function parseAdmonition(lexer) {
     // `""` still emits a (empty) <p class="admonition-title"> per §12.
     if (titleText !== undefined) {
         node.title = parseInline(titleText, lexer.abbrDefs, lexer.linkDefs);
+    }
+    if (label !== undefined) {
+        node.label = label;
     }
     // No inline opener attributes (strict djot): a preceding block-attribute
     // line is the only way to attribute an admonition, and parseBlocks
@@ -1087,6 +1135,8 @@ function divHasCloser(lexer) {
 function parseDiv(lexer) {
     const m = RE_DIV_OPEN.exec(lexer.consume());
     const fence = m[1].length;
+    // Optional inert grouping `[label]` on a typeless div (`::: [First]`).
+    const label = m[2] !== undefined ? m[2].slice(1, -1) : undefined;
     const inner = [];
     while (!lexer.eof()) {
         const ln = lexer.peek();
@@ -1107,6 +1157,9 @@ function parseDiv(lexer) {
     // No inline opener attributes (strict djot): a bare `:::` carries none;
     // a preceding block-attribute line attaches them in parseBlocks.
     const node = { type: 'div', children: parseBlocks(subLexer, 0) };
+    if (label !== undefined) {
+        node.label = label;
+    }
     return node;
 }
 // Definition list (§4.5). An entry is 1+ `:: term` lines followed by 1+
@@ -2155,7 +2208,7 @@ function parseTable(lexer) {
     const rowAttrsList = [];
     let lastRaw = null;
     while (!lexer.eof() &&
-        (RE_TABLE_ROW.test(lexer.peek()) || RE_TABLE_CONT.test(lexer.peek()))) {
+        (isTableRow(lexer.peek()) || RE_TABLE_CONT.test(lexer.peek()))) {
         const line = lexer.peek();
         if (RE_TABLE_CONT.test(line)) {
             if (!lastRaw)

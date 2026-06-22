@@ -1,4 +1,3 @@
-```
-# not a heading
-/not italic/  *not bold*  #notatag
+```js "*.config.js"
+export default {}
 ```

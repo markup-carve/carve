@@ -1300,7 +1300,93 @@ npm install x
 
 :::
 
-Anything else after the language token — a bare second word, a quoted value, or an inline `{…}` block — is **not** a fenced code block. There is no error: the backtick run falls back to ordinary inline parsing (an inline code span). The bracket is the only delimiter that admits metadata.
+A quoted `"header"` after the language (and before any `[label]`) sets a human-visible title for the block. Because a code block's `<pre><code>` holds atomic preformatted text, the header cannot be a child element the way an admonition title is — core carries it as the `title` attribute on the `<pre>`, and the host decides whether to render a filename bar or leave it as the native mouseover tooltip. It uses the same quoted-title token as an admonition header, but because it targets an attribute the text is literal (not inline-parsed), only HTML-escaped — so markup-like characters in a filename survive.
+
+::: compare
+
+````carve
+```php "src/Auth.php"
+$ok = true;
+```
+````
+
+```html
+<pre title="src/Auth.php"><code class="language-php">$ok = true;
+</code></pre>
+```
+
+:::
+
+A header and a `[label]` may combine, in that fixed order. The label stays inert in core (a code-group would use it as the tab name); the header still becomes the `title`.
+
+::: compare
+
+````carve
+```php "src/Auth.php" [Composer]
+composer require x
+```
+````
+
+```html
+<pre title="src/Auth.php"><code class="language-php">composer require x
+</code></pre>
+```
+
+:::
+
+A header may appear with no language, leaving the `<code>` unclassed.
+
+::: compare
+
+````carve
+``` "notes.txt"
+remember the milk
+```
+````
+
+```html
+<pre title="notes.txt"><code>remember the milk
+</code></pre>
+```
+
+:::
+
+The header text is literal — markup-like characters (a glob `*`, an underscore) are not parsed, so a filename survives intact in the `title`.
+
+::: compare
+
+````carve
+```js "*.config.js"
+export default {}
+```
+````
+
+```html
+<pre title="*.config.js"><code class="language-js">export default {}
+</code></pre>
+```
+
+:::
+
+If the preceding `{…}` block-attribute line also sets `title`, that line wins — the opener header only fills `title` when the attribute line did not.
+
+::: compare
+
+````carve
+{title="from the attribute line"}
+```php "from the header"
+code
+```
+````
+
+```html
+<pre title="from the attribute line"><code class="language-php">code
+</code></pre>
+```
+
+:::
+
+Anything else after the language token — a bare second word, a `key="value"` pair, an inline `{…}` block, or a header and label in the wrong order — is **not** a fenced code block. There is no error: the backtick run falls back to ordinary inline parsing (an inline code span). Quotes and brackets are the only delimiters that admit metadata, and only in the order header-then-label.
 
 ::: compare
 
@@ -1312,6 +1398,22 @@ code
 
 ```html
 <p><code>js title="x"
+code
+</code></p>
+```
+
+:::
+
+::: compare
+
+`````carve
+```php [Composer] "x"
+code
+```
+`````
+
+```html
+<p><code>php [Composer] "x"
 code
 </code></p>
 ```
@@ -1528,6 +1630,61 @@ Custom call-out.
 <div class="hint">
   <p class="admonition-title">Heads up</p>
   <p>Custom call-out.</p>
+</div>
+```
+
+::::
+
+A `[label]` after the type (and after any quoted header) is a grouping identifier — the same `[label]` token a code fence takes. Core ignores it on a standalone block; a group extension (e.g. tabs) uses it as the tab name. It is the canonical replacement for the older tabs `{label="…"}` / inner-heading convention (both stay supported, deprecated). The `selected` default-tab marker is not a label — it stays a boolean attribute on the preceding `{…}` line.
+
+:::: compare
+
+```carve
+::: tip "Pro Tip" [Build]
+Save early, save often.
+:::
+```
+
+```html
+<aside class="admonition tip">
+  <p class="admonition-title">Pro Tip</p>
+  <p>Save early, save often.</p>
+</aside>
+```
+
+::::
+
+A typeless generic div may carry a label too (a tab member with no semantic type); core still renders a plain `<div>`.
+
+:::: compare
+
+```carve
+::: [First]
+First panel.
+:::
+```
+
+```html
+<div>
+  <p>First panel.</p>
+</div>
+```
+
+::::
+
+As the first token after the fence, the bare `[label]` may sit directly against it (`:::[First]`), the same allowance a code fence makes for `` ```[NPM] ``.
+
+:::: compare
+
+```carve
+:::[First]
+First panel.
+:::
+```
+
+```html
+<div>
+  <p>First panel.</p>
 </div>
 ```
 

@@ -47,11 +47,67 @@ npm install x
 ````
 
 ````
+```php "src/Auth.php"
+$ok = true;
+```
+.
+<pre title="src/Auth.php"><code class="language-php">$ok = true;
+</code></pre>
+````
+
+````
+```php "src/Auth.php" [Composer]
+composer require x
+```
+.
+<pre title="src/Auth.php"><code class="language-php">composer require x
+</code></pre>
+````
+
+````
+``` "notes.txt"
+remember the milk
+```
+.
+<pre title="notes.txt"><code>remember the milk
+</code></pre>
+````
+
+````
+```js "*.config.js"
+export default {}
+```
+.
+<pre title="*.config.js"><code class="language-js">export default {}
+</code></pre>
+````
+
+````
+{title="from the attribute line"}
+```php "from the header"
+code
+```
+.
+<pre title="from the attribute line"><code class="language-php">code
+</code></pre>
+````
+
+````
 ```js title="x"
 code
 ```
 .
 <p><code>js title="x"
+code
+</code></p>
+````
+
+````
+```php [Composer] "x"
+code
+```
+.
+<p><code>php [Composer] "x"
 code
 </code></p>
 ````

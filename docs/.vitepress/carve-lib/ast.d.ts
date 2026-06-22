@@ -83,6 +83,13 @@ export interface CodeBlock extends BaseNode {
     type: 'code-block';
     lang?: string;
     /**
+     * Optional quoted "header" from the info string (```php "src/Auth.php").
+     * A visible title carried to the `title` attribute on the `<pre>` (a code
+     * block's `<pre><code>` is atomic, so the title rides as an attribute, not a
+     * child element). A preceding `{title=...}` block-attribute line wins.
+     */
+    header?: string;
+    /**
      * Optional bracketed label from the info string (```php [NPM] -> "NPM").
      * Structured metadata only: it is NOT part of the language/class. The core
      * renderer ignores it; an extension (e.g. code-group) may use it.
@@ -119,6 +126,12 @@ export interface Admonition extends BaseNode {
     type: 'admonition';
     kind: string;
     title?: InlineNode[];
+    /**
+     * Optional opener `[label]` grouping id (`::: tab [First]`). Inert in core
+     * (not rendered); a group extension (tabs) uses it as the tab name. Mirrors
+     * {@link CodeBlock.label}.
+     */
+    label?: string;
     children: BlockNode[];
 }
 /**
@@ -129,6 +142,12 @@ export interface Admonition extends BaseNode {
  */
 export interface Div extends BaseNode {
     type: 'div';
+    /**
+     * Optional opener `[label]` grouping id (bare `::: [First]`). Inert in core;
+     * a group extension (tabs) uses it as the tab name. Mirrors
+     * {@link CodeBlock.label}.
+     */
+    label?: string;
     children: BlockNode[];
 }
 /**
