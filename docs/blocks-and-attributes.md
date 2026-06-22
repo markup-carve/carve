@@ -40,15 +40,15 @@ Read this first.
 
 renders the heading as `<h2 class="featured">` inside `<section id="install">` (an explicit heading id hoists to the `<section>` wrapper, PART 9 §13) and the admonition as `<aside class="admonition note callout">`.
 
-This is uniform across every block - headings, block quotes, lists, code blocks, divs/admonitions, line-blocks, tables. They all take their attributes on the preceding line; none take a trailing attribute on the block's own line. (For a code block the fence line accepts only `lang [label]` - a `{…}` after the language word makes the line *not a fence at all*; the backticks then fall back to ordinary inline parsing. For a heading, a trailing `{…}` is ordinary inline text. Put the attributes on the line above, like any other block.)
+This is uniform across every block - headings, block quotes, lists, code blocks, divs/admonitions, line-blocks, tables. They all take their attributes on the preceding line; none take a trailing attribute on the block's own line. (For a code block the fence line accepts only structured metadata - `lang`, optional `"header"`, optional `[label]`, in that order. A trailing `{…}` after the language word makes the line *not a fence at all*; the backticks then fall back to ordinary inline parsing. For a heading, a trailing `{…}` is ordinary inline text. Put the attributes on the line above, like any other block.)
 
 ### Code blocks: line numbers, titles, and highlighting
 
-Because a code block takes its attributes on the preceding line, those attributes flow straight onto the rendered `<pre>`. A renderer can use them to switch on line numbers, a title, or highlighted lines - no special fence syntax is needed (and none exists: the fence word is a single token).
+Because a code block takes its attributes on the preceding line, those attributes flow straight onto the rendered `<pre>`. A renderer can use them to switch on line numbers or set other presentation hooks. The fence line has only the structured code metadata: language, optional quoted header, optional bracketed label.
 
 ````carve
-{.line-numbers title="src/app.php"}
-``` php
+{.line-numbers data-line-start="42"}
+```php "src/app.php" [Backend]
 $x = compute();
 return $x;
 ```
@@ -56,12 +56,22 @@ return $x;
 
 - `.line-numbers` asks the renderer for a line-number gutter.
 - `data-line-start="42"` (a plain `data-*` attribute) starts numbering at 42.
-- `title="…"` names the block; renderers typically surface it as a caption.
+- `"src/app.php"` is the code-block header; core carries it as `title` on the `<pre>`, and renderers typically surface it as a caption.
+- `[Backend]` is a grouping label; core ignores it, while a code-group extension can use it as the tab name.
 
-How *highlighting*, *diff*, and *focus* are expressed is a renderer concern, not Carve syntax. Renderers built on Torchlight read in-code annotations, so the signal lives in the code body and the single-token fence stays untouched:
+If the preceding attribute line also sets `title="…"`, that explicit attribute wins over the quoted opener header:
 
 ````carve
-``` php
+{title="shown title"}
+```php "fallback title"
+echo "ok";
+```
+````
+
+How *highlighting*, *diff*, and *focus* are expressed is a renderer concern, not Carve syntax. Renderers built on Torchlight read in-code annotations, so the signal lives in the code body and the fence metadata stays limited to `lang "header" [label]`:
+
+````carve
+```php
 $safe = clean($in);   // [tl! highlight]
 $old  = legacy();     // [tl! --]
 $new  = modern();     // [tl! ++]
@@ -69,7 +79,7 @@ $new  = modern();     // [tl! ++]
 ````
 
 ::: warning Not supported: the `lang #` info-string convention
-Markdown/djot tooling often writes `` ```php # `` or `` ```php {1,3-5} `` on the fence line to mark line numbers or ranges. In Carve that line is **not a fence** - the fence word is a single token, so a space and anything after it falls back to inline parsing. Use the preceding attribute line (and, for highlighting, in-code annotations) instead.
+Markdown/djot tooling often writes `` ```php # `` or `` ```php {1,3-5} `` on the fence line to mark line numbers or ranges. In Carve that line is **not a fence** - after the language token, only an optional `"header"` and then an optional `[label]` are admitted. Use the preceding attribute line for renderer attributes and in-code annotations for highlighting.
 :::
 
 ## Inline elements
