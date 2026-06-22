@@ -40,7 +40,43 @@ Read this first.
 
 renders the heading as `<h2 class="featured">` inside `<section id="install">` (an explicit heading id hoists to the `<section>` wrapper, PART 9 §13) and the admonition as `<aside class="admonition note callout">`.
 
-This is uniform across every block - headings, block quotes, lists, code blocks, divs/admonitions, line-blocks, tables. They all take their attributes on the preceding line; none take a trailing attribute on the block's own line. (For a code block the fence line accepts only `lang [label]` - a `{…}` after the language word makes the line *not a fence at all*; the backticks then fall back to ordinary inline parsing. For a heading, a trailing `{…}` is ordinary inline text. Put the attributes on the line above, like any other block.)
+This is uniform across every block - headings, block quotes, lists, code blocks, divs/admonitions, line-blocks, tables. They all take their attributes on the preceding line; none take a trailing attribute on the block's own line. (For a code block the fence line accepts only structured metadata - `lang`, optional `"header"`, optional `[label]`, in that order. A trailing `{…}` after the language word makes the line *not a fence at all*; the backticks then fall back to ordinary inline parsing. For a heading, a trailing `{…}` is ordinary inline text. Put the attributes on the line above, like any other block.)
+
+### Code blocks: line numbers, titles, and highlighting
+
+Because a code block takes its attributes on the preceding line, those attributes flow straight onto the rendered `<pre>`. A renderer can use them to switch on line numbers or set other presentation hooks. The fence line has only the structured code metadata: language, optional quoted header, optional bracketed label.
+
+````carve
+{.line-numbers data-line-start="42"}
+```php "src/app.php" [Backend]
+$x = compute();
+return $x;
+```
+````
+
+- `.line-numbers` asks the renderer for a line-number gutter.
+- `data-line-start="42"` (a plain `data-*` attribute) starts numbering at 42.
+- `"src/app.php"` is the code-block header; core carries it as `title` on the `<pre>`, and renderers typically surface it as a caption.
+- `[Backend]` is a grouping label; core ignores it, while a code-group extension can use it as the tab name.
+
+If the preceding attribute line also sets `title="…"`, that explicit attribute wins over the quoted opener header:
+
+````carve
+{title="shown title"}
+```php "fallback title"
+echo "ok";
+```
+````
+
+How *highlighting*, *diff*, and *focus* are expressed is a renderer concern, not Carve syntax. Renderers built on Torchlight read in-code annotations, so the signal lives in the code body and the fence metadata stays limited to `lang "header" [label]`:
+
+````carve
+```php
+$safe = clean($in);   // [tl! highlight]
+$old  = legacy();     // [tl! --]
+$new  = modern();     // [tl! ++]
+```
+````
 
 ## Inline elements
 
@@ -107,7 +143,7 @@ text [span]{.c}       ← inline: directly AFTER, no space
 -{#item} list item    ← list item: abuts the marker (no space!)
 
 {.x}                  ← code block: line BEFORE the fence
-``` lang
+```lang
 code
 ```
 ````

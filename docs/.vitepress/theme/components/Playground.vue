@@ -298,9 +298,31 @@ async function highlightCode(): Promise<void> {
   }
 }
 
-// --- Code-block pill: on hover, show a top-right pill with the language and a
-// click-to-copy button. Runs after highlight so it covers Shiki blocks (tagged
-// with data-lang) and any plain `language-x` block left un-highlighted. ---
+function codePillIcon(kind: 'copy' | 'check'): SVGSVGElement {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg.setAttribute('viewBox', '0 0 24 24')
+  svg.setAttribute('aria-hidden', 'true')
+  svg.setAttribute('focusable', 'false')
+  svg.classList.add('code-pill-icon')
+  const paths = kind === 'copy'
+    ? [
+        'M8 8h10v12H8z',
+        'M6 16H4V4h12v2',
+      ]
+    : [
+        'M20 6 9 17l-5-5',
+      ]
+  for (const d of paths) {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+    path.setAttribute('d', d)
+    svg.appendChild(path)
+  }
+  return svg
+}
+
+// --- Code-block chrome: on hover, show the language and a click-to-copy icon.
+// Runs after highlight so it covers Shiki blocks (tagged with data-lang) and
+// any plain `language-x` block left un-highlighted. ---
 function decorateCodeBlocks(): void {
   const root = outputEl.value
   if (!root) return
@@ -323,13 +345,14 @@ function decorateCodeBlocks(): void {
     btn.type = 'button'
     btn.className = 'code-pill-copy'
     btn.setAttribute('aria-label', 'Copy code')
-    btn.textContent = '📋'
+    btn.title = 'Copy code'
+    btn.replaceChildren(codePillIcon('copy'))
     btn.addEventListener('click', () => {
       const text = (code ?? pre).textContent ?? ''
       void navigator.clipboard?.writeText(text).then(() => {
-        btn.textContent = '✓'
+        btn.replaceChildren(codePillIcon('check'))
         setTimeout(() => {
-          btn.textContent = '📋'
+          btn.replaceChildren(codePillIcon('copy'))
         }, 1200)
       })
     })

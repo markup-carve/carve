@@ -1911,7 +1911,7 @@ Content begins here.
 
 :::
 
-The space between `---` and the format token is optional — `---toml` and `--- toml` are both accepted (the no-space form is canonical), matching the optional space on a code fence (` ```php ` / ` ``` php `).
+The space between `---` and the format token is optional — `---toml` and `--- toml` are both accepted (the no-space form is canonical), matching code fences: ` ```php ` is canonical, though a space after the fence is accepted for compatibility.
 
 ::: compare
 
