@@ -67,9 +67,12 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 +                             block to the quote - no > prefixing)
 - list now lives inside the quote
 
-```language [Label]
+```language "Header" [Label]
 code block
 ```
+                             (canonical is ```language - no space; "Header"
+                              -> <pre title>, [Label] = code-group tab name;
+                              both optional, space-separated, in that order)
 
 ```=html
 <div>passed through when the output format matches</div>

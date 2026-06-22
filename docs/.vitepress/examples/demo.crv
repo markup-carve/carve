@@ -111,6 +111,14 @@ def greet(name: str) -> str:
     return f"Hello, {name}!"
 ```
 
+A quoted "header" after the language sets the block's title (rendered as the
+`title` attribute on the `<pre>` - a filename bar or hover tooltip):
+
+```python "greet.py"
+def greet(name: str) -> str:
+    return f"Hello, {name}!"
+```
+
 A tilde fence works too:
 
 ~~~yaml

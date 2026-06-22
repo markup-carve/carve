@@ -112,6 +112,11 @@ email autolink <a href="mailto:hello@example.com">hello@example.com</a>, and a r
     <pre><code class="language-python">def greet(name: str) -&gt; str:
     return f"Hello, {name}!"
 </code></pre>
+    <p>A quoted “header” after the language sets the block’s title (rendered as the
+<code>title</code> attribute on the <code>&lt;pre&gt;</code> - a filename bar or hover tooltip):</p>
+    <pre title="greet.py"><code class="language-python">def greet(name: str) -&gt; str:
+    return f"Hello, {name}!"
+</code></pre>
     <p>A tilde fence works too:</p>
     <pre><code class="language-yaml">key: value
 list:
