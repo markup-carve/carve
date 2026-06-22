@@ -1,9 +1,8 @@
 # Performance
 
 Where the three reference implementations stand on raw HTML-rendering
-throughput, how they compare to their Markdown / CommonMark / Djot
-counterparts, and a log of what has been optimized (and what was deliberately
-ruled out).
+throughput, and how they compare to their Markdown / CommonMark / Djot
+counterparts in the same language.
 
 This page is about **speed**. For **correctness and conformance** across the
 implementations, see [Implementation Comparison](/implementation-comparison),
@@ -26,8 +25,8 @@ extension-hook surface).
   min-of-5-trials of an N-iteration loop. Minimum (not mean) is used to reject
   scheduler noise on a loaded machine.
 - **Metric:** `MB/s = input_bytes / wall_time`.
-- **carve config:** core conversion (no extensions). Extensions add a roughly
-  measurable but small overhead; see the optimization log below.
+- **carve config:** core conversion (no extensions). Extensions add a small,
+  measurable overhead.
 - The benchmark harnesses themselves are kept out of this repo (they pull in
   every competing engine as a dependency). Each implementation ships its own
   regression guard instead, listed under [Regression guards](#regression-guards).
@@ -68,63 +67,7 @@ take a different shape:
   copy volume, is the dominant cost once the render hot path is tuned.
 
 So carve's ceiling, short of an architectural rewrite, sits below the pull
-parsers by design. The optimization work below closes the gap that is
-*not* architectural.
-
-## Optimization log
-
-### carve-rs: render hot path ([carve-rs #121](https://github.com/markup-carve/carve-rs/pull/121))
-
-The render phase dominated both allocation count and time. The fix kept the
-AST architecture and removed throwaway-`String` allocation from rendering:
-
-| metric | before | after |
-| --- | --- | --- |
-| render allocations / doc | 78.5k | 16.5k |
-| render throughput | 14.5 MB/s | 52.4 MB/s |
-| total `to_html` throughput | 11.8 MB/s | **22.9 MB/s (1.94x)** |
-
-- `smart_text_after` returns `Cow` and short-circuits when a text node
-  contains no smart-typography / escape trigger character. The old code ran an
-  unconditional 16-entry replacement chain per text node, and `str::replace`
-  allocates even on no match. **The single largest win.**
-- `write_escaped_text` / `write_escaped_attr` scan by byte and write directly
-  into the output buffer instead of formatting into a temporary `String` per
-  node and per attribute.
-- `sanitize_attr_value` / `sanitize_url` return `Cow` so the pass-through case
-  borrows instead of cloning.
-
-### carve-php: extension inline-matcher gating ([carve-php #214](https://github.com/markup-carve/carve-php/pull/214))
-
-The inline scanner ran every registered extension matcher at every scan
-position. Trigger-byte gating skips a matcher unless the current byte can
-start one of its patterns:
-
-- `patternFirstByte` became `patternFirstBytes` returning the full set of
-  bytes a pattern can start with (handling alternation, quantifiers, POSIX
-  classes, and flags correctly).
-- A null trigger set means "runs everywhere" and also disables the global
-  fast-skip, so only genuinely run-everywhere matchers pay the full cost.
-- Result: wikilinks and citations dropped from ~90 ms of added scan time to
-  near zero; full-extension throughput up ~15%.
-
-## Ruled-out levers
-
-Recorded so they are not re-explored. All were investigated against carve-rs.
-
-| Lever | Verdict | Why |
-| --- | --- | --- |
-| **Borrow input into the AST** (`&'a str` / `Cow` node payloads) | Rejected | Text is unescaped at *render* time and link/image titles plus attribute values are unescaped at *parse* time, so most payloads cannot be a verbatim input slice. Every extension also synthesizes new text (anchors, TOC, flattened summaries). It would recover only ~10-20% of parse allocations while forcing a viral lifetime through `Document`, `Options`, and every extension - a semver-major break - for no measured throughput gain. |
-| **`CompactString`** (inline strings <=24 bytes) | Rejected | Prototyped: cut total allocations ~7% (34.4k to 31.9k), byte-identical, full corpus green - but **zero throughput change** (the construct/deref branch cost cancels the alloc-count saving) at the cost of a new dependency and churn across ~20 files. Safe but pointless as a speed play. |
-| **`SmallVec` for node children** | Rejected | The inline/block node enums are recursive, so `SmallVec<[InlineNode; N]>` is infinitely sized (E0072) without `Box` (which re-adds an allocation). On the only non-recursive leaf `Vec`s it ballooned `BlockNode` from 288 to 400 bytes with no alloc-count cut and a throughput regression from worse cache behavior. |
-
-## Remaining lever (untried)
-
-The only path with real upside left is **arena / bump allocation** (e.g.
-`bumpalo`): allocate the whole node tree and its strings in one bump arena so
-each allocation is a near-free pointer bump and the entire tree is freed in one
-shot. This keeps owned semantics (no input borrowing) but is a genuine rewrite
-of how the AST is owned, larger than anything attempted so far. Not scheduled.
+parsers by design.
 
 ## Regression guards
 
