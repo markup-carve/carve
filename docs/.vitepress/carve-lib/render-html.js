@@ -50,6 +50,7 @@ function isDangerousAttrName(name) {
     const n = name.toLowerCase();
     return n.startsWith('on') || DANGEROUS_ATTR_NAMES.has(n);
 }
+const HTML_ATTR_NAME_RE = /^[A-Za-z_:][A-Za-z0-9_.:-]*$/;
 /** URL schemes that must never appear in an attribute value. */
 const DANGEROUS_VALUE_SCHEMES = new Set(['javascript', 'vbscript', 'data', 'file']);
 /**
@@ -76,12 +77,27 @@ function sanitizeAttrValue(name, value) {
  *  the legacy `behavior` / `-moz-binding` script bindings. Whitespace is
  *  collapsed first so `expr ession (` cannot evade. */
 function hasDangerousCss(value) {
-    const compact = value.replace(/\s+/g, '').toLowerCase();
+    // Decode CSS escapes BEFORE lowercasing: an escaped uppercase code point
+    // (e.g. `\55` -> `U`) must fold to lowercase too, or `\55rl(` would slip past
+    // the lowercase needles.
+    const compact = decodeCssEscapes(value.replace(/\/\*[\s\S]*?\*\//g, ''))
+        .toLowerCase()
+        .replace(/\s+/g, '');
     return (compact.includes('expression(') ||
         compact.includes('url(') ||
         compact.includes('@import') ||
         compact.includes('behavior:') ||
         compact.includes('-moz-binding'));
+}
+function decodeCssEscapes(value) {
+    return value.replace(/\\([0-9a-f]{1,6}\s?|[\s\S])/gi, (_m, esc) => {
+        if (/^[0-9a-f]/i.test(esc)) {
+            const hex = esc.trim();
+            const cp = Number.parseInt(hex, 16);
+            return Number.isFinite(cp) && cp <= 0x10ffff ? String.fromCodePoint(cp) : '';
+        }
+        return esc;
+    });
 }
 /** Inject `data-source-line` into the first opening tag of a rendered block. */
 function withSourceLine(html, line) {
@@ -208,6 +224,7 @@ function collectFootnotes(ast) {
     const defs = ast.footnoteDefs ?? {};
     const order = [];
     const seen = {};
+    const labelIndexes = new Map();
     const onNode = (n) => {
         if (n.type !== 'footnote')
             return;
@@ -223,10 +240,11 @@ function collectFootnotes(ast) {
         // Reference footnote (`[^label]`): numbered at first resolved reference.
         if (!n.id || !defs[n.id])
             return;
-        let idx = order.findIndex((e) => e.label === n.id);
-        if (idx === -1) {
+        let idx = labelIndexes.get(n.id);
+        if (idx === undefined) {
             order.push({ label: n.id, backrefs: [] });
             idx = order.length - 1;
+            labelIndexes.set(n.id, idx);
         }
         const number = idx + 1;
         const occ = (seen[n.id] = (seen[n.id] ?? 0) + 1);
@@ -319,7 +337,7 @@ function renderAttrs(attrs) {
         return '';
     const parts = [];
     const classAttr = () => attrs.classes && attrs.classes.length
-        ? `class="${attrs.classes.join(' ')}"`
+        ? `class="${attrs.classes.map(escapeAttr).join(' ')}"`
         : '';
     // Escape the id value: an `#id` is identifier-restricted (escaping is a
     // no-op), but `id=value` (which now also feeds this slot, last-wins §15) can
@@ -333,6 +351,8 @@ function renderAttrs(attrs) {
         // Always strip event-handler / injection-sink attribute names, and blank a
         // dangerous-scheme or CSS-expression value, regardless of render options.
         if (isDangerousAttrName(k))
+            return '';
+        if (!HTML_ATTR_NAME_RE.test(k))
             return '';
         const v = attrs.keyValues?.[k];
         return v !== undefined ? `${k}="${escapeAttr(sanitizeAttrValue(k, v))}"` : '';
@@ -788,9 +808,7 @@ function renderAdmonition(node, opts, level) {
     // wrapper class: extra classes append, id/key attach to the wrapper.
     const canonical = CANONICAL_ADMONITIONS.has(node.kind);
     const baseClass = canonical ? `admonition ${node.kind}` : node.kind;
-    const extraClasses = node.attrs?.classes?.length
-        ? ' ' + node.attrs.classes.join(' ')
-        : '';
+    const classValue = [baseClass, ...(node.attrs?.classes ?? [])].map(escapeAttr).join(' ');
     const restAttrs = {};
     if (node.attrs?.id !== undefined)
         restAttrs.id = node.attrs.id;
@@ -802,7 +820,7 @@ function renderAdmonition(node, opts, level) {
         restAttrs.order = node.attrs.order.filter((s) => s !== '.class');
     const rest = renderAttrs(restAttrs);
     const tag = canonical ? 'aside' : 'div';
-    return `${pad}<${tag} class="${baseClass}${extraClasses}"${rest}>\n${titleLine}${body}\n${pad}</${tag}>`;
+    return `${pad}<${tag} class="${classValue}"${rest}>\n${titleLine}${body}\n${pad}</${tag}>`;
 }
 function renderFigure(node, opts, level) {
     const pad = indent(level);
@@ -823,7 +841,7 @@ function renderFigure(node, opts, level) {
     return `${pad}<figure${renderAttrs(node.attrs)}>\n${inner}\n${pad}  <figcaption>${renderInlines(node.caption, opts)}</figcaption>\n${pad}</figure>`;
 }
 function renderImage(img, opts) {
-    const titleAttr = img.title ? ` title="${escapeAttr(img.title)}"` : '';
+    const titleAttr = img.title !== undefined ? ` title="${escapeAttr(img.title)}"` : '';
     const src = escapeAttr(sanitizeUrl(img.src, opts));
     // The sanitized structural src wins; never re-emit an author-supplied
     // `src` from an attribute block, which would bypass sanitization.
@@ -858,7 +876,7 @@ function renderInline(node, opts) {
         case 'code':
             return `<code${renderAttrs(node.attrs)}>${escapeHtml(node.value)}</code>`;
         case 'link': {
-            const titleAttr = node.title ? ` title="${escapeAttr(node.title)}"` : '';
+            const titleAttr = node.title !== undefined ? ` title="${escapeAttr(node.title)}"` : '';
             const href = escapeAttr(sanitizeUrl(node.href, opts));
             // The sanitized structural href wins; never re-emit an author-supplied
             // `href` from an attribute block, which would bypass sanitization.
@@ -899,14 +917,14 @@ function renderInline(node, opts) {
             // Canonical placeholder is `{name}` (matching tags and carve-php);
             // `{user}` stays as a legacy alias.
             const enc = encodeURIComponent(node.user);
-            const href = opts.mentionUrl.replaceAll('{name}', enc).replaceAll('{user}', enc);
+            const href = sanitizeUrl(opts.mentionUrl.replaceAll('{name}', enc).replaceAll('{user}', enc), opts);
             return `<a class="mention" href="${escapeAttr(href)}">${text}</a>`;
         }
         case 'tag': {
             const text = `#${escapeHtml(node.name)}`;
             if (!opts.tagUrl)
                 return `<span class="tag"><strong>${text}</strong></span>`;
-            const href = opts.tagUrl.replaceAll('{name}', encodeURIComponent(node.name));
+            const href = sanitizeUrl(opts.tagUrl.replaceAll('{name}', encodeURIComponent(node.name)), opts);
             return `<a class="tag" href="${escapeAttr(href)}">${text}</a>`;
         }
         case 'extension': {

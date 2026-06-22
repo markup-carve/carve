@@ -1,0 +1,7 @@
+Empty link and image titles are preserved
+
+```
+[x](u "")
+.
+<p><a href="u" title="">x</a></p>
+```

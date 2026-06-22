@@ -175,6 +175,10 @@ class Lexer {
     // O(n²) (the any-length cache above never trips when a too-short closer is
     // present). pos only advances, so the stored start is a monotone frontier.
     divNoCloserOfLenFrom = new Map();
+    // Negative cache for lineBlockHasCloser, mirroring divHasCloser for the
+    // `::: |` opener. Without it, many unclosed line-block openers rescan to EOF.
+    lineBlockNoCloserFrom = Infinity;
+    lineBlockNoCloserOfLenFrom = new Map();
     // Negative cache for fenceHasCloser (paragraph-interruption closer
     // lookahead): the smallest line index from which NO bare fence-closer
     // line exists onward. Once proven, every later fence opener (pos only
@@ -960,12 +964,25 @@ function parseAdmonition(lexer) {
 }
 function lineBlockHasCloser(lexer) {
     const start = lexer.pos + 1;
+    if (start >= lexer.lineBlockNoCloserFrom)
+        return false;
     const fence = RE_LINE_BLOCK_OPEN.exec(lexer.peek())[1].length;
+    if (start >= (lexer.lineBlockNoCloserOfLenFrom.get(fence) ?? Infinity))
+        return false;
+    let sawAnyCloser = false;
     for (let i = start; i < lexer.lines.length; i++) {
         const c = RE_ADMONITION_CLOSE.exec(lexer.lines[i]);
-        if (c && c[1].length >= fence)
-            return true;
+        if (c) {
+            sawAnyCloser = true;
+            if (c[1].length >= fence)
+                return true;
+        }
     }
+    const prev = lexer.lineBlockNoCloserOfLenFrom.get(fence) ?? Infinity;
+    if (start < prev)
+        lexer.lineBlockNoCloserOfLenFrom.set(fence, start);
+    if (!sawAnyCloser)
+        lexer.lineBlockNoCloserFrom = start;
     return false;
 }
 function parseLineBlock(lexer) {
@@ -1361,7 +1378,7 @@ function parseBlockImage(lexer) {
     const m = RE_BARE_IMAGE.exec(line);
     const img = { type: 'image', src: m[2], alt: m[1] };
     const title = m[3] ?? m[4];
-    if (title)
+    if (title !== undefined)
         img.title = title;
     if (m[5])
         img.attrs = parseAttrs(m[5]);
@@ -1531,7 +1548,7 @@ function lazyContinuationEndsList(line, lexer) {
             !RE_ADMONITION_CLOSE.test(line) &&
             divHasCloser(lexer)) ||
         (RE_DIV_OPEN.test(line) && divHasCloser(lexer)) ||
-        (RE_LINE_BLOCK_OPEN.test(line) && divHasCloser(lexer)) ||
+        (RE_LINE_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer)) ||
         RE_ABBR_DEF.test(line) ||
         RE_FOOTNOTE_DEF.test(line) ||
         RE_LINK_DEF.test(line) ||
@@ -2744,6 +2761,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
     // flatten/traverse -- O(n^2) over a quote-dense run (and a catastrophic cliff
     // once the rope gets deep). A scalar keeps the smart-quote context check O(1).
     let bufLast = '';
+    const emphasisNoClose = new Map();
     // Precompute each `[`'s balancing `]` once (O(n)) so the link/image/span
     // branches resolve the close bracket in O(1); see buildBracketMap.
     const bracketClose = text.includes('[') ? buildBracketMap(text) : {};
@@ -2875,12 +2893,14 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
         if (c === '$') {
             const display = text[i + 1] === '$';
             const dollarLen = display ? 2 : 1;
-            if (text[i + dollarLen] === '`') {
-                const mm = /^(`+)([\s\S]*?[^`])(\1)(?!`)/.exec(text.slice(i + dollarLen));
-                if (mm) {
+            const tick = i + dollarLen;
+            if (text[tick] === '`') {
+                const { end, closed, openLen } = verbatimSpanEnd(text, tick);
+                const innerEnd = end - openLen;
+                if (closed && text[end] !== '`' && innerEnd > tick + openLen && text[innerEnd - 1] !== '`') {
                     flush();
-                    const content = mm[2].replace(/^ (.*) $/, '$1');
-                    const len = dollarLen + mm[0].length;
+                    const content = text.slice(tick + openLen, innerEnd).replace(/^ (.*) $/, '$1');
+                    const len = end - i;
                     out.push(withPos({ type: 'math', display, content }, source, text, i, i + len));
                     i += len;
                     continue;
@@ -2899,7 +2919,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                     flush();
                     const img = { type: 'image', src: ml[1], alt: rest.slice(2, close) };
                     const title = ml[2] ?? ml[3];
-                    if (title)
+                    if (title !== undefined)
                         img.title = unescapeAttrValue(title);
                     let len = close + 1 + ml[0].length;
                     if (ml[4]) {
@@ -2955,7 +2975,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                         children: scanInline(innerText, shiftSource(source, text, i + 1), inFootnote),
                     };
                     const title = ml[2] ?? ml[3];
-                    if (title)
+                    if (title !== undefined)
                         link.title = unescapeAttrValue(title);
                     let len = close + 1 + ml[0].length;
                     if (ml[4]) {
@@ -3199,7 +3219,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             }
         }
         // Emphasis-family delimiters
-        const em = matchEmphasis(text, i, source, inFootnote);
+        const em = matchEmphasis(text, i, source, inFootnote, emphasisNoClose);
         if (em) {
             flush();
             out.push(withPos(em.node, source, text, i, em.end));
@@ -3230,7 +3250,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
     flush();
     return out;
 }
-function matchEmphasis(text, i, source, inFootnote = false) {
+function matchEmphasis(text, i, source, inFootnote = false, noClose = new Map()) {
     const c = text[i];
     // Bold-italic /*...*/  (priority over /italic/ and *bold*)
     if (c === '/' && text[i + 1] === '*') {
@@ -3279,7 +3299,7 @@ function matchEmphasis(text, i, source, inFootnote = false) {
             if ((delim === '/' || delim === '_') && before === '/')
                 continue;
             // Find closer that's not preceded by space
-            const close = findEmphasisClose(text, i + 1, delim);
+            const close = cachedFindEmphasisClose(text, i + 1, delim, noClose);
             if (close !== -1) {
                 const inner = text.slice(i + 1, close);
                 return {
@@ -3294,6 +3314,15 @@ function matchEmphasis(text, i, source, inFootnote = false) {
 function findClose(text, from, marker) {
     // Search forward for marker, simple substring match
     return text.indexOf(marker, from);
+}
+function cachedFindEmphasisClose(text, from, delim, noClose) {
+    const firstNoClose = noClose.get(delim);
+    if (firstNoClose !== undefined && from >= firstNoClose)
+        return -1;
+    const close = findEmphasisClose(text, from, delim);
+    if (close === -1)
+        noClose.set(delim, Math.min(firstNoClose ?? from, from));
+    return close;
 }
 function withPos(node, source, text, start, end) {
     node.pos = sourcePos(source, text, start, end);

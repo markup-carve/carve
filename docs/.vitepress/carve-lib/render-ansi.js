@@ -1,3 +1,4 @@
+const MAX_RENDER_DEPTH = 200;
 const RESET = '\x1b[0m';
 const BOLD = '\x1b[1m';
 const DIM = '\x1b[2m';
@@ -17,7 +18,7 @@ const FG_BRIGHT_BLUE = '\x1b[94m';
 const FG_BRIGHT_GREEN = '\x1b[92m';
 const FG_BRIGHT_WHITE = '\x1b[97m';
 export function renderAnsi(ast, _opts = {}) {
-    const ctx = { listDepth: 0, blockQuoteDepth: 0, ordered: [] };
+    const ctx = { listDepth: 0, blockQuoteDepth: 0, ordered: [], blockDepth: 0, inlineDepth: 0 };
     const out = renderBlocks(ast.children, ctx);
     const footnotes = renderFootnoteDefs(ast, ctx);
     return normalize(`${out}${footnotes}`);
@@ -26,7 +27,15 @@ function style(text, codes) {
     return `${codes}${text}${RESET}`;
 }
 function renderBlocks(blocks, ctx) {
-    return blocks.map((b) => renderBlock(b, ctx)).join('');
+    if (ctx.blockDepth >= MAX_RENDER_DEPTH)
+        return '';
+    ctx.blockDepth++;
+    try {
+        return blocks.map((b) => renderBlock(b, ctx)).join('');
+    }
+    finally {
+        ctx.blockDepth--;
+    }
 }
 function renderBlock(node, ctx) {
     switch (node.type) {
@@ -35,7 +44,7 @@ function renderBlock(node, ctx) {
         case 'paragraph': {
             if (isLegacyDefinitionParagraph(node)) {
                 const [term, def] = legacyDefinitionParts(node);
-                return `${style(term, BOLD + FG_YELLOW)}\n  ${def}\n\n`;
+                return `${style(stripControls(term), BOLD + FG_YELLOW)}\n  ${stripControls(def)}\n\n`;
             }
             let content = renderInlines(node.children, ctx);
             const prefix = blockQuotePrefix(ctx);
@@ -44,7 +53,7 @@ function renderBlock(node, ctx) {
             return `${content}\n\n`;
         }
         case 'code-block':
-            return renderCodeBlock(node.content, node.lang);
+            return renderCodeBlock(stripControls(node.content), node.lang ? stripControls(node.lang) : node.lang);
         case 'blockquote':
             ctx.blockQuoteDepth++;
             {
@@ -79,7 +88,7 @@ function renderBlock(node, ctx) {
         case 'image':
             return renderImage(node);
         case 'raw-block':
-            return `${style(`[raw:${node.format}] ${node.content}`, DIM)}\n\n`;
+            return `${style(`[raw:${node.format}] ${stripControls(node.content)}`, DIM)}\n\n`;
         case 'abbreviation-def':
         case 'comment':
             return '';
@@ -219,12 +228,20 @@ function renderFootnoteDefs(ast, ctx) {
         return '';
     let out = '';
     for (const [label, blocks] of Object.entries(ast.footnoteDefs)) {
-        out += `${style(`[${label}]`, FG_CYAN + DIM)} ${renderBlocks(blocks, ctx).trim()}\n`;
+        out += `${style(`[${stripControls(label)}]`, FG_CYAN + DIM)} ${renderBlocks(blocks, ctx).trim()}\n`;
     }
     return out;
 }
 function renderInlines(nodes, ctx) {
-    return nodes.map((node) => renderInline(node, ctx)).join('');
+    if (ctx.inlineDepth >= MAX_RENDER_DEPTH)
+        return '';
+    ctx.inlineDepth++;
+    try {
+        return nodes.map((node) => renderInline(node, ctx)).join('');
+    }
+    finally {
+        ctx.inlineDepth--;
+    }
 }
 function renderInline(node, ctx) {
     switch (node.type) {
@@ -249,12 +266,13 @@ function renderInline(node, ctx) {
         case 'bold-italic':
             return style(renderInlines(node.children, ctx), BOLD + ITALIC);
         case 'code':
-            return style(node.value, FG_BRIGHT_YELLOW);
+            return style(stripControls(node.value), FG_BRIGHT_YELLOW);
         case 'link': {
             const text = renderInlines(node.children, ctx);
+            const href = stripControls(node.href);
             let out = style(text, UNDERLINE + FG_BLUE);
-            if (node.href && !node.href.startsWith('#') && node.href !== stripAnsi(text)) {
-                out += style(` (${node.href})`, DIM);
+            if (href && !href.startsWith('#') && href !== stripAnsi(text)) {
+                out += style(` (${href})`, DIM);
             }
             return out;
         }
@@ -263,25 +281,25 @@ function renderInline(node, ctx) {
         case 'span':
             return renderInlines(node.children, ctx);
         case 'math':
-            return style(node.content, FG_BRIGHT_MAGENTA);
+            return style(stripControls(node.content), FG_BRIGHT_MAGENTA);
         case 'raw-inline':
             return '';
         case 'emoji':
-            return `:${node.name}:`;
+            return `:${stripControls(node.name)}:`;
         case 'autolink':
-            return style(node.href.startsWith('mailto:') ? node.href.slice(7) : node.href, UNDERLINE + FG_BLUE);
+            return style(stripControls(node.href.startsWith('mailto:') ? node.href.slice(7) : node.href), UNDERLINE + FG_BLUE);
         case 'mention':
-            return `@${node.user}`;
+            return `@${stripControls(node.user)}`;
         case 'tag':
-            return `#${node.name}`;
+            return `#${stripControls(node.name)}`;
         case 'extension':
             return renderInlines(node.content, ctx);
         case 'abbreviation':
-            return `${node.abbr}${style(` (${node.expansion})`, DIM)}`;
+            return `${stripControls(node.abbr)}${style(` (${stripControls(node.expansion)})`, DIM)}`;
         case 'footnote':
             return node.inline
                 ? `(${renderInlines(node.inline, ctx)})`
-                : style(`[${node.id ?? ''}]`, FG_CYAN + BOLD);
+                : style(`[${stripControls(node.id ?? '')}]`, FG_CYAN + BOLD);
         case 'soft-break':
             return ' ';
         case 'hard-break':
@@ -292,17 +310,17 @@ function renderInline(node, ctx) {
             return style(renderInlines(node.children, ctx), STRIKE + '\x1b[31m');
         case 'critic-substitute':
             // Show BOTH sides; dropping oldText loses content.
-            return (style(node.oldText, STRIKE + '\x1b[31m') +
-                style(node.newText, FG_GREEN + UNDERLINE));
+            return (style(stripControls(node.oldText), STRIKE + '\x1b[31m') +
+                style(stripControls(node.newText), FG_GREEN + UNDERLINE));
         case 'critic-comment':
             return '';
         case 'crossref':
-            return `</#${node.target}>`;
+            return `</#${stripControls(node.target)}>`;
         case 'caption-number':
             return node.n === undefined ? '#' : String(node.n);
         case 'citation-group':
             // Tier-2 ext node; the core renderer has no numbering, so emit the source.
-            return node.raw;
+            return stripControls(node.raw);
         case 'comment':
             return '';
         default: {
@@ -312,7 +330,8 @@ function renderInline(node, ctx) {
     }
 }
 function renderImage(node) {
-    return `${style('[img:', FG_MAGENTA)}${node.alt ? ` ${node.alt}` : ''}${style(']', FG_MAGENTA)}`;
+    const alt = stripControls(node.alt);
+    return `${style('[img:', FG_MAGENTA)}${alt ? ` ${alt}` : ''}${style(']', FG_MAGENTA)}`;
 }
 function stripAnsi(text) {
     return text.replace(/\x1b\[[0-9;]*m/g, '');
@@ -387,9 +406,15 @@ function normalize(text) {
 }
 function cleanEscapedText(node) {
     // The value is the literal text (the parser already resolved backslash
-    // escapes), so a `\*` reaches here as `*`. Return it verbatim -- dropping the
-    // character would lose data.
-    return node.value;
+    // escapes), so a `\*` reaches here as `*`. Strip control bytes so attacker
+    // text cannot inject terminal escape sequences (see stripControls).
+    return stripControls(node.value);
+}
+/** Drop C0/C1 control characters (keeping tab and newline) from author content
+ *  so attacker ESC / OSC sequences cannot inject into ANSI terminal output. The
+ *  renderer's own styling escapes are added separately and are not affected. */
+function stripControls(s) {
+    return s.replace(/\p{Cc}/gu, (c) => (c === '\t' || c === '\n' ? c : ''));
 }
 function isLegacyDefinitionParagraph(node) {
     return (node.children.length === 3 &&

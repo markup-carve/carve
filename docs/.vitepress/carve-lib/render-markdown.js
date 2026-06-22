@@ -1,3 +1,4 @@
+const MAX_RENDER_DEPTH = 200;
 export function renderMarkdown(ast, _opts = {}) {
     const headingIds = new Set();
     const referencedHeadingIds = new Set();
@@ -16,13 +17,21 @@ export function renderMarkdown(ast, _opts = {}) {
                 referencedHeadingIds.add(id);
         });
     });
-    const ctx = { headingIds, referencedHeadingIds, listDepth: 0 };
+    const ctx = { headingIds, referencedHeadingIds, listDepth: 0, blockDepth: 0, inlineDepth: 0 };
     const out = renderBlocks(ast.children, ctx);
     const footnotes = renderFootnoteDefs(ast, ctx);
     return normalize(`${out}${footnotes}`);
 }
 function renderBlocks(blocks, ctx) {
-    return blocks.map((b) => renderBlock(b, ctx)).join('');
+    if (ctx.blockDepth >= MAX_RENDER_DEPTH)
+        return '';
+    ctx.blockDepth++;
+    try {
+        return blocks.map((b) => renderBlock(b, ctx)).join('');
+    }
+    finally {
+        ctx.blockDepth--;
+    }
 }
 function renderBlock(node, ctx) {
     switch (node.type) {
@@ -39,8 +48,10 @@ function renderBlock(node, ctx) {
             }
             return `${renderInlines(node.children, ctx)}\n\n`;
         case 'code-block': {
-            const fence = safeFence(node.content, 3);
-            return `${fence}${node.lang ?? ''}\n${node.content}\n${fence}\n\n`;
+            const content = stripControls(node.content);
+            const fence = safeFence(content, 3);
+            const lang = markdownFenceInfo(node.lang);
+            return `${fence}${lang}\n${content}\n${fence}\n\n`;
         }
         case 'blockquote': {
             const lines = renderBlocks(node.children, ctx).trim().split('\n');
@@ -71,7 +82,8 @@ function renderBlock(node, ctx) {
         case 'image':
             return renderImage(node);
         case 'raw-block':
-            return node.format === 'html' ? `${node.content}\n\n` : '';
+            // Escape, not emit: raw HTML in Markdown would be live again downstream.
+            return node.format === 'html' ? `${escapeMdHtml(stripControls(node.content))}\n\n` : '';
         case 'abbreviation-def':
         case 'comment':
             return '';
@@ -158,12 +170,20 @@ function renderFootnoteDefs(ast, ctx) {
         return '';
     let out = '';
     for (const [label, blocks] of Object.entries(ast.footnoteDefs)) {
-        out += `[^${label}]: ${renderBlocks(blocks, ctx).trim()}\n`;
+        out += `[^${stripControls(label)}]: ${renderBlocks(blocks, ctx).trim()}\n`;
     }
     return out;
 }
 function renderInlines(nodes, ctx) {
-    return nodes.map((node) => renderInline(node, ctx)).join('');
+    if (ctx.inlineDepth >= MAX_RENDER_DEPTH)
+        return '';
+    ctx.inlineDepth++;
+    try {
+        return nodes.map((node) => renderInline(node, ctx)).join('');
+    }
+    finally {
+        ctx.inlineDepth--;
+    }
 }
 function renderInline(node, ctx) {
     switch (node.type) {
@@ -189,7 +209,7 @@ function renderInline(node, ctx) {
         case 'bold-italic':
             return `***${renderInlines(node.children, ctx)}***`;
         case 'code':
-            return renderCode(node.value);
+            return renderCode(stripControls(node.value));
         case 'link':
             return renderLink(node, ctx);
         case 'image':
@@ -197,29 +217,35 @@ function renderInline(node, ctx) {
         case 'span':
             return renderInlines(node.children, ctx);
         case 'math':
-            return node.display ? `$$${node.content}$$` : `$${node.content}$`;
+            return node.display
+                ? `$$${stripControls(node.content)}$$`
+                : `$${stripControls(node.content)}$`;
         case 'raw-inline':
-            return node.format === 'html' ? node.content : '';
+            return node.format === 'html' ? escapeMdHtml(stripControls(node.content)) : '';
         case 'emoji':
-            return `:${node.name}:`;
-        case 'autolink':
-            return `[${node.href}](${node.href})`;
+            return `:${stripControls(node.name)}:`;
+        case 'autolink': {
+            const label = stripControls(node.href);
+            return `[${label}](${markdownDestination(node.href)})`;
+        }
         case 'mention':
-            return `@${node.user}`;
+            return `@${stripControls(node.user)}`;
         case 'tag':
-            return escapeText(`#${node.name}`);
+            return escapeText(`#${stripControls(node.name)}`);
         case 'extension':
             return renderInlines(node.content, ctx);
         case 'abbreviation': {
             // Markdown has no abbreviation syntax; emit an HTML `<abbr>` so the title
             // survives (markdown allows inline HTML), matching carve-php. Dropping it
             // to plain text would lose the expansion.
-            const title = node.expansion.replace(/[&<>"]/g, (c) => c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : '&quot;');
-            const text = node.abbr.replace(/[&<>]/g, (c) => c === '&' ? '&amp;' : c === '<' ? '&lt;' : '&gt;');
+            const title = stripControls(node.expansion).replace(/[&<>"]/g, (c) => c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : '&quot;');
+            const text = stripControls(node.abbr).replace(/[&<>]/g, (c) => c === '&' ? '&amp;' : c === '<' ? '&lt;' : '&gt;');
             return `<abbr title="${title}">${text}</abbr>`;
         }
         case 'footnote':
-            return node.inline ? `^[${renderInlines(node.inline, ctx)}]` : `[^${node.id ?? ''}]`;
+            return node.inline
+                ? `^[${renderInlines(node.inline, ctx)}]`
+                : `[^${stripControls(node.id ?? '')}]`;
         case 'soft-break':
             return '\n';
         case 'hard-break':
@@ -234,12 +260,12 @@ function renderInline(node, ctx) {
         case 'critic-comment':
             return '';
         case 'crossref':
-            return `</#${node.target}>`;
+            return `</#${stripControls(node.target)}>`;
         case 'caption-number':
             return node.n === undefined ? '#' : String(node.n);
         case 'citation-group':
             // Tier-2 ext node; the core renderer has no numbering, so emit the source.
-            return node.raw;
+            return stripControls(node.raw);
         case 'comment':
             return '';
         default: {
@@ -253,15 +279,31 @@ function renderLink(node, ctx) {
     const id = fragmentId(node.href);
     if (id && !ctx.headingIds.has(id))
         return text;
-    const destination = id ? markdownFragmentDestination(id) : node.href;
+    const destination = id ? markdownFragmentDestination(id) : markdownDestination(node.href);
     return node.title === undefined
         ? `[${text}](${destination})`
-        : `[${text}](${destination} "${node.title}")`;
+        : `[${text}](${destination} "${escapeMdTitle(node.title)}")`;
 }
 function renderImage(node) {
+    const src = markdownDestination(node.src);
+    const alt = escapeMarkdownLabel(node.alt);
     return node.title === undefined
-        ? `![${node.alt}](${node.src})`
-        : `![${node.alt}](${node.src} "${node.title}")`;
+        ? `![${alt}](${src})`
+        : `![${alt}](${src} "${escapeMdTitle(node.title)}")`;
+}
+function markdownFenceInfo(lang) {
+    if (lang === undefined)
+        return '';
+    // Keep only the first whitespace-delimited token (the language word); drop it
+    // if it still contains a backtick (would break the fence).
+    const token = stripControls(lang).split(/\s/)[0] ?? '';
+    return token.includes('`') ? '' : token;
+}
+function escapeMarkdownLabel(text) {
+    return stripControls(text).replace(/[\\[\]]/g, '\\$&');
+}
+function escapeMdTitle(title) {
+    return stripControls(title).replace(/[\\"]/g, '\\$&');
 }
 function safeFence(content, min) {
     let longest = 0;
@@ -280,11 +322,54 @@ function markdownFragmentDestination(id) {
         return `#${id}`;
     return `<#${id.replace(/[\\<>]/g, (ch) => `\\${ch}`)}>`;
 }
+function markdownDestination(url) {
+    return stripControls(sanitizeMdUrl(url).replace(/[ ()<>]/g, (ch) => {
+        switch (ch) {
+            case ' ':
+                return '%20';
+            case '(':
+                return '%28';
+            case ')':
+                return '%29';
+            case '<':
+                return '%3C';
+            case '>':
+                return '%3E';
+            default:
+                return ch;
+        }
+    }));
+}
 function fragmentId(href) {
     return href.startsWith('#') ? href.slice(1) : undefined;
 }
 function escapeText(text) {
+    text = stripControls(text);
+    // Neutralize embedded HTML (<>&) so Markdown re-rendered to HTML cannot
+    // execute it: carve's "HTML is text" guarantee holds for the Markdown target
+    // too. `&` first so the entities are not re-escaped.
+    text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // Escape Markdown metacharacters (none overlap with the HTML chars above).
     return text.replace(/[\\`*_[\]#]/g, '\\$&');
+}
+/** Dangerous URL schemes blanked on Markdown link/image destinations, mirroring
+ *  the HTML renderer so a `javascript:` URL does not survive into Markdown (and
+ *  from there a downstream Markdown -> HTML render). */
+const MD_DANGEROUS_SCHEMES = new Set(['javascript', 'vbscript', 'data', 'file']);
+function sanitizeMdUrl(url) {
+    const probe = url.replace(/[\u0000-\u0020]/g, '');
+    const m = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(probe);
+    if (m && MD_DANGEROUS_SCHEMES.has(m[1].toLowerCase()))
+        return '';
+    return url;
+}
+/** Drop C0/C1 control characters (keeping tab and newline) from author content. */
+function stripControls(s) {
+    return s.replace(/\p{Cc}/gu, (c) => (c === '\t' || c === '\n' ? c : ''));
+}
+/** Escape `<>&` so embedded raw HTML cannot become live markup downstream. */
+function escapeMdHtml(text) {
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 function cleanEscapedText(node) {
     // The value is the literal text (the parser already resolved backslash

@@ -1,0 +1,22 @@
+Cross-references resolve inside footnote bodies
+
+```
+# H
+
+Body[^n]
+
+[^n]: see </#h>
+.
+<section id="H">
+  <h1>H</h1>
+  <p>Body<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+</section>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <a href="#H">H</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
