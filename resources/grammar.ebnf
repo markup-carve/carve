@@ -1057,7 +1057,11 @@ key_value_attribute = identifier, '=', attribute_value ;
 boolean_attribute = identifier ;
 
 attribute_value = unquoted_value | quoted_value ;
-unquoted_value = (letter | digit | '-' | '_')+ ;
+unquoted_value = (letter | digit | '-' | '_' | '.' | ':')+ ;
+(* `.` and `:` are admitted so common unquoted values -- version strings
+   (`v1.2`), paths/data values (`a.b`), and namespaced/pseudo tokens
+   (`xml:lang`, `sm:hover`) -- need no quoting. A value containing any OTHER
+   non-identifier character must be quoted. *)
 (* A backslash escapes ASCII punctuation inside a quoted value (same
    `escaped_char` rule as inline text), so a value can contain a literal
    quote: `"a\"b"` -> the value `a"b`. *)

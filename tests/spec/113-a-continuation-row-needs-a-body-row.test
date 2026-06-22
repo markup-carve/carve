@@ -1,0 +1,12 @@
+A continuation row needs a body row
+
+```
+| a | b |
+| - | - |
++ cont |
+.
+<table>
+  <thead><tr><th>a</th><th>b</th></tr></thead>
+</table>
+<p>+ cont |</p>
+```

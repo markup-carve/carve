@@ -1,0 +1,10 @@
+Adjacent attribute blocks on one line merge
+
+```
+{.c}{#i}
+# H
+.
+<section id="i">
+  <h1 class="c">H</h1>
+</section>
+```

@@ -6308,3 +6308,80 @@ Body[^n]
 ```
 
 :::
+
+## Unquoted attribute values may contain dots and colons
+
+An unquoted attribute value admits `.` and `:` (besides letters, digits, `-`,
+`_`) so version strings, paths, and namespaced tokens need no quoting.
+
+::: compare
+
+```carve
+[a]{k=v.w}
+```
+
+```html
+<p><span k="v.w">a</span></p>
+```
+
+:::
+
+## A pipe pair with no cell is not a table
+
+`||` has no cell between the pipes, so it is ordinary paragraph text, not a
+one-cell table.
+
+::: compare
+
+```carve
+||
+```
+
+```html
+<p>||</p>
+```
+
+:::
+
+## Adjacent attribute blocks on one line merge
+
+Two (or more) `{...}` blocks written back-to-back on a block-attribute line
+combine into one attribute set, exactly like a single space-separated block.
+
+::: compare
+
+```carve
+{.c}{#i}
+# H
+```
+
+```html
+<section id="i">
+  <h1 class="c">H</h1>
+</section>
+```
+
+:::
+
+## A continuation row needs a body row
+
+A `+` continuation row joins the row above it. After a GFM header plus its
+delimiter row there is no body row yet, so a following `+` line is not a
+continuation -- it stays an ordinary paragraph.
+
+::: compare
+
+```carve
+| a | b |
+| - | - |
++ cont |
+```
+
+```html
+<table>
+  <thead><tr><th>a</th><th>b</th></tr></thead>
+</table>
+<p>+ cont |</p>
+```
+
+:::
