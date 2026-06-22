@@ -10,7 +10,7 @@
 // previous values in a finally so nested and sequential parses stay isolated.
 let activeMatchers = [];
 let activeMatcherCtx = null;
-const RE_HEADING = /^(#{1,6})\s+(.+?)(?:\s+\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
+const RE_HEADING = /^(#{1,6}) +(.+?)(?:\s+\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
 // Thematic break: a line of 3+ of the same `-`, `*`, or `_`, optionally
 // separated by spaces/tabs (`---`, `- - -`, `* * *`); nothing else on the line
 // (grammar thematic_break). A run alone on a line can't be emphasis (no
@@ -576,12 +576,7 @@ function peekBlockAttributes(lexer) {
     }
     if (!closed)
         return false;
-    const m = /^\s*\{([\s\S]*)\}\s*$/.exec(collected);
-    if (!m)
-        return false;
-    if (!isValidAttrPayload(m[1]))
-        return false;
-    return !isEmptyAttrs(parseAttrs(m[1]));
+    return parseBlockAttributeRun(collected) !== null;
 }
 function tryCollectBlockAttributes(lexer) {
     if (!/^\s*\{/.test(lexer.peek()))
@@ -609,24 +604,63 @@ function tryCollectBlockAttributes(lexer) {
     }
     if (!closed)
         return null;
-    // The whole run must be exactly `{ … }` with nothing after the close.
-    const m = /^\s*\{([\s\S]*)\}\s*$/.exec(collected);
-    if (!m)
-        return null;
-    // The ENTIRE payload must be valid attribute syntax (attributes +
-    // whitespace, nothing else). A line like `{.note junk}` or `{#todo#}`
-    // has leftover content -> it is NOT a block-attribute line and falls
-    // through to literal text (otherwise the junk would be silently
-    // dropped and the recognized tokens wrongly hoisted onto the next
-    // block).
-    if (!isValidAttrPayload(m[1]))
-        return null;
-    const attrs = parseAttrs(m[1]);
-    if (isEmptyAttrs(attrs))
+    const attrs = parseBlockAttributeRun(collected);
+    if (!attrs)
         return null;
     for (let k = 0; k < n; k++)
         lexer.consume();
     return attrs;
+}
+function parseBlockAttributeRun(src) {
+    let i = 0;
+    let out = null;
+    let sawBlock = false;
+    while (i < src.length) {
+        while (i < src.length && /\s/.test(src[i]))
+            i++;
+        if (i >= src.length)
+            break;
+        if (src[i] !== '{')
+            return null;
+        const start = ++i;
+        let quote = null;
+        let closed = false;
+        for (; i < src.length; i++) {
+            const ch = src[i];
+            if (quote) {
+                if (ch === '\\') {
+                    i++;
+                    continue;
+                }
+                if (ch === quote)
+                    quote = null;
+                continue;
+            }
+            if (ch === '"' || ch === "'") {
+                quote = ch;
+                continue;
+            }
+            if (ch === '}') {
+                closed = true;
+                break;
+            }
+        }
+        if (!closed)
+            return null;
+        const inner = src.slice(start, i);
+        // The ENTIRE payload must be valid attribute syntax (attributes +
+        // whitespace, nothing else). A line like `{#todo#}` has leftover content
+        // and stays literal. Empty `{}` is not a block-attribute line.
+        if (!isValidAttrPayload(inner))
+            return null;
+        const attrs = parseAttrs(inner);
+        if (isEmptyAttrs(attrs))
+            return null;
+        out = out ? mergeAttrs(out, attrs) : attrs;
+        sawBlock = true;
+        i++;
+    }
+    return sawBlock ? out : null;
 }
 function parseBlock(lexer) {
     const startLine = lexer.pos;
@@ -795,8 +829,8 @@ function parseHeading(lexer) {
     // heading. A block-opener (list/quote/table/fence/div/thematic break) ALSO
     // ends it and starts that block, exactly as it interrupts a paragraph (§10)
     // -- only plain text folds.
-    let text = line.replace(/^#{1,6}[ \t]+/, '');
-    const sameLevel = new RegExp(`^#{${level}}[ \\t]+(.+)$`);
+    let text = line.replace(/^#{1,6} +/, '');
+    const sameLevel = new RegExp(`^#{${level}} +(.+)$`);
     while (!lexer.eof()) {
         const next = lexer.peek();
         if (next.trim() === '')
@@ -807,7 +841,7 @@ function parseHeading(lexer) {
             lexer.consume();
             continue;
         }
-        if (/^#{1,6}([ \t]|$)/.test(next) || RE_CAPTION.test(next) || RE_COMMENT_BLOCK.test(next)) {
+        if (/^#{1,6}( |$)/.test(next) || RE_CAPTION.test(next) || RE_COMMENT_BLOCK.test(next)) {
             break;
         }
         // A block-opener ends the heading and starts that block (§10), so only
@@ -823,7 +857,7 @@ function parseHeading(lexer) {
     // attribute line (§15), not as a trailing `{…}` on its own line. A `{…}`
     // at the end of the heading text is therefore ordinary inline content.
     // Column where the content starts on the first line (the marker + spaces).
-    const textColumn = line.length - line.replace(/^#{1,6}[ \t]+/, '').length + 1;
+    const textColumn = line.length - line.replace(/^#{1,6} +/, '').length + 1;
     node.children = parseInline(text, lexer.abbrDefs, lexer.linkDefs, {
         baseOffset: lexer.lineOffset(lineIndex) + textColumn - 1,
         startLine: lineIndex + 1,
@@ -2141,6 +2175,12 @@ function parseCellMarkers(src) {
             }
         }
     }
+    // A lone `<` is a colspan marker even when it is glued to the pipes (`|<|`).
+    // It may fail to merge later (for example in column 0), but it must still
+    // render as an empty structural marker cell rather than an empty left-aligned
+    // cell. Non-lone prefixes such as `|< text|` remain per-cell alignment.
+    if (src.trim() === '<')
+        return { header: false, span: 'colspan', content: '' };
     // Tight prefix only: the marker must sit at index 0 of the raw text.
     let i = 0;
     let header = false;
@@ -2176,10 +2216,10 @@ function parseCellMarkers(src) {
     const trimmed = src.trim();
     if (trimmed === '^')
         return { header: false, span: 'rowspan', content: '' };
-    if (trimmed === '<')
-        return { header: false, span: 'colspan', content: '' };
     return { header: false, content: trimmed };
 }
+const isGfmDelimiterCell = (c) => !c.span && !c.attrs && /^:?-+:?$/.test(c.raw.trim());
+const isGfmDelimiterRow = (row) => row.length > 0 && row.every(isGfmDelimiterCell);
 // A row attribute block is a valid `{...}` attribute block GLUED to the row's
 // closing `|` and running to end of line -- the row-level twin of a cell's
 // opening-pipe attribute block. It sets the `<tr>` attributes. The whole
@@ -2213,6 +2253,11 @@ function parseTable(lexer) {
         if (RE_TABLE_CONT.test(line)) {
             if (!lastRaw)
                 break; // a continuation with no row to extend
+            if (rawRows.length === 2 &&
+                rawRows[1] === lastRaw &&
+                isGfmDelimiterRow(lastRaw) &&
+                !isGfmDelimiterRow(rawRows[0]))
+                break;
             lexer.consume();
             splitTableRow(line).forEach((src, idx) => {
                 const frag = src.trim();
@@ -2252,11 +2297,9 @@ function parseTable(lexer) {
     // delimiter row anywhere else is an ordinary data row.
     // A cell carrying author attributes (`|{.x} ---`) is content, not a plain
     // structural delimiter, so it never makes its row a GFM header separator.
-    const isDelimCell = (c) => !c.span && !c.attrs && /^:?-+:?$/.test(c.raw.trim());
     if (rawRows.length >= 2 &&
-        rawRows[1].length > 0 &&
-        rawRows[1].every(isDelimCell) &&
-        !rawRows[0].every(isDelimCell)) {
+        isGfmDelimiterRow(rawRows[1]) &&
+        !isGfmDelimiterRow(rawRows[0])) {
         const aligns = rawRows[1].map((c) => {
             const t = c.raw.trim();
             const left = t.startsWith(':');
@@ -3018,6 +3061,17 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             if (close > 0) {
                 const innerText = rest.slice(1, close);
                 const tail = rest.slice(close + 1);
+                // Footnote reference [^label] -- before reference links so adjacent
+                // refs like `[^a][^a]` are two notes, not one unresolved `[text][ref]`.
+                // Inside footnote content a `[^x]` is literal, not a reference
+                // (no notes inside notes, design §3.1).
+                const mfn = inFootnote ? null : RE_FOOTNOTE_REF.exec(rest);
+                if (mfn) {
+                    flush();
+                    out.push(withPos({ type: 'footnote', id: mfn[1].trim() }, source, text, i, i + mfn[0].length));
+                    i += mfn[0].length;
+                    continue;
+                }
                 // Inline link [text](url "title"){attrs}
                 const ml = RE_LINK_TAIL.exec(tail);
                 if (ml) {
@@ -3074,12 +3128,10 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                     continue;
                 }
             }
-            // Footnote reference [^label] — before span, so `[^x]{.c}` stays a
+            // Footnote reference [^label] -- before span, so `[^x]{.c}` stays a
             // footnote ref (the `{.c}` then attaches via the inline-attr pass)
             // rather than becoming a <span> of `^x`. Footnote labels hold no
             // nested brackets, so its own regex stays authoritative.
-            // Inside footnote content a `[^x]` is literal, not a reference
-            // (no notes inside notes, design §3.1).
             const mfn = inFootnote ? null : RE_FOOTNOTE_REF.exec(rest);
             if (mfn) {
                 flush();
