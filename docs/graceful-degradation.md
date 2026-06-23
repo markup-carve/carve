@@ -95,46 +95,63 @@ extension-only token (a carousel index, an embed poster, a reveal trigger) MUST
 define a static caption-or-source fallback, or the renderer MUST surface the
 token rather than drop it.
 
-## How the renderer chooses: interactive vs static
+## Three classes of degradation
 
-The engine does **not** sniff the target. It does not ask "is this a PDF." The
-degradation is decided entirely by two caller-controlled inputs:
+"Not online" is two failure modes, not one, plus a third in the same family:
 
-1. **Output format.** Markdown, plain text, and ANSI are inherently static and
-   have no extension render hooks, so they **always** take the fallback. The
-   label-as-caption rule applies unconditionally there.
-2. **The enabled extension set** for an HTML render. If the interactive group
-   extension (tabs / code-group) is active, it transforms the node first and
-   consumes the `[label]` into a clickable header - the core fallback never
-   fires. If that extension is **not** enabled, the labeled container reaches
-   the core renderer and the caption is emitted.
+1. **Interaction-only** - tabs, code-group, details, spoiler. The content is all
+   present; only the *UI* (click, hover) is gone. Fallback: **flatten** - show
+   every panel, surface its label, expand disclosures.
+2. **Client-rendered visual** - mermaid, charts, math. The content is *source*
+   that needs a client script to become a visual. Offline you get raw source,
+   not the diagram. Fallback: **move rendering to build time** - pre-render to an
+   image (mermaid/chart) or server-side render (math); else degrade to source.
+3. **Embedded** - iframes, video, future embed extensions. Online is a live
+   embed; offline is a **poster image plus a link**.
+
+Class 1 is a cheap markup transform. Classes 2 and 3 need a build-time renderer
+and so are a pipeline concern, not a markup tweak.
+
+## How the renderer chooses: the `mode` signal
+
+The engine does **not** sniff the target. Degradation is set by a render
+**mode** - `"interactive"` (default) or `"static"` - plus the output format:
+
+- **Output format.** Markdown, plain text, and ANSI are inherently static and
+  force `"static"`; the label-caption rule and source-fallbacks apply
+  unconditionally there.
+- **Mode (HTML only).** `"interactive"` renders the live forms; `"static"`
+  renders through each extension's `renderStatic` path (and the core caption
+  floor for any unconsumed label). See the
+  [Extensions Contract](/extensions) for the `renderStatic` hook, the
+  resolution order, and the `renderers` map that supplies class-2/3 build-time
+  renderers.
 
 So the **build chooses the mode by target**, the same way it already chooses a
 [profile](/profiles):
 
-- **Online HTML** - enable the interactive extensions (tabs, code-group, the
-  client-rendered mermaid/chart/math). Labels are consumed into live widgets.
-- **Static HTML / PDF / Markdown / plain / ANSI export** - omit the interactive
-  extensions. Labels surface as captions, diagram blocks fall back to source
-  (or a pre-rendered image), and the output is self-contained.
+- **Online HTML** - `mode: "interactive"`. Tabs are live, mermaid draws via its
+  script, math via KaTeX.
+- **Static HTML / PDF source / archival** - `mode: "static"` (with a `renderers`
+  map for diagrams/math). Tabs flatten to labeled sections, diagrams become
+  images or source, math is server-rendered or source - self-contained, no
+  client JS required.
 
-There is no implicit detection and no ambiguity: a given `(format, extension
-set)` pair produces one deterministic result. A host that wants both an
-interactive site and a print/PDF artifact runs the render twice with the two
-configurations, or keeps the interactive HTML and adds a print stylesheet (see
-below). Implementations MAY ship a named **static / print preset** (the
-extension-set analogue of a profile) so callers need not assemble the list by
-hand.
+There is no implicit detection: a given `(format, mode, renderers)` triple
+produces one deterministic result. A host that wants both an interactive site
+and a print/PDF artifact renders twice with the two modes, or keeps the
+interactive HTML and adds a print stylesheet (see below). `"print"`, `"email"`,
+and similar are reserved for future named presets layered on `"static"`.
 
 ## A PDF workflow
 
 Two supported routes; both rely on the rules above so no authored content is
 lost:
 
-1. **HTML to PDF.** Render Carve to HTML **with the interactive extensions
-   disabled** (so tabs become labeled stacked sections and disclosures expand),
-   **pre-render** mermaid/charts to SVG/PNG, and render **math server-side**
-   (KaTeX to MathML/HTML). Pass that self-contained HTML to a print engine
+1. **HTML to PDF.** Render Carve to HTML in **`mode: "static"`** with a
+   `renderers` map (so tabs become labeled stacked sections, disclosures expand,
+   mermaid/charts **pre-render** to SVG/PNG, and **math** renders server-side).
+   Pass that self-contained HTML to a print engine
    (weasyprint, headless Chromium). Because client scripts never run in a print
    engine, anything left to client JS would otherwise be blank - the disabled
    extensions plus pre-rendering are what make the PDF complete.

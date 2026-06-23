@@ -180,6 +180,54 @@ An extension is a named unit contributing any subset of four things, run as:
 - Impl-idiomatic (PHP `addExtension`/ctor; JS `extensions: [...]` option),
   declaring the same lifecycle contributions.
 
+### 2.5 Static rendering mode (`renderStatic`)
+
+A render carries a **mode** - a render option, not document syntax:
+
+- `"interactive"` (default) - online HTML; extensions render their interactive
+  form (live tabs, mermaid via a client script, KaTeX).
+- `"static"` - HTML for a medium that cannot interact or run client scripts
+  (print, PDF source, archival HTML). The Markdown, plain-text, and ANSI
+  renderers force `"static"` and the caller cannot override it.
+
+`"print"`, `"email"`, and similar names are **reserved** for future named
+presets; an implementation MUST reject an unknown mode value rather than guess.
+Omitting the mode means `"interactive"`, so existing callers are unaffected.
+
+In `"static"` HTML an extension renders through an optional
+`renderStatic(node, ctx)` hook. Per node, the resolution order is:
+
+1. the extension's `renderStatic`, if defined;
+2. else the extension's ordinary renderer (correct for extensions that are
+   already static - list-table, citations, heading-permalinks - which need no
+   `renderStatic`);
+3. else, for a container whose grouping `[label]` no extension consumed, the
+   core caption floor (see [Graceful Degradation](/graceful-degradation)).
+
+No construct falls through to "dropped": every authored token reaches at least
+the floor. `renderStatic` MUST preserve all content and MAY drop only
+interaction. Expected static output per interactive extension:
+
+| Extension | `renderStatic` output |
+| --- | --- |
+| tabs / code-group | each panel as a `<section>` headed by its `[label]` |
+| details | expanded, its title as a heading |
+| spoiler | the revealed content (no blur) |
+| fenced-render (mermaid, chart) | a build-rendered image if a renderer is supplied, else the source as a code block |
+| math (display / inline) | server-side output (MathML/HTML) if a renderer is supplied, else the source |
+
+Client-script extensions (mermaid, chart, math) cannot produce their image
+inside the engine. A `"static"` render therefore accepts a **renderers** map
+keyed by extension name - e.g. `{ renderers: { mermaid: src => svg } }`. When the
+needed renderer is absent, `renderStatic` MUST fall back to source, never blank.
+
+`renderStatic` is the HTML-static path only. The Markdown, plain-text, and ANSI
+renderers reach the same end by flattening containers and keeping client-script
+blocks as source; they do not call `renderStatic`.
+
+Parity: for a given `(input, mode, renderers)` the implementations MUST produce
+the same output - a static-mode parity battery, mirroring the profile fixtures.
+
 ## 3. Home, conformance, per-impl
 
 - This document is the normative home for the taxonomy + contract.
