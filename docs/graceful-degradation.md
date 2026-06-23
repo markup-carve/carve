@@ -95,6 +95,61 @@ extension-only token (a carousel index, an embed poster, a reveal trigger) MUST
 define a static caption-or-source fallback, or the renderer MUST surface the
 token rather than drop it.
 
+## How the renderer chooses: interactive vs static
+
+The engine does **not** sniff the target. It does not ask "is this a PDF." The
+degradation is decided entirely by two caller-controlled inputs:
+
+1. **Output format.** Markdown, plain text, and ANSI are inherently static and
+   have no extension render hooks, so they **always** take the fallback. The
+   label-as-caption rule applies unconditionally there.
+2. **The enabled extension set** for an HTML render. If the interactive group
+   extension (tabs / code-group) is active, it transforms the node first and
+   consumes the `[label]` into a clickable header - the core fallback never
+   fires. If that extension is **not** enabled, the labeled container reaches
+   the core renderer and the caption is emitted.
+
+So the **build chooses the mode by target**, the same way it already chooses a
+[profile](/profiles):
+
+- **Online HTML** - enable the interactive extensions (tabs, code-group, the
+  client-rendered mermaid/chart/math). Labels are consumed into live widgets.
+- **Static HTML / PDF / Markdown / plain / ANSI export** - omit the interactive
+  extensions. Labels surface as captions, diagram blocks fall back to source
+  (or a pre-rendered image), and the output is self-contained.
+
+There is no implicit detection and no ambiguity: a given `(format, extension
+set)` pair produces one deterministic result. A host that wants both an
+interactive site and a print/PDF artifact runs the render twice with the two
+configurations, or keeps the interactive HTML and adds a print stylesheet (see
+below). Implementations MAY ship a named **static / print preset** (the
+extension-set analogue of a profile) so callers need not assemble the list by
+hand.
+
+## A PDF workflow
+
+Two supported routes; both rely on the rules above so no authored content is
+lost:
+
+1. **HTML to PDF.** Render Carve to HTML **with the interactive extensions
+   disabled** (so tabs become labeled stacked sections and disclosures expand),
+   **pre-render** mermaid/charts to SVG/PNG, and render **math server-side**
+   (KaTeX to MathML/HTML). Pass that self-contained HTML to a print engine
+   (weasyprint, headless Chromium). Because client scripts never run in a print
+   engine, anything left to client JS would otherwise be blank - the disabled
+   extensions plus pre-rendering are what make the PDF complete.
+2. **Markdown to PDF.** Render Carve to Markdown (the fallback is automatic),
+   then hand it to a Markdown-to-PDF toolchain (for example pandoc). Diagram
+   and math source survive as fenced blocks for that toolchain to handle.
+
+The alternative to route 1's "disable extensions" step is to render the
+interactive HTML once and ship a **print stylesheet** that, under
+`@media print`, expands disclosures, shows every tab panel with its label, and
+reveals spoilers. That keeps a single HTML artifact serving both screen and
+print, at the cost of a stylesheet that the diagram/math extensions must still
+cooperate with (their output must be print-visible, i.e. pre-rendered, not
+script-drawn).
+
 ## Recommendations for interactive extensions
 
 - **Tabs / code-group:** rely on the label-caption fallback above; an extension
