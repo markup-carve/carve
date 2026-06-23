@@ -160,6 +160,50 @@ does not launder an attack:
   responsible for inserting it into a trusted context and for the surrounding
   Content-Security-Policy.
 
+## How Carve compares on security
+
+Most lightweight-markup ecosystems treat sanitization as the *consumer's* job:
+the format says nothing about safety, and you are expected to bolt on a
+sanitizer (or pick a "safe mode") yourself. Carve is unusual in that the
+baseline defenses on this page are **part of the specification** (grammar
+PART 9 §25), **pinned by the shared corpus**, and **enforced identically by all
+three implementations** with no configuration.
+
+| | Spec mandates sanitization? | URL scheme filtering | Attribute hardening | Raw HTML default | DoS bounds in spec |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **Carve** | **yes** (§25, corpus-pinned, 3 impls) | always-on denylist | always-on (incl. extension wrappers, CSS-escape decoding) | **on, one-flag opt-out / safe mode** | yes (linear-time, depth caps) |
+| CommonMark / markdown-it / marked | no | none (consumer's job) | no attribute model | on (libs vary; `markdown-it` defaults off) | no |
+| GitHub GFM | no - platform sanitizer | via GitHub's separate allowlist | via GitHub's sanitizer | sanitized server-side | no |
+| Djot (Carve's parent) | no | none mandated | none mandated | on | no |
+| MDX | n/a - compiles to JS | n/a | n/a | executes code | no |
+
+What this means in practice for **untrusted input**:
+
+- Carve out of the box blanks dangerous URL schemes (`javascript:`/`vbscript:`/
+  `data:`/`file:`), drops `on*`/`srcdoc`/`formaction` and script-bearing CSS,
+  bounds resources, and strips terminal-control bytes from the Markdown / plain
+  / ANSI renderers - **without you wiring up a sanitizer**. Stock Markdown and
+  reference Djot do none of this; you must add a sanitizer or use a host that
+  sanitizes (as GitHub does).
+- The safety is *guaranteed by the spec and tested across implementations*, so
+  carve-php, carve-js and carve-rs all behave the same - you do not inherit a
+  different security posture by switching implementation.
+
+::: warning One thing you must still configure
+**Raw HTML is on by default.** ` ```=html ` blocks and `` `…`{=html} `` inline
+raw are emitted verbatim unless you disable raw passthrough (or run a safe
+mode). For untrusted input, turn raw HTML off - the URL, attribute, and DoS
+defenses above are always on, but raw passthrough is the one switch you own.
+:::
+
+::: tip Defense in depth still applies
+Carve's URL/CSS hardening is a **denylist** of known-dangerous constructs, not a
+full allowlist sanitizer. For genuinely hostile input that may carry arbitrary
+attributes, keep running the rendered HTML through a DOM sanitizer (e.g.
+DOMPurify) under a Content-Security-Policy. `SafeMode` / `Profile` add
+allowlist-style policies on top (see below).
+:::
+
 ## Beyond the baseline: SafeMode and Profiles
 
 The baseline on this page - the URL scheme denylist, the attribute name/value

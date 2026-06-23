@@ -79,10 +79,15 @@ special cases.
 
 | | Markdown | Djot | MDX | **Carve** |
 |---|:---:|:---:|:---:|:---:|
-| Safe with untrusted input | ⚠️ raw HTML on by default (sanitize modes exist) | ✅ | ❌ executes JS | ✅ raw off by default |
+| Sanitization mandated by the spec | ❌ consumer's job | ❌ consumer's job | n/a | ✅ §25, corpus-pinned |
+| URL / attribute / DoS hardening by default | ❌ | ❌ | ❌ | ✅ always on |
+| Raw HTML default | ⚠️ on (libs vary) | ⚠️ on | runs JS | ⚠️ on, one-flag opt-out / safe mode |
 | Embeds live components / JS | ❌ | ❌ | ✅ (its purpose) | ❌ by design |
 | Independent implementations | many, divergent | several (js, lua, rust, go) | JS-only | **php · js · rs, conformance-tested** |
 | Shared spec test corpus | ❌ | ⚠️ | ❌ | ✅ |
+
+See [Security → How Carve compares on security](/security#how-carve-compares-on-security)
+for the detailed breakdown and caveats.
 
 ## When to pick which
 
