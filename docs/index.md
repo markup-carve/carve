@@ -20,6 +20,10 @@ hero:
       link: https://github.com/markup-carve
 
 features:
+  - title: Interactive Online, Readable Offline
+    details: "Built for the interactive web first — diagrams, math, charts and tabs hydrate into rich output online. With no JavaScript every block degrades to clean semantic HTML: a Mermaid fence still shows its source, <details> stays native, tables stay tables."
+    link: /graceful-degradation
+    linkText: How it degrades
   - title: Visual Mnemonics
     details: "/italic/ slashes lean, *bold* asterisks are heavy, _underline_ sits below, ~strikethrough~ runs through. Syntax that looks like its output."
   - title: Linear-Time Rigor
