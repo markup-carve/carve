@@ -20,16 +20,14 @@ hero:
       link: https://github.com/markup-carve
 
 features:
-  - title: Interactive Online, Readable Offline
-    details: "Built for the interactive web first — diagrams, math, charts and tabs hydrate into rich output online. With no JavaScript every block degrades to clean semantic HTML: a Mermaid fence still shows its source, <details> stays native, tables stay tables."
-    link: /graceful-degradation
-    linkText: How it degrades
   - title: Visual Mnemonics
     details: "/italic/ slashes lean, *bold* asterisks are heavy, _underline_ sits below, ~strikethrough~ runs through. Syntax that looks like its output."
   - title: Linear-Time Rigor
     details: "Djot-style linear-time parsing with no backtracking and unambiguous rules (Djot is the markup Carve builds on), extended with captions, abbreviations, and social conventions."
   - title: Ten-Second Rule
     details: Learnable in 10 seconds for basic use. Memorable after 10 days without practice. Unambiguous within 10 characters of context.
+  - title: Interactive Online, Readable Offline
+    details: "Built for the interactive web first — diagrams, math, charts and tabs hydrate into rich output online. With no JavaScript every block degrades to clean semantic HTML: a Mermaid fence still shows its source, <details> stays native, tables stay tables."
   - title: Captions Everywhere
     details: One ^ prefix adds captions to images, blockquotes, and tables — emitting semantic figure / figcaption / caption HTML.
   - title: Friendly Tables
