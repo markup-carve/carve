@@ -3067,6 +3067,20 @@ A backslash before a space produces a non-breaking space.
 
 :::
 
+A non-breaking space counts as whitespace for smart-quote flanking, so a quote that follows one opens (exactly as it would after an ordinary space).
+
+::: compare
+
+```carve
+say\ 'twas a fine\ "day"
+```
+
+```html
+<p>say&nbsp;‘twas a fine&nbsp;“day”</p>
+```
+
+:::
+
 ## Raw inline
 
 A verbatim span tagged `{=format}` passes through when the format
