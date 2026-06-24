@@ -15,3 +15,25 @@ Read the [intro][x]{.ext} first.
 .
 <p>Read the <a href="/intro" class="ext">intro</a> first.</p>
 ```
+
+```
+> [ref]: /url
+
+See [it][ref].
+.
+<blockquote>
+
+</blockquote>
+<p>See <a href="/url">it</a>.</p>
+```
+
+```
+- [ref]: /url
+
+See [it][ref].
+.
+<ul>
+  <li></li>
+</ul>
+<p>See <a href="/url">it</a>.</p>
+```

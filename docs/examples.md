@@ -2452,6 +2452,45 @@ Read the [intro][x]{.ext} first.
 
 :::
 
+"Anywhere in the document" includes inside a container: a reference definition
+written inside a blockquote or a list item is still an invisible block that is
+collected into the document-wide definition table, so a reference elsewhere
+resolves against it. The container keeps only its visible content (here, none).
+
+::: compare
+
+```carve
+> [ref]: /url
+
+See [it][ref].
+```
+
+```html
+<blockquote>
+
+</blockquote>
+<p>See <a href="/url">it</a>.</p>
+```
+
+:::
+
+::: compare
+
+```carve
+- [ref]: /url
+
+See [it][ref].
+```
+
+```html
+<ul>
+  <li></li>
+</ul>
+<p>See <a href="/url">it</a>.</p>
+```
+
+:::
+
 ## Collapsed reference link
 
 `[text][]` uses the link text as the label.
