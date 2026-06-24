@@ -62,3 +62,36 @@ one
 two
 :::</p>
 ```
+
+```
+::: \
+one
+two
+:::
+.
+<div class="hardbreaks">
+  <p>one<br>
+two</p>
+</div>
+```
+
+```
+:::: \
+  indented
+next
+
+::: note
+a
+b
+:::
+::::
+.
+<div class="hardbreaks">
+  <p>indented<br>
+next</p>
+  <aside class="admonition note">
+    <p>a
+b</p>
+  </aside>
+</div>
+```

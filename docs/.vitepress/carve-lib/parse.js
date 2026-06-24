@@ -88,6 +88,11 @@ const RE_ADMONITION_CLOSE = /^(:{3,})\s*$/;
 // pipe form is unchanged (`<div class="line-block">` with `<br>` breaks).
 // Mirrors carve#119 / carve-php#124.
 const RE_LINE_BLOCK_OPEN = /^(:{3,})[ \t]+\|[ \t]*$/;
+// Local hard-break block: `::: \` converts soft breaks in direct paragraph
+// children only. It is deliberately smaller than a line block: no leading
+// whitespace preservation, no stanza model, and no inheritance into nested
+// blocks.
+const RE_HARDBREAKS_BLOCK_OPEN = /^(:{3,})[ \t]+\\[ \t]*$/;
 // Generic fenced div: a bare `:::` opener with NO type word (djot's generic
 // container). A typed `::: word` routes to parseAdmonition. An inline
 // `::: {.class}` is NOT a div (strict djot) -- use a preceding attribute
@@ -690,6 +695,8 @@ function parseBlockInner(lexer) {
     }
     if (RE_LINE_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer))
         return parseLineBlock(lexer);
+    if (RE_HARDBREAKS_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer))
+        return parseHardBreaksBlock(lexer);
     // A typed `::: word` admonition, like a bare `:::` div, opens ONLY when a
     // matching closer exists ahead (PART 9 §12 / grammar: `admonition = open …
     // close`). Without this guard an unterminated `::: note` swallows the rest
@@ -1048,7 +1055,7 @@ function lineBlockHasCloser(lexer) {
     const start = lexer.pos + 1;
     if (start >= lexer.lineBlockNoCloserFrom)
         return false;
-    const fence = RE_LINE_BLOCK_OPEN.exec(lexer.peek())[1].length;
+    const fence = /^(:{3,})/.exec(lexer.peek())[1].length;
     if (start >= (lexer.lineBlockNoCloserOfLenFrom.get(fence) ?? Infinity))
         return false;
     let sawAnyCloser = false;
@@ -1104,6 +1111,38 @@ function parseLineBlock(lexer) {
         children,
     };
     return node;
+}
+function parseHardBreaksBlock(lexer) {
+    const m = RE_HARDBREAKS_BLOCK_OPEN.exec(lexer.consume());
+    const fence = m[1].length;
+    const inner = [];
+    while (!lexer.eof()) {
+        const ln = lexer.peek();
+        const c = RE_ADMONITION_CLOSE.exec(ln);
+        if (c && c[1].length >= fence) {
+            lexer.consume();
+            break;
+        }
+        lexer.consume();
+        inner.push(ln);
+    }
+    const subLexer = new Lexer(inner.join('\n'));
+    subLexer.abbrDefs = lexer.abbrDefs;
+    subLexer.linkDefs = lexer.linkDefs;
+    subLexer.footnoteDefs = lexer.footnoteDefs;
+    subLexer.nested = true;
+    subLexer.depth = lexer.depth + 1;
+    const children = parseBlocks(subLexer, 0);
+    for (const child of children) {
+        if (child.type !== 'paragraph')
+            continue;
+        child.children = child.children.map((node) => node.type === 'soft-break' ? { type: 'hard-break' } : node);
+    }
+    return {
+        type: 'div',
+        attrs: { classes: ['hardbreaks'], order: ['.class'] },
+        children,
+    };
 }
 function expandLineBlockLeadingWhitespace(line) {
     let i = 0;
@@ -1329,9 +1368,10 @@ function trackBlockQuoteLazyState(content, state) {
         }
         if (RE_DIV_OPEN.test(content) ||
             RE_ADMONITION_OPEN.test(content) ||
-            RE_LINE_BLOCK_OPEN.test(content)) {
-            // Div / admonition / line-block opener (`:::`, `::: type`, or `::: |`)
-            // is structural; it opens no paragraph itself.
+            RE_LINE_BLOCK_OPEN.test(content) ||
+            RE_HARDBREAKS_BLOCK_OPEN.test(content)) {
+            // Div / admonition / special colon-fence opener (`:::`, `::: type`,
+            // `::: |`, or `::: \`) is structural; it opens no paragraph itself.
             state.paragraphOpen = false;
             return;
         }
@@ -1636,6 +1676,7 @@ function lazyContinuationEndsList(line, lexer) {
             divHasCloser(lexer)) ||
         (RE_DIV_OPEN.test(line) && divHasCloser(lexer)) ||
         (RE_LINE_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer)) ||
+        (RE_HARDBREAKS_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer)) ||
         RE_ABBR_DEF.test(line) ||
         RE_FOOTNOTE_DEF.test(line) ||
         RE_LINK_DEF.test(line) ||
@@ -1719,7 +1760,8 @@ function trackItemLazyState(content, state) {
     // fall-through below once the opener line has been seen).
     if (RE_DIV_OPEN.test(content) ||
         (RE_ADMONITION_OPEN.test(content) && !RE_ADMONITION_CLOSE.test(content)) ||
-        RE_LINE_BLOCK_OPEN.test(content)) {
+        RE_LINE_BLOCK_OPEN.test(content) ||
+        RE_HARDBREAKS_BLOCK_OPEN.test(content)) {
         state.lazyFoldable = false;
         return;
     }
@@ -2468,13 +2510,14 @@ function startsInterruptingBlock(lexer) {
         case '_':
             return RE_HR.test(ln.trim());
         case ':':
-            // An admonition/div/line-block that has a `:::` closer ahead (the `::: |`
-            // line-block shares the bare `:::` closer). A definition-list term (`::`)
-            // is NOT in the §10 interrupter set (like an ordered list), so it does
-            // not interrupt a paragraph or heading -- it folds as lazy text.
+            // An admonition/div/special colon fence that has a `:::` closer ahead.
+            // A definition-list term (`::`) is NOT in the §10 interrupter set (like
+            // an ordered list), so it does not interrupt a paragraph or heading --
+            // it folds as lazy text.
             if ((RE_ADMONITION_OPEN.test(ln) && !RE_ADMONITION_CLOSE.test(ln)) ||
                 RE_DIV_OPEN.test(ln) ||
-                RE_LINE_BLOCK_OPEN.test(ln))
+                RE_LINE_BLOCK_OPEN.test(ln) ||
+                RE_HARDBREAKS_BLOCK_OPEN.test(ln))
                 return divHasCloser(lexer);
             return false;
         case '[':

@@ -18,7 +18,7 @@ A block owns a rectangle of the document: it starts on its own line and is separ
 - Block quote - `> …`
 - List (bullet `-` / `*`, ordered `1.` / `1)`, task `- [ ]`) and its list items
 - Code block (fenced) - ` ``` `
-- Generic div / admonition / line-block - `::: …`
+- Generic div / admonition / line-block / local hard-break block - `::: …`
 - Table
 - Thematic break - `---`
 - Frontmatter - leading `---` block
@@ -40,7 +40,7 @@ Read this first.
 
 renders the heading as `<h2 class="featured">` inside `<section id="install">` (an explicit heading id hoists to the `<section>` wrapper, PART 9 §13) and the admonition as `<aside class="admonition note callout">`.
 
-This is uniform across every block - headings, block quotes, lists, code blocks, divs/admonitions, line-blocks, tables. They all take their attributes on the preceding line; none take a trailing attribute on the block's own line. (For a code block the fence line accepts only structured metadata - `lang`, optional `"header"`, optional `[label]`, in that order. A trailing `{…}` after the language word makes the line *not a fence at all*; the backticks then fall back to ordinary inline parsing. For a heading, a trailing `{…}` is ordinary inline text. Put the attributes on the line above, like any other block.)
+This is uniform across every block - headings, block quotes, lists, code blocks, divs/admonitions, line-blocks, local hard-break blocks, tables. They all take their attributes on the preceding line; none take a trailing attribute on the block's own line. (For a code block the fence line accepts only structured metadata - `lang`, optional `"header"`, optional `[label]`, in that order. A trailing `{…}` after the language word makes the line *not a fence at all*; the backticks then fall back to ordinary inline parsing. For a heading, a trailing `{…}` is ordinary inline text. Put the attributes on the line above, like any other block.)
 
 ### Code blocks: line numbers, titles, and highlighting
 
