@@ -220,6 +220,10 @@ Client-script extensions (mermaid, chart, math) cannot produce their image
 inside the engine. A `"static"` render therefore accepts a **renderers** map
 keyed by extension name - e.g. `{ renderers: { mermaid: src => svg } }`. When the
 needed renderer is absent, `renderStatic` MUST fall back to source, never blank.
+A renderer typically returns a self-contained `data:` image URI; if you sanitize
+the static HTML afterwards, **allow the `data:` scheme for images** or the image
+is silently stripped. Concrete, tested renderer recipes (graphviz/mermaid/math,
+per engine) are in [Static Rendering Recipes](/static-rendering-recipes).
 
 `renderStatic` is the HTML-static path only. The Markdown, plain-text, and ANSI
 renderers reach the same end by flattening containers and keeping client-script
