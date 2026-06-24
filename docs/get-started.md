@@ -5,6 +5,12 @@ description: Try Carve in 30 seconds, then render it in your own project.
 
 # Get Started
 
+## Interactive online, readable offline
+
+One of Carve's design principles: it targets the interactive web first. The [Playground](/playground), live preview, and hydration extensions (Mermaid, D2, Graphviz, Vega-Lite, Chart.js, math, tabs, details) render rich, interactive output when JavaScript is present. But interactivity is an enhancement, never a requirement — Carve only ever emits the marker element, and the client library hydrates it.
+
+With no JavaScript — RSS readers, email, `curl`, archived pages, PDF, Markdown or terminal exports — every construct degrades to self-describing semantic HTML: a `mermaid` fence renders as `<pre class="mermaid">` showing its source, `:::details` is a native `<details>`, `list-table` is a real `<table>`, captions are `<figure>` / `<figcaption>`. The document is always whole; online just makes it richer.
+
 ## 1. Try it now — no install
 
 The fastest path is the **[Playground](/playground)**: type Carve on the left, watch the HTML render live on the right. Nothing to set up.
