@@ -59,6 +59,7 @@ block = heading
       | list
       | table
       | line_block
+      | local_hard_break_block
       | admonition
       | div
       | comment_block
@@ -545,6 +546,16 @@ line_block_body = stanza, {blank_line, stanza} ;
 stanza = line_block_line, {line_block_line} ;
 line_block_line = {whitespace}, inline_content, newline ;
 (* the leading whitespace is PRESERVED in output -- PART 9 §23 *)
+
+(* --- Local hard-break block -- a RECOGNIZED `:::` type for authors who want
+   Markdown-like visible line breaks locally without the full line-block verse
+   model. `::: \` renders as `<div class="hardbreaks">` and turns soft breaks
+   in DIRECT paragraph children into hard breaks. It does NOT preserve leading
+   whitespace and it does NOT inherit into nested block content. *)
+local_hard_break_block = local_hard_break_block_open, newline,
+                         {block - admonition_close},
+                         admonition_close, newline ;
+local_hard_break_block_open = colon_fence, space, backslash ;
 
 (* --- Comments --- *)
 comment_line = "%%", {character}, newline ;
@@ -1148,8 +1159,8 @@ EOF = (* end of file *) ;
       lists)
    9. Tables (| prefix)
    10. Colon fences (::: -- admonition with type word, line block with |,
-       generic div when bare; longest-token wins: a `::: x` line is never
-       a `:: ` definition term)
+       local hard-break block with \, generic div when bare; longest-token
+       wins: a `::: x` line is never a `:: ` definition term)
    11. Paragraphs (everything else)
    Recognition order is NOT interruption: which of these may interrupt an
    open paragraph is PART 9 §10 (list markers -- bullet and ordered -- never do).
@@ -1993,6 +2004,22 @@ EOF = (* end of file *) ;
         `line-block` without the container consuming indentation.
       - INLINE CONTENT parses normally (emphasis, links, code, ...); only the
         whitespace and soft-break handling differ from an ordinary div.
+      (corpus 88-line-blocks*.)
+
+      LOCAL HARD-BREAK BLOCK -- NORMATIVE (governs `local_hard_break_block` in
+      PART 2). A `::: \` fenced block is the smaller local opt-in for visible
+      line breaks.
+      - TRIGGER. A bare backslash `\` TYPE TOKEN on the opener (`::: \`) selects
+        this behavior. The token is not an English type word. Extra classes / id
+        attach via a PRECEDING block-attribute line.
+      - WRAPPER. Renders as `<div class="hardbreaks">` (a generic div, never an
+        `<aside>`).
+      - DIRECT PARAGRAPHS ONLY. Each soft break in a direct paragraph child of
+        the block becomes a hard break (`<br>`). Nested blocks parse normally and
+        keep normal soft-break behavior; the mode is not inherited.
+      - NO WHITESPACE PRESERVATION. Unlike `::: |`, leading whitespace has no
+        special visual-preservation rule. Ordinary paragraph parsing trims or
+        folds it as usual.
       (corpus 88-line-blocks*.)
 
    24. TABS AND INDENTATION -- NORMATIVE (governs `indent` in PART 2 and all

@@ -92,6 +92,11 @@ inner
 Roses are red,
   Violets are blue.
 :::
+
+::: \                        (local hard breaks; no whitespace preservation)
+one
+two
+:::
 ````
 
 ## Tables

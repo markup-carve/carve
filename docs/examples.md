@@ -5670,6 +5670,55 @@ two
 
 ::::
 
+For a smaller local opt-in to visible line breaks, use `::: \`. It turns soft breaks in direct paragraph children into hard breaks, but it does not preserve leading whitespace and does not affect nested blocks.
+
+:::: compare
+
+```carve
+::: \
+one
+two
+:::
+```
+
+```html
+<div class="hardbreaks">
+  <p>one<br>
+two</p>
+</div>
+```
+
+::::
+
+Nested blocks keep ordinary soft-break behavior, and leading whitespace is not treated as alignment.
+
+::::: compare
+
+```carve
+:::: \
+  indented
+next
+
+::: note
+a
+b
+:::
+::::
+```
+
+```html
+<div class="hardbreaks">
+  <p>indented<br>
+next</p>
+  <aside class="admonition note">
+    <p>a
+b</p>
+  </aside>
+</div>
+```
+
+:::::
+
 ## Mention and tag name boundaries
 
 A mention or tag name runs over letters, digits, `_`, `-`, and *interior* dots (a dot followed by another name character, as in `@john.doe` or `#release-1.0`). A dot at the end of the run is sentence punctuation, not part of the name; other punctuation ends the name and stays literal (an apostrophe becomes a typographic quote).
