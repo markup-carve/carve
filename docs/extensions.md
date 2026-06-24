@@ -206,20 +206,38 @@ In `"static"` HTML an extension renders through an optional
 
 No construct falls through to "dropped": every authored token reaches at least
 the floor. `renderStatic` MUST preserve all content and MAY drop only
-interaction. Expected static output per interactive extension:
+interaction.
+
+An extension whose **interactive output depends on a client script** (tabs,
+code-group, spoiler, fenced-render, math, and any future carousel/embed) MUST
+implement `renderStatic` - otherwise step 2 falls back to its script-dependent
+interactive output, which is silently broken in a `static` render. An engine
+SHOULD warn when such an extension is registered without a `renderStatic`, and
+`carve lint` MAY flag it. (Extensions whose ordinary output is already static -
+list-table, citations, heading-permalinks - are exempt; they have no script to
+lose.)
+
+Expected static output per interactive extension:
 
 | Extension | `renderStatic` output |
 | --- | --- |
 | tabs / code-group | each panel as a `<section>` headed by its `[label]` |
 | details | not a `renderStatic` case - emits a native `<details open>` in static (see [Graceful Degradation](/graceful-degradation)); interactive without scripts, so never flattened |
 | spoiler | the revealed content (no blur) |
-| fenced-render (mermaid, chart) | a build-rendered image if a renderer is supplied, else the source as a code block |
+| fenced-render (mermaid, chart, graphviz) | a build-rendered image if a renderer for that key is supplied, else the source as a code block |
 | math (display / inline) | server-side output (MathML/HTML) if a renderer is supplied, else the source |
 
-Client-script extensions (mermaid, chart, math) cannot produce their image
-inside the engine. A `"static"` render therefore accepts a **renderers** map
-keyed by extension name - e.g. `{ renderers: { mermaid: src => svg } }`. When the
-needed renderer is absent, `renderStatic` MUST fall back to source, never blank.
+Client-script extensions cannot produce their image inside the engine. A
+`"static"` render therefore accepts a **renderers** map. The canonical keys are
+`mermaid`, `chart`, `graphviz`, and `math` - implementations MUST use these exact
+names so the same `renderers` config behaves identically across engines (a fixed
+`{mermaid, chart, math}` struct that omits `graphviz` is non-conformant). When
+the needed renderer is absent, `renderStatic` MUST fall back to source, never
+blank. Renderers are **synchronous** (`source -> string`; `math` also takes a
+display flag): an async tool (mmdc, an HTTP service) must be run in a build step
+and supplied as a pre-resolved lookup, not awaited inside the render. Renderers
+apply to the **static HTML** path only - the Markdown/plain/ANSI renderers keep
+client-script blocks as source regardless.
 A renderer typically returns a self-contained `data:` image URI; if you sanitize
 the static HTML afterwards, **allow the `data:` scheme for images** or the image
 is silently stripped. Concrete, tested renderer recipes (graphviz/mermaid/math,
