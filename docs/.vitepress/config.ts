@@ -227,6 +227,8 @@ export default defineConfig({
               { text: 'Technical Rationale', link: '/technical-rationale' },
               { text: 'Native Features', link: '/native-features-analysis' },
               { text: 'Security', link: '/security' },
+              { text: 'Graceful Degradation', link: '/graceful-degradation' },
+              { text: 'Static Rendering Recipes', link: '/static-rendering-recipes' },
             ],
           },
           {
@@ -302,6 +304,8 @@ export default defineConfig({
             { text: 'Markup Language Comparison', link: '/markup-languages' },
             { text: 'Implementation Comparison', link: '/implementation-comparison' },
             { text: 'Security', link: '/security' },
+            { text: 'Graceful Degradation', link: '/graceful-degradation' },
+              { text: 'Static Rendering Recipes', link: '/static-rendering-recipes' },
             { text: 'Performance', link: '/performance' },
             { text: 'Edge Cases', link: '/edge-cases' },
           ],

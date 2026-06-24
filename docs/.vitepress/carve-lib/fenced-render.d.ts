@@ -15,6 +15,15 @@ export interface FencedRenderOptions {
     wrapInFigure?: boolean;
     /** Figure class. Default `"{cssClass}-figure"`. */
     figureClass?: string;
+    /**
+     * Which build-time renderer in the static `renderers` map produces this
+     * instance's image (`'mermaid'`, `'chart'` or `'graphviz'`). When set and a
+     * `mode: "static"` render supplies that renderer, `renderStatic` emits the
+     * renderer's output (an `<svg>` / `<img>`); otherwise it falls back to the
+     * source as a `<pre><code>` block. Unset means no build renderer applies and
+     * static always degrades to source.
+     */
+    staticRenderer?: 'mermaid' | 'chart' | 'graphviz';
 }
 /**
  * Generic client-rendered fenced-block factory (Tier-3). Claims fenced code
@@ -53,7 +62,8 @@ export interface FencedRenderOptions {
 export declare function fencedRender(opts: FencedRenderOptions): CarveExtension;
 /** D2 preset (text mode, `<pre class="d2">`). */
 export declare const d2: () => CarveExtension;
-/** Graphviz preset (text mode); claims both `dot` and `graphviz`. */
+/** Graphviz preset (text mode); claims both `dot` and `graphviz`. In a static
+ *  render a supplied `renderers.graphviz` pre-renders the source to an image. */
 export declare const graphviz: () => CarveExtension;
 /** WaveDrom preset (text mode, `<pre class="wavedrom">`). */
 export declare const wavedrom: () => CarveExtension;
@@ -61,7 +71,8 @@ export declare const wavedrom: () => CarveExtension;
 export declare const abc: () => CarveExtension;
 /** Vega-Lite preset (json mode, `<div class="vega-lite"><script ...>`). */
 export declare const vegaLite: () => CarveExtension;
-/** Chart.js preset (json mode, `<div class="chart"><script ...>`). */
+/** Chart.js preset (json mode, `<div class="chart"><script ...>`). In a static
+ *  render a supplied `renderers.chart` pre-renders the config to an image. */
 export declare const chart: () => CarveExtension;
 /**
  * Mermaid preset (text mode, `<pre class="mermaid">`). Mermaid is one preset of

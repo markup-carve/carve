@@ -1,4 +1,5 @@
 const MAX_RENDER_DEPTH = 200;
+const TRIM_NON_NBSP_RE = /^[^\S\u00a0]+|[^\S\u00a0]+$/g;
 export function renderPlainText(ast, _opts = {}) {
     const ctx = { blockDepth: 0, inlineDepth: 0 };
     const out = renderBlocks(ast.children, ctx);
@@ -29,7 +30,7 @@ function renderBlock(node, ctx) {
         case 'code-block':
             return `${stripControls(node.content)}\n\n`;
         case 'blockquote':
-            return `"${renderBlocks(node.children, ctx).trim()}"\n\n`;
+            return `"${trimNonNbsp(renderBlocks(node.children, ctx))}"\n\n`;
         case 'list':
             return renderList(node, ctx);
         case 'thematic-break':
@@ -39,13 +40,18 @@ function renderBlock(node, ctx) {
         case 'admonition': {
             const body = renderBlocks(node.children, ctx);
             const title = node.title !== undefined ? renderInlines(node.title, ctx) : '';
+            // Caption floor: surface an unconsumed grouping [label] as a standalone
+            // line (title first when both are present).
+            const labelLine = node.label ? `${stripControls(node.label)}\n\n` : '';
             if (title !== '') {
-                return `${title}\n\n${body}`;
+                return `${title}\n\n${labelLine}${body}`;
             }
-            return body;
+            return `${labelLine}${body}`;
         }
         case 'div':
-            return renderBlocks(node.children, ctx);
+            return node.label
+                ? `${stripControls(node.label)}\n\n${renderBlocks(node.children, ctx)}`
+                : renderBlocks(node.children, ctx);
         case 'definition-list':
             return renderDefinitionList(node.items, ctx, true);
         case 'figure':
@@ -68,7 +74,7 @@ function renderList(node, ctx) {
     for (const item of node.items) {
         out += node.ordered ? `${counter}. ` : '- ';
         counter++;
-        out += `${renderBlocks(item.children, ctx).trim()}\n`;
+        out += `${trimNonNbsp(renderBlocks(item.children, ctx))}\n`;
     }
     return `${out}\n`;
 }
@@ -78,28 +84,40 @@ function renderDefinitionList(items, ctx, trailingBlank) {
         for (const term of item.terms)
             out += `${renderInlines(term, ctx)}\n`;
         for (const def of item.definitions)
-            out += `  ${renderBlocks(def, ctx).trim()}\n`;
+            out += `  ${trimNonNbsp(renderBlocks(def, ctx))}\n`;
     }
     return trailingBlank ? `${out}\n` : out;
 }
 function renderTable(node, ctx) {
+    // Use the table's true column count (max cells across rows) so a row with
+    // rowspan/colspan filler cells still emits every column (matches the HTML and
+    // Markdown renderers and carve-php / carve-rs).
+    const cols = node.rows.reduce((max, row) => Math.max(max, row.cells.length), 0);
     let out = '';
     for (const row of node.rows) {
-        out += `${row.cells.map((cell) => renderInlines(cell.children, ctx).trim()).join(' | ')}\n`;
+        const cells = [];
+        for (let i = 0; i < cols; i++) {
+            cells.push(i < row.cells.length ? trimNonNbsp(renderInlines(row.cells[i].children, ctx)) : '');
+        }
+        out += `${cells.join(' | ')}\n`;
     }
     if (node.caption)
-        out = `${out.trimEnd()}\n${renderInlines(node.caption, ctx)}\n`;
+        out = `${trimEndNonNbsp(out)}\n${renderInlines(node.caption, ctx)}\n`;
     return `${out}\n`;
 }
 function renderFigure(node, ctx) {
     const target = node.target.type === 'image'
         ? stripControls(node.target.alt)
         : node.target.type === 'table'
-            ? renderTable(node.target, ctx).trim()
-            : renderBlock(node.target, ctx).trim();
+            ? trimNonNbsp(renderTable(node.target, ctx))
+            : trimNonNbsp(renderBlock(node.target, ctx));
     // A block-level target (a code-block listing or a display-math equation)
     // keeps the caption on its own line; an inline image target stays adjacent.
-    const sep = node.target.type === 'code-block' || node.target.type === 'paragraph' ? '\n' : '';
+    const sep = node.target.type === 'blockquote'
+        ? '\n\n'
+        : node.target.type === 'code-block' || node.target.type === 'paragraph'
+            ? '\n'
+            : '';
     return `${target}${sep}${renderInlines(node.caption, ctx)}`;
 }
 function renderFootnoteDefs(ast, ctx) {
@@ -107,7 +125,7 @@ function renderFootnoteDefs(ast, ctx) {
         return '';
     let out = '';
     for (const [label, blocks] of Object.entries(ast.footnoteDefs)) {
-        out += `[${stripControls(label)}]: ${renderBlocks(blocks, ctx).trim()}\n`;
+        out += `[${stripControls(label)}]: ${trimNonNbsp(renderBlocks(blocks, ctx))}\n`;
     }
     return out;
 }
@@ -142,7 +160,7 @@ function renderInline(node, ctx) {
         case 'code':
             return stripControls(node.value);
         case 'link':
-            return node.href.startsWith('#') ? renderInlines(node.children, ctx) : stripControls(node.href);
+            return renderInlines(node.children, ctx);
         case 'image':
             return stripControls(node.alt);
         case 'math':
@@ -192,7 +210,13 @@ function normalize(text) {
     // ordinary space in plain text. Done after trimming so placeholder-derived
     // leading indentation (e.g. in a line block) survives; a literal U+00A0 in
     // the author's text is left intact.
-    return `${text.replace(/\n{3,}/g, '\n\n').trim()}\n`.replace(/\ue000/g, ' ');
+    return `${trimNonNbsp(text.replace(/\n{3,}/g, '\n\n'))}\n`.replace(/\ue000/g, ' ');
+}
+function trimNonNbsp(text) {
+    return text.replace(TRIM_NON_NBSP_RE, '');
+}
+function trimEndNonNbsp(text) {
+    return text.replace(/[^\S\u00a0]+$/g, '');
 }
 function cleanEscapedText(node) {
     // The value is the literal text (the parser already resolved backslash

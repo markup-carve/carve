@@ -30,6 +30,14 @@ function escapeMath(s) {
  */
 export function mathBlock(opts = {}) {
     const language = opts.language ?? 'math';
+    const mathAttrs = (code) => {
+        const attrs = { ...(code.attrs ?? {}) };
+        attrs.classes = ['math display', ...(attrs.classes ?? [])];
+        if (attrs.order && !attrs.order.includes('.class')) {
+            attrs.order = ['.class', ...attrs.order];
+        }
+        return attrs;
+    };
     return {
         name: 'math-block',
         blockRenderers: {
@@ -41,12 +49,22 @@ export function mathBlock(opts = {}) {
                 // the author attributes, mirroring core display `$$` math (renderAttrs2
                 // with baseClass). ctx.renderAttrs applies the always-on attribute
                 // hardening, so a {onclick=…} fence cannot inject a handler.
-                const attrs = { ...(code.attrs ?? {}) };
-                attrs.classes = ['math display', ...(attrs.classes ?? [])];
-                if (attrs.order && !attrs.order.includes('.class')) {
-                    attrs.order = ['.class', ...attrs.order];
-                }
-                return `${ctx.indent(ctx.level)}<div${ctx.renderAttrs(attrs)}>\\[${escapeMath(code.content)}\\]</div>`;
+                return `${ctx.indent(ctx.level)}<div${ctx.renderAttrs(mathAttrs(code))}>\\[${escapeMath(code.content)}\\]</div>`;
+            },
+        },
+        // Static render: math needs a client script (KaTeX / MathJax) to draw. If a
+        // build-time `renderers.math` is supplied, emit its server-side output
+        // (MathML / HTML) inside the `math display` div so the page is
+        // self-contained; otherwise keep the `\[…\]` source - never blank.
+        staticBlockRenderers: {
+            'code-block': (node, ctx) => {
+                const code = node;
+                if (code.lang !== language)
+                    return undefined;
+                const open = `${ctx.indent(ctx.level)}<div${ctx.renderAttrs(mathAttrs(code))}>`;
+                const build = ctx.renderers.math;
+                const body = build ? build(code.content, true) : `\\[${escapeMath(code.content)}\\]`;
+                return `${open}${body}</div>`;
             },
         },
     };

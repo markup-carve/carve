@@ -1,10 +1,31 @@
 import type { Attrs, BlockNode, Document, Extension, InlineNode } from './ast.js';
+/**
+ * Build-time renderers for client-script extensions, supplied for a
+ * `mode: "static"` HTML render. Each maps the construct's source to a
+ * self-contained string the engine emits directly (an `<svg>`/`<img>` for a
+ * diagram, MathML/HTML for math). When the renderer a node needs is absent,
+ * the extension's `renderStatic` falls back to source - never blank.
+ */
+export interface StaticRenderers {
+    /** Mermaid diagram source -> SVG/HTML string. */
+    mermaid?: (source: string) => string;
+    /** Chart config source -> SVG/HTML string. */
+    chart?: (source: string) => string;
+    /** Graphviz / DOT source -> SVG/HTML string. */
+    graphviz?: (source: string) => string;
+    /** Math TeX source -> MathML/HTML string. `display` flags block math. */
+    math?: (tex: string, display: boolean) => string;
+}
 /** Render helpers passed to an extension renderer. */
 export interface ExtensionRenderContext {
     renderInlines(nodes: InlineNode[]): string;
     escapeHtml(s: string): string;
     escapeAttr(s: string): string;
     renderAttrs(attrs: Attrs | undefined): string;
+    /** The active render mode: `"interactive"` (default) or `"static"`. */
+    mode: 'interactive' | 'static';
+    /** Build-time renderers supplied for a static render (else empty). */
+    renderers: StaticRenderers;
 }
 /** Renderer for a `:name[…]` extension node, keyed by extension name. */
 export type ExtensionRenderer = (node: Extension, ctx: ExtensionRenderContext) => string;
@@ -92,5 +113,19 @@ export interface CarveExtension {
     blockRenderers?: Record<string, BlockExtensionRenderer>;
     /** Renderers keyed by an extension inline node `type` (e.g. `citation-group`). */
     inlineRenderers?: Record<string, InlineExtensionRenderer>;
+    /**
+     * Static-mode block renderers, keyed by core block node `type`. Consulted
+     * only when an HTML render runs with `mode: "static"`, taking precedence over
+     * {@link blockRenderers} for that node. An extension that is already static
+     * (its interactive output needs no client script) may omit these and let the
+     * normal renderer run. Return `undefined` to defer (to the next extension,
+     * then the normal renderer, then the core caption floor). The
+     * {@link BlockExtensionRenderContext} carries `mode` and `renderers` so a
+     * static renderer can fall back to source when its build renderer is absent.
+     */
+    staticBlockRenderers?: Record<string, BlockExtensionRenderer>;
+    /** Static-mode inline renderers, keyed by inline node `type`. The inline
+     *  twin of {@link staticBlockRenderers}. */
+    staticInlineRenderers?: Record<string, InlineExtensionRenderer>;
 }
 //# sourceMappingURL=extension.d.ts.map

@@ -180,6 +180,76 @@ An extension is a named unit contributing any subset of four things, run as:
 - Impl-idiomatic (PHP `addExtension`/ctor; JS `extensions: [...]` option),
   declaring the same lifecycle contributions.
 
+### 2.5 Static rendering mode (`renderStatic`)
+
+A render carries a **mode** - a render option, not document syntax:
+
+- `"interactive"` (default) - online HTML; extensions render their interactive
+  form (live tabs, mermaid via a client script, KaTeX).
+- `"static"` - HTML for a medium that cannot interact or run client scripts
+  (print, PDF source, archival HTML). The Markdown, plain-text, and ANSI
+  renderers force `"static"` and the caller cannot override it.
+
+`"print"`, `"email"`, and similar names are **reserved** for future named
+presets; an implementation MUST reject an unknown mode value rather than guess.
+Omitting the mode means `"interactive"`, so existing callers are unaffected.
+
+In `"static"` HTML an extension renders through an optional
+`renderStatic(node, ctx)` hook. Per node, the resolution order is:
+
+1. the extension's `renderStatic`, if defined;
+2. else the extension's ordinary renderer (correct for extensions that are
+   already static - list-table, citations, heading-permalinks - which need no
+   `renderStatic`);
+3. else, for a container whose grouping `[label]` no extension consumed, the
+   core caption floor (see [Graceful Degradation](/graceful-degradation)).
+
+No construct falls through to "dropped": every authored token reaches at least
+the floor. `renderStatic` MUST preserve all content and MAY drop only
+interaction.
+
+An extension whose **interactive output depends on a client script** (tabs,
+code-group, spoiler, fenced-render, math, and any future carousel/embed) MUST
+implement `renderStatic` - otherwise step 2 falls back to its script-dependent
+interactive output, which is silently broken in a `static` render. An engine
+SHOULD warn when such an extension is registered without a `renderStatic`, and
+`carve lint` MAY flag it. (Extensions whose ordinary output is already static -
+list-table, citations, heading-permalinks - are exempt; they have no script to
+lose.)
+
+Expected static output per interactive extension:
+
+| Extension | `renderStatic` output |
+| --- | --- |
+| tabs / code-group | each panel as a `<section>` headed by its `[label]` |
+| details | not a `renderStatic` case - emits a native `<details open>` in static (see [Graceful Degradation](/graceful-degradation)); interactive without scripts, so never flattened |
+| spoiler | the revealed content (no blur) |
+| fenced-render (mermaid, chart, graphviz) | a build-rendered image if a renderer for that key is supplied, else the source as a code block |
+| math (display / inline) | server-side output (MathML/HTML) if a renderer is supplied, else the source |
+
+Client-script extensions cannot produce their image inside the engine. A
+`"static"` render therefore accepts a **renderers** map. The canonical keys are
+`mermaid`, `chart`, `graphviz`, and `math` - implementations MUST use these exact
+names so the same `renderers` config behaves identically across engines (a fixed
+`{mermaid, chart, math}` struct that omits `graphviz` is non-conformant). When
+the needed renderer is absent, `renderStatic` MUST fall back to source, never
+blank. Renderers are **synchronous** (`source -> string`; `math` also takes a
+display flag): an async tool (mmdc, an HTTP service) must be run in a build step
+and supplied as a pre-resolved lookup, not awaited inside the render. Renderers
+apply to the **static HTML** path only - the Markdown/plain/ANSI renderers keep
+client-script blocks as source regardless.
+A renderer typically returns a self-contained `data:` image URI; if you sanitize
+the static HTML afterwards, **allow the `data:` scheme for images** or the image
+is silently stripped. Concrete, tested renderer recipes (graphviz/mermaid/math,
+per engine) are in [Static Rendering Recipes](/static-rendering-recipes).
+
+`renderStatic` is the HTML-static path only. The Markdown, plain-text, and ANSI
+renderers reach the same end by flattening containers and keeping client-script
+blocks as source; they do not call `renderStatic`.
+
+Parity: for a given `(input, mode, renderers)` the implementations MUST produce
+the same output - a static-mode parity battery, mirroring the profile fixtures.
+
 ## 3. Home, conformance, per-impl
 
 - This document is the normative home for the taxonomy + contract.

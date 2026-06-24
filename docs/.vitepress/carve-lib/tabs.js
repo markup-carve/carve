@@ -158,6 +158,26 @@ export function tabs(opts = {}) {
             return undefined;
         return mode === 'aria' ? renderAria(node, items, ctx) : renderCss(node, items, ctx);
     };
+    // Static (non-interactive) render: every panel is shown in sequence as a
+    // `<section>` headed by its `[label]` (graceful-degradation rule). No radios,
+    // no JS - the labels survive as visible headings so a reader of the PDF / the
+    // archival page can tell the panels apart.
+    const renderTabsStatic = (node, ctx) => {
+        const items = collectTabs(node, ctx);
+        if (items.length === 0)
+            return undefined;
+        const pad = ctx.indent(ctx.level);
+        const innerPad = ctx.indent(ctx.level + 1);
+        let html = `${pad}<div${buildWrapperAttributes(node, ctx)}>\n`;
+        for (const tab of items) {
+            html += `${innerPad}<section class="${ctx.escapeAttr(tabClass)}">\n`;
+            html += `${innerPad}<h3 class="${ctx.escapeAttr(labelClass)}">${ctx.escapeHtml(tab.label)}</h3>\n`;
+            html += tab.content;
+            html += `${innerPad}</section>\n`;
+        }
+        html += `${pad}</div>`;
+        return html;
+    };
     return {
         name: 'tabs',
         beforeRender(doc) {
@@ -168,6 +188,10 @@ export function tabs(opts = {}) {
         blockRenderers: {
             admonition: (node, ctx) => (isTabs(node) ? renderTabs(node, ctx) : undefined),
             div: (node, ctx) => (isTabs(node) ? renderTabs(node, ctx) : undefined),
+        },
+        staticBlockRenderers: {
+            admonition: (node, ctx) => isTabs(node) ? renderTabsStatic(node, ctx) : undefined,
+            div: (node, ctx) => (isTabs(node) ? renderTabsStatic(node, ctx) : undefined),
         },
     };
 }
