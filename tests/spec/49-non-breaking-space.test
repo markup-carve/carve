@@ -5,3 +5,9 @@ Non-breaking space
 .
 <p>10&nbsp;kg</p>
 ```
+
+```
+say\ 'twas a fine\ "day"
+.
+<p>say&nbsp;‘twas a fine&nbsp;“day”</p>
+```

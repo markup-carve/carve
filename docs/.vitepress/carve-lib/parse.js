@@ -2779,7 +2779,7 @@ function allocateDashes(n) {
     return '—'.repeat(em) + '–'.repeat(en);
 }
 const isAlnum = (ch) => /[A-Za-z0-9]/.test(ch);
-const isQuoteOpenContext = (prev) => prev === '' || /[\s([{\-–—/]/.test(prev) || prev === '“' || prev === '‘';
+const isQuoteOpenContext = (prev) => prev === '' || /[\s([{\-–—/]/.test(prev) || prev === '“' || prev === '‘' || prev === '\ue000';
 /**
  * Recognize one smart-typography construct at `text[i]`.
  * `prev` is the character immediately before (for contextual quotes).
