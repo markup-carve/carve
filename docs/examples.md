@@ -1648,6 +1648,7 @@ Save early, save often.
 ```html
 <aside class="admonition tip">
   <p class="admonition-title">Pro Tip</p>
+  <p class="div-label">Build</p>
   <p>Save early, save often.</p>
 </aside>
 ```
@@ -1666,6 +1667,7 @@ First panel.
 
 ```html
 <div>
+  <p class="div-label">First</p>
   <p>First panel.</p>
 </div>
 ```
@@ -1684,6 +1686,7 @@ First panel.
 
 ```html
 <div>
+  <p class="div-label">First</p>
   <p>First panel.</p>
 </div>
 ```

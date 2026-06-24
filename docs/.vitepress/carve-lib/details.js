@@ -54,6 +54,26 @@ export function details() {
                     `${pad}</details>`);
             },
         },
+        // Static render: a disclosure is NOT flattened. It stays the same native
+        // `<details>/<summary>` element as the interactive path, but carries the
+        // `open` attribute so the body is expanded by default for print / archival.
+        staticBlockRenderers: {
+            admonition: (node, ctx) => {
+                const adm = node;
+                if (adm.kind !== 'details')
+                    return undefined;
+                const pad = ctx.indent(ctx.level);
+                const innerPad = ctx.indent(ctx.level + 1);
+                const title = adm.title ? inlineText(adm.title) : '';
+                const summary = title.trim() === '' ? 'Details' : title;
+                const open = `<details open${ctx.renderAttrs(adm.attrs)}>`;
+                const body = ctx.renderChildren(adm.children, ctx.level + 1);
+                return (`${pad}${open}\n` +
+                    `${innerPad}<summary>${ctx.escapeHtml(summary)}</summary>\n` +
+                    `${body}\n` +
+                    `${pad}</details>`);
+            },
+        },
     };
 }
 /** Flatten an inline tree to its text content (titles only). */

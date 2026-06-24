@@ -105,7 +105,15 @@ function withSourceLine(html, line) {
         return html;
     return html.replace(/^(\s*<[A-Za-z][A-Za-z0-9]*)/, `$1 data-source-line="${line}"`);
 }
+/** Allowed render modes. `"print"` / `"email"` are reserved, not yet valid. */
+const RENDER_MODES = new Set(['interactive', 'static']);
 export function renderHtml(ast, opts = {}) {
+    // Reject an unknown mode rather than guess (spec: an impl MUST reject an
+    // unknown mode value). Omitting it means "interactive".
+    if (opts.mode !== undefined && !RENDER_MODES.has(opts.mode)) {
+        throw new Error(`renderHtml: unknown render mode ${JSON.stringify(opts.mode)} ` +
+            `(expected "interactive" or "static")`);
+    }
     const out = [];
     // Section-wrapping pass (grammar PART 9 §13): every top-level heading
     // opens a <section id="{slug}"> that holds the heading and the content
@@ -417,18 +425,10 @@ function renderAttrs2(attrs, opts = {}) {
     }
     return renderAttrs(a);
 }
-// Let an extension render a top-level heading's <h*> element via a
-// `blockRenderers.heading` renderer (the <section> wrapper stays core), tried
-// in registration order like other block renderers. Returns undefined when no
-// extension claims it, so core renders the default heading.
-function renderHeadingElement(node, opts, level) {
-    const headingRenderers = opts.extensions?.flatMap((e) => {
-        const fn = e.blockRenderers?.heading;
-        return fn ? [fn] : [];
-    });
-    if (!headingRenderers || !headingRenderers.length)
-        return undefined;
-    const ctx = {
+/** Build the block-extension render context for a given level. Carries the
+ *  active `mode` and `renderers` so a `renderStatic` impl can branch. */
+function blockCtx(opts, level) {
+    return {
         level,
         indent,
         renderChildren: (nodes, lvl) => nodes.map((c) => renderBlock(c, opts, lvl)).join('\n'),
@@ -436,11 +436,45 @@ function renderHeadingElement(node, opts, level) {
         escapeHtml,
         escapeAttr,
         renderAttrs,
+        mode: opts.mode ?? 'interactive',
+        renderers: opts.renderers ?? {},
     };
-    for (const r of headingRenderers) {
-        const out = r(node, ctx);
-        if (out !== undefined)
-            return out;
+}
+/** The shared inline-extension render context. */
+function inlineCtx(opts) {
+    return {
+        renderInlines: (nodes) => renderInlines(nodes, opts),
+        escapeHtml,
+        escapeAttr,
+        renderAttrs,
+        mode: opts.mode ?? 'interactive',
+        renderers: opts.renderers ?? {},
+    };
+}
+// Let an extension render a top-level heading's <h*> element via a
+// `blockRenderers.heading` renderer (the <section> wrapper stays core), tried
+// in registration order. In static mode an extension's `staticBlockRenderers.
+// heading` takes precedence, then its normal `blockRenderers.heading` -
+// consistent with every other core block type. Returns undefined when no
+// extension claims it, so core renders the default heading.
+function renderHeadingElement(node, opts, level) {
+    if (!opts.extensions?.length)
+        return undefined;
+    const isStatic = opts.mode === 'static';
+    const ctx = blockCtx(opts, level);
+    for (const e of opts.extensions) {
+        const staticFn = isStatic ? e.staticBlockRenderers?.heading : undefined;
+        if (staticFn) {
+            const out = staticFn(node, ctx);
+            if (out !== undefined)
+                return out;
+        }
+        const fn = e.blockRenderers?.heading;
+        if (fn) {
+            const out = fn(node, ctx);
+            if (out !== undefined)
+                return out;
+        }
     }
     return undefined;
 }
@@ -454,26 +488,33 @@ function renderBlock(node, opts, level) {
     // section-wrapping pass (renderHeadingElement), where the id lives on the
     // <section>. A heading nested in a container keeps its id on the <h*> and is
     // rendered by core below, so heading renderers do not apply to it.
-    const blockRenderers = node.type === 'heading'
-        ? undefined
-        : opts.extensions?.flatMap((e) => {
+    const isStatic = opts.mode === 'static';
+    // Per-node resolution, walking extensions in REGISTRATION ORDER so an
+    // earlier extension's renderer always wins over a later one's (the same
+    // precedence interactive mode has). For each extension in turn, static mode
+    // tries (1) its `staticBlockRenderers` (the `renderStatic` hook), then (2)
+    // its normal `blockRenderers`; interactive mode tries only (2). Whichever
+    // returns a string takes the node; `undefined` defers to the next extension,
+    // then to core (which applies the caption floor for an unconsumed div label).
+    // Headings are excluded: a top-level heading is rendered by the
+    // section-wrapping pass (renderHeadingElement), where the id lives on the
+    // <section>. A heading nested in a container keeps its id on the <h*> and is
+    // rendered by core below.
+    if (node.type !== 'heading' && opts.extensions?.length) {
+        const ctx = blockCtx(opts, level);
+        for (const e of opts.extensions) {
+            const staticFn = isStatic ? e.staticBlockRenderers?.[node.type] : undefined;
+            if (staticFn) {
+                const out = staticFn(node, ctx);
+                if (out !== undefined)
+                    return out;
+            }
             const fn = e.blockRenderers?.[node.type];
-            return fn ? [fn] : [];
-        });
-    if (blockRenderers && blockRenderers.length) {
-        const ctx = {
-            level,
-            indent,
-            renderChildren: (nodes, lvl) => nodes.map((c) => renderBlock(c, opts, lvl)).join('\n'),
-            renderInlines: (nodes) => renderInlines(nodes, opts),
-            escapeHtml,
-            escapeAttr,
-            renderAttrs,
-        };
-        for (const r of blockRenderers) {
-            const out = r(node, ctx);
-            if (out !== undefined)
-                return out;
+            if (fn) {
+                const out = fn(node, ctx);
+                if (out !== undefined)
+                    return out;
+            }
         }
     }
     switch (node.type) {
@@ -507,10 +548,17 @@ function renderBlock(node, opts, level) {
             return renderAdmonition(node, opts, level);
         case 'div': {
             const open = `${pad}<div${renderAttrs(node.attrs)}>`;
-            if (node.children.length === 0)
-                return `${open}\n${pad}</div>`;
+            // Core caption floor (graceful degradation): a grouping `[label]` that
+            // no extension consumed must not be silently dropped. Surface it as a
+            // `<p class="div-label">` at the start of the div content. (A group
+            // extension consumes the node before it reaches core, so there is no
+            // double rendering when one is active.)
+            const floor = labelFloor(node.label, level + 1);
+            if (node.children.length === 0) {
+                return floor ? `${open}\n${floor}\n${pad}</div>` : `${open}\n${pad}</div>`;
+            }
             const body = node.children.map((c) => renderBlock(c, opts, level + 1)).join('\n');
-            return `${open}\n${body}\n${pad}</div>`;
+            return `${open}\n${floor ? `${floor}\n` : ''}${body}\n${pad}</div>`;
         }
         case 'definition-list': {
             const lines = [`${pad}<dl${renderAttrs(node.attrs)}>`];
@@ -800,6 +848,17 @@ const CANONICAL_ADMONITIONS = new Set([
     'example',
     'quote',
 ]);
+/**
+ * The core caption floor for an unconsumed grouping `[label]`: a
+ * `<p class="div-label">` (label HTML-escaped) at the given indent level, or
+ * `''` when there is no label. The label text survives in every target even
+ * when no group extension (tabs / code-group) consumed it.
+ */
+function labelFloor(label, level) {
+    if (label === undefined || label === '')
+        return '';
+    return `${indent(level)}<p class="div-label">${escapeHtml(label)}</p>`;
+}
 function renderAdmonition(node, opts, level) {
     const pad = indent(level);
     // `node.title` undefined => no title supplied; an empty-but-defined
@@ -807,6 +866,10 @@ function renderAdmonition(node, opts, level) {
     const titleLine = node.title !== undefined
         ? `${pad}  <p class="admonition-title">${renderInlines(node.title, opts)}</p>\n`
         : '';
+    // Core caption floor: surface an unconsumed `[label]` after the title (the
+    // title is rendered first when a block carries both).
+    const floor = labelFloor(node.label, level + 1);
+    const labelLine = floor ? `${floor}\n` : '';
     const body = node.children.map((c) => renderBlock(c, opts, level + 1)).join('\n');
     // Leading block attributes (§15) merge with the admonition's own
     // wrapper class: extra classes append, id/key attach to the wrapper.
@@ -824,7 +887,7 @@ function renderAdmonition(node, opts, level) {
         restAttrs.order = node.attrs.order.filter((s) => s !== '.class');
     const rest = renderAttrs(restAttrs);
     const tag = canonical ? 'aside' : 'div';
-    return `${pad}<${tag} class="${classValue}"${rest}>\n${titleLine}${body}\n${pad}</${tag}>`;
+    return `${pad}<${tag} class="${classValue}"${rest}>\n${titleLine}${labelLine}${body}\n${pad}</${tag}>`;
 }
 function renderFigure(node, opts, level) {
     const pad = indent(level);
@@ -892,6 +955,14 @@ function renderInline(node, opts) {
             return `<span${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</span>`;
         case 'math': {
             const base = node.display ? 'math display' : 'math inline';
+            // Static mode: if a build-time math renderer is supplied, emit its
+            // server-side output (MathML/HTML) inside the math span so the page needs
+            // no client KaTeX/MathJax. Absent a renderer, fall back to the same
+            // delimiter-wrapped source the interactive path emits (never blank).
+            if (opts.mode === 'static' && opts.renderers?.math) {
+                const ssr = opts.renderers.math(node.content, node.display);
+                return `<span${renderAttrs2(node.attrs, { baseClass: base })}>${ssr}</span>`;
+            }
             const body = node.display
                 ? `\\[${escapeHtml(node.content)}\\]`
                 : `\\(${escapeHtml(node.content)}\\)`;
@@ -932,18 +1003,25 @@ function renderInline(node, opts) {
             return `<a class="tag" href="${escapeAttr(href)}">${text}</a>`;
         }
         case 'extension': {
-            const renderer = opts.extensions
-                ?.flatMap((e) => (e.renderers ? [e.renderers] : []))
-                .map((r) => r[node.name])
-                .find((fn) => fn !== undefined);
-            if (renderer) {
-                const ctx = {
-                    renderInlines: (nodes) => renderInlines(nodes, opts),
-                    escapeHtml,
-                    escapeAttr,
-                    renderAttrs,
-                };
-                return renderer(node, ctx);
+            // Per-extension resolution in registration order (mirrors the block
+            // path): for each extension, static mode tries its `staticInlineRenderers`
+            // (the inline `renderStatic` hook, keyed by node type `extension`) first,
+            // then its name-keyed `renderers`; interactive tries only `renderers`.
+            // Fall through to the generic inline fallback.
+            const isStatic = opts.mode === 'static';
+            if (opts.extensions?.length) {
+                const ctx = inlineCtx(opts);
+                for (const e of opts.extensions) {
+                    const staticFn = isStatic ? e.staticInlineRenderers?.[node.type] : undefined;
+                    if (staticFn) {
+                        const out = staticFn(node, ctx);
+                        if (out !== undefined)
+                            return out;
+                    }
+                    const fn = e.renderers?.[node.name];
+                    if (fn)
+                        return fn(node, ctx);
+                }
             }
             return renderExtension(node.name, node.content, node.attrs, opts);
         }
@@ -973,24 +1051,26 @@ function renderInline(node, opts) {
             // Filled by resolve(); an unresolved placeholder renders empty.
             return node.n === undefined ? '' : String(node.n);
         case 'citation-group': {
-            // Extension-produced node: delegate to registered inline renderers in
-            // order; each may return undefined to defer to the next (mirrors the
-            // block-renderer dispatch). Fall back to the verbatim source.
-            const inlineRenderers = opts.extensions?.flatMap((e) => {
-                const fn = e.inlineRenderers?.[node.type];
-                return fn ? [fn] : [];
-            });
-            if (inlineRenderers && inlineRenderers.length) {
-                const ctx = {
-                    renderInlines: (nodes) => renderInlines(nodes, opts),
-                    escapeHtml,
-                    escapeAttr,
-                    renderAttrs,
-                };
-                for (const r of inlineRenderers) {
-                    const out = r(node, ctx);
-                    if (out !== undefined)
-                        return out;
+            // Extension-produced node: per-extension resolution in registration order
+            // (mirrors the block path). For each extension, static mode tries its
+            // `staticInlineRenderers` first, then its `inlineRenderers`; each may
+            // return undefined to defer. Fall back to the verbatim source.
+            const isStatic = opts.mode === 'static';
+            if (opts.extensions?.length) {
+                const ctx = inlineCtx(opts);
+                for (const e of opts.extensions) {
+                    const staticFn = isStatic ? e.staticInlineRenderers?.[node.type] : undefined;
+                    if (staticFn) {
+                        const out = staticFn(node, ctx);
+                        if (out !== undefined)
+                            return out;
+                    }
+                    const fn = e.inlineRenderers?.[node.type];
+                    if (fn) {
+                        const out = fn(node, ctx);
+                        if (out !== undefined)
+                            return out;
+                    }
                 }
             }
             return escapeHtml(node.raw);

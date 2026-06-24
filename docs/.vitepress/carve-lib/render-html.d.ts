@@ -1,6 +1,27 @@
 import type { Document } from './ast.js';
-import type { CarveExtension } from './extension.js';
+import type { CarveExtension, StaticRenderers } from './extension.js';
 export interface RenderOptions {
+    /**
+     * Render mode. `"interactive"` (default) emits the live forms - clickable
+     * tabs, client-script diagrams, KaTeX-ready math. `"static"` emits a
+     * self-contained page for a medium that cannot interact or run client
+     * scripts (print, PDF source, archival HTML): each extension renders through
+     * its `renderStatic` path (tabs flatten to labeled sections, disclosures
+     * expand, diagrams/math become build-rendered output or source), and any
+     * unconsumed div grouping `[label]` renders as a `<p class="div-label">`
+     * caption floor. An unknown value is rejected. Omitting it means
+     * `"interactive"`, so existing callers are unaffected. `"print"` / `"email"`
+     * are reserved for future named presets.
+     */
+    mode?: 'interactive' | 'static';
+    /**
+     * Build-time renderers for client-script extensions, used only in
+     * `mode: "static"`. Maps an extension's source to self-contained output
+     * (e.g. `{ mermaid: src => svg }`). When the renderer a node needs is
+     * absent, that extension's static path falls back to the source as a code
+     * block - content is never dropped.
+     */
+    renderers?: StaticRenderers;
     mentionUrl?: string;
     tagUrl?: string;
     /** Emoji shortcode -> glyph map. `:name:` with no entry renders literally. */

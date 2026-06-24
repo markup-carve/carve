@@ -1,4 +1,5 @@
 const MAX_RENDER_DEPTH = 200;
+const TRIM_NON_NBSP_RE = /^[^\S\u00a0]+|[^\S\u00a0]+$/g;
 const RESET = '\x1b[0m';
 const BOLD = '\x1b[1m';
 const DIM = '\x1b[2m';
@@ -70,17 +71,31 @@ function renderBlock(node, ctx) {
         case 'admonition': {
             const body = renderBlocks(node.children, ctx);
             const title = node.title !== undefined ? renderInlines(node.title, ctx) : '';
+            // Carry the blockquote `│` prefix onto a bold line, matching how the
+            // paragraph renderer prefixes body content in a quote. `styled` is
+            // already a styled string (title) or raw label text.
+            const prefix = blockQuotePrefix(ctx);
+            const boldLine = (styled) => prefix ? prefixLines(styled, prefix) : styled;
+            // Caption floor: surface an unconsumed grouping [label] as a bold line
+            // (title first when both are present).
+            const labelLine = node.label
+                ? `${boldLine(style(stripControls(node.label), BOLD))}\n\n`
+                : '';
             if (title !== '') {
-                // Carry the blockquote `│` prefix onto the title line too, matching how
-                // the paragraph renderer prefixes body content in a quote.
-                const prefix = blockQuotePrefix(ctx);
-                const titleLine = prefix ? prefixLines(style(title, BOLD), prefix) : style(title, BOLD);
-                return `${titleLine}\n\n${body}`;
+                return `${boldLine(style(title, BOLD))}\n\n${labelLine}${body}`;
             }
-            return body;
+            return `${labelLine}${body}`;
         }
-        case 'div':
-            return renderBlocks(node.children, ctx);
+        case 'div': {
+            if (!node.label)
+                return renderBlocks(node.children, ctx);
+            // Caption floor: a bold label line, prefixed with the blockquote `│` when
+            // inside a quote (matching the admonition label/title and the div body).
+            const prefix = blockQuotePrefix(ctx);
+            const styled = style(stripControls(node.label), BOLD);
+            const labelLine = prefix ? prefixLines(styled, prefix) : styled;
+            return `${labelLine}\n\n${renderBlocks(node.children, ctx)}`;
+        }
         case 'definition-list':
             return renderDefinitionList(node.items, ctx, true);
         case 'figure':
@@ -151,7 +166,7 @@ function renderList(node, ctx) {
         else {
             marker = style('•', FG_CYAN);
         }
-        return `${indent}${marker} ${renderBlocks(item.children, ctx).trim()}\n`;
+        return `${indent}${marker} ${trimNonNbsp(renderBlocks(item.children, ctx))}\n`;
     })
         .join('');
     ctx.listDepth--;
@@ -163,15 +178,23 @@ function renderDefinitionList(items, ctx, trailingBlank) {
         for (const term of item.terms)
             out += `${style(renderInlines(term, ctx), BOLD + FG_YELLOW)}\n`;
         for (const def of item.definitions)
-            out += `  ${renderBlocks(def, ctx).trim()}\n`;
+            out += `  ${trimNonNbsp(renderBlocks(def, ctx))}\n`;
     }
     return trailingBlank ? `${out}\n` : out;
 }
 function renderTable(node, ctx) {
-    const rows = node.rows.map((row) => row.cells.map((cell) => {
-        const content = renderInlines(cell.children, ctx).trim();
-        return { content, plain: stripAnsi(content), isHeader: row.cells.every((c) => c.header) };
-    }));
+    // Use the table's true column count (max cells across rows) so a row with
+    // rowspan/colspan filler cells still emits every column and stays aligned
+    // with the borders (matches the HTML/Markdown renderers and carve-php/rs).
+    const cols = node.rows.reduce((max, row) => Math.max(max, row.cells.length), 0);
+    const rows = node.rows.map((row) => {
+        const isHeader = row.cells.length > 0 && row.cells.every((c) => c.header);
+        return Array.from({ length: cols }, (_, i) => {
+            const cell = row.cells[i];
+            const content = cell ? trimNonNbsp(renderInlines(cell.children, ctx)) : '';
+            return { content, plain: stripAnsi(content), isHeader };
+        });
+    });
     const widths = [];
     for (const row of rows) {
         row.forEach((cell, i) => {
@@ -206,7 +229,7 @@ function tableRow(cells, widths) {
     const parts = cells.map((cell, i) => {
         const padding = (widths[i] ?? 0) - width(cell.plain);
         const content = cell.isHeader
-            ? style(cell.plain + ' '.repeat(padding), BOLD)
+            ? style(cell.content + ' '.repeat(padding), BOLD)
             : cell.content + ' '.repeat(padding);
         return ` ${content} `;
     });
@@ -216,19 +239,20 @@ function renderFigure(node, ctx) {
     const target = node.target.type === 'image'
         ? renderImage(node.target)
         : node.target.type === 'table'
-            ? renderTable(node.target, ctx).trimEnd()
-            : renderBlock(node.target, ctx).trimEnd();
-    return `${target}\n${renderCaption(node.caption, ctx)}`;
+            ? trimEndNonNbsp(renderTable(node.target, ctx))
+            : trimEndNonNbsp(renderBlock(node.target, ctx));
+    const sep = node.target.type === 'blockquote' ? '\n\n' : '\n';
+    return `${target}${sep}${renderCaption(node.caption, ctx)}`;
 }
 function renderCaption(nodes, ctx) {
-    return `${style(renderInlines(nodes, ctx).trim(), ITALIC + DIM)}\n\n`;
+    return `${style(trimNonNbsp(renderInlines(nodes, ctx)), ITALIC + DIM)}\n\n`;
 }
 function renderFootnoteDefs(ast, ctx) {
     if (!ast.footnoteDefs)
         return '';
     let out = '';
     for (const [label, blocks] of Object.entries(ast.footnoteDefs)) {
-        out += `${style(`[${stripControls(label)}]`, FG_CYAN + DIM)} ${renderBlocks(blocks, ctx).trim()}\n`;
+        out += `${style(`[${stripControls(label)}]`, FG_CYAN + DIM)} ${trimNonNbsp(renderBlocks(blocks, ctx))}\n`;
     }
     return out;
 }
@@ -402,7 +426,13 @@ function normalize(text) {
     // The internal non-breaking-space placeholder (U+E000) collapses to an
     // ordinary space in terminal output. Done after trimming so placeholder-
     // derived leading indentation survives; a literal U+00A0 is left intact.
-    return `${text.replace(/\n{3,}/g, '\n\n').trim()}\n`.replace(/\ue000/g, ' ');
+    return `${trimNonNbsp(text.replace(/\n{3,}/g, '\n\n'))}\n`.replace(/\ue000/g, ' ');
+}
+function trimNonNbsp(text) {
+    return text.replace(TRIM_NON_NBSP_RE, '');
+}
+function trimEndNonNbsp(text) {
+    return text.replace(/[^\S\u00a0]+$/g, '');
 }
 function cleanEscapedText(node) {
     // The value is the literal text (the parser already resolved backslash

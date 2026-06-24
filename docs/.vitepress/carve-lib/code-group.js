@@ -99,6 +99,32 @@ export function codeGroup(opts = {}) {
         const escaped = ctx.escapeHtml(item.block.content);
         return `<pre${ctx.renderAttrs(withoutSelected(item.block.attrs))}><code${langAttr}>${escaped}\n</code></pre>\n`;
     };
+    // Static render: each code panel as a `<section>` headed by its label, no
+    // radios / JS. The label (the `[NPM]`-style tab name, or the language) stays
+    // a visible heading so a reader offline can tell the panels apart.
+    const renderGroupStatic = (node, ctx) => {
+        const items = extractItems(node);
+        if (items.length === 0)
+            return undefined;
+        const pad = ctx.indent(ctx.level);
+        const innerPad = ctx.indent(ctx.level + 1);
+        const classes = [wrapperClass, ...extraClasses(node).filter((c) => c !== wrapperClass)];
+        const attrs = { classes };
+        if (node.attrs?.id !== undefined)
+            attrs.id = node.attrs.id;
+        if (node.attrs?.keyValues)
+            attrs.keyValues = { ...node.attrs.keyValues };
+        attrs.order = ['.class', ...(node.attrs?.order ?? []).filter((s) => s !== '.class')];
+        let html = `${pad}<div${ctx.renderAttrs(attrs)}>\n`;
+        for (const item of items) {
+            html += `${innerPad}<section class="${ctx.escapeAttr(panelClass)}">\n`;
+            html += `${innerPad}<h3 class="${ctx.escapeAttr(labelClass)}">${ctx.escapeHtml(item.label)}</h3>\n`;
+            html += renderCodeBlock(item, ctx);
+            html += `${innerPad}</section>\n`;
+        }
+        html += `${pad}</div>`;
+        return html;
+    };
     return {
         name: 'code-group',
         beforeRender(doc) {
@@ -108,6 +134,10 @@ export function codeGroup(opts = {}) {
         blockRenderers: {
             admonition: (node, ctx) => isCodeGroup(node) ? renderGroup(node, ctx) : undefined,
             div: (node, ctx) => (isCodeGroup(node) ? renderGroup(node, ctx) : undefined),
+        },
+        staticBlockRenderers: {
+            admonition: (node, ctx) => isCodeGroup(node) ? renderGroupStatic(node, ctx) : undefined,
+            div: (node, ctx) => (isCodeGroup(node) ? renderGroupStatic(node, ctx) : undefined),
         },
     };
 }
