@@ -37,7 +37,7 @@ The table reflects the reference engines' renderer behavior.
 | Construct | Interactive HTML | Static / PDF / Markdown / Plain | Status |
 | --- | --- | --- | --- |
 | Tabs / code-group | clickable tabs; `[label]` is the tab header | each panel shown in sequence, **its `[label]` as a caption heading** | see normative rule below |
-| Disclosure (`details`) | collapsible; `"title"` is the summary | title shown, body expanded | degrades natively (title is a quoted title node) |
+| Disclosure (`details`) | native `<details>`/`<summary>` (interactive without scripts) | native `<details open>` - kept, not flattened | special case - see below |
 | Spoiler | blurred until revealed | revealed | degrades natively (hiding is meaningless offline) |
 | Mermaid / charts | script-drawn diagram | diagram source preserved (a ` ```mermaid ` fence in Markdown); for PDF the extension SHOULD pre-render to SVG/PNG at build time | source never lost; image needs build-time render |
 | Math (`$\`...\``) | KaTeX / MathJax | source preserved (`$...$` in Markdown); for PDF use server-side KaTeX to MathML/HTML | source never lost |
@@ -49,6 +49,31 @@ Most constructs already degrade well because their distinguishing text is a
 **title** (a quoted `"..."` node the renderer emits) or **source** (kept
 verbatim). The exception is tabs/code-group, whose distinguishing text is a
 **grouping `[label]`**.
+
+## Disclosure is a special case (not flattened)
+
+> A disclosure (`details`) renders as a native `<details>`/`<summary>` element in
+> **all** modes; in `static` mode it carries the `open` attribute. It is **not**
+> flattened, because `<details>` is interactive *without scripts* - browsers
+> collapse and expand it natively. Flattening it to a plain section would only
+> discard the disclosure semantics and its screen-reader affordance for no gain.
+
+This is the line between disclosure and the script-dependent constructs:
+tabs/code-group/spoiler need a script or stylesheet to be interactive, so they
+flatten in `static`; `details` does not, so it stays itself. The only static
+requirement is the `open` attribute - without it a print engine could render the
+disclosure collapsed and hide the body.
+
+**Email and other no-`<details>` targets.** A few email clients ignore the
+`<details>` element. They do not lose content - a non-supporting client shows the
+summary and body as ordinary blocks (it just cannot toggle). If you need a target
+that has no `<details>` at all, flatten it as a post-step: rewrite
+`<details open><summary>X</summary>...</details>` to
+`<section class="disclosure"><p class="disclosure-title">X</p>...</section>`
+(a few lines of DOM rewriting on the static HTML), or render through the reserved
+`email` mode once an implementation defines it. Flattening here is a portability
+polish, not a correctness fix - the default `<details open>` already preserves
+all content everywhere.
 
 ## The label problem
 

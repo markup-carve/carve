@@ -211,7 +211,7 @@ interaction. Expected static output per interactive extension:
 | Extension | `renderStatic` output |
 | --- | --- |
 | tabs / code-group | each panel as a `<section>` headed by its `[label]` |
-| details | expanded, its title as a heading |
+| details | not a `renderStatic` case - emits a native `<details open>` in static (see [Graceful Degradation](/graceful-degradation)); interactive without scripts, so never flattened |
 | spoiler | the revealed content (no blur) |
 | fenced-render (mermaid, chart) | a build-rendered image if a renderer is supplied, else the source as a code block |
 | math (display / inline) | server-side output (MathML/HTML) if a renderer is supplied, else the source |
