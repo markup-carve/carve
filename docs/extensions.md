@@ -553,16 +553,22 @@ either alone.
 
 - `:index[term]` (the core inline extension form) marks an index occurrence at
   that point. It is an **invisible marker**: it emits no visible text, only an
-  empty anchor that the generated index links back to.
+  empty `<span>` anchor target that the generated index links back to. A span
+  (not an `<a>`) is used deliberately so a marker placed inside a link label
+  never nests one anchor inside another.
 - A `::: index` block marks where the index renders (its body is normally
   empty, like `::: references`).
 
 ### 8.2 Rendering
 
-- Each `:index[term]` emits `<a id="idx-{slug}-{n}" class="index-term"></a>`,
-  where `slug` is the §7.2 slug of the term and `n` is that slug's 1-based
-  occurrence count in document order. The element is empty, so nothing shows
-  inline.
+- Each `:index[term]` in the document body emits
+  `<span id="idx-{slug}-{n}" class="index-term"></span>`, where `slug` is the
+  §7.2 slug of the term and `n` is that slug's 1-based occurrence count in
+  document order. The element is empty, so nothing shows inline.
+- Only body occurrences are indexed. A marker inside deferred content - a
+  footnote definition, which the renderer may drop (unreferenced) or reorder -
+  renders **inert** (`<span class="index-term"></span>`, no id) and is not
+  listed, so a generated back-link never points at an anchor that was dropped.
 - `::: index` renders `<ul class="index">` with one `<li>` per distinct slug,
   the list **sorted by slug in ascending Unicode-codepoint order** (equivalently
   UTF-8 byte order - a fixed, locale-independent sort, so all implementations
