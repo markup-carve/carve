@@ -4,6 +4,7 @@
  * Block lexer reads line by line; inline parser does a single scan
  * over each block's text content. No backtracking.
  */
+import { utf8ByteLength } from './abbr-budget.js';
 // Active extension matchers for the current parse() call. A module-level hook
 // keeps the ~15 recursive scanInline call sites and every sub-lexer free of an
 // extra threaded parameter. Parsing is synchronous; parse() saves/restores the
@@ -36,20 +37,20 @@ const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*(?:([a-zA-Z0-9_+#/.-]+)(?:\s+("[^"]*"))?
 // is unambiguous and a `+ x` line is ordinary paragraph text. A marker is a list
 // item only with non-empty content: a content-less marker (`-`, `- `, `-   ` --
 // bare or trailing whitespace only) is NOT a list, it is paragraph text.
-const RE_UNORDERED = /^(\s*)[-*] +([^ \t].*)$/;
+const RE_UNORDERED = /^([^\S\u00a0]*)[-*] +([\S\u00a0].*)$/;
 // Ordered marker: decimal, a single letter (alpha), or a roman-numeral
 // run, then `.` or `)`. The dialect is fixed by the FIRST item (see
 // olKindOf); letter/roman markers are ambiguous w.r.t. paragraphs (§10).
-const RE_ORDERED = /^(\s*)([0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])([.)]) +([^ \t].*)$/;
+const RE_ORDERED = /^([^\S\u00a0]*)([0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])([.)]) +([\S\u00a0].*)$/;
 // Task states (matches djot-php): `x`/`X` are checked; ` `, `-`, `_`,
 // `>`, `?` are all accepted and render as an unchecked checkbox.
-const RE_TASK = /^(\s*)[-*] +\[([ xX\-_>?])\] +([^ \t].*)$/;
+const RE_TASK = /^([^\S\u00a0]*)[-*] +\[([ xX\-_>?])\] +([\S\u00a0].*)$/;
 // A list-item attribute block ABUTTING the marker: a bullet (`-`/`*`) or an
 // ordered marker directly followed by `{...}` (no space), then the marker's
 // required space and content. The brace attaches its attributes to the <li>
 // (Carve addition, grammar `item_attributes`). The brace body uses the same
 // quote-aware subpattern as the inline span tail (RE_SPAN_TAIL).
-const RE_ITEM_ATTR = /^(\s*)((?:[-*])|(?:[0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])[.)])\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\}( +[^ \t].*)$/;
+const RE_ITEM_ATTR = /^([^\S\u00a0]*)((?:[-*])|(?:[0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])[.)])\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\}( +[\S\u00a0].*)$/;
 // Strip a valid abutting `{...}` from a marker line so the bare marker regexes
 // match, returning the stripped line plus the parsed attributes. Returns null
 // when there is no abutting brace or the brace is not a valid attribute payload
@@ -78,7 +79,7 @@ function isBlankLine(line) {
     // terminate at EOF, not treat it as an endless run of blank lines.
     return line !== undefined && trimStructural(line) === '';
 }
-const RE_BLOCKQUOTE = /^>\s?(.*)$/;
+const RE_BLOCKQUOTE = /^>[^\S ]?(.*)$/;
 // Fences are a run of 3+ colons (group 1). A longer opener nests: a
 // `::::` block contains `:::` blocks, and only a bare closer of equal-or-
 // greater length closes it (djot fence-length rule).
@@ -103,11 +104,13 @@ const RE_ADMONITION_CLOSE = /^(:{3,})\s*$/;
 // pipe form is unchanged (`<div class="line-block">` with `<br>` breaks).
 // Mirrors carve#119 / carve-php#124.
 const RE_LINE_BLOCK_OPEN = /^(:{3,})[ \t]+\|[ \t]*$/;
-// Local hard-break block: `::: \` converts soft breaks in direct paragraph
-// children only. It is deliberately smaller than a line block: no leading
-// whitespace preservation, no stanza model, and no inheritance into nested
-// blocks.
-const RE_HARDBREAKS_BLOCK_OPEN = /^(:{3,})[ \t]+\\[ \t]*$/;
+// Hard-break block: `::: \` (colon fence + a single trailing backslash). Like
+// the line block it emits a `<div>`, but with class `hardbreaks`: the body is
+// parsed as ordinary blocks and soft breaks become hard breaks ONLY in the
+// div's DIRECT paragraph children (nested blocks keep ordinary soft breaks),
+// with no leading-whitespace preservation. carve spec #207 / 88-line-blocks;
+// matches carve-rs / carve-php (carve-js was the lagging impl).
+const RE_HARDBREAKS_OPEN = /^(:{3,})[ \t]+\\[ \t]*$/;
 // Generic fenced div: a bare `:::` opener with NO type word (djot's generic
 // container). A typed `::: word` routes to parseAdmonition. An inline
 // `::: {.class}` is NOT a div (strict djot) -- use a preceding attribute
@@ -131,7 +134,11 @@ const RE_ABBR_DEF = /^\*\[([A-Z][A-Z0-9]*)\]:\s+(.+)$/;
 // (grammar.ebnf:243,251), so it is intentionally not accepted here.
 // A leading `@` label is reserved for citation defs (`[@key]: entry`, #90),
 // handled by the citations extension — never a link destination.
-const RE_LINK_DEF = /^\s*\[(?!@)([^\]]+)\]:\s+(\S+)(?:\s+(?:"([^"]*)"|'([^']*)'))?\s*$/;
+// Per grammar.ebnf:738,741,755 the destination ends at the first whitespace;
+// a following quoted run is the title. Anything else after the destination is
+// ignored (not a valid title), so the definition still registers with the bare
+// token as its destination -- it is NOT rejected. carve-rs matches this.
+const RE_LINK_DEF = /^[^\S ]*\[(?!@)([^\]]+)\]:[^\S ]+(\S+)(?:\s+(?:"([^"]*)"|'([^']*)'))?.*$/;
 // Footnote definition `[^label]: body`. Tested before RE_LINK_DEF, which
 // would otherwise capture `^label` as a link reference label.
 const RE_FOOTNOTE_DEF = /^\[\^([^\]]+)\]:\s+(.+)$/;
@@ -293,6 +300,9 @@ export function parse(source, opts = {}) {
     try {
         const children = parseBlocks(lexer, 0);
         const doc = { type: 'document', children };
+        // Record the source byte length so renderers can size the
+        // abbreviation-expansion budget (DoS guard); see render-html/markdown/ansi.
+        doc.srcByteLength = utf8ByteLength(source);
         if (lexer.frontmatter)
             doc.frontmatter = lexer.frontmatter;
         if (lexer.footnoteDefs.size)
@@ -431,10 +441,10 @@ function stripContainerPrefixes(raw) {
     do {
         prev = line;
         line = line
-            .replace(/^\s*>\s?/, '') // blockquote
-            .replace(/^\s*(?:[-*]|\d+[.)])\s+(?:\[[ xX\-_>?]\]\s+)?/, ''); // list/task
+            .replace(/^[^\S\u00a0]*>[^\S\u00a0]?/, '') // blockquote (NBSP is content)
+            .replace(/^[^\S\u00a0]*(?:[-*]|\d+[.)])[^\S\u00a0]+(?:\[[ xX\-_>?]\][^\S\u00a0]+)?/, ''); // list/task (NBSP is content)
     } while (line !== prev);
-    return line.replace(/^\s+/, ''); // residual indentation
+    return line.replace(/^[^\S\u00a0]+/, ''); // residual indentation (keep a content NBSP)
 }
 /**
  * One top-level pass over the whole source collects every reference
@@ -710,7 +720,7 @@ function parseBlockInner(lexer) {
     }
     if (RE_LINE_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer))
         return parseLineBlock(lexer);
-    if (RE_HARDBREAKS_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer))
+    if (RE_HARDBREAKS_OPEN.test(line) && hardBreaksHasCloser(lexer))
         return parseHardBreaksBlock(lexer);
     // A typed `::: word` admonition, like a bare `:::` div, opens ONLY when a
     // matching closer exists ahead (PART 9 §12 / grammar: `admonition = open …
@@ -1074,7 +1084,7 @@ function lineBlockHasCloser(lexer) {
     const start = lexer.pos + 1;
     if (start >= lexer.lineBlockNoCloserFrom)
         return false;
-    const fence = /^(:{3,})/.exec(lexer.peek())[1].length;
+    const fence = RE_LINE_BLOCK_OPEN.exec(lexer.peek())[1].length;
     if (start >= (lexer.lineBlockNoCloserOfLenFrom.get(fence) ?? Infinity))
         return false;
     let sawAnyCloser = false;
@@ -1131,8 +1141,57 @@ function parseLineBlock(lexer) {
     };
     return node;
 }
+function expandLineBlockLeadingWhitespace(line) {
+    let i = 0;
+    let columns = 0;
+    while (i < line.length) {
+        const ch = line[i];
+        if (ch === ' ')
+            columns++;
+        else if (ch === '\t')
+            columns += 4 - (columns % 4);
+        else
+            break;
+        i++;
+    }
+    // Use the internal non-breaking-space placeholder (U+E000) - the same
+    // private-use sentinel as an escaped space - so the indent never collides
+    // with a literal U+00A0 in the author's text and is converted per renderer
+    // (HTML &nbsp;, Markdown U+00A0, plain/ANSI an ordinary space).
+    return '\ue000'.repeat(columns) + line.slice(i);
+}
+// Whether a `::: \` hard-break opener at peek(0) has a matching bare `:::`
+// closer of equal-or-greater colon length ahead. The closer is the same bare
+// `:::` the line block uses, so this reuses the line-block negative caches.
+function hardBreaksHasCloser(lexer) {
+    const start = lexer.pos + 1;
+    if (start >= lexer.lineBlockNoCloserFrom)
+        return false;
+    const fence = RE_HARDBREAKS_OPEN.exec(lexer.peek())[1].length;
+    if (start >= (lexer.lineBlockNoCloserOfLenFrom.get(fence) ?? Infinity))
+        return false;
+    let sawAnyCloser = false;
+    for (let i = start; i < lexer.lines.length; i++) {
+        const c = RE_ADMONITION_CLOSE.exec(lexer.lines[i]);
+        if (c) {
+            sawAnyCloser = true;
+            if (c[1].length >= fence)
+                return true;
+        }
+    }
+    const prev = lexer.lineBlockNoCloserOfLenFrom.get(fence) ?? Infinity;
+    if (start < prev)
+        lexer.lineBlockNoCloserOfLenFrom.set(fence, start);
+    if (!sawAnyCloser)
+        lexer.lineBlockNoCloserFrom = start;
+    return false;
+}
+// `::: \` hard-break block. Unlike the line block, the body is parsed as
+// ordinary blocks (so nested admonitions / lists work); soft breaks are then
+// promoted to hard breaks ONLY in the div's DIRECT paragraph children, and
+// there is no leading-whitespace preservation. Emits `<div class="hardbreaks">`.
 function parseHardBreaksBlock(lexer) {
-    const m = RE_HARDBREAKS_BLOCK_OPEN.exec(lexer.consume());
+    const m = RE_HARDBREAKS_OPEN.exec(lexer.consume());
     const fence = m[1].length;
     const inner = [];
     while (!lexer.eof()) {
@@ -1153,34 +1212,15 @@ function parseHardBreaksBlock(lexer) {
     subLexer.depth = lexer.depth + 1;
     const children = parseBlocks(subLexer, 0);
     for (const child of children) {
-        if (child.type !== 'paragraph')
-            continue;
-        child.children = child.children.map((node) => node.type === 'soft-break' ? { type: 'hard-break' } : node);
+        if (child.type === 'paragraph') {
+            child.children = child.children.map((node) => node.type === 'soft-break' ? { type: 'hard-break' } : node);
+        }
     }
     return {
         type: 'div',
         attrs: { classes: ['hardbreaks'], order: ['.class'] },
         children,
     };
-}
-function expandLineBlockLeadingWhitespace(line) {
-    let i = 0;
-    let columns = 0;
-    while (i < line.length) {
-        const ch = line[i];
-        if (ch === ' ')
-            columns++;
-        else if (ch === '\t')
-            columns += 4 - (columns % 4);
-        else
-            break;
-        i++;
-    }
-    // Use the internal non-breaking-space placeholder (U+E000) - the same
-    // private-use sentinel as an escaped space - so the indent never collides
-    // with a literal U+00A0 in the author's text and is converted per renderer
-    // (HTML &nbsp;, Markdown U+00A0, plain/ANSI an ordinary space).
-    return '\ue000'.repeat(columns) + line.slice(i);
 }
 // Generic div: same body collection as an admonition, but emits a plain
 // <div> carrying the opener's attributes (no class added). Like
@@ -1265,7 +1305,8 @@ function parseDefinitionList(lexer) {
         while (!lexer.eof()) {
             const ln = lexer.peek();
             if (!isBlankLine(ln) && leadingWhitespace(ln) >= 3) {
-                bodyLines.push(ln.replace(/^\s+/, ''));
+                // Strip the structural indentation but keep a content U+00A0.
+                bodyLines.push(ln.replace(/^[^\S\u00a0]+/, ''));
                 lexer.consume();
             }
             else
@@ -1388,9 +1429,9 @@ function trackBlockQuoteLazyState(content, state) {
         if (RE_DIV_OPEN.test(content) ||
             RE_ADMONITION_OPEN.test(content) ||
             RE_LINE_BLOCK_OPEN.test(content) ||
-            RE_HARDBREAKS_BLOCK_OPEN.test(content)) {
-            // Div / admonition / special colon-fence opener (`:::`, `::: type`,
-            // `::: |`, or `::: \`) is structural; it opens no paragraph itself.
+            RE_HARDBREAKS_OPEN.test(content)) {
+            // Div / admonition / line-block opener (`:::`, `::: type`, or `::: |`)
+            // is structural; it opens no paragraph itself.
             state.paragraphOpen = false;
             return;
         }
@@ -1681,7 +1722,8 @@ function lineOpensBlock(line) {
         isTableRow(line) ||
         (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line)) ||
         RE_DIV_OPEN.test(line) ||
-        RE_LINE_BLOCK_OPEN.test(line));
+        RE_LINE_BLOCK_OPEN.test(line) ||
+        RE_HARDBREAKS_OPEN.test(line));
 }
 function lazyContinuationEndsList(line, lexer) {
     return (RE_RAW_FENCE.test(line) ||
@@ -1695,7 +1737,7 @@ function lazyContinuationEndsList(line, lexer) {
             divHasCloser(lexer)) ||
         (RE_DIV_OPEN.test(line) && divHasCloser(lexer)) ||
         (RE_LINE_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer)) ||
-        (RE_HARDBREAKS_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer)) ||
+        (RE_HARDBREAKS_OPEN.test(line) && hardBreaksHasCloser(lexer)) ||
         RE_ABBR_DEF.test(line) ||
         RE_FOOTNOTE_DEF.test(line) ||
         RE_LINK_DEF.test(line) ||
@@ -1780,7 +1822,7 @@ function trackItemLazyState(content, state) {
     if (RE_DIV_OPEN.test(content) ||
         (RE_ADMONITION_OPEN.test(content) && !RE_ADMONITION_CLOSE.test(content)) ||
         RE_LINE_BLOCK_OPEN.test(content) ||
-        RE_HARDBREAKS_BLOCK_OPEN.test(content)) {
+        RE_HARDBREAKS_OPEN.test(content)) {
         state.lazyFoldable = false;
         return;
     }
@@ -2529,14 +2571,14 @@ function startsInterruptingBlock(lexer) {
         case '_':
             return RE_HR.test(trimStructural(ln));
         case ':':
-            // An admonition/div/special colon fence that has a `:::` closer ahead.
-            // A definition-list term (`::`) is NOT in the §10 interrupter set (like
-            // an ordered list), so it does not interrupt a paragraph or heading --
-            // it folds as lazy text.
+            // An admonition/div/line-block that has a `:::` closer ahead (the `::: |`
+            // line-block shares the bare `:::` closer). A definition-list term (`::`)
+            // is NOT in the §10 interrupter set (like an ordered list), so it does
+            // not interrupt a paragraph or heading -- it folds as lazy text.
             if ((RE_ADMONITION_OPEN.test(ln) && !RE_ADMONITION_CLOSE.test(ln)) ||
                 RE_DIV_OPEN.test(ln) ||
                 RE_LINE_BLOCK_OPEN.test(ln) ||
-                RE_HARDBREAKS_BLOCK_OPEN.test(ln))
+                RE_HARDBREAKS_OPEN.test(ln))
                 return divHasCloser(lexer);
             return false;
         case '[':
@@ -2687,12 +2729,20 @@ function sliceColumns(line, cols, keepResidual = false) {
 // ============================================================================
 // Footnote reference `[^label]` (no `]` in the label).
 const RE_FOOTNOTE_REF = /^\[\^([^\]]+)\]/;
-const RE_EXTENSION = /^:([a-zA-Z][\w-]*)\[([^\]]*)\](?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
+// extension_name = identifier = (letter|'_'){letter|digit|'_'|'-'}
+// (grammar.ebnf:968-969,1122) -- a lone `_` is a valid extension name.
+const RE_EXTENSION = /^:([a-zA-Z_][\w-]*)\[([^\]]*)\](?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
 // Raw inline passthrough tag, follows a verbatim span: `` `…`{=html} ``.
 const RE_RAW_INLINE = /^\{=([a-zA-Z][\w-]*)\}/;
 // Emoji shortcode `:name:` (after extension, which needs `[`).
 const RE_EMOJI = /^:([a-zA-Z0-9][\w+-]*):/;
-const RE_AUTOLINK = /^<([a-zA-Z][a-zA-Z0-9+.\-]*:[^>\s]+|[^\s>@]+@[^\s>]+)>/;
+// Autolink (grammar.ebnf:775,776,791,792,1139). Two alternatives:
+//   url_autolink   = scheme ':' {url_char}+   -- url_char excludes `<`/`>`, so
+//                    a body `<` makes the construct invalid (whole-literal).
+//   email_autolink = {email_char}+ '@' {email_char}+ '.' {letter}+ -- the
+//                    `.TLD` is MANDATORY and email_char excludes `:`/`@`, so
+//                    `<a@b>` (no TLD) and `<x@y:z>` are not autolinks.
+const RE_AUTOLINK = /^<([a-zA-Z][a-zA-Z0-9+.\-]*:[^>\s<]+|[A-Za-z0-9._+\-]+@[A-Za-z0-9._+\-]+\.[A-Za-z]+)>/;
 const RE_CROSSREF = /^<\/#([^>\s]+)>/;
 const RE_INLINE_ATTR = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\}/;
 // Tail patterns parsed after a `[…]` (or `![…]`) whose close bracket was
@@ -2705,7 +2755,9 @@ const RE_INLINE_ATTR = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\}
 // `}` is the first one outside quotes (djot "don't mind braces in quotes").
 // RE_SPAN_TAIL's body is `*` so an empty `{}` matches; isValidAttrPayload then
 // decides span (valid block, possibly empty) vs literal (invalid content).
-const RE_LINK_TAIL = /^\(([^)\s]*)(?:\s+"((?:[^"\\]|\\.)*)"|\s+'((?:[^'\\]|\\.)*)')?\)(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
+// Destination is non-empty (grammar `link_destination = {...}+`), so `[a]()`
+// is NOT a link -- it stays literal (matches carve-php / carve-rs).
+const RE_LINK_TAIL = /^\(([^)\s]+)(?:\s+"((?:[^"\\]|\\.)*)"|\s+'((?:[^'\\]|\\.)*)')?\)(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
 const RE_REF_TAIL = /^\[([^\]]*)\](?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
 const RE_SPAN_TAIL = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\}/;
 /**
@@ -2841,8 +2893,17 @@ function allocateDashes(n) {
     return '—'.repeat(em) + '–'.repeat(en);
 }
 const isAlnum = (ch) => /[A-Za-z0-9]/.test(ch);
+// Adjudicated smart-quote opening context (matches carve-rs on these inputs):
+// a straight quote curls OPENING when preceded by start-of-content, Unicode
+// whitespace (incl. NBSP, handled below via the U+E000 placeholder), or one of
+// the operator/opening-punctuation chars `( [ { = : - /`. Sentence punctuation
+// (`. , ; ! ?`), letters, digits and closing brackets stay CLOSING. The en/em
+// dash also opens (a quote right after a `--` dash run opens), as does a quote
+// directly after an opening curly quote (nested-quote context).
 const isQuoteOpenContext = (prev) => prev === '' ||
-    /[\s([{\-–—/]/.test(prev) ||
+    // `=` opens a quote so an attribute-like `key="value"` / `="x"` gets an
+    // opening curly quote; `:` opens too (`:"q"` -> `:“q”`), matching carve-rs.
+    /[\s([{\-–—/=:]/.test(prev) ||
     prev === '“' ||
     prev === '‘' ||
     // U+E000 is the internal non-breaking-space placeholder (escaped `\ ` /

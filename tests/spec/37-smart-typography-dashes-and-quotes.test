@@ -7,6 +7,20 @@ He paused -- then ran --- fast... "Stop!" it's over.
 ```
 
 ```
+a="b"
+:"q"
+-"q"
+/"q"
+("q")
+.
+<p>a=“b”
+:“q”
+-“q”
+/“q”
+(“q”)</p>
+```
+
+```
 the '70s and '24' and 'word'
 .
 <p>the ’70s and ’24’ and ‘word’</p>

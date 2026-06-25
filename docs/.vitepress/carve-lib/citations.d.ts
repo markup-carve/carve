@@ -1,7 +1,33 @@
 import type { CarveExtension } from './extension.js';
+/** A CSL-JSON name object (the subset the minimal formatter reads). */
+export interface CslName {
+    family?: string;
+    given?: string;
+    literal?: string;
+}
+/** A CSL-JSON bibliography entry (the subset the minimal formatter reads;
+ *  unknown fields are ignored). */
+export interface CslEntry {
+    id: string;
+    author?: CslName[];
+    issued?: {
+        'date-parts'?: number[][];
+        literal?: string;
+    };
+    title?: string;
+    [k: string]: unknown;
+}
 export interface CitationsOptions {
     /** `numbered` (default) emits `[1]`; `author-date` emits `(Author Year)`. */
     mode?: 'numbered' | 'author-date';
+    /**
+     * Tier-3 Bibliography (#199): an external CSL-JSON pool. Keys resolve against
+     * in-document `[@key]:` defs first, then this pool. When supplied (even
+     * empty), in-text citations and the references list gain footnote-style
+     * back-links. The host resolves the front-matter `bibliography:` path and
+     * passes the parsed array here; the extension itself does no file I/O.
+     */
+    bibliography?: CslEntry[];
 }
 /**
  * Citations (#90, Tier-2). Bracketed `[@key]` references with an in-document

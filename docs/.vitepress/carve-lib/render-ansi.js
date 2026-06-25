@@ -1,3 +1,4 @@
+import { AbbrBudget, utf8ByteLength } from './abbr-budget.js';
 const MAX_RENDER_DEPTH = 200;
 const TRIM_NON_NBSP_RE = /^[^\S\u00a0]+|[^\S\u00a0]+$/g;
 const RESET = '\x1b[0m';
@@ -19,7 +20,14 @@ const FG_BRIGHT_BLUE = '\x1b[94m';
 const FG_BRIGHT_GREEN = '\x1b[92m';
 const FG_BRIGHT_WHITE = '\x1b[97m';
 export function renderAnsi(ast, _opts = {}) {
-    const ctx = { listDepth: 0, blockQuoteDepth: 0, ordered: [], blockDepth: 0, inlineDepth: 0 };
+    const ctx = {
+        listDepth: 0,
+        blockQuoteDepth: 0,
+        ordered: [],
+        blockDepth: 0,
+        inlineDepth: 0,
+        abbrBudget: new AbbrBudget(ast.srcByteLength),
+    };
     const out = renderBlocks(ast.children, ctx);
     const footnotes = renderFootnoteDefs(ast, ctx);
     return normalize(`${out}${footnotes}`);
@@ -226,7 +234,12 @@ function tableBorder(widths, pos) {
 }
 function tableRow(cells, widths) {
     const sep = style('│', DIM);
-    const parts = cells.map((cell, i) => {
+    // Drop trailing empty cells so a short/rowspan header row is ragged
+    // (`│ A │`, not `│ A │   │`); widths/borders stay full-width. Matches
+    // carve-php / carve-rs.
+    const lastFilled = cells.reduce((last, cell, i) => (cell.plain !== '' ? i : last), -1);
+    const visible = cells.slice(0, lastFilled + 1);
+    const parts = visible.map((cell, i) => {
         const padding = (widths[i] ?? 0) - width(cell.plain);
         const content = cell.isHeader
             ? style(cell.content + ' '.repeat(padding), BOLD)
@@ -318,8 +331,13 @@ function renderInline(node, ctx) {
             return `#${stripControls(node.name)}`;
         case 'extension':
             return renderInlines(node.content, ctx);
-        case 'abbreviation':
+        case 'abbreviation': {
+            // DoS guard: once cumulative expansion bytes exceed the budget, degrade
+            // to the plain key text only (no ` (EXPANSION)` suffix).
+            if (!ctx.abbrBudget.charge(utf8ByteLength(node.expansion)))
+                return stripControls(node.abbr);
             return `${stripControls(node.abbr)}${style(` (${stripControls(node.expansion)})`, DIM)}`;
+        }
         case 'footnote':
             return node.inline
                 ? `(${renderInlines(node.inline, ctx)})`

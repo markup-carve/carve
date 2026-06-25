@@ -5,3 +5,21 @@ Autolinks
 .
 <p><a href="https://example.com">https://example.com</a> and <a href="mailto:a@b.com">a@b.com</a></p>
 ```
+
+```
+<http://a.com/<script>>
+.
+<p>&lt;http://a.com/&lt;script&gt;&gt;</p>
+```
+
+```
+<http://a.com/>
+.
+<p><a href="http://a.com/">http://a.com/</a></p>
+```
+
+```
+<a@b> <a@b.com> <x@y:z>
+.
+<p>&lt;a@b&gt; <a href="mailto:a@b.com">a@b.com</a> &lt;x@y:z&gt;</p>
+```

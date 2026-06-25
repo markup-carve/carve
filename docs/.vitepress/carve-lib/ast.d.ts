@@ -48,6 +48,14 @@ export interface Document extends BaseNode {
      * emits the endnotes section; an unreferenced definition is dropped.
      */
     footnoteDefs?: Record<string, BlockNode[]>;
+    /**
+     * UTF-8 byte length of the source this document was parsed from. Used by the
+     * renderers to size the abbreviation-expansion budget (DoS guard) so a tiny
+     * input with a huge `*[KEY]: EXPANSION` def cannot amplify output without
+     * bound. Absent when the document was constructed directly (not via parse);
+     * renderers then fall back to the base budget.
+     */
+    srcByteLength?: number;
 }
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 export interface Heading extends BaseNode {
@@ -299,6 +307,9 @@ export interface Citation {
     suppressAuthor: boolean;
     /** Assigned during resolve (numbered mode); undefined if key undefined. */
     number?: number;
+    /** Per-key, document-wide use-site index (1-based), assigned when a
+     *  bibliography pool is supplied; drives back-link anchors (#199). */
+    useIndex?: number;
 }
 /** A `[…@key…]` citation, possibly several `;`-separated items (#90, Tier-2). */
 export interface CitationGroup extends BaseNode {

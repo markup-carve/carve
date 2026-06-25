@@ -6,6 +6,12 @@
  * structures (table, blockquote, figure, admonition) get two-space
  * indented children for readability.
  */
+import { AbbrBudget, utf8ByteLength } from './abbr-budget.js';
+// Per-render abbreviation-expansion budget (DoS guard). Set at the top of
+// renderHtml() and reset to null when it returns, so it never leaks across
+// calls. Rendering is synchronous and single-threaded, so a module-scoped
+// tracker is safe and avoids threading a counter through every signature.
+let abbrBudget = null;
 /** Dangerous URL schemes blocked by default on links/images (denylist). */
 const DANGEROUS_URL_SCHEMES = ['javascript', 'vbscript', 'data', 'file'];
 /**
@@ -19,17 +25,27 @@ const DANGEROUS_URL_SCHEMES = ['javascript', 'vbscript', 'data', 'file'];
  * passes. Pass `allowedUrlSchemes` to switch to a strict ALLOWLIST instead;
  * pass `deniedUrlSchemes` to customize the denylist.
  *
- * Scheme detection ignores leading C0 control characters and whitespace,
- * which browsers strip before parsing a scheme - so `\tjavascript:` and
- * ` javascript:` are caught, not bypassed. The returned value is still
- * passed through `escapeAttr` by the caller.
+ * Scheme detection ignores leading C0 control characters, whitespace, and
+ * Unicode separators, which browsers strip (or that obfuscate) before a
+ * scheme is parsed - so `\tjavascript:`, ` javascript:`, and a NBSP-prefixed
+ * scheme are caught, not bypassed. The returned value is still passed through
+ * `escapeAttr` by the caller.
  */
+/**
+ * Characters dropped before scheme detection: C0 controls + ASCII space
+ * (U+0000..U+0020), plus Unicode whitespace/separators that some contexts
+ * tolerate around a scheme - NBSP (U+00A0), line/paragraph separators
+ * (U+2028 / U+2029) and the BOM / zero-width no-break space (U+FEFF).
+ * Stripping these defeats obfuscated schemes like " javascript:" with a
+ * leading NBSP and keeps the probe aligned with carve-rs / carve-php.
+ */
+const SCHEME_PROBE_STRIP_RE = /[\u0000-\u0020\u00a0\u2028\u2029\ufeff]+/g;
 function sanitizeUrl(url, opts) {
     if (opts.sanitizeUrls === false)
         return url;
     // Browsers ignore C0 controls and whitespace when reading the scheme;
     // strip them for detection so obfuscated schemes can't slip through.
-    const probe = url.replace(/[\u0000-\u0020]/g, '');
+    const probe = url.replace(SCHEME_PROBE_STRIP_RE, '');
     const scheme = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(probe);
     if (!scheme)
         return url;
@@ -63,7 +79,7 @@ const DANGEROUS_VALUE_SCHEMES = new Set(['javascript', 'vbscript', 'data', 'file
 function sanitizeAttrValue(name, value) {
     const colon = value.indexOf(':');
     if (colon !== -1) {
-        const scheme = value.slice(0, colon).replace(/[\u0000-\u0020]+/g, '').toLowerCase();
+        const scheme = value.slice(0, colon).replace(SCHEME_PROBE_STRIP_RE, '').toLowerCase();
         if (DANGEROUS_VALUE_SCHEMES.has(scheme))
             return '';
     }
@@ -114,6 +130,19 @@ export function renderHtml(ast, opts = {}) {
         throw new Error(`renderHtml: unknown render mode ${JSON.stringify(opts.mode)} ` +
             `(expected "interactive" or "static")`);
     }
+    // Save/restore (not clear-to-null): an extension HTML renderer may call
+    // renderHtml() recursively while the outer document renders. Restoring the
+    // previous tracker keeps the outer document's abbreviation budget intact.
+    const prevBudget = abbrBudget;
+    abbrBudget = new AbbrBudget(ast.srcByteLength);
+    try {
+        return renderDocumentBody(ast, opts);
+    }
+    finally {
+        abbrBudget = prevBudget;
+    }
+}
+function renderDocumentBody(ast, opts) {
     const out = [];
     // Section-wrapping pass (grammar PART 9 §13): every top-level heading
     // opens a <section id="{slug}"> that holds the heading and the content
@@ -1025,8 +1054,15 @@ function renderInline(node, opts) {
             }
             return renderExtension(node.name, node.content, node.attrs, opts);
         }
-        case 'abbreviation':
+        case 'abbreviation': {
+            // DoS guard: once cumulative expansion bytes exceed the budget, degrade
+            // to plain key text (no <abbr>, no title). charge() accounts for the
+            // expansion's UTF-8 bytes.
+            const fit = abbrBudget?.charge(utf8ByteLength(node.expansion)) ?? true;
+            if (!fit)
+                return escapeHtml(node.abbr);
             return `<abbr title="${escapeAttr(node.expansion)}">${escapeHtml(node.abbr)}</abbr>`;
+        }
         case 'footnote':
             // number is assigned by collectFootnotes for refs with a matching
             // definition; an unresolved ref falls back to literal source.

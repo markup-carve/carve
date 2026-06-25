@@ -37,3 +37,19 @@ See [it][ref].
 </ul>
 <p>See <a href="/url">it</a>.</p>
 ```
+
+```
+[r][r]
+
+[r]: a b c
+.
+<p><a href="a">r</a></p>
+```
+
+```
+[r][r]
+
+[r]: /url "Title"
+.
+<p><a href="/url" title="Title">r</a></p>
+```

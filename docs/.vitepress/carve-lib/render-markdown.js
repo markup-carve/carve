@@ -1,3 +1,4 @@
+import { AbbrBudget, utf8ByteLength } from './abbr-budget.js';
 const MAX_RENDER_DEPTH = 200;
 const TRIM_NON_NBSP_RE = /^[^\S\u00a0]+|[^\S\u00a0]+$/g;
 export function renderMarkdown(ast, _opts = {}) {
@@ -18,7 +19,14 @@ export function renderMarkdown(ast, _opts = {}) {
                 referencedHeadingIds.add(id);
         });
     });
-    const ctx = { headingIds, referencedHeadingIds, listDepth: 0, blockDepth: 0, inlineDepth: 0 };
+    const ctx = {
+        headingIds,
+        referencedHeadingIds,
+        listDepth: 0,
+        blockDepth: 0,
+        inlineDepth: 0,
+        abbrBudget: new AbbrBudget(ast.srcByteLength),
+    };
     const out = renderBlocks(ast.children, ctx);
     const footnotes = renderFootnoteDefs(ast, ctx);
     return normalize(`${out}${footnotes}`);
@@ -250,8 +258,12 @@ function renderInline(node, ctx) {
             // Markdown has no abbreviation syntax; emit an HTML `<abbr>` so the title
             // survives (markdown allows inline HTML), matching carve-php. Dropping it
             // to plain text would lose the expansion.
-            const title = stripControls(node.expansion).replace(/[&<>"]/g, (c) => c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : '&quot;');
             const text = stripControls(node.abbr).replace(/[&<>]/g, (c) => c === '&' ? '&amp;' : c === '<' ? '&lt;' : '&gt;');
+            // DoS guard: once cumulative expansion bytes exceed the budget, degrade
+            // to the plain key text only (no <abbr>, no title).
+            if (!ctx.abbrBudget.charge(utf8ByteLength(node.expansion)))
+                return text;
+            const title = stripControls(node.expansion).replace(/[&<>"]/g, (c) => c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : '&quot;');
             return `<abbr title="${title}">${text}</abbr>`;
         }
         case 'footnote':
