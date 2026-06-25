@@ -657,22 +657,18 @@ render-stage transform.
 
 ### 9.3 Numbered cross-references
 
-- An **auto-filled** cross-reference is a link whose target is `#{id}` of a
-  numbered heading **and whose visible text equals that heading's title** - i.e.
-  the text Carve auto-cloned for a `</#id>` reference. A resolved `</#id>`
-  becomes an ordinary title-cloned link during `resolve()`, before any extension
-  runs, so it carries no provenance marker and is identified by this shape
-  alone. Only these are rewritten; a link with author-written text
-  (`[my words](#parsing)`) keeps its text - the "explicit text overrides" rule.
-- **Benign coincidence (defined, not a bug):** a hand-written link whose text
-  happens to equal the target's title (`[Parsing](#parsing)`) is byte-identical
-  to a resolved `</#parsing>` after `resolve()`, so it is also rewritten. This
-  is acceptable - it still points at the section and gains a correct number - and
-  it is the price of keeping HeadingNumbers a pure render-stage extension with no
-  core change. The override rule holds whenever the author's text *differs* from
-  the title, which is the whole point of writing custom text. (A future core
-  flag tagging crossref-origin links could make the distinction exact; out of
-  scope here.)
+- Only **`</#id>` cross-references** are rewritten, identified by provenance:
+  `resolve()` converts a `</#id>` crossref into a title-cloned link and tags it
+  with a **non-rendered `fromCrossref` flag** (metadata every renderer ignores -
+  it never appears in HTML). HeadingNumbers rewrites only flagged links.
+  Ordinary `[text](#id)` links and implicit `[label][]` references are **not**
+  tagged, so they always keep their text - including the case where that text
+  happens to equal the heading title (`[Parsing](#parsing)`). This makes the
+  "explicit text overrides" rule exact.
+- This is the one small core touch the extension needs: a flag set at resolve
+  time. It changes no rendered output, so the core conformance corpus is
+  unaffected; it only lets a render-stage extension tell an auto-filled
+  cross-reference from a hand-written link.
 - The rewrite is controlled by the `crossref` option:
   - `number-title` (default): text becomes `{label} {N} - {title}` →
     `Section 1.2 - Parsing`.
