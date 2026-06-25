@@ -16,7 +16,7 @@ extensions take.
 The author writes:
 
 ````
-```qr wifi
+```qr-wifi
 ssid: HomeNet
 password: hunter2
 security: WPA
@@ -85,10 +85,21 @@ vCard versions and the WiFi hidden flag), not a single standard:
 | `vcard` | `BEGIN:VCARD␍␊VERSION:3.0␍␊…END:VCARD` | richer, larger symbol |
 | `event` | `BEGIN:VEVENT␍␊SUMMARY:…␍␊…END:VEVENT` | add-to-calendar |
 
-::: warning Escaping
-WiFi / MeCard / vCard treat `\ ; , :` (and `"` for WiFi) as **structural**. A
-password containing `;` will break the symbol unless each value is
-backslash-escaped. The builder below does this; do not skip it.
+The type rides on the **fence info word**: bare `` ```qr `` is a URL/text, and a
+type is a *hyphenated* token `` ```qr-wifi ``, `` ```qr-vcard ``, etc. It must be
+hyphenated, not a second word: `` ```qr wifi `` is, per the grammar's
+[invalid-fence fallback](./extensions), *not* a code block at all (a bare second
+info word disqualifies the fence), so the type has to be part of the single
+`language_info` token — and `-` is a valid token character.
+
+::: tip Authors never escape
+WiFi / MeCard / vCard treat `\ ; , :` (and `"` for WiFi) as **structural**, but
+that is the *builder's* problem, not the author's. The author always writes the
+plain value — `password: pa;ss`, `org: ACME, Inc` — and `buildQrPayload`
+escapes it. The fenced-code body is verbatim (no inline parsing), so what the
+author types is exactly what the builder receives; keeping all escaping inside
+the builder is what makes the input friendly. Forget the escaping and a value
+with a `;` or `,` silently corrupts the symbol.
 :::
 
 ## Step 2 - the payload builder (pure, testable)
@@ -127,10 +138,13 @@ export function buildQrPayload(type: string, body: string): string {
              (f.tel ? `TEL:${e(f.tel)};` : '') + (f.email ? `EMAIL:${e(f.email)};` : '') +
              (f.url ? `URL:${e(f.url)};` : '') + ';'
     }
-    case 'vcard':
-      return ['BEGIN:VCARD', 'VERSION:3.0', `N:${last};${first};;;`, `FN:${f.name ?? ''}`,
-        f.org && `ORG:${f.org}`, f.tel && `TEL:${f.tel}`, f.email && `EMAIL:${f.email}`,
-        f.url && `URL:${f.url}`, 'END:VCARD'].filter(Boolean).join('\r\n')
+    case 'vcard': {
+      // vCard 3.0 escapes `\ ; ,` and folds newlines in values.
+      const v = (s: string) => String(s ?? '').replace(/([\\;,])/g, '\\$1').replace(/\r?\n/g, '\\n')
+      return ['BEGIN:VCARD', 'VERSION:3.0', `N:${v(last)};${v(first)};;;`, `FN:${v(f.name ?? '')}`,
+        f.org && `ORG:${v(f.org)}`, f.tel && `TEL:${v(f.tel)}`, f.email && `EMAIL:${v(f.email)}`,
+        f.url && `URL:${v(f.url)}`, 'END:VCARD'].filter(Boolean).join('\r\n')
+    }
     default: return body.trim()
   }
 }
@@ -145,6 +159,8 @@ function buildQrPayload(string $type, string $body): string {
         if (str_contains($line, ':')) { [$k, $v] = explode(':', $line, 2); $f[trim($k)] = trim($v); }
     }
     [$first, $last] = array_pad(explode(' ', $f['name'] ?? '', 2), 2, '');
+    // vCard 3.0 value escaping (`\ ; ,` and newline folding).
+    $vc = fn (string $s) => str_replace(['\\', ';', ',', "\n"], ['\\\\', '\\;', '\\,', '\\n'], $s);
 
     return match (strtolower($type ?: 'url')) {
         'url', 'text' => trim($body),
@@ -161,11 +177,12 @@ function buildQrPayload(string $type, string $body): string {
                  . (!empty($f['email']) ? 'EMAIL:' . $esc($f['email'], '\\;,:') . ';' : '')
                  . (!empty($f['url'])   ? 'URL:'   . $esc($f['url'], '\\;,:')   . ';' : '') . ';',
         'vcard' => implode("\r\n", array_filter([
-            'BEGIN:VCARD', 'VERSION:3.0', "N:{$last};{$first};;;", 'FN:' . ($f['name'] ?? ''),
-            !empty($f['org'])   ? 'ORG:'   . $f['org']   : null,
-            !empty($f['tel'])   ? 'TEL:'   . $f['tel']   : null,
-            !empty($f['email']) ? 'EMAIL:' . $f['email'] : null,
-            !empty($f['url'])   ? 'URL:'   . $f['url']   : null,
+            'BEGIN:VCARD', 'VERSION:3.0',
+            'N:' . $vc($last) . ';' . $vc($first) . ';;;', 'FN:' . $vc($f['name'] ?? ''),
+            !empty($f['org'])   ? 'ORG:'   . $vc($f['org'])   : null,
+            !empty($f['tel'])   ? 'TEL:'   . $vc($f['tel'])   : null,
+            !empty($f['email']) ? 'EMAIL:' . $vc($f['email']) : null,
+            !empty($f['url'])   ? 'URL:'   . $vc($f['url'])   : null,
             'END:VCARD',
         ])),
         default => trim($body),
@@ -200,12 +217,16 @@ import { carveToHtml } from '@markup-carve/carve'
 import { buildQrPayload } from './qr-payload.js'
 import { toQrSvg } from './qr-encode.js' // wraps `qrcode`
 
+// `qr` -> "url"; `qr-<type>` -> "<type>"; anything else is not ours.
+const qrType = (lang) =>
+  lang === 'qr' ? 'url' : lang?.startsWith('qr-') ? lang.slice(3) : undefined
+
 const qr = {
   name: 'qr',
   blockRenderers: {
     'code-block': (node, ctx) => {
-      if (node.lang !== 'qr') return undefined          // defer: not ours
-      const [, type = ''] = (node.info ?? '').split(/\s+/) // ```qr wifi
+      const type = qrType(node.lang)
+      if (type === undefined) return undefined          // defer: not ours
       const svg = toQrSvg(buildQrPayload(type, node.value ?? ''))
       return `${ctx.indent(ctx.level)}<figure class="qr">${svg}</figure>`
     },
@@ -217,27 +238,37 @@ const html = carveToHtml(source, { extensions: [qr] })
 
 ```php [carve-php]
 use Carve\CarveConverter;
-use Carve\Extension\StaticRenderExtensionInterface;
+use Carve\Event\RenderEvent;
+use Carve\Extension\ExtensionInterface;
+use Carve\Node\Block\CodeBlock;
 
-final class QrExtension implements StaticRenderExtensionInterface
+final class QrExtension implements ExtensionInterface
 {
-    public function register(CarveConverter $converter): void { /* nothing extra */ }
+    /** @param \Closure(string): string $encoder payload -> <svg>/<img> */
+    public function __construct(private \Closure $encoder) {}
 
-    public function renderStaticHtml($event, $renderer): bool
+    public function register(CarveConverter $converter): void
     {
-        $node = $event->getNode();
-        if (!$node instanceof \Carve\Node\Block\CodeBlock || $node->getLang() !== 'qr') {
-            return false; // defer: not ours
-        }
-        $type = trim(explode(' ', (string) $node->getInfo(), 2)[1] ?? '');
-        $svg  = toQrSvg(buildQrPayload($type, $node->getContent()));
-        $event->setHtml('<figure class="qr">' . $svg . '</figure>');
-        return true;
+        $converter->on('render.code_block', function (RenderEvent $event): void {
+            $node = $event->getNode();
+            if (!$node instanceof CodeBlock) {
+                return;
+            }
+            $lang = $node->getLanguage();                 // 'qr' or 'qr-<type>'
+            $type = $lang === 'qr' ? 'url'
+                : (str_starts_with((string) $lang, 'qr-') ? substr($lang, 3) : null);
+            if ($type === null) {
+                return;                                    // defer: not ours
+            }
+            $svg = ($this->encoder)(buildQrPayload($type, $node->getContent()));
+            $event->setHtml('<figure class="qr">' . $svg . "</figure>\n");
+        });
     }
 }
 
 $converter = new CarveConverter();
-$converter->addExtension(new QrExtension());
+// inject any encoder (wraps endroid/qr-code, chillerlan/php-qrcode, …)
+$converter->addExtension(new QrExtension(fn (string $p) => toQrSvg($p)));
 $html = $converter->convert($source);
 ```
 
