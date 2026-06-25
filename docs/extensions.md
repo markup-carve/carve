@@ -43,7 +43,7 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | Smart typography, `@mention`, `#tag`, `:emoji:` parsing | <Badge type="tip" text="core" /> | on | **yes** (§19) |
 | Citations `[@key]`, bare-URL autolinking | <Badge type="info" text="standard" /> | off | — |
 | Mention/tag → URL templates, emoji glyph map, locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
-| Mermaid / FencedRender, MathBlock, ListTable, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
+| Mermaid / FencedRender, MathBlock, ListTable, Bibliography, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, SemanticSpan, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
 
 A `:name[…]` / `::: name` whose word has no registered handler renders via the
@@ -67,7 +67,10 @@ differs by processor. The narrative below details each tier.
   HTML `<table>`, so cells can hold block content the pipe-table syntax cannot;
   `{header-rows}` / `{header-cols}` take a count or the boolean first-row/column
   form, and `^` / `<` give pipe-table-parity rowspan / colspan; in carve-php,
-  carve-js and carve-rs), Spoiler (the standard hidden-content role - inline
+  carve-js and carve-rs), Bibliography (a reference list rendered from citation
+  keys (§4) resolved against an external CSL-JSON source named in front-matter,
+  reusing the `::: references` placeholder with mandated numeric output and
+  back-links; §6), Spoiler (the standard hidden-content role - inline
   `:spoiler[text]` → `<span class="spoiler">` and block `::: spoiler` →
   `<details class="spoiler">` disclosure; in carve-php, carve-js and carve-rs),
   Tabs, CodeGroup, Details, TableOfContents,
@@ -307,8 +310,8 @@ Grammar: `resources/grammar.ebnf` PART 9 §22. Narrative: `case-study/syntax.md`
   for v1; the bare year is emitted.
 - An uncited-but-defined entry is dropped from the references list (no
   `nocite`-style force-include).
-- External bibliographies (`.bib` / CSL-JSON) and narrative form are future
-  issues, not part of this contract.
+- External bibliographies are handled by the Bibliography extension (§6, CSL-JSON
+  via front-matter); `.bib` ingestion and narrative form remain out of scope.
 
 ## 5. ListTable (Tier-3)
 
@@ -367,3 +370,117 @@ no-cell-row defer, and the thead/tbody rowspan clamp).
 - Deeply ambiguous overlapping-span soup (a marker glued to another, or a `^`
   inside the interior of an existing merged rectangle) resolves however the
   native pipe-table grid walk resolves it; not pinned.
+
+## 6. Bibliography (Tier-3)
+
+Render a reference list from citation keys resolved against an external
+CSL-JSON source (issue #199). This is the external-data follow-up the Citations
+extension (§4) explicitly deferred (§4.4): §4 resolves `@key` against in-document
+`[@key]:` definitions only; this extension adds a document-level bibliography
+pool. Off by default; enable per processor. Depends on Citations (§4) being
+enabled - it reuses the same `citation-group` nodes, numbering, and
+`::: references` placeholder, so it is a data-source layer, not new syntax.
+
+### 6.1 Data source
+
+- A front-matter key names the source: `bibliography: refs.json` (a single
+  string, or a list of strings). When several files are listed, the **host**
+  merges them left to right and resolves duplicate `id`s (earlier file wins)
+  before handing the extension a single pool - the extension never sees file
+  boundaries (see the loader note below), so merge order is a host convention,
+  not part of the extension's cross-impl contract.
+- The format is **CSL-JSON only** - an array of entry objects, each with a
+  string `id` matching a citation `@key`. One parser per implementation keeps
+  cross-impl parity tractable. BibTeX is out of scope (convert to CSL-JSON
+  upstream).
+- **The extension does not perform file I/O.** Carve implementations are not all
+  filesystem-capable (browser, WASM, sandboxed hosts), so mandating `fopen`
+  would break parity. Instead the host resolves the front-matter path and passes
+  the parsed CSL-JSON array in as a processor option (e.g. `bibliography:
+  [...entries]`); the front-matter key is the **authoring convention** that
+  filesystem-capable hosts follow to populate that option. The contract this
+  spec pins is the data shape and the resolution rules below, not the loader.
+
+### 6.2 Resolution
+
+- A cited `@key` resolves against, in order: (a) an in-document `[@key]:`
+  definition (§4), then (b) the CSL-JSON pool. An in-document definition wins on
+  collision, so a document can override or supplement an external entry locally.
+- Only **cited** keys enter the reference list (the §4.4 rule holds: no
+  `nocite`-style force-include of uncited entries).
+- Numbering is unchanged from §4: cited+resolved keys are numbered in
+  first-citation order.
+
+### 6.3 Rendering
+
+- The list renders into an explicit `::: references` div if present, else is
+  appended at document end - identical placement to §4.
+- **Numeric is the mandated default**: `<ol class="references">`, in-text
+  citations rendered `[1]`. When author-date mode (§4) is enabled, its sorted
+  `<ul class="references">` form is reused; the CSL-JSON `author` / `issued`
+  fields feed the author-date label.
+- **Entry text from CSL-JSON** uses one fixed minimal template (full styling is
+  the renderer-plugin point below). Build from three fields, omitting any absent
+  field together with its separator, then append a trailing period if the result
+  is non-empty:
+  - `author`: the CSL array; each name renders `Family, Given` (just `Family`
+    when `given` is absent, or the `literal` field verbatim when present),
+    multiple authors joined with `; `.
+  - year: `issued.date-parts[0][0]`, else `issued.literal`, wrapped in parens.
+  - `title`: emitted verbatim.
+  - Assembly: `"{authors} ({year})"` (a single space between the two), then the
+    title joined with `. `, then a trailing `.`. Example:
+    `Smith, John (2020). A Study.` The entry is **plain text, HTML-escaped** -
+    CSL-JSON is external data, not Carve markup, so it is never re-parsed.
+- **Back-links are mandated.** The in-text marker for each resolved key is
+  `<a id="cite-{key}-{n}" href="#ref-{key}">{number}</a>` - the existing §4
+  forward link gains a per-use `id`. The anchor sits on the **per-key rendered
+  item**, not on the `citation-group` element, so a multi-key group such as
+  `[@a; @b]` carries one anchor per key (`cite-a-1`, `cite-b-1`) rather than
+  colliding on a single element `id`. `{n}` counts that key's use sites
+  document-wide, independent of which group each use appears in. Each reference
+  entry is then `<li id="ref-{key}">{entry} <a href="#cite-{key}-{m}"
+  class="ref-backref">↩</a> …</li>`, one back-link per use site `m = 1 … n`.
+  A group that renders verbatim (some key unresolved, §6.4) is not a use site and
+  contributes no anchors. Back-links appear **only when a bibliography pool is
+  supplied**; pure §4 in-document citations (no pool) render exactly as before,
+  so the Tier-2 citation corpus is unchanged.
+- Full CSL **style** resolution (rendering an arbitrary `.csl` style) is an
+  explicit **renderer-plugin extension point**, not part of this contract and
+  not corpus-pinned. The baseline this spec pins is numeric + the §4 author-date
+  form from the CSL-JSON fields.
+
+### 6.4 Degradation
+
+Matches the §4 verbatim rule - no content is ever dropped:
+
+- A citation group with any key that resolves in neither source renders its
+  verbatim `[@key]` source. The whole group is then literal text, so **none** of
+  its keys are cited - a key that appears only inside a verbatim group is not
+  numbered, not added to the reference list, and is not a back-link use site
+  (no orphan entry with a dangling back-ref). A key cited elsewhere in a
+  fully-resolved group is unaffected.
+- A `::: references` placeholder with no resolvable data (extension off, no
+  bibliography option supplied, or every key unresolved) stays a plain
+  `<div class="references">` containing whatever it literally held.
+- An unreadable or malformed CSL-JSON source resolves to an empty pool; keys
+  then fall back to in-document defs, and otherwise degrade per the verbatim
+  rule above. A host MAY surface a load warning out of band, but the rendered
+  output never changes shape on a missing source.
+
+### 6.5 Conformance (NOT corpus-pinned)
+
+Tier-3, so not in the mandatory corpus. The contract is cross-impl parity: for
+the same document and the same CSL-JSON pool, the three implementations produce
+the same numbered list, the same back-link anchors, and the same degradation.
+Each implementation pins this in its own suite (external resolution from a
+supplied pool, in-doc override precedence, back-links across multiple use sites,
+the cited-only rule, and the missing-source / unresolved-key defer). Multi-file
+merge is a host concern, not pinned here.
+
+### 6.6 Out of scope (impls MAY differ)
+
+- BibTeX (`.bib`) ingestion - convert to CSL-JSON upstream.
+- Arbitrary `.csl` style rendering (the renderer-plugin point above).
+- Same-author-year disambiguation letters (`2020a` / `2020b`), inherited from
+  §4.4 - the bare year is emitted.
