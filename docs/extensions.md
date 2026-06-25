@@ -419,15 +419,32 @@ enabled - it reuses the same `citation-group` nodes, numbering, and
   citations rendered `[1]`. When author-date mode (§4) is enabled, its sorted
   `<ul class="references">` form is reused; the CSL-JSON `author` / `issued`
   fields feed the author-date label.
-- **Back-links are mandated.** Each entry is emitted as
-  `<li id="ref-{key}">…<a href="#cite-{key}-{n}" class="ref-backref">↩</a></li>`,
-  with one back-link per in-text use site (`cite-{key}-1`, `-2`, …),
-  footnote-style. The use-site anchor sits on the **per-key rendered item**, not
-  on the `citation-group` element: a group renders each key as its own wrapped
-  number (`<a id="cite-{key}-{n}">[1]</a>`), so a multi-key group such as
-  `[@a; @b]` carries one anchor per key rather than colliding on a single
-  element `id`. `{n}` counts that key's use sites document-wide, independent of
-  which group each use appears in.
+- **Entry text from CSL-JSON** uses one fixed minimal template (full styling is
+  the renderer-plugin point below). Build from three fields, omitting any absent
+  field together with its separator, then append a trailing period if the result
+  is non-empty:
+  - `author`: the CSL array; each name renders `Family, Given` (just `Family`
+    when `given` is absent, or the `literal` field verbatim when present),
+    multiple authors joined with `; `.
+  - year: `issued.date-parts[0][0]`, else `issued.literal`, wrapped in parens.
+  - `title`: emitted verbatim.
+  - Assembly: `"{authors} ({year})"` (a single space between the two), then the
+    title joined with `. `, then a trailing `.`. Example:
+    `Smith, John (2020). A Study.` The entry is **plain text, HTML-escaped** -
+    CSL-JSON is external data, not Carve markup, so it is never re-parsed.
+- **Back-links are mandated.** The in-text marker for each resolved key is
+  `<a id="cite-{key}-{n}" href="#ref-{key}">{number}</a>` - the existing §4
+  forward link gains a per-use `id`. The anchor sits on the **per-key rendered
+  item**, not on the `citation-group` element, so a multi-key group such as
+  `[@a; @b]` carries one anchor per key (`cite-a-1`, `cite-b-1`) rather than
+  colliding on a single element `id`. `{n}` counts that key's use sites
+  document-wide, independent of which group each use appears in. Each reference
+  entry is then `<li id="ref-{key}">{entry} <a href="#cite-{key}-{m}"
+  class="ref-backref">↩</a> …</li>`, one back-link per use site `m = 1 … n`.
+  A group that renders verbatim (some key unresolved, §6.4) is not a use site and
+  contributes no anchors. Back-links appear **only when a bibliography pool is
+  supplied**; pure §4 in-document citations (no pool) render exactly as before,
+  so the Tier-2 citation corpus is unchanged.
 - Full CSL **style** resolution (rendering an arbitrary `.csl` style) is an
   explicit **renderer-plugin extension point**, not part of this contract and
   not corpus-pinned. The baseline this spec pins is numeric + the §4 author-date
