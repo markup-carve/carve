@@ -49,7 +49,7 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | Smart typography, `@mention`, `#tag`, `:emoji:` parsing | <Badge type="tip" text="core" /> | on | **yes** (§19) |
 | Citations `[@key]`, bare-URL autolinking | <Badge type="info" text="standard" /> | off | — |
 | Mention/tag → URL templates, emoji glyph map, locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
-| Mermaid / FencedRender, MathBlock, ListTable, Bibliography, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
+| Mermaid / FencedRender, MathBlock, ListTable, Bibliography, Glossary, Index, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, SemanticSpan, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
 
 A `:name[…]` / `::: name` whose word has no registered handler renders via the
@@ -76,7 +76,10 @@ differs by processor. The narrative below details each tier.
   carve-js and carve-rs), Bibliography (a reference list rendered from citation
   keys (§4) resolved against an external CSL-JSON source named in front-matter,
   reusing the `::: references` placeholder with mandated numeric output and
-  back-links; §6), Spoiler (the standard hidden-content role - inline
+  back-links; §6), Glossary (a `::: glossary` definition list whose terms become
+  `<dt id="gloss-{slug}">` entries that `:term[word]` links to; §7), Index
+  (invisible `:index[term]` markers collected into a sorted `::: index` list
+  with back-links to every occurrence; §8), Spoiler (the standard hidden-content role - inline
   `:spoiler[text]` → `<span class="spoiler">` and block `::: spoiler` →
   `<details class="spoiler">` disclosure; in carve-php, carve-js and carve-rs),
   Tabs, CodeGroup, Details, TableOfContents,
@@ -490,3 +493,109 @@ merge is a host concern, not pinned here.
 - Arbitrary `.csl` style rendering (the renderer-plugin point above).
 - Same-author-year disambiguation letters (`2020a` / `2020b`), inherited from
   §4.4 - the bare year is emitted.
+
+## 7. Glossary (Tier-3)
+
+Defined terms with descriptions, linked from their in-text uses to a generated
+glossary section (issue #91). Lower universality than citations, and the
+glossary section is derived content (like the table of contents or heading
+permalinks), so this is Tier-3: off by default, never in any corpus. It reuses
+existing syntax - the definition list and the `:name[…]` inline extension form -
+rather than adding a primitive.
+
+### 7.1 Syntax
+
+- A `::: glossary` block whose body is a definition list (`:: term` / `:  def`)
+  declares the glossary. Each term is one entry.
+- `:term[word]` (the core inline extension form) references a term. The link
+  target is derived from the *bracket text*, not a separate key.
+
+### 7.2 Slug
+
+- A term's id is `gloss-{slug}`, where `slug` is the heading-id slug of the
+  term's plain text with lowercasing on and ASCII folding off
+  (`slugify(text, {lowercase: true})` - the same routine §-cross-references use,
+  so `:term[HTTP]` and a `:: HTTP` entry agree on `gloss-http`). `:term[word]`
+  slugs its own bracket text the same way, so the two sides meet without an
+  explicit key.
+
+### 7.3 Rendering
+
+- The `::: glossary` block renders `<dl class="glossary">`; each term becomes
+  `<dt id="gloss-{slug}">{term}</dt>` and each definition `<dd>{def}</dd>`,
+  preserving the definition-list grouping (terms sharing one definition each get
+  their own `<dt>`). Entries render in **source order** - no sort, so the output
+  is trivially identical across implementations (alphabetizing is the author's
+  job). On a duplicate slug the first entry wins the id; later duplicates still
+  render their `<dt>`/`<dd>` but without the id.
+- `:term[word]` renders `<a href="#gloss-{slug}" class="term">{word}</a>` when
+  `slug` matches a defined term. When it matches none (resolved, but the term is
+  not in any `::: glossary`), it degrades to `<span class="term">{word}</span>` -
+  no link, nothing dropped.
+
+### 7.4 Degradation
+
+When the extension is off, `:term[word]` is the generic inline fallback
+`<span class="ext-term">word</span>` and `::: glossary` is a plain
+`<div class="glossary">` holding its literal definition list - readable either
+way, no content lost.
+
+### 7.5 Conformance (NOT corpus-pinned)
+
+Tier-3, so not in the mandatory corpus. The contract is cross-impl parity: for
+the same document the implementations produce the same `<dl>`, the same
+`gloss-{slug}` ids, and the same `:term` resolution / degradation. Each
+implementation pins this in its own suite.
+
+## 8. Index (Tier-3)
+
+Back-of-book index terms: mark occurrences in the text, collect them into a
+generated, sorted index with back-links to every occurrence (issue #91).
+Derived content like the glossary, so Tier-3, off by default, never in any
+corpus. Pairs with but is independent of the Glossary extension (§7) - enable
+either alone.
+
+### 8.1 Syntax
+
+- `:index[term]` (the core inline extension form) marks an index occurrence at
+  that point. It is an **invisible marker**: it emits no visible text, only an
+  empty `<span>` anchor target that the generated index links back to. A span
+  (not an `<a>`) is used deliberately so a marker placed inside a link label
+  never nests one anchor inside another.
+- A `::: index` block marks where the index renders (its body is normally
+  empty, like `::: references`).
+
+### 8.2 Rendering
+
+- Each `:index[term]` in the document body emits
+  `<span id="idx-{slug}-{n}" class="index-term"></span>`, where `slug` is the
+  §7.2 slug of the term and `n` is that slug's 1-based occurrence count in
+  document order. The element is empty, so nothing shows inline.
+- Only body occurrences are indexed. A marker inside deferred content - a
+  footnote definition, which the renderer may drop (unreferenced) or reorder -
+  renders **inert** (`<span class="index-term"></span>`, no id) and is not
+  listed, so a generated back-link never points at an anchor that was dropped.
+- `::: index` renders `<ul class="index">` with one `<li>` per distinct slug,
+  the list **sorted by slug in ascending Unicode-codepoint order** (equivalently
+  UTF-8 byte order - a fixed, locale-independent sort, so all implementations
+  agree). Each item is `{display} <a href="#idx-{slug}-1"
+  class="index-backref">↩</a> …`, one back-link per occurrence `1 … n`. The
+  `{display}` text is the first occurrence's literal term text (HTML-escaped).
+- If no `:index[…]` marker exists, `::: index` stays a plain
+  `<div class="index">` (nothing to collect), matching the §6.4 empty-section
+  rule.
+
+### 8.3 Degradation
+
+When the extension is off, `:index[term]` is the generic inline fallback
+`<span class="ext-index">term</span>` (the term text becomes visible - the
+marker cannot hide without its handler) and `::: index` is a plain
+`<div class="index">`. No content is dropped.
+
+### 8.4 Conformance (NOT corpus-pinned)
+
+Tier-3, not corpus-pinned. The contract is cross-impl parity: the same document
+yields the same `idx-{slug}-{n}` anchors, the same sorted `<ul>`, and the same
+back-links. Each implementation pins this in its own suite (occurrence
+anchoring, the codepoint sort, multi-occurrence back-links, and the
+no-marker / extension-off degradation).
