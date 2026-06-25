@@ -13,9 +13,18 @@ join, an SMS) is just a **payload convention**. That split - a pure
 *payload builder* in front of a *renderer* - is the shape most useful
 extensions take.
 
-The author writes:
+The author writes any of these - the type rides on the hyphenated fence info
+word (`qr-wifi`, `qr-sms`, …; bare `qr` is a URL):
 
+::: code-group
+
+````carve [URL]
+```qr
+https://example.com
+```
 ````
+
+````carve [WiFi]
 ```qr-wifi
 ssid: HomeNet
 password: hunter2
@@ -23,7 +32,27 @@ security: WPA
 ```
 ````
 
-and gets a scannable QR that joins the network.
+````carve [SMS]
+```qr-sms
+to: +15550100
+body: Running late, be there soon
+```
+````
+
+````carve [vCard]
+```qr-vcard
+name: Jane Doe
+org: ACME, Inc
+tel: +15550100
+email: jane@example.com
+url: https://example.com
+```
+````
+
+:::
+
+and gets a scannable QR for each - a link to open, a network to join, a text to
+send, a contact to save. Same extension, different payload convention (Step 1).
 
 ::: tip Tier
 Everything here is [Tier-3](./extensions#_1-feature-taxonomy): an app extension,
