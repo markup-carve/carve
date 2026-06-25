@@ -276,7 +276,10 @@ function asDefinition(kids) {
  *  (§6.3): `Family, Given (Year). Title.`, missing fields + separators omitted,
  *  trailing period when non-empty. The text is plain (HTML-escaped at render). */
 function cslToDef(e) {
-    const names = (e.author ?? []).map(formatName).filter((n) => n !== '');
+    // Real-world CSL-JSON often has a non-array `author` (string/number/object);
+    // a non-array here must not abort the whole document render (§6.3 robustness).
+    const list = Array.isArray(e.author) ? e.author : [];
+    const names = list.map(formatName).filter((n) => n !== '');
     const authors = names.join('; ');
     const year = cslYear(e.issued);
     let head = authors;
@@ -292,8 +295,8 @@ function cslToDef(e) {
         cslText += '.';
     const def = { entry: [], cslText };
     // author/year also feed author-date mode; use the first author's family.
-    const first = e.author?.[0];
-    const author = first ? (first.literal ?? first.family) : undefined;
+    const first = list[0];
+    const author = first && typeof first === 'object' ? (first.literal ?? first.family) : undefined;
     if (author !== undefined)
         def.author = author;
     if (year)
@@ -301,6 +304,10 @@ function cslToDef(e) {
     return def;
 }
 function formatName(n) {
+    // Array elements may be null / non-objects in untrusted CSL-JSON; skip them
+    // rather than dereferencing `.literal`/`.family` (would throw).
+    if (!n || typeof n !== 'object')
+        return '';
     if (n.literal)
         return n.literal;
     if (n.family && n.given)
