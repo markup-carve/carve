@@ -455,7 +455,11 @@ enabled - it reuses the same `citation-group` nodes, numbering, and
 Matches the §4 verbatim rule - no content is ever dropped:
 
 - A citation group with any key that resolves in neither source renders its
-  verbatim `[@key]` source.
+  verbatim `[@key]` source. The whole group is then literal text, so **none** of
+  its keys are cited - a key that appears only inside a verbatim group is not
+  numbered, not added to the reference list, and is not a back-link use site
+  (no orphan entry with a dangling back-ref). A key cited elsewhere in a
+  fully-resolved group is unaffected.
 - A `::: references` placeholder with no resolvable data (extension off, no
   bibliography option supplied, or every key unresolved) stays a plain
   `<div class="references">` containing whatever it literally held.
