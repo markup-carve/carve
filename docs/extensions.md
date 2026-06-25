@@ -620,25 +620,36 @@ render-stage transform.
   headings inside a blockquote** (quoted content is not the document's own
   sections - matching how heading-id assignment declines blockquote headings as
   implicit-reference targets).
-- Maintain a per-level counter. For a heading at level `L >= minLevel`: increment
-  `counter[L]`, reset every deeper level (`L+1 … 6`) to `0`, and the number is
-  `counter[minLevel] … counter[L]` joined with `.`. Headings shallower than
-  `minLevel` are not numbered and do not affect counters.
+- Headings inside a footnote definition are **not** numbered (the walk covers
+  the document body only); a `</#id>` to such a heading keeps its plain title.
+- Number gap-free with a small stack: track the current dotted number and the
+  heading level of each part. For a heading at level `L >= minLevel`, pop parts
+  deeper than `L`; if the top part is at level `L` increment it, otherwise push a
+  new `1`; the number is the parts joined with `.`. Headings shallower than
+  `minLevel` are not numbered and do not affect the stack. A skipped structural
+  level (a jump from `##` straight to `####`) therefore produces `1.1`, **not**
+  an empty `1.0.1` segment - the dotted number reflects the *nesting of numbered
+  headings*, not absolute levels.
 - `minLevel` (option, default `1`) sets the top numbered level. A document whose
   `# Title` is the doc title sets `minLevel: 2` so the first `##` is `1`.
 - A heading carrying the `unnumbered` class is skipped: it gets no number and
-  **does not advance any counter**. Deeper headings continue from the
-  surrounding counter state. The class comes from a **preceding** attribute line
-  (trailing `{…}` on a heading is literal text in Carve, not an attribute):
+  **does not advance the stack**. Deeper headings continue from the surrounding
+  state. The class comes from a **preceding** attribute line (trailing `{…}` on a
+  heading is literal text in Carve, not an attribute):
 
   ```carve
   {.unnumbered}
   ## Changelog
   ```
-- Skipped intermediate levels (a jump from `##` straight to `####`) carry the
-  shallower level's current counter as a `0` segment; this is deterministic but
-  reads oddly, so authors should not skip levels. (Documented, not clamped, so
-  every implementation produces the same string.)
+- On a duplicate (explicit) heading id, the **first** heading wins the number /
+  title used for `</#id>` rewrites, matching how id assignment picks the
+  `</#id>` target - so a rewritten label and its link destination always agree.
+  (A quoted or unnumbered first heading still wins the id though it carries no
+  number.)
+- A strictly-nested hierarchy numbers unambiguously. A *non-monotonic* one that
+  returns to a previously **skipped** level (`#` → `###` → `##`) is inherently
+  ambiguous and may reuse a number; the rule above stays deterministic, but
+  authors should nest heading levels without skips for clean numbering.
 
 ### 9.2 Heading rendering
 
