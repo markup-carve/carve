@@ -49,7 +49,7 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | Smart typography, `@mention`, `#tag`, `:emoji:` parsing | <Badge type="tip" text="core" /> | on | **yes** (§19) |
 | Citations `[@key]`, bare-URL autolinking | <Badge type="info" text="standard" /> | off | — |
 | Mention/tag → URL templates, emoji glyph map, locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
-| Mermaid / FencedRender, MathBlock, ListTable, Bibliography, Glossary, Index, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
+| Mermaid / FencedRender, MathBlock, ListTable, Bibliography, Glossary, Index, HeadingNumbers, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, SemanticSpan, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
 
 A `:name[…]` / `::: name` whose word has no registered handler renders via the
@@ -84,6 +84,9 @@ differs by processor. The narrative below details each tier.
   `<details class="spoiler">` disclosure; in carve-php, carve-js and carve-rs),
   Tabs, CodeGroup, Details, TableOfContents,
   HeadingPermalinks,
+  HeadingNumbers (auto-number sections - `<span class="section-number">1.2</span>`
+  on each heading - and rewrite auto-filled `</#id>` cross-references to
+  "Section 1.2 - Title"; opt-in, no new syntax; §9),
   HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks, SemanticSpan,
   and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
 
@@ -599,3 +602,111 @@ yields the same `idx-{slug}-{n}` anchors, the same sorted `<ul>`, and the same
 back-links. Each implementation pins this in its own suite (occurrence
 anchoring, the codepoint sort, multi-occurrence back-links, and the
 no-marker / extension-off degradation).
+
+## 9. HeadingNumbers (Tier-3)
+
+Auto-number sections and render numbered cross-references - "Section 1.2" or
+"Section 1.2 - Title" instead of the bare heading title (issue #198). Carve
+already auto-numbers figures/tables/equations via captions; this is the section
+equivalent. Numbering is a **rendering policy, not source semantics**, so it is
+Tier-3: off by default, never corpus-pinned, and adds **no new syntax** (it only
+reads existing headings and the `{.unnumbered}` class). It runs as a
+render-stage transform.
+
+### 9.1 Numbering
+
+- Walk every heading in document order, descending into containers (list items,
+  divs/admonitions, definition lists) exactly as id assignment does, but **skip
+  headings inside a blockquote** (quoted content is not the document's own
+  sections - matching how heading-id assignment declines blockquote headings as
+  implicit-reference targets).
+- Maintain a per-level counter. For a heading at level `L >= minLevel`: increment
+  `counter[L]`, reset every deeper level (`L+1 … 6`) to `0`, and the number is
+  `counter[minLevel] … counter[L]` joined with `.`. Headings shallower than
+  `minLevel` are not numbered and do not affect counters.
+- `minLevel` (option, default `1`) sets the top numbered level. A document whose
+  `# Title` is the doc title sets `minLevel: 2` so the first `##` is `1`.
+- A heading carrying the `unnumbered` class is skipped: it gets no number and
+  **does not advance any counter**. Deeper headings continue from the
+  surrounding counter state. The class comes from a **preceding** attribute line
+  (trailing `{…}` on a heading is literal text in Carve, not an attribute):
+
+  ```carve
+  {.unnumbered}
+  ## Changelog
+  ```
+- Skipped intermediate levels (a jump from `##` straight to `####`) carry the
+  shallower level's current counter as a `0` segment; this is deterministic but
+  reads oddly, so authors should not skip levels. (Documented, not clamped, so
+  every implementation produces the same string.)
+
+### 9.2 Heading rendering
+
+- A numbered heading prepends a number span inside the `<h*>`, one space before
+  the title. The id stays where Carve already puts it - on the `<section>`
+  wrapper for a top-level heading, on the `<h*>` itself for a heading nested in a
+  list/div - and is unchanged; only the span is added:
+
+  ```html
+  <section id="parsing">
+    <h2><span class="section-number">1.2</span> Parsing</h2>
+  </section>
+  ```
+
+  The span is separate so a host can restyle or hide it in CSS.
+
+### 9.3 Numbered cross-references
+
+- An **auto-filled** cross-reference is a link whose target is `#{id}` of a
+  numbered heading **and whose visible text equals that heading's title** - i.e.
+  the text Carve auto-cloned for a `</#id>` reference. A resolved `</#id>`
+  becomes an ordinary title-cloned link during `resolve()`, before any extension
+  runs, so it carries no provenance marker and is identified by this shape
+  alone. Only these are rewritten; a link with author-written text
+  (`[my words](#parsing)`) keeps its text - the "explicit text overrides" rule.
+- **Benign coincidence (defined, not a bug):** a hand-written link whose text
+  happens to equal the target's title (`[Parsing](#parsing)`) is byte-identical
+  to a resolved `</#parsing>` after `resolve()`, so it is also rewritten. This
+  is acceptable - it still points at the section and gains a correct number - and
+  it is the price of keeping HeadingNumbers a pure render-stage extension with no
+  core change. The override rule holds whenever the author's text *differs* from
+  the title, which is the whole point of writing custom text. (A future core
+  flag tagging crossref-origin links could make the distinction exact; out of
+  scope here.)
+- The rewrite is controlled by the `crossref` option:
+  - `number-title` (default): text becomes `{label} {N} - {title}` →
+    `Section 1.2 - Parsing`.
+  - `number`: text becomes `{label} {N}` → `Section 1.2`.
+  - `title`: cross-references are left untouched (numbering appears only on the
+    headings).
+- `label` (option, default `Section`) is the prefix word; set it to `§`, a
+  localized word, etc. The `href` is never changed.
+
+### 9.4 Interaction with HeadingLevelShift
+
+Numbering keys off the heading level present when it runs. To number by the
+**final** (post-shift) levels, register `headingNumbers` **after**
+`headingLevelShift` so its render-stage pass runs later. Registered before, it
+numbers by the pre-shift levels.
+
+### 9.5 Degradation
+
+When the extension is off, headings render with no number span and
+cross-references keep their title-cloned text - exactly today's behavior, so a
+document is unchanged and never broken by disabling the policy.
+
+### 9.6 Conformance (NOT corpus-pinned)
+
+Tier-3, not corpus-pinned. The contract is cross-impl parity: the same document
+and options yield the same `section-number` strings on the same headings and the
+same rewritten cross-reference text. Each implementation pins this in its own
+suite (the dotted counter incl. the level-skip and `{.unnumbered}` rules,
+`minLevel`, the three `crossref` styles, the auto-vs-explicit reference
+distinction, and extension-off degradation).
+
+### 9.7 Out of scope (impls MAY differ / future)
+
+- Appendix lettering (`A`, `B`, `A.1`) and front-matter/body or per-section
+  restart need a section-grouping marker; deferred to a follow-up.
+- Numbering figures/tables relative to sections (`Figure 2-3`) is a caption
+  concern, not this extension.
