@@ -32,6 +32,8 @@ export { lintCarve, formatLintWarnings, } from './lint.js';
 export { tabNormalize } from './tab-normalize.js';
 export { details } from './details.js';
 export { listTable } from './list-table.js';
+export { glossary } from './glossary.js';
+export { index } from './index-terms.js';
 export { citations, } from './citations.js';
 export { fencedRender, mermaid, d2, graphviz, wavedrom, abc, vegaLite, chart, presets, } from './fenced-render.js';
 export { mathBlock } from './math-block.js';

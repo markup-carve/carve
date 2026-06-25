@@ -1821,6 +1821,50 @@ valid extension name (grammar `extension_name`).
 
 :::
 
+An `identifier` must start with a letter or `_`, so a digit-first name is not a valid extension. `:1[x]` stays literal text; `:a1[x]` (a digit after the first letter) is a valid extension and renders as a generic span.
+
+::: compare
+
+```carve
+:1[x]
+:a1[x]
+```
+
+```html
+<p>:1[x]
+<span class="ext-a1">x</span></p>
+```
+
+:::
+
+The `extension_content` runs up to the **first** `]` (`extension_content = {character - ']'}`); a nested `]` therefore closes the extension early and the remainder is literal text.
+
+::: compare
+
+```carve
+:foo[a [b] c]
+```
+
+```html
+<p><span class="ext-foo">a [b</span> c]</p>
+```
+
+:::
+
+An authored `{.class}` on a generic inline extension merges into the single `class` attribute — the structural `ext-NAME` class comes first, then the authored classes. There is never a second `class` attribute.
+
+::: compare
+
+```carve
+:foo[a]{.cls}
+```
+
+```html
+<p><span class="ext-foo cls">a</span></p>
+```
+
+:::
+
 ## Attributes
 
 ::: compare
@@ -2569,6 +2613,50 @@ an inline link.
 
 :::
 
+A backslash-escaped quote inside the title is a literal quote, exactly as in an inline link title (`link_title`). The escaped `\"` does not end the quoted run; it renders as a literal `"` (`&quot;`) in the `title` attribute.
+
+::: compare
+
+```carve
+[x][y]
+
+[y]: /u "a\"b\"c"
+```
+
+```html
+<p><a href="/u" title="a&quot;b&quot;c">x</a></p>
+```
+
+:::
+
+A reference definition requires a non-empty destination (grammar `reference_definition`). A `[r]:` with nothing after the colon — or only trailing whitespace — is **not** a definition; the line stays literal text.
+
+::: compare
+
+```carve
+[r]:
+```
+
+```html
+<p>[r]:</p>
+```
+
+:::
+
+Trailing whitespace after the colon does not create a destination either, so it is still literal.
+
+::: compare
+
+```carve
+[r]:   
+```
+
+```html
+<p>[r]:</p>
+```
+
+:::
+
 ## Collapsed reference link
 
 `[text][]` uses the link text as the label.
@@ -2655,6 +2743,70 @@ a="b"
 -“q”
 /“q”
 (“q”)</p>
+```
+
+:::
+
+When a quote does **not** follow one of those opening contexts it closes instead — so a quote right after a closing bracket (`}` `)` `]`), after sentence punctuation (`.` `,`), or mid-word always becomes a right/closing quote. An empty `""` opens both marks (the second `"` follows a `"`, which is not an opening context, yet there is nothing to its right to close against, so it too renders as an opening quote).
+
+::: compare
+
+```carve
+}"q"
+)"q"
+]"q"
+."q"
+,"q"
+a"b
+""
+```
+
+```html
+<p>}”q”
+)”q”
+]”q”
+.”q”
+,”q”
+a”b
+””</p>
+```
+
+:::
+
+The same opening set applies to the single quote `'`. After `(`, `[`, `=`, `:`, `-`, or `/` a single quote opens (`‘`); the matching `'` then closes (`’`).
+
+::: compare
+
+```carve
+('q')
+['q']
+='q'
+:'q'
+-'q'
+/'q'
+```
+
+```html
+<p>(‘q’)
+[‘q’]
+=‘q’
+:‘q’
+-‘q’
+/‘q’</p>
+```
+
+:::
+
+A single quote after `{` opens too — shown on its own line because a trailing `{…}` would otherwise be read as an attribute block.
+
+::: compare
+
+```carve
+{'q'}
+```
+
+```html
+<p>{‘q’}</p>
 ```
 
 :::
@@ -3513,6 +3665,34 @@ whole run is not an autolink and renders as fully escaped literal text (grammar
 
 ```html
 <p>&lt;http://a.com/&lt;script&gt;&gt;</p>
+```
+
+:::
+
+`url_char` also excludes `"` `\` `` ` `` `{` `}` `|` `^`, so a double quote inside the brackets breaks the autolink. The whole run is literal text; the straight quotes additionally pick up smart-quote typography.
+
+::: compare
+
+```carve
+<http://a.com/"q">
+```
+
+```html
+<p>&lt;http://a.com/“q”&gt;</p>
+```
+
+:::
+
+A clean URL with only `url_char`s autolinks normally, query string and all.
+
+::: compare
+
+```carve
+<http://a.com/p?x=1>
+```
+
+```html
+<p><a href="http://a.com/p?x=1">http://a.com/p?x=1</a></p>
 ```
 
 :::

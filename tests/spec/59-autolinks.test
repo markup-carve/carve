@@ -13,6 +13,18 @@ Autolinks
 ```
 
 ```
+<http://a.com/"q">
+.
+<p>&lt;http://a.com/“q”&gt;</p>
+```
+
+```
+<http://a.com/p?x=1>
+.
+<p><a href="http://a.com/p?x=1">http://a.com/p?x=1</a></p>
+```
+
+```
 <http://a.com/>
 .
 <p><a href="http://a.com/">http://a.com/</a></p>
