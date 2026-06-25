@@ -765,12 +765,17 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination, 
    footnote-definition precedence and holds in core whether or not the citation
    extension is enabled, so a short entry like `[@a]: A.` is not mis-claimed as
    a link definition. *)
-(* KNOWN DIVERGENCE (carve-js, the canonical oracle): although a reference
-   definition reuses `link_title`, the ref-def title slot does NOT yet apply
-   the backslash-escape rule above -- the title stops at the first raw quote
-   (`[r]: /u "a \" b"` keeps `a \` as the title). The escape is honored only
-   in the inline-link title. The examples corpus therefore pins the escaped
-   quote with the inline form (decision D), not the ref-def form. *)
+(* The reference-definition title reuses `link_title`, INCLUDING the
+   backslash-escape rule above: a `\"` inside the quoted run is a literal
+   quote and does not end the title (`[y]: /u "a\"b\"c"` -> title
+   `a"b"c`, emitted as `title="a&quot;b&quot;c"`). This matches the
+   inline-link title; the earlier carve-js divergence (ref-def title
+   stopping at the first raw quote) was fixed in the canonical oracle, and
+   the examples corpus now pins the ref-def escaped-quote form too. *)
+(* A reference definition requires a NON-EMPTY `link_destination` (one or
+   more `url_char`s after the `':' space`). A bare `[r]:` -- with nothing
+   after the colon, or only trailing whitespace -- does NOT form a
+   definition; the line stays literal paragraph text. *)
 
 (* --- Inline Spans --- *)
 (* A bracketed inline run immediately followed by an attribute block
@@ -812,6 +817,11 @@ scheme = letter, {letter | digit | '+' | '-' | '.'} ;  (* 1+ chars; single-lette
 url_char = letter | digit | '-' | '.' | '_' | '~' | ':' | '/' | '?'
          | '#' | '[' | ']' | '@' | '!' | '$' | '&' | "'" | '(' | ')'
          | '*' | '+' | ',' | ';' | '=' | '%' ;
+(* `url_char` therefore EXCLUDES `"`, `\`, `` ` ``, `{`, `}`, `|`, `^`
+   (and `<` / `>`). Any of these inside `<...>` breaks the autolink: the
+   whole run is not an autolink and renders as escaped literal text --
+   `<http://a.com/"q">` is literal (the straight quotes additionally pick
+   up smart-quote typography). *)
 
 (* --- Images --- *)
 image = '!', '[', alt_text, ']', '(', image_source, [image_title], ')', [attributes] ;
@@ -989,8 +999,17 @@ extension_inline = ':', extension_name, '[', extension_content, ']', [attributes
 extension_name = identifier ;
 (* `identifier` already permits a leading `_`, so `_` is a valid extension
    name: `:_[x]` -> `<span class="ext-_">x</span>` (an unrecognized name
-   falls back to a generic `<span class="ext-NAME">`). *)
+   falls back to a generic `<span class="ext-NAME">`). It MUST start with a
+   letter or `_`, so a digit-first name is NOT an extension: `:1[x]` stays
+   literal text, while `:a1[x]` (digit only after the first letter) is valid.
+   On a GENERIC extension an authored `{.class}` MERGES into the single
+   `class` attribute -- the structural `ext-NAME` class comes FIRST, then the
+   authored classes (`:foo[a]{.cls}` -> `class="ext-foo cls"`); never two
+   `class` attributes. *)
 extension_content = {character - ']'} ;
+(* The content runs up to the FIRST `]`; a nested `]` closes the extension
+   early and the remainder is literal: `:foo[a [b] c]` ->
+   `<span class="ext-foo">a [b</span> c]`. *)
 
 (* --- Editorial Markup (CriticMarkup-inspired) --- *)
 editorial_markup = addition | deletion | substitution | editorial_comment ;
@@ -1051,7 +1070,12 @@ smart_quote = '"' | "'" ;
    U+00A0), OR one of the opening/operator characters `( [ { = : - /`;
    OTHERWISE it is a RIGHT (closing) quote. So an apostrophe (`don't`)
    is a right single quote, while `a="b"`, `:"q"`, `-"q"`, `/"q"` and
-   `("q")` all OPEN the first quote. An unpaired quote still converts;
+   `("q")` all OPEN the first quote. The SAME opening set applies to BOTH
+   `"` and `'` (e.g. `('q')` -> `(‘q’)`, `{'q'}` -> `{‘q’}`). Outside that
+   set the quote CLOSES: after a closing bracket (`}` `)` `]`), after
+   sentence punctuation (`.` `,`), or mid-word (`a"b`) it is a right quote.
+   An unpaired quote still converts; an empty `""` opens both marks (the
+   second `"` follows a non-opening `"` but has nothing to close against);
    the substitution never spans or pairs across other inline constructs.
    `\"` / `\'` escape to the straight character (PART 9 §8). *)
 

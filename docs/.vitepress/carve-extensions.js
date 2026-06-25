@@ -73,6 +73,8 @@ const EXCLUDED = {
   headingLevelShift: 'needs a shift-amount option',
   headingReference: 'needs config / overlaps core cross-references',
   tabNormalize: 'invisible whitespace transform, nothing to show',
+  glossary: 'needs a ::: glossary definition block plus :term[…] uses, nothing to show zero-config',
+  index: 'needs :index[…] markers plus a ::: index block, nothing to show zero-config',
 
   // 3. FencedRender presets with no client library loaded in the docs.
   d2: 'needs the D2 client library, not loaded in the docs',

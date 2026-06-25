@@ -138,7 +138,10 @@ const RE_ABBR_DEF = /^\*\[([A-Z][A-Z0-9]*)\]:\s+(.+)$/;
 // a following quoted run is the title. Anything else after the destination is
 // ignored (not a valid title), so the definition still registers with the bare
 // token as its destination -- it is NOT rejected. carve-rs matches this.
-const RE_LINK_DEF = /^[^\S ]*\[(?!@)([^\]]+)\]:[^\S ]+(\S+)(?:\s+(?:"([^"]*)"|'([^']*)'))?.*$/;
+// The title groups allow a backslash-escaped quote inside (`"a\"b"`) so the run
+// does not truncate at the first inner quote; the captured value is then run
+// through unescapeAttrValue at consumption, matching the inline title path.
+const RE_LINK_DEF = /^[^\S ]*\[(?!@)([^\]]+)\]:[^\S ]+(\S+)(?:\s+(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'))?.*$/;
 // Footnote definition `[^label]: body`. Tested before RE_LINK_DEF, which
 // would otherwise capture `^label` as a link reference label.
 const RE_FOOTNOTE_DEF = /^\[\^([^\]]+)\]:\s+(.+)$/;
@@ -505,7 +508,7 @@ function collectLinkDefs(lexer) {
             const def = { href: m[2] };
             const title = m[3] ?? m[4];
             if (title !== undefined)
-                def.title = title;
+                def.title = unescapeAttrValue(title);
             lexer.linkDefs.set(normalizeRefLabel(m[1]), def);
             continue;
         }
@@ -1506,6 +1509,7 @@ function parseBlockQuote(lexer) {
         // plus a sibling list. A caption `^ …` attaches to the quote.
         if (isBlankLine(ln) ||
             RE_CAPTION.test(ln) ||
+            colonFenceShapeEndsLazyContinuation(ln) ||
             startsInterruptingBlock(lexer)) {
             break;
         }
@@ -1725,19 +1729,18 @@ function lineOpensBlock(line) {
         RE_LINE_BLOCK_OPEN.test(line) ||
         RE_HARDBREAKS_OPEN.test(line));
 }
-function lazyContinuationEndsList(line, lexer) {
+function lazyContinuationEndsList(line) {
     return (RE_RAW_FENCE.test(line) ||
         RE_FENCE.test(line) ||
         RE_COMMENT_BLOCK.test(line) ||
-        // A typed admonition ends the list only when it actually opens one — i.e.
-        // a closer exists ahead (same guard as the block dispatch + the bare div).
-        // An unterminated `::: note` is not a block, so it folds as lazy text.
-        (RE_ADMONITION_OPEN.test(line) &&
-            !RE_ADMONITION_CLOSE.test(line) &&
-            divHasCloser(lexer)) ||
-        (RE_DIV_OPEN.test(line) && divHasCloser(lexer)) ||
-        (RE_LINE_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer)) ||
-        (RE_HARDBREAKS_OPEN.test(line) && hardBreaksHasCloser(lexer)) ||
+        // A flush-left colon-fence shaped line ends list lazy continuation
+        // regardless of outer-stream closer lookahead. If the line belongs to the
+        // item, it must be indented and parsed by the item sub-lexer; otherwise a
+        // later flush-left `:::` can be incorrectly pulled in as the item's closer.
+        (RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line)) ||
+        RE_DIV_OPEN.test(line) ||
+        RE_LINE_BLOCK_OPEN.test(line) ||
+        RE_HARDBREAKS_OPEN.test(line) ||
         RE_ABBR_DEF.test(line) ||
         RE_FOOTNOTE_DEF.test(line) ||
         RE_LINK_DEF.test(line) ||
@@ -1751,6 +1754,12 @@ function lazyContinuationEndsList(line, lexer) {
         extractItemAttr(line) !== null ||
         isTableRow(line) ||
         isBlockImageLine(line));
+}
+function colonFenceShapeEndsLazyContinuation(line) {
+    return ((RE_ADMONITION_OPEN.test(line) && !RE_ADMONITION_CLOSE.test(line)) ||
+        RE_DIV_OPEN.test(line) ||
+        RE_LINE_BLOCK_OPEN.test(line) ||
+        RE_HARDBREAKS_OPEN.test(line));
 }
 /**
  * Track verbatim/paragraph state across a list item's collected inner lines so a
@@ -2119,7 +2128,7 @@ function parseList(lexer) {
                 // an inline-verbatim run that is part of the paragraph, so a dedented
                 // line folds into it (matching the §10 closer-lookahead rule).
                 (((lazyState.lazyFoldable || lazyState.inFence) &&
-                    !lazyContinuationEndsList(l, lexer)) ||
+                    !lazyContinuationEndsList(l)) ||
                     // A list marker indented past the base column but BELOW the content
                     // column folds into the lead text rather than ending the list. Under
                     // symmetric §10 no list marker interrupts a paragraph, so on the
@@ -2737,12 +2746,13 @@ const RE_RAW_INLINE = /^\{=([a-zA-Z][\w-]*)\}/;
 // Emoji shortcode `:name:` (after extension, which needs `[`).
 const RE_EMOJI = /^:([a-zA-Z0-9][\w+-]*):/;
 // Autolink (grammar.ebnf:775,776,791,792,1139). Two alternatives:
-//   url_autolink   = scheme ':' {url_char}+   -- url_char excludes `<`/`>`, so
-//                    a body `<` makes the construct invalid (whole-literal).
+//   url_autolink   = scheme ':' {url_char}+   -- url_char excludes `<`/`>` plus
+//                    `"` `\` `` ` `` `{` `}` `|` `^`, so a body holding any of
+//                    those makes the construct invalid (whole-literal).
 //   email_autolink = {email_char}+ '@' {email_char}+ '.' {letter}+ -- the
 //                    `.TLD` is MANDATORY and email_char excludes `:`/`@`, so
 //                    `<a@b>` (no TLD) and `<x@y:z>` are not autolinks.
-const RE_AUTOLINK = /^<([a-zA-Z][a-zA-Z0-9+.\-]*:[^>\s<]+|[A-Za-z0-9._+\-]+@[A-Za-z0-9._+\-]+\.[A-Za-z]+)>/;
+const RE_AUTOLINK = /^<([a-zA-Z][a-zA-Z0-9+.\-]*:[^>\s<"\\`{}|^]+|[A-Za-z0-9._+\-]+@[A-Za-z0-9._+\-]+\.[A-Za-z]+)>/;
 const RE_CROSSREF = /^<\/#([^>\s]+)>/;
 const RE_INLINE_ATTR = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\}/;
 // Tail patterns parsed after a `[…]` (or `![…]`) whose close bracket was

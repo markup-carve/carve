@@ -17,3 +17,23 @@ Press :kbd[Ctrl+C] to copy.
 .
 <p><span class="ext-_">x</span></p>
 ```
+
+```
+:1[x]
+:a1[x]
+.
+<p>:1[x]
+<span class="ext-a1">x</span></p>
+```
+
+```
+:foo[a [b] c]
+.
+<p><span class="ext-foo">a [b</span> c]</p>
+```
+
+```
+:foo[a]{.cls}
+.
+<p><span class="ext-foo cls">a</span></p>
+```
