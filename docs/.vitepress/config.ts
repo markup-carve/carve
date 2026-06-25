@@ -216,6 +216,7 @@ export default defineConfig({
               { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
               { text: 'Validation', link: '/validation' },
               { text: 'Extensions Contract', link: '/extensions' },
+              { text: 'Writing an Extension (QR case study)', link: '/extension-tutorial' },
               { text: 'Profiles Contract', link: '/profiles' },
               { text: 'Edge Cases', link: '/edge-cases' },
             ],

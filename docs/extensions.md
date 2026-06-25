@@ -6,6 +6,12 @@ authority for Tier-1 output; the optional Tier-2 corpus
 This document defines the feature taxonomy and the extension mechanism every
 implementation realizes.
 
+::: tip Hands-on
+For a worked, end-to-end walkthrough of building a Tier-3 extension (a `qr`
+fenced block, in both carve-js and carve-php), see
+[Writing an extension: a QR-code case study](./extension-tutorial).
+:::
+
 ## 1. Feature taxonomy
 
 | Tier | Definition | Default | Conformance |
