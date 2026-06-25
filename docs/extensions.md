@@ -50,7 +50,7 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | Citations `[@key]`, bare-URL autolinking | <Badge type="info" text="standard" /> | off | — |
 | Mention/tag → URL templates, emoji glyph map, locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
 | Mermaid / FencedRender, MathBlock, ListTable, Bibliography, Glossary, Index, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
-| TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, SemanticSpan, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
+| TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, SemanticSpan, ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
 
 A `:name[…]` / `::: name` whose word has no registered handler renders via the
 generic fallback (`<span>` / `<div class="name">`), so a document using an
@@ -85,6 +85,8 @@ differs by processor. The narrative below details each tier.
   Tabs, CodeGroup, Details, TableOfContents,
   HeadingPermalinks,
   HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks, SemanticSpan,
+  ColorSwatch (inline `:color[value]` -> a validated color chip; carve-php,
+  carve-js and carve-rs — see the [extension tutorial](./extension-tutorial)),
   and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
 
   `Details` is a pure renderer extension over the existing `:::details`
