@@ -475,11 +475,15 @@ function allChildNodes(node) {
     if (node.type === 'definition-list') {
         const out = [];
         const items = node['items'] ?? [];
+        // Non-spread push throughout: term/def/caption/child arrays can be
+        // unbounded, so `push(...arr)` risks a call-stack overflow on large input.
         for (const item of items) {
             for (const term of item.terms)
-                out.push(...term);
+                for (const n of term)
+                    out.push(n);
             for (const def of item.definitions)
-                out.push(...def);
+                for (const n of def)
+                    out.push(n);
         }
         return out;
     }
@@ -490,12 +494,14 @@ function allChildNodes(node) {
             out.push(target);
         const caption = node['caption'];
         if (caption)
-            out.push(...caption);
+            for (const n of caption)
+                out.push(n);
         return out;
     }
     const out = [];
     for (const { list } of childArrays(node))
-        out.push(...list);
+        for (const n of list)
+            out.push(n);
     return out;
 }
 /** Build text nodes from content, converting `\n` to hard breaks. */

@@ -743,13 +743,20 @@ link_destination = {(url_char - ')') | unicode_url_char}+ ;
    rule and NO escape inside the destination (`[x](http://a/b(c))` links to
    `http://a/b(c` and leaves the second `)` literal) -- percent-encode a
    literal `)` as `%29`. There is NO angle-bracket-wrapped destination
-   form. *)
+   form. A newline counts as whitespace, so it ENDS the destination: a
+   `(` whose run reaches the end of the line without a closing `)` is not
+   a link and stays literal (the `[t](url` / `more)` two-line case). *)
 unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
 (* Titles accept double OR single quotes -- a deliberate enhancement
    over djot (which has no single-quote titles; it would fold `'...'`
    into the URL). The non-delimiting quote may appear inside the title. *)
-link_title = space, ('"', {character - '"'}, '"')
-           | space, ("'", {character - "'"}, "'") ;
+(* A backslash-escaped delimiter inside the title is a literal quote
+   (CommonMark-style): `\"` in a "-title and `\'` in a '-title are kept
+   as the literal quote character and do NOT end the title. This is
+   honored for the INLINE-link title (`[t](/url "ti\"tle")` -> title
+   `ti"tle`); see the note at `reference_definition` for the ref-def slot. *)
+link_title = space, ('"', {('\', '"') | (character - '"')}, '"')
+           | space, ("'", {('\', "'") | (character - "'")}, "'") ;
 
 reference_label = (character - ']' - '@'), {character - ']'} ;
 reference_definition = '[', reference_label, ']', ':', space, link_destination, [link_title], newline ;
@@ -758,6 +765,12 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination, 
    footnote-definition precedence and holds in core whether or not the citation
    extension is enabled, so a short entry like `[@a]: A.` is not mis-claimed as
    a link definition. *)
+(* KNOWN DIVERGENCE (carve-js, the canonical oracle): although a reference
+   definition reuses `link_title`, the ref-def title slot does NOT yet apply
+   the backslash-escape rule above -- the title stops at the first raw quote
+   (`[r]: /u "a \" b"` keeps `a \` as the title). The escape is honored only
+   in the inline-link title. The examples corpus therefore pins the escaped
+   quote with the inline form (decision D), not the ref-def form. *)
 
 (* --- Inline Spans --- *)
 (* A bracketed inline run immediately followed by an attribute block
@@ -773,6 +786,13 @@ autolink = '<', (url_autolink | email_autolink), '>', [attributes] ;
    -> `<a href="https://example.com" class="ext">https://example.com</a>`.
    Same slot as every other inline carrier; both reference impls agree. *)
 url_autolink = scheme, ':', {url_char}+ ;
+(* The autolink body is built from `url_char` only; `<` and `>` are NOT
+   url_chars, so a `<` inside the brackets cannot be part of the body --
+   `<http://a.com/<script>>` is not an autolink and renders as the fully
+   escaped literal text. *)
+(* The trailing `.`, {letter}+ (TLD) is MANDATORY for an email autolink:
+   `<a@b.com>` is a mailto link, but `<a@b>` (no dot+TLD) and `<x@y:z>`
+   (`:` is not an email_char) are NOT email autolinks and stay literal. *)
 email_autolink = {email_char}+, '@', {email_char}+, '.', {letter}+ ;
 
 auto_text_link = "</#", crossref_id, '>' ;  (* cross-reference with auto text *)
@@ -967,6 +987,9 @@ citation_definition = '[@', citation_key, "]:", space, [attributes], inline_cont
 (* --- Extensions --- *)
 extension_inline = ':', extension_name, '[', extension_content, ']', [attributes] ;
 extension_name = identifier ;
+(* `identifier` already permits a leading `_`, so `_` is a valid extension
+   name: `:_[x]` -> `<span class="ext-_">x</span>` (an unrecognized name
+   falls back to a generic `<span class="ext-NAME">`). *)
 extension_content = {character - ']'} ;
 
 (* --- Editorial Markup (CriticMarkup-inspired) --- *)
@@ -1023,12 +1046,14 @@ ellipsis = "..." ;    (* → … *)
 smart_quote = '"' | "'" ;
 (* Smart quotes are PER-CHARACTER contextual substitution, NOT a paired
    span: each `"` / `'` is independently mapped to a left or right
-   typographic quote by its FLANKING characters -- preceded by whitespace
-   or start-of-content -> left (opening) quote; otherwise -> right
-   (closing) quote. An apostrophe (`don't`) is therefore a right single
-   quote; an unpaired quote still converts; the substitution never spans
-   or pairs across other inline constructs. `\"` / `\'` escape to the
-   straight character (PART 9 §8). *)
+   typographic quote by its PRECEDING character. It is a LEFT (opening)
+   quote when preceded by start-of-content, whitespace (incl. NBSP
+   U+00A0), OR one of the opening/operator characters `( [ { = : - /`;
+   OTHERWISE it is a RIGHT (closing) quote. So an apostrophe (`don't`)
+   is a right single quote, while `a="b"`, `:"q"`, `-"q"`, `/"q"` and
+   `("q")` all OPEN the first quote. An unpaired quote still converts;
+   the substitution never spans or pairs across other inline constructs.
+   `\"` / `\'` escape to the straight character (PART 9 §8). *)
 
 arrow = "->" | "<-" | "<->" | "=>" ;
 comparison = "!=" | "<=" | ">=" ;

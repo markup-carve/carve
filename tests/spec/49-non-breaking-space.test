@@ -11,3 +11,9 @@ say\ 'twas a fine\ "day"
 .
 <p>say&nbsp;‘twas a fine&nbsp;“day”</p>
 ```
+
+```
+`a b`
+.
+<p><code>a&nbsp;b</code></p>
+```

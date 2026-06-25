@@ -5,3 +5,11 @@ Link destination stops at the first parenthesis
 .
 <p><a href="http://a/b(c">x</a>)</p>
 ```
+
+```
+[t](url
+more)
+.
+<p>[t](url
+more)</p>
+```

@@ -5,3 +5,15 @@ Press :kbd[Ctrl+C] to copy.
 .
 <p>Press <kbd>Ctrl+C</kbd> to copy.</p>
 ```
+
+```
+:foo[bar]
+.
+<p><span class="ext-foo">bar</span></p>
+```
+
+```
+:_[x]
+.
+<p><span class="ext-_">x</span></p>
+```

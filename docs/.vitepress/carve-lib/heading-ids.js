@@ -566,7 +566,11 @@ export function resolveHeadingIds(doc, opts = {}) {
                 case 'link': {
                     const children = enforceNoNesting(n.children, true);
                     if (insideLink) {
-                        out.push(...children);
+                        // Non-spread push: `children` may be unbounded (a large link label),
+                        // and `push(...children)` would overflow V8's call-stack argument
+                        // limit (~65k) on adversarial input.
+                        for (const c of children)
+                            out.push(c);
                     }
                     else {
                         n.children = children;
@@ -616,7 +620,15 @@ export function resolveHeadingIds(doc, opts = {}) {
         return out;
     };
     const applyNoNesting = (xs) => {
-        xs.splice(0, xs.length, ...enforceNoNesting(xs, false));
+        // In-place rewrite WITHOUT spread: `enforceNoNesting` can return a very
+        // large array (e.g. a paragraph with ~65k inline nodes). Spreading it into
+        // `splice(0, len, ...arr)` overflows V8's call-stack argument limit and
+        // throws RangeError, crashing every public API (resolveHeadingIds runs
+        // unconditionally). Mutate length + push instead.
+        const next = enforceNoNesting(xs, false);
+        xs.length = 0;
+        for (const n of next)
+            xs.push(n);
     };
     for (const block of doc.children)
         walkBlock(block, applyNoNesting);

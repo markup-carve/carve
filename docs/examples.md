@@ -405,6 +405,20 @@ Single-quoted titles work too (a deliberate enhancement over djot). A literal ap
 
 :::
 
+A backslash-escaped delimiter inside a title is a literal quote (CommonMark-style), so `\"` does not end a double-quoted title — it renders as a literal `"` (`&quot;`) in the `title` attribute (grammar `link_title`).
+
+::: compare
+
+```carve
+[t](/url "ti\"tle")
+```
+
+```html
+<p><a href="/url" title="ti&quot;tle">t</a></p>
+```
+
+:::
+
 Autolinks use angle brackets and produce a self-titled anchor; bare email addresses get the `mailto:` scheme.
 
 ::: compare
@@ -1778,6 +1792,35 @@ Press :kbd[Ctrl+C] to copy.
 
 :::
 
+An unrecognized extension name falls back to a generic `<span class="ext-NAME">`.
+
+::: compare
+
+```carve
+:foo[bar]
+```
+
+```html
+<p><span class="ext-foo">bar</span></p>
+```
+
+:::
+
+The extension name is an `identifier`, which permits a leading `_`, so `_` is a
+valid extension name (grammar `extension_name`).
+
+::: compare
+
+```carve
+:_[x]
+```
+
+```html
+<p><span class="ext-_">x</span></p>
+```
+
+:::
+
 ## Attributes
 
 ::: compare
@@ -2491,6 +2534,41 @@ See [it][ref].
 
 :::
 
+A reference definition shares the `link_destination` rule, so its URL ends at
+the **first whitespace**: everything after the first space is ignored (it is not
+a title unless it is a quoted run). So `[r]: a b c` resolves the label to `a`.
+
+::: compare
+
+```carve
+[r][r]
+
+[r]: a b c
+```
+
+```html
+<p><a href="a">r</a></p>
+```
+
+:::
+
+A quoted run after the destination is still parsed as the title, exactly as in
+an inline link.
+
+::: compare
+
+```carve
+[r][r]
+
+[r]: /url "Title"
+```
+
+```html
+<p><a href="/url" title="Title">r</a></p>
+```
+
+:::
+
 ## Collapsed reference link
 
 `[text][]` uses the link text as the label.
@@ -2555,6 +2633,28 @@ He paused -- then ran --- fast... "Stop!" it's over.
 
 ```html
 <p>He paused – then ran — fast… “Stop!” it’s over.</p>
+```
+
+:::
+
+A quote opens (left/opening quote) when it follows start-of-content, whitespace (incl. NBSP), or one of the opening/operator characters `( [ { = : - /`; otherwise it closes. So a quote right after `=`, `:`, `-`, `/`, or an opening paren still opens the first quote (grammar `smart_quote`).
+
+::: compare
+
+```carve
+a="b"
+:"q"
+-"q"
+/"q"
+("q")
+```
+
+```html
+<p>a=“b”
+:“q”
+-“q”
+/“q”
+(“q”)</p>
 ```
 
 :::
@@ -3120,6 +3220,22 @@ say\ 'twas a fine\ "day"
 
 :::
 
+The non-breaking space U+00A0 serializes as `&nbsp;` in text and code-span
+output. (In a heading `id` it is kept as the raw byte instead - ids are not
+entity-encoded; see *Heading IDs*.)
+
+::: compare
+
+```carve
+`a b`
+```
+
+```html
+<p><code>a&nbsp;b</code></p>
+```
+
+:::
+
 ## Raw inline
 
 A verbatim span tagged `{=format}` passes through when the format
@@ -3380,6 +3496,53 @@ email gets a `mailto:` scheme.
 
 ```html
 <p><a href="https://example.com">https://example.com</a> and <a href="mailto:a@b.com">a@b.com</a></p>
+```
+
+:::
+
+The autolink body is built from URL characters only; `<` and `>` are not URL
+characters, so a `<` inside the angle brackets cannot be part of the body. The
+whole run is not an autolink and renders as fully escaped literal text (grammar
+`url_autolink` / `url_char`).
+
+::: compare
+
+```carve
+<http://a.com/<script>>
+```
+
+```html
+<p>&lt;http://a.com/&lt;script&gt;&gt;</p>
+```
+
+:::
+
+A well-formed `<url>` still autolinks normally.
+
+::: compare
+
+```carve
+<http://a.com/>
+```
+
+```html
+<p><a href="http://a.com/">http://a.com/</a></p>
+```
+
+:::
+
+An email autolink requires a trailing dot and TLD (grammar `email_autolink`):
+`<a@b.com>` becomes a `mailto:` link, but `<a@b>` (no dot+TLD) and `<x@y:z>`
+(`:` is not an email character) are not email autolinks and stay literal.
+
+::: compare
+
+```carve
+<a@b> <a@b.com> <x@y:z>
+```
+
+```html
+<p>&lt;a@b&gt; <a href="mailto:a@b.com">a@b.com</a> &lt;x@y:z&gt;</p>
 ```
 
 :::
@@ -6360,6 +6523,24 @@ the end of the line.
 
 ```html
 <p><a href="http://a/b(c">x</a>)</p>
+```
+
+:::
+
+A newline counts as whitespace, so it ends the destination too: an unclosed `(`
+whose run reaches the end of the line is not a link. The `(` and the following
+text stay literal across the line break (grammar `link_destination`).
+
+::: compare
+
+```carve
+[t](url
+more)
+```
+
+```html
+<p>[t](url
+more)</p>
 ```
 
 :::

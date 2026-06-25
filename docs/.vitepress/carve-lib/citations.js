@@ -20,9 +20,14 @@ let lastBracketMap = {};
  */
 export function citations(opts = {}) {
     const mode = opts.mode ?? 'numbered';
+    // A supplied pool (even empty) activates the Tier-3 Bibliography behavior:
+    // external resolution + back-links (#199).
+    const hasBib = opts.bibliography !== undefined;
+    const pool = opts.bibliography ?? [];
     const defs = new Map();
     const numbers = new Map();
     const order = []; // cited+defined keys in first-citation order
+    const uses = new Map(); // per-key use-site count (back-links)
     return {
         name: 'citations',
         matchInline: matchCitation,
@@ -32,21 +37,38 @@ export function citations(opts = {}) {
             defs.clear();
             numbers.clear();
             order.length = 0;
+            uses.clear();
             doc.children = collectDefs(doc.children, defs);
+            // Seed the CSL-JSON pool: in-document defs win on collision (§6.2).
+            for (const e of pool) {
+                if (e && typeof e.id === 'string' && !defs.has(e.id))
+                    defs.set(e.id, cslToDef(e));
+            }
             return doc;
         },
         beforeRender(doc) {
-            // Number cited+defined keys in document order; collect them.
+            // Number cited+defined keys in document order; collect them. When a
+            // bibliography pool is active, also assign per-key use-site indexes for
+            // back-links - but only for groups that fully resolve (a group with any
+            // undefined key renders verbatim and is not a use site, §6.4).
             for (const block of doc.children)
                 walkCitationGroups(block, (g) => {
+                    // A group with any unresolved key renders verbatim (§6.4): its keys are
+                    // literal text, not citations, so they are neither numbered, listed,
+                    // nor a back-link use site. Skip the whole group.
+                    if (!g.items.every((it) => defs.has(it.key)))
+                        return;
                     for (const item of g.items) {
-                        if (!defs.has(item.key))
-                            continue;
                         if (!numbers.has(item.key)) {
                             numbers.set(item.key, numbers.size + 1);
                             order.push(item.key);
                         }
                         item.number = numbers.get(item.key);
+                        if (hasBib) {
+                            const n = (uses.get(item.key) ?? 0) + 1;
+                            uses.set(item.key, n);
+                            item.useIndex = n;
+                        }
                     }
                 });
             if (order.length === 0)
@@ -68,13 +90,13 @@ export function citations(opts = {}) {
             return doc;
         },
         inlineRenderers: {
-            'citation-group': (node, ctx) => renderGroup(node, ctx, mode, numbers, defs),
+            'citation-group': (node, ctx) => renderGroup(node, ctx, mode, numbers, defs, hasBib),
         },
         blockRenderers: {
             div: (node, ctx) => {
                 const kv = node.attrs?.keyValues;
                 if (kv && REFS_MARK in kv)
-                    return renderRefsList(ctx, mode, order, defs);
+                    return renderRefsList(ctx, mode, order, defs, uses, hasBib);
                 return undefined;
             },
         },
@@ -196,7 +218,9 @@ function joinWithSoftBreaks(lines) {
     lines.forEach((line, i) => {
         if (i > 0)
             out.push({ type: 'soft-break' });
-        out.push(...line);
+        // Non-spread push: a single soft-break-delimited segment can be unbounded.
+        for (const n of line)
+            out.push(n);
     });
     return out;
 }
@@ -248,29 +272,72 @@ function asDefinition(kids) {
     return { key: it.key, value };
 }
 // ----- render ---------------------------------------------------------------
-function renderGroup(node, ctx, mode, numbers, defs) {
+/** Build a `Def` from a CSL-JSON entry using the minimal fixed template
+ *  (§6.3): `Family, Given (Year). Title.`, missing fields + separators omitted,
+ *  trailing period when non-empty. The text is plain (HTML-escaped at render). */
+function cslToDef(e) {
+    const names = (e.author ?? []).map(formatName).filter((n) => n !== '');
+    const authors = names.join('; ');
+    const year = cslYear(e.issued);
+    let head = authors;
+    if (year)
+        head = head ? `${head} (${year})` : `(${year})`;
+    const segs = [];
+    if (head)
+        segs.push(head);
+    if (typeof e.title === 'string' && e.title !== '')
+        segs.push(e.title);
+    let cslText = segs.join('. ');
+    if (cslText)
+        cslText += '.';
+    const def = { entry: [], cslText };
+    // author/year also feed author-date mode; use the first author's family.
+    const first = e.author?.[0];
+    const author = first ? (first.literal ?? first.family) : undefined;
+    if (author !== undefined)
+        def.author = author;
+    if (year)
+        def.year = year;
+    return def;
+}
+function formatName(n) {
+    if (n.literal)
+        return n.literal;
+    if (n.family && n.given)
+        return `${n.family}, ${n.given}`;
+    return n.family ?? '';
+}
+function cslYear(issued) {
+    const y = issued?.['date-parts']?.[0]?.[0];
+    if (typeof y === 'number')
+        return String(y);
+    return issued?.literal ?? '';
+}
+function renderGroup(node, ctx, mode, numbers, defs, hasBib) {
     // Any item whose key has no definition ⇒ render the source verbatim.
     if (node.items.some((it) => !defs.has(it.key)))
         return ctx.escapeHtml(node.raw);
     const pre = (it) => (it.prefix ? `${ctx.renderInlines(it.prefix)} ` : '');
     const loc = (it) => (it.locator ? `, ${ctx.renderInlines(it.locator)}` : '');
+    // Back-link anchor on the per-key item (only with a bibliography pool, §6.3).
+    const idAttr = (it) => hasBib && it.useIndex ? `id="cite-${ctx.escapeAttr(it.key)}-${it.useIndex}" ` : '';
     if (mode === 'author-date') {
         const parts = node.items.map((it) => {
             const d = defs.get(it.key);
             const label = it.suppressAuthor
                 ? d.year ?? String(it.number ?? '')
                 : `${d.author ?? ''} ${d.year ?? ''}`.trim() || String(it.number ?? '');
-            return `${pre(it)}<a href="#ref-${ctx.escapeAttr(it.key)}">${ctx.escapeHtml(label)}</a>${loc(it)}`;
+            return `${pre(it)}<a ${idAttr(it)}href="#ref-${ctx.escapeAttr(it.key)}">${ctx.escapeHtml(label)}</a>${loc(it)}`;
         });
         return `(${parts.join('; ')})`;
     }
     const parts = node.items.map((it) => {
         const n = numbers.get(it.key);
-        return `${pre(it)}<a href="#ref-${ctx.escapeAttr(it.key)}">${n}</a>${loc(it)}`;
+        return `${pre(it)}<a ${idAttr(it)}href="#ref-${ctx.escapeAttr(it.key)}">${n}</a>${loc(it)}`;
     });
     return `[${parts.join(', ')}]`;
 }
-function renderRefsList(ctx, mode, order, defs) {
+function renderRefsList(ctx, mode, order, defs, uses, hasBib) {
     const pad = ctx.indent(ctx.level);
     const keys = [...order];
     if (mode === 'author-date') {
@@ -279,7 +346,21 @@ function renderRefsList(ctx, mode, order, defs) {
     // Both modes use a list element so the markup is valid; numbered is ordered.
     const tag = mode === 'author-date' ? 'ul' : 'ol';
     const items = keys
-        .map((k) => `${pad}  <li id="ref-${ctx.escapeAttr(k)}">${ctx.renderInlines(defs.get(k).entry)}</li>`)
+        .map((k) => {
+        const d = defs.get(k);
+        // A CSL-sourced entry is plain text (escaped); an in-doc def is inline AST.
+        const body = d.cslText !== undefined ? ctx.escapeHtml(d.cslText) : ctx.renderInlines(d.entry);
+        let backlinks = '';
+        if (hasBib) {
+            const n = uses.get(k) ?? 0;
+            const links = [];
+            for (let m = 1; m <= n; m++)
+                links.push(`<a href="#cite-${ctx.escapeAttr(k)}-${m}" class="ref-backref">↩</a>`);
+            if (links.length)
+                backlinks = (body ? ' ' : '') + links.join(' ');
+        }
+        return `${pad}  <li id="ref-${ctx.escapeAttr(k)}">${body}${backlinks}</li>`;
+    })
         .join('\n');
     return `${pad}<${tag} class="references">\n${items}\n${pad}</${tag}>`;
 }
