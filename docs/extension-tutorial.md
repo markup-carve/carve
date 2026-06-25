@@ -349,6 +349,101 @@ An extension emits HTML into the document, so it owns that output's safety:
 
 See [Security](./security) for the document-level model.
 
+## Second example: a static map
+
+QR showed the build-time-image shape. A `map` block shows the *same*
+pure-builder + render-seam split, but with **three interchangeable render modes**
+behind one syntax — the choice most "embed" extensions face.
+
+The author writes a coordinate (and optional caption):
+
+````
+```map
+52.520,13.405,12
+Brandenburg Gate, Berlin
+```
+````
+
+### Builder (pure) — parse + validate the coordinate
+
+```ts
+// "lat,lon[,zoom]\n[caption]" -> a validated, render-agnostic model.
+export function parseMap(body: string): { lat: number; lon: number; zoom: number; caption: string } | null {
+  const [coords = '', ...rest] = body.trim().split('\n')
+  const [lat, lon, zoom = 12] = coords.split(',').map((s) => Number(s.trim()))
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+    return null // not a coordinate -> defer to the readable code-block fallback
+  }
+  return { lat, lon, zoom: Number.isFinite(zoom) ? zoom : 12, caption: rest.join(' ').trim() }
+}
+```
+
+Everything after this is just *which seam* turns the model into HTML — all three
+take the same `parseMap` output.
+
+### Mode A — build-time SVG (self-contained, offline, no key)
+
+No network, no API key, no client JS — the coordinate becomes a small inline SVG
+with a pin. Best for email, PDF, archival HTML. The numbers flow only into
+**numeric SVG attributes**, so there is nothing to escape and nothing to inject.
+
+```html
+<figure class="qmap">
+  <svg viewBox="0 0 520 300" width="100%" role="img" aria-label="Map of 52.520, 13.405">…
+    <circle cx="260" cy="150" r="9" fill="#f85149" stroke="#fff" stroke-width="2"/>
+    <text x="260" y="186" text-anchor="middle">52.520, 13.405</text>
+  </svg>
+  <figcaption>Brandenburg Gate, Berlin</figcaption>
+</figure>
+```
+
+### Mode B — build-time provider image (a real map, still one `<img>`)
+
+The seam calls a static-tile service at *build* time and emits the returned
+image. Still self-contained in the page (no client JS); the network fetch and
+the API key live in the build, not the reader's browser. The builder constructs
+the URL from the validated numbers, so the coordinate never reaches markup raw:
+
+```ts
+const src =
+  `https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=520&height=300` +
+  `&center=lonlat:${m.lon},${m.lat}&zoom=${m.zoom}` +
+  `&marker=lonlat:${m.lon},${m.lat};color:%23f85149&apiKey=${KEY}`
+// -> <figure class="qmap"><img alt={caption} src={src}><figcaption>…</figcaption></figure>
+```
+
+### Mode C — live embed (interactive, client)
+
+When the reader needs to pan/zoom, emit a provider iframe instead (OpenStreetMap
+needs no key). This is the Mermaid-style "ship a marker, the browser hydrates"
+path — use `fencedRender`'s text mode, or emit the iframe directly:
+
+```html
+<iframe loading="lazy" title="Map — 52.520, 13.405"
+  src="https://www.openstreetmap.org/export/embed.html?bbox=13.375,52.505,13.435,52.535&marker=52.520,13.405"></iframe>
+```
+
+### Wiring — same hook as QR
+
+```ts
+const map = {
+  name: 'map',
+  blockRenderers: {
+    'code-block': (node, ctx) => {
+      if (node.lang !== 'map') return undefined
+      const m = parseMap(node.value ?? '')
+      if (m === null) return undefined          // not a coordinate -> readable code block
+      return `${ctx.indent(ctx.level)}<figure class="qmap">${renderMapSvg(m)}</figure>`
+    },
+  },
+}
+```
+
+carve-php is the exact shape from QR's Step 4 (`register()` + `on('render.code_block')`,
+`getLanguage() === 'map'`). The lesson: **one syntax, a pure model, and a seam you
+pick per medium** — offline SVG, build-time image, or live embed — without the
+author changing a thing.
+
 ## Where this fits
 
 The pattern generalizes: a **pure builder** (author input -> a canonical string
