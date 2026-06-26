@@ -34,6 +34,7 @@ export { details } from './details.js';
 export { listTable } from './list-table.js';
 export { glossary } from './glossary.js';
 export { headingNumbers } from './heading-numbers.js';
+export { codeCallouts } from './code-callouts.js';
 export { index } from './index-terms.js';
 export { citations, } from './citations.js';
 export { fencedRender, mermaid, d2, graphviz, wavedrom, abc, vegaLite, chart, presets, } from './fenced-render.js';

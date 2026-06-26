@@ -21,6 +21,7 @@ export { details } from './details.js';
 export { listTable } from './list-table.js';
 export { glossary } from './glossary.js';
 export { headingNumbers, type HeadingNumbersOptions } from './heading-numbers.js';
+export { codeCallouts } from './code-callouts.js';
 export { index } from './index-terms.js';
 export { citations, type CitationsOptions, type CslEntry, type CslName, } from './citations.js';
 export { fencedRender, mermaid, d2, graphviz, wavedrom, abc, vegaLite, chart, presets, type FencedRenderOptions, type FencedRenderContentMode, } from './fenced-render.js';
