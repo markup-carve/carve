@@ -45,6 +45,21 @@
       "slug": "09-citations-locator-semicolon",
       "feature": "citations-numbered",
       "description": "A semicolon inside a locator falls back to literal text (not a citation)."
+    },
+    {
+      "slug": "10-code-callouts",
+      "feature": "code-callouts",
+      "description": "In-code <n> markers render as <b class=\"callout\"> bubbles and the following <n> list binds as <ol class=\"callouts\"> with explicit values."
+    },
+    {
+      "slug": "11-code-callouts-no-marker",
+      "feature": "code-callouts",
+      "description": "A code block with no marker does not bind the following list; the <n> line stays a literal paragraph."
+    },
+    {
+      "slug": "12-code-callouts-marker-no-list",
+      "feature": "code-callouts",
+      "description": "An in-code marker still renders its bubble when no callout list follows; the prose stays a literal paragraph."
     }
   ]
 }

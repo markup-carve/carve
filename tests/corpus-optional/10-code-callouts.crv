@@ -1,0 +1,7 @@
+```js
+const x = compute();   <1>
+return x * 2;          <2>
+```
+
+<1> Runs the expensive step once.
+<2> Doubles the result.

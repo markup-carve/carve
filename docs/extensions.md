@@ -47,7 +47,7 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | Frontmatter, comments, raw blocks / inline `=format` | <Badge type="tip" text="core" /> | on | no |
 | The extension **syntax** `:name[…]` (inline) and `::: name` (block) | <Badge type="tip" text="core" /> | on | no — the *handlers* are Tier-2/3 |
 | Smart typography, `@mention`, `#tag`, `:emoji:` parsing | <Badge type="tip" text="core" /> | on | **yes** (§19) |
-| Citations `[@key]`, bare-URL autolinking | <Badge type="info" text="standard" /> | off | — |
+| Citations `[@key]`, bare-URL autolinking, code callouts `<n>` | <Badge type="info" text="standard" /> | off | — |
 | Mention/tag → URL templates, emoji glyph map, locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
 | Mermaid / FencedRender, MathBlock, ListTable, Bibliography, Glossary, Index, HeadingNumbers, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, SemanticSpan, ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
@@ -64,7 +64,8 @@ differs by processor. The narrative below details each tier.
   typography and `@mention` / `#tag` / `:emoji:` parsing are also default-on and
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, emoji glyph map,
-  locale smart-quote sets, bare-URL autolinking, and citations (§4).
+  locale smart-quote sets, bare-URL autolinking, citations (§4), and code
+  callouts (`<n>` markers inside fenced code + a bound explanation list; §10).
 - Tier 3 (non-exhaustive): FencedRender (a generic fenced-code-block factory
   with Mermaid, D2, Graphviz, WaveDrom, ABC, Vega-Lite and Chart.js presets),
   MathBlock (a ` ```math ` fenced block →
@@ -719,3 +720,67 @@ distinction, and extension-off degradation).
   restart need a section-grouping marker; deferred to a follow-up.
 - Numbering figures/tables relative to sections (`Figure 2-3`) is a caption
   concern, not this extension.
+
+## 10. CodeCallouts (Tier-2)
+
+Mark points inside a fenced code block with `<n>` and attach an explanation
+list (issue #88), the way AsciiDoc callouts work. Tier-2 (standard-recommended):
+a spec-defined cross-impl syntax that every implementation SHOULD offer but
+ships **off / passthrough** by default; its output is pinned in the optional
+corpus (`tests/corpus-optional`) when enabled. Collision risk is low because the
+markers are recognized **only inside fenced code**.
+
+### 10.1 Syntax
+
+- Inside a fenced code block, a `<n>` token (`n` = one or more ASCII digits)
+  that is the **last non-whitespace content on its line** is a callout marker.
+  Whitespace before it is ordinary code indentation and is preserved.
+  In-code markers render whenever the extension is enabled, independently of
+  whether an explanation list follows (a marked line with no bound list still
+  shows its bubble - the author placed the marker).
+- Immediately after the code block, a **callout list** binds the explanations: a
+  paragraph whose every soft-break line has the form `<n> text` (a marker, a
+  single space, then inline prose). The list binds only when (a) the code block
+  contains at least one marker and (b) every line of that following paragraph is
+  a `<n> text` item; otherwise that paragraph is ordinary content (the list does
+  not bind) - the in-code markers still render as bubbles per the rule above.
+
+### 10.2 Rendering
+
+- An in-code marker renders as `<b class="callout" data-callout="n">n</b>` -
+  the only part of the code line that is **not** HTML-escaped; the rest of the
+  content escapes as usual. The marker is a styleable element the host hides from
+  copy-to-clipboard with CSS (`user-select: none`), so Carve emits it and the
+  host styles it - no script required.
+- The callout list renders as `<ol class="callouts">`, one `<li value="n">` per
+  `<n> text` item in source order (its inline prose parsed normally). The
+  explicit `value="n"` is the item's marker number, so the displayed ordinal
+  always equals the in-code bubble even when numbers are non-sequential or do
+  not start at 1 (`<3>` ↔ `<li value="3">`); alignment is by number, not list
+  position.
+
+### 10.3 Degradation
+
+- **Non-HTML targets** (Markdown, plain text, ANSI): the extension contributes
+  HTML renderers only, so non-HTML output keeps the `<n>` markers literal in the
+  code and the callout list as its ordinary `<n> text` lines. Nothing is dropped
+  and the marker↔note correspondence survives as the literal numbers - it is the
+  source-faithful, copy-paste-able form. (A `(n)`-style rewrite in non-HTML
+  targets would need non-HTML extension render hooks; out of scope for v1.)
+- **Extension off**: identical to the above - the `<n>` tokens stay literal in
+  the code and the following lines are an ordinary paragraph; nothing is
+  reinterpreted.
+
+### 10.4 Conformance (`tests/corpus-optional`)
+
+Tier-2, so pinned in the optional corpus when enabled, with a `manifest.json`
+entry. Cases pin: in-code marker rendering (escaping around the `<b>`), the
+`<ol class="callouts">` binding, the marker/list alignment, and the failure
+modes (a code block with no marker, and a following paragraph with a non-`<n>`
+line, both leave the `<n>` literal).
+
+### 10.5 Out of scope (impls MAY differ / future)
+
+- Comment-anchored markers (`// <1>`) - bare `<n>` only for v1.
+- Linking a marker to its list item (anchor/back-ref) - the marker is a
+  styleable bubble, not a link, in v1.

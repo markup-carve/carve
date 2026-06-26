@@ -16,12 +16,31 @@ export function colorSwatch(options = {}) {
         renderers: {
             color: (node, ctx) => {
                 const value = safeColor(inlineText(node.content));
-                if (value === null)
-                    return undefined;
-                return renderSwatch(node.attrs, ctx, value, position, shape, tint, reveal);
+                const contrast = hasKeyValue(node.attrs, 'contrast');
+                const attrs = contrast ? stripKeyValue(node.attrs, 'contrast') : node.attrs;
+                if (value === null) {
+                    return contrast ? renderGenericColor(node, attrs, ctx) : undefined;
+                }
+                const text = contrastText(value);
+                if (contrast && text !== null)
+                    return renderContrastLabel(attrs, ctx, value, text);
+                return renderSwatch(attrs, ctx, value, position, shape, tint, reveal);
             },
         },
     };
+}
+function renderContrastLabel(nodeAttrs, ctx, value, text) {
+    const attrs = withBaseClass(nodeAttrs, 'swatch-label');
+    // The computed colors go last so author attributes keep their source order; an
+    // explicit author `style` wins and suppresses ours (which also avoids emitting
+    // a duplicate `style` attribute).
+    const style = hasKeyValue(nodeAttrs, 'style')
+        ? ''
+        : ` style="${ctx.escapeAttr(`background:${value};color:${text}`)}"`;
+    return `<span${ctx.renderAttrs(attrs)}${style}>${ctx.escapeHtml(value)}</span>`;
+}
+function renderGenericColor(node, attrs, ctx) {
+    return `<span${ctx.renderAttrs(withBaseClass(attrs, `ext-${node.name}`))}>${ctx.renderInlines(node.content)}</span>`;
 }
 function renderSwatch(nodeAttrs, ctx, value, position, shape, tint, reveal) {
     const label = ctx.escapeHtml(value);
@@ -95,6 +114,49 @@ function safeColor(s) {
     }
     return null;
 }
+function contrastText(value) {
+    // A fully transparent color paints no background, so a computed text color
+    // would sit on the page itself and could be unreadable. Decline the contrast
+    // label (fall back to the normal swatch) instead of guessing.
+    if (isFullyTransparentHex(value))
+        return null;
+    const rgb = parseIntegerRgb(value);
+    if (rgb === null)
+        return null;
+    const brightness = Math.floor((rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000);
+    return brightness >= 128 ? '#000' : '#fff';
+}
+/** True for hex colors whose alpha channel is fully zero (e.g. `#0000`, `#00000000`). */
+function isFullyTransparentHex(value) {
+    const hex = /^#([0-9a-fA-F]{4}|[0-9a-fA-F]{8})$/.exec(value);
+    if (!hex)
+        return false;
+    const alpha = hex[1].length === 4 ? hex[1][3] : hex[1].slice(6, 8);
+    return /^0+$/.test(alpha);
+}
+function parseIntegerRgb(value) {
+    const hex = /^#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.exec(value);
+    if (hex) {
+        const h = hex[1];
+        if (h.length === 3 || h.length === 4) {
+            return [parseInt(h[0] + h[0], 16), parseInt(h[1] + h[1], 16), parseInt(h[2] + h[2], 16)];
+        }
+        return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+    }
+    const rgb = /^rgba?\((.*)\)$/.exec(value);
+    if (!rgb)
+        return null;
+    const tokens = rgb[1].trim().split(/[\s,/]+/).filter(Boolean);
+    if (tokens.length < 3)
+        return null;
+    const channels = tokens.slice(0, 3);
+    if (!channels.every((t) => /^[+-]?\d+$/.test(t)))
+        return null;
+    return channels.map((t) => clampByte(Number.parseInt(t, 10)));
+}
+function clampByte(n) {
+    return Math.min(255, Math.max(0, n));
+}
 /** Merge a base class ahead of the author classes (a fresh Attrs copy). */
 function withBaseClass(attrs, base) {
     const a = attrs ? { ...attrs } : {};
@@ -114,6 +176,25 @@ function withDefaultKeyValue(attrs, key, value) {
     if (key in keyValues)
         return attrs;
     return { ...attrs, keyValues: { ...keyValues, [key]: value } };
+}
+function hasKeyValue(attrs, key) {
+    return attrs?.keyValues?.[key] !== undefined;
+}
+function stripKeyValue(attrs, key) {
+    if (!attrs?.keyValues || attrs.keyValues[key] === undefined)
+        return attrs;
+    const keyValues = { ...attrs.keyValues };
+    delete keyValues[key];
+    const out = { ...attrs };
+    if (Object.keys(keyValues).length > 0) {
+        out.keyValues = keyValues;
+    }
+    else {
+        delete out.keyValues;
+    }
+    if (out.order)
+        out.order = out.order.filter((slot) => slot !== key);
+    return out;
 }
 /** Flatten an inline tree to its text content. */
 function inlineText(nodes) {
