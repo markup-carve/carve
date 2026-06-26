@@ -220,8 +220,57 @@ function scanHits(source) {
     // inner `~x~`). A nested *different* family (`~~_x_~~` -> strike AND
     // emphasis; `**_x_**` -> strong AND emphasis) is two real, distinct
     // mis-renders, so both are kept.
-    const taken = [];
-    const sameFamilyOverlap = (s, e, fam) => taken.some(([ts, te, tf]) => tf === fam && s < te && ts < e);
+    // Per-family list of accepted [start, end) intervals, kept sorted by start.
+    // Overlap is then a binary search (find the rightmost interval starting
+    // before `e`, check it covers past `s`) instead of a linear scan of a
+    // single growing array — the latter was O(n^2) on inputs with thousands of
+    // same-family matches (e.g. `**a** ` repeated). Within a single rule, matches
+    // arrive in ascending `start`, so insertion lands at the end (O(1) push);
+    // cross-rule same-family inserts (rare) cost an O(log n) binary insert.
+    const takenByFamily = new Map();
+    const sameFamilyOverlap = (s, e, fam) => {
+        const list = takenByFamily.get(fam);
+        if (!list || list.length === 0)
+            return false;
+        // Rightmost interval with start < e.
+        let lo = 0;
+        let hi = list.length;
+        while (lo < hi) {
+            const mid = (lo + hi) >> 1;
+            if (list[mid][0] < e)
+                lo = mid + 1;
+            else
+                hi = mid;
+        }
+        // Intervals are non-overlapping within a family, so sorting by start also
+        // sorts by end. The rightmost interval starting before `e` (index lo-1)
+        // has the largest end among all candidates; if it does not reach past `s`,
+        // none do. So a single check at lo-1 decides overlap.
+        if (lo === 0)
+            return false;
+        return list[lo - 1][1] > s;
+    };
+    const recordTaken = (s, e, fam) => {
+        let list = takenByFamily.get(fam);
+        if (!list) {
+            list = [];
+            takenByFamily.set(fam, list);
+        }
+        if (list.length === 0 || s >= list[list.length - 1][0]) {
+            list.push([s, e]);
+            return;
+        }
+        let lo = 0;
+        let hi = list.length;
+        while (lo < hi) {
+            const mid = (lo + hi) >> 1;
+            if (list[mid][0] < s)
+                lo = mid + 1;
+            else
+                hi = mid;
+        }
+        list.splice(lo, 0, [s, e]);
+    };
     for (const rule of RULES) {
         rule.pattern.lastIndex = 0;
         let m;
@@ -238,7 +287,7 @@ function scanHits(source) {
                 continue;
             if (sameFamilyOverlap(start, end, rule.family))
                 continue;
-            taken.push([start, end, rule.family]);
+            recordTaken(start, end, rule.family);
             const { line, column } = posOf(start);
             // Build the suggestion from the ORIGINAL captured content, not the
             // code-masked one, so `*a `code` b*` round-trips instead of losing
@@ -290,13 +339,51 @@ function scanHits(source) {
  */
 export function applyMigrationFixes(source) {
     const hits = scanHits(source);
-    const overlaps = (a, b) => a.start < b.end && b.start < a.end;
-    const contains = (a, b) => a.start <= b.start && b.end <= a.end;
-    const crosses = (a, b) => overlaps(a, b) && !contains(a, b) && !contains(b, a);
+    // Mark every hit that *crosses* another (partial overlap where neither span
+    // contains the other). `hits` is sorted by start (line/column), so a single
+    // sweep replaces the O(n^2) all-pairs scan. Two intervals a (earlier start)
+    // and b cross iff start_b < end_a < end_b. Keep an "active" list of earlier
+    // intervals still open past the current start (end > start_b); among those,
+    // any whose end is strictly inside b (end_a < end_b) crosses b, and vice
+    // versa. Equal starts can never cross (one contains the other).
+    const crossed = new Set();
+    // Active intervals, kept sorted by end. Heap-free: ends are pruned from the
+    // front as the sweep advances, and inserts are by binary position.
+    const active = [];
+    for (const b of hits) {
+        // Drop intervals that closed at or before b's start: they can't cross b.
+        let drop = 0;
+        while (drop < active.length && active[drop].end <= b.start)
+            drop++;
+        if (drop > 0)
+            active.splice(0, drop);
+        for (const a of active) {
+            // a.start <= b.start (sweep order) and a.end > b.start (still active).
+            // Crossing needs a.end strictly inside b and starts distinct.
+            if (a.start === b.start)
+                continue;
+            if (a.end < b.end) {
+                crossed.add(a);
+                crossed.add(b);
+            }
+            // a.end >= b.end means a contains b (no cross from this pair).
+        }
+        // Insert b keeping `active` sorted by end.
+        let lo = 0;
+        let hi = active.length;
+        while (lo < hi) {
+            const mid = (lo + hi) >> 1;
+            if (active[mid].end < b.end)
+                lo = mid + 1;
+            else
+                hi = mid;
+        }
+        active.splice(lo, 0, b);
+    }
     const applied = [];
     const skipped = [];
     for (const h of hits) {
-        if (hits.some((o) => o !== h && crosses(h, o)))
+        if (crossed.has(h))
             skipped.push(h);
         else
             applied.push(h);

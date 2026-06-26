@@ -1,0 +1,109 @@
+Fence opener with a nested-list body inside a list item
+
+```
+- ::: note
+  - para text
+  :::
+.
+<ul>
+  <li>
+    <aside class="admonition note">
+      <ul>
+        <li>para text</li>
+      </ul>
+    </aside>
+  </li>
+</ul>
+```
+
+```
+- ::: note
+  1. para text
+  :::
+.
+<ul>
+  <li>
+    <aside class="admonition note">
+      <ol>
+        <li>para text</li>
+      </ol>
+    </aside>
+  </li>
+</ul>
+```
+
+```
+- ::: note
+  - one
+  - two
+  :::
+.
+<ul>
+  <li>
+    <aside class="admonition note">
+      <ul>
+        <li>one</li>
+        <li>two</li>
+      </ul>
+    </aside>
+  </li>
+</ul>
+```
+
+```
+- ::: note
+
+  - para text
+  :::
+.
+<ul>
+  <li>
+    <aside class="admonition note">
+      <ul>
+        <li>para text</li>
+      </ul>
+    </aside>
+  </li>
+</ul>
+```
+
+```
+- ::: note
+  - para text
+.
+<ul>
+  <li>::: note
+    <ul>
+      <li>para text</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- ::: note
+  - para text
+:::
+.
+<ul>
+  <li>::: note
+    <ul>
+      <li>para text</li>
+    </ul>
+  </li>
+</ul>
+<p>:::</p>
+```
+
+```
+- ::: note
+  :::
+.
+<ul>
+  <li>
+    <aside class="admonition note">
+
+    </aside>
+  </li>
+</ul>
+```

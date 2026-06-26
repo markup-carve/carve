@@ -236,8 +236,12 @@ function convertInline(input) {
     do {
         prev = line;
         line = line
-            .replace(/\x00S(\d+)\x00/g, (_m, i) => stash[Number(i)])
-            .replace(/\x00P(\d+)\x00/g, (_m, i) => protectedSpans[Number(i)]);
+            // A stash/protect index that has no stored value means the NUL-wrapped
+            // sentinel came from the input itself (not one we emitted), so keep the
+            // matched text verbatim rather than splicing the literal string
+            // "undefined" into the output.
+            .replace(/\x00S(\d+)\x00/g, (m, i) => stash[Number(i)] ?? m)
+            .replace(/\x00P(\d+)\x00/g, (m, i) => protectedSpans[Number(i)] ?? m);
     } while (line !== prev);
     return line;
 }

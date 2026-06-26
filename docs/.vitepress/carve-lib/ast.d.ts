@@ -236,6 +236,14 @@ export interface Link extends BaseNode {
      */
     ref?: string;
     rawRef?: string;
+    /**
+     * Set by resolve() when this Link was produced from a `</#id>` cross-reference
+     * (not an ordinary `[text](url)` link or an implicit `[label][]` reference).
+     * Non-rendered metadata - every renderer ignores it; it lets a render-stage
+     * extension (HeadingNumbers, #198) rewrite only auto-filled cross-references
+     * without a fragile title-equality guess.
+     */
+    fromCrossref?: boolean;
 }
 export interface Image extends BaseNode {
     type: 'image';

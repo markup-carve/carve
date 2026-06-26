@@ -55,6 +55,22 @@ function deTypography(s) {
     return out;
 }
 /**
+ * Trojan-Source hardening for generated ids. Two pre-slug transforms make an id
+ * deterministic and free of dangerous/invisible Unicode (CVE-2021-42574 class):
+ *
+ *  - NFC normalization, so a precomposed `é` (U+00E9) and a decomposed
+ *    `e`+U+0301 produce the SAME id.
+ *  - Stripping bidi-override / isolate controls (U+202A..U+202E, U+2066..U+2069)
+ *    and zero-width characters (U+200B, U+200C, U+200D, U+2060, U+FEFF, U+00AD)
+ *    so none of these can ever appear inside an `id="..."`.
+ *
+ * Applied before the slug run so the remaining text slugs as usual.
+ */
+const ID_STRIP_RE = /[\u202A-\u202E\u2066-\u2069\u200B\u200C\u200D\u2060\uFEFF\u00AD]/gu;
+function sanitizeIdSource(s) {
+    return s.normalize('NFC').replace(ID_STRIP_RE, '');
+}
+/**
  * jgm/djot#393 slug step: replace each maximal run of non-alphanumeric ASCII with a
  * single '-' and trim. Non-ASCII characters and letter case are preserved.
  */
@@ -102,7 +118,7 @@ export function headingIdSlugOpts(opts) {
  * `lowercase` for a fully lowercase ASCII slug.
  */
 export function slugify(plainText, opts = {}) {
-    let s = slugRun(deTypography(plainText));
+    let s = slugRun(deTypography(sanitizeIdSource(plainText)));
     if (opts.asciiFold || opts.asciiStrict) {
         // Transliterate runs in both modes so Latin/Cyrillic become letters rather
         // than separators. Strict then uses slugRunAscii to drop unmappable
@@ -347,7 +363,70 @@ export function resolveHeadingIds(doc, opts = {}) {
         }
     };
     const crossrefCloneCache = new Map();
-    /** Pass 2: resolve `</#id>` crossrefs, cloning finalized children. */
+    // Pre-resolution snapshot of each target's inline children, taken before any
+    // crossref resolution mutates them. Crossref link text is cloned from here
+    // (not from the live target) so a reference never picks up a nested link the
+    // within-target pass already wrote into another target -- which would
+    // double-expand the text (e.g. `A B ` / `Title Bee` instead of one level).
+    const pristineTargets = new Map();
+    // Flatten any `</#…>` crossref nodes inside a target's text to plain text:
+    // a NESTED crossref does NOT recursively expand its own target. This makes
+    // crossref resolution strictly ONE LEVEL (the target's own text), matching
+    // carve-php / carve-rs and making the result bounded regardless of how
+    // crossrefs chain or cycle. (A resolved crossref shows nothing for the
+    // nested link; an UNresolved `</#x>` would render literally, but at clone
+    // time nested crossrefs are still raw `crossref` nodes, so emit empty text
+    // to mirror the siblings, which drop the nested reference entirely.)
+    const flattenNestedCrossrefs = (nodes) => {
+        for (let i = 0; i < nodes.length; i++) {
+            const n = nodes[i];
+            if (n.type === 'crossref') {
+                nodes[i] = { type: 'text', value: '' };
+                continue;
+            }
+            switch (n.type) {
+                case 'italic':
+                case 'strong':
+                case 'underline':
+                case 'strike':
+                case 'super':
+                case 'sub':
+                case 'highlight':
+                case 'bold-italic':
+                case 'link':
+                case 'span':
+                case 'critic-insert':
+                case 'critic-delete':
+                    flattenNestedCrossrefs(n.children);
+                    break;
+                case 'extension':
+                    flattenNestedCrossrefs(n.content);
+                    break;
+                case 'footnote':
+                    if (n.inline)
+                        flattenNestedCrossrefs(n.inline);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+    /**
+     * Pass 2: resolve `</#id>` crossrefs into one-level links.
+     *
+     * Each crossref becomes a link whose text is a clone of the TARGET's own
+     * inline children with any nested crossrefs flattened to text -- i.e. the
+     * resolution is strictly one level deep and never recurses into a target's
+     * own crossrefs. This matches carve-php / carve-rs (`# A </#a>` ->
+     * `A <a href="#A">A </a>`; `See </#a>` where A is `# Title </#b>` ->
+     * `<a href="#a">Title </a>`), and -- critically -- makes resolution bounded
+     * and non-recursive in the crossref graph. Previously a crossref CYCLE
+     * (self-ref, mutual A<->B, or any ring) made a target transitively contain
+     * itself; the shared clone cache then spliced a link's `children` array into
+     * itself, producing an unbounded / cyclic object graph that overflowed the
+     * later `enforceNoNesting` walk (`RangeError: Maximum call stack size
+     * exceeded`) -- a crash-DoS reachable from every public API on tiny input.
+     */
     const resolveCrossrefs = (nodes) => {
         for (let i = 0; i < nodes.length; i++) {
             const n = nodes[i];
@@ -362,16 +441,23 @@ export function resolveHeadingIds(doc, opts = {}) {
                 if (tgt && tgtId !== undefined) {
                     let children = crossrefCloneCache.get(tgtId);
                     if (!children) {
-                        // Clone each resolved target once per document. Repeated crossrefs
-                        // share that immutable inline tree instead of re-stringifying the
-                        // same large heading/caption for every reference.
-                        children = JSON.parse(JSON.stringify(tgt));
+                        // Clone each target once per document from its PRISTINE
+                        // (pre-resolution) text, then flatten its OWN nested crossrefs to
+                        // text so the link stays one level (no recursion into the crossref
+                        // graph -> no cycle, no unbounded chain). Cloning from pristine --
+                        // not the live target -- avoids inheriting a nested link another
+                        // target's resolution already wrote in. Repeated crossrefs share
+                        // the cached immutable tree.
+                        const source = pristineTargets.get(tgtId) ?? tgt;
+                        children = JSON.parse(JSON.stringify(source));
+                        flattenNestedCrossrefs(children);
                         crossrefCloneCache.set(tgtId, children);
                     }
                     const link = {
                         type: 'link',
                         href: `#${tgtId}`,
                         children,
+                        fromCrossref: true,
                     };
                     nodes[i] = link;
                 }
@@ -539,11 +625,14 @@ export function resolveHeadingIds(doc, opts = {}) {
     numberBlocks(doc.children);
     for (const body of footnoteBodies)
         numberBlocks(body);
-    // Finalize crossrefs WITHIN target (heading/caption) children first, so the
-    // per-target clone cache below captures resolved text. Otherwise a `</#id>`
-    // appearing in the body BEFORE its target heading would clone that heading
-    // while its own nested `</#…>` are still unresolved placeholders, and the
-    // cache would then lock that stale clone in for every later reference.
+    // Snapshot each target's children BEFORE any crossref resolution mutates
+    // them, so the clone cache can build one-level link text from the target's
+    // own (pre-resolution) inlines rather than from a copy that another target's
+    // resolution has already rewritten with nested links.
+    for (const [id, children] of targets)
+        pristineTargets.set(id, JSON.parse(JSON.stringify(children)));
+    // Finalize crossrefs WITHIN target (heading/caption) children so each
+    // target's own `</#…>` becomes a one-level link in its rendered text.
     for (const children of targets.values())
         resolveCrossrefs(children);
     for (const block of doc.children)
