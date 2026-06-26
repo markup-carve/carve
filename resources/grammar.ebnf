@@ -985,8 +985,29 @@ footnote_definition = "[^", footnote_label, "]:", space, inline_content, newline
    citation; a `[@k, a; b]` with a `;` in the locator is literal text.
    Pinned in tests/corpus-optional (features citations-numbered /
    citations-author-date and the failure-mode cases). *)
-citation_group = '[', citation_item, {';', citation_item}, ']' ;
+citation_group = '[', ['+'], citation_item, {';', citation_item}, ']' ;
 citation_item = [inline_content], ['-'], '@', citation_key, [',', space, inline_content] ;
+(* A single leading `+` immediately after `[` sets the whole citation cluster to
+   integral mode (CSL/Citum CitationMode: integral = author-in-text; absent =
+   non-integral/parenthetical). This is the Djot draft `[+@foo, p. 15]` form.
+   Mode is a GROUP property; there is no per-item `+`. A bare `+` before `@key`
+   inside a multi-item bracket (e.g. `[@a; +@b]`) is parsed as prefix text on
+   that item, not as an integral marker.
+   `-` before `@key` suppresses the author for that item (per-item; applies in
+   both numbered and author-date modes via `data-suppress-author="true"`).
+   The locator (text after the first `,` in an item) is parsed into a typed
+   citeproc label + value + trailing suffix: longest-match label from the fixed
+   vocabulary (book/chapter/column/figure/folio/issue/line/note/opus/page/
+   paragraph/part/section/sub verbo/verse/volume, with abbreviations), matching
+   only at a boundary (end of string, whitespace, ASCII digit, `§`, or `¶`); no
+   label but a leading ASCII digit defaults to `page`; value is the leading run
+   of digits/roman/`.,&-` with trailing separators trimmed; the remainder is the
+   suffix. A roman numeral locator with no label produces no data-locator-label.
+   The structure is surfaced as `data-*` attributes on the rendered citation
+   anchors (`data-cite-key`, `data-suppress-author`, `data-cite-prefix`,
+   `data-locator-label`, `data-locator`, `data-suffix`) and, for an integral
+   cluster, a `<span class="citation" data-cite-mode="integral">` wrapper around
+   the entire citation group output. *)
 citation_key = (letter | digit | '_'), {citation_key_char} ;
 (* Pandoc-compatible key charset (carve-js `KEY`): after the first char, any of
    these internal punctuation marks are allowed. *)
