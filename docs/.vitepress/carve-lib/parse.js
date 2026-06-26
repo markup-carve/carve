@@ -183,13 +183,18 @@ const RE_COMMENT_LINE = /^%%/;
 // A bare fence-closer line (` ``` ` / `~~~`, no info), used only by the
 // paragraph-interruption closer lookahead's negative cache (§10).
 const RE_FENCE_CLOSER = /^\s{0,3}(`{3,}|~{3,})\s*$/;
-// Maximum block-container nesting depth. Each level of blockquote / div / list /
-// footnote recurses parseBlocks -> parseBlock -> parseContainer -> parseBlocks,
-// so unbounded nesting (e.g. `> ` repeated thousands of times) overflows the
-// call stack. Past this depth, container openers degrade to literal paragraph
-// text instead of crashing. Far above any real document; only adversarial input
-// reaches it.
-const MAX_NESTING_DEPTH = 200;
+// Maximum block-container nesting depth, applied UNIFORMLY to blockquote, list,
+// fenced-div / admonition (and footnote) nesting. Each level recurses
+// parseBlocks -> parseBlock -> parseContainer -> parseBlocks, so unbounded
+// nesting (e.g. `> ` repeated thousands of times, a deeply indented list, or a
+// stack of varied-length `:::` fences) would overflow the call stack. Every
+// container sub-lexer carries `depth = parent.depth + 1` and re-enters
+// parseBlockInner, where this single gate degrades the opener to literal
+// paragraph text past the cap - so all container kinds flatten the same way
+// rather than crashing. The same constant also bounds the inline recursion
+// (see scanInline). Far above any real document; only adversarial input reaches
+// it. Exported so callers/tests can assert the exact, shared cap.
+export const MAX_NESTING_DEPTH = 200;
 class Lexer {
     lines;
     lineOffsets;
@@ -2215,12 +2220,33 @@ function parseList(lexer) {
             // it -- keep this detection in step so the attributed marker-line case
             // merges/absorbs like the plain one.
             extractItemAttr(content) !== null;
+        // When the lead is a colon-fence opener (`::: word` admonition or a bare
+        // `:::` div) whose matching closer line sits among the collected nested
+        // lines, the body in between -- including a nested LIST -- belongs to the
+        // container. The `firstBlockIdx` split (which exists to let an indented
+        // ordered sub-list nest instead of folding) would otherwise sever the
+        // opener from its body, leaving `::: word` literal and the closer as
+        // trailing text. Keep the whole stream together so the admonition/div
+        // opener captures its nested-list body and finds its closer (matching
+        // carve-rs / the grammar `admonition = open, {block}, close`). The closer
+        // must be one of the collected (item-content-column) lines: a closer at
+        // column 0 dedents out of the item and is not in `nested`, so this guard
+        // does not fire and the opener correctly stays literal.
+        const leadOpensColonFence = (RE_ADMONITION_OPEN.test(content) && !RE_ADMONITION_CLOSE.test(content)) ||
+            RE_DIV_OPEN.test(content);
+        const colonFenceLen = leadOpensColonFence ? /^(:{3,})/.exec(content)[1].length : 0;
+        const colonFenceHasBodyCloser = leadOpensColonFence &&
+            nested.some((ln) => {
+                const c = RE_ADMONITION_CLOSE.exec(ln);
+                return c !== null && c[1].length >= colonFenceLen;
+            });
         // Parse the lead text together with its continuation/nested lines as one
         // block sequence (lazy continuation merges into the lead paragraph). An
         // indented ordered sub-list, however, is parsed as its own block stream so
         // it nests instead of folding into the lead paragraph.
-        const leadLines = firstBlockIdx === -1 || leadIsMarker ? nested : nested.slice(0, firstBlockIdx);
-        const blockLines = firstBlockIdx === -1 || leadIsMarker ? [] : nested.slice(firstBlockIdx);
+        const keepStreamWhole = firstBlockIdx === -1 || leadIsMarker || colonFenceHasBodyCloser;
+        const leadLines = keepStreamWhole ? nested : nested.slice(0, firstBlockIdx);
+        const blockLines = keepStreamWhole ? [] : nested.slice(firstBlockIdx);
         const mkSub = (text) => {
             const s = new Lexer(text);
             s.abbrDefs = lexer.abbrDefs;

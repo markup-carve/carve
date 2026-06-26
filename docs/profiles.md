@@ -73,6 +73,19 @@ is always allowed. Deny always beats allow; an allowlist is a closed set.
 follows `disallowedAction` (`error` reports a violation; `to_text`/`strip`
 truncate/flatten).
 
+### A profile is not a substitute for disabling raw-HTML passthrough
+
+A profile restricts node **types**; it does **not** by itself turn off raw-HTML
+passthrough. The built-in `article`, `comment`, and `minimal` presets DO deny
+`raw_block` / `raw_inline`, so they are safe for untrusted input. But a CUSTOM
+profile that leaves `raw_block` / `raw_inline` allowed will still emit live HTML
+if the renderer's raw passthrough is on (the default, see
+[Security](/security) PART 9 §25). For untrusted input a host MUST therefore
+either select/author a profile that DENIES `raw_block` and `raw_inline`, OR
+disable raw-HTML passthrough on the renderer (`allowRawHtml: false`), ideally
+both. The two controls are independent: the profile gates AST node types; the
+renderer flag gates whether raw content is serialized verbatim or escaped.
+
 ## Presets (normative)
 
 Four presets MUST exist with exactly these definitions.

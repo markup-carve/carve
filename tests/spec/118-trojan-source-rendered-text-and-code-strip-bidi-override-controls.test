@@ -1,0 +1,13 @@
+Trojan-Source: rendered text and code strip bidi-override controls
+
+```
+a‮b
+.
+<p>ab</p>
+```
+
+```
+`a‮b`
+.
+<p><code>ab</code></p>
+```

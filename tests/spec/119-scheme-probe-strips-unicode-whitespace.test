@@ -1,0 +1,9 @@
+Scheme probe strips Unicode whitespace
+
+```
+[click][a]
+
+[a]:  javascript:alert(1)
+.
+<p><a href="">click</a></p>
+```

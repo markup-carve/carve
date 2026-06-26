@@ -1,0 +1,25 @@
+Trojan-Source: heading ids are NFC-normalized and strip invisible controls
+
+```
+# Café
+.
+<section id="Café">
+  <h1>Café</h1>
+</section>
+```
+
+```
+# Café
+.
+<section id="Café">
+  <h1>Café</h1>
+</section>
+```
+
+```
+# A‮B​C
+.
+<section id="ABC">
+  <h1>AB​C</h1>
+</section>
+```

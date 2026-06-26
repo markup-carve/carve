@@ -6851,3 +6851,422 @@ continuation -- it stays an ordinary paragraph.
 ```
 
 :::
+
+## Fence opener with a nested-list body inside a list item
+
+A `:::` opener inside a list item opens its block even when its body is a
+nested list, provided the matching closer sits at the item content column
+(PART 9 §12). A bullet (`-`) or ordered marker (`1.`) on the next line is part
+of the admonition body, not a sibling list that swallows the opener as literal
+text. The closer must align with the opener's content column; a `:::` at column
+zero (outside the item) does not close it.
+
+A nested unordered list body is wrapped by the admonition:
+
+:::: compare
+
+```carve
+- ::: note
+  - para text
+  :::
+```
+
+```html
+<ul>
+  <li>
+    <aside class="admonition note">
+      <ul>
+        <li>para text</li>
+      </ul>
+    </aside>
+  </li>
+</ul>
+```
+
+::::
+
+A nested ordered list body is wrapped the same way:
+
+:::: compare
+
+```carve
+- ::: note
+  1. para text
+  :::
+```
+
+```html
+<ul>
+  <li>
+    <aside class="admonition note">
+      <ol>
+        <li>para text</li>
+      </ol>
+    </aside>
+  </li>
+</ul>
+```
+
+::::
+
+A two-item nested list is wrapped whole:
+
+:::: compare
+
+```carve
+- ::: note
+  - one
+  - two
+  :::
+```
+
+```html
+<ul>
+  <li>
+    <aside class="admonition note">
+      <ul>
+        <li>one</li>
+        <li>two</li>
+      </ul>
+    </aside>
+  </li>
+</ul>
+```
+
+::::
+
+A blank line between the opener and the nested list still opens the block:
+
+:::: compare
+
+```carve
+- ::: note
+
+  - para text
+  :::
+```
+
+```html
+<ul>
+  <li>
+    <aside class="admonition note">
+      <ul>
+        <li>para text</li>
+      </ul>
+    </aside>
+  </li>
+</ul>
+```
+
+::::
+
+NEGATIVE: with no closer, the opener stays literal text and the bullet starts an
+ordinary nested list:
+
+:::: compare
+
+```carve
+- ::: note
+  - para text
+```
+
+```html
+<ul>
+  <li>::: note
+    <ul>
+      <li>para text</li>
+    </ul>
+  </li>
+</ul>
+```
+
+::::
+
+NEGATIVE: a closer at column zero is outside the item, so it does not close the
+opener; the opener stays literal and the stray `:::` becomes a top-level
+paragraph:
+
+:::: compare
+
+```carve
+- ::: note
+  - para text
+:::
+```
+
+```html
+<ul>
+  <li>::: note
+    <ul>
+      <li>para text</li>
+    </ul>
+  </li>
+</ul>
+<p>:::</p>
+```
+
+::::
+
+GUARD: an empty body (opener immediately followed by its closer) still opens:
+
+:::: compare
+
+```carve
+- ::: note
+  :::
+```
+
+```html
+<ul>
+  <li>
+    <aside class="admonition note">
+
+    </aside>
+  </li>
+</ul>
+```
+
+::::
+
+## Footnote definition inside a container is collected
+
+A footnote definition is document-level metadata: it is collected and resolved
+even when it sits inside a blockquote or a list item (PART 9 §16). The reference
+resolves to an endnote and the container that held the definition is left empty.
+
+Definition inside a blockquote:
+
+::: compare
+
+```carve
+See [^a].
+
+> [^a]: note body
+```
+
+```html
+<p>See <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<blockquote>
+
+</blockquote>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note body<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+Definition inside a list item:
+
+::: compare
+
+```carve
+See [^a].
+
+- [^a]: note body
+```
+
+```html
+<p>See <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<ul>
+  <li></li>
+</ul>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note body<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## Cyclic cross-reference resolves to one level
+
+A `</#id>` cross-reference resolves to ONE level: it links to the target and
+adopts the target's text, flattening any nested cross-reference in that text
+(PART 9 §19). This makes a self-reference or a mutual cycle safe -- no infinite
+expansion.
+
+A self-reference resolves once:
+
+::: compare
+
+```carve
+# A </#a>
+```
+
+```html
+<section id="A">
+  <h1>A <a href="#A">A </a></h1>
+</section>
+```
+
+:::
+
+A mutual cycle resolves to one level on each side:
+
+::: compare
+
+```carve
+# A </#b>
+
+# B </#a>
+```
+
+```html
+<section id="A">
+  <h1>A <a href="#B">B </a></h1>
+</section>
+<section id="B">
+  <h1>B <a href="#A">A </a></h1>
+</section>
+```
+
+:::
+
+A normal (non-cyclic) cross-reference still resolves:
+
+::: compare
+
+```carve
+# Intro
+
+See </#intro>.
+```
+
+```html
+<section id="Intro">
+  <h1>Intro</h1>
+  <p>See <a href="#Intro">Intro</a>.</p>
+</section>
+```
+
+:::
+
+## Trojan-Source: heading ids are NFC-normalized and strip invisible controls
+
+A heading id is NFC-normalized and stripped of bidi-override / isolate controls
+and zero-width characters (PART 9 §26), so visually identical source cannot
+produce diverging ids and an invisible control cannot smuggle a different
+target.
+
+<!-- The carve body holds a precomposed e-acute (U+00E9). -->
+A precomposed `é` (U+00E9) yields id `Café`:
+
+::: compare
+
+```carve
+# Café
+```
+
+```html
+<section id="Café">
+  <h1>Café</h1>
+</section>
+```
+
+:::
+
+<!-- The carve body holds a decomposed e (U+0065) + COMBINING ACUTE ACCENT (U+0301). -->
+A decomposed `e` + U+0301 yields the SAME id `Café` (NFC), while the rendered
+heading text keeps the author's decomposed sequence:
+
+::: compare
+
+```carve
+# Café
+```
+
+```html
+<section id="Café">
+  <h1>Café</h1>
+</section>
+```
+
+:::
+
+<!-- The carve body holds A, RIGHT-TO-LEFT OVERRIDE (U+202E), B, ZERO WIDTH SPACE (U+200B), C. -->
+A heading containing U+202E and U+200B yields an id with NEITHER (`ABC`); the
+rendered text drops the bidi-override but keeps the zero-width space:
+
+::: compare
+
+```carve
+# A‮B​C
+```
+
+```html
+<section id="ABC">
+  <h1>AB​C</h1>
+</section>
+```
+
+:::
+
+## Trojan-Source: rendered text and code strip bidi-override controls
+
+A bidi-override / isolate control in rendered text or in a code span is dropped
+(PART 9 §26): it is DOM-inert, and entity-encoding it would let it decode back
+to the raw control downstream, so it is removed rather than escaped.
+
+<!-- The carve body holds a, RIGHT-TO-LEFT OVERRIDE (U+202E), b. -->
+In paragraph text the control is stripped:
+
+::: compare
+
+```carve
+a‮b
+```
+
+```html
+<p>ab</p>
+```
+
+:::
+
+<!-- The carve body holds a code span: a, RIGHT-TO-LEFT OVERRIDE (U+202E), b. -->
+In a code span the control is stripped too (not entity-encoded):
+
+::: compare
+
+```carve
+`a‮b`
+```
+
+```html
+<p><code>ab</code></p>
+```
+
+:::
+
+## Scheme probe strips Unicode whitespace
+
+The URL scheme probe strips ALL Unicode whitespace -- including NARROW NO-BREAK
+SPACE (U+202F) -- before matching the scheme (PART 9 §25), so an obfuscated
+`javascript:` destination cannot slip past the denylist.
+
+<!-- The reference destination is prefixed by NARROW NO-BREAK SPACE (U+202F) before `javascript:`. -->
+A reference destination prefixed by U+202F then `javascript:` is rejected,
+leaving an empty `href`:
+
+::: compare
+
+```carve
+[click][a]
+
+[a]:  javascript:alert(1)
+```
+
+```html
+<p><a href="">click</a></p>
+```
+
+:::

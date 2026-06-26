@@ -28,7 +28,7 @@ export interface ExtensionRenderContext {
     renderers: StaticRenderers;
 }
 /** Renderer for a `:name[…]` extension node, keyed by extension name. */
-export type ExtensionRenderer = (node: Extension, ctx: ExtensionRenderContext) => string;
+export type ExtensionRenderer = (node: Extension, ctx: ExtensionRenderContext) => string | undefined;
 /**
  * Render helpers passed to a block-node renderer. `renderChildren` and
  * `indent` route back through the core renderer, so an extension emits its

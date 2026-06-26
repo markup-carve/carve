@@ -1616,6 +1616,20 @@ EOF = (* end of file *) ;
       closer). Equal-length fences do not nest. A bare opener with no
       matching closer ahead is literal text.
 
+      FENCE OPENER WITH A NESTED-LIST BODY: a `:::` opener inside a LIST
+      ITEM opens its block even when the opener's body is a nested list
+      (`- item` / `1. item`). The matching closer is located at the ITEM
+      CONTENT COLUMN (the column the opener starts at), not at column zero;
+      a `:::` at column zero is outside the item and does NOT close it. With
+      a valid closer, the bullet/ordered marker lines are the admonition's
+      body and the block wraps the nested `<ul>`/`<ol>`. A blank line
+      between the opener and the nested list still opens the block, and an
+      empty body (opener immediately followed by its closer) opens too. With
+      NO matching closer, the opener degrades to literal text and the marker
+      lines form an ordinary nested list. The corpus pins these
+      (docs/examples.md "Fence opener with a nested-list body inside a list
+      item").
+
       The two tiers for a typed block:
 
       Tier 1 -- CANONICAL ADMONITION TYPES render as a semantic
@@ -1824,7 +1838,13 @@ EOF = (* end of file *) ;
       - Definitions may appear anywhere (order-independent); the FIRST
         definition for a label wins. A body is the def line plus any
         following lines indented by >= 2 spaces (single blank lines
-        allowed between chunks), parsed as blocks.
+        allowed between chunks), parsed as blocks. A definition is
+        document-level metadata: it is COLLECTED and RESOLVED even when it
+        sits INSIDE A CONTAINER (a blockquote or a list item). The reference
+        resolves to the one endnotes section and the container that held the
+        definition renders EMPTY (the definition is not left behind as
+        content). The corpus pins this (docs/examples.md "Footnote
+        definition inside a container is collected").
       - A reference with NO matching definition renders as literal source
         text `[^label]` (a trailing `{attrs}` on an unresolved ref is not
         round-tripped -- a marginal mistyped-label edge). An UNREFERENCED
@@ -1944,6 +1964,14 @@ EOF = (* end of file *) ;
       - `</#id>` clones the target heading's full inline children, so a
         heading with markup (`# *Setup*`) yields a link that KEEPS the
         markup (`<a href="#…"><strong>Setup</strong> …</a>`).
+      - A `</#id>` cross-reference resolves to exactly ONE LEVEL: it links
+        to the target and adopts the target's text, FLATTENING any nested
+        cross-reference in that text (a `</#…>` in the cloned heading text is
+        not re-expanded). One-level resolution makes a self-reference
+        (`# A </#a>`) and a mutual cycle (`# A </#b>` + `# B </#a>`) SAFE --
+        each side resolves once, no infinite expansion. A normal, non-cyclic
+        crossref still resolves. The corpus pins this (docs/examples.md
+        "Cyclic cross-reference resolves to one level").
       - `</#id>` to a NUMBERED CAPTION (a figure / table / listing / equation
         whose caption carries a number placeholder and an `{#id}`) yields the
         caption's LABEL + NUMBER ("Figure 1"), markup preserved, NOT the
@@ -2117,11 +2145,18 @@ EOF = (* end of file *) ;
         destination (`href`), image source (`src`), and autolink -- an HTML
         renderer MUST reject any URL whose scheme is `javascript`, `vbscript`,
         `data`, or `file`, emitting an EMPTY value (`href=""` / `src=""`).
-        Scheme detection MUST first strip leading ASCII control characters,
-        spaces, tabs, and newlines (which browsers ignore when resolving a
-        scheme). A `data:` exception for images, if offered, MUST be opt-in.
-        An attribute-block `href`/`src` override (PART 4) MUST NOT reintroduce
-        a rejected scheme.
+        Scheme detection MUST first strip leading ASCII control characters
+        AND ALL UNICODE WHITESPACE -- not just ASCII space/tab/newline but
+        every Unicode space separator, including NARROW NO-BREAK SPACE
+        (U+202F), NBSP (U+00A0), the U+2000..U+200A spaces, MEDIUM
+        MATHEMATICAL SPACE (U+205F), IDEOGRAPHIC SPACE (U+3000), the
+        line/paragraph separators (U+2028 / U+2029), and the BOM (U+FEFF) --
+        before matching the scheme, so an obfuscated `<U+202F>javascript:`
+        destination cannot slip past the denylist. The corpus pins the
+        U+202F case (docs/examples.md "Scheme probe strips Unicode
+        whitespace"). A `data:` exception for images, if offered, MUST be
+        opt-in. An attribute-block `href`/`src` override (PART 4) MUST NOT
+        reintroduce a rejected scheme.
       - ATTRIBUTE NAME/VALUE HARDENING. On EVERY rendered element -- including
         elements emitted by extensions -- an HTML renderer MUST drop
         attributes whose name begins with `on` (case-insensitive) and the
@@ -2154,20 +2189,51 @@ EOF = (* end of file *) ;
       - RESOURCE BOUNDS (DoS). An implementation MUST parse and render any
         input in time and space LINEAR in input size (within a constant
         factor). It MUST enforce a FINITE nesting-depth cap for block and
-        inline containers (RECOMMENDED 100; an implementation MAY choose a
-        larger fixed cap), beyond which further openers degrade to literal
-        text rather than recursing. It MUST bound abbreviation, reference,
+        inline containers, beyond which further openers degrade to literal
+        text rather than recursing. The cap is a single constant
+        MAX_NESTING_DEPTH applied UNIFORMLY to blockquote, list, and
+        fenced-div / admonition nesting (and to footnote-body and the inline
+        recursion): the reference uses MAX_NESTING_DEPTH = 200, and a
+        conformant implementation SHOULD use the same value (it MAY choose a
+        larger fixed cap, but never an unbounded one). Past the cap every
+        container kind FLATTENS the same way -- the opener becomes literal
+        paragraph text -- rather than crashing. The same ceiling MUST apply
+        to recursive RENDER / RESOLVE / FILTER passes over a
+        programmatically constructed tree, not only the parse path. It MUST
+        bound abbreviation, reference,
         footnote, and crossref expansion so total work stays O(n): in
         particular an empty abbreviation term is rejected, a reference is not
         resolved by rescanning the whole output per occurrence, and a crossref
-        target is not cloned without bound. Recursive RENDER, RESOLVE, and
-        FILTER passes over a programmatically constructed tree MUST be subject
-        to the same finite ceiling, not only the parse path.
+        target is not cloned without bound.
       - NON-HTML TARGETS. The Markdown, plain-text, and terminal (ANSI)
         renderers MUST NOT become injection vectors either: text, code, math,
         AND URL values MUST be stripped of control characters before emission
         to a terminal, and a Markdown link/image title MUST escape the `"`
         that would otherwise terminate it.
+
+   26. TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING -- NORMATIVE (CVE-2021-42574
+      class). Visually deceptive or invisible Unicode MUST NOT produce
+      diverging heading ids nor smuggle a live control character into the
+      output. The corpus pins representative cases (docs/examples.md
+      "Trojan-Source: heading ids ...", "Trojan-Source: rendered text and
+      code ...").
+      - HEADING IDS are NFC-normalized and stripped of bidi-override /
+        isolate controls (U+202A..U+202E and U+2066..U+2069) and zero-width
+        characters (U+200B, U+200C, U+200D, U+2060, U+FEFF, U+00AD) before
+        slugging. Consequences: a precomposed `é` (U+00E9) and a decomposed
+        `e` + U+0301 yield the SAME id (NFC); a heading containing U+202E and
+        U+200B yields an id with NEITHER codepoint.
+      - RENDERED TEXT and CODE-SPAN / CODE-BLOCK content strip the
+        bidi-override / isolate controls (U+202A..U+202E, U+2066..U+2069):
+        these are DOM-inert, and entity-encoding one would let it DECODE BACK
+        to the raw control downstream, so they are REMOVED, not escaped. A
+        control in a code span is likewise stripped, NOT entity-encoded.
+      - PRESERVED in rendered text: the directional MARKS LRM (U+200E) and
+        RLM (U+200F), and the zero-width characters (U+200B etc.) -- these are
+        stripped from IDS (above) but kept in TEXT, since they can be
+        legitimate content and are not an override/isolate injection. (So
+        `# A<U+202E>B<U+200B>C` renders text `AB<U+200B>C` -- override gone,
+        zero-width kept -- with id `ABC`.)
 *)
 
 

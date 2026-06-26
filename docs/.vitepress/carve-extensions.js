@@ -75,6 +75,8 @@ const EXCLUDED = {
   tabNormalize: 'invisible whitespace transform, nothing to show',
   glossary: 'needs a ::: glossary definition block plus :term[…] uses, nothing to show zero-config',
   index: 'needs :index[…] markers plus a ::: index block, nothing to show zero-config',
+  colorSwatch: 'needs :color[…] markers, nothing to show zero-config',
+  headingNumbers: 'needs section-numbering config / overlaps core heading numbering',
 
   // 3. FencedRender presets with no client library loaded in the docs.
   d2: 'needs the D2 client library, not loaded in the docs',

@@ -33,13 +33,18 @@ const DANGEROUS_URL_SCHEMES = ['javascript', 'vbscript', 'data', 'file'];
  */
 /**
  * Characters dropped before scheme detection: C0 controls + ASCII space
- * (U+0000..U+0020), plus Unicode whitespace/separators that some contexts
- * tolerate around a scheme - NBSP (U+00A0), line/paragraph separators
- * (U+2028 / U+2029) and the BOM / zero-width no-break space (U+FEFF).
- * Stripping these defeats obfuscated schemes like " javascript:" with a
- * leading NBSP and keeps the probe aligned with carve-rs / carve-php.
+ * plus ALL Unicode whitespace/separators that some contexts tolerate around a
+ * scheme. The `\s` class (with the `u` flag) covers every Unicode space
+ * separator - NBSP (U+00A0), NARROW NO-BREAK SPACE (U+202F), the U+2000..U+200A
+ * spaces, MEDIUM MATHEMATICAL SPACE (U+205F), IDEOGRAPHIC SPACE (U+3000), OGHAM
+ * SPACE MARK (U+1680), line/paragraph separators (U+2028 / U+2029), the BOM /
+ * zero-width no-break space (U+FEFF), and ASCII whitespace - while the explicit
+ * C0 ranges still strip the non-whitespace controls `\s` omits (U+0000..U+0008,
+ * U+000E..U+001F). This is the most thorough strip: it defeats obfuscated
+ * schemes like " javascript:" prefixed with a NARROW NO-BREAK SPACE (U+202F)
+ * that the previous fixed list would have missed.
  */
-const SCHEME_PROBE_STRIP_RE = /[\u0000-\u0020\u00a0\u2028\u2029\ufeff]+/g;
+const SCHEME_PROBE_STRIP_RE = /[\u0000-\u0008\u000e-\u001f\s]+/gu;
 function sanitizeUrl(url, opts) {
     if (opts.sanitizeUrls === false)
         return url;
@@ -1048,8 +1053,11 @@ function renderInline(node, opts) {
                             return out;
                     }
                     const fn = e.renderers?.[node.name];
-                    if (fn)
-                        return fn(node, ctx);
+                    if (fn) {
+                        const out = fn(node, ctx);
+                        if (out !== undefined)
+                            return out;
+                    }
                 }
             }
             return renderExtension(node.name, node.content, node.attrs, opts);
@@ -1142,8 +1150,27 @@ const HTML_ESCAPE = {
     // Internal non-breaking-space placeholder (line-block indent / escaped space).
     '\ue000': '&nbsp;',
 };
+/**
+ * Bidi-override / isolate controls (CVE-2021-42574, "Trojan Source"). These can
+ * silently reorder the visual order of rendered text/code so the displayed
+ * source differs from what executes. We STRIP each wherever it appears in
+ * rendered TEXT or CODE. Stripping (not escaping to a numeric reference) is the
+ * mitigation that actually holds: an HTML parser DECODES `&#x202e;` back to the
+ * raw control, so an entity-escaped override still reorders the live DOM \u2014 only
+ * removing the character is DOM-inert. The directional MARKS U+200E / U+200F
+ * (LRM / RLM) are NOT stripped \u2014 they are legitimate for laying out genuine
+ * right-to-left text and do not reorder surrounding runs the way the
+ * overrides/isolates do. Zero-width characters are likewise left as-is in text
+ * (they are only stripped from generated ids; see heading-ids.ts).
+ */
+const BIDI_CONTROL_RE = /[\u202A-\u202E\u2066-\u2069]/g;
+function stripBidiControls(s) {
+    return s.replace(BIDI_CONTROL_RE, '');
+}
 function escapeHtml(s) {
-    return s.replace(/[&<>\u00a0\ue000]/g, (c) => HTML_ESCAPE[c]);
+    // Strip the Trojan-Source bidi controls, then escape the structural HTML
+    // metacharacters.
+    return stripBidiControls(s).replace(/[&<>\u00a0\ue000]/g, (c) => HTML_ESCAPE[c]);
 }
 function escapeAttr(s) {
     return s.replace(/[&<>"']/g, (c) => c === '"' ? '&quot;' : c === "'" ? '&apos;' : HTML_ESCAPE[c]);

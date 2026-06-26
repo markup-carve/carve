@@ -28,6 +28,7 @@ export interface ParseOptions {
      */
     extensions?: CarveExtension[];
 }
+export declare const MAX_NESTING_DEPTH = 200;
 export declare function parse(source: string, opts?: ParseOptions): Document;
 /**
  * Normalize an explicit `[label]: url` reference label for matching:

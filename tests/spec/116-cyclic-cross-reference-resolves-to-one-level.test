@@ -1,0 +1,33 @@
+Cyclic cross-reference resolves to one level
+
+```
+# A </#a>
+.
+<section id="A">
+  <h1>A <a href="#A">A </a></h1>
+</section>
+```
+
+```
+# A </#b>
+
+# B </#a>
+.
+<section id="A">
+  <h1>A <a href="#B">B </a></h1>
+</section>
+<section id="B">
+  <h1>B <a href="#A">A </a></h1>
+</section>
+```
+
+```
+# Intro
+
+See </#intro>.
+.
+<section id="Intro">
+  <h1>Intro</h1>
+  <p>See <a href="#Intro">Intro</a>.</p>
+</section>
+```
