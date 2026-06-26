@@ -2145,6 +2145,15 @@ EOF = (* end of file *) ;
         destination (`href`), image source (`src`), and autolink -- an HTML
         renderer MUST reject any URL whose scheme is `javascript`, `vbscript`,
         `data`, or `file`, emitting an EMPTY value (`href=""` / `src=""`).
+        The denylist additionally covers the OS protocol-handler and
+        command-execution class (CVE-2026-20841 class): `ms-msdt`, `ms-office`,
+        `ms-word`, `ms-excel`, `ms-powerpoint`, `ms-access`, `ms-visio`,
+        `ms-project`, `ms-publisher`, `ms-infopath`, `ms-spd`, `ms-search`,
+        `search-ms`, `ms-cxh`, `ms-cxh-full`, `shell`, `vscode`,
+        `vscode-insiders`, and `jar`. These route to an operating-system
+        handler that can launch a binary or open a macro-bearing document, so
+        they are blanked like `javascript:`. Ordinary web and contact schemes
+        -- `http`, `https`, `mailto`, `tel`, `ftp`, `sms` -- remain allowed.
         Scheme detection MUST first strip leading ASCII control characters
         AND ALL UNICODE WHITESPACE -- not just ASCII space/tab/newline but
         every Unicode space separator, including NARROW NO-BREAK SPACE

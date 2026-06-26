@@ -6614,6 +6614,72 @@ An autolink with a dangerous scheme is blanked the same way:
 
 :::
 
+The denylist also covers OS protocol-handler and command-execution schemes
+(CVE-2026-20841 class). These route to an operating-system handler that can
+launch a binary or open a macro-bearing document. A Windows document handler
+such as `ms-office:` is blanked, even when it embeds an inner URL:
+
+::: compare
+
+```carve
+[a](ms-office:ofe|u|http://evil/x.docm)
+```
+
+```html
+<p><a href="">a</a></p>
+```
+
+:::
+
+The Follina-class `ms-msdt:` handler is blanked:
+
+::: compare
+
+```carve
+[b](ms-msdt:/id)
+```
+
+```html
+<p><a href="">b</a></p>
+```
+
+:::
+
+The `shell:` scheme (and an `ms-msdt:` autolink) are blanked the same way:
+
+::: compare
+
+```carve
+[c](shell:Startup)
+
+<ms-msdt:/id>
+```
+
+```html
+<p><a href="">c</a></p>
+<p><a href="">ms-msdt:/id</a></p>
+```
+
+:::
+
+Ordinary web and contact schemes remain allowed -- only the dangerous classes
+are neutralized. An `https:` link and a `tel:` link are kept intact:
+
+::: compare
+
+```carve
+[d](https://ok.com)
+
+[e](tel:+15551234)
+```
+
+```html
+<p><a href="https://ok.com">d</a></p>
+<p><a href="tel:+15551234">e</a></p>
+```
+
+:::
+
 An image whose source uses a dangerous scheme keeps its `alt` but drops the
 `src` value:
 

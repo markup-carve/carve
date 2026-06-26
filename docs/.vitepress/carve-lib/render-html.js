@@ -12,8 +12,52 @@ import { AbbrBudget, utf8ByteLength } from './abbr-budget.js';
 // calls. Rendering is synchronous and single-threaded, so a module-scoped
 // tracker is safe and avoids threading a counter through every signature.
 let abbrBudget = null;
-/** Dangerous URL schemes blocked by default on links/images (denylist). */
-const DANGEROUS_URL_SCHEMES = ['javascript', 'vbscript', 'data', 'file'];
+/**
+ * Dangerous URL schemes blocked by default on links/images/autolinks and
+ * `{href=…}` / `{src=…}` attribute overrides (denylist). Two classes:
+ *
+ *  1. Script / inline-content schemes: `javascript`, `vbscript`, `data`,
+ *     `file` - the classic XSS / local-file vectors.
+ *  2. OS protocol-handler / command-execution schemes (the CVE-2026-20841
+ *     class): a markup link a consumer routes to the operating-system handler
+ *     can open a macro document or run a command - e.g. `ms-office:ofe|u|…`,
+ *     `ms-msdt:` (Follina), `search-ms:`, `shell:`, `vscode://`, `jar:`. These
+ *     never have a legitimate use in a content-markup document, so they are
+ *     blanked exactly like the script class above.
+ *
+ * This is the SINGLE source of truth referenced by both the link/image URL
+ * sanitizer and the attribute-override value sanitizer, so the spec corpus and
+ * sibling engines can pin the exact set. Match is case-insensitive and
+ * obfuscation-resistant (see `SCHEME_PROBE_STRIP_RE`). Legitimate non-command
+ * schemes (`http`, `https`, `mailto`, `tel`, `ftp`, `sms`, …) stay allowed.
+ */
+const DANGEROUS_URL_SCHEMES = [
+    // Script / inline-content / local-file vectors.
+    'javascript',
+    'vbscript',
+    'data',
+    'file',
+    // OS protocol-handler / command-execution schemes (CVE-2026-20841 class).
+    'ms-msdt',
+    'ms-office',
+    'ms-word',
+    'ms-excel',
+    'ms-powerpoint',
+    'ms-access',
+    'ms-visio',
+    'ms-project',
+    'ms-publisher',
+    'ms-infopath',
+    'ms-spd',
+    'ms-search',
+    'search-ms',
+    'ms-cxh',
+    'ms-cxh-full',
+    'shell',
+    'vscode',
+    'vscode-insiders',
+    'jar',
+];
 /**
  * Neutralize a dangerous URL on a link `href` or image `src`, defeating
  * `javascript:` / `data:` style injection.
@@ -72,8 +116,11 @@ function isDangerousAttrName(name) {
     return n.startsWith('on') || DANGEROUS_ATTR_NAMES.has(n);
 }
 const HTML_ATTR_NAME_RE = /^[A-Za-z_:][A-Za-z0-9_.:-]*$/;
-/** URL schemes that must never appear in an attribute value. */
-const DANGEROUS_VALUE_SCHEMES = new Set(['javascript', 'vbscript', 'data', 'file']);
+/** URL schemes that must never appear in an attribute value. Derived from the
+ *  single `DANGEROUS_URL_SCHEMES` denylist so `{href=…}` / `{src=…}` overrides
+ *  block exactly the same set as link/image URLs (script class + the
+ *  OS protocol-handler / command-execution class, CVE-2026-20841). */
+const DANGEROUS_VALUE_SCHEMES = new Set(DANGEROUS_URL_SCHEMES);
 /**
  * Blank an attribute value that carries a dangerous URL scheme or a CSS
  * `expression(...)`, so an author cannot smuggle script through an attribute
