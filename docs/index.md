@@ -34,6 +34,8 @@ features:
     details: "|= for headers, ^ for rowspan, < for colspan, + for multi-line cells. No separator row required."
   - title: Built-in Extensions
     details: ":type[content]{attrs} for keyboard hints, semantic spans, video embeds. @mentions and #tags as you'd expect from social platforms."
+  - title: Safe With Untrusted Input
+    details: "Always-on URL-scheme and attribute hardening, Trojan-Source stripping, and linear-time DoS limits neutralize the common Markdown attack classes with no separate sanitizer. Raw HTML is gated behind one switch (with a built-in safe mode), and Carve never executes embedded code (unlike MDX)."
 ---
 
 ## Quick Reference
@@ -154,9 +156,14 @@ admonition content
 ### Extensions, mentions, tags
 
 ```carve
-:youtube[VIDEO_ID]
 @username   #tagname
+:youtube[VIDEO_ID]
 ```
+
+`:name[content]{attrs}` is the generic inline-extension syntax; a specific embed
+like `:youtube[…]` is produced by a **registered extension** (built-in where
+shipped, otherwise a small custom one). `@mentions` and `#tags` render as inert
+spans until you supply URL templates.
 
 ### Comments
 
