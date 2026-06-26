@@ -1,8 +1,72 @@
 /** Citation key characters (Pandoc-compatible). */
 const KEY = String.raw `[\w][\w:.#$%&+?<>~/-]*`;
-// One `;`-item: optional prefix, optional `-` (suppress author), `@key`,
-// optional `, locator`. Prefix is lazy so it stops at the `-?@key`.
+// One `;`-item: optional prefix, optional single `-` marker, `@key`,
+// optional `, locator`. The marker is exactly one sign directly before `@`.
 const ITEM_RE = new RegExp(String.raw `^(.*?)(-?)@(${KEY})(?:,\s*(.*))?$`);
+/** Fixed citeproc locator vocabulary: canonical -> matchers. Flattened and
+ *  sorted longest-first so global longest-match wins. ASCII case-insensitive. */
+const LOCATOR_VOCAB = [
+    ['book', ['book', 'bk.']],
+    ['chapter', ['chapter', 'chaps.', 'chap.']],
+    ['column', ['column', 'cols.', 'col.']],
+    ['figure', ['figure', 'figs.', 'fig.']],
+    ['folio', ['folio', 'fols.', 'fol.']],
+    ['issue', ['issue', 'no.']],
+    ['line', ['line', 'll.', 'l.']],
+    ['note', ['note', 'nn.', 'n.']],
+    ['opus', ['opus', 'opp.', 'op.']],
+    ['page', ['pages', 'page', 'pp.', 'p.']],
+    ['paragraph', ['paragraph', 'paras.', 'para.', '¶¶', '¶']],
+    ['part', ['part', 'pts.', 'pt.']],
+    ['section', ['section', 'secs.', 'sec.', '§§', '§']],
+    ['sub verbo', ['sub verbo', 's.vv.', 's.v.']],
+    ['verse', ['verse', 'vv.', 'v.']],
+    ['volume', ['volume', 'vols.', 'vol.']],
+];
+const FLAT_TERMS = LOCATOR_VOCAB.flatMap(([canon, ms]) => ms.map((m) => [m, canon])).sort((a, b) => b[0].length - a[0].length);
+const VALUE_CHAR = /[0-9IVXLCDMivxlcdm.,&\- ]/;
+/** True when `ch` ends a label term (boundary). Roman letters are NOT a
+ *  boundary; a roman value is only reachable through whitespace/`.`. */
+function isLabelBoundary(ch) {
+    if (ch === undefined || ch === ' ' || ch === '\t')
+        return true;
+    if (ch >= '0' && ch <= '9')
+        return true;
+    return ch === '§' || ch === '¶';
+}
+/** Parse a raw locator substring into label / value / suffix. Pure; never
+ *  throws. See the design spec "Locator parsing" section. */
+export function parseLocator(loc) {
+    const s = loc.replace(/^\s+/, '');
+    const lower = s.toLowerCase();
+    let label;
+    let rest = s;
+    for (const [m, canon] of FLAT_TERMS) {
+        if (lower.startsWith(m.toLowerCase()) && isLabelBoundary(s[m.length])) {
+            label = canon;
+            rest = s.slice(m.length).replace(/^[ \t]+/, '');
+            break;
+        }
+    }
+    if (label === undefined) {
+        const c = rest[0];
+        if (c !== undefined && c >= '0' && c <= '9')
+            label = 'page';
+    }
+    if (label === undefined)
+        return s === '' ? {} : { suffixText: s };
+    let i = 0;
+    while (i < rest.length && VALUE_CHAR.test(rest[i]))
+        i++;
+    const value = rest.slice(0, i).replace(/[ ,&\-.]+$/, '');
+    const suffixText = rest.slice(i).replace(/^[ \t]+/, '');
+    const out = { label };
+    if (value !== '')
+        out.value = value;
+    if (suffixText !== '')
+        out.suffixText = suffixText;
+    return out;
+}
 /** Private marker key on the carrier div that the block renderer turns into
  *  the references list. */
 const REFS_MARK = 'data-cite-refs';
@@ -137,9 +201,17 @@ function parseItem(raw, ctx) {
     const item = { key: m[3], suppressAuthor: m[2] === '-' };
     if (prefixText !== '')
         item.prefix = ctx.parseInlines(prefixText);
-    const locText = m[4]?.trim();
-    if (locText)
-        item.locator = ctx.parseInlines(locText);
+    const locRaw = m[4];
+    if (locRaw !== undefined && locRaw.trim() !== '') {
+        item.locator = ctx.parseInlines(locRaw.trim()); // raw, printed as-is
+        const p = parseLocator(locRaw); // parse the RAW substring
+        if (p.label !== undefined)
+            item.locatorLabel = p.label;
+        if (p.value !== undefined)
+            item.locatorValue = p.value;
+        if (p.suffixText !== undefined)
+            item.suffix = ctx.parseInlines(p.suffixText);
+    }
     return item;
 }
 const matchCitation = (text, pos, ctx) => {
@@ -151,9 +223,14 @@ const matchCitation = (text, pos, ctx) => {
     const after = text[close + 1];
     if (after === '(' || after === '[' || after === '{')
         return null;
-    const inner = text.slice(pos + 1, close);
+    let inner = text.slice(pos + 1, close);
     if (!inner.includes('@'))
         return null;
+    let mode;
+    if (inner[0] === '+') {
+        mode = 'integral';
+        inner = inner.slice(1);
+    }
     const items = [];
     for (const part of inner.split(';')) {
         const item = parseItem(part, ctx);
@@ -164,6 +241,8 @@ const matchCitation = (text, pos, ctx) => {
     if (items.length === 0)
         return null;
     const node = { type: 'citation-group', items, raw: text.slice(pos, close + 1) };
+    if (mode)
+        node.mode = mode;
     return { node: node, end: close + 1 };
 };
 // ----- afterParse: collect [@key]: definitions ------------------------------
@@ -328,21 +407,42 @@ function renderGroup(node, ctx, mode, numbers, defs, hasBib) {
     const loc = (it) => (it.locator ? `, ${ctx.renderInlines(it.locator)}` : '');
     // Back-link anchor on the per-key item (only with a bibliography pool, §6.3).
     const idAttr = (it) => hasBib && it.useIndex ? `id="cite-${ctx.escapeAttr(it.key)}-${it.useIndex}" ` : '';
+    const dataAttrs = (it) => {
+        const a = [`data-cite-key="${ctx.escapeAttr(it.key)}"`];
+        if (it.suppressAuthor)
+            a.push('data-suppress-author="true"');
+        const pfx = flattenText(it.prefix);
+        if (pfx)
+            a.push(`data-cite-prefix="${ctx.escapeAttr(pfx)}"`);
+        if (it.locatorLabel)
+            a.push(`data-locator-label="${ctx.escapeAttr(it.locatorLabel)}"`);
+        if (it.locatorValue)
+            a.push(`data-locator="${ctx.escapeAttr(it.locatorValue)}"`);
+        const sfx = flattenText(it.suffix);
+        if (sfx)
+            a.push(`data-suffix="${ctx.escapeAttr(sfx)}"`);
+        return a.join(' ') + ' ';
+    };
+    const wrap = (s) => node.mode === 'integral'
+        ? `<span class="citation" data-cite-mode="integral">${s}</span>`
+        : s;
     if (mode === 'author-date') {
         const parts = node.items.map((it) => {
             const d = defs.get(it.key);
             const label = it.suppressAuthor
                 ? d.year ?? String(it.number ?? '')
                 : `${d.author ?? ''} ${d.year ?? ''}`.trim() || String(it.number ?? '');
-            return `${pre(it)}<a ${idAttr(it)}href="#ref-${ctx.escapeAttr(it.key)}">${ctx.escapeHtml(label)}</a>${loc(it)}`;
+            return `${pre(it)}<a ${idAttr(it)}${dataAttrs(it)}href="#ref-${ctx.escapeAttr(it.key)}">${ctx.escapeHtml(label)}</a>${loc(it)}`;
         });
-        return `(${parts.join('; ')})`;
+        const out = `(${parts.join('; ')})`;
+        return wrap(out);
     }
     const parts = node.items.map((it) => {
         const n = numbers.get(it.key);
-        return `${pre(it)}<a ${idAttr(it)}href="#ref-${ctx.escapeAttr(it.key)}">${n}</a>${loc(it)}`;
+        return `${pre(it)}<a ${idAttr(it)}${dataAttrs(it)}href="#ref-${ctx.escapeAttr(it.key)}">${n}</a>${loc(it)}`;
     });
-    return `[${parts.join(', ')}]`;
+    const out = `[${parts.join(', ')}]`;
+    return wrap(out);
 }
 function renderRefsList(ctx, mode, order, defs, uses, hasBib) {
     const pad = ctx.indent(ctx.level);
@@ -372,6 +472,19 @@ function renderRefsList(ctx, mode, order, defs, uses, hasBib) {
     return `${pad}<${tag} class="references">\n${items}\n${pad}</${tag}>`;
 }
 // ----- helpers --------------------------------------------------------------
+/** Plain-text flatten of an inline run for a lossy data-* attribute mirror. */
+function flattenText(nodes) {
+    if (!nodes)
+        return '';
+    let out = '';
+    for (const n of nodes) {
+        if (n.type === 'text')
+            out += n.value;
+        else if ('children' in n && Array.isArray(n.children))
+            out += flattenText(n.children);
+    }
+    return out;
+}
 function hasClass(b, cls) {
     const attrs = b.attrs;
     return !!attrs?.classes?.includes(cls);

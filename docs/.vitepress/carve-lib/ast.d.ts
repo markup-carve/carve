@@ -309,8 +309,15 @@ export interface Citation {
     key: string;
     /** Inline prefix text before the `@` (e.g. "see "). */
     prefix?: InlineNode[];
-    /** Inline locator after ", " (e.g. "p. 33"). */
+    /** Raw inline locator after ", " (e.g. "p. 33"); what the built-in
+     *  formatter prints. Retained for byte-stable visible output. */
     locator?: InlineNode[];
+    /** Canonical citeproc locator label (e.g. "page"), parsed from `locator`. */
+    locatorLabel?: string;
+    /** Locator value (plain text, e.g. "33-35, 38"), parsed from `locator`. */
+    locatorValue?: string;
+    /** Inline suffix after the locator value (e.g. "and <em>passim</em>"). */
+    suffix?: InlineNode[];
     /** `-@key` suppresses the author in author-date mode. */
     suppressAuthor: boolean;
     /** Assigned during resolve (numbered mode); undefined if key undefined. */
@@ -323,6 +330,8 @@ export interface Citation {
 export interface CitationGroup extends BaseNode {
     type: 'citation-group';
     items: Citation[];
+    /** Citation-level mode; set by a leading '+' after '['. Absent = non-integral (parenthetical). CSL/Citum CitationMode vocabulary. */
+    mode?: 'integral';
     /** Verbatim source `[…]` for the undefined-key literal fallback. */
     raw: string;
 }

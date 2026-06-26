@@ -60,6 +60,61 @@
       "slug": "12-code-callouts-marker-no-list",
       "feature": "code-callouts",
       "description": "An in-code marker still renders its bubble when no callout list follows; the prose stays a literal paragraph."
+    },
+    {
+      "slug": "13-citations-locator-page",
+      "feature": "citations-numbered",
+      "description": "A 'p.' locator sets data-locator-label=page and data-locator to the numeric value."
+    },
+    {
+      "slug": "14-citations-locator-range-suffix",
+      "feature": "citations-numbered",
+      "description": "A 'pp.' locator with a range and trailing text splits into value and suffix."
+    },
+    {
+      "slug": "15-citations-locator-labels",
+      "feature": "citations-numbered",
+      "description": "Multiple locator labels (chap., \u00a7) parse to their canonical citeproc names."
+    },
+    {
+      "slug": "16-citations-locator-default-page",
+      "feature": "citations-numbered",
+      "description": "A bare digit locator with no label defaults to data-locator-label=page."
+    },
+    {
+      "slug": "17-citations-locator-roman",
+      "feature": "citations-numbered",
+      "description": "A roman numeral locator with no label produces no data-locator-label; the value is a suffix."
+    },
+    {
+      "slug": "18-citations-label-boundary",
+      "feature": "citations-numbered",
+      "description": "Labels only match at a boundary; 'pageant' and 'voli' are not page/volume labels."
+    },
+    {
+      "slug": "19-citations-comma-suffix-trim",
+      "feature": "citations-numbered",
+      "description": "Text after the locator value (comma suffix) is captured as data-suffix."
+    },
+    {
+      "slug": "20-citations-empty-value",
+      "feature": "citations-numbered",
+      "description": "A label with no numeric value still sets data-locator-label; inline suffix is captured."
+    },
+    {
+      "slug": "21-citations-integral",
+      "feature": "citations-numbered",
+      "description": "A [+@key] group with leading '+' is wrapped in a span with data-cite-mode=integral."
+    },
+    {
+      "slug": "22-citations-group-marker-vs-item",
+      "feature": "citations-numbered",
+      "description": "'+' is a group-level flag (integral mode) not a per-item marker; per-item '+' is literal prefix text."
+    },
+    {
+      "slug": "23-citations-suppress-per-item",
+      "feature": "citations-numbered",
+      "description": "A '-' before @key in a non-integral group sets data-suppress-author per item."
     }
   ]
 }

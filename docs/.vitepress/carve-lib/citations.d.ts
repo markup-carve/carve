@@ -1,4 +1,12 @@
 import type { CarveExtension } from './extension.js';
+export interface ParsedLocator {
+    label?: string;
+    value?: string;
+    suffixText?: string;
+}
+/** Parse a raw locator substring into label / value / suffix. Pure; never
+ *  throws. See the design spec "Locator parsing" section. */
+export declare function parseLocator(loc: string): ParsedLocator;
 /** A CSL-JSON name object (the subset the minimal formatter reads). */
 export interface CslName {
     family?: string;

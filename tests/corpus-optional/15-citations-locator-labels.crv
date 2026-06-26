@@ -1,0 +1,6 @@
+A [@k, chap. 2] and [@k, § 5].
+
+[@k]: {author="K" year="2020"} K. (2020). *Work*. Pub.
+[@smith2020]: {author="Smith" year="2020"} Smith, J. (2020). *A Study*. Pub.
+[@a]: {author="Aye" year="2021"} Aye, A. (2021). *Notes*. Pub.
+[@b]: {author="Bee" year="2019"} Bee, B. (2019). *More*. Pub.
