@@ -13,6 +13,36 @@ Security hardening
 ```
 
 ```
+[a](ms-office:ofe|u|http://evil/x.docm)
+.
+<p><a href="">a</a></p>
+```
+
+```
+[b](ms-msdt:/id)
+.
+<p><a href="">b</a></p>
+```
+
+```
+[c](shell:Startup)
+
+<ms-msdt:/id>
+.
+<p><a href="">c</a></p>
+<p><a href="">ms-msdt:/id</a></p>
+```
+
+```
+[d](https://ok.com)
+
+[e](tel:+15551234)
+.
+<p><a href="https://ok.com">d</a></p>
+<p><a href="tel:+15551234">e</a></p>
+```
+
+```
 ![logo](javascript:stealCookies)
 .
 <img src="" alt="logo">

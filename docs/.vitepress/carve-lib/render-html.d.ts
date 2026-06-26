@@ -56,8 +56,10 @@ export interface RenderOptions {
     allowedUrlSchemes?: string[];
     /**
      * Customize the default scheme DENYLIST (case-insensitive). Ignored when
-     * `allowedUrlSchemes` is set. Defaults to
-     * `['javascript', 'vbscript', 'data', 'file']`.
+     * `allowedUrlSchemes` is set. Defaults to the `DANGEROUS_URL_SCHEMES` set:
+     * the script class (`javascript`, `vbscript`, `data`, `file`) plus the
+     * OS protocol-handler / command-execution class (`ms-office`, `ms-msdt`,
+     * `search-ms`, `shell`, `vscode`, `jar`, …) behind CVE-2026-20841.
      */
     deniedUrlSchemes?: string[];
     /**
