@@ -115,6 +115,11 @@
       "slug": "23-citations-suppress-per-item",
       "feature": "citations-numbered",
       "description": "A '-' before @key in a non-integral group sets data-suppress-author per item."
+    },
+    {
+      "slug": "24-citations-trailing-comma",
+      "feature": "citations-numbered",
+      "description": "A trailing comma with no locator ([@key,]) is ignored - the item is a normal citation, not verbatim text (carve#227)."
     }
   ]
 }
