@@ -397,6 +397,60 @@ with a pin. Best for email, PDF, archival HTML. The numbers flow only into
 </figure>
 ```
 
+A `style:` line (or a 4th comma field) lets the builder pick a palette — still
+one self-contained SVG, no network. Here is the *actual* output for three
+styles (these render inline in this page):
+
+````
+```map
+52.520,13.405,12
+Brandenburg Gate, Berlin
+style: light
+```
+````
+
+<div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start;margin:1rem 0">
+
+<figure style="margin:0;width:240px">
+<svg viewBox="0 0 240 140" width="240" role="img" aria-label="Light map">
+  <rect width="240" height="140" fill="#eef1f4"/>
+  <path d="M0 80 Q70 55 130 88 T240 70" fill="none" stroke="#cdd6df" stroke-width="9"/>
+  <path d="M60 0 L78 140" stroke="#cdd6df" stroke-width="6"/>
+  <circle cx="120" cy="70" r="7" fill="#e5484d" stroke="#fff" stroke-width="2"/>
+  <text x="120" y="100" text-anchor="middle" font-size="10" fill="#586069" font-family="ui-monospace,monospace">52.520, 13.405</text>
+</svg>
+<figcaption style="font-size:.8rem;color:#8b949e"><code>style: light</code></figcaption>
+</figure>
+
+<figure style="margin:0;width:240px">
+<svg viewBox="0 0 240 140" width="240" role="img" aria-label="Dark map">
+  <rect width="240" height="140" fill="#0f1922"/>
+  <path d="M0 80 Q70 55 130 88 T240 70" fill="none" stroke="#2d4a5a" stroke-width="9"/>
+  <path d="M60 0 L78 140" stroke="#2d4a5a" stroke-width="6"/>
+  <circle cx="120" cy="70" r="7" fill="#f0a020" stroke="#0f1922" stroke-width="2"/>
+  <text x="120" y="100" text-anchor="middle" font-size="10" fill="#9fb0bd" font-family="ui-monospace,monospace">52.520, 13.405</text>
+</svg>
+<figcaption style="font-size:.8rem;color:#8b949e"><code>style: dark</code></figcaption>
+</figure>
+
+<figure style="margin:0;width:240px">
+<svg viewBox="0 0 240 140" width="240" role="img" aria-label="Blueprint map">
+  <defs><pattern id="bp" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#2b5fb0" stroke-width="1"/></pattern></defs>
+  <rect width="240" height="140" fill="#103a87"/>
+  <rect width="240" height="140" fill="url(#bp)"/>
+  <path d="M0 80 Q70 55 130 88 T240 70" fill="none" stroke="#dce8ff" stroke-width="3" opacity=".8"/>
+  <circle cx="120" cy="70" r="7" fill="#fff" stroke="#103a87" stroke-width="2"/>
+  <text x="120" y="100" text-anchor="middle" font-size="10" fill="#dce8ff" font-family="ui-monospace,monospace">52.520, 13.405</text>
+</svg>
+<figcaption style="font-size:.8rem;color:#8b949e"><code>style: blueprint</code></figcaption>
+</figure>
+
+</div>
+
+The `style` is just data the builder maps to a palette — adding one is a table
+entry, not a new code path. (For Mode B the same `style` becomes the provider's
+`style=` query param: `osm-bright`, `dark-matter`, `satellite`, …)
+
 ### Mode B — build-time provider image (a real map, still one `<img>`)
 
 The seam calls a static-tile service at *build* time and emits the returned
