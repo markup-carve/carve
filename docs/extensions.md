@@ -735,12 +735,15 @@ markers are recognized **only inside fenced code**.
 - Inside a fenced code block, a `<n>` token (`n` = one or more ASCII digits)
   that is the **last non-whitespace content on its line** is a callout marker.
   Whitespace before it is ordinary code indentation and is preserved.
+  In-code markers render whenever the extension is enabled, independently of
+  whether an explanation list follows (a marked line with no bound list still
+  shows its bubble - the author placed the marker).
 - Immediately after the code block, a **callout list** binds the explanations: a
   paragraph whose every soft-break line has the form `<n> text` (a marker, a
   single space, then inline prose). The list binds only when (a) the code block
   contains at least one marker and (b) every line of that following paragraph is
-  a `<n> text` item; otherwise the paragraph is ordinary content and the code
-  `<n>` tokens stay literal.
+  a `<n> text` item; otherwise that paragraph is ordinary content (the list does
+  not bind) - the in-code markers still render as bubbles per the rule above.
 
 ### 10.2 Rendering
 

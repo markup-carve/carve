@@ -55,6 +55,11 @@
       "slug": "11-code-callouts-no-marker",
       "feature": "code-callouts",
       "description": "A code block with no marker does not bind the following list; the <n> line stays a literal paragraph."
+    },
+    {
+      "slug": "12-code-callouts-marker-no-list",
+      "feature": "code-callouts",
+      "description": "An in-code marker still renders its bubble when no callout list follows; the prose stays a literal paragraph."
     }
   ]
 }
