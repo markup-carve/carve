@@ -23,6 +23,7 @@ import { resolveHeadingIds, headingIdSlugOpts, } from './heading-ids.js';
 import { applyProfile as applyProfileImpl } from './profile-filter.js';
 import { renderHtml as renderHtmlImpl } from './render-html.js';
 import { renderMarkdown as renderMarkdownImpl, } from './render-markdown.js';
+import { renderCarve as renderCarveImpl, } from './render-carve.js';
 import { renderPlainText as renderPlainTextImpl, } from './render-plain.js';
 import { renderAnsi as renderAnsiImpl } from './render-ansi.js';
 export * from './ast.js';
@@ -93,6 +94,10 @@ export function renderHtml(ast, opts = {}) {
 export function renderMarkdown(ast, opts = {}) {
     return renderMarkdownImpl(ast, opts);
 }
+/** Render a resolved Carve AST to canonical Carve source. */
+export function renderCarve(ast, opts = {}) {
+    return renderCarveImpl(ast, opts);
+}
 /** Render a resolved Carve AST to plain text. */
 export function renderPlainText(ast, opts = {}) {
     return renderPlainTextImpl(ast, opts);
@@ -156,6 +161,20 @@ export function carveToMarkdown(source, opts = {}) {
     }), opts.extensions);
     doc = runProfile(doc, source, opts);
     return renderMarkdown(doc, opts);
+}
+/**
+ * Convenience: parse + render canonical Carve source in one call.
+ *
+ * Unlike the other `carveToX` helpers, the formatter deliberately does NOT run
+ * `resolve()` / extension transforms / profiles. Those are render-time
+ * enrichments (auto heading ids, footnote/crossref numbering, default
+ * attributes) and baking them back into the source would make the formatter
+ * non-conservative - it must format what the author wrote, not the resolved
+ * output. The semantic invariant still holds because `carveToHtml` re-applies
+ * resolution on the formatted source.
+ */
+export function carveToCarve(source, opts = {}) {
+    return renderCarve(parse(source, opts), opts);
 }
 /** Convenience: parse + resolve + render plain text in one call. */
 export function carveToPlainText(source, opts = {}) {

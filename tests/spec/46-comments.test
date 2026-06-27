@@ -49,3 +49,23 @@ bar
 <p>foo
 bar</p>
 ```
+
+```
+x
+  %% indented comment
+y
+.
+<p>x</p>
+<p>y</p>
+```
+
+```
+before
+
+  %% indented comment
+
+after
+.
+<p>before</p>
+<p>after</p>
+```

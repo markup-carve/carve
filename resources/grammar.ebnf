@@ -558,7 +558,12 @@ local_hard_break_block = local_hard_break_block_open, newline,
 local_hard_break_block_open = colon_fence, space, backslash ;
 
 (* --- Comments --- *)
-comment_line = "%%", {character}, newline ;
+(* A line comment may be indented: optional leading whitespace before `%%` does
+   not matter, so an indented line whose first non-whitespace content is `%%` is
+   a comment line just like one in the first column. Like every block, it
+   interrupts an open paragraph (the lines before and after become separate
+   paragraphs) and renders nothing. *)
+comment_line = [whitespace], "%%", {character}, newline ;
 
 comment_block = comment_block_open, newline,
                 {character | newline},

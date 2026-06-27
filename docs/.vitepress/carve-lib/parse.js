@@ -177,9 +177,13 @@ const RE_FRONTMATTER_CLOSE = /^---\s*$/;
 // FORMAT must follow `=` with no intervening space (```= html is not raw).
 const RE_RAW_FENCE = /^(`{3,}|~{3,})\s*=([a-zA-Z][\w-]*)\s*$/;
 // Comments (§4.13): a `%%%`+ line opens/closes a block comment (matched
-// by length); a `%%` line is a line comment. Neither is rendered.
+// by length); a `%%` line is a line comment. Neither is rendered. A line
+// comment may be indented: leading whitespace before `%%` does not matter, so an
+// indented line whose first non-whitespace content is `%%` is a comment line
+// (it interrupts an open paragraph and renders nothing), matching carve-php /
+// carve-rs and the grammar's `comment_line = [whitespace], "%%", …`.
 const RE_COMMENT_BLOCK = /^%{3,}\s*$/;
-const RE_COMMENT_LINE = /^%%/;
+const RE_COMMENT_LINE = /^[ \t]*%%/;
 // A bare fence-closer line (` ``` ` / `~~~`, no info), used only by the
 // paragraph-interruption closer lookahead's negative cache (§10).
 const RE_FENCE_CLOSER = /^\s{0,3}(`{3,}|~{3,})\s*$/;
@@ -724,7 +728,7 @@ function parseBlockInner(lexer) {
         return parseCommentBlock(lexer);
     if (RE_COMMENT_LINE.test(line)) {
         const l = lexer.consume();
-        return { type: 'comment', block: false, content: l.slice(2).replace(/^\s/, '') };
+        return { type: 'comment', block: false, content: l.replace(/^[ \t]*%%/, '').replace(/^\s/, '') };
     }
     if (RE_LINE_BLOCK_OPEN.test(line) && lineBlockHasCloser(lexer))
         return parseLineBlock(lexer);

@@ -4,12 +4,14 @@ import { type AsciiHeadingIdMode } from './heading-ids.js';
 import { Profile } from './profile.js';
 import { type RenderOptions } from './render-html.js';
 import { type MarkdownRenderOptions } from './render-markdown.js';
+import { type CarveRenderOptions } from './render-carve.js';
 import { type PlainTextRenderOptions } from './render-plain.js';
 import { type AnsiRenderOptions } from './render-ansi.js';
 export * from './ast.js';
 export type { ParseOptions } from './parse.js';
 export type { RenderOptions } from './render-html.js';
 export type { MarkdownRenderOptions } from './render-markdown.js';
+export type { CarveRenderOptions } from './render-carve.js';
 export type { PlainTextRenderOptions } from './render-plain.js';
 export type { AnsiRenderOptions } from './render-ansi.js';
 export type { CarveExtension, ExtensionRenderer, ExtensionRenderContext, BlockExtensionRenderer, BlockExtensionRenderContext, InlineMatch, BlockMatch, MatcherContext, InlineMatcher, BlockMatcher, } from './extension.js';
@@ -72,6 +74,8 @@ export declare function parse(source: string, opts?: ParseOptions): Document;
 export declare function renderHtml(ast: Document, opts?: RenderOptions): string;
 /** Render a resolved Carve AST to Markdown. */
 export declare function renderMarkdown(ast: Document, opts?: MarkdownRenderOptions): string;
+/** Render a resolved Carve AST to canonical Carve source. */
+export declare function renderCarve(ast: Document, opts?: CarveRenderOptions): string;
 /** Render a resolved Carve AST to plain text. */
 export declare function renderPlainText(ast: Document, opts?: PlainTextRenderOptions): string;
 /** Render a resolved Carve AST to ANSI terminal text. */
@@ -91,6 +95,18 @@ export declare function resolve(doc: Document, opts?: {
 export declare function carveToHtml(source: string, opts?: ParseOptions & RenderOptions & ProfileOptions): string;
 /** Convenience: parse + resolve + render Markdown in one call. */
 export declare function carveToMarkdown(source: string, opts?: ParseOptions & MarkdownRenderOptions & ProfileOptions): string;
+/**
+ * Convenience: parse + render canonical Carve source in one call.
+ *
+ * Unlike the other `carveToX` helpers, the formatter deliberately does NOT run
+ * `resolve()` / extension transforms / profiles. Those are render-time
+ * enrichments (auto heading ids, footnote/crossref numbering, default
+ * attributes) and baking them back into the source would make the formatter
+ * non-conservative - it must format what the author wrote, not the resolved
+ * output. The semantic invariant still holds because `carveToHtml` re-applies
+ * resolution on the formatted source.
+ */
+export declare function carveToCarve(source: string, opts?: ParseOptions & CarveRenderOptions): string;
 /** Convenience: parse + resolve + render plain text in one call. */
 export declare function carveToPlainText(source: string, opts?: ParseOptions & PlainTextRenderOptions & ProfileOptions): string;
 /** Convenience: parse + resolve + render ANSI terminal text in one call. */
