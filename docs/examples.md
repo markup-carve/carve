@@ -3304,6 +3304,45 @@ bar</p>
 
 :::
 
+Leading whitespace before `%%` does not matter: an indented line whose first
+non-whitespace content is `%%` is a line comment, exactly like one in the first
+column. It renders nothing and, like any block, interrupts an open paragraph.
+
+::: compare
+
+```carve
+x
+  %% indented comment
+y
+```
+
+```html
+<p>x</p>
+<p>y</p>
+```
+
+:::
+
+An indented comment-only line on its own renders nothing (it does not leave an
+empty paragraph).
+
+::: compare
+
+```carve
+before
+
+  %% indented comment
+
+after
+```
+
+```html
+<p>before</p>
+<p>after</p>
+```
+
+:::
+
 ## Raw blocks
 
 A ` ```=FORMAT ` block (a code fence whose info string is `=FORMAT`) passes its

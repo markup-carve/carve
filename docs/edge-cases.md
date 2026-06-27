@@ -295,6 +295,11 @@ stack in a single left-to-right pass: linear time, no backtracking.
 - Without preceding whitespace `%%` is literal: `The value is 50%% increase`
   stays literal text — percentages are safe
 - `\%%` (escaped first percent) is literal
+- A **whole-line** comment may be **indented**: leading whitespace before `%%`
+  does not matter, so an indented line whose first non-whitespace content is
+  `%%` is a comment line just like one in the first column. Like any block it
+  interrupts an open paragraph and renders nothing (it leaves no empty
+  paragraph)
 
 **Block comments:**
 - `%%%` must be on **its own line** to open/close
