@@ -1,6 +1,6 @@
 (* ============================================================================
    Carve Markup Language - EBNF Grammar
-   Version: 0.1-draft
+   Version: 0.1
 
    This grammar defines the syntax of Carve, a post-Markdown lightweight markup
    language with visual mnemonics and human-centered design.
@@ -577,6 +577,21 @@ comment_block_close = "%%%", {'%'} ;  (* must match opener length *)
    is not formed inside code spans / inline-raw, nor when the first % is
    escaped -- a semantic constraint stated in PART 9, not context-free. *)
 inline_comment = "%%", {character - newline} ;
+
+(* PROVENANCE MARKER (convention, not a distinct production): tooling such as
+   `carve fmt --stamp` may write a trailing comment recording the spec version a
+   document was last processed under and the engine that wrote it. It is an
+   ordinary comment -- a `%%` line or a `%%%` block -- so it renders nothing; it
+   is identified by a `carve-version:` field as its first key. Two forms:
+     %% carve-version: 0.1; generated-by: carve-js 0.1.0
+   or
+     %%%
+     carve-version: 0.1
+     generated-by: carve-js 0.1.0
+     %%%
+   It is tool-written and deterministic (no timestamp), replace-in-place (a tool
+   updates the existing marker rather than appending a second), and lives at the
+   END of the document. Authors do not hand-write it. See PART 9 / docs. *)
 
 (* --- Raw Blocks --- *)
 raw_block = code_fence_open, [space], "=", format_name, newline,

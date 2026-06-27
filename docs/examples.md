@@ -3343,6 +3343,26 @@ after
 
 :::
 
+Tooling (`carve fmt --stamp`) may append a *provenance marker* - a trailing
+comment recording the spec version a document was processed under and the engine
+that wrote it. It is an ordinary comment, so it renders nothing; it is
+deterministic (no timestamp) and tool-managed (replaced in place, not
+hand-written).
+
+::: compare
+
+```carve
+Hello.
+
+%% carve-version: 0.1; generated-by: carve-js 0.1.0
+```
+
+```html
+<p>Hello.</p>
+```
+
+:::
+
 ## Raw blocks
 
 A ` ```=FORMAT ` block (a code fence whose info string is `=FORMAT`) passes its

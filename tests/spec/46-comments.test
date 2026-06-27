@@ -69,3 +69,11 @@ after
 <p>before</p>
 <p>after</p>
 ```
+
+```
+Hello.
+
+%% carve-version: 0.1; generated-by: carve-js 0.1.0
+.
+<p>Hello.</p>
+```

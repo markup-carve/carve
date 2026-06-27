@@ -306,6 +306,16 @@ stack in a single left-to-right pass: linear time, no backtracking.
 - Content can contain anything except the same-length delimiter
 - Use more `%` to nest: `%%%%` can contain `%%%`
 
+**Provenance marker (tool-written):**
+- Tooling such as `carve fmt --stamp` writes a trailing comment recording the
+  spec version a document was processed under and the engine that wrote it, e.g.
+  `%% carve-version: 0.1; generated-by: carve-js 0.1.0` (or the `%%%` block form)
+- It is an ordinary comment, so it renders nothing; it is identified by its
+  `carve-version:` first field
+- Deterministic (no timestamp) and replace-in-place (a tool updates the existing
+  marker, never appends a second), and it sits at the **end** of the document
+- Authors do not hand-write it; a plain `carve fmt` preserves it unchanged
+
 **Examples:**
 ```carve
 %% This is a comment
