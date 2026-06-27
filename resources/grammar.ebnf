@@ -981,6 +981,30 @@ footnote_definition = "[^", footnote_label, "]:", space, inline_content, newline
    references list; author-date (configuration) emits `(Author Year)` + an
    alphabetical list. The references list is appended at document end or
    injected into a `::: references` block.
+
+   INTEGRAL MARKER (issue #226): a single leading `+` immediately after `[`
+   marks the whole citation cluster as integral (author-in-text). The `+` is
+   a group-level flag - there is no per-item integral mode. An integral cluster
+   is wrapped in `<span class="citation" data-cite-mode="integral">…</span>`.
+   The vocabulary (`integral` / `non-integral`) matches CSL / Citum `CitationMode`.
+   Example: `[+@smith2020]`, `[+see @smith2020, p. 12]`.
+
+   TYPED LOCATORS (issue #226): the locator text after the first `,` in an item
+   is parsed into a citeproc `{label, value}` structure plus a trailing suffix.
+   Longest-match, boundary rule: a term matches only when followed by end-of-locator,
+   whitespace, a digit, `§`, or `¶`. On a leading digit with no preceding term,
+   the default label is `page`. Trailing `,`, `&`, `-`, `.` are trimmed from the
+   value; the remainder is the suffix. Canonical labels with recognized abbreviations:
+     book (bk.) | chapter (chap., chaps.) | column | figure | folio |
+     issue (no.) | line (l., ll.) | note (n., nn.) | opus | page (p., pp.) |
+     paragraph (para., ¶) | part | section (sec., §) | sub verbo (s.v.) |
+     verse (v., vv.) | volume (vol.)
+
+   DATA-* HTML CONTRACT (issue #226): each citation anchor carries, in order,
+   only the attributes that apply: `data-cite-key`, `data-suppress-author`,
+   `data-cite-prefix`, `data-locator-label`, `data-locator`, `data-suffix`.
+   Prefix and suffix are flattened plain text.
+
    Undefined behavior (impls MAY differ, NOT corpus-pinned): same-author-year
    disambiguation letters (e.g. `2020a` / `2020b`) are out of scope for v1 -
    the bare year is emitted. A `;` inside a locator is not supported (it splits
@@ -989,7 +1013,8 @@ footnote_definition = "[^", footnote_label, "]:", space, inline_content, newline
    undefined key renders the verbatim source; a `[@k]{...}` is a span, not a
    citation; a `[@k, a; b]` with a `;` in the locator is literal text.
    Pinned in tests/corpus-optional (features citations-numbered /
-   citations-author-date and the failure-mode cases). *)
+   citations-author-date and the failure-mode cases, plus typed-locator,
+   integral, and suppress-author enrichment cases 13-24). *)
 citation_group = '[', ['+'], citation_item, {';', citation_item}, ']' ;
 citation_item = [inline_content], ['-'], '@', citation_key, [',', space, inline_content] ;
 (* A single leading `+` immediately after `[` sets the whole citation cluster to
