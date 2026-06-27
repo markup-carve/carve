@@ -161,6 +161,9 @@ export default defineConfig({
   description: 'A post-Markdown markup language with visual mnemonics and human-centered design.',
   base: '/carve/',
   lang: 'en-US',
+  // README.md is a GitHub-facing orientation file for people browsing the
+  // docs/ source on GitHub; it is not a site page.
+  srcExclude: ['README.md'],
   cleanUrls: true,
   lastUpdated: true,
 
