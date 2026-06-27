@@ -19,10 +19,10 @@ Or skim the **[Cheat Sheet](/cheatsheet)** — the whole syntax fits on one page
 
 ## 2. Render Carve in your project
 
-There are two reference parsers. Both turn a Carve string into HTML.
+There are three reference engines. All of them turn a Carve string into HTML and pass the shared Tier-1 corpus.
 
 ::: warning Registry packages are in progress
-The npm and Packagist releases are not published yet. For now, install the parsers straight from their Git repositories. The package names below are the ones the published releases will use.
+The npm, Packagist, and crates.io releases are not published yet. For now, install the parsers straight from their Git repositories. The package names below are the ones the published releases will use.
 :::
 
 ### JavaScript / TypeScript — [`carve-js`](https://github.com/markup-carve/carve-js)
@@ -39,6 +39,24 @@ const html = carveToHtml('/italic/, *bold*, and a heading')
 
 `carveToHtml` is the one-call entry point; the package also exposes the AST (`parse`) and the Markdown / plain-text / ANSI renderers.
 
+### Rust — [`carve-rs`](https://github.com/markup-carve/carve-rs)
+
+The Rust engine is a third reference-quality implementation — Tier-1 corpus passing — and ships a `carve` CLI tool.
+
+```bash
+# Crate not yet published to crates.io; install from source:
+cargo install --git https://github.com/markup-carve/carve-rs carve-cli
+```
+
+```bash
+# CLI: convert a .crv file to HTML
+carve render input.crv
+```
+
+**Browser / Node via WebAssembly — [`carve-wasm`](https://github.com/markup-carve/carve-wasm)**
+
+carve-wasm wraps carve-rs as a WebAssembly module, usable in the browser or any Node/Bun/Deno environment. It is early-stage; see the repository for the current API.
+
 ### PHP — [`carve-php`](https://github.com/markup-carve/carve-php)
 
 ```bash
@@ -52,6 +70,18 @@ $html = (new CarveConverter())->convert('/italic/, *bold*, and a heading');
 ```
 
 `CarveConverter::convert()` returns HTML; the package also ships `parse()` plus Markdown / plain-text / ANSI renderers and HTML/Markdown/Djot converters.
+
+### Language bindings
+
+Higher-level wrappers built on carve-rs are available for other languages. Registry packages are not yet published; install from the respective GitHub repositories.
+
+| Language | Project | Install (once published) |
+|---|---|---|
+| Python | [carve-py](https://github.com/markup-carve/carve-py) | `pip install carve-lang` |
+| Ruby | [carve-rb](https://github.com/markup-carve/carve-rb) | `gem install carve-lang` |
+| Go | [carve-go](https://github.com/markup-carve/carve-go) | `go get github.com/markup-carve/carve-go` |
+
+The full ecosystem — editor integrations, framework plugins, and more — is listed on the **[Ecosystem](/ecosystem)** page.
 
 ## 3. Learn the syntax
 
