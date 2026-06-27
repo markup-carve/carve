@@ -1,0 +1,60 @@
+# Versioning & Changelog
+
+This page defines how the **Carve specification** is versioned and records every
+normative change. It is the source of truth for "did the language change in a way
+that affects my documents?"
+
+## Versions
+
+The spec carries a version (the `Version:` field in
+[`grammar.ebnf`](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf)),
+currently **0.1**. It is pre-1.0: the language is still settling, so a minor bump
+may include behavior changes. From 1.0 onward, behavior changes reserve a major
+bump.
+
+Implementations declare which spec version they conform to. The `carve fmt
+--stamp` tool records it inside a document as a trailing
+[provenance marker](/edge-cases):
+
+```
+%% carve-version: 0.1; generated-by: carve-js 0.1.0
+```
+
+So a document carries the spec version it was last processed under, and this page
+tells you what changed since — together they answer whether a document needs
+attention after a spec upgrade.
+
+## Change categories
+
+Every changelog entry is tagged with its migration impact:
+
+- **`[behavior]`** — changes the rendered output of some existing input. These
+  are the entries that can require **document migration**: a `.crv` that rendered
+  one way before may render differently. Review these when upgrading.
+- **`[clarification]`** — pins or documents existing behavior without changing
+  output. No migration needed; impls may have converged to match.
+- **`[addition]`** — new syntax or capability. Backward-compatible: existing
+  documents are unaffected; only documents that opt into the new construct change.
+
+When upgrading a document across spec versions, you only need to act on
+**`[behavior]`** entries between the document's stamped `carve-version` and the
+target version.
+
+## Changelog
+
+### 0.1
+
+Initial released version. Establishes the grammar, the PART 9 semantic
+constraints, the conformance corpus, and the tooling conventions (`carve fmt`,
+the provenance marker, profiles, the extension contract). Everything prior to
+0.1 was draft; there is no earlier released version to migrate from.
+
+<!--
+Format for future entries (newest first):
+
+### 0.2
+
+- [behavior] <what changed in rendered output> (#PR). Migration: <what authors do>.
+- [clarification] <what was pinned> (#PR).
+- [addition] <new syntax> (#PR).
+-->

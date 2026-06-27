@@ -222,6 +222,7 @@ export default defineConfig({
               { text: 'Writing an Extension (QR case study)', link: '/extension-tutorial' },
               { text: 'Profiles Contract', link: '/profiles' },
               { text: 'Edge Cases', link: '/edge-cases' },
+              { text: 'Versioning & Changelog', link: '/versioning' },
             ],
           },
           {
@@ -315,6 +316,7 @@ export default defineConfig({
               { text: 'Static Rendering Recipes', link: '/static-rendering-recipes' },
             { text: 'Performance', link: '/performance' },
             { text: 'Edge Cases', link: '/edge-cases' },
+            { text: 'Versioning & Changelog', link: '/versioning' },
           ],
         },
         {
