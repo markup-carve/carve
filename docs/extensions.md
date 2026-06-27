@@ -290,17 +290,58 @@ Grammar: `resources/grammar.ebnf` PART 9 §22. Narrative: `case-study/syntax.md`
   those tails is claimed. This is exactly the gap core leaves (core declines
   tail-less brackets), so citations never hijack core syntax.
 - Items are `;`-separated; each is `[prefix] [-] @key [, locator]`. The leading
-  `-` suppresses the author in author-date mode.
+  `-` suppresses the author in author-date mode (per item).
+- A single leading `+` immediately after `[` marks the whole cluster as
+  **integral** (author-in-text): `[+@smith2020]`, `[+see @smith2020, p. 12]`.
+  Mode is a group property - there is no per-item integral flag. Vocabulary
+  matches CSL / Citum `CitationMode` (`integral` / `non-integral`).
 - Definitions are in-document, one per line, footnote-style:
   `[@key]: {author= year=}? entry`. The optional `{author= year=}` feeds
   author-date output; its quotes may be straight or smart (the typographic
   pass runs over entry prose). A leading `@` label is reserved from reference
   definitions in core (parallels `[^...]:` precedence).
 
-### 4.2 Lifecycle
+### 4.2 Typed Locators
+
+The locator text after the first `,` in an item is parsed into a structured
+`{label, value}` pair plus a trailing suffix, so a host CSL processor receives
+the same data it would from Pandoc.
+
+**Matching rules:**
+
+- Canonical labels (longest-match, boundary rule - a term matches only when
+  followed by end-of-locator, whitespace, a digit, `§`, or `¶`):
+
+  | Label | Abbreviations |
+  |---|---|
+  | book | bk. |
+  | chapter | chap., chaps. |
+  | column | |
+  | figure | |
+  | folio | |
+  | issue | no. |
+  | line | l., ll. |
+  | note | n., nn. |
+  | opus | |
+  | page | p., pp. |
+  | paragraph | para., ¶ |
+  | part | |
+  | section | sec., § |
+  | sub verbo | s.v. |
+  | verse | v., vv. |
+  | volume | vol. |
+
+- A leading digit with no preceding label defaults to `page`.
+- The value runs to end-of-locator or the next `;`; trailing `,`, `&`, `-`,
+  `.` are trimmed. The remainder (after the value) is the **suffix**.
+- An unrecognized locator string is emitted as-is (no label, no value split).
+
+### 4.3 Lifecycle
 
 - **Matcher** (inline): claims `[...@key...]` per the rule above, producing a
-  `citation-group` node carrying its verbatim `raw` source.
+  `citation-group` node carrying its verbatim `raw` source and the parsed
+  integral flag, suppress-author flags, prefixes, locator labels/values, and
+  suffixes.
 - **afterParse**: collects and removes `[@key]:` definition lines; resets
   per-document state so a reused extension instance does not leak across runs.
 - **beforeRender**: numbers cited+defined keys in first-citation order and
@@ -311,15 +352,39 @@ Grammar: `resources/grammar.ebnf` PART 9 §22. Narrative: `case-study/syntax.md`
   list (`<ol class="references">` numbered, sorted `<ul class="references">`
   author-date).
 
-### 4.3 Conformance (pinned in `tests/corpus-optional`)
+### 4.4 HTML data-\* contract
 
-- `citations-numbered`, `citations-author-date`: the five forms, the references
-  list, and the `{author= year=}` author-date path.
+Each rendered citation anchor carries the following `data-*` attributes, in
+canonical order, emitting only the attributes that apply for the item:
+
+| Attribute | Value |
+|---|---|
+| `data-cite-key` | the citation key |
+| `data-suppress-author` | `"true"` when `-` was present |
+| `data-cite-prefix` | flattened plain-text prefix (when present) |
+| `data-locator-label` | parsed label name (when a label was matched) |
+| `data-locator` | parsed locator value (when present) |
+| `data-suffix` | flattened plain-text suffix (when present) |
+
+An integral cluster wraps all its items in:
+
+```html
+<span class="citation" data-cite-mode="integral">…</span>
+```
+
+### 4.5 Conformance (pinned in `tests/corpus-optional`)
+
+- `citations-numbered`, `citations-author-date`: the base forms, the references
+  list, and the `{author= year=}` author-date path (corpus cases 05-06).
 - Failure modes are pinned too: a group with any undefined key renders verbatim;
   `[@k]{...}` is a span, not a citation; a `;` inside a locator falls back to
-  literal text.
+  literal text (cases 07-09).
+- **Enrichment** (cases 13-24): typed locators (label match, boundary rule,
+  default-page, value trim, suffix), integral cluster marker (`[+@key]`),
+  per-item suppress-author, group-marker disambiguation vs. per-item flags,
+  and trailing-comma edge case.
 
-### 4.4 Undefined (impls MAY differ; NOT corpus-pinned)
+### 4.6 Undefined (impls MAY differ; NOT corpus-pinned)
 
 - Same-author-year disambiguation letters (`2020a` / `2020b`) are out of scope
   for v1; the bare year is emitted.
@@ -390,7 +455,7 @@ no-cell-row defer, and the thead/tbody rowspan clamp).
 
 Render a reference list from citation keys resolved against an external
 CSL-JSON source (issue #199). This is the external-data follow-up the Citations
-extension (§4) explicitly deferred (§4.4): §4 resolves `@key` against in-document
+extension (§4) explicitly deferred (§4.6): §4 resolves `@key` against in-document
 `[@key]:` definitions only; this extension adds a document-level bibliography
 pool. Off by default; enable per processor. Depends on Citations (§4) being
 enabled - it reuses the same `citation-group` nodes, numbering, and
@@ -421,7 +486,7 @@ enabled - it reuses the same `citation-group` nodes, numbering, and
 - A cited `@key` resolves against, in order: (a) an in-document `[@key]:`
   definition (§4), then (b) the CSL-JSON pool. An in-document definition wins on
   collision, so a document can override or supplement an external entry locally.
-- Only **cited** keys enter the reference list (the §4.4 rule holds: no
+- Only **cited** keys enter the reference list (the §4.6 rule holds: no
   `nocite`-style force-include of uncited entries).
 - Numbering is unchanged from §4: cited+resolved keys are numbered in
   first-citation order.
@@ -498,7 +563,7 @@ merge is a host concern, not pinned here.
 - BibTeX (`.bib`) ingestion - convert to CSL-JSON upstream.
 - Arbitrary `.csl` style rendering (the renderer-plugin point above).
 - Same-author-year disambiguation letters (`2020a` / `2020b`), inherited from
-  §4.4 - the bare year is emitted.
+  §4.6 - the bare year is emitted.
 
 ## 7. Glossary (Tier-3)
 

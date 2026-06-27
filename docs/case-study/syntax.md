@@ -296,7 +296,25 @@ Smith [@smith2020] and others [see @jones2019, p. 4] agree.
 ```
 
 - **Forms:** `[@key]`, `[@key, p. 33]` (locator), `[see @key]` (prefix),
-  `[@a; @b]` (multiple), `[-@key]` (suppress author).
+  `[@a; @b]` (multiple), `[-@key]` (suppress author in author-date mode).
+- **Integral (author-in-text):** a single leading `+` after `[` marks the
+  whole cluster integral: `[+@smith2020]`, `[+see @smith2020, p. 12]`.
+  Wraps the rendered citation in
+  `<span class="citation" data-cite-mode="integral">`. Mode is group-level;
+  there is no per-item integral flag.
+- **Typed locators:** the locator after `,` is parsed into a CSL `{label,
+  value}` pair. Recognized labels include `p.` / `pp.` (page), `chap.`
+  (chapter), `sec.` / `§` (section), `vol.` (volume), `no.` (issue), and
+  more (full vocabulary in `../extensions.md` §4.2). A leading digit defaults
+  to `page`. Trailing separators (`,`, `&`, `-`, `.`) are trimmed from the
+  value; the remainder is the suffix. Examples:
+  - `[@key, p. 12]` - label `page`, value `12`
+  - `[@key, chap. 3, conclusion]` - label `chapter`, value `3`, suffix `conclusion`
+  - `[@key, 42]` - label `page` (default), value `42`
+- **`data-*` on anchors:** `data-cite-key`, `data-suppress-author`,
+  `data-cite-prefix`, `data-locator-label`, `data-locator`, `data-suffix`
+  (each only when present). This gives a host CSL processor the structure it
+  needs without any Carve-side style resolution.
 - **Output** is processor-configured: numbered (default) renders `[1]` with an
   ordered references list; author-date renders `(Smith 2020)`. The `{author=
   year=}` attributes feed author-date and are optional for numbered.

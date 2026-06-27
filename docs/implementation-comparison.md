@@ -142,6 +142,12 @@ extension_profile_note=this run compares default/no-opt-in output. Use --corpus=
 
 Optional raw output:
 
+> **Note:** the snapshot below is from 2026-06-19 (4 optional corpus pairs).
+> The optional corpus has since grown to 24 pairs (citations-numbered enrichment
+> cases 13-24 for typed locators, integral marker, and suppress-author; code
+> callouts cases 10-12; trailing-comma case 24). Regenerate with
+> `npm run compare:impls -- --corpus=optional` to get current counts.
+
 ```text
 Implementation summary
 profile=optional/opt-in corpus=optional corpus_pairs=4
