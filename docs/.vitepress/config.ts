@@ -236,6 +236,7 @@ export default defineConfig({
             text: 'Compare',
             items: [
               { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
+              { text: 'Coming from Markdown', link: '/migrate-from-markdown' },
               { text: 'Divergence from Djot', link: '/divergence-from-djot' },
               { text: 'Markup Language Comparison', link: '/markup-languages' },
               { text: 'Implementation Comparison', link: '/implementation-comparison' },
@@ -281,6 +282,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             { text: 'Get Started', link: '/get-started' },
+            { text: 'Coming from Markdown', link: '/migrate-from-markdown' },
             { text: 'Playground', link: '/playground' },
             { text: 'Cheat Sheet', link: '/cheatsheet' },
             { text: 'Examples', link: '/examples' },
@@ -301,6 +303,7 @@ export default defineConfig({
             { text: 'Formal Grammar', link: '/grammar' },
             { text: 'Native Features', link: '/native-features-analysis' },
             { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
+            { text: 'Coming from Markdown', link: '/migrate-from-markdown' },
             { text: 'Divergence from Djot', link: '/divergence-from-djot' },
             { text: 'Markup Language Comparison', link: '/markup-languages' },
             { text: 'Implementation Comparison', link: '/implementation-comparison' },
