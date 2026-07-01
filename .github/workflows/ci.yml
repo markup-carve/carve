@@ -72,3 +72,28 @@ jobs:
       # Build the VitePress site so a broken doc (e.g. unescaped Vue
       # interpolation) fails the PR instead of only the Pages deploy.
       - run: npm run docs:build
+
+  mermaid-lint:
+    name: mermaid diagrams valid
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Prefer HTTPS for Git dependencies
+        run: |
+          git config --global url."https://github.com/".insteadOf ssh://git@github.com/
+          git config --global url."https://github.com/".insteadOf git@github.com:
+
+      - run: npm ci
+
+      # Validate every Mermaid diagram embedded in tracked docs, including the
+      # ```mermaid blocks inside .crv sources (via --ext crv), so a broken
+      # diagram fails the PR instead of silently rendering as an error in the
+      # browser.
+      - run: npm run lint:mermaid
