@@ -7395,3 +7395,47 @@ leaving an empty `href`:
 ```
 
 :::
+
+## Footnotes placement
+
+A `::: footnotes` block flushes the endnotes section at that point instead of
+at the document end. All footnotes are included, even those referenced after
+the marker.
+
+::: compare
+
+```carve
+Intro[^a] and[^b].
+
+::: footnotes
+:::
+
+## After
+
+More text.
+
+[^a]: first note
+
+[^b]: second note
+```
+
+```html
+<p>Intro<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a>.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>first note<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>second note<a href="#fnref2" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+<section id="After">
+  <h2>After</h2>
+  <p>More text.</p>
+</section>
+```
+
+:::
