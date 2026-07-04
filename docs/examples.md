@@ -7402,7 +7402,7 @@ A `::: footnotes` block flushes the endnotes section at that point instead of
 at the document end. All footnotes are included, even those referenced after
 the marker.
 
-::: compare
+:::: compare
 
 ```carve
 Intro[^a] and[^b].
@@ -7438,4 +7438,4 @@ More text.
 </section>
 ```
 
-:::
+::::
