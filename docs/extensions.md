@@ -751,10 +751,16 @@ the opt-in.
 
 ### 8b.3 Degradation & conformance
 
-Both degrade gracefully (a labeled `<div>` floor). Not corpus-pinned; the
-cross-impl contract is the byte-identical `<nav>`/endnotes fragment. Each
-implementation pins the window selection, id resolution, and degradation in its
-own suite.
+Both degrade gracefully (a labeled `<div>` floor).
+
+- **`::: footnotes`** is core and its full output is byte-identical across
+  implementations, so it is **corpus-pinned** in the main corpus
+  (`120-footnotes-placement`).
+- **`::: toc`** is a Tier-3 extension whose embedded output carries
+  per-implementation block indentation (like Glossary and Index), so it is
+  **not** corpus-pinned; the cross-impl contract is the byte-identical `<nav>`
+  list fragment, and each implementation pins the window selection, id
+  resolution, and degradation in its own suite.
 
 ## 9. HeadingNumbers (Tier-3)
 
