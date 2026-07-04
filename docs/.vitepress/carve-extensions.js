@@ -75,6 +75,7 @@ const EXCLUDED = {
   tabNormalize: 'invisible whitespace transform, nothing to show',
   glossary: 'needs a ::: glossary definition block plus :term[…] uses, nothing to show zero-config',
   index: 'needs :index[…] markers plus a ::: index block, nothing to show zero-config',
+  tocPlacement: 'needs a ::: toc block plus document headings, nothing to show zero-config',
   colorSwatch: 'needs :color[…] markers, nothing to show zero-config',
   headingNumbers: 'needs section-numbering config / overlaps core heading numbering',
   codeCallouts: 'needs <n> markers inside a fenced code block plus a bound list, nothing to show zero-config',
