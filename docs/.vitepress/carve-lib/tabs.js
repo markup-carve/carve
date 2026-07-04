@@ -101,11 +101,13 @@ export function tabs(opts = {}) {
     };
     const renderCss = (wrapper, items, ctx) => {
         tabSetCounter++;
-        const setId = `${idPrefix}-${tabSetCounter}`;
+        // Generated ids join the document id namespace (extensions contract §2.6):
+        // an explicit {#tabset-1} or a colliding heading slug bumps these.
+        const setId = ctx.uniqueId(`${idPrefix}-${tabSetCounter}`);
         const pad = ctx.indent(ctx.level);
         let html = `${pad}<div${buildWrapperAttributes(wrapper, ctx)}>\n`;
         items.forEach((tab, index) => {
-            const inputId = tab.id ?? `${setId}-tab-${index + 1}`;
+            const inputId = tab.id ?? ctx.uniqueId(`${setId}-tab-${index + 1}`);
             const checked = tab.selected ? ' checked' : '';
             html +=
                 `<input type="radio" name="${ctx.escapeAttr(setId)}" ` +
@@ -123,13 +125,21 @@ export function tabs(opts = {}) {
     };
     const renderAria = (wrapper, items, ctx) => {
         tabSetCounter++;
-        const setId = `${idPrefix}-${tabSetCounter}`;
+        const setId = ctx.uniqueId(`${idPrefix}-${tabSetCounter}`);
         const pad = ctx.indent(ctx.level);
+        // Compute each tab/panel id pair ONCE and reuse in both render loops, so a
+        // bumped generated id keeps the ARIA wiring consistent (carve-php parity).
+        const pairIds = items.map((tab, index) => {
+            const num = index + 1;
+            return {
+                tab: tab.id ? `${ctx.escapeAttr(tab.id)}-tab` : ctx.uniqueId(`${setId}-tab-${num}`),
+                panel: tab.id ? `${ctx.escapeAttr(tab.id)}-panel` : ctx.uniqueId(`${setId}-panel-${num}`),
+            };
+        });
         let html = `${pad}<div${buildWrapperAttributes(wrapper, ctx, 'tablist')}>\n`;
         items.forEach((tab, index) => {
-            const num = index + 1;
-            const tabId = tab.id ? `${ctx.escapeAttr(tab.id)}-tab` : `${setId}-tab-${num}`;
-            const panelId = tab.id ? `${ctx.escapeAttr(tab.id)}-panel` : `${setId}-panel-${num}`;
+            const tabId = pairIds[index].tab;
+            const panelId = pairIds[index].panel;
             const selected = tab.selected ? 'true' : 'false';
             const tabindex = tab.selected ? '' : ' tabindex="-1"';
             html +=
@@ -139,9 +149,8 @@ export function tabs(opts = {}) {
                     `class="${ctx.escapeAttr(labelClass)}"${tabindex}>${ctx.escapeHtml(tab.label)}</button>\n`;
         });
         items.forEach((tab, index) => {
-            const num = index + 1;
-            const tabId = tab.id ? `${ctx.escapeAttr(tab.id)}-tab` : `${setId}-tab-${num}`;
-            const panelId = tab.id ? `${ctx.escapeAttr(tab.id)}-panel` : `${setId}-panel-${num}`;
+            const tabId = pairIds[index].tab;
+            const panelId = pairIds[index].panel;
             const hidden = tab.selected ? '' : ' hidden';
             html +=
                 `<div role="tabpanel" id="${panelId}" ` +

@@ -16,12 +16,14 @@ import { fileURLToPath } from 'node:url';
 import process from 'node:process';
 import { parseArgs } from 'node:util';
 import { applyMigrationFixes, djotMigrationWarnings, formatMigrationWarnings, lintCarve, formatLintWarnings, carveToHtml, carveToMarkdown, carveToCarve, carveToPlainText, carveToAnsi, } from './index.js';
+import { stampCarve } from './stamp.js';
+import { LIB_VERSION } from './version.js';
 const HELP = `carve - Carve markup tooling
 
 Usage:
   carve [options] [file]           Render (default; the 'render' word is optional)
   carve render [options] [file]    Render Carve to HTML / Markdown / text / ANSI / Carve
-  carve fmt [-w|--check] [files...] Format Carve source canonically
+  carve fmt [-w|--check] [--stamp] [files...] Format Carve source canonically
   carve fix [options] [files...]   Auto-fix delimiter collisions
   carve lint [files...]            Report problems without changing anything
 
@@ -41,6 +43,10 @@ fmt - format Carve source canonically.
     -w, --write    Rewrite the given files in place
         --check    Exit 1 if any file is not formatted (no writes)
         --stdout   Print formatted output to stdout (single file or stdin)
+        --stamp    Append a provenance marker (a comment recording the spec
+                   version and engine) at the end of the document; replaces an
+                   existing one. Deterministic (no timestamp); renders nothing.
+        --stamp-block  Like --stamp but writes the multi-line %%% block form.
 
 fix - rewrite Djot/Markdown delimiter collisions to their Carve equivalents,
 constructs that otherwise silently mis-render under Carve (e.g. **bold**
@@ -186,6 +192,8 @@ async function runFmt(args, io) {
                 write: { type: 'boolean', short: 'w' },
                 check: { type: 'boolean' },
                 stdout: { type: 'boolean' },
+                stamp: { type: 'boolean' },
+                'stamp-block': { type: 'boolean' },
                 help: { type: 'boolean', short: 'h' },
             },
             allowPositionals: true,
@@ -206,6 +214,13 @@ async function runFmt(args, io) {
         io.writeErr('carve fmt: choose at most one of --write, --check, --stdout\n');
         return 2;
     }
+    // `--stamp` writes a one-liner provenance marker; `--stamp-block` the block
+    // form. Format, then stamp, so the marker lands on canonical output.
+    const stampForm = values['stamp-block'] ? 'block' : values.stamp ? 'line' : null;
+    const format = (src) => {
+        const out = carveToCarve(src);
+        return stampForm ? stampCarve(out, `carve-js ${LIB_VERSION}`, stampForm) : out;
+    };
     const files = positionals;
     if (files.length === 0) {
         if (values.write) {
@@ -213,7 +228,7 @@ async function runFmt(args, io) {
             return 2;
         }
         const src = await io.readStdin();
-        const out = carveToCarve(src);
+        const out = format(src);
         if (values.check)
             return out === src ? 0 : 1;
         io.write(out);
@@ -240,7 +255,7 @@ async function runFmt(args, io) {
             hadError = true;
             continue;
         }
-        const out = carveToCarve(src);
+        const out = format(src);
         if (mode === 'stdout') {
             io.write(out);
             continue;

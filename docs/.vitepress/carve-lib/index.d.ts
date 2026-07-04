@@ -33,7 +33,7 @@ export { colorSwatch, type ColorSwatchOptions, type SwatchPosition, type SwatchS
 export { wikilinks, type WikilinksOptions } from './wikilinks.js';
 export { autolink, type AutolinkOptions } from './autolink.js';
 export { externalLinks, type ExternalLinksOptions } from './external-links.js';
-export { tableOfContents, type TableOfContentsOptions } from './table-of-contents.js';
+export { tableOfContents, tocPlacement, type TableOfContentsOptions } from './table-of-contents.js';
 export { headingPermalinks, type HeadingPermalinksOptions } from './heading-permalinks.js';
 export { codeGroup, type CodeGroupOptions } from './code-group.js';
 export { tabs, type TabsOptions, type TabsMode } from './tabs.js';
@@ -42,6 +42,8 @@ export { headingReference, type HeadingReferenceOptions } from './heading-refere
 export { defaultAttributes, type DefaultAttributesOptions, type DefaultAttributesMap, } from './default-attributes.js';
 export { Profile, LinkPolicy, ProfileViolationError, formatProfileViolation, canonicalType, CANONICAL_BLOCK_TYPES, CANONICAL_INLINE_TYPES, type DisallowedAction, type ProfileViolation, } from './profile.js';
 export { applyProfile, type ProfileFilterResult } from './profile-filter.js';
+export { stampCarve, buildMarker, stripTrailingMarker, type StampForm } from './stamp.js';
+export { SPEC_VERSION, LIB_VERSION } from './version.js';
 /**
  * Options shared by every `carveTo*` entry point for profile-based feature
  * restriction. A profile runs as an AST transform after resolve() and before

@@ -60,7 +60,8 @@ export function codeGroup(opts = {}) {
         if (items.length === 0)
             return undefined;
         groupCounter++;
-        const groupId = `${idPrefix}-${groupCounter}`;
+        // Generated ids join the document id namespace (extensions contract §2.6).
+        const groupId = ctx.uniqueId(`${idPrefix}-${groupCounter}`);
         const pad = ctx.indent(ctx.level);
         // Wrapper attributes: wrapperClass first, then any extra classes the author
         // added (except 'code-group'), then non-class attributes.
@@ -73,7 +74,7 @@ export function codeGroup(opts = {}) {
         attrs.order = ['.class', ...(node.attrs?.order ?? []).filter((s) => s !== '.class')];
         let html = `${pad}<div${ctx.renderAttrs(attrs)}>\n`;
         items.forEach((item, index) => {
-            const inputId = `${groupId}-tab-${index + 1}`;
+            const inputId = ctx.uniqueId(`${groupId}-tab-${index + 1}`);
             const checked = item.selected ? ' checked' : '';
             html +=
                 `<input type="radio" name="${ctx.escapeAttr(groupId)}" ` +

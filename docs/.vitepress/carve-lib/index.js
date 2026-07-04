@@ -45,7 +45,7 @@ export { colorSwatch, } from './color-swatch.js';
 export { wikilinks } from './wikilinks.js';
 export { autolink } from './autolink.js';
 export { externalLinks } from './external-links.js';
-export { tableOfContents } from './table-of-contents.js';
+export { tableOfContents, tocPlacement } from './table-of-contents.js';
 export { headingPermalinks } from './heading-permalinks.js';
 export { codeGroup } from './code-group.js';
 export { tabs } from './tabs.js';
@@ -54,6 +54,8 @@ export { headingReference } from './heading-reference.js';
 export { defaultAttributes, } from './default-attributes.js';
 export { Profile, LinkPolicy, ProfileViolationError, formatProfileViolation, canonicalType, CANONICAL_BLOCK_TYPES, CANONICAL_INLINE_TYPES, } from './profile.js';
 export { applyProfile } from './profile-filter.js';
+export { stampCarve, buildMarker, stripTrailingMarker } from './stamp.js';
+export { SPEC_VERSION, LIB_VERSION } from './version.js';
 /**
  * Apply a profile to a resolved document in the shared pipeline position
  * (after resolve, before render). Enforces maxLength on the source bytes

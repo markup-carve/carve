@@ -92,6 +92,25 @@ export function citations(opts = {}) {
     const numbers = new Map();
     const order = []; // cited+defined keys in first-citation order
     const uses = new Map(); // per-key use-site count (back-links)
+    // Deduplicated DOM ids (extensions contract §2.6): `cite-{key}-{n}` use-site
+    // anchors and `ref-{key}` entries join the document id namespace, so an
+    // explicit {#cite-foo-1} or a colliding heading slug bumps them. Reserved
+    // once per render, keyed so anchors and back-links stay consistent.
+    const citeIds = new Map();
+    const refIds = new Map();
+    let idsReserved = false;
+    const reserveIds = (ctx) => {
+        if (idsReserved)
+            return;
+        for (const [key, count] of uses) {
+            for (let n = 1; n <= count; n++) {
+                citeIds.set(`${key}-${n}`, ctx.uniqueId(`cite-${key}-${n}`));
+            }
+        }
+        for (const key of order)
+            refIds.set(key, ctx.uniqueId(`ref-${key}`));
+        idsReserved = true;
+    };
     return {
         name: 'citations',
         matchInline: matchCitation,
@@ -102,6 +121,9 @@ export function citations(opts = {}) {
             numbers.clear();
             order.length = 0;
             uses.clear();
+            citeIds.clear();
+            refIds.clear();
+            idsReserved = false;
             doc.children = collectDefs(doc.children, defs);
             // Seed the CSL-JSON pool: in-document defs win on collision (§6.2).
             for (const e of pool) {
@@ -154,13 +176,18 @@ export function citations(opts = {}) {
             return doc;
         },
         inlineRenderers: {
-            'citation-group': (node, ctx) => renderGroup(node, ctx, mode, numbers, defs, hasBib),
+            'citation-group': (node, ctx) => {
+                reserveIds(ctx);
+                return renderGroup(node, ctx, mode, numbers, defs, hasBib, citeIds, refIds);
+            },
         },
         blockRenderers: {
             div: (node, ctx) => {
                 const kv = node.attrs?.keyValues;
-                if (kv && REFS_MARK in kv)
-                    return renderRefsList(ctx, mode, order, defs, uses, hasBib);
+                if (kv && REFS_MARK in kv) {
+                    reserveIds(ctx);
+                    return renderRefsList(ctx, mode, order, defs, uses, hasBib, citeIds, refIds);
+                }
                 return undefined;
             },
         },
@@ -399,14 +426,17 @@ function cslYear(issued) {
         return String(y);
     return issued?.literal ?? '';
 }
-function renderGroup(node, ctx, mode, numbers, defs, hasBib) {
+function renderGroup(node, ctx, mode, numbers, defs, hasBib, citeIds, refIds) {
     // Any item whose key has no definition ⇒ render the source verbatim.
     if (node.items.some((it) => !defs.has(it.key)))
         return ctx.escapeHtml(node.raw);
     const pre = (it) => (it.prefix ? `${ctx.renderInlines(it.prefix)} ` : '');
     const loc = (it) => (it.locator ? `, ${ctx.renderInlines(it.locator)}` : '');
     // Back-link anchor on the per-key item (only with a bibliography pool, §6.3).
-    const idAttr = (it) => hasBib && it.useIndex ? `id="cite-${ctx.escapeAttr(it.key)}-${it.useIndex}" ` : '';
+    const idAttr = (it) => hasBib && it.useIndex
+        ? `id="${ctx.escapeAttr(citeIds.get(`${it.key}-${it.useIndex}`) ?? `cite-${it.key}-${it.useIndex}`)}" `
+        : '';
+    const refHref = (it) => ctx.escapeAttr(refIds.get(it.key) ?? `ref-${it.key}`);
     const dataAttrs = (it) => {
         const a = [`data-cite-key="${ctx.escapeAttr(it.key)}"`];
         if (it.suppressAuthor)
@@ -432,19 +462,19 @@ function renderGroup(node, ctx, mode, numbers, defs, hasBib) {
             const label = it.suppressAuthor
                 ? d.year ?? String(it.number ?? '')
                 : `${d.author ?? ''} ${d.year ?? ''}`.trim() || String(it.number ?? '');
-            return `${pre(it)}<a ${idAttr(it)}${dataAttrs(it)}href="#ref-${ctx.escapeAttr(it.key)}">${ctx.escapeHtml(label)}</a>${loc(it)}`;
+            return `${pre(it)}<a ${idAttr(it)}${dataAttrs(it)}href="#${refHref(it)}">${ctx.escapeHtml(label)}</a>${loc(it)}`;
         });
         const out = `(${parts.join('; ')})`;
         return wrap(out);
     }
     const parts = node.items.map((it) => {
         const n = numbers.get(it.key);
-        return `${pre(it)}<a ${idAttr(it)}${dataAttrs(it)}href="#ref-${ctx.escapeAttr(it.key)}">${n}</a>${loc(it)}`;
+        return `${pre(it)}<a ${idAttr(it)}${dataAttrs(it)}href="#${refHref(it)}">${n}</a>${loc(it)}`;
     });
     const out = `[${parts.join(', ')}]`;
     return wrap(out);
 }
-function renderRefsList(ctx, mode, order, defs, uses, hasBib) {
+function renderRefsList(ctx, mode, order, defs, uses, hasBib, citeIds, refIds) {
     const pad = ctx.indent(ctx.level);
     const keys = [...order];
     if (mode === 'author-date') {
@@ -462,11 +492,11 @@ function renderRefsList(ctx, mode, order, defs, uses, hasBib) {
             const n = uses.get(k) ?? 0;
             const links = [];
             for (let m = 1; m <= n; m++)
-                links.push(`<a href="#cite-${ctx.escapeAttr(k)}-${m}" class="ref-backref">↩</a>`);
+                links.push(`<a href="#${ctx.escapeAttr(citeIds.get(`${k}-${m}`) ?? `cite-${k}-${m}`)}" class="ref-backref">↩</a>`);
             if (links.length)
                 backlinks = (body ? ' ' : '') + links.join(' ');
         }
-        return `${pad}  <li id="ref-${ctx.escapeAttr(k)}">${body}${backlinks}</li>`;
+        return `${pad}  <li id="${ctx.escapeAttr(refIds.get(k) ?? `ref-${k}`)}">${body}${backlinks}</li>`;
     })
         .join('\n');
     return `${pad}<${tag} class="references">\n${items}\n${pad}</${tag}>`;

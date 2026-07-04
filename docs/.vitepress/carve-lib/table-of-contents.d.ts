@@ -26,4 +26,33 @@ export interface TableOfContentsOptions {
  * Configurable `minLevel`, `maxLevel`, `listType`, `cssClass`, and `position`.
  */
 export declare function tableOfContents(opts?: TableOfContentsOptions): CarveExtension;
+/**
+ * In-document TOC placement directive (Tier-3). Unlike {@link tableOfContents}
+ * (which injects one TOC at the document top or bottom), this renders a
+ * `<nav class="toc">` exactly where the author writes a `::: toc` block, so a
+ * long document can place its contents after an intro. Off by default.
+ *
+ * The block parses as a typed admonition (`kind: 'toc'`); this extension takes
+ * over its rendering. The level window is set with attributes on the line
+ * *before* the opener (Carve attaches `:::`-block attributes on a preceding
+ * attribute line, not inline on the opener):
+ *
+ * ```
+ * ::: toc              (all levels, 1-6)
+ * :::
+ *
+ * {depth=2}            (levels 1-2)
+ * ::: toc
+ * :::
+ *
+ * {from=2 to=4}        (levels 2-4)
+ * ::: toc
+ * :::
+ * ```
+ *
+ * Reads the resolved (dedup-aware) heading ids from `heading.attrs.id`, so
+ * links always match the emitted `<h*>` anchors. If the extension is absent the
+ * block degrades to a plain `<aside class="admonition toc">` placeholder.
+ */
+export declare function tocPlacement(): CarveExtension;
 //# sourceMappingURL=table-of-contents.d.ts.map

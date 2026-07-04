@@ -22,6 +22,13 @@ export interface ExtensionRenderContext {
     escapeHtml(s: string): string;
     escapeAttr(s: string): string;
     renderAttrs(attrs: Attrs | undefined): string;
+    /**
+     * Reserve a DOM id in the shared document id namespace (extensions
+     * contract §2.6): returns `baseId` when free, else the next free numeric
+     * suffix (`baseId-2`, `-3`, ...), never colliding with explicit `{#id}`
+     * attributes, generated heading ids, or previously generated ids.
+     */
+    uniqueId(baseId: string): string;
     /** The active render mode: `"interactive"` (default) or `"static"`. */
     mode: 'interactive' | 'static';
     /** Build-time renderers supplied for a static render (else empty). */

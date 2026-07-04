@@ -7,11 +7,16 @@
  * indented children for readability.
  */
 import { AbbrBudget, utf8ByteLength } from './abbr-budget.js';
+import { collectDocumentIds } from './document-ids.js';
 // Per-render abbreviation-expansion budget (DoS guard). Set at the top of
 // renderHtml() and reset to null when it returns, so it never leaks across
 // calls. Rendering is synchronous and single-threaded, so a module-scoped
 // tracker is safe and avoids threading a counter through every signature.
 let abbrBudget = null;
+// Per-render document id namespace (extensions contract §2.6): seeded with
+// every explicit / heading id in the resolved AST, consumed by extensions via
+// ctx.uniqueId(). Same save/restore discipline as abbrBudget above.
+let docIds = null;
 /**
  * Dangerous URL schemes blocked by default on links/images/autolinks and
  * `{href=…}` / `{src=…}` attribute overrides (denylist). Two classes:
@@ -186,12 +191,15 @@ export function renderHtml(ast, opts = {}) {
     // renderHtml() recursively while the outer document renders. Restoring the
     // previous tracker keeps the outer document's abbreviation budget intact.
     const prevBudget = abbrBudget;
+    const prevDocIds = docIds;
     abbrBudget = new AbbrBudget(ast.srcByteLength);
+    docIds = collectDocumentIds(ast);
     try {
         return renderDocumentBody(ast, opts);
     }
     finally {
         abbrBudget = prevBudget;
+        docIds = prevDocIds;
     }
 }
 function renderDocumentBody(ast, opts) {
@@ -209,9 +217,29 @@ function renderDocumentBody(ast, opts) {
     };
     // Number footnote refs by document reference order before rendering.
     const footnotes = collectFootnotes(ast);
+    // `::: footnotes` placement directive: when present, the endnotes section is
+    // flushed at the marker instead of at document end (see the intercept below).
+    let footnotesPlaced = false;
     for (const node of ast.children) {
         if (node.type === 'abbreviation-def')
             continue;
+        // `::: footnotes` flushes the endnotes section HERE instead of at document
+        // end. Only the first marker in a document that actually has footnotes
+        // places; any other `::: footnotes` (or one in a document with no notes)
+        // falls through to its default typed-div rendering. A document without the
+        // marker is byte-identical to the previous behavior (default end append).
+        if (isFootnotePlacement(node) && footnotes.order.length && !footnotesPlaced) {
+            // Preserve any blocks authored inside the placeholder before flushing.
+            for (const child of node.children) {
+                const r = renderBlock(child, opts, sectionStack.length);
+                if (r !== '')
+                    out.push(r);
+            }
+            closeTo(1); // emit the endnotes at top level, byte-identical to the default
+            out.push(renderFootnoteSection(ast, footnotes, opts));
+            footnotesPlaced = true;
+            continue;
+        }
         if (node.type === 'heading') {
             closeTo(node.level);
             const depth = sectionStack.length;
@@ -247,9 +275,14 @@ function renderDocumentBody(ast, opts) {
             out.push(rendered);
     }
     closeTo(1); // close any sections still open at end of document
-    if (footnotes.order.length)
+    if (footnotes.order.length && !footnotesPlaced)
         out.push(renderFootnoteSection(ast, footnotes, opts));
     return out.join('\n');
+}
+/** A `::: footnotes` placement directive (typed admonition, kind `footnotes`):
+ *  marks where the endnotes section should render instead of at document end. */
+function isFootnotePlacement(node) {
+    return node.type === 'admonition' && node.kind === 'footnotes';
 }
 /** Visit every inline array under a block subtree (depth-first). */
 function walkBlockInlines(node, visit) {
@@ -517,6 +550,7 @@ function blockCtx(opts, level) {
         escapeHtml,
         escapeAttr,
         renderAttrs,
+        uniqueId,
         mode: opts.mode ?? 'interactive',
         renderers: opts.renderers ?? {},
     };
@@ -528,9 +562,16 @@ function inlineCtx(opts) {
         escapeHtml,
         escapeAttr,
         renderAttrs,
+        uniqueId,
         mode: opts.mode ?? 'interactive',
         renderers: opts.renderers ?? {},
     };
+}
+/** Reserve an id in the per-render document id namespace (ctx.uniqueId). A
+ *  render always installs a registry; the bare fallback only covers an
+ *  extension calling a saved ctx outside renderHtml(). */
+function uniqueId(baseId) {
+    return docIds ? docIds.uniqueId(baseId) : baseId;
 }
 // Let an extension render a top-level heading's <h*> element via a
 // `blockRenderers.heading` renderer (the <section> wrapper stays core), tried
