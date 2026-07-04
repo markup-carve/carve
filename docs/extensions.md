@@ -692,6 +692,67 @@ back-links. Each implementation pins this in its own suite (occurrence
 anchoring, the codepoint sort, multi-occurrence back-links, and the
 no-marker / extension-off degradation).
 
+## 8b. Placement directives: TOC & footnotes (Tier-3)
+
+Two directives let the author control *where* a piece of derived content
+renders, extending the same collect-then-emit family as Glossary (§7) and
+Index (§8).
+
+### 8b.1 `::: toc` — table of contents
+
+A `::: toc` block renders a `<nav class="toc">` of the document's headings at
+that spot (rather than the top/bottom injection of the standalone TOC
+extension). Opt-in, off by default. The level window is set with attributes on
+the line **before** the opener (Carve attaches `:::`-block attributes on a
+preceding attribute line, never inline on the opener):
+
+```
+::: toc              (all levels, 1-6)
+:::
+
+{depth=2}            (levels 1-2)
+::: toc
+:::
+
+{from=2 to=4}        (levels 2-4)
+::: toc
+:::
+```
+
+- `{depth=N}` includes levels `1..N`; `{from=X to=Y}` is an explicit window
+  (swapped if inverted). Both clamp to 1-6; a non-numeric value falls back.
+- The author's `{#id .class}` is carried onto the `<nav>`; the directive-only
+  `depth`/`from`/`to` keys are stripped from the output.
+- Entries link to each heading's resolved, dedup-aware id (so links match the
+  emitted `<section id>` anchors). **Scope: document-level (top-level) headings**
+  — headings nested inside containers (`::: note`, blockquotes) are excluded,
+  matching the standalone TOC extension in carve-js / carve-rs.
+- The nested `<ul>` HTML is byte-identical to the standalone TOC extension
+  (one tag per line).
+
+### 8b.2 `::: footnotes` — endnotes placement
+
+A `::: footnotes` block relocates the endnotes section to that spot instead of
+the document end. This is **core** (no extension needed) — the marker itself is
+the opt-in.
+
+- All footnotes are flushed at the marker, including those referenced *after*
+  it in the document.
+- Only the **first** `::: footnotes` places; a second one degrades to an empty
+  `<div class="footnotes"></div>` placeholder (no duplicate section).
+- A document with **no** `::: footnotes` marker is **byte-identical** to the
+  default end-of-document rendering.
+- A marker in a document with no footnotes, or a `::: footnotes` nested inside a
+  footnote definition, degrades to an ordinary `<div class="footnotes">` and
+  never relocates.
+
+### 8b.3 Degradation & conformance
+
+Both degrade gracefully (a labeled `<div>` floor). Not corpus-pinned; the
+cross-impl contract is the byte-identical `<nav>`/endnotes fragment. Each
+implementation pins the window selection, id resolution, and degradation in its
+own suite.
+
 ## 9. HeadingNumbers (Tier-3)
 
 Auto-number sections and render numbered cross-references - "Section 1.2" or
