@@ -288,6 +288,9 @@ export interface Emoji extends BaseNode {
 export interface AutoLink extends BaseNode {
     type: 'autolink';
     href: string;
+    /** Display text = the raw content between `<>`: an explicit scheme is kept
+     *  (`<mailto:a@b>` shows `mailto:a@b`), an email autolink shows the address. */
+    text?: string;
 }
 export interface CrossRef extends BaseNode {
     type: 'crossref';

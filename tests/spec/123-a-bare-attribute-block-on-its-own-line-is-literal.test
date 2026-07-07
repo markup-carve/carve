@@ -1,0 +1,7 @@
+A bare attribute block on its own line is literal
+
+```
+{}
+.
+<p>{}</p>
+```

@@ -1,0 +1,7 @@
+Autolink display keeps the raw content
+
+```
+<mailto:a@b>
+.
+<p><a href="mailto:a@b">mailto:a@b</a></p>
+```

@@ -1571,7 +1571,11 @@ function parseBlockQuote(lexer) {
  */
 function isBlockImageLine(line) {
     const m = RE_BARE_IMAGE.exec(line);
-    return m !== null && (m[5] === undefined || !isEmptyAttrs(parseAttrs(m[5])));
+    // A trailing attr block must be a valid, non-empty payload; a digit-first /
+    // invalid one (`{#1a}`) is literal (§14), so the line is NOT a bare block
+    // image -- it falls back to a paragraph (inline image + literal braces).
+    return (m !== null &&
+        (m[5] === undefined || (isValidAttrPayload(m[5]) && !isEmptyAttrs(parseAttrs(m[5])))));
 }
 function parseBlockImage(lexer) {
     const line = lexer.consume();
@@ -3188,12 +3192,18 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                         img.title = unescapeAttrValue(title);
                     let len = close + 1 + ml[0].length;
                     if (ml[4]) {
-                        const a = parseAttrs(ml[4]);
-                        // An empty-attr trailing `{…}` is literal, not consumed.
-                        if (isEmptyAttrs(a))
+                        // A digit-first / invalid payload (`{#1a}`) is literal (§14), and an
+                        // empty-attr `{…}` is literal too -- neither is consumed.
+                        if (!isValidAttrPayload(ml[4])) {
                             len -= ml[4].length + 2;
-                        else
-                            img.attrs = a;
+                        }
+                        else {
+                            const a = parseAttrs(ml[4]);
+                            if (isEmptyAttrs(a))
+                                len -= ml[4].length + 2;
+                            else
+                                img.attrs = a;
+                        }
                     }
                     out.push(withPos(img, source, text, i, i + len));
                     i += len;
@@ -3372,6 +3382,9 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                 const auto = {
                     type: 'autolink',
                     href: href.includes('@') && !href.includes(':') ? `mailto:${href}` : href,
+                    // Display is the raw `<...>` content: a URI autolink keeps its scheme
+                    // (`<mailto:a@b>` -> `mailto:a@b`), an email autolink shows the address.
+                    text: href,
                 };
                 let consumed = m[0].length;
                 // Optional trailing {attrs} (djot): `<url>{.c}`. An explicit
@@ -3448,7 +3461,10 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             // preceding node and the `{`, so the block is NOT attached -- it stays
             // literal text (`<url> {.x}` keeps `{.x}`). Matches carve-php / carve-rs.
             const attr = !buf ? RE_INLINE_ATTR.exec(rest) : null;
-            if (attr && out.length) {
+            // A digit-first / otherwise invalid payload (`{#1a}`, `{2=v}`) makes the
+            // whole block literal (§14), same strict rule as block/span attrs — so
+            // `` `code`{#1a} `` keeps the braces rather than parsing a bogus attr.
+            if (attr && out.length && isValidAttrPayload(attr[1])) {
                 const prev = out[out.length - 1];
                 const parsed = parseAttrs(attr[1]);
                 // A `{...}` that yields no real attribute is literal text (PART 9

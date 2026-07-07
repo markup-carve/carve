@@ -1,0 +1,7 @@
+Classes are deduplicated
+
+```
+[x]{.a .a .b}
+.
+<p><span class="a b">x</span></p>
+```

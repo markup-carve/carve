@@ -723,7 +723,11 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
    `{…}`: both impls consume AND apply it -- `\`c\`{.x}` ->
    `<code class="x">c</code>`, and `#id`/`key=value` likewise. (Was an impl
    divergence where carve-js dropped the attributes; RESOLVED -- both now
-   apply them identically.) *)
+   apply them identically.) The STRICT attribute rule (§14) applies here and
+   to IMAGE trailing attrs exactly as to any other inline attribute: a
+   digit-first / invalid payload makes the block literal, so `\`c\`{#1a}` and
+   `![a](i){#1a}` keep the braces as text rather than parsing a bogus
+   attribute. *)
 
 (* --- Raw Inline (inline parallel of raw_block; PART 9 §20) --- *)
 (* A code span whose trailing attribute block is EXACTLY `{=format}` is raw
@@ -755,17 +759,23 @@ link_text = inline_content ;
    and `[a https://b c](/u)` (with an autolink extension) links the literal
    text `a https://b c` to `/u` rather than emitting a nested anchor. Mirrors
    CommonMark "links may not contain other links". *)
-link_destination = {(url_char - ')') | unicode_url_char}+ ;
+link_destination = {(url_char - ')') | '\' | unicode_url_char}+ ;
 (* The destination is ANY run of URL characters: absolute (`https://…`),
    relative (`/path`, `./file`), or a bare fragment (`#section`) -- there is
    no scheme requirement. It ends at the first whitespace (a following
    quoted run is the title) or at the first `)`; there is NO balanced-paren
    rule and NO escape inside the destination (`[x](http://a/b(c))` links to
    `http://a/b(c` and leaves the second `)` literal) -- percent-encode a
-   literal `)` as `%29`. There is NO angle-bracket-wrapped destination
-   form. A newline counts as whitespace, so it ENDS the destination: a
-   `(` whose run reaches the end of the line without a closing `)` is not
-   a link and stays literal (the `[t](url` / `more)` two-line case). *)
+   literal `)` as `%29`. A BACKSLASH is an ordinary destination character
+   kept verbatim (`[t](a\b)` links to `a\b`); there is no destination escape
+   processing, so `\)` does not escape the `)` -- it still ends the run
+   (`[t](a\)b)` links to `a\` and leaves `b)` literal). Note `url_char`
+   itself (used by autolinks) still EXCLUDES `\`, so `<http://a\b>` is not
+   an autolink; the backslash is a destination-only literal. There is NO
+   angle-bracket-wrapped destination form. A newline counts as whitespace,
+   so it ENDS the destination: a `(` whose run reaches the end of the line
+   without a closing `)` is not a link and stays literal (the `[t](url` /
+   `more)` two-line case). *)
 unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
 (* Titles accept double OR single quotes -- a deliberate enhancement
    over djot (which has no single-quote titles; it would fold `'...'`
@@ -810,6 +820,12 @@ autolink = '<', (url_autolink | email_autolink), '>', [attributes] ;
    inline-attribute carrier, examples.md): `<https://example.com>{.ext}`
    -> `<a href="https://example.com" class="ext">https://example.com</a>`.
    Same slot as every other inline carrier; both reference impls agree. *)
+(* DISPLAY TEXT -- NORMATIVE: the visible text is the RAW content between
+   `<` and `>`, verbatim. A url_autolink keeps its scheme
+   (`<mailto:a@b>` -> `<a href="mailto:a@b">mailto:a@b</a>`); an
+   email_autolink has no explicit scheme, so it shows the address and the
+   `mailto:` is added only to the href
+   (`<a@b.com>` -> `<a href="mailto:a@b.com">a@b.com</a>`). *)
 url_autolink = scheme, ':', {url_char}+ ;
 (* The autolink body is built from `url_char` only; `<` and `>` are NOT
    url_chars, so a `<` inside the brackets cannot be part of the body --
@@ -1166,9 +1182,11 @@ attribute_list = attribute, {whitespace+, attribute} ;
    appear in the source, with all classes merged into a single `class`
    attribute placed at the position of the FIRST class. So `{.a #b k=c}`
    -> `class="a" id="b" k="c"` and `{k=c .a #b}` -> `k="c" class="a"
-   id="b"`. Matches djot and carve-php. (Block-attribute merge keeps
-   each slot at its first-appearance position; values are last-wins,
-   PART 9 §15.) *)
+   id="b"`. (Block-attribute merge keeps each slot at its first-appearance
+   position; values are last-wins, PART 9 §15.) Repeated class VALUES are
+   DEDUPLICATED, keeping first-occurrence order: `{.a .a .b}` -> `class="a
+   b"`, and classes accumulated across adjacent/continued attribute blocks
+   dedup the same way. *)
 
 attribute = id_attribute | class_attribute | key_value_attribute
           | boolean_attribute ;
@@ -1203,6 +1221,10 @@ quoted_value = '"', { escaped_char | (character - '"' - '\') }, '"'
    reference impls treat it as literal text). Merge + reach semantics
    (including float-across-blank-lines BETWEEN separate blocks): §15. *)
 block_attributes = '{', opt_ws, attribute, {attr_separator, attribute}, opt_ws, '}', newline ;
+(* block_attributes requires AT LEAST ONE attribute -- there is NO block-level
+   blessed-empty form (unlike the inline `[text]{}` span, which is blessed).
+   A bare `{}` line is therefore NOT a block-attribute block; it stays a
+   literal paragraph (`<p>{}</p>`). *)
 opt_ws = {whitespace} ;                  (* spaces/tabs only, no line breaks *)
 attr_separator = (whitespace | continuation), opt_ws ;  (* one ws OR one line break *)
 continuation = newline, opt_ws ;         (* a single line break + indent; NOT a blank line *)

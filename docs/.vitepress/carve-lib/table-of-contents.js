@@ -1,3 +1,4 @@
+import { AbbrBudget, utf8ByteLength } from './abbr-budget.js';
 import { inlineText } from './heading-ids.js';
 function escapeHtml(s) {
     return s
@@ -5,6 +6,11 @@ function escapeHtml(s) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
+}
+/** Strip Trojan-Source bidi-override / isolate controls (§26), matching the
+ *  core's heading-text handling so a TOC link can't visually spoof its target. */
+function stripBidi(s) {
+    return s.replace(/[\u202A-\u202E\u2066-\u2069]/g, '');
 }
 // Build a nested list from a flat, document-order entry list. This is a
 // byte-faithful port of carve-php's TableOfContentsExtension::renderTocList so
@@ -33,6 +39,11 @@ function buildList(entries, listType) {
                     depth--;
                 }
                 html += '</li>\n';
+                // Record the current entry's (shallower) level so a later deeper
+                // heading nests under IT, not under the stale level of the list it
+                // reused. Without this, e.g. `# A / ### B / ## C / ### D` flattens D as
+                // a sibling of C instead of nesting it under C.
+                levelStack[depth - 1] = e.level;
             }
         }
         html += `<li><a href="#${escapeHtml(e.id)}">${escapeHtml(e.text)}</a>`;
@@ -80,7 +91,7 @@ export function tableOfContents(opts = {}) {
                 const id = h.attrs?.id;
                 if (!id || h.level < minLevel || h.level > maxLevel)
                     continue;
-                entries.push({ level: h.level, text: inlineText(h.children), id });
+                entries.push({ level: h.level, text: stripBidi(inlineText(h.children)), id });
             }
             if (entries.length === 0)
                 return doc;
@@ -125,7 +136,8 @@ function tocWindow(attrs) {
  *  author's `{#id .class}`, and drop the directive-only `depth`/`from`/`to`
  *  keys so they never render as HTML attributes. */
 function navAttrs(attrs) {
-    const a = { classes: ['toc', ...(attrs?.classes ?? [])] };
+    // `toc` leads; drop any author-supplied `toc` so `{.toc}` never doubles it.
+    const a = { classes: ['toc', ...(attrs?.classes ?? []).filter((c) => c !== 'toc')] };
     if (attrs?.id !== undefined)
         a.id = attrs.id;
     const kv = attrs?.keyValues;
@@ -139,20 +151,49 @@ function navAttrs(attrs) {
     }
     return a;
 }
-function renderToc(node, ctx, entries) {
-    const { minLevel, maxLevel } = tocWindow(node.attrs);
-    const picked = entries.filter((e) => e.level >= minLevel && e.level <= maxLevel);
+/** Depth-first, document-order collection of every heading with a resolved id,
+ *  recursing into container blocks. Stops at a heading (its inline children hold
+ *  no headings). Skips `pos` metadata. */
+function collectPlacementHeadings(node, out) {
+    if (!node || typeof node !== 'object')
+        return;
+    const typed = node;
+    if (typed.type === 'heading') {
+        const h = node;
+        const id = h.attrs?.id;
+        if (id !== undefined)
+            out.push({ level: h.level, text: stripBidi(inlineText(h.children)), id });
+        return;
+    }
+    for (const key of Object.keys(node)) {
+        if (key === 'pos')
+            continue;
+        const value = node[key];
+        if (Array.isArray(value))
+            for (const el of value)
+                collectPlacementHeadings(el, out);
+        else if (value && typeof value === 'object')
+            collectPlacementHeadings(value, out);
+    }
+}
+function renderToc(node, ctx, entries, budget) {
     const attrs = ctx.renderAttrs(navAttrs(node.attrs));
-    // Newlined, column-0 nav matching carve-php byte-for-byte; empty window
-    // degrades to a single-line empty nav.
-    const nav = picked.length === 0
-        ? `<nav${attrs}></nav>`
-        : `<nav${attrs}>\n${buildList(picked, 'ul')}</nav>`;
+    const emptyNav = `<nav${attrs}></nav>`;
     // Preserve any authored blocks written inside the placeholder before the nav,
     // never silently drop them (mirrors the index/glossary directives).
-    if (node.children.length === 0)
-        return nav;
-    return `${ctx.renderChildren(node.children, ctx.level)}\n${nav}`;
+    const wrap = (nav) => node.children.length === 0 ? nav : `${ctx.renderChildren(node.children, ctx.level)}\n${nav}`;
+    const { minLevel, maxLevel } = tocWindow(node.attrs);
+    const picked = entries.filter((e) => e.level >= minLevel && e.level <= maxLevel);
+    if (picked.length === 0)
+        return wrap(emptyNav);
+    // Newlined, column-0 nav matching carve-php byte-for-byte.
+    const nav = `<nav${attrs}>\n${buildList(picked, 'ul')}</nav>`;
+    // Bound cumulative nav bytes across all `::: toc` blocks in one render: K
+    // blocks x N headings would otherwise amplify output ~K*N. Once the
+    // per-render budget is exhausted, further blocks degrade to an empty nav.
+    if (!budget.charge(utf8ByteLength(nav)))
+        return wrap(emptyNav);
+    return wrap(nav);
 }
 /**
  * In-document TOC placement directive (Tier-3). Unlike {@link tableOfContents}
@@ -184,25 +225,25 @@ function renderToc(node, ctx, entries) {
  */
 export function tocPlacement() {
     let entries = [];
+    let budget = new AbbrBudget(undefined);
     return {
         name: 'toc',
         beforeRender(doc) {
             entries = [];
-            for (const node of doc.children) {
-                if (node.type !== 'heading')
-                    continue;
-                const h = node;
-                const id = h.attrs?.id;
-                if (id === undefined)
-                    continue;
-                entries.push({ level: h.level, text: inlineText(h.children), id });
-            }
+            budget = new AbbrBudget(doc.srcByteLength);
+            // Walk the whole body in document order so headings nested in containers
+            // (`::: note`, blockquotes, lists, divs) are included - they render with
+            // id anchors, so they belong in the TOC. Footnote definitions live in
+            // `doc.footnoteDefs`, not `doc.children`, so their headings (which get no
+            // id) are naturally excluded.
+            for (const node of doc.children)
+                collectPlacementHeadings(node, entries);
             return doc;
         },
         blockRenderers: {
             admonition: (node, ctx) => {
                 const a = node;
-                return a.kind === 'toc' ? renderToc(a, ctx, entries) : undefined;
+                return a.kind === 'toc' ? renderToc(a, ctx, entries, budget) : undefined;
             },
         },
     };

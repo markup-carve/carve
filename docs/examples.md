@@ -7439,3 +7439,92 @@ More text.
 ```
 
 ::::
+
+## Classes are deduplicated
+
+Repeated class values are merged into a single `class` attribute and
+deduplicated, keeping first-occurrence order (PART 9 §15). `class="a a"` and
+`class="a"` are equivalent in HTML, so the shorter form is emitted.
+
+::: compare
+
+```carve
+[x]{.a .a .b}
+```
+
+```html
+<p><span class="a b">x</span></p>
+```
+
+:::
+
+## Code span and image trailing attributes are strict
+
+A trailing `{...}` on a code span or an image obeys the same strict attribute
+rule as any other inline attribute (PART 9 §14): a digit-first or otherwise
+invalid payload makes the whole block literal, not a bogus attribute.
+
+::: compare
+
+```carve
+`x`{2=v}
+```
+
+```html
+<p><code>x</code>{2=v}</p>
+```
+
+:::
+
+## A bare attribute block on its own line is literal
+
+A `block_attributes` line requires at least one attribute (PART 9 §15); there
+is no block-level blessed-empty form (only the inline `[text]{}` span is
+blessed). So a bare `{}` line stays a literal paragraph.
+
+::: compare
+
+```carve
+{}
+```
+
+```html
+<p>{}</p>
+```
+
+:::
+
+## A backslash in a link destination is a literal character
+
+A link destination has no backslash escapes: `url_char` includes the backslash
+as an ordinary URL character, kept verbatim. `[t](a\b)` links to `a\b`.
+
+::: compare
+
+```carve
+[t](a\b)
+```
+
+```html
+<p><a href="a\b">t</a></p>
+```
+
+:::
+
+## Autolink display keeps the raw content
+
+An autolink's display text is the raw content between `<` and `>`: a URI
+autolink keeps its scheme (`<mailto:a@b>` shows `mailto:a@b`), while an email
+autolink (no explicit scheme) shows the address with a `mailto:` href.
+
+::: compare
+
+```carve
+<mailto:a@b>
+```
+
+```html
+<p><a href="mailto:a@b">mailto:a@b</a></p>
+```
+
+:::

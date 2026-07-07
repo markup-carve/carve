@@ -1,0 +1,7 @@
+Code span and image trailing attributes are strict
+
+```
+`x`{2=v}
+.
+<p><code>x</code>{2=v}</p>
+```

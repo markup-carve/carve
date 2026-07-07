@@ -306,6 +306,29 @@ export function resolveHeadingIds(doc, opts = {}) {
             }
         }
     };
+    // Reserve every EXPLICIT id in the document (on any node, heading or not)
+    // before auto-slugging headings, so a heading's auto id never collides with
+    // an explicit `{#id}` elsewhere -- two elements sharing a DOM id is invalid
+    // HTML. Matches carve-php, which reserves all explicit ids up front.
+    const reserveExplicitIds = (node) => {
+        if (!node || typeof node !== 'object')
+            return;
+        const id = node.attrs?.id;
+        if (typeof id === 'string')
+            used.add(id);
+        for (const key of Object.keys(node)) {
+            if (key === 'pos')
+                continue;
+            const v = node[key];
+            if (Array.isArray(v))
+                for (const el of v)
+                    reserveExplicitIds(el);
+            else if (v && typeof v === 'object')
+                reserveExplicitIds(v);
+        }
+    };
+    for (const b of doc.children)
+        reserveExplicitIds(b);
     assignIds(doc.children, false);
     // Two-pass resolution: implicit-heading refs must be finalized
     // BEFORE crossref cloning, otherwise a forward `</#id>` could clone

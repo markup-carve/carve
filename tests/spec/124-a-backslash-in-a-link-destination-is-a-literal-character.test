@@ -1,0 +1,7 @@
+A backslash in a link destination is a literal character
+
+```
+[t](a\b)
+.
+<p><a href="a\b">t</a></p>
+```
