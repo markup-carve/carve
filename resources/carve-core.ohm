@@ -9,19 +9,26 @@ CarveCore {
   // conformance corpus in CI fashion: a corpus input that this grammar
   // matches must render to the corpus HTML byte-for-byte.
   //
-  // SCOPE (Core). Blocks: ATX headings, thematic breaks, paragraphs, fenced
-  // code (backtick/tilde, optional language token). Inline: the seven bare
-  // emphasis delimiters (/ * _ ~ ^ = ,) with the full PART 3
-  // bare_opener/bare_closer word-boundary guards, verbatim code spans, and
-  // backslash escapes.
+  // SCOPE (Core). This file owns the INLINE layer and the leaf blocks of
+  // the executable spec. Blocks: ATX headings, thematic breaks, paragraphs,
+  // fenced code. Inline: the seven bare emphasis delimiters (/ * _ ~ ^ = ,)
+  // with the full PART 3 bare_opener/bare_closer word-boundary guards,
+  // verbatim code spans, math ($/$$ + span), escapes, links (inline,
+  // reference, collapsed), images, inline spans + attribute blocks,
+  // autolinks (URL + email), footnote references, and crossrefs (</#id>).
   //
-  // DELIBERATELY OUT (not Core; see grammar.ebnf PART 0 / PART 9 / PART 9R):
-  // indentation containers (lists, quotes, footnote bodies - the L0 layout
-  // automaton), tables (2D span walk), links/images/spans/attributes,
-  // smart typography, mentions/tags, math, divs/admonitions, resolution
-  // passes. A paragraph line containing any construct Core does not
-  // implement FAILS to match - by design, so a match is a full-fidelity
-  // claim, never an approximation.
+  // Container blocks (lists, block quotes, footnote definitions - the L0
+  // layout automaton) live in scripts/spec/layout.mjs; resolution and
+  // serialization (PART 9R / PART 10) in scripts/spec/html.mjs. Together
+  // they form the executable spec that scripts/formal-core-check.mjs runs
+  // against the corpus.
+  //
+  // DELIBERATELY OUT (Full Carve; the pipeline REFUSES rather than
+  // approximates): tables (2D span walk), divs/admonitions, smart
+  // typography, mentions/tags, inline extensions (:name[...]), emoji,
+  // editorial markup, comments, block-attribute lines, definition lists,
+  // citations, includes, frontmatter, inline footnotes (^[...]), and
+  // multi-line heading folding.
   //
   // Word boundaries without lookbehind (PEGs have none):
   //  - left boundary / no-intraword: `word` absorbs a delimiter glued
@@ -39,7 +46,13 @@ CarveCore {
   // checker asserts it as a documented semantic predicate.
   // ==========================================================================
 
-  Doc        = block*
+  doc        = block*
+  // start rule used by the executable-spec pipeline (scripts/spec/*): the
+  // layout automaton owns block structure; this parses ONE line of inline
+  // content. newline is not matchable here.
+  inlines    = inline*
+  // (lexical, lowercase: Ohm syntactic rules skip whitespace -- fatal for
+  // an indentation-sensitive language)
 
   block      = blankLine
              | heading
@@ -50,7 +63,15 @@ CarveCore {
   blankLine  = spaceChar* newline
 
   // --- Headings: 1-6 '#' at column 0, one space, inline text to EOL --------
-  heading    = hashes " " inline+ lineEnd
+  heading    = headingL<"######"> | headingL<"#####"> | headingL<"####">
+             | headingL<"###"> | headingL<"##"> | headingL<"#">
+  headingL<h> = h " " inline+ lineEnd &hBound<h>
+  // A heading must be FOLLOWED by a blank line, a DIFFERENT-level heading,
+  // another structural opener, or EOF. A plain line directly after a
+  // heading, or a SAME-level `#` marker line, is djot-style multi-line
+  // heading FOLDING -- Full Carve, not Core: the document fails to match
+  // rather than mis-rendering as separate blocks.
+  hBound<h>  = blankLine | (~(h " ") structural) | end
   hashes     = "######" | "#####" | "####" | "###" | "##" | "#"
 
   // --- Thematic break: a lone line of 3+ dashes/stars/underscores ----------
@@ -58,8 +79,8 @@ CarveCore {
 
   // --- Fenced code ----------------------------------------------------------
   codeBlock  = backtickFence | tildeFence
-  backtickFence = btOpen langInfo? newline codeLine* btClose
-  tildeFence    = tdOpen langInfo? newline codeLine* tdClose
+  backtickFence = btOpen langInfo? newline codeLine<btClose>* btClose
+  tildeFence    = tdOpen langInfo? newline codeLine<tdClose>* tdClose
   btOpen     = "```" "`"*
   btClose    = "```" "`"* spaceChar* lineEnd
   tdOpen     = "~~~" "~"*
@@ -67,60 +88,88 @@ CarveCore {
   langInfo   = spaceChar* langToken
   langToken  = langChar+
   langChar   = letter | digit | "-" | "_" | "+" | "#" | "." | "/"
-  codeLine   = ~btClose ~tdClose (~newline any)* newline
+  // only a closer of the OPEN fence's character ends the body: a `~~~`
+  // line inside a backtick block (and vice versa) is ordinary content
+  codeLine<closer> = ~closer (~newline any)* newline
 
   // --- Paragraph: 1+ lines of Core-only inline content ----------------------
   paragraph  = paraLine+
   paraLine   = ~blankLine ~structural inline+ lineEnd
-  structural = hashes " " | thematicBreak | btOpen | tdOpen
+  structural = headingStart | thematicBreak | btOpen | tdOpen
+             | colonFence | ordMarker
+  headingStart = hashes " "
+  colonFence = ":::"
+  // an ordered-list marker line (digit/letter run + `)` + space) is a
+  // Full-Carve list: Core refuses the document rather than rendering a
+  // paragraph. (The `.`-delimited form already fails: `.` is not a Core
+  // character.)
+  ordMarker  = alnumCh+ ")" " "
 
   // ==========================================================================
   // INLINE (Core)
   // ==========================================================================
-  inline     = span | code | escape | word | inlineSpace | litDelim | other
+  inline     = delimRun | inlineNote | footnoteRef | crossref | span
+             | mathD | mathI | code | escape | image | bracketed
+             | autolink | word | inlineSpace | litDelim | bang | dollar
+             | dot | dash | plus | pct | other
+  // SAME-DELIMITER ADJACENCY (bare_opener\'s !(d) guard): a run of 2+
+  // identical bare delimiters is literal text, never an opener.
+  delimRun   = dRun<"/"> | dRun<"*"> | dRun<"_"> | dRun<"~"> | dRun<"^"> | dRun<"="> | dRun<",">
+  dRun<d>    = d d+
 
-  span       = emph | strong | underline | strike | sup | sub | highlight
+  span       = boldItalic | emph | strong | underline | strike | sup | sub | highlight
+
+  // Combined form /*x*/ -> <strong><em> (grammar.ebnf bold_italic); matched
+  // before emph so the two-char token wins over nested /-then-* parsing.
+  boldItalic = "/*" ~spaceOrEnd biInner+ "*/" ~alnumCh
+  biInner    = ~("*/") (rich | word | " " ~("*/") | litDelim | other)
+
+  // constructs allowed inside any span (everything except spans themselves,
+  // which are listed per-delimiter to exclude self-nesting)
+  rich       = delimRun | inlineNote | footnoteRef | crossref | mathD | mathI
+             | code | escape | image | bracketed | autolink | bang | dollar
+             | dot | dash | plus | pct
 
   // One rule shape per delimiter (the bare_opener/bare_closer instantiation).
-  emph       = "/" ~spaceOrEnd emphInner+ emphClose
-  emphInner  = ~emphClose (strong | underline | strike | sup | sub | highlight
-             | code | escape | word | spaceIn<"/"> | litSelf<"/"> | other)
-  emphClose  = "/" ~alnum
+  emph       = "/" ~"/" ~spaceOrEnd emphInner+ emphClose
+  emphInner = ~emphClose (strong | underline | strike | sup | sub | highlight
+             | rich | word | spaceIn<"/"> | litSelf<"/"> | litDelim | other)
+  emphClose  = "/" ~alnumCh
 
-  strong     = "*" ~spaceOrEnd strongInner+ strongClose
+  strong     = "*" ~"*" ~spaceOrEnd strongInner+ strongClose
   strongInner = ~strongClose (emph | underline | strike | sup | sub | highlight
-              | code | escape | word | spaceIn<"*"> | litSelf<"*"> | other)
-  strongClose = "*" ~alnum
+             | rich | word | spaceIn<"*"> | litSelf<"*"> | litDelim | other)
+  strongClose = "*" ~alnumCh
 
-  underline  = "_" ~spaceOrEnd underInner+ underClose
+  underline  = "_" ~"_" ~spaceOrEnd underInner+ underClose
   underInner = ~underClose (emph | strong | strike | sup | sub | highlight
-             | code | escape | word | spaceIn<"_"> | litSelf<"_"> | other)
-  underClose = "_" ~alnum
+             | rich | word | spaceIn<"_"> | litSelf<"_"> | litDelim | other)
+  underClose = "_" ~alnumCh
 
-  strike     = "~" ~spaceOrEnd strikeInner+ strikeClose
+  strike     = "~" ~"~" ~spaceOrEnd strikeInner+ strikeClose
   strikeInner = ~strikeClose (emph | strong | underline | sup | sub | highlight
-              | code | escape | word | spaceIn<"~"> | litSelf<"~"> | other)
-  strikeClose = "~" ~alnum
+             | rich | word | spaceIn<"~"> | litSelf<"~"> | litDelim | other)
+  strikeClose = "~" ~alnumCh
 
-  sup        = "^" ~spaceOrEnd supInner+ supClose
-  supInner   = ~supClose (emph | strong | underline | strike | sub | highlight
-             | code | escape | word | spaceIn<"^"> | litSelf<"^"> | other)
-  supClose   = "^" ~alnum
+  sup        = "^" ~"^" ~spaceOrEnd supInner+ supClose
+  supInner = ~supClose (emph | strong | underline | strike | sub | highlight
+             | rich | word | spaceIn<"^"> | litSelf<"^"> | litDelim | other)
+  supClose   = "^" ~alnumCh
 
-  sub        = "," ~spaceOrEnd subInner+ subClose
-  subInner   = ~subClose (emph | strong | underline | strike | sup | highlight
-             | code | escape | word | spaceIn<","> | litSelf<","> | other)
-  subClose   = "," ~alnum
+  sub        = "," ~"," ~spaceOrEnd subInner+ subClose
+  subInner = ~subClose (emph | strong | underline | strike | sup | highlight
+             | rich | word | spaceIn<","> | litSelf<","> | litDelim | other)
+  subClose   = "," ~alnumCh
 
-  highlight  = "=" ~spaceOrEnd hlInner+ hlClose
-  hlInner    = ~hlClose (emph | strong | underline | strike | sup | sub
-             | code | escape | word | spaceIn<"="> | litSelf<"="> | other)
-  hlClose    = "=" ~alnum
+  highlight  = "=" ~"=" ~spaceOrEnd hlInner+ hlClose
+  hlInner = ~hlClose (emph | strong | underline | strike | sup | sub
+             | rich | word | spaceIn<"="> | litSelf<"="> | litDelim | other)
+  hlClose    = "=" ~alnumCh
 
   // interior space: allowed except directly before this span's closer
-  spaceIn<d> = " " ~(d ~alnum)
+  spaceIn<d> = " " ~(d ~alnumCh)
   // a same-type delimiter that is not a valid closer is literal content
-  litSelf<d> = d &alnum
+  litSelf<d> = d &alnumCh
 
   // Verbatim code span: equal-length maximal backtick runs (Core uses the
   // 1..3 tier; longer runs are out of Core). Single-space strip is applied
@@ -132,10 +181,76 @@ CarveCore {
 
   escape     = "\\" punctChar
 
+  // --- Math (PART 3: `$` / `$$` + a verbatim span; bare `$` is literal) ---
+  mathI      = "$" code
+  mathD      = "$$" code
+
+  // --- Cross-reference with auto text (PART 3 auto_text_link) -------------
+  crossref   = "</#" xrefId ">"
+  xrefId     = (~">" ~space ~newline any)+
+
+  // --- Footnotes (PART 3; `^[` ranks ABOVE superscript, PART 8) -----------
+  footnoteRef = "[^" fnLabel "]"
+  fnLabel    = (~"]" ~newline any)+
+  inlineNote = "^[" brContent* "]"
+
+  // --- Bracketed constructs: link / image / span / reference link ---------
+  // The single-char lookahead after `]` selects the construct (PART 9 S14);
+  // a bare bracketed run with no tail is LITERAL text (rendered with its
+  // content inline-parsed).
+  bracketed  = "[" brContent* "]" brTail?
+  brContent  = escape | code | nested | (~"]" ~newline any)
+  nested     = "[" brContent* "]"
+  brTail     = linkTail | refTail | attrs
+  linkTail   = "(" dest destTitle? ")" attrs?
+  refTail    = "[" refLabel? "]" attrs?
+  refLabel   = (~"]" ~newline any)+
+  dest       = destChar*
+  destChar   = ~(")" | " " | "\t" | newline) any
+  destTitle  = " "+ quoted
+  quoted     = "\"" qChar* "\""
+  qChar      = qEsc | (~"\"" ~newline any)
+  qEsc       = "\\" "\""
+
+  image      = "!" "[" altText "]" "(" dest destTitle? ")" attrs?
+  altText    = (~"]" ~newline any)*
+
+  // --- Autolinks (PART 3): URL or email in angle brackets ------------------
+  autolink   = "<" (urlBody | emailBody) ">" attrs?
+  urlBody    = scheme ":" urlChar+
+  scheme     = letter (letter | digit | "+" | "-" | ".")*
+  emailBody  = emailChar+ "@" emailChar+ "." letter+
+  emailChar  = letter | digit | "-" | "_" | "." | "+"
+  urlChar    = letter | digit | "-" | "." | "_" | "~" | ":" | "/" | "?"
+             | "#" | "[" | "]" | "@" | "!" | "$" | "&" | "'" | "(" | ")"
+             | "*" | "+" | "," | ";" | "=" | "%"
+
+  // --- Attribute block (PART 4, strict identifiers) ------------------------
+  attrs      = "{" attrSp* attrItem (attrSp+ attrItem)* attrSp* "}"
+  attrSp     = " "
+  attrItem   = idAttr | classAttr | kvAttr | boolAttr
+  idAttr     = "#" ident
+  classAttr  = "." ident
+  kvAttr     = ident "=" attrVal
+  boolAttr   = ident
+  attrVal    = quoted | bareVal
+  bareVal    = (~(" " | "}" | newline) any)+
+  ident      = identStart identRest*
+  identStart = letter | "_" | "-"
+  identRest  = letter | digit | "_" | "-"
+
   // A word absorbs any bare delimiter glued between two word characters -
   // this IS the left word-boundary / no-intraword rule, structurally.
-  word       = wordChar (wordChar | wordGlue)*
+  word       = wordChar (wordChar | wordGlue | underGlue | atGlue | dotGlue)*
   wordGlue   = delim &wordChar
+  // absorb the `@` of an embedded email address (me@example.com) and the
+  // intraword dot (example.com) so neither triggers mention/typography rules
+  atGlue     = "@" &wordChar
+  dotGlue    = "." &wordChar
+  // a delimiter directly after a word-attached `_` never opens (the
+  // bare_opener guard excludes a preceding `_`): absorb `_` + delimiter
+  // when a word character follows, keeping the run literal
+  underGlue  = "_" delim &wordChar
   wordChar   = letter | digit
   delim      = "/" | "*" | "_" | "~" | "^" | "=" | ","
 
@@ -143,19 +258,34 @@ CarveCore {
 
   // A bare delimiter that opened nothing is literal text.
   litDelim   = delim
+  bang       = "!" ~"["
+  dollar     = "$" ~"`" ~"$"
+  // single punctuation is plain text; RUNS that smart-typography or the
+  // comment syntax would transform (`...`, `--`, `+-`, `%%`) are Full
+  // Carve, so Core refuses them
+  dot        = "." ~".."
+  dash       = "-" ~"-"
+  plus       = "+" ~"-"
+  pct        = "%" ~"%"
 
   // Core-safe plain characters. Everything NOT listed here and not handled
   // above (brackets, braces, quotes, $, <, >, !, %, dashes, dots, ...)
   // makes the line - and the document - fail to match: those constructs
   // exist in Full Carve, so Core refuses rather than mis-renders.
-  other      = letter | digit | ":" | ";" | "?" | "&" | "(" | ")" | "@"
+  other      = letter | digit | colon | ";" | "?" | "&" | "(" | ")" | at
+  // a `:` opening an inline extension (:name[...]) or an emoji (:name:) is
+  // Full Carve -> refuse; a plain colon is text
+  colon      = ":" ~(ident (":" | "["))
+  // a bare `@` followed by a word char is a mention (Full Carve) -> refuse;
+  // an email-embedded `@` is absorbed by the word rule (atGlue)
+  at         = "@" ~wordChar
 
   // --- Lexical ---------------------------------------------------------------
   punctChar  = "!" | "\"" | "#" | "$" | "%" | "&" | "'" | "(" | ")" | "*"
              | "+" | "," | "-" | "." | "/" | ":" | ";" | "<" | "=" | ">"
              | "?" | "@" | "[" | "\\" | "]" | "^" | "_" | "`" | "{" | "|"
              | "}" | "~"
-  alnum      = letter | digit
+  alnumCh    = letter | digit
   spaceChar  = " " | "\t"
   newline    = "\n" | "\r\n"
   lineEnd    = newline | end
