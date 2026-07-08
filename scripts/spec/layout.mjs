@@ -35,7 +35,6 @@ export const LAZY = '\u0000L\u0000'
 
 // Lines that put the whole document out of the executable subset.
 const REFUSERS = [
-  [/^[ \t]*\|/, 'table'],
   [/^[ \t]*:::/, 'colon fence'],
   [/^%{2,}/, 'comment'],
   [/^\{/, 'block attribute line'],
@@ -95,6 +94,97 @@ function classifyOrdered(token) {
   return out
 }
 
+// --- tables (PART 9 SS5) ----------------------------------------------------
+// T1: split a row into raw cell segments; an unescaped `|` outside a code
+// span separates cells. Returns null when the line is not a row.
+function splitRow(line) {
+  let s = line
+  let rowAttrs = null
+  const ra = /\|\{([^}]*)\}[ \t]*$/.exec(s)
+  if (ra) {
+    // T8: a `{...}` GLUED to the closing pipe is the row attribute block
+    rowAttrs = `{${ra[1]}}`
+    s = s.slice(0, ra.index + 1)
+  }
+  if (s[0] !== '|') return null
+  const cells = []
+  let cur = ''
+  let i = 1
+  let inCode = 0 // backtick run length of an open code span
+  while (i < s.length) {
+    const c = s[i]
+    if (c === '\\' && s[i + 1] === '|' && !inCode) {
+      cur += '\\|'
+      i += 2
+      continue
+    }
+    if (c === '`') {
+      let run = 1
+      while (s[i + run] === '`') run++
+      if (!inCode) inCode = run
+      else if (inCode === run) inCode = 0
+      cur += '`'.repeat(run)
+      i += run
+      continue
+    }
+    if (c === '|' && !inCode) {
+      cells.push(cur)
+      cur = ''
+      i++
+      continue
+    }
+    cur += c
+    i++
+  }
+  const trailing = cur.trim() === ''
+  if (!trailing) cells.push(cur) // lenient open form: `| a | b`
+  if (cells.length === 0) return null // T2: `||` has no cell
+  if (cells.length === 1 && cells[0].trim() === '') return null // `||`
+  return { cells, rowAttrs, trailing }
+}
+
+// T2: does this line interrupt a paragraph as a table row? (strict: both
+// a leading AND a trailing pipe)
+export function interruptingRow(line) {
+  if (!/^\|.*\|[ \t]*$/.test(line)) return false
+  return splitRow(line) !== null
+}
+
+const CONT_ROW = /^\+[ \t]*\|.*\|[ \t]*$/ // strict: must close with a pipe
+const DELIM_CELL = /^[ \t]*:?-+:?[ \t]*$/
+
+// classify one raw cell segment
+function parseCell(seg) {
+  const cell = { header: false, align: null, attrs: null, content: '' }
+  let s = seg
+  if (s.startsWith('=')) {
+    cell.header = true
+    s = s.slice(1)
+  } else if (s.startsWith('\\=')) {
+    s = '\\=' + s.slice(2) // literal `=` data cell; unescaped by inline pass
+  }
+  // glued alignment marker (per-column on a header cell, per-cell on a body
+  // cell); a DOUBLED marker aligns and keeps one literal char (corpus 25)
+  const am = /^([<>~])/.exec(s)
+  if (am) {
+    cell.align = am[1] === '<' ? 'left' : am[1] === '>' ? 'right' : 'center'
+    s = s.slice(1)
+  }
+  const at = /^\{([^}]*)\}(?= |$)/.exec(s)
+  if (at) {
+    cell.attrs = `{${at[1]}}`
+    s = s.slice(at[0].length)
+  }
+  cell.content = s.trim()
+  if (cell.attrs && (cell.content === '^' || cell.content === '<')) {
+    // T4: there is no attributed span marker - the cell is ordinary content
+    // whose literal text includes the braces
+    cell.attrs = null
+    cell.content = seg.trim()
+  }
+  return cell
+}
+
 function isBlank(line) {
   return /^[ \t]*$/.test(line)
 }
@@ -134,6 +224,7 @@ function parseBlocks(lines, state, top, inItem = false) {
     const line = lines[idx]
     if (line === undefined) return false
     if (startsVisibleBlock(line)) return true
+    if (interruptingRow(line)) return true
     const fence = FENCE.exec(line)
     if (fence && hasCloser(lines, idx)) return true // I4
     if (LINK_DEF.test(line) || FOOTNOTE_DEF.test(line) || ABBR_DEF.test(line)) return true // I5
@@ -235,6 +326,80 @@ function parseBlocks(lines, state, top, inItem = false) {
       continue
     }
 
+    // --- tables (PART 9 SS5) ---
+    if (line[0] === '|' && splitRow(line) !== null) {
+      const node = { t: 'table', rows: [], caption: undefined }
+      while (i < n) {
+        const l = lines[i]
+        if (l === undefined || isBlank(l)) break
+        if (CONT_ROW.test(l)) {
+          // T6: continuation row - joins per column onto the row above
+          const sr = splitRow(l.replace(/^\+[ \t]*/, '|'))
+          if (!sr) break
+          if (node.rows.length === 0) throw new Refuse('table begins with a continuation row')
+          const prev = node.rows[node.rows.length - 1]
+          sr.cells.forEach((seg, ci) => {
+            const add = seg.trim()
+            const cell = prev.cells[ci]
+            if (add === '' || cell === undefined) return
+            if (cell.content === '^' || cell.content === '<') {
+              // the joined text belongs to the SPANNING cell (T6); applied
+              // after the span walk resolves the marker's origin
+              ;(cell.joins ??= []).push(add)
+              return
+            }
+            cell.content += (cell.content ? ' ' : '') + add
+          })
+          i++
+          continue
+        }
+        const sr = splitRow(l)
+        if (!sr) break
+        // T7: the GFM delimiter row (second line only; a delimiter-shaped
+        // FIRST row disqualifies promotion - the second row is then data)
+        if (
+          node.rows.length === 1 && sr.cells.every((c) => DELIM_CELL.test(c)) &&
+          !node.rows[0].rawCells.every((c) => DELIM_CELL.test(c))
+        ) {
+          node.rows[0].cells.forEach((c) => (c.header = true))
+          node.rows[0].isHead = true
+          sr.cells.forEach((seg, ci) => {
+            const s = seg.trim()
+            const left = s.startsWith(':')
+            const right = s.endsWith(':')
+            const col = node.rows[0].cells[ci]
+            if (!col) return
+            if (left && right) col.align = 'center'
+            else if (left) col.align = 'left'
+            else if (right) col.align = 'right'
+          })
+          i++
+          continue
+        }
+        const row = { cells: sr.cells.map(parseCell), rawCells: sr.cells, rowAttrs: sr.rowAttrs }
+        node.rows.push(row)
+        i++
+      }
+      // native header section: the leading run of all-header rows
+      if (node.rows.length && !node.rows[0].isHead) {
+        for (const row of node.rows) {
+          if (row.cells.every((c) => c.header)) row.isHead = true
+          else break
+        }
+      }
+      // caption (SS4; one blank line allowed)
+      let j = i
+      if (j < n && isBlank(lines[j] ?? '') && CAPTION.test(lines[j + 1] ?? '')) j++
+      const cap = j < n && lines[j] !== undefined ? CAPTION.exec(lines[j]) : null
+      if (cap) {
+        node.caption = cap[1]
+        i = j + 1
+      }
+      blocks.push(node)
+      continue
+    }
+    if (CONT_ROW.test(line)) throw new Refuse('continuation row outside a table')
+
     // --- block quote ---
     if (QUOTE.test(line)) {
       const inner = []
@@ -285,7 +450,16 @@ function parseBlocks(lines, state, top, inItem = false) {
       continue
     }
 
-    if (CONT_MARKER.test(line)) throw new Refuse('stray continuation marker')
+    if (CONT_MARKER.test(line)) {
+      if (inItem) {
+        // PART 9 SS17 L4: inside a list item the marker attaches the
+        // following flush-left block; consuming the marker line suffices -
+        // the next lines parse as their own block
+        i++
+        continue
+      }
+      throw new Refuse('stray continuation marker')
+    }
     if (CAPTION.test(line)) throw new Refuse('caption with no attachable block')
 
     // --- paragraph ---
@@ -300,11 +474,13 @@ function parseBlocks(lines, state, top, inItem = false) {
         if (re.test(lines[i])) throw new Refuse(`${what} interrupting a paragraph`)
       }
       if (CAPTION.test(lines[i])) break // a caption ends the block (SS4)
+      if (inItem && CONT_MARKER.test(lines[i])) break // SS17 L4
       if (inItem && para.length > 0 && matchMarker(lines[i])) break // SS24 C3
       if (para.length > 0) {
         // definitions interrupt and are consumed (SS10 I5)
         if (LINK_DEF.test(lines[i]) || FOOTNOTE_DEF.test(lines[i]) || ABBR_DEF.test(lines[i])) break
         if (startsVisibleBlock(lines[i])) break // I1
+        if (interruptingRow(lines[i])) break // I1: valid table row
         const f = FENCE.exec(lines[i])
         if (f) {
           if (hasCloser(lines, i)) break // I4: interrupts
@@ -352,7 +528,7 @@ function findCloser(lines, openIdx, run) {
 // Parse ONE following flush-left block (for the `+` continuation marker).
 function takeOneBlock(lines, start, state) {
   let end = start
-  while (end < lines.length && !isBlank(lines[end]) && !CONT_MARKER.test(lines[end])) end++
+  while (end < lines.length && !isBlank(lines[end]) && !CONT_MARKER.test(lines[end]) && !QUOTE.test(lines[end])) end++
   return { rawMarker: lines.slice(start, end), next: end }
 }
 
@@ -443,8 +619,36 @@ function collectItems(lines, i, list, state) {
     if (list.task) item.checked = /^[xX]$/.test(head.task)
     let openPara = true // the marker line's text opens the item paragraph
     i++
+    // FIRST-BLOCK form (SS17 L4): a bare `+` as the sole marker-line content
+    // opens an item whose body is the following flush-left block(s)
+    let attachNext = false
+    if (!list.task && head.text.trim() === '+') {
+      itemLines.length = 0
+      attachNext = true
+      openPara = false
+    }
+    const attachFlushLeft = () => {
+      itemLines.push('')
+      while (
+        i < n && !isBlank(lines[i]) && !CONT_MARKER.test(lines[i]) &&
+        !(matchMarker(lines[i])?.indent === baseIndent)
+      ) {
+        itemLines.push(lines[i])
+        i++
+      }
+      itemLines.push('')
+      openPara = false
+    }
+    if (attachNext) attachFlushLeft()
     while (i < n) {
       const line = lines[i]
+      // `+` at the item's MARKER column attaches ONE following flush-left
+      // block to this item (SS17 L3/L4)
+      if (CONT_MARKER.test(line) && indentCols(line).col === baseIndent) {
+        i++
+        attachFlushLeft()
+        continue
+      }
       if (line.startsWith(LAZY)) {
         // a lazy line from an OUTER context propagates to the deepest open
         // paragraph (PART 9 SS10 I2)
@@ -501,6 +705,7 @@ function collectItems(lines, i, list, state) {
         // text may fold into? markers open a sub-item paragraph; quotes an
         // open quoted paragraph; fences/breaks close everything (SS10 I2/I6)
         if (FENCE.test(dedented) || HR.test(dedented)) openPara = false
+        else if (dedented[0] === '|' || CONT_ROW.test(dedented)) openPara = false
         else if (matchMarker(dedented) || QUOTE.test(dedented)) openPara = true
         else if (!isBlank(dedented)) openPara = true
         i++
@@ -514,7 +719,7 @@ function collectItems(lines, i, list, state) {
         i++
         continue
       }
-      if (!nm && openPara && itemLines.length > 0) {
+      if (!nm && openPara && itemLines.length > 0 && !startsVisibleBlock(line) && !interruptingRow(line)) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3)
         itemLines.push(LAZY + line.replace(/^[ \t]+/, ''))
         i++

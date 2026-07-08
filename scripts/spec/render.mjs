@@ -343,6 +343,14 @@ function overlapScan(text) {
   return false
 }
 
+// parse a standalone `{...}` attribute block (table row/cell attrs);
+// returns the serialized attribute string or null when invalid
+export function parseAttrBlock(text) {
+  const m = g.match(text, 'attrs')
+  if (m.failed()) return null
+  return renderAttrs(attrSem(m).parseAttrs())
+}
+
 export function renderInline(text) {
   if (overlapScan(text)) throw new Refuse('overlapping emphasis (delimiter-stack close-first rule)')
   const m = g.match(text, 'inlines')

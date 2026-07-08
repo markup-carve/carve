@@ -111,7 +111,7 @@ CarveCore {
   inline     = delimRun | inlineNote | footnoteRef | crossref | span
              | mathD | mathI | code | escape | image | bracketed
              | autolink | word | inlineSpace | litDelim | bang | dollar
-             | dot | dash | plus | pct | other
+             | dot | dash | plus | pct | lt | gt | other
   // SAME-DELIMITER ADJACENCY (bare_opener\'s !(d) guard): a run of 2+
   // identical bare delimiters is literal text, never an opener.
   delimRun   = dRun<"/"> | dRun<"*"> | dRun<"_"> | dRun<"~"> | dRun<"^"> | dRun<"="> | dRun<",">
@@ -219,7 +219,9 @@ CarveCore {
   autolink   = "<" (urlBody | emailBody) ">" attrs?
   urlBody    = scheme ":" urlChar+
   scheme     = letter (letter | digit | "+" | "-" | ".")*
-  emailBody  = emailChar+ "@" emailChar+ "." letter+
+  emailBody  = emailLocal "@" (emailSeg ".")+ letter+
+  emailLocal = emailChar+
+  emailSeg   = (letter | digit | "-" | "_")+
   emailChar  = letter | digit | "-" | "_" | "." | "+"
   urlChar    = letter | digit | "-" | "." | "_" | "~" | ":" | "/" | "?"
              | "#" | "[" | "]" | "@" | "!" | "$" | "&" | "'" | "(" | ")"
@@ -263,6 +265,10 @@ CarveCore {
   // single punctuation is plain text; RUNS that smart-typography or the
   // comment syntax would transform (`...`, `--`, `+-`, `%%`) are Full
   // Carve, so Core refuses them
+  // a `<` that opens no autolink/crossref, and a bare `>`, are literal
+  // text (HTML-escaped by the renderer)
+  lt         = "<"
+  gt         = ">"
   dot        = "." ~".."
   dash       = "-" ~"-"
   plus       = "+" ~"-"

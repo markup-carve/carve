@@ -5,7 +5,7 @@
  */
 
 import { Refuse } from './layout.mjs'
-import { renderInline, makeSlugger, checkUrl, escapeAttr } from './render.mjs'
+import { renderInline, makeSlugger, checkUrl, escapeAttr, parseAttrBlock } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -94,6 +94,8 @@ function renderBlock(b, depth, ctx) {
     }
     case 'list':
       return renderList(b, depth, ctx)
+    case 'table':
+      return renderTable(b, depth, ctx)
     default:
       throw new Refuse(`unknown block ${b.t}`)
   }
@@ -150,6 +152,97 @@ function renderItem(item, list, depth, ctx) {
   }
   out += `\n${pad}</li>`
   return out
+}
+
+// --- tables: PART 9 SS5 T5 span walk + serialization -------------------------
+function renderTable(node, depth, ctx) {
+  const pad = '  '.repeat(depth)
+  const rows = node.rows
+  // resolve span markers (T5): row-major; consumed positions are skipped in
+  // the output; a marker with no reachable origin renders as an EMPTY cell
+  const consumed = new Set()
+  const key = (r, c) => `${r}:${c}`
+  for (let r = 0; r < rows.length; r++) {
+    const cells = rows[r].cells
+    for (let c = 0; c < cells.length; c++) {
+      const cell = cells[c]
+      if (consumed.has(key(r, c))) continue
+      if (cell.content === '<' && cell.align === null) {
+        let cc = c - 1
+        while (cc >= 0 && consumed.has(key(r, cc))) cc--
+        if (cc >= 0 && rows[r].cells[cc] !== undefined) {
+          const origin = rows[r].cells[cc]
+          origin.colspan = (origin.colspan ?? 1) + 1
+          consumed.add(key(r, c))
+          for (const jn of cell.joins ?? []) origin.content += (origin.content ? ' ' : '') + jn
+        } else {
+          cell.content = ''
+          cell.empty = true
+        }
+      } else if (cell.content === '^' && cell.align === null) {
+        let rr = r - 1
+        while (rr >= 0 && consumed.has(key(rr, c))) rr--
+        if (rr >= 0 && rows[rr].cells[c] !== undefined) {
+          const origin = rows[rr].cells[c]
+          origin.rowspan = (origin.rowspan ?? 1) + 1
+          consumed.add(key(r, c))
+          for (const jn of cell.joins ?? []) origin.content += (origin.content ? ' ' : '') + jn
+        } else {
+          cell.content = ''
+          cell.empty = true
+        }
+      }
+    }
+  }
+  // column alignment: from the thead row's cells (native marker or GFM)
+  const colAlign = []
+  if (rows[0]?.isHead) {
+    rows[0].cells.forEach((c, ci) => (colAlign[ci] = c.align ?? null))
+  }
+  let headCount = 0
+  while (headCount < rows.length && rows[headCount].isHead) headCount++
+  const renderCell = (cell, r, c) => {
+    const tag = cell.header ? 'th' : 'td'
+    let a = ''
+    if (cell.rowspan) a += ` rowspan="${cell.rowspan}"`
+    if (cell.colspan) a += ` colspan="${cell.colspan}"`
+    if (cell.attrs) {
+      const parsed = parseAttrBlock(cell.attrs)
+      if (parsed === null) throw new Refuse('invalid cell attribute block')
+      a += parsed
+    }
+    const align = cell.empty ? null : (cell.align ?? colAlign[c] ?? null)
+    if (align) a += ` style="text-align: ${align};"`
+    const content = cell.empty || cell.content === '' ? '' : renderInline(cell.content)
+    return `<${tag}${a}>${content}</${tag}>`
+  }
+  const renderRow = (row, r) => {
+    let ra = ''
+    if (row.rowAttrs) {
+      const parsed = parseAttrBlock(row.rowAttrs)
+      if (parsed === null) throw new Refuse('invalid row attribute block')
+      ra = parsed
+    }
+    const cells = row.cells
+      .map((cell, c) => (consumed.has(key(r, c)) ? null : renderCell(cell, r, c)))
+      .filter((x) => x !== null)
+      .join('')
+    return `<tr${ra}>${cells}</tr>`
+  }
+  const out = [`${pad}<table>`]
+  if (node.caption !== undefined) out.push(`${pad}  <caption>${renderInline(node.caption)}</caption>`)
+  const bodyStart = headCount
+  if (headCount > 0) {
+    const headRows = rows.slice(0, headCount).map((row, r) => renderRow(row, r)).join('')
+    out.push(`${pad}  <thead>${headRows}</thead>`)
+  }
+  if (rows.length > bodyStart) {
+    out.push(`${pad}  <tbody>`)
+    for (let r = bodyStart; r < rows.length; r++) out.push(`${pad}    ${renderRow(rows[r], r)}`)
+    out.push(`${pad}  </tbody>`)
+  }
+  out.push(`${pad}</table>`)
+  return out.join('\n')
 }
 
 // --- PART 9R R1: reference links --------------------------------------------
