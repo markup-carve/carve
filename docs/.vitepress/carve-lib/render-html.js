@@ -1176,9 +1176,9 @@ function renderInline(node, opts) {
         case 'hard-break':
             return '<br>\n';
         case 'critic-insert':
-            return `<ins>${renderInlines(node.children, opts)}</ins>`;
+            return `<ins${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</ins>`;
         case 'critic-delete':
-            return `<del>${renderInlines(node.children, opts)}</del>`;
+            return `<del${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</del>`;
         case 'critic-substitute':
             return `<del>${escapeHtml(node.oldText)}</del><ins>${escapeHtml(node.newText)}</ins>`;
         case 'critic-comment':

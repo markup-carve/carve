@@ -1,0 +1,7 @@
+Editorial markup takes a trailing attribute
+
+```
+{++a++}{.a}
+.
+<p><ins class="a">+a+</ins></p>
+```

@@ -11,6 +11,13 @@ export interface TableOfContentsOptions {
     cssClass?: string;
     /** Insert the generated TOC at the top or bottom of the document. Default `'top'`. */
     position?: 'top' | 'bottom';
+    /** Wrap the TOC in a `<details>`/`<summary>` disclosure so it can be collapsed.
+     *  Off by default; when off the output is the unchanged `<nav class="toc">`. */
+    collapsible?: boolean;
+    /** Summary label for the disclosure (only used when `collapsible` is true). Default `'Table of Contents'`. */
+    summary?: string;
+    /** Render the disclosure expanded by default (only used when `collapsible` is true). */
+    open?: boolean;
 }
 /**
  * Generate a table of contents from the document's headings, ported from
@@ -24,6 +31,8 @@ export interface TableOfContentsOptions {
  * ```
  *
  * Configurable `minLevel`, `maxLevel`, `listType`, `cssClass`, and `position`.
+ * Set `collapsible: true` to wrap the TOC in a `<details>`/`<summary>` disclosure
+ * (closed unless `open: true`), with the label from `summary`.
  */
 export declare function tableOfContents(opts?: TableOfContentsOptions): CarveExtension;
 /**

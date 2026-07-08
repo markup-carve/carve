@@ -71,6 +71,8 @@ function buildList(entries, listType) {
  * ```
  *
  * Configurable `minLevel`, `maxLevel`, `listType`, `cssClass`, and `position`.
+ * Set `collapsible: true` to wrap the TOC in a `<details>`/`<summary>` disclosure
+ * (closed unless `open: true`), with the label from `summary`.
  */
 export function tableOfContents(opts = {}) {
     const minLevel = opts.minLevel ?? 1;
@@ -80,6 +82,9 @@ export function tableOfContents(opts = {}) {
     const listType = opts.listType === 'ol' ? 'ol' : 'ul';
     const cssClass = opts.cssClass ?? 'toc';
     const position = opts.position ?? 'top';
+    const collapsible = opts.collapsible ?? false;
+    const summary = opts.summary ?? 'Table of Contents';
+    const open = opts.open ?? false;
     return {
         name: 'table-of-contents',
         beforeRender(doc) {
@@ -95,7 +100,14 @@ export function tableOfContents(opts = {}) {
             }
             if (entries.length === 0)
                 return doc;
-            const html = `<nav class="${escapeHtml(cssClass)}">\n${buildList(entries, listType)}</nav>`;
+            const list = buildList(entries, listType);
+            // Collapsible: the heading list sits directly inside a <details>
+            // disclosure so it can be toggled, closed by default unless `open`.
+            // Byte-identical to carve-php's TableOfContentsExtension.
+            const html = collapsible
+                ? `<details class="${escapeHtml(cssClass)}"${open ? ' open' : ''}>\n` +
+                    `<summary>${escapeHtml(summary)}</summary>\n${list}</details>`
+                : `<nav class="${escapeHtml(cssClass)}">\n${list}</nav>`;
             const toc = { type: 'raw-block', format: 'html', content: html };
             if (position === 'top')
                 doc.children.unshift(toc);

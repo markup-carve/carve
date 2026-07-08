@@ -7528,3 +7528,21 @@ autolink (no explicit scheme) shows the address with a `mailto:` href.
 ```
 
 :::
+
+## Editorial markup takes a trailing attribute
+
+An addition `{++...++}` or deletion `{--...--}` is an ordinary inline node, so a
+trailing `{...}` attribute block attaches to its `<ins>` / `<del>`, exactly like
+a span, code span, link, or emphasis (PART 9 §22 / §15).
+
+::: compare
+
+```carve
+{++a++}{.a}
+```
+
+```html
+<p><ins class="a">+a+</ins></p>
+```
+
+:::

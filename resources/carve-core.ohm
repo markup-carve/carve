@@ -1,0 +1,163 @@
+CarveCore {
+
+  // ==========================================================================
+  // Carve Core - the executable companion grammar (Ohm/PEG).
+  //
+  // ROLE. This file is the machine-interpretable proof for the CORE subset of
+  // resources/grammar.ebnf: everything here is pure grammar - no prose
+  // normativity. scripts/formal-core-check.mjs runs it against the
+  // conformance corpus in CI fashion: a corpus input that this grammar
+  // matches must render to the corpus HTML byte-for-byte.
+  //
+  // SCOPE (Core). Blocks: ATX headings, thematic breaks, paragraphs, fenced
+  // code (backtick/tilde, optional language token). Inline: the seven bare
+  // emphasis delimiters (/ * _ ~ ^ = ,) with the full PART 3
+  // bare_opener/bare_closer word-boundary guards, verbatim code spans, and
+  // backslash escapes.
+  //
+  // DELIBERATELY OUT (not Core; see grammar.ebnf PART 0 / PART 9 / PART 9R):
+  // indentation containers (lists, quotes, footnote bodies - the L0 layout
+  // automaton), tables (2D span walk), links/images/spans/attributes,
+  // smart typography, mentions/tags, math, divs/admonitions, resolution
+  // passes. A paragraph line containing any construct Core does not
+  // implement FAILS to match - by design, so a match is a full-fidelity
+  // claim, never an approximation.
+  //
+  // Word boundaries without lookbehind (PEGs have none):
+  //  - left boundary / no-intraword: `word` absorbs a delimiter glued
+  //    between two word chars (wordGlue), so an intraword delimiter can
+  //    never open a run;
+  //  - opener not followed by whitespace: negative lookahead;
+  //  - closer not preceded by whitespace: an interior space may not sit
+  //    directly before the closer (the spaceIn* rules);
+  //  - closer not followed by an alphanumeric: negative lookahead;
+  //  - a non-closing delimiter inside its own span is literal content
+  //    (litSelf*), which realizes the nearest-valid-closer rule.
+  //
+  // The ONE Core rule a PEG cannot state: len(closer) >= len(opener) for
+  // fences (a counting constraint - `where` guard in grammar.ebnf). The
+  // checker asserts it as a documented semantic predicate.
+  // ==========================================================================
+
+  Doc        = block*
+
+  block      = blankLine
+             | heading
+             | thematicBreak
+             | codeBlock
+             | paragraph
+
+  blankLine  = spaceChar* newline
+
+  // --- Headings: 1-6 '#' at column 0, one space, inline text to EOL --------
+  heading    = hashes " " inline+ lineEnd
+  hashes     = "######" | "#####" | "####" | "###" | "##" | "#"
+
+  // --- Thematic break: a lone line of 3+ dashes/stars/underscores ----------
+  thematicBreak = ("---" "-"* | "***" "*"* | "___" "_"*) lineEnd
+
+  // --- Fenced code ----------------------------------------------------------
+  codeBlock  = backtickFence | tildeFence
+  backtickFence = btOpen langInfo? newline codeLine* btClose
+  tildeFence    = tdOpen langInfo? newline codeLine* tdClose
+  btOpen     = "```" "`"*
+  btClose    = "```" "`"* spaceChar* lineEnd
+  tdOpen     = "~~~" "~"*
+  tdClose    = "~~~" "~"* spaceChar* lineEnd
+  langInfo   = spaceChar* langToken
+  langToken  = langChar+
+  langChar   = letter | digit | "-" | "_" | "+" | "#" | "." | "/"
+  codeLine   = ~btClose ~tdClose (~newline any)* newline
+
+  // --- Paragraph: 1+ lines of Core-only inline content ----------------------
+  paragraph  = paraLine+
+  paraLine   = ~blankLine ~structural inline+ lineEnd
+  structural = hashes " " | thematicBreak | btOpen | tdOpen
+
+  // ==========================================================================
+  // INLINE (Core)
+  // ==========================================================================
+  inline     = span | code | escape | word | inlineSpace | litDelim | other
+
+  span       = emph | strong | underline | strike | sup | sub | highlight
+
+  // One rule shape per delimiter (the bare_opener/bare_closer instantiation).
+  emph       = "/" ~spaceOrEnd emphInner+ emphClose
+  emphInner  = ~emphClose (strong | underline | strike | sup | sub | highlight
+             | code | escape | word | spaceIn<"/"> | litSelf<"/"> | other)
+  emphClose  = "/" ~alnum
+
+  strong     = "*" ~spaceOrEnd strongInner+ strongClose
+  strongInner = ~strongClose (emph | underline | strike | sup | sub | highlight
+              | code | escape | word | spaceIn<"*"> | litSelf<"*"> | other)
+  strongClose = "*" ~alnum
+
+  underline  = "_" ~spaceOrEnd underInner+ underClose
+  underInner = ~underClose (emph | strong | strike | sup | sub | highlight
+             | code | escape | word | spaceIn<"_"> | litSelf<"_"> | other)
+  underClose = "_" ~alnum
+
+  strike     = "~" ~spaceOrEnd strikeInner+ strikeClose
+  strikeInner = ~strikeClose (emph | strong | underline | sup | sub | highlight
+              | code | escape | word | spaceIn<"~"> | litSelf<"~"> | other)
+  strikeClose = "~" ~alnum
+
+  sup        = "^" ~spaceOrEnd supInner+ supClose
+  supInner   = ~supClose (emph | strong | underline | strike | sub | highlight
+             | code | escape | word | spaceIn<"^"> | litSelf<"^"> | other)
+  supClose   = "^" ~alnum
+
+  sub        = "," ~spaceOrEnd subInner+ subClose
+  subInner   = ~subClose (emph | strong | underline | strike | sup | highlight
+             | code | escape | word | spaceIn<","> | litSelf<","> | other)
+  subClose   = "," ~alnum
+
+  highlight  = "=" ~spaceOrEnd hlInner+ hlClose
+  hlInner    = ~hlClose (emph | strong | underline | strike | sup | sub
+             | code | escape | word | spaceIn<"="> | litSelf<"="> | other)
+  hlClose    = "=" ~alnum
+
+  // interior space: allowed except directly before this span's closer
+  spaceIn<d> = " " ~(d ~alnum)
+  // a same-type delimiter that is not a valid closer is literal content
+  litSelf<d> = d &alnum
+
+  // Verbatim code span: equal-length maximal backtick runs (Core uses the
+  // 1..3 tier; longer runs are out of Core). Single-space strip is applied
+  // by the renderer per the code_span rule.
+  code       = code3 | code2 | code1
+  code1      = "`" (~"`" any)+ "`" ~"`"
+  code2      = "``" (~"``" any)+ "``" ~"`"
+  code3      = "```" (~"```" any)+ "```" ~"`"
+
+  escape     = "\\" punctChar
+
+  // A word absorbs any bare delimiter glued between two word characters -
+  // this IS the left word-boundary / no-intraword rule, structurally.
+  word       = wordChar (wordChar | wordGlue)*
+  wordGlue   = delim &wordChar
+  wordChar   = letter | digit
+  delim      = "/" | "*" | "_" | "~" | "^" | "=" | ","
+
+  inlineSpace = " "
+
+  // A bare delimiter that opened nothing is literal text.
+  litDelim   = delim
+
+  // Core-safe plain characters. Everything NOT listed here and not handled
+  // above (brackets, braces, quotes, $, <, >, !, %, dashes, dots, ...)
+  // makes the line - and the document - fail to match: those constructs
+  // exist in Full Carve, so Core refuses rather than mis-renders.
+  other      = letter | digit | ":" | ";" | "?" | "&" | "(" | ")" | "@"
+
+  // --- Lexical ---------------------------------------------------------------
+  punctChar  = "!" | "\"" | "#" | "$" | "%" | "&" | "'" | "(" | ")" | "*"
+             | "+" | "," | "-" | "." | "/" | ":" | ";" | "<" | "=" | ">"
+             | "?" | "@" | "[" | "\\" | "]" | "^" | "_" | "`" | "{" | "|"
+             | "}" | "~"
+  alnum      = letter | digit
+  spaceChar  = " " | "\t"
+  newline    = "\n" | "\r\n"
+  lineEnd    = newline | end
+  spaceOrEnd = " " | "\t" | newline | end
+}

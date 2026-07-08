@@ -19,11 +19,42 @@
    - x - y   = exception (x but not y)
    - (x)     = grouping
 
+   GUARD NOTATION (formal predicates -- machine-interpretable, PEG-class).
+   These are the ONLY devices beyond pure context-free EBNF that the
+   productions use. Each has exact, implementable semantics; none is prose.
+   - &(p)      = positive lookahead: the input AHEAD must match p; consumes
+                 nothing (PEG `&`). p may be a full production, so unbounded
+                 lookahead such as "a matching closer exists ahead" is legal.
+   - !(p)      = negative lookahead: the input ahead must NOT match p;
+                 consumes nothing (PEG `!`).
+   - <&(c) / <!(c) = single-character look-BEHIND: the character immediately
+                 BEFORE the current position must (must not) match the
+                 character class c; consumes nothing. Left context is always
+                 exactly one already-scanned character or START, so this is a
+                 regular condition, mechanically checkable.
+   - x:name    = capture: bind the text matched by x to `name`.
+   - where C   = semantic guard: C is a boolean expression over captures
+                 using only len(name), char(name) (the run's character),
+                 numeric comparison, and equality. A production carrying
+                 `where` matches only when C holds. This is the single
+                 counting device (fence-length matching); everything else
+                 above is regular lookaround.
+   - prod(d)   = production TEMPLATE: a production parameterized by a
+                 terminal d, instantiated once per listed terminal (an
+                 indexed-grammar macro; expansion is purely mechanical).
+   - START, EOL = virtual zero-width terminals (start of inline run /
+                 end of line).
+   Character classes for guards: ws = space | tab | newline; alnum =
+   letter | digit; punct = ascii_punctuation; non_ws = character - ws.
+
    NORMATIVITY
    - This file (resources/grammar.ebnf) is the NORMATIVE specification of
-     Carve. Where any document disagrees with it, this file wins. Within
-     it, PART 9 (semantic constraints not expressible in pure EBNF) is the
-     authority for behavior the grammar productions cannot encode.
+     Carve. Where any document disagrees with it, this file wins. It is
+     LAYERED, each layer in a declared formalism: PART 0 (layout automaton)
+     -> PARTS 1-8 (EBNF productions + the GUARD NOTATION above) -> PART 9
+     (operational semantics for the non-context-free rules) -> PART 9R
+     (two-pass resolution semantics) -> PART 10 (serialization). PART 9 and
+     PART 9R are the authority for behavior the productions cannot encode.
    - docs/case-study/syntax.md and docs/edge-cases.md are EXPLANATORY and
      DERIVED — prose for humans, non-normative.
    - docs/examples.md and the generated tests/corpus/* pairs are the
@@ -33,24 +64,88 @@
    ============================================================================ *)
 
 (* ============================================================================
+   PART 0: LAYOUT LAYER (L0) -- LINE AUTOMATON (NORMATIVE)
+   ============================================================================
+
+   The block productions (PARTS 1-2) are context-free only OVER THE OUTPUT OF
+   THIS LAYER. Indentation, container prefixes, and lazy continuation are 2D
+   properties no string grammar can express (they need column arithmetic and
+   carried container state); L0 states them as a deterministic one-pass line
+   automaton instead of prose. The three reference implementations realize
+   this automaton literally.
+
+   INPUT.  Lines, split on newline ('\n' | '\r\n'). Column arithmetic is
+           PART 9 §24 C1: a space advances the column by 1, a tab to the next
+           multiple of 4; tabs outside indentation are preserved verbatim.
+   STATE.  open := stack of open containers, bottom-up (document ->
+           innermost), plus the current leaf (none | paragraph | heading |
+           ...). Container kinds and the per-line prefix each demands:
+             block quote    marker `>` [+ one space]
+             list item      indentation to content_column (PART 9 §24 C3)
+             footnote def   indentation >= 2 spaces (PART 9 §16)
+             fenced body    (code / raw / comment / admonition / div /
+                            line block / hard-break block) -- no per-line
+                            prefix; bounded by its where-guarded fence pair
+   STEP (per line L, executed exactly once -- no backtracking, Design
+         Principle 1: the contribution a line makes to block structure never
+         depends on a future line, the only lookahead being the DECLARED
+         &(...) closer guards on fence / frontmatter openers):
+     S1 MATCH PREFIXES. Walk `open` bottom-up, consuming each container's
+        prefix from L (strip `> ` for quotes; DEDENT by columns for
+        indentation containers, PART 9 §24 C5). Stop at the first container
+        whose prefix L does not supply.
+     S2 FENCED BODY. If the innermost matched container is a fenced body, L
+        is verbatim content unless it matches that fence's where-guarded
+        closer (then pop). No other rule applies to L.
+     S3 FULL MATCH (every prefix consumed). The residue of L continues the
+        innermost container: BLANK -> close the open paragraph (recorded for
+        tight/loose, PART 9 §17 L1); a BLOCK OPENER -> the interruption
+        relation decides (PART 9 §10); a LIST MARKER reaching
+        content_column -> sublist (PART 9 §24 C3); otherwise paragraph /
+        lazy item text.
+     S4 PARTIAL MATCH. The unmatched containers are candidates to close.
+        LAZY CONTINUATION: if the innermost MATCHED context holds an OPEN
+        PARAGRAPH and the residue is NOT an interrupting line (PART 9 §10 --
+        list markers and plain text fold; visible openers interrupt), L
+        folds into that paragraph and NOTHING closes. Otherwise close the
+        unmatched containers and re-classify the residue in the surviving
+        context (S3).
+     S5 OPENERS. When S3/S4 classify the residue as a container opener (a
+        quote marker; a list marker at an admissible column; a `+`
+        continuation marker at the marker column, PART 9 §17 L3/L4; a fence
+        opener whose closer-lookahead guard holds), push the container and
+        recurse on the remaining residue.
+   OUTPUT. The layout-resolved line stream (equivalently: INDENT / DEDENT /
+           CONT events plus line residues). PARTS 1-2 parse blocks over it;
+           inline parsing (PART 3) runs per finished block -- the two-phase
+           model of PART 8.
+   ============================================================================ *)
+
+(* ============================================================================
    PART 1: DOCUMENT STRUCTURE
    ============================================================================ *)
 
 document = [frontmatter], {block}, EOF ;
 
-frontmatter = frontmatter_open, frontmatter_content, frontmatter_close, newline ;
+frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatter_close),
+              frontmatter_open, frontmatter_content, frontmatter_close, newline ;
+(* FORMAL closer lookahead (was prose): the leading &(...) guard demands that
+   a closing `---` line exist ahead before the opener is claimed. With no
+   closer the guard fails, so a bare `---` at document start is an ordinary
+   thematic break and the following lines are ordinary blocks (same lookahead
+   model as PART 9 §10). *)
 (* The opening delimiter may carry a format token (yaml | json | toml | neon |
    ...); a bare `---` defaults to `yaml`. The space before the token is OPTIONAL
    (lenient: both `---yaml` and `--- yaml` are accepted; `---yaml` is canonical).
    The closing delimiter is always a bare `---`. The token distinguishes a typed
-   opener from a thematic break. A BARE `---` at document start is frontmatter
-   only when a closing `---` line exists ahead (closer lookahead, same model as
-   PART 9 §10); with no closer the line is an ordinary thematic break and the
-   following lines are ordinary blocks. *)
+   opener from a thematic break. *)
 frontmatter_open = "---", [space], [frontmatter_format], newline ;
 frontmatter_close = "---", newline ;
 frontmatter_format = (letter | digit)+ ;
-frontmatter_content = (* metadata in the named format, parsed by that parser *) ;
+frontmatter_content = {content_line - frontmatter_close} ;
+content_line = {character - newline}, newline ;
+(* frontmatter_content lines are metadata in the named format, handed to that
+   format's parser; the grammar treats them as opaque lines. *)
 
 block = heading
       | thematic_break
@@ -167,7 +262,7 @@ heading_continuation_line = [heading_marker, space], inline_content, newline ;
 thematic_break = (('-', '-', '-', {'-'}) | ('*', '*', '*', {'*'}) | ('_', '_', '_', {'_'})), newline ;
 
 (* --- Code Blocks --- *)
-code_block = fenced_code_block, [caption] ;
+code_block = fenced_code_block, [caption_slot] ;
 (* A trailing caption (PART 9 §4) wraps the code block in a figure: a
    numbered LISTING. The caption may carry a `#` number placeholder, and a
    `</#id>` to the block resolves to "Listing N" (PART 9 §19). *)
@@ -215,8 +310,12 @@ fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
    PART 9 §20) is a SEPARATE production matched before this one (a leading `=`
    is never a language, and a raw block takes no header). *)
 
-code_fence_open = backtick_fence | tilde_fence ;
-code_fence_close = backtick_fence | tilde_fence ;  (* same fence char; length >= opener (PART 9 §2) *)
+code_fence_open  = (backtick_fence | tilde_fence):open ;
+code_fence_close = (backtick_fence | tilde_fence):close
+                   where char(close) = char(open) and len(close) >= len(open) ;
+(* FORMAL (PART 9 §2, now stated as a guard): the closer uses the SAME fence
+   character as its opener and is at least as long. The `where` clause is the
+   grammar's counting device -- see GUARD NOTATION in the header. *)
 
 backtick_fence = '`', '`', '`', {'`'} ;
 tilde_fence = '~', '~', '~', {'~'} ;
@@ -239,7 +338,7 @@ code_content = (* any text until matching fence, preserved literally *) ;
    only). Matches djot / CommonMark. Pinned by corpus tabs-in-code-preserved. *)
 
 (* --- Blockquotes --- *)
-blockquote = blockquote_line, {blockquote_line | lazy_continuation_line | continuation_marker_block}, [caption] ;
+blockquote = blockquote_line, {blockquote_line | lazy_continuation_line | continuation_marker_block}, [caption_slot] ;
 (* marked and lazy lines may interleave: `> a` / lazy / `> b` is ONE quote.
    A `+` continuation_marker_block attaches a flush-left block to the quote -- see
    the CONTINUATION MARKER note below and PART 9 §17. *)
@@ -391,7 +490,7 @@ definition_continuation = (space, space, space, inline_content, newline)
    fence and from a stray `:` in prose; all three reference impls agree.) *)
 
 (* --- Tables --- *)
-table = standard_row, [delimiter_row], {table_row}, [caption] ;
+table = standard_row, [delimiter_row], {table_row}, [caption_slot] ;
 (* a table BEGINS with a standard row; a continuation row only ever follows
    an existing row (its cells append to the row above -- PART 9 §5). An optional
    GFM delimiter row may appear as the SECOND line; it promotes the first row to
@@ -452,6 +551,12 @@ cell_content = inline_content ;
 
 (* --- Captions --- *)
 caption = '^', space, inline_content, newline ;
+caption_slot = [blank_line], caption ;
+(* FORMAL adjacency (PART 9 §4, now structural): a caption attaches to the
+   immediately preceding captionable block, with AT MOST ONE blank line
+   between them -- the optional blank_line in caption_slot is the whole
+   allowance. Host productions reference caption_slot; a `^ ` line anywhere
+   else is ordinary inline/paragraph content. *)
 
 (* CAPTION NUMBER PLACEHOLDER -- NORMATIVE.
    The FIRST bare `#` in a caption's TOP-LEVEL inline_content is a number
@@ -468,10 +573,15 @@ caption = '^', space, inline_content, newline ;
    in the resolution pass. A caption with no bare `#` is unchanged. *)
 
 (* --- Admonitions --- *)
-(* A fence is a run of 3+ colons. A longer opener nests shorter blocks; a
-   block is closed only by a bare fence of equal-or-greater length, so a
-   `:::` inside a `::::` block is content (PART 9 §12). *)
+(* A fence is a run of 3+ colons. A longer opener nests shorter blocks. *)
 colon_fence = ":::", {":"} ;
+colon_fence_close = colon_fence:close
+                    where len(close) >= len(open) ;
+(* FORMAL (PART 9 §12, now a guard): `open` is the colon_fence captured by
+   the enclosing block's opener (admonition_open / div_open /
+   line_block_open / local_hard_break_block_open). A block is closed only
+   by a bare fence of equal-or-greater length, so a `:::` inside a `::::`
+   block is content. Equal-length fences do not nest. *)
 
 admonition = admonition_open, newline,
              {block - admonition_close},
@@ -495,9 +605,9 @@ admonition = admonition_open, newline,
        convention (those stay supported, deprecated). The `selected`
        default-tab marker is NOT a label -- it remains a boolean attribute on
        the preceding `{...}` line. *)
-admonition_open = colon_fence, space, admonition_type,
+admonition_open = colon_fence:open, space, admonition_type,
                   [space+, quoted_title], [space+, label] ;
-admonition_close = colon_fence ;
+admonition_close = colon_fence_close ;
 
 admonition_type = "note" | "tip" | "warning" | "danger" | "info"
                 | "success" | "example" | "quote"  (* Tier 1 canonical *)
@@ -523,7 +633,7 @@ quoted_title = '"', {character - '"'}, '"' ;
    space -- admonition_open). Shares the colon-fence closer and the fence-length
    nesting rule (PART 9 §12). *)
 div = div_open, newline, {block - admonition_close}, admonition_close, newline ;
-div_open = colon_fence, [[space], label] ;
+div_open = colon_fence:open, [[space], label] ;
 
 (* --- Line block (verse) -- a RECOGNIZED `:::` type that preserves the
    author's per-line layout. `::: |` renders as a generic
@@ -537,7 +647,7 @@ div_open = colon_fence, [[space], label] ;
    a line block; extra attributes attach via a PRECEDING block-attribute line.
    Normative rendering: PART 9 §23. *)
 line_block = line_block_open, newline, line_block_body, admonition_close, newline ;
-line_block_open = colon_fence, space, "|" ;
+line_block_open = colon_fence:open, space, "|" ;
 (* The body is a sequence of stanzas separated by blank lines; each stanza is
    a run of consecutive non-blank lines. Inline content parses normally; the
    per-line leading whitespace is retained and the intra-stanza newlines are
@@ -555,7 +665,7 @@ line_block_line = {whitespace}, inline_content, newline ;
 local_hard_break_block = local_hard_break_block_open, newline,
                          {block - admonition_close},
                          admonition_close, newline ;
-local_hard_break_block_open = colon_fence, space, backslash ;
+local_hard_break_block_open = colon_fence:open, space, backslash ;
 
 (* --- Comments --- *)
 (* A line comment may be indented: optional leading whitespace before `%%` does
@@ -569,8 +679,9 @@ comment_block = comment_block_open, newline,
                 {character | newline},
                 comment_block_close, newline ;
 
-comment_block_open = "%%%", {'%'} ;  (* 3+ percent signs *)
-comment_block_close = "%%%", {'%'} ;  (* must match opener length *)
+comment_block_open = ("%%%", {'%'}):open ;  (* 3+ percent signs *)
+comment_block_close = ("%%%", {'%'}):close
+                      where len(close) = len(open) ;  (* FORMAL (PART 9 §2): exact length match *)
 
 (* trailing (inline) line comment: from a %% marker to end of line, content
    not rendered. The marker requires whitespace or start-of-run before it and
@@ -913,23 +1024,35 @@ math_display = "$$", code_span ;
    is literal by the same-delimiter-adjacency rule (PART 9 §9), like `**x**` or
    `//x//`. The delimiter set is fully uniform: all single-char. --- *)
 
-(* For EVERY bare delimiter (`/`, `*`, `_`, `~`, `^`, `=`, `,` -- all single-char):
-   Opener: NOT followed by whitespace, AND preceded by start, whitespace, or
-           punctuation -- but NOT by an alphanumeric, by `_`, or by the same
-           delimiter character.
-   Closer: NOT preceded by whitespace, AND NOT followed by an alphanumeric.
-   Exact disambiguation of delimiter runs is pinned by the conformance corpus
-   (tests/corpus/01-emphasis*); see PART 9 §9. Forced `{X … X}` spans bypass
-   these conditions entirely (PART 9 §22). *)
+(* FORMAL word-boundary guards -- NORMATIVE; production templates (GUARD
+   NOTATION, header) instantiated for every bare delimiter
+   d in { '/', '*', '_', '~', '^', '=', ',' } (all single-char): *)
 
-emphasis = '/', emphasis_content, '/', [attributes] ;  (* italic *)
-strong = '*', strong_content, '*', [attributes] ;       (* bold *)
-bold_italic = "/*", bi_content, "*/", [attributes] ;    (* combined *)
-underline = '_', underline_content, '_', [attributes] ;
-strikethrough = '~', strike_content, '~', [attributes] ;
-superscript = '^', super_content, '^', [attributes] ;
-subscript = ',', sub_content, ',', [attributes] ;        (* single-char; was ",," *)
-highlight = '=', highlight_content, '=', [attributes] ;  (* single-char; was "==" *)
+bare_opener(d) = <!(alnum | '_' | d), d, !(ws | d) ;
+bare_closer(d) = <&(non_ws), d, !(alnum) ;
+
+(* Reading:
+   - opener: the char BEFORE d is START, whitespace, or punctuation -- but
+     NOT an alphanumeric, NOT `_`, and NOT the same delimiter
+     (same-delimiter adjacency, PART 9 §9: a doubled delimiter never
+     opens); d is NOT followed by whitespace and NOT by another d.
+   - closer: d is NOT preceded by whitespace and NOT followed by an
+     alphanumeric. (A following same-delimiter is allowed: in `/x//` the
+     first `/` after `x` closes; the trailing `/` stays literal.)
+   Run disambiguation (nearest valid closer, delimiter stack, no same-type
+   nesting) is PART 9 §9; the corpus pins it (tests/corpus/01-emphasis*).
+   Forced `{X … X}` spans bypass BOTH guards entirely (PART 9 §22). *)
+
+emphasis = bare_opener('/'), emphasis_content, bare_closer('/'), [attributes] ;  (* italic *)
+strong = bare_opener('*'), strong_content, bare_closer('*'), [attributes] ;       (* bold *)
+bold_italic = bare_opener('/'), '*', bi_content, '*', bare_closer('/'), [attributes] ;
+   (* the combined `/*` opener: the boundary guards apply to the OUTER `/`;
+      the inner `*` is part of the two-char token, not separately guarded *)
+underline = bare_opener('_'), underline_content, bare_closer('_'), [attributes] ;
+strikethrough = bare_opener('~'), strike_content, bare_closer('~'), [attributes] ;
+superscript = bare_opener('^'), super_content, bare_closer('^'), [attributes] ;
+subscript = bare_opener(','), sub_content, bare_closer(','), [attributes] ;        (* single-char; was ",," *)
+highlight = bare_opener('='), highlight_content, bare_closer('='), [attributes] ;  (* single-char; was "==" *)
 
 (* --- Forced intraword emphasis (PART 9 §22). A brace-pair wrapping a bare
    emphasis delimiter forces a span with NO word-boundary condition, so it
@@ -973,12 +1096,9 @@ super_content = (inline_element | text_run | literal_special)+ ;
 sub_content = (inline_element | text_run | literal_special)+ ;
 highlight_content = (inline_element | text_run | literal_special)+ ;
 
-(* Word boundary rule for emphasis openers/closers (normative: PART 9 §9).
-   Applies to EVERY bare delimiter. Forced `{X … X}` spans (PART 9 §22) are
-   exempt. PSEUDO-PRODUCTIONS -- prose conditions, not reachable grammar
-   symbols. *)
-emphasis_open_condition = (* preceding char is whitespace, start, or punctuation but NOT alphanumeric or '_'; following char is non-whitespace *) ;
-emphasis_close_condition = (* preceding char is non-whitespace; following char is NOT alphanumeric *) ;
+(* The former prose pseudo-productions emphasis_open_condition /
+   emphasis_close_condition are SUPERSEDED by the formal bare_opener(d) /
+   bare_closer(d) templates above. *)
 
 (* --- Footnotes (PART 9 §16) --- *)
 (* Both implemented forms: the REFERENCE form `[^label]` resolving against a
@@ -1096,10 +1216,15 @@ extension_content = {character - ']'} ;
 (* --- Editorial Markup (CriticMarkup-inspired) --- *)
 editorial_markup = addition | deletion | substitution | editorial_comment ;
 
-addition = "{+", inline_content, "+}" ;
-deletion = "{-", inline_content, "-}" ;
+addition = "{+", inline_content, "+}", [attributes] ;
+deletion = "{-", inline_content, "-}", [attributes] ;
 substitution = "{~", inline_content, "~>", inline_content, "~}" ;
 editorial_comment = "{#", inline_content, "#}" ;
+(* ATTRIBUTES -- NORMATIVE: an addition / deletion is an ordinary inline node,
+   so a trailing `{...}` attribute block attaches to its `<ins>` / `<del>`,
+   exactly like a span, code span, link, or emphasis: `{++a++}{.a}` ->
+   `<ins class="a">…</ins>`. (All three impls agreed only after this was
+   pinned; carve-js dropped the block, carve-rs kept it literal.) *)
 (* DISAMBIGUATION (PART 9 §22). `{~ … ~}` is editorial SUBSTITUTION when it
    contains a top-level `~>`, and forced STRIKETHROUGH otherwise. `{# … #}`
    stays editorial comment (`#` is not an emphasis delimiter, no collision). *)
@@ -1341,35 +1466,28 @@ EOF = (* end of file *) ;
 *)
 
 (* ============================================================================
-   PART 9: SEMANTIC CONSTRAINTS (NOT EXPRESSIBLE IN PURE EBNF)
+   PART 9: SEMANTIC CONSTRAINTS (GUARDS + OPERATIONAL SEMANTICS; the
+   rules a context-free production cannot carry, stated formally)
    ============================================================================ *)
 
 (*
-   1. WORD BOUNDARIES FOR EMPHASIS (summary -- §9 below is NORMATIVE).
-      The word-boundary conditions apply to EVERY bare delimiter
-      (`/ * _ ~ ^ = ,` -- all single-char). No bare delimiter emphasizes
-      intraword. The forced `{X … X}` family (§22) is the escape hatch for
-      deliberate intraword emphasis.
-      - SAME-DELIMITER ADJACENCY applies to ALL SEVEN single-char delimiters
-        `/ * _ ~ ^ = ,`: a delimiter adjacent to another of the same delimiter
-        (before or after) never opens, so a doubled delimiter is literal
-        (`**x**`, `~~x~~`, `^^x^^`, `==x==`, `,,x,,` literal, like `//x//`,
-        `__x__`).
-      - Opener (all bare): NOT followed by whitespace AND preceded by
-        whitespace, start, or punctuation but NOT by an alphanumeric or `_`
-        (left word boundary)
-      - Closer (all bare): NOT preceded by whitespace AND NOT followed by an
-        alphanumeric (right word boundary).
-      - Example: "/ not italic /" is literal (whitespace after opener);
-        "a/b/c", "foo*bar*baz", "snake_case", "x = 5", "key=value" are literal
-        (opener has no left boundary, or is followed by whitespace);
-        "/usr/local/" -> <em>usr/local</em> (01-emphasis-6); "x{*y*}z" ->
-        x<strong>y</strong>z (forced, §22).
-      - This is STRICTER than Djot, whose rule is whitespace-only.
+   1. WORD BOUNDARIES FOR EMPHASIS -- FORMALIZED. Stated formally by the
+      bare_opener(d) / bare_closer(d) guard templates in PART 3, for all
+      seven single-char bare delimiters `/ * _ ~ ^ = ,`; §9 holds the
+      run-resolution rules (nearest closer, delimiter stack). No bare
+      delimiter emphasizes intraword; the forced `{X … X}` family (§22) is
+      the deliberate-intraword escape hatch.
+      Canonical pinned examples: "/ not italic /" literal (ws after opener);
+      "a/b/c", "foo*bar*baz", "snake_case", "x = 5", "key=value" literal
+      (no left boundary / ws after opener); "/usr/local/" ->
+      <em>usr/local</em> (01-emphasis-6); "x{*y*}z" -> x<strong>y</strong>z
+      (forced, §22). STRICTER than Djot, whose rule is whitespace-only.
 
-   2. MATCHING FENCES
-      - Code fence closer must have same character and >= same length as opener
-      - Comment block closer must have same length as opener
+   2. MATCHING FENCES -- FORMALIZED. Stated as `where` guards on the
+      productions (GUARD NOTATION, header):
+      - code_fence_close: same fence character, len(close) >= len(open);
+      - colon_fence_close (§12): len(close) >= len(open);
+      - comment_block_close: len(close) = len(open).
 
    3. NO SAME-TYPE NESTING
       - /nested /italic/ here/ is invalid
@@ -1380,128 +1498,108 @@ EOF = (* end of file *) ;
         already-literal `//x//` and `__x__` (corpus 71-doubled-emphasis-
         delimiters).
 
-   4. CAPTION PLACEMENT
-      - ^ caption must immediately follow image, blockquote, table, a fenced
-        code block (a captioned code block is a numbered LISTING), or a
-        standalone display-math block (a captioned equation is a numbered
-        EQUATION; its block must be solely the `$$`…`` span)
-      - One blank line allowed between block and caption
+   4. CAPTION PLACEMENT -- FORMALIZED (caption_slot in PART 2). A `^ `
+      caption attaches via the [caption_slot] slot of the captionable
+      hosts: an image paragraph, a blockquote, a table, a fenced code block
+      (a captioned code block is a numbered LISTING), or a standalone
+      display-math block (a numbered EQUATION; the block must be solely the
+      `$$`…`` span). caption_slot's single optional blank_line IS the
+      "one blank line allowed between block and caption" rule -- structural
+      now, not prose.
 
-   5. TABLE CELL CONTENT, ROW VALIDITY, CONTINUATION ROWS
-      - Pipes must be escaped (\|) or inside code spans. Escape processing
-        is cell-splitting-aware: an unescaped `|` outside a code span
-        separates cells; `\|` and a `|` inside a code span are content.
-      - Span markers (^ <) must be sole cell content. A leading `=` on a
-        cell (glued to the `|`) marks a HEADER cell; escape it (`\=`) for a
-        data cell whose text starts with `=`. Because a span marker must be the
-        WHOLE cell, any other content disqualifies it: a cell like `{.x} <` is
-        NOT a colspan marker -- it is an ordinary cell whose literal text is
-        `{.x} <`. (So a leading attribute block does not attach to a span
-        marker; there is no such thing as an attributed span marker.)
-      - SPAN MARKER WITH NO VALID ORIGIN (NORMATIVE): a span marker merges into
-        the nearest still-available origin -- a rowspan `^` walks UP its column,
-        a colspan `<` walks LEFT along its row, skipping over cells already
-        consumed by another span until it reaches an available cell to extend.
-        When that walk finds no available cell at all -- it runs off the edge of
-        the table without ever reaching one -- the marker renders as an EMPTY
-        cell (a `<td></td>` / `<th></th>` carrying no content and no span); it is
-        never dropped and never left literal. This covers, uniformly, every
-        degenerate marker:
-          * ORPHAN -- a `^` in the FIRST row, or a `<` in the FIRST column, has
-            no cell above / to its left at all, so the walk runs straight off the
-            edge. (corpus 96-table-span-marker-in-first-column.)
-          * BLOCKED -- every cell between the marker and the edge is already
-            consumed by another span, so the walk skips all of them and runs off
-            the edge with no available origin. For example a `<` in the second
-            column whose only left neighbor (the first column) is occupied by a
-            rowspan reaching down from a row above has nothing left to merge and
-            becomes an empty cell. (A `<` that, after skipping a consumed
-            neighbor, still reaches an available cell farther along DOES extend
-            that cell -- it is not blocked.)
-            (corpus 104-blocked-span-marker-renders-as-empty-cell.)
-        The same walk governs rowspans: a `^` whose entire column up to the top
-        edge is consumed by other spans reaches no available origin and renders
-        as an empty cell, exactly like a BLOCKED `<`. A `^` that DOES reach an
-        available cell above still extends it -- including a HEADER cell, whose
-        rowspan crosses the thead/tbody boundary (see HEADER CELL ROWSPAN below);
-        such a header origin is reachable, not suppressed, so it is not a
-        degenerate marker.
-      - HEADER CELL ROWSPAN (NORMATIVE): a rowspan `^` extends the cell directly
-        above it even when that cell is a HEADER cell -- the rowspan crosses the
-        header/body boundary, so a header cell can carry a `rowspan` that spans
-        the header row plus the body rows below it (`<th rowspan="N">`). This
-        holds for both a native `|=` header and a GFM-delimiter-promoted header.
-        (corpus 99-table-header-cell-rowspan.)
-      - VALID TABLE ROW (the §10 interruption test): a line whose first
-        non-indent character is `|` AND whose last non-whitespace character
-        is `|`, with at least one cell between them. A line-initial `|`
-        without the trailing `|` does NOT interrupt a paragraph (it stays
-        prose); at BLOCK START (after a blank line) the trailing `|` is
-        lenient -- a `| a | b` line still opens a table.
-      - CONTINUATION ROWS (`+` first column instead of `|`): a continuation
-        row appends to the row ABOVE it -- each of its non-empty cells is
-        joined onto the corresponding cell of that row (separated by a
-        single space, as a soft wrap); empty cells append nothing. It adds
-        no `<tr>`. Works under rowspan: the joined content belongs to the
-        spanning cell (corpus 40, 41). A table cannot BEGIN with a
-        continuation row (PART 2 `table`).
-      - GFM DELIMITER ROW (NORMATIVE) -- an alternative header syntax to the
-        native `|=` header cell. A row is a delimiter row when it appears
-        IMMEDIATELY AFTER the first row of a table AND every cell is a
-        delimiter_cell: optional whitespace, an optional leading `:`, one or
-        more `-`, an optional trailing `:`, optional whitespace (PART 2
-        `delimiter_cell`). At least one `-` is required and only `:`/`-`/
-        whitespace may appear, so an EMPTY cell (`|---||`) or any other content
-        (`|-a-|`, `|:|`) disqualifies the whole row -- it is then an ordinary
-        standard_row. A delimiter row:
-          1. promotes the FIRST row's cells to header cells (`<thead>` / `<th>`);
-          2. sets each column's text alignment from its delimiter cell's colons
-             -- `:--` left, `--:` right, `:-:` center, a bare `---` no alignment
-             -- applied to the WHOLE column (the header cell and every body cell
-             in that column);
-          3. is CONSUMED: it produces no `<tr>`.
-        A column with no corresponding delimiter cell (count mismatch) is
-        promoted with default alignment. POSITION IS STRICT: a delimiter-shaped
-        row that is NOT the second line -- the first line of the table, or any
-        row after the second -- is an ordinary row, and its `-` runs are inline
-        content (smart typography may render `---` as an em dash). So a table
-        cannot begin with a delimiter row, and a second delimiter-shaped row is
-        just data. The native `|=` header cell and `<`/`>`/`~` alignment markers
-        may COEXIST with a delimiter row; but when a single column carries BOTH a
-        native alignment marker AND a delimiter-cell colon, the resulting
-        alignment is UNSPECIFIED (do not combine the two mechanisms on one
-        column). Verified identical across carve-js / carve-php / carve-rs;
-        the happy path is pinned by corpus 09-tables-3.
-      - ROW ATTRIBUTES (NORMATIVE) -- a `{…}` attribute block GLUED to a row's
-        closing `|` (no intervening space) sets that row's `<tr>` attributes.
-        It is the row-level twin of a cell's opening-pipe attribute block: the
-        same `{…}` syntax, the same validity rule. The WHOLE payload must be a
-        valid, non-empty attribute block (§15); a space before the brace
-        (`| a | {.x}`), an empty `{}`, or an invalid payload is NOT a row
-        attribute -- the `{` is ordinary content, so the line (ending in `}`,
-        not `|`) is not even a table row. A row attribute block applies to the
-        row's `<tr>` whether the row is a header row (`<tr>` inside `<thead>`)
-        or a body row, and composes with the GFM delimiter row. It also
-        composes with cell attributes: `|{.c} a |{.r}` yields `<tr class="r">`
-        with `<td class="c">`. Pinned by corpus 98-table-row-attributes.
+   5. TABLE MODEL -- OPERATIONAL SEMANTICS (cell split, row validity,
+      header cells, span walk, continuation rows, delimiter row, row
+      attributes). STATE: a parsed table is a grid of logical cells;
+      consumed(r,c) marks a position absorbed by a span originating at
+      another cell; avail(r,c) := a cell was emitted at (r,c) and NOT
+      consumed(r,c).
+      T1 CELL SPLIT (escape scan, cell-splitting-aware). Scanning a row
+         left to right OUTSIDE code spans: an unescaped `|` separates
+         cells; `\|` and a `|` inside a code span are content. (The
+         code-span state carried across the scan is what makes this
+         non-context-free.)
+      T2 VALID TABLE ROW (the §10 I1 interruption test).
+         interrupting_row(L) := L's first non-indent character is `|` AND
+         its last non-whitespace character is `|` AND at least one cell
+         lies between. A line-initial `|` without the trailing `|` does NOT
+         interrupt (stays prose); at BLOCK START (after a blank line) the
+         trailing `|` is lenient -- `| a | b` still opens a table.
+      T3 HEADER CELL. A leading `=` GLUED to the cell's opening `|` marks a
+         HEADER cell; `\=` yields a data cell whose text starts with `=`.
+      T4 SPAN MARKERS. A cell whose WHOLE content is `^` (rowspan) or `<`
+         (colspan) is a span marker; ANY other content disqualifies it --
+         `{.x} <` is an ordinary cell with literal text `{.x} <` (no
+         attributed span marker exists).
+      T5 SPAN WALK -- NORMATIVE, a total function. origin(marker) :=
+           for `<` at (r,c): the nearest c' < c walking LEFT with
+             avail(r,c'), skipping consumed positions;
+           for `^` at (r,c): the nearest r' < r walking UP with
+             avail(r',c), skipping consumed positions.
+         Origin found -> extend its colspan/rowspan across the marker's
+         position and mark that position consumed. A `^` MAY reach a HEADER
+         cell: the rowspan crosses the thead/tbody boundary
+         (`<th rowspan="N">`), for native `|=` and GFM-promoted headers
+         alike (corpus 99-table-header-cell-rowspan).
+         NO origin (the walk runs off the edge) -> the marker renders as an
+         EMPTY cell (`<td></td>` / `<th></th>`, no content, no span); never
+         dropped, never literal. Covers uniformly:
+           * ORPHAN -- `^` in the FIRST row / `<` in the FIRST column
+             (corpus 96-table-span-marker-in-first-column);
+           * BLOCKED -- every intermediate position consumed by other spans
+             (corpus 104-blocked-span-marker-renders-as-empty-cell). A
+             marker that skips consumed neighbors and still reaches an
+             available cell DOES extend it -- not blocked.
+      T6 CONTINUATION ROWS (`+` in the first column instead of `|`).
+         Appends per-column onto the row ABOVE: each non-empty cell joins
+         its column's cell content with a single space (soft wrap); empty
+         cells append nothing; no `<tr>` is produced. Under rowspan the
+         joined content belongs to the SPANNING cell (corpus 40, 41). A
+         table cannot BEGIN with a continuation row (PART 2 `table`).
+      T7 GFM DELIMITER ROW -- NORMATIVE. delimiter_row(R) := R is EXACTLY
+         the SECOND row of the table AND every cell matches delimiter_cell
+         (optional ws, optional `:`, one or more `-`, optional `:`,
+         optional ws -- PART 2; an empty cell `|---||` or other content
+         `|-a-|`, `|:|` disqualifies the whole row, which is then an
+         ordinary standard_row). Effects:
+           1. promote the FIRST row's cells to header (`<thead>`/`<th>`);
+           2. set per-column alignment from the colons (`:--` left, `--:`
+              right, `:-:` center, bare `---` none), applied to the WHOLE
+              column (header + body cells);
+           3. CONSUME the row (no `<tr>`).
+         Column-count mismatch: unmatched columns promote with default
+         alignment. POSITION IS STRICT: a delimiter-shaped row anywhere
+         else (first line, or after the second) is an ordinary row whose
+         `-` runs are inline content (`---` may smart-render as an em
+         dash). Native `|=` header cells and `<`/`>`/`~` alignment markers
+         may COEXIST with a delimiter row; a single column carrying BOTH a
+         native marker AND a delimiter colon has UNSPECIFIED alignment (do
+         not combine on one column). Verified identical js/php/rs; pinned
+         by corpus 09-tables-3.
+      T8 ROW ATTRIBUTES -- NORMATIVE. A `{…}` GLUED to a row's closing `|`
+         (no intervening space) sets that row's `<tr>` attributes -- the
+         row-level twin of a cell's opening-pipe attribute block, same
+         syntax, same validity rule. The WHOLE payload must be a valid,
+         non-empty attribute block (§15); a space before the brace
+         (`| a | {.x}`), an empty `{}`, or an invalid payload is NOT a row
+         attribute -- the `{` is ordinary content, so the line (ending in
+         `}`, not `|`) is not even a table row. Applies to header and body
+         rows; composes with the delimiter row and with cell attributes:
+         `|{.c} a |{.r}` -> `<tr class="r">` with `<td class="c">`. Pinned
+         by corpus 98-table-row-attributes.
 
-   6. REFERENCE RESOLUTION
-      - Reference links [text][ref] resolved to [ref]: url definitions
-      - LABEL MATCHING is EXACT: case-sensitive, no whitespace folding
-        (corpus 73-reference-labels-are-case-sensitive). When the same
-        label is defined twice, the LAST definition wins for links --
-        note the deliberate asymmetry with footnote definitions, where
-        the FIRST wins (§16).
-      - Collapsed references [text][] use text as reference label
-      - Abbreviations matched at word boundaries only
-      - All definitions (link/footnote/abbreviation references, heading IDs)
-        are collected in the first pass (PART 8, "first pass") BEFORE inline
-        resolution runs. A document-order definition appearing AFTER its use
-        is still resolved -- this is the defined two-pass model, not
-        backtracking, and is O(n). Design Principle 2 ("no dependency on
-        later references") scopes to inline *tokenization/highlighting*,
-        which never needs the definition table; semantic *expansion*
-        (abbr <abbr>, </#id> auto-text, [ref] targets) uses it.
+   6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R (rules
+      R1-R3; this §-anchor stays for existing references). Summary: link
+      labels match EXACTLY (case-sensitive, no whitespace folding; corpus
+      73-reference-labels-are-case-sensitive); LAST link definition wins
+      vs FIRST footnote definition (deliberate asymmetry, §16); collapsed
+      references [text][] use their text as the label; abbreviations match
+      at word boundaries only; ALL definitions (link / footnote /
+      abbreviation / heading ids) are collected in the first pass (PART 8)
+      before inline resolution runs -- a definition after its use still
+      resolves; two-pass, O(n), not backtracking. Design Principle 2 ("no
+      dependency on later references") scopes to inline
+      tokenization/highlighting, which never needs the definition table;
+      semantic expansion (abbr, </#id> auto-text, [ref] targets) uses it.
 
    7. MENTION/TAG BOUNDARIES
       - @ and # only start mentions/tags at word boundaries
@@ -1520,164 +1618,134 @@ EOF = (* end of file *) ;
         dashes, ellipsis, smart quotes, arrows, comparisons, `+-`, and
         symbols (`(c)`,`(r)`,`(tm)`).
 
-   9. EMPHASIS SPAN BOUNDARY -- NORMATIVE (governs *_content productions in
-      PART 3; §1 above is a summary of this section).
-      - SAME-DELIMITER ADJACENCY (ALL SEVEN single-char delimiters `/ * _ ~ ^ = ,`).
-        A bare delimiter immediately adjacent -- before OR after -- to another
-        of the SAME delimiter never opens a span. A doubled delimiter is
-        therefore literal text, never nested same-type emphasis (§3): `**x**`,
-        `~~x~~`, `^^x^^`, `==x==`, `,,x,,` stay literal exactly like `//x//` and
-        `__x__` (corpus 71-doubled-emphasis-delimiters, 01-emphasis-11). A
-        longer run (`,,,y,,,`, `===y===`) is likewise all-literal (corpus
-        74-two-char-delimiter-runs).
-      - WORD BOUNDARY (ALL bare delimiters `/ * _ ~ ^ = ,`; no
-        bare intraword emphasis). A delimiter opens only if NOT followed by
-        whitespace AND preceded by whitespace, start, or punctuation -- but NOT
-        by an alphanumeric or `_` (left word boundary). So (/x/) -> (<em>x</em>)
-        and a./b/ -> a.<em>b</em> (corpus 01-emphasis-8), while foo_bar_baz,
-        foo*bar*baz, snake_case, x = 5, key=value stay literal (01-emphasis-10,
-        01-emphasis-11). For deliberate intraword emphasis use the forced
-        `{X … X}` family (§22): x{*y*}z -> x<strong>y</strong>z.
-      - A delimiter closes only if NOT preceded by whitespace AND NOT followed
-        by an alphanumeric (right word boundary), for every bare delimiter.
-        "/ not italic /" stays literal (ws after opener); "x /a/b y" stays
-        literal because the candidate closer is followed by `b` (corpus
-        01-emphasis-9).
-      - The span runs from the opener to its NEAREST valid closer; any
-        same-type delimiter in between is LITERAL content (no same-type
-        nesting, §3). Hence /usr/local/ -> <em>usr/local</em> (01-emphasis-6)
-        and the/path/here is literal (first / has no left boundary). The
-        trailing delimiter of an unbalanced run stays literal, so /b// ->
-        <em>b</em>/ and /x// -> <em>x</em>/. See edge-cases.md §1.
-      - Resolution uses a delimiter stack, single left-to-right pass, no
-        backtracking (Design Principle 1). Forced `{X … X}` spans (§22) are
-        pushed on the same stack; only their word-boundary test is skipped.
+   9. EMPHASIS SPAN RESOLUTION -- FORMAL GUARDS + DELIMITER-STACK
+      OPERATIONAL SEMANTICS (governs the *_content productions in PART 3;
+      §1 points here). The per-delimiter boundary tests ARE the
+      bare_opener(d) / bare_closer(d) templates in PART 3. Run resolution
+      is one left-to-right pass over the inline stream with a delimiter
+      stack -- O(n), NO backtracking (Design Principle 1):
+      E1 CLASSIFY. At each unescaped bare delimiter d outside code spans /
+         raw inline, evaluate bare_opener(d) and bare_closer(d). Neither
+         holds -> literal text.
+      E2 CLOSE FIRST. A d satisfying bare_closer(d) with an open d-entry on
+         the stack closes the NEAREST such entry. Spans NEST, never
+         overlap: entries pushed above the closed one are popped and their
+         delimiters demoted to literal (the djot model -- an opener that
+         gets closed demotes the still-open candidates between).
+      E3 NO SAME-TYPE NESTING (§3). While a d-span is open, a further d
+         that would open does NOT push -- it is literal content. Hence
+         /usr/local/ -> <em>usr/local</em> (01-emphasis-6); the/path/here
+         literal (first `/` has no left boundary); unbalanced trailing runs
+         stay literal: /b// -> <em>b</em>/ and /x// -> <em>x</em>/
+         (edge-cases.md §1).
+      E4 OPEN. Otherwise a d satisfying bare_opener(d) pushes an entry.
+      E5 END OF BLOCK. Entries still open demote to literal.
+      Forced `{X … X}` spans (§22) push/pop on the SAME stack; only the
+      boundary tests are skipped.
+      CONSEQUENCES (pinned): SAME-DELIMITER ADJACENCY is bare_opener's
+      <!(d) / !(d) guards -- a doubled bare delimiter is literal, never
+      nested same-type emphasis: `**x**`, `~~x~~`, `^^x^^`, `==x==`,
+      `,,x,,` like `//x//`, `__x__` (corpus 71-doubled-emphasis-delimiters,
+      01-emphasis-11); longer runs (`,,,y,,,`, `===y===`) all-literal
+      (corpus 74-two-char-delimiter-runs). WORD BOUNDARY: (/x/) ->
+      (<em>x</em>), a./b/ -> a.<em>b</em> (01-emphasis-8); foo_bar_baz,
+      foo*bar*baz, snake_case, x = 5, key=value literal (01-emphasis-10,
+      -11); "x /a/b y" literal -- the candidate closer is followed by `b`
+      (01-emphasis-9). Intraword emphasis: forced family only, x{*y*}z ->
+      x<strong>y</strong>z (§22).
 
-   10. PARAGRAPH INTERRUPTION -- NORMATIVE (governs `paragraph` in PART 2).
-      A VISIBLE block (EXCEPT a list marker) INTERRUPTS an open paragraph with
-      NO blank line before it, at the document top level AND inside nested
-      content (list item, block quote, admonition/div body). A continuation line
-      that begins such a block is parsed as that block; the paragraph ends on
-      the preceding line. This is the Markdown-like rule (CommonMark "a paragraph
-      can be interrupted") for every block EXCEPT lists; list markers follow Djot
-      (a blank line is required, see LIST MARKERS DO NOT INTERRUPT below).
-      The interrupting blocks:
-        - heading            `#`..`######` + space;
-        - thematic break     a lone `---` / `***` / `___` line;
-        - block quote        `>` (NOTE: a line-initial `>` is ALWAYS a quote
-                             marker, so a prose line starting `>= 5` becomes a
-                             quote -- escape it, `\>= 5`, to keep it prose);
-        - table row          a `|`...`|` line that is a valid table row
-                             (a stray `|` in prose is NOT -- see VALID TABLE
-                             ROW in §5);
-        - fenced code        a ``` / ~~~ opener that HAS a matching closer
-                             ahead (see CLOSER LOOKAHEAD);
-        - admonition / div   a `:::` opener that HAS a matching closer ahead.
-      So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more" is
-      <p>intro</p> + <hr> + <p>more</p> (corpus 76-paragraph-interruption).
+   10. PARAGRAPH INTERRUPTION -- OPERATIONAL SEMANTICS (governs
+      `paragraph` in PART 2). The relation interrupts(L, P) decides whether
+      a line L ends an OPEN paragraph P with NO blank line between, at the
+      document top level AND inside nested content (list item, block quote,
+      admonition/div body). L interrupts -> L is parsed as its block and P
+      ends on the preceding line (the Markdown-like rule for every block
+      EXCEPT lists, which follow Djot).
+      I1 VISIBLE OPENERS interrupt. interrupts(L, P) holds when L begins:
+         - a heading (`#`..`######` + space);
+         - a thematic break (a lone `---` / `***` / `___` line);
+         - a block quote (`>`; a line-initial `>` is ALWAYS a quote marker,
+           so a prose line starting `>= 5` becomes a quote -- escape it,
+           `\>= 5`, to keep it prose);
+         - a valid table row (interrupting_row(L), §5 T2; a stray `|` in
+           prose is NOT one);
+         - a fenced code opener WITH a matching closer ahead (I4);
+         - a `:::` opener WITH a matching closer ahead (I4).
+         So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more"
+         is <p>intro</p> + <hr> + <p>more</p> (corpus
+         76-paragraph-interruption).
+      I2 LIST MARKERS NEVER INTERRUPT (symmetric). NEITHER a bullet
+         (`- `/`* `, `- [x] ` task) NOR an ordered marker (decimal, letter,
+         roman, any value) interrupts: the line FOLDS into P as lazy
+         continuation; a list needs a blank line before it (matching Djot).
+         "Liste: \n - eins \n - zwei" is ONE paragraph, so is
+         "x = 5 \n * 3 + 17"; a blank line starts the list. (Deliberate
+         change from the earlier bullet/ordered asymmetry: an ordered
+         marker is too common in prose, and the symmetric rule removes the
+         hard-wrapped-bullet false positive. Pinned by corpus 05-lists-12/13,
+         76-paragraph-interruption, 77-blockquote-lazy-continuation,
+         79-multi-line-headings.) TIGHT NESTED LISTS UNAFFECTED: an
+         indented marker inside an open list ITEM opens a sublist with no
+         blank line -- that is §24 C3 (content column), not this relation.
+      I3 IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)")
+         does not interrupt: an image is not a block of its own in Carve;
+         it stays an inline image inside the paragraph.
+      I4 CLOSER LOOKAHEAD -- the same &(...) guards the fence / div /
+         frontmatter productions carry. An UNTERMINATED ``` or `:::` opener
+         does not interrupt; the line stays paragraph text (a stray ``` in
+         prose then opens an unclosed inline verbatim run rendering as
+         <code> to the end of the block -- the code_span maximal-run rule).
+         Pinned by corpus 76-paragraph-interruption (unterminated-fence and
+         unterminated-`:::` pairs).
+      I5 INVISIBLE CONSTRUCTS interrupt AND are consumed: a reference
+         definition (link `[r]: url`, footnote `[^r]: …`, abbreviation
+         `*[A]: …`), a comment (`%%` line, `%%%` block), and a
+         block-attribute line (`{…}` alone on a line, §15). "See[^m].\n
+         [^m]: note" resolves the footnote; "para\n%% x" drops the comment;
+         "Para\n{.x}" ends the paragraph with the attribute line floating
+         forward (§15; corpus 84-block-attribute-lines-7). (A small
+         deviation from djot, which keeps such a line as paragraph text.)
+      I6 SCOPE + THE HEADING EXCEPTION. The relation applies to EVERY open
+         paragraph, including a blockquote's lazy continuation: "> quoted
+         \n - item" folds into ONE quote whose paragraph is
+         "quoted\n- item" (NOT quote + <ul>); "> text \n > # H" is a quoted
+         heading; a quoted bullet ("> p \n > - x") folds the same way.
+         HEADING is the SOLE exception: a bounded title holds no block, so
+         a list marker ENDS an open heading and starts a sibling list
+         ("# H \n - item" -> heading + <ul>), any block-opener ends it, and
+         only plain text (or a same-`#` marker line) folds in (PART 2,
+         MULTI-LINE HEADINGS) -- matching djot.
 
-      LIST MARKERS DO NOT INTERRUPT (symmetric). NEITHER a bullet (`- `/`* `,
-      `- [x] ` task) NOR an ordered marker (decimal, letter, or roman, in any
-      value) interrupts a paragraph: a list needs a blank line before it
-      (matching Djot). The bullet and the ordered marker behave IDENTICALLY at
-      the paragraph boundary -- one rule, no marker-class carve-out. So
-      "Liste: \n - eins \n - zwei" is a SINGLE paragraph (the bullet lines fold
-      in as lazy continuation), and so is "x = 5 \n * 3 + 17"; a blank line --
-      "Liste: \n\n - eins" -- starts the list. This is a deliberate change from
-      the earlier "a bullet interrupts, an ordered marker does not" asymmetry:
-      an ordered marker is too common in prose ("see step 2.", "version 1985.")
-      to interrupt, and making the bullet match removes both the asymmetry and
-      the residual false positive (a hard-wrapped prose line that happens to
-      begin with a bullet no longer becomes a list). Pinned by corpus
-      05-lists-12/13, 76-paragraph-interruption, 77-blockquote-lazy-continuation,
-      79-multi-line-headings. TIGHT NESTED LISTS ARE UNAFFECTED: this rule
-      governs only a marker that would interrupt an OPEN PARAGRAPH; an indented
-      marker inside an open list item still opens a sublist with no blank line
-      (see NESTING below and §24).
-
-      IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)") does NOT
-      interrupt: an image is not a block of its own in Carve, so it stays an
-      inline image inside the paragraph.
-
-      CLOSER LOOKAHEAD (fenced code, admonition, div). A fence / `:::` opener
-      interrupts ONLY when a matching closer exists ahead in the same context.
-      An UNTERMINATED opener does NOT interrupt -- the line stays paragraph
-      text -- so a stray ``` or `:::` in prose never swallows the rest of the
-      block. An unterminated ``` is then an unclosed inline verbatim run that
-      renders as a `<code>` span to the end of the block (the `code_span`
-      maximal-run rule). Pinned by corpus 76-paragraph-interruption (the
-      unterminated-fence and unterminated-`:::` pairs).
-
-      INVISIBLE CONSTRUCTS. A reference definition (link `[r]: url`, footnote
-      `[^r]: …`, abbreviation `*[A]: …`), a comment (`%%` line, `%%%` block),
-      or a block-attribute line (`{…}` alone on a line, §15) also interrupts
-      a paragraph with no blank line: it is parsed and consumed/collected,
-      rather than left as literal text. So "See[^m].\n[^m]:
-      note" resolves the footnote, "para\n%% x" drops the comment, and
-      "Para\n{.x}" ends the paragraph with the attribute line floating
-      forward (§15; corpus 84-block-attribute-lines-7).
-      (Unchanged from the prior rule; a small deviation from djot, which keeps
-      such a line as paragraph text.)
-
-      NESTING. Interruption applies inside nested content too: a `# H` after a
-      prose line in a block quote ("> text \n > # H") is a heading. An indented
-      sublist still nests with no blank line ("- a \n   - b" -> a list whose
-      first item holds a sublist): that is NOT paragraph interruption -- the
-      marker opens a sublist inside an OPEN LIST ITEM, governed by §24, not by
-      this rule.
-
-      "Folds into a paragraph" applies to EVERY open paragraph -- at the top
-      level AND inside a blockquote's lazy continuation (a quoted line ends in an
-      open paragraph). A HEADING is the SOLE exception: a bounded title cannot
-      hold a block, so a list marker ENDS it (starts a sibling list OUTSIDE) --
-      matching djot:
-        - HEADING CONTINUATION (see `heading`): a block-opener ends an open
-          heading; a LIST MARKER -- bullet or ordered -- also ends it and starts
-          a sibling list, so "# H \n - item" is a heading PLUS a `<ul>`. Only
-          plain text (and a same-`#` marker line) folds into the heading.
-        - BLOCKQUOTE LAZY CONTINUATION (see `blockquote`): a col-0 list marker
-          after a quoted line FOLDS into the open quoted paragraph (§10, exactly
-          as at the top level), so "> quoted \n - item" is ONE quote whose
-          paragraph is "quoted\n- item" -- NOT a quote plus a `<ul>`. Plain text
-          and a list marker both fold into the open quoted paragraph (§10); a
-          visible block-opener still ends the quote. (A QUOTED bullet --
-          "> p \n > - x" -- folds the same way, the marker meeting an open
-          paragraph inside the quote.)
-
-   11. LIST MARKER CHANGE STARTS A NEW LIST -- NORMATIVE (governs `list`
-      in PART 2). §10 decides FIRST whether a sequence of marker lines
-      establishes a list at all (paragraph-interruption gate); §11 then
-      decides whether established list items belong to one list or to
-      adjacent sibling lists. The rules layer; §11 never overrides §10.
-      Given two adjacent list items at the same indent that both passed
-      §10, they belong to the SAME list only when their marker matches:
-        - same character within `-`, `*` for unordered (`+` is NOT a
-          bullet in Carve -- it is the continuation marker, §17);
-        - same `ordered_marker` alternative for ordered;
-        - same plain-vs-task classification.
-      A line whose marker differs from the immediately-preceding item
-      on any of those axes starts a new sibling list at the same indent.
-      Matches djot (minus djot's `+` bullet). Example:
-        - a              produces:    <ul><li>a</li><li>b</li></ul>
-        - b                            <ul><li>c</li><li>d</li></ul>
-        * c
-        * d
-      Same axis for plain-vs-task: `- a` followed by `- [x] b` is two
-      lists (matches djot). The marker-match rule itself looks only one
-      item back; the ordered DIALECT below additionally carries the
-      first item's classification (and its one-item-forward tie-break)
-      for the rest of the list.
-      ORDERED DIALECTS. An ordered list's dialect (decimal / lower- or
-      upper-alpha / lower- or upper-roman) and delimiter (`.` or `)`) are
-      fixed by its FIRST item; a later item whose marker is outside that
-      dialect, or uses the other delimiter, starts a new sibling list. The
-      first item also sets the `<ol>` `type` (a/A/i/I; decimal omits it)
-      and `start` (the marker's value; omitted when 1).
-      AMBIGUOUS-LETTER TIE-BREAK: a single roman-letter first marker
-      (i/v/x/l/c/d/m) is ROMAN when the next sibling is the consecutive
-      roman numeral (`iv.`+`v.`, `i.`+`ii.`) and ALPHA when the next is the
-      consecutive letter (`c.`+`d.`, `v.`+`w.`); a lone `i`/`I` defaults to
-      roman, any other lone letter to alpha.
+   11. LIST MARKER CHANGE STARTS A NEW LIST -- OPERATIONAL (governs `list`
+      in PART 2). §10 decides FIRST whether marker lines establish a list
+      at all (the interruption gate); §11 then partitions established
+      same-indent items into sibling lists. The rules layer; §11 never
+      overrides §10.
+      N1 SAME LIST iff two adjacent items at the same indent match on ALL
+         axes: bullet character (`-` vs `*`; `+` is NOT a bullet in Carve --
+         it is the continuation marker, §17), ordered_marker alternative,
+         delimiter (`.` vs `)`), and plain-vs-task classification. Any axis
+         differs -> a new sibling list at the same indent. Matches djot
+         (minus djot's `+` bullet). Example:
+           - a              produces:    <ul><li>a</li><li>b</li></ul>
+           - b                            <ul><li>c</li><li>d</li></ul>
+           * c
+           * d
+         `- a` followed by `- [x] b` is likewise two lists.
+      N2 ORDERED DIALECT. A list's dialect (decimal / lower- or upper-alpha
+         / lower- or upper-roman) and delimiter are fixed by its FIRST
+         item; a later marker outside the dialect, or with the other
+         delimiter, starts a new sibling list. The first item also sets the
+         `<ol>` `type` (a/A/i/I; decimal omits it) and `start` (the
+         marker's value; omitted when 1).
+      N3 AMBIGUOUS-LETTER TIE-BREAK. A single roman-letter first marker
+         (i/v/x/l/c/d/m) is ROMAN when the next sibling is the consecutive
+         roman numeral (`iv.`+`v.`, `i.`+`ii.`) and ALPHA when the next is
+         the consecutive letter (`c.`+`d.`, `v.`+`w.`); a lone `i`/`I`
+         defaults to roman, any other lone letter to alpha.
+      N1 looks only one item back; N2/N3 carry the FIRST item's
+      classification (with N3's one-item-forward tie-break) for the rest of
+      the list.
 
    12. FENCED ":::" BLOCK RENDERING -- NORMATIVE (governs `admonition`
       and `div` in PART 2; cross-references syntax.md §4.20 "Block
@@ -1860,66 +1928,51 @@ EOF = (* end of file *) ;
       spans, where carve-js treats those as literal. Use a plain
       `.class` / `#id` / `key=value` / bare word for a portable span.
 
-   15. BLOCK ATTRIBUTE LINES -- NORMATIVE (governs `block_attributes`
-      in PART 2; matches djot). A `{...}` attribute block on its own
-      line is a leading block attribute: it does NOT render -- it
-      attaches to the next block element. Semantics:
-      - REACH: leading attribute blocks float forward to the next block
-        element, across intervening blank lines. `{#id}\n\nText` yields
-        `<p id="id">Text</p>`. A run with no following block element
-        (e.g. at end of document) is dropped, producing no output.
-      - TRAILING A PARAGRAPH -- NORMATIVE. A `{...}` line directly after
-        paragraph content (no blank line) is still a leading block-attribute
-        line: it INTERRUPTS the paragraph (§10) and floats FORWARD like any
-        other. It does NOT attach backward to the paragraph it follows, and
-        does NOT fold into the paragraph as literal text. `Para\n{.class}`
-        yields `<p>Para</p>` (dropped -- no following block); and
-        `Para\n{.class}\n\nNext` yields `<p>Para</p>` then
-        `<p class="class">Next</p>`. (A trailing SAME-LINE `{...}` with no
-        abutting host is not a block-attribute line at all -- it stays literal
-        inline content, §14: `Para {.x}` -> `<p>Para {.x}</p>`.)
-      - ACCUMULATION across consecutive blocks: when several attribute
-        blocks precede the same target (adjacent or blank-separated),
-        they merge in source order with these rules --
-          * id: last one wins.
-          * key=value: last value for a given key wins.
-          * class: ALL classes accumulate in source order, with NO
-            de-duplication (`{.a .b}` then `{.b .c}` -> `class="a b b c"`,
-            matching djot and carve-php).
-        Worked example (the djot canonical case):
-          {#id}
-          {key=val}
-          {.foo .bar}
-          {key=val2}
-          {.baz}
-          {#id2}
-          Okay
-        -> <p id="id2" key="val2" class="foo bar baz">Okay</p>
-      - MULTI-LINE BLOCK: a single attribute block may wrap across lines
-        -- the `}` need not sit on the opening line. `{#id\n .foo}` is
-        one block contributing id `id` and class `foo`. A BLANK line
-        inside the braces ends the block (it is then literal text, not a
-        block_attributes). A quoted value containing a literal `}` that
-        spans lines is not supported by the reference impls
-        (pathological).
-      - NOT AN ATTRIBUTE LIST -> NOT AN ATTRIBUTE LINE: a `{…}` line whose
-        braces do not parse as an attribute list is ordinary paragraph
-        content and follows the normal inline rules (e.g. a `{#a #}` line
-        is an editorial comment, §22 family, not a block-attribute line).
-      - NO block construct takes a trailing `{…}` on its own line
-        (djot-strict; headings, fences and `:::` openers included) --
-        the preceding block-attribute line is the ONLY block-level
-        attribute channel. A trailing `{…}` on a heading line is literal
-        inline content (PART 2, headings).
-      Implementation status: carve-php, carve-js, and carve-rs implement §15
-      in full -- leading block-attribute lines, float-forward across blank
-      lines (including a line that trails a paragraph), accumulation, and
-      multi-line blocks. Pinned by corpus 84-block-attribute-lines.
+   15. BLOCK ATTRIBUTE LINES -- OPERATIONAL SEMANTICS (governs
+      `block_attributes` in PART 2; matches djot). STATE: pending := the
+      ordered list of collected attribute blocks not yet attached.
+      A1 COLLECT. A `{…}` alone on a line (the `}` may arrive on a later
+         line, A5) that parses as a valid attribute list appends to
+         pending and renders NOTHING. It also interrupts an open paragraph
+         (§10 I5) and NEVER attaches backward: "Para\n{.class}" ->
+         <p>Para</p> (pending then dropped, A4); "Para\n{.class}\n\nNext"
+         -> <p>Para</p> then <p class="class">Next</p>.
+      A2 FLOAT FORWARD. pending survives blank lines and further attribute
+         lines and attaches to the NEXT block element: `{#id}\n\nText` ->
+         <p id="id">Text</p>.
+      A3 MERGE (over all pending blocks, source order):
+         * id -> last one wins;
+         * key=value -> last value for a given key wins;
+         * class -> ALL classes accumulate in source order, NO
+           de-duplication ({.a .b} then {.b .c} -> class="a b b c",
+           matching djot and carve-php).
+         Worked djot-canonical example: {#id} {key=val} {.foo .bar}
+         {key=val2} {.baz} {#id2} then "Okay" ->
+         <p id="id2" key="val2" class="foo bar baz">Okay</p>.
+      A4 DROP IF DANGLING. pending with no following block element (end of
+         document) produces no output.
+      A5 MULTI-LINE BLOCK. One block may wrap across lines ({#id\n .foo} is
+         one block: id `id`, class `foo`). A BLANK line inside the braces
+         ends the attempt -- the text is then literal, not a
+         block_attributes. A quoted value containing a literal `}` spanning
+         lines is unsupported by the reference impls (pathological).
+      A6 NOT AN ATTRIBUTE LIST -> NOT AN ATTRIBUTE LINE. A `{…}` line whose
+         braces do not parse as an attribute list is ordinary paragraph
+         content under normal inline rules (a `{#a #}` line is an editorial
+         comment, §22 family).
+      A7 THE ONLY BLOCK CHANNEL. NO block construct takes a trailing `{…}`
+         on its own line (djot-strict; headings, fences and `:::` openers
+         included) -- the preceding block-attribute line is the sole
+         block-level attribute channel. A trailing `{…}` on a heading line
+         is literal inline content (PART 2, headings).
+      Implementation status: php, js, and rs implement §15 in full. Pinned
+      by corpus 84-block-attribute-lines.
 
    16. FOOTNOTES -- NORMATIVE (governs `footnote` / `footnote_definition`
       in PART 3). The reference form `[^label]` + `[^label]: body` and the
       INLINE form `^[content]` are implemented; the sidenote (`[>content]`)
-      remains deferred.
+      remains deferred. Numbering and resolution are formalized
+      as PART 9R rule R2; the rendering rules below stay normative here.
       - A `[^label]` reference with a matching definition is NUMBERED by
         document reference order (first referenced = 1); the same label
         referenced again reuses its number.
@@ -1973,66 +2026,56 @@ EOF = (* end of file *) ;
         text (`[t[^1]](u)`) or inside a heading later cloned by a `</#id>`
         crossref nests an <a> in an <a>; avoid footnotes in those positions.
 
-   17. TIGHT vs LOOSE LISTS -- NORMATIVE (governs `list` rendering). A list is
-      LOOSE if any item is followed by a blank line before the next sibling
-      marker, OR any item holds a blank-line-separated second PARAGRAPH;
-      otherwise TIGHT. A tight item's paragraph renders WITHOUT a `<p>`
-      (`<li>text</li>`); a loose item's paragraphs ARE wrapped
-      (`<li><p>text</p></li>`).
-
-      COMPACT LIST BLOCKS -- Carve deviation from djot/CommonMark. A blank line
-      before an item's sub-BLOCK (sub-list, block quote, fenced code, fenced
-      div, heading, table) does NOT loosen the list: the item stays tight, lead
-      text inline, block attached. Only a genuine second PARAGRAPH (blank +
-      indented plain prose), or a blank line between items, loosens. The blank
-      line is still required to START the block, so block recognition and the
-      uniformity principle are unchanged -- only the tight/loose RENDERING
-      differs. djot renders these loose; Carve renders them tight. Pinned by
-      corpus compact-list-blocks.
-
-      CONTINUATION MARKER -- Carve addition. A line whose only content is `+`,
-      at the current block container's MARKER COLUMN, attaches the FOLLOWING
-      flush-left block to that container with no blank line and no marker prefix
-      or indentation, keeping the container tight. It attaches ONE block of ANY
-      kind (paragraph, list, fenced code, table, block quote, div, ...), up to
-      the next blank line, sibling marker, or a further `+`. `+` is not a Carve
-      bullet (PART 9 §11), so a lone `+` is unambiguous; outside any container a
-      lone `+` is literal text. The marker only ATTACHES, it never SEPARATES: a
-      blank line is the sole way to END a container and start a sibling, so a `+`
-      can never break the following block OUT of the current container -- it adds
-      it IN. Containers that take the marker:
-
-        - LIST ITEM (NORMATIVE; pinned by corpus list-continuation-marker). `+`
-          at the item's marker column attaches the block to the item (useful for
-          code/tables you would rather not indent). The marker may also sit on
-          the marker line itself (`- +`) to open an item whose body is the
-          flush-left block(s) that follow, with no inline lead -- the FIRST-BLOCK
-          form (a bare `+`; `- + text` keeps `+ text` as literal text).
-
-        - BLOCK QUOTE (NORMATIVE). `+` at column 0 immediately after a
-          blockquote line attaches the following flush-left block to the quote
-          -- the un-prefixed alternative to repeating `>` on every line of the
-          block (the quote analogue of the list item's "no indent" convenience).
-          So "> quoted \n + \n - item" is a quote whose body is the paragraph
-          "quoted" PLUS a real <ul> -- not a `>`-prefixed list and not the
-          lazily-folded literal text that "> quoted \n - item" produces. A blank
-          line after the quote still ends it and starts a top-level sibling.
-
-      NOT a continuation container (the `+` keeps its plain meaning -- no gap to
-      fill, so introducing it would only add ambiguity):
-
-        - FENCED CONTAINERS -- admonition / generic `div` (`:::`) and the line
-          block. Their body already holds flush-left blocks directly between the
-          fences, so no marker is needed; a lone `+` inside one is literal text.
-        - TABLE -- a `+` in the first column is already the multi-line-cell
-          CONTINUATION ROW (PART 9 §5, `continuation_row`), a distinct construct,
-          not a block-attach marker.
-        - LEAF blocks -- heading, thematic break, code block, raw block, and
-          paragraph hold no child blocks, so none is ever a `+` container. A
-          heading is a bounded title (see `heading`), not an open body.
-        - FOOTNOTE DEFINITION bodies compose by indentation today; a `+` attach
-          form for them is a possible future extension, deliberately OUT OF SCOPE
-          here.
+   17. TIGHT vs LOOSE LISTS + CONTINUATION MARKER -- OPERATIONAL (governs
+      `list` rendering and the continuation_marker productions in PART 2).
+      L1 LOOSE(list) := some item is followed by a blank line before the
+         next sibling marker, OR some item holds a blank-line-separated
+         second PARAGRAPH; otherwise TIGHT. A tight item's paragraph
+         renders WITHOUT `<p>` (<li>text</li>); a loose item's paragraphs
+         ARE wrapped (<li><p>text</p></li>).
+      L2 COMPACT LIST BLOCKS -- Carve deviation from djot/CommonMark. A
+         blank line before an item's sub-BLOCK (sub-list, block quote,
+         fenced code, fenced div, heading, table) does NOT loosen: the item
+         stays tight, lead text inline, block attached. Only a genuine
+         second PARAGRAPH (blank + indented plain prose), or a blank line
+         BETWEEN items, loosens. The blank line is still required to START
+         the block, so recognition and the uniformity principle are
+         unchanged -- only the tight/loose RENDERING differs (djot renders
+         these loose). Pinned by corpus compact-list-blocks.
+      L3 CONTINUATION MARKER `+` -- Carve addition. A line whose only
+         content is `+`, at the current container's MARKER COLUMN, attaches
+         the FOLLOWING flush-left block to that container -- ONE block of
+         ANY kind (paragraph, list, fenced code, table, block quote, div,
+         ...), up to the next blank line, sibling marker, or a further `+`
+         -- with no marker prefix or indentation, keeping the container
+         tight. `+` is not a Carve bullet (§11 N1), so a lone `+` is
+         unambiguous; outside any container a lone `+` is literal text.
+         The marker only ATTACHES, never separates: a blank line is the
+         sole way to END a container, so a `+` can never break the
+         following block OUT of its container -- it adds it IN.
+      L4 CONTAINERS THAT TAKE THE MARKER:
+         - LIST ITEM (pinned by corpus list-continuation-marker): `+` at
+           the item's marker column attaches the block to the item (for
+           code/tables one would rather not indent). FIRST-BLOCK form: the
+           marker may sit on the marker line itself (`- +`, a bare `+`) to
+           open an item whose body is the following flush-left block(s)
+           with no inline lead; `- + text` keeps `+ text` as literal text.
+         - BLOCK QUOTE: `+` at column 0 immediately after a blockquote line
+           attaches the following flush-left block to the quote -- the
+           un-prefixed alternative to repeating `>`. "> quoted \n + \n
+           - item" is a quote whose body is the paragraph "quoted" PLUS a
+           real <ul> (not a lazily-folded paragraph, cf. §10 I6). A blank
+           line after the quote still ends it.
+      L5 NOT CONTINUATION CONTAINERS (a lone `+` keeps its plain meaning):
+         - fenced containers (admonition / generic div / line block) --
+           their bodies already hold flush-left blocks; a lone `+` inside
+           is literal text;
+         - TABLE -- a first-column `+` is the continuation ROW (§5 T6), a
+           distinct construct;
+         - LEAF blocks (heading, thematic break, code block, raw block,
+           paragraph) hold no child blocks; a heading is a bounded title.
+         - FOOTNOTE DEFINITION bodies compose by indentation today; a `+`
+           attach form is possible future work, deliberately OUT OF SCOPE.
 
    18. MATH -- NORMATIVE (governs `math` in PART 3; djot form). Inline
       `$` + verbatim backtick span; display `$$` + verbatim backtick
@@ -2048,7 +2091,8 @@ EOF = (* end of file *) ;
       Author `{attrs}` after the span merge onto the <span> (the base
       `math …` class is kept; see PART 10 §1).
 
-   19. CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES -- NORMATIVE.
+   19. CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES -- NORMATIVE
+      (resolution formalized as PART 9R rules R4/R5; behavior detail here).
       - `</#id>` clones the target heading's full inline children, so a
         heading with markup (`# *Setup*`) yields a link that KEEPS the
         markup (`<a href="#…"><strong>Setup</strong> …</a>`).
@@ -2187,41 +2231,42 @@ EOF = (* end of file *) ;
         folds it as usual.
       (corpus 88-line-blocks*.)
 
-   24. TABS AND INDENTATION -- NORMATIVE (governs `indent` in PART 2 and all
-      indentation-sensitive comparisons). Adjudicated with the tab-stop work
-      (carve #99 / Rule B carve #103); shipped in all three implementations.
-      - COLUMNS, NOT CHARACTERS. Indentation is measured in VISUAL COLUMNS:
-        a tab advances to the next multiple of 4 (CommonMark tab stops), a
-        space advances by 1. A leading tab therefore indents to column 4.
-        Outside indentation (code content, inline text) tabs are PRESERVED
-        verbatim and never expanded (PART 2, TABS IN CODE).
-      - MARKER SEPARATOR IS A SPACE. The required separator after a list
-        marker is a single SPACE character -- a syntax delimiter, not
-        indentation. `-<TAB>a` is NOT a list item (paragraph text).
-      - CONTENT COLUMN. An item's content column is the visual column where
-        its content starts (marker width + separator: `- ` -> 2, `1. ` -> 3,
-        `10. ` -> 4). A LIST-MARKER child -- a bullet (`-`/`*`, task) OR an
-        ordered marker -- must reach the parent item's content column to open a
-        sublist; below it, the line folds as lazy item text (list markers never
-        interrupt, §10). Bullet and ordered markers are SYMMETRIC here. Every
-        other block opener (quote, heading, fence, table, ...) nests at ANY
-        indent past the parent item's base column (those are unambiguous as
-        blocks and never fold as lazy text).
-      - RULE B (BULLETS AT ANY INDENT -- TOP LEVEL). A bullet (`-`/`*` + space +
-        content) opens a list at ANY indentation at the TOP LEVEL: there is no
-        column-0 restriction (unlike CommonMark, a `    - x` line is a list, not
-        indented code). An ordered marker behaves the same at the top level.
-        This "any indent" freedom is about WHERE a list may open at the top
-        level, NOT about sublist nesting depth (nesting follows the content-
-        column rule above) and NOT about interrupting an OPEN PARAGRAPH (a
-        marker needs a blank line before it -- the symmetric §10 rule).
-      - DEDENT. When nested content is re-parsed, the container's structural
-        indent is stripped by columns. A tab straddling the dedent boundary
-        is consumed WHOLE on non-marker lines (Carve has no indent-sensitive
-        block below list nesting, so the residual columns never matter);
-        on a LIST-MARKER line the straddling tab's unconsumed columns are
-        re-inserted as spaces, so sibling markers aligned with mixed
-        tab/space indentation keep the same visual column and stay siblings.
+   24. TABS AND INDENTATION -- FORMALIZED COLUMN ARITHMETIC (governs
+      `indent` in PART 2 and every indentation-sensitive comparison; the
+      arithmetic PART 0's layout automaton runs on. Adjudicated with the
+      tab-stop work, carve #99 / Rule B carve #103; shipped in all three
+      implementations).
+      C1 COLUMNS, NOT CHARACTERS. col advances by 1 for a space and to the
+         next multiple of 4 for a tab (CommonMark tab stops; a leading tab
+         indents to column 4). Outside indentation (code content, inline
+         text) tabs are PRESERVED verbatim and never expanded (PART 2,
+         TABS IN CODE).
+      C2 MARKER SEPARATOR IS A SPACE. The required separator after a list
+         marker is a single SPACE character -- a syntax delimiter, not
+         indentation. `-<TAB>a` is NOT a list item (paragraph text).
+      C3 CONTENT COLUMN. content_column(item) := the visual column where
+         the item's content starts (marker width + separator: `- ` -> 2,
+         `1. ` -> 3, `10. ` -> 4). A LIST-MARKER child -- bullet (`-`/`*`,
+         task) OR ordered, SYMMETRIC -- must reach the parent item's
+         content_column to open a sublist; below it the line folds as lazy
+         item text (list markers never interrupt, §10 I2). Every OTHER
+         block opener (quote, heading, fence, table, ...) nests at ANY
+         indent past the parent item's base column (unambiguous as blocks,
+         never lazy text).
+      C4 RULE B (TOP LEVEL, ANY INDENT). A bullet (`-`/`*` + space +
+         content) opens a list at ANY indentation at the TOP LEVEL -- no
+         column-0 restriction (unlike CommonMark, `    - x` is a list, not
+         indented code); an ordered marker behaves the same. Scope: WHERE a
+         top-level list may open -- NOT sublist nesting (C3) and NOT
+         interrupting an open paragraph (§10 I2).
+      C5 DEDENT. Re-parsing nested content strips the container's
+         structural indent BY COLUMNS. A tab straddling the dedent boundary
+         is consumed WHOLE on non-marker lines (Carve has no
+         indent-sensitive block below list nesting, so the residual columns
+         never matter); on a LIST-MARKER line the straddling tab's
+         unconsumed columns are re-inserted as spaces, so sibling markers
+         aligned with mixed tab/space indentation keep the same visual
+         column and stay siblings.
 
    25. SECURITY REQUIREMENTS -- NORMATIVE (HTML output target). These rules
       bind any implementation that emits HTML for UNTRUSTED input. They were
@@ -2333,6 +2378,66 @@ EOF = (* end of file *) ;
         zero-width kept -- with id `ABC`.)
 *)
 
+
+(* ============================================================================
+   PART 9R: RESOLUTION SEMANTICS (NORMATIVE) -- whole-document passes
+   ============================================================================
+
+   The two-pass model (PART 8 "first pass"): PASS 1 collects definitions
+   while blocks are parsed; PASS 2 resolves inline uses. A definition may
+   appear before or after its use. Complexity is O(n) -- no rescanning per
+   occurrence (PART 9 §25 RESOURCE BOUNDS). Definitions are collected even
+   inside containers (blockquote / list item); the container then renders
+   without them (PART 9 §16; corpus "Footnote definition inside a container
+   is collected"). These rules are attribute-grammar / two-pass semantics --
+   deliberately NOT grammar productions: symbol-table resolution is provably
+   outside context-free syntax, and stating it as rules over declared state
+   keeps it machine-checkable without pretending it is EBNF.
+
+   STATE (symbol tables, PASS 1):
+     linkDefs     : label -> (url, title?, attrs?)   -- LAST definition wins
+     footnoteDefs : label -> body                    -- FIRST definition wins
+     abbrDefs     : term -> expansion                -- non-empty term (§25)
+     headingIds   : slug -> heading node             -- case-preserving; the
+                    PART 2 HEADING IDENTIFIERS rules: explicit {#id} ids are
+                    reserved first in document order, then auto-slugs, with
+                    -2/-3/... collision dedup
+     captionIds   : id -> (kind in {figure, table, listing, equation},
+                    number)                          -- from R5
+     footnoteSeq  : ONE shared document-order counter for both footnote
+                    forms
+
+   RULES (PASS 2):
+   R1 LINK REFERENCES. [text][label] and [text][] (label := text) resolve
+      against linkDefs. Matching is EXACT: case-sensitive, no whitespace
+      folding (corpus 73-reference-labels-are-case-sensitive). Definition
+      attributes transfer to the link; link attributes override per key.
+      Unresolved -> the bracketed run renders as literal source text. Carve
+      has NO shortcut reference: a bare [label] never resolves (PART 9 §14).
+   R2 FOOTNOTES (rendering in PART 9 §16). A [^label] use with a matching
+      footnoteDefs entry is numbered by FIRST-REFERENCE order from
+      footnoteSeq; repeat references reuse the number (k-th repeat gets
+      refId fnref{n}-{k} and an extra backlink). An inline ^[content] note
+      draws a fresh anonymous number from the SAME footnoteSeq (it cannot
+      be re-referenced). Unresolved reference -> literal source text;
+      unreferenced definition -> dropped.
+   R3 ABBREVIATIONS. Each abbrDefs term matches in rendered text at WORD
+      BOUNDARIES only and emits <abbr>. Expansion is bounded per PART 9 §25
+      (an empty term is rejected; total work stays O(n)).
+   R4 CROSSREFS (behavior detail in PART 9 §19). </#id> folds
+      case-insensitively and matches against the case-preserved headingIds
+      (an ASCII spelling of a non-ASCII id does NOT resolve; corpus
+      19-heading-ids), then against captionIds for numbered captions (the
+      link text is then LABEL + NUMBER, e.g. "Figure 1", markup preserved).
+      Resolution is ONE LEVEL: cloned heading text is not re-expanded, so
+      self-references and cycles are safe. Unresolved -> literal.
+   R5 NUMBERED CAPTIONS. Per kind, in document order, each caption whose
+      top-level text carries a bare `#` placeholder receives the next
+      number of its kind (PART 2, CAPTION NUMBER PLACEHOLDER); an {#id} on
+      the caption registers it in captionIds for R4.
+   R6 SECTION WRAPPING consumes headingIds after dedup -- the stateful
+      emission algorithm in PART 9 §13.
+   ============================================================================ *)
 
 (* ============================================================================
    PART 10: HTML SERIALIZATION CONVENTIONS (NORMATIVE)
