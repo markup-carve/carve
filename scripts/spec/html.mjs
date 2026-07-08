@@ -4,8 +4,8 @@
  * contract; anything the subset cannot render faithfully throws Refuse.
  */
 
-import { Refuse } from './layout.mjs'
-import { renderInline, makeSlugger, checkUrl, escapeAttr, parseAttrBlock } from './render.mjs'
+import { Refuse, TIER1 } from './layout.mjs'
+import { renderInline, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, renderBlockAttrs } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -16,6 +16,8 @@ export function renderDoc(doc) {
     abbrDefs: doc.abbrDefs,
     footnoteDefs: doc.footnoteDefs,
     headingIds: new Map(), // lower-cased slug -> { id, html }
+    captionSeq: new Map(), // caption label word -> counter (R5)
+    captionIds: new Map(), // lower-cased id -> "Label N" (R4)
   }
   const out = []
   const sections = []
@@ -28,13 +30,30 @@ export function renderDoc(doc) {
         sections.pop()
         out.push(`${indent()}</section>`)
       }
-      const id = ctx.slug(b.text)
+      // an explicit {#id} from a preceding attribute line lands on the
+      // <section> (PART 9 SS13/SS15); remaining attrs go on the <h*>
+      let id = null
+      let hAttrs = ''
+      if (b.battrs) {
+        const rest = []
+        for (const list of b.battrs) {
+          const keep = []
+          for (const a of list) {
+            if (a[0] === 'id') id = a[1]
+            else keep.push(a)
+          }
+          if (keep.length) rest.push(keep)
+        }
+        hAttrs = renderBlockAttrs(rest)
+      }
+      if (id === null) id = ctx.slug(b.text.replace(/<\/#[^>]*>/g, '').replace(/[ \t]+$/, ''))
       ctx.headingIds.set(id.toLowerCase(), { id, html })
-      out.push(`${indent()}<section id="${id}">`)
+      out.push(`${indent()}<section id="${escapeAttr(id)}">`)
       sections.push(b.level)
-      out.push(`${indent()}<h${b.level}>${html}</h${b.level}>`)
+      out.push(`${indent()}<h${b.level}${hAttrs}>${html}</h${b.level}>`)
     } else {
-      out.push(renderBlock(b, sections.length, ctx))
+      const r = renderBlock(b, sections.length, ctx)
+      if (r !== null) out.push(r)
     }
   }
   while (sections.length) {
@@ -52,50 +71,160 @@ export function renderDoc(doc) {
 
 function renderBlock(b, depth, ctx) {
   const pad = '  '.repeat(depth)
+  const ba = b.battrs ? renderBlockAttrs(b.battrs) : ''
   switch (b.t) {
     case 'para': {
-      const html = b.lines.map((l) => renderInline(l)).join('\n')
+      const html = renderInline(b.lines.join('\n'))
       if (b.lines.length === 1 && IMG_ONLY.test(html)) {
         // a standalone image paragraph renders as a bare <img> (PART 10)
         if (b.caption !== undefined) {
-          return `${pad}<figure>\n${pad}  ${html}\n${pad}  <figcaption>${renderInline(b.caption)}</figcaption>\n${pad}</figure>`
+          const id = / id="([^"]*)"/.exec(ba)?.[1]
+          const cap = numberCaption(b.caption, ctx, id)
+          return `${pad}<figure${ba}>\n${pad}  ${html}\n${pad}  <figcaption>${renderInline(cap)}</figcaption>\n${pad}</figure>`
         }
-        return pad + html
+        return pad + (ba ? html.replace('<img ', `<img${ba} `.replace(/ $/, ' ')) : html)
       }
-      if (b.caption !== undefined) throw new Refuse('caption on a text paragraph')
-      return `${pad}<p>${html}</p>`
+      if (b.caption !== undefined) {
+        const id = / id="([^"]*)"/.exec(ba)?.[1]
+        const cap = numberCaption(b.caption, ctx, id)
+        return `${pad}<figure${ba}>\n${pad}  <p>${html}</p>\n${pad}  <figcaption>${renderInline(cap)}</figcaption>\n${pad}</figure>`
+      }
+      return `${pad}<p${ba}>${html}</p>`
     }
     case 'hr':
-      return `${pad}<hr>`
+      return `${pad}<hr${ba}>`
     case 'code': {
       const cls = b.lang ? ` class="language-${b.lang}"` : ''
+      const title = b.title != null && !/ title="/.test(ba) ? ` title="${escapeAttr(b.title)}"` : ''
+      if (b.caption !== undefined) {
+        const id = / id="([^"]*)"/.exec(ba)?.[1]
+        const cap = numberCaption(b.caption, ctx, id)
+        const esc0 = b.text
+          .replace(/[\u202A-\u202E\u2066-\u2069]/g, '')
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+        return `${pad}<figure${ba}>\n${pad}  <pre${title}><code${cls}>${esc0}</code></pre>\n${pad}  <figcaption>${renderInline(cap)}</figcaption>\n${pad}</figure>`
+      }
       const esc = b.text
         .replace(/[‪-‮⁦-⁩]/g, '')
         .replaceAll('&', '&amp;')
         .replaceAll('<', '&lt;')
         .replaceAll('>', '&gt;')
-      return `${pad}<pre><code${cls}>${esc}</code></pre>`
+      return `${pad}<pre${title}${ba}><code${cls}>${esc}</code></pre>`
     }
     case 'quote': {
-      const inner = b.children.map((c) => renderBlock(c, depth + 1, ctx)).join('\n')
+      const inner = b.children.map((c) => renderBlock(c, depth + 1, ctx)).filter((x) => x !== null).join('\n')
       if (b.caption !== undefined) {
         // single-paragraph attribution form pins the compact figure layout
         if (b.children.length === 1 && b.children[0].t === 'para') {
           const p = renderBlock(b.children[0], 0, ctx)
-          return `${pad}<figure>\n${pad}  <blockquote>${p}</blockquote>\n${pad}  <figcaption>${renderInline(b.caption)}</figcaption>\n${pad}</figure>`
+          return `${pad}<figure${ba}>\n${pad}  <blockquote>${p}</blockquote>\n${pad}  <figcaption>${renderInline(b.caption)}</figcaption>\n${pad}</figure>`
         }
         throw new Refuse('captioned multi-block quote')
       }
       if (b.children.length === 1 && b.children[0].t === 'para') {
         const p = renderBlock(b.children[0], 0, ctx)
-        return `${pad}<blockquote>${p}</blockquote>`
+        return `${pad}<blockquote${ba}>${p}</blockquote>`
       }
-      return `${pad}<blockquote>\n${inner}\n${pad}</blockquote>`
+      return `${pad}<blockquote${ba}>\n${inner}\n${pad}</blockquote>`
     }
     case 'list':
       return renderList(b, depth, ctx)
     case 'table':
       return renderTable(b, depth, ctx)
+    case 'colon-div': {
+      const pad2 = '  '.repeat(depth)
+      const tag = b.type !== null && TIER1.has(b.type) ? 'aside' : 'div'
+      let attrStr
+      if (b.type === null) {
+        // generic div: attribute-line attrs apply verbatim in SOURCE order
+        attrStr = b.battrs ? renderBlockAttrs(b.battrs) : ''
+      } else {
+        // typed block: the type class leads; attribute-line classes merge
+        // into it, everything else follows in source order (PART 9 SS15)
+        const baseCls = TIER1.has(b.type) ? ['admonition', b.type] : [b.type]
+        const extra = []
+        const rest = []
+        for (const list of b.battrs ?? []) {
+          const keep = []
+          for (const a of list) {
+            if (a[0] === 'class') extra.push(a[1])
+            else keep.push(a)
+          }
+          if (keep.length) rest.push(keep)
+        }
+        attrStr = ` class="${[...baseCls, ...extra].join(' ')}"` + renderBlockAttrs(rest)
+      }
+      const open = `${pad2}<${tag}${attrStr}>`
+      const closeTag = `</${tag}>`
+      const parts = []
+      if (b.title !== null) parts.push(`${pad2}  <p class="admonition-title">${renderInline(b.title)}</p>`)
+      if (b.label !== null) parts.push(`${pad2}  <p class="div-label">${renderInline(b.label)}</p>`)
+      for (const c of b.children) parts.push(renderBlock(c, depth + 1, ctx))
+      if (parts.length === 0) {
+        // empty body: a bare div collapses to one line break; a typed block
+        // keeps its empty body line (both corpus/oracle-pinned)
+        if (b.type === null) return `${open}\n${pad2}${closeTag}`
+        return `${open}\n\n${pad2}${closeTag}`
+      }
+      return `${open}\n${parts.join('\n')}\n${pad2}${closeTag}`
+    }
+    case 'line-block': {
+      const pad2 = '  '.repeat(depth)
+      // stanzas split on blank lines; soft breaks harden; leading spaces
+      // serialize as NBSP entities (PART 9 SS23)
+      const stanzas = []
+      let cur = []
+      for (const l of b.lines) {
+        if (/^[ \t]*$/.test(l)) {
+          if (cur.length) stanzas.push(cur)
+          cur = []
+        } else cur.push(l)
+      }
+      if (cur.length) stanzas.push(cur)
+      const ps = stanzas.map((st) => {
+        const rendered = st.map((l) => {
+          const m = /^( *)(.*)$/.exec(l)
+          return '&nbsp;'.repeat(m[1].length) + renderInline(m[2].replace(/[ \t]+$/, ''))
+        })
+        return `${pad2}  <p>${rendered.join('<br>\n')}</p>`
+      })
+      return `${pad2}<div class="line-block">\n${ps.join('\n')}\n${pad2}</div>`
+    }
+    case 'hardbreaks': {
+      const pad2 = '  '.repeat(depth)
+      // direct paragraph children harden their soft breaks; nested blocks
+      // keep normal behavior (PART 9 SS23)
+      const parts = b.children.map((c) => {
+        if (c.t === 'para') {
+          const html = renderInline(c.lines.join('\n')).replaceAll('\n', '<br>\n')
+          return `${'  '.repeat(depth + 1)}<p>${html}</p>`
+        }
+        return renderBlock(c, depth + 1, ctx)
+      })
+      if (parts.length === 0) return `${pad2}<div class="hardbreaks"></div>`
+      return `${pad2}<div class="hardbreaks">\n${parts.join('\n')}\n${pad2}</div>`
+    }
+    case 'deflist': {
+      const rows = b.items.map((it) =>
+        it.dt !== undefined ? `${pad}  <dt>${renderInline(it.dt)}</dt>` : `${pad}  <dd>${renderInline(it.dd)}</dd>`
+      )
+      return `${pad}<dl>\n${rows.join('\n')}\n${pad}</dl>`
+    }
+    case 'raw':
+      // PART 9 SS20: verbatim for the html target, dropped otherwise
+      return b.format === 'html' ? b.text.split('\n').map((l) => pad + l).join('\n') : null
+    case 'heading': {
+      // a heading inside a container: no section wrapper (SS13 wraps
+      // top-level headings only); the id lands on the <h*> itself
+      const html = renderInline(b.text)
+      const id = ctx.slug(b.text.replace(/<\/#[^>]*>/g, '').replace(/[ \t]+$/, ''))
+      ctx.headingIds.set(id.toLowerCase(), { id, html })
+      return `${pad}<h${b.level} id="${escapeAttr(id)}">${html}</h${b.level}>`
+    }
+    case 'footnotes-placement':
+      return '\uE000fnplacement\uE001'
     default:
       throw new Refuse(`unknown block ${b.t}`)
   }
@@ -104,7 +233,7 @@ function renderBlock(b, depth, ctx) {
 function renderList(list, depth, ctx) {
   const pad = '  '.repeat(depth)
   let tag = 'ul'
-  let attrs = ''
+  let attrs = list.battrs ? renderBlockAttrs(list.battrs) : ''
   if (list.ord) {
     tag = 'ol'
     if (list.ord.type) attrs += ` type="${list.ord.type}"`
@@ -116,11 +245,17 @@ function renderList(list, depth, ctx) {
 
 function renderItem(item, list, depth, ctx) {
   const pad = '  '.repeat(depth)
+  let liAttrs = ''
+  if (item.attrs) {
+    const parsed = parseAttrBlock(item.attrs)
+    if (parsed === null) throw new Refuse('invalid list-item attribute block')
+    liAttrs = parsed
+  }
   const prefix = list.task
     ? `<input type="checkbox"${item.checked ? ' checked' : ''} disabled> `
     : ''
   const blocks = item.blocks
-  if (blocks.length === 0) return `${pad}<li></li>`
+  if (blocks.length === 0) return `${pad}<li${liAttrs}></li>`
 
   const parts = []
   for (let i = 0; i < blocks.length; i++) {
@@ -138,13 +273,13 @@ function renderItem(item, list, depth, ctx) {
   // line at the li indent (corpus 05-lists-4, 103-marker-line-nested-lists)
   const first = parts[0]
   if (parts.length === 1 && first.inlineable) {
-    return `${pad}<li>${prefix}${first.html}</li>`
+    return `${pad}<li${liAttrs}>${prefix}${first.html}</li>`
   }
   let out
   if (first.inlineable) {
-    out = `${pad}<li>${prefix}${first.html}`
+    out = `${pad}<li${liAttrs}>${prefix}${first.html}`
   } else {
-    out = `${pad}<li>\n${first.html}`
+    out = `${pad}<li${liAttrs}>\n${first.html}`
   }
   for (let i = 1; i < parts.length; i++) {
     const p = parts[i]
@@ -154,9 +289,23 @@ function renderItem(item, list, depth, ctx) {
   return out
 }
 
+// PART 9R R5: the FIRST bare `#` in a caption's top-level text is a number
+// placeholder; each label word draws from its own sequence. An id on the
+// captioned block registers the "Label N" text for crossrefs (R4).
+function numberCaption(text, ctx, id) {
+  const m = /^(\S+)([^#]*?)(?<!\\)#(?=[\s:.]|$)/.exec(text)
+  if (!m) return text
+  const label = m[1]
+  const n = (ctx.captionSeq.get(label) ?? 0) + 1
+  ctx.captionSeq.set(label, n)
+  if (id) ctx.captionIds.set(id.toLowerCase(), `${label} ${n}`)
+  return text.replace(/(?<!\\)#(?=[\s:.]|$)/, String(n))
+}
+
 // --- tables: PART 9 SS5 T5 span walk + serialization -------------------------
 function renderTable(node, depth, ctx) {
   const pad = '  '.repeat(depth)
+  const ba = node.battrs ? renderBlockAttrs(node.battrs) : ''
   const rows = node.rows
   // resolve span markers (T5): row-major; consumed positions are skipped in
   // the output; a marker with no reachable origin renders as an EMPTY cell
@@ -229,8 +378,11 @@ function renderTable(node, depth, ctx) {
       .join('')
     return `<tr${ra}>${cells}</tr>`
   }
-  const out = [`${pad}<table>`]
-  if (node.caption !== undefined) out.push(`${pad}  <caption>${renderInline(node.caption)}</caption>`)
+  const out = [`${pad}<table${ba}>`]
+  if (node.caption !== undefined) {
+    const id = / id="([^"]*)"/.exec(ba)?.[1]
+    out.push(`${pad}  <caption>${renderInline(numberCaption(node.caption, ctx, id))}</caption>`)
+  }
   const bodyStart = headCount
   if (headCount > 0) {
     const headRows = rows.slice(0, headCount).map((row, r) => renderRow(row, r)).join('')
@@ -251,7 +403,7 @@ function resolveRefs(html, ctx) {
     const { label, text, attrs } = JSON.parse(json)
     const key = label ?? stripTags(text)
     const def = ctx.linkDefs.get(key)
-    if (!def) throw new Refuse(`unresolved reference [${key}]`)
+    if (!def) return `[${text}][${label ?? ''}]` // unresolved -> literal (R1)
     const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
     return `<a href="${escapeAttr(checkUrl(def.url))}"${t}${attrs}>${text}</a>`
   })
@@ -263,9 +415,19 @@ function stripTags(s) {
 
 // --- PART 9R R2: footnotes ---------------------------------------------------
 function resolveFootnotes(html, ctx) {
+  const placement = html.includes('\uE000fnplacement\uE001')
   const order = [] // labels by first reference
   const counts = new Map()
-  html = html.replace(/fn:(.*?)/g, (_, label) => {
+  const inlineNotes = [] // rendered content per anonymous note, by number
+  html = html.replace(/(fn|note):([\s\S]*?)\u0002(.*?)/g, (_, kind, payload, attrs) => {
+    if (kind === 'note') {
+      // an inline note draws a fresh number from the SAME sequence (R2)
+      order.push({ inline: inlineNotes.length })
+      inlineNotes.push(payload)
+      const n = order.length
+      return `<a id="fnref${n}" href="#fn${n}" role="doc-noteref"${attrs}><sup>${n}</sup></a>`
+    }
+    const label = payload
     if (!ctx.footnoteDefs.has(label)) return `[^${label}]` // unresolved -> literal
     let n = order.indexOf(label) + 1
     if (n === 0) {
@@ -275,16 +437,21 @@ function resolveFootnotes(html, ctx) {
     const k = (counts.get(label) ?? 0) + 1
     counts.set(label, k)
     const refId = k === 1 ? `fnref${n}` : `fnref${n}-${k}`
-    return `<a id="${refId}" href="#fn${n}" role="doc-noteref"><sup>${n}</sup></a>`
+    return `<a id="${refId}" href="#fn${n}" role="doc-noteref"${attrs}><sup>${n}</sup></a>`
   })
-  if (order.length === 0) return html
+  if (order.length === 0) return html.replace(/\uE000fnplacement\uE001\n?/g, '')
 
   const notes = order.map((label, idx) => {
     const n = idx + 1
-    const body = ctx.footnoteDefs.get(label)
-    let rendered = body
-      .map((b) => renderBlock(b, 3, ctx))
-      .join('\n')
+    let rendered
+    if (typeof label === 'object') {
+      rendered = `      <p>${inlineNotes[label.inline]}</p>`
+    } else {
+      const body = ctx.footnoteDefs.get(label)
+      rendered = body
+        .map((b) => renderBlock(b, 3, ctx))
+        .join('\n')
+    }
     // backlink into the LAST paragraph (PART 9 SS16); a k-th repeat
     // reference adds an indexed backlink `↩<sup>k</sup>`
     const total = counts.get(label) ?? 1
@@ -301,20 +468,24 @@ function resolveFootnotes(html, ctx) {
     }
     return `    <li id="fn${n}">\n${rendered}\n    </li>`
   })
-  return (
-    html +
-    `\n<section role="doc-endnotes">\n  <hr>\n  <ol>\n${notes.join('\n')}\n  </ol>\n</section>`
-  )
+  const section = `<section role="doc-endnotes">\n  <hr>\n  <ol>\n${notes.join('\n')}\n  </ol>\n</section>`
+  if (placement) return html.replace('\uE000fnplacement\uE001', section).replace(/\uE000fnplacement\uE001\n?/g, '')
+  return html + '\n' + section
 }
 
 // --- PART 9R R4: crossrefs ---------------------------------------------------
 function resolveCrossrefs(html, ctx) {
   return html.replace(/xref(text)?:(.*?)/g, (_, textOnly, id) => {
     const hit = ctx.headingIds.get(id.toLowerCase())
-    if (!hit) throw new Refuse(`unresolved crossref </#${id}>`)
+    if (!hit) {
+      const cap = ctx.captionIds.get(id.toLowerCase())
+      if (cap) return textOnly ? cap : `<a href="#${id}">${cap}</a>`
+      // unresolved: literal source text (PART 9 SS19)
+      return `&lt;/#${id}&gt;`
+    }
     // one-level resolution: nested sentinels in the cloned text flatten to
     // their literal source (PART 9R R4)
-    const text = hit.html.replace(/xref(?:text)?:(.*?)/g, '</#$1>')
+    const text = hit.html.replace(/xref(?:text)?:(.*?)/g, '')
     return textOnly ? text : `<a href="#${hit.id}">${text}</a>`
   })
 }

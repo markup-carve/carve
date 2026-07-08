@@ -29,13 +29,13 @@ Light markup languages are provably not context-free: fence-length matching is a
 | PART 3 inline grammar | [`resources/carve-core.ohm`](https://github.com/markup-carve/carve/blob/main/resources/carve-core.ohm) (Ohm/PEG) |
 | PART 9R resolution + PART 10 serialization | `scripts/spec/html.mjs` |
 
-Core covers: headings, thematic breaks, paragraphs, fenced code, lists (bullet/ordered/task, all dialects, lazy continuation, tight/loose), block quotes (incl. the `+` continuation marker and attribution captions), the seven emphasis delimiters with full word-boundary rules, code spans, math, escapes, links (all three forms), images (incl. figure captions), inline spans and attribute blocks (incl. the security hardening rules), autolinks, footnotes (reference form, endnotes, backlinks), crossrefs, and abbreviations.
+The executable spec covers the full conformant core: block structure (headings incl. multi-line folding and section wrapping, lists with every ordered dialect, quotes, tables with the span walk, fenced code and colon fences, definition lists, comments, frontmatter, block-attribute lines), the complete inline layer (emphasis with word-boundary guards, links, images, spans, attributes with the security hardening rules, autolinks, math, extensions, mentions/tags, editorial markup, smart typography, footnotes incl. inline notes, crossrefs, raw passthrough), and the resolution passes (references, footnote numbering and endnotes placement, numbered captions, abbreviations).
 
 ```bash
 npm run core:check
 ```
 
-The gate enforces a strict contract over the full conformance corpus: an input the executable spec accepts must render to the pinned corpus HTML **byte-for-byte** (currently ~45% of corpus inputs); anything using constructs outside the subset is REFUSED rather than approximated, so an accept is always a full-fidelity claim. The counting rule a PEG cannot state - fence closer length >= opener length - is asserted in the layout automaton, mirroring the `where` guard in the EBNF.
+The gate demands byte-identical HTML for **every pair in the conformance corpus - currently 388/388**. Rules a pure PEG cannot state are executed as declared predicates in the layout automaton (fence-length counting, the `where` guards) or as a pre-scan (the emphasis close-first delimiter-stack rule), so the pipeline never silently diverges from the delimiter-stack semantics.
 
 Implementations should match this grammar. The [case study](./case-study/) explains the design rationale, the [reference page](./edge-cases) covers parsing edge cases, and the [examples](./examples) show the expected HTML output for each construct.
 

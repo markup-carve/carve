@@ -68,6 +68,6 @@ for (const d of diffs) {
   }
 }
 if (diffMode) {
-  for (const r of refused.slice(0, 40)) console.log(`REFUSED ${r}`)
+  for (const r of refused.slice(0, 400)) console.log(`REFUSED ${r}`)
 }
 process.exit(diffs.length ? 1 : 0)

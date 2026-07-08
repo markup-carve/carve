@@ -24,7 +24,7 @@ const escapeHtml = (s) =>
     .replaceAll('>', '&gt;')
     .replaceAll(' ', '&nbsp;')
 
-export const escapeAttr = (s) => escapeHtml(s).replaceAll('"', '&quot;')
+export const escapeAttr = (s) => escapeHtml(s).replaceAll('"', '&quot;').replaceAll("'", '&apos;')
 
 // PART 9 SS25: URL sink scheme denylist -- a denylisted scheme renders an
 // EMPTY value. Scheme detection first strips ASCII controls and ALL Unicode
@@ -45,8 +45,9 @@ export function checkUrl(url) {
 // ---------------------------------------------------------------------------
 // Inline semantics
 function spanOp(tag) {
-  return function (_open, inner, _close) {
-    return `<${tag}>${inner.children.map((c) => c.h()).join('')}</${tag}>`
+  return function (_open, inner, _close, attrs) {
+    const a = renderAttrs(attrsOf(attrs))
+    return `<${tag}${a}>${inner.children.map((c) => c.h()).join('')}</${tag}>`
   }
 }
 function codeText(content) {
@@ -151,8 +152,9 @@ const sem = g.createSemantics().addOperation('h', {
   inlines(items) {
     return items.children.map((c) => c.h()).join('')
   },
-  boldItalic(_o, inner, _c) {
-    return `<strong><em>${inner.children.map((c) => c.h()).join('')}</em></strong>`
+  boldItalic(_o, inner, _c, attrs) {
+    const a = renderAttrs(attrsOf(attrs))
+    return `<strong${a}><em>${inner.children.map((c) => c.h()).join('')}</em></strong>`
   },
   emph: spanOp('em'),
   strong: spanOp('strong'),
@@ -164,26 +166,50 @@ const sem = g.createSemantics().addOperation('h', {
   code1: codeOp,
   code2: codeOp,
   code3: codeOp,
-  mathI(_d, code) {
-    // `code` is the alternation node; its sole child is codeN(_o,content,_c)
-    return `<span class="math inline">\\(${escapeHtml(codeText(code.child(0).child(1)))}\\)</span>`
+  codeU(_o, _r, content) {
+    // unclosed run: verbatim to end of block, trailing whitespace stripped,
+    // NO single-space strip
+    return `<code>${escapeHtml(content.sourceString.replace(/\s+$/, ''))}</code>`
   },
-  mathD(_d, code) {
-    return `<span class="math display">\\[${escapeHtml(codeText(code.child(0).child(1)))}\\]</span>`
+  nl(_n) {
+    return '\n'
+  },
+  codeA(alt) {
+    return alt.h()
+  },
+  codeAttrd(code, attrs) {
+    const a = renderAttrs(attrsOf(attrs))
+    if (a === '') return code.h()
+    return code.h().replace('<code>', `<code${a}>`)
+  },
+  mathI(_d, code, attrs) {
+    // `code` is the alternation node; its sole child is codeN(_o,content,_c)
+    return mathSpan('inline', code, attrs)
+  },
+  mathD(_d, code, attrs) {
+    return mathSpan('display', code, attrs)
   },
   crossref(_o, id, _c) {
     return `xref:${id.sourceString}`
   },
-  footnoteRef(_o, label, _c) {
-    return `fn:${label.sourceString}`
+  footnoteRef(_o, label, _c, attrs) {
+    const a = renderAttrs(attrsOf(attrs))
+    return `fn:${label.sourceString}\u0002${a}`
   },
-  inlineNote(_o, content, _c) {
-    throw new Refuse('inline footnote (out of the executable subset)')
+  inlineNote(_o, content, _c, attrs) {
+    // anonymous note: content renders now; numbering happens in PART 9R.
+    // Footnote/crossref recognition is DISABLED inside a note (SS16); a
+    // nested sentinel would also break the sentinel framing, so refuse.
+    const inner = renderInline(content.sourceString, '[')
+    if (inner.includes('\uE000')) throw new Refuse('nested construct in an inline note')
+    if (content.sourceString.trim() === '') throw new Refuse('empty inline note')
+    const a = renderAttrs(attrsOf(attrs))
+    return `\uE000note:${inner}\u0002${a}\uE001`
   },
   bracketed(_o, content, _c, tail) {
     // link text is FULL inline content; parse the raw source recursively
     const raw = content.sourceString
-    let inner = raw === '' ? '' : renderInline(raw)
+    let inner = raw === '' ? '' : renderInline(raw, '[')
     if (tail.numChildren === 0) {
       // bare bracketed run: literal (PART 9 SS14), content still parsed
       return `[${inner}]`
@@ -207,6 +233,91 @@ const sem = g.createSemantics().addOperation('h', {
   },
   escape(_bs, ch) {
     return escapeHtml(ch.sourceString)
+  },
+  nbspEsc(_bs, _sp) {
+    return '&nbsp;'
+  },
+  hardBreak(_bs, _la) {
+    return '<br>'
+  },
+  mention(_a, name) {
+    return `<span class="mention"><strong>@${escapeHtml(name.sourceString)}</strong></span>`
+  },
+  tag(_h, name) {
+    return `<span class="tag"><strong>#${escapeHtml(name.sourceString)}</strong></span>`
+  },
+  forcedSpan(f) {
+    return f.h()
+  },
+  forced(_ob, d, inner, _d2, _cb, attrs) {
+    const tag = { '/': 'em', '*': 'strong', _: 'u', '~': 's', '^': 'sup', ',': 'sub', '=': 'mark' }[d.sourceString]
+    const a = renderAttrs(attrsOf(attrs))
+    return `<${tag}${a}>${inner.children.map((c) => c.h()).join('')}</${tag}>`
+  },
+  edIns(_o, content, _c, attrs) {
+    return `<ins${renderAttrs(attrsOf(attrs))}>${renderInline(content.sourceString, '{')}</ins>`
+  },
+  edDel(_o, content, _c, attrs) {
+    return `<del${renderAttrs(attrsOf(attrs))}>${renderInline(content.sourceString, '{')}</del>`
+  },
+  edSub(_o, oldC, _ar, newC, _c, attrs) {
+    const a = renderAttrs(attrsOf(attrs))
+    return `<del${a}>${renderInline(oldC.sourceString, '{')}</del><ins${a}>${renderInline(newC.sourceString, '{')}</ins>`
+  },
+  edComment(_o, content, _c, attrs) {
+    // comment content is verbatim (spaces preserved)
+    return `<span class="critic-comment"${renderAttrs(attrsOf(attrs))}>${escapeHtml(content.sourceString)}</span>`
+  },
+  rawInline(code, _ob, fmt, _cb) {
+    // PART 9 SS20: emitted UNESCAPED for the html format, dropped otherwise
+    const text = codeText(code.child(0).child(1))
+    return fmt.sourceString === 'html' ? text : ''
+  },
+  extension(_c, name, _o, content, _cl, attrs) {
+    const n = name.sourceString
+    const inner = renderInline(content.sourceString, '[')
+    const extra = attrsOf(attrs).filter((a) => a[0] === 'class').map((a) => a[1])
+    const rest = attrsOf(attrs).filter((a) => a[0] !== 'class')
+    // the kbd extension renders its own element (attrs apply to it);
+    // everything else is the generic ext-<name> span
+    if (n === 'kbd') {
+      const cls = extra.length ? ` class="${escapeAttr(extra.join(' '))}"` : ''
+      return `<kbd${cls}${renderAttrs(rest)}>${inner}</kbd>`
+    }
+    const cls = [`ext-${n}`, ...extra].join(' ')
+    return `<span class="${cls}"${renderAttrs(rest)}>${inner}</span>`
+  },
+  spComment(_sp, _pp, _rest) {
+    return ''
+  },
+  arrow(tok) {
+    return { '<->': '\u2194', '->': '\u2192', '<-': '\u2190', '=>': '\u21d2', '!=': '\u2260', '<=': '\u2264', '>=': '\u2265', '+-': '\u00b1' }[tok.sourceString]
+  },
+  symbol(tok) {
+    return { '(c)': '\u00a9', '(r)': '\u00ae', '(tm)': '\u2122' }[tok.sourceString]
+  },
+  ellipsis(_e) {
+    return '\u2026'
+  },
+  dashRun(_a, _b) {
+    // PART 9 SS8: a run of n hyphens -> em/en dash mix (djot algorithm):
+    // n%3==0 all em; n%2==0 all en; else one em + (n-3)/2 en
+    const n = this.sourceString.length
+    if (n % 3 === 0) return '\u2014'.repeat(n / 3)
+    if (n % 2 === 0) return '\u2013'.repeat(n / 2)
+    return '\u2014' + '\u2013'.repeat((n - 3) / 2)
+  },
+  dquote(_q) {
+    return smartQuote(this, '\u201c', '\u201d', false)
+  },
+  squote(_q) {
+    return smartQuote(this, '\u2018', '\u2019', true)
+  },
+  hash(_h, _la) {
+    return '#'
+  },
+  looseAttrs(a) {
+    return escapeHtml(a.sourceString) // standalone block is literal text
   },
   word(first, rest) {
     return escapeHtml(this.sourceString)
@@ -242,11 +353,21 @@ sem.addOperation('applyTail(text)', {
     const { text } = this.args
     return `<span${renderAttrs(this.parseAttrs())}>${text}</span>`
   },
+  emptyAttrs(_o, _sp, _c) {
+    const { text } = this.args
+    return `<span>${text}</span>`
+  },
 })
 
 sem.addOperation('titleText', {
   destTitle(_sp, q) {
-    return q.parseAttrs() // quoted -> unescaped string
+    return q.titleText()
+  },
+  quoted(_o, chars, _c) {
+    return chars.children.map((c) => c.sourceString.replace(/^\\/, '')).join('')
+  },
+  squoted(_o, chars, _c) {
+    return chars.children.map((c) => c.sourceString.replace(/^\\/, '')).join('')
   },
 })
 // reuse parseAttrs for quoted strings
@@ -277,6 +398,9 @@ sem.addOperation('parseAttrs', {
   },
   quoted(_o, chars, _c) {
     return chars.children.map((c) => c.parseAttrs()).join('')
+  },
+  squoted(_o, chars, _c) {
+    return chars.children.map((c) => c.sourceString.replace(/^\\/, '')).join('')
   },
   qChar(c) {
     return c.parseAttrs()
@@ -343,6 +467,33 @@ function overlapScan(text) {
   return false
 }
 
+// math attrs merge into the base `math inline|display` class (PART 9 SS18);
+// key/value and boolean attributes go through the SAME hardening path as
+// every other carrier (PART 9 SS25)
+function mathSpan(kind, code, attrs) {
+  const wrap = kind === 'inline' ? ['\\(', '\\)'] : ['\\[', '\\]']
+  const list = attrsOf(attrs)
+  const classes = ['math', kind, ...list.filter((a) => a[0] === 'class').map((a) => a[1])]
+  let rest = ''
+  for (const a of list) {
+    if (a[0] === 'id') rest += ` id="${escapeAttr(a[1])}"`
+    else if (a[0] === 'kv') {
+      const h = hardenAttr(a[1], a[2])
+      if (h) rest += ` ${a[1]}="${escapeAttr(h.value)}"`
+    } else if (a[0] === 'bool') {
+      if (hardenAttr(a[1], '')) rest += ` ${a[1]}=""`
+    }
+  }
+  const inner = code.child(0)
+  // codeU (unclosed run) carries its content in a different child slot
+  const body = escapeHtml(
+    inner.ctorName === 'codeU'
+      ? inner.child(2).sourceString.replace(/\s+$/, '')
+      : codeText(inner.child(1))
+  )
+  return `<span class="${classes.join(' ')}"${rest}>${wrap[0]}${body}${wrap[1]}</span>`
+}
+
 // parse a standalone `{...}` attribute block (table row/cell attrs);
 // returns the serialized attribute string or null when invalid
 export function parseAttrBlock(text) {
@@ -351,7 +502,80 @@ export function parseAttrBlock(text) {
   return renderAttrs(attrSem(m).parseAttrs())
 }
 
-export function renderInline(text) {
+// raw parsed attr list ([kind, name, value?] tuples) or null when invalid
+export function parseAttrList(text) {
+  const m = g.match(text, 'attrs')
+  if (m.failed()) return null
+  return attrSem(m).parseAttrs()
+}
+
+// PART 9 SS15 A3 merge for BLOCK attribute lines: first-appearance position,
+// last value wins for id/key, classes ACCUMULATE in source order (no dedup)
+export function renderBlockAttrs(lists) {
+  const parts = []
+  const classes = []
+  let classAt = -1
+  const seen = new Map()
+  for (const list of lists) {
+    for (const a of list) {
+      if (a[0] === 'class') {
+        if (classAt === -1) {
+          classAt = parts.length
+          parts.push(null)
+        }
+        classes.push(a[1])
+      } else if (a[0] === 'id') {
+        if (seen.has('#id')) parts[seen.get('#id')] = ` id="${escapeAttr(a[1])}"`
+        else {
+          seen.set('#id', parts.length)
+          parts.push(` id="${escapeAttr(a[1])}"`)
+        }
+      } else if (a[0] === 'kv') {
+        const h = hardenAttr(a[1], a[2])
+        if (!h) continue
+        if (seen.has(a[1])) parts[seen.get(a[1])] = ` ${a[1]}="${escapeAttr(h.value)}"`
+        else {
+          seen.set(a[1], parts.length)
+          parts.push(` ${a[1]}="${escapeAttr(h.value)}"`)
+        }
+      } else {
+        if (!hardenAttr(a[1], '')) continue
+        parts.push(` ${a[1]}=""`)
+      }
+    }
+  }
+  if (classAt !== -1) parts[classAt] = ` class="${escapeAttr(classes.join(' '))}"`
+  return parts.join('')
+}
+
+// quote-context decision (PART 9 SS8): OPENING after whitespace or an
+// opening context character; CLOSING otherwise (incl. start of input -
+// corpus 37-3 pins a line-initial pair as two closers). A single quote
+// directly before a digit is always an apostrophe ('70s, '24).
+const QUOTE_OPEN_PREV = new Set([' ', '\t', '=', ':', '-', '/', '(', '[', '{'])
+function smartQuote(node, open, close, single) {
+  const src = node.source.sourceString
+  const at = node.source.startIdx
+  const prev = at > 0 ? src[at - 1] : quotePrevCtx
+  const next = src[at + 1] ?? ''
+  if (single && /[0-9]/.test(next) && !/[\p{L}\p{N}]/u.test(prev)) return close // apostrophe
+  if (QUOTE_OPEN_PREV.has(prev) && prev !== '') return open
+  return close
+}
+
+let quotePrevCtx = '' // preceding character for recursive inline parses
+
+export function renderInline(text, prevCtx = '') {
+  const saved = quotePrevCtx
+  quotePrevCtx = prevCtx
+  try {
+    return renderInlineInner(text)
+  } finally {
+    quotePrevCtx = saved
+  }
+}
+
+function renderInlineInner(text) {
   if (overlapScan(text)) throw new Refuse('overlapping emphasis (delimiter-stack close-first rule)')
   const m = g.match(text, 'inlines')
   if (m.failed()) throw new Refuse(`inline: ${m.shortMessage}`)
@@ -369,7 +593,7 @@ export function makeSlugger() {
       .replace(/[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e\s]+/g, '-')
       .replace(/^-+|-+$/g, '')
     if (slug === '') slug = 's'
-    else if (/^[0-9]/.test(slug)) slug = `s-${slug}`
+    else if (/^\p{N}/u.test(slug)) slug = `s-${slug}`
     const n = seen.get(slug) ?? 0
     seen.set(slug, n + 1)
     return n === 0 ? slug : `${slug}-${n + 1}`
