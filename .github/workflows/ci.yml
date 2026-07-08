@@ -48,8 +48,12 @@ jobs:
       - name: Conformance
         run: npm test
 
+      # The gate needs ohm-js (the conformance steps above run against the
+      # vendored carve-lib and need no install).
       - name: Executable-spec gate (formal Core grammar vs corpus)
-        run: npm run core:check
+        run: |
+          npm ci
+          npm run core:check
 
   docs-build:
     name: docs build
