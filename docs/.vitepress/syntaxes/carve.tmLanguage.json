@@ -348,7 +348,7 @@
       }
     },
     "highlight": {
-      "match": "(==)([^=\\n]+?)(==)",
+      "match": "(?<![=\\w])(=)(?=\\S)([^=\\n]+?)(?<=\\S)(=)(?![=\\w])",
       "captures": {
         "1": { "name": "punctuation.definition.highlight.carve" },
         "2": { "name": "markup.highlight.carve" },
@@ -364,7 +364,7 @@
       }
     },
     "subscript": {
-      "match": "(,,)(?=\\S)([^,\\n]+?)(,,)",
+      "match": "(\\{,)([^,\\n]+?)(,\\})",
       "captures": {
         "1": { "name": "punctuation.definition.subscript.carve" },
         "2": { "name": "markup.subscript.carve" },
