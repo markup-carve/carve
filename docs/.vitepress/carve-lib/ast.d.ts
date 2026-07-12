@@ -250,6 +250,16 @@ export interface Image extends BaseNode {
     src: string;
     alt: string;
     title?: string;
+    /**
+     * Internal placeholder for a reference image `![alt][ref]` / collapsed
+     * `![alt][]`, mirroring {@link Link.ref}. applyLinkDefs matches it against
+     * the document's explicit `[label]: url` defs (case-sensitively): on hit it
+     * sets `src`/`title` and clears `ref`/`rawRef`; anything still unresolved
+     * after resolve() becomes a Text node carrying `rawRef` (literal source).
+     * Unlike a link ref, an image ref does NOT match heading text.
+     */
+    ref?: string;
+    rawRef?: string;
 }
 /** Inline span: `[text]{attrs}` -> <span {attrs}>text</span> (PART 9 §14). */
 export interface Span extends BaseNode {

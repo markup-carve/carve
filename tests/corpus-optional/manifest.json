@@ -120,6 +120,26 @@
       "slug": "24-citations-trailing-comma",
       "feature": "citations-numbered",
       "description": "A trailing comma with no locator ([@key,]) is ignored - the item is a normal citation, not verbatim text (carve#227)."
+    },
+    {
+      "slug": "25-details-summary-inline",
+      "feature": "details",
+      "description": "The details summary renders the quoted title's inline markup (phrasing content)."
+    },
+    {
+      "slug": "26-list-table-caption-inline",
+      "feature": "list-table",
+      "description": "The list-table caption renders the quoted title's inline markup (phrasing content)."
+    },
+    {
+      "slug": "27-spoiler-summary-inline",
+      "feature": "spoiler",
+      "description": "The spoiler summary renders the quoted title's inline markup (phrasing content)."
+    },
+    {
+      "slug": "28-tabs-panel-title",
+      "feature": "tabs",
+      "description": "A tab's quoted title is content: it stays inside the panel as the admonition-title line while the [label] becomes the tab button."
     }
   ]
 }

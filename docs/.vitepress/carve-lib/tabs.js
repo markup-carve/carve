@@ -47,6 +47,13 @@ export function tabs(opts = {}) {
         const skipFirstHeading = explicitLabel(tab) === undefined;
         let skipped = false;
         let html = '';
+        // The quoted opener title is CONTENT, not the tab name (that's the
+        // [label]'s job): it stays inside the panel as the same admonition-title
+        // line core would emit. Without this the title vanished from the output.
+        const title = tab.type === 'admonition' ? tab.title : undefined;
+        if (title !== undefined) {
+            html += `<p class="admonition-title">${ctx.renderInlines(title)}</p>\n`;
+        }
         for (const child of tab.children) {
             if (skipFirstHeading && !skipped && child.type === 'heading') {
                 skipped = true;

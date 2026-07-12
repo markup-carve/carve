@@ -27,9 +27,10 @@
  * Implemented as a block-node renderer (extensions contract §2.3): the inner
  * content is rendered by the core renderer at the correct nesting level, so a
  * details block behaves identically wherever it sits — top level, inside a
- * list item, inside a blockquote. The summary renders as escaped plain text
- * (inline markup in a title is flattened), and the widget needs raw-HTML
- * output, so it is inert when raw HTML is stripped.
+ * list item, inside a blockquote. The summary is a phrasing-content element,
+ * so the title renders through the inline pipeline (`"a *b*"` keeps its
+ * `<strong>`), exactly like the admonition-title line it replaces. The widget
+ * needs raw-HTML output, so it is inert when raw HTML is stripped.
  *
  * @example
  * carveToHtml(src, { extensions: [details()] })
@@ -44,12 +45,12 @@ export function details() {
                     return undefined;
                 const pad = ctx.indent(ctx.level);
                 const innerPad = ctx.indent(ctx.level + 1);
-                const title = adm.title ? inlineText(adm.title) : '';
-                const summary = title.trim() === '' ? 'Details' : title;
+                const rendered = adm.title ? ctx.renderInlines(adm.title).trim() : '';
+                const summary = rendered !== '' ? rendered : 'Details';
                 const open = `<details${ctx.renderAttrs(adm.attrs)}>`;
                 const body = ctx.renderChildren(adm.children, ctx.level + 1);
                 return (`${pad}${open}\n` +
-                    `${innerPad}<summary>${ctx.escapeHtml(summary)}</summary>\n` +
+                    `${innerPad}<summary>${summary}</summary>\n` +
                     `${body}\n` +
                     `${pad}</details>`);
             },
@@ -64,29 +65,16 @@ export function details() {
                     return undefined;
                 const pad = ctx.indent(ctx.level);
                 const innerPad = ctx.indent(ctx.level + 1);
-                const title = adm.title ? inlineText(adm.title) : '';
-                const summary = title.trim() === '' ? 'Details' : title;
+                const rendered = adm.title ? ctx.renderInlines(adm.title).trim() : '';
+                const summary = rendered !== '' ? rendered : 'Details';
                 const open = `<details open${ctx.renderAttrs(adm.attrs)}>`;
                 const body = ctx.renderChildren(adm.children, ctx.level + 1);
                 return (`${pad}${open}\n` +
-                    `${innerPad}<summary>${ctx.escapeHtml(summary)}</summary>\n` +
+                    `${innerPad}<summary>${summary}</summary>\n` +
                     `${body}\n` +
                     `${pad}</details>`);
             },
         },
     };
-}
-/** Flatten an inline tree to its text content (titles only). */
-function inlineText(nodes) {
-    let s = '';
-    for (const node of nodes) {
-        const n = node;
-        if (typeof n.value === 'string')
-            s += n.value;
-        const kids = n.children ?? n.content;
-        if (Array.isArray(kids))
-            s += inlineText(kids);
-    }
-    return s;
 }
 //# sourceMappingURL=details.js.map

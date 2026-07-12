@@ -22,10 +22,6 @@ function renderBlock(node, ctx) {
         case 'heading':
             return `${renderInlines(node.children, ctx)}\n\n`;
         case 'paragraph':
-            if (isLegacyDefinitionParagraph(node)) {
-                const [term, def] = legacyDefinitionParts(node);
-                return `${stripControls(term)}\n  ${stripControls(def)}\n\n`;
-            }
             return `${renderInlines(node.children, ctx)}\n\n`;
         case 'code-block':
             return `${stripControls(node.content)}\n\n`;
@@ -57,7 +53,9 @@ function renderBlock(node, ctx) {
         case 'figure':
             return renderFigure(node, ctx);
         case 'image':
-            return stripControls(node.alt);
+            // Block-level (standalone) image: emit the trailing block separator so a
+            // following block is not glued to it, matching carve-php / carve-rs.
+            return `${stripControls(node.alt)}\n\n`;
         case 'raw-block':
         case 'abbreviation-def':
         case 'comment':
@@ -99,9 +97,10 @@ function renderTable(node, ctx) {
         for (let i = 0; i < cols; i++) {
             cells.push(i < row.cells.length ? trimNonNbsp(renderInlines(row.cells[i].children, ctx)) : '');
         }
-        // Drop trailing empty cells so a short/rowspan header row is ragged
-        // (`A`, not `A | `), matching carve-php / carve-rs.
-        while (cells.length && cells[cells.length - 1] === '')
+        // Drop only SYNTHETIC trailing padding (columns this row does not have, so
+        // a short/rowspan row stays ragged: `A`, not `A | `), but KEEP a genuine
+        // trailing empty cell the row authored (`| x || ` -> `x |`). Matches carve-rs.
+        while (cells.length > row.cells.length && cells[cells.length - 1] === '')
             cells.pop();
         out += `${cells.join(' | ')}\n`;
     }
@@ -115,14 +114,12 @@ function renderFigure(node, ctx) {
         : node.target.type === 'table'
             ? trimNonNbsp(renderTable(node.target, ctx))
             : trimNonNbsp(renderBlock(node.target, ctx));
-    // A block-level target (a code-block listing or a display-math equation)
-    // keeps the caption on its own line; an inline image target stays adjacent.
-    const sep = node.target.type === 'blockquote'
-        ? '\n\n'
-        : node.target.type === 'code-block' || node.target.type === 'paragraph'
-            ? '\n'
-            : '';
-    return `${target}${sep}${renderInlines(node.caption, ctx)}`;
+    // The caption sits on its own line directly under the figure (`\n`) - an
+    // image target used to glue it on. A blockquote target keeps the blank-line
+    // separation; a table drops the caption entirely. End with the block
+    // separator so a following block is not glued (matching carve-php).
+    const sep = node.target.type === 'blockquote' ? '\n\n' : node.target.type === 'table' ? '' : '\n';
+    return `${target}${sep}${renderInlines(node.caption, ctx)}\n\n`;
 }
 function renderFootnoteDefs(ast, ctx) {
     if (!ast.footnoteDefs)
@@ -174,7 +171,9 @@ function renderInline(node, ctx) {
         case 'emoji':
             return `:${stripControls(node.name)}:`;
         case 'autolink':
-            return stripControls(node.href.startsWith('mailto:') ? node.href.slice(7) : node.href);
+            // Raw autolink content: a URI autolink keeps its scheme, an email shows
+            // the address; fall back to stripping an auto-added `mailto:`.
+            return stripControls(node.text ?? (node.href.startsWith('mailto:') ? node.href.slice(7) : node.href));
         case 'mention':
             return `@${stripControls(node.user)}`;
         case 'tag':
@@ -232,18 +231,5 @@ function cleanEscapedText(node) {
  *  so attacker ESC / OSC sequences cannot inject into terminal output. */
 function stripControls(s) {
     return s.replace(/\p{Cc}/gu, (c) => (c === '\t' || c === '\n' ? c : ''));
-}
-function isLegacyDefinitionParagraph(node) {
-    return (node.children.length === 3 &&
-        node.children[0]?.type === 'text' &&
-        node.children[0].value.startsWith(': ') &&
-        node.children[1]?.type === 'soft-break' &&
-        node.children[2]?.type === 'text');
-}
-function legacyDefinitionParts(node) {
-    return [
-        (node.children[0].value).slice(2),
-        node.children[2].value,
-    ];
 }
 //# sourceMappingURL=render-plain.js.map

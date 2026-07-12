@@ -137,7 +137,15 @@ export function citations(opts = {}) {
             // bibliography pool is active, also assign per-key use-site indexes for
             // back-links - but only for groups that fully resolve (a group with any
             // undefined key renders verbatim and is not a use site, §6.4).
-            for (const block of doc.children)
+            // Footnote definition bodies render after the document body, so a
+            // citation used only inside a footnote body must still be numbered and
+            // listed (else it renders `undefined` with no references entry). Walk
+            // them after the main children, in footnote-definition order.
+            const numberingTargets = [
+                ...doc.children,
+                ...Object.values(doc.footnoteDefs ?? {}).flat(),
+            ];
+            for (const block of numberingTargets)
                 walkCitationGroups(block, (g) => {
                     // A group with any unresolved key renders verbatim (§6.4): its keys are
                     // literal text, not citations, so they are neither numbered, listed,

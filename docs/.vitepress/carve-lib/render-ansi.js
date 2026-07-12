@@ -51,10 +51,6 @@ function renderBlock(node, ctx) {
         case 'heading':
             return renderHeading(node.level, renderInlines(node.children, ctx));
         case 'paragraph': {
-            if (isLegacyDefinitionParagraph(node)) {
-                const [term, def] = legacyDefinitionParts(node);
-                return `${style(stripControls(term), BOLD + FG_YELLOW)}\n  ${stripControls(def)}\n\n`;
-            }
             let content = renderInlines(node.children, ctx);
             const prefix = blockQuotePrefix(ctx);
             if (prefix)
@@ -78,7 +74,7 @@ function renderBlock(node, ctx) {
             return renderTable(node, ctx);
         case 'admonition': {
             const body = renderBlocks(node.children, ctx);
-            const title = node.title !== undefined ? renderInlines(node.title, ctx) : '';
+            const title = node.title !== undefined ? renderInlines(unwrapStrong(node.title), ctx) : '';
             // Carry the blockquote `│` prefix onto a bold line, matching how the
             // paragraph renderer prefixes body content in a quote. `styled` is
             // already a styled string (title) or raw label text.
@@ -109,7 +105,9 @@ function renderBlock(node, ctx) {
         case 'figure':
             return renderFigure(node, ctx);
         case 'image':
-            return renderImage(node);
+            // Block-level (standalone) image: emit the trailing block separator so a
+            // following block is not glued to it, matching carve-php / carve-rs.
+            return `${renderImage(node)}\n\n`;
         case 'raw-block':
             return `${style(`[raw:${node.format}] ${stripControls(node.content)}`, DIM)}\n\n`;
         case 'abbreviation-def':
@@ -200,7 +198,9 @@ function renderTable(node, ctx) {
         return Array.from({ length: cols }, (_, i) => {
             const cell = row.cells[i];
             const content = cell ? trimNonNbsp(renderInlines(cell.children, ctx)) : '';
-            return { content, plain: stripAnsi(content), isHeader };
+            // `padding` marks a SYNTHETIC cell (a column this row does not have),
+            // as opposed to a genuine empty cell the row authored.
+            return { content, plain: stripAnsi(content), isHeader, padding: cell === undefined };
         });
     });
     const widths = [];
@@ -234,11 +234,12 @@ function tableBorder(widths, pos) {
 }
 function tableRow(cells, widths) {
     const sep = style('│', DIM);
-    // Drop trailing empty cells so a short/rowspan header row is ragged
-    // (`│ A │`, not `│ A │   │`); widths/borders stay full-width. Matches
-    // carve-php / carve-rs.
-    const lastFilled = cells.reduce((last, cell, i) => (cell.plain !== '' ? i : last), -1);
-    const visible = cells.slice(0, lastFilled + 1);
+    // Drop only SYNTHETIC trailing padding (columns this row does not have, so a
+    // short/rowspan row stays ragged: `│ A │`, not `│ A │   │`), but KEEP a
+    // genuine trailing empty cell the row authored so the box stays well-formed
+    // (`| x || ` -> `│ x │   │`); widths/borders stay full-width. Matches carve-rs.
+    const lastGenuine = cells.reduce((last, cell, i) => (!cell.padding ? i : last), -1);
+    const visible = cells.slice(0, lastGenuine + 1);
     const parts = visible.map((cell, i) => {
         const padding = (widths[i] ?? 0) - width(cell.plain);
         const content = cell.isHeader
@@ -324,7 +325,7 @@ function renderInline(node, ctx) {
         case 'emoji':
             return `:${stripControls(node.name)}:`;
         case 'autolink':
-            return style(stripControls(node.href.startsWith('mailto:') ? node.href.slice(7) : node.href), UNDERLINE + FG_BLUE);
+            return style(stripControls(node.text ?? (node.href.startsWith('mailto:') ? node.href.slice(7) : node.href)), UNDERLINE + FG_BLUE);
         case 'mention':
             return `@${stripControls(node.user)}`;
         case 'tag':
@@ -378,8 +379,33 @@ function renderImage(node) {
 function stripAnsi(text) {
     return text.replace(/\x1b\[[0-9;]*m/g, '');
 }
+// East-Asian Wide / Fullwidth code points occupy two terminal columns; every
+// other code point occupies one. Mirrors PHP's `mb_strwidth` for real content
+// (CJK, Kana, Hangul, fullwidth forms, most emoji) so an ANSI table with CJK
+// cells aligns with its box borders.
+function isWideCodePoint(cp) {
+    return ((cp >= 0x1100 && cp <= 0x115f) ||
+        cp === 0x2329 ||
+        cp === 0x232a ||
+        (cp >= 0x2e80 && cp <= 0x303e) ||
+        (cp >= 0x3041 && cp <= 0x33ff) ||
+        (cp >= 0x3400 && cp <= 0x4dbf) ||
+        (cp >= 0x4e00 && cp <= 0x9fff) ||
+        (cp >= 0xa000 && cp <= 0xa4cf) ||
+        (cp >= 0xac00 && cp <= 0xd7a3) ||
+        (cp >= 0xf900 && cp <= 0xfaff) ||
+        (cp >= 0xfe10 && cp <= 0xfe19) ||
+        (cp >= 0xfe30 && cp <= 0xfe6f) ||
+        (cp >= 0xff00 && cp <= 0xff60) ||
+        (cp >= 0xffe0 && cp <= 0xffe6) ||
+        (cp >= 0x1f300 && cp <= 0x1faff) ||
+        (cp >= 0x20000 && cp <= 0x3fffd));
+}
 function width(text) {
-    return Array.from(stripAnsi(text)).length;
+    let w = 0;
+    for (const ch of stripAnsi(text))
+        w += isWideCodePoint(ch.codePointAt(0)) ? 2 : 1;
+    return w;
 }
 function toSuperscript(text) {
     const map = {
@@ -464,17 +490,20 @@ function cleanEscapedText(node) {
 function stripControls(s) {
     return s.replace(/\p{Cc}/gu, (c) => (c === '\t' || c === '\n' ? c : ''));
 }
-function isLegacyDefinitionParagraph(node) {
-    return (node.children.length === 3 &&
-        node.children[0]?.type === 'text' &&
-        node.children[0].value.startsWith(': ') &&
-        node.children[1]?.type === 'soft-break' &&
-        node.children[2]?.type === 'text');
-}
-function legacyDefinitionParts(node) {
-    return [
-        (node.children[0].value).slice(2),
-        node.children[2].value,
-    ];
+/**
+ * The admonition-title line is emitted inside a bold wrapper; nested `strong`
+ * nodes would produce degenerate output (`**a **b****` in Markdown, a
+ * mid-title SGR reset in ANSI), and bold-in-bold is visually a no-op anyway,
+ * so strong nodes unwrap to their children inside the title only.
+ */
+function unwrapStrong(nodes) {
+    return nodes.flatMap((n) => {
+        const kids = n.children;
+        if (n.type === 'strong')
+            return unwrapStrong(kids ?? []);
+        if (Array.isArray(kids))
+            return [{ ...n, children: unwrapStrong(kids) }];
+        return [n];
+    });
 }
 //# sourceMappingURL=render-ansi.js.map

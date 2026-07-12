@@ -174,6 +174,10 @@ export function inlineText(nodes) {
                 out += inlineText(n.children);
                 break;
             case 'extension':
+                // An `:index[term]` marker is invisible (§8.1): it emits no visible
+                // text, so its term must not feed a heading slug or any derived text.
+                if (n.name === 'index')
+                    break;
                 out += inlineText(n.content);
                 break;
             case 'critic-substitute':
@@ -355,6 +359,13 @@ export function resolveHeadingIds(doc, opts = {}) {
                     nodes[i] = { type: 'text', value: n.rawRef ?? '' };
                     continue;
                 }
+            }
+            if (n.type === 'image' && n.ref !== undefined) {
+                // A reference image resolves only against explicit `[label]: url`
+                // defs (applyLinkDefs); an unresolved one is literal source. It never
+                // matches heading text like a link ref does.
+                nodes[i] = { type: 'text', value: n.rawRef ?? '' };
+                continue;
             }
             switch (n.type) {
                 case 'italic':
@@ -747,6 +758,66 @@ export function resolveHeadingIds(doc, opts = {}) {
     for (const body of footnoteBodies)
         for (const b of body)
             walkBlock(b, applyNoNesting);
+    // Promote a paragraph whose sole child is a (resolved) image to a block-level
+    // image, matching the standalone inline-image rule and carve-php. A reference
+    // image resolves AFTER the syntactic block-image check, so it arrives here as
+    // a one-image paragraph; an unresolved ref already became a Text node, so its
+    // paragraph is left untouched (renders as a literal `<p>`).
+    const promoteBlockImages = (blocks) => {
+        for (let i = 0; i < blocks.length; i++) {
+            const b = blocks[i];
+            if (b.type === 'paragraph' && b.children.length === 1 && b.children[0].type === 'image') {
+                blocks[i] = b.children[0];
+                continue;
+            }
+            // A resolved reference image on its own line followed by a `^ ` caption
+            // becomes a <figure>, matching a direct-image figure and carve-php. The
+            // syntactic block-image/caption pass runs at PARSE time and only knows the
+            // inline `![…](…)` form, so a reference image arrives here as a paragraph
+            // `[Image, soft-break, "^ caption…"]`. An unresolved ref is a Text node
+            // (not an Image), so its paragraph is left literal. The caption inlines
+            // are already parsed (paragraph interruption already stopped the caption
+            // at a block opener, so a multi-line caption keeps its interior soft
+            // breaks); strip the `^ ` marker from the leading Text.
+            if (b.type === 'paragraph' &&
+                b.children.length >= 3 &&
+                b.children[0].type === 'image' &&
+                b.children[1].type === 'soft-break' &&
+                b.children[2].type === 'text' &&
+                /^\^\s+/.test(b.children[2].value)) {
+                const caption = b.children.slice(2);
+                const first = caption[0];
+                const stripped = first.value.replace(/^\^\s+/, '');
+                if (stripped === '')
+                    caption.shift();
+                else
+                    caption[0] = { ...first, value: stripped };
+                blocks[i] = { type: 'figure', target: b.children[0], caption };
+                continue;
+            }
+            switch (b.type) {
+                case 'blockquote':
+                case 'admonition':
+                case 'div':
+                    promoteBlockImages(b.children);
+                    break;
+                case 'list':
+                    for (const item of b.items)
+                        promoteBlockImages(item.children);
+                    break;
+                case 'definition-list':
+                    for (const it of b.items)
+                        for (const d of it.definitions)
+                            promoteBlockImages(d);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+    promoteBlockImages(doc.children);
+    for (const body of footnoteBodies)
+        promoteBlockImages(body);
     return doc;
 }
 //# sourceMappingURL=heading-ids.js.map

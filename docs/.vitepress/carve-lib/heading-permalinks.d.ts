@@ -11,6 +11,14 @@ export interface HeadingPermalinksOptions {
     levels?: number[];
     /** Place the anchor before the heading text instead of after. Default false. */
     prepend?: boolean;
+    /**
+     * Only reveal the anchor on heading hover: wrap it in a
+     * `<span class="permalink-wrapper permalink-hover">` the host stylesheet
+     * targets via `h*:hover > .permalink-hover`. Default false (bare anchor).
+     */
+    showOnHover?: boolean;
+    /** Add a `data-permalink-copy` hook the host JS can use to copy the URL. Default false. */
+    copyToClipboard?: boolean;
 }
 /**
  * Append (or prepend) a clickable permalink anchor to each heading, ported
@@ -25,7 +33,8 @@ export interface HeadingPermalinksOptions {
  * // </section>
  * ```
  *
- * Configurable `symbol`, `cssClass`, `ariaLabel`, `levels`, and `prepend`.
+ * Configurable `symbol`, `cssClass`, `ariaLabel`, `levels`, `prepend`,
+ * `showOnHover`, and `copyToClipboard`.
  */
 export declare function headingPermalinks(opts?: HeadingPermalinksOptions): CarveExtension;
 //# sourceMappingURL=heading-permalinks.d.ts.map

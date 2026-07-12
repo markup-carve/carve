@@ -51,10 +51,6 @@ function renderBlock(node, ctx) {
             return `${'#'.repeat(node.level)} ${text}${suffix}\n\n`;
         }
         case 'paragraph':
-            if (isLegacyDefinitionParagraph(node)) {
-                const [term, def] = legacyDefinitionParts(node);
-                return `**${escapeText(term)}**\n: ${escapeText(def)}\n\n`;
-            }
             return `${renderInlines(node.children, ctx)}\n\n`;
         case 'code-block': {
             const content = stripControls(node.content);
@@ -77,7 +73,7 @@ function renderBlock(node, ctx) {
             // leading bold line, then an unconsumed grouping [label] (also bold, the
             // caption floor; title first when both are present), then the body.
             const body = renderBlocks(node.children, ctx);
-            const title = node.title !== undefined ? renderInlines(node.title, ctx) : '';
+            const title = node.title !== undefined ? renderInlines(unwrapStrong(node.title), ctx) : '';
             // Escape the label the same way text is escaped (HTML + Markdown
             // metacharacters), not just strip controls: a label like `[<img …>]`
             // must not emit live HTML when the Markdown is re-rendered.
@@ -96,7 +92,9 @@ function renderBlock(node, ctx) {
         case 'figure':
             return renderFigure(node, ctx);
         case 'image':
-            return renderImage(node);
+            // Block-level (standalone) image: emit the trailing block separator so a
+            // following block is not glued to it, matching carve-php / carve-rs.
+            return `${renderImage(node)}\n\n`;
         case 'raw-block':
             // Escape, not emit: raw HTML in Markdown would be live again downstream.
             return node.format === 'html' ? `${escapeMdHtml(stripControls(node.content))}\n\n` : '';
@@ -153,19 +151,40 @@ function renderTable(node, ctx) {
     let header;
     const rows = [];
     let columns = 0;
+    // Per-column alignment, taken from the first non-header row (matching
+    // carve-php), so the Markdown separator preserves `:---` / `:---:` / `---:`
+    // instead of dropping alignment.
+    const aligns = [];
     for (const row of node.rows) {
         const cells = row.cells.map((cell) => trimNonNbsp(renderInlines(cell.children, ctx)));
         columns = Math.max(columns, cells.length);
         const rendered = `| ${cells.join(' | ')} |`;
         if (row.cells.every((cell) => cell.header))
             header = rendered;
-        else
+        else {
             rows.push(rendered);
+            row.cells.forEach((cell, i) => {
+                if (aligns[i] === undefined)
+                    aligns[i] = cell.align;
+            });
+        }
     }
+    const separator = (i) => {
+        switch (aligns[i]) {
+            case 'left':
+                return ':---';
+            case 'center':
+                return ':---:';
+            case 'right':
+                return '---:';
+            default:
+                return '---';
+        }
+    };
     let out = '';
     if (header !== undefined) {
         out += `${header}\n`;
-        out += `| ${Array.from({ length: columns }, () => '---').join(' | ')} |\n`;
+        out += `| ${Array.from({ length: columns }, (_, i) => separator(i)).join(' | ')} |\n`;
     }
     out += `${rows.join('\n')}\n\n`;
     return out;
@@ -176,14 +195,13 @@ function renderFigure(node, ctx) {
         : node.target.type === 'table'
             ? trimNonNbsp(renderTable(node.target, ctx))
             : trimNonNbsp(renderBlock(node.target, ctx));
-    // A block-level target (a code-block listing or a display-math equation)
-    // keeps the caption on its own line; an inline image target stays adjacent.
-    const sep = node.target.type === 'blockquote'
-        ? '\n\n'
-        : node.target.type === 'code-block' || node.target.type === 'paragraph'
-            ? '\n'
-            : '';
-    return `${target}${sep}${renderInlines(node.caption, ctx)}`;
+    // The caption sits on its own line directly under the figure (`\n`) - an
+    // image target used to glue it on (`![a](/u)cap`). A blockquote target keeps
+    // the blank-line separation; a table drops the caption entirely.
+    const sep = node.target.type === 'blockquote' ? '\n\n' : node.target.type === 'table' ? '' : '\n';
+    // End with the block separator so a following block is not glued to the
+    // caption (matching every other block renderer and carve-php).
+    return `${target}${sep}${renderInlines(node.caption, ctx)}\n\n`;
 }
 function renderFootnoteDefs(ast, ctx) {
     if (!ast.footnoteDefs)
@@ -245,7 +263,9 @@ function renderInline(node, ctx) {
         case 'emoji':
             return `:${stripControls(node.name)}:`;
         case 'autolink': {
-            const label = stripControls(node.href);
+            // Visible text is the raw autolink content (an email autolink shows the
+            // address, not the `mailto:` href); fall back to href for older nodes.
+            const label = stripControls(node.text ?? node.href);
             return `[${label}](${markdownDestination(node.href)})`;
         }
         case 'mention':
@@ -403,19 +423,6 @@ function cleanEscapedText(node) {
     // plain/ansi need no escaping.
     return node.value;
 }
-function isLegacyDefinitionParagraph(node) {
-    return (node.children.length === 3 &&
-        node.children[0]?.type === 'text' &&
-        node.children[0].value.startsWith(': ') &&
-        node.children[1]?.type === 'soft-break' &&
-        node.children[2]?.type === 'text');
-}
-function legacyDefinitionParts(node) {
-    return [
-        (node.children[0].value).slice(2),
-        node.children[2].value,
-    ];
-}
 function normalize(text) {
     // The internal non-breaking-space placeholder (U+E000) becomes a literal
     // non-breaking space (U+00A0). Markdown is a re-parseable round-trip format,
@@ -501,5 +508,21 @@ function walkInlines(nodes, visit) {
                 break;
         }
     }
+}
+/**
+ * The admonition-title line is emitted inside a bold wrapper; nested `strong`
+ * nodes would produce degenerate output (`**a **b****` in Markdown, a
+ * mid-title SGR reset in ANSI), and bold-in-bold is visually a no-op anyway,
+ * so strong nodes unwrap to their children inside the title only.
+ */
+function unwrapStrong(nodes) {
+    return nodes.flatMap((n) => {
+        const kids = n.children;
+        if (n.type === 'strong')
+            return unwrapStrong(kids ?? []);
+        if (Array.isArray(kids))
+            return [{ ...n, children: unwrapStrong(kids) }];
+        return [n];
+    });
 }
 //# sourceMappingURL=render-markdown.js.map

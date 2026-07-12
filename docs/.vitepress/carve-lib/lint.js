@@ -14,7 +14,9 @@
  *   - a ```raw FORMAT fence (the Carve raw block is ```=FORMAT; the wrong
  *     form fails to open and desyncs the rest of the document's fences);
  *   - a line that begins with a block marker (`:::`, `{#`, `{.`) yet parsed
- *     as a paragraph because the block never opened.
+ *     as a paragraph because the block never opened; a fence opener whose
+ *     trailing text is an unquoted, curly-quoted, or `{…}`-shaped title gets
+ *     a targeted "did you mean" hint instead of the generic warning.
  *
  * The id/crossref checks mirror resolveHeadingIds so they agree with what the
  * resolver actually does - they do not re-run resolve (which would discard the
@@ -366,6 +368,59 @@ function collectSilentFailures(source, doc, verbatimLines, out) {
         if (!m)
             continue;
         const loc = locate(first);
+        // 3a. The common authoring mistakes on a fence opener get a targeted
+        //     hint instead of the generic marker warning: an unquoted trailing
+        //     title (the VitePress/Docusaurus habit), typographic quotes (a CMS
+        //     "smart quote" filter rewrote the source before Carve saw it), or a
+        //     trailing `{…}` attribute block.
+        if (m[2].startsWith(':')) {
+            // Analyze the raw source line, not the text node: smart punctuation has
+            // already rewritten straight quotes to typographic ones in the AST text,
+            // which would make an unterminated straight quote look like a curly one.
+            const lineText = lines[loc.line - 1] ?? '';
+            const fm = /^(:{3,})[ \t]+([a-zA-Z_][\w-]*)[ \t]+(.+?)[ \t]*$/.exec(lineText);
+            if (fm) {
+                const fence = fm[1];
+                const type = fm[2];
+                const trailing = fm[3];
+                // A trailing [label] is valid on its own - split it off so the
+                // suggested fix quotes only the title part and keeps the label.
+                const lm = /^(.*?)[ \t]+(\[[^\]\n]*\])$/.exec(trailing);
+                const titlePart = lm ? lm[1] : trailing;
+                const label = lm ? ` ${lm[2]}` : '';
+                let message;
+                const curly = /^[“”](.*)[“”]$/.exec(titlePart);
+                if (curly) {
+                    message =
+                        `The title after "${type}" uses typographic quotes - usually a CMS ` +
+                            `"smart quote" filter rewrote the source before Carve parsed it. A fence ` +
+                            `title needs straight double quotes: ${fence} ${type} "${curly[1]}"${label}.`;
+                }
+                else if (titlePart.startsWith('{')) {
+                    message =
+                        `A "{…}" on the fence line is not an attribute block - it makes the whole ` +
+                            `line plain text. Put attributes on their own line directly above the ` +
+                            `":::" opener.`;
+                }
+                else if (!titlePart.startsWith('"') && !titlePart.startsWith('[')) {
+                    message =
+                        `Text after the "${type}" fence type must be a quoted "title" or a ` +
+                            `[label] - unquoted it makes the whole line plain text. Did you mean ` +
+                            `${fence} ${type} "${titlePart}"${label}?`;
+                }
+                if (message) {
+                    out.push({
+                        line: loc.line,
+                        column: loc.column,
+                        rule: 'fence-title-syntax',
+                        message,
+                        start: loc.start,
+                        end: loc.start + lineText.length,
+                    });
+                    continue;
+                }
+            }
+        }
         const what = m[2].startsWith(':')
             ? `an admonition/div fence ("${m[2]}")`
             : `a block-attribute line ("${m[2]}…")`;

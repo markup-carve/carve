@@ -57,7 +57,12 @@ function renderBlock(node, ctx) {
         case 'table':
             return withAttrs(renderTable(node, ctx));
         case 'admonition': {
-            const title = node.title !== undefined ? ` "${escapeQuoted(renderInlines(node.title, ctx))}"` : '';
+            // The quoted title is re-parsed as a quoted_title token (which admits
+            // no escapes and cannot contain a quote), so the inline serialization
+            // must be emitted verbatim: wrapping it in escapeQuoted doubles the
+            // backslashes renderInlines already produced and compounds on every
+            // fmt pass (issue 295).
+            const title = node.title !== undefined ? ` "${renderInlines(node.title, ctx)}"` : '';
             const label = node.label !== undefined ? ` [${escapeBracketText(node.label)}]` : '';
             const body = renderBlocks(node.children, ctx);
             const fence = colonFenceFor(node.children);
@@ -340,9 +345,9 @@ function renderInline(node, ctx, prevChar = '', nextChar = '') {
         case 'hard-break':
             return '\\\n';
         case 'critic-insert':
-            return `{+${renderInlines(node.children, ctx)}+}`;
+            return `{+${renderInlines(node.children, ctx)}+}${renderAttrs(node.attrs)}`;
         case 'critic-delete':
-            return `{-${renderInlines(node.children, ctx)}-}`;
+            return `{-${renderInlines(node.children, ctx)}-}${renderAttrs(node.attrs)}`;
         case 'critic-substitute':
             return `{~${escapeCriticText(node.oldText)}~>${escapeCriticText(node.newText)}~}`;
         case 'critic-comment':
@@ -374,6 +379,12 @@ function renderLink(node, ctx) {
     return `[${text}](${escapeDestination(node.href)}${title})${renderAttrs(node.attrs)}`;
 }
 function renderImage(node) {
+    // An unresolved reference image round-trips via its verbatim source, exactly
+    // like an unresolved reference link (renderLink); `![alt]()` would change the
+    // rendered text and break the carveToHtml(fmt(x)) == carveToHtml(x) invariant.
+    if (node.ref !== undefined && node.rawRef !== undefined) {
+        return node.rawRef;
+    }
     const title = node.title === undefined ? '' : ` "${escapeQuoted(node.title)}"`;
     return `![${escapeImageAlt(node.alt)}](${escapeDestination(node.src)}${title})${renderAttrs(node.attrs)}`;
 }
@@ -412,8 +423,11 @@ function codeFenceInfo(lang, header, label) {
     const parts = [];
     if (lang)
         parts.push(escapeFenceToken(lang));
+    // The fence header is a LITERAL quoted_title token: no escape processing
+    // on parse, and it cannot contain a quote. Emit it verbatim - escaping a
+    // backslash here would round-trip to a doubled backslash (issue 295).
     if (header !== undefined)
-        parts.push(`"${escapeQuoted(header)}"`);
+        parts.push(`"${header}"`);
     if (label !== undefined)
         parts.push(`[${escapeBracketText(label)}]`);
     return parts.length ? ` ${parts.join(' ')}` : '';

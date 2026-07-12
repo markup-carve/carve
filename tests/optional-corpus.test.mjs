@@ -12,7 +12,15 @@ import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToHtml, citations, codeCallouts } from '../docs/.vitepress/carve-lib/index.js'
+import {
+  carveToHtml,
+  citations,
+  codeCallouts,
+  details,
+  listTable,
+  spoiler,
+  tabs,
+} from '../docs/.vitepress/carve-lib/index.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus-optional')
@@ -41,6 +49,10 @@ const featureRunners = {
   'citations-author-date': (source) =>
     carveToHtml(source, { extensions: [citations({ mode: 'author-date' })] }),
   'code-callouts': (source) => carveToHtml(source, { extensions: [codeCallouts()] }),
+  details: (source) => carveToHtml(source, { extensions: [details()] }),
+  'list-table': (source) => carveToHtml(source, { extensions: [listTable()] }),
+  spoiler: (source) => carveToHtml(source, { extensions: [spoiler()] }),
+  tabs: (source) => carveToHtml(source, { extensions: [tabs()] }),
 }
 
 for (const entry of manifest.cases) {

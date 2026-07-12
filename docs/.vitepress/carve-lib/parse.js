@@ -153,9 +153,17 @@ const RE_TABLE_ROW = /^\|/;
 // trailing pipe, not just a leading one. A row may carry an attribute block
 // GLUED to its closing pipe (`| a |{.x}` -> <tr class="x">); rowAttrsFromLine
 // validates and strips it, so the gate allows an optional trailing `{...}`.
-const isTableRow = (line) => RE_TABLE_ROW.test(line) &&
-    (/\|[ \t]*$/.test(line) || rowAttrsFromLine(line).attrs !== undefined) &&
-    splitTableRow(rowAttrsFromLine(line).body).some((cell) => cell.length > 0);
+const isTableRow = (line) => {
+    if (!RE_TABLE_ROW.test(line))
+        return false;
+    if (!/\|[ \t]*$/.test(line) && rowAttrsFromLine(line).attrs === undefined)
+        return false;
+    const cells = splitTableRow(rowAttrsFromLine(line).body);
+    // A row needs a non-empty cell OR at least two cells: `|||` (two empty cells)
+    // is a valid all-empty body row, but `||` (a single empty cell) is not a
+    // table. Matches carve-php / carve-rs.
+    return cells.some((cell) => cell.length > 0) || cells.length >= 2;
+};
 // A `+`-prefixed continuation row (multi-line cell). Like the grammar's
 // continuation_row it ends with `|`; that trailing pipe distinguishes
 // it from a `+ ` list item (which never ends with `|`). Only consumed
@@ -838,7 +846,7 @@ function parseEquationBlock(lexer) {
         return {
             type: 'figure',
             target: para,
-            caption: parseInline(cap[1], lexer.abbrDefs, lexer.linkDefs, undefined, true),
+            caption: parseInline(readCaptionText(lexer, cap[1]), lexer.abbrDefs, lexer.linkDefs, undefined, true),
         };
     }
     // Non-blank, non-caption text immediately follows: let parseParagraph fold
@@ -956,7 +964,7 @@ function parseFence(lexer) {
             return {
                 type: 'figure',
                 target: cb,
-                caption: parseInline(cap[1], lexer.abbrDefs, lexer.linkDefs, undefined, true),
+                caption: parseInline(readCaptionText(lexer, cap[1]), lexer.abbrDefs, lexer.linkDefs, undefined, true),
             };
         }
     }
@@ -1556,7 +1564,7 @@ function parseBlockQuote(lexer) {
             return {
                 type: 'figure',
                 target: bq,
-                caption: parseInline(cap[1], lexer.abbrDefs, lexer.linkDefs, undefined, true),
+                caption: parseInline(readCaptionText(lexer, cap[1]), lexer.abbrDefs, lexer.linkDefs, undefined, true),
             };
         }
     }
@@ -1601,7 +1609,7 @@ function parseBlockImage(lexer) {
             return {
                 type: 'figure',
                 target: img,
-                caption: parseInline(cap[1], lexer.abbrDefs, lexer.linkDefs, undefined, true),
+                caption: parseInline(readCaptionText(lexer, cap[1]), lexer.abbrDefs, lexer.linkDefs, undefined, true),
             };
         }
     }
@@ -2502,7 +2510,7 @@ function parseTable(lexer) {
         if (cap && lookahead <= 1) {
             for (let i = 0; i <= lookahead; i++)
                 lexer.consume();
-            table.caption = parseInline(cap[1], lexer.abbrDefs, lexer.linkDefs, undefined, true);
+            table.caption = parseInline(readCaptionText(lexer, cap[1]), lexer.abbrDefs, lexer.linkDefs, undefined, true);
         }
     }
     return table;
@@ -2648,6 +2656,27 @@ function startsInterruptingBlock(lexer) {
 // them and starts a sibling list -- unlike paragraph interruption, where a list
 // marker FOLDS in (symmetric §10): a list folds into a PARAGRAPH but ends a
 // heading/quote, matching djot. Every paragraph-interrupter ends them too.
+// Consume a caption's continuation lines. A caption is multi-line inline
+// content, so it folds following lines exactly like a PARAGRAPH (§10), NOT like
+// a heading: a list marker FOLDS in (djot — a list needs a blank line to
+// interrupt), while a heading / blockquote / table / fenced code / `:::` div /
+// thematic break / `%%%` comment interrupts and ends the caption. A blank line
+// or a further `^ ` caption line also ends it. Continuation lines join with
+// `\n`. The lexer is positioned on the line AFTER the caption's first line;
+// `firstLine` is that first line's already-extracted text (`cap[1]`).
+function readCaptionText(lexer, firstLine) {
+    let text = firstLine;
+    while (!lexer.eof()) {
+        const next = lexer.peek();
+        if (isBlankLine(next) || RE_CAPTION.test(next))
+            break;
+        if (startsInterruptingBlock(lexer))
+            break;
+        text += '\n' + next;
+        lexer.consume();
+    }
+    return text;
+}
 function endsHeadingOrQuote(lexer) {
     const ln = lexer.peek();
     if (ln !== undefined &&
@@ -3183,10 +3212,12 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             const closeAbs = bracketClose[i + 1];
             const close = closeAbs === undefined ? -1 : closeAbs - i;
             if (close > 1) {
-                const ml = RE_LINK_TAIL.exec(rest.slice(close + 1));
+                const alt = rest.slice(2, close);
+                const tail = rest.slice(close + 1);
+                const ml = RE_LINK_TAIL.exec(tail);
                 if (ml) {
                     flush();
-                    const img = { type: 'image', src: ml[1], alt: rest.slice(2, close) };
+                    const img = { type: 'image', src: ml[1], alt };
                     const title = ml[2] ?? ml[3];
                     if (title !== undefined)
                         img.title = unescapeAttrValue(title);
@@ -3205,6 +3236,42 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                                 img.attrs = a;
                         }
                     }
+                    out.push(withPos(img, source, text, i, i + len));
+                    i += len;
+                    continue;
+                }
+                // Reference image `![alt][ref]{attrs}`; collapsed `![alt][]` reuses the
+                // alt as the label. The image form of a reference link — same explicit
+                // `[label]: url` resolution (applyLinkDefs), src instead of href. Alt
+                // must be non-empty (as for a reference link's text).
+                const mref = RE_REF_TAIL.exec(tail);
+                // Full `![alt][ref]` allows an empty alt (`![][ref]`, label = ref);
+                // collapsed `![alt][]` needs a non-empty alt to use as the label.
+                if (mref && (mref[1] !== '' || alt !== '')) {
+                    flush();
+                    let len = close + 1 + mref[0].length;
+                    let attrs;
+                    if (mref[2]) {
+                        if (!isValidAttrPayload(mref[2])) {
+                            len -= mref[2].length + 2;
+                        }
+                        else {
+                            const a = parseAttrs(mref[2]);
+                            if (isEmptyAttrs(a))
+                                len -= mref[2].length + 2;
+                            else
+                                attrs = a;
+                        }
+                    }
+                    const img = {
+                        type: 'image',
+                        src: '',
+                        alt,
+                        ref: mref[1] !== '' ? mref[1] : alt,
+                        rawRef: rest.slice(0, len),
+                    };
+                    if (attrs)
+                        img.attrs = attrs;
                     out.push(withPos(img, source, text, i, i + len));
                     i += len;
                     continue;
@@ -3811,6 +3878,20 @@ function applyLinkDefs(nodes, defs) {
             // against the document's parsed headings, or finalize it to
             // literal text. Falling back here would lose the link node
             // before that pass ever sees it.
+            out.push(node);
+            continue;
+        }
+        if (node.type === 'image' && node.ref !== undefined) {
+            const def = defs.get(normalizeRefLabel(node.ref));
+            if (def) {
+                node.src = def.href;
+                if (def.title !== undefined)
+                    node.title = def.title;
+                delete node.ref;
+                delete node.rawRef;
+            }
+            // Unresolved image refs do NOT match heading text; the resolve pass
+            // finalizes any survivor to literal source (rawRef).
             out.push(node);
             continue;
         }

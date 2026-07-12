@@ -28,9 +28,10 @@ import type { CarveExtension } from './extension.js';
  * Implemented as a block-node renderer (extensions contract §2.3): the inner
  * content is rendered by the core renderer at the correct nesting level, so a
  * details block behaves identically wherever it sits — top level, inside a
- * list item, inside a blockquote. The summary renders as escaped plain text
- * (inline markup in a title is flattened), and the widget needs raw-HTML
- * output, so it is inert when raw HTML is stripped.
+ * list item, inside a blockquote. The summary is a phrasing-content element,
+ * so the title renders through the inline pipeline (`"a *b*"` keeps its
+ * `<strong>`), exactly like the admonition-title line it replaces. The widget
+ * needs raw-HTML output, so it is inert when raw HTML is stripped.
  *
  * @example
  * carveToHtml(src, { extensions: [details()] })
