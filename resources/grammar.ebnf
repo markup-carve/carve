@@ -550,7 +550,24 @@ cell_content = inline_content ;
    the exception is not expressible context-free. *)
 
 (* --- Captions --- *)
-caption = '^', space, inline_content, newline ;
+caption = '^', space, inline_content, newline, {caption_continuation_line} ;
+caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
+(* MULTI-LINE CAPTIONS -- NORMATIVE. A caption is multi-line inline CONTENT, so
+   its text spills onto following lines exactly like a PARAGRAPH (§10), NOT like
+   a heading. It ends the same way an open paragraph does:
+     1. a blank line ends the caption;
+     2. a line that INTERRUPTS a paragraph -- a heading, blockquote, table,
+        fenced code, `:::` div, thematic break, or `%%%` comment -- ends the
+        caption and starts that block;
+     3. a LIST MARKER does NOT end the caption: like a paragraph, a caption
+        folds a `- ` / `1.` line in as literal text (djot -- a list needs a
+        blank line to interrupt). `^ cap` + `- x` yields the caption `cap\n- x`;
+     4. a further `^ ` line does NOT continue the caption (there is no repeated
+        marker); it ends the caption and, having no captionable block to attach
+        to, is ordinary paragraph text.
+   Continuation lines join with a newline, so `^ cap` + `more` yields the
+   caption text `cap\nmore`. The caption id (`#` placeholder) and cross-reference
+   targeting use the full folded text. *)
 caption_slot = [blank_line], caption ;
 (* FORMAL adjacency (PART 9 §4, now structural): a caption attaches to the
    immediately preceding captionable block, with AT MOST ONE blank line

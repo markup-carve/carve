@@ -141,6 +141,16 @@ two
 A `^` caption after a fenced code block makes a numbered *listing*; after a
 standalone `$$`-math block, a numbered *equation*.
 
+A caption spans multiple lines like a paragraph — following lines fold in until
+a blank line or a block that would interrupt a paragraph (a list marker folds
+in, it does not end the caption):
+
+```carve
+![Photo](img.jpg)
+^ A long caption that
+continues on the next line.
+```
+
 ## Attributes & metadata
 
 ```carve
