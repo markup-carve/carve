@@ -40,7 +40,7 @@ Read this first.
 
 renders the heading as `<h2 class="featured">` inside `<section id="install">` (an explicit heading id hoists to the `<section>` wrapper, PART 9 §13) and the admonition as `<aside class="admonition note callout">`.
 
-This is uniform across every block - headings, block quotes, lists, code blocks, divs/admonitions, line-blocks, local hard-break blocks, tables. They all take their attributes on the preceding line; none take a trailing attribute on the block's own line. (For a code block the fence line accepts only structured metadata - `lang`, optional `"header"`, optional `[label]`, in that order. A trailing `{…}` after the language word makes the line *not a fence at all*; the backticks then fall back to ordinary inline parsing. For a heading, a trailing `{…}` is ordinary inline text. Put the attributes on the line above, like any other block.)
+This is uniform across every block - headings, block quotes, lists, code blocks, divs/admonitions, line-blocks, local hard-break blocks, tables. They all take their attributes on the preceding line; none take a trailing attribute on the block's own line. (For a code block the fence line accepts only structured metadata - `lang`, optional `"header"`, optional `[label]`, in that order. A `:::` container fence takes the same two metadata tokens after its type word - see [Container fences: titles and labels](#container-fences-titles-and-labels) below. A trailing `{…}` after the language word makes the line *not a fence at all*; the backticks then fall back to ordinary inline parsing. For a heading, a trailing `{…}` is ordinary inline text. Put the attributes on the line above, like any other block.)
 
 ### Code blocks: line numbers, titles, and highlighting
 
@@ -77,6 +77,32 @@ $old  = legacy();     // [tl! --]
 $new  = modern();     // [tl! ++]
 ```
 ````
+
+### Container fences: titles and labels
+
+A `:::` fence line takes the same two metadata tokens as a code fence, after the type word and in the same fixed order: an optional quoted `"header"` and an optional bracketed `[label]`. This is the one-line way to title an admonition or name a tab panel:
+
+```carve
+::: note "Custom Title"
+The quoted header becomes <p class="admonition-title">.
+:::
+
+:::: tabs
+::: tab [Overview]
+The [label] is the tab name (canonical; the older {label="…"} attribute
+and inner-heading conventions stay supported but are deprecated).
+:::
+::::
+
+::: tip "Pro Tip" [Build]
+Header and label together - header first, label second.
+:::
+```
+
+Two strictness rules to know:
+
+- The header must use **straight double quotes**. An unquoted trailing word (`::: note Custom Title`) or typographic quotes (`::: note “Custom”`, the kind word processors and CMS text filters substitute) make the line *not a fence at all* - the whole block degrades to a literal paragraph. If you see raw `:::` lines in your output, check the quotes first.
+- The quoted opener header is the only thing that produces the visible `<p class="admonition-title">`. A `title="…"` key on the preceding attribute line is an ordinary HTML `title` attribute (a hover tooltip) like on any block - a different channel, not a fallback spelling.
 
 ## Inline elements
 

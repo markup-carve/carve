@@ -78,9 +78,17 @@ code block
 <div>passed through when the output format matches</div>
 ```
 
-::: note                     (admonition: note tip warning danger
+::: note "Custom Title"      (admonition: note tip warning danger
 body                          info success example quote;
-:::                           any other word = <div class="word">)
+:::                           any other word = <div class="word">;
+                              optional "Title" -> admonition-title,
+                              must be straight-quoted - unquoted or
+                              curly-quoted text makes the line a
+                              plain paragraph)
+
+::: tab [Label]              (optional [Label] after the type = group
+body                          identifier, e.g. the tab name; same
+:::                           "Header" [Label] tokens as a code fence)
 
 :::: outer                   (longer fences nest shorter ones)
 ::: note

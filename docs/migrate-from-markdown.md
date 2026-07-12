@@ -153,6 +153,16 @@ Dangerous operation ahead.
 
 The Tier-1 canonical types - `note`, `tip`, `warning`, `danger`, `info`, `success`, `example`, `quote` - render as admonition `<aside>` callouts. Any other `:::` name (e.g. `important`, `caution`, or your own) renders as a generic typed `<div>` (class `name`), or as a registered extension if one claims that name.
 
+A custom title goes in **straight double quotes** after the type:
+
+```carve
+::: tip "Custom Title"
+The quoted header renders as the admonition's title.
+:::
+```
+
+If you come from VitePress or Docusaurus, note the difference: their unquoted form (`::: tip Custom Title`) is **not** a fence in Carve - the whole block degrades to a literal paragraph. Quote the title. The same happens when a CMS "smart quote" filter converts your straight quotes to typographic ones (`::: tip “Custom”`) before Carve parses the text - if you see raw `:::` lines in your output, check the quotes.
+
 ### Attributes
 
 Attach `{#id .class key="value"}` to inline elements directly, and to block elements via a standalone line **before** the block:
