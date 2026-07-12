@@ -45,6 +45,18 @@ Save early, save often.
 ```
 
 ```
+{title="attr title"}
+::: note "opener title"
+Body.
+:::
+.
+<aside class="admonition note" title="attr title">
+  <p class="admonition-title">opener title</p>
+  <p>Body.</p>
+</aside>
+```
+
+```
 ::: [First]
 First panel.
 :::

@@ -1,3 +1,4 @@
-::: [First]
-First panel.
+{title="attr title"}
+::: note "opener title"
+Body.
 :::

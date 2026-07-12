@@ -1669,6 +1669,26 @@ Save early, save often.
 
 ::::
 
+The quoted opener header is the only source of the visible `admonition-title` paragraph. A `title="…"` key on the preceding attribute line is an ordinary HTML `title` attribute on the wrapper (a hover tooltip) — a separate channel, not a fallback spelling, and it never collides with the opener header:
+
+:::: compare
+
+```carve
+{title="attr title"}
+::: note "opener title"
+Body.
+:::
+```
+
+```html
+<aside class="admonition note" title="attr title">
+  <p class="admonition-title">opener title</p>
+  <p>Body.</p>
+</aside>
+```
+
+::::
+
 A typeless generic div may carry a label too (a tab member with no semantic type); core still renders a plain `<div>`.
 
 :::: compare
