@@ -971,10 +971,25 @@ url_char = letter | digit | '-' | '.' | '_' | '~' | ':' | '/' | '?'
    up smart-quote typography). *)
 
 (* --- Images --- *)
-image = '!', '[', alt_text, ']', '(', image_source, [image_title], ')', [attributes] ;
+(* An image has the same three forms as a link (inline / reference / collapsed
+   reference); only the leading `!` and the `<img src>` output differ. *)
+image = inline_image | reference_image | collapsed_reference_image ;
+inline_image = '!', '[', alt_text, ']', '(', image_source, [image_title], ')', [attributes] ;
+reference_image = '!', '[', alt_text, ']', '[', reference_label, ']', [attributes] ;
+collapsed_reference_image = '!', '[', alt_text, ']', '[', ']', [attributes] ;
 alt_text = {character - ']'} ;
 image_source = link_destination ;  (* absolute or relative, like links *)
 image_title = link_title ;
+(* A reference / collapsed-reference image resolves its label against the
+   document's reference definitions EXACTLY as the matching reference_link does
+   (case-sensitive), taking the definition's destination as `src` and its
+   optional title as the image title. A collapsed `![alt][]` uses alt_text as
+   the label, so alt_text must be non-empty; the full `![alt][ref]` form allows
+   an empty alt_text (the label is reference_label). An UNRESOLVED reference
+   image renders as literal source (the `!` plus the bracketed text) and --
+   unlike a reference link -- never matches heading text. There is NO shortcut
+   `![alt]` reference image, mirroring the absence of a shortcut reference
+   link. Trailing [attributes] attach to the resolved <img>. *)
 
 (* A caption (`^ ` line) may follow a standalone image paragraph on the
    next line, wrapping it in a <figure> -- caption placement is PART 9 §4;
