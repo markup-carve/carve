@@ -1,5 +1,6 @@
 import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
+import 'carve-grammars/shiki/carve.css'
 import './custom.css'
 import 'katex/dist/katex.min.css'
 import Playground from './components/Playground.vue'

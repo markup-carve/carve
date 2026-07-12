@@ -2,9 +2,8 @@ import { defineConfig } from 'vitepress'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import githubLight from 'shiki/themes/github-light.mjs'
-import githubDark from 'shiki/themes/github-dark.mjs'
 import container from 'markdown-it-container'
+import { carveMarkdown } from 'carve-grammars/shiki'
 import carve from '@markup-carve/vite-plugin-carve'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { carveExtensions } from './carve-extensions.js'
@@ -13,7 +12,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const loadGrammar = (file: string) =>
   JSON.parse(readFileSync(resolve(__dirname, `./syntaxes/${file}`), 'utf8'))
 
-const carveGrammar = loadGrammar('carve.tmLanguage.json')
 // Languages used in the docs that Shiki does not bundle. Without these,
 // the build warns ("language 'ebnf' is not loaded, falling back to
 // 'txt'") for the formal-grammar snippet import and the background.md
@@ -21,137 +19,6 @@ const carveGrammar = loadGrammar('carve.tmLanguage.json')
 const ebnfGrammar = loadGrammar('ebnf.tmLanguage.json')
 const orgGrammar = loadGrammar('org.tmLanguage.json')
 const textileGrammar = loadGrammar('textile.tmLanguage.json')
-
-// Extend the bundled GitHub themes with rules for Carve scopes that don't
-// have stock styling: highlight, subscript, superscript. Strikethrough has
-// a built-in rule (fontStyle: strikethrough) but Shiki's HTML emitter has
-// a long-standing limitation where it doesn't translate the strikethrough
-// fontStyle bit into text-decoration in its output — see the transformer
-// below for that.
-const carveLightExtras = [
-  // markup.bold.italic is a more specific path than markup.bold, so it wins
-  // over the base bold rule and combines both font styles.
-  { scope: 'markup.bold.italic', settings: { foreground: '#24292e', fontStyle: 'italic bold' } },
-  { scope: 'markup.highlight', settings: { foreground: '#b08800', fontStyle: 'bold' } },
-  { scope: 'markup.superscript', settings: { foreground: '#6f42c1' } },
-  { scope: 'markup.subscript', settings: { foreground: '#6f42c1' } },
-  // Code: inline raw, fenced fences, fenced info string, fenced content.
-  // (Themes use markup.inline.raw — our scope is markup.raw.inline, so we
-  //  set our own rule rather than rely on prefix matching.)
-  { scope: 'markup.raw.inline', settings: { foreground: '#005cc5' } },
-  { scope: 'markup.raw.code', settings: { foreground: '#6a737d' } },
-  { scope: 'fenced_code.block.language', settings: { foreground: '#22863a', fontStyle: 'bold' } },
-  { scope: 'punctuation.definition.fenced', settings: { foreground: '#959da5' } },
-  { scope: 'punctuation.definition.raw', settings: { foreground: '#959da5' } },
-  // Lists and task checkboxes
-  { scope: ['punctuation.definition.list.unnumbered', 'punctuation.definition.list.numbered', 'punctuation.definition.list'], settings: { foreground: '#d73a49', fontStyle: 'bold' } },
-  { scope: 'punctuation.definition.checkbox', settings: { foreground: '#959da5' } },
-  { scope: 'constant.language.checkbox', settings: { foreground: '#22863a', fontStyle: 'bold' } },
-  // Tables: operators stand out, separators stay subtle
-  { scope: 'keyword.operator.table.header', settings: { foreground: '#d73a49', fontStyle: 'bold' } },
-  { scope: ['keyword.operator.table.rowspan', 'keyword.operator.table.colspan', 'keyword.operator.table.continuation'], settings: { foreground: '#e36209', fontStyle: 'bold' } },
-  { scope: 'punctuation.separator.table', settings: { foreground: '#959da5' } },
-  // Admonitions
-  { scope: 'punctuation.definition.admonition', settings: { foreground: '#d73a49', fontStyle: 'bold' } },
-  { scope: 'entity.name.tag.admonition', settings: { foreground: '#22863a', fontStyle: 'bold' } },
-  { scope: 'string.unquoted.admonition.title', settings: { foreground: '#032f62' } },
-  // Captions
-  { scope: 'punctuation.definition.caption', settings: { foreground: '#e36209', fontStyle: 'bold' } },
-  { scope: 'markup.caption', settings: { foreground: '#6a737d', fontStyle: 'italic' } },
-  // Attributes {#id .class key=value}
-  { scope: 'meta.attributes', settings: { foreground: '#e36209' } },
-  { scope: 'punctuation.definition.attributes', settings: { foreground: '#959da5' } },
-  // Mentions and tags
-  { scope: 'punctuation.definition.mention', settings: { foreground: '#d73a49' } },
-  { scope: 'variable.other.mention', settings: { foreground: '#d73a49', fontStyle: 'bold' } },
-  { scope: 'punctuation.definition.tag', settings: { foreground: '#22863a' } },
-  { scope: 'variable.other.tag', settings: { foreground: '#22863a', fontStyle: 'bold' } },
-  // Abbreviations
-  { scope: 'entity.name.abbreviation', settings: { foreground: '#005cc5', fontStyle: 'bold' } },
-  { scope: 'string.unquoted.abbreviation', settings: { foreground: '#6a737d', fontStyle: 'italic' } },
-]
-
-const carveDarkExtras = [
-  { scope: 'markup.bold.italic', settings: { foreground: '#e1e4e8', fontStyle: 'italic bold' } },
-  { scope: 'markup.highlight', settings: { foreground: '#ffd33d', fontStyle: 'bold' } },
-  { scope: 'markup.superscript', settings: { foreground: '#b392f0' } },
-  { scope: 'markup.subscript', settings: { foreground: '#b392f0' } },
-  { scope: 'markup.raw.inline', settings: { foreground: '#79b8ff' } },
-  { scope: 'markup.raw.code', settings: { foreground: '#959da5' } },
-  { scope: 'fenced_code.block.language', settings: { foreground: '#85e89d', fontStyle: 'bold' } },
-  { scope: 'punctuation.definition.fenced', settings: { foreground: '#6a737d' } },
-  { scope: 'punctuation.definition.raw', settings: { foreground: '#6a737d' } },
-  { scope: ['punctuation.definition.list.unnumbered', 'punctuation.definition.list.numbered', 'punctuation.definition.list'], settings: { foreground: '#f97583', fontStyle: 'bold' } },
-  { scope: 'punctuation.definition.checkbox', settings: { foreground: '#6a737d' } },
-  { scope: 'constant.language.checkbox', settings: { foreground: '#85e89d', fontStyle: 'bold' } },
-  { scope: 'keyword.operator.table.header', settings: { foreground: '#f97583', fontStyle: 'bold' } },
-  { scope: ['keyword.operator.table.rowspan', 'keyword.operator.table.colspan', 'keyword.operator.table.continuation'], settings: { foreground: '#ffab70', fontStyle: 'bold' } },
-  { scope: 'punctuation.separator.table', settings: { foreground: '#6a737d' } },
-  { scope: 'punctuation.definition.admonition', settings: { foreground: '#f97583', fontStyle: 'bold' } },
-  { scope: 'entity.name.tag.admonition', settings: { foreground: '#85e89d', fontStyle: 'bold' } },
-  { scope: 'string.unquoted.admonition.title', settings: { foreground: '#79b8ff' } },
-  { scope: 'punctuation.definition.caption', settings: { foreground: '#ffab70', fontStyle: 'bold' } },
-  { scope: 'markup.caption', settings: { foreground: '#959da5', fontStyle: 'italic' } },
-  { scope: 'meta.attributes', settings: { foreground: '#ffab70' } },
-  { scope: 'punctuation.definition.attributes', settings: { foreground: '#6a737d' } },
-  { scope: 'punctuation.definition.mention', settings: { foreground: '#f97583' } },
-  { scope: 'variable.other.mention', settings: { foreground: '#f97583', fontStyle: 'bold' } },
-  { scope: 'punctuation.definition.tag', settings: { foreground: '#85e89d' } },
-  { scope: 'variable.other.tag', settings: { foreground: '#85e89d', fontStyle: 'bold' } },
-  { scope: 'entity.name.abbreviation', settings: { foreground: '#79b8ff', fontStyle: 'bold' } },
-  { scope: 'string.unquoted.abbreviation', settings: { foreground: '#959da5', fontStyle: 'italic' } },
-]
-
-const carveLightTheme = {
-  ...githubLight,
-  tokenColors: [...githubLight.tokenColors, ...carveLightExtras],
-}
-
-const carveDarkTheme = {
-  ...githubDark,
-  tokenColors: [...githubDark.tokenColors, ...carveDarkExtras],
-}
-
-// Shiki sets fontStyle bit 8 for strikethrough on the token but does not
-// emit `text-decoration: line-through` in its dual-theme HTML output.
-// Bridge that with a transformer that adds the inline CSS for any token
-// whose fontStyle bit is set, plus vertical-align / background for tokens
-// matching our subscript / superscript / highlight scopes (detected via
-// explanation, which we opt into in preprocess).
-const FontStyle = { Italic: 1, Bold: 2, Underline: 4, Strikethrough: 8 }
-
-const carveStylingTransformer = {
-  name: 'carve-extras',
-  preprocess(_code: string, options: Record<string, unknown>) {
-    options.includeExplanation = 'scopeName'
-  },
-  tokens(tokens: Array<Array<{
-    fontStyle?: number
-    htmlAttrs?: Record<string, string>
-    explanation?: Array<{ scopes: Array<{ scopeName: string }> }>
-  }>>) {
-    for (const line of tokens) {
-      for (const tk of line) {
-        const scopes = tk.explanation?.flatMap((e) =>
-          e.scopes.map((s) => s.scopeName),
-        ) ?? []
-        const hasScope = (prefix: string) => scopes.some((s) => s.startsWith(prefix))
-
-        const mark = (attr: string) => {
-          if (!tk.htmlAttrs) tk.htmlAttrs = {}
-          tk.htmlAttrs[attr] = ''
-        }
-
-        if ((tk.fontStyle ?? 0) & FontStyle.Strikethrough || hasScope('markup.strikethrough')) {
-          mark('data-carve-strike')
-        }
-        if (hasScope('markup.superscript')) mark('data-carve-super')
-        if (hasScope('markup.subscript')) mark('data-carve-sub')
-        if (hasScope('markup.highlight')) mark('data-carve-highlight')
-      }
-    }
-  },
-}
 
 // If the repo is published at https://markup-carve.github.io/carve/
 // keep `base: '/carve/'`. If you publish from an org page repo named
@@ -174,9 +41,7 @@ export default defineConfig({
   },
 
   markdown: {
-    languages: [carveGrammar, ebnfGrammar, orgGrammar, textileGrammar],
-    theme: { light: carveLightTheme, dark: carveDarkTheme },
-    codeTransformers: [carveStylingTransformer],
+    ...carveMarkdown({ languages: [ebnfGrammar, orgGrammar, textileGrammar] }),
     config(md) {
       // Custom container for two-column "Carve | HTML" example blocks.
       md.use(container, 'compare', {

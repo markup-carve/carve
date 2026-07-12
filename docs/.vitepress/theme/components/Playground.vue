@@ -274,7 +274,7 @@ function getHighlighter(): Promise<unknown> {
     highlighterPromise = (async () => {
       const { createHighlighter } = await import('shiki')
       // The repo's Carve TextMate grammar, so `language-carve` blocks highlight too.
-      const carveGrammar = (await import('../../syntaxes/carve.tmLanguage.json')).default
+      const carveGrammar = (await import('carve-grammars/textmate/carve.tmLanguage.json')).default
       return createHighlighter({
         themes: ['github-light', 'github-dark'],
         langs: [
