@@ -1689,6 +1689,25 @@ Body.
 
 ::::
 
+The title is ordinary inline content - emphasis, code, and the other inline forms work inside it (unlike a code-fence header, which targets an HTML attribute and stays literal):
+
+:::: compare
+
+```carve
+::: note "Install *now* via `npm`"
+Body.
+:::
+```
+
+```html
+<aside class="admonition note">
+  <p class="admonition-title">Install <strong>now</strong> via <code>npm</code></p>
+  <p>Body.</p>
+</aside>
+```
+
+::::
+
 A typeless generic div may carry a label too (a tab member with no semantic type); core still renders a plain `<div>`.
 
 :::: compare

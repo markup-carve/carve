@@ -57,6 +57,17 @@ Body.
 ```
 
 ```
+::: note "Install *now* via `npm`"
+Body.
+:::
+.
+<aside class="admonition note">
+  <p class="admonition-title">Install <strong>now</strong> via <code>npm</code></p>
+  <p>Body.</p>
+</aside>
+```
+
+```
 ::: [First]
 First panel.
 :::
