@@ -1649,7 +1649,7 @@ Custom call-out.
 
 ::::
 
-A `[label]` after the type (and after any quoted header) is a grouping identifier — the same `[label]` token a code fence takes. Core ignores it on a standalone block; a group extension (e.g. tabs) uses it as the tab name. It is the canonical replacement for the older tabs `{label="…"}` / inner-heading convention (both stay supported, deprecated). The `selected` default-tab marker is not a label — it stays a boolean attribute on the preceding `{…}` line.
+A `[label]` after the type (and after any quoted header) is a grouping identifier — the same `[label]` token a code fence takes. Core ignores it on a standalone block; a group extension (e.g. tabs) uses it as the tab name. It is the canonical replacement for the older tabs `{label="…"}` / inner-heading convention (both stay supported, deprecated). The `selected` default-tab marker is not a label — it stays a boolean attribute on the preceding `{…}` line. Title and label never trade places: under a group extension the quoted header stays inside the panel as its `admonition-title` line while the `[label]` moves out to the tab button (and the standalone `div-label` caption disappears); a header is never used as the tab name.
 
 :::: compare
 

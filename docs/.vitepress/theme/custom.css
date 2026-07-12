@@ -256,6 +256,17 @@
   font-size: 0.8rem;
   margin-bottom: 0.4rem;
 }
+/* The graceful-degradation floor for an unconsumed grouping [label]: a small
+   muted caption, visually distinct from the admonition-title heading line so
+   the two opener tokens don't read as the same thing. */
+.carve-render .div-label {
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--vp-c-text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+}
 .carve-render .admonition.note,
 .carve-render .admonition.info {
   border-left-color: var(--vp-c-note-1, var(--vp-c-brand-1));
