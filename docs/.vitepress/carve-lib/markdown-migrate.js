@@ -234,8 +234,10 @@ function convertInline(input) {
     // an unconverted `^x^` would render literal. (Highlight ==x== was converted
     // to =x= above; math was converted and protected before the emphasis passes.)
     // The brace guards skip an already-braced `{^x^}` (e.g. just produced by
-    // the <sup> HTML-tag rule above) so it is not wrapped twice.
-    line = line.replace(/(?<!\{)\^(?![\s[])([^^\n]+?)(?<!\s)\^(?!\})/g, '{^$1^}');
+    // the <sup> HTML-tag rule above) so it is not wrapped twice. The `[` guards
+    // skip carets that belong to footnote references (`[^x] … [^y]` must not
+    // pair up as a superscript span across the line).
+    line = line.replace(/(?<![{[])\^(?![\s[])([^^\n]+?)(?<![\s[])\^(?!\})/g, '{^$1^}');
     // Restore stashes and protected spans until stable: a protected/stashed
     // span may itself contain placeholders (e.g. a reference-definition line
     // that wrapped an already-protected URL), so a single pass is not enough.

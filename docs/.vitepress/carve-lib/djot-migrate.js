@@ -54,9 +54,11 @@ const RULES = [
     {
         id: 'djot-superscript-caret',
         family: '^',
-        // Exclude `^[` (a Carve inline footnote, not a superscript opener) and
-        // the braced `{^x^}` form, which is valid in both languages.
-        pattern: /(?<!\{)\^(?![\s[])((?:(?!\n[ \t]*\n)[^^])+?)(?<!\s)\^(?!\})/gd,
+        // Exclude `^[` (a Carve inline footnote, not a superscript opener), the
+        // braced `{^x^}` form, which is valid in both languages, and carets that
+        // belong to footnote references (`[^x] … [^y]` must not pair up as a
+        // superscript span across the paragraph).
+        pattern: /(?<![{[])\^(?![\s[])((?:(?!\n[ \t]*\n)[^^])+?)(?<![\s[])\^(?!\})/gd,
         message: () => 'Djot superscript `^x^` is literal text in Carve — Carve superscript is the braced `{^x^}` only.',
         suggestion: (m) => `{^${m[1]}^}`,
         delims: ['{^', '^}'],
