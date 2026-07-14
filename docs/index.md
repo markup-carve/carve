@@ -64,7 +64,7 @@ Carve holds the content **raw** - the verbatim text plus the format label - and 
 ```carve
 /italic/   *bold*   /*bold italic*/
 _underline_   ~strikethrough~
-^super^   ,sub,   =highlight=
+=highlight=   {^super^}   {,sub,}
 ```
 
 ### Headings

@@ -107,6 +107,14 @@ export declare function carveToMarkdown(source: string, opts?: ParseOptions & Ma
  * non-conservative - it must format what the author wrote, not the resolved
  * output. The semantic invariant still holds because `carveToHtml` re-applies
  * resolution on the formatted source.
+ *
+ * The one structural pass it DOES run is `promoteBlockImages`: a reference
+ * image with a caption parses as a paragraph `[Image, SoftBreak, "^ …"]`, and
+ * without promoting it to a <figure> the serializer would escape the caption's
+ * leading `^` to `\^` (only carve-js's lenient parser reads that back as a
+ * caption; carve-rs / carve-php lose the figure). Promoting first yields a
+ * portable, unescaped `^ …` caption line, matching carve-php and carve-rs. This
+ * is representation, not enrichment - it changes no author-visible content.
  */
 export declare function carveToCarve(source: string, opts?: ParseOptions & CarveRenderOptions): string;
 /** Convenience: parse + resolve + render plain text in one call. */

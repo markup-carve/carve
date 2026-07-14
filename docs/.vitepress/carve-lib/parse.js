@@ -145,7 +145,19 @@ const RE_LINK_DEF = /^[^\S ]*\[(?!@)([^\]]+)\]:[^\S ]+(\S+)(?:\s+(?:"((?:[^"\\
 // Footnote definition `[^label]: body`. Tested before RE_LINK_DEF, which
 // would otherwise capture `^label` as a link reference label.
 const RE_FOOTNOTE_DEF = /^\[\^([^\]]+)\]:\s+(.+)$/;
-const RE_CAPTION = /^\^\s+(.+)$/;
+// A caption line mirrors a heading's first line (§4/§553): `^` + one-or-more
+// literal spaces (the grammar delimiter is a space, not a tab) + content that
+// carries at least one non-ASCII-whitespace character. Leading spaces are
+// folded into the delimiter; `^ ` alone (or `^\t…`) is not a caption, exactly
+// as `# ` / `#\t…` is not a heading. "Content" is tested against ASCII
+// whitespace only ([ \t\n\r\f]) -- a non-breaking space (U+00A0) is content
+// here, as it is everywhere else in the parser, so `^  ` IS a caption.
+const RE_CAPTION = /^\^ +(.*[^ \t\n\r\f].*)$/;
+// §756 (NORMATIVE): trailing whitespace on a block's final line is stripped
+// before rendering. ASCII whitespace only ([ \t\f\r]) so a trailing NBSP (which
+// is content everywhere else) survives; the trailing `\n` is excluded so a
+// multi-line block only loses its FINAL line's trailing run.
+const RE_TRAILING_WS = /[ \t\f\r]+$/;
 const RE_TABLE_ROW = /^\|/;
 // A complete standard table row opens AND closes with `|` (grammar
 // standard_row). A stray leading `|` with no closing `|` (`| a`) is ordinary
@@ -789,7 +801,7 @@ function parseBlockInner(lexer) {
         return parseList(lexer);
     if (isTableRow(line))
         return parseTable(lexer);
-    if (isBlockImageLine(line))
+    if (isBlockImageLine(line) && imageIsBlock(lexer))
         return parseBlockImage(lexer);
     // Extension block matchers run after every core construct, before the
     // paragraph fallback: extensions add syntax, they never hijack core.
@@ -904,6 +916,9 @@ function parseHeading(lexer) {
         text += '\n' + next;
         lexer.consume();
     }
+    // §756 (NORMATIVE): strip the final line's trailing whitespace (ASCII only,
+    // so a trailing NBSP stays content), matching a paragraph and carve-rs/-php.
+    text = text.replace(RE_TRAILING_WS, '');
     const node = { type: 'heading', level, children: [] };
     // djot-strict: a heading takes its attributes on the PRECEDING block-
     // attribute line (§15), not as a trailing `{…}` on its own line. A `{…}`
@@ -1584,6 +1599,26 @@ function isBlockImageLine(line) {
     // image -- it falls back to a paragraph (inline image + literal braces).
     return (m !== null &&
         (m[5] === undefined || (isValidAttrPayload(m[5]) && !isEmptyAttrs(parseAttrs(m[5])))));
+}
+// A bare image line is parsed as a block image (or a figure) ONLY when it
+// stands alone — the next line is blank / EOF, a `^ ` caption, or a paragraph
+// interrupter (heading/quote/table/fence/div/thematic break). When the next
+// line FOLDS instead (plain text, a list marker, another bare image), the image
+// stays an inline image inside a paragraph with that content, per grammar
+// §1722 I3 ("an image is not a block of its own; it stays inline in the
+// paragraph") — a sole-image paragraph is still promoted to a bare block image
+// afterwards (promoteBlockImages).
+function imageIsBlock(lexer) {
+    const next = lexer.peek(1);
+    if (next === undefined || isBlankLine(next) || RE_CAPTION.test(next))
+        return true;
+    // Peek-1 interruption: advance past the image line, reuse the paragraph
+    // interruption test, then rewind.
+    const saved = lexer.pos;
+    lexer.pos++;
+    const interrupts = startsInterruptingBlock(lexer);
+    lexer.pos = saved;
+    return interrupts;
 }
 function parseBlockImage(lexer) {
     const line = lexer.consume();
@@ -2675,7 +2710,9 @@ function readCaptionText(lexer, firstLine) {
         text += '\n' + next;
         lexer.consume();
     }
-    return text;
+    // §756 (NORMATIVE): trailing whitespace on the block's final line is stripped
+    // before rendering. ASCII whitespace only -- a trailing NBSP is content.
+    return text.replace(RE_TRAILING_WS, '');
 }
 function endsHeadingOrQuote(lexer) {
     const ln = lexer.peek();
@@ -3063,11 +3100,18 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
     // Precompute each `[`'s balancing `]` once (O(n)) so the link/image/span
     // branches resolve the close bracket in O(1); see buildBracketMap.
     const bracketClose = text.includes('[') ? buildBracketMap(text) : {};
+    // Whether the current buffer's FIRST character is an escaped caret (`\^`),
+    // which is literal and must not be read as a caption marker downstream.
+    let bufEscapedCaret = false;
     const flush = () => {
         if (buf) {
-            out.push(withPos({ type: 'text', value: buf }, source, text, bufStart, i));
+            const node = { type: 'text', value: buf };
+            if (bufEscapedCaret)
+                node.escapedLeadingCaret = true;
+            out.push(withPos(node, source, text, bufStart, i));
             buf = '';
             bufLast = '';
+            bufEscapedCaret = false;
         }
     };
     const append = (value) => {
@@ -3102,6 +3146,10 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
         if (c === '\\' && i + 1 < text.length) {
             const nxt = text[i + 1];
             if (/[\\`*_{}\[\]()#+\-.!~^/<>@%|=,"'$&:;?]/.test(nxt)) {
+                // Remember a leading escaped caret so it is never mistaken for a caption
+                // marker (`\^ cap` after an image stays a paragraph, not a figure).
+                if (nxt === '^' && buf === '')
+                    bufEscapedCaret = true;
                 append(nxt);
                 i += 2;
                 continue;
@@ -3143,9 +3191,16 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             const trimmed = buf.replace(/[ \t]+$/, '');
             const commentStart = i - (buf.length - trimmed.length);
             if (trimmed) {
-                out.push(withPos({ type: 'text', value: trimmed }, source, text, bufStart, commentStart));
+                // Carry the escaped-leading-caret flag (this path flushes the buffer
+                // directly instead of via flush()), so `\^ cap %% note` is not misread
+                // as a caption.
+                const node = { type: 'text', value: trimmed };
+                if (bufEscapedCaret)
+                    node.escapedLeadingCaret = true;
+                out.push(withPos(node, source, text, bufStart, commentStart));
             }
             buf = '';
+            bufEscapedCaret = false;
             const nl = text.indexOf('\n', i);
             const end = nl === -1 ? text.length : nl;
             const content = text.slice(i + 2, end).replace(/^[ \t]/, '');
@@ -3279,13 +3334,13 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             }
         }
         // Inline footnote `^[content]` (pandoc-style; design §2-§5). The caret must
-        // immediately precede `[`, must not itself follow a `^` (`^^[` is suppressed
-        // by same-delimiter adjacency), and must not be inside footnote content
-        // (no notes inside notes, §3.1). The matching `]` is the balanced close from
-        // bracketClose (escape/code-span aware). Empty or whitespace-only content is
-        // literal. Ranked above superscript. Content is inline-only, parsed with
-        // footnote recognition disabled.
-        if (!inFootnote && c === '^' && text[i + 1] === '[' && text[i - 1] !== '^') {
+        // immediately precede `[` and must not be inside footnote content (no notes
+        // inside notes, §3.1). A `^` anywhere else is literal text (there is no bare
+        // superscript), so `^^[x]` is a literal `^` followed by a note. The matching
+        // `]` is the balanced close from bracketClose (escape/code-span aware).
+        // Empty or whitespace-only content is literal. Content is inline-only,
+        // parsed with footnote recognition disabled.
+        if (!inFootnote && c === '^' && text[i + 1] === '[') {
             const close = bracketClose[i + 1];
             if (close !== undefined && trimStructural(text.slice(i + 2, close)) !== '') {
                 flush();
@@ -3634,17 +3689,17 @@ function matchEmphasis(text, i, source, inFootnote = false, noClose = new Map())
             };
         }
     }
-    // Single-char delimiters. Highlight `=` and subscript `,` are single-char
-    // like the rest; a doubled `==`/`,,` is therefore literal by same-delimiter
-    // adjacency (handled below), exactly like `**x**`.
+    // Single-char delimiters. Highlight `=` is single-char like the rest; a
+    // doubled `==` is therefore literal by same-delimiter adjacency (handled
+    // below), exactly like `**x**`. There is NO bare `^`/`,` delimiter:
+    // superscript and subscript exist only in the braced forms `{^x^}`/`{,x,}`
+    // (grammar PART 9 §9 rationale note) -- a bare caret or comma is literal.
     const pairs = [
         ['/', 'italic'],
         ['*', 'strong'],
         ['_', 'underline'],
         ['~', 'strike'],
-        ['^', 'super'],
         ['=', 'highlight'],
-        [',', 'sub'],
     ];
     for (const [delim, type] of pairs) {
         if (c === delim) {
@@ -3655,8 +3710,8 @@ function matchEmphasis(text, i, source, inFootnote = false, noClose = new Map())
                 continue;
             // No same-type nesting (spec §4.2): a bare delimiter adjacent to the
             // same delimiter (before OR after) does not open, so a doubled
-            // delimiter is literal text. `**x**`, `~~x~~`, `^^x^^`, `==x==`, `,,x,,`
-            // stay literal, uniformly with `//x//` and `__x__`. Applies to all seven.
+            // delimiter is literal text. `**x**`, `~~x~~`, `==x==` stay literal,
+            // uniformly with `//x//` and `__x__`. Applies to all five.
             if (after === delim || before === delim)
                 continue;
             // Word-boundary opener (spec §9): every bare delimiter can't open after
@@ -3825,7 +3880,13 @@ function applyAbbreviations(nodes, defs) {
         let m;
         while ((m = abbrRe.exec(value))) {
             if (m.index > last) {
-                out.push({ type: 'text', value: value.slice(last, m.index) });
+                const frag = { type: 'text', value: value.slice(last, m.index) };
+                // The leading fragment (starting at offset 0) inherits the
+                // escaped-leading-caret flag, so an escaped caption whose text is an
+                // abbreviation (`\^ ABC`) is not misread as a caption after splitting.
+                if (last === 0 && node.escapedLeadingCaret)
+                    frag.escapedLeadingCaret = true;
+                out.push(frag);
             }
             const abbr = m[1];
             out.push({
@@ -4001,7 +4062,7 @@ export function parseAttrs(src) {
         attrs.order = order;
     return attrs;
 }
-function mergeAttrs(a, b) {
+export function mergeAttrs(a, b) {
     if (!a)
         return b;
     const out = { ...a };

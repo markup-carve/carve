@@ -32,9 +32,11 @@ literal too. For deliberate intraword emphasis use the forced `{X … X}` family
 
 The **same-delimiter adjacency** part of that rule — a delimiter adjacent to
 another of the same delimiter (before or after) does not open — applies to all
-seven single-character delimiters. So a doubled delimiter is always literal:
-`**x**`, `~~x~~`, `^^x^^`, `==x==`, and `,,x,,` render verbatim, exactly like
-`//x//` and `__x__` (corpus `71-doubled-emphasis-delimiters`).
+five single-character delimiters. So a doubled delimiter is always literal:
+`**x**`, `~~x~~`, and `==x==` render verbatim, exactly like `//x//` and
+`__x__` (corpus `71-doubled-emphasis-delimiters`). (`^` and `,` are not
+delimiters at all — superscript/subscript are the braced `{^x^}` / `{,x,}`
+forms only.)
 
 **This means a path in an emphasizing position still italicizes:**
 `/usr/local/` → `<em>usr/local</em>` (verified — corpus `01-emphasis-6`),
@@ -70,18 +72,20 @@ The `^` character has three meanings:
 
 | Context | Meaning | Example |
 |---------|---------|---------|
-| Inline | Superscript | `x^2^` |
+| Braced inline | Superscript | `x{^2^}` |
+| Inline footnote opener | Note | `^[content]` |
 | Table cell | Rowspan | `\| ^ \|` |
 | Line start after block | Caption | `^ Figure 1` |
 
 **Resolution rules:**
 1. **Caption:** `^` at line start, immediately after image/quote/table/code block/display math
 2. **Rowspan:** `^` as sole content of a table cell (with optional whitespace)
-3. **Superscript:** `^text^` inline with content on both sides
+3. **Superscript:** only the braced `{^text^}`; a bare `^` is otherwise literal
+   (unless it opens an inline footnote `^[…]`)
 
 **Examples:**
 ```carve
-x^2^ + y^2^ = z^2^           # Superscript
+x{^2^} + y{^2^} = z{^2^}     # Superscript (braced form)
 
 | Category | Item   |
 | ^        | Apple  |          # Rowspan (^ is sole cell content)
@@ -89,7 +93,8 @@ x^2^ + y^2^ = z^2^           # Superscript
 ![Photo](img.jpg)
 ^ Figure 1: Caption            # Caption (^ at line start after image)
 
-The answer is ^ 42.            # Literal ^ (no closing ^)
+The answer is ^ 42.            # Literal ^ (plain text)
+x^2^ + y^2^                    # Literal ^ (no bare superscript)
 ```
 
 **Edge case - table cell with just `^2^`:**
@@ -97,7 +102,9 @@ The answer is ^ 42.            # Literal ^ (no closing ^)
 | Value |
 | ^2^   |
 ```
-This is superscript "2" in a cell, not rowspan, because `^2^` is a complete superscript span.
+This is literal text `^2^` in a cell (not rowspan — the `^` is not alone; not
+superscript — there is no bare superscript). Superscript in a cell is the
+braced `| {^2^} |`.
 
 ---
 
@@ -351,7 +358,7 @@ Inline `*not bold*` and `/not/italic/` are literal.
 
 ## 12. Caption Timing
 
-**Problem:** When does `^` become a caption vs superscript?
+**Problem:** When does `^` become a caption vs literal text?
 
 **Rules:**
 1. Caption `^` must be at **line start**
@@ -406,7 +413,7 @@ Backslash escapes any ASCII punctuation:
 \/not italic\/
 \@not-a-mention
 \#not-a-tag
-\^ not superscript
+\^ not a caption marker
 ```
 
 Inside code spans, backslash is literal:
@@ -436,7 +443,7 @@ Inside code spans, backslash is literal:
 ```carve
 **               # Not bold (no content)
 //               # Not italic (no content between //)
-^^               # Not superscript
+{^^}             # Not superscript (no content)
 ||               # Empty table cells (valid)
 ```
 

@@ -34,8 +34,8 @@ syntaxes together instead.
 | Code inline | `` `code` `` | `` `code` `` | `` `code` `` | `` `code` `` | `` `code` `` | ``` ``code`` ``` | `` `code` `` |
 | Strikethrough | - | - | `~~text~~` | - | `[.line-through]#text#` | - | `~text~` |
 | Highlight | - | - | - | `{=text=}` | `#text#` | - | `=text=` |
-| Subscript | - | - | - | `{~text~}` | `~text~` | - | `,text,` |
-| Superscript | - | - | - | `{^text^}` | `^text^` | - | `^text^` |
+| Subscript | - | - | - | `{~text~}` | `~text~` | - | `{,text,}` |
+| Superscript | - | - | - | `{^text^}` | `^text^` | - | `{^text^}` |
 | Tables | varies | - | `\| col \|` | `\| col \|` | `\|===` | directives | `\| col \|` + spans |
 | Task lists | - | - | `- [x]` | `- [x]` | `* [x]` | - | `- [x]` |
 | Footnotes | varies | - | `[^1]` (deployed; not in the formal spec) | `[^1]` | `footnote:[]` | `[1]_` | `[^1]`, `^[inline]` |
@@ -46,7 +46,7 @@ syntaxes together instead.
 **Notes on the Djot column:**
 
 - **Strikethrough:** Djot has no strikethrough. Its nearest elements are *delete* `{-text-}` (`<del>`) and *insert* `{+text+}` (`<ins>`); plain `~text~` is subscript, not a line-through.
-- **Subscript / Superscript:** the braces are optional in Djot — `~text~`/`^text^` work as shorthand, and the `{~ ~}`/`{^ ^}` forms are only needed when the span contains spaces or ambiguous boundaries.
+- **Subscript / Superscript:** the braces are optional in Djot — `~text~`/`^text^` work as shorthand, and the `{~ ~}`/`{^ ^}` forms are only needed when the span contains spaces or ambiguous boundaries. In Carve the braces are mandatory: `{,text,}` / `{^text^}` are the only sub/sup forms, and a bare `,` or `^` is always literal.
 
 ## Syntax Examples
 

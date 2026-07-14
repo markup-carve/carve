@@ -135,7 +135,8 @@ used `+` as a bullet (most don't).
 | Bold italic | `_*text*_` | `/*text*/` |
 | Underline | (none; `{+text+}` is insert → `<ins>`) | `_text_` (line underneath) |
 | Highlight | `{=text=}` | `=text=` |
-| Subscript | `~text~` | `,text,` (comma pulls down) |
+| Subscript | `~text~` | `{,text,}` (comma pulls down; braced only) |
+| Superscript | `^text^` | `{^text^}` (braced only) |
 
 **Why.** Carve targets non-technical authors too. Syntax that resembles its
 output is learnable in seconds and memorable after weeks away - the "ten-second
@@ -143,10 +144,16 @@ rule." It is a source-compatibility break with Djot, but a small, teachable one.
 
 ::: warning One delimiter flips meaning
 `~text~` is **subscript** in Djot but **strikethrough** in Carve (the tilde looks
-like a line through text). Carve writes subscript as `,text,`. This is the one
-inline delimiter whose meaning differs between the two languages - worth knowing
-when porting Djot source.
+like a line through text). Carve writes subscript as the braced `{,text,}` only.
+This is the one inline delimiter whose meaning differs between the two
+languages - worth knowing when porting Djot source.
 :::
+
+Superscript and subscript have **no bare delimiter** in Carve: `^text^` and
+`,text,` are literal text, and only the braced `{^text^}` / `{,text,}` forms
+mark. The dominant uses (H₂O, mc²) are intraword — which a word-boundary
+delimiter could never express — and a bare comma would collide with prose
+punctuation (`typo ,oops, happens` must not become a subscript).
 
 ## 5. No parenthesized ordered markers
 
@@ -236,8 +243,9 @@ as more than restyled Djot:
 Most Djot source needs only mechanical changes:
 
 1. `_italic_` → `/italic/`, and check every `*…*` (Djot strong stays `*…*`).
-2. `~sub~` → `,sub,`; if you used `~` for strikethrough-by-convention, it's now
-   native.
+2. `~sub~` → `{,sub,}` and `^sup^` → `{^sup^}` (braced forms; Carve has no
+   bare sub/sup delimiter); if you used `~` for strikethrough-by-convention,
+   it's now native.
 3. Replace `+` bullets with `-` or `*`.
 4. `{% comment %}` → `%%`.
 5. Heading anchors are case-preserving (Djot-shaped), so hand-written

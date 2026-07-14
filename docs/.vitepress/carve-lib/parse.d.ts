@@ -40,4 +40,5 @@ export declare function parse(source: string, opts?: ParseOptions): Document;
  */
 export declare function normalizeRefLabel(label: string): string;
 export declare function parseAttrs(src: string): Attrs;
+export declare function mergeAttrs(a: Attrs | undefined, b: Attrs): Attrs;
 //# sourceMappingURL=parse.d.ts.map

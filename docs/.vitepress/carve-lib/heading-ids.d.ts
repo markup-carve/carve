@@ -1,4 +1,4 @@
-import type { Document, InlineNode } from './ast.js';
+import type { BlockNode, Document, InlineNode } from './ast.js';
 /**
  * Public opt-in for ASCII heading ids. `true` / `'fold'` is best-effort
  * transliteration (non-ASCII the map can't handle is kept verbatim); `'strict'`
@@ -62,4 +62,20 @@ export declare function resolveHeadingIds(doc: Document, opts?: {
     asciiFold?: boolean;
     asciiStrict?: boolean;
 }): Document;
+/**
+ * Promote a paragraph whose sole child is a (resolved) image to a block-level
+ * image, matching the standalone inline-image rule and carve-php. A reference
+ * image resolves AFTER the syntactic block-image check, so it arrives here as a
+ * one-image paragraph; an unresolved ref already became a Text node, so its
+ * paragraph is left untouched (renders as a literal `<p>`). A one-image
+ * paragraph followed by a `^ …` caption becomes a <figure>.
+ *
+ * Exported so `carve fmt` (carveToCarve) can apply it too: without the figure
+ * promotion the caption stays a paragraph `[Image, SoftBreak, "^ …"]` and the
+ * serializer escapes the leading `^` to `\^`, which only carve-js's lenient
+ * parser reads back as a caption (carve-rs / carve-php read it literally,
+ * losing the figure). Emitting the promoted figure yields a portable
+ * unescaped `^ …` line, matching carve-php.
+ */
+export declare function promoteBlockImages(blocks: BlockNode[], figuresOnly?: boolean): void;
 //# sourceMappingURL=heading-ids.d.ts.map

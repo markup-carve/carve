@@ -303,9 +303,9 @@ function renderInline(node, ctx, prevChar = '', nextChar = '') {
         case 'strike':
             return withAttrs(renderEmphasis('~', renderInlines(node.children, ctx), prevChar, nextChar));
         case 'super':
-            return withAttrs(renderEmphasis('^', renderInlines(node.children, ctx), prevChar, nextChar));
+            return withAttrs(renderForcedEmphasis('^', renderInlines(node.children, ctx)));
         case 'sub':
-            return withAttrs(renderEmphasis(',', renderInlines(node.children, ctx), prevChar, nextChar));
+            return withAttrs(renderForcedEmphasis(',', renderInlines(node.children, ctx)));
         case 'highlight':
             return withAttrs(renderEmphasis('=', renderInlines(node.children, ctx), prevChar, nextChar));
         case 'bold-italic':
@@ -402,6 +402,11 @@ function renderBlockComment(content) {
 function renderMath(display, content) {
     const code = renderCode(content);
     return `${display ? '$$' : '$'}${code}`;
+}
+// Superscript and subscript have no bare delimiter form -- always emit the
+// braced `{^x^}` / `{,x,}` form.
+function renderForcedEmphasis(delim, content) {
+    return `{${delim}${content}${delim}}`;
 }
 function renderEmphasis(delim, content, prevChar, nextChar) {
     const needsForced = /[A-Za-z0-9_]/.test(prevChar) ||
@@ -524,8 +529,11 @@ function trimEndNonNbsp(text) {
 function cleanEscapedText(node) {
     return node.value;
 }
+// `,` needs no escape: there is no bare subscript delimiter, and the braced
+// `{,` opener is neutralized by the `{` escape. `^` stays escaped for the
+// inline-footnote (`^[`) and caption (line-leading `^`) channels.
 function escapeText(text) {
-    return text.replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '').replace(/[\\`*_{}\[\]()#+\-.!~^/<>@%|=,:;"']/g, '\\$&');
+    return text.replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '').replace(/[\\`*_{}\[\]()#+\-.!~^/<>@%|=:;"']/g, '\\$&');
 }
 function escapePlainLine(text) {
     return text.replace(/\n/g, ' ');

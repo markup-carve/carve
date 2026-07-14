@@ -5,7 +5,7 @@
  * Djot document fed to a Carve processor renders *wrong with no error*.
  * This module flags exactly those silent mis-renders so a migration is
  * mechanical and reviewable. It deliberately does NOT warn on constructs
- * that mean the same thing in both languages (e.g. `^sup^`, `$math$`,
+ * that mean the same thing in both languages (e.g. `$math$`,
  * `{+ins+}`/`{-del-}`), to keep the signal-to-noise high.
  *
  * Detection masks all code (fenced + inline, multi-line, mirroring
@@ -50,6 +50,16 @@ const RULES = [
         // bare `,x,` would be literal in Carve; `{,x,}` renders in every position.
         suggestion: (m) => `{,${m[1]},}`,
         delims: ['{,', ',}'],
+    },
+    {
+        id: 'djot-superscript-caret',
+        family: '^',
+        // Exclude `^[` (a Carve inline footnote, not a superscript opener) and
+        // the braced `{^x^}` form, which is valid in both languages.
+        pattern: /(?<!\{)\^(?![\s[])((?:(?!\n[ \t]*\n)[^^])+?)(?<!\s)\^(?!\})/gd,
+        message: () => 'Djot superscript `^x^` is literal text in Carve — Carve superscript is the braced `{^x^}` only.',
+        suggestion: (m) => `{^${m[1]}^}`,
+        delims: ['{^', '^}'],
     },
     {
         id: 'djot-emphasis-underscore',

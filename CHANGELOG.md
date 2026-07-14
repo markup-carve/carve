@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **BREAKING: no bare superscript/subscript delimiters.** `^text^` and
+  `,text,` are now literal text; superscript and subscript are written with
+  the braced forms `{^text^}` / `{,text,}` only. Rationale: sub/sup attach to
+  characters, not words — the dominant uses (`H{,2,}O`, `mc{^2^}`) are
+  intraword, which the bare word-boundary form could never express — and a
+  bare comma or caret collides with prose punctuation (a single misplaced
+  space could conjure a subscript). The bare emphasis delimiter set is now
+  `/ * _ ~ =`; grammar, executable spec, and corpus updated accordingly.
+
 ## [0.1.0] - YYYY-MM-DD
 
 First normative grammar and corpus snapshot. This release locks the Carve

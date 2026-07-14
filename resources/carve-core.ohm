@@ -119,7 +119,7 @@ CarveCore {
   delimRun   = dRun<"/"> | dRun<"*"> | dRun<"_"> | dRun<"~"> | dRun<"^"> | dRun<"="> | dRun<",">
   dRun<d>    = d d+
 
-  span       = boldItalic | emph | strong | underline | strike | sup | sub | highlight
+  span       = boldItalic | emph | strong | underline | strike | highlight
 
   // Combined form /*x*/ -> <strong><em> (grammar.ebnf bold_italic); matched
   // before emph so the two-char token wins over nested /-then-* parsing.
@@ -136,37 +136,30 @@ CarveCore {
 
   // One rule shape per delimiter (the bare_opener/bare_closer instantiation).
   emph       = "/" ~"/" ~spaceOrEnd emphInner+ emphClose attrs?
-  emphInner = ~emphClose (strong | underline | strike | sup | sub | highlight
+  emphInner = ~emphClose (strong | underline | strike | highlight
              | rich | word | spaceIn<"/"> | litSelf<"/"> | litDelim | other)
   emphClose  = "/" ~alnumCh
 
   strong     = "*" ~"*" ~spaceOrEnd strongInner+ strongClose attrs?
-  strongInner = ~strongClose (emph | underline | strike | sup | sub | highlight
+  strongInner = ~strongClose (emph | underline | strike | highlight
              | rich | word | spaceIn<"*"> | litSelf<"*"> | litDelim | other)
   strongClose = "*" ~alnumCh
 
   underline  = "_" ~"_" ~spaceOrEnd underInner+ underClose attrs?
-  underInner = ~underClose (emph | strong | strike | sup | sub | highlight
+  underInner = ~underClose (emph | strong | strike | highlight
              | rich | word | spaceIn<"_"> | litSelf<"_"> | litDelim | other)
   underClose = "_" ~alnumCh
 
   strike     = "~" ~"~" ~spaceOrEnd strikeInner+ strikeClose attrs?
-  strikeInner = ~strikeClose (emph | strong | underline | sup | sub | highlight
+  strikeInner = ~strikeClose (emph | strong | underline | highlight
              | rich | word | spaceIn<"~"> | litSelf<"~"> | litDelim | other)
   strikeClose = "~" ~alnumCh
 
-  sup        = "^" ~"^" ~spaceOrEnd supInner+ supClose attrs?
-  supInner = ~supClose (emph | strong | underline | strike | sub | highlight
-             | rich | word | spaceIn<"^"> | litSelf<"^"> | litDelim | other)
-  supClose   = "^" ~alnumCh
-
-  sub        = "," ~"," ~spaceOrEnd subInner+ subClose attrs?
-  subInner = ~subClose (emph | strong | underline | strike | sup | highlight
-             | rich | word | spaceIn<","> | litSelf<","> | litDelim | other)
-  subClose   = "," ~alnumCh
+  // NO bare sup/sub rules: `^` and `,` are always literal outside the
+  // braced forms {^...^} / {,...,} (grammar.ebnf PART 3 rationale note)
 
   highlight  = "=" ~"=" ~spaceOrEnd hlInner+ hlClose attrs?
-  hlInner = ~hlClose (emph | strong | underline | strike | sup | sub
+  hlInner = ~hlClose (emph | strong | underline | strike
              | rich | word | spaceIn<"="> | litSelf<"="> | litDelim | other)
   hlClose    = "=" ~alnumCh
 
@@ -212,7 +205,7 @@ CarveCore {
   crossref   = "</#" xrefId ">"
   xrefId     = (~">" ~space ~newline any)+
 
-  // --- Footnotes (PART 3; `^[` ranks ABOVE superscript, PART 8) -----------
+  // --- Footnotes (PART 3; a bare `^` is literal, so `^[` is unambiguous) --
   footnoteRef = "[^" fnLabel "]" attrs?
   fnLabel    = (~"]" ~newline any)+
   inlineNote = "^[" brContent* "]" attrs?

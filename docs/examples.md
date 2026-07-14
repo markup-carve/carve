@@ -14,23 +14,23 @@ Each pair shows the Carve source on the left and the HTML it produces on the rig
 ```carve
 /italic/  *bold*  /*bold italic*/
 _underline_  ~strikethrough~
-^super^  ,sub,  =highlight=
+=highlight=  {^super^}  {,sub,}
 ```
 
 ```html
 <p><em>italic</em>  <strong>bold</strong>  <strong><em>bold italic</em></strong>
 <u>underline</u>  <s>strikethrough</s>
-<sup>super</sup>  <sub>sub</sub>  <mark>highlight</mark></p>
+<mark>highlight</mark>  <sup>super</sup>  <sub>sub</sub></p>
 ```
 
 :::
 
-The word-boundary rule applies to *every* bare delimiter (`/ * _ ~ ^ = ,` — all single-char). No bare delimiter emphasizes intraword: `foo*bar*baz`, `foo~bar~baz`, `snake_case`, `a/b/c`, `x = 5`, `key=value`, `1,2,3` all stay literal. For deliberate intraword emphasis, use the forced `{X … X}` family (below). For any bare delimiter:
+The word-boundary rule applies to *every* bare delimiter (`/ * _ ~ =` — all single-char). No bare delimiter emphasizes intraword: `foo*bar*baz`, `foo~bar~baz`, `snake_case`, `a/b/c`, `x = 5`, `key=value` all stay literal. For deliberate intraword emphasis, use the forced `{X … X}` family (below). Superscript and subscript have *no* bare delimiter at all — they exist only in the braced forms `{^…^}` / `{,…,}` (see below). For any bare delimiter:
 
 - an **opener** is recognized only if it is *not* followed by whitespace **and** is preceded by the start of the line/block, whitespace, or a punctuation character (not by an alphanumeric, `_`, or the same delimiter) — so `a/b/c`, `foo_bar_baz`, `snake_case`, and `//a/` stay literal, while `(/x/)` and `a./b/` open after punctuation;
 - a **closer** is recognized only if it is *not* preceded by whitespace **and** *not* followed by an alphanumeric character — so `x /a/b y` stays literal.
 
-Highlight and subscript are the single-char `=` and `,` delimiters; the uniform word boundary keeps `x = 5`, `key=value`, `1,2,3`, `a,b,c`, `x, y, z` literal. Every bare delimiter is single-char, so a *doubled* delimiter (`==x==`, `,,x,,`) is literal by the same-delimiter-adjacency rule, just like `**x**` or `//x//`. This is *stricter* than Djot, whose `_`/`*` rule is purely whitespace-flanking. The boundary rule still allows `/usr/local/` → `<em>usr/local</em>`: the opening `/` sits at line start and the inner same-type `/` characters are literal content (Carve does not nest same-type emphasis). The normative rule lives in `resources/grammar.ebnf` PART 9 §9 and §22.
+Highlight is the single-char `=` delimiter; the uniform word boundary keeps `x = 5`, `key=value`, `a=b` literal. Every bare delimiter is single-char, so a *doubled* delimiter (`==x==`) is literal by the same-delimiter-adjacency rule, just like `**x**` or `//x//`. This is *stricter* than Djot, whose `_`/`*` rule is purely whitespace-flanking. `^` and `,` are *not* bare delimiters — a comma or caret in prose is always literal text (`1,2,3`, `a,b,c`, `x, y, z`, `2 ^ 3`), and superscript/subscript are written with the braced forms only. The boundary rule still allows `/usr/local/` → `<em>usr/local</em>`: the opening `/` sits at line start and the inner same-type `/` characters are literal content (Carve does not nest same-type emphasis). The normative rule lives in `resources/grammar.ebnf` PART 9 §9 and §22.
 
 ::: compare
 
@@ -4278,9 +4278,11 @@ invalid, so emphasis inside the brackets is rendered.
 
 ## Superscript and subscript
 
-`^x^` is superscript and `,x,` is subscript — both single-char bare delimiters
-under the uniform word-boundary rule, so they mark only at a word boundary; for
-the common intraword cases (H₂O, mc²) use the forced `{^…^}` / `{,…,}` family.
+Superscript and subscript exist *only* in the braced forms `{^…^}` and
+`{,…,}` (the same brace-pair family that forces intraword emphasis) — there is
+no bare `^x^` or `,x,` delimiter. The dominant uses (H₂O, mc², 10⁶) are
+intraword, which only the braced family can express, and a bare comma or caret
+would collide with plain prose punctuation.
 
 ::: compare
 
@@ -4290,6 +4292,21 @@ H{,2,}O and E=mc{^2^}
 
 ```html
 <p>H<sub>2</sub>O and E=mc<sup>2</sup></p>
+```
+
+:::
+
+A `^` or `,` outside the braced forms is always literal text — even where a
+bare delimiter's word-boundary rule would have matched:
+
+::: compare
+
+```carve
+typo ,oops, happens and 10^6^ things and x ^2^ y
+```
+
+```html
+<p>typo ,oops, happens and 10^6^ things and x ^2^ y</p>
 ```
 
 :::
@@ -4501,18 +4518,18 @@ literally, like any other unresolved reference.
 ## Two-char delimiter runs
 
 Every bare delimiter is single-char. A doubled (or longer) run of any delimiter
-is literal by the same-delimiter-adjacency rule, so `==x==` and `,,y,,` are
-doubled `=` / `,` and render literal, while the single-char `=z=` and `,w,`
+is literal by the same-delimiter-adjacency rule, so `==x==` and `~~y~~` are
+doubled `=` / `~` and render literal, while the single-char `=z=` and `~w~`
 mark.
 
 ::: compare
 
 ```carve
-==x== ,,y,, =z= ,w,
+==x== ~~y~~ =z= ~w~
 ```
 
 ```html
-<p>==x== ,,y,, <mark>z</mark> <sub>w</sub></p>
+<p>==x== ~~y~~ <mark>z</mark> <s>w</s></p>
 ```
 
 :::
@@ -5871,8 +5888,9 @@ See </#eq-emc>.
 An inline footnote `^[content]` carries its note text in place (pandoc-style),
 with no separate definition. It is numbered into the same endnotes section as a
 reference footnote, interleaved by document order, and its content is inline
-(§16). A caret immediately before `[` opens the note; `^[x]^` is therefore a
-note plus a literal `^`, `^^[x]` is suppressed, and `\^[x]` is literal.
+(§16). A caret immediately before `[` opens the note; any other caret is
+literal text (there is no bare superscript). `^[x]^` is therefore a note plus
+a literal `^`, `^^[x]` is a literal `^` plus a note, and `\^[x]` is literal.
 
 ::: compare
 
@@ -6223,7 +6241,26 @@ Reach @john. That is @john's idea, @john!
 
 ## Superscript in a table cell
 
-A `^` with content on both sides inside a cell is a complete superscript span - only a *lone* `^` as the sole cell content is a rowspan marker.
+Superscript in a cell uses the braced form `{^…^}`. A *lone* `^` as the sole
+cell content is a rowspan marker; any other bare `^` in a cell is literal text.
+
+::: compare
+
+```carve
+| Value |
+| {^2^} |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>Value</td></tr>
+    <tr><td><sup>2</sup></td></tr>
+  </tbody>
+</table>
+```
+
+:::
 
 ::: compare
 
@@ -6236,7 +6273,7 @@ A `^` with content on both sides inside a cell is a complete superscript span - 
 <table>
   <tbody>
     <tr><td>Value</td></tr>
-    <tr><td><sup>2</sup></td></tr>
+    <tr><td>^2^</td></tr>
   </tbody>
 </table>
 ```

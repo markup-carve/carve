@@ -1,7 +1,7 @@
 Two-char delimiter runs
 
 ```
-==x== ,,y,, =z= ,w,
+==x== ~~y~~ =z= ~w~
 .
-<p>==x== ,,y,, <mark>z</mark> <sub>w</sub></p>
+<p>==x== ~~y~~ <mark>z</mark> <s>w</s></p>
 ```

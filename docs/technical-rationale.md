@@ -371,7 +371,8 @@ Examples:
 
 - stricter boundary rules for `/` and `_`
 - explicit caption placement rules
-- explicit disambiguation of `^` in captions, superscripts, and tables
+- explicit disambiguation of `^` in captions, footnotes, and tables (inline
+  superscript is braced-only, so a bare `^` never competes)
 - clearer separation between headings and tags
 
 ### 6. The language is easier to implement and easier to trust
@@ -415,9 +416,9 @@ Carve uses:
 *bold*
 _underline_
 ~strikethrough~
-^super^
-,sub,
 =highlight=
+{^super^}
+{,sub,}
 ```
 
 The goal is not novelty for its own sake. The goal is that the delimiter gives
@@ -524,18 +525,20 @@ That last case is deliberate. If a path sits exactly where valid emphasis would
 sit, Carve treats it as emphasis. The rule stays simple, and technical content
 still has a straightforward escape hatch: code spans.
 
-## `^` meaning "caption" vs "superscript" vs "rowspan"
+## `^` meaning "caption" vs "footnote" vs "rowspan"
 
 Carve reuses `^`, but only with hard contextual boundaries:
 
 - line-start `^` after a figure-like block means caption
 - table-cell `^` as the sole cell content means rowspan
-- inline `^text^` means superscript
+- `^[` opens an inline footnote
+- superscript is the braced `{^text^}` only — a bare inline `^` is literal
+  text, so it never competes with the channels above
 
 Examples:
 
 ```carve
-x^2^
+x{^2^}
 
 | Topic | Item |
 | ^     | A    |

@@ -160,8 +160,6 @@ const sem = g.createSemantics().addOperation('h', {
   strong: spanOp('strong'),
   underline: spanOp('u'),
   strike: spanOp('s'),
-  sup: spanOp('sup'),
-  sub: spanOp('sub'),
   highlight: spanOp('mark'),
   code1: codeOp,
   code2: codeOp,
@@ -429,7 +427,7 @@ sem.addOperation('parseAttrs', {
 // stack entry (E2 demotion, i.e. overlapping candidate spans). Detect that
 // case with a faithful mini stack-scan and REFUSE it - the executable spec
 // never silently diverges from the delimiter-stack semantics.
-const DELIMS = new Set(['/', '*', '_', '~', '^', '=', ','])
+const DELIMS = new Set(['/', '*', '_', '~', '='])
 const isWordCh = (c) => c !== undefined && /[\p{L}\p{N}]/u.test(c)
 const isWs = (c) => c === undefined || /\s/.test(c)
 

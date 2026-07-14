@@ -14,13 +14,14 @@
  *        bold-italic   triple-star / triple-underscore -> star+slash
  *        strikethrough double-tilde -> single tilde ~x~
  *        highlight     ==x==       -> =x=     ( Carve highlight is a single `=` )
- *        superscript   ^x^         -> ^x^     ( unchanged )
+ *        superscript   ^x^         -> {^x^}   ( Carve has no bare superscript )
  *        inline math   $x$         -> $`x`
  *
- *      Carve's highlight/subscript markers are single chars (`=x=`, `,x,`); the
- *      doubled forms `==x==` / `,,x,,` are literal. The `<mark>`/`<sub>`/`<sup>`
- *      HTML tags map to the forced brace forms (`{=x=}` / `{,x,}` / `{^x^}`),
- *      which also render when the tag sits intraword (e.g. `H<sub>2</sub>O`).
+ *      Carve's highlight marker is a single char (`=x=`); the doubled form
+ *      `==x==` is literal. Superscript/subscript have NO bare form in Carve —
+ *      the `<mark>` HTML tag maps to `=x=`/`{=x=}` while `<sub>`/`<sup>` always
+ *      map to the braced forms (`{,x,}` / `{^x^}`), which render in every
+ *      position (e.g. `H<sub>2</sub>O`).
  *
  * The `_x_` -> `/x/` rule is the critical one: a naive Markdown->Djot port
  * keeps `_x_`, which Carve renders as underline — a silent mis-render.
@@ -61,6 +62,9 @@
  */
 function markerForm(marker) {
     return (match, body, offset, full) => {
+        // Superscript and subscript have NO bare form in Carve — always braced.
+        if (marker === '^' || marker === ',')
+            return `{${marker}${body}${marker}}`;
         const before = full[offset - 1] ?? '';
         const after = full[offset + match.length] ?? '';
         const intraword = /[A-Za-z0-9]/.test(before) || /[A-Za-z0-9]/.test(after);
@@ -226,9 +230,12 @@ function convertInline(input) {
     for (const [re, repl] of HTML_TAG_RULES) {
         line = typeof repl === 'string' ? line.replace(re, repl) : line.replace(re, repl);
     }
-    // ^superscript^ is identical in Carve — no change. (Highlight ==x== was
-    // converted to =x= above; math was converted and protected before the
-    // emphasis passes.)
+    // ^superscript^ (pandoc-style) -> {^x^}. Carve has no bare superscript, so
+    // an unconverted `^x^` would render literal. (Highlight ==x== was converted
+    // to =x= above; math was converted and protected before the emphasis passes.)
+    // The brace guards skip an already-braced `{^x^}` (e.g. just produced by
+    // the <sup> HTML-tag rule above) so it is not wrapped twice.
+    line = line.replace(/(?<!\{)\^(?![\s[])([^^\n]+?)(?<!\s)\^(?!\})/g, '{^$1^}');
     // Restore stashes and protected spans until stable: a protected/stashed
     // span may itself contain placeholders (e.g. a reference-definition line
     // that wrapped an already-protected URL), so a single pass is not enough.

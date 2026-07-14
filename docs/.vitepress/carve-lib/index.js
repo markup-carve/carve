@@ -19,7 +19,7 @@
  *     pass can see it.
  */
 import { parse as parseImpl } from './parse.js';
-import { resolveHeadingIds, headingIdSlugOpts, } from './heading-ids.js';
+import { resolveHeadingIds, headingIdSlugOpts, promoteBlockImages, } from './heading-ids.js';
 import { applyProfile as applyProfileImpl } from './profile-filter.js';
 import { renderHtml as renderHtmlImpl } from './render-html.js';
 import { renderMarkdown as renderMarkdownImpl, } from './render-markdown.js';
@@ -174,9 +174,23 @@ export function carveToMarkdown(source, opts = {}) {
  * non-conservative - it must format what the author wrote, not the resolved
  * output. The semantic invariant still holds because `carveToHtml` re-applies
  * resolution on the formatted source.
+ *
+ * The one structural pass it DOES run is `promoteBlockImages`: a reference
+ * image with a caption parses as a paragraph `[Image, SoftBreak, "^ …"]`, and
+ * without promoting it to a <figure> the serializer would escape the caption's
+ * leading `^` to `\^` (only carve-js's lenient parser reads that back as a
+ * caption; carve-rs / carve-php lose the figure). Promoting first yields a
+ * portable, unescaped `^ …` caption line, matching carve-php and carve-rs. This
+ * is representation, not enrichment - it changes no author-visible content.
  */
 export function carveToCarve(source, opts = {}) {
-    return renderCarve(parse(source, opts), opts);
+    const doc = parse(source, opts);
+    promoteBlockImages(doc.children, true);
+    if (doc.footnoteDefs) {
+        for (const body of Object.values(doc.footnoteDefs))
+            promoteBlockImages(body, true);
+    }
+    return renderCarve(doc, opts);
 }
 /** Convenience: parse + resolve + render plain text in one call. */
 export function carveToPlainText(source, opts = {}) {

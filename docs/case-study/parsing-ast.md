@@ -75,8 +75,8 @@ Inline
 ├── Strong { content }             // *text*
 ├── Underline { content }          // _text_
 ├── Strikethrough { content }      // ~text~
-├── Superscript { content }        // ^text^
-├── Subscript { content }          // ,text,
+├── Superscript { content }        // {^text^}
+├── Subscript { content }          // {,text,}
 ├── Highlight { content }          // =text=
 ├── Code { content, language? }
 ├── Math { content, display }

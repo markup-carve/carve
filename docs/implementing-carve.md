@@ -33,7 +33,7 @@ parses and renders the native syntax correctly against the spec corpus.
 - **Tier-1 (core, required)** - native blocks and inlines: headings, paragraphs,
   lists, blockquotes, fenced code, tables, frontmatter, captions, admonitions,
   and the inline mnemonics (`/italic/`, `*bold*`, `_underline_`, `~strike~`,
-  `^sup^`, `,sub,`, `=highlight=`), links, images, attributes.
+  `=highlight=`, braced `{^sup^}` / `{,sub,}`), links, images, attributes.
 - **Tier-2 (extensions and adapters, optional)** - the extension registry,
   `:type[content]{attrs}` handlers, and host-specific adapters. Implementations
   may omit these and still be conformant.

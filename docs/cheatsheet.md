@@ -21,8 +21,8 @@ implementation — except rows marked **✦**, which are opt-in extensions
 | `/*bold italic*/` | ***both*** | combined |
 | `_underline_` | underline | the line sits below |
 | `~strike~` | ~~strike~~ | tilde runs through |
-| `^super^` | super­script | caret points up |
-| `,sub,` | sub­script | commas pull down |
+| `{^super^}` | super­script | caret points up |
+| `{,sub,}` | sub­script | commas pull down |
 | `=highlight=` | highlight | like a highlighter pen |
 | `` `code` `` | `code` | backticks |
 | `[text](url)` | link | |

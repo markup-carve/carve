@@ -792,8 +792,6 @@ inline_element = escaped_char
                | bold_italic
                | underline
                | strikethrough
-               | superscript
-               | subscript
                | highlight
                | forced_emphasis
                | forced_strong
@@ -1035,11 +1033,24 @@ math_display = "$$", code_span ;
 
 (* --- Emphasis (left/right word-boundary rule; PART 9 §9 is normative).
    The word-boundary restriction applies to EVERY bare emphasis delimiter
-   (`/`, `*`, `_`, `~`, `^`, `=`, `,`). No bare delimiter opens or closes
+   (`/`, `*`, `_`, `~`, `=`). No bare delimiter opens or closes
    intraword: `foo*bar*baz`, `foo~bar~baz`, `snake_case`, `a/b/c` all stay
    literal. One rule, no per-character carve-outs. Every bare delimiter is
    single-char -- there is no two-char delimiter. This is STRICTER than Djot,
    whose rule is whitespace-only.
+
+   NO BARE SUPERSCRIPT/SUBSCRIPT -- `^` and `,` are NOT bare delimiters.
+   Superscript and subscript exist ONLY in the braced form
+   (`{^x^}` -> <sup>, `{,x,}` -> <sub>; the PART 9 §22 brace-pair family,
+   whose productions keep their historical forced_* names). Two reasons:
+   (a) sub/sup attach to characters, not words -- the dominant uses
+   (`H{,2,}O`, `mc{^2^}`, `10{^6^}`) are intraword, which the bare
+   word-boundary form could never express anyway; the bare form covered
+   only the rare whole-word case. (b) `,` is the most frequent punctuation
+   character in prose and `^` is claimed by captions, header rowspan, and
+   inline footnotes; a single misplaced space (`typo ,oops, happens`)
+   would otherwise conjure a subscript. A bare `^` or `,` is ALWAYS
+   literal text.
 
    FORCED INTRAWORD -- the brace-pair `{X … X}` family (PART 9 §22) is the
    explicit escape hatch: it opens a span regardless of word boundary, so
@@ -1048,17 +1059,16 @@ math_display = "$$", code_span ;
    only needed to force a span where a bare delimiter would otherwise stay
    literal.
 
-   HIGHLIGHT and SUBSCRIPT are the single-char `=` and `,` delimiters. Uniform
-   word boundary makes single `=` and `,` safe: `x = 5`, `key=value`, `a=b`,
-   `=>`, `1,2,3`, `a,b,c`, `x, y, z`, `$1,000` all stay literal -- the opener is
-   followed by whitespace, or preceded/followed by an alphanumeric, so the
-   word-boundary rule rejects it. A DOUBLED bare delimiter (`==x==`, `,,x,,`)
-   is literal by the same-delimiter-adjacency rule (PART 9 §9), like `**x**` or
-   `//x//`. The delimiter set is fully uniform: all single-char. --- *)
+   HIGHLIGHT is the single-char `=` delimiter. Uniform word boundary makes
+   single `=` safe: `x = 5`, `key=value`, `a=b`, `=>` all stay literal -- the
+   opener is followed by whitespace, or preceded/followed by an alphanumeric,
+   so the word-boundary rule rejects it. A DOUBLED bare delimiter (`==x==`)
+   is literal by the same-delimiter-adjacency rule (PART 9 §9), like `**x**`
+   or `//x//`. The delimiter set is fully uniform: all single-char. --- *)
 
 (* FORMAL word-boundary guards -- NORMATIVE; production templates (GUARD
    NOTATION, header) instantiated for every bare delimiter
-   d in { '/', '*', '_', '~', '^', '=', ',' } (all single-char): *)
+   d in { '/', '*', '_', '~', '=' } (all single-char): *)
 
 bare_opener(d) = <!(alnum | '_' | d), d, !(ws | d) ;
 bare_closer(d) = <&(non_ws), d, !(alnum) ;
@@ -1082,9 +1092,10 @@ bold_italic = bare_opener('/'), '*', bi_content, '*', bare_closer('/'), [attribu
       the inner `*` is part of the two-char token, not separately guarded *)
 underline = bare_opener('_'), underline_content, bare_closer('_'), [attributes] ;
 strikethrough = bare_opener('~'), strike_content, bare_closer('~'), [attributes] ;
-superscript = bare_opener('^'), super_content, bare_closer('^'), [attributes] ;
-subscript = bare_opener(','), sub_content, bare_closer(','), [attributes] ;        (* single-char; was ",," *)
 highlight = bare_opener('='), highlight_content, bare_closer('='), [attributes] ;  (* single-char; was "==" *)
+(* there is NO bare superscript/subscript production -- `^` and `,` are
+   always literal outside the forced forms; see the rationale note above
+   and forced_super / forced_sub below *)
 
 (* --- Forced intraword emphasis (PART 9 §22). A brace-pair wrapping a bare
    emphasis delimiter forces a span with NO word-boundary condition, so it
@@ -1124,8 +1135,6 @@ strong_content = (inline_element | text_run | literal_special)+ ;
 bi_content = (inline_element | text_run | literal_special)+ ;
 underline_content = (inline_element | text_run | literal_special)+ ;
 strike_content = (inline_element | text_run | literal_special)+ ;
-super_content = (inline_element | text_run | literal_special)+ ;
-sub_content = (inline_element | text_run | literal_special)+ ;
 highlight_content = (inline_element | text_run | literal_special)+ ;
 
 (* The former prose pseudo-productions emphasis_open_condition /
@@ -1137,8 +1146,9 @@ highlight_content = (inline_element | text_run | literal_special)+ ;
    `[^label]: body` definition, and the INLINE form `^[content]` (pandoc
    form; a deliberate carve extension over djot). Numbering (one shared
    document-order sequence), endnotes rendering, and the inline form's
-   balanced-bracket close are PART 9 §16. PART 8 ranks `^[` ABOVE
-   superscript. Only the sidenote form remains deferred. *)
+   balanced-bracket close are PART 9 §16. A bare `^` is always literal
+   (no bare superscript), so `^[` is unambiguous. Only the sidenote form
+   remains deferred. *)
 footnote = reference_footnote | inline_footnote ;
 reference_footnote = "[^", footnote_label, ']' ;
 footnote_label = {character - ']'}+ ;
@@ -1463,14 +1473,15 @@ EOF = (* end of file *) ;
    1. Escaped characters (\x)
    2. Code spans (`...`)
    3. Autolinks (<url>) and crossrefs (</#id>)
-   4. Inline footnotes (^[content]) -- above emphasis, so `^[` is a note,
-      not superscript; see PART 9 §16
+   4. Inline footnotes (^[content]) -- above emphasis; a bare `^` is
+      always literal, so `^[` is unambiguous; see PART 9 §16
    5. Links, images, reference footnotes, inline spans
       ([text](url), ![alt](src), [^label], [text]{attrs} -- the
       single-char lookahead after `]` selects among them, PART 9 §14;
       a `[^` run is a footnote reference before bracket scanning)
    6. Math ($`…`, $$`…`)
-   7. Emphasis markers (/, *, _, ~, ^, =, ,) and forced spans ({/.../} etc.)
+   7. Emphasis markers (/, *, _, ~, =) and forced spans ({/.../}, {^...^},
+      {,...,} etc.)
       -- EXCEPT a delimiter that begins a multi-char smart-typography
       pattern: `=>` is the arrow, never a highlight opener (the pattern
       is consumed first; PART 9 §8)
@@ -2051,11 +2062,10 @@ EOF = (* end of file *) ;
             reference note).
           * Empty or whitespace-only (`^[]`, `^[ ]`) is literal; an unclosed
             `^[…` is literal.
-        PRECEDENCE (PART 8): `^[` is ranked ABOVE superscript. Consequences:
-        `^[x]^` is a note then a literal `^` (no longer superscript-of-`[x]`;
-        escape `\^[x]^` to keep superscript); `^^[x]` is suppressed by
-        same-delimiter `^` adjacency (literal); `\^[x]` is literal; a `^` not
-        immediately followed by `[` is superscript as before.
+        PRECEDENCE (PART 8): `^[` opens an inline note; a bare `^` anywhere
+        else is literal text (there is no bare superscript). Consequences:
+        `^[x]^` is a note then a literal `^`; `\^[x]` is literal; a `^` not
+        immediately followed by `[` is plain text.
       - LIMITATION: a footnote (reference `[^1]` or inline `^[…]`) inside link
         text (`[t[^1]](u)`) or inside a heading later cloned by a `</#id>`
         crossref nests an <a> in an <a>; avoid footnotes in those positions.

@@ -197,6 +197,14 @@ export type BlockNode = Heading | Paragraph | BlockQuote | List | CodeBlock | Th
 export interface Text extends BaseNode {
     type: 'text';
     value: string;
+    /**
+     * The node's leading `^` came from an ESCAPED caret (`\^`) in the source, so
+     * it is literal and must NOT be read as a caption marker. Set only when
+     * relevant; used by promoteBlockImages so `![a](/u)\n\^ cap` stays a paragraph
+     * (matching carve-rs / carve-php) instead of being promoted to a figure. The
+     * rendered value is already the literal `^`, so renderers ignore this flag.
+     */
+    escapedLeadingCaret?: boolean;
 }
 export interface Emphasis extends BaseNode {
     type: 'italic' | 'strong' | 'underline' | 'strike' | 'super' | 'sub' | 'highlight' | 'bold-italic';

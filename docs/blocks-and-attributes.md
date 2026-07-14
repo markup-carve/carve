@@ -122,7 +122,7 @@ Rules of thumb: a standalone admonition wants quotes; a panel in a group wants b
 An inline element lives inside a line of text.
 
 - Emphasis `/…/`, strong `*…*`, underline `_…_`
-- Strikethrough `~…~`, highlight `=…=`, subscript `,…,`, superscript `^…^`
+- Strikethrough `~…~`, highlight `=…=`, subscript `{,…,}`, superscript `{^…^}`
 - Inline code - `` `…` ``
 - Link `[…](…)`, reference link `[…][…]`, image `![…](…)`
 - Span `[…]{…}`, autolink `<…>`, footnote reference `[^…]`
