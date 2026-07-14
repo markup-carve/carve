@@ -299,12 +299,15 @@ CarveCore {
 
   // A word absorbs any bare delimiter glued between two word characters -
   // this IS the left word-boundary / no-intraword rule, structurally.
-  word       = wordChar (wordChar | wordGlue | underGlue | atGlue | hashGlue | dotGlue | pctGlue)*
+  word       = wordChar (wordChar | wordGlue | underGlue | atGlue | hashGlue | colonGlue | dotGlue | pctGlue)*
   wordGlue   = delim &wordChar
-  // absorb the `@`/`#` glued between word chars (me@example.com, a#b) and
-  // the intraword dot so none triggers mention/tag/typography rules
+  // absorb the `@`/`#`/`:` glued between word chars (me@example.com, a#b,
+  // a:b:c, 10:30) and the intraword dot so none triggers mention / tag /
+  // symbol / typography rules (the left word-boundary guard: a symbol only
+  // opens at start or after a non-word char, matching @mention / #tag)
   atGlue     = "@" &wordChar
   hashGlue   = "#" &wordChar
+  colonGlue  = ":" &wordChar
   dotGlue    = "." &wordChar
   // a %-run glued to a word is literal (50%%, a%%b) - never a comment
   pctGlue    = "%" "%"* &(wordChar | " " | end)
