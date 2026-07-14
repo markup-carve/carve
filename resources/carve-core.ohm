@@ -307,7 +307,10 @@ CarveCore {
   // opens at start or after a non-word char, matching @mention / #tag)
   atGlue     = "@" &wordChar
   hashGlue   = "#" &wordChar
-  colonGlue  = ":" &wordChar
+  // absorb an intraword colon, but NOT one that opens an inline extension
+  // (`a:kbd[x]`): extensions have no left-boundary restriction, so the
+  // `:name[` opener must still reach the extension rule.
+  colonGlue  = ":" ~(extName "[") &wordChar
   dotGlue    = "." &wordChar
   // a %-run glued to a word is literal (50%%, a%%b) - never a comment
   pctGlue    = "%" "%"* &(wordChar | " " | end)
