@@ -21,7 +21,7 @@
   "devDependencies": {
     "@markup-carve/vite-plugin-carve": "git+https://github.com/markup-carve/vite-plugin-carve.git",
     "@mermaid-lint/cli": "^0.35.0",
-    "carve-grammars": "github:markup-carve/carve-grammars",
+    "@markup-carve/carve-grammars": "github:markup-carve/carve-grammars",
     "markdown-it-container": "^4.0.0",
     "ohm-js": "^17.5.0",
     "vitepress": "^1.5.0"

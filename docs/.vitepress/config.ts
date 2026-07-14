@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import container from 'markdown-it-container'
-import { carveMarkdown } from 'carve-grammars/shiki'
+import { carveMarkdown } from '@markup-carve/carve-grammars/shiki'
 import carve from '@markup-carve/vite-plugin-carve'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { carveExtensions } from './carve-extensions.js'
