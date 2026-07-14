@@ -47,14 +47,13 @@ reported as skipped, not failures.
 | Feature | Rust | JS | PHP |
 |---------|------|----|-----|
 | Social link templates | pass | pass | pass |
-| Symbol map | pending¹ | pass | skipped |
+| Symbol map | pass | pass | skipped¹ |
 | German smart quotes | skipped | skipped | pass |
 | Bare URL autolink | skipped | skipped | pass |
 
-¹ Rust and PHP are renaming the `emoji` construct to `symbol` and adopting the
-canonical name shape, word-boundary guard and attribute wrapper (carve#258
-Steps 3-4); until then Rust diverges on the boundary/attribute cases and PHP
-is skipped. JS is the reference for this feature.
+¹ PHP is adopting the canonical name shape, word-boundary guard, attribute
+wrapper and a `symbols` render map (carve#258 Step 4); until it lands the
+optional `symbol-map` case stays skipped for PHP. Rust and JS both pass.
 
 | Implementation | Optional pass | Skipped | Mismatches | Errors | Avg CLI ms/file |
 |----------------|---------------|---------|------------|--------|-----------------|

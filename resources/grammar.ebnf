@@ -1328,7 +1328,7 @@ symbol_name = (letter | digit), {letter | digit | '_' | '+' | '-'} ;
 
 (* --- Smart Typography --- *)
 smart_typography = em_dash | en_dash | ellipsis | smart_quote
-                 | arrow | comparison | symbol ;
+                 | arrow | comparison | typographic_symbol ;
 (* NOTE: fractions are deliberately NOT converted (PART 9 §8 / dismissed-
    syntax.md) -- `1/2` collides with dates (`1/2/2024`) and paths. *)
 
@@ -1360,7 +1360,10 @@ smart_quote = '"' | "'" ;
 
 arrow = "->" | "<-" | "<->" | "=>" ;
 comparison = "!=" | "<=" | ">=" ;
-symbol = "(c)" | "(r)" | "(tm)" | "+-" ;
+(* NOT the `:name:` symbol above -- these are the fixed typographic
+   replacements (© ® ™ ±). Named `typographic_symbol` so the two do not
+   collide: `symbol` is the `:name:` placeholder (PART 9 §7). *)
+typographic_symbol = "(c)" | "(r)" | "(tm)" | "+-" ;
 
 (* --- Breaks --- *)
 hard_break = '\', newline ;  (* backslash at end of line *)

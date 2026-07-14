@@ -45,12 +45,9 @@ const impls = [
         ]
       }
       if (feature === 'symbol-map') {
-        // Rust still exposes the pre-rename `--emoji` flag and lacks the
-        // boundary guard / attribute wrapper until carve#258 Step 3, so this
-        // case is expected to diverge until carve-rs catches up.
         return [
           'cargo', 'run', '--quiet', '--',
-          '--emoji', 'rocket=🚀', '--emoji', 'tada=🎉', '--emoji', 'UPPER=⬆️',
+          '--symbol', 'rocket=🚀', '--symbol', 'tada=🎉', '--symbol', 'UPPER=⬆️',
         ]
       }
       return null
