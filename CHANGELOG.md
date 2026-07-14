@@ -7,18 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-- **BREAKING: no bare superscript/subscript delimiters.** `^text^` and
-  `,text,` are now literal text; superscript and subscript are written with
-  the braced forms `{^text^}` / `{,text,}` only. Rationale: sub/sup attach to
-  characters, not words — the dominant uses (`H{,2,}O`, `mc{^2^}`) are
-  intraword, which the bare word-boundary form could never express — and a
-  bare comma or caret collides with prose punctuation (a single misplaced
-  space could conjure a subscript). The bare emphasis delimiter set is now
-  `/ * _ ~ =`; grammar, executable spec, and corpus updated accordingly.
-
-## [0.1.0] - YYYY-MM-DD
+## [0.1.0] - 2026-07-14
 
 First normative grammar and corpus snapshot. This release locks the Carve
 specification at its initial stable version: the grammar (`resources/grammar.ebnf`),
@@ -32,9 +21,14 @@ advance to `0.1.0` together as the first lockstep minor release.
 #### Tier-1 core (always-on, corpus-pinned)
 
 - **Inline emphasis** - `/italic/`, `*bold*`, `_underline_`, `~strikethrough~`,
-  `^superscript^`, `,subscript,`, `=highlight=`, `/*bold italic*/`; strict
-  word-boundary rules (no intraword bare delimiters); doubled delimiter is always
-  literal; forced `{X...X}` family for deliberate intraword emphasis
+  `=highlight=`, `/*bold italic*/`; strict word-boundary rules (no intraword bare
+  delimiters); doubled delimiter is always literal; forced `{X...X}` family for
+  deliberate intraword emphasis
+- **Superscript and subscript** - braced-only `{^text^}` / `{,text,}`. There is no
+  bare `^text^` / `,text,` form: sub/sup attach to characters, not words, so the
+  dominant uses (`H{,2,}O`, `mc{^2^}`) are intraword, which a word-boundary bare
+  delimiter could never express - and a bare comma or caret collides with prose
+  punctuation. The bare emphasis delimiter set is therefore `/ * _ ~ =`.
 - **Headings** - `#` through `######`; each heading wrapped in a
   `<section id="...">` element; heading ids are Unicode-preserving and
   case-preserving by default, with opt-in lowercase and ASCII-fold transforms
@@ -81,8 +75,12 @@ advance to `0.1.0` together as the first lockstep minor release.
 - **Abbreviations** - `*[ABBR]: expansion` for automatic `<abbr>` tags
 - **Smart typography** - straight quotes to curly quotes, `--` en-dash,
   `---` em-dash, `...` ellipsis; locale-aware quote sets (Tier-2 when configured)
-- **Mentions and tags** - `@user` mention, `#tag` tag; rendered as non-link
-  spans by default; URL templates configurable at render time (Tier-2)
+- **Mentions, tags and symbols** - `@user` mention, `#tag` tag, `:name:` symbol;
+  all three share one left-boundary rule (open only at start of line or after
+  whitespace or an opening punctuation character) and render as non-link spans by
+  default. Symbol names allow `+` / `-` as the first character; unmapped symbols
+  render literally. URL templates (mention/tag) and the symbol map are Tier-2
+  configuration over this Tier-1 syntax.
 - **Extension syntax** - `:name[content]{attrs}` inline extension,
   `::: name` block extension; unknown words fall through to generic
   `<span>` / `<div class="name">` without error
@@ -115,7 +113,8 @@ advance to `0.1.0` together as the first lockstep minor release.
   on each heading; numbered `</#id>` cross-references rewritten to "Section 1.2 - Title"
 - **Mention / tag URL templates** - configurable URL templates for `@mention`
   and `#tag` routing
-- **Emoji glyph map** - `:emoji:` shortcode to glyph mapping
+- **Symbol map** - `:name:` symbol to replacement mapping (e.g. an emoji glyph
+  map); a symbol carrying attributes renders as a `<span>`
 - **Locale smart-quote sets** - per-locale opening/closing quote pairs
 - **Bare-URL autolinking** - plain URLs in prose auto-linked without angle brackets
 
