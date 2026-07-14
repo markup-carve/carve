@@ -384,6 +384,50 @@ where none of the above conflicts exist.
 
 ---
 
+## Symbols: a braced `{:name:}` form for intraword use
+
+**Proposed:**
+```
+Ship it{:+1:}now
+```
+
+**Rationale for proposal:**
+- A symbol only opens at the start of content or after a non-word character
+  (the leading-boundary guard, PART 9 §7), so `word:+1:` is literal text.
+  A braced form would force the symbol where a bare one cannot open.
+- It would mirror the brace-pair convention Carve already has: `{*bold*}`
+  forces intraword emphasis, and `{^x^}` / `{,x,}` are the *only* form of
+  superscript and subscript. "Braces force it intraword" is already learned.
+- The syntax is unclaimed: an attribute block cannot start with `:`, and
+  `{:name:}` today produces the nonsense `{` + resolved symbol + `}` (the
+  brace merely satisfies the boundary guard and is then literal).
+
+**Considerations:**
+- **No demonstrated need.** Shortcodes sit between spaces in essentially all
+  real prose - that is exactly why the boundary guard is safe in the first
+  place. The intraword case is hypothetical; it did not come up until someone
+  went looking for it.
+- **The guard it works around is load-bearing.** `word:+-:` is literal for the
+  same reason `10:30:` and `a:b:c` are: a colon glued to a word never opens a
+  symbol, whatever the symbols map contains. That protection is the feature.
+- **A new inline form is not one production.** Every added inline syntax ripples
+  through the tree-sitter grammar, the TextMate / Prism / highlight.js
+  grammars, the editor plugins (vim, emacs, sublime, vscode, intellij, zed,
+  helix), the corpus, and all three engines. That is a large, permanent bill
+  for a case with no user behind it.
+- **A workaround exists if it is ever truly needed.** `word[:+1:]{}` renders
+  the symbol intraword today (the bracket satisfies the guard; the span carries
+  the attributes). It is deliberately NOT documented: it is a coincidence, not
+  an interface, and it emits an empty attribute block and a `<span>` wrapper.
+  Documenting it would freeze both artifacts.
+
+**Decision:** Deferred, not rejected. The design is recorded here so it is not
+re-litigated; `{:` stays unclaimed. If a real document ever needs an intraword
+symbol, this is the form to add - and the argument for it will be an actual use
+case rather than a hypothetical one.
+
+---
+
 ## Summary
 
 Most rejected ideas fall into these categories:
