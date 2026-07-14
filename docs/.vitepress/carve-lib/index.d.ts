@@ -15,7 +15,7 @@ export type { CarveRenderOptions } from './render-carve.js';
 export type { PlainTextRenderOptions } from './render-plain.js';
 export type { AnsiRenderOptions } from './render-ansi.js';
 export type { CarveExtension, ExtensionRenderer, ExtensionRenderContext, BlockExtensionRenderer, BlockExtensionRenderContext, InlineMatch, BlockMatch, MatcherContext, InlineMatcher, BlockMatcher, } from './extension.js';
-export { djotMigrationWarnings, formatMigrationWarnings, applyMigrationFixes, type MigrationWarning, type MigrationFixResult, } from './djot-migrate.js';
+export { djotMigrationWarnings, formatMigrationWarnings, applyMigrationFixes, type MigrationWarning, type MigrationCategory, type MigrationFixResult, } from './djot-migrate.js';
 export { markdownToCarve } from './markdown-migrate.js';
 export { lintCarve, formatLintWarnings, type LintWarning, } from './lint.js';
 export { tabNormalize } from './tab-normalize.js';

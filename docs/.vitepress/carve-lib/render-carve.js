@@ -323,7 +323,7 @@ function renderInline(node, ctx, prevChar = '', nextChar = '') {
         case 'raw-inline':
             return `${renderCode(node.content)}{=${escapeFormat(node.format)}}`;
         case 'symbol':
-            return withAttrs(`:${escapeIdentifier(node.name)}:`);
+            return withAttrs(`:${escapeSymbolName(node.name)}:`);
         case 'autolink':
             // Emit the raw autolink content verbatim (keeps a URI scheme like
             // `mailto:`); fall back to the href for nodes without `text`.
@@ -565,6 +565,11 @@ function escapeAbbr(text) {
 }
 function escapeIdentifier(text) {
     return text.replace(/[^\w-]/g, '');
+}
+// A symbol name may contain `+` and `-` (so `:+1:` / `:-1:` round-trip),
+// unlike an extension identifier.
+function escapeSymbolName(text) {
+    return text.replace(/[^\w+-]/g, '');
 }
 function escapeName(text) {
     return text.replace(/[^\w.-]/g, '').replace(/^\.+|\.+$/g, '');

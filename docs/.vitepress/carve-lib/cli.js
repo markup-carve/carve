@@ -61,14 +61,20 @@ constructs that otherwise silently mis-render under Carve (e.g. **bold**
   to stdout. Crossing collisions that cannot be auto-fixed are reported on
   stderr for manual review.
 
-lint - report delimiter collisions AND silent-failure problems as
-\`file:line:col rule - message\`: broken </#id> cross-references, unresolved
-reference links, duplicate heading ids, missing/duplicate/unused footnotes,
-trailing {…} attribute blocks on headings (literal, not attributes), legacy
-\`\`\`raw FORMAT fences (use \`\`\`=FORMAT), and lines that open like a block
-(\`:::\`, \`{#\`) but parsed as plain text. Reads files or stdin; exits 1 if
-anything is reported, 0 if clean.
+lint - report silent-failure problems as \`file:line:col rule - message\`:
+broken </#id> cross-references, unresolved reference links, duplicate heading
+ids, missing/duplicate/unused footnotes, trailing {…} attribute blocks on
+headings (literal, not attributes), legacy \`\`\`raw FORMAT fences (use
+\`\`\`=FORMAT), and lines that open like a block (\`:::\`, \`{#\`) but parsed as
+plain text. Also flags Djot/Markdown constructs that mis-render in Carve
+(\`**bold**\`, \`~~strike~~\`, \`^sup^\`, \`+\` bullets). Reads files or stdin;
+exits 1 if anything is reported, 0 if clean.
 
+  lint options:
+        --from-djot  Also flag valid Carve whose meaning differs from Djot
+                     (\`_x_\` underline vs emphasis, \`~x~\` strike vs subscript,
+                     \`{=x=}\` highlight) — noise for hand-written Carve, useful
+                     when checking a document migrated from Djot.
   -h, --help     Show this help
 `;
 /** Report the un-auto-fixable (overlapping) warnings for one input. */
@@ -361,8 +367,12 @@ export async function run(argv, io) {
     return runRender(argv, io);
 }
 /** Report all warnings for one source; returns how many were found. */
-function reportLint(source, file, io) {
-    const migration = djotMigrationWarnings(source);
+function reportLint(source, file, io, fromDjot) {
+    // Default lint targets hand-written Carve, so it reports only constructs
+    // that mis-render in Carve (`carve-breakage`). Djot-semantic shifts such as
+    // `_x_` (underline, not emphasis) are valid Carve and only matter when the
+    // source is being migrated FROM Djot, so they surface only with --from-djot.
+    const migration = djotMigrationWarnings(source).filter((w) => fromDjot || w.category === 'carve-breakage');
     const semantic = lintCarve(source);
     if (migration.length)
         io.write(formatMigrationWarnings(migration, file) + '\n');
@@ -372,10 +382,14 @@ function reportLint(source, file, io) {
 }
 async function runLint(args, io) {
     let positionals;
+    let fromDjot;
     try {
         const parsed = parseArgs({
             args,
-            options: { help: { type: 'boolean', short: 'h' } },
+            options: {
+                help: { type: 'boolean', short: 'h' },
+                'from-djot': { type: 'boolean' },
+            },
             allowPositionals: true,
         });
         if (parsed.values.help) {
@@ -383,6 +397,7 @@ async function runLint(args, io) {
             return 0;
         }
         positionals = parsed.positionals;
+        fromDjot = parsed.values['from-djot'] ?? false;
     }
     catch (e) {
         io.writeErr(`carve lint: ${e.message}\n`);
@@ -390,7 +405,7 @@ async function runLint(args, io) {
     }
     if (positionals.length === 0) {
         const src = await io.readStdin();
-        return reportLint(src, '<stdin>', io) > 0 ? 1 : 0;
+        return reportLint(src, '<stdin>', io, fromDjot) > 0 ? 1 : 0;
     }
     let total = 0;
     let hadError = false;
@@ -404,7 +419,7 @@ async function runLint(args, io) {
             hadError = true;
             continue;
         }
-        total += reportLint(src, file, io);
+        total += reportLint(src, file, io, fromDjot);
     }
     if (hadError)
         return 2;

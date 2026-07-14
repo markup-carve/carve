@@ -27,6 +27,7 @@ const RULES = [
     // and never the delimiter char `x`.
     {
         id: 'markdown-strong-double-star',
+        category: 'carve-breakage',
         family: '*',
         pattern: /\*\*(?!\s)((?:(?!\n[ \t]*\n)[^*])+?)(?<!\s)\*\*/gd,
         message: () => 'Djot/Markdown `**strong**` is not Carve bold — Carve bold is a single `*`, so this renders with literal asterisks.',
@@ -35,6 +36,7 @@ const RULES = [
     },
     {
         id: 'markdown-strikethrough-double-tilde',
+        category: 'carve-breakage',
         family: '~',
         pattern: /~~(?!\s)((?:(?!\n[ \t]*\n)[^~])+?)(?<!\s)~~/gd,
         message: () => 'Markdown `~~strikethrough~~` is not Carve — Carve strikethrough is a single `~`.',
@@ -43,6 +45,7 @@ const RULES = [
     },
     {
         id: 'djot-subscript-tilde',
+        category: 'djot-shift',
         family: '~',
         pattern: /~(?!\s)((?:(?!\n[ \t]*\n)[^~])+?)(?<!\s)~/gd,
         message: () => 'Djot subscript `~x~` renders as *strikethrough* in Carve.',
@@ -53,6 +56,9 @@ const RULES = [
     },
     {
         id: 'djot-superscript-caret',
+        // Breakage: `^x^` silently drops the superscript (Carve superscript is the
+        // braced `{^x^}`), so the intended markup never renders.
+        category: 'carve-breakage',
         family: '^',
         // Exclude `^[` (a Carve inline footnote, not a superscript opener), the
         // braced `{^x^}` form, which is valid in both languages, and carets that
@@ -65,6 +71,7 @@ const RULES = [
     },
     {
         id: 'djot-emphasis-underscore',
+        category: 'djot-shift',
         family: '_',
         pattern: /(?<![A-Za-z0-9_])_(?!\s)((?:(?!\n[ \t]*\n)[^_])+?)(?<!\s)_(?![A-Za-z0-9_])/gd,
         message: () => 'Djot emphasis `_x_` renders as *underline* in Carve.',
@@ -73,6 +80,7 @@ const RULES = [
     },
     {
         id: 'djot-highlight-braces',
+        category: 'djot-shift',
         family: '{',
         pattern: /\{=(?!\s)((?:(?!\n[ \t]*\n)[\s\S])+?)(?<!\s)=\}/gd,
         message: () => 'Djot highlight `{=x=}` is also Carve highlight (`{=x=}`).',
@@ -88,6 +96,7 @@ const RULES = [
     // IS the Carve continuation marker and is intentional.
     {
         id: 'djot-plus-bullet',
+        category: 'carve-breakage',
         family: 'plus-bullet',
         pattern: /(?<=^[ \t]*)(\+)(?=[ \t]+\S)/gmd,
         message: () => 'Djot/Markdown `+` bullet is not a Carve bullet (`+` is the list-continuation marker) — this line renders as a paragraph.',
@@ -181,6 +190,7 @@ function stripHit(h) {
         line: h.line,
         column: h.column,
         rule: h.rule,
+        category: h.category,
         message: h.message,
         suggestion: h.suggestion,
         start: h.start,
@@ -324,6 +334,7 @@ function scanHits(source) {
                 line,
                 column,
                 rule: rule.id,
+                category: rule.category,
                 message: rule.message(m),
                 suggestion,
                 start,

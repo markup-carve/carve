@@ -5,6 +5,15 @@ export interface MigrationWarning {
     column: number;
     /** Stable rule id, e.g. "djot-emphasis-underline". */
     rule: string;
+    /**
+     * Whether the construct produces objectively wrong Carve output
+     * (`carve-breakage`) or is valid Carve that merely means something
+     * different than it did in Djot/Markdown (`djot-shift`). `carve lint`
+     * reports only `carve-breakage` by default — a `djot-shift` such as
+     * `_x_` (underline) is intentional in hand-written Carve, so surfacing
+     * it there is noise. `--from-djot` opts the shifts back in.
+     */
+    category: MigrationCategory;
     /** Human-readable explanation of the silent mis-render. */
     message: string;
     /**
@@ -23,6 +32,16 @@ export interface MigrationWarning {
     /** 0-based offset in the normalized source, exclusive. Splice target end. */
     end: number;
 }
+/**
+ * `carve-breakage`: the construct mis-renders in Carve regardless of origin
+ * (leaked literal delimiters, a bullet that degrades to a paragraph) — always
+ * worth flagging, even in hand-written Carve.
+ *
+ * `djot-shift`: valid Carve whose meaning merely differs from Djot/Markdown
+ * (`_x_` is underline, not emphasis). Only relevant when migrating FROM Djot,
+ * so `carve lint` hides it unless `--from-djot` is given.
+ */
+export type MigrationCategory = 'carve-breakage' | 'djot-shift';
 /**
  * Scan Djot/Carve source and return warnings for constructs that silently
  * change meaning under Carve. Empty array means the source is free of the

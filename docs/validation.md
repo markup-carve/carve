@@ -29,8 +29,19 @@ and pre-commit hooks:
 carve lint docs/**/*.crv
 ```
 
-`carve lint` has no rule-selection flags yet. It reads files or stdin and
-reports the full built-in rule set.
+By default `carve lint` reports the semantic rules below plus the
+Djot/Markdown constructs that actually mis-render in Carve (`**bold**`,
+`~~strike~~`, `^sup^`, and `+` bullets). It does **not** flag valid Carve
+whose meaning merely differs from Djot — `_x_` (underline, not emphasis),
+`~x~` (strikethrough, not subscript), and `{=x=}` (highlight) are intentional
+in hand-written Carve, so surfacing them there is noise.
+
+Pass `--from-djot` when the document was migrated from Djot and you want those
+semantic shifts flagged too:
+
+```sh
+carve lint --from-djot doc.crv
+```
 
 ## Programmatic API
 
@@ -82,5 +93,7 @@ the command-line and editor behavior stay aligned.
 | `block-marker-as-text` | a line that opens like a block (`:::`, `{#`, `{.`) but parsed as plain text |
 
 The CLI also reports Djot/Markdown delimiter collisions from the migration
-checker, so `carve lint` is the broadest single validation command.
+checker — mis-rendering constructs by default, plus the Djot semantic shifts
+under `--from-djot` — so `carve lint` is the broadest single validation
+command.
 
