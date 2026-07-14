@@ -38,11 +38,12 @@ const featureRunners = {
       mentionUrl: '/users/{name}',
       tagUrl: '/topics/{name}',
     }),
-  'emoji-map': (source) =>
+  'symbol-map': (source) =>
     carveToHtml(source, {
-      emoji: {
+      symbols: {
         rocket: '🚀',
         tada: '🎉',
+        UPPER: '⬆️',
       },
     }),
   'citations-numbered': (source) => carveToHtml(source, { extensions: [citations()] }),

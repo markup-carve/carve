@@ -260,7 +260,7 @@ function renderInline(node, ctx) {
                 : `$${stripControls(node.content)}$`;
         case 'raw-inline':
             return node.format === 'html' ? escapeMdHtml(stripControls(node.content)) : '';
-        case 'emoji':
+        case 'symbol':
             return `:${stripControls(node.name)}:`;
         case 'autolink': {
             // Visible text is the raw autolink content (an email autolink shows the

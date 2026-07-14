@@ -126,7 +126,7 @@ An inline element lives inside a line of text.
 - Inline code - `` `…` ``
 - Link `[…](…)`, reference link `[…][…]`, image `![…](…)`
 - Span `[…]{…}`, autolink `<…>`, footnote reference `[^…]`
-- Math, `:emoji:`, `@mention`, `#tag`
+- Math, `:symbol:`, `@mention`, `#tag`
 
 ### Attributing an inline
 

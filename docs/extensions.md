@@ -46,9 +46,9 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | Cross-references `</#id>` + numbered cross-refs, editorial / critic markup | <Badge type="tip" text="core" /> | on | no |
 | Frontmatter, comments, raw blocks / inline `=format` | <Badge type="tip" text="core" /> | on | no |
 | The extension **syntax** `:name[…]` (inline) and `::: name` (block) | <Badge type="tip" text="core" /> | on | no — the *handlers* are Tier-2/3 |
-| Smart typography, `@mention`, `#tag`, `:emoji:` parsing | <Badge type="tip" text="core" /> | on | **yes** (§19) |
+| Smart typography, `@mention`, `#tag`, `:symbol:` parsing | <Badge type="tip" text="core" /> | on | **yes** (§19) |
 | Citations `[@key]`, bare-URL autolinking, code callouts `<n>` | <Badge type="info" text="standard" /> | off | — |
-| Mention/tag → URL templates, emoji glyph map, locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
+| Mention/tag → URL templates, symbol map (e.g. emoji glyphs), locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
 | Mermaid / FencedRender, MathBlock, ListTable, Bibliography, Glossary, Index, HeadingNumbers, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, SemanticSpan, ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
 
@@ -61,9 +61,9 @@ differs by processor. The narrative below details each tier.
   list-item attributes, `::: |` verse, `<…>` autolinks, the
   `:name[…]` / `::: name` extension syntax). Recognized `:::` type words
   (the eight admonitions + `line-block`) are catalogued in `examples.md`. Smart
-  typography and `@mention` / `#tag` / `:emoji:` parsing are also default-on and
+  typography and `@mention` / `#tag` / `:symbol:` parsing are also default-on and
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
-- Tier 2: configuration over Tier-1 syntax — mention/tag→URL, emoji glyph map,
+- Tier 2: configuration over Tier-1 syntax — mention/tag→URL, symbol map (e.g. emoji glyphs),
   locale smart-quote sets, bare-URL autolinking, citations (§4), and code
   callouts (`<n>` markers inside fenced code + a bound explanation list; §10).
 - Tier 3 (non-exhaustive): FencedRender (a generic fenced-code-block factory

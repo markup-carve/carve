@@ -171,20 +171,24 @@ Add 1/2 cup of flour and 3/4 teaspoon of salt.
 
 ---
 
-## Emoji Shortcodes: `:smile:`
+## Built-in Emoji Semantics for `:smile:`
 
 **Proposed:**
 ```
 Great work! :thumbsup: :rocket:
 ```
 
-**Why rejected:**
-- Conflicts with extension syntax `:type[content]`
-- Requires maintaining emoji database
+**Why rejected (as an emoji feature):**
+- Requires maintaining an emoji database in every implementation
 - Unicode emoji input is widely available now
 - Platform-specific rendering issues
 
-**Decision:** Use Unicode emoji directly or via extension `:emoji[rocket]` if needed.
+**Decision:** the `:name:` *syntax* was kept, but as a semantics-free
+**symbol** (djot's model): the parser records only the name, and mapping —
+emoji or anything else — is processor configuration (`symbols` map or an
+inline-renderer extension handler), with a literal `:name:` fallback. What
+was dismissed is the built-in emoji database, not the syntax. See the
+Symbols section in `examples.md`.
 
 ---
 

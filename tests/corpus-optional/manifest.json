@@ -7,9 +7,9 @@
       "description": "Mention and tag rendering with configured URL templates."
     },
     {
-      "slug": "02-emoji-map",
-      "feature": "emoji-map",
-      "description": "Emoji shortcode rendering against a supplied glyph map."
+      "slug": "02-symbol-map",
+      "feature": "symbol-map",
+      "description": "Symbol shortcode rendering against a supplied map (e.g. emoji glyphs), plus name-shape and word-boundary literal cases."
     },
     {
       "slug": "03-smart-quotes-locale-de",

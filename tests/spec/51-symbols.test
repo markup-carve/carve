@@ -1,0 +1,19 @@
+Symbols
+
+```
+Great :rocket: and :kbd[Ctrl] is an extension.
+.
+<p>Great :rocket: and <kbd>Ctrl</kbd> is an extension.</p>
+```
+
+```
+a:b:c and 10:30: meeting, :+1: and :_x: too.
+.
+<p>a:b:c and 10:30: meeting, :+1: and :_x: too.</p>
+```
+
+```
+Launch :rocket:{.big} now.
+.
+<p>Launch <span class="big">:rocket:</span> now.</p>
+```

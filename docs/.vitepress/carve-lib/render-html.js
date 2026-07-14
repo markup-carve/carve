@@ -1102,8 +1102,40 @@ function renderInline(node, opts) {
                     ? escapeHtml(node.content)
                     : node.content
                 : '';
-        case 'emoji':
-            return opts.emoji?.[node.name] ?? escapeHtml(`:${node.name}:`);
+        case 'symbol': {
+            // Resolution precedence (§ Symbols): a registered inline-renderer for
+            // the `symbol` node type wins (static mode tries `staticInlineRenderers`
+            // first, then `inlineRenderers`; each may return undefined to defer),
+            // then the `symbols` map (emitted raw, trusted processor config), then
+            // the literal `:name:`. Attributes wrap the resolved body in a span so
+            // they have a target.
+            let body;
+            const isStatic = opts.mode === 'static';
+            if (opts.extensions?.length) {
+                const ctx = inlineCtx(opts);
+                for (const e of opts.extensions) {
+                    const staticFn = isStatic ? e.staticInlineRenderers?.[node.type] : undefined;
+                    if (staticFn) {
+                        const out = staticFn(node, ctx);
+                        if (out !== undefined) {
+                            body = out;
+                            break;
+                        }
+                    }
+                    const fn = e.inlineRenderers?.[node.type];
+                    if (fn) {
+                        const out = fn(node, ctx);
+                        if (out !== undefined) {
+                            body = out;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (body === undefined)
+                body = opts.symbols?.[node.name] ?? escapeHtml(`:${node.name}:`);
+            return node.attrs ? `<span${renderAttrs(node.attrs)}>${body}</span>` : body;
+        }
         case 'autolink': {
             // Display the raw autolink content (a URI autolink keeps its scheme);
             // fall back to stripping an auto-added `mailto:` for nodes without `text`.

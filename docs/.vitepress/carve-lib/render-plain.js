@@ -168,7 +168,7 @@ function renderInline(node, ctx) {
             return stripControls(node.content);
         case 'raw-inline':
             return '';
-        case 'emoji':
+        case 'symbol':
             return `:${stripControls(node.name)}:`;
         case 'autolink':
             // Raw autolink content: a URI autolink keeps its scheme, an email shows

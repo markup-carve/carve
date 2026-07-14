@@ -322,7 +322,7 @@ function renderInline(node, ctx) {
             return style(stripControls(node.content), FG_BRIGHT_MAGENTA);
         case 'raw-inline':
             return '';
-        case 'emoji':
+        case 'symbol':
             return `:${stripControls(node.name)}:`;
         case 'autolink':
             return style(stripControls(node.text ?? (node.href.startsWith('mailto:') ? node.href.slice(7) : node.href)), UNDERLINE + FG_BLUE);

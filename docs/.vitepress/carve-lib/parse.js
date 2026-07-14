@@ -2843,8 +2843,8 @@ const RE_FOOTNOTE_REF = /^\[\^([^\]]+)\]/;
 const RE_EXTENSION = /^:([a-zA-Z_][\w-]*)\[([^\]]*)\](?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
 // Raw inline passthrough tag, follows a verbatim span: `` `…`{=html} ``.
 const RE_RAW_INLINE = /^\{=([a-zA-Z][\w-]*)\}/;
-// Emoji shortcode `:name:` (after extension, which needs `[`).
-const RE_EMOJI = /^:([a-zA-Z0-9][\w+-]*):/;
+// Symbol shortcode `:name:` (after extension, which needs `[`).
+const RE_SYMBOL = /^:([a-zA-Z0-9][\w+-]*):/;
 // Autolink (grammar.ebnf:775,776,791,792,1139). Two alternatives:
 //   url_autolink   = scheme ':' {url_char}+   -- url_char excludes `<`/`>` plus
 //                    `"` `\` `` ` `` `{` `}` `|` `^`, so a body holding any of
@@ -3489,12 +3489,12 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                 i += m[0].length;
                 continue;
             }
-            // Emoji shortcode `:name:` (after extension, which needs `[`).
-            const em = RE_EMOJI.exec(rest);
-            if (em) {
+            // Symbol shortcode `:name:` (after extension, which needs `[`).
+            const sym = (i === 0 || !/[A-Za-z0-9_]/.test(text[i - 1])) ? RE_SYMBOL.exec(rest) : null;
+            if (sym) {
                 flush();
-                out.push(withPos({ type: 'emoji', name: em[1] }, source, text, i, i + em[0].length));
-                i += em[0].length;
+                out.push(withPos({ type: 'symbol', name: sym[1] }, source, text, i, i + sym[0].length));
+                i += sym[0].length;
                 continue;
             }
         }

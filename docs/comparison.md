@@ -65,7 +65,7 @@ special cases.
 | Smart typography | 🧩 | ✅ | 🧩 | ✅ |
 | Editorial / critic markup | ❌ | ❌ | ❌ | ✅ |
 | Frontmatter | ⚠️ tooling | ❌ | 🧩 | ✅ |
-| Emoji shortcodes | 🧩 | ⚠️ | 🧩 | 🧩 `:emoji[…]` extension |
+| Symbols / emoji shortcodes | 🧩 | ✅ symbols, mapped via filters | 🧩 | ✅ `:name:` symbols, mapped via config |
 
 ## Docs & cross-referencing
 

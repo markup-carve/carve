@@ -449,7 +449,7 @@ class ProfileFilter {
             if (node.type === 'image' ||
                 node.type === 'mention' ||
                 node.type === 'tag' ||
-                node.type === 'emoji' ||
+                node.type === 'symbol' ||
                 node.type === 'abbreviation' ||
                 node.type === 'crossref' ||
                 node.type === 'caption-number' ||
@@ -611,7 +611,7 @@ function extractTextContent(node) {
             }
             return items.join('\n');
         }
-        case 'emoji':
+        case 'symbol':
             return ':' + node['name'] + ':';
         case 'footnote': {
             // Reference: `[^id]`; carve-php FootnoteRef renders `[^label]`.

@@ -3503,10 +3503,23 @@ Use `<br>`{=html} to break, and `\foo`{=latex} is dropped.
 
 :::
 
-## Emoji
+## Symbols
 
-`:name:` is an emoji shortcode resolved against a processor-supplied map;
-with no map it renders literally. `:type[…]` is still an extension.
+`:name:` is a symbol: a generic named inline placeholder with no built-in
+semantics. The parser records only the name; resolution is processor
+configuration, in precedence order: a registered inline-renderer extension
+handler for symbol nodes, else the renderer `symbols` map (name →
+replacement, emitted raw in the target format — processor configuration is
+trusted, the same class as the `renderers` map), else the literal text
+`:name:`. Emoji substitution is the common use, not a language feature.
+`:type[…]` is still an extension and is tried first.
+
+The name starts with an alphanumeric character and continues with word
+characters, `+` or `-` — `:+1:` and `:_x:` are literal text. Like mentions
+and tags, a symbol only opens at the start of content or after a non-word
+character: `a:b:c` and `10:30:` stay literal text, while `(:tada:)` is a
+symbol. (Djot's symbols accept `:+1:` and open intraword; Carve deliberately
+does not — see the djot divergence notes.)
 
 ::: compare
 
@@ -3516,6 +3529,36 @@ Great :rocket: and :kbd[Ctrl] is an extension.
 
 ```html
 <p>Great :rocket: and <kbd>Ctrl</kbd> is an extension.</p>
+```
+
+:::
+
+Boundary and name-shape cases — all of these stay plain text:
+
+::: compare
+
+```carve
+a:b:c and 10:30: meeting, :+1: and :_x: too.
+```
+
+```html
+<p>a:b:c and 10:30: meeting, :+1: and :_x: too.</p>
+```
+
+:::
+
+A trailing attribute block attaches to the symbol; in HTML output attributes
+force a `<span>` wrapper around the resolved (or literal) output so they
+have an element to land on. Without attributes no wrapper is emitted.
+
+::: compare
+
+```carve
+Launch :rocket:{.big} now.
+```
+
+```html
+<p>Launch <span class="big">:rocket:</span> now.</p>
 ```
 
 :::

@@ -322,8 +322,8 @@ function renderInline(node, ctx, prevChar = '', nextChar = '') {
             return withAttrs(renderMath(node.display, node.content));
         case 'raw-inline':
             return `${renderCode(node.content)}{=${escapeFormat(node.format)}}`;
-        case 'emoji':
-            return `:${escapeIdentifier(node.name)}:`;
+        case 'symbol':
+            return withAttrs(`:${escapeIdentifier(node.name)}:`);
         case 'autolink':
             // Emit the raw autolink content verbatim (keeps a URI scheme like
             // `mailto:`); fall back to the href for nodes without `text`.

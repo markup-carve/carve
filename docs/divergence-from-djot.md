@@ -216,6 +216,30 @@ to control it. This block-interruption rule is one of Carve's larger
 block-level breaks from Djot, and part of why the project frames itself as
 post-Markdown rather than post-Djot.
 
+## 8. Symbols: same name, stricter shape and boundary
+
+Djot and Carve both parse `:name:` as a **symbol** - a named placeholder
+rendered literally by default. Djot leaves mapping to filters; Carve builds
+it into processor configuration (the renderer `symbols` map, or an
+inline-renderer extension handler), with the same literal fallback.
+
+Carve tightens two things djot leaves loose:
+
+- **Name shape.** Djot (djot.js) matches `:[\w_+-]+:`, so `:+1:`, `:_x:` and
+  digit-only names all parse. Carve requires the first character to be
+  alphanumeric (`[a-zA-Z0-9][\w+-]*`): `:+1:` and `:_x:` are literal text.
+  (The two djot implementations already disagree here - djot-php rejects
+  `:+1:` while djot.js accepts it, invisibly, because unmapped symbols
+  render literally in both.)
+- **Word boundary.** Djot opens a symbol anywhere, so `a:b:c` contains the
+  symbol `b` and `10:30:` contains `30` - with a mapping active these
+  substitute inside words and times. Carve applies the same leading
+  boundary rule as `@mention` / `#tag`: a symbol only opens at the start of
+  content or after a non-word character.
+
+Attributes on a symbol (`:rocket:{.big}`) are pinned to render a `<span>`
+wrapper in HTML so the attributes have a target.
+
 ## What Carve adds on top (not breaks)
 
 These aren't divergences - Djot has no equivalent - but they're why Carve exists

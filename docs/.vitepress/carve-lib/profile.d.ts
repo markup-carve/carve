@@ -12,7 +12,7 @@ export declare const CANONICAL_INLINE_TYPES: readonly ["text", "emphasis", "stro
  * Map a carve-js internal `node.type` to its canonical snake_case name.
  *
  * Returns `undefined` for types that have no canonical mapping (e.g.
- * `crossref`, `caption-number`, `emoji`, `abbreviation-def`, `critic-*`);
+ * `crossref`, `caption-number`, `abbreviation-def`, `critic-*`);
  * such nodes are denied-by-default by the profile resolver, matching
  * carve-php's "unknown type -> denied" rule. The exception is `document`,
  * which the resolver always treats as allowed.

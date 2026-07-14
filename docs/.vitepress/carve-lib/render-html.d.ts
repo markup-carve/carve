@@ -24,8 +24,8 @@ export interface RenderOptions {
     renderers?: StaticRenderers;
     mentionUrl?: string;
     tagUrl?: string;
-    /** Emoji shortcode -> glyph map. `:name:` with no entry renders literally. */
-    emoji?: Record<string, string>;
+    /** Symbol shortcode -> trusted raw output map. `:name:` with no entry renders literally. */
+    symbols?: Record<string, string>;
     /** Registered extensions (renderers consulted; transforms run by carveToHtml). */
     extensions?: CarveExtension[];
     /**

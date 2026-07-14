@@ -295,12 +295,12 @@ export interface RawInline extends BaseNode {
     content: string;
 }
 /**
- * Emoji shortcode `:name:` (djot symbols). Resolved against a
+ * Symbol shortcode `:name:` (commonly used for emoji). Resolved against a
  * processor-supplied name->glyph map at render time; an unmapped name
  * renders literally as `:name:`.
  */
-export interface Emoji extends BaseNode {
-    type: 'emoji';
+export interface SymbolInline extends BaseNode {
+    type: 'symbol';
     name: string;
 }
 export interface AutoLink extends BaseNode {
@@ -409,6 +409,6 @@ export interface CriticComment extends BaseNode {
     type: 'critic-comment';
     text: string;
 }
-export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | Emoji | AutoLink | CrossRef | CaptionNumber | CitationGroup | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment | Comment;
+export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | SymbolInline | AutoLink | CrossRef | CaptionNumber | CitationGroup | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment | Comment;
 export type AnyNode = Document | BlockNode | InlineNode;
 //# sourceMappingURL=ast.d.ts.map

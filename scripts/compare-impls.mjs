@@ -44,8 +44,14 @@ const impls = [
           '/topics/{name}',
         ]
       }
-      if (feature === 'emoji-map') {
-        return ['cargo', 'run', '--quiet', '--', '--emoji', 'rocket=🚀', '--emoji', 'tada=🎉']
+      if (feature === 'symbol-map') {
+        // Rust still exposes the pre-rename `--emoji` flag and lacks the
+        // boundary guard / attribute wrapper until carve#258 Step 3, so this
+        // case is expected to diverge until carve-rs catches up.
+        return [
+          'cargo', 'run', '--quiet', '--',
+          '--emoji', 'rocket=🚀', '--emoji', 'tada=🎉', '--emoji', 'UPPER=⬆️',
+        ]
       }
       return null
     },
@@ -90,7 +96,7 @@ const impls = [
           `,
         ]
       }
-      if (feature === 'emoji-map') {
+      if (feature === 'symbol-map') {
         return [
           'node',
           '--input-type=module',
@@ -100,7 +106,7 @@ const impls = [
             import { carveToHtml } from './dist/index.js';
             const source = readFileSync(process.argv[1], 'utf8');
             process.stdout.write(carveToHtml(source, {
-              emoji: { rocket: '🚀', tada: '🎉' },
+              symbols: { rocket: '🚀', tada: '🎉', UPPER: '⬆️' },
             }));
           `,
         ]
