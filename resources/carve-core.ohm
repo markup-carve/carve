@@ -108,7 +108,7 @@ CarveCore {
   // ==========================================================================
   // INLINE (Core)
   // ==========================================================================
-  inline     = arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | mention | tag
+  inline     = arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | symbolAttr | mention | tag
              | editorial | forcedSpan | span
              | mathD | mathI | codeA | nbspEsc | hardBreak | escape | image | bracketed
              | autolink | word | spComment | inlineSpace | litDelim | bang | dollar
@@ -128,7 +128,7 @@ CarveCore {
 
   // constructs allowed inside any span (everything except spans themselves,
   // which are listed per-delimiter to exclude self-nesting)
-  rich       = arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | mention | tag
+  rich       = arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | symbolAttr | mention | tag
              | editorial | forcedSpan | mathD | mathI
              | codeA | escape | image | bracketed | autolink | bang | dollar
              | ellipsis | dashRun | dquote | squote
@@ -238,6 +238,13 @@ CarveCore {
   extension  = ":" extName "[" extContent "]" attrs?
   extName    = identStart identRest*
   extContent = (escape | (~"]" ~newline any))*
+
+  // An attributed symbol shortcode `:name:{...}` wraps in a <span> in Full
+  // Carve (a resolved/literal body carrying the attributes). Core has no
+  // symbol node to attach attributes to, so it refuses this form (out of
+  // subset). A bare `:name:` with no attribute block is unaffected and
+  // stays literal text.
+  symbolAttr = ":" shortcodeName ":" &attrs
 
   // --- Bracketed constructs: link / image / span / reference link ---------
   // The single-char lookahead after `]` selects the construct (PART 9 S14);
@@ -355,9 +362,12 @@ CarveCore {
   // a valid-shaped attribute block with no abutting carrier is LITERAL
   // text (PART 9 SS14/SS15); an invalid payload still refuses
   looseAttrs = attrs
-  // a `:` opening an inline extension (:name[...]) or an emoji (:name:) is
-  // Full Carve -> refuse; a plain colon is text
+  // a `:` opening an inline extension (:name[...]) is Full Carve -> refuse;
+  // a plain colon is text. A bare `:name:` symbol shortcode with no map is
+  // literal text in Core, matching Full Carve's mapless fallback; the
+  // attributed form `:name:{...}` is refused (see symbolAttr).
   colon      = ":" ~(ident "[")
+  shortcodeName = alnumCh (alnumCh | "_" | "+" | "-")*
   // a bare `@` followed by a word char is a mention (Full Carve) -> refuse;
   // an email-embedded `@` is absorbed by the word rule (atGlue)
   at         = "@" ~wordChar

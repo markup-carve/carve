@@ -238,6 +238,11 @@ const sem = g.createSemantics().addOperation('h', {
   hardBreak(_bs, _la) {
     return '<br>'
   },
+  symbolAttr(_c1, _name, _c2, _attrs) {
+    // Full Carve wraps `:name:{...}` in a <span> carrying the attributes;
+    // Core has no symbol node to attach them to, so it refuses (out of subset).
+    throw new Refuse('symbol with attributes')
+  },
   mention(_a, name) {
     return `<span class="mention"><strong>@${escapeHtml(name.sourceString)}</strong></span>`
   },
