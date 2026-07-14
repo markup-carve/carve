@@ -225,12 +225,13 @@ inline-renderer extension handler), with the same literal fallback.
 
 Carve tightens two things djot leaves loose:
 
-- **Name shape.** Djot (djot.js) matches `:[\w_+-]+:`, so `:+1:`, `:_x:` and
-  digit-only names all parse. Carve requires the first character to be
-  alphanumeric (`[a-zA-Z0-9][\w+-]*`): `:+1:` and `:_x:` are literal text.
-  (The two djot implementations already disagree here - djot-php rejects
-  `:+1:` while djot.js accepts it, invisibly, because unmapped symbols
-  render literally in both.)
+- **Name shape.** Djot (djot.js) matches `:[\w_+-]+:`, so any name including a
+  leading `_` parses. Carve requires the first character to be a letter, a
+  digit, `+` or `-` (`[a-zA-Z0-9+-][\w+-]*`): the reaction shortcodes `:+1:`
+  and `:-1:` parse, but `:_x:` stays literal because `:_x_:` would otherwise
+  steal from underline. (The two djot implementations already disagree on the
+  shape - djot-php rejects `:+1:` while djot.js accepts it, invisibly, because
+  unmapped symbols render literally in both.)
 - **Word boundary.** Djot opens a symbol anywhere, so `a:b:c` contains the
   symbol `b` and `10:30:` contains `30` - with a mapping active these
   substitute inside words and times. Carve applies the same leading

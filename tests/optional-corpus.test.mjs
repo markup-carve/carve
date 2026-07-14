@@ -43,6 +43,7 @@ const featureRunners = {
       symbols: {
         rocket: '🚀',
         tada: '🎉',
+        '+1': '👍',
         UPPER: '⬆️',
       },
     }),

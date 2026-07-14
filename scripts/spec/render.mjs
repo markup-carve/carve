@@ -238,6 +238,12 @@ const sem = g.createSemantics().addOperation('h', {
   hardBreak(_bs, _la) {
     return '<br>'
   },
+  shortcode(_c1, name, _c2) {
+    // No symbol map in Core: the literal `:name:` fallback. Consuming it as one
+    // token is what keeps smart typography out of the name (`:+-:` stays the
+    // symbol `+-`, it does not become `:±:`).
+    return `:${escapeHtml(name.sourceString)}:`
+  },
   symbolAttr(_c1, _name, _c2, _attrs) {
     // Full Carve wraps `:name:{...}` in a <span> carrying the attributes;
     // Core has no symbol node to attach them to, so it refuses (out of subset).

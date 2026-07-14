@@ -1319,12 +1319,22 @@ symbol_boundary = (* :name:: no word character directly before the opening
    `<span class="big">:rocket:</span>` (unmapped). Without attributes no
    wrapper is emitted. *)
 symbol = ':', symbol_name, ':', [attributes] ;
-symbol_name = (letter | digit), {letter | digit | '_' | '+' | '-'} ;
-(* The FIRST name character is strictly alphanumeric: `:+1:` and `:_x:` are
-   literal text (djot's symbol accepts these; Carve deliberately does not --
-   see divergence-from-djot). No whitespace, no second colon inside. The
+symbol_name = (letter | digit | '+' | '-'), {letter | digit | '_' | '+' | '-'} ;
+(* The FIRST name character is a letter, a digit, `+` or `-`, so the reaction
+   shortcodes `:+1:` / `:-1:` parse (they are the most common ones in the
+   wild). It may NOT be `_`: `:_x_:` would otherwise steal from underline
+   (`:` + `_x_` + `:`), and no real shortcode needs a leading underscore --
+   so `:_x:` stays literal text. No whitespace, no second colon inside. The
    inline extension `:type[...]` is tried first; `:kbd[Ctrl]` never parses
-   as a symbol because the name run must be closed by ':'. *)
+   as a symbol because the name run must be closed by ':'.
+
+   PRECEDENCE vs SMART TYPOGRAPHY -- NORMATIVE: a symbol is recognized BEFORE
+   the typographic replacements (PART 9 §8), so a name made of typographic
+   punctuation is a symbol, not a substitution: `:+-:` is the symbol `+-`
+   (NOT `:` + ± + `:`), and `:--:` is the symbol `--` (NOT an en dash between
+   colons). The typographic forms still apply everywhere a symbol does not
+   open -- `a +- b` is `a ± b`, and `word:+-:` (no boundary, so no symbol)
+   is `word:±:`. Pinned by the corpus (Symbols section). *)
 
 (* --- Smart Typography --- *)
 smart_typography = em_dash | en_dash | ellipsis | smart_quote

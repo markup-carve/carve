@@ -108,7 +108,7 @@ CarveCore {
   // ==========================================================================
   // INLINE (Core)
   // ==========================================================================
-  inline     = arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | symbolAttr | mention | tag
+  inline     = arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
              | editorial | forcedSpan | span
              | mathD | mathI | codeA | nbspEsc | hardBreak | escape | image | bracketed
              | autolink | word | spComment | inlineSpace | litDelim | bang | dollar
@@ -128,7 +128,7 @@ CarveCore {
 
   // constructs allowed inside any span (everything except spans themselves,
   // which are listed per-delimiter to exclude self-nesting)
-  rich       = arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | symbolAttr | mention | tag
+  rich       = arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
              | editorial | forcedSpan | mathD | mathI
              | codeA | escape | image | bracketed | autolink | bang | dollar
              | ellipsis | dashRun | dquote | squote
@@ -245,6 +245,12 @@ CarveCore {
   // subset). A bare `:name:` with no attribute block is unaffected and
   // stays literal text.
   symbolAttr = ":" shortcodeName ":" &attrs
+  // An UNattributed `:name:` shortcode. Core has no symbol map, so it renders
+  // literally -- but it must still be CONSUMED as one token, or its inner
+  // characters would fall through to smart typography (`:+-:` would become
+  // `:±:` instead of the symbol `+-`). PART 9 §7: a symbol is recognized
+  // before the typographic replacements.
+  shortcode  = ":" shortcodeName ":" ~attrs
 
   // --- Bracketed constructs: link / image / span / reference link ---------
   // The single-char lookahead after `]` selects the construct (PART 9 S14);
@@ -310,7 +316,7 @@ CarveCore {
   // absorb an intraword colon, but NOT one that opens an inline extension
   // (`a:kbd[x]`): extensions have no left-boundary restriction, so the
   // `:name[` opener must still reach the extension rule.
-  colonGlue  = ":" ~(extName "[") &wordChar
+  colonGlue  = ":" ~(extName "[") &(wordChar | "+" | "-")
   dotGlue    = "." &wordChar
   // a %-run glued to a word is literal (50%%, a%%b) - never a comment
   pctGlue    = "%" "%"* &(wordChar | " " | end)
@@ -373,7 +379,7 @@ CarveCore {
   // literal text in Core, matching Full Carve's mapless fallback; the
   // attributed form `:name:{...}` is refused (see symbolAttr).
   colon      = ":" ~(ident "[")
-  shortcodeName = alnumCh (alnumCh | "_" | "+" | "-")*
+  shortcodeName = (alnumCh | "+" | "-") (alnumCh | "_" | "+" | "-")*
   // a bare `@` followed by a word char is a mention (Full Carve) -> refuse;
   // an email-embedded `@` is absorbed by the word rule (atGlue)
   at         = "@" ~wordChar

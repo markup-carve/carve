@@ -2844,7 +2844,11 @@ const RE_EXTENSION = /^:([a-zA-Z_][\w-]*)\[([^\]]*)\](?:\{((?:[^}"'\n]|"(?:[^"\\
 // Raw inline passthrough tag, follows a verbatim span: `` `…`{=html} ``.
 const RE_RAW_INLINE = /^\{=([a-zA-Z][\w-]*)\}/;
 // Symbol shortcode `:name:` (after extension, which needs `[`).
-const RE_SYMBOL = /^:([a-zA-Z0-9][\w+-]*):/;
+// The first name char is a letter, digit, `+` or `-` (so `:+1:` / `:-1:`
+// parse), but never `_` — `:_x_:` would steal from underline. Scanning the
+// symbol at the opening `:` also gives it precedence over smart typography,
+// so `:+-:` is the symbol `+-`, not a `±` between colons (grammar PART 9 §7).
+const RE_SYMBOL = /^:([a-zA-Z0-9+-][\w+-]*):/;
 // Autolink (grammar.ebnf:775,776,791,792,1139). Two alternatives:
 //   url_autolink   = scheme ':' {url_char}+   -- url_char excludes `<`/`>` plus
 //                    `"` `\` `` ` `` `{` `}` `|` `^`, so a body holding any of

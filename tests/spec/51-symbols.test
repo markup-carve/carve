@@ -7,9 +7,15 @@ Great :rocket: and :kbd[Ctrl] is an extension.
 ```
 
 ```
-a:b:c and 10:30: meeting, :+1: and :_x: too.
+a:b:c and 10:30: meeting, :_x: too.
 .
-<p>a:b:c and 10:30: meeting, :+1: and :_x: too.</p>
+<p>a:b:c and 10:30: meeting, :_x: too.</p>
+```
+
+```
+Vote :+1: or :-1:. Tolerance :+-: is a symbol, but a +- b and word:+-: are not.
+.
+<p>Vote :+1: or :-1:. Tolerance :+-: is a symbol, but a ± b and word:±: are not.</p>
 ```
 
 ```
