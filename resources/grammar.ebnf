@@ -481,13 +481,24 @@ task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
 definition_list = definition_entry+ ;
 definition_entry = definition_term+, definition_body+ ;
 definition_term = "::", space, inline_content, newline ;
-definition_body = ':', space, space, inline_content, newline, {definition_continuation} ;
+definition_body = ':', space, space, inline_content, newline,
+                  { definition_continuation
+                  | (blank_line+, definition_continuation)
+                  | continuation_marker_block } ;
 definition_continuation = (space, space, space, inline_content, newline)
                         | (backslash, newline, space, space, space, inline_content, newline) ;
 (* The term marker is TWO colons. A single-colon `: term` line is NOT a
    definition list -- it is ordinary paragraph text. (Deliberate: djot uses a
    single colon, but `::` keeps the term marker distinct from the `:::` div
-   fence and from a stray `:` in prose; all three reference impls agree.) *)
+   fence and from a stray `:` in prose; all three reference impls agree.)
+
+   A definition body CONTINUES exactly like a list item (PART 9 §17): a blank
+   line followed by an indented block folds in (so a `<dd>` may hold multiple
+   paragraphs -- FORM A), and a lone `+` attaches the FOLLOWING flush-left block
+   with no indentation (`continuation_marker_block` -- FORM B, the un-prefixed
+   analogue of the list-item and block-quote `+` forms). A blank line that is
+   NOT followed by an indented continuation ends the body: the single-blank
+   entry separator before the next `:: term` is preserved. *)
 
 (* --- Tables --- *)
 table = standard_row, [delimiter_row], {table_row}, [caption_slot] ;
@@ -1157,8 +1168,13 @@ inline_footnote = "^[", inline_content, ']' ;
 (* the closing `]` is the balanced, escape- and code-span-aware close
    (PART 9 §16); footnote recognition is DISABLED inside the content *)
 
-footnote_definition = "[^", footnote_label, "]:", space, inline_content, newline ;
-(* the body extends to following lines indented by >= 2 spaces -- PART 9 §16 *)
+footnote_definition = "[^", footnote_label, "]:", space, inline_content, newline,
+                      {footnote_continuation | continuation_marker_block} ;
+footnote_continuation = (space, space, {whitespace}, inline_content, newline) | blank_line ;
+(* the body extends to following lines indented by >= 2 spaces -- PART 9 §16.
+   A lone `+` also attaches a flush-left block (`continuation_marker_block`,
+   PART 9 §17), the same continuation marker lists, block quotes and definition
+   bodies use. *)
 
 (* DEFERRED (reserved, not implemented):
    sidenote = "[>", inline_content, ']' ; *)

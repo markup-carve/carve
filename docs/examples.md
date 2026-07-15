@@ -3240,6 +3240,56 @@ is a div/admonition.
 
 :::
 
+A definition continues exactly like a list item. An indented block after a
+blank line folds into the definition, so a `<dd>` can hold more than one
+paragraph:
+
+::: compare
+
+```carve
+:: term
+:  A definition can now hold
+
+   more than one paragraph.
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>A definition can now hold</p>
+    <p>more than one paragraph.</p>
+  </dd>
+</dl>
+```
+
+:::
+
+A lone `+` is the continuation marker (the same one lists and block quotes
+use): it attaches the following flush-left block to the definition with no
+indentation.
+
+::: compare
+
+```carve
+:: term
+:  A first paragraph,
++
+then a flush-left block joined with +.
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>A first paragraph,</p>
+    <p>then a flush-left block joined with +.</p>
+  </dd>
+</dl>
+```
+
+:::
+
 ## Comments
 
 `%%` starts a line comment and a `%%%` fence a block comment; neither is
@@ -3702,6 +3752,34 @@ See the note.[^n]
     <li id="fn1">
       <p>First paragraph of the note.</p>
       <p>Second paragraph, indented under the definition.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+The continuation marker `+` also works here: a lone `+` attaches the following
+flush-left block to the note, so a second block needs no indentation.
+
+::: compare
+
+```carve
+See the note.[^n]
+
+[^n]: First paragraph of the note.
++
+A second paragraph, joined with +.
+```
+
+```html
+<p>See the note.<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>First paragraph of the note.</p>
+      <p>A second paragraph, joined with +.<a href="#fnref1" role="doc-backlink">↩</a></p>
     </li>
   </ol>
 </section>

@@ -404,6 +404,13 @@ function parseBlocks(lines, state, top, inItem = false) {
         } else if (isBlank(lines[i]) && /^ {2,}\S/.test(lines[i + 1] ?? '')) {
           bodyLines.push('')
           i++
+        } else if (CONT_MARKER.test(lines[i] ?? '')) {
+          // A `+` pull-left block joins the note (SS17). The attached block is
+          // a full block, outside the executable subset's footnote model here -
+          // refuse rather than approximate (the corpus pins the real output).
+          // Checked BEFORE lazy continuation, which would otherwise swallow the
+          // bare `+` as paragraph text.
+          throw new Refuse('`+` continuation in a footnote definition')
         } else if (
           !isBlank(lines[i] ?? '') &&
           bodyLines[bodyLines.length - 1] !== '' &&
@@ -525,6 +532,17 @@ function parseBlocks(lines, state, top, inItem = false) {
         let dm
         if ((dm = /^:: (.*)$/.exec(lines[i] ?? ''))) node.items.push({ dt: dm[1].trim() })
         else if ((dm = /^: {2}(.*)$/.exec(lines[i] ?? ''))) node.items.push({ dd: dm[1].trim() })
+        // A definition body continues like a list item (SS17): an indented
+        // block, or a `+` pull-left block, folds into the `<dd>`. That yields a
+        // multi-block `<dd>`, which the inline-only executable subset cannot
+        // represent - refuse rather than approximate (the corpus pins the real,
+        // loose output for all three engines).
+        else if (CONT_MARKER.test(lines[i] ?? ''))
+          throw new Refuse('`+` continuation in a definition (multi-block dd)')
+        else if (/^ {3,}\S/.test(lines[i] ?? ''))
+          throw new Refuse('indented continuation in a definition (multi-block dd)')
+        else if (isBlank(lines[i]) && /^ {3,}\S/.test(lines[i + 1] ?? ''))
+          throw new Refuse('multi-paragraph definition body (multi-block dd)')
         else break
         i++
       }

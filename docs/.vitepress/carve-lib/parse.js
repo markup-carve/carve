@@ -1042,6 +1042,28 @@ function parseFootnoteDef(lexer) {
             lexer.consume();
             continue;
         }
+        // Form B: a lone `+` attaches the FOLLOWING flush-left block to the note
+        // with no indentation (the same continuation marker lists and block quotes
+        // use); the attached block ends at a blank line, another `+`, or the next
+        // footnote definition.
+        if (/^\+[ \t]*$/.test(ln)) {
+            lexer.consume();
+            pendingBlanks = 0;
+            const attached = [];
+            while (!lexer.eof()) {
+                const a = lexer.peek();
+                if (isBlankLine(a) || /^\+[ \t]*$/.test(a) || RE_FOOTNOTE_DEF.test(a))
+                    break;
+                lexer.consume();
+                attached.push(a);
+            }
+            if (attached.length > 0) {
+                bodyLines.push('');
+                for (const a of attached)
+                    bodyLines.push(a);
+            }
+            continue;
+        }
         const ws = leadingWhitespace(ln);
         if (ws >= 2) {
             // Dedent by the FIRST continuation line's indent (not strip-all),
@@ -1337,15 +1359,66 @@ function parseDefinitionList(lexer) {
     const items = [];
     const parseDefBody = (first) => {
         const bodyLines = [first];
-        while (!lexer.eof()) {
+        // A definition continues exactly like a list item (PART 9 \u00a717):
+        //  - form A: a deeper-indented line (>= the content column) folds in, and a
+        //    blank line is tolerated when a later line still continues the body, so
+        //    a `<dd>` can hold multiple paragraphs;
+        //  - form B: a lone `+` attaches the FOLLOWING flush-left block, so rich
+        //    content can join the definition with no indentation (the un-prefixed
+        //    analogue of the list-item and block-quote `+` forms).
+        for (;;) {
+            if (lexer.eof())
+                break;
             const ln = lexer.peek();
+            // Form B: `+` pull-left continuation.
+            if (/^\+[ \t]*$/.test(ln)) {
+                lexer.consume();
+                const attached = [];
+                while (!lexer.eof()) {
+                    const a = lexer.peek();
+                    if (isBlankLine(a) ||
+                        /^\+[ \t]*$/.test(a) ||
+                        RE_DEFLIST_TERM.test(a) ||
+                        RE_DEFLIST_DEF.test(a))
+                        break;
+                    lexer.consume();
+                    attached.push(a);
+                }
+                if (attached.length > 0) {
+                    bodyLines.push('');
+                    for (const a of attached)
+                        bodyLines.push(a);
+                }
+                continue;
+            }
+            // Form A: an indented continuation line (with no intervening blank).
             if (!isBlankLine(ln) && leadingWhitespace(ln) >= 3) {
                 // Strip the structural indentation but keep a content U+00A0.
                 bodyLines.push(ln.replace(/^[^\S\u00a0]+/, ''));
                 lexer.consume();
+                continue;
             }
-            else
+            // Blank line: absorb it as a paragraph separator ONLY when a later line
+            // is still an indented continuation. Otherwise leave it in place so the
+            // entry-separator rule (a single blank before the next `:: term`) and the
+            // outer block stream see it unchanged.
+            if (isBlankLine(ln)) {
+                let look = 1;
+                while (isBlankLine(lexer.peek(look)))
+                    look++;
+                const after = lexer.peek(look);
+                if (after !== undefined && !isBlankLine(after) && leadingWhitespace(after) >= 3) {
+                    for (let k = 0; k < look; k++) {
+                        bodyLines.push('');
+                        lexer.consume();
+                    }
+                    continue;
+                }
                 break;
+            }
+            // A flush-left line that is neither `+` nor an indented continuation ends
+            // the definition (and, if not a new marker, the list).
+            break;
         }
         const sub = new Lexer(bodyLines.join('\n'));
         sub.abbrDefs = lexer.abbrDefs;
