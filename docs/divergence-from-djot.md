@@ -256,8 +256,8 @@ blank-separated paragraphs, nested blocks, and so on.
   Second paragraph.
 ```
 
-Carve keeps the rich body but replaces the indentation-scoped syntax with
-explicit markers:
+Carve changes only the term and definition *markers*; djot's loose,
+indentation-scoped body carries over unchanged:
 
 - A **term** is a line starting with `:: ` (double colon).
 - A **definition** is a line starting with `:  ` (single colon, then two
@@ -280,10 +280,17 @@ explicit markers:
 ```
 
 A definition **continues exactly like a list item**, so a `<dd>` is not limited
-to a single block: a blank line then an indented block folds in (form A), and a
-lone `+` attaches the following flush-left block with no indentation (form B,
-the same continuation marker lists and block quotes use). So multi-paragraph
-definitions are supported - the divergence is the *markers*, not the capability:
+to a single block. Both forms work:
+
+- **form A** - a blank line then an indented block folds in. This is *exactly
+  djot's* indentation-scoped body, so any djot loose definition body carries
+  over.
+- **form B** - a lone `+` attaches the following flush-left block with no
+  indentation (the same continuation marker lists and block quotes use). This
+  is a Carve addition on top of the djot model.
+
+So multi-paragraph definitions are fully supported - the divergence is the
+*markers*, not the capability:
 
 ```
 :: term
@@ -292,10 +299,12 @@ definitions are supported - the divergence is the *markers*, not the capability:
 Second, flush-left paragraph joined with +.
 ```
 
-The two syntaxes are mutually incompatible: Djot deflist source parses as a
-plain paragraph in Carve, and vice versa. The trade is deliberate - unambiguous
-line markers over indentation-scoped looseness, matching how Carve treats the
-double-colon as a term and reserves three colons for a div/admonition.
+The term and definition markers are mutually incompatible: a djot `: term`
+line parses as a plain paragraph in Carve, and vice versa. Only the markers are
+traded - unambiguous `::` / `:  ` instead of djot's single colon, matching how
+Carve treats the double-colon as a term and reserves three colons for a
+div/admonition. The loose body itself is *not* traded away: form A is djot's
+indentation-scoped body, and `+` (form B) is added on top.
 
 ## What Carve adds on top (not breaks)
 
