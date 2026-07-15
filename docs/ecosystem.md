@@ -63,6 +63,14 @@ Carve embedded in another tool or framework.
 | [carve-grammars](https://github.com/markup-carve/carve-grammars) | Tiptap | Editor kit and Carve serializer. |
 | [vite-plugin-carve](https://github.com/markup-carve/vite-plugin-carve) | Vite | Import `.crv` documents as rendered HTML. *Early.* |
 
+## AI / agent tooling
+
+Skills and context packs that teach AI coding agents to author Carve.
+
+| Project | Target | Status |
+|---|---|---|
+| [carve-skill](https://github.com/markup-carve/carve-skill) | Claude Code / agents | Authoring skill - a syntax card, the Markdown/Djot trap list, and a `carve lint` validation loop so agents write valid `.crv` the first time. |
+
 ## Resources
 
 | Project | Description |

@@ -65,7 +65,7 @@ it targets in its own README.
 
 Current satellites: carve-emacs, carve.vim, carve-sublime, carve-wysiwyg,
 carve-components, python-carve, intellij-carve, vscode-carve, lsp-carve,
-vite-plugin-carve.
+vite-plugin-carve, carve-skill.
 
 ## Version map
 
