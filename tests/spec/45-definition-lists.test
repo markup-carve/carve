@@ -68,3 +68,15 @@ onto the next line.</dd>
   </dd>
 </dl>
 ```
+
+```
+:: A term that
+wraps onto the next line
+:  its definition
+.
+<dl>
+  <dt>A term that
+wraps onto the next line</dt>
+  <dd>its definition</dd>
+</dl>
+```

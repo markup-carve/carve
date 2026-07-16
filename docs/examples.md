@@ -3335,13 +3335,34 @@ the list form `- +` provides. Write `:  \+` for a literal `+`.
 
 :::
 
-The **term** side is deliberately narrow. A `:: term` is a single inline line:
-it does not fold following lines and does not hold block content (a `<dt>` is a
-short label, like a heading). A definition list also does **not** interrupt a
-paragraph - a `::` line directly under prose folds into that paragraph, so a
-list needs a blank line before it. A definition (`<dd>`) ends at a blank line
-that is not followed by an indented continuation, at a new `::` / `:  ` marker,
-or at a block opener.
+The **term** side is inline-only, like a heading label: it holds inline content
+(no block content), but it *does* fold a following plain line into the term
+with a soft break - a wrapped term line joins the term instead of ending the
+list. A new marker (`::` / `:  `), a blank line, or a block opener ends the
+term.
+
+::: compare
+
+```carve
+:: A term that
+wraps onto the next line
+:  its definition
+```
+
+```html
+<dl>
+  <dt>A term that
+wraps onto the next line</dt>
+  <dd>its definition</dd>
+</dl>
+```
+
+:::
+
+A definition list also does **not** interrupt a paragraph - a `::` line
+directly under prose folds into that paragraph, so a list needs a blank line
+before it. A definition (`<dd>`) ends at a blank line that is not followed by an
+indented continuation, at a new `::` / `:  ` marker, or at a block opener.
 
 ## Comments
 

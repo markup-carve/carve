@@ -1514,7 +1514,22 @@ function parseDefinitionList(lexer) {
             if (!t)
                 break;
             lexer.consume();
-            terms.push(parseInline(t[1], lexer.abbrDefs, lexer.linkDefs));
+            // A term is multi-line like a heading: a following plain line folds into
+            // it with a soft break, instead of ending the list and stranding the
+            // definition. A blank line, a new marker (`::` / `:  `), or a block
+            // opener ends the term.
+            let termText = t[1];
+            while (!lexer.eof()) {
+                const next = lexer.peek();
+                if (isBlankLine(next) ||
+                    RE_DEFLIST_TERM.test(next) ||
+                    RE_DEFLIST_DEF.test(next) ||
+                    endsHeadingOrQuote(lexer))
+                    break;
+                termText += '\n' + next;
+                lexer.consume();
+            }
+            terms.push(parseInline(termText, lexer.abbrDefs, lexer.linkDefs));
         }
         while (!lexer.eof()) {
             const d = RE_DEFLIST_DEF.exec(lexer.peek());

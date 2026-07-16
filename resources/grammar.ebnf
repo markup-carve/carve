@@ -480,7 +480,11 @@ task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
 (* --- Definition Lists --- *)
 definition_list = definition_entry+ ;
 definition_entry = definition_term+, definition_body+ ;
-definition_term = "::", space, inline_content, newline ;
+definition_term = "::", space, inline_content, newline, {term_continuation_line} ;
+term_continuation_line = inline_content, newline ;
+(* A term folds a following plain line like a heading (soft break); a blank
+   line, a new `::`/`:  ` marker, or a block opener ends it. A term holds inline
+   content only -- no block body. *)
 definition_body = (':', space, space, first_block_content)
                 | (':', space, space, inline_content, newline,
                    { definition_continuation

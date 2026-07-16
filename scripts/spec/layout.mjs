@@ -559,9 +559,8 @@ function parseBlocks(lines, state, top, inItem = false) {
           // represent it.
           const cur = lines[i] ?? ''
           const last = node.items[node.items.length - 1]
-          if (
+          const foldable =
             last &&
-            last.dd !== undefined &&
             !isBlank(cur) &&
             !startsVisibleBlock(cur) &&
             !LINK_DEF.test(cur) &&
@@ -571,8 +570,13 @@ function parseBlocks(lines, state, top, inItem = false) {
             !ORDERED.test(cur) &&
             !FENCE.test(cur) &&
             !CAPTION.test(cur)
-          ) {
+          if (foldable && last.dd !== undefined) {
+            // Lazy continuation into the open definition (dd).
             last.dd += '\n' + cur.replace(/^[ \t]+/, '')
+          } else if (foldable && last.dt !== undefined) {
+            // A term (dt) folds a plain continuation line like a heading, so a
+            // wrapped term line does not strand the definition.
+            last.dt += '\n' + cur.replace(/^[ \t]+/, '')
           } else {
             break
           }
