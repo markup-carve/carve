@@ -5,10 +5,16 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..')
-const examplesPath = resolve(repoRoot, 'docs/examples.md')
+const examplesDir = resolve(repoRoot, 'docs/examples')
 const outDir = resolve(repoRoot, 'tests/corpus')
 
-const src = readFileSync(examplesPath, 'utf8')
+// The example pairs live in docs/examples/{core,extensions,edge-cases}.md.
+// Read them in a fixed tier order so corpus numbering is deterministic across
+// machines and CI (readdir order is filesystem-dependent).
+const exampleFiles = ['core', 'extensions', 'edge-cases']
+const src = exampleFiles
+  .map((name) => readFileSync(resolve(examplesDir, `${name}.md`), 'utf8'))
+  .join('\n')
 const lines = src.split('\n')
 
 const examples = []
@@ -34,7 +40,9 @@ for (const line of lines) {
     pendingBlocks = { carve: null, html: null }
     continue
   }
-  const compareOpen = mode === 'scanning' && /^:{3,}\s+compare$/.test(line.trim())
+  // Accept `::: compare` plus optional modifiers like `::: compare no-render`
+  // (a docs-only rendering hint); the pair is still part of the corpus.
+  const compareOpen = mode === 'scanning' && /^:{3,}\s+compare(\s+\S.*)?$/.test(line.trim())
   if (compareOpen) {
     compareMarker = line.trim().match(/^(:{3,})/)[1]
     mode = 'in_compare'

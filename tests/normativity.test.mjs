@@ -79,6 +79,12 @@ test('explanatory docs carry the non-normative banner', () => {
 
 test('the conformance contract exists and is non-empty', () => {
   assert.ok(existsSync(resolve(repo, 'docs/examples.md')))
+  for (const name of ['core', 'extensions', 'edge-cases']) {
+    assert.ok(
+      existsSync(resolve(repo, `docs/examples/${name}.md`)),
+      `docs/examples/${name}.md (corpus source) is missing`,
+    )
+  }
   const crv = readdirSync(resolve(repo, 'tests/corpus')).filter((f) =>
     f.endsWith('.crv'),
   )
@@ -91,11 +97,16 @@ test('the conformance contract exists and is non-empty', () => {
 // leaks as literal text. Guard: every `compare` container's colon marker must
 // be LONGER than the longest `:`-run anywhere in its body.
 test('every ::: compare container marker exceeds its body colon-run (VitePress render safety)', () => {
-  const lines = readFileSync(resolve(repo, 'docs/examples.md'), 'utf8').split('\n')
+  // The compare blocks live in docs/examples/{core,extensions,edge-cases}.md
+  // (the corpus source). Scan all of them, not the examples.md index.
+  const exampleFiles = ['core', 'extensions', 'edge-cases']
+  const lines = exampleFiles.flatMap((name) =>
+    readFileSync(resolve(repo, `docs/examples/${name}.md`), 'utf8').split('\n'),
+  )
   const fenceRe = /^(`{3,}|~{3,})/
   const offenders = []
   for (let i = 0; i < lines.length; i++) {
-    const open = /^(:{3,})\s+compare$/.exec(lines[i].trim())
+    const open = /^(:{3,})\s+compare(\s+\S.*)?$/.exec(lines[i].trim())
     if (!open) continue
     const marker = open[1]
     let fence = null

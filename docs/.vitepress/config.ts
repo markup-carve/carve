@@ -45,10 +45,14 @@ export default defineConfig({
     config(md) {
       // Custom container for two-column "Carve | HTML" example blocks.
       md.use(container, 'compare', {
-        render(tokens: Array<{ nesting: number }>, idx: number) {
-          return tokens[idx].nesting === 1
-            ? '<div class="carve-compare">\n'
-            : '</div>\n'
+        render(tokens: Array<{ nesting: number; info?: string }>, idx: number) {
+          if (tokens[idx].nesting !== 1) return '</div>\n'
+          // `::: compare no-render` opts a block out of the live "Rendered" tab
+          // (for raw-HTML / security examples that should not inject into the page).
+          const info = tokens[idx].info ?? ''
+          const noRender = /\bno-render\b/.test(info)
+          const cls = noRender ? 'carve-compare carve-compare--no-render' : 'carve-compare'
+          return `<div class="${cls}">\n`
         },
       })
     },
@@ -154,7 +158,15 @@ export default defineConfig({
             { text: 'Coming from Markdown', link: '/migrate-from-markdown' },
             { text: 'Playground', link: '/playground' },
             { text: 'Cheat Sheet', link: '/cheatsheet' },
-            { text: 'Examples', link: '/examples' },
+            {
+              text: 'Examples',
+              link: '/examples',
+              items: [
+                { text: 'Core', link: '/examples/core' },
+                { text: 'Extensions', link: '/examples/extensions' },
+                { text: 'Edge cases', link: '/examples/edge-cases' },
+              ],
+            },
           ],
         },
         {

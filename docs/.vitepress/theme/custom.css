@@ -20,6 +20,74 @@
   }
 }
 
+/*
+ * Output half of a compare block: tabs toggling the raw HTML and the live
+ * "Rendered" result (injected client-side from the same verified HTML string;
+ * see theme/index.ts enhanceCompareBlocks). Grid places this in the 2nd column.
+ */
+.carve-output {
+  min-width: 0;
+}
+
+.carve-output__tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: -1px;
+}
+
+.carve-output__tab {
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  color: var(--vp-c-text-2);
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+
+.carve-output__tab.is-active {
+  color: var(--vp-c-brand-1);
+  background: var(--vp-c-bg);
+}
+
+.carve-output__pane {
+  display: none;
+}
+
+.carve-output__pane.is-active {
+  display: block;
+}
+
+.carve-output__pane > div[class*='language-'] {
+  margin: 0;
+}
+
+.carve-result {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 0 8px 8px 8px;
+  padding: 0.75rem 1rem;
+  background: var(--vp-c-bg);
+  overflow-x: auto;
+}
+
+.carve-result > :first-child {
+  margin-top: 0;
+}
+
+.carve-result > :last-child {
+  margin-bottom: 0;
+}
+
+/* The result pane reuses `.carve-render` for all construct styling; only the
+   pane's own first/last figure margins need trimming here. */
+.carve-result > figure:first-child {
+  margin-top: 0;
+}
+
 .dogfood-carve {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -333,12 +401,20 @@
   font-weight: 500;
 }
 
-/* Figure caption (blockquote / image with `^ caption`). */
+/* Figure (image / blockquote with `^ caption`) and its caption. */
 .carve-render figure {
   margin: 1rem 0;
 }
+.carve-render figure img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  display: block;
+}
 .carve-render figcaption {
-  margin-top: 0.4rem;
+  margin-top: 0.45rem;
+  padding-left: 0.6rem;
+  border-left: 2px solid var(--vp-c-brand-1);
   color: var(--vp-c-text-2);
   font-size: 0.88rem;
   font-style: italic;
