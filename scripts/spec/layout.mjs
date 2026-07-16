@@ -531,7 +531,15 @@ function parseBlocks(lines, state, top, inItem = false) {
       while (i < n) {
         let dm
         if ((dm = /^:: (.*)$/.exec(lines[i] ?? ''))) node.items.push({ dt: dm[1].trim() })
-        else if ((dm = /^: {2}(.*)$/.exec(lines[i] ?? ''))) node.items.push({ dd: dm[1].trim() })
+        else if ((dm = /^: {2}(.*)$/.exec(lines[i] ?? ''))) {
+          // FIRST-BLOCK (`:  +`): the body is the following flush-left block, a
+          // block-bodied dd the inline-only subset cannot represent - refuse
+          // (the corpus pins the real output). `:  \+` stays a literal `+`.
+          if (CONT_MARKER.test(dm[1].trim())) {
+            throw new Refuse('first-block definition (`:  +`, block-bodied dd)')
+          }
+          node.items.push({ dd: dm[1].trim() })
+        }
         // A definition body continues like a list item (SS17): an indented
         // block, or a `+` pull-left block, folds into the `<dd>`. That yields a
         // multi-block `<dd>`, which the inline-only executable subset cannot

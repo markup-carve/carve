@@ -481,11 +481,16 @@ task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
 definition_list = definition_entry+ ;
 definition_entry = definition_term+, definition_body+ ;
 definition_term = "::", space, inline_content, newline ;
-definition_body = ':', space, space, inline_content, newline,
-                  { definition_continuation
-                  | (blank_line+, definition_continuation)
-                  | continuation_marker_block
-                  | lazy_continuation_line } ;
+definition_body = (':', space, space, first_block_content)
+                | (':', space, space, inline_content, newline,
+                   { definition_continuation
+                   | (blank_line+, definition_continuation)
+                   | continuation_marker_block
+                   | lazy_continuation_line }) ;
+(* FIRST-BLOCK (`:  +`): when the sole content is a lone `+`, the body is the
+   FOLLOWING flush-left block, with no indentation -- the definition-list twin
+   of the list-item `- +` opener (`first_block_content`). `:  \+` is a literal
+   `+`. *)
 definition_continuation = (space, space, space, inline_content, newline)
                         | (backslash, newline, space, space, space, inline_content, newline) ;
 (* The term marker is TWO colons. A single-colon `: term` line is NOT a

@@ -1404,14 +1404,33 @@ function parseDiv(lexer) {
 function parseDefinitionList(lexer) {
     const items = [];
     const parseDefBody = (first) => {
-        const bodyLines = [first];
+        const bodyLines = [];
+        // First-block form (`:  +`, mirroring the list `- +`): when the sole
+        // content is a lone `+`, the definition body is the FOLLOWING flush-left
+        // block, with no indentation. `:  \+` keeps a literal `+` instead.
+        if (/^\+[ \t]*$/.test(first)) {
+            while (!lexer.eof()) {
+                const a = lexer.peek();
+                if (isBlankLine(a) ||
+                    /^\+[ \t]*$/.test(a) ||
+                    RE_DEFLIST_TERM.test(a) ||
+                    RE_DEFLIST_DEF.test(a))
+                    break;
+                lexer.consume();
+                bodyLines.push(a);
+            }
+        }
+        else {
+            bodyLines.push(first);
+        }
         // A definition continues like a list item (PART 9 \u00a717):
         //  - form A: a deeper-indented line (>= the content column) folds in, and a
         //    blank line is tolerated when a later line still continues the body, so
         //    a `<dd>` can hold multiple paragraphs;
         //  - form B: a lone `+` attaches the FOLLOWING flush-left block, so rich
         //    content can join the definition with no indentation (the un-prefixed
-        //    analogue of the list-item and block-quote `+` forms);
+        //    analogue of the list-item and block-quote `+` forms; a leading `:  +`
+        //    is the same marker opening the FIRST block);
         //  - lazy continuation: a flush-left line with no blank before it that does
         //    NOT start an interrupting block folds into the open paragraph (the same
         //    CommonMark lazy rule list items and block quotes use, matching djot).

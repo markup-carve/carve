@@ -55,3 +55,16 @@ onto the next line.
 onto the next line.</dd>
 </dl>
 ```
+
+```
+:: term
+:  +
+> the whole definition is this quote
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <blockquote><p>the whole definition is this quote</p></blockquote>
+  </dd>
+</dl>
+```

@@ -3312,6 +3312,37 @@ onto the next line.</dd>
 
 :::
 
+When the definition's sole content is a lone `+`, it opens a *first block*: the
+body is the following flush-left block, with no indentation - the same opener
+the list form `- +` provides. Write `:  \+` for a literal `+`.
+
+::: compare
+
+```carve
+:: term
+:  +
+> the whole definition is this quote
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <blockquote><p>the whole definition is this quote</p></blockquote>
+  </dd>
+</dl>
+```
+
+:::
+
+The **term** side is deliberately narrow. A `:: term` is a single inline line:
+it does not fold following lines and does not hold block content (a `<dt>` is a
+short label, like a heading). A definition list also does **not** interrupt a
+paragraph - a `::` line directly under prose folds into that paragraph, so a
+list needs a blank line before it. A definition (`<dd>`) ends at a blank line
+that is not followed by an indented continuation, at a new `::` / `:  ` marker,
+or at a block opener.
+
 ## Comments
 
 `%%` starts a line comment and a `%%%` fence a block comment; neither is
