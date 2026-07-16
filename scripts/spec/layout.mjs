@@ -543,7 +543,32 @@ function parseBlocks(lines, state, top, inItem = false) {
           throw new Refuse('indented continuation in a definition (multi-block dd)')
         else if (isBlank(lines[i]) && /^ {3,}\S/.test(lines[i + 1] ?? ''))
           throw new Refuse('multi-paragraph definition body (multi-block dd)')
-        else break
+        else {
+          // Lazy continuation (SS17): a flush-left line with no blank before it
+          // that does not start a visible block folds into the open
+          // definition's inline content (the same rule list items / block
+          // quotes use; djot-compatible). It stays inline, so the subset can
+          // represent it.
+          const cur = lines[i] ?? ''
+          const last = node.items[node.items.length - 1]
+          if (
+            last &&
+            last.dd !== undefined &&
+            !isBlank(cur) &&
+            !startsVisibleBlock(cur) &&
+            !LINK_DEF.test(cur) &&
+            !FOOTNOTE_DEF.test(cur) &&
+            !ABBR_DEF.test(cur) &&
+            !BULLET.test(cur) &&
+            !ORDERED.test(cur) &&
+            !FENCE.test(cur) &&
+            !CAPTION.test(cur)
+          ) {
+            last.dd += '\n' + cur.replace(/^[ \t]+/, '')
+          } else {
+            break
+          }
+        }
         i++
       }
       if (node.items.length === 0) throw new Refuse('malformed definition list')

@@ -43,3 +43,15 @@ then a flush-left block joined with +.
   </dd>
 </dl>
 ```
+
+```
+:: term
+:  A definition wrapped
+onto the next line.
+.
+<dl>
+  <dt>term</dt>
+  <dd>A definition wrapped
+onto the next line.</dd>
+</dl>
+```

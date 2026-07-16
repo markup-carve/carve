@@ -3290,6 +3290,28 @@ then a flush-left block joined with +.
 
 :::
 
+A flush-left line with no blank before it lazily continues the open definition
+paragraph, exactly as it would inside a list item (and as in djot). A blank
+line, a new marker, or a block opener ends the definition instead.
+
+::: compare
+
+```carve
+:: term
+:  A definition wrapped
+onto the next line.
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>A definition wrapped
+onto the next line.</dd>
+</dl>
+```
+
+:::
+
 ## Comments
 
 `%%` starts a line comment and a `%%%` fence a block comment; neither is
