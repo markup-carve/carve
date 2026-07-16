@@ -57,20 +57,34 @@ export { applyProfile } from './profile-filter.js';
 export { stampCarve, buildMarker, stripTrailingMarker } from './stamp.js';
 export { SPEC_VERSION, LIB_VERSION } from './version.js';
 /**
- * Apply a profile to a resolved document in the shared pipeline position
- * (after resolve, before render). Enforces maxLength on the source bytes
- * first (matching carve-php, which checks the input length pre-parse and
- * throws). Mutates and returns `doc`.
+ * Enforce the profile's maximum input length BEFORE parsing, so an oversize
+ * untrusted input is rejected without the parser doing any work (a giant input
+ * is otherwise linear parse work even after the O(n) inline fixes). No-op when
+ * no profile is set or its maxLength is 0 (unlimited). Length is measured in
+ * UTF-8 bytes, matching carve-php's pre-parse strlen() check.
  */
-function runProfile(doc, source, opts) {
+function enforceProfileMaxLength(source, opts) {
     const profile = opts.profile;
     if (!profile)
-        return doc;
+        return;
     const maxLength = profile.getMaxLength();
     if (maxLength > 0 && byteLength(source) > maxLength) {
         throw new RangeError(`Input exceeds the profile's maximum length of ${maxLength} bytes ` +
             `(got ${byteLength(source)} bytes).`);
     }
+}
+/**
+ * Apply a profile's feature / link / nesting restrictions to a resolved
+ * document (after resolve, before render). Mutates and returns `doc`.
+ *
+ * Input-length enforcement is NOT done here - it runs pre-parse via
+ * {@link enforceProfileMaxLength} in the `carveToX` entry points, so an oversize
+ * input is rejected before the parser runs.
+ */
+function runProfile(doc, opts) {
+    const profile = opts.profile;
+    if (!profile)
+        return doc;
     return applyProfileImpl(doc, profile, opts.profileBaseHost ?? null).doc;
 }
 /** UTF-8 byte length, matching PHP's strlen() on the source string. */
@@ -120,6 +134,7 @@ export function resolve(doc, opts = {}) {
 }
 /** Convenience: parse + resolve + render in one call. */
 export function carveToHtml(source, opts = {}) {
+    enforceProfileMaxLength(source, opts);
     const exts = opts.extensions ?? [];
     // `sourceLine` rendering needs block positions, so enable parsing them.
     // Extensions are forwarded to the parse so their matchers add syntax.
@@ -132,7 +147,7 @@ export function carveToHtml(source, opts = {}) {
         asciiHeadingIds: opts.asciiHeadingIds ?? false,
         lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
     }), exts);
-    doc = runProfile(doc, source, opts);
+    doc = runProfile(doc, opts);
     return renderHtml(doc, opts);
 }
 /**
@@ -157,11 +172,12 @@ function applyTransforms(doc, exts) {
 }
 /** Convenience: parse + resolve + render Markdown in one call. */
 export function carveToMarkdown(source, opts = {}) {
+    enforceProfileMaxLength(source, opts);
     let doc = applyTransforms(resolve(parse(source, opts), {
         asciiHeadingIds: opts.asciiHeadingIds ?? false,
         lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
     }), opts.extensions);
-    doc = runProfile(doc, source, opts);
+    doc = runProfile(doc, opts);
     return renderMarkdown(doc, opts);
 }
 /**
@@ -194,20 +210,22 @@ export function carveToCarve(source, opts = {}) {
 }
 /** Convenience: parse + resolve + render plain text in one call. */
 export function carveToPlainText(source, opts = {}) {
+    enforceProfileMaxLength(source, opts);
     let doc = applyTransforms(resolve(parse(source, opts), {
         asciiHeadingIds: opts.asciiHeadingIds ?? false,
         lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
     }), opts.extensions);
-    doc = runProfile(doc, source, opts);
+    doc = runProfile(doc, opts);
     return renderPlainText(doc, opts);
 }
 /** Convenience: parse + resolve + render ANSI terminal text in one call. */
 export function carveToAnsi(source, opts = {}) {
+    enforceProfileMaxLength(source, opts);
     let doc = applyTransforms(resolve(parse(source, opts), {
         asciiHeadingIds: opts.asciiHeadingIds ?? false,
         lowercaseHeadingIds: opts.lowercaseHeadingIds ?? false,
     }), opts.extensions);
-    doc = runProfile(doc, source, opts);
+    doc = runProfile(doc, opts);
     return renderAnsi(doc, opts);
 }
 //# sourceMappingURL=index.js.map

@@ -370,6 +370,17 @@ export class Profile {
     static ACTION_STRIP = 'strip';
     static ACTION_TO_TEXT = 'to_text';
     static ACTION_ERROR = 'error';
+    /**
+     * Default maximum input length (UTF-8 bytes) for the untrusted `comment`
+     * preset - a DoS backstop enforced pre-parse. Generous for a comment body;
+     * override with `setMaxLength(0)` to disable or another value to retune.
+     */
+    static COMMENT_MAX_LENGTH = 100_000;
+    /**
+     * Default maximum input length (UTF-8 bytes) for the untrusted `minimal`
+     * preset (chat / micro-posts). Override with `setMaxLength(...)` as needed.
+     */
+    static MINIMAL_MAX_LENGTH = 10_000;
     name = 'custom';
     description = '';
     featureReasons = {};
@@ -425,7 +436,8 @@ export class Profile {
         ])
             .allowBlock(['paragraph', 'list', 'list_item', 'block_quote', 'code_block'])
             .setLinkPolicy(LinkPolicy.unrestricted().addRelAttribute('nofollow').addRelAttribute('ugc'))
-            .setMaxNesting(4);
+            .setMaxNesting(4)
+            .setMaxLength(Profile.COMMENT_MAX_LENGTH);
         p.featureReasons = {
             heading: 'Headings are disabled in comments to prevent disrupting page structure.',
             image: 'Images are disabled to prevent spam, inappropriate content, and bandwidth abuse.',
@@ -472,7 +484,8 @@ export class Profile {
             'hard_break',
         ])
             .allowBlock(['paragraph', 'list', 'list_item'])
-            .setMaxNesting(2);
+            .setMaxNesting(2)
+            .setMaxLength(Profile.MINIMAL_MAX_LENGTH);
         p.featureReasons = {
             link: 'Links are disabled in this minimal context.',
             highlight: 'Highlighting is disabled in this minimal context.',

@@ -13,3 +13,81 @@ Definition lists
   <dd>A pigment or paint.</dd>
 </dl>
 ```
+
+```
+:: term
+:  A definition can now hold
+
+   more than one paragraph.
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>A definition can now hold</p>
+    <p>more than one paragraph.</p>
+  </dd>
+</dl>
+```
+
+```
+:: term
+:  A first paragraph,
++
+then a flush-left block joined with +.
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>A first paragraph,</p>
+    <p>then a flush-left block joined with +.</p>
+  </dd>
+</dl>
+```
+
+```
+:: term
+:  A definition wrapped
+onto the next line.
+.
+<dl>
+  <dt>term</dt>
+  <dd>A definition wrapped
+onto the next line.</dd>
+</dl>
+```
+
+```
+:: term
+:  +
+> the whole definition is this quote
+.
+<dl>
+  <dt>term</dt>
+  <dd>
+    <blockquote><p>the whole definition is this quote</p></blockquote>
+  </dd>
+</dl>
+```
+
+```
+:: A term that
+wraps onto the next line
+:  its definition
+.
+<dl>
+  <dt>A term that
+wraps onto the next line</dt>
+  <dd>its definition</dd>
+</dl>
+```
+
+```
+:: term
+
+:  the definition
+.
+<dl>
+  <dt>term</dt>
+  <dd>the definition</dd>
+</dl>
+```

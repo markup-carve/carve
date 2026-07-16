@@ -71,6 +71,17 @@ export declare class Profile {
     static readonly ACTION_STRIP: DisallowedAction;
     static readonly ACTION_TO_TEXT: DisallowedAction;
     static readonly ACTION_ERROR: DisallowedAction;
+    /**
+     * Default maximum input length (UTF-8 bytes) for the untrusted `comment`
+     * preset - a DoS backstop enforced pre-parse. Generous for a comment body;
+     * override with `setMaxLength(0)` to disable or another value to retune.
+     */
+    static readonly COMMENT_MAX_LENGTH = 100000;
+    /**
+     * Default maximum input length (UTF-8 bytes) for the untrusted `minimal`
+     * preset (chat / micro-posts). Override with `setMaxLength(...)` as needed.
+     */
+    static readonly MINIMAL_MAX_LENGTH = 10000;
     private name;
     private description;
     private featureReasons;

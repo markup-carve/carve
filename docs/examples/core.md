@@ -2584,6 +2584,160 @@ is a div/admonition.
 
 :::
 
+A definition continues exactly like a list item. An indented block after a
+blank line folds into the definition, so a `<dd>` can hold more than one
+paragraph:
+
+::: compare
+
+```carve
+:: term
+:  A definition can now hold
+
+   more than one paragraph.
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>A definition can now hold</p>
+    <p>more than one paragraph.</p>
+  </dd>
+</dl>
+```
+
+:::
+
+A lone `+` is the continuation marker (the same one lists and block quotes
+use): it attaches the following flush-left block to the definition with no
+indentation.
+
+::: compare
+
+```carve
+:: term
+:  A first paragraph,
++
+then a flush-left block joined with +.
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <p>A first paragraph,</p>
+    <p>then a flush-left block joined with +.</p>
+  </dd>
+</dl>
+```
+
+:::
+
+A flush-left line with no blank before it lazily continues the open definition
+paragraph, exactly as it would inside a list item (and as in djot). A blank
+line, a new marker, or a block opener ends the definition instead.
+
+::: compare
+
+```carve
+:: term
+:  A definition wrapped
+onto the next line.
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>A definition wrapped
+onto the next line.</dd>
+</dl>
+```
+
+:::
+
+When the definition's sole content is a lone `+`, it opens a *first block*: the
+body is the following flush-left block, with no indentation - the same opener
+the list form `- +` provides. Write `:  \+` for a literal `+`.
+
+::: compare
+
+```carve
+:: term
+:  +
+> the whole definition is this quote
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>
+    <blockquote><p>the whole definition is this quote</p></blockquote>
+  </dd>
+</dl>
+```
+
+:::
+
+The **term** side is inline-only, like a heading label: it holds inline content
+(no block content), but it *does* fold a following plain line into the term
+with a soft break - a wrapped term line joins the term instead of ending the
+list. A new marker (`::` / `:  `), a blank line, or a block opener ends the
+term.
+
+::: compare
+
+```carve
+:: A term that
+wraps onto the next line
+:  its definition
+```
+
+```html
+<dl>
+  <dt>A term that
+wraps onto the next line</dt>
+  <dd>its definition</dd>
+</dl>
+```
+
+:::
+
+A definition list also does **not** interrupt a paragraph - a `::` line
+directly under prose folds into that paragraph, so a list needs a blank line
+before it.
+
+A blank line may separate a term from its definition (or one definition from
+the next) for readability - a following `:  ` line still attaches to the entry:
+
+::: compare
+
+```carve
+:: term
+
+:  the definition
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>the definition</dd>
+</dl>
+```
+
+:::
+
+A definition (`<dd>`) ends at a blank line that is followed by neither an
+indented continuation nor a `:  ` definition, at a new `::` term, or at a block
+opener.
+
+Attributes attach to the **whole `<dl>`** via a preceding block-attribute line
+(`{.class}` on the line before the first `:: term`). There is deliberately no
+per-`<dt>` / per-`<dd>` attribute form: unlike a list item (`-{.c}`) or a table
+row (`| … |{.c}`), a term or definition takes no glued marker attributes. Style
+individual terms/definitions with CSS descendant selectors (`dl.gloss dt`), or
+put the attributes on the `<dl>`.
+
 ## Comments
 
 `%%` starts a line comment and a `%%%` fence a block comment; neither is

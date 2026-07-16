@@ -404,6 +404,13 @@ function parseBlocks(lines, state, top, inItem = false) {
         } else if (isBlank(lines[i]) && /^ {2,}\S/.test(lines[i + 1] ?? '')) {
           bodyLines.push('')
           i++
+        } else if (CONT_MARKER.test(lines[i] ?? '')) {
+          // A `+` pull-left block joins the note (SS17). The attached block is
+          // a full block, outside the executable subset's footnote model here -
+          // refuse rather than approximate (the corpus pins the real output).
+          // Checked BEFORE lazy continuation, which would otherwise swallow the
+          // bare `+` as paragraph text.
+          throw new Refuse('`+` continuation in a footnote definition')
         } else if (
           !isBlank(lines[i] ?? '') &&
           bodyLines[bodyLines.length - 1] !== '' &&
@@ -524,8 +531,71 @@ function parseBlocks(lines, state, top, inItem = false) {
       while (i < n) {
         let dm
         if ((dm = /^:: (.*)$/.exec(lines[i] ?? ''))) node.items.push({ dt: dm[1].trim() })
-        else if ((dm = /^: {2}(.*)$/.exec(lines[i] ?? ''))) node.items.push({ dd: dm[1].trim() })
-        else break
+        else if ((dm = /^: {2}(.*)$/.exec(lines[i] ?? ''))) {
+          // FIRST-BLOCK (`:  +`): the body is the following flush-left block, a
+          // block-bodied dd the inline-only subset cannot represent - refuse
+          // (the corpus pins the real output). `:  \+` stays a literal `+`.
+          if (CONT_MARKER.test(dm[1].trim())) {
+            throw new Refuse('first-block definition (`:  +`, block-bodied dd)')
+          }
+          node.items.push({ dd: dm[1].trim() })
+        }
+        // A definition body continues like a list item (SS17): an indented
+        // block, or a `+` pull-left block, folds into the `<dd>`. That yields a
+        // multi-block `<dd>`, which the inline-only executable subset cannot
+        // represent - refuse rather than approximate (the corpus pins the real,
+        // loose output for all three engines).
+        else if (CONT_MARKER.test(lines[i] ?? ''))
+          throw new Refuse('`+` continuation in a definition (multi-block dd)')
+        else if (/^ {3,}\S/.test(lines[i] ?? ''))
+          throw new Refuse('indented continuation in a definition (multi-block dd)')
+        else if (isBlank(lines[i])) {
+          // A blank line inside an entry. A blank before a `:  ` definition is
+          // a separator (djot parity): a definition may be separated from its
+          // term or a previous definition by a blank line - consume it. A blank
+          // before an indented continuation is a multi-paragraph dd (out of the
+          // inline subset); otherwise the blank ends the list.
+          let look = i + 1
+          while (look < n && isBlank(lines[look])) look++
+          if (look < n && /^: {2}/.test(lines[look] ?? '')) {
+            i = look
+            continue
+          }
+          if (/^ {3,}\S/.test(lines[i + 1] ?? '')) {
+            throw new Refuse('multi-paragraph definition body (multi-block dd)')
+          }
+          break
+        }
+        else {
+          // Lazy continuation (SS17): a flush-left line with no blank before it
+          // that does not start a visible block folds into the open
+          // definition's inline content (the same rule list items / block
+          // quotes use; djot-compatible). It stays inline, so the subset can
+          // represent it.
+          const cur = lines[i] ?? ''
+          const last = node.items[node.items.length - 1]
+          const foldable =
+            last &&
+            !isBlank(cur) &&
+            !startsVisibleBlock(cur) &&
+            !LINK_DEF.test(cur) &&
+            !FOOTNOTE_DEF.test(cur) &&
+            !ABBR_DEF.test(cur) &&
+            !BULLET.test(cur) &&
+            !ORDERED.test(cur) &&
+            !FENCE.test(cur) &&
+            !CAPTION.test(cur)
+          if (foldable && last.dd !== undefined) {
+            // Lazy continuation into the open definition (dd).
+            last.dd += '\n' + cur.replace(/^[ \t]+/, '')
+          } else if (foldable && last.dt !== undefined) {
+            // A term (dt) folds a plain continuation line like a heading, so a
+            // wrapped term line does not strand the definition.
+            last.dt += '\n' + cur.replace(/^[ \t]+/, '')
+          } else {
+            break
+          }
+        }
         i++
       }
       if (node.items.length === 0) throw new Refuse('malformed definition list')

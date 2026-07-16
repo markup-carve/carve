@@ -479,15 +479,43 @@ task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
 
 (* --- Definition Lists --- *)
 definition_list = definition_entry+ ;
-definition_entry = definition_term+, definition_body+ ;
-definition_term = "::", space, inline_content, newline ;
-definition_body = ':', space, space, inline_content, newline, {definition_continuation} ;
+definition_entry = definition_term+, [blank_line], definition_body,
+                   {[blank_line], definition_body} ;
+(* A blank line may separate a term from its definition, and one definition
+   from the next, for readability -- the blank is a separator only (djot
+   parity). A blank NOT followed by a `:  ` definition ends the entry. *)
+definition_term = "::", space, inline_content, newline, {term_continuation_line} ;
+term_continuation_line = inline_content, newline ;
+(* A term folds a following plain line like a heading (soft break); a blank
+   line, a new `::`/`:  ` marker, or a block opener ends it. A term holds inline
+   content only -- no block body. *)
+definition_body = (':', space, space, first_block_content)
+                | (':', space, space, inline_content, newline,
+                   { definition_continuation
+                   | (blank_line+, definition_continuation)
+                   | continuation_marker_block
+                   | lazy_continuation_line }) ;
+(* FIRST-BLOCK (`:  +`): when the sole content is a lone `+`, the body is the
+   FOLLOWING flush-left block, with no indentation -- the definition-list twin
+   of the list-item `- +` opener (`first_block_content`). `:  \+` is a literal
+   `+`. *)
 definition_continuation = (space, space, space, inline_content, newline)
                         | (backslash, newline, space, space, space, inline_content, newline) ;
 (* The term marker is TWO colons. A single-colon `: term` line is NOT a
    definition list -- it is ordinary paragraph text. (Deliberate: djot uses a
    single colon, but `::` keeps the term marker distinct from the `:::` div
-   fence and from a stray `:` in prose; all three reference impls agree.) *)
+   fence and from a stray `:` in prose; all three reference impls agree.)
+
+   A definition body CONTINUES like a list item (PART 9 §17): a blank line
+   followed by an indented block folds in (so a `<dd>` may hold multiple
+   paragraphs -- FORM A); a lone `+` attaches the FOLLOWING flush-left block
+   with no indentation (`continuation_marker_block` -- FORM B, the un-prefixed
+   analogue of the list-item and block-quote `+` forms); and a flush-left line
+   with no blank before it that does not start an interrupting block lazily
+   continues the open paragraph (`lazy_continuation_line`, the same rule as list
+   items and block quotes, matching djot). A blank line that is NOT followed by
+   an indented continuation ends the body: the single-blank entry separator
+   before the next `:: term` is preserved. *)
 
 (* --- Tables --- *)
 table = standard_row, [delimiter_row], {table_row}, [caption_slot] ;
@@ -1157,8 +1185,13 @@ inline_footnote = "^[", inline_content, ']' ;
 (* the closing `]` is the balanced, escape- and code-span-aware close
    (PART 9 §16); footnote recognition is DISABLED inside the content *)
 
-footnote_definition = "[^", footnote_label, "]:", space, inline_content, newline ;
-(* the body extends to following lines indented by >= 2 spaces -- PART 9 §16 *)
+footnote_definition = "[^", footnote_label, "]:", space, inline_content, newline,
+                      {footnote_continuation | continuation_marker_block} ;
+footnote_continuation = (space, space, {whitespace}, inline_content, newline) | blank_line ;
+(* the body extends to following lines indented by >= 2 spaces -- PART 9 §16.
+   A lone `+` also attaches a flush-left block (`continuation_marker_block`,
+   PART 9 §17), the same continuation marker lists, block quotes and definition
+   bodies use. *)
 
 (* DEFERRED (reserved, not implemented):
    sidenote = "[>", inline_content, ']' ; *)

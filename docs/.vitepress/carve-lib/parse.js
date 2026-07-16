@@ -675,8 +675,20 @@ function tryCollectBlockAttributes(lexer) {
 }
 function parseBlockAttributeRun(src) {
     let i = 0;
-    let out = null;
-    let sawBlock = false;
+    let count = 0;
+    // The first block's parsed Attrs is returned as-is for a single-block run so
+    // that common path stays byte-identical to the pre-optimization fold (which
+    // never called mergeAttrs for one block). For 2+ blocks the values below
+    // accumulate into a single mutable builder in ONE pass, avoiding the
+    // per-block `mergeAttrs` array recopy that was O(n^2) on runs like
+    // `{.c}{.c}{.c}…`. The builder reproduces mergeAttrs' semantics exactly:
+    // classes append (no dedup), id/keyValues last-wins, first-seen source order.
+    let first = null;
+    let id;
+    const classes = [];
+    let keyValues;
+    const order = [];
+    const orderSeen = new Set();
     while (i < src.length) {
         while (i < src.length && /\s/.test(src[i]))
             i++;
@@ -718,11 +730,45 @@ function parseBlockAttributeRun(src) {
         const attrs = parseAttrs(inner);
         if (isEmptyAttrs(attrs))
             return null;
-        out = out ? mergeAttrs(out, attrs) : attrs;
-        sawBlock = true;
+        count++;
+        if (count === 1)
+            first = attrs;
+        // Accumulate this block into the builder (mirrors mergeAttrs field rules).
+        if (attrs.id !== undefined)
+            id = attrs.id;
+        if (attrs.classes)
+            for (const c of attrs.classes)
+                classes.push(c);
+        if (attrs.keyValues) {
+            if (!keyValues)
+                keyValues = {};
+            for (const [k, v] of Object.entries(attrs.keyValues))
+                keyValues[k] = v;
+        }
+        if (attrs.order) {
+            for (const slot of attrs.order) {
+                if (!orderSeen.has(slot)) {
+                    orderSeen.add(slot);
+                    order.push(slot);
+                }
+            }
+        }
         i++;
     }
-    return sawBlock ? out : null;
+    if (count === 0)
+        return null;
+    if (count === 1)
+        return first;
+    const out = {};
+    if (id !== undefined)
+        out.id = id;
+    if (classes.length)
+        out.classes = classes;
+    if (keyValues)
+        out.keyValues = keyValues;
+    if (order.length)
+        out.order = order;
+    return out;
 }
 function parseBlock(lexer) {
     const startLine = lexer.pos;
@@ -1042,6 +1088,28 @@ function parseFootnoteDef(lexer) {
             lexer.consume();
             continue;
         }
+        // Form B: a lone `+` attaches the FOLLOWING flush-left block to the note
+        // with no indentation (the same continuation marker lists and block quotes
+        // use); the attached block ends at a blank line, another `+`, or the next
+        // footnote definition.
+        if (/^\+[ \t]*$/.test(ln)) {
+            lexer.consume();
+            pendingBlanks = 0;
+            const attached = [];
+            while (!lexer.eof()) {
+                const a = lexer.peek();
+                if (isBlankLine(a) || /^\+[ \t]*$/.test(a) || RE_FOOTNOTE_DEF.test(a))
+                    break;
+                lexer.consume();
+                attached.push(a);
+            }
+            if (attached.length > 0) {
+                bodyLines.push('');
+                for (const a of attached)
+                    bodyLines.push(a);
+            }
+            continue;
+        }
         const ws = leadingWhitespace(ln);
         if (ws >= 2) {
             // Dedent by the FIRST continuation line's indent (not strip-all),
@@ -1336,16 +1404,99 @@ function parseDiv(lexer) {
 function parseDefinitionList(lexer) {
     const items = [];
     const parseDefBody = (first) => {
-        const bodyLines = [first];
-        while (!lexer.eof()) {
+        const bodyLines = [];
+        // First-block form (`:  +`, mirroring the list `- +`): when the sole
+        // content is a lone `+`, the definition body is the FOLLOWING flush-left
+        // block, with no indentation. `:  \+` keeps a literal `+` instead.
+        if (/^\+[ \t]*$/.test(first)) {
+            while (!lexer.eof()) {
+                const a = lexer.peek();
+                if (isBlankLine(a) ||
+                    /^\+[ \t]*$/.test(a) ||
+                    RE_DEFLIST_TERM.test(a) ||
+                    RE_DEFLIST_DEF.test(a))
+                    break;
+                lexer.consume();
+                bodyLines.push(a);
+            }
+        }
+        else {
+            bodyLines.push(first);
+        }
+        // A definition continues like a list item (PART 9 \u00a717):
+        //  - form A: a deeper-indented line (>= the content column) folds in, and a
+        //    blank line is tolerated when a later line still continues the body, so
+        //    a `<dd>` can hold multiple paragraphs;
+        //  - form B: a lone `+` attaches the FOLLOWING flush-left block, so rich
+        //    content can join the definition with no indentation (the un-prefixed
+        //    analogue of the list-item and block-quote `+` forms; a leading `:  +`
+        //    is the same marker opening the FIRST block);
+        //  - lazy continuation: a flush-left line with no blank before it that does
+        //    NOT start an interrupting block folds into the open paragraph (the same
+        //    CommonMark lazy rule list items and block quotes use, matching djot).
+        for (;;) {
+            if (lexer.eof())
+                break;
             const ln = lexer.peek();
+            // Form B: `+` pull-left continuation.
+            if (/^\+[ \t]*$/.test(ln)) {
+                lexer.consume();
+                const attached = [];
+                while (!lexer.eof()) {
+                    const a = lexer.peek();
+                    if (isBlankLine(a) ||
+                        /^\+[ \t]*$/.test(a) ||
+                        RE_DEFLIST_TERM.test(a) ||
+                        RE_DEFLIST_DEF.test(a))
+                        break;
+                    lexer.consume();
+                    attached.push(a);
+                }
+                if (attached.length > 0) {
+                    bodyLines.push('');
+                    for (const a of attached)
+                        bodyLines.push(a);
+                }
+                continue;
+            }
+            // Form A: an indented continuation line (with no intervening blank).
             if (!isBlankLine(ln) && leadingWhitespace(ln) >= 3) {
                 // Strip the structural indentation but keep a content U+00A0.
                 bodyLines.push(ln.replace(/^[^\S\u00a0]+/, ''));
                 lexer.consume();
+                continue;
             }
-            else
+            // Blank line: absorb it as a paragraph separator ONLY when a later line
+            // is still an indented continuation. Otherwise leave it in place so the
+            // entry-separator rule (a single blank before the next `:: term`) and the
+            // outer block stream see it unchanged.
+            if (isBlankLine(ln)) {
+                let look = 1;
+                while (isBlankLine(lexer.peek(look)))
+                    look++;
+                const after = lexer.peek(look);
+                if (after !== undefined && !isBlankLine(after) && leadingWhitespace(after) >= 3) {
+                    for (let k = 0; k < look; k++) {
+                        bodyLines.push('');
+                        lexer.consume();
+                    }
+                    continue;
+                }
                 break;
+            }
+            // A new term/definition marker ends this definition (the outer loop
+            // picks it up).
+            if (RE_DEFLIST_TERM.test(ln) || RE_DEFLIST_DEF.test(ln))
+                break;
+            // Lazy continuation: a flush-left line (no blank before it) that does not
+            // start an interrupting block folds into the open paragraph; a block
+            // opener ends the definition.
+            if (!startsInterruptingBlock(lexer)) {
+                bodyLines.push(ln);
+                lexer.consume();
+                continue;
+            }
+            break;
         }
         const sub = new Lexer(bodyLines.join('\n'));
         sub.abbrDefs = lexer.abbrDefs;
@@ -1363,9 +1514,37 @@ function parseDefinitionList(lexer) {
             if (!t)
                 break;
             lexer.consume();
-            terms.push(parseInline(t[1], lexer.abbrDefs, lexer.linkDefs));
+            // A term is multi-line like a heading: a following plain line folds into
+            // it with a soft break, instead of ending the list and stranding the
+            // definition. A blank line, a new marker (`::` / `:  `), or a block
+            // opener ends the term.
+            let termText = t[1];
+            while (!lexer.eof()) {
+                const next = lexer.peek();
+                if (isBlankLine(next) ||
+                    RE_DEFLIST_TERM.test(next) ||
+                    RE_DEFLIST_DEF.test(next) ||
+                    endsHeadingOrQuote(lexer))
+                    break;
+                termText += '\n' + next;
+                lexer.consume();
+            }
+            terms.push(parseInline(termText, lexer.abbrDefs, lexer.linkDefs));
         }
         while (!lexer.eof()) {
+            // A blank line before a `:  ` definition is allowed: a definition may be
+            // separated from its term (or a previous definition) by a blank line for
+            // readability, matching djot. The blank is a separator only - it does not
+            // end the entry when a `:  ` definition follows.
+            if (isBlankLine(lexer.peek())) {
+                let look = 1;
+                while (isBlankLine(lexer.peek(look)))
+                    look++;
+                if (!RE_DEFLIST_DEF.test(lexer.peek(look) ?? ''))
+                    break;
+                for (let k = 0; k < look; k++)
+                    lexer.consume();
+            }
             const d = RE_DEFLIST_DEF.exec(lexer.peek());
             if (!d)
                 break;
@@ -2935,6 +3114,121 @@ function buildBracketMap(s) {
     }
     return map;
 }
+// Suffix-existence tables used to skip the inline tail regexes when their
+// mandatory close delimiter is absent from the rest of the input. Each tail
+// pattern (RE_LINK_TAIL, RE_SPAN_TAIL, the critic and forced-emphasis
+// patterns) requires a specific literal (`)`, `}`, `+}`, `-}`) inside its
+// match; if no such literal occurs at or after the position where the regex
+// would be anchored, the regex CANNOT match, so running it is pure wasted work.
+// Without this guard those patterns backtrack to end-of-input at O(n) distinct
+// positions — quadratic on adversarial runs like `![x](`×n, `[x](`×n or
+// `{+`×n. `suf[k] === 1` iff the delimiter occurs at some index >= k; built in
+// one backward O(n) pass, so each guard is O(1). Skipping only ever elides a
+// call that would have failed, keeping output byte-identical.
+function suffixHasChar(s, ch) {
+    const n = s.length;
+    const suf = new Uint8Array(n + 1);
+    let seen = 0;
+    for (let k = n - 1; k >= 0; k--) {
+        if (s[k] === ch)
+            seen = 1;
+        suf[k] = seen;
+    }
+    return suf;
+}
+function suffixHasPair(s, a, b) {
+    const n = s.length;
+    const suf = new Uint8Array(n + 1);
+    let seen = 0;
+    for (let k = n - 1; k >= 0; k--) {
+        if (s[k] === a && s[k + 1] === b)
+            seen = 1;
+        suf[k] = seen;
+    }
+    return suf;
+}
+// A `[text]{…}` span only forms when the `{…}` content is a valid attribute
+// payload (see isValidAttrPayload). RE_SPAN_TAIL scans `[^}"'\n]*` forward to
+// the first unquoted `}`; on a run like `[x]{[x]{…}` — or `[x]{a[x]{…}`,
+// `[x]{.a [x]{…}` — where one far `}` exists but the content can NEVER validate,
+// that scan runs to the far `}` at every `[`, so N brackets do O(n) work each:
+// O(n^2). This walks the SAME attribute-token grammar and bails at the first
+// character that cannot continue a valid token, rejecting a doomed payload in
+// O(1) per opener instead of O(n). It is a pure SKIP filter: it returns true
+// ONLY when the payload is provably invalid (so the elided RE_SPAN_TAIL would
+// have failed too); on reaching a `}` (a candidate close) or any construct whose
+// validity is subtle — a quote, an escape, a `key=<value>`, a newline, or rare
+// whitespace — it returns false and the unchanged RE_SPAN_TAIL + isValidAttrPayload
+// path runs, so every accepted span (and its output) is byte-identical. Because
+// a nested `{`/`[` (or any other invalid boundary char) ends the walk, each
+// character is visited by O(1) walks, keeping the total O(n). `brace` is the
+// index of the opening `{`.
+// Whitespace RE_SPAN_TAIL content may contain: any `\s` except `\n` (which its
+// class `[^}"'\n]` excludes). Matches isValidAttrPayload's `\s+` on those chars.
+const WS_NO_NL = /[^\S\n]/;
+function isIdentStart(c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c === '_';
+}
+function isIdentPart(c) {
+    return isIdentStart(c) || (c >= '0' && c <= '9') || c === '-';
+}
+function spanAttrProvablyInvalid(text, brace) {
+    const n = text.length;
+    let i = brace + 1;
+    while (i < n) {
+        const c = text[i];
+        // A candidate close at a token boundary: let the real regex decide/parse.
+        if (c === '}')
+            return false;
+        // A newline is the ONLY whitespace RE_SPAN_TAIL's content class excludes
+        // (`[^}"'\n]`), so it ends the content run — defer (the regex stops here, no
+        // far scan). Every OTHER `\s` (space, tab, NBSP, other Unicode spaces) is a
+        // valid token separator for isValidAttrPayload's `\s+`, so skip it.
+        if (c === '\n')
+            return false;
+        if (WS_NO_NL.test(c)) {
+            i++;
+            continue;
+        }
+        // Quotes and escapes are subtle — defer to RE_SPAN_TAIL rather than skip.
+        if (c === '"' || c === "'" || c === '\\')
+            return false;
+        if (c === '#' || c === '.') {
+            // `#id` / `.class`: an identifier (letter or `_`, then `[\w-]`) MUST
+            // follow, else the token — and the whole payload — is invalid (§14).
+            const d = text[i + 1];
+            if (d === undefined || !isIdentStart(d))
+                return true;
+            i += 2;
+            while (i < n && isIdentPart(text[i]))
+                i++;
+            continue;
+        }
+        if (isIdentStart(c)) {
+            // A bareword: a boolean attribute, or the name of a `key=value`.
+            i++;
+            while (i < n && isIdentPart(text[i]))
+                i++;
+            if (text[i] === '=') {
+                const v = text[i + 1];
+                // `key=` with an EMPTY value (EOF, `}`, or any whitespace follows) leaves
+                // a dangling `=` and is invalid — a bare value is `\S+` (>=1 non-space)
+                // and a quoted value starts with `"`/`'`. Otherwise (quoted or bare value)
+                // defer to the regex (a valid bare value is consumed whole -> linear).
+                if (v === undefined || v === '}' || /\s/.test(v)) {
+                    return true;
+                }
+                return false;
+            }
+            continue;
+        }
+        // Any other character cannot begin a valid attribute token at a boundary
+        // (`[`, `{`, `(`, a digit, `-`, `+`, `=`, `,`, …): the payload is invalid.
+        return true;
+    }
+    // Ran off the end without a closing `}`: RE_SPAN_TAIL would fail too.
+    return true;
+}
 // Content runs to the delimiter-specific closer (`+}` / `-}`), so a nested
 // span of a DIFFERENT type whose `}` would otherwise abort an `[^}]*` class is
 // kept inside and recursed into: `{+a {-b-} c+}` -> ins(a, del(b), c). Matches
@@ -3104,6 +3398,14 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
     // Precompute each `[`'s balancing `]` once (O(n)) so the link/image/span
     // branches resolve the close bracket in O(1); see buildBracketMap.
     const bracketClose = text.includes('[') ? buildBracketMap(text) : {};
+    // Suffix tables so a tail regex is only run when its mandatory close
+    // delimiter still lies ahead; otherwise the regex would backtrack to EOF and
+    // fail. See suffixHasChar/suffixHasPair. Built only when the delimiter is
+    // present at all, mirroring the bracketClose guard above.
+    const rparenSuf = text.includes(')') ? suffixHasChar(text, ')') : null;
+    const rbraceSuf = text.includes('}') ? suffixHasChar(text, '}') : null;
+    const insSuf = text.includes('+}') ? suffixHasPair(text, '+', '}') : null;
+    const delSuf = text.includes('-}') ? suffixHasPair(text, '-', '}') : null;
     // Whether the current buffer's FIRST character is an escaped caret (`\^`),
     // which is literal and must not be read as a caption marker downstream.
     let bufEscapedCaret = false;
@@ -3273,7 +3575,8 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             if (close > 1) {
                 const alt = rest.slice(2, close);
                 const tail = rest.slice(close + 1);
-                const ml = RE_LINK_TAIL.exec(tail);
+                // A link/image tail needs a literal `)`; skip when none lies ahead.
+                const ml = rparenSuf && rparenSuf[i + close + 1] ? RE_LINK_TAIL.exec(tail) : null;
                 if (ml) {
                     flush();
                     const img = { type: 'image', src: ml[1], alt };
@@ -3378,7 +3681,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                     continue;
                 }
                 // Inline link [text](url "title"){attrs}
-                const ml = RE_LINK_TAIL.exec(tail);
+                const ml = rparenSuf && rparenSuf[i + close + 1] ? RE_LINK_TAIL.exec(tail) : null;
                 if (ml) {
                     flush();
                     const link = {
@@ -3463,7 +3766,13 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             // `{=y=}`) is not an attribute block, so it stays literal.
             if (close > 0) {
                 const innerText = rest.slice(1, close);
-                const ms = RE_SPAN_TAIL.exec(rest.slice(close + 1));
+                // A span tail needs a literal `}` ahead; and its `{…}` content must be
+                // able to form a valid attribute payload. Skip RE_SPAN_TAIL (which would
+                // otherwise scan to a far `}` at every `[` -> O(n^2) on `[x]{[x]{…}`)
+                // when no `}` lies ahead or the payload is provably invalid.
+                const ms = rbraceSuf && rbraceSuf[i + close + 1] && !spanAttrProvablyInvalid(text, i + close + 1)
+                    ? RE_SPAN_TAIL.exec(rest.slice(close + 1))
+                    : null;
                 if (ms && isValidAttrPayload(ms[1])) {
                     flush();
                     out.push({
@@ -3554,7 +3863,12 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
         }
         // CriticMarkup family
         if (c === '{') {
-            const sub = RE_CRITIC_SUB.exec(rest);
+            // Each `{…}` tail regex requires its own literal close (`}`, `+}`, `-}`);
+            // skip it when that delimiter is absent from the rest of the input, which
+            // would otherwise force a backtrack to EOF at every `{` (quadratic on
+            // runs like `{+`×n or `{~`×n). O(1) suffix lookups; output-identical.
+            const hasBrace = !!(rbraceSuf && rbraceSuf[i]);
+            const sub = hasBrace ? RE_CRITIC_SUB.exec(rest) : null;
             if (sub) {
                 flush();
                 out.push({
@@ -3566,21 +3880,21 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                 i += sub[0].length;
                 continue;
             }
-            const ins = RE_CRITIC_INS.exec(rest);
+            const ins = insSuf && insSuf[i] ? RE_CRITIC_INS.exec(rest) : null;
             if (ins) {
                 flush();
                 out.push(withPos({ type: 'critic-insert', children: scanInline(ins[1], shiftSource(source, text, i + 2), inFootnote) }, source, text, i, i + ins[0].length));
                 i += ins[0].length;
                 continue;
             }
-            const del = RE_CRITIC_DEL.exec(rest);
+            const del = delSuf && delSuf[i] ? RE_CRITIC_DEL.exec(rest) : null;
             if (del) {
                 flush();
                 out.push(withPos({ type: 'critic-delete', children: scanInline(del[1], shiftSource(source, text, i + 2), inFootnote) }, source, text, i, i + del[0].length));
                 i += del[0].length;
                 continue;
             }
-            const cmt = RE_CRITIC_CMT.exec(rest);
+            const cmt = hasBrace ? RE_CRITIC_CMT.exec(rest) : null;
             if (cmt) {
                 flush();
                 out.push(withPos({ type: 'critic-comment', text: cmt[1] }, source, text, i, i + cmt[0].length));
@@ -3589,7 +3903,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             }
             // Forced intraword emphasis `{X…X}` (§22) — emits the same node as the
             // bare delimiter, but with no word-boundary condition.
-            const forced = RE_FORCED_EMPHASIS.exec(rest);
+            const forced = hasBrace ? RE_FORCED_EMPHASIS.exec(rest) : null;
             if (forced) {
                 flush();
                 out.push(withPos({ type: FORCED_TYPE[forced[1]], children: scanInline(forced[2], shiftSource(source, text, i + 2), inFootnote) }, source, text, i, i + forced[0].length));
@@ -3600,7 +3914,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             // a non-empty `buf` means unflushed text (e.g. a space) sits between the
             // preceding node and the `{`, so the block is NOT attached -- it stays
             // literal text (`<url> {.x}` keeps `{.x}`). Matches carve-php / carve-rs.
-            const attr = !buf ? RE_INLINE_ATTR.exec(rest) : null;
+            const attr = !buf && hasBrace ? RE_INLINE_ATTR.exec(rest) : null;
             // A digit-first / otherwise invalid payload (`{#1a}`, `{2=v}`) makes the
             // whole block literal (§14), same strict rule as block/span attrs — so
             // `` `code`{#1a} `` keeps the braces rather than parsing a bogus attr.

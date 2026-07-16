@@ -444,6 +444,34 @@ See the note.[^n]
 
 :::
 
+The continuation marker `+` also works here: a lone `+` attaches the following
+flush-left block to the note, so a second block needs no indentation.
+
+::: compare
+
+```carve
+See the note.[^n]
+
+[^n]: First paragraph of the note.
++
+A second paragraph, joined with +.
+```
+
+```html
+<p>See the note.<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>First paragraph of the note.</p>
+      <p>A second paragraph, joined with +.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
 ## Empty delimiters
 
 A delimiter pair with no content is literal text, not emphasis.
