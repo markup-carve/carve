@@ -479,7 +479,11 @@ task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
 
 (* --- Definition Lists --- *)
 definition_list = definition_entry+ ;
-definition_entry = definition_term+, definition_body+ ;
+definition_entry = definition_term+, [blank_line], definition_body,
+                   {[blank_line], definition_body} ;
+(* A blank line may separate a term from its definition, and one definition
+   from the next, for readability -- the blank is a separator only (djot
+   parity). A blank NOT followed by a `:  ` definition ends the entry. *)
 definition_term = "::", space, inline_content, newline, {term_continuation_line} ;
 term_continuation_line = inline_content, newline ;
 (* A term folds a following plain line like a heading (soft break); a blank

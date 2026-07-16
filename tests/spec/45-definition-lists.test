@@ -80,3 +80,14 @@ wraps onto the next line</dt>
   <dd>its definition</dd>
 </dl>
 ```
+
+```
+:: term
+
+:  the definition
+.
+<dl>
+  <dt>term</dt>
+  <dd>the definition</dd>
+</dl>
+```

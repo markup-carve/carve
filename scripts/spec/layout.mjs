@@ -549,8 +549,23 @@ function parseBlocks(lines, state, top, inItem = false) {
           throw new Refuse('`+` continuation in a definition (multi-block dd)')
         else if (/^ {3,}\S/.test(lines[i] ?? ''))
           throw new Refuse('indented continuation in a definition (multi-block dd)')
-        else if (isBlank(lines[i]) && /^ {3,}\S/.test(lines[i + 1] ?? ''))
-          throw new Refuse('multi-paragraph definition body (multi-block dd)')
+        else if (isBlank(lines[i])) {
+          // A blank line inside an entry. A blank before a `:  ` definition is
+          // a separator (djot parity): a definition may be separated from its
+          // term or a previous definition by a blank line - consume it. A blank
+          // before an indented continuation is a multi-paragraph dd (out of the
+          // inline subset); otherwise the blank ends the list.
+          let look = i + 1
+          while (look < n && isBlank(lines[look])) look++
+          if (look < n && /^: {2}/.test(lines[look] ?? '')) {
+            i = look
+            continue
+          }
+          if (/^ {3,}\S/.test(lines[i + 1] ?? '')) {
+            throw new Refuse('multi-paragraph definition body (multi-block dd)')
+          }
+          break
+        }
         else {
           // Lazy continuation (SS17): a flush-left line with no blank before it
           // that does not start a visible block folds into the open

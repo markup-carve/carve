@@ -1532,6 +1532,19 @@ function parseDefinitionList(lexer) {
             terms.push(parseInline(termText, lexer.abbrDefs, lexer.linkDefs));
         }
         while (!lexer.eof()) {
+            // A blank line before a `:  ` definition is allowed: a definition may be
+            // separated from its term (or a previous definition) by a blank line for
+            // readability, matching djot. The blank is a separator only - it does not
+            // end the entry when a `:  ` definition follows.
+            if (isBlankLine(lexer.peek())) {
+                let look = 1;
+                while (isBlankLine(lexer.peek(look)))
+                    look++;
+                if (!RE_DEFLIST_DEF.test(lexer.peek(look) ?? ''))
+                    break;
+                for (let k = 0; k < look; k++)
+                    lexer.consume();
+            }
             const d = RE_DEFLIST_DEF.exec(lexer.peek());
             if (!d)
                 break;
