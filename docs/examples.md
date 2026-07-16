@@ -3387,6 +3387,14 @@ A definition (`<dd>`) ends at a blank line that is followed by neither an
 indented continuation nor a `:  ` definition, at a new `::` term, or at a block
 opener.
 
+Attributes attach to the **whole `<dl>`** via a preceding block-attribute line
+(`{.class}` on the line before the first `:: term`). There is deliberately no
+per-`<dt>` / per-`<dd>` attribute form: unlike a list item (`-{.c}`) or a table
+row (`| … |{.c}`), a term or definition takes no glued marker attributes. Style
+individual terms/definitions with CSS descendant selectors (`dl.gloss dt`), or
+put the attributes on the `<dl>`. This matches djot, which also has no per-item
+definition-list attributes.
+
 ## Comments
 
 `%%` starts a line comment and a `%%%` fence a block comment; neither is
