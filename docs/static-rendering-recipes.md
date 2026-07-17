@@ -55,7 +55,7 @@ flag where the engine exposes one.
 
 - **carve-php:** `new CarveConverter(mode: RenderMode::STATIC, renderers: ['mermaid' => fn (string $src): string => ..., 'math' => fn (string $tex): string => ...])`
 - **carve-js:** `renderHtml(doc, { mode: 'static', renderers: { mermaid: (src) => '...', math: (tex, display) => '...' } })`
-- **carve-rs:** `Options::with_mode(Mode::Static).with_renderers(StaticRenderers { mermaid: Some(Box::new(|src| ...)), math: Some(Box::new(|tex, display| ...)), ..Default::default() })`
+- **carve-rs:** `Options::new().with_mode(Mode::Static).with_renderers(StaticRenderers { mermaid: Some(Box::new(|src| ...)), math: Some(Box::new(|tex, display| ...)), ..Default::default() })`
 - **carve-py:** `carve.to_html(src, mode='static', renderers={'mermaid': lambda s: '...', 'math': lambda tex, display: '...'})`
 
 In every engine, **if a needed renderer is absent the static path falls back to

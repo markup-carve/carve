@@ -45,12 +45,12 @@ The Rust engine is a third reference-quality implementation — Tier-1 corpus pa
 
 ```bash
 # Crate not yet published to crates.io; install from source:
-cargo install --git https://github.com/markup-carve/carve-rs carve-cli
+cargo install --git https://github.com/markup-carve/carve-rs carve-lang
 ```
 
 ```bash
 # CLI: convert a .crv file to HTML
-carve render input.crv
+carve input.crv
 ```
 
 **Browser / Node via WebAssembly — [`carve-wasm`](https://github.com/markup-carve/carve-wasm)**

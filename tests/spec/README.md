@@ -2,7 +2,7 @@
 
 These `.test` files are the **same corpus** as [`../corpus/`](../corpus/), re-emitted in the fenced-example format that [`jgm/djot.js`](https://github.com/jgm/djot.js) popularised. They exist so implementations whose runners already speak that format (notably [`markup-carve/carve-php`](https://github.com/markup-carve/carve-php)'s `OfficialTestSuiteTest`) can consume the Carve spec without writing a new file-pair reader.
 
-This is a **derived directory** — do not edit the files here. Edits to `docs/examples.md` regenerate both `../corpus/*.{crv,html}` and `*.test` on the next `npm run corpus:build`. Edits made directly to `.test` files will be overwritten.
+This is a **derived directory** — do not edit the files here. Edits to the source pages under `docs/examples/` (`core.md`, `extensions.md`, `edge-cases.md`) regenerate both `../corpus/*.{crv,html}` and `*.test` on the next `npm run corpus:build`. Edits made directly to `.test` files will be overwritten.
 
 ## Format
 

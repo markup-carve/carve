@@ -100,7 +100,7 @@ Carve includes:
 2. Easy tables without separator rows
 3. Standard [link syntax](https://example.com) with full tooling support
 
-::: tip Getting Started
+::: tip "Getting Started"
 Just write naturally and let Carve handle the rest.
 :::
 

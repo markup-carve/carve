@@ -5,7 +5,7 @@ description: Side-by-side Carve source and the HTML it produces, split into core
 
 # Examples
 
-Each pair shows the Carve source on the left and the HTML it produces on the right; toggle the output to **Rendered** to see the result in place. The HTML rendering reflects the *intended* output — Carve itself is still a spec, so think of these as the contract a future implementation should honor.
+Each pair shows the Carve source on the left and the HTML it produces on the right; toggle the output to **Rendered** to see the result in place. The HTML rendering reflects the *intended* output: think of these as the contract every implementation must honor. Reference implementations already exist (carve-js, carve-rs, carve-php) and are tested against exactly these fixtures.
 
 The examples are split into three pages:
 

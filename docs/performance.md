@@ -30,6 +30,8 @@ extension-hook surface).
 - The benchmark harnesses themselves are kept out of this repo (they pull in
   every competing engine as a dependency). Each implementation ships its own
   regression guard instead, listed under [Regression guards](#regression-guards).
+  For cross-engine render-speed comparisons (carve-js / carve-php / carve-rs), see
+  [carve-bench](https://github.com/markup-carve/carve-bench).
 
 ## Snapshot (2026-06-22)
 

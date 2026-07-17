@@ -19,8 +19,12 @@ Line 31: `+` bullet detected — not a Carve bullet (it is the
 
 ### 7.2 Auto-Migration Tool
 
-```bash
-carve migrate input.md --from markdown --to carve > output.crv
+The Markdown converter is a library API, not a CLI command. Call `markdownToCarve` (carve-js, exported from `@markup-carve/carve`) or `MarkupCarve\Carve\Converter\MarkdownToCarve` (carve-php):
+
+```js
+import { markdownToCarve } from '@markup-carve/carve'
+
+const carve = markdownToCarve(markdownSource)
 ```
 
 ### 7.3 Compatibility Modes (proposed)
@@ -142,13 +146,13 @@ How complex should tables get?
 - Nested tables
 - Multi-line cells
 
-**Decision:** Support colspan (`||`), multi-line via `\`, recommend separate list for complex data.
+**Decision:** Support colspan (`<`) and rowspan (`^`) cell markers, multi-line cells via `+` continuation lines, recommend separate list for complex data.
 
 ### 10.6 Versioning Strategy
 
 ```
 ---
-carve-version: 1.0
+carve-version: 0.1
 ---
 ```
 

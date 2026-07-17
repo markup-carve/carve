@@ -51,9 +51,10 @@ reported as skipped, not failures.
 | German smart quotes | skipped | skipped | pass |
 | Bare URL autolink | skipped | skipped | pass |
 
-¹ PHP is adopting the canonical name shape, word-boundary guard, attribute
-wrapper and a `symbols` render map (carve#258 Step 4); until it lands the
-optional `symbol-map` case stays skipped for PHP. Rust and JS both pass.
+¹ As of this 2026-06-19 snapshot the `symbol-map` case was still skipped for
+PHP. PHP has since shipped `:name:` symbols (canonical name shape, word-boundary
+guard, attribute wrapper, and a `symbols` render map; carve#258), so a fresh
+`npm run compare:impls` run now reports it as passing for all three engines.
 
 | Implementation | Optional pass | Skipped | Mismatches | Errors | Avg CLI ms/file |
 |----------------|---------------|---------|------------|--------|-----------------|

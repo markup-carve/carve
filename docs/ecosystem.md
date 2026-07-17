@@ -57,11 +57,38 @@ Carve embedded in another tool or framework.
 | [jekyll-carve](https://github.com/markup-carve/jekyll-carve) | Jekyll | Converter plugin for `.crv` pages. |
 | [eleventy-carve](https://github.com/markup-carve/eleventy-carve) | Eleventy (11ty) | Plugin for processing Carve source files. |
 | [astro-carve](https://github.com/markup-carve/astro-carve) | Astro | Integration for importing `.crv` pages. |
+| [hugo-carve](https://github.com/markup-carve/hugo-carve) | Hugo | Preprocessor that converts `.crv` content to HTML, via carve-go. |
 | [symfony-carve](https://github.com/markup-carve/symfony-carve) | Symfony | Bundle to render Carve markup to HTML via carve-php. |
 | [symfony-carve-demo](https://github.com/markup-carve/symfony-carve-demo) | Symfony | Demo app showcasing the symfony-carve bundle. |
+| [laravel-carve](https://github.com/markup-carve/laravel-carve) | Laravel | Integration with Blade directives, services, validation, and caching. |
+| [laravel-carve-demo](https://github.com/markup-carve/laravel-carve-demo) | Laravel | Runnable app demonstrating every feature of laravel-carve. |
+| [shopware-carve](https://github.com/markup-carve/shopware-carve) | Shopware 6 | Twig filters, CMS element, product/category fields, admin live preview, mail, and a CLI. |
 | [wp-carve](https://github.com/markup-carve/wp-carve) | WordPress | Plugin on the carve-php engine - live preview, multi-format paste, REST API. |
 | [carve-grammars](https://github.com/markup-carve/carve-grammars) | Tiptap | Editor kit and Carve serializer. |
 | [vite-plugin-carve](https://github.com/markup-carve/vite-plugin-carve) | Vite | Import `.crv` documents as rendered HTML. *Early.* |
+
+## PDF / output
+
+Render Carve documents to formats beyond HTML.
+
+| Project | Output | Notes |
+|---|---|---|
+| [carve-pdf](https://github.com/markup-carve/carve-pdf) | PDF | Render `.crv` documents to clean, paginated PDFs. |
+| [carve-hexapdf](https://github.com/markup-carve/carve-hexapdf) | PDF | Carve to PDF via the pure-Ruby HexaPDF engine (over carve-lang / carve-rb). |
+
+## Extensions
+
+Opt-in extensions that add non-core syntax.
+
+| Project | Target | Notes |
+|---|---|---|
+| [carve-php-media-embed](https://github.com/markup-carve/carve-php-media-embed) | carve-php | Embeds audio/video from 30+ providers via dereuromark/media-embed. |
+
+## Benchmarks
+
+| Project | Description |
+|---|---|
+| [carve-bench](https://github.com/markup-carve/carve-bench) | Cross-engine render performance benchmarks (carve-js / carve-php / carve-rs). |
 
 ## AI / agent tooling
 

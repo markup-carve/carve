@@ -256,7 +256,7 @@ const qr = {
     'code-block': (node, ctx) => {
       const type = qrType(node.lang)
       if (type === undefined) return undefined          // defer: not ours
-      const svg = toQrSvg(buildQrPayload(type, node.value ?? ''))
+      const svg = toQrSvg(buildQrPayload(type, (node as CodeBlock).content ?? ''))
       return `${ctx.indent(ctx.level)}<figure class="qr">${svg}</figure>`
     },
   },
@@ -485,7 +485,7 @@ const map = {
   blockRenderers: {
     'code-block': (node, ctx) => {
       if (node.lang !== 'map') return undefined
-      const m = parseMap(node.value ?? '')
+      const m = parseMap((node as CodeBlock).content ?? '')
       if (m === null) return undefined          // not a coordinate -> readable code block
       return `${ctx.indent(ctx.level)}<figure class="qmap">${renderMapSvg(m)}</figure>`
     },

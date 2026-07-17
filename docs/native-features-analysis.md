@@ -211,7 +211,7 @@ feature-level boundary.
   rowspan/colspan/multi-line), the two-tier `:::` model (canonical
   `<aside class="admonition …">` / custom `<div class="…">`, §12),
   figures/captions, abbreviation definitions, raw blocks, comments.
-- **Inline:** emphasis family (`/ * _ ~ ^ , =` + `/* */`, §9), code
+- **Inline:** emphasis family (bare `/ * _ ~ =` + `/* */`; sup/sub braced-only `{^ ^}` / `{, ,}`, §9), code
   spans, raw inline (`` `…`{=format} `` passthrough, §20), links
   (inline / reference / collapsed), angle-bracket autolinks
   (`<url>` / `<email>`), images, spans (§14), math (djot form, §18), footnotes

@@ -1298,7 +1298,7 @@ substitution = "{~", inline_content, "~>", inline_content, "~}" ;
 editorial_comment = "{#", inline_content, "#}" ;
 (* ATTRIBUTES -- NORMATIVE: an addition / deletion is an ordinary inline node,
    so a trailing `{...}` attribute block attaches to its `<ins>` / `<del>`,
-   exactly like a span, code span, link, or emphasis: `{++a++}{.a}` ->
+   exactly like a span, code span, link, or emphasis: `{+a+}{.a}` ->
    `<ins class="a">…</ins>`. (All three impls agreed only after this was
    pinned; carve-js dropped the block, carve-rs kept it literal.) *)
 (* DISAMBIGUATION (PART 9 §22). `{~ … ~}` is editorial SUBSTITUTION when it
@@ -1592,7 +1592,8 @@ EOF = (* end of file *) ;
 (*
    1. WORD BOUNDARIES FOR EMPHASIS -- FORMALIZED. Stated formally by the
       bare_opener(d) / bare_closer(d) guard templates in PART 3, for all
-      seven single-char bare delimiters `/ * _ ~ ^ = ,`; §9 holds the
+      five single-char bare delimiters `/ * _ ~ =` (sup/sub `^` `,` are
+      braced-only, `{^ ^}` / `{, ,}`, not bare); §9 holds the
       run-resolution rules (nearest closer, delimiter stack). No bare
       delimiter emphasizes intraword; the forced `{X … X}` family (§22) is
       the deliberate-intraword escape hatch.
@@ -1763,10 +1764,10 @@ EOF = (* end of file *) ;
       boundary tests are skipped.
       CONSEQUENCES (pinned): SAME-DELIMITER ADJACENCY is bare_opener's
       <!(d) / !(d) guards -- a doubled bare delimiter is literal, never
-      nested same-type emphasis: `**x**`, `~~x~~`, `^^x^^`, `==x==`,
-      `,,x,,` like `//x//`, `__x__` (corpus 71-doubled-emphasis-delimiters,
-      01-emphasis-11); longer runs (`,,,y,,,`, `===y===`) all-literal
-      (corpus 74-two-char-delimiter-runs). WORD BOUNDARY: (/x/) ->
+      nested same-type emphasis: `**x**`, `~~x~~`, `==x==` like `//x//`,
+      `__x__` (corpus 74-doubled-emphasis-delimiters, 01-emphasis-11);
+      longer runs (`===y===`) all-literal. (The braced-only `^`/`,` are not
+      bare, so `^^x^^` and `,,x,,` are likewise literal.) WORD BOUNDARY: (/x/) ->
       (<em>x</em>), a./b/ -> a.<em>b</em> (01-emphasis-8); foo_bar_baz,
       foo*bar*baz, snake_case, x = 5, key=value literal (01-emphasis-10,
       -11); "x /a/b y" literal -- the candidate closer is followed by `b`

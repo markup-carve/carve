@@ -477,9 +477,11 @@ behave identically. This avoids the CommonMark `1.`-only heuristic Djot removed,
 and removes the old false positive where a wrapped prose line became a list.
 
 **A heading and a blockquote are different:** a list marker **ends** an open
-heading or blockquote and starts a top-level **sibling list** (it folds only
-into a *paragraph*). Plain text folds into a heading/quote; a list marker does
-not. This matches Djot.
+heading (a bounded title) and starts a top-level **sibling list**. A blockquote
+is *not* ended: a quoted line ends in an open paragraph, so a list marker folds
+into it as lazy continuation — `> q` / `- a` is **one** quote whose paragraph is
+`q\n- a`, not a quote plus a sibling list. Plain text folds into a heading too;
+a list marker does not. This matches Djot.
 
 **Other carve-outs:**
 
@@ -508,7 +510,7 @@ collected/consumed (an attribute line floats forward to the next block, §15).
 | `See[^m].` / `[^m]: note` | paragraph + endnotes | invisible construct |
 | `# H` / `- item` | heading + sibling list | list marker ENDS the heading |
 | `# H` / `1. one` | heading + sibling list | list marker ENDS the heading (ordered too) |
-| `> q` / `- a` | quote + sibling list | list marker ENDS the quote |
+| `> q` / `- a` | one quoted paragraph | the bullet folds in (lazy continuation) |
 | `> text` / `> # H` | quote: paragraph + heading | heading interrupts inside the quote |
 | `> p` / `> - x` | one quoted paragraph | quoted bullet folds (paragraph interruption inside the quote) |
 | `- a` / `  - b` | nested sublist | indented sublist still nests (content column) |
@@ -546,7 +548,7 @@ The heading id derives from the **full folded text**.
 outside
 ```
 
-This is **one** heading - `<h1>Title␤outside</h1>` with id `title-outside` -
+This is **one** heading - `<h1>Title␤outside</h1>` with id `Title-outside` -
 NOT a heading plus a paragraph. The biggest authoring trap in the heading syntax: always put
 a blank line after a heading. (Corpus `79-multi-line-headings`.)
 

@@ -6,8 +6,8 @@
  * (docs/.vitepress/carve-lib), and asserts a byte-identical match
  * against the .html (after trimming).
  *
- * The corpus is generated from docs/examples.md by
- * `npm run corpus:build`; CI regenerates it first, so a mismatch here
+ * The corpus is generated from docs/examples/{core,extensions,edge-cases}.md
+ * by `npm run corpus:build`; CI regenerates it first, so a mismatch here
  * means either the examples drifted from the committed corpus or the
  * vendored carve-lib lags carve-js. Both are real regressions.
  *

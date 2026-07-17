@@ -39,7 +39,7 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 |---|---|---|---|
 | Headings, paragraphs, lists, task lists, blockquotes, thematic breaks | <Badge type="tip" text="core" /> | on | no |
 | Tables (incl. rowspan/colspan/alignment), fenced code, inline code | <Badge type="tip" text="core" /> | on | no |
-| Emphasis family (`/` `*` `_` `~` `^` `,` `=`), links, images, `<…>` autolinks | <Badge type="tip" text="core" /> | on | no |
+| Emphasis family (bare `/` `*` `_` `~` `=`; sup/sub braced-only `{^ ^}` / `{, ,}`), links, images, `<…>` autolinks | <Badge type="tip" text="core" /> | on | no |
 | Attributes `{.class #id k=v}`, generic divs / spans, captions / figures | <Badge type="tip" text="core" /> | on | no |
 | Admonitions (8 canonical types), definition lists, verse `::: \|` | <Badge type="tip" text="core" /> | on | no |
 | Math `$…$` / `$$…$$`, footnotes `[^id]` + inline `^[…]`, abbreviations | <Badge type="tip" text="core" /> | on | no |

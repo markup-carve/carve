@@ -79,7 +79,7 @@ carveToHtml(trustedInput, { sanitizeUrls: false })
 | Option | Default | Effect |
 |---|---|---|
 | `sanitizeUrls` | `true` | Filter link/image URL schemes. Set `false` only for fully trusted input. |
-| `allowedUrlSchemes` | `['http', 'https', 'mailto']` | Schemes permitted when `sanitizeUrls` is on. Case-insensitive. |
+| `allowedUrlSchemes` | unset (denylist mode) | Unset by default: a denylist blocks dangerous schemes (`javascript:`, `data:`, etc.) while others (`tel:`, `ftp:`, `sms:`) pass. An allowlist is enforced only when this is explicitly set. Case-insensitive. |
 
 ## Attribute hardening (always on)
 
@@ -134,7 +134,7 @@ neutralizes them (grammar PART 9 §26):
 run `if (admin)‮ //‬ ok` then deploy
 ```
 
-renders as `run <code>if (admin) //</code> then deploy` — the override is gone,
+renders as `run <code>if (admin) // ok</code> then deploy` — the override is gone,
 so the code reads the way it executes. No Markdown implementation defends this
 by default.
 

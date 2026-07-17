@@ -8,10 +8,12 @@ description: A task-oriented guide for Markdown and GFM authors switching to Car
 This guide is for authors who already know CommonMark or GitHub-Flavored Markdown (GFM) and want to rewrite documents in Carve. It focuses on what to change, not on why Carve differs from Markdown - for the design rationale see [Carve vs Markdown/Djot/MDX](/comparison).
 
 ::: tip Automated conversion
-The `carve` CLI includes a Markdown converter. Run it to get a first-pass Carve file you can then refine:
+There is no `migrate` CLI command; the Markdown converter is a library API. In carve-js call `markdownToCarve` (exported from `@markup-carve/carve`); in carve-php use `MarkupCarve\Carve\Converter\MarkdownToCarve`:
 
-```bash
-carve migrate input.md --from markdown --to carve > output.crv
+```js
+import { markdownToCarve } from '@markup-carve/carve'
+
+const carve = markdownToCarve(markdownSource)
 ```
 
 The converter handles most mechanical substitutions, but review the output for emphasis and table syntax.
@@ -257,7 +259,7 @@ Bare tags are safe (literal) regardless. The setting above only governs the expl
 
 When moving a document from Markdown to Carve:
 
-- [ ] Run `carve migrate --from markdown` for a first-pass conversion
+- [ ] Run the library converter (`markdownToCarve` in carve-js, `MarkdownToCarve` in carve-php) for a first-pass conversion
 - [ ] Review all emphasis: `*italic*` -> `/italic/`, `**bold**` -> `*bold*`
 - [ ] Check `_underline_` occurrences - these render as `<u>` in Carve, not `<em>`
 - [ ] Convert GFM table delimiter rows to `|=` header cells
