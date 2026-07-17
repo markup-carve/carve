@@ -169,7 +169,7 @@ A `{…}` on the line before a list attaches to the **list**, not to an item. To
 
 This is a Carve addition (djot cannot attribute list items at all) and is the **only** way to target the `<li>` element itself. For task items the block abuts the marker before the checkbox: `-{.c} [ ] text`.
 
-(Aside: the `:::` *type word* that picks an admonition vs a generic div - e.g. `::: note` - is about block type, not attributes; a div takes its attributes on the preceding line like any block. See [Examples → Admonitions](/examples#admonitions).)
+(Aside: the `:::` *type word* that picks an admonition vs a generic div - e.g. `::: note` - is about block type, not attributes; a div takes its attributes on the preceding line like any block. See [Examples → Admonitions](/examples/extensions#admonitions).)
 
 ## Quick reference
 

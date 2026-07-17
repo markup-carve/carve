@@ -35,7 +35,7 @@ The executable spec covers the full conformant core: block structure (headings i
 npm run core:check
 ```
 
-The gate demands byte-identical HTML for **every pair in the conformance corpus - currently 402/402**. Rules a pure PEG cannot state are executed as declared predicates in the layout automaton (fence-length counting, the `where` guards) or as a pre-scan (the emphasis close-first delimiter-stack rule), so the pipeline never silently diverges from the delimiter-stack semantics.
+The gate demands byte-identical HTML for **every pair in the conformance corpus**. Rules a pure PEG cannot state are executed as declared predicates in the layout automaton (fence-length counting, the `where` guards) or as a pre-scan (the emphasis close-first delimiter-stack rule), so the pipeline never silently diverges from the delimiter-stack semantics.
 
 Implementations should match this grammar. The [case study](./case-study/) explains the design rationale, the [reference page](./edge-cases) covers parsing edge cases, and the [examples](./examples) show the expected HTML output for each construct.
 

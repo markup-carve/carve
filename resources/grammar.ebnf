@@ -1614,9 +1614,9 @@ EOF = (* end of file *) ;
       - /nested *bold* here/ is valid
       - A consequence (§9 SAME-DELIMITER ADJACENCY): a doubled bare delimiter
         never opens nested same-type emphasis -- it is literal text. So `**x**`
-        -> `**x**`, `~~x~~` -> `~~x~~`, `^^x^^` -> `^^x^^`, uniform with the
-        already-literal `//x//` and `__x__` (corpus 71-doubled-emphasis-
-        delimiters).
+        -> `**x**` and `~~x~~` -> `~~x~~`, uniform with the already-literal
+        `//x//` and `__x__` (corpus 74-doubled-emphasis-delimiters). The
+        braced-only `^`/`,` are not bare, so `^^x^^` is likewise literal.
 
    4. CAPTION PLACEMENT -- FORMALIZED (caption_slot in PART 2). A `^ `
       caption attaches via the [caption_slot] slot of the captionable

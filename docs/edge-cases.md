@@ -17,7 +17,7 @@ This document analyzes potentially ambiguous or tricky parsing scenarios in Carv
 than Djot (Djot's `_`/`*` rule is purely whitespace-flanking; Carve adds
 word-boundary conditions so intraword `a/b/c`, `foo_bar_baz`, and `snake_case`
 stay literal). This rule applies to *every* bare delimiter
-(`/ * _ ~ ^ = ,` — all single-char), so `foo*bar*baz` and `foo~bar~baz` are
+(`/ * _ ~ =` — all single-char), so `foo*bar*baz` and `foo~bar~baz` are
 literal too. For deliberate intraword emphasis use the forced `{X … X}` family
 (PART 9 §22), e.g. `foo{*bar*}baz`. The normative statement lives in
 `resources/grammar.ebnf` PART 9 §9 and §22; in summary, for any bare delimiter:
@@ -34,7 +34,7 @@ The **same-delimiter adjacency** part of that rule — a delimiter adjacent to
 another of the same delimiter (before or after) does not open — applies to all
 five single-character delimiters. So a doubled delimiter is always literal:
 `**x**`, `~~x~~`, and `==x==` render verbatim, exactly like `//x//` and
-`__x__` (corpus `71-doubled-emphasis-delimiters`). (`^` and `,` are not
+`__x__` (corpus `74-doubled-emphasis-delimiters`). (`^` and `,` are not
 delimiters at all — superscript/subscript are the braced `{^x^}` / `{,x,}`
 forms only.)
 
