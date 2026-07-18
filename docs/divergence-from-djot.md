@@ -306,6 +306,63 @@ Carve treats the double-colon as a term and reserves three colons for a
 div/admonition. The loose body itself is *not* traded away: form A is djot's
 indentation-scoped body, and `+` (form B) is added on top.
 
+## 10. Raw passthrough is target-routed (and the pandoc boundary)
+
+**Djot and Carve share the raw-passthrough syntax:** `` `content`{=format} `` inline
+and a ```` ```=format ```` block emit `content` verbatim, but **only** to the renderer
+whose output target is `format`. Every other renderer drops the span. This is the
+same `RawInline`/`RawBlock` model pandoc-flavored Markdown has used for years
+(`` `\alpha`{=latex} ``), and Djot inherits it to feed **pandoc** - which is where
+`{=latex}`, `{=typst}`, `{=docx}`, etc. actually render, since the Djot reference
+library itself writes only HTML.
+
+**Where Carve differs: it has no pandoc-style multi-writer.** Carve ships HTML,
+Markdown, ANSI, and plain-text renderers, and **only the HTML renderer owns a
+format** (`html`). So today every non-`html` raw span is inert in Carve's own
+renderers - it survives in the AST (`raw-inline` / `raw-block` node, tagged with
+its `format`) for a custom AST consumer or a future native writer, but no built-in
+renderer emits it.
+
+| raw span | Carve HTML | Carve MD / ANSI / plain |
+|----------|-----------|-------------------------|
+| `` `x`{=html} `` | emitted verbatim | escaped to text (MD) / dropped |
+| `` `x`{=latex} ``, `` `x`{=typst} ``, `` `x`{=markdown} `` | dropped | dropped |
+
+**The raw construct itself is pandoc-compatible.** Pandoc's Djot reader parses
+Carve's `` `x`{=format} `` byte-identically and routes it correctly per writer:
+
+| pandoc: djot → | survives | drops |
+|----------------|----------|-------|
+| `html` | `{=html}` | latex, typst, markdown |
+| `latex` | `{=latex}` | html, typst, markdown |
+| `typst` | `{=typst}` | html, latex, markdown |
+
+::: warning Do not pipe a whole Carve document through pandoc
+Only the raw-passthrough construct is byte-shared. A full Carve document is **not**
+valid Djot: pandoc's Djot reader reads `/italic/` as literal text and remaps
+`_underline_` to `<em>` (Djot emphasis). Carve's visual-mnemonic emphasis
+(section 4) is the break. Use pandoc for the raw spans' sake only if you first
+convert the surrounding document, not by feeding Carve source to `-f djot`.
+:::
+
+**Why document this.** A `` `x`{=latex} `` that silently renders nothing in Carve
+looks like a bug. It is not - it is a hatch for an external writer that Carve does
+not yet bundle. The one live, escape-free target in Carve is `html`.
+
+**Closing the gap: pandoc-carve.** The
+[pandoc-carve](https://github.com/markup-carve/pandoc-carve) bridge converts the
+Carve AST to Pandoc's JSON AST, so one Carve document reaches every pandoc
+writer - LaTeX, Typst, DOCX, PDF, and beyond - with the emphasis mapping done
+correctly and raw spans target-routed by pandoc itself:
+
+```bash
+pandoc-carve doc.crv -t latex -o doc.tex
+pandoc-carve doc.crv -t typst -o doc.typ
+```
+
+With the bridge in play, `{=latex}` and friends are no longer inert: they are
+authored for the pandoc writer that will eventually consume the document.
+
 ## What Carve adds on top (not breaks)
 
 These aren't divergences - Djot has no equivalent - but they're why Carve exists

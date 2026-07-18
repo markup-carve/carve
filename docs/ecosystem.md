@@ -75,6 +75,7 @@ Render Carve documents to formats beyond HTML.
 |---|---|---|
 | [carve-pdf](https://github.com/markup-carve/carve-pdf) | PDF | Render `.crv` documents to clean, paginated PDFs. |
 | [carve-hexapdf](https://github.com/markup-carve/carve-hexapdf) | PDF | Carve to PDF via the pure-Ruby HexaPDF engine (over carve-lang / carve-rb). |
+| [pandoc-carve](https://github.com/markup-carve/pandoc-carve) | LaTeX, Typst, DOCX, PDF, ... | Carve AST to Pandoc JSON bridge; reaches every pandoc writer and makes `{=latex}`-style raw spans fire. |
 
 ## Extensions
 

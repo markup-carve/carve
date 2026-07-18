@@ -37,7 +37,7 @@ implementation — except rows marked **✦**, which are opt-in extensions
 | `\*literal\*` | escape | backslash + any ASCII punctuation |
 | `--` `---` `...` `->` `(c)` | – — … → © | smart typography |
 | `\` at end of line | hard break | `\ ` (backslash-space) = no-break space |
-| `` `<br>`{=html} `` | raw inline | emitted only for that output format |
+| `` `<br>`{=html} `` | raw inline | target-routed; Carve renderers emit only `=html`, others feed external writers ([why](/divergence-from-djot#_10-raw-passthrough-is-target-routed-and-the-pandoc-boundary)) |
 
 Bare delimiters work only at word boundaries; force one intraword with the brace form, e.g. `H{,2,}O`, `mc{^2^}`.
 
