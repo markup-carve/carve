@@ -1,0 +1,12 @@
+Footnote definition requires an inline body
+
+```
+Use [^a].
+
+[^a]:
+  First
+.
+<p>Use [^a].</p>
+<p>[^a]:
+First</p>
+```

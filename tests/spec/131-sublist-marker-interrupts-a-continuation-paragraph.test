@@ -1,0 +1,33 @@
+Sublist marker interrupts a continuation paragraph
+
+```
+- first
+
+  second
+  - nested
+.
+<ul>
+  <li><p>first</p>
+    <p>second</p>
+    <ul>
+      <li>nested</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- first
+
+  second
+  1. nested
+.
+<ul>
+  <li><p>first</p>
+    <p>second</p>
+    <ol>
+      <li>nested</li>
+    </ol>
+  </li>
+</ul>
+```
