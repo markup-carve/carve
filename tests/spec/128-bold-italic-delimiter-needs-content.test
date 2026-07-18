@@ -17,3 +17,9 @@ Bold-italic delimiter needs content
 .
 <p><strong><em>x</em></strong></p>
 ```
+
+```
+a/*y*/b
+.
+<p>a<strong><em>y</em></strong>b</p>
+```

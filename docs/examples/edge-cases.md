@@ -3818,6 +3818,23 @@ With real content, the full bold-italic collapse still applies.
 
 :::
 
+The bold-italic pair `/*...*/` has no word-boundary condition on its outer `/`:
+the combined two-character opener wins over the bare `/`-then-`*` parse even when
+a word character sits directly before `/*` or directly after the closing `*/`, so
+it opens and closes intraword.
+
+::: compare
+
+```carve
+a/*y*/b
+```
+
+```html
+<p>a<strong><em>y</em></strong>b</p>
+```
+
+:::
+
 ## Thematic break requires contiguous markers
 
 A thematic break is three or more of the same marker (`-`, `*`, `_`) contiguous

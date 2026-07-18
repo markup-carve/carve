@@ -141,7 +141,7 @@ CarveCore {
 
   // Combined form /*x*/ -> <strong><em> (grammar.ebnf bold_italic); matched
   // before emph so the two-char token wins over nested /-then-* parsing.
-  boldItalic = "/*" ~spaceOrEnd biInner+ "*/" ~alnumCh attrs?
+  boldItalic = "/*" ~spaceOrEnd biInner+ "*/" attrs?
   biInner    = ~("*/") (rich | word | " " ~("*/") | litDelim | other)
 
   // constructs allowed inside any span (everything except spans themselves,
