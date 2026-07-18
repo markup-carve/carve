@@ -301,7 +301,7 @@ CarveCore {
 
   // A word absorbs any bare delimiter glued between two word characters -
   // this IS the left word-boundary / no-intraword rule, structurally.
-  word       = wordChar (wordChar | wordGlue | underGlue | atGlue | hashGlue | colonGlue | dotGlue | pctGlue)*
+  word       = wordChar (wordChar | wordGlue | atGlue | hashGlue | colonGlue | dotGlue | pctGlue)*
   wordGlue   = delim &wordChar
   // absorb the `@`/`#`/`:` glued between word chars (me@example.com, a#b,
   // a:b:c, 10:30) and the intraword dot so none triggers mention / tag /
@@ -316,10 +316,13 @@ CarveCore {
   dotGlue    = "." &wordChar
   // a %-run glued to a word is literal (50%%, a%%b) - never a comment
   pctGlue    = "%" "%"* &(wordChar | " " | end)
-  // a delimiter directly after a word-attached `_` never opens (the
-  // bare_opener guard excludes a preceding `_`): absorb `_` + delimiter
-  // when a word character follows, keeping the run literal
-  underGlue  = "_" delim &wordChar
+  // NOTE: a `_` glued to a word (e.g. `a_/b`) is NOT absorbed here -- it reaches
+  // the resolver as a bare `litDelim` candidate. The bare_opener guard already
+  // keeps a delimiter that FOLLOWS a `_` from opening (grammar.ebnf §9,
+  // `prev === '_'` in bareOpener), and the `_` itself must stay a candidate so
+  // it can CLOSE an open underline span (`_z_/y/` -> <u>z</u>/y/, matching the
+  // engines + §9 close-first). A former `underGlue = "_" delim &wordChar` rule
+  // swallowed that closing `_` into a text run and diverged.
   wordChar   = letter | digit
   delim      = "/" | "*" | "_" | "~" | "^" | "=" | ","
 

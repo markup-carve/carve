@@ -1,0 +1,7 @@
+Emphasis span closes before a following delimiter
+
+```
+_z_/y/
+.
+<p><u>z</u>/y/</p>
+```
