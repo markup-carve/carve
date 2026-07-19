@@ -123,6 +123,28 @@ The first directive is a block include (its file becomes sibling blocks between
 the paragraphs); the second is an inline include (its content is spliced into
 the surrounding sentence).
 
+## The directive is inert in code (verbatim protection)
+
+An include directive is recognized **only** where inline and block constructs
+are recognized. Inside a code span, a fenced or raw code block, or any other
+verbatim context, <code v-pre>{{ … }}</code> is ordinary literal text and is
+**never** resolved. This is a consequence of Carve's general invariant that
+**code is verbatim** - no construct transforms inside a code span or code block,
+and the include directive is no exception. It means a literal directive can
+always be written and displayed by placing it in code:
+
+~~~carve
+```
+{{ path }}
+```
+~~~
+
+renders the fenced line verbatim; it is not an include. The same holds for an
+inline code span: <code v-pre>`{{ path }}`</code> is literal. Because recognition
+is grammar-level, a processor MUST NOT resolve includes by blind textual
+substitution over the raw source (which would clobber a directive a user wrote
+inside a code block); it recognizes the directive only in directive position.
+
 ## The host resolver
 
 The **resolution model** keeps the parser pure and pushes all filesystem

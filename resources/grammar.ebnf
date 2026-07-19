@@ -2395,6 +2395,15 @@ EOF = (* end of file *) ;
            version and NOT specified here: Carve headings are a flat stream, so
            inferring the include-site level is deferred.
 
+        I9 VERBATIM PROTECTION. An include directive is recognized ONLY where
+           inline and block constructs are recognized. Inside a code span, a
+           fenced or raw code block, or any other verbatim context, `{{ ... }}`
+           is ordinary LITERAL text and is NEVER resolved. This is a consequence
+           of Carve's general invariant that CODE IS VERBATIM -- no construct
+           transforms inside a code span or code block -- of which the include
+           directive is no exception. A literal `{{ ... }}` can therefore always
+           be written and displayed by placing it in code.
+
    20. RAW PASSTHROUGH -- NORMATIVE (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT
       fence, PART 2) emits its verbatim content UNESCAPED when FORMAT
