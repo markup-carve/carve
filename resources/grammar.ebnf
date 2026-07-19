@@ -1530,11 +1530,19 @@ bare_path          = {character - ('#' | '@' | '}' | ' ' | '"')}+ ;
 quoted_path        = '"', {escaped_char | (character - '"' - '\')}, '"' ;
 (* `#section`: include only the subtree rooted at the heading whose id equals
    `section` -- that heading through the content up to the next heading of the
-   same or higher level (§19). *)
+   same or higher level (§19). `#section` and a line-range (`@lines`) are the two
+   SELECTION mechanisms and are MUTUALLY EXCLUSIVE (§19 I1): the production stays
+   permissive, but a directive carrying BOTH is an ERROR -- the processor emits a
+   Warning and leaves the directive LITERAL. *)
 include_section    = '#', identifier ;
-(* `@key:value`: an extensible option slot. The one CONCRETE option defined in
-   §19 is `@lines:N-M` (include a physical-line range); every other `@key` is
-   RESERVED. Options are space-separated and combinable with `#section`. *)
+(* `@key:value`: an extensible option slot, split into SELECTION options (choose
+   which content is pulled in) and TRANSFORM options (reshape selected content).
+   The CONCRETE options defined in §19 are `@lines:N-M` (SELECTION -- a physical
+   line range; mutually exclusive with `#section`) and `@shift:N` (TRANSFORM -- a
+   SIGNED heading-level shift, orthogonal to selection, so it may accompany
+   `#section`, a line-range, or neither). `@shift:auto` is RESERVED for a future
+   version, NOT defined here. Every other `@key` is RESERVED. Options are
+   space-separated. *)
 include_option     = '@', include_option_name, ':', include_option_value ;
 include_option_name  = identifier ;
 include_option_value = {character - ('#' | '@' | '}' | ' ')}+ ;
@@ -2296,14 +2304,19 @@ EOF = (* end of file *) ;
         I1 SYNTAX. `{{ path }}`, `{{ path #section }}`, `{{ path @key:value }}`,
            combinable `{{ path #section @key:value }}` (PART 6). `path` is bare
            (stops at space / `#` / `@` / `}`) or double-quoted for spaces, and
-           is resolved RELATIVE TO THE INCLUDING FILE. `#section` selects the
-           subtree rooted at the heading whose id equals `section` (that heading
-           through content up to the next same-or-higher-level heading).
-           `@key:value` is an extensible option slot; the one defined option is
-           `@lines:N-M` (a 1-based inclusive physical-line range). When both are
-           present, `#section` selects first and `@lines` is relative to the
-           SELECTED SECTION's first line (choice; see docs/includes.md).
-           Every other `@key` is RESERVED.
+           is resolved RELATIVE TO THE INCLUDING FILE. Options split into two
+           disjoint kinds. SELECTION options choose WHICH content is pulled in:
+           `#section` (semantic -- the subtree rooted at the heading whose id
+           equals `section`, that heading through content up to the next
+           same-or-higher-level heading) and `@lines:N-M` (physical -- a 1-based
+           inclusive line range). The two SELECTION mechanisms are MUTUALLY
+           EXCLUSIVE: a directive MUST select by `#section` OR by a line-range,
+           NEVER both; a directive carrying both is an ERROR (Warning + literal,
+           per I7). TRANSFORM options reshape already-selected content and are
+           orthogonal to selection: `@shift:N` shifts every included heading's
+           level by the SIGNED integer N (I8). `@shift` MAY accompany `#section`,
+           a line-range, or neither. `@shift:auto` is RESERVED (future,
+           NOT defined here). Every other `@key` is RESERVED.
 
         I2 BLOCK vs INLINE. A directive ALONE on its own line is a BLOCK
            include: the resolved content merges as BLOCKS at the directive
@@ -2334,28 +2347,53 @@ EOF = (* end of file *) ;
            a later include (the fully expanded document read top to bottom).
            The rename appends the least `-N` (integer N >= 2) that is not already
            taken in that namespace: first `-2`, then `-3`, and so on. A Warning
-           is emitted per rename. Auto-generated (slug) heading-id collisions are
-           NOT covered here; they continue to dedup via the existing heading-id
-           tracker (§13; choice, see docs/includes.md).
+           is emitted per rename. SCOPE: this include-time pass covers EXPLICIT
+           heading ids, footnote labels, and reference-definition labels ONLY.
+           Auto-generated (slug) heading-id collisions are NOT part of it; they
+           continue to dedup via the existing heading-id tracker (§13, which
+           suffixes duplicate slugs once the files are merged). ORDERING: the
+           include-time explicit-id / footnote / reference rename runs BEFORE the
+           §13 slug dedup, so ids are deterministic (the explicit-id namespace is
+           settled first, then §13 dedups auto-slug ids against the final set).
 
         I6 LIMITS. The processor MUST detect inclusion CYCLES (a file that
            transitively includes itself): the offending directive is left
-           literal, not expanded, and a Warning is emitted. Recursion is bounded
-           by MAX_INCLUDE_DEPTH = 16 (a small, human-scale nesting bound, far
-           under the structural MAX_NESTING = 200 of §25; proposed value, see
-           docs/includes.md); a directive at greater depth is left literal with
+           literal, not expanded, and a Warning is emitted. Cycle detection is
+           the PRIMARY guard. As a SECONDARY DoS bound, implementations MUST
+           enforce a FINITE include-depth limit; the RECOMMENDED default is at
+           least 16 (a small, human-scale nesting bound, far under the structural
+           MAX_NESTING = 200 of §25) and the host MAY configure it. No exact hard
+           constant is pinned. A directive at greater depth is left literal with
            a Warning. Total expanded output is charged against the same per-
            render byte budget as other amplifying features -- `max(1 MB,
            8 x input length)` (§25); once exceeded, further expansion degrades
            to the literal directive with a Warning.
 
-        I7 ERRORS. Unreadable path, binary / non-text content, cycle,
+        I7 ERRORS. Unreadable path, binary / non-text content, BOTH selection
+           mechanisms present (`#section` + a line-range, I1), cycle,
            depth-exceeded, and size-exceeded EACH emit a Warning and leave the
            directive LITERAL (visible and debuggable). Inclusion NEVER silently
            drops a directive. See PART 9 §25 (File inclusion) for the security
            model: parser stays pure, resolver is host-supplied and MUST enforce
            path containment, a symlink / escape policy, and same-sanitization
            parsing (no privilege escalation via include).
+
+        I8 HEADING-LEVEL SHIFT (`@shift:N`). A TRANSFORM option (I1), orthogonal
+           to selection. N is a SIGNED integer; every heading in the included
+           content has its level increased by N (N=2: an h1 becomes an h3; a
+           NEGATIVE N raises levels, N=-1: an h2 becomes an h1). An omitted
+           `@shift` is `@shift:0` (no shift, the default; current behavior
+           unchanged). CLAMP: the resulting level is clamped to the valid range
+           [1, 6]; a shift that would push a heading below 1 or above 6 clamps to
+           the bound and emits a Warning -- the heading is KEPT, never dropped.
+           IDS/SLUGS UNCHANGED: `@shift` changes only the level, never a
+           heading's id / slug (ids are name-based), so `</#id>` cross-references
+           into shifted headings still resolve. AUTO-NUMBERING: if section
+           auto-numbering (HeadingNumbers, docs/extensions.md) is enabled,
+           shifted headings renumber at their NEW level as a consequence.
+           `@shift:auto` (context-relative auto-shift) is RESERVED for a future
+           version and NOT specified here: Carve headings are a flat stream, so
+           inferring the include-site level is deferred.
 
    20. RAW PASSTHROUGH -- NORMATIVE (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT

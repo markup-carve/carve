@@ -32,6 +32,7 @@ security.
 {{ path #section }}
 {{ path @key:value }}
 {{ path #section @key:value }}
+{{ path @shift:N }}
 ```
 
 - **`path`** is either **bare** (it stops at the first space, `#`, `@`, or
@@ -42,16 +43,64 @@ security.
   `section`: that heading through the content up to (but not including) the next
   heading of the **same or higher** level. The id is matched the same way a
   `</#id>` cross-reference matches (explicit `{#id}` or the auto-generated slug).
-- **`@key:value`** is an extensible option slot. Options are space-separated and
-  combine freely with `#section`.
-  - **`@lines:N-M`** is the one concrete option: include the 1-based, inclusive
-    physical-line range `N` through `M` of the resolved source.
+- **`@key:value`** is an extensible option slot. Options are space-separated.
+  - **`@lines:N-M`** includes the 1-based, inclusive physical-line range `N`
+    through `M` of the resolved source.
+  - **`@shift:N`** shifts the level of every included heading by the signed
+    integer `N` (see [Heading-level shift](#heading-level-shift-shift)).
   - Every other `@key` is **reserved**. A processor that does not recognize an
     option SHOULD treat the directive as unresolvable (Warning, literal).
 
-When `#section` and `@lines:N-M` are both present, `#section` selects the
-subtree first and `@lines` is then relative to the **selected section's** first
-line (line 1 is the section heading). See [Open questions](#open-questions).
+### Selection vs transform options
+
+Directive options fall into two disjoint kinds:
+
+- **Selection options** choose *which* content is pulled in: `#section`
+  (semantic - a heading's subtree) and a line-range `@lines:N-M` (physical - raw
+  source lines).
+- **Transform options** reshape content that has already been selected:
+  `@shift:N` (heading-level shift). Future transform options join this kind.
+
+The two **selection** mechanisms are **mutually exclusive**: a single directive
+MUST select content by `#section` **or** by a line-range, never both. Combining
+them is ambiguous, and neither use case - reusing a chapter by heading, or
+quoting a code snippet by line - needs both. A directive that specifies both
+`#section` and `@lines` is an **error**: the processor emits a Warning and leaves
+the directive **literal**, exactly like the other error cases (see
+[Errors](#errors)).
+
+**Transform** options are orthogonal to selection. `@shift` is **not** a
+selection option: it MAY accompany `#section`, a line-range, or neither, and it
+composes with whichever selection (if any) the directive uses.
+
+### Heading-level shift (`@shift`)
+
+`@shift:N` takes a **signed** integer and increases the level of **every**
+heading in the included content by `N`:
+
+```carve
+{{ chapter.dj @shift:2 }}
+```
+
+- With `@shift:2`, an included `h1` becomes an `h3`, an `h2` becomes an `h4`, and
+  so on. A **negative** `N` raises headings toward the top level: `@shift:-1`
+  turns an `h2` into an `h1`.
+- The option is **optional**; an omitted `@shift` is equivalent to `@shift:0`
+  (no shift, the default behavior).
+- **Clamp to `[1, 6]`.** The shifted level is clamped to the valid heading range.
+  If a shift would push a heading below level 1 or above level 6, the processor
+  clamps it to the nearest bound (1 or 6) and emits a Warning. The heading is
+  **kept**, never dropped.
+- **Ids and slugs are unchanged.** `@shift` changes only a heading's *level*,
+  never its id or slug (ids are name-based, not level-based), so `</#id>`
+  cross-references into a shifted heading still resolve.
+- **Auto-numbering follows the new level.** If section auto-numbering (the
+  [HeadingNumbers](/extensions#_9-headingnumbers-tier-3) feature) is enabled,
+  shifted headings renumber at their **new** level as a consequence of the shift.
+- **`@shift:auto` is reserved.** A context-relative auto-shift (inferring the
+  shift from the include site's heading level) is **reserved** for a future
+  version and is **not** specified here: Carve headings are a flat stream, so
+  inferring the include-site level is deferred.
 
 ## Block vs inline includes
 
@@ -129,10 +178,18 @@ labels**, and **explicit heading ids**. The processor MUST resolve these
 3. **Warning per rename.** Every rename emits a Warning so the collision is
    visible and debuggable.
 
-Auto-generated (slug) heading-id collisions are **not** handled here: they
-continue to be de-duplicated by the existing heading-id tracker (PART 9 §13,
-which already appends `-2`, `-3`, …). Only **explicit** ids participate in the
-include-collision rename. See [Open questions](#open-questions).
+The include-time rename pass is scoped to **explicit heading ids, footnote
+labels, and reference-definition labels only**. Auto-generated (slug) heading-id
+collisions are **not** part of this pass: they continue to be de-duplicated by
+the existing heading-id tracker (PART 9 §13, which already appends `-2`, `-3`, …
+to duplicate slugs once the files are merged into one document). Two `##
+Introduction` headings from different included files are therefore suffixed by
+§13, not here.
+
+**Ordering.** The include-time explicit-id / footnote / reference rename runs
+**before** the §13 slug dedup. Fixing this order keeps ids deterministic: the
+explicit-id namespace is settled first, and §13 then dedups the auto-slug ids
+against the already-final set. See PART 9 §13.
 
 ## Limits
 
@@ -142,11 +199,12 @@ Inclusion is bounded to keep expansion linear and terminating:
   transitively includes itself). The offending directive is left **literal**
   (not expanded) and a Warning is emitted. Detection is over the include graph,
   not a single edge, so `A -> B -> A` is caught.
-- **Depth.** Recursion is bounded by **`MAX_INCLUDE_DEPTH = 16`**: a small,
-  human-scale nesting bound, well under the structural `MAX_NESTING = 200` of
-  [Security](/security#resource-limits-denial-of-service). A directive deeper
-  than the bound is left literal with a Warning. (Proposed value; see
-  [Open questions](#open-questions).)
+- **Depth.** Implementations MUST enforce a **finite** include-depth limit; the
+  RECOMMENDED default is **at least 16**, and the host MAY configure it. This is a
+  small, human-scale nesting bound, well under the structural `MAX_NESTING = 200`
+  of [Security](/security#resource-limits-denial-of-service). Cycle detection
+  remains the **primary** guard; the depth limit is the **secondary** DoS bound.
+  A directive deeper than the limit is left literal with a Warning.
 - **Size.** Total expanded output is charged against the same per-render byte
   budget as other amplifying features, `max(1 MB, 8 × input length)`. Once a
   render would exceed it, further expansion degrades to the literal directive
@@ -163,10 +221,16 @@ Every failure path is **visible**, never a silent drop. Each of these emits a
 |---|---|
 | Unreadable / missing path | Warning + literal directive |
 | Binary / non-text content | Warning + literal directive |
+| Both `#section` and a line-range (`@lines`) present | Warning + literal directive |
 | Inclusion cycle | Warning + literal directive |
-| Depth exceeds `MAX_INCLUDE_DEPTH` | Warning + literal directive |
+| Depth exceeds the include-depth limit | Warning + literal directive |
 | Expanded size exceeds the byte budget | Warning + literal directive |
 | No resolver configured | Literal directive (no Warning required) |
+
+A `@shift:N` whose result would leave the valid heading range is the one
+degrade that does **not** go literal: the heading is **kept** with its level
+clamped to `[1, 6]` and a Warning is emitted (see
+[Heading-level shift](#heading-level-shift-shift)).
 
 ## Security
 
@@ -207,21 +271,3 @@ renders as
 ```
 
 verified byte-identical across the executable-spec oracle and every engine.
-
-## Open questions
-
-These are deliberate, marked choices rather than hidden assumptions:
-
-- **`@lines` combined with `#section`.** This page defines `@lines:N-M` as
-  relative to the selected section's first line when a `#section` filter is also
-  present. The alternative (line numbers always relative to the whole file) is
-  equally defensible; the section-relative reading was chosen so that the two
-  filters compose intuitively (select, then slice). Open for maintainer
-  confirmation.
-- **`MAX_INCLUDE_DEPTH = 16`.** Proposed as a human-scale nesting bound far under
-  the structural `MAX_NESTING = 200`. The exact value is a maintainer call.
-- **Rename scope for auto-slug heading ids.** This spec confines include-time
-  rename-on-collision to *explicit* ids (plus footnote and reference labels) and
-  defers auto-slug collisions to the existing §13 heading-id tracker. Folding
-  auto-slug ids into the same include-time pass is possible but would duplicate
-  the tracker's logic; the deferral was chosen to keep one de-dup authority.
