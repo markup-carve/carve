@@ -29,7 +29,7 @@ export interface RenderOptions {
     /** Registered extensions (renderers consulted; transforms run by carveToHtml). */
     extensions?: CarveExtension[];
     /**
-     * Stamp each top-level block element with `data-source-line="{n}"` (the
+     * Stamp each block element with `data-source-line="{n}"` (the
      * 1-based source line it starts on). Requires the AST to carry positions
      * (parse with `{ positions: true }`; `carveToHtml` enables this for you).
      * Off by default so canonical output is unchanged. Intended for editor

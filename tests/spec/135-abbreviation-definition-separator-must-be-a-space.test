@@ -1,0 +1,10 @@
+Abbreviation definition separator must be a space
+
+```
+*[HTML]:	Hyper
+
+The HTML
+.
+<p>*[HTML]:	Hyper</p>
+<p>The HTML</p>
+```

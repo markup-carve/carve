@@ -104,24 +104,29 @@ function renderList(node, ctx) {
     try {
         let out = '';
         let counter = node.start ?? 1;
+        // The marker is semantic (§11: a different bullet char / ordered delim
+        // starts a new list), so emit it as authored - normalizing would merge
+        // adjacent sibling lists on re-parse (carve issue 286).
+        const delim = node.delim ?? '.';
+        const bullet = node.bulletChar ?? '-';
         node.items.forEach((item, idx) => {
             const indent = '  '.repeat(ctx.listDepth - 1);
             let prefix;
             if (node.ordered) {
-                prefix = `${orderedMarker(counter, node.olType)}. `;
+                prefix = `${orderedMarker(counter, node.olType)}${delim} `;
                 counter++;
             }
             else if (item.checked !== undefined) {
-                prefix = `- ${item.checked ? '[x]' : '[ ]'} `;
+                prefix = `${bullet} ${item.checked ? '[x]' : '[ ]'} `;
             }
             else {
-                prefix = '- ';
+                prefix = `${bullet} `;
             }
             const itemAttrs = renderAttrs(item.attrs);
             if (itemAttrs) {
                 prefix = node.ordered
                     ? `${prefix.trimEnd()}${itemAttrs} `
-                    : `-${itemAttrs}${item.checked !== undefined ? ` [${item.checked ? 'x' : ' '}] ` : ' '}`;
+                    : `${bullet}${itemAttrs}${item.checked !== undefined ? ` [${item.checked ? 'x' : ' '}] ` : ' '}`;
             }
             let content = trimNonNbsp(renderListItem(item, ctx));
             if (item.children.length === 1 && item.children[0]?.type === 'list') {

@@ -3994,3 +3994,60 @@ First</p>
 ```
 
 :::
+
+## Footnote definition separator must be a space
+
+The separator after a footnote-definition marker must be a literal space (U+0020). A tab after `[^label]:` does **not** open a definition; the line stays an ordinary paragraph and the tab is preserved as text. This aligns with heading, list, and task markers, which already reject a tab, and with the grammar 's `space` production.
+
+::: compare
+
+```carve
+Use [^a].
+
+[^a]:	Tabbed
+```
+
+```html
+<p>Use [^a].</p>
+<p>[^a]:	Tabbed</p>
+```
+
+:::
+
+## Link reference definition separator must be a space
+
+The same rule applies to link reference definitions: `[label]:` must be followed by a literal space. A tab leaves the line as a paragraph, so the later `[a][]` has no target to resolve.
+
+::: compare
+
+```carve
+[a]:	/url
+
+[a][]
+```
+
+```html
+<p>[a]:	/url</p>
+<p>[a][]</p>
+```
+
+:::
+
+## Abbreviation definition separator must be a space
+
+Abbreviation definitions follow the rule too: `*[label]:` must be followed by a literal space. A tab keeps the line as a paragraph and no abbreviation is registered.
+
+::: compare
+
+```carve
+*[HTML]:	Hyper
+
+The HTML
+```
+
+```html
+<p>*[HTML]:	Hyper</p>
+<p>The HTML</p>
+```
+
+:::

@@ -1,0 +1,10 @@
+Link reference definition separator must be a space
+
+```
+[a]:	/url
+
+[a][]
+.
+<p>[a]:	/url</p>
+<p>[a][]</p>
+```

@@ -1,3 +1,15 @@
+/**
+ * Source position of a node, attached when parsing with `{ positions: true }`.
+ *
+ * Line numbers are always in ORIGINAL-document coordinates, including for
+ * blocks nested inside containers (block quotes, divs, list items, footnote
+ * and definition bodies), whose content is re-parsed from a transformed
+ * snippet. Columns and offsets are NOT remapped for such nested blocks: they
+ * remain relative to the container's snippet (the container itself carries
+ * document-space offsets). Consumers needing document-exact positions should
+ * rely on lines; snippet-space offsets of nested blocks may be remapped in a
+ * future version.
+ */
 export interface Position {
     /** 1-based line number, inclusive */
     startLine: number;
@@ -78,6 +90,20 @@ export interface List extends BaseNode {
     start?: number;
     /** Ordered-list type attribute: a/A (alpha) or i/I (roman); absent = decimal. */
     olType?: 'a' | 'A' | 'i' | 'I';
+    /**
+     * Ordered-marker delimiter as authored: `.` (`1.`) or `)` (`1)`).
+     * The marker is semantic (section 11: a sibling with a different delimiter
+     * starts a new list), so `renderCarve` preserves it - normalizing would
+     * merge adjacent lists on re-parse (carve issue 286). Absent (e.g. on a
+     * programmatically built AST) fmt falls back to `.`.
+     */
+    delim?: '.' | ')';
+    /**
+     * Bullet character as authored: `-` or `*` (unordered lists only). Same
+     * §11 semantics as {@link delim}: preserved by `renderCarve` so adjacent
+     * lists separated only by their bullet stay separate. Absent -> `-`.
+     */
+    bulletChar?: '-' | '*';
     tight: boolean;
     items: ListItem[];
 }
@@ -168,6 +194,13 @@ export interface Div extends BaseNode {
 export interface DefinitionItem {
     terms: InlineNode[][];
     definitions: BlockNode[][];
+    /**
+     * 1-based source line of each definition's `:  ` marker line, parallel to
+     * `definitions`. Only populated when parsing with positions; used to stamp
+     * `<dd>` with its marker line (the body may start on a later line, e.g. the
+     * `:  +` first-block form).
+     */
+    definitionLines?: number[];
 }
 export interface DefinitionList extends BaseNode {
     type: 'definition-list';

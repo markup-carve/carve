@@ -945,6 +945,13 @@ link_title = space, ('"', {('\', '"') | (character - '"')}, '"')
 
 reference_label = (character - ']' - '@'), {character - ']'} ;
 reference_definition = '[', reference_label, ']', ':', space, link_destination, [link_title], newline ;
+(* The marker-to-content separator is the `space` terminal (U+0020) ONLY, in
+   all three definition markers: `reference_definition`, `footnote_definition`
+   and `abbreviation_definition`. A tab does NOT satisfy `space`
+   (`space = ' '`), so `[^a]:<TAB>x`, `[a]:<TAB>/url` and `*[HTML]:<TAB>x` are
+   ordinary paragraphs, not definitions -- the marker line is preserved as
+   text. This mirrors the heading, list and task markers, which likewise
+   require a literal space after the marker. carve-rs is the reference here. *)
 (* A leading `@` is reserved: `[@key]: ...` is never a reference definition, it
    is a citation definition (PART 9 §22, Tier-2). This parallels the `[^...]:`
    footnote-definition precedence and holds in core whether or not the citation

@@ -31,12 +31,12 @@ const HR = /^(-{3,}|\*{3,}|_{3,})[ \t]*$/
 const FENCE = /^(`{3,}|~{3,})(.*)$/
 const PURE_FENCE = /^(`{3,}|~{3,})[ \t]*$/
 const QUOTE = /^> ?(.*)$|^>$/
-const LINK_DEF = /^\[([^\]^@][^\]]*)\]:\s+(\S+)(?:\s+"((?:\\"|[^"])*)")?(?:\s.*)?$/
+const LINK_DEF = /^\[([^\]^@][^\]]*)\]: \s*(\S+)(?:\s+"((?:\\"|[^"])*)")?(?:\s.*)?$/
 // The marker line must carry inline content (PART 9 SS16 production:
 // `"]:", space, inline_content`); a bare `[^label]:` is an ordinary
 // paragraph line (corpus 132).
-const FOOTNOTE_DEF = /^\[\^([^\]]+)\]:[ \t]+(\S.*)$/
-const ABBR_DEF = /^\*\[([^\]]+)\]:\s+(.+)$/
+const FOOTNOTE_DEF = /^\[\^([^\]]+)\]: [ \t]*(\S.*)$/
+const ABBR_DEF = /^\*\[([^\]]+)\]: \s*(.+)$/
 const CAPTION = /^\^ (.*)$/
 const BULLET = /^([ \t]*)([-*])(\{[^}]*\})? (?:\[([ xX_>?-])\] )?(.+)$/
 const ORDERED = /^([ \t]*)([0-9]+|[a-z]+|[A-Z]+)([.)])(\{[^}]*\})? (.+)$/

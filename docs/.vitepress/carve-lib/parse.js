@@ -130,7 +130,13 @@ const RE_DIV_OPEN = /^(:{3,})\s*(\[[^\]]*\])?\s*$/;
 // DEFINITION line is a colon + two-or-more spaces + text.
 const RE_DEFLIST_TERM = /^::(?!:)\s+(.+)$/;
 const RE_DEFLIST_DEF = /^: {2,}(.+)$/;
-const RE_ABBR_DEF = /^\*\[([A-Z][A-Z0-9]*)\]:\s+(.+)$/;
+// A definition marker's separator must START with a literal space (U+0020),
+// not a tab (#288) -- matching carve-rs and every marker whose grammar
+// delimiter is `space` (heading `# `, list bullets, task `[ ]`). The `]: \s*`
+// requires that first space, then folds any further whitespace into the
+// separator; `\s+` alone would wrongly accept a leading tab. A tab after the
+// colon therefore forms no definition and the line stays a paragraph.
+const RE_ABBR_DEF = /^\*\[([A-Z][A-Z0-9]*)\]: \s*(.+)$/;
 // Block-level reference-link definition: `[label]: url "title"` or
 // `[label]: url 'title'` (grammar.ebnf link_title allows both quote
 // styles). The destination is a bare token; an angle-bracketed `<url>`
@@ -145,10 +151,10 @@ const RE_ABBR_DEF = /^\*\[([A-Z][A-Z0-9]*)\]:\s+(.+)$/;
 // The title groups allow a backslash-escaped quote inside (`"a\"b"`) so the run
 // does not truncate at the first inner quote; the captured value is then run
 // through unescapeAttrValue at consumption, matching the inline title path.
-const RE_LINK_DEF = /^[^\S ]*\[(?!@)([^\]]+)\]:[^\S ]+(\S+)(?:\s+(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'))?.*$/;
+const RE_LINK_DEF = /^[^\S ]*\[(?!@)([^\]]+)\]: [^\S ]*(\S+)(?:\s+(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'))?.*$/;
 // Footnote definition `[^label]: body`. Tested before RE_LINK_DEF, which
 // would otherwise capture `^label` as a link reference label.
-const RE_FOOTNOTE_DEF = /^\[\^([^\]]+)\]:\s+(.+)$/;
+const RE_FOOTNOTE_DEF = /^\[\^([^\]]+)\]: \s*(.+)$/;
 // A caption line mirrors a heading's first line (§4/§553): `^` + one-or-more
 // literal spaces (the grammar delimiter is a space, not a tab) + content that
 // carries at least one non-ASCII-whitespace character. Leading spaces are
@@ -226,6 +232,9 @@ export const MAX_NESTING_DEPTH = 200;
 class Lexer {
     lines;
     lineOffsets;
+    lineNumberOffset;
+    sourceLineMap;
+    suppressPositions = false;
     pos = 0;
     // Block-container nesting depth of this (sub-)lexer; 0 at the document top.
     depth = 0;
@@ -263,7 +272,8 @@ class Lexer {
     // line exists onward. Once proven, every later fence opener (pos only
     // advances) short-circuits, keeping "many unclosed fences" input linear.
     noFenceCloserFrom = Infinity;
-    constructor(source, opts = {}) {
+    constructor(source, opts = {}, lineNumberOffset = 0) {
+        this.lineNumberOffset = lineNumberOffset;
         this.defaultFrontmatterFormat = opts.defaultFrontmatterFormat ?? 'yaml';
         this.lines = source.replace(/\r\n?/g, '\n').split('\n');
         // Drop trailing empty line introduced by terminal newline
@@ -308,6 +318,30 @@ class Lexer {
     lineOffset(lineIndex) {
         return this.lineOffsets[lineIndex] ?? 0;
     }
+    lineNumber(lineIndex) {
+        return this.sourceLineMap?.[lineIndex] ?? this.lineNumberOffset + lineIndex + 1;
+    }
+}
+function normalizedSourceLines(source) {
+    const lines = source.replace(/\r\n?/g, '\n').split('\n');
+    if (lines.length && lines[lines.length - 1] === '')
+        lines.pop();
+    return lines;
+}
+function subLexer(source, opts, lineNumberOffset, sourceLineMap) {
+    const sub = new Lexer(source, opts, lineNumberOffset);
+    if (sourceLineMap)
+        sub.sourceLineMap = sourceLineMap;
+    return sub;
+}
+function nestedSubLexer(parent, source, startLineIndex, sourceLineMap) {
+    const sub = subLexer(source, {}, parent.lineNumberOffset + startLineIndex, sourceLineMap ?? normalizedSourceLines(source).map((_line, i) => parent.lineNumber(startLineIndex + i)));
+    sub.abbrDefs = parent.abbrDefs;
+    sub.linkDefs = parent.linkDefs;
+    sub.footnoteDefs = parent.footnoteDefs;
+    sub.nested = true;
+    sub.depth = parent.depth + 1;
+    return sub;
 }
 export function parse(source, opts = {}) {
     newlineIndexCache.clear();
@@ -373,7 +407,15 @@ function makeMatcherCtx(lexer, opts) {
 // sub-lexer so a nested matcher reading ctx.linkDefs/abbrDefs sees the
 // snippet-local definitions.
 function parseBlockSource(source, opts, root) {
-    const sub = new Lexer(source, opts);
+    const sourceLines = normalizedSourceLines(source);
+    const anchor = root.pos + 1;
+    const sourceLineMap = sourceLines.length > 0 &&
+        sourceLines.every((line, i) => root.lines[anchor + i] === line)
+        ? sourceLines.map((_line, i) => root.lineNumber(anchor + i))
+        : undefined;
+    const sub = subLexer(source, opts, root.lineNumberOffset + anchor, sourceLineMap);
+    if (!sourceLineMap)
+        sub.suppressPositions = true;
     // Propagate nesting depth so MAX_NESTING_DEPTH still bounds extension-owned
     // recursion (a self-recursive container matcher would otherwise stack-overflow).
     sub.depth = root.depth + 1;
@@ -885,7 +927,7 @@ function parseEquationBlock(lexer) {
     const firstLead = raw.match(/^[ \t]+/)?.[0].length ?? 0;
     const inline = parseInline(raw.replace(/^[ \t]+/, ''), lexer.abbrDefs, lexer.linkDefs, {
         baseOffset: lexer.lineOffset(lineIndex) + firstLead,
-        startLine: lineIndex + 1,
+        startLine: lexer.lineNumber(lineIndex),
         startColumn: 1 + firstLead,
     });
     if (inline.length !== 1)
@@ -920,11 +962,13 @@ function parseEquationBlock(lexer) {
     return para;
 }
 function attachBlockPos(lexer, node, startLineIndex, endLineIndexExclusive) {
+    if (lexer.suppressPositions)
+        return;
     const endLineIndex = Math.max(startLineIndex, endLineIndexExclusive - 1);
     const endLine = lexer.lines[endLineIndex] ?? '';
     node.pos = {
-        startLine: startLineIndex + 1,
-        endLine: endLineIndex + 1,
+        startLine: lexer.lineNumber(startLineIndex),
+        endLine: lexer.lineNumber(endLineIndex),
         startColumn: 1,
         endColumn: endLine.length + 1,
         startOffset: lexer.lineOffset(startLineIndex),
@@ -945,6 +989,7 @@ function parseHeading(lexer) {
     // -- only plain text folds.
     let text = line.replace(/^#{1,6} +/, '');
     const sameLevel = new RegExp(`^#{${level}} +(.+)$`);
+    const sameLevelBare = new RegExp(`^#{${level}}[ ]*$`);
     while (!lexer.eof()) {
         const next = lexer.peek();
         if (isBlankLine(next))
@@ -952,6 +997,13 @@ function parseHeading(lexer) {
         const cont = sameLevel.exec(next);
         if (cont) {
             text += '\n' + cont[1];
+            lexer.consume();
+            continue;
+        }
+        // A bare same-level marker line (`#` for a level-1 heading) continues the
+        // heading but contributes no content, so the surrounding marker lines join
+        // with a single newline (djot; carve heading rule "same number ... or none").
+        if (sameLevelBare.test(next)) {
             lexer.consume();
             continue;
         }
@@ -977,7 +1029,7 @@ function parseHeading(lexer) {
     const textColumn = line.length - line.replace(/^#{1,6} +/, '').length + 1;
     node.children = parseInline(text, lexer.abbrDefs, lexer.linkDefs, {
         baseOffset: lexer.lineOffset(lineIndex) + textColumn - 1,
-        startLine: lineIndex + 1,
+        startLine: lexer.lineNumber(lineIndex),
         startColumn: textColumn,
     });
     return node;
@@ -1080,15 +1132,19 @@ function parseCommentBlock(lexer) {
 // wins. Emits no block — the body is stashed on lexer.footnoteDefs and
 // rendered in the endnotes section.
 function parseFootnoteDef(lexer) {
+    const defLineIndex = lexer.pos;
     const m = RE_FOOTNOTE_DEF.exec(lexer.consume());
     const label = m[1].trim();
     const bodyLines = [m[2]];
+    const bodyLineNumbers = [lexer.lineNumber(defLineIndex)];
     let pendingBlanks = 0;
+    let pendingBlankLineNumbers = [];
     let contentCol = -1;
     while (!lexer.eof()) {
         const ln = lexer.peek();
         if (isBlankLine(ln)) {
             pendingBlanks++;
+            pendingBlankLineNumbers.push(lexer.lineNumber(lexer.pos));
             lexer.consume();
             continue;
         }
@@ -1097,20 +1153,26 @@ function parseFootnoteDef(lexer) {
         // use); the attached block ends at a blank line, another `+`, or the next
         // footnote definition.
         if (/^\+[ \t]*$/.test(ln)) {
+            const plusLineNumber = lexer.lineNumber(lexer.pos);
             lexer.consume();
             pendingBlanks = 0;
+            pendingBlankLineNumbers = [];
             const attached = [];
+            const attachedLineNumbers = [];
             while (!lexer.eof()) {
                 const a = lexer.peek();
                 if (isBlankLine(a) || /^\+[ \t]*$/.test(a) || RE_FOOTNOTE_DEF.test(a))
                     break;
+                attachedLineNumbers.push(lexer.lineNumber(lexer.pos));
                 lexer.consume();
                 attached.push(a);
             }
             if (attached.length > 0) {
                 bodyLines.push('');
+                bodyLineNumbers.push(plusLineNumber);
                 for (const a of attached)
                     bodyLines.push(a);
+                bodyLineNumbers.push(...attachedLineNumbers);
             }
             continue;
         }
@@ -1120,10 +1182,14 @@ function parseFootnoteDef(lexer) {
             // so deeper-indented nested structure inside the note is preserved.
             if (contentCol === -1)
                 contentCol = ws;
-            for (let k = 0; k < pendingBlanks; k++)
+            for (let k = 0; k < pendingBlanks; k++) {
                 bodyLines.push('');
+                bodyLineNumbers.push(pendingBlankLineNumbers[k]);
+            }
             pendingBlanks = 0;
+            pendingBlankLineNumbers = [];
             bodyLines.push(ln.slice(Math.min(contentCol, ws)));
+            bodyLineNumbers.push(lexer.lineNumber(lexer.pos));
             lexer.consume();
         }
         else {
@@ -1131,17 +1197,13 @@ function parseFootnoteDef(lexer) {
         }
     }
     if (!lexer.footnoteDefs.has(label)) {
-        const sub = new Lexer(bodyLines.join('\n'));
-        sub.abbrDefs = lexer.abbrDefs;
-        sub.linkDefs = lexer.linkDefs;
-        sub.footnoteDefs = lexer.footnoteDefs;
-        sub.nested = true;
-        sub.depth = lexer.depth + 1;
+        const sub = nestedSubLexer(lexer, bodyLines.join('\n'), defLineIndex, bodyLineNumbers);
         lexer.footnoteDefs.set(label, parseBlocks(sub, 0));
     }
     return null;
 }
 function parseAdmonition(lexer) {
+    const openLineIndex = lexer.pos;
     const open = lexer.consume();
     const m = RE_ADMONITION_OPEN.exec(open);
     const fence = m[1].length;
@@ -1166,12 +1228,7 @@ function parseAdmonition(lexer) {
         lexer.consume();
         inner.push(ln);
     }
-    const subLexer = new Lexer(inner.join('\n'));
-    subLexer.abbrDefs = lexer.abbrDefs;
-    subLexer.linkDefs = lexer.linkDefs;
-    subLexer.footnoteDefs = lexer.footnoteDefs;
-    subLexer.nested = true;
-    subLexer.depth = lexer.depth + 1;
+    const subLexer = nestedSubLexer(lexer, inner.join('\n'), openLineIndex + 1);
     const children = parseBlocks(subLexer, 0);
     const node = { type: 'admonition', kind, children };
     // `!== undefined` (not truthiness): an explicitly empty quoted title
@@ -1298,6 +1355,7 @@ function hardBreaksHasCloser(lexer) {
 // promoted to hard breaks ONLY in the div's DIRECT paragraph children, and
 // there is no leading-whitespace preservation. Emits `<div class="hardbreaks">`.
 function parseHardBreaksBlock(lexer) {
+    const openLineIndex = lexer.pos;
     const m = RE_HARDBREAKS_OPEN.exec(lexer.consume());
     const fence = m[1].length;
     const inner = [];
@@ -1311,12 +1369,7 @@ function parseHardBreaksBlock(lexer) {
         lexer.consume();
         inner.push(ln);
     }
-    const subLexer = new Lexer(inner.join('\n'));
-    subLexer.abbrDefs = lexer.abbrDefs;
-    subLexer.linkDefs = lexer.linkDefs;
-    subLexer.footnoteDefs = lexer.footnoteDefs;
-    subLexer.nested = true;
-    subLexer.depth = lexer.depth + 1;
+    const subLexer = nestedSubLexer(lexer, inner.join('\n'), openLineIndex + 1);
     const children = parseBlocks(subLexer, 0);
     for (const child of children) {
         if (child.type === 'paragraph') {
@@ -1372,6 +1425,7 @@ function divHasCloser(lexer) {
     return false;
 }
 function parseDiv(lexer) {
+    const openLineIndex = lexer.pos;
     const m = RE_DIV_OPEN.exec(lexer.consume());
     const fence = m[1].length;
     // Optional inert grouping `[label]` on a typeless div (`::: [First]`).
@@ -1387,12 +1441,7 @@ function parseDiv(lexer) {
         lexer.consume();
         inner.push(ln);
     }
-    const subLexer = new Lexer(inner.join('\n'));
-    subLexer.abbrDefs = lexer.abbrDefs;
-    subLexer.linkDefs = lexer.linkDefs;
-    subLexer.footnoteDefs = lexer.footnoteDefs;
-    subLexer.nested = true;
-    subLexer.depth = lexer.depth + 1;
+    const subLexer = nestedSubLexer(lexer, inner.join('\n'), openLineIndex + 1);
     // No inline opener attributes (strict djot): a bare `:::` carries none;
     // a preceding block-attribute line attaches them in parseBlocks.
     const node = { type: 'div', children: parseBlocks(subLexer, 0) };
@@ -1407,8 +1456,9 @@ function parseDiv(lexer) {
 // blank line between entries is allowed, anything else ends the list.
 function parseDefinitionList(lexer) {
     const items = [];
-    const parseDefBody = (first) => {
+    const parseDefBody = (first, firstLineIndex) => {
         const bodyLines = [];
+        const bodyLineNumbers = [];
         // First-block form (`:  +`, mirroring the list `- +`): when the sole
         // content is a lone `+`, the definition body is the FOLLOWING flush-left
         // block, with no indentation. `:  \+` keeps a literal `+` instead.
@@ -1420,12 +1470,15 @@ function parseDefinitionList(lexer) {
                     RE_DEFLIST_TERM.test(a) ||
                     RE_DEFLIST_DEF.test(a))
                     break;
+                const lineIndex = lexer.pos;
                 lexer.consume();
                 bodyLines.push(a);
+                bodyLineNumbers.push(lexer.lineNumber(lineIndex));
             }
         }
         else {
             bodyLines.push(first);
+            bodyLineNumbers.push(lexer.lineNumber(firstLineIndex));
         }
         // A definition continues like a list item (PART 9 \u00a717):
         //  - form A: a deeper-indented line (>= the content column) folds in, and a
@@ -1444,8 +1497,10 @@ function parseDefinitionList(lexer) {
             const ln = lexer.peek();
             // Form B: `+` pull-left continuation.
             if (/^\+[ \t]*$/.test(ln)) {
+                const plusLineIndex = lexer.pos;
                 lexer.consume();
                 const attached = [];
+                const attachedLineNumbers = [];
                 while (!lexer.eof()) {
                     const a = lexer.peek();
                     if (isBlankLine(a) ||
@@ -1453,20 +1508,26 @@ function parseDefinitionList(lexer) {
                         RE_DEFLIST_TERM.test(a) ||
                         RE_DEFLIST_DEF.test(a))
                         break;
+                    const lineIndex = lexer.pos;
                     lexer.consume();
                     attached.push(a);
+                    attachedLineNumbers.push(lexer.lineNumber(lineIndex));
                 }
                 if (attached.length > 0) {
                     bodyLines.push('');
+                    bodyLineNumbers.push(lexer.lineNumber(plusLineIndex));
                     for (const a of attached)
                         bodyLines.push(a);
+                    bodyLineNumbers.push(...attachedLineNumbers);
                 }
                 continue;
             }
             // Form A: an indented continuation line (with no intervening blank).
             if (!isBlankLine(ln) && leadingWhitespace(ln) >= 3) {
                 // Strip the structural indentation but keep a content U+00A0.
+                const lineIndex = lexer.pos;
                 bodyLines.push(ln.replace(/^[^\S\u00a0]+/, ''));
+                bodyLineNumbers.push(lexer.lineNumber(lineIndex));
                 lexer.consume();
                 continue;
             }
@@ -1481,7 +1542,9 @@ function parseDefinitionList(lexer) {
                 const after = lexer.peek(look);
                 if (after !== undefined && !isBlankLine(after) && leadingWhitespace(after) >= 3) {
                     for (let k = 0; k < look; k++) {
+                        const lineIndex = lexer.pos;
                         bodyLines.push('');
+                        bodyLineNumbers.push(lexer.lineNumber(lineIndex));
                         lexer.consume();
                     }
                     continue;
@@ -1496,27 +1559,26 @@ function parseDefinitionList(lexer) {
             // start an interrupting block folds into the open paragraph; a block
             // opener ends the definition.
             if (!startsInterruptingBlock(lexer)) {
+                const lineIndex = lexer.pos;
                 bodyLines.push(ln);
+                bodyLineNumbers.push(lexer.lineNumber(lineIndex));
                 lexer.consume();
                 continue;
             }
             break;
         }
-        const sub = new Lexer(bodyLines.join('\n'));
-        sub.abbrDefs = lexer.abbrDefs;
-        sub.linkDefs = lexer.linkDefs;
-        sub.footnoteDefs = lexer.footnoteDefs;
-        sub.nested = true;
-        sub.depth = lexer.depth + 1;
+        const sub = nestedSubLexer(lexer, bodyLines.join('\n'), firstLineIndex, bodyLineNumbers);
         return parseBlocks(sub, 0);
     };
     while (!lexer.eof() && RE_DEFLIST_TERM.test(lexer.peek())) {
         const terms = [];
         const definitions = [];
+        const definitionLines = [];
         while (!lexer.eof()) {
             const t = RE_DEFLIST_TERM.exec(lexer.peek());
             if (!t)
                 break;
+            const termLineIndex = lexer.pos;
             lexer.consume();
             // A term is multi-line like a heading: a following plain line folds into
             // it with a soft break, instead of ending the list and stranding the
@@ -1533,7 +1595,11 @@ function parseDefinitionList(lexer) {
                 termText += '\n' + next;
                 lexer.consume();
             }
-            terms.push(parseInline(termText, lexer.abbrDefs, lexer.linkDefs));
+            terms.push(parseInline(termText, lexer.abbrDefs, lexer.linkDefs, {
+                baseOffset: lexer.lineOffset(termLineIndex) + lexer.lines[termLineIndex].indexOf(t[1]),
+                startLine: lexer.lineNumber(termLineIndex),
+                startColumn: lexer.lines[termLineIndex].indexOf(t[1]) + 1,
+            }));
         }
         while (!lexer.eof()) {
             // A blank line before a `:  ` definition is allowed: a definition may be
@@ -1549,13 +1615,15 @@ function parseDefinitionList(lexer) {
                 for (let k = 0; k < look; k++)
                     lexer.consume();
             }
+            const defLineIndex = lexer.pos;
             const d = RE_DEFLIST_DEF.exec(lexer.peek());
             if (!d)
                 break;
             lexer.consume();
-            definitions.push(parseDefBody(d[1]));
+            definitionLines.push(lexer.lineNumber(defLineIndex));
+            definitions.push(parseDefBody(d[1], defLineIndex));
         }
-        items.push({ terms, definitions });
+        items.push({ terms, definitions, definitionLines });
         // Allow a single blank line before the next entry's `:: term`.
         if (!lexer.eof() && isBlankLine(lexer.peek())) {
             let look = 1;
@@ -1660,7 +1728,9 @@ function trackBlockQuoteLazyState(content, state) {
     state.paragraphOpen = true;
 }
 function parseBlockQuote(lexer) {
+    const firstLineIndex = lexer.pos;
     const inner = [];
+    const innerLineNumbers = [];
     const state = {
         inFence: false,
         fenceClose: null,
@@ -1672,9 +1742,11 @@ function parseBlockQuote(lexer) {
         const ln = lexer.peek();
         const m = RE_BLOCKQUOTE.exec(ln);
         if (m) {
+            const lineIndex = lexer.pos;
             lexer.consume();
             const content = m[1] ?? '';
             inner.push(content);
+            innerLineNumbers.push(lexer.lineNumber(lineIndex));
             trackBlockQuoteLazyState(content, state);
             continue;
         }
@@ -1686,13 +1758,16 @@ function parseBlockQuote(lexer) {
         // splice them into the quote body behind a blank-line separator, so they
         // parse as their own block instead of folding into the quoted paragraph.
         if (/^\+[ \t]*$/.test(ln)) {
+            const plusLineNumber = lexer.lineNumber(lexer.pos);
             lexer.consume();
             const attached = [];
+            const attachedLineNumbers = [];
             while (!lexer.eof()) {
                 const next = lexer.peek();
                 if (isBlankLine(next) || RE_BLOCKQUOTE.test(next) || /^\+[ \t]*$/.test(next)) {
                     break;
                 }
+                attachedLineNumbers.push(lexer.lineNumber(lexer.pos));
                 lexer.consume();
                 attached.push(next);
             }
@@ -1700,9 +1775,12 @@ function parseBlockQuote(lexer) {
                 // `inner` always holds the quote's first content line, so a leading
                 // blank separates the attached block from it.
                 inner.push('');
+                innerLineNumbers.push(plusLineNumber);
                 for (const attachedLine of attached)
                     inner.push(attachedLine);
+                innerLineNumbers.push(...attachedLineNumbers);
                 inner.push('');
+                innerLineNumbers.push(plusLineNumber);
                 // The attached block closed any open paragraph: a following unmarked
                 // line no longer lazily continues the quote.
                 state.paragraphOpen = false;
@@ -1734,16 +1812,13 @@ function parseBlockQuote(lexer) {
         // list marker when no open paragraph precedes it.
         if (!state.paragraphOpen)
             break;
+        const lineIndex = lexer.pos;
         lexer.consume();
         inner.push(ln);
+        innerLineNumbers.push(lexer.lineNumber(lineIndex));
         trackBlockQuoteLazyState(ln, state);
     }
-    const subLexer = new Lexer(inner.join('\n'));
-    subLexer.abbrDefs = lexer.abbrDefs;
-    subLexer.linkDefs = lexer.linkDefs;
-    subLexer.footnoteDefs = lexer.footnoteDefs;
-    subLexer.nested = true;
-    subLexer.depth = lexer.depth + 1;
+    const subLexer = nestedSubLexer(lexer, inner.join('\n'), firstLineIndex, innerLineNumbers);
     const children = parseBlocks(subLexer, 0);
     const bq = { type: 'blockquote', children };
     // Optional caption with ^
@@ -2120,6 +2195,7 @@ function parseList(lexer) {
     const items = [];
     let loose = false;
     while (!lexer.eof()) {
+        const itemStartLineIndex = lexer.pos;
         const line = lexer.peek();
         if (isBlankLine(line)) {
             // Blank lines between siblings are handled by the per-item collector
@@ -2176,6 +2252,8 @@ function parseList(lexer) {
         // directly with a table, code block, quote or div at column 0.
         if (trimStructural(content) === '+') {
             const attached = [];
+            const attachedLineNumbers = [];
+            let attachedStartLineIndex = lexer.pos;
             while (!lexer.eof()) {
                 const a = lexer.peek();
                 if (isBlankLine(a))
@@ -2201,17 +2279,16 @@ function parseList(lexer) {
                     if (sibling || anyMarker || trimStructural(a) === '+')
                         break;
                 }
+                if (attached.length === 0)
+                    attachedStartLineIndex = lexer.pos;
                 attached.push(sliceColumns(a, baseIndent));
+                attachedLineNumbers.push(lexer.lineNumber(lexer.pos));
                 lexer.consume();
             }
-            const sub = new Lexer(attached.join('\n'));
-            sub.abbrDefs = lexer.abbrDefs;
-            sub.linkDefs = lexer.linkDefs;
-            sub.footnoteDefs = lexer.footnoteDefs;
-            sub.nested = true;
-            sub.depth = lexer.depth + 1;
+            const sub = nestedSubLexer(lexer, attached.join('\n'), attachedStartLineIndex, attachedLineNumbers);
             const fbChildren = parseBlocks(sub, 0);
             const fbItem = { type: 'list-item', children: fbChildren };
+            attachBlockPos(lexer, fbItem, itemStartLineIndex, lexer.pos);
             if (checked !== undefined)
                 fbItem.checked = checked;
             if (itemAttrs)
@@ -2220,6 +2297,7 @@ function parseList(lexer) {
             continue;
         }
         const nested = [];
+        const nestedLineNumbers = [];
         // Index in `nested` where an indented ORDERED sub-list begins. Ordered
         // markers do not interrupt a paragraph (§10), so if the sub-list is joined
         // with the lead text it folds into the lead paragraph instead of nesting
@@ -2229,6 +2307,8 @@ function parseList(lexer) {
         // the join, so only an indented ordered marker triggers the split.
         let firstBlockIdx = -1;
         let pendingBlanks = 0;
+        let pendingBlankLineNumbers = [];
+        let postBlankContinuationOpen = false;
         // Indices in `nested` that hold a `+`-injected blank separator. These keep
         // the attached block parsing standalone but never loosen the list (Bug B).
         const plusSeparators = new Set();
@@ -2245,6 +2325,8 @@ function parseList(lexer) {
             const l = lexer.peek();
             if (isBlankLine(l)) {
                 pendingBlanks++;
+                pendingBlankLineNumbers.push(lexer.lineNumber(lexer.pos));
+                postBlankContinuationOpen = false;
                 lexer.consume();
                 continue;
             }
@@ -2254,14 +2336,17 @@ function parseList(lexer) {
             // injects a blank separator so the block parses on its own; the
             // compact-list rule above then keeps the item tight.
             if (indentColumns(l) === baseIndent && trimStructural(l) === '+') {
+                const plusLineNumber = lexer.lineNumber(lexer.pos);
                 lexer.consume();
                 pendingBlanks = 0;
+                pendingBlankLineNumbers = [];
                 // Mark this blank as a `+`-injected separator: it lets the attached
                 // block parse on its own but must NOT loosen the list (Bug B). A real
                 // internal blank before a plain paragraph still loosens; a `+` one
                 // never does, matching carve-php.
                 plusSeparators.add(nested.length);
                 nested.push('');
+                nestedLineNumbers.push(plusLineNumber);
                 trackItemLazyState('', lazyState);
                 while (!lexer.eof()) {
                     const a = lexer.peek();
@@ -2290,6 +2375,7 @@ function parseList(lexer) {
                     }
                     const attached = sliceColumns(a, baseIndent);
                     nested.push(attached);
+                    nestedLineNumbers.push(lexer.lineNumber(lexer.pos));
                     trackItemLazyState(attached, lazyState);
                     lexer.consume();
                 }
@@ -2327,12 +2413,19 @@ function parseList(lexer) {
                         !RE_ADMONITION_OPEN.test(d0) &&
                         lineOpensBlock(d0);
             }
-            if (lw >= contentCol || belowColBlockOpener) {
+            // After a real blank line, carve-php/carve-rs accept any line indented at
+            // least two columns as continuation content for the still-open item. This
+            // is intentionally looser than tight same-paragraph nesting, where a list
+            // marker below the marker's content column still folds as literal text.
+            const postBlankContinuation = (pendingBlanks > 0 || postBlankContinuationOpen) && lw >= baseIndent + 2;
+            if (lw >= contentCol || postBlankContinuation || belowColBlockOpener) {
                 for (let k = 0; k < pendingBlanks; k++) {
                     nested.push('');
+                    nestedLineNumbers.push(pendingBlankLineNumbers[k]);
                     trackItemLazyState('', lazyState);
                 }
                 pendingBlanks = 0;
+                pendingBlankLineNumbers = [];
                 // A sub-list marker (ordered, unordered, or task) at or past the content
                 // column starts the item's block stream. A sub-list MARKER line is
                 // dedented residual-aware so tab+space-aligned siblings keep the same
@@ -2353,7 +2446,9 @@ function parseList(lexer) {
                 const keepResidual = firstBlockIdx !== -1 && isMarker;
                 const dedented = sliceColumns(l, contentCol, keepResidual);
                 nested.push(dedented);
+                nestedLineNumbers.push(lexer.lineNumber(lexer.pos));
                 trackItemLazyState(dedented, lazyState);
+                postBlankContinuationOpen = postBlankContinuation;
                 lexer.consume();
             }
             else if (pendingBlanks === 0 &&
@@ -2384,7 +2479,9 @@ function parseList(lexer) {
                 // (or is the indented ordered marker above) folds into the item's lead
                 // paragraph (djot rule). A block-starting line or a blank ends the list.
                 nested.push(l);
+                nestedLineNumbers.push(lexer.lineNumber(lexer.pos));
                 trackItemLazyState(l, lazyState);
+                postBlankContinuationOpen = false;
                 lexer.consume();
             }
             else {
@@ -2481,20 +2578,18 @@ function parseList(lexer) {
         const keepStreamWhole = firstBlockIdx === -1 || leadIsMarker || colonFenceHasBodyCloser;
         const leadLines = keepStreamWhole ? nested : nested.slice(0, firstBlockIdx);
         const blockLines = keepStreamWhole ? [] : nested.slice(firstBlockIdx);
-        const mkSub = (text) => {
-            const s = new Lexer(text);
-            s.abbrDefs = lexer.abbrDefs;
-            s.linkDefs = lexer.linkDefs;
-            s.footnoteDefs = lexer.footnoteDefs;
-            s.nested = true;
-            s.depth = lexer.depth + 1;
-            return s;
+        const mkSub = (text, startLineIndex, sourceLineMap) => {
+            return nestedSubLexer(lexer, text, startLineIndex, sourceLineMap);
         };
-        const children = parseBlocks(mkSub([content, ...leadLines].join('\n')), 0);
+        const children = parseBlocks(mkSub([content, ...leadLines].join('\n'), itemStartLineIndex, [
+            lexer.lineNumber(itemStartLineIndex),
+            ...nestedLineNumbers.slice(0, leadLines.length),
+        ]), 0);
         if (blockLines.length > 0) {
-            children.push(...parseBlocks(mkSub(blockLines.join('\n')), 0));
+            children.push(...parseBlocks(mkSub(blockLines.join('\n'), itemStartLineIndex + 1 + firstBlockIdx, nestedLineNumbers.slice(firstBlockIdx)), 0));
         }
         const item = { type: 'list-item', children };
+        attachBlockPos(lexer, item, itemStartLineIndex, lexer.pos);
         if (checked !== undefined)
             item.checked = checked;
         if (itemAttrs)
@@ -2508,6 +2603,11 @@ function parseList(lexer) {
         const t = olTypeOf(orderedKind);
         if (t)
             list.olType = t;
+        if (orderedDelim === '.' || orderedDelim === ')')
+            list.delim = orderedDelim;
+    }
+    else if (firstMarkerChar === '-' || firstMarkerChar === '*') {
+        list.bulletChar = firstMarkerChar;
     }
     return list;
 }
@@ -2956,7 +3056,7 @@ function parseParagraph(lexer) {
         type: 'paragraph',
         children: parseInline(text, lexer.abbrDefs, lexer.linkDefs, {
             baseOffset: lexer.lineOffset(startLineIndex) + firstLead,
-            startLine: startLineIndex + 1,
+            startLine: lexer.lineNumber(startLineIndex),
             startColumn: 1 + firstLead,
         }),
     };
@@ -3439,6 +3539,15 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             flush();
             out.push(withPos({ type: 'hard-break' }, source, text, i, i + 2));
             i += 2;
+            continue;
+        }
+        // A backslash at the very end of the content (no following character) is
+        // still a hard break, mirroring the `\`-before-newline rule at end of
+        // input (`para\` at EOF -> `<br>`), matching djot and carve's cheatsheet.
+        if (c === '\\' && i + 1 >= text.length) {
+            flush();
+            out.push(withPos({ type: 'hard-break' }, source, text, i, i + 1));
+            i++;
             continue;
         }
         // Non-breaking space: a backslash followed by a space (djot). Emit the

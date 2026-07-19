@@ -173,10 +173,31 @@ function decodeCssEscapes(value) {
     });
 }
 /** Inject `data-source-line` into the first opening tag of a rendered block. */
+/**
+ * Inject `data-source-line` into the first opening tag of a rendered block,
+ * placed after any author attributes (immediately before the closing `>` or
+ * `/>`), byte-for-byte with carve-php and carve-rs which append it last.
+ */
 function withSourceLine(html, line) {
     if (line === undefined)
         return html;
-    return html.replace(/^(\s*<[A-Za-z][A-Za-z0-9]*)/, `$1 data-source-line="${line}"`);
+    const open = /^\s*<[A-Za-z][A-Za-z0-9-]*(?:\s[^>]*)?>/.exec(html)?.[0];
+    if (open && /\sdata-source-line(?:\s|=|>)/i.test(open))
+        return html;
+    // $1 = `<tag` + author attrs, $2 = the closing `>` or ` />`. The attr scan
+    // steps over quoted values so a `>` inside a quoted attribute (possible in
+    // extension-rendered raw HTML, e.g. `<div title="a > b">`) is not mistaken
+    // for the end of the tag. Core output escapes `>` in values, so this only
+    // matters for extension HTML.
+    return html.replace(/^(\s*<[A-Za-z][A-Za-z0-9-]*(?:"[^"]*"|'[^']*'|[^>"'])*?)(\s*\/?>)/, `$1 data-source-line="${line}"$2`);
+}
+function hasAuthoredSourceLine(attrs) {
+    return Object.keys(attrs?.keyValues ?? {}).some((k) => k.toLowerCase() === 'data-source-line');
+}
+function sourceLineAttr(opts, line, attrs) {
+    return opts.sourceLine && line !== undefined && !hasAuthoredSourceLine(attrs)
+        ? ` data-source-line="${line}"`
+        : '';
 }
 /** Allowed render modes. `"print"` / `"email"` are reserved, not yet valid. */
 const RENDER_MODES = new Set(['interactive', 'static']);
@@ -263,16 +284,11 @@ function renderDocumentBody(ast, opts) {
             }
             const headingAttrs = stripId(node.attrs);
             const inner = renderInlines(node.children, opts);
-            const slAttr = opts.sourceLine && node.pos ? ` data-source-line="${node.pos.startLine}"` : '';
-            out.push(`${indent(depth + 1)}<h${node.level}${slAttr}${renderAttrs(headingAttrs)}>${inner}</h${node.level}>`);
+            const slAttr = sourceLineAttr(opts, node.pos?.startLine, headingAttrs);
+            out.push(`${indent(depth + 1)}<h${node.level}${renderAttrs(headingAttrs)}${slAttr}>${inner}</h${node.level}>`);
             continue;
         }
-        let rendered = renderBlock(node, opts, sectionStack.length);
-        // Raw HTML blocks emit author markup verbatim, so there is no reliable
-        // opening tag to annotate; leave them untouched.
-        if (opts.sourceLine && node.type !== 'raw-block') {
-            rendered = withSourceLine(rendered, node.pos?.startLine);
-        }
+        const rendered = renderBlock(node, opts, sectionStack.length);
         if (rendered !== '')
             out.push(rendered);
     }
@@ -356,7 +372,10 @@ function collectFootnotes(ast) {
         if (n.inline) {
             const number = order.length + 1;
             const refId = `fnref${number}`;
-            order.push({ inline: n.inline, backrefs: [refId] });
+            const entry = { inline: n.inline, backrefs: [refId] };
+            if (n.pos?.startLine !== undefined)
+                entry.sourceLine = n.pos.startLine;
+            order.push(entry);
             n.number = number;
             n.refId = refId;
             return;
@@ -366,7 +385,11 @@ function collectFootnotes(ast) {
             return;
         let idx = labelIndexes.get(n.id);
         if (idx === undefined) {
-            order.push({ label: n.id, backrefs: [] });
+            const entry = { label: n.id, backrefs: [] };
+            const sourceLine = defs[n.id]?.[0]?.pos?.startLine;
+            if (sourceLine !== undefined)
+                entry.sourceLine = sourceLine;
+            order.push(entry);
             idx = order.length - 1;
             labelIndexes.set(n.id, idx);
         }
@@ -419,7 +442,10 @@ function renderFootnoteSection(ast, st, opts) {
         else {
             body.push(`${indent(3)}<p>${blink}</p>`);
         }
-        lines.push(`${indent(2)}<li id="fn${number}">`, ...body, `${indent(2)}</li>`);
+        lines.push(
+        // The endnote item carries the definition's source line so editor
+        // integrations can map the rendered footnote back to its source.
+        `${indent(2)}<li id="fn${number}"${sourceLineAttr(opts, entry.sourceLine)}>`, ...body, `${indent(2)}</li>`);
     });
     lines.push(`${indent(1)}</ol>`, '</section>');
     return lines.join('\n');
@@ -633,47 +659,49 @@ function renderBlock(node, opts, level) {
             if (staticFn) {
                 const out = staticFn(node, ctx);
                 if (out !== undefined)
-                    return out;
+                    return opts.sourceLine ? withSourceLine(out, node.pos?.startLine) : out;
             }
             const fn = e.blockRenderers?.[node.type];
             if (fn) {
                 const out = fn(node, ctx);
                 if (out !== undefined)
-                    return out;
+                    return opts.sourceLine ? withSourceLine(out, node.pos?.startLine) : out;
             }
         }
     }
     switch (node.type) {
         case 'heading': {
             const inner = renderInlines(node.children, opts);
-            return `${pad}<h${node.level}${renderAttrs(node.attrs)}>${inner}</h${node.level}>`;
+            return `${pad}<h${node.level}${renderAttrs(node.attrs)}${sourceLineAttr(opts, node.pos?.startLine, node.attrs)}>${inner}</h${node.level}>`;
         }
         case 'paragraph': {
             const inner = renderInlines(node.children, opts);
-            return `${pad}<p${renderAttrs(node.attrs)}>${inner}</p>`;
+            return `${pad}<p${renderAttrs(node.attrs)}${sourceLineAttr(opts, node.pos?.startLine, node.attrs)}>${inner}</p>`;
         }
         case 'thematic-break':
-            return `${pad}<hr${renderAttrs(node.attrs)}>`;
+            return `${pad}<hr${renderAttrs(node.attrs)}${sourceLineAttr(opts, node.pos?.startLine, node.attrs)}>`;
         case 'code-block': {
             // The opener "header" is resolved to a `title` attribute at parse time
             // (see parseBlocks), so it renders here AND wherever else a code block is
             // emitted (e.g. inside a code-group).
             const langAttr = node.lang ? ` class="language-${node.lang}"` : '';
             const escaped = escapeHtml(node.content);
-            return `${pad}<pre${renderAttrs(node.attrs)}><code${langAttr}>${escaped}\n</code></pre>`;
+            return `${pad}<pre${renderAttrs(node.attrs)}${sourceLineAttr(opts, node.pos?.startLine, node.attrs)}><code${langAttr}>${escaped}\n</code></pre>`;
         }
         case 'blockquote':
             return renderBlockQuote(node, opts, level);
         case 'list':
             return renderList(node, opts, level);
-        case 'image':
-            return `${pad}${renderImage(node, opts)}`;
+        case 'image': {
+            const rendered = `${pad}${renderImage(node, opts)}`;
+            return opts.sourceLine ? withSourceLine(rendered, node.pos?.startLine) : rendered;
+        }
         case 'table':
             return renderTable(node, opts, level);
         case 'admonition':
             return renderAdmonition(node, opts, level);
         case 'div': {
-            const open = `${pad}<div${renderAttrs(node.attrs)}>`;
+            const open = `${pad}<div${renderAttrs(node.attrs)}${sourceLineAttr(opts, node.pos?.startLine, node.attrs)}>`;
             // Core caption floor (graceful degradation): a grouping `[label]` that
             // no extension consumed must not be silently dropped. Surface it as a
             // `<p class="div-label">` at the start of the div content. (A group
@@ -687,17 +715,22 @@ function renderBlock(node, opts, level) {
             return `${open}\n${floor ? `${floor}\n` : ''}${body}\n${pad}</div>`;
         }
         case 'definition-list': {
-            const lines = [`${pad}<dl${renderAttrs(node.attrs)}>`];
+            const lines = [
+                `${pad}<dl${renderAttrs(node.attrs)}${sourceLineAttr(opts, node.pos?.startLine, node.attrs)}>`,
+            ];
             for (const it of node.items) {
                 for (const t of it.terms)
-                    lines.push(`${pad}  <dt>${renderInlines(t, opts)}</dt>`);
-                for (const d of it.definitions) {
+                    lines.push(`${pad}  <dt${sourceLineAttr(opts, t[0]?.pos?.startLine)}>${renderInlines(t, opts)}</dt>`);
+                for (const [di, d] of it.definitions.entries()) {
+                    // The dd anchors at its `:  ` marker line (the body may start
+                    // later, e.g. the `:  +` first-block form), matching carve-php.
+                    const ddLine = it.definitionLines?.[di] ?? d[0]?.pos?.startLine;
                     if (d.length === 1 && d[0].type === 'paragraph') {
-                        lines.push(`${pad}  <dd>${renderInlines(d[0].children, opts)}</dd>`);
+                        lines.push(`${pad}  <dd${sourceLineAttr(opts, ddLine)}>${renderInlines(d[0].children, opts)}</dd>`);
                     }
                     else {
                         const body = d.map((b) => renderBlock(b, opts, level + 2)).join('\n');
-                        lines.push(`${pad}  <dd>\n${body}\n${pad}  </dd>`);
+                        lines.push(`${pad}  <dd${sourceLineAttr(opts, ddLine)}>\n${body}\n${pad}  </dd>`);
                     }
                 }
             }
@@ -727,11 +760,11 @@ function renderBlock(node, opts, level) {
 }
 function renderBlockQuote(node, opts, level) {
     const pad = indent(level);
-    const attrs = renderAttrs(node.attrs);
+    const attrs = sourceLineAttr(opts, node.pos?.startLine, node.attrs) + renderAttrs(node.attrs);
     if (node.children.length === 1 && node.children[0].type === 'paragraph') {
         const para = node.children[0];
         const inner = renderInlines(para.children, opts);
-        return `${pad}<blockquote${attrs}><p${renderAttrs(para.attrs)}>${inner}</p></blockquote>`;
+        return `${pad}<blockquote${attrs}><p${renderAttrs(para.attrs)}${sourceLineAttr(opts, para.pos?.startLine, para.attrs)}>${inner}</p></blockquote>`;
     }
     const inner = node.children.map((c) => renderBlock(c, opts, level + 1)).join('\n');
     return `${pad}<blockquote${attrs}>\n${inner}\n${pad}</blockquote>`;
@@ -749,7 +782,7 @@ function renderList(node, opts, level) {
     const items = node.items
         .map((it) => renderListItem(it, opts, level + 1, node.tight))
         .join('\n');
-    return `${pad}<${tag}${typeAttr}${startAttr}${renderAttrs(node.attrs)}>\n${items}\n${pad}</${tag}>`;
+    return `${pad}<${tag}${typeAttr}${startAttr}${renderAttrs(node.attrs)}${sourceLineAttr(opts, node.pos?.startLine, node.attrs)}>\n${items}\n${pad}</${tag}>`;
 }
 function renderListItem(item, opts, level, tight) {
     const pad = indent(level);
@@ -769,16 +802,16 @@ function renderListItem(item, opts, level, tight) {
         // must keep the <p> so the attributes survive.
         if (tight && isLead && !p.attrs)
             return inner;
-        return `<p${renderAttrs(p.attrs)}>${inner}</p>`;
+        return `<p${renderAttrs(p.attrs)}${sourceLineAttr(opts, p.pos?.startLine, p.attrs)}>${inner}</p>`;
     };
     // Single paragraph: stays on the <li> line. Tight omits <p>, loose keeps it.
     if (item.children.length === 1 && item.children[0].type === 'paragraph') {
-        return `${pad}<li${renderAttrs(item.attrs)}>${checkbox}${wrapPara(item.children[0], true)}</li>`;
+        return `${pad}<li${renderAttrs(item.attrs)}${sourceLineAttr(opts, item.pos?.startLine, item.attrs)}>${checkbox}${wrapPara(item.children[0], true)}</li>`;
     }
     // Mixed content (e.g. a lead paragraph followed by a nested list): the
     // first paragraph sits on the <li> line; remaining blocks go below,
     // indented one level deeper, with the closing </li> back at item indent.
-    let head = `${pad}<li${renderAttrs(item.attrs)}>${checkbox}`;
+    let head = `${pad}<li${renderAttrs(item.attrs)}${sourceLineAttr(opts, item.pos?.startLine, item.attrs)}>${checkbox}`;
     const body = [];
     // A paragraph that immediately follows the lead paragraph (a consecutive
     // run from index 0, e.g. a `+`-attached second paragraph -- Bug B) renders as
@@ -811,7 +844,9 @@ function renderListItem(item, opts, level, tight) {
 }
 function renderTable(node, opts, level) {
     const pad = indent(level);
-    const lines = [`${pad}<table${renderAttrs(node.attrs)}>`];
+    const lines = [
+        `${pad}<table${renderAttrs(node.attrs)}${sourceLineAttr(opts, node.pos?.startLine, node.attrs)}>`,
+    ];
     if (node.caption) {
         lines.push(`${pad}  <caption>${renderInlines(node.caption, opts)}</caption>`);
     }
@@ -1013,7 +1048,7 @@ function renderAdmonition(node, opts, level) {
         restAttrs.order = node.attrs.order.filter((s) => s !== '.class');
     const rest = renderAttrs(restAttrs);
     const tag = canonical ? 'aside' : 'div';
-    return `${pad}<${tag} class="${classValue}"${rest}>\n${titleLine}${labelLine}${body}\n${pad}</${tag}>`;
+    return `${pad}<${tag}${sourceLineAttr(opts, node.pos?.startLine, restAttrs)} class="${classValue}"${rest}>\n${titleLine}${labelLine}${body}\n${pad}</${tag}>`;
 }
 function renderFigure(node, opts, level) {
     const pad = indent(level);
@@ -1031,7 +1066,7 @@ function renderFigure(node, opts, level) {
     else {
         inner = renderTable(node.target, opts, level + 1);
     }
-    return `${pad}<figure${renderAttrs(node.attrs)}>\n${inner}\n${pad}  <figcaption>${renderInlines(node.caption, opts)}</figcaption>\n${pad}</figure>`;
+    return `${pad}<figure${renderAttrs(node.attrs)}${sourceLineAttr(opts, node.pos?.startLine, node.attrs)}>\n${inner}\n${pad}  <figcaption>${renderInlines(node.caption, opts)}</figcaption>\n${pad}</figure>`;
 }
 function renderImage(img, opts) {
     const titleAttr = img.title !== undefined ? ` title="${escapeAttr(img.title)}"` : '';

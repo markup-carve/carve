@@ -1,0 +1,10 @@
+Footnote definition separator must be a space
+
+```
+Use [^a].
+
+[^a]:	Tabbed
+.
+<p>Use [^a].</p>
+<p>[^a]:	Tabbed</p>
+```
