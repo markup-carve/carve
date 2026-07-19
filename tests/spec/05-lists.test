@@ -90,6 +90,25 @@ not a list</p>
 ```
 
 ```
+1. one
+
+  - sub a
+  - sub b
+
+1. two
+.
+<ol>
+  <li><p>one</p>
+    <ul>
+      <li>sub a</li>
+      <li>sub b</li>
+    </ul>
+  </li>
+  <li><p>two</p></li>
+</ol>
+```
+
+```
 - [ ] outer
   - inner
 .
