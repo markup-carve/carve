@@ -1503,13 +1503,41 @@ abbreviation_expansion = {character - newline}+ ;
    PART 6: INCLUDES
    ============================================================================ *)
 
-(* PROCESSOR-LEVEL (PART 9 §19): includes are NOT part of the core parser
-   and the directive is deliberately NOT reachable from `block`/`inline` --
-   a conformant core may leave `{{ … }}` literal. *)
-include_directive = "{{", space, include_path, [include_section], [include_options], space, "}}" ;
-include_path = {character - ('#' | '@' | '}' | ' ')}+ ;
-include_section = '#', identifier ;
-include_options = {space, '@', identifier, ':', attribute_value}+ ;
+(* PROCESSOR-LEVEL (PART 9 §19): the file-inclusion / transclusion directive
+   is NOT part of the core parser. It is deliberately NOT reachable from
+   `block` or `inline`, so a conformant CORE never recognizes it and leaves
+   `{{ … }}` literal (renders the bytes under ordinary inline rules; a
+   bare-path directive with no active inline markers therefore emits verbatim).
+   Expansion is a HOST-driven processor pass whose full normative semantics --
+   the host-resolver contract, block vs inline merge, cross-file collision
+   renaming, cycle / depth / size limits, security model, and error handling --
+   are PART 9 §19. The productions below fix the DIRECTIVE SYNTAX only.
+
+   BLOCK vs INLINE (semantic, pinned in §19, not context-free): a directive
+   ALONE on its own line is a BLOCK include (resolved content merges as
+   blocks); a directive appearing within inline content is an INLINE include
+   (resolved content merges as inline). This mirrors djot's block/inline split.
+
+   TEXT-ONLY: `{{ … }}` includes Carve / text sources only. A binary or image
+   target is NOT an include (images use `![]()`); on a binary or unreadable
+   target the processor emits a Warning and leaves the directive literal. *)
+include_directive = "{{", space, include_path, [include_section],
+                    {space, include_option}, space, "}}" ;
+(* path: bare (stops at space / `#` / `@` / `}`) OR double-quoted for a path
+   containing spaces. Resolved relative to the including file (the host's job). *)
+include_path       = quoted_path | bare_path ;
+bare_path          = {character - ('#' | '@' | '}' | ' ' | '"')}+ ;
+quoted_path        = '"', {escaped_char | (character - '"' - '\')}, '"' ;
+(* `#section`: include only the subtree rooted at the heading whose id equals
+   `section` -- that heading through the content up to the next heading of the
+   same or higher level (§19). *)
+include_section    = '#', identifier ;
+(* `@key:value`: an extensible option slot. The one CONCRETE option defined in
+   §19 is `@lines:N-M` (include a physical-line range); every other `@key` is
+   RESERVED. Options are space-separated and combinable with `#section`. *)
+include_option     = '@', include_option_name, ':', include_option_value ;
+include_option_name  = identifier ;
+include_option_value = {character - ('#' | '@' | '}' | ' ')}+ ;
 
 (* ============================================================================
    PART 7: LEXICAL ELEMENTS
@@ -2255,16 +2283,79 @@ EOF = (* end of file *) ;
       - Mentions (`@user`), tags (`#tag`) and smart typography are ON by
         default in the conformant core; a processor MAY disable them. The
         corpus pins the default-on behavior.
-      - Includes (`{{ path }}`) are a PROCESSOR-LEVEL directive, NOT part
-        of the core parser; a conformant core MAY leave `{{ … }}` literal.
-        An implementing processor MUST treat includes as opt-in (off for
-        untrusted input) and MUST resolve include paths only to files under
-        the configured project root AFTER symlink resolution (rejecting
-        `..`-traversal and absolute paths that escape the root). It MUST NOT
-        fetch remote URLs unless an allowlist is explicitly configured, and
-        MUST bound BOTH recursion depth AND total expanded byte size to
-        prevent include-bomb amplification (a file that includes another N
-        times, transitively). See PART 9 §25 for the general security model.
+      - FILE INCLUSION / TRANSCLUSION (`{{ … }}`) is a PROCESSOR-LEVEL
+        directive, NOT part of the core parser. Its syntax is PART 6; its
+        normative semantics are below and mirrored, with worked examples, in
+        docs/includes.md. A conformant CORE never recognizes the directive
+        (unreachable from `block`/`inline`) and leaves `{{ … }}` LITERAL --
+        it parses the bytes under ordinary inline rules, so a bare-path
+        directive with no active inline markers emits verbatim (corpus
+        "Include directive with no resolver renders literal"). The rules a
+        conforming PROCESSOR that DOES expand includes MUST follow:
+
+        I1 SYNTAX. `{{ path }}`, `{{ path #section }}`, `{{ path @key:value }}`,
+           combinable `{{ path #section @key:value }}` (PART 6). `path` is bare
+           (stops at space / `#` / `@` / `}`) or double-quoted for spaces, and
+           is resolved RELATIVE TO THE INCLUDING FILE. `#section` selects the
+           subtree rooted at the heading whose id equals `section` (that heading
+           through content up to the next same-or-higher-level heading).
+           `@key:value` is an extensible option slot; the one defined option is
+           `@lines:N-M` (a 1-based inclusive physical-line range). When both are
+           present, `#section` selects first and `@lines` is relative to the
+           SELECTED SECTION's first line (choice; see docs/includes.md).
+           Every other `@key` is RESERVED.
+
+        I2 BLOCK vs INLINE. A directive ALONE on its own line is a BLOCK
+           include: the resolved content merges as BLOCKS at the directive
+           site. A directive within inline content is an INLINE include: the
+           resolved content merges as INLINE. Mirrors the §10 block/inline model.
+
+        I3 RESOLUTION MODEL. The CORE performs NO file I/O. The HOST supplies a
+           resolver with the contract: given (path, section?, options?,
+           includingFileContext) it returns resolved Carve source text OR an
+           error. If NO resolver is configured the directive is left LITERAL
+           (the processor emits the verbatim `{{ … }}`). This mirrors the
+           bibliography loader precedent (host resolves, parser stays pure;
+           docs/extensions.md §6.1) and preserves browser / WASM parity.
+
+        I4 MECHANISM (normative on OUTCOME, permissive on mechanism). The
+           observable result MUST be AS IF the resolved content appeared inline
+           at the directive site. An implementation MAY splice source pre-parse
+           OR parse-and-merge events / AST. Source positions SHOULD be remapped
+           so source-mapped hosts can attribute included spans to the child file
+           (Carve's AST already distinguishes snippet-local from document-space
+           offsets; carve-js src/ast.ts `Position`).
+
+        I5 CROSS-FILE COLLISIONS -- DETERMINISTIC RENAME-ON-COLLISION. When
+           expansion brings together duplicate FOOTNOTE labels, reference-
+           definition labels, or EXPLICIT heading ids, the FIRST occurrence in
+           document order keeps its label / id and each later duplicate is
+           renamed. Order is: parent before child, and an earlier include before
+           a later include (the fully expanded document read top to bottom).
+           The rename appends the least `-N` (integer N >= 2) that is not already
+           taken in that namespace: first `-2`, then `-3`, and so on. A Warning
+           is emitted per rename. Auto-generated (slug) heading-id collisions are
+           NOT covered here; they continue to dedup via the existing heading-id
+           tracker (§13; choice, see docs/includes.md).
+
+        I6 LIMITS. The processor MUST detect inclusion CYCLES (a file that
+           transitively includes itself): the offending directive is left
+           literal, not expanded, and a Warning is emitted. Recursion is bounded
+           by MAX_INCLUDE_DEPTH = 16 (a small, human-scale nesting bound, far
+           under the structural MAX_NESTING = 200 of §25; proposed value, see
+           docs/includes.md); a directive at greater depth is left literal with
+           a Warning. Total expanded output is charged against the same per-
+           render byte budget as other amplifying features -- `max(1 MB,
+           8 x input length)` (§25); once exceeded, further expansion degrades
+           to the literal directive with a Warning.
+
+        I7 ERRORS. Unreadable path, binary / non-text content, cycle,
+           depth-exceeded, and size-exceeded EACH emit a Warning and leave the
+           directive LITERAL (visible and debuggable). Inclusion NEVER silently
+           drops a directive. See PART 9 §25 (File inclusion) for the security
+           model: parser stays pure, resolver is host-supplied and MUST enforce
+           path containment, a symlink / escape policy, and same-sanitization
+           parsing (no privilege escalation via include).
 
    20. RAW PASSTHROUGH -- NORMATIVE (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT
