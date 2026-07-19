@@ -4284,22 +4284,58 @@ EOF = (* end of file *) ;
       - Mentions (`@user`), tags (`#tag`) and smart typography are ON by
         default in the conformant core; a processor MAY disable them. The
         corpus pins the default-on behavior.
-      - Includes (`{{ path }}`) are a PROCESSOR-LEVEL directive, NOT part
-        of the core parser; a conformant core MAY leave `{{ … }}` literal.
-        An implementing processor MUST treat includes as opt-in (off for
-        untrusted input) and MUST resolve include paths only to files under
-        the configured project root AFTER symlink resolution (rejecting
-        `..`-traversal and absolute paths that escape the root). It MUST NOT
-        fetch remote URLs unless an allowlist is explicitly configured, and
-        MUST bound BOTH recursion depth AND total expanded byte size to
-        prevent include-bomb amplification (a file that includes another N
-        times, transitively). Once the total byte budget is exhausted, it MUST
-        refuse later include directives BEFORE invoking their resolver; the
-        byte bound also bounds reads, not only emitted output. See PART 9 §25
-        for the general security model. The processor-neutral security vectors
-        under `tests/include-security-conformance/` pin these requirements;
-        they do NOT specify the broader include language reserved for a
-        processor.
+      - FILE INCLUSION / TRANSCLUSION (`{{ … }}`) is a PROCESSOR-LEVEL
+        directive, NOT part of the core parser. Its syntax is PART 6; its
+        normative semantics are below and mirrored, with worked examples, in
+        docs/includes.md. A conformant CORE never recognizes the directive
+        (unreachable from `block`/`inline`) and leaves `{{ … }}` LITERAL. The
+        rules a conforming PROCESSOR that DOES expand includes MUST follow:
+
+        I1 SYNTAX. `{{ path }}`, `{{ path #section }}`, `{{ path @key:value }}`,
+           combinable `{{ path #section @key:value }}` (PART 6). `path` is bare
+           or double-quoted for spaces, and is resolved RELATIVE TO THE
+           INCLUDING FILE. `#section` selects a heading subtree. `@key:value`
+           is an extensible option slot; `@lines:N-M` selects a 1-based
+           inclusive physical-line range. Every other `@key` is RESERVED.
+
+        I2 BLOCK vs INLINE. A directive ALONE on its own line is a BLOCK
+           include: resolved content merges as BLOCKS. A directive within
+           inline content is an INLINE include and may merge only inline
+           content.
+
+        I3 RESOLUTION MODEL. The CORE performs NO file I/O. The HOST supplies
+           the resolver. If NO resolver is configured the directive stays
+           LITERAL. Include processing is opt-in and MUST be off for untrusted
+           input.
+
+        I4 MECHANISM. The observable result MUST be AS IF the resolved content
+           appeared at the directive site. Implementations MAY splice source
+           before parsing or parse and merge trees. Source positions SHOULD be
+           attributed to the child file.
+
+        I5 CROSS-FILE COLLISIONS. Duplicate footnote labels and explicit
+           heading ids are renamed deterministically in document order. The
+           first keeps its name; later collisions take the least free `-N`,
+           starting at `-2`, with a Warning. Reference definitions remain
+           file-scoped. Auto-generated heading ids continue through the §13
+           tracker.
+
+        I6 LIMITS. The processor MUST detect inclusion cycles and MUST bound
+           recursion depth. It MUST also bound total expanded byte size,
+           charging repeated includes per occurrence. Once the byte budget is
+           exhausted it MUST refuse later directives BEFORE invoking their
+           resolver, so the bound limits reads as well as emitted output.
+           Failures leave the directive literal and emit a Warning.
+
+        I7 ERRORS AND SECURITY. Unreadable or non-text content, cycles, depth
+           exhaustion and byte exhaustion warn and remain literal. Resolution
+           MUST be confined to files under the configured project root AFTER
+           symlink resolution, rejecting traversal and absolute escapes. A
+           processor MUST NOT fetch remote URLs without an explicit allowlist.
+           Included content receives the same sanitization as parent content.
+           The processor-neutral vectors in
+           `tests/include-security-conformance/` pin only these security
+           requirements; the broader suite pins I1-I14.
 
    20. RAW PASSTHROUGH -- NORMATIVE (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT

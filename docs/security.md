@@ -162,6 +162,55 @@ or a quadratic blow-up.
 For an explicit input-size ceiling (and broader feature restriction), configure
 a `Profile` / safe mode `maxLength`.
 
+## File inclusion
+
+File inclusion / transclusion - the <code v-pre>{{ … }}</code> directive (PART 9 §19, full page
+at [File inclusion](/includes)) - is a **processor-level** feature and is
+**off by default**. The core parser performs **no file I/O**: it never opens,
+reads, or resolves a path, so a browser / WASM / sandboxed build is inert here
+by construction, and an unconfigured processor leaves <code v-pre>{{ … }}</code> literal. All
+filesystem behavior lives in a **host-supplied resolver** that you opt into.
+
+Because inclusion is the one feature that can pull in *new source you did not
+author inline*, it carries its own threat surface. The division of
+responsibility:
+
+- **The parser stays pure.** No inclusion can make the core touch the
+  filesystem or the network. Absent a resolver, the directive renders as inert
+  text.
+- **The host resolver owns containment.** A resolver you enable MUST:
+  - **Confine paths to a configured root.** Resolve `..` and symlinks *first*,
+    then reject any target that lands outside the root. A path is contained only
+    after canonicalization, not before.
+  - **Apply a symlink / escape policy.** A symlink whose real target escapes the
+    root is rejected the same as a literal `../` traversal.
+  - **Refuse remote fetches by default.** Absolute paths and URL schemes
+    (`file:`, `http:`, `data:`, …) MAY be denied outright; enable a remote
+    source only behind an explicit allowlist.
+- **Included content is parsed under the SAME sanitization as any Carve.**
+  Inclusion is a *source-merge*, not a privilege boundary: raw-HTML passthrough,
+  the URL-scheme denylist, attribute hardening, and Trojan-Source stripping all
+  apply to included bytes exactly as to inline bytes. An include can never
+  reintroduce a capability the host disabled for the parent - there is **no
+  privilege escalation via include**.
+- **Amplification is bounded.** The processor MUST detect inclusion **cycles**
+  (a file that transitively includes itself) and leave the offending directive
+  literal; bound recursion by `MAX_INCLUDE_DEPTH` (16); and charge total
+  expanded output against the same `max(1 MB, 8 × input length)` byte budget as
+  other expansion features (see *Resource limits* above). Past any limit the
+  directive degrades to literal text with a Warning - never a silent drop.
+
+Threats this policy addresses: **path traversal** (`../../etc/passwd`),
+**symlink escape** (a link inside the root pointing out of it), **include
+cycles** (A includes B includes A), **include-bomb / size amplification** (a
+small file included N times, transitively - the zip-bomb analog), and
+**DoS by depth** (unbounded nesting). Non-filesystem hosts have no resolver, so
+every directive is inert.
+
+For the directive syntax, the resolver contract, cross-file id / footnote /
+reference collision handling, and error behavior, see the
+[File inclusion](/includes) page.
+
 ## Non-HTML render targets
 
 The guarantees above are not HTML-only. The Markdown, plain-text, and ANSI
