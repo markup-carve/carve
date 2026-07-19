@@ -2321,7 +2321,11 @@ EOF = (* end of file *) ;
         I2 BLOCK vs INLINE. A directive ALONE on its own line is a BLOCK
            include: the resolved content merges as BLOCKS at the directive
            site. A directive within inline content is an INLINE include: the
-           resolved content merges as INLINE. Mirrors the §10 block/inline model.
+           resolved content MUST parse (as an I4 fragment) to INLINE-ONLY
+           content -- a single paragraph, or nothing -- and its inlines are
+           spliced into the surrounding inline sequence. Resolved content
+           with any other block structure in inline position is an ERROR
+           (Warning + literal, per I7). Mirrors the §10 block/inline model.
 
         I3 RESOLUTION MODEL. The CORE performs NO file I/O. The HOST supplies a
            resolver with the contract: given (path, section?, options?,
@@ -2333,11 +2337,24 @@ EOF = (* end of file *) ;
 
         I4 MECHANISM (normative on OUTCOME, permissive on mechanism). The
            observable result MUST be AS IF the resolved content appeared inline
-           at the directive site. An implementation MAY splice source pre-parse
-           OR parse-and-merge events / AST. Source positions SHOULD be remapped
-           so source-mapped hosts can attribute included spans to the child file
-           (Carve's AST already distinguishes snippet-local from document-space
-           offsets; carve-js src/ast.ts `Position`).
+           at the directive site, SUBJECT TO FRAGMENT CONTAINMENT: included
+           content is parsed as a SELF-CONTAINED FRAGMENT. A construct still
+           open at the end of the included content CLOSES at child EOF (an
+           unclosed fence or div terminates there, exactly as at the end of a
+           standalone document); included content NEVER captures or
+           reinterprets parent content that follows the directive. An
+           implementation MAY splice source pre-parse OR parse-and-merge
+           events / AST -- but ONLY where the result equals the fragment-
+           containment outcome. The two diverge exactly when the child ends
+           inside an unterminated construct (a naive textual splice would let
+           an unclosed child fence swallow the rest of the parent); that
+           result is NON-conformant. This matters doubly for `@lines:N-M`,
+           whose physical slice can cut a fence or div in half: the torn
+           construct is bounded to the fragment, never the parent. Source
+           positions SHOULD be remapped so source-mapped hosts can attribute
+           included spans to the child file (Carve's AST already distinguishes
+           snippet-local from document-space offsets; carve-js src/ast.ts
+           `Position`).
 
         I5 CROSS-FILE COLLISIONS -- DETERMINISTIC RENAME-ON-COLLISION. When
            expansion brings together duplicate FOOTNOTE labels, reference-
@@ -2370,8 +2387,9 @@ EOF = (* end of file *) ;
            to the literal directive with a Warning.
 
         I7 ERRORS. Unreadable path, binary / non-text content, BOTH selection
-           mechanisms present (`#section` + a line-range, I1), cycle,
-           depth-exceeded, and size-exceeded EACH emit a Warning and leave the
+           mechanisms present (`#section` + a line-range, I1), block-structured
+           content in INLINE position (I2), cycle, depth-exceeded, and
+           size-exceeded EACH emit a Warning and leave the
            directive LITERAL (visible and debuggable). Inclusion NEVER silently
            drops a directive. See PART 9 §25 (File inclusion) for the security
            model: parser stays pure, resolver is host-supplied and MUST enforce

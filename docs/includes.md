@@ -123,6 +123,15 @@ The first directive is a block include (its file becomes sibling blocks between
 the paragraphs); the second is an inline include (its content is spliced into
 the surrounding sentence).
 
+An inline include is constrained to **inline-only content**: the resolved
+source MUST parse (as a [self-contained
+fragment](#merge-mechanism-and-source-mapping)) to a single paragraph, or to
+nothing. Its inlines are then spliced into the surrounding inline sequence. If
+the resolved content carries any other block structure - multiple paragraphs, a
+heading, a list, a fence - the directive is an **error**: the processor emits a
+Warning and leaves the directive **literal**, like the other error cases (see
+[Errors](#errors)). Block-shaped content belongs in a block include.
+
 ## The directive is inert in code (verbatim protection)
 
 An include directive is recognized **only** where inline and block constructs
@@ -172,10 +181,24 @@ The specification is normative on the **outcome** and permissive on the
 **mechanism**:
 
 - The observable result MUST be **as if** the resolved content had appeared
-  inline at the directive site.
+  inline at the directive site, subject to **fragment containment**: included
+  content is parsed as a **self-contained fragment**. A construct still open at
+  the end of the included content **closes at child EOF**, exactly as it would
+  at the end of a standalone document. Included content can therefore **never
+  capture or reinterpret parent content** that follows the directive.
 - An implementation MAY splice the resolved **source** before parsing, or parse
-  the child and **merge events / AST** into the parent. Either is conformant as
-  long as the outcome rule holds.
+  the child and **merge events / AST** into the parent - but only where the
+  result equals the fragment-containment outcome. The two diverge exactly when
+  the child ends inside an unterminated construct: a naive textual splice of a
+  child ending in an **unclosed fence** would let that fence swallow the rest
+  of the parent document. That result is **non-conformant** - the fence ends
+  with the included content. A splice-based implementation must compensate
+  (e.g. synthesize the missing closer, or fall back to fragment parsing) to
+  stay conformant.
+- Fragment containment matters doubly for `@lines:N-M`: a physical line slice
+  can cut a fence or a div in half and manufacture exactly such a torn
+  construct. The tear is bounded to the fragment; the parent document is never
+  affected.
 - Source positions **SHOULD** be remapped so that source-mapped hosts (editors,
   highlighters, error reporters) can attribute an included span to the child
   file rather than to the directive. Carve's AST already carries the machinery:
@@ -183,6 +206,19 @@ The specification is normative on the **outcome** and permissive on the
   offsets for re-parsed nested content (`carve-js` `src/ast.ts`, the `Position`
   interface). Included content is the same shape of problem as a re-parsed
   container snippet.
+
+Worked example - `snippet.crv` ends inside an unclosed fence:
+
+~~~carve
+Some text.
+
+```js
+let x = 1;
+~~~
+
+`{{ snippet.crv }}` yields a paragraph and a code block whose fence closes at
+the end of `snippet.crv`. The parent content after the directive is parsed
+normally - it is **not** pulled into the code block.
 
 ## Cross-file collisions
 
@@ -244,6 +280,7 @@ Every failure path is **visible**, never a silent drop. Each of these emits a
 | Unreadable / missing path | Warning + literal directive |
 | Binary / non-text content | Warning + literal directive |
 | Both `#section` and a line-range (`@lines`) present | Warning + literal directive |
+| Block-structured content in inline position (inline include) | Warning + literal directive |
 | Inclusion cycle | Warning + literal directive |
 | Depth exceeds the include-depth limit | Warning + literal directive |
 | Expanded size exceeds the byte budget | Warning + literal directive |
