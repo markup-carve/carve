@@ -195,10 +195,12 @@ responsibility:
   privilege escalation via include**.
 - **Amplification is bounded.** The processor MUST detect inclusion **cycles**
   (a file that transitively includes itself) and leave the offending directive
-  literal; bound recursion by `MAX_INCLUDE_DEPTH` (16); and charge total
-  expanded output against the same `max(1 MB, 8 × input length)` byte budget as
-  other expansion features (see *Resource limits* above). Past any limit the
-  directive degrades to literal text with a Warning - never a silent drop.
+  literal; **cycle detection is the primary guard**. As a secondary DoS bound,
+  implementations MUST enforce a **finite** include-depth limit (recommended
+  default **at least 16**, host-configurable) and charge total expanded output
+  against the same `max(1 MB, 8 × input length)` byte budget as other expansion
+  features (see *Resource limits* above). Past any limit the directive degrades
+  to literal text with a Warning - never a silent drop.
 
 Threats this policy addresses: **path traversal** (`../../etc/passwd`),
 **symlink escape** (a link inside the root pointing out of it), **include
