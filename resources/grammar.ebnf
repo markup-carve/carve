@@ -2566,15 +2566,22 @@ EOF = (* end of file *) ;
            IDENTITY: each target is identified by the resolver's CANONICAL ID
            where one is supplied -- the same identity the cycle guard uses in
            I6 -- and otherwise by the RESOLVED PATH.
-           ATTEMPTED TARGETS ARE INCLUDED: the set MUST contain targets that
-           were ATTEMPTED but NOT resolved -- missing or unreadable, binary,
-           containment-denied (I10), cycle-broken (I6), and depth- or
-           size-exceeded (I6). RATIONALE: a host that watches only the files it
-           successfully read never learns that a previously-missing target now
-           EXISTS, so a preview would stay stale at exactly the moment the
-           author fixes the problem.
-           DISTINGUISHABILITY: each entry MUST be distinguishable as RESOLVED
-           versus ATTEMPTED-BUT-UNRESOLVED.
+           MEMBERSHIP -- EVERY TOUCHED TARGET IS A MEMBER: the set MUST contain
+           EVERY target the expansion TOUCHED, INCLUDING every target whose
+           expansion DID NOT SUCCEED -- missing or unreadable, binary,
+           containment-denied (I10), cycle-broken (I6), depth- or size-exceeded
+           (I6), or a requested `#section` that was NOT FOUND. MEMBERSHIP
+           answers ONE question only: is this target IN THE REPORTED SET AT
+           ALL. Whether a given member is then marked RESOLVED or UNRESOLVED is
+           decided SOLELY by the RESOLVED SEMANTICS rule below -- strictly, DID
+           A READ HAPPEN -- and NEVER by whether the expansion SUCCEEDED. The
+           two are ORTHOGONAL: a target can be a MEMBER whose expansion FAILED
+           while still being marked RESOLVED. RATIONALE: a host that watches
+           only the files it successfully read never learns that a
+           previously-missing target now EXISTS, so a preview would stay stale
+           at exactly the moment the author fixes the problem.
+           DISTINGUISHABILITY: each member MUST be distinguishable as RESOLVED
+           versus UNRESOLVED.
            RESOLVED SEMANTICS: the distinction reflects ONLY whether the
            target's SOURCE WAS SUCCESSFULLY READ. It is INDEPENDENT of whether
            the resulting expansion was later REFUSED.

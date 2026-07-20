@@ -399,17 +399,22 @@ during the expansion.
 - **Identity.** Each target is identified by the resolver's **canonical id**
   where the resolver supplies one - the same identity the cycle guard uses (see
   [Limits](#limits)) - and otherwise by the resolved path.
-- **Attempted targets are included, not just successful ones.** The set MUST
-  contain targets that were **attempted but not resolved**: missing or
-  unreadable, binary, containment-denied, cycle-broken, and depth- or
-  size-exceeded. The reason is invalidation: a host that watches only the files
-  it successfully read never learns that a previously-missing target now
-  **exists**, so a preview would stay stale at exactly the moment the author
-  fixes the problem.
-- **Resolved versus attempted is observable.** Each entry MUST be
-  distinguishable as **resolved** or **attempted-but-unresolved**, so a host can
-  drive file watching from the whole set while driving diagnostics from the
-  failures.
+- **Every touched target is a member, not just the successful ones.** The set
+  MUST contain **every** target the expansion touched, including every target
+  whose expansion did **not** succeed: missing or unreadable, binary,
+  containment-denied, cycle-broken, depth- or size-exceeded, or a requested
+  `#section` that was not found. Membership answers one question only: is this
+  target in the reported set at all. Whether a given member is then marked
+  **resolved** or **unresolved** is decided solely by the rule below - strictly,
+  did a read happen - and never by whether the expansion succeeded. The two are
+  **orthogonal**: a target can be a member whose expansion failed while still
+  being marked resolved. The reason for the broad membership is invalidation: a
+  host that watches only the files it successfully read never learns that a
+  previously-missing target now **exists**, so a preview would stay stale at
+  exactly the moment the author fixes the problem.
+- **Resolved versus unresolved is observable.** Each member MUST be
+  distinguishable as **resolved** or **unresolved**, so a host can drive file
+  watching from the whole set while driving diagnostics from the Warnings.
 - **`resolved` means "the source was read", nothing more.** The distinction
   reflects **only** whether the target's source was successfully read. It is
   **independent** of whether the resulting expansion was later refused.
@@ -698,11 +703,12 @@ These are **host obligations** for an editor preview that expands includes.
    that watches only the open file will silently show stale output, which is the
    most common inclusion bug in practice. Hosts do not have to infer the
    dependency set themselves: a processor that expands includes **MUST** report
-   the targets it **resolved** and those it merely **attempted** (see
+   **every** target it touched, each one marked **resolved** or **unresolved**
+   according to whether its source was read (see
    [Reported dependencies](#reported-dependencies)). Watch the whole reported
    set, failures included - creating a previously-missing target has to
    invalidate the preview too.
-2. **Diagnostics.** The Warnings the spec already requires - unresolved target,
+2. **Diagnostics.** The Warnings the spec already requires - unreadable target,
    cycle, containment denial, depth exceeded, size exceeded (see
    [Errors](#errors) and [Limits](#limits)) - SHOULD be surfaced as editor
    diagnostics. Leaving them as silent literal text hides a real error behind
