@@ -75,8 +75,9 @@ composes with whichever selection (if any) the directive uses.
 
 ### Heading-level shift (`@shift`)
 
-`@shift:N` takes a **signed** integer and increases the level of **every**
-heading in the included content by `N`:
+`@shift` takes **either** a signed integer **or** the literal value `auto`,
+never both. `@shift:N` increases the level of **every** heading in the included
+content by `N`:
 
 ```carve
 {{ chapter.dj @shift:2 }}
@@ -97,10 +98,58 @@ heading in the included content by `N`:
 - **Auto-numbering follows the new level.** If section auto-numbering (the
   [HeadingNumbers](/extensions#_9-headingnumbers-tier-3) feature) is enabled,
   shifted headings renumber at their **new** level as a consequence of the shift.
-- **`@shift:auto` is reserved.** A context-relative auto-shift (inferring the
-  shift from the include site's heading level) is **reserved** for a future
-  version and is **not** specified here: Carve headings are a flat stream, so
-  inferring the include-site level is deferred.
+#### Context-relative shift (`@shift:auto`)
+
+With `@shift:auto` the processor **computes** the shift instead of taking it
+from the author. Two quantities define it:
+
+- **Context level `C`** is the level of the nearest **preceding** heading, in
+  document order, that sits in the directive's own block container or in an
+  **enclosing** (ancestor) container. A heading inside a **sibling** container
+  that has already closed does **not** set the context. If no such heading
+  exists, `C = 0`.
+- **Top level `T`** is the **minimum** heading level present in the resolved
+  content, **after** any `#section` or line-range selection has been applied.
+  Using the minimum rather than the first heading's level preserves the included
+  document's internal relative structure.
+
+The computed shift is:
+
+```
+N = (C + 1) - T
+```
+
+`N` is then applied exactly as a literal shift under the rules above: the
+resulting level is clamped to `[1, 6]` with a Warning on clamp, the heading is
+kept and never dropped, ids and slugs are unchanged so cross-references still
+resolve, and section auto-numbering renumbers at the new level.
+
+Worked example - the including document has a `## Chapters` heading before the
+directive, so `C = 2`:
+
+```carve
+## Chapters
+
+{{ chapter-one.crv @shift:auto }}
+```
+
+`chapter-one.crv` starts at `# Chapter One`, so `T = 1` and
+`N = (2 + 1) - 1 = 2`. The child's `h1` renders as an `h3`, one level below the
+`## Chapters` heading that contains it.
+
+- **Content with no headings.** If the resolved content contains no headings,
+  `auto` is a **no-op** (`N = 0`) and emits **no** Warning.
+- **Nested includes.** `auto` resolves against the document **as assembled at
+  that point**, so a shift already applied by an ancestor include is in effect
+  when a nested `auto` is computed. Expansion proceeds **outside-in**, which
+  makes the result deterministic.
+- **Inline includes.** Inline content cannot contain headings, so `auto` on an
+  inline include is a no-op.
+
+`auto` makes a chapter file **portable**: the same file can be included at any
+depth without editing its heading levels. And because the author writes
+`@shift:auto` explicitly at the include site, the position-dependence is
+**opt-in per directive** rather than ambient behavior.
 
 ## Block vs inline includes
 
