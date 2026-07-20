@@ -29,7 +29,16 @@ identifiers, independent of a renderer's output tag.
 `inline_extension`, `mention`, `code`, `link`, `image`, `soft_break`,
 `hard_break`, `raw_inline`, `escaped_text`, `footnote_ref`, `inline_footnote`,
 `span`, `superscript`, `subscript`, `highlight`, `insert`, `delete`, `symbol`,
-`math`, `abbreviation`.
+`math`, `abbreviation`, `literal_inline`.
+
+`literal_inline` is the inline literal of PART 9 §27 (`` `…`{!} ``). It gets its
+own type rather than folding into `text`: its content is escaped, so its trust
+level does match a text node, but when it carries attributes it renders a
+`<span>` — and the `comment` / `minimal` presets deliberately exclude `span`.
+Reporting it as `text` would let untrusted input smuggle a `<span class="…">`
+past those allowlists. Keeping it distinct also means an allowlist that predates
+the construct denies it by the resolution rule below, which is the intended
+fail-closed behavior.
 
 The `document` root is always allowed and cannot be denied.
 
@@ -110,7 +119,14 @@ User comments: basic formatting, `nofollow`/`ugc` links.
 - `maxNesting`: `4`.
 - `maxLength`: `100000` (100 KB) input-size cap; override via `setMaxLength(0)` to disable.
 - (So: no headings, images, tables, footnotes, divs/sections, def-lists,
-  thematic breaks, line blocks, spans, symbols, math, abbreviations, raw HTML.)
+  thematic breaks, line blocks, spans, symbols, math, abbreviations, inline
+  literals, raw HTML.)
+
+  An inline literal is denied here for the same reason a span is: with
+  attributes it renders one. The `to_text` action keeps its content, so
+  `` `/kaet/`{! .ipa} `` still reads as `/kaet/` — only the element and its
+  attributes are dropped. A host that wants transcriptions in untrusted input
+  can add `literal_inline` to the allowlist deliberately.
 
 ### `minimal`
 Chat/micro-posts: non-destructive inline formatting, paragraphs and lists.
