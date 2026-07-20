@@ -2578,12 +2578,25 @@ EOF = (* end of file *) ;
            RESOLVED SEMANTICS: the distinction reflects ONLY whether the
            target's SOURCE WAS SUCCESSFULLY READ. It is INDEPENDENT of whether
            the resulting expansion was later REFUSED.
-             - A target that WAS read but whose expansion was then refused
-               (cycle-broken, depth-exceeded, size-exceeded) is RESOLVED. The
-               refusal is surfaced through a WARNING (I7), not through this
-               flag.
+             - A target that WAS read but whose expansion was then refused, or
+               was only PARTLY usable -- cycle-broken, depth-exceeded,
+               size-exceeded, or a requested `#section` that was NOT FOUND --
+               is RESOLVED. The refusal, or the missing section, is surfaced
+               through a WARNING (I7), not through this flag.
+             - A MISSING `#section` in particular MUST NOT downgrade a target
+               to UNRESOLVED. The file WAS read, so a host MUST KEEP WATCHING
+               it: editing the child to ADD the missing section MUST invalidate
+               the preview, which cannot happen once the target has been
+               dropped from the watched set. This flag does NOT mean "the
+               include SUCCEEDED".
              - A target that was NEVER read -- missing or unreadable, binary,
-               containment-denied (I10) -- is UNRESOLVED.
+               containment-denied (I10) -- is UNRESOLVED. A directive REFUSED
+               BEFORE the resolver is ever called, such as one past the
+               include-depth limit (I6), was never read and is therefore
+               UNRESOLVED. The DIVIDING LINE is strictly WHETHER A READ
+               HAPPENED, never whether the refusal was EARLY or LATE: the same
+               depth-exceeded condition yields RESOLVED when a read already
+               occurred and UNRESOLVED when it did not.
              - MONOTONIC: once recorded RESOLVED a target MUST NOT be
                downgraded; a target first recorded UNRESOLVED MUST be UPGRADED
                if a later read of the SAME target succeeds.
@@ -2603,9 +2616,23 @@ EOF = (* end of file *) ;
            VERBATIM, WITHOUT escaping, so the directive SURVIVES formatting.
            `{{ chapter.crv }}` MUST format to `{{ chapter.crv }}`, NEVER to
            `\{\{ chapter\.crv \}\}`.
-           SCOPE: the rule applies to a run that is a WELL-FORMED directive per
-           I1 (a path, with an OPTIONAL `#section` and options). A MALFORMED
-           run such as `{{ oops` is ORDINARY TEXT and is escaped normally.
+           SCOPE: the rule applies to a run that is SHAPE-WELL-FORMED: it OPENS
+           with `{{`, CLOSES with `}}`, and contains a NON-EMPTY path token.
+           Validity of the SECTION and of the OPTIONS is NOT REQUIRED for
+           preservation. `{{ a.crv @bogus:1 }}`, whose shape is well-formed but
+           whose option is not a recognized key (I1), MUST still be preserved
+           VERBATIM. A run that is NOT shape-well-formed -- no closing `}}`, or
+           an EMPTY path -- such as `{{ oops`, is ORDINARY TEXT and is escaped
+           normally.
+           RATIONALE (SHAPE, NOT VALIDITY): option and section validity are
+           DIAGNOSTIC concerns, surfaced as Warnings at EXPANSION time (I7).
+           Escaping a directive because one of its options is MISSPELLED
+           destroys BOTH the construct AND the diagnostic: the formatter turns a
+           FIXABLE TYPO into PERMANENT LITERAL TEXT, and the author loses the
+           very Warning that would have named the mistake, left with literal
+           text to reconstruct BY HAND. Preservation is about keeping the
+           author's INTENT EDITABLE; VALIDATION happens later and REPORTS
+           ITSELF.
            MECHANISM (why this must be stated): the core deliberately treats
            the directive as plain TEXT -- it is unreachable from
            `block` / `inline`, the design behind I9 -- so a serializer escapes

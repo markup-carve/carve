@@ -337,10 +337,24 @@ must format back to <code v-pre>{{ chapter.crv }}</code>, never to
 `\{\{ chapter\.crv \}\}`, which would silently destroy every include in the
 document.
 
-**Scope.** The rule applies to a run that is a **well-formed** directive per the
-[directive syntax](#directive-syntax): a path, with an optional `#section` and
-options. A malformed run such as <code v-pre>{{ oops</code> is ordinary text and is escaped
+**Scope.** The rule applies to a run that is **shape-well-formed**: it opens with
+<code v-pre>{{</code>, closes with <code v-pre>}}</code>, and contains a
+**non-empty path token**. Validity of the **section** and of the **options** is
+**not required** for preservation. <code v-pre>{{ a.crv @bogus:1 }}</code>, whose
+shape is well-formed but whose option is not a recognized key (see
+[directive syntax](#directive-syntax)), MUST still be preserved verbatim. A run
+that is **not** shape-well-formed - no closing <code v-pre>}}</code>, or an empty
+path - such as <code v-pre>{{ oops</code>, is ordinary text and is escaped
 normally.
+
+**Why shape, not validity.** Option and section validity are **diagnostic**
+concerns, surfaced as Warnings at expansion time (see [Errors](#errors)).
+Escaping a directive because one of its options is misspelled destroys **both**
+the construct and the diagnostic: the formatter turns a fixable typo into
+**permanent literal text**, and the author loses the very Warning that would have
+named the mistake, left with literal text to reconstruct by hand. Preservation is
+about keeping the author's **intent editable**; validation happens later and
+reports itself.
 
 **Why this has to be stated.** The core deliberately treats the directive as
 plain **text** - it is unreachable from block and inline parsing, the same
@@ -399,12 +413,23 @@ during the expansion.
 - **`resolved` means "the source was read", nothing more.** The distinction
   reflects **only** whether the target's source was successfully read. It is
   **independent** of whether the resulting expansion was later refused.
-  - A target that **was** read but whose expansion was then refused
-    (cycle-broken, depth-exceeded, size-exceeded) is **resolved**. The refusal
-    is surfaced through a Warning (see [Errors](#errors)), not through this
-    flag.
+  - A target that **was** read but whose expansion was then refused, or was
+    only partly usable - cycle-broken, depth-exceeded, size-exceeded, or a
+    requested `#section` that was **not found** - is **resolved**. The refusal,
+    or the missing section, is surfaced through a Warning (see
+    [Errors](#errors)), not through this flag.
+  - A **missing `#section`** in particular MUST NOT downgrade a target to
+    unresolved. The file **was** read, so a host must keep watching it: editing
+    the child to add the missing section must invalidate the preview, which
+    cannot happen once the target has been dropped from the watched set. This
+    flag does not mean "the include succeeded".
   - A target that was **never** read - missing or unreadable, binary,
-    containment-denied - is **unresolved**.
+    containment-denied - is **unresolved**. A directive refused **before the
+    resolver is ever called**, such as one past the include-depth limit, was
+    never read and is therefore unresolved. The dividing line is strictly
+    **whether a read happened**, never whether the refusal was early or late:
+    the same depth-exceeded condition yields resolved when a read already
+    occurred and unresolved when it did not.
   - The flag is **monotonic**: once recorded resolved, a target MUST NOT be
     downgraded; a target first recorded unresolved MUST be upgraded if a later
     read of the same target succeeds.
