@@ -323,6 +323,49 @@ let x = 1;
 the end of `snippet.crv`. The parent content after the directive is parsed
 normally - it is **not** pulled into the code block.
 
+## Formatting preserves the directive
+
+A Carve **serializer** - the AST-to-Carve renderer behind `carve fmt` - **MUST**
+emit an include directive **verbatim, without escaping**, so the directive
+survives formatting.
+
+~~~carve
+{{ chapter.crv }}
+~~~
+
+must format back to <code v-pre>{{ chapter.crv }}</code>, never to
+`\{\{ chapter\.crv \}\}`, which would silently destroy every include in the
+document.
+
+**Scope.** The rule applies to a run that is a **well-formed** directive per the
+[directive syntax](#directive-syntax): a path, with an optional `#section` and
+options. A malformed run such as <code v-pre>{{ oops</code> is ordinary text and is escaped
+normally.
+
+**Why this has to be stated.** The core deliberately treats the directive as
+plain **text** - it is unreachable from block and inline parsing, the same
+design that gives you
+[verbatim protection](#the-directive-is-inert-in-code-verbatim-protection) - so
+a serializer escapes it defensively like any other punctuation-bearing text. The
+formatter's guaranteed invariant, that rendering the formatted document produces
+the same HTML as rendering the original, **continues to hold**: the escaped form
+still renders as the same literal text. An entire formatter test suite therefore
+stays green while the feature is destroyed. The invariant cannot express "the
+directive must survive", so the requirement is explicit.
+
+**The authored-literal objection.** A serializer cannot distinguish an authored
+literal <code v-pre>{{</code> from a directive, because <code v-pre>\{\{</code>
+and <code v-pre>{{</code> parse to the **same**
+text. That is acceptable and creates no new ambiguity, because verbatim
+protection already answers it: an author who needs a guaranteed literal places
+it in **code**, where the directive is inert by construction. Prose round-trips
+as a directive; code protects literals.
+
+**Stronger invariant to test against.** A formatter **SHOULD** additionally be
+tested against the property that **expanding** the formatted document yields the
+same result as expanding the original, not merely the same HTML when no resolver
+is configured.
+
 ## Reported dependencies
 
 Expansion has a second output besides the document and its Warnings. A processor
@@ -482,6 +525,24 @@ Every failure path is **visible**, never a silent drop. Each of these emits a
 | Depth exceeds the include-depth limit | Warning + literal directive |
 | Expanded size exceeds the byte budget | Warning + literal directive |
 | No resolver configured | Literal directive (no Warning required) |
+
+### A rejected directive has no observable side effects
+
+When a directive is rejected for **any** reason - unresolvable, binary, both
+selection mechanisms present, cycle, depth exceeded, size exceeded, or resolved
+content that cannot merge at the directive's position - the resulting document
+**MUST** be **byte-identical** to the same document with that directive written
+as literal text from the start.
+
+Any state accumulated while processing the child is therefore discarded with it.
+In particular, **identifier reservations** made while processing the child -
+explicit heading ids and footnote labels - **MUST NOT** persist if the child's
+content is not ultimately merged. A rejected inline block-include that kept the
+child's heading id reservations would suffix a later legitimate heading for no
+reason and silently pollute the id namespace. That is non-conformant.
+
+The requirement is the general invariant, not only the id case, so future kinds
+of side effect are covered by construction.
 
 ### Warning text is normalized, never the raw resolver error
 

@@ -2590,6 +2590,52 @@ EOF = (* end of file *) ;
            invalidation cannot be implemented correctly. See docs/includes.md
            (Reported dependencies, and Editor and IDE integration).
 
+        I12 FORMATTER PRESERVATION. A Carve SERIALIZER (the AST-to-Carve
+           renderer behind `carve fmt`) MUST emit an include directive
+           VERBATIM, WITHOUT escaping, so the directive SURVIVES formatting.
+           `{{ chapter.crv }}` MUST format to `{{ chapter.crv }}`, NEVER to
+           `\{\{ chapter\.crv \}\}`.
+           SCOPE: the rule applies to a run that is a WELL-FORMED directive per
+           I1 (a path, with an OPTIONAL `#section` and options). A MALFORMED
+           run such as `{{ oops` is ORDINARY TEXT and is escaped normally.
+           MECHANISM (why this must be stated): the core deliberately treats
+           the directive as plain TEXT -- it is unreachable from
+           `block` / `inline`, the design behind I9 -- so a serializer escapes
+           it DEFENSIVELY like any other punctuation-bearing text. The
+           formatter's guaranteed invariant (rendering the FORMATTED document
+           produces the SAME HTML as rendering the ORIGINAL) CONTINUES TO HOLD,
+           because the escaped form still renders as the same literal text. An
+           entire formatter suite therefore stays GREEN while the feature is
+           destroyed. The invariant CANNOT EXPRESS "the directive must
+           survive", which is why this rule is explicit.
+           AUTHORED-LITERAL OBJECTION: a serializer CANNOT distinguish an
+           authored literal `{{` from a directive, because `\{\{` and `{{`
+           parse to the SAME text. That is ACCEPTABLE and creates NO new
+           ambiguity: I9 already supplies the answer -- an author who needs a
+           GUARANTEED literal places it in CODE, where the directive is inert
+           by construction. Prose round-trips as a directive; code protects
+           literals.
+           STRONGER INVARIANT: a formatter SHOULD additionally be tested
+           against the property that EXPANDING the formatted document yields
+           the SAME result as EXPANDING the original -- not merely the same
+           HTML when NO resolver is configured.
+
+        I13 A REJECTED DIRECTIVE HAS NO OBSERVABLE SIDE EFFECTS. When a
+           directive is REJECTED for ANY reason (unresolvable, binary, BOTH
+           selection mechanisms present, cycle, depth exceeded, size exceeded,
+           or resolved content that CANNOT MERGE at the directive's position,
+           I2), the resulting document MUST be BYTE-IDENTICAL to the same
+           document with that directive written as LITERAL TEXT from the start.
+           CONSEQUENCE: any state accumulated while processing the child MUST
+           be DISCARDED with it. In particular, IDENTIFIER RESERVATIONS made
+           while processing the child -- explicit heading ids and footnote
+           labels -- MUST NOT PERSIST if the child's content is not ultimately
+           merged. A rejected INLINE block-include that reserved the child's
+           heading ids would suffix a LATER legitimate heading for no reason
+           and silently POLLUTE the id namespace; that is NON-CONFORMANT.
+           The rule is stated as the GENERAL invariant, not only the id case,
+           so future side effects are covered BY CONSTRUCTION.
+
    20. RAW PASSTHROUGH -- NORMATIVE (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT
       fence, PART 2) emits its verbatim content UNESCAPED when FORMAT
