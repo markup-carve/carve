@@ -2357,22 +2357,47 @@ EOF = (* end of file *) ;
            snippet-local from document-space offsets; carve-js src/ast.ts
            `Position`).
 
-        I5 CROSS-FILE COLLISIONS -- DETERMINISTIC RENAME-ON-COLLISION. When
-           expansion brings together duplicate FOOTNOTE labels, reference-
-           definition labels, or EXPLICIT heading ids, the FIRST occurrence in
-           document order keeps its label / id and each later duplicate is
+        I5 CROSS-FILE COLLISIONS. An identifier that expansion brings together
+           is handled according to whether it is DOCUMENT-VISIBLE or FILE-LOCAL.
+
+           DOCUMENT-VISIBLE IDENTIFIERS -- DETERMINISTIC RENAME-ON-COLLISION.
+           EXPLICIT heading ids (the link targets of `</#id>` cross-references)
+           and FOOTNOTE labels (footnotes are collected and numbered globally in
+           the assembled document) are document-visible: they are exposed by the
+           assembled document and can be targeted across file boundaries. When
+           expansion brings together duplicates of either, the FIRST occurrence
+           in document order keeps its label / id and each later duplicate is
            renamed. Order is: parent before child, and an earlier include before
            a later include (the fully expanded document read top to bottom).
            The rename appends the least `-N` (integer N >= 2) that is not already
-           taken in that namespace: first `-2`, then `-3`, and so on. A Warning
-           is emitted per rename. SCOPE: this include-time pass covers EXPLICIT
-           heading ids, footnote labels, and reference-definition labels ONLY.
-           Auto-generated (slug) heading-id collisions are NOT part of it; they
-           continue to dedup via the existing heading-id tracker (§13, which
-           suffixes duplicate slugs once the files are merged). ORDERING: the
-           include-time explicit-id / footnote / reference rename runs BEFORE the
-           §13 slug dedup, so ids are deterministic (the explicit-id namespace is
-           settled first, then §13 dedups auto-slug ids against the final set).
+           taken in that namespace: first `-2`, then `-3`, and so on. Explicit
+           heading ids and footnote labels are SEPARATE namespaces. References to
+           a renamed target follow the rename, so the renamed target's own
+           `</#id>` cross-references and footnote references still resolve to it.
+           A Warning MUST be emitted per rename.
+
+           FILE-LOCAL IDENTIFIERS -- SCOPED, NOT RENAMED. A REFERENCE-DEFINITION
+           label is file-local metadata: it is resolved WITHIN the document that
+           defines it, BEFORE that document is merged into its parent. Two files
+           MAY therefore use the same label with different destinations, and each
+           file's references resolve to its own definition -- a parent `[a][]`
+           resolves to the parent's `[a]: /PARENT` and a child `[a][]` to the
+           child's `[a]: /CHILD`. This is NOT a collision: it MUST NOT emit a
+           Warning and MUST NOT rename anything.
+
+           RATIONALE: a reference-definition label is never addressable from
+           another file, so renaming it would be pure churn plus a spurious
+           warning. An explicit heading id or a footnote label genuinely IS
+           document-visible, so a duplicate there must be resolved and surfaced.
+
+           SCOPE: the include-time rename pass covers EXPLICIT heading ids and
+           footnote labels ONLY. Auto-generated (slug) heading-id collisions are
+           NOT part of it; they continue to dedup via the existing heading-id
+           tracker (§13, which suffixes duplicate slugs once the files are
+           merged). ORDERING: the include-time explicit-id / footnote rename runs
+           BEFORE the §13 slug dedup, so ids are deterministic (the explicit-id
+           namespace is settled first, then §13 dedups auto-slug ids against the
+           final set).
 
         I6 LIMITS. The processor MUST detect inclusion CYCLES (a file that
            transitively includes itself): the offending directive is left

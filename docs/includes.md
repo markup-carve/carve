@@ -355,8 +355,15 @@ correctly - see
 
 ## Cross-file collisions
 
-Merging documents can collide **footnote labels**, **reference-definition
-labels**, and **explicit heading ids**. The processor MUST resolve these
+How an identifier behaves when expansion merges files depends on whether it is
+**document-visible** or **file-local**.
+
+### Document-visible identifiers are renamed on collision
+
+**Explicit heading ids** (the link targets of `</#id>` cross-references) and
+**footnote labels** (footnotes are collected and numbered globally in the
+assembled document) are exposed by the assembled document and can be targeted
+across file boundaries. The processor MUST resolve duplicates of either
 **deterministically** by **rename-on-collision**:
 
 1. **Ordering.** Read the fully expanded document top to bottom: parent before
@@ -364,23 +371,55 @@ labels**, and **explicit heading ids**. The processor MUST resolve these
    occurrence in that order keeps its label / id.
 2. **Rename scheme.** Each later duplicate is renamed by appending the least
    `-N` (integer `N >= 2`) that is not already taken in the same namespace:
-   first `-2`, then `-3`, and so on. Footnotes, reference definitions, and
-   heading ids are separate namespaces.
+   first `-2`, then `-3`, and so on. Footnote labels and explicit heading ids
+   are separate namespaces. References to a renamed target follow the rename,
+   so the renamed target's own cross-references and footnote references still
+   resolve to it.
 3. **Warning per rename.** Every rename emits a Warning so the collision is
    visible and debuggable.
 
-The include-time rename pass is scoped to **explicit heading ids, footnote
-labels, and reference-definition labels only**. Auto-generated (slug) heading-id
-collisions are **not** part of this pass: they continue to be de-duplicated by
-the existing heading-id tracker (PART 9 §13, which already appends `-2`, `-3`, …
-to duplicate slugs once the files are merged into one document). Two `##
-Introduction` headings from different included files are therefore suffixed by
-§13, not here.
+### File-local identifiers are scoped, not renamed
 
-**Ordering.** The include-time explicit-id / footnote / reference rename runs
-**before** the §13 slug dedup. Fixing this order keeps ids deterministic: the
-explicit-id namespace is settled first, and §13 then dedups the auto-slug ids
-against the already-final set. See PART 9 §13.
+A **reference-definition label** is file-local metadata: it is resolved **within
+the document that defines it, before that document is merged** into its parent.
+Two files may therefore use the same label with different destinations, and each
+file's references resolve to its own definition:
+
+```carve
+%% parent.crv
+See [a][].
+
+[a]: /PARENT
+```
+
+```carve
+%% child.crv
+See [a][].
+
+[a]: /CHILD
+```
+
+The parent's `[a][]` resolves to `/PARENT` and the child's to `/CHILD`. This is
+**not** a collision: it MUST NOT emit a Warning and MUST NOT rename anything.
+
+**Rationale.** A reference-definition label is never addressable from another
+file, so renaming it would be pure churn plus a spurious warning. An explicit
+heading id or a footnote label genuinely is document-visible, so a duplicate
+there must be resolved and surfaced.
+
+### Scope and ordering
+
+The include-time rename pass is scoped to **explicit heading ids and footnote
+labels only**. Auto-generated (slug) heading-id collisions are **not** part of
+this pass: they continue to be de-duplicated by the existing heading-id tracker
+(PART 9 §13, which already appends `-2`, `-3`, … to duplicate slugs once the
+files are merged into one document). Two `## Introduction` headings from
+different included files are therefore suffixed by §13, not here.
+
+**Ordering.** The include-time explicit-id / footnote rename runs **before** the
+§13 slug dedup. Fixing this order keeps ids deterministic: the explicit-id
+namespace is settled first, and §13 then dedups the auto-slug ids against the
+already-final set. See PART 9 §13.
 
 ## Limits
 
