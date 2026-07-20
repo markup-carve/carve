@@ -39,6 +39,19 @@ security.
   `}`) or **double-quoted** (`"my chapter.crv"`) when it contains spaces. The
   path is resolved **relative to the including file**; resolution is the host's
   job (see [The host resolver](#the-host-resolver)).
+- **The path is required - an empty or path-less run is not a directive.** A run
+  is a directive **only** when it contains a **non-empty path token**; the path
+  is the required element and `#section` and options are modifiers on it. So
+  <code v-pre>{{ }}</code> and <code v-pre>{{   }}</code> (empty or
+  whitespace-only), <code v-pre>{{ #intro }}</code> (a section but no path), and
+  <code v-pre>{{ @lines:2-4 }}</code> (options but no path) are **not**
+  directives. They are ordinary text at **both** recognition points - expansion
+  and formatting - so they are left literal and escaped exactly like any other
+  text. An empty <code v-pre>{{ }}</code> therefore renders as the literal text
+  <code v-pre>{{ }}</code>, visible to the author, rather than producing a
+  diagnostic: visibility is the feedback, the same way [Errors](#errors) leave
+  failed directives visible. (A `carve lint` advisory for a probable empty-path
+  typo is a tooling concern whose home is lint, not this spec.)
 - **`#section`** includes only the subtree rooted at the heading whose id equals
   `section`: that heading through the content up to (but not including) the next
   heading of the **same or higher** level. The id is matched the same way a
@@ -343,9 +356,14 @@ document.
 **not required** for preservation. <code v-pre>{{ a.crv @bogus:1 }}</code>, whose
 shape is well-formed but whose option is not a recognized key (see
 [directive syntax](#directive-syntax)), MUST still be preserved verbatim. A run
-that is **not** shape-well-formed - no closing <code v-pre>}}</code>, or an empty
-path - such as <code v-pre>{{ oops</code>, is ordinary text and is escaped
-normally.
+that is **not** shape-well-formed - no closing <code v-pre>}}</code>, or no
+non-empty path token (the [path-is-required rule](#directive-syntax):
+<code v-pre>{{ oops</code>, <code v-pre>{{ }}</code>,
+<code v-pre>{{ #intro }}</code>, <code v-pre>{{ @lines:2-4 }}</code>) - is
+ordinary text and is escaped normally. A path-less run is not a directive here
+for the same reason it is not one at expansion; the two recognition points agree
+by construction (see
+[One recognition set](#one-recognition-set-for-serializer-and-expander)).
 
 **Why shape, not validity.** Option and section validity are **diagnostic**
 concerns, surfaced as Warnings at expansion time (see [Errors](#errors)).
@@ -379,6 +397,30 @@ as a directive; code protects literals.
 tested against the property that **expanding** the formatted document yields the
 same result as expanding the original, not merely the same HTML when no resolver
 is configured.
+
+## One recognition set for serializer and expander
+
+The exact set of <code v-pre>{{ … }}</code> runs a serializer preserves (under
+[Formatting preserves the directive](#formatting-preserves-the-directive)) **MUST**
+be identical to the set of runs the **expander** recognizes as directives (under
+[directive syntax](#directive-syntax) and [The host resolver](#the-host-resolver)).
+A run is a directive, or it is not, and **both** subsystems MUST agree on which:
+there is no run that one treats as a directive while the other treats as text.
+This equality of the two sets is a **MUST**.
+
+Every formatter defect found while building this feature came from the two
+subsystems disagreeing - a serializer escaping what the expander would expand
+(the preservation bug), or an expander recognizing as a failed directive what the
+serializer escapes (the empty <code v-pre>{{ }}</code> split, resolved by the
+[path-is-required rule](#directive-syntax)). When recognition is defined **once**,
+neither class of defect can exist.
+
+To that end an implementation **SHOULD** share a single directive-recognition
+routine between its serializer and its expander, so the two cannot drift.
+carve-js and carve-php are the reference pattern: each factors recognition into
+one extracted module that both paths consume. The **sharing mechanism** is a
+SHOULD; the **equality of the two sets** is the MUST above and holds however it is
+achieved.
 
 ## Reported dependencies
 

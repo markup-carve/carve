@@ -2326,6 +2326,22 @@ EOF = (* end of file *) ;
            a line-range, or neither. `@shift` takes EITHER a signed integer OR
            the literal value `auto` (context-relative, computed by the processor
            per I8), never both. Every other `@key` is RESERVED.
+           PATH IS REQUIRED -- AN EMPTY OR PATH-LESS RUN IS NOT A DIRECTIVE. A
+           run is a directive ONLY when it contains a NON-EMPTY path token; the
+           path is the REQUIRED element and `#section` and options are MODIFIERS
+           on it. The following are therefore NOT directives -- they are
+           ORDINARY TEXT, recognized as directives at NEITHER recognition point
+           (expansion, I3, and formatting, I12), and are left LITERAL / escaped
+           exactly like any other text:
+             - an EMPTY or WHITESPACE-ONLY run: `{{ }}`, `{{   }}`;
+             - a run with a `#section` but no path: `{{ #intro }}`;
+             - a run with options but no path: `{{ @lines:2-4 }}`.
+           CONSEQUENCE FOR AUTHORING: an empty `{{ }}` renders as the LITERAL
+           text `{{ }}`, VISIBLE to the author, rather than producing a
+           diagnostic. Visibility IS the feedback, consistent with I7 leaving
+           failed directives visible. (A `carve lint` advisory for a probable
+           empty-path typo is a TOOLING concern whose home is lint, NOT this
+           spec; it is not specified here.)
 
         I2 BLOCK vs INLINE. A directive ALONE on its own line is a BLOCK
            include: the resolved content merges as BLOCKS at the directive
@@ -2629,8 +2645,11 @@ EOF = (* end of file *) ;
            preservation. `{{ a.crv @bogus:1 }}`, whose shape is well-formed but
            whose option is not a recognized key (I1), MUST still be preserved
            VERBATIM. A run that is NOT shape-well-formed -- no closing `}}`, or
-           an EMPTY path -- such as `{{ oops`, is ORDINARY TEXT and is escaped
-           normally.
+           NO NON-EMPTY path token (the PATH IS REQUIRED rule of I1: `{{ oops`,
+           `{{ }}`, `{{ #intro }}`, `{{ @lines:2-4 }}`) -- is ORDINARY TEXT and
+           is escaped normally. A path-less run is not a directive here for the
+           SAME reason it is not one at expansion; the two recognition points
+           agree by construction (I14).
            RATIONALE (SHAPE, NOT VALIDITY): option and section validity are
            DIAGNOSTIC concerns, surfaced as Warnings at EXPANSION time (I7).
            Escaping a directive because one of its options is MISSPELLED
@@ -2677,6 +2696,27 @@ EOF = (* end of file *) ;
            and silently POLLUTE the id namespace; that is NON-CONFORMANT.
            The rule is stated as the GENERAL invariant, not only the id case,
            so future side effects are covered BY CONSTRUCTION.
+
+        I14 ONE RECOGNITION SET FOR SERIALIZER AND EXPANDER. The exact set of
+           `{{ … }}` runs a Carve SERIALIZER preserves under I12 MUST be
+           IDENTICAL to the set of runs the EXPANDER recognizes as directives
+           under I1 / I3. A run is a directive, or it is NOT, and BOTH
+           subsystems MUST agree on WHICH: there is no run that one treats as a
+           directive while the other treats as text. This equality of the two
+           sets is a MUST.
+           RATIONALE: every formatter defect found while building this feature
+           came from the two subsystems DISAGREEING -- a serializer escaping
+           what the expander would expand (the I12 preservation bug), or an
+           expander recognizing as a failed directive what the serializer
+           escapes (the empty `{{ }}` split resolved by the I1 PATH IS REQUIRED
+           rule). When recognition is defined ONCE, neither class can exist.
+           MECHANISM (SHOULD): an implementation SHOULD share a SINGLE
+           directive-recognition routine between its serializer and its
+           expander, so the two CANNOT DRIFT. carve-js and carve-php are the
+           reference pattern -- each factors recognition into one extracted
+           module consumed by both paths. The SHARING MECHANISM is a SHOULD;
+           the EQUALITY OF THE TWO SETS is the MUST above and holds however it
+           is achieved.
 
    20. RAW PASSTHROUGH -- NORMATIVE (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT
