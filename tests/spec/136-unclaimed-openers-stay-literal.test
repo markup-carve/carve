@@ -1,0 +1,10 @@
+Unclaimed openers stay literal
+
+```
+[>foo]
+
+{:tada:}
+.
+<p>[&gt;foo]</p>
+<p>{:tada:}</p>
+```

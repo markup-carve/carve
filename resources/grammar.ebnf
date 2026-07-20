@@ -1192,8 +1192,10 @@ highlight_content = (inline_element | text_run | literal_special)+ ;
    form; a deliberate carve extension over djot). Numbering (one shared
    document-order sequence), endnotes rendering, and the inline form's
    balanced-bracket close are PART 9 §16. A bare `^` is always literal
-   (no bare superscript), so `^[` is unambiguous. Only the sidenote form
-   remains deferred. *)
+   (no bare superscript), so `^[` is unambiguous. These two are the only
+   note forms; the once-proposed sidenote `[>content]` was DISMISSED (a
+   sidenote is footnote content placed by CSS, not a separate construct) --
+   see docs/dismissed-syntax.md. *)
 footnote = reference_footnote | inline_footnote ;
 reference_footnote = "[^", footnote_label, ']' ;
 footnote_label = {character - ']'}+ ;
@@ -1209,8 +1211,12 @@ footnote_continuation = (space, space, {whitespace}, inline_content, newline) | 
    PART 9 §17), the same continuation marker lists, block quotes and definition
    bodies use. *)
 
-(* DEFERRED (reserved, not implemented):
-   sidenote = "[>", inline_content, ']' ; *)
+(* DISMISSED (not reserved, no production): a sidenote form
+     sidenote = "[>", inline_content, ']' ;
+   was proposed and declined -- margin placement is CSS over the existing
+   footnote/endnote output, so it does not warrant core syntax. The `[>`
+   opener is therefore UNCLAIMED and `[>foo]` is literal text (pinned by the
+   corpus). Rationale: docs/dismissed-syntax.md. *)
 
 (* --- Citations (PART 9 §22, Tier-2 extension; issue #90) --- *)
 (* TIER-2, OFF BY DEFAULT. A `[...]` whose content contains a `@key` and which
@@ -2114,8 +2120,10 @@ EOF = (* end of file *) ;
 
    16. FOOTNOTES -- NORMATIVE (governs `footnote` / `footnote_definition`
       in PART 3). The reference form `[^label]` + `[^label]: body` and the
-      INLINE form `^[content]` are implemented; the sidenote (`[>content]`)
-      remains deferred. Numbering and resolution are formalized
+      INLINE form `^[content]` are implemented, and they are the only note
+      forms: the proposed sidenote (`[>content]`) was dismissed as a
+      presentation concern, so `[>` is unclaimed and `[>foo]` is literal
+      text (docs/dismissed-syntax.md). Numbering and resolution are formalized
       as PART 9R rule R2; the rendering rules below stay normative here.
       - A `[^label]` reference with a matching definition is NUMBERED by
         document reference order (first referenced = 1); the same label

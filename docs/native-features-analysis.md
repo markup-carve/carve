@@ -230,9 +230,12 @@ feature-level boundary.
 - The `:type[content]` extension *registry* beyond the generic fallback.
 - Everything under "Keep as implementation extensions" above.
 
-### Deferred (reserved syntax, not yet implemented)
+### Not implemented, and not planned
 
-- Sidenotes (`[>content]`). (Inline footnotes `^[content]` are now implemented — §16.)
+- Sidenotes (`[>content]`), dismissed: a sidenote is footnote content placed
+  in the margin by CSS, so it needs no syntax of its own. `[>` is unclaimed and
+  `[>foo]` is literal text. See `dismissed-syntax.md`. (Both note forms that do
+  exist, `[^label]` and inline `^[content]`, are implemented; see §16.)
 - Setext (underline) headings — intentionally excluded (matches djot).
 
 ### Deliberate gaps (will not implement)
