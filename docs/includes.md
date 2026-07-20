@@ -360,6 +360,94 @@ Inclusion is a §25 / security-model concern. The full treatment is on the
 Threats addressed: path traversal, symlink escape, include cycles, zip-bomb /
 size amplification, and DoS by depth.
 
+## Editor and IDE integration
+
+This section is **guidance**, not new parsing rules: it describes how a host
+SHOULD apply the normative model above. Carve's editor and host surfaces fall
+into three **trust classes**, and inclusion policy follows the class.
+
+### Class 1: local editors on the user's own files
+
+Editor integrations (`vscode-carve`, `intellij-carve`, `zed-carve`,
+`helix-carve`, `emacs-carve`, `vim-carve`, `sublime-carve`) have both a document
+path and a trust signal, which is the most favorable position for inclusion.
+
+- **Gate on workspace trust.** Inclusion SHOULD be enabled only when the
+  workspace or project is **trusted** (VS Code Workspace Trust, JetBrains
+  Trusted Projects). In untrusted or restricted mode, directives stay literal.
+  The host SHOULD show a visible hint in that state rather than failing
+  silently: a document that quietly renders <code v-pre>{{ … }}</code> as text
+  looks like a syntax error to the author.
+- **Root at the workspace, not the document.** The containment root SHOULD be
+  the **workspace / project root** rather than the individual document's
+  directory, so that a document in `chapters/` can reference `shared/` without
+  each file needing its own root. This **refines** the file-based default of
+  [The containment root](#the-containment-root) for the editor case: the
+  document's directory remains the fallback for a file opened outside any
+  workspace.
+- **Expose the policy as a setting.** Hosts SHOULD offer an explicit setting -
+  `enabled: auto | on | off`, where the default `auto` means *on if and only if
+  the workspace is trusted* - plus a root override for projects whose content
+  root is not the workspace root.
+
+### Class 2: browser hosts with no filesystem
+
+Browser-embedded hosts (`carve-components`, `carve-wysiwyg`, the docs
+playground) have no filesystem and a string-input API. No root can be inferred,
+so includes cannot resolve at all (see
+[The containment root](#the-containment-root)).
+
+- Such hosts SHOULD surface an **explicit affordance** that includes are not
+  resolved, rather than silently rendering the directive as literal text.
+- They MAY accept a **virtual resolver**: an in-memory map from path to source.
+  That lets sandboxes, demos, and documentation exercise inclusion end to end
+  with no filesystem access, while the host stays inert by construction.
+
+### Class 3: server-side rendering of attacker-influencable content
+
+Server-side hosts that render content supplied by users (CMS and e-commerce
+field rendering, for example `wp-carve` and `shopware-carve`) are the dangerous
+class.
+
+- Inclusion **MUST remain disabled** on these paths. A post body or a product
+  description is user-controlled input, so enabling a file-read capability there
+  is a **file-disclosure vulnerability**, not a feature.
+- If such a host ever offers inclusion, it MUST be an explicit,
+  **administrator-only**, explicitly-rooted opt-in, and that opt-in MUST NOT be
+  inherited by front-end rendering paths.
+
+### Requirements for live preview
+
+These are **host obligations** for an editor preview that expands includes.
+
+1. **Dependency tracking and invalidation.** A preview MUST re-render when an
+   **included** file changes, not only when the open document changes. A preview
+   that watches only the open file will silently show stale output, which is the
+   most common inclusion bug in practice. To make that possible, a processor
+   that expands includes SHOULD report the set of targets it **resolved** and
+   **attempted** (a failed or denied target still has to be watched, since
+   creating that file should invalidate the preview).
+2. **Diagnostics.** The Warnings the spec already requires - unresolved target,
+   cycle, containment denial, depth exceeded, size exceeded (see
+   [Errors](#errors) and [Limits](#limits)) - SHOULD be surfaced as editor
+   diagnostics. Leaving them as silent literal text hides a real error behind
+   something that looks like plain prose.
+3. **Navigation.** Hosts MAY offer go-to-definition on an include path. Because
+   positions carry child-file attribution (see
+   [Merge mechanism and source mapping](#merge-mechanism-and-source-mapping)), a
+   preview-to-source jump SHOULD land in the correct **child** file rather than
+   on the directive line.
+4. **Caching.** Hosts SHOULD cache child parses keyed by **target identity plus
+   modification time**, rather than re-reading every target on every keystroke.
+
+### Implement it once, in the language server
+
+Implementing resolution in a **language server** (`carve-lsp`) rather than per
+editor gives the thin integrations (`helix-carve`, `emacs-carve`, `vim-carve`,
+`zed-carve`, `sublime-carve`) both inclusion and include diagnostics with no
+per-editor work. The server's `rootUri` is the natural containment root, and it
+already owns the document lifecycle that dependency tracking and caching need.
+
 ## Core behavior: no resolver, no expansion
 
 A conformant **core** never expands includes; it renders the directive as
