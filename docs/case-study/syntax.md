@@ -1031,8 +1031,10 @@ renders as
 > **Inline footnotes** (`^[content]` — a caret immediately before `[`) are
 > implemented and corpus-pinned (Tier-1, grammar PART 9 §16; see the *Inline
 > footnotes* examples). The note text is carried in place and numbered into the
-> same endnote pool as reference footnotes. **Sidenotes** (`[>content]`) remain
-> *reserved but not yet implemented* — margin notes with no djot equivalent.
+> same endnote pool as reference footnotes. These two are the only note forms:
+> **sidenotes** (`[>content]`) were proposed and *dismissed*, since a margin
+> note is footnote content positioned by CSS. `[>` is unclaimed, and `[>foo]`
+> is literal text. See [dismissed syntax](../dismissed-syntax).
 
 ### 4.12 Special Blocks (Admonitions)
 
