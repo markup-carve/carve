@@ -1072,7 +1072,7 @@ function collectItems(lines, i, list, state) {
       const heads = new Set(head.dialects.map((d) => d.dialect))
       list.ord.dialects = list.ord.dialects.filter((d) => heads.has(d.dialect))
     }
-    const contentCol = head.indent + head.markerWidth
+    let contentCol = head.indent + head.markerWidth
     const itemLines = [head.text]
     const item = { }
     if (head.attrs && head.attrs.replace(/[{} ]/g, '') !== '') item.attrs = head.attrs
@@ -1144,6 +1144,18 @@ function collectItems(lines, i, list, state) {
           itemLines.push('')
           list.tight = false
           openPara = true
+          i = j
+          continue
+        }
+        if (nm && nm.indent >= baseIndent + 2 && nm.indent < contentCol) {
+          // a sub-list indented at least TWO columns past the marker column
+          // still attaches after a blank even when it stops short of the
+          // content column (SS17 L2); the item's content column narrows to
+          // where that content actually starts. One column is NOT enough:
+          // `- a` + blank + ` - b` stays two sibling lists.
+          contentCol = nm.indent
+          itemLines.push('')
+          openPara = false
           i = j
           continue
         }
