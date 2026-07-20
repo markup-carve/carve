@@ -428,6 +428,42 @@ case rather than a hypothetical one.
 
 ---
 
+## Sidenotes: `[>content]`
+
+**Proposed:**
+```
+The margin carries the aside.[>A note that sits beside the text.]
+```
+
+**Rationale for proposal:**
+- Margin notes are a well-established typographic form (Tufte-style layouts).
+- The `[>` opener was unclaimed and visually suggests "push this to the side".
+- It would have sat next to the two footnote forms already in core: the
+  reference form `[^label]` and the inline form `^[content]` (PART 9 §16).
+
+**Why rejected:**
+- **It is a presentation concern, not a language one.** A sidenote and a
+  footnote carry the same thing: a note bound to a point in the text. Whether
+  that note is set in the margin, at the foot of the page, or in an endnote
+  pool is a decision about layout, not about what the document means.
+- **The existing machinery already covers it.** Footnotes and inline footnotes
+  produce numbered, back-linked notes with stable ids. A host that wants margin
+  notes styles those with CSS; nothing in the parse tree needs to change.
+- **A new inline form is never one production.** It would ripple through the
+  tree-sitter, TextMate, Prism and highlight.js grammars, every editor plugin,
+  the corpus, and all three engines, to buy a CSS rule.
+
+**Decision:** Dismissed. Sidenotes are rendered by styling the existing
+footnote and endnote output; Carve gains no sidenote syntax. The decision
+record is issue #163, where the "purely a display issue" argument was accepted
+and the request closed.
+
+**The `[>` slot:** `[>` is **not** claimed by any construct. `[>foo]` is
+ordinary literal text today and is pinned as such by the corpus. Nothing is
+reserved here, and a future proposal is free to use the slot on its own merits.
+
+---
+
 ## Summary
 
 Most rejected ideas fall into these categories:

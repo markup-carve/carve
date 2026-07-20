@@ -157,8 +157,10 @@ differs by processor. The narrative below details each tier.
 
 Footnotes are **not** Tier 3. Reference footnotes `[^id]` and inline footnotes
 `^[content]` are both implemented Tier-1 core (`resources/grammar.ebnf` PART 9
-§16); only the **sidenote** form `[>content]` is deferred core reserved syntax
-(reserved but not yet implemented), not an app extension. The djot-php
+§16), and they are the only note forms. The once-proposed **sidenote** form
+`[>content]` was dismissed rather than deferred: margin placement is CSS over
+the existing footnote output, so `[>` stays unclaimed and `[>foo]` is literal
+text (see [dismissed syntax](./dismissed-syntax)). The djot-php
 `[…]{.fn}` form maps onto carve's inline `^[content]`; see
 `native-features-analysis.md`.
 
