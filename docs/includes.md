@@ -203,6 +203,27 @@ is grammar-level, a processor MUST NOT resolve includes by blind textual
 substitution over the raw source (which would clobber a directive a user wrote
 inside a code block); it recognizes the directive only in directive position.
 
+### Recognition operates on a run, not on one node
+
+Grammar-level recognition does **not** mean "one parsed text node matches the
+directive grammar". A directive's own syntax overlaps constructs the core
+already parses: `#section` is tag syntax, `@key:value` is mention syntax, and a
+double-quoted path is rewritten by smart quotes. By the time the include pass
+runs, <code v-pre>{{ chapter.crv #intro @shift:1 }}</code> is therefore several
+adjacent nodes - text, a tag, a mention - not one.
+
+A processor MUST therefore recognize a directive over a **contiguous run of
+inline nodes that carry only literal text content** (text, tag, mention, and any
+other node whose source form is recoverable verbatim), reassembling the run's
+source before matching, and replacing only the matched span. Recognizing single
+nodes silently drops every directive that carries `#section` or an option, and
+every directive that appears mid-sentence.
+
+The run stops at any node that is **not** literal-text-shaped. A directive
+interrupted by emphasis, a link, or a code span is therefore **not** recognized
+and stays literal - the same rule that keeps a bare-path directive with active
+inline markers literal.
+
 ## The host resolver
 
 The **resolution model** keeps the parser pure and pushes all filesystem

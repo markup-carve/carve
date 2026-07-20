@@ -4337,6 +4337,23 @@ EOF = (* end of file *) ;
            `tests/include-security-conformance/` pin only these security
            requirements; the broader suite pins I1-I14.
 
+        I9a RECOGNITION SHAPE -- RUN, NOT NODE. Grammar-level recognition does
+           NOT mean "one parsed text node matches the directive grammar". A
+           directive's own syntax overlaps constructs the core already parses:
+           `#section` is TAG syntax, `@key:value` is MENTION syntax, and a
+           double-quoted path is rewritten by smart quotes, so by the time the
+           include pass runs `{{ x #intro @shift:1 }}` is SEVERAL adjacent nodes.
+           A processor MUST recognize a directive over a CONTIGUOUS RUN of inline
+           nodes carrying only LITERAL TEXT content (text, tag, mention, and any
+           other node whose source form is recoverable verbatim): reassemble the
+           run's source, match, and replace ONLY the matched span. Recognizing
+           single nodes silently drops every directive carrying `#section` or an
+           option, and every directive appearing mid-sentence. The run STOPS at
+           any node that is not literal-text-shaped, so a directive interrupted
+           by emphasis, a link, or a code span is NOT recognized and stays
+           literal (same rule as a bare-path directive with active inline
+           markers).
+
         I9 VERBATIM PROTECTION. An include directive is recognized ONLY where
            inline and block constructs are recognized. Inside a code span, a
            fenced or raw code block, or any other verbatim context, `{{ ... }}`
