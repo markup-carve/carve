@@ -109,6 +109,33 @@ not a list</p>
 ```
 
 ```
+1. one
+
+  text
+
+1. two
+.
+<ol>
+  <li><p>one</p>
+    <p>text</p>
+  </li>
+  <li><p>two</p></li>
+</ol>
+```
+
+```
+1. one
+
+  > q
+.
+<ol>
+  <li>one
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ol>
+```
+
+```
 - [ ] outer
   - inner
 .

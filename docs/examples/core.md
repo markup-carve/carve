@@ -738,6 +738,49 @@ After a blank line the lazy-fold channel is closed, so the content-column rule r
 
 :::
 
+The relaxed rule is not specific to sub-lists: a plain paragraph indented two columns attaches the same way, and turns the item loose because a second paragraph inside an item always does (§17 L1).
+
+::: compare
+
+```carve
+1. one
+
+  text
+
+1. two
+```
+
+```html
+<ol>
+  <li><p>one</p>
+    <p>text</p>
+  </li>
+  <li><p>two</p></li>
+</ol>
+```
+
+:::
+
+A block opener attaches on the same two-column rule, and stays tight: unlike a second paragraph, a nested block does not loosen the list.
+
+::: compare
+
+```carve
+1. one
+
+  > q
+```
+
+```html
+<ol>
+  <li>one
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ol>
+```
+
+:::
+
 A task item's content column is the bullet width (2), since the checkbox is content, not marker, so a child indented to column 2 nests. A marker indented below the content column folds in as lazy continuation rather than nesting; no list marker interrupts (§10), so only a marker at or past the content column opens a sub-list.
 
 ::: compare

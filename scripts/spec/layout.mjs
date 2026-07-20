@@ -306,6 +306,44 @@ function startsVisibleBlock(line) {
   return HEADING.test(line) || HR.test(line) || QUOTE.test(line)
 }
 
+// A sub-BLOCK attached to an open list item after a blank line: it nests and
+// leaves the list TIGHT (SS17 L2), unlike a second paragraph, which loosens it
+// (SS17 L1). Colon fences and table rows count -- they are blocks, not prose.
+// `rest` is the remainder of THIS item (see itemRest), already dedented to the
+// item's content column, and is only consulted to confirm a colon fence
+// actually closes. It must not run past the item: a closer belonging to a
+// sibling item or to the document would otherwise make an unclosed opener
+// look like a block.
+function opensSubBlock(line, rest) {
+  if (QUOTE.test(line) || HEADING.test(line) || HR.test(line) ||
+      interruptingRow(line)) return true
+  const f = FENCE.exec(line)
+  // an INVALID info string is not a fence at all (PART 2 INVALID-FENCE
+  // FALLBACK) -- the line is prose and loosens the item
+  if (f) return parseFenceInfo(f[2]) !== null
+  const cf = COLON_FENCE.exec(line)
+  if (!cf) return false
+  // a colon fence is a BLOCK only when the opener is well-formed AND a closer
+  // follows (PART 9 SS12); otherwise the line is ordinary prose and loosens
+  // the item like any second paragraph
+  return parseColonOpener(cf[2]) !== null && findColonCloser(rest, -1, cf[1].length) !== -1
+}
+
+// the lines after `j` that still belong to the item opened at `baseIndent`,
+// dedented to `contentCol`: everything up to the first non-blank line that
+// dedents back to the marker column or further out
+function itemRest(lines, j, baseIndent, contentCol) {
+  const out = []
+  for (let k = j + 1; k < lines.length; k++) {
+    const l = lines[k]
+    // a `+` at the marker column pulls the following flush-left block INTO
+    // the item (SS17 L3/L4), so the item does not end there
+    if (!isBlank(l) && indentCols(l).col <= baseIndent && !CONT_MARKER.test(l.trim())) break
+    out.push(dedent(l, contentCol))
+  }
+  return out
+}
+
 export function parse(src) {
   const lines = src.split('\n')
   if (lines[lines.length - 1] === '') lines.pop()
@@ -1133,7 +1171,7 @@ function collectItems(lines, i, list, state) {
         }
         if (col >= contentCol && !(nm && nm.indent >= contentCol)) {
           const dedented = dedent(lines[j], contentCol)
-          if (QUOTE.test(dedented) || FENCE.test(dedented) || HEADING.test(dedented) || HR.test(dedented)) {
+          if (opensSubBlock(dedented, itemRest(lines, j, baseIndent, contentCol))) {
             // sub-BLOCK after a blank: attaches, stays tight (SS17 L2)
             itemLines.push('')
             openPara = false
@@ -1147,15 +1185,24 @@ function collectItems(lines, i, list, state) {
           i = j
           continue
         }
-        if (nm && nm.indent >= baseIndent + 2 && nm.indent < contentCol) {
-          // a sub-list indented at least TWO columns past the marker column
-          // still attaches after a blank even when it stops short of the
-          // content column (SS17 L2); the item's content column narrows to
+        if (col >= baseIndent + 2 && col < contentCol) {
+          // after a blank the lazy-fold channel is closed, so the content
+          // column relaxes: ANY continuation indented at least TWO columns
+          // past the marker column attaches, even when it stops short of the
+          // content column (SS17 L2). The item's content column narrows to
           // where that content actually starts. One column is NOT enough:
           // `- a` + blank + ` - b` stays two sibling lists.
-          contentCol = nm.indent
+          contentCol = col
+          const dedented = dedent(lines[j], contentCol)
           itemLines.push('')
-          openPara = false
+          if (nm || opensSubBlock(dedented, itemRest(lines, j, baseIndent, contentCol))) {
+            // sub-list or sub-BLOCK: attaches, stays tight (SS17 L2)
+            openPara = false
+          } else {
+            // a second PARAGRAPH inside the item -> loose (SS17 L1)
+            list.tight = false
+            openPara = true
+          }
           i = j
           continue
         }
