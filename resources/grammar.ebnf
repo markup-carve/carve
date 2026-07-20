@@ -1540,9 +1540,9 @@ include_section    = '#', identifier ;
    The CONCRETE options defined in §19 are `@lines:N-M` (SELECTION -- a physical
    line range; mutually exclusive with `#section`) and `@shift:N` (TRANSFORM -- a
    SIGNED heading-level shift, orthogonal to selection, so it may accompany
-   `#section`, a line-range, or neither). `@shift:auto` is RESERVED for a future
-   version, NOT defined here. Every other `@key` is RESERVED. Options are
-   space-separated. *)
+   `#section`, a line-range, or neither). `@shift` takes EITHER a SIGNED integer
+   OR the literal value `auto` (context-relative shift, §19 I8), never both.
+   Every other `@key` is RESERVED. Options are space-separated. *)
 include_option     = '@', include_option_name, ':', include_option_value ;
 include_option_name  = identifier ;
 include_option_value = {character - ('#' | '@' | '}' | ' ')}+ ;
@@ -2315,8 +2315,9 @@ EOF = (* end of file *) ;
            per I7). TRANSFORM options reshape already-selected content and are
            orthogonal to selection: `@shift:N` shifts every included heading's
            level by the SIGNED integer N (I8). `@shift` MAY accompany `#section`,
-           a line-range, or neither. `@shift:auto` is RESERVED (future,
-           NOT defined here). Every other `@key` is RESERVED.
+           a line-range, or neither. `@shift` takes EITHER a signed integer OR
+           the literal value `auto` (context-relative, computed by the processor
+           per I8), never both. Every other `@key` is RESERVED.
 
         I2 BLOCK vs INLINE. A directive ALONE on its own line is a BLOCK
            include: the resolved content merges as BLOCKS at the directive
@@ -2396,8 +2397,10 @@ EOF = (* end of file *) ;
            path containment, a symlink / escape policy, and same-sanitization
            parsing (no privilege escalation via include).
 
-        I8 HEADING-LEVEL SHIFT (`@shift:N`). A TRANSFORM option (I1), orthogonal
-           to selection. N is a SIGNED integer; every heading in the included
+        I8 HEADING-LEVEL SHIFT (`@shift:N` | `@shift:auto`). A TRANSFORM option
+           (I1), orthogonal to selection. `@shift` takes EITHER a SIGNED integer
+           OR the literal value `auto`, NEVER both.
+           LITERAL FORM. N is a SIGNED integer; every heading in the included
            content has its level increased by N (N=2: an h1 becomes an h3; a
            NEGATIVE N raises levels, N=-1: an h2 becomes an h1). An omitted
            `@shift` is `@shift:0` (no shift, the default; current behavior
@@ -2409,9 +2412,38 @@ EOF = (* end of file *) ;
            into shifted headings still resolve. AUTO-NUMBERING: if section
            auto-numbering (HeadingNumbers, docs/extensions.md) is enabled,
            shifted headings renumber at their NEW level as a consequence.
-           `@shift:auto` (context-relative auto-shift) is RESERVED for a future
-           version and NOT specified here: Carve headings are a flat stream, so
-           inferring the include-site level is deferred.
+
+           AUTO FORM (`@shift:auto`). CONTEXT-RELATIVE: the processor COMPUTES
+           the shift instead of taking it from the author.
+           CONTEXT LEVEL C: the level of the nearest PRECEDING heading, in
+           document order, that is in the directive's OWN block container or an
+           ENCLOSING (ancestor) container. A heading inside a SIBLING container
+           that has already CLOSED does NOT set the context. If no such heading
+           exists, C = 0.
+           TOP LEVEL T: the MINIMUM heading level present in the resolved
+           content, AFTER any `#section` or line-range selection has been
+           applied. The MINIMUM (not the first heading's level) is used so the
+           included document's internal relative structure is preserved.
+           COMPUTED SHIFT: N = (C + 1) - T. N is then applied EXACTLY as a
+           literal shift under the rules above -- clamp to [1, 6] with a Warning
+           on clamp, heading KEPT never dropped, ids / slugs unchanged so
+           cross-references still resolve, and auto-numbering renumbering at the
+           new level.
+           NO HEADINGS: if the resolved content contains NO headings, `auto` is a
+           NO-OP (N = 0) and emits NO Warning.
+           NESTED INCLUDES: `auto` resolves against the document AS ASSEMBLED at
+           that point, so a shift already applied by an ANCESTOR include is in
+           effect when a nested `auto` is computed. Expansion proceeds
+           OUTSIDE-IN, which makes the result DETERMINISTIC.
+           INLINE INCLUDES: inline content cannot contain headings, so `auto` on
+           an INLINE include (I2) is a no-op.
+           EXAMPLE: an including document with `## Chapters` before the directive
+           gives C = 2; a child starting at `# Chapter One` gives T = 1; so
+           N = (2 + 1) - 1 = 2 and the child's h1 renders as an h3.
+           RATIONALE: `auto` makes a chapter file PORTABLE -- the same file can
+           be included at any depth without editing its heading levels. Because
+           the author writes `@shift:auto` explicitly at the include site, the
+           position-dependence is OPT-IN PER DIRECTIVE, not ambient behavior.
 
         I9 VERBATIM PROTECTION. An include directive is recognized ONLY where
            inline and block constructs are recognized. Inside a code span, a
