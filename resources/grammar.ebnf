@@ -2455,6 +2455,29 @@ EOF = (* end of file *) ;
            and `../../../etc/passwd` is DENIED. See PART 9 §25 (File inclusion)
            and docs/security.md.
 
+        I11 DEPENDENCY REPORTING. A processor that expands includes MUST report,
+           alongside the expanded document and any Warnings, the SET OF INCLUDE
+           TARGETS it touched during the expansion.
+           SCOPE: the set covers the ENTIRE recursive expansion, including
+           nested children, DE-DUPLICATED, in a DETERMINISTIC order.
+           IDENTITY: each target is identified by the resolver's CANONICAL ID
+           where one is supplied -- the same identity the cycle guard uses in
+           I6 -- and otherwise by the RESOLVED PATH.
+           ATTEMPTED TARGETS ARE INCLUDED: the set MUST contain targets that
+           were ATTEMPTED but NOT resolved -- missing or unreadable, binary,
+           containment-denied (I10), cycle-broken (I6), and depth- or
+           size-exceeded (I6). RATIONALE: a host that watches only the files it
+           successfully read never learns that a previously-missing target now
+           EXISTS, so a preview would stay stale at exactly the moment the
+           author fixes the problem.
+           DISTINGUISHABILITY: each entry MUST be distinguishable as RESOLVED
+           versus ATTEMPTED-BUT-UNRESOLVED.
+           PURPOSE: hosts use this set for INVALIDATION (file watching) and for
+           DIAGNOSTICS. It is a CROSS-IMPLEMENTATION CONTRACT, so an editor can
+           rely on it regardless of which engine backs it. Without it, preview
+           invalidation cannot be implemented correctly. See docs/includes.md
+           (Reported dependencies, and Editor and IDE integration).
+
    20. RAW PASSTHROUGH -- NORMATIVE (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT
       fence, PART 2) emits its verbatim content UNESCAPED when FORMAT

@@ -253,6 +253,36 @@ let x = 1;
 the end of `snippet.crv`. The parent content after the directive is parsed
 normally - it is **not** pulled into the code block.
 
+## Reported dependencies
+
+Expansion has a second output besides the document and its Warnings. A processor
+that expands includes **MUST** report the **set of include targets it touched**
+during the expansion.
+
+- **Whole expansion, de-duplicated.** The set covers the entire recursive
+  expansion including nested children, with duplicates collapsed, in a
+  **deterministic** order.
+- **Identity.** Each target is identified by the resolver's **canonical id**
+  where the resolver supplies one - the same identity the cycle guard uses (see
+  [Limits](#limits)) - and otherwise by the resolved path.
+- **Attempted targets are included, not just successful ones.** The set MUST
+  contain targets that were **attempted but not resolved**: missing or
+  unreadable, binary, containment-denied, cycle-broken, and depth- or
+  size-exceeded. The reason is invalidation: a host that watches only the files
+  it successfully read never learns that a previously-missing target now
+  **exists**, so a preview would stay stale at exactly the moment the author
+  fixes the problem.
+- **Resolved versus attempted is observable.** Each entry MUST be
+  distinguishable as **resolved** or **attempted-but-unresolved**, so a host can
+  drive file watching from the whole set while driving diagnostics from the
+  failures.
+
+Hosts use this set for **invalidation** (file watching) and for **diagnostics**.
+It is a **cross-implementation contract**: an editor can rely on it regardless
+of which engine backs it. Without it, preview invalidation cannot be implemented
+correctly - see
+[Requirements for live preview](#requirements-for-live-preview).
+
 ## Cross-file collisions
 
 Merging documents can collide **footnote labels**, **reference-definition
@@ -423,10 +453,12 @@ These are **host obligations** for an editor preview that expands includes.
 1. **Dependency tracking and invalidation.** A preview MUST re-render when an
    **included** file changes, not only when the open document changes. A preview
    that watches only the open file will silently show stale output, which is the
-   most common inclusion bug in practice. To make that possible, a processor
-   that expands includes SHOULD report the set of targets it **resolved** and
-   **attempted** (a failed or denied target still has to be watched, since
-   creating that file should invalidate the preview).
+   most common inclusion bug in practice. Hosts do not have to infer the
+   dependency set themselves: a processor that expands includes **MUST** report
+   the targets it **resolved** and those it merely **attempted** (see
+   [Reported dependencies](#reported-dependencies)). Watch the whole reported
+   set, failures included - creating a previously-missing target has to
+   invalidate the preview too.
 2. **Diagnostics.** The Warnings the spec already requires - unresolved target,
    cycle, containment denial, depth exceeded, size exceeded (see
    [Errors](#errors) and [Limits](#limits)) - SHOULD be surfaced as editor
