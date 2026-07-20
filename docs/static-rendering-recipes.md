@@ -49,7 +49,7 @@ Two rules of thumb:
 ## Closure signatures per engine
 
 The `renderers` map is keyed by extension name (`mermaid`, `chart`, `graphviz`,
-`math`). The closure takes the source string and returns an HTML fragment (an
+`plantuml`, `math`). The closure takes the source string and returns an HTML fragment (an
 `<img>`, inline `<svg>`, or your fallback). Math additionally receives a display
 flag where the engine exposes one.
 

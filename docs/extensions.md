@@ -245,16 +245,25 @@ Expected static output per interactive extension:
 | tabs / code-group | each panel as a `<section>` headed by its `[label]` |
 | details | not a `renderStatic` case - emits a native `<details open>` in static (see [Graceful Degradation](/graceful-degradation)); interactive without scripts, so never flattened |
 | spoiler | the revealed content (no blur) |
-| fenced-render (mermaid, chart, graphviz) | a build-rendered image if a renderer for that key is supplied, else the source as a code block |
+| fenced-render (mermaid, chart, graphviz, plantuml) | a build-rendered image if a renderer for that key is supplied, else the source as a code block |
 | math (display / inline) | server-side output (MathML/HTML) if a renderer is supplied, else the source |
 
 Client-script extensions cannot produce their image inside the engine. A
 `"static"` render therefore accepts a **renderers** map. The canonical keys are
-`mermaid`, `chart`, `graphviz`, and `math` - implementations MUST use these exact
-names so the same `renderers` config behaves identically across engines (a fixed
-`{mermaid, chart, math}` struct that omits `graphviz` is non-conformant). When
-the needed renderer is absent, `renderStatic` MUST fall back to source, never
-blank. Renderers are **synchronous** (`source -> string`; `math` also takes a
+`mermaid`, `chart`, `graphviz`, `plantuml`, and `math` - implementations MUST use
+these exact names so the same `renderers` config behaves identically across
+engines (a fixed `{mermaid, chart, math}` struct that omits `graphviz` or
+`plantuml` is non-conformant). When the needed renderer is absent, `renderStatic`
+MUST fall back to source, never blank.
+
+> [!NOTE]
+> The canonical key set is **closed**: it grows only by a deliberate, coordinated
+> change across the spec and every implementation, never ad hoc. Adding a key
+> (as `plantuml` was added alongside `mermaid`/`chart`/`graphviz`/`math`) is a
+> lockstep edit - the spec sentence above, plus each engine's renderers type or
+> map and the preset that carries the key, plus any binding that validates keys
+> (e.g. carve-rb's allowlist). The payoff for that cost is the cross-engine parity
+> guarantee; the discipline is that renderer keys are curated, not open-ended. Renderers are **synchronous** (`source -> string`; `math` also takes a
 display flag): an async tool (mmdc, an HTTP service) must be run in a build step
 and supplied as a pre-resolved lookup, not awaited inside the render. Renderers
 apply to the **static HTML** path only - the Markdown/plain/ANSI renderers keep
