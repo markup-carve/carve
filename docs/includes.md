@@ -175,6 +175,39 @@ The host supplies a **resolver** with this contract:
 - The resolver is **opt-in** and MUST be off for untrusted input unless the host
   has satisfied the [Security](#security) requirements.
 
+### The containment root
+
+Every resolved path is checked against a single **containment root**. Where that
+root comes from depends on whether the entry point carries a path at all.
+
+- **File-based entry points** - a CLI invocation on a document path, or a
+  convert-from-file API - **SHOULD** default the containment root to the
+  **directory of the top-level document**. A document path is already known
+  there, so requiring the host to name a root explicitly is not necessary. The
+  root **MUST NOT** default to the process working directory: that directory is
+  arbitrary with respect to the document and may be `/` or a home directory.
+- **String-input APIs** have no document path, so no root can be inferred. A host
+  **MUST** supply the root explicitly; otherwise inclusion stays disabled and
+  directives remain literal. This preserves the opt-in posture for embedders: an
+  application that converts a string never gains filesystem reach by accident.
+- **One root for the whole expansion.** Relative include paths resolve relative
+  to the **including file** (I1), but containment is checked against the single
+  **top-level** root. The root **MUST NOT** re-base per included file. A re-based
+  root would shrink at every level of nesting, so a nested document could never
+  reference a sibling directory of the project.
+
+```
+book/            <- root (default: directory of the top-level document)
+  main.crv
+  chapters/ch1.crv
+  shared/glossary.crv
+```
+
+From `chapters/ch1.crv`, the include `../shared/glossary.crv` is **allowed**: it
+canonicalizes to `book/shared/glossary.crv`, which is inside the root, even
+though the path contains a `..` segment. From the same file,
+`../../../etc/passwd` is **denied**: it canonicalizes outside `book/`.
+
 ## Merge mechanism and source mapping
 
 The specification is normative on the **outcome** and permissive on the
@@ -216,7 +249,7 @@ Some text.
 let x = 1;
 ~~~
 
-`{{ snippet.crv }}` yields a paragraph and a code block whose fence closes at
+<code v-pre>{{ snippet.crv }}</code> yields a paragraph and a code block whose fence closes at
 the end of `snippet.crv`. The parent content after the directive is parsed
 normally - it is **not** pulled into the code block.
 
@@ -301,10 +334,23 @@ Inclusion is a §25 / security-model concern. The full treatment is on the
 - **The host resolver MUST enforce path containment.** Resolve `..` and symlinks
   **first**, then reject any target that lands outside a configured root. A path
   is contained only after canonicalization.
+- **Containment is canonical, not lexical.** A processor **MUST** canonicalize
+  the candidate path, resolving symbolic links, and then verify that the
+  canonical result is contained within the canonical root. A `..` segment is
+  permitted exactly when the canonical result stays inside the root. Rejecting
+  `..` lexically is wrong in **both** directions: it is too strict, because it
+  rejects legitimate sibling-directory layouts such as a document in `chapters/`
+  including `../shared/glossary.crv` whose target is inside the project root; and
+  it is too weak, because symbolic links and absolute paths escape a root with no
+  `..` present at all.
+- **The root defaults to the top-level document's directory** for file-based
+  entry points, is supplied explicitly for string input, and is fixed for the
+  whole expansion - see [The containment root](#the-containment-root).
 - **Symlink / escape policy.** A symlink whose real target escapes the root is
   rejected the same as a literal traversal.
-- **Absolute paths and schemes MAY be denied.** Remote fetches (`file:`,
-  `http:`, `data:`, …) are off unless explicitly allowlisted.
+- **Absolute paths and schemes MAY be denied.** Absolute paths remain denied
+  unless they canonicalize inside the root. Remote fetches (`file:`, `http:`,
+  `data:`, …) are off unless explicitly allowlisted.
 - **Same-sanitization parsing.** Included content is parsed under the **same**
   raw-HTML, URL-scheme, attribute, and Trojan-Source sanitization as any Carve
   content. Inclusion is a source-merge, **not** a privilege boundary: there is

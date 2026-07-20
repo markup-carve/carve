@@ -4346,6 +4346,39 @@ EOF = (* end of file *) ;
            directive is no exception. A literal `{{ ... }}` can therefore always
            be written and displayed by placing it in code.
 
+        I10 CONTAINMENT ROOT + CANONICAL CONTAINMENT CHECK. Every resolved path
+           is checked against a single CONTAINMENT ROOT.
+           DEFAULT ROOT (RECOMMENDED): for FILE-BASED entry points (a CLI
+           invocation on a document path, or a convert-from-file API) the root
+           SHOULD default to the DIRECTORY OF THE TOP-LEVEL DOCUMENT -- a
+           document path is already known, so requiring the host to name a root
+           explicitly is not necessary. The root MUST NOT default to the process
+           working directory (arbitrary with respect to the document, and
+           possibly `/` or a home directory).
+           NO PATH CONTEXT, NO DEFAULT: for STRING-INPUT APIs there is no
+           document path and therefore no inferable root; a host MUST supply the
+           root explicitly, otherwise inclusion stays DISABLED and directives
+           remain LITERAL (I3). This preserves the opt-in posture for embedders.
+           ONE ROOT PER EXPANSION: relative include paths resolve relative to the
+           INCLUDING file (I1), but containment is checked against the single
+           TOP-LEVEL root. The root MUST NOT re-base per included file; a
+           re-based root shrinks at every nesting level, so a nested document
+           could never reference a sibling directory of the project.
+           CANONICAL, NOT LEXICAL (MUST): a processor MUST canonicalize the
+           candidate path (resolving symbolic links) and then verify the
+           canonical result is contained within the canonical root. A `..`
+           segment is PERMITTED exactly when the canonical result stays inside
+           the root. A lexical `..` rejection is wrong on both sides: TOO STRICT
+           (it rejects legitimate sibling-directory layouts, e.g. a document in
+           `chapters/` including `../shared/glossary.crv` whose target is inside
+           the project root) and TOO WEAK (symbolic links and absolute paths
+           escape a root with no `..` present at all). Absolute paths remain
+           DENIED unless they canonicalize inside the root. Given the layout
+           `book/{main.crv, chapters/ch1.crv, shared/glossary.crv}` with root
+           `book/`: from `chapters/ch1.crv`, `../shared/glossary.crv` is ALLOWED
+           and `../../../etc/passwd` is DENIED. See PART 9 §25 (File inclusion)
+           and docs/security.md.
+
    20. RAW PASSTHROUGH -- NORMATIVE (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT
       fence, PART 2) emits its verbatim content UNESCAPED when FORMAT
