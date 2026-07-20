@@ -182,11 +182,42 @@ responsibility:
   - **Confine paths to a configured root.** Resolve `..` and symlinks *first*,
     then reject any target that lands outside the root. A path is contained only
     after canonicalization, not before.
+  - **Check containment canonically, never lexically.** Canonicalize the
+    candidate path, resolving symbolic links, then verify the canonical result is
+    contained within the canonical root. A `..` segment is permitted exactly when
+    the canonical result stays inside the root. A lexical `..` rejection is wrong
+    on both sides: **too strict**, because it rejects legitimate
+    sibling-directory layouts (a document in `chapters/` including
+    `../shared/glossary.crv`, whose target is inside the project root); and **too
+    weak**, because symbolic links and absolute paths escape a root with no `..`
+    present at all. Absolute paths remain denied unless they canonicalize inside
+    the root.
   - **Apply a symlink / escape policy.** A symlink whose real target escapes the
     root is rejected the same as a literal `../` traversal.
-  - **Refuse remote fetches by default.** Absolute paths and URL schemes
-    (`file:`, `http:`, `data:`, …) MAY be denied outright; enable a remote
-    source only behind an explicit allowlist.
+  - **Refuse remote fetches by default.** URL schemes (`file:`, `http:`, `data:`,
+    …) MAY be denied outright; enable a remote source only behind an explicit
+    allowlist.
+- **The root is well defined, and is never the working directory.** For
+  file-based entry points (a CLI invocation on a document path, or a
+  convert-from-file API) the root SHOULD default to the **directory of the
+  top-level document**; it MUST NOT default to the process working directory,
+  which is arbitrary and may be `/` or a home directory. For string-input APIs
+  no path context exists, so a host MUST supply the root explicitly or inclusion
+  stays disabled and directives remain literal. The root is fixed for the whole
+  expansion: relative paths resolve against the *including* file, but containment
+  is always checked against the single top-level root, which MUST NOT re-base per
+  included file.
+
+```
+book/            <- root (default: directory of the top-level document)
+  main.crv
+  chapters/ch1.crv
+  shared/glossary.crv
+```
+
+From `chapters/ch1.crv`, `../shared/glossary.crv` is allowed (it canonicalizes
+inside `book/`), while `../../../etc/passwd` is denied.
+
 - **Included content is parsed under the SAME sanitization as any Carve.**
   Inclusion is a *source-merge*, not a privilege boundary: raw-HTML passthrough,
   the URL-scheme denylist, attribute hardening, and Trojan-Source stripping all
