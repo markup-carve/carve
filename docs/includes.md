@@ -332,6 +332,13 @@ during the expansion.
 - **Whole expansion, de-duplicated.** The set covers the entire recursive
   expansion including nested children, with duplicates collapsed, in a
   **deterministic** order.
+- **Order is first-encounter, not post-order.** The reported order MUST be the
+  order in which each target's directive is **first encountered** reading the
+  fully expanded document top to bottom (document order). It MUST NOT be
+  completion / post-order. This set is a cross-implementation contract, so an
+  editor diffing dependency lists across engines has to see the same sequence;
+  document order is also the natural order in which to present targets and to
+  reason about invalidation.
 - **Identity.** Each target is identified by the resolver's **canonical id**
   where the resolver supplies one - the same identity the cycle guard uses (see
   [Limits](#limits)) - and otherwise by the resolved path.
@@ -346,6 +353,24 @@ during the expansion.
   distinguishable as **resolved** or **attempted-but-unresolved**, so a host can
   drive file watching from the whole set while driving diagnostics from the
   failures.
+- **`resolved` means "the source was read", nothing more.** The distinction
+  reflects **only** whether the target's source was successfully read. It is
+  **independent** of whether the resulting expansion was later refused.
+  - A target that **was** read but whose expansion was then refused
+    (cycle-broken, depth-exceeded, size-exceeded) is **resolved**. The refusal
+    is surfaced through a Warning (see [Errors](#errors)), not through this
+    flag.
+  - A target that was **never** read - missing or unreadable, binary,
+    containment-denied - is **unresolved**.
+  - The flag is **monotonic**: once recorded resolved, a target MUST NOT be
+    downgraded; a target first recorded unresolved MUST be upgraded if a later
+    read of the same target succeeds.
+
+  The reason is that the dependency set exists for **invalidation** - it answers
+  "which files must I watch" - while diagnostics travel in Warnings. Conflating
+  the two degrades both: a host watching files would stop watching a file that
+  genuinely exists, and a host listing problems would miss ones the flag cannot
+  express.
 
 Hosts use this set for **invalidation** (file watching) and for **diagnostics**.
 It is a **cross-implementation contract**: an editor can rely on it regardless
@@ -458,6 +483,22 @@ Every failure path is **visible**, never a silent drop. Each of these emits a
 | Expanded size exceeds the byte budget | Warning + literal directive |
 | No resolver configured | Literal directive (no Warning required) |
 
+### Warning text is normalized, never the raw resolver error
+
+A processor **MUST NOT** surface a resolver's raw error text verbatim in a
+Warning message. It **MUST** emit its own normalized message describing the
+failure class: unreadable target, binary content, containment denial, cycle,
+depth exceeded, or size exceeded. A processor **MAY** expose the raw resolver
+error on a **separate** diagnostic field or channel, which a host can choose not
+to render.
+
+A filesystem resolver's error text commonly embeds absolute paths, so
+propagating it verbatim leaks host filesystem layout into rendered output. In
+any hosted preview or server-side rendering path that is an
+information-disclosure risk, and it also makes warning text host-dependent,
+which undermines the cross-implementation contract described under
+[Reported dependencies](#reported-dependencies).
+
 A `@shift:N` whose result would leave the valid heading range is the one
 degrade that does **not** go literal: the heading is **kept** with its level
 clamped to `[1, 6]` and a Warning is emitted (see
@@ -494,10 +535,17 @@ Inclusion is a §25 / security-model concern. The full treatment is on the
   raw-HTML, URL-scheme, attribute, and Trojan-Source sanitization as any Carve
   content. Inclusion is a source-merge, **not** a privilege boundary: there is
   **no privilege escalation via include**.
+- **Warning text is normalized.** A processor MUST NOT surface a resolver's raw
+  error text verbatim in a Warning; it emits its own message for the failure
+  class and MAY carry the raw error on a separate diagnostic channel. Resolver
+  errors commonly embed absolute paths, and rendering them would leak host
+  filesystem layout - see
+  [Warning text is normalized](#warning-text-is-normalized-never-the-raw-resolver-error).
 - **Non-filesystem hosts.** With no resolver, every directive is literal.
 
 Threats addressed: path traversal, symlink escape, include cycles, zip-bomb /
-size amplification, and DoS by depth.
+size amplification, DoS by depth, and host-path disclosure through raw resolver
+error text.
 
 ## Editor and IDE integration
 

@@ -2421,6 +2421,19 @@ EOF = (* end of file *) ;
            model: parser stays pure, resolver is host-supplied and MUST enforce
            path containment, a symlink / escape policy, and same-sanitization
            parsing (no privilege escalation via include).
+           WARNING TEXT IS NORMALIZED, NEVER THE RESOLVER'S RAW ERROR. A
+           processor MUST NOT surface a resolver's raw error text VERBATIM in a
+           Warning message. It MUST emit its OWN normalized message describing
+           the FAILURE CLASS -- unreadable target, binary content, containment
+           denial, cycle, depth exceeded, size exceeded. A processor MAY expose
+           the raw resolver error on a SEPARATE diagnostic field or channel,
+           which a host can choose not to render. RATIONALE: a filesystem
+           resolver's error text commonly embeds ABSOLUTE PATHS, so propagating
+           it verbatim leaks host filesystem layout into rendered output. In a
+           hosted preview or a server-side rendering path that is an
+           INFORMATION-DISCLOSURE risk, and it also makes warning text
+           HOST-DEPENDENT, which undermines the cross-implementation contract
+           (I11).
 
         I8 HEADING-LEVEL SHIFT (`@shift:N` | `@shift:auto`). A TRANSFORM option
            (I1), orthogonal to selection. `@shift` takes EITHER a SIGNED integer
@@ -2534,6 +2547,14 @@ EOF = (* end of file *) ;
            TARGETS it touched during the expansion.
            SCOPE: the set covers the ENTIRE recursive expansion, including
            nested children, DE-DUPLICATED, in a DETERMINISTIC order.
+           ORDER: the reported order MUST be FIRST-ENCOUNTER order -- the order
+           in which each target's directive is FIRST ENCOUNTERED reading the
+           fully expanded document TOP TO BOTTOM (document order). It MUST NOT
+           be completion / post-order. RATIONALE: this set is a
+           cross-implementation contract (see PURPOSE below), so an editor
+           diffing dependency lists across engines MUST see the SAME sequence;
+           document order is also the natural order in which to present targets
+           and to reason about invalidation.
            IDENTITY: each target is identified by the resolver's CANONICAL ID
            where one is supplied -- the same identity the cycle guard uses in
            I6 -- and otherwise by the RESOLVED PATH.
@@ -2546,6 +2567,23 @@ EOF = (* end of file *) ;
            author fixes the problem.
            DISTINGUISHABILITY: each entry MUST be distinguishable as RESOLVED
            versus ATTEMPTED-BUT-UNRESOLVED.
+           RESOLVED SEMANTICS: the distinction reflects ONLY whether the
+           target's SOURCE WAS SUCCESSFULLY READ. It is INDEPENDENT of whether
+           the resulting expansion was later REFUSED.
+             - A target that WAS read but whose expansion was then refused
+               (cycle-broken, depth-exceeded, size-exceeded) is RESOLVED. The
+               refusal is surfaced through a WARNING (I7), not through this
+               flag.
+             - A target that was NEVER read -- missing or unreadable, binary,
+               containment-denied (I10) -- is UNRESOLVED.
+             - MONOTONIC: once recorded RESOLVED a target MUST NOT be
+               downgraded; a target first recorded UNRESOLVED MUST be UPGRADED
+               if a later read of the SAME target succeeds.
+           RATIONALE: the dependency set exists for INVALIDATION -- it answers
+           "which files must I watch" -- while diagnostics travel in Warnings.
+           Conflating the two degrades BOTH: a host watching files would stop
+           watching a file that genuinely EXISTS, and a host listing problems
+           would miss ones the flag cannot express.
            PURPOSE: hosts use this set for INVALIDATION (file watching) and for
            DIAGNOSTICS. It is a CROSS-IMPLEMENTATION CONTRACT, so an editor can
            rely on it regardless of which engine backs it. Without it, preview

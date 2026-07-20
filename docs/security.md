@@ -233,11 +233,25 @@ inside `book/`), while `../../../etc/passwd` is denied.
   features (see *Resource limits* above). Past any limit the directive degrades
   to literal text with a Warning - never a silent drop.
 
+- **Warning text is normalized, never the resolver's raw error.** When a
+  directive fails, the processor **MUST NOT** put the resolver's raw error text
+  into the Warning message. It **MUST** emit its own normalized message naming
+  the failure class (unreadable target, binary content, containment denial,
+  cycle, depth exceeded, size exceeded), and **MAY** carry the raw error on a
+  separate diagnostic field the host can choose not to render. A filesystem
+  resolver's error text commonly embeds **absolute paths**, so surfacing it
+  verbatim leaks host filesystem layout into rendered output - an
+  information-disclosure risk in any hosted preview or server-side rendering
+  path, and a source of host-dependent warning text that undermines the
+  cross-implementation contract.
+
 Threats this policy addresses: **path traversal** (`../../etc/passwd`),
 **symlink escape** (a link inside the root pointing out of it), **include
 cycles** (A includes B includes A), **include-bomb / size amplification** (a
 small file included N times, transitively - the zip-bomb analog), and
-**DoS by depth** (unbounded nesting). Non-filesystem hosts have no resolver, so
+**DoS by depth** (unbounded nesting), and **host-path disclosure** (leaking
+filesystem layout through raw resolver error text). Non-filesystem hosts have no
+resolver, so
 every directive is inert.
 
 For the directive syntax, the resolver contract, cross-file id / footnote /
