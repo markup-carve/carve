@@ -285,6 +285,14 @@ const sem = g.createSemantics().addOperation('h', {
     const text = codeText(code.child(0).child(1))
     return fmt.sourceString === 'html' ? text : ''
   },
+  litInline(code, _ob, _s1, _bang, _s2, items, _s3, _cb) {
+    // PART 9 SS27: verbatim content, HTML-ESCAPED, emitted by every renderer
+    // and never dropped, with the <code> wrapper removed. Bare text when the
+    // block carries no further attribute; a <span> when it does.
+    const text = escapeHtml(codeText(code.child(0).child(1)))
+    const attrs = items.children.map((c) => c.parseAttrs())
+    return attrs.length ? `<span${renderAttrs(attrs)}>${text}</span>` : text
+  },
   extension(_c, name, _o, content, _cl, attrs) {
     const n = name.sourceString
     const inner = renderInline(content.sourceString, '[')

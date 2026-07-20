@@ -163,7 +163,7 @@ CarveCore {
   // Verbatim code span: equal-length maximal backtick runs (Core uses the
   // 1..3 tier; longer runs are out of Core). Single-space strip is applied
   // by the renderer per the code_span rule.
-  codeA      = rawInline | codeAttrd
+  codeA      = rawInline | litInline | codeAttrd
   codeAttrd  = code attrs?
   code       = code3 | code2 | code1 | codeU
   // UNCLOSED RUN (PART 3 code_span): an opener with no equal-run closer
@@ -227,6 +227,12 @@ CarveCore {
   // raw inline passthrough: a code span whose trailing block is EXACTLY
   // {=format} (PART 9 SS20)
   rawInline  = code "{=" ident "}"
+
+  // inline literal: a code span whose trailing block STARTS with the "!"
+  // sigil (PART 9 SS27). Content is escaped and always emitted; the <code>
+  // wrapper is dropped. Further attributes after the sigil are applied to an
+  // emitted <span>; with none, bare text is emitted.
+  litInline  = code "{" attrSp* "!" (attrSp+ attrItem)* attrSp* "}"
 
   // --- Inline extensions: :name[content] -> ext span (PART 8 rank 9);
   // content ends at the FIRST unescaped "]" (corpus 16-5)
