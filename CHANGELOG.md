@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Static diagram output now uses a uniform wrapper across engines: a supplied
+  renderer's output is wrapped in a `<div class="{cssClass}">` carrying the
+  fence's merged attributes. Previously carve-js emitted `<pre>`, carve-php a
+  `<div>`, and carve-rs bare output that dropped the css class (carve#302).
+
 ### Added
 
 - Diagram documentation: a dedicated Diagrams & Charts page and a cheatsheet

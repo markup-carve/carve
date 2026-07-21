@@ -257,6 +257,21 @@ lockstep. `math` is the one distinct key (its renderer also takes a display
 flag). Implementations MUST consult the renderer by css class and MUST fall back
 to source when the needed renderer is absent - never blank.
 
+A supplied diagram renderer's output MUST be wrapped in a single
+`<div>` carrying the fence's **merged attributes** - the css class ahead of any
+author `{#id .class data-*}` - so the wrapper is uniform across engines and the
+class survives for styling:
+
+```html
+<div class="mermaid"><!-- renderer output (svg / img) --></div>
+```
+
+The wrapper is a `<div>`, not the interactive hydration tag (`<pre>` for text
+mode, `<div>` for json), because the rendered output is an image, not source
+text. The source-fallback form (no renderer) stays a `<pre><code>` block.
+(Attribute ordering within the tag follows the engine's element serialization,
+PART 10.)
+
 > [!NOTE]
 > The map was **closed** in earlier drafts (a fixed `{mermaid, chart, graphviz,
 > plantuml, math}` set); it is now **open** so third-party diagram libraries are
