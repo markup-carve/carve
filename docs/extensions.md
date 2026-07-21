@@ -51,6 +51,7 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | Mention/tag → URL templates, symbol map (e.g. emoji glyphs), locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
 | Mermaid / FencedRender, MathBlock, ListTable, Bibliography, Glossary, Index, HeadingNumbers, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, SemanticSpan, ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
+| [ImgFence](/svg-images) (sanitized SVG `img` fence — sandboxed by default) | <Badge type="warning" text="extension" /> | off | — |
 
 A `:name[…]` / `::: name` whose word has no registered handler renders via the
 generic fallback (`<span>` / `<div class="name">`), so a document using an

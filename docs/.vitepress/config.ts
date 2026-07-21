@@ -85,6 +85,7 @@ export default defineConfig({
               { text: 'Cheat Sheet', link: '/cheatsheet' },
               { text: 'Examples', link: '/examples' },
               { text: 'Diagrams & Charts', link: '/diagrams' },
+              { text: 'SVG Images', link: '/svg-images' },
               { text: 'Formal Grammar', link: '/grammar' },
               { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
               { text: 'Validation', link: '/validation' },
