@@ -434,7 +434,7 @@ class ProfileFilter {
         if (node.type === 'text')
             return node['value'] === '';
         // Nodes storing raw content directly are non-empty if they have content.
-        const contentTypes = ['code-block', 'raw-block', 'raw-inline', 'math', 'code', 'comment'];
+        const contentTypes = ['code-block', 'raw-block', 'raw-inline', 'literal-inline', 'math', 'code', 'comment'];
         if (contentTypes.includes(node.type)) {
             const content = node['content'] ?? node['value'] ?? '';
             if (content !== '')
@@ -634,6 +634,7 @@ function extractTextContent(node) {
             return node['content'] ?? '';
         case 'raw-block':
         case 'raw-inline':
+        case 'literal-inline':
             return node['content'] ?? '';
         case 'soft-break':
             return ' ';

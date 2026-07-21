@@ -149,6 +149,16 @@ export function canonicalType(type) {
             return 'hard_break';
         case 'raw-inline':
             return 'raw_inline';
+        case 'literal-inline':
+            // An inline literal is a code span with the `<code>` wrapper dropped:
+            // same verbatim capture, same escaping, same trailing-attribute surface.
+            // So it is classified as `code` for profiles -- allowed exactly where a
+            // code span is, denied where code is. (It shares `code`'s trust class the
+            // way `inline_footnote` shares `footnote`'s.) Aliasing it to `text`
+            // instead would be WRONG: with attributes it renders a `<span>`, carrying
+            // class/id/style just as an attributed code span does, so it belongs with
+            // `code`, not with plain text.
+            return 'code';
         case 'footnote':
             // Inline footnote (`^[...]`) carries `inline`; a reference (`[^id]`)
             // does not. carve-php denies both under the footnote family, so the

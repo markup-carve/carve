@@ -3653,11 +3653,10 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                 const len = end - i + raw[0].length;
                 out.push(withPos({ type: 'raw-inline', format: raw[1], content: inner }, source, text, i, i + len));
                 i += len;
+                continue;
             }
-            else {
-                out.push(withPos({ type: 'code', value: inner }, source, text, i, end));
-                i = end;
-            }
+            out.push(withPos({ type: 'code', value: inner }, source, text, i, end));
+            i = end;
             continue;
         }
         // Math (djot form): inline $`x`, display $$`x`. A bare `$` not
@@ -3677,6 +3676,23 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                     i += len;
                     continue;
                 }
+            }
+        }
+        // Inline literal (§27): a `!` prefix on a verbatim code span, mirroring
+        // the `$`-math prefix above. The span content is captured verbatim, later
+        // HTML-escaped and emitted by every renderer with the `<code>` wrapper
+        // dropped; a trailing `{…}` attaches below as an ordinary inline attribute
+        // block (no special first-token sigil). Like math it requires a CLOSED
+        // span — a bare `!` before an unclosed run stays literal text and the run
+        // becomes an ordinary (unclosed) code span.
+        if (c === '!' && text[i + 1] === '`') {
+            const { end, closed, openLen } = verbatimSpanEnd(text, i + 1);
+            if (closed) {
+                flush();
+                const content = text.slice(i + 1 + openLen, end - openLen).replace(/^ (.*) $/, '$1');
+                out.push(withPos({ type: 'literal-inline', content }, source, text, i, end));
+                i = end;
+                continue;
             }
         }
         // Image ![alt](src) — the alt text allows nested balanced [...], so the

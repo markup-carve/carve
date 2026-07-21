@@ -328,6 +328,23 @@ export interface RawInline extends BaseNode {
     content: string;
 }
 /**
+ * Inline literal (`` !`…` ``): a `!` prefix on a verbatim code span (grammar
+ * PART 9 §27), mirroring the `$`-math prefix. `content` is captured verbatim
+ * by the backtick run exactly as for a code span -- no inline construct is
+ * recognized inside it and smart typography does not apply.
+ *
+ * Unlike raw passthrough (§20) it is EMITTED BY EVERY RENDERER and never
+ * dropped or target-routed, and its content is HTML-escaped on output. The
+ * `<code>` wrapper is dropped: an inline literal is prose, not code. A
+ * trailing attribute block is the ordinary inline attribute block and lands in
+ * `attrs`, rendered on a `<span>`; with none, the content is emitted as bare
+ * text.
+ */
+export interface LiteralInline extends BaseNode {
+    type: 'literal-inline';
+    content: string;
+}
+/**
  * Symbol shortcode `:name:` (commonly used for emoji). Resolved against a
  * processor-supplied name->glyph map at render time; an unmapped name
  * renders literally as `:name:`.
@@ -442,6 +459,6 @@ export interface CriticComment extends BaseNode {
     type: 'critic-comment';
     text: string;
 }
-export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | SymbolInline | AutoLink | CrossRef | CaptionNumber | CitationGroup | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment | Comment;
+export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | LiteralInline | SymbolInline | AutoLink | CrossRef | CaptionNumber | CitationGroup | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment | Comment;
 export type AnyNode = Document | BlockNode | InlineNode;
 //# sourceMappingURL=ast.d.ts.map

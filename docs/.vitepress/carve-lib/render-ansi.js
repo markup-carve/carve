@@ -322,6 +322,10 @@ function renderInline(node, ctx) {
             return style(stripControls(node.content), FG_BRIGHT_MAGENTA);
         case 'raw-inline':
             return '';
+        case 'literal-inline':
+            // §27: always emitted (unlike raw passthrough above). It is prose, not
+            // code, so it carries no code styling.
+            return stripControls(node.content);
         case 'symbol':
             return `:${stripControls(node.name)}:`;
         case 'autolink':
