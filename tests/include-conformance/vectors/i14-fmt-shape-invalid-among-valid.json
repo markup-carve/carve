@@ -1,0 +1,17 @@
+{
+  "name": "i14-fmt-shape-invalid-among-valid",
+  "description": "A shape-invalid run is escaped without disturbing valid directives around it.",
+  "rules": [
+    "I14"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "a {{ x.crv }} b {{ }} c {{ y.crv }} d",
+  "files": {},
+  "expected": {
+    "html": "<p>a {{ x.crv }} b {{ }} c {{ y.crv }} d</p>",
+    "fmt": "a {{ x.crv }} b \\{\\{ \\}\\} c {{ y.crv }} d\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

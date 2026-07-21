@@ -1,0 +1,37 @@
+{
+  "name": "i10-fs-dotdot-escape-denied",
+  "description": "A single-level ../ escape is denied; the target is an unresolved dependency.",
+  "rules": [
+    "I10",
+    "I11"
+  ],
+  "mode": "filesystem",
+  "resolver": "filesystem",
+  "tree": {
+    "root/main.crv": "{{ ok.crv }}\n\n{{ ../secret.crv }}\n",
+    "root/ok.crv": "Fine.\n",
+    "secret.crv": "TOP SECRET\n"
+  },
+  "entryPath": "root/main.crv",
+  "root": "root",
+  "expected": {
+    "html": "<p>Fine.</p>\n<p>{{ ../secret.crv }}</p>",
+    "fmt": "{{ ok.crv }}\n\n{{ ../secret.crv }}\n",
+    "warnings": [
+      {
+        "rule": "include-unresolved",
+        "file": "<TMP>/root/main.crv"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "<TMP>/root/ok.crv",
+        "resolved": true
+      },
+      {
+        "id": "../secret.crv",
+        "resolved": false
+      }
+    ]
+  }
+}

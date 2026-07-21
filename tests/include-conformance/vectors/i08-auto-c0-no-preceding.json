@@ -1,0 +1,24 @@
+{
+  "name": "i08-auto-c0-no-preceding",
+  "description": "auto with no preceding heading gives C=0 and leaves levels alone.",
+  "rules": [
+    "I8"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @shift:auto }}",
+  "files": {
+    "child": "# Top\n\n## Sub"
+  },
+  "expected": {
+    "html": "<section id=\"Top\">\n  <h1>Top</h1>\n  <section id=\"Sub\">\n    <h2>Sub</h2>\n  </section>\n</section>",
+    "fmt": "{{ child @shift:auto }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "i01-whitespace-braces-literal",
+  "description": "Whitespace-only braces are ordinary text.",
+  "rules": [
+    "I1"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{   }}",
+  "files": {},
+  "expected": {
+    "html": "<p>{{   }}</p>",
+    "fmt": "\\{\\{   \\}\\}\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

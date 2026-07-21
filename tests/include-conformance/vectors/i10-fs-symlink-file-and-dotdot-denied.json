@@ -1,0 +1,42 @@
+{
+  "name": "i10-fs-symlink-file-and-dotdot-denied",
+  "description": "A symlinked file whose real target escapes, and a ../ escape, are both denied.",
+  "rules": [
+    "I10"
+  ],
+  "mode": "filesystem",
+  "resolver": "filesystem",
+  "tree": {
+    "root/main.crv": "{{ link.crv }}\n\n{{ ../secret.crv }}\n",
+    "secret.crv": "TOP SECRET\n",
+    "root/link.crv": {
+      "symlink": "secret.crv"
+    }
+  },
+  "entryPath": "root/main.crv",
+  "root": "root",
+  "expected": {
+    "html": "<p>{{ link.crv }}</p>\n<p>{{ ../secret.crv }}</p>",
+    "fmt": "{{ link.crv }}\n\n{{ ../secret.crv }}\n",
+    "warnings": [
+      {
+        "rule": "include-unresolved",
+        "file": "<TMP>/root/main.crv"
+      },
+      {
+        "rule": "include-unresolved",
+        "file": "<TMP>/root/main.crv"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "link.crv",
+        "resolved": false
+      },
+      {
+        "id": "../secret.crv",
+        "resolved": false
+      }
+    ]
+  }
+}

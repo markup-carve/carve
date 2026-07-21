@@ -1,0 +1,17 @@
+{
+  "name": "i12-fmt-section-preserved",
+  "description": "A #section selection survives formatting.",
+  "rules": [
+    "I12"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "{{ chapter.crv #intro }}",
+  "files": {},
+  "expected": {
+    "html": "<p>{{ chapter.crv <span class=\"tag\"><strong>#intro</strong></span> }}</p>",
+    "fmt": "{{ chapter.crv #intro }}\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

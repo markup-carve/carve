@@ -1,0 +1,29 @@
+{
+  "name": "i08-shift-clamp-at-1",
+  "description": "A shift below level 1 clamps to 1, warns, and keeps the heading.",
+  "rules": [
+    "I8"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @shift:-2 }}",
+  "files": {
+    "child": "# A"
+  },
+  "expected": {
+    "html": "<section id=\"A\">\n  <h1>A</h1>\n</section>",
+    "fmt": "{{ child @shift:-2 }}\n",
+    "warnings": [
+      {
+        "rule": "include-heading-clamp",
+        "file": "child"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

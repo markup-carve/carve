@@ -1,0 +1,29 @@
+{
+  "name": "i08-auto-stated-parent-nested-auto",
+  "description": "A stated parent shift places a nested auto by the assembled level, not doubly.",
+  "rules": [
+    "I8"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "# One\n\n{{ child @shift:1 }}",
+  "files": {
+    "child": "{{ grand @shift:auto }}",
+    "grand": "# GrandTop"
+  },
+  "expected": {
+    "html": "<section id=\"One\">\n  <h1>One</h1>\n  <section id=\"GrandTop\">\n    <h2>GrandTop</h2>\n  </section>\n</section>",
+    "fmt": "# One\n\n{{ child @shift:1 }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      },
+      {
+        "id": "grand",
+        "resolved": true
+      }
+    ]
+  }
+}

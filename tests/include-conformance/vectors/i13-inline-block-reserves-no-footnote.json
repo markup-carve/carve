@@ -1,0 +1,33 @@
+{
+  "name": "i13-inline-block-reserves-no-footnote",
+  "description": "A rejected inline block-include reserves no footnote label; only the later note survives.",
+  "rules": [
+    "I13"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "See {{ a }}.\n\n{{ later }}",
+  "files": {
+    "later": "{#dup}\n# Later\n\nSee [^note].\n\n[^note]: Later note.",
+    "a": "One [^note].\n\nTwo.\n\n[^note]: Rejected note."
+  },
+  "expected": {
+    "html": "<p>See {{ a }}.</p>\n<section id=\"dup\">\n  <h1>Later</h1>\n  <p>See <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n</section>\n<section role=\"doc-endnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>Later note.<a href=\"#fnref1\" role=\"doc-backlink\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "fmt": "See {{ a }}\\.\n\n{{ later }}\n",
+    "warnings": [
+      {
+        "rule": "include-block-in-inline"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "a",
+        "resolved": true
+      },
+      {
+        "id": "later",
+        "resolved": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "name": "i09a-multi-directive-one-run",
+  "description": "Several directives (plain, sectioned, optioned, quoted, adjacent) sharing inline runs all expand, in first-encounter dependency order.",
+  "rules": [
+    "I9a",
+    "I11",
+    "multi-directive"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "start {{ a.crv }} mid {{ b.crv }} end\n\nsec {{ c.crv #Intro }} and {{ c.crv #Outro }} done\n\nopt {{ a.crv @shift:1 }} and {{ b.crv @lines:1-1 }} done\n\nquoted {{ \"e f.crv\" }} and {{ \"g h.crv\" }} done\n\n{{ a.crv }}{{ d.crv }}",
+  "files": {
+    "a.crv": "A body.",
+    "b.crv": "B body.",
+    "c.crv": "# Intro\n\nC intro.\n\n# Outro\n\nC outro.",
+    "d.crv": "D body.",
+    "e f.crv": "EF body.",
+    "g h.crv": "GH body."
+  },
+  "checkFmtExpandEquivalence": true,
+  "expected": {
+    "html": "<p>start A body. mid B body. end</p>\n<p>sec {{ c.crv <span class=\"tag\"><strong>#Intro</strong></span> }} and {{ c.crv <span class=\"tag\"><strong>#Outro</strong></span> }} done</p>\n<p>opt A body. and B body. done</p>\n<p>quoted EF body. and GH body. done</p>\n<p>A body.D body.</p>",
+    "fmt": "start {{ a.crv }} mid {{ b.crv }} end\n\nsec {{ c.crv #Intro }} and {{ c.crv #Outro }} done\n\nopt {{ a.crv @shift:1 }} and {{ b.crv @lines:1-1 }} done\n\nquoted {{ \"e f.crv\" }} and {{ \"g h.crv\" }} done\n\n{{ a.crv }}{{ d.crv }}\n",
+    "warnings": [
+      {
+        "rule": "include-block-in-inline"
+      },
+      {
+        "rule": "include-block-in-inline"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "a.crv",
+        "resolved": true
+      },
+      {
+        "id": "b.crv",
+        "resolved": true
+      },
+      {
+        "id": "c.crv",
+        "resolved": true
+      },
+      {
+        "id": "e f.crv",
+        "resolved": true
+      },
+      {
+        "id": "g h.crv",
+        "resolved": true
+      },
+      {
+        "id": "d.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

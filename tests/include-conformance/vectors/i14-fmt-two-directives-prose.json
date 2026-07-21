@@ -1,0 +1,17 @@
+{
+  "name": "i14-fmt-two-directives-prose",
+  "description": "Two directives separated by prose both survive (guards a \"first only\" defect).",
+  "rules": [
+    "I14"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "a {{ x.crv }} b {{ y.crv }} c",
+  "files": {},
+  "expected": {
+    "html": "<p>a {{ x.crv }} b {{ y.crv }} c</p>",
+    "fmt": "a {{ x.crv }} b {{ y.crv }} c\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}
