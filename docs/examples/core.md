@@ -1591,12 +1591,12 @@ still code
 ```
 `````
 
-```html
+`````html
 <pre><code>code
   ```
 still code
 </code></pre>
-```
+`````
 
 :::
 
