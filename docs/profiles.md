@@ -19,17 +19,38 @@ parity is verified by those fixtures, not the corpus.
 A profile's allow/deny lists use these exact type strings. They are stable
 identifiers, independent of a renderer's output tag.
 
+Type identifiers are **`snake_case`**, always. A hyphenated or camelCased
+identifier is a defect in the implementation that emits it, not an alternate
+spelling.
+
 **Block:** `paragraph`, `heading`, `code_block`, `block_quote`, `list`,
 `list_item`, `table`, `table_row`, `table_cell`, `thematic_break`, `div`,
-`raw_block`, `footnote`, `definition_list`, `definition_term`,
+`admonition`, `raw_block`, `footnote`, `definition_list`, `definition_term`,
 `definition_description`, `section`, `line_block`, `comment`, `figure`,
 `caption`.
 
 **Inline:** `text`, `emphasis`, `strong`, `underline`, `strike`,
-`inline_extension`, `mention`, `code`, `link`, `image`, `soft_break`,
-`hard_break`, `raw_inline`, `escaped_text`, `footnote_ref`, `inline_footnote`,
-`span`, `superscript`, `subscript`, `highlight`, `insert`, `delete`, `symbol`,
-`math`, `abbreviation`.
+`inline_extension`, `mention`, `code`, `link`, `autolink`, `image`,
+`soft_break`, `hard_break`, `raw_inline`, `escaped_text`, `footnote_ref`,
+`inline_footnote`, `heading_ref`, `citation_group`, `caption_number`,
+`span`, `superscript`, `subscript`, `highlight`, `insert`, `delete`,
+`substitution`, `symbol`, `math`, `abbreviation`.
+
+An **`autolink`** is its own type, not a `link`. The two differ in what the
+author wrote and in what a formatter must be able to reproduce: an autolink
+carries no label, shows its own target, and drops an added `mailto:` scheme
+when displayed. Folding it into `link` loses the authored form, so a
+round-trip could not restore it.
+
+An **`admonition`** is likewise its own type rather than a `div` carrying a
+class. A profile that wants to deny callouts while allowing generic
+containers has no way to express that if the kind lives in a class string.
+
+Types serving a formatter rather than a document are **not** in this
+vocabulary and cannot be named in a profile. An implementation may carry a
+node preserving literal source for round-trip formatting (carve-php calls it
+`raw_text`); denying it would break `fmt` while expressing nothing about the
+document's content.
 
 The inline literal of PART 9 §27 (`` !`…` ``) is classified as **`code`** for
 profiles — it is a code span with the `<code>` wrapper dropped, sharing code's
