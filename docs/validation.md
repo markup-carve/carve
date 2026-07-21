@@ -91,6 +91,7 @@ the command-line and editor behavior stay aligned.
 | `heading-trailing-attribute` | a trailing `{#id}` or `{.class}` on a heading line; attributes must go on the line above the heading |
 | `raw-block-syntax` | a legacy `` ```raw FORMAT `` fence; Carve raw blocks use `` ```=FORMAT `` |
 | `block-marker-as-text` | a line that opens like a block (`:::`, `{#`, `{.`) but parsed as plain text |
+| `fence-delimiter-indentation` | an indented fenced-code delimiter (`` ``` `` / `~~~`); a Carve fence is column-exact and must sit at its container's content column (column 0 at the top level), so an indented run does not open a code block |
 
 The CLI also reports Djot/Markdown delimiter collisions from the migration
 checker — mis-rendering constructs by default, plus the Djot semantic shifts
