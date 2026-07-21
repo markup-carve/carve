@@ -16,6 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Inline literal** (`` !`…` ``, PART 9 §27): a `!` prefix on a verbatim code
+  span, mirroring the `$`-math prefix. Content is captured verbatim and
+  HTML-escaped, emitted by every renderer, but rendered as prose with the
+  `<code>` wrapper dropped - so notation that collides with the bare emphasis
+  delimiters (phonemic `/kaet/`, glob patterns, paths) needs no per-character
+  escaping. A trailing `{…}` is the ordinary inline attribute block. Chosen
+  over the earlier trailing-`{!}` sigil for family fit with math and image
+  (carve#280).
 - Diagram documentation: a dedicated Diagrams & Charts page and a cheatsheet
   section covering the `FencedRender` presets, which were previously described
   only in capability tables.
