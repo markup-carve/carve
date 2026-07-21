@@ -316,6 +316,22 @@ code_fence_close = (backtick_fence | tilde_fence):close
 (* FORMAL (PART 9 §2, now stated as a guard): the closer uses the SAME fence
    character as its opener and is at least as long. The `where` clause is the
    grammar's counting device -- see GUARD NOTATION in the header. *)
+(* COLUMN-EXACT DELIMITERS -- NORMATIVE (PART 2). A fenced-code delimiter --
+   the opener AND the closer -- sits exactly at its container's content column;
+   after container prefixes are stripped (PART 0), that means NO leading
+   whitespace (at the top level, column 0). Carve has no indented-code-block
+   construct, so leading spaces carry no disambiguating meaning and the fence is
+   strict like every other block opener -- an indented heading, thematic break,
+   or block quote is likewise plain text (PART 9 §10). Consequences:
+     - A backtick/tilde run indented at the document level is an ordinary
+       paragraph line; its runs fall back to inline code spans.
+     - A closing run indented PAST its opener is not a delimiter but code
+       content -- which is exactly what lets an indented ``` line appear as
+       sample text inside a fence.
+   Earlier drafts accepted 0-3 columns of indentation on a delimiter (a Markdown
+   inheritance, to disambiguate against the 4-space indented code block); Carve
+   has no such construct, so that tolerance is removed. The X->Carve converters
+   re-base an indented Markdown fence to its container's content column. *)
 
 backtick_fence = '`', '`', '`', {'`'} ;
 tilde_fence = '~', '~', '~', {'~'} ;

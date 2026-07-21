@@ -1561,6 +1561,45 @@ Code-block content is never parsed for Carve syntax — emphasis, headings, and 
 
 :::
 
+A fenced-code **delimiter sits exactly at its container's content column** — at document level, that is column 0. Carve has no indented-code-block construct, so leading spaces carry no meaning to disambiguate against, and the fence is strict like every other block opener (an indented heading, thematic break, or block quote is likewise plain text). A run of backticks indented at document level is therefore an ordinary paragraph, and its delimiters fall back to inline code spans.
+
+::: compare
+
+````carve
+ ```
+ code
+ ```
+````
+
+```html
+<p><code>
+code
+</code></p>
+```
+
+:::
+
+The **closer is column-exact too**. A closing run indented past the opener is not a delimiter but code content, which is what lets an indented ``` line appear as sample text inside a fence. Here the two-space `` ``` `` is content and the flush `` ``` `` closes.
+
+::: compare
+
+`````carve
+```
+code
+  ```
+still code
+```
+`````
+
+```html
+<pre><code>code
+  ```
+still code
+</code></pre>
+```
+
+:::
+
 ## Inline code
 
 ::: compare
