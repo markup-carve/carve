@@ -15,10 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **PlantUML preset** (`plantuml`, claims `plantuml` and `puml`), covering the
   UML diagram types Mermaid does not (use case, component, deployment, timing),
   renderable client-side offline via `@plantuml/core`.
-- `plantuml` added to the canonical static-render **renderers** key set
-  (`mermaid`, `chart`, `graphviz`, `plantuml`, `math`), so a build-time PlantUML
-  renderer can bake diagrams into no-JS static HTML. A note on the extensions
-  page documents that the key set is closed and grows only by lockstep change.
+- `plantuml` added to the static-render **renderers** key set, so a build-time
+  PlantUML renderer can bake diagrams into no-JS static HTML.
+- **Open static renderers map.** The `renderers` map is now keyed by the fence's
+  css class rather than a closed canonical set, so a custom `FencedRender` fence
+  word (`fencedRender({ language: 'myuml' })` + `renderers: { myuml: … }`) is
+  static-capable in every engine with the same config - no spec edit, no
+  lockstep. Canonical presets are just the pre-named classes. This supersedes
+  the closed-key-set design.
 
 First normative grammar and corpus snapshot. This release locks the Carve
 specification at its initial stable version: the grammar (`resources/grammar.ebnf`),
