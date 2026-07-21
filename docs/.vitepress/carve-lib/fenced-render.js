@@ -52,7 +52,6 @@ export function fencedRender(opts) {
     const cssClass = opts.cssClass ?? languages[0];
     const tag = opts.tag ?? (mode === 'json' ? 'div' : 'pre');
     const figureClass = opts.figureClass ?? `${cssClass}-figure`;
-    const staticRendererKey = opts.staticRenderer;
     return {
         name: 'fenced-render',
         blockRenderers: {
@@ -77,12 +76,12 @@ export function fencedRender(opts) {
         },
         staticBlockRenderers: {
             // Static render: the diagram is a client-script visual, so the engine
-            // cannot draw it. If a build-time renderer is supplied for this instance
-            // (`renderers.mermaid` / `renderers.chart` / `renderers.graphviz`), emit its output wrapped in
-            // the attributed element so author attrs survive; otherwise degrade to
-            // the source as a `<pre><code class="language-…">`
-            // block - never blank, and re-renderable by a host that loads the client
-            // library.
+            // cannot draw it. The renderers map is open and keyed by css class, so if
+            // a build-time renderer is supplied for this fence's class (`mermaid`,
+            // `chart`, a custom word, …) emit its output wrapped in the attributed
+            // element so author attrs survive; otherwise degrade to the source as a
+            // `<pre><code class="language-…">` block - never blank, and re-renderable
+            // by a host that loads the client library.
             'code-block': (node, ctx) => {
                 const code = node;
                 if (!languages.includes(code.lang ?? ''))
@@ -93,13 +92,16 @@ export function fencedRender(opts) {
                 // path), so an `{#id .class data-x=y}` on the fence survives both the
                 // renderer-output and the source-fallback degradation paths.
                 const attrs = { ...code.attrs, classes: [cssClass, ...(code.attrs?.classes ?? [])] };
-                const build = staticRendererKey ? ctx.renderers[staticRendererKey] : undefined;
+                // Keyed by css class against the open renderers map. The 'math' key is a
+                // MathRenderer (2-arg); a diagram fence never keys it, so narrow here.
+                const build = ctx.renderers[cssClass];
                 if (build) {
-                    // Wrap the renderer's output (an `<svg>` / `<img>`) in the same
-                    // element + author attributes the interactive path emits, so the
-                    // fence's id / classes / other attrs land on the wrapping element
-                    // instead of being dropped.
-                    const element = `<${tag}${ctx.renderAttrs(attrs)}>${build(code.content)}</${tag}>`;
+                    // Wrap the renderer's output (an `<svg>` / `<img>`) in a `<div>` with
+                    // the fence's merged attributes (cssClass + author `{#id .class}`), so
+                    // the class/attrs survive and the wrapper is identical across engines
+                    // (carve#302). A `<div>` - not the interactive `<pre>`/`<div>` tag -
+                    // because the output is a rendered image, not source text.
+                    const element = `<div${ctx.renderAttrs(attrs)}>${build(code.content)}</div>`;
                     if (opts.wrapInFigure) {
                         return `${pad}<figure class="${ctx.escapeAttr(figureClass)}">\n${pad}${element}\n${pad}</figure>`;
                     }
@@ -118,21 +120,25 @@ export function fencedRender(opts) {
 export const d2 = () => fencedRender({ language: 'd2' });
 /** Graphviz preset (text mode); claims both `dot` and `graphviz`. In a static
  *  render a supplied `renderers.graphviz` pre-renders the source to an image. */
-export const graphviz = () => fencedRender({ language: ['dot', 'graphviz'], cssClass: 'graphviz', staticRenderer: 'graphviz' });
+export const graphviz = () => fencedRender({ language: ['dot', 'graphviz'], cssClass: 'graphviz' });
 /** WaveDrom preset (text mode, `<pre class="wavedrom">`). */
 export const wavedrom = () => fencedRender({ language: 'wavedrom' });
 /** ABC music notation preset (text mode, `<pre class="abc">`). */
 export const abc = () => fencedRender({ language: 'abc' });
+/** PlantUML preset (text mode); claims both `plantuml` and `puml`. Covers the
+ *  UML shapes Mermaid does not (use case, component, deployment, timing). Load
+ *  a client-side PlantUML build (`@plantuml/core`) to render the diagrams. */
+export const plantuml = () => fencedRender({ language: ['plantuml', 'puml'], cssClass: 'plantuml' });
 /** Vega-Lite preset (json mode, `<div class="vega-lite"><script ...>`). */
 export const vegaLite = () => fencedRender({ language: 'vega-lite', contentMode: 'json' });
 /** Chart.js preset (json mode, `<div class="chart"><script ...>`). In a static
  *  render a supplied `renderers.chart` pre-renders the config to an image. */
-export const chart = () => fencedRender({ language: 'chart', contentMode: 'json', staticRenderer: 'chart' });
+export const chart = () => fencedRender({ language: 'chart', contentMode: 'json' });
 /**
  * Mermaid preset (text mode, `<pre class="mermaid">`). Mermaid is one preset of
  * {@link fencedRender}; load Mermaid.js on the page to render the diagrams.
  */
-export const mermaid = (opts = {}) => fencedRender({ language: 'mermaid', staticRenderer: 'mermaid', ...opts });
+export const mermaid = (opts = {}) => fencedRender({ language: 'mermaid', ...opts });
 /**
  * Every bundled diagram preset as ready-to-register extensions, for spreading
  * into the `extensions` option:
@@ -140,7 +146,8 @@ export const mermaid = (opts = {}) => fencedRender({ language: 'mermaid', static
  *     carveToHtml(src, { extensions: [...presets(), mathBlock()] })
  *
  * This claims every preset fence word (`mermaid`, `d2`, `dot`, `graphviz`,
- * `wavedrom`, `abc`, `vega-lite`, `chart`), so a literal code sample in one of
+ * `wavedrom`, `abc`, `plantuml`, `puml`, `vega-lite`, `chart`), so a literal code
+ * sample in one of
  * those languages becomes a hydration element; include only the presets whose
  * client library you actually load if that matters.
  */
@@ -150,6 +157,7 @@ export const presets = () => [
     graphviz(),
     wavedrom(),
     abc(),
+    plantuml(),
     vegaLite(),
     chart(),
 ];

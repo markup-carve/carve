@@ -259,6 +259,10 @@ const TRAILING_HEADING_ATTR = /(^|\s)(\{\s*[.#][^{}]*\})\s*$/;
 const LEGACY_RAW_FENCE = /^(\s*)(`{3,}|~{3,})\s*raw\s+(\S+)/;
 /** A line that opens like a block construct (`:::`, `{#`, `{.`). */
 const LEAKED_BLOCK_MARKER = /^(\s*)(:{3,}|\{[.#])/;
+// A fenced-code delimiter (opener or closer) with leading whitespace. A Carve
+// fence is column-exact, so an indented delimiter the parser did not fold into
+// a verbatim region is a silent degradation.
+const INDENTED_FENCE = /^([ \t]+)(`{3,}|~{3,})/;
 /** A footnote definition line. Mirrors parse.ts. */
 const FOOTNOTE_DEF = /^\[\^([^\]]+)\]:\s+(.+)$/;
 /**
@@ -433,6 +437,43 @@ function collectSilentFailures(source, doc, verbatimLines, out) {
             start: loc.start,
             end: loc.start + m[2].length,
         });
+    }
+    // 4. An indented fenced-code OPENER. A Carve fence is column-exact - it sits
+    //    at its container's content column (column 0 at the top level), like every
+    //    other block opener. An indented run of backticks/tildes therefore does
+    //    NOT open a code block; the opener degrades to a paragraph (its run
+    //    becomes an inline code span) and the body to plain text. Lines inside a
+    //    real verbatim region are skipped, so a fence legitimately opened at a
+    //    list item's content column, and an indented ``` shown as sample text
+    //    inside a code block, are both left alone.
+    //    SCOPE: this deliberately catches OPENERS only. An indented delimiter
+    //    INSIDE an open fence is structurally identical whether it is a
+    //    mis-indented closer or valid indented sample text (an indented ``` is a
+    //    supported way to show a fence inside a fence), so the linter cannot tell
+    //    intent and must not flag it - that would false-positive on the sample-
+    //    text feature. A mis-indented closer is also loud (the fence runs on
+    //    visibly), unlike the silent opener case this rule targets.
+    for (let i = 0; i < lines.length; i++) {
+        if (verbatimLines.has(i + 1))
+            continue;
+        const m = INDENTED_FENCE.exec(lines[i]);
+        if (!m)
+            continue;
+        // a legacy `raw FORMAT` fence is already reported by rule 2; do not
+        // double-flag the same line for its indentation.
+        if (LEGACY_RAW_FENCE.test(lines[i]))
+            continue;
+        const fence = m[2];
+        // Skip an inline code span: a same-line closing run of the fence char (>=
+        // the opening length) makes `  ```x```` verbatim text, not a mis-indented
+        // fence delimiter -- de-indenting it would not open a code block either.
+        if (lines[i].slice(m[1].length + fence.length).includes(fence))
+            continue;
+        push(i + 1, m[1].length + 1, fence.length, 'fence-delimiter-indentation', `This ${fence[0] === '`' ? 'backtick' : 'tilde'} fence is indented; a Carve ` +
+            `fenced-code delimiter is column-exact and must sit at its container's content ` +
+            `column (column 0 at the top level). Indented, it does not open a code block - the ` +
+            `run renders as inline code and the body as plain text. Move it to column 0, or to ` +
+            `the enclosing list item's content column.`);
     }
 }
 function collectFootnoteDefinitionWarnings(source, doc, verbatimLines, referenced, out) {

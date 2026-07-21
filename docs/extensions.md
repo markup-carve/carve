@@ -67,7 +67,7 @@ differs by processor. The narrative below details each tier.
   locale smart-quote sets, bare-URL autolinking, citations (§4), and code
   callouts (`<n>` markers inside fenced code + a bound explanation list; §10).
 - Tier 3 (non-exhaustive): FencedRender (a generic fenced-code-block factory
-  with Mermaid, D2, Graphviz, WaveDrom, ABC, Vega-Lite and Chart.js presets),
+  with Mermaid, D2, Graphviz, WaveDrom, ABC, PlantUML, Vega-Lite and Chart.js presets),
   MathBlock (a ` ```math ` fenced block →
   `<div class="math display">`, the GFM-style block form of Carve's `$…$`
   math), ListTable (a `::: list-table` div whose nested list renders as a real
@@ -106,10 +106,10 @@ differs by processor. The narrative below details each tier.
   `FencedRender` is the generic form of the Mermaid pattern: one configurable
   renderer claims fenced code blocks by language word and emits a single
   client-hydration element. In **text** mode (Mermaid, D2, Graphviz, WaveDrom,
-  ABC) the body is HTML-escaped inside `<pre class="lang">…</pre>`, with `&` and
+  ABC, PlantUML) the body is HTML-escaped inside `<pre class="lang">…</pre>`, with `&` and
   `<` escaped but `>` preserved so arrow syntax (`-->`) survives; in **json**
   mode (Vega-Lite, Chart.js) the body is emitted verbatim inside
-  `<div class="lang"><script type="application/json">…</script></div>`. The seven
+  `<div class="lang"><script type="application/json">…</script></div>`. The eight
   named presets are one-liners, and any other client-rendered language needs no
   new code - just a new instance with its fence word. Carve only emits the
   marker element; loading the client library and hydrating it is the host's job.
@@ -245,16 +245,43 @@ Expected static output per interactive extension:
 | tabs / code-group | each panel as a `<section>` headed by its `[label]` |
 | details | not a `renderStatic` case - emits a native `<details open>` in static (see [Graceful Degradation](/graceful-degradation)); interactive without scripts, so never flattened |
 | spoiler | the revealed content (no blur) |
-| fenced-render (mermaid, chart, graphviz) | a build-rendered image if a renderer for that key is supplied, else the source as a code block |
+| fenced-render (mermaid, chart, graphviz, plantuml, custom) | a build-rendered image if a renderer keyed by the fence's css class is supplied, else the source as a code block |
 | math (display / inline) | server-side output (MathML/HTML) if a renderer is supplied, else the source |
 
 Client-script extensions cannot produce their image inside the engine. A
-`"static"` render therefore accepts a **renderers** map. The canonical keys are
-`mermaid`, `chart`, `graphviz`, and `math` - implementations MUST use these exact
-names so the same `renderers` config behaves identically across engines (a fixed
-`{mermaid, chart, math}` struct that omits `graphviz` is non-conformant). When
-the needed renderer is absent, `renderStatic` MUST fall back to source, never
-blank. Renderers are **synchronous** (`source -> string`; `math` also takes a
+`"static"` render therefore accepts a **renderers** map. The map is **open**: a
+diagram renderer is keyed by the **fence's css class** - `mermaid`, `chart`,
+`graphviz`, `plantuml`, or any custom fence word - so a custom `FencedRender`
+instance is static-capable with no change to the engine, no spec edit, and no
+lockstep. `math` is the one distinct key (its renderer also takes a display
+flag). Implementations MUST consult the renderer by css class and MUST fall back
+to source when the needed renderer is absent - never blank.
+
+A supplied diagram renderer's output MUST be wrapped in a single
+`<div>` carrying the fence's **merged attributes** - the css class ahead of any
+author `{#id .class data-*}` - so the wrapper is uniform across engines and the
+class survives for styling:
+
+```html
+<div class="mermaid"><!-- renderer output (svg / img) --></div>
+```
+
+The wrapper is a `<div>`, not the interactive hydration tag (`<pre>` for text
+mode, `<div>` for json), because the rendered output is an image, not source
+text. The source-fallback form (no renderer) stays a `<pre><code>` block.
+(Attribute ordering within the tag follows the engine's element serialization,
+PART 10.)
+
+> [!NOTE]
+> The map was **closed** in earlier drafts (a fixed `{mermaid, chart, graphviz,
+> plantuml, math}` set); it is now **open** so third-party diagram libraries are
+> first-class. A custom fence word (`fencedRender({ language: 'myuml' })` +
+> `renderers: { myuml: … }`) renders statically in every engine with the same
+> config, exactly like a canonical preset - the portability the canonical set
+> alone could not give. Canonical presets are just the pre-named css classes;
+> they carry no privilege the map withholds from a custom one.
+
+Renderers are **synchronous** (`source -> string`; `math` also takes a
 display flag): an async tool (mmdc, an HTTP service) must be run in a build step
 and supplied as a pre-resolved lookup, not awaited inside the render. Renderers
 apply to the **static HTML** path only - the Markdown/plain/ANSI renderers keep

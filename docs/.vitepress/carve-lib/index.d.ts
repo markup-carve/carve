@@ -26,7 +26,7 @@ export { headingNumbers, type HeadingNumbersOptions } from './heading-numbers.js
 export { codeCallouts } from './code-callouts.js';
 export { index } from './index-terms.js';
 export { citations, type CitationsOptions, type CslEntry, type CslName, } from './citations.js';
-export { fencedRender, mermaid, d2, graphviz, wavedrom, abc, vegaLite, chart, presets, type FencedRenderOptions, type FencedRenderContentMode, } from './fenced-render.js';
+export { fencedRender, mermaid, d2, graphviz, wavedrom, abc, plantuml, vegaLite, chart, presets, type FencedRenderOptions, type FencedRenderContentMode, } from './fenced-render.js';
 export { mathBlock, type MathBlockOptions } from './math-block.js';
 export { spoiler } from './spoiler.js';
 export { colorSwatch, type ColorSwatchOptions, type SwatchPosition, type SwatchShape, } from './color-swatch.js';

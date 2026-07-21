@@ -84,6 +84,7 @@ export default defineConfig({
             items: [
               { text: 'Cheat Sheet', link: '/cheatsheet' },
               { text: 'Examples', link: '/examples' },
+              { text: 'Diagrams & Charts', link: '/diagrams' },
               { text: 'Formal Grammar', link: '/grammar' },
               { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
               { text: 'Validation', link: '/validation' },
@@ -167,6 +168,7 @@ export default defineConfig({
                 { text: 'Edge cases', link: '/examples/edge-cases' },
               ],
             },
+            { text: 'Diagrams & Charts', link: '/diagrams' },
           ],
         },
         {

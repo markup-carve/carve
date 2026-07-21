@@ -83,6 +83,7 @@ const EXCLUDED = {
   // 3. FencedRender presets with no client library loaded in the docs.
   d2: 'needs the D2 client library, not loaded in the docs',
   graphviz: 'needs a Graphviz/Viz.js client library, not loaded in the docs',
+  plantuml: 'needs the PlantUML client library, not loaded in the docs',
   wavedrom: 'needs the WaveDrom client library, not loaded in the docs',
   abc: 'needs the abcjs client library, not loaded in the docs',
   vegaLite: 'needs the Vega-Lite client library, not loaded in the docs',

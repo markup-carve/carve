@@ -624,3 +624,50 @@ See </#eq-emc>.
 ```
 
 :::
+
+## Diagrams and charts
+
+`FencedRender` claims a fenced code block by its language word and emits a single
+hydration element for a client library to draw. Eight presets ship: `mermaid`,
+`d2`, `graphviz`, `wavedrom`, `abc` and `plantuml` (text mode; `plantuml` also
+claims `puml`), plus `vega-lite` and `chart` (json mode).
+
+Mermaid covers most of UML - `classDiagram`, `sequenceDiagram`, `stateDiagram-v2`
+and `erDiagram` - and `plantuml` / `puml` is the dedicated PlantUML preset for
+the full UML set:
+
+````carve
+``` mermaid
+classDiagram
+  class Parser {
+    +parse(source) Document
+    -blockPass()
+  }
+  Parser --> Document : produces
+  Document <|-- Section
+```
+````
+
+Text mode escapes the body inside a `<pre>`, escaping `&` and `<` but preserving
+`>` so arrow syntax survives:
+
+```html
+<pre class="mermaid">graph LR; A --&gt; B</pre>
+```
+
+A `chart` fence carries a Chart.js config, emitted verbatim in json mode:
+
+````carve
+``` chart
+{"type":"bar","data":{"labels":["V60","Aeropress"],"datasets":[{"data":[12,7]}]}}
+```
+````
+
+```html
+<div class="chart"><script type="application/json">{"type":"bar","data":{"labels":["V60","Aeropress"],"datasets":[{"data":[12,7]}]}}</script></div>
+```
+
+These pairs are shown as plain fences rather than `::: compare` blocks: the
+presets are Tier-3, and Tier-3 output is deliberately never pinned in the
+conformance corpus. See [Diagrams & Charts](/diagrams) for the full preset table,
+static rendering, and degradation behavior.

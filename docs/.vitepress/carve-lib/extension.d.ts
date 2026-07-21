@@ -6,15 +6,22 @@ import type { Attrs, BlockNode, Document, Extension, InlineNode } from './ast.js
  * diagram, MathML/HTML for math). When the renderer a node needs is absent,
  * the extension's `renderStatic` falls back to source - never blank.
  */
+/** A diagram renderer: fence source -> SVG/HTML string. */
+export type DiagramRenderer = (source: string) => string;
+/** The math renderer: (tex, display) -> MathML/HTML string. */
+export type MathRenderer = (tex: string, display: boolean) => string;
+/**
+ * Build-time renderers for a static HTML render. The map is **open**: a diagram
+ * renderer is keyed by the fence's css class (`mermaid`, `chart`, `graphviz`,
+ * `plantuml`, or any custom fence word), so a custom `fencedRender` instance is
+ * static-capable with no change to this type. `math` is the one distinct entry
+ * (its closure also takes a display flag). A missing key degrades to source.
+ */
 export interface StaticRenderers {
-    /** Mermaid diagram source -> SVG/HTML string. */
-    mermaid?: (source: string) => string;
-    /** Chart config source -> SVG/HTML string. */
-    chart?: (source: string) => string;
-    /** Graphviz / DOT source -> SVG/HTML string. */
-    graphviz?: (source: string) => string;
     /** Math TeX source -> MathML/HTML string. `display` flags block math. */
-    math?: (tex: string, display: boolean) => string;
+    math?: MathRenderer;
+    /** Diagram renderer for any fence css class (mermaid, chart, …, or custom). */
+    [cssClass: string]: DiagramRenderer | MathRenderer | undefined;
 }
 /** Render helpers passed to an extension renderer. */
 export interface ExtensionRenderContext {

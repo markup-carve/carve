@@ -13,4 +13,6 @@ The examples are split into three pages:
 - [**Extensions**](/examples/extensions) — tier-2/3 features layered on the core language: admonitions, abbreviations, mentions and tags, inline extensions, symbols, and cross-reference numbering.
 - [**Edge cases**](/examples/edge-cases) — precise boundary rules, table-alignment variants, lazy continuation, paragraph interruption, security hardening and other robustness guarantees.
 
-Every pair on those pages is also part of the [conformance corpus](/grammar): the HTML shown is generated from the same fixtures the reference implementations are tested against, so it cannot drift from real output.
+Every `::: compare` pair on those pages is also part of the [conformance corpus](/grammar): the HTML shown is generated from the same fixtures the reference implementations are tested against, so it cannot drift from real output.
+
+Diagrams and charts are the exception: the `mermaid`, `chart` and other [FencedRender presets](/diagrams) are Tier-3, and Tier-3 output is deliberately never corpus-pinned, so those examples are shown as plain fences rather than compare pairs.

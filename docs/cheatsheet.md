@@ -179,6 +179,25 @@ block comment
 {+inserted+}  {-deleted-}  {~old~>new~}  {#a comment#}   (CriticMarkup)
 ```
 
+## Diagrams & charts
+
+Fenced blocks drawn by a client library or a build step. Fence words: `mermaid`,
+`d2`, `graphviz`, `wavedrom`, `abc`, `plantuml` (`puml`), `vega-lite`, `chart`.
+
+````carve
+``` mermaid
+classDiagram              (UML: classDiagram, sequenceDiagram,
+  Parser --> Document      stateDiagram-v2, erDiagram)
+```
+
+``` chart
+{"type":"bar","data":{"labels":["a","b"],"datasets":[{"data":[1,2]}]}}
+```
+````
+
+Extension, off by default; falls back to a code block when unrendered. See
+**[Diagrams & Charts](/diagrams)**.
+
 ## Next
 
 - **[Examples](/examples)** — each construct next to its rendered HTML.

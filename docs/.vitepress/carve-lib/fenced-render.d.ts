@@ -15,15 +15,6 @@ export interface FencedRenderOptions {
     wrapInFigure?: boolean;
     /** Figure class. Default `"{cssClass}-figure"`. */
     figureClass?: string;
-    /**
-     * Which build-time renderer in the static `renderers` map produces this
-     * instance's image (`'mermaid'`, `'chart'` or `'graphviz'`). When set and a
-     * `mode: "static"` render supplies that renderer, `renderStatic` emits the
-     * renderer's output (an `<svg>` / `<img>`); otherwise it falls back to the
-     * source as a `<pre><code>` block. Unset means no build renderer applies and
-     * static always degrades to source.
-     */
-    staticRenderer?: 'mermaid' | 'chart' | 'graphviz';
 }
 /**
  * Generic client-rendered fenced-block factory (Tier-3). Claims fenced code
@@ -69,6 +60,10 @@ export declare const graphviz: () => CarveExtension;
 export declare const wavedrom: () => CarveExtension;
 /** ABC music notation preset (text mode, `<pre class="abc">`). */
 export declare const abc: () => CarveExtension;
+/** PlantUML preset (text mode); claims both `plantuml` and `puml`. Covers the
+ *  UML shapes Mermaid does not (use case, component, deployment, timing). Load
+ *  a client-side PlantUML build (`@plantuml/core`) to render the diagrams. */
+export declare const plantuml: () => CarveExtension;
 /** Vega-Lite preset (json mode, `<div class="vega-lite"><script ...>`). */
 export declare const vegaLite: () => CarveExtension;
 /** Chart.js preset (json mode, `<div class="chart"><script ...>`). In a static
@@ -86,7 +81,8 @@ export declare const mermaid: (opts?: Omit<FencedRenderOptions, "language" | "co
  *     carveToHtml(src, { extensions: [...presets(), mathBlock()] })
  *
  * This claims every preset fence word (`mermaid`, `d2`, `dot`, `graphviz`,
- * `wavedrom`, `abc`, `vega-lite`, `chart`), so a literal code sample in one of
+ * `wavedrom`, `abc`, `plantuml`, `puml`, `vega-lite`, `chart`), so a literal code
+ * sample in one of
  * those languages becomes a hydration element; include only the presets whose
  * client library you actually load if that matters.
  */

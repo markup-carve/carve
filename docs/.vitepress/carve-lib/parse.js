@@ -35,7 +35,7 @@ const RE_HR = /^([-*_])\1{2,}[ \t]*$/;
 // of the form `=FORMAT` is a raw passthrough block (RE_RAW_FENCE), matched
 // before this; a leading `=` therefore never starts a language token.
 // Groups: 3 lang, 4|6 header (quoted, incl. quotes), 5|7|8 label (incl. brackets).
-const RE_FENCE = /^(\s*)(`{3,}|~{3,})\s*(?:([a-zA-Z0-9_+#/.-]+)(?:\s+("[^"]*"))?(?:\s+(\[[^\]]*\]))?|("[^"]*")(?:\s+(\[[^\]]*\]))?|(\[[^\]]*\]))?\s*$/;
+const RE_FENCE = /^()(`{3,}|~{3,})\s*(?:([a-zA-Z0-9_+#/.-]+)(?:\s+("[^"]*"))?(?:\s+(\[[^\]]*\]))?|("[^"]*")(?:\s+(\[[^\]]*\]))?|(\[[^\]]*\]))?\s*$/;
 // Bullets are `-` and `*` only. Unlike Markdown/djot, `+` is not a Carve bullet
 // -- it is reserved as the list-continuation marker (PART 9 §17), so a lone `+`
 // is unambiguous and a `+ x` line is ordinary paragraph text. A marker is a list
@@ -216,7 +216,7 @@ const RE_COMMENT_BLOCK = /^%{3,}\s*$/;
 const RE_COMMENT_LINE = /^[ \t]*%%/;
 // A bare fence-closer line (` ``` ` / `~~~`, no info), used only by the
 // paragraph-interruption closer lookahead's negative cache (§10).
-const RE_FENCE_CLOSER = /^\s{0,3}(`{3,}|~{3,})\s*$/;
+const RE_FENCE_CLOSER = /^(`{3,}|~{3,})\s*$/;
 // Maximum block-container nesting depth, applied UNIFORMLY to blockquote, list,
 // fenced-div / admonition (and footnote) nesting. Each level recurses
 // parseBlocks -> parseBlock -> parseContainer -> parseBlocks, so unbounded
@@ -513,7 +513,7 @@ export function normalizeRefLabel(label) {
  * near-impossible input, and skipping the strip avoids the more common false
  * positive of fabricating a def from ordinary prose).
  */
-function stripContainerPrefixes(raw) {
+function stripContainerPrefixesKeepIndent(raw) {
     let line = raw;
     let prev;
     do {
@@ -522,7 +522,11 @@ function stripContainerPrefixes(raw) {
             .replace(/^[^\S\u00a0]*>[^\S\u00a0]?/, '') // blockquote (NBSP is content)
             .replace(/^[^\S\u00a0]*(?:[-*]|\d+[.)])[^\S\u00a0]+(?:\[[ xX\-_>?]\][^\S\u00a0]+)?/, ''); // list/task (NBSP is content)
     } while (line !== prev);
-    return line.replace(/^[^\S\u00a0]+/, ''); // residual indentation (keep a content NBSP)
+    return line;
+}
+function stripContainerPrefixes(raw) {
+    // residual indentation (keep a content NBSP)
+    return stripContainerPrefixesKeepIndent(raw).replace(/^[^\S\u00a0]+/, '');
 }
 /**
  * One top-level pass over the whole source collects every reference
@@ -551,6 +555,16 @@ function stripContainerPrefixes(raw) {
  */
 function collectLinkDefs(lexer) {
     let fence = null;
+    // Track the enclosing list item's content column so a fenced-code delimiter
+    // is tested at its container's content column (PART 2), not blindly at
+    // column 0. Without this the prepass cannot tell a real fence nested at a
+    // list item's content column from a merely indented run, and a definition
+    // written inside such a fence is spuriously collected. Same content-column
+    // stack the Markdown migrator uses. (Blockquote prefixes are handled by
+    // stripContainerPrefixes; a list nested inside a blockquote is not tracked
+    // here — a rarer residual case.)
+    const listCols = [];
+    let prevBlank = true;
     for (let idx = 0; idx < lexer.lines.length; idx++) {
         // Skip leading frontmatter — `lexer.pos` is its end (0 when there is
         // none, including an unclosed opener that is NOT frontmatter), so a
@@ -560,15 +574,71 @@ function collectLinkDefs(lexer) {
             continue;
         const raw = lexer.lines[idx];
         const line = stripContainerPrefixes(raw);
+        const wasPrevBlank = prevBlank;
+        prevBlank = raw.trim() === '';
+        if (!fence) {
+            // maintain the content-column stack (same rule as the migrator): a
+            // marker opens an item at its marker width; a blank is transparent; a
+            // dedented line leaves an item when a blank precedes it or it starts a
+            // block; code content (inside a fence) never changes it.
+            // bullets are `-`/`*` (not `+`, the continuation marker); ordered markers
+            // cover every dialect the parser accepts (decimal, roman, single-letter);
+            // an optional abutting `{…}` attribute block is part of the marker width
+            const marker = raw.match(/^([ \t]*)(?:[-*]|(?:[0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])[.)])(?:\{[^}]*\})? +/);
+            const indent = raw.length - raw.replace(/^[ \t]+/, '').length;
+            // Test the RAW line for a block starter: a blockquote `>` is stripped by
+            // stripContainerPrefixes, so check `raw` (trimmed) for it, else a quote
+            // interrupting a list item would not pop the stack.
+            const rawTrimmed = raw.trim();
+            const startsBlock = /^#{1,6}([ \t]|$)/.test(rawTrimmed) ||
+                rawTrimmed.startsWith('>') ||
+                /^(`{3,}|~{3,})/.test(rawTrimmed) ||
+                /^(-{3,}|\*{3,}|_{3,})$/.test(rawTrimmed);
+            if (marker && /\S/.test(raw.slice(marker[0].length))) {
+                while (listCols.length && listCols[listCols.length - 1] > marker[1].length)
+                    listCols.pop();
+                listCols.push(marker[0].length);
+            }
+            else if (raw.trim() !== '' && (wasPrevBlank || startsBlock)) {
+                while (listCols.length && listCols[listCols.length - 1] > indent)
+                    listCols.pop();
+            }
+        }
+        // strip the enclosing content column so a fence delimiter at that column
+        // is recognized (kept-indent view keeps residual indent after markers)
+        const contentCol = listCols.length ? listCols[listCols.length - 1] : 0;
+        // A fence is quoted if a blockquote prefix leads the line, possibly behind a
+        // single list marker (`- > ```), so its closer is blockquote-stripped. Deeper
+        // list/quote mixing is a documented residual.
+        const afterMarker = raw.replace(/^([ \t]*)(?:[-*]|(?:[0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])[.)])(?:\{[^}]*\})? +(?:\[[ xX\-_>?]\] +)?/, '');
+        const rawIsQuoted = /^(?:[^\S ]*>[^\S ]?)+/.test(raw) || /^(?:[^\S ]*>[^\S ]?)+/.test(afterMarker);
         if (fence) {
-            const close = line.match(/^ {0,3}([`~]{3,})\s*$/);
+            // CLOSER: strip a blockquote prefix only when the fence is quoted, and
+            // NEVER a list marker -- a fence delimiter is a continuation line of pure
+            // indentation, so a literal `- ``` / `> ``` inside a doc-level code sample
+            // is not a closer. Re-base to the column the fence opened at.
+            const k = fence.quoted ? raw.replace(/^(?:[^\S ]*>[^\S ]?)+/, '') : raw;
+            const ki = k.length - k.replace(/^[ \t]+/, '').length;
+            const d = ki >= fence.contentCol ? k.slice(fence.contentCol) : k;
+            const close = d.match(/^([`~]{3,})\s*$/);
             if (close && close[1][0] === fence.ch && close[1].length >= fence.len)
                 fence = null;
             continue; // definitions inside fenced code are literal samples
         }
-        const open = RE_FENCE.exec(line);
+        // OPENER: strip container prefixes (blockquote AND list marker) and re-base
+        // to the content column, so a fence on a list item marker line (`- ```) or a
+        // continuation line at the content column both open. RESIDUAL (line-based
+        // approximation): tab-vs-space marker alignment, the post-blank baseIndent+2
+        // rule, and lists nested in blockquotes are not modeled -- each errs toward a
+        // spurious link (or, for a quoted fence in a deeply/exotically nested list,
+        // an unresolved reference). The sound fix is collecting defs during block
+        // parsing.
+        const kept = stripContainerPrefixesKeepIndent(raw);
+        const keptIndent = kept.length - kept.replace(/^[ \t]+/, '').length;
+        const deIndented = keptIndent >= contentCol ? kept.slice(contentCol) : kept;
+        const open = RE_FENCE.exec(deIndented);
         if (open) {
-            fence = { ch: open[2][0], len: open[2].length };
+            fence = { ch: open[2][0], len: open[2].length, contentCol, quoted: rawIsQuoted };
             continue;
         }
         // An abbreviation def (`*[ABBR]: ...`) is not a link def.
@@ -1046,7 +1116,7 @@ function parseFence(lexer) {
     const labelRaw = m[5] ?? m[7] ?? m[8];
     const header = headerRaw ? headerRaw.slice(1, -1) : undefined;
     const label = labelRaw ? labelRaw.slice(1, -1) : undefined;
-    const closeRe = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
+    const closeRe = new RegExp(`^${marker[0]}{${marker.length},}\\s*$`);
     const lines = [];
     while (!lexer.eof()) {
         const ln = lexer.peek();
@@ -1093,7 +1163,7 @@ function parseRawBlock(lexer) {
     const m = RE_RAW_FENCE.exec(lexer.consume());
     const marker = m[1];
     const format = m[2];
-    const closeRe = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
+    const closeRe = new RegExp(`^${marker[0]}{${marker.length},}\\s*$`);
     const lines = [];
     while (!lexer.eof()) {
         const ln = lexer.peek();
@@ -1693,7 +1763,7 @@ function trackBlockQuoteLazyState(content, state) {
         if (fence) {
             const marker = fence[2];
             state.inFence = true;
-            state.fenceClose = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
+            state.fenceClose = new RegExp(`^${marker[0]}{${marker.length},}\\s*$`);
             state.paragraphOpen = false;
             return;
         }
@@ -1701,7 +1771,7 @@ function trackBlockQuoteLazyState(content, state) {
         if (raw) {
             const marker = raw[1];
             state.inFence = true;
-            state.fenceClose = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
+            state.fenceClose = new RegExp(`^${marker[0]}{${marker.length},}\\s*$`);
             state.paragraphOpen = false;
             return;
         }
@@ -2109,7 +2179,7 @@ function trackItemLazyState(content, state) {
     if (fence) {
         const marker = fence[2];
         state.inFence = true;
-        state.fenceClose = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
+        state.fenceClose = new RegExp(`^${marker[0]}{${marker.length},}\\s*$`);
         state.lazyFoldable = false;
         return;
     }
@@ -2117,7 +2187,7 @@ function trackItemLazyState(content, state) {
     if (raw) {
         const marker = raw[1];
         state.inFence = true;
-        state.fenceClose = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
+        state.fenceClose = new RegExp(`^${marker[0]}{${marker.length},}\\s*$`);
         state.lazyFoldable = false;
         return;
     }
@@ -2874,7 +2944,7 @@ function fenceHasCloser(lexer, marker) {
     const start = lexer.pos + 1;
     if (start >= lexer.noFenceCloserFrom)
         return false; // memo: no closer ahead
-    const closeRe = new RegExp(`^\\s{0,3}${marker[0]}{${marker.length},}\\s*$`);
+    const closeRe = new RegExp(`^${marker[0]}{${marker.length},}\\s*$`);
     let sawAnyCloser = false;
     for (let i = start; i < lexer.lines.length; i++) {
         const l = lexer.lines[i];

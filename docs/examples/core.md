@@ -711,6 +711,76 @@ An ordered child *below* the content column does not nest: an ordered marker doe
 
 :::
 
+After a blank line the lazy-fold channel is closed, so the content-column rule relaxes: any continuation indented at least two columns — even below an ordered marker's content column — belongs to the open item. The item turns loose and the indented block nests inside it; the list does not split into siblings.
+
+::: compare
+
+```carve
+1. one
+
+  - sub a
+  - sub b
+
+1. two
+```
+
+```html
+<ol>
+  <li><p>one</p>
+    <ul>
+      <li>sub a</li>
+      <li>sub b</li>
+    </ul>
+  </li>
+  <li><p>two</p></li>
+</ol>
+```
+
+:::
+
+The relaxed rule is not specific to sub-lists: a plain paragraph indented two columns attaches the same way, and turns the item loose because a second paragraph inside an item always does (§17 L1).
+
+::: compare
+
+```carve
+1. one
+
+  text
+
+1. two
+```
+
+```html
+<ol>
+  <li><p>one</p>
+    <p>text</p>
+  </li>
+  <li><p>two</p></li>
+</ol>
+```
+
+:::
+
+A block opener attaches on the same two-column rule, and stays tight: unlike a second paragraph, a nested block does not loosen the list.
+
+::: compare
+
+```carve
+1. one
+
+  > q
+```
+
+```html
+<ol>
+  <li>one
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ol>
+```
+
+:::
+
 A task item's content column is the bullet width (2), since the checkbox is content, not marker, so a child indented to column 2 nests. A marker indented below the content column folds in as lazy continuation rather than nesting; no list marker interrupts (§10), so only a marker at or past the content column opens a sub-list.
 
 ::: compare
@@ -1488,6 +1558,45 @@ Code-block content is never parsed for Carve syntax — emphasis, headings, and 
 /not italic/  *not bold*  #notatag
 </code></pre>
 ```
+
+:::
+
+A fenced-code **delimiter sits exactly at its container's content column** — at document level, that is column 0. Carve has no indented-code-block construct, so leading spaces carry no meaning to disambiguate against, and the fence is strict like every other block opener (an indented heading, thematic break, or block quote is likewise plain text). A run of backticks indented at document level is therefore an ordinary paragraph, and its delimiters fall back to inline code spans.
+
+::: compare
+
+````carve
+ ```
+ code
+ ```
+````
+
+```html
+<p><code>
+code
+</code></p>
+```
+
+:::
+
+The **closer is column-exact too**. A closing run indented past the opener is not a delimiter but code content, which is what lets an indented ``` line appear as sample text inside a fence. Here the two-space `` ``` `` is content and the flush `` ``` `` closes.
+
+::: compare
+
+`````carve
+```
+code
+  ```
+still code
+```
+`````
+
+`````html
+<pre><code>code
+  ```
+still code
+</code></pre>
+`````
 
 :::
 

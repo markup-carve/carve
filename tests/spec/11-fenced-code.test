@@ -144,3 +144,26 @@ print("hi")
 /not italic/  *not bold*  #notatag
 </code></pre>
 ````
+
+````
+ ```
+ code
+ ```
+.
+<p><code>
+code
+</code></p>
+````
+
+````
+```
+code
+  ```
+still code
+```
+.
+<pre><code>code
+  ```
+still code
+</code></pre>
+````

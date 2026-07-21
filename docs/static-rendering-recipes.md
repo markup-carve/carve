@@ -48,8 +48,8 @@ Two rules of thumb:
 
 ## Closure signatures per engine
 
-The `renderers` map is keyed by extension name (`mermaid`, `chart`, `graphviz`,
-`math`). The closure takes the source string and returns an HTML fragment (an
+The `renderers` map is **open**, keyed by the fence's css class (`mermaid`,
+`chart`, `graphviz`, `plantuml`, `math`, or any custom fence word). The closure takes the source string and returns an HTML fragment (an
 `<img>`, inline `<svg>`, or your fallback). Math additionally receives a display
 flag where the engine exposes one.
 
