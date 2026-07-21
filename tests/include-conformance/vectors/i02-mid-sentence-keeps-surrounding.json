@@ -1,0 +1,24 @@
+{
+  "name": "i02-mid-sentence-keeps-surrounding",
+  "description": "A mid-sentence include keeps the text before and after it.",
+  "rules": [
+    "I2"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "Intro: {{ child }} tail.",
+  "files": {
+    "child": "a /short/ fragment"
+  },
+  "expected": {
+    "html": "<p>Intro: a <em>short</em> fragment tail.</p>",
+    "fmt": "Intro\\: {{ child }} tail\\.\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

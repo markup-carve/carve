@@ -1,0 +1,29 @@
+{
+  "name": "i13-no-side-effect-both-selections",
+  "description": "A both-selections directive reserves nothing.",
+  "rules": [
+    "I13"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "Text {{ child #s @lines:1-2 }} text.\n\n{{ later }}",
+  "files": {
+    "later": "{#dup}\n# Later\n\nSee [^note].\n\n[^note]: Later note.",
+    "child": "{#dup}\n# S"
+  },
+  "expected": {
+    "html": "<p>Text {{ child <span class=\"tag\"><strong>#s</strong></span> <span class=\"mention\"><strong>@lines</strong></span>:1-2 }} text.</p>\n<section id=\"dup\">\n  <h1>Later</h1>\n  <p>See <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n</section>\n<section role=\"doc-endnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>Later note.<a href=\"#fnref1\" role=\"doc-backlink\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "fmt": "Text {{ child #s @lines:1-2 }} text\\.\n\n{{ later }}\n",
+    "warnings": [
+      {
+        "rule": "include-selection-conflict"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "later",
+        "resolved": true
+      }
+    ]
+  }
+}

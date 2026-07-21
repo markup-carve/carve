@@ -1,0 +1,19 @@
+{
+  "name": "i09-verbatim-fence-and-code-span",
+  "description": "A directive inside a fenced block or an inline code span is never resolved.",
+  "rules": [
+    "I9"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "```txt\n{{ child }}\n```\n\nUse `{{ child }}`.",
+  "files": {
+    "child": "expanded"
+  },
+  "expected": {
+    "html": "<pre><code class=\"language-txt\">{{ child }}\n</code></pre>\n<p>Use <code>{{ child }}</code>.</p>",
+    "fmt": "``` txt\n{{ child }}\n```\n\nUse `{{ child }}`\\.\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

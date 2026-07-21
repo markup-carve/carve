@@ -1,0 +1,17 @@
+{
+  "name": "i14-fmt-not-shape-wellformed-escaped",
+  "description": "A run with no closing braces is not a directive and is escaped normally.",
+  "rules": [
+    "I14"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "{{ oops",
+  "files": {},
+  "expected": {
+    "html": "<p>{{ oops</p>",
+    "fmt": "\\{\\{ oops\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

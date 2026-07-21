@@ -1,0 +1,17 @@
+{
+  "name": "i12-fmt-lines-preserved",
+  "description": "A line range survives formatting.",
+  "rules": [
+    "I12"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "{{ chapter.crv @lines:2-40 }}",
+  "files": {},
+  "expected": {
+    "html": "<p>{{ chapter.crv <span class=\"mention\"><strong>@lines</strong></span>:2-40 }}</p>",
+    "fmt": "{{ chapter.crv @lines:2-40 }}\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "i12-fmt-fence-stays",
+  "description": "A directive in a fenced block is preserved verbatim inside the reindented fence.",
+  "rules": [
+    "I12",
+    "I9"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "```txt\n{{ chapter.crv }}\n```",
+  "files": {},
+  "expected": {
+    "html": "<pre><code class=\"language-txt\">{{ chapter.crv }}\n</code></pre>",
+    "fmt": "``` txt\n{{ chapter.crv }}\n```\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

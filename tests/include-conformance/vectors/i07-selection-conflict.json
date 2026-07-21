@@ -1,0 +1,24 @@
+{
+  "name": "i07-selection-conflict",
+  "description": "Both #section and a line range present: warn and stay literal.",
+  "rules": [
+    "I7",
+    "I1"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child #x @lines:1-1 }}",
+  "files": {
+    "child": "# X"
+  },
+  "expected": {
+    "html": "<p>{{ child <span class=\"tag\"><strong>#x</strong></span> <span class=\"mention\"><strong>@lines</strong></span>:1-1 }}</p>",
+    "fmt": "{{ child #x @lines:1-1 }}\n",
+    "warnings": [
+      {
+        "rule": "include-selection-conflict"
+      }
+    ],
+    "dependencies": []
+  }
+}

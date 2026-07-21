@@ -1,0 +1,17 @@
+{
+  "name": "i01-section-only-no-path-literal",
+  "description": "A #section with no path is not a directive.",
+  "rules": [
+    "I1"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ #intro }}",
+  "files": {},
+  "expected": {
+    "html": "<p>{{ <span class=\"tag\"><strong>#intro</strong></span> }}</p>",
+    "fmt": "\\{\\{ #intro \\}\\}\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

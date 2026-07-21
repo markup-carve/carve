@@ -16,7 +16,9 @@
     "lint:mermaid": "mermaid-lint --ext crv --quiet",
     "test": "node --test tests/corpus.test.mjs tests/optional-corpus.test.mjs tests/normativity.test.mjs tests/examples.test.mjs tests/playground-extensions.test.mjs",
     "test:conformance": "npm run corpus:build && npm test",
-    "examples:snapshot": "UPDATE_EXAMPLES=1 node --test tests/examples.test.mjs"
+    "examples:snapshot": "UPDATE_EXAMPLES=1 node --test tests/examples.test.mjs",
+    "include:gen": "node scripts/gen-include-conformance.mjs",
+    "test:includes": "node --test tests/include-conformance.test.mjs"
   },
   "devDependencies": {
     "@markup-carve/vite-plugin-carve": "git+https://github.com/markup-carve/vite-plugin-carve.git",

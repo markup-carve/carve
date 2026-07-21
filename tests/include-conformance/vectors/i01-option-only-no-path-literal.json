@@ -1,0 +1,17 @@
+{
+  "name": "i01-option-only-no-path-literal",
+  "description": "Options with no path are not a directive.",
+  "rules": [
+    "I1"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ @lines:2-4 }}",
+  "files": {},
+  "expected": {
+    "html": "<p>{{ <span class=\"mention\"><strong>@lines</strong></span>:2-4 }}</p>",
+    "fmt": "\\{\\{ @lines\\:2\\-4 \\}\\}\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

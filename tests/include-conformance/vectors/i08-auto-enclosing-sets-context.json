@@ -1,0 +1,24 @@
+{
+  "name": "i08-auto-enclosing-sets-context",
+  "description": "A heading in an enclosing container does set C.",
+  "rules": [
+    "I8"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "# One\n\n::: note\n## Inner\n\n{{ child @shift:auto }}\n:::",
+  "files": {
+    "child": "# Top"
+  },
+  "expected": {
+    "html": "<section id=\"One\">\n  <h1>One</h1>\n  <aside class=\"admonition note\">\n    <h2 id=\"Inner\">Inner</h2>\n    <h3 id=\"Top\">Top</h3>\n  </aside>\n</section>",
+    "fmt": "# One\n\n::: note\n## Inner\n\n{{ child @shift:auto }}\n:::\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

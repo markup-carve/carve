@@ -1,0 +1,23 @@
+{
+  "name": "i01-shift-malformed-value",
+  "description": "A malformed value on a known option warns and stays literal.",
+  "rules": [
+    "I1"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @shift:x }}",
+  "files": {
+    "child": "body"
+  },
+  "expected": {
+    "html": "<p>{{ child <span class=\"mention\"><strong>@shift</strong></span>:x }}</p>",
+    "fmt": "{{ child @shift:x }}\n",
+    "warnings": [
+      {
+        "rule": "include-unknown-option"
+      }
+    ],
+    "dependencies": []
+  }
+}

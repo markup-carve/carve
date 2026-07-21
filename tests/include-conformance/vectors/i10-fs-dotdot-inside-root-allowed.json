@@ -1,0 +1,31 @@
+{
+  "name": "i10-fs-dotdot-inside-root-allowed",
+  "description": "A ../ path whose canonical target stays inside the root is allowed.",
+  "rules": [
+    "I10"
+  ],
+  "mode": "filesystem",
+  "resolver": "filesystem",
+  "tree": {
+    "main.crv": "{{ chapters/ch1.crv }}\n",
+    "chapters/ch1.crv": "Chapter one.\n\n{{ ../shared/glossary.crv }}\n",
+    "shared/glossary.crv": "Glossary body.\n"
+  },
+  "entryPath": "main.crv",
+  "root": ".",
+  "expected": {
+    "html": "<p>Chapter one.</p>\n<p>Glossary body.</p>",
+    "fmt": "{{ chapters/ch1.crv }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "<TMP>/chapters/ch1.crv",
+        "resolved": true
+      },
+      {
+        "id": "<TMP>/shared/glossary.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

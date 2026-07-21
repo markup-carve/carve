@@ -1,0 +1,24 @@
+{
+  "name": "i08-auto-closed-sibling-no-context",
+  "description": "A heading in a closed sibling container does not set C; it falls back to the enclosing heading.",
+  "rules": [
+    "I8"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "# One\n\n> ## Quoted\n\n{{ child @shift:auto }}",
+  "files": {
+    "child": "# Top"
+  },
+  "expected": {
+    "html": "<section id=\"One\">\n  <h1>One</h1>\n  <blockquote>\n    <h2 id=\"Quoted\">Quoted</h2>\n  </blockquote>\n  <section id=\"Top\">\n    <h2>Top</h2>\n  </section>\n</section>",
+    "fmt": "# One\n\n> ## Quoted\n\n{{ child @shift:auto }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

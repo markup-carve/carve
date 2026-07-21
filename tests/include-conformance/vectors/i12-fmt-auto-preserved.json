@@ -1,0 +1,17 @@
+{
+  "name": "i12-fmt-auto-preserved",
+  "description": "An auto shift survives formatting.",
+  "rules": [
+    "I12"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "{{ chapter.crv @shift:auto }}",
+  "files": {},
+  "expected": {
+    "html": "<p>{{ chapter.crv <span class=\"mention\"><strong>@shift</strong></span>:auto }}</p>",
+    "fmt": "{{ chapter.crv @shift:auto }}\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

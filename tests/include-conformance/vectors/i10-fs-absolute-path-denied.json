@@ -1,0 +1,31 @@
+{
+  "name": "i10-fs-absolute-path-denied",
+  "description": "An absolute path outside the root is denied by default.",
+  "rules": [
+    "I10"
+  ],
+  "mode": "filesystem",
+  "resolver": "filesystem",
+  "tree": {
+    "root/main.crv": "{{ \"<ABS:secret.crv>\" }}\n",
+    "secret.crv": "TOP SECRET\n"
+  },
+  "entryPath": "root/main.crv",
+  "root": "root",
+  "expected": {
+    "html": "<p>{{ “<TMP>/secret.crv” }}</p>",
+    "fmt": "{{ \"<TMP>/secret.crv\" }}\n",
+    "warnings": [
+      {
+        "rule": "include-unresolved",
+        "file": "<TMP>/root/main.crv"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "<TMP>/secret.crv",
+        "resolved": false
+      }
+    ]
+  }
+}
