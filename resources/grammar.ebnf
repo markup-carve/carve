@@ -874,10 +874,8 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
    (Pinned as the "Inline verbatim ..." corpus pair; was a carve-js
    divergence, resolved.) *)
 (* A trailing `{…}` on a code span is the generic inline-attribute
-   block, NOT a language tag -- EXCEPT two sigil-led forms: `{=format}`, which
-   is raw inline passthrough (raw_inline below, PART 9 §20), and a block whose
-   first token is `!`, which is an inline literal (literal_inline below,
-   PART 9 §27). For any OTHER
+   block, NOT a language tag -- EXCEPT the exact form `{=format}`, which is
+   raw inline passthrough (raw_inline below, PART 9 §20). For any OTHER
    `{…}`: both impls consume AND apply it -- `\`c\`{.x}` ->
    `<code class="x">c</code>`, and `#id`/`key=value` likewise. (Was an impl
    divergence where carve-js dropped the attributes; RESOLVED -- both now
@@ -895,16 +893,16 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
 raw_inline = backtick_run, code_span_content, backtick_run, '{=', format_name, '}' ;
 
 (* --- Literal Inline (PART 9 §27) --- *)
-(* A code span whose trailing attribute block STARTS with the `!` sigil is an
-   inline literal: the verbatim span content is HTML-ESCAPED and emitted by
-   EVERY renderer (never dropped), but WITHOUT the `<code>` wrapper -- it is
-   prose, not code. The `!` must be the first token in the block; any further
-   id/class/key attributes follow it and are applied to the emitted element.
-   With no further attributes the span emits bare escaped text (no element);
-   with attributes it emits a `<span>` carrying them. Unlike `{=format}`
-   (raw_inline, §20) the content is escaped and never target-routed. *)
-literal_inline = backtick_run, code_span_content, backtick_run,
-                 '{', opt_ws, '!', [whitespace+, attribute_list], opt_ws, '}' ;
+(* A `!` PREFIX on a verbatim code span is an inline literal, mirroring
+   `math_inline = '$', code_span` (§18). The span content is HTML-ESCAPED and
+   emitted by EVERY renderer (never dropped), but WITHOUT the `<code>` wrapper
+   -- it is prose, not code. The trailing `[attributes]` is the ORDINARY
+   code-span attribute block: with attributes an emitted `<span>` carries them,
+   with none bare escaped text is emitted. Unlike `{=format}` (raw_inline, §20)
+   the content is escaped and never target-routed. The `!` binds to a following
+   backtick run only; `!` elsewhere (and `![` opening an image) is unaffected,
+   so a literal `!` immediately before a backtick run is written `\!`. *)
+literal_inline = '!', code_span ;
 
 (* --- Links --- *)
 link = inline_link | reference_link | collapsed_reference_link ;
@@ -2544,10 +2542,11 @@ EOF = (* end of file *) ;
         zero-width kept -- with id `ABC`.)
 
    27. INLINE LITERAL -- NORMATIVE (governs `literal_inline` in PART 3).
-      A code span whose trailing attribute block has `!` as its FIRST token is
-      an INLINE LITERAL. It exists so notation that collides with the bare
-      emphasis delimiters -- phonemic transcription `/kaet/`, glob patterns,
-      paths -- can be written without per-character escaping.
+      A `!` PREFIX immediately before a verbatim code span is an INLINE
+      LITERAL, mirroring how `$` before a code span is inline math (§18). It
+      exists so notation that collides with the bare emphasis delimiters --
+      phonemic transcription `/kaet/`, glob patterns, paths -- can be written
+      without per-character escaping.
       - CONTENT is captured VERBATIM by the backtick run exactly as for a code
         span: no inline construct inside it is recognized, and SMART TYPOGRAPHY
         (§8) does NOT apply -- `--`, `...` and quotes stay as authored.
@@ -2556,26 +2555,27 @@ EOF = (* end of file *) ;
       - It is EMITTED BY EVERY RENDERER and is NEVER dropped or target-routed.
         Again the opposite of §20, where a non-matching format drops the span.
       - The `<code>` WRAPPER IS DROPPED: an inline literal is prose, not code.
-      - ELEMENT. With no further attributes the content is emitted as BARE
-        escaped text, with no element at all. When the block carries any
-        further attribute (id / class / key=value / boolean) a `<span>` is
-        emitted carrying them, in the §14 render order. So the element appears
-        exactly when an attribute needs somewhere to live.
-      - The `!` sigil is CONSUMED, never rendered, and MUST be the first token
-        in the block. `{.ipa !}` is NOT an inline literal: `!` is not a valid
-        attribute identifier, so the STRICT attribute rule (§14) makes the
-        whole block literal text.
-      - A `{!…}` block on anything OTHER than a code span is likewise not a
-        literal -- by the same §14 rule the braces stay literal text, so
-        `[t](x){!}` renders the braces as authored. The construct is therefore
-        inert everywhere except immediately after a backtick run.
+      - ELEMENT. The TRAILING `{…}` is the ORDINARY code-span attribute block,
+        not a special form. With no attribute block the content is emitted as
+        BARE escaped text, with no element at all. When an attribute block is
+        present (id / class / key=value / boolean) a `<span>` is emitted
+        carrying it, in the §14 render order. So the element appears exactly
+        when an attribute needs somewhere to live.
+      - The `!` sigil is CONSUMED, never rendered, and binds to a FOLLOWING
+        BACKTICK RUN only. It is tried before `image` (`![`) and before a bare
+        literal `!` in the inline order, so `!` before `[` still opens an image
+        and `!` anywhere else stays literal text. A literal `!` immediately
+        before a backtick run is therefore written `\!` -- the single case this
+        construct reinterprets. (Chosen over the earlier trailing-`{!}` sigil:
+        the `!` prefix matches the `$`-math / `!`-image family, keeps the
+        attribute block ordinary, and reads as "not code". See #280.)
       - There is NO block form. A fenced code block already carries its content
         verbatim; the inline case is the one the notation problem needs, and a
         block spelling is deliberately left undefined rather than invented.
       Examples (corpus-pinned):
-        `/kaet/`{!}        -> /kaet/
-        `/kaet/`{! .ipa}   -> <span class="ipa">/kaet/</span>
-        `a<b>`{!}          -> a&lt;b&gt;
+        !`/kaet/`        -> /kaet/
+        !`/kaet/`{.ipa}  -> <span class="ipa">/kaet/</span>
+        !`a<b>`          -> a&lt;b&gt;
 *)
 
 

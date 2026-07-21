@@ -31,7 +31,7 @@ identifiers, independent of a renderer's output tag.
 `span`, `superscript`, `subscript`, `highlight`, `insert`, `delete`, `symbol`,
 `math`, `abbreviation`.
 
-The inline literal of PART 9 §27 (`` `…`{!} ``) is classified as **`code`** for
+The inline literal of PART 9 §27 (`` !`…` ``) is classified as **`code`** for
 profiles — it is a code span with the `<code>` wrapper dropped, sharing code's
 verbatim capture, escaping, and trailing-attribute surface, so it is allowed
 exactly where `code` is and denied where `code` is. (Types are trust classes,
@@ -121,7 +121,7 @@ User comments: basic formatting, `nofollow`/`ugc` links.
 - (So: no headings, images, tables, footnotes, divs/sections, def-lists,
   thematic breaks, line blocks, spans, symbols, math, abbreviations, raw HTML.)
 
-  Inline literals (`` `…`{!} ``) ARE permitted here: they classify as `code`,
+  Inline literals (`` !`…` ``) ARE permitted here: they classify as `code`,
   which this preset allows, and an attributed literal carries the same
   class/id/style an attributed code span already does under this preset. A host
   that wants to forbid them must deny `code`.
