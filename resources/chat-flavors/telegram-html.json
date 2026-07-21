@@ -1,0 +1,228 @@
+{
+  "id": "telegram-html",
+  "label": "Telegram HTML",
+  "extends": null,
+  "verified": "2026-07-21",
+  "limits": {
+    "message": 4096
+  },
+  "link": {
+    "style": "html"
+  },
+  "escape": {
+    "mechanism": "entities",
+    "chars": "&<>"
+  },
+  "nodes": {
+    "paragraph": {
+      "support": "native"
+    },
+    "heading": {
+      "support": "none",
+      "fallback": "inline",
+      "template": "<b>{content}</b>"
+    },
+    "code_block": {
+      "support": "native",
+      "open": "<pre>",
+      "close": "</pre>"
+    },
+    "block_quote": {
+      "support": "native",
+      "open": "<blockquote>",
+      "close": "</blockquote>",
+      "template": "<blockquote>{content}</blockquote>"
+    },
+    "list": {
+      "support": "none",
+      "fallback": "unwrap",
+      "bullet": "- ",
+      "ordered": "{number}. "
+    },
+    "list_item": {
+      "support": "native"
+    },
+    "table": {
+      "support": "none",
+      "fallback": "codeblock"
+    },
+    "table_row": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "table_cell": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "thematic_break": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "div": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "raw_block": {
+      "support": "none",
+      "fallback": "drop"
+    },
+    "footnote": {
+      "support": "none",
+      "fallback": "appendix"
+    },
+    "definition_list": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "definition_term": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "definition_description": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "section": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "line_block": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "comment": {
+      "support": "none",
+      "fallback": "drop"
+    },
+    "figure": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "caption": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "text": {
+      "support": "native"
+    },
+    "emphasis": {
+      "support": "native",
+      "open": "<i>",
+      "close": "</i>"
+    },
+    "strong": {
+      "support": "native",
+      "open": "<b>",
+      "close": "</b>"
+    },
+    "underline": {
+      "support": "native",
+      "open": "<u>",
+      "close": "</u>"
+    },
+    "strike": {
+      "support": "native",
+      "open": "<s>",
+      "close": "</s>"
+    },
+    "inline_extension": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "mention": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "code": {
+      "support": "native",
+      "open": "<code>",
+      "close": "</code>"
+    },
+    "link": {
+      "support": "native"
+    },
+    "image": {
+      "support": "none",
+      "fallback": "inline",
+      "template": "{alt} ({url})"
+    },
+    "soft_break": {
+      "support": "native"
+    },
+    "hard_break": {
+      "support": "native"
+    },
+    "raw_inline": {
+      "support": "none",
+      "fallback": "drop"
+    },
+    "escaped_text": {
+      "support": "native"
+    },
+    "footnote_ref": {
+      "support": "native"
+    },
+    "inline_footnote": {
+      "support": "none",
+      "fallback": "appendix"
+    },
+    "heading_ref": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "span": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "superscript": {
+      "support": "none",
+      "fallback": "carve"
+    },
+    "subscript": {
+      "support": "none",
+      "fallback": "carve"
+    },
+    "highlight": {
+      "support": "none",
+      "fallback": "carve"
+    },
+    "insert": {
+      "support": "none",
+      "fallback": "carve"
+    },
+    "delete": {
+      "support": "none",
+      "fallback": "carve"
+    },
+    "symbol": {
+      "support": "native"
+    },
+    "math": {
+      "support": "none",
+      "fallback": "inline",
+      "template": "{content}"
+    },
+    "abbreviation": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "inline_extension:spoiler": {
+      "support": "native",
+      "open": "<tg-spoiler>",
+      "close": "</tg-spoiler>"
+    },
+    "substitution": {
+      "support": "native"
+    },
+    "caption_number": {
+      "support": "native"
+    },
+    "raw_text": {
+      "support": "native"
+    },
+    "citation-group": {
+      "support": "none",
+      "fallback": "unwrap"
+    }
+  }
+}

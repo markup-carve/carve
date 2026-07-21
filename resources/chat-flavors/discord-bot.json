@@ -1,0 +1,7 @@
+{
+  "id": "discord-bot",
+  "label": "Discord Bot",
+  "extends": "discord",
+  "verified": "2026-07-21",
+  "link": { "style": "markdown" }
+}

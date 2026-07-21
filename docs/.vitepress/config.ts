@@ -91,6 +91,8 @@ export default defineConfig({
               { text: 'Extensions Contract', link: '/extensions' },
               { text: 'Writing an Extension (QR case study)', link: '/extension-tutorial' },
               { text: 'Profiles Contract', link: '/profiles' },
+            { text: 'Chat Flavors', link: '/chat-flavors' },
+              { text: 'Chat Flavors', link: '/chat-flavors' },
               { text: 'Edge Cases', link: '/edge-cases' },
               { text: 'Versioning & Changelog', link: '/versioning' },
             ],

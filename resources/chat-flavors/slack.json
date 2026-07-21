@@ -1,0 +1,220 @@
+{
+  "id": "slack",
+  "label": "Slack",
+  "extends": null,
+  "verified": "2026-07-21",
+  "limits": {
+    "message": 3000
+  },
+  "link": {
+    "style": "slackPipe"
+  },
+  "escape": {
+    "mechanism": "entities",
+    "chars": "&<>"
+  },
+  "nodes": {
+    "paragraph": {
+      "support": "native"
+    },
+    "heading": {
+      "support": "none",
+      "fallback": "inline",
+      "template": "*{content}*"
+    },
+    "code_block": {
+      "support": "native",
+      "open": "```",
+      "close": "```"
+    },
+    "block_quote": {
+      "support": "native",
+      "prefix": "> "
+    },
+    "list": {
+      "support": "none",
+      "fallback": "unwrap",
+      "bullet": "- ",
+      "ordered": "{number}. "
+    },
+    "list_item": {
+      "support": "native"
+    },
+    "table": {
+      "support": "none",
+      "fallback": "codeblock"
+    },
+    "table_row": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "table_cell": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "thematic_break": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "div": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "raw_block": {
+      "support": "none",
+      "fallback": "drop"
+    },
+    "footnote": {
+      "support": "none",
+      "fallback": "appendix"
+    },
+    "definition_list": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "definition_term": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "definition_description": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "section": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "line_block": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "comment": {
+      "support": "none",
+      "fallback": "drop"
+    },
+    "figure": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "caption": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "text": {
+      "support": "native"
+    },
+    "emphasis": {
+      "support": "native",
+      "open": "_",
+      "close": "_"
+    },
+    "strong": {
+      "support": "native",
+      "open": "*",
+      "close": "*"
+    },
+    "underline": {
+      "support": "none",
+      "fallback": "carve"
+    },
+    "strike": {
+      "support": "native",
+      "open": "~",
+      "close": "~"
+    },
+    "inline_extension": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "mention": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "code": {
+      "support": "native",
+      "open": "`",
+      "close": "`"
+    },
+    "link": {
+      "support": "native"
+    },
+    "image": {
+      "support": "none",
+      "fallback": "inline",
+      "template": "{alt} ({url})"
+    },
+    "soft_break": {
+      "support": "native"
+    },
+    "hard_break": {
+      "support": "native"
+    },
+    "raw_inline": {
+      "support": "none",
+      "fallback": "drop"
+    },
+    "escaped_text": {
+      "support": "native"
+    },
+    "footnote_ref": {
+      "support": "native"
+    },
+    "inline_footnote": {
+      "support": "none",
+      "fallback": "appendix"
+    },
+    "heading_ref": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "span": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "superscript": {
+      "support": "none",
+      "fallback": "carve"
+    },
+    "subscript": {
+      "support": "none",
+      "fallback": "carve"
+    },
+    "highlight": {
+      "support": "none",
+      "fallback": "carve"
+    },
+    "insert": {
+      "support": "none",
+      "fallback": "carve"
+    },
+    "delete": {
+      "support": "none",
+      "fallback": "carve"
+    },
+    "symbol": {
+      "support": "native"
+    },
+    "math": {
+      "support": "none",
+      "fallback": "inline",
+      "template": "{content}"
+    },
+    "abbreviation": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "substitution": {
+      "support": "native"
+    },
+    "caption_number": {
+      "support": "native"
+    },
+    "raw_text": {
+      "support": "native"
+    },
+    "citation-group": {
+      "support": "none",
+      "fallback": "unwrap"
+    }
+  }
+}

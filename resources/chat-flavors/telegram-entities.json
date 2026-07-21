@@ -1,0 +1,81 @@
+{
+  "id": "telegram-entities",
+  "label": "Telegram (entities)",
+  "extends": "telegram-html",
+  "verified": "2026-07-21",
+  "output": "ranges",
+  "offsets": "utf16",
+  "link": {
+    "style": "none"
+  },
+  "escape": {
+    "mechanism": "none",
+    "chars": ""
+  },
+  "nodes": {
+    "strong": {
+      "support": "native",
+      "style": "bold"
+    },
+    "emphasis": {
+      "support": "native",
+      "style": "italic"
+    },
+    "underline": {
+      "support": "native",
+      "style": "underline"
+    },
+    "strike": {
+      "support": "native",
+      "style": "strikethrough"
+    },
+    "highlight": {
+      "support": "none",
+      "fallback": "carve"
+    },
+    "code": {
+      "support": "native",
+      "style": "code"
+    },
+    "code_block": {
+      "support": "native",
+      "style": "pre"
+    },
+    "block_quote": {
+      "support": "native",
+      "style": "blockquote"
+    },
+    "link": {
+      "support": "native",
+      "style": "text_link"
+    },
+    "image": {
+      "support": "none",
+      "fallback": "inline",
+      "template": "{alt} ({url})"
+    },
+    "heading": {
+      "support": "none",
+      "fallback": "inline",
+      "template": "{content}",
+      "style": "bold"
+    },
+    "inline_extension:spoiler": {
+      "support": "native",
+      "style": "spoiler"
+    },
+    "substitution": {
+      "support": "native"
+    },
+    "caption_number": {
+      "support": "native"
+    },
+    "raw_text": {
+      "support": "native"
+    },
+    "citation-group": {
+      "support": "none",
+      "fallback": "unwrap"
+    }
+  }
+}

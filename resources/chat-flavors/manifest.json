@@ -1,0 +1,14 @@
+{
+  "version": "0.1.0",
+  "normative": false,
+  "description": "Chat-platform flavor tables. Opt-in and versioned separately from the Carve spec, because chat syntax is set by vendors and changes on their schedule.",
+  "flavors": [
+    "whatsapp",
+    "slack",
+    "telegram-html",
+    "telegram-entities",
+    "discord",
+    "discord-bot",
+    "signal"
+  ]
+}
