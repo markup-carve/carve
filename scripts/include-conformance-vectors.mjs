@@ -831,6 +831,52 @@ export const vectors = [
     files: { later: laterFile, a: 'One [^note].\n\nTwo.\n\n[^note]: Rejected note.' },
   },
 
+  // --- Directive inside a heading (expansion + post-expansion heading id) ---
+  // These close a gap the original 90 vectors missed: a directive in a
+  // heading's inline content must expand, and the section id must be the slug
+  // of the POST-expansion heading text. carve-php rendered a literal directive
+  // here before its fix; carve-js and carve-rs were already correct.
+  {
+    name: 'i02-heading-include-mid-text',
+    description: 'A directive inside a heading expands; the section id is the slug of the post-expansion text.',
+    rules: ['I2', 'I9a', 'heading-include'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '# a {{ x.crv }} b',
+    files: { 'x.crv': 'Xtext' },
+  },
+  {
+    name: 'i02-heading-include-whole-text',
+    description: 'A heading built entirely from an include; the id is the slug of the included text.',
+    rules: ['I2', 'I9a', 'heading-include'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '# {{ title.crv }}',
+    files: { 'title.crv': 'My Title' },
+  },
+  {
+    name: 'i02-heading-include-explicit-id',
+    description: 'An explicit heading id wins over the post-expansion slug when a directive fills the heading text.',
+    rules: ['I2', 'I9a', 'heading-include'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: '{#custom}\n# {{ title.crv }}',
+    files: { 'title.crv': 'My Title' },
+  },
+
+  // --- I12/I14 multi-option directive round-trips verbatim -----------------
+  // Pins that an author's option/section token ORDER is preserved byte-for-byte
+  // under fmt (not reordered). carve-php was reordering here before its fix.
+  {
+    name: 'i12-fmt-multi-option-verbatim',
+    description: 'A multi-option directive (unknown option + section) serializes byte-identically, author token order preserved.',
+    rules: ['I12', 'I14'],
+    mode: 'virtual',
+    resolver: 'virtual',
+    entry: 'Here {{ x.crv @bogus:1 #intro }} now.',
+    files: { 'x.crv': 'body' },
+  },
+
   // --- I10 containment (filesystem mode) -----------------------------------
   {
     name: 'i10-fs-dotdot-inside-root-allowed',

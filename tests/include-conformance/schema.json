@@ -18,11 +18,11 @@
     },
     "rules": {
       "type": "array",
-      "description": "The §19 rule ids this vector exercises (I1..I14, plus I9a and the pseudo-rules 'multi-directive' and 'quoted-path').",
+      "description": "The §19 rule ids this vector exercises (I1..I14, plus I9a and the pseudo-rules 'multi-directive', 'quoted-path' and 'heading-include').",
       "minItems": 1,
       "items": {
         "type": "string",
-        "pattern": "^(I(1[0-4]|[1-9])a?|multi-directive|quoted-path)$"
+        "pattern": "^(I(1[0-4]|[1-9])a?|multi-directive|quoted-path|heading-include)$"
       }
     },
     "mode": {
