@@ -1,0 +1,25 @@
+Trailing whitespace boundaries
+
+```
+!`  `
+.
+<p>  </p>
+```
+
+```
+`  `
+.
+<p><code>  </code></p>
+```
+
+```
+$`  `
+.
+<p><span class="math inline">\(  \)</span></p>
+```
+
+```
+A trailing no-break space 
+.
+<p>A trailing no-break space&nbsp;</p>
+```

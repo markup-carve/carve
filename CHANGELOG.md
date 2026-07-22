@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Corpus coverage for trailing-whitespace boundaries.** The trailing-whitespace
+  strip applies to the paragraph's SOURCE line, so it never touches spaces a
+  construct produces while rendering: a paragraph whose entire content is an
+  all-space verbatim span keeps them. The existing all-space pairs only covered
+  the mid-sentence form, so the lone case - the one that actually diverged
+  between implementations - was unpinned. A trailing no-break space is likewise
+  pinned as content, not whitespace; only ASCII whitespace is stripped.
 - **Corpus coverage for all-space verbatim content.** The single-space strip on
   a verbatim span drops one leading and one trailing space, but not when the
   content is entirely spaces - those spans keep every space. No corpus pair
