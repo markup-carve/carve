@@ -1,0 +1,43 @@
+; This file is for unifying the coding style for different editors and IDEs.
+; More information at https://editorconfig.org
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{yml,yaml}]
+indent_size = 2
+
+; ---------------------------------------------------------------------------
+; Byte-exact test data. Several corpus pairs assert the handling of characters
+; an editor would otherwise "clean up": a trailing no-break space (U+00A0), a
+; trailing ASCII space, and zero-width / bidi control characters in the
+; Trojan-Source pairs. Those bytes ARE the assertion, so nothing may normalize
+; them. Two fixtures also deliberately end without a final newline.
+; ---------------------------------------------------------------------------
+
+[tests/corpus/**]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+[tests/corpus-optional/**]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+[tests/examples/**]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+[tests/spec/**]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+; The corpus is GENERATED from the fenced blocks in these files, so trailing
+; whitespace and invisible characters inside them are load-bearing test input.
+[docs/examples/**]
+trim_trailing_whitespace = false

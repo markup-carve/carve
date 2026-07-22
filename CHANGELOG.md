@@ -16,6 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Protection for byte-exact corpus fixtures.** Several pairs assert the
+  handling of characters an editor or formatter would "clean up": a trailing
+  no-break space, a trailing ASCII space, and the zero-width / bidi controls in
+  the Trojan-Source pairs. An `.editorconfig` and `.gitattributes` now stop
+  those bytes being normalized away, and a `tests/fixture-bytes.test.mjs` guard
+  fails loudly if one goes missing. The guard is not redundant with the corpus
+  test: where the same invisible character appears raw on BOTH sides of a pair
+  (the Trojan-Source zero-width case), stripping it from both keeps them in
+  sync, so the corpus test stays green while no longer testing anything.
 - **Corpus coverage for trailing-whitespace boundaries.** The trailing-whitespace
   strip applies to the paragraph's SOURCE line, so it never touches spaces a
   construct produces while rendering: a paragraph whose entire content is an

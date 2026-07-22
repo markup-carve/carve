@@ -1,0 +1,11 @@
+# Corpus fixtures and generated example output are BYTE-EXACT test data.
+# Marking them binary (-text) stops git from applying any content or
+# line-ending normalization on checkout/commit, which would silently destroy
+# the characters several pairs exist to assert: a trailing no-break space
+# (U+00A0), a trailing ASCII space, and the zero-width / bidi controls in the
+# Trojan-Source pairs. Diffs stay readable because the files are still UTF-8
+# text; only the normalization is disabled.
+tests/corpus/**        -text
+tests/corpus-optional/** -text
+tests/examples/**      -text
+tests/spec/**          -text
