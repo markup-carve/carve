@@ -1689,12 +1689,19 @@ EOF = (* end of file *) ;
          cells; `\|` and a `|` inside a code span are content. (The
          code-span state carried across the scan is what makes this
          non-context-free.)
-      T2 VALID TABLE ROW (the §10 I1 interruption test).
-         interrupting_row(L) := L's first non-indent character is `|` AND
-         its last non-whitespace character is `|` AND at least one cell
-         lies between. A line-initial `|` without the trailing `|` does NOT
-         interrupt (stays prose); at BLOCK START (after a blank line) the
-         trailing `|` is lenient -- `| a | b` still opens a table.
+      T2 VALID TABLE ROW. ONE predicate, used both for the §10 I1
+         interruption test and for opening a table at a block start:
+         valid_row(L) := L's first non-indent character is `|` AND its last
+         non-whitespace character is `|` AND at least one cell lies between.
+         (T8's row attribute block is glued to that closing `|`, so a row
+         ending `|{.x}` still qualifies -- strip the block, then test.)
+         A line-initial `|` WITHOUT the closing `|` is prose, wherever it
+         appears: `| a | b` neither interrupts a paragraph nor opens a table
+         (corpus 140). This matches the `standard_row` production, which
+         ends in `'|'`; there is no lenient open form.
+         The two uses may never disagree: a line the block parser builds a
+         table from but the §17 sub-block test calls prose would make a list
+         item loose AND fill it with a table.
       T3 HEADER CELL. A leading `=` GLUED to the cell's opening `|` marks a
          HEADER cell; `\=` yields a data cell whose text starts with `=`.
       T4 SPAN MARKERS. A cell whose WHOLE content is `^` (rowspan) or `<`
@@ -1844,8 +1851,8 @@ EOF = (* end of file *) ;
          - a block quote (`>`; a line-initial `>` is ALWAYS a quote marker,
            so a prose line starting `>= 5` becomes a quote -- escape it,
            `\>= 5`, to keep it prose);
-         - a valid table row (interrupting_row(L), §5 T2; a stray `|` in
-           prose is NOT one);
+         - a valid table row (valid_row(L), §5 T2; a stray `|` in prose,
+           and a line-initial `|` with no closing `|`, are NOT ones);
          - a fenced code opener WITH a matching closer ahead (I4);
          - a `:::` opener WITH a matching closer ahead (I4).
          So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more"

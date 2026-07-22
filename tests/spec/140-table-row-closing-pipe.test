@@ -1,0 +1,31 @@
+Table row closing pipe
+
+```
+| a | b
+.
+<p>| a | b</p>
+```
+
+```
+| a | b |
+| c | d
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+<p>| c | d</p>
+```
+
+```
+| a
+| b |
+.
+<p>| a</p>
+<table>
+  <tbody>
+    <tr><td>b</td></tr>
+  </tbody>
+</table>
+```

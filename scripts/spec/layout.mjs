@@ -144,18 +144,24 @@ function splitRow(line) {
     cur += c
     i++
   }
-  const trailing = cur.trim() === ''
-  if (!trailing) cells.push(cur) // lenient open form: `| a | b`
+  // T2: a row CLOSES with a pipe (`standard_row` ends in `'|'`). A line-initial
+  // `|` with content dangling after the last pipe is prose, at a block start as
+  // much as mid-paragraph -- there is no lenient open form.
+  if (cur.trim() !== '') return null
   if (cells.length === 0) return null // T2: `||` has no cell
   if (cells.length === 1 && cells[0].trim() === '') return null // `||`
-  return { cells, rowAttrs, trailing }
+  return { cells, rowAttrs }
 }
 
-// T2: does this line interrupt a paragraph as a table row? (strict: both
-// a leading AND a trailing pipe)
-export function interruptingRow(line) {
-  if (!/^\|.*\|[ \t]*$/.test(line)) return false
-  return splitRow(line) !== null
+// T2: is this line a table row? One test, used both for the §10 I1 paragraph
+// interruption and for opening a table at a block start -- a line is a row or
+// it is not, and the two answers may never differ (a line the block parser
+// builds a table from but the §17 sub-block test calls prose would make an item
+// loose AND fill it with a table).
+export function isTableRow(line) {
+  // splitRow owns the closing-pipe test, so a row whose closing pipe carries a
+  // `{...}` attribute block (T8) still qualifies -- the line ends in `}`.
+  return line[0] === '|' && splitRow(line) !== null
 }
 
 const COLON_FENCE = /^(:{3,})(.*)$/
@@ -316,7 +322,7 @@ function startsVisibleBlock(line) {
 // look like a block.
 function opensSubBlock(line, rest) {
   if (QUOTE.test(line) || HEADING.test(line) || HR.test(line) ||
-      interruptingRow(line)) return true
+      isTableRow(line)) return true
   const f = FENCE.exec(line)
   // an INVALID info string is not a fence at all (PART 2 INVALID-FENCE
   // FALLBACK) -- the line is prose and loosens the item
@@ -397,7 +403,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     const line = lines[idx]
     if (line === undefined) return false
     if (startsVisibleBlock(line)) return true
-    if (interruptingRow(line)) return true
+    if (isTableRow(line)) return true
     {
       const cf = COLON_FENCE.exec(line)
       if (cf && parseColonOpener(cf[2]) && findColonCloser(lines, idx, cf[1].length) !== -1) return true
@@ -754,7 +760,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     }
 
     // --- tables (PART 9 SS5) ---
-    if (line[0] === '|' && splitRow(line) !== null) {
+    if (isTableRow(line)) {
       const node = { t: 'table', rows: [], caption: undefined }
       while (i < n) {
         const l = lines[i]
@@ -929,7 +935,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         // definitions interrupt and are consumed (SS10 I5)
         if (LINK_DEF.test(lines[i]) || FOOTNOTE_DEF.test(lines[i]) || ABBR_DEF.test(lines[i])) break
         if (startsVisibleBlock(lines[i])) break // I1
-        if (interruptingRow(lines[i])) break // I1: valid table row
+        if (isTableRow(lines[i])) break // I1: valid table row
         {
           const cf = COLON_FENCE.exec(lines[i])
           if (cf && parseColonOpener(cf[2]) && findColonCloser(lines, i, cf[1].length) !== -1) break // I1/I4
@@ -1239,7 +1245,7 @@ function collectItems(lines, i, list, state) {
         i++
         continue
       }
-      if (!nm && openPara && itemLines.length > 0 && !startsVisibleBlock(line) && !interruptingRow(line) && !COLON_FENCE.test(line)) {
+      if (!nm && openPara && itemLines.length > 0 && !startsVisibleBlock(line) && !isTableRow(line) && !COLON_FENCE.test(line)) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3)
         itemLines.push(LAZY + line.replace(/^[ \t]+/, ''))
         i++
