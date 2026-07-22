@@ -1,0 +1,19 @@
+Inline literal
+
+```
+The word cat is !`/kaet/` in IPA.
+.
+<p>The word cat is /kaet/ in IPA.</p>
+```
+
+```
+!`/kaet/`{.ipa} and !`a<b>` and !`*not bold*`
+.
+<p><span class="ipa">/kaet/</span> and a&lt;b&gt; and *not bold*</p>
+```
+
+```
+\!`x` is a bang before code.
+.
+<p>!<code>x</code> is a bang before code.</p>
+```

@@ -119,7 +119,7 @@ CarveCore {
              | arrow | span | inlineNote | litDelim
              | symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
              | editorial | forcedSpan
-             | mathD | mathI | codeA | nbspEsc | hardBreak | escape | image | bracketed
+             | mathD | mathI | litInline | codeA | nbspEsc | hardBreak | escape | image | bracketed
              | autolink | bang | dollar
              | ellipsis | dashRun | dot | dash | plus | pct | lt | gt
              | dquote | squote | hash | looseAttrs | nl | other | anyChar
@@ -192,6 +192,14 @@ CarveCore {
   // --- Math (PART 3: `$` / `$$` + a verbatim span; bare `$` is literal) ---
   mathI      = "$" code attrs?
   mathD      = "$$" code attrs?
+
+  // --- Inline literal (PART 9 SS27): "!" prefix on a verbatim code span,
+  // mirroring math's "$" prefix. Content is HTML-escaped and emitted by every
+  // renderer; the <code> wrapper is dropped. A trailing attribute block is the
+  // ORDINARY code-span attribute block -- with attributes a <span> carries
+  // them, with none bare escaped text is emitted. Tried before `image` and
+  // `bang` in the inline alternation so `!` binds to a following backtick run.
+  litInline  = "!" code attrs?
 
   // --- Cross-reference with auto text (PART 3 auto_text_link) -------------
   crossref   = "</#" xrefId ">"

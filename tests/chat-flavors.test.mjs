@@ -23,23 +23,21 @@ const flavorDir = resolve(here, '../resources/chat-flavors')
 const manifest = JSON.parse(readFileSync(resolve(flavorDir, 'manifest.json'), 'utf8'))
 
 /*
- * The normative node-type vocabulary from docs/profiles.md. A flavor must say
- * something about every one of these, so a type added to the spec cannot
- * silently degrade in every chat target at once.
+ * The normative node-type vocabulary, read from docs/profiles.md rather than
+ * copied. A copy goes stale silently: when the vocabulary gained six types,
+ * a hardcoded list here kept passing while every flavor was missing them.
  */
-const BLOCK_TYPES = [
-  'paragraph', 'heading', 'code_block', 'block_quote', 'list', 'list_item',
-  'table', 'table_row', 'table_cell', 'thematic_break', 'div', 'raw_block',
-  'footnote', 'definition_list', 'definition_term', 'definition_description',
-  'section', 'line_block', 'comment', 'figure', 'caption',
-]
+const profiles = readFileSync(resolve(here, '../docs/profiles.md'), 'utf8')
 
-const INLINE_TYPES = [
-  'text', 'emphasis', 'strong', 'underline', 'strike', 'inline_extension',
-  'mention', 'code', 'link', 'image', 'soft_break', 'hard_break', 'raw_inline',
-  'escaped_text', 'footnote_ref', 'inline_footnote', 'span', 'superscript',
-  'subscript', 'highlight', 'insert', 'delete', 'symbol', 'math', 'abbreviation',
-]
+function vocabulary(label) {
+  const section = profiles.match(new RegExp(`\\*\\*${label}:\\*\\*([\\s\\S]*?)\\n\\n`))
+  assert.ok(section, `no ${label} vocabulary paragraph in docs/profiles.md`)
+
+  return [...section[1].matchAll(/`([A-Za-z0-9_-]+)`/g)].map((m) => m[1])
+}
+
+const BLOCK_TYPES = vocabulary('Block')
+const INLINE_TYPES = vocabulary('Inline')
 
 const SUPPORT = ['native', 'none']
 const FALLBACK = ['unwrap', 'carve', 'inline', 'codeblock', 'appendix', 'drop']

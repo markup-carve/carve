@@ -555,6 +555,16 @@ function stripContainerPrefixes(raw) {
  */
 function collectLinkDefs(lexer) {
     let fence = null;
+    // Track the enclosing list item's content column so a fenced-code delimiter
+    // is tested at its container's content column (PART 2), not blindly at
+    // column 0. Without this the prepass cannot tell a real fence nested at a
+    // list item's content column from a merely indented run, and a definition
+    // written inside such a fence is spuriously collected. Same content-column
+    // stack the Markdown migrator uses. (Blockquote prefixes are handled by
+    // stripContainerPrefixes; a list nested inside a blockquote is not tracked
+    // here — a rarer residual case.)
+    const listCols = [];
+    let prevBlank = true;
     for (let idx = 0; idx < lexer.lines.length; idx++) {
         // Skip leading frontmatter — `lexer.pos` is its end (0 when there is
         // none, including an unclosed opener that is NOT frontmatter), so a
@@ -564,25 +574,71 @@ function collectLinkDefs(lexer) {
             continue;
         const raw = lexer.lines[idx];
         const line = stripContainerPrefixes(raw);
+        const wasPrevBlank = prevBlank;
+        prevBlank = raw.trim() === '';
+        if (!fence) {
+            // maintain the content-column stack (same rule as the migrator): a
+            // marker opens an item at its marker width; a blank is transparent; a
+            // dedented line leaves an item when a blank precedes it or it starts a
+            // block; code content (inside a fence) never changes it.
+            // bullets are `-`/`*` (not `+`, the continuation marker); ordered markers
+            // cover every dialect the parser accepts (decimal, roman, single-letter);
+            // an optional abutting `{…}` attribute block is part of the marker width
+            const marker = raw.match(/^([ \t]*)(?:[-*]|(?:[0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])[.)])(?:\{[^}]*\})? +/);
+            const indent = raw.length - raw.replace(/^[ \t]+/, '').length;
+            // Test the RAW line for a block starter: a blockquote `>` is stripped by
+            // stripContainerPrefixes, so check `raw` (trimmed) for it, else a quote
+            // interrupting a list item would not pop the stack.
+            const rawTrimmed = raw.trim();
+            const startsBlock = /^#{1,6}([ \t]|$)/.test(rawTrimmed) ||
+                rawTrimmed.startsWith('>') ||
+                /^(`{3,}|~{3,})/.test(rawTrimmed) ||
+                /^(-{3,}|\*{3,}|_{3,})$/.test(rawTrimmed);
+            if (marker && /\S/.test(raw.slice(marker[0].length))) {
+                while (listCols.length && listCols[listCols.length - 1] > marker[1].length)
+                    listCols.pop();
+                listCols.push(marker[0].length);
+            }
+            else if (raw.trim() !== '' && (wasPrevBlank || startsBlock)) {
+                while (listCols.length && listCols[listCols.length - 1] > indent)
+                    listCols.pop();
+            }
+        }
+        // strip the enclosing content column so a fence delimiter at that column
+        // is recognized (kept-indent view keeps residual indent after markers)
+        const contentCol = listCols.length ? listCols[listCols.length - 1] : 0;
+        // A fence is quoted if a blockquote prefix leads the line, possibly behind a
+        // single list marker (`- > ```), so its closer is blockquote-stripped. Deeper
+        // list/quote mixing is a documented residual.
+        const afterMarker = raw.replace(/^([ \t]*)(?:[-*]|(?:[0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])[.)])(?:\{[^}]*\})? +(?:\[[ xX\-_>?]\] +)?/, '');
+        const rawIsQuoted = /^(?:[^\S ]*>[^\S ]?)+/.test(raw) || /^(?:[^\S ]*>[^\S ]?)+/.test(afterMarker);
         if (fence) {
-            const close = line.match(/^([`~]{3,})\s*$/);
+            // CLOSER: strip a blockquote prefix only when the fence is quoted, and
+            // NEVER a list marker -- a fence delimiter is a continuation line of pure
+            // indentation, so a literal `- ``` / `> ``` inside a doc-level code sample
+            // is not a closer. Re-base to the column the fence opened at.
+            const k = fence.quoted ? raw.replace(/^(?:[^\S ]*>[^\S ]?)+/, '') : raw;
+            const ki = k.length - k.replace(/^[ \t]+/, '').length;
+            const d = ki >= fence.contentCol ? k.slice(fence.contentCol) : k;
+            const close = d.match(/^([`~]{3,})\s*$/);
             if (close && close[1][0] === fence.ch && close[1].length >= fence.len)
                 fence = null;
             continue; // definitions inside fenced code are literal samples
         }
-        // A fence OPENER is column-exact (PART 2), but this prepass is line-based
-        // and does not know the container's content column, so it cannot fully
-        // agree with the block parser. It errs on the side of NOT opening: a
-        // definition inside a fence nested at a container's content column is
-        // still collected here, so a later reference to it resolves when it
-        // should not. That is a spurious link; the opposite error (opening a
-        // fence the parser never opened) silently swallows every later
-        // definition, which is content loss. See the known-limitation test.
-        // The sound fix is to collect definitions during block parsing, where the
-        // container columns are known.
-        const open = RE_FENCE.exec(stripContainerPrefixesKeepIndent(raw));
+        // OPENER: strip container prefixes (blockquote AND list marker) and re-base
+        // to the content column, so a fence on a list item marker line (`- ```) or a
+        // continuation line at the content column both open. RESIDUAL (line-based
+        // approximation): tab-vs-space marker alignment, the post-blank baseIndent+2
+        // rule, and lists nested in blockquotes are not modeled -- each errs toward a
+        // spurious link (or, for a quoted fence in a deeply/exotically nested list,
+        // an unresolved reference). The sound fix is collecting defs during block
+        // parsing.
+        const kept = stripContainerPrefixesKeepIndent(raw);
+        const keptIndent = kept.length - kept.replace(/^[ \t]+/, '').length;
+        const deIndented = keptIndent >= contentCol ? kept.slice(contentCol) : kept;
+        const open = RE_FENCE.exec(deIndented);
         if (open) {
-            fence = { ch: open[2][0], len: open[2].length };
+            fence = { ch: open[2][0], len: open[2].length, contentCol, quoted: rawIsQuoted };
             continue;
         }
         // An abbreviation def (`*[ABBR]: ...`) is not a link def.
@@ -3667,11 +3723,10 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                 const len = end - i + raw[0].length;
                 out.push(withPos({ type: 'raw-inline', format: raw[1], content: inner }, source, text, i, i + len));
                 i += len;
+                continue;
             }
-            else {
-                out.push(withPos({ type: 'code', value: inner }, source, text, i, end));
-                i = end;
-            }
+            out.push(withPos({ type: 'code', value: inner }, source, text, i, end));
+            i = end;
             continue;
         }
         // Math (djot form): inline $`x`, display $$`x`. A bare `$` not
@@ -3691,6 +3746,23 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                     i += len;
                     continue;
                 }
+            }
+        }
+        // Inline literal (§27): a `!` prefix on a verbatim code span, mirroring
+        // the `$`-math prefix above. The span content is captured verbatim, later
+        // HTML-escaped and emitted by every renderer with the `<code>` wrapper
+        // dropped; a trailing `{…}` attaches below as an ordinary inline attribute
+        // block (no special first-token sigil). Like math it requires a CLOSED
+        // span — a bare `!` before an unclosed run stays literal text and the run
+        // becomes an ordinary (unclosed) code span.
+        if (c === '!' && text[i + 1] === '`') {
+            const { end, closed, openLen } = verbatimSpanEnd(text, i + 1);
+            if (closed) {
+                flush();
+                const content = text.slice(i + 1 + openLen, end - openLen).replace(/^ (.*) $/, '$1');
+                out.push(withPos({ type: 'literal-inline', content }, source, text, i, end));
+                i = end;
+                continue;
             }
         }
         // Image ![alt](src) — the alt text allows nested balanced [...], so the

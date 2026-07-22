@@ -824,6 +824,7 @@ literal_special = special_char ;
 
 inline_element = escaped_char
                | raw_inline
+               | literal_inline
                | code_span
                | autolink
                | auto_text_link
@@ -906,6 +907,18 @@ code_span_content = (* any chars except a closing backtick_run of equal count *)
    `format` matches the output, else dropped. Any OTHER trailing `{…}` is a
    generic attributed code span (above), NOT raw inline. *)
 raw_inline = backtick_run, code_span_content, backtick_run, '{=', format_name, '}' ;
+
+(* --- Literal Inline (PART 9 §27) --- *)
+(* A `!` PREFIX on a verbatim code span is an inline literal, mirroring
+   `math_inline = '$', code_span` (§18). The span content is HTML-ESCAPED and
+   emitted by EVERY renderer (never dropped), but WITHOUT the `<code>` wrapper
+   -- it is prose, not code. The trailing `[attributes]` is the ORDINARY
+   code-span attribute block: with attributes an emitted `<span>` carries them,
+   with none bare escaped text is emitted. Unlike `{=format}` (raw_inline, §20)
+   the content is escaped and never target-routed. The `!` binds to a following
+   backtick run only; `!` elsewhere (and `![` opening an image) is unaffected,
+   so a literal `!` immediately before a backtick run is written `\!`. *)
+literal_inline = '!', code_span ;
 
 (* --- Links --- *)
 link = inline_link | reference_link | collapsed_reference_link ;
@@ -2543,6 +2556,42 @@ EOF = (* end of file *) ;
         legitimate content and are not an override/isolate injection. (So
         `# A<U+202E>B<U+200B>C` renders text `AB<U+200B>C` -- override gone,
         zero-width kept -- with id `ABC`.)
+
+   27. INLINE LITERAL -- NORMATIVE (governs `literal_inline` in PART 3).
+      A `!` PREFIX immediately before a verbatim code span is an INLINE
+      LITERAL, mirroring how `$` before a code span is inline math (§18). It
+      exists so notation that collides with the bare emphasis delimiters --
+      phonemic transcription `/kaet/`, glob patterns, paths -- can be written
+      without per-character escaping.
+      - CONTENT is captured VERBATIM by the backtick run exactly as for a code
+        span: no inline construct inside it is recognized, and SMART TYPOGRAPHY
+        (§8) does NOT apply -- `--`, `...` and quotes stay as authored.
+      - CONTENT is HTML-ESCAPED on output. This is the opposite of raw
+        passthrough (§20), which emits its content unescaped.
+      - It is EMITTED BY EVERY RENDERER and is NEVER dropped or target-routed.
+        Again the opposite of §20, where a non-matching format drops the span.
+      - The `<code>` WRAPPER IS DROPPED: an inline literal is prose, not code.
+      - ELEMENT. The TRAILING `{…}` is the ORDINARY code-span attribute block,
+        not a special form. With no attribute block the content is emitted as
+        BARE escaped text, with no element at all. When an attribute block is
+        present (id / class / key=value / boolean) a `<span>` is emitted
+        carrying it, in the §14 render order. So the element appears exactly
+        when an attribute needs somewhere to live.
+      - The `!` sigil is CONSUMED, never rendered, and binds to a FOLLOWING
+        BACKTICK RUN only. It is tried before `image` (`![`) and before a bare
+        literal `!` in the inline order, so `!` before `[` still opens an image
+        and `!` anywhere else stays literal text. A literal `!` immediately
+        before a backtick run is therefore written `\!` -- the single case this
+        construct reinterprets. (Chosen over the earlier trailing-`{!}` sigil:
+        the `!` prefix matches the `$`-math / `!`-image family, keeps the
+        attribute block ordinary, and reads as "not code". See #280.)
+      - There is NO block form. A fenced code block already carries its content
+        verbatim; the inline case is the one the notation problem needs, and a
+        block spelling is deliberately left undefined rather than invented.
+      Examples (corpus-pinned):
+        !`/kaet/`        -> /kaet/
+        !`/kaet/`{.ipa}  -> <span class="ipa">/kaet/</span>
+        !`a<b>`          -> a&lt;b&gt;
 *)
 
 

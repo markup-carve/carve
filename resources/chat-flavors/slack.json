@@ -212,7 +212,16 @@
     "raw_text": {
       "support": "native"
     },
-    "citation-group": {
+    "admonition": {
+      "support": "none",
+      "fallback": "unwrap"
+    },
+    "autolink": {
+      "support": "none",
+      "fallback": "inline",
+      "template": "{url}"
+    },
+    "citation_group": {
       "support": "none",
       "fallback": "unwrap"
     }

@@ -1137,6 +1137,14 @@ function renderInline(node, opts) {
                     ? escapeHtml(node.content)
                     : node.content
                 : '';
+        case 'literal-inline': {
+            // §27: content is escaped and ALWAYS emitted (never target-routed like
+            // raw passthrough), with the `<code>` wrapper dropped. An element is
+            // emitted only when an attribute needs somewhere to live.
+            const text = escapeHtml(node.content);
+            const attrs = renderAttrs(node.attrs);
+            return attrs ? `<span${attrs}>${text}</span>` : text;
+        }
         case 'symbol': {
             // Resolution precedence (§ Symbols): a registered inline-renderer for
             // the `symbol` node type wins (static mode tries `staticInlineRenderers`

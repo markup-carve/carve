@@ -285,6 +285,21 @@ const sem = g.createSemantics().addOperation('h', {
     const text = codeText(code.child(0).child(1))
     return fmt.sourceString === 'html' ? text : ''
   },
+  litInline(_bang, code, attrs) {
+    // PART 9 §27: "!" prefix on a verbatim code span. Content is HTML-ESCAPED,
+    // emitted by every renderer and never dropped, with the <code> wrapper
+    // removed. Bare text when no attribute block is present; a <span> carrying
+    // the attributes when one is. Body extraction mirrors mathSpan (codeU
+    // carries its content in a different child slot).
+    const inner = code.child(0)
+    const body = escapeHtml(
+      inner.ctorName === 'codeU'
+        ? inner.child(2).sourceString.replace(/\s+$/, '')
+        : codeText(inner.child(1)),
+    )
+    const a = renderAttrs(attrsOf(attrs))
+    return a === '' ? body : `<span${a}>${body}</span>`
+  },
   extension(_c, name, _o, content, _cl, attrs) {
     const n = name.sourceString
     const inner = renderInline(content.sourceString, '[')

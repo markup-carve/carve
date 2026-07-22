@@ -260,6 +260,11 @@ function renderInline(node, ctx) {
                 : `$${stripControls(node.content)}$`;
         case 'raw-inline':
             return node.format === 'html' ? escapeMdHtml(stripControls(node.content)) : '';
+        case 'literal-inline':
+            // §27: emitted by EVERY renderer, never dropped. It is prose, not code,
+            // so no code fence -- the content becomes literal text, with Markdown
+            // metacharacters escaped so `*not bold*` stays visible as authored.
+            return escapeText(node.content);
         case 'symbol':
             return `:${stripControls(node.name)}:`;
         case 'autolink': {

@@ -25,6 +25,7 @@ implementation — except rows marked **✦**, which are opt-in extensions
 | `{,sub,}` | sub­script | commas pull down |
 | `=highlight=` | highlight | like a highlighter pen |
 | `` `code` `` | `code` | backticks |
+| `` !`/kaet/` `` | /kaet/ | inline literal — verbatim prose, no `code` styling; `!` mirrors `$`-math |
 | `[text](url)` | link | |
 | `[Page Name][]` | wiki-style link | resolves to a heading |
 | `<https://url>` | autolink | |
