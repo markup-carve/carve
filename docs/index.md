@@ -177,7 +177,20 @@ block comment
 
 ## Status
 
-Carve is a design exploration. The specification lives in the [Case Study](./case-study/). Reference material covers the normative [extensions contract](./extensions), the [technical rationale](./technical-rationale), [parsing edge cases](./edge-cases), [native features](./native-features-analysis), and the [broader markup landscape](./markup-languages).
+**Carve 0.1 is specified and shipping.** Tier-1 core and Tier-2 standard
+extensions are normative and stable; Tier-3 app-level extensions ship but evolve
+(see [Versioning](./versioning)). Conformance is pinned by 437 corpus examples
+with exact HTML output, and the three reference engines - carve-js (TypeScript),
+carve-php, and carve-rs - all run the same corpus with no open divergences.
+Pre-1.0, a minor release may still change the grammar.
+
+Reference material covers the normative [grammar](./grammar) and
+[extensions contract](./extensions), the [security model](./security), the
+[technical rationale](./technical-rationale), [parsing edge cases](./edge-cases),
+[native features](./native-features-analysis), and the
+[broader markup landscape](./markup-languages). The [Case Study](./case-study/)
+records the original design research the language grew out of; it is history,
+not the normative spec.
 
 Looking for a parser, editor plugin, or framework integration? See the [Ecosystem](./ecosystem). Want to write your own? Start with [Build Your Own Implementation](./implementing-carve).
 

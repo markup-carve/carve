@@ -17,9 +17,9 @@ repository. In rough order of usefulness when implementing:
   given input must match. It is the same corpus every reference parser runs
   against.
 - **[Formal Grammar](./grammar)** - the block and inline grammar.
-- **[Case Study](./case-study/)** - design rationale and the syntax
-  specification, including [Parsing & AST](./case-study/parsing-ast) and
-  [Implementation & Reflection](./case-study/implementation).
+- **[Case Study](./case-study/)** - the design rationale behind the rules
+  (historical, not normative), including [Parsing & AST](./case-study/parsing-ast)
+  and [Implementation & Reflection](./case-study/implementation).
 - **[Extensions Contract](./extensions)** - the normative contract for the
   `:type[content]{attrs}` extension syntax (optional - see tiers below).
 - **[Edge Cases](./edge-cases)** and **[Divergence from Djot](./divergence-from-djot)**
