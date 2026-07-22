@@ -63,9 +63,11 @@ the core but version on their own cadence. They are not required to match core
 version numbers at any level. Each satellite should document which core version
 it targets in its own README.
 
-Current satellites: carve-emacs, carve.vim, carve-sublime, carve-wysiwyg,
-carve-components, python-carve, intellij-carve, vscode-carve, lsp-carve,
-vite-plugin-carve, carve-skill.
+The authoritative list of satellites is [the ecosystem page](docs/ecosystem.md),
+which is grouped by role (parsers, bindings, editor support, framework
+integrations, AI tooling). It is deliberately not duplicated here: the copy that
+used to live in this file drifted and ended up naming repositories that do not
+exist.
 
 ## Version map
 

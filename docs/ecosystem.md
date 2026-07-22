@@ -41,6 +41,7 @@ Syntax highlighting, structural editing, and diagnostics inside editors.
 | [emacs-carve](https://github.com/markup-carve/emacs-carve) | Emacs | Major mode for `.crv` files. |
 | [vim-carve](https://github.com/markup-carve/vim-carve) | Vim / Neovim | Syntax highlighting + tree-sitter grammar. |
 | [sublime-carve](https://github.com/markup-carve/sublime-carve) | Sublime Text | Syntax package for `.crv` files. |
+| [sublime-carve-lsp](https://github.com/markup-carve/sublime-carve-lsp) | Sublime Text | LSP helper package - diagnostics, hover and symbols via the Carve language server. |
 | [helix-carve](https://github.com/markup-carve/helix-carve) | Helix | Editor support for Carve. |
 | [intellij-carve](https://github.com/markup-carve/intellij-carve) | JetBrains IDEs | Highlighting, live preview, and export for IntelliJ, PhpStorm, etc. |
 | [zed-carve](https://github.com/markup-carve/zed-carve) | Zed | Editor support. |
@@ -84,6 +85,7 @@ Opt-in extensions that add non-core syntax.
 | Project | Target | Notes |
 |---|---|---|
 | [carve-php-media-embed](https://github.com/markup-carve/carve-php-media-embed) | carve-php | Embeds audio/video from 30+ providers via dereuromark/media-embed. |
+| [carve-php-chat](https://github.com/markup-carve/carve-php-chat) | carve-php | Renders Carve to chat-platform markup (WhatsApp, Slack, Telegram, Discord) via data-driven flavor definitions. |
 
 ## Benchmarks
 
