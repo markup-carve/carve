@@ -95,6 +95,65 @@ jobs:
           gh repo clone "$REPO" work -- --depth 1
           cd work
 
+          # Identity is set here (not just before the commit) because the
+          # preserve path below can create a merge commit.
+          BOT_EMAIL="41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "$BOT_EMAIL"
+
+          # ---- Never clobber human work on an open bump PR ----------------
+          # The clone above is --depth 1, which implies --single-branch, so
+          # origin/automation/bump-spec is NOT fetched. Recreating the branch
+          # from main and force-pushing therefore DISCARDS anything a human
+          # added to an open bump PR -- the allowlist entry this workflow's own
+          # draft body asks for, or a `main` merged in to pick up a fix the
+          # branch predated. That fires whenever another corpus change lands on
+          # carve main while a draft bump PR is still open.
+          #
+          # Ask the API which commits are ahead of main and who wrote them; no
+          # fetch needed, so the fast path stays a shallow single-branch clone.
+          # A missing branch makes the call fail -> same safe action as "no
+          # commits ahead": recreate from main.
+          foreign=0
+          if ahead="$(gh api "repos/$REPO/compare/main...automation/bump-spec" \
+                --jq '.commits[] | "\(.commit.author.email)|\(.commit.committer.email)"' 2>/dev/null)"; then
+            while IFS= read -r line; do
+              [ -z "$line" ] && continue
+              # A commit counts as human if EITHER identity differs from the
+              # bot. Conservative in the safe direction: an unrecognised
+              # identity means preserve, never clobber.
+              if [ "${line%%|*}" != "$BOT_EMAIL" ] || [ "${line##*|}" != "$BOT_EMAIL" ]; then
+                foreign=$((foreign + 1))
+              fi
+            done <<< "$ahead"
+          fi
+
+          preserve=""
+          if [ "$foreign" -gt 0 ]; then
+            preserve=1
+            echo "automation/bump-spec on $REPO carries $foreign non-workflow commit(s) -> preserving"
+            # Need real history to merge: restore the full refspec and deepen.
+            git remote set-branches origin '*'
+            git fetch --unshallow origin 2>/dev/null || git fetch origin
+            git checkout -B automation/bump-spec origin/automation/bump-spec
+            # Bring main in so the branch also carries fixes it predates, and
+            # so conformance below runs against the human's work (e.g. their
+            # allowlist entry) rather than a tree built from bare main.
+            if ! git merge --no-edit origin/main; then
+              git merge --abort 2>/dev/null || true
+              conflict_msg="Bump aborted for \`$REPO\`: merging \`main\` into \`automation/bump-spec\` conflicts. The branch carries $foreign human commit(s), so this workflow will not force-push over them. Resolve the conflict on the branch, then re-run."
+              echo "::error::$conflict_msg"
+              echo "$conflict_msg" >> "$GITHUB_STEP_SUMMARY"
+              pr="$(gh pr list --repo "$REPO" --head automation/bump-spec --state open --json number --jq '.[0].number // empty')"
+              if [ -n "$pr" ]; then
+                gh pr comment "$pr" --repo "$REPO" --body "$conflict_msg" 2>/dev/null || true
+              fi
+              exit 1
+            fi
+          else
+            git checkout -B automation/bump-spec
+          fi
+
           git submodule update --init "$SUB"
           # Fetch the main branch (always served), then check out the resolved
           # commit from it -- more portable than fetching a bare SHA.
@@ -102,7 +161,16 @@ jobs:
           git -C "$SUB" checkout "$CARVE_SHA"
 
           if git diff --quiet -- "$SUB"; then
-            echo "$REPO already pins carve $short; nothing to do."
+            # Already at the target SHA. In the preserve path the merge above
+            # may still have produced a commit; pushing it keeps the open PR
+            # current instead of silently discarding it.
+            if [ -n "$preserve" ] \
+               && [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/automation/bump-spec)" ]; then
+              git push origin automation/bump-spec
+              echo "$REPO already pins carve $short; pushed the merge of main onto the open bump branch."
+            else
+              echo "$REPO already pins carve $short; nothing to do."
+            fi
             exit 0
           fi
 
@@ -184,22 +252,23 @@ jobs:
             fi
           fi
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -B automation/bump-spec
+          # Identity and branch checkout already happened above, before the
+          # submodule was touched (checking out a different branch changes the
+          # tree, so the decision has to precede the bump).
           # Stage the submodule bump plus any files codex changed.
           git add -A
           git commit -m "chore: bump spec corpus submodule to carve $short${draft:+ (+ impl attempt)}"
-          # HAZARD: this recreates the branch from the downstream repo's main
-          # (the clone is --depth 1 of main and never fetches the existing
-          # automation/bump-spec), so the force-push DISCARDS any commits a
-          # human added to an open bump PR -- including the allowlist entry the
-          # draft PR body asks for, or a `main` merged in to pick up a fix the
-          # branch predated. That happens whenever another corpus change lands
-          # on carve main while a draft bump PR is still open. If that bites,
-          # guard it: refuse to force-push when the remote branch carries
-          # commits this workflow did not author, or bump on a per-SHA branch.
-          git push -f origin automation/bump-spec
+          if [ -n "$preserve" ]; then
+            # Built on top of the existing branch, so this fast-forwards. A
+            # plain push (no --force) is the safety net: if the branch moved
+            # since the API check above, the push is REJECTED rather than
+            # overwriting whatever arrived in the meantime.
+            git push origin automation/bump-spec
+          else
+            # Branch was recreated from main and carries only this workflow's
+            # own commits, so replacing it loses nothing.
+            git push -f origin automation/bump-spec
+          fi
 
           body="$(printf '%s\n\n%s\n%s' \
             "Automated bump of the \`$SUB\` submodule to carve main (\`$short\`)." \
@@ -222,6 +291,18 @@ jobs:
             fi
             gh pr edit "$existing" --repo "$REPO" --body "$body" 2>/dev/null || true
             echo "Updated existing PR #$existing on $REPO (draft=${draft:+yes})."
+          fi
+
+          # Taking the preserve path is a deviation from the normal
+          # recreate-and-force-push, and it rewrote someone's open PR branch.
+          # Say so where a human will actually see it -- the run summary and
+          # the PR itself -- rather than only in the job log.
+          if [ -n "$preserve" ]; then
+            preserved_msg="Kept $foreign commit(s) not authored by this workflow on \`automation/bump-spec\`, merged \`main\` in, and re-bumped the corpus to carve \`$short\` — instead of force-pushing over them."
+            echo "- **$REPO**: $preserved_msg" >> "$GITHUB_STEP_SUMMARY"
+            if [ -n "$existing" ]; then
+              gh pr comment "$existing" --repo "$REPO" --body "$preserved_msg" 2>/dev/null || true
+            fi
           fi
 
           # A conforming (non-draft) bump is mechanical: enable squash
