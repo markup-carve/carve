@@ -56,7 +56,7 @@ export function spoiler() {
         // Block: the disclosure is expanded into a flat `<section>` with the title
         // as a heading.
         staticInlineRenderers: {
-            extension: (node, ctx) => {
+            inline_extension: (node, ctx) => {
                 const ext = node;
                 if (ext.name !== 'spoiler')
                     return undefined;

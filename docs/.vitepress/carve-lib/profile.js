@@ -86,21 +86,21 @@ export function canonicalType(type) {
             return 'paragraph';
         case 'heading':
             return 'heading';
-        case 'code-block':
+        case 'code_block':
             return 'code_block';
-        case 'blockquote':
+        case 'block_quote':
             return 'block_quote';
         case 'list':
             return 'list';
-        case 'list-item':
+        case 'list_item':
             return 'list_item';
         case 'table':
             return 'table';
-        case 'table-row':
+        case 'table_row':
             return 'table_row';
-        case 'table-cell':
+        case 'table_cell':
             return 'table_cell';
-        case 'thematic-break':
+        case 'thematic_break':
             return 'thematic_break';
         case 'div':
             return 'div';
@@ -108,9 +108,9 @@ export function canonicalType(type) {
         // it is a Div. Treat it under the `div` feature for allow/deny purposes.
         case 'admonition':
             return 'div';
-        case 'raw-block':
+        case 'raw_block':
             return 'raw_block';
-        case 'definition-list':
+        case 'definition_list':
             return 'definition_list';
         case 'figure':
             return 'figure';
@@ -119,7 +119,7 @@ export function canonicalType(type) {
         // ----- inline -----
         case 'text':
             return 'text';
-        case 'italic':
+        case 'emphasis':
             return 'emphasis';
         case 'strong':
             return 'strong';
@@ -127,7 +127,7 @@ export function canonicalType(type) {
             return 'underline';
         case 'strike':
             return 'strike';
-        case 'extension':
+        case 'inline_extension':
             return 'inline_extension';
         case 'mention':
             return 'mention';
@@ -143,13 +143,13 @@ export function canonicalType(type) {
             return 'link';
         case 'image':
             return 'image';
-        case 'soft-break':
+        case 'soft_break':
             return 'soft_break';
-        case 'hard-break':
+        case 'hard_break':
             return 'hard_break';
-        case 'raw-inline':
+        case 'raw_inline':
             return 'raw_inline';
-        case 'literal-inline':
+        case 'literal_inline':
             // An inline literal is a code span with the `<code>` wrapper dropped:
             // same verbatim capture, same escaping, same trailing-attribute surface.
             // So it is classified as `code` for profiles -- allowed exactly where a
@@ -167,15 +167,15 @@ export function canonicalType(type) {
             return undefined; // handled specially in resolveType via node shape
         case 'span':
             return 'span';
-        case 'super':
+        case 'superscript':
             return 'superscript';
-        case 'sub':
+        case 'subscript':
             return 'subscript';
         case 'highlight':
             return 'highlight';
-        case 'critic-insert':
+        case 'insert':
             return 'insert';
-        case 'critic-delete':
+        case 'delete':
             return 'delete';
         case 'symbol':
             return 'symbol';
@@ -184,8 +184,8 @@ export function canonicalType(type) {
         case 'abbreviation':
             return 'abbreviation';
         default:
-            // 'crossref', 'caption-number', 'abbreviation-def',
-            // 'critic-substitute', 'critic-comment', 'bold-italic' (handled below)
+            // 'heading_ref', 'caption_number', 'abbreviation_def',
+            // 'substitution', 'critic-comment'
             return undefined;
     }
 }

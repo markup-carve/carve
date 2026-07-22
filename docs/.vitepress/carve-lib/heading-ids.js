@@ -160,31 +160,30 @@ export function inlineText(nodes) {
             // An inline literal renders as visible prose (§27), so it contributes
             // its content to the heading text -- otherwise `` # !`Cat` `` would
             // slug to the empty fallback and `</#cat>` could never resolve.
-            case 'literal-inline':
+            case 'literal_inline':
                 out += n.content;
                 break;
-            case 'italic':
+            case 'emphasis':
             case 'strong':
             case 'underline':
             case 'strike':
-            case 'super':
-            case 'sub':
+            case 'superscript':
+            case 'subscript':
             case 'highlight':
-            case 'bold-italic':
             case 'link':
             case 'span':
-            case 'critic-insert':
-            case 'critic-delete':
+            case 'insert':
+            case 'delete':
                 out += inlineText(n.children);
                 break;
-            case 'extension':
+            case 'inline_extension':
                 // An `:index[term]` marker is invisible (§8.1): it emits no visible
                 // text, so its term must not feed a heading slug or any derived text.
                 if (n.name === 'index')
                     break;
                 out += inlineText(n.content);
                 break;
-            case 'critic-substitute':
+            case 'substitution':
                 out += n.newText;
                 break;
             case 'abbreviation':
@@ -196,11 +195,11 @@ export function inlineText(nodes) {
             case 'tag':
                 out += n.name;
                 break;
-            case 'soft-break':
-            case 'hard-break':
+            case 'soft_break':
+            case 'hard_break':
                 out += ' ';
                 break;
-            case 'caption-number':
+            case 'caption_number':
                 // Contributes its assigned number (nothing while unresolved).
                 out += n.n === undefined ? '' : String(n.n);
                 break;
@@ -289,7 +288,7 @@ export function resolveHeadingIds(doc, opts = {}) {
                 case 'heading':
                     assignHeadingId(b, inBlockquote);
                     break;
-                case 'blockquote':
+                case 'block_quote':
                     assignIds(b.children, true);
                     break;
                 case 'admonition':
@@ -300,13 +299,13 @@ export function resolveHeadingIds(doc, opts = {}) {
                     for (const it of b.items)
                         assignIds(it.children, inBlockquote);
                     break;
-                case 'definition-list':
+                case 'definition_list':
                     for (const it of b.items)
                         for (const d of it.definitions)
                             assignIds(d, inBlockquote);
                     break;
                 case 'figure':
-                    if (b.target.type === 'blockquote')
+                    if (b.target.type === 'block_quote')
                         assignIds(b.target.children, true);
                     break;
                 default:
@@ -372,21 +371,20 @@ export function resolveHeadingIds(doc, opts = {}) {
                 continue;
             }
             switch (n.type) {
-                case 'italic':
+                case 'emphasis':
                 case 'strong':
                 case 'underline':
                 case 'strike':
-                case 'super':
-                case 'sub':
+                case 'superscript':
+                case 'subscript':
                 case 'highlight':
-                case 'bold-italic':
                 case 'link':
                 case 'span':
-                case 'critic-insert':
-                case 'critic-delete':
+                case 'insert':
+                case 'delete':
                     resolveRefs(n.children);
                     break;
-                case 'extension':
+                case 'inline_extension':
                     resolveRefs(n.content);
                     break;
                 case 'footnote':
@@ -418,26 +416,25 @@ export function resolveHeadingIds(doc, opts = {}) {
     const flattenNestedCrossrefs = (nodes) => {
         for (let i = 0; i < nodes.length; i++) {
             const n = nodes[i];
-            if (n.type === 'crossref') {
+            if (n.type === 'heading_ref') {
                 nodes[i] = { type: 'text', value: '' };
                 continue;
             }
             switch (n.type) {
-                case 'italic':
+                case 'emphasis':
                 case 'strong':
                 case 'underline':
                 case 'strike':
-                case 'super':
-                case 'sub':
+                case 'superscript':
+                case 'subscript':
                 case 'highlight':
-                case 'bold-italic':
                 case 'link':
                 case 'span':
-                case 'critic-insert':
-                case 'critic-delete':
+                case 'insert':
+                case 'delete':
                     flattenNestedCrossrefs(n.children);
                     break;
-                case 'extension':
+                case 'inline_extension':
                     flattenNestedCrossrefs(n.content);
                     break;
                 case 'footnote':
@@ -468,7 +465,7 @@ export function resolveHeadingIds(doc, opts = {}) {
     const resolveCrossrefs = (nodes) => {
         for (let i = 0; i < nodes.length; i++) {
             const n = nodes[i];
-            if (n.type === 'crossref') {
+            if (n.type === 'heading_ref') {
                 // Exact match first, then case-insensitive (case-folded) fallback so a
                 // lowercase `</#getting-started>` resolves to a case-preserved
                 // `Getting-Started` id. The emitted href uses the ACTUAL id.
@@ -506,21 +503,20 @@ export function resolveHeadingIds(doc, opts = {}) {
                 continue;
             }
             switch (n.type) {
-                case 'italic':
+                case 'emphasis':
                 case 'strong':
                 case 'underline':
                 case 'strike':
-                case 'super':
-                case 'sub':
+                case 'superscript':
+                case 'subscript':
                 case 'highlight':
-                case 'bold-italic':
                 case 'link':
                 case 'span':
-                case 'critic-insert':
-                case 'critic-delete':
+                case 'insert':
+                case 'delete':
                     resolveCrossrefs(n.children);
                     break;
-                case 'extension':
+                case 'inline_extension':
                     resolveCrossrefs(n.content);
                     break;
                 case 'footnote':
@@ -538,7 +534,7 @@ export function resolveHeadingIds(doc, opts = {}) {
             case 'paragraph':
                 fn(b.children);
                 break;
-            case 'blockquote':
+            case 'block_quote':
                 if (b.attribution)
                     fn(b.attribution);
                 b.children.forEach((c) => walkBlock(c, fn));
@@ -555,7 +551,7 @@ export function resolveHeadingIds(doc, opts = {}) {
             case 'div':
                 b.children.forEach((c) => walkBlock(c, fn));
                 break;
-            case 'definition-list':
+            case 'definition_list':
                 for (const it of b.items) {
                     for (const t of it.terms)
                         fn(t);
@@ -572,7 +568,7 @@ export function resolveHeadingIds(doc, opts = {}) {
                 break;
             case 'figure':
                 fn(b.caption);
-                if (b.target.type === 'blockquote' || b.target.type === 'table')
+                if (b.target.type === 'block_quote' || b.target.type === 'table')
                     walkBlock(b.target, fn);
                 break;
             default:
@@ -592,7 +588,7 @@ export function resolveHeadingIds(doc, opts = {}) {
     const footnoteBodies = doc.footnoteDefs ? Object.values(doc.footnoteDefs) : [];
     const counters = new Map();
     const numberCaption = (caption, attrs) => {
-        const idx = caption.findIndex((n) => n.type === 'caption-number');
+        const idx = caption.findIndex((n) => n.type === 'caption_number');
         if (idx === -1)
             return;
         const labelNodes = caption.slice(0, idx);
@@ -623,7 +619,7 @@ export function resolveHeadingIds(doc, opts = {}) {
                 numberCaption(b.caption, b.attrs);
             }
             switch (b.type) {
-                case 'blockquote':
+                case 'block_quote':
                 case 'admonition':
                 case 'div':
                     numberBlocks(b.children);
@@ -632,7 +628,7 @@ export function resolveHeadingIds(doc, opts = {}) {
                     for (const it of b.items)
                         numberBlocks(it.children);
                     break;
-                case 'definition-list':
+                case 'definition_list':
                     for (const it of b.items)
                         for (const d of it.definitions)
                             numberBlocks(d);
@@ -641,7 +637,7 @@ export function resolveHeadingIds(doc, opts = {}) {
                     // A figure wraps an image / blockquote / table; descend into a
                     // blockquote or table target so a nested captioned element is
                     // numbered too (mirrors walkBlock's figure-target descent).
-                    if (b.target.type === 'blockquote')
+                    if (b.target.type === 'block_quote')
                         numberBlocks(b.target.children);
                     else if (b.target.type === 'table' && b.target.caption)
                         numberCaption(b.target.caption, b.target.attrs);
@@ -721,21 +717,20 @@ export function resolveHeadingIds(doc, opts = {}) {
                         n.inline = enforceNoNesting(n.inline, false);
                     out.push(n);
                     break;
-                case 'italic':
+                case 'emphasis':
                 case 'strong':
                 case 'underline':
                 case 'strike':
-                case 'super':
-                case 'sub':
+                case 'superscript':
+                case 'subscript':
                 case 'highlight':
-                case 'bold-italic':
                 case 'span':
-                case 'critic-insert':
-                case 'critic-delete':
+                case 'insert':
+                case 'delete':
                     n.children = enforceNoNesting(n.children, insideLink);
                     out.push(n);
                     break;
-                case 'extension':
+                case 'inline_extension':
                     n.content = enforceNoNesting(n.content, insideLink);
                     out.push(n);
                     break;
@@ -787,7 +782,7 @@ function captionFirstLineHasContent(children) {
         return true;
     for (let k = 3; k < children.length; k++) {
         const c = children[k];
-        if (c.type === 'soft-break')
+        if (c.type === 'soft_break')
             break;
         if (c.type !== 'text' || RE_HAS_CONTENT.test(c.value))
             return true;
@@ -849,7 +844,7 @@ export function promoteBlockImages(blocks, figuresOnly = false) {
             // A REAL image only (see above): an unresolved reference is literal text,
             // not a figure target.
             !b.children[0].ref &&
-            b.children[1].type === 'soft-break' &&
+            b.children[1].type === 'soft_break' &&
             b.children[2].type === 'text' &&
             // Mirror the caption delimiter (§4/§553): `^` + one-or-more spaces (a
             // space, not a tab). The FIRST line must carry content -- either text
@@ -879,7 +874,7 @@ export function promoteBlockImages(blocks, figuresOnly = false) {
             continue;
         }
         switch (b.type) {
-            case 'blockquote':
+            case 'block_quote':
             case 'admonition':
             case 'div':
                 promoteBlockImages(b.children, figuresOnly);
@@ -888,7 +883,7 @@ export function promoteBlockImages(blocks, figuresOnly = false) {
                 for (const item of b.items)
                     promoteBlockImages(item.children, figuresOnly);
                 break;
-            case 'definition-list':
+            case 'definition_list':
                 for (const it of b.items)
                     for (const d of it.definitions)
                         promoteBlockImages(d, figuresOnly);

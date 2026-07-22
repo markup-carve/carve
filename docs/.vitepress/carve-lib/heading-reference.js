@@ -129,7 +129,7 @@ function walkBlock(node, targets, counts) {
         case 'paragraph':
             resolveInlines(node.children, targets, counts);
             break;
-        case 'blockquote':
+        case 'block_quote':
         case 'div':
         case 'admonition':
             node.children.forEach((c) => walkBlock(c, targets, counts));
@@ -143,7 +143,7 @@ function walkBlock(node, targets, counts) {
                 for (const cell of row.cells)
                     resolveInlines(cell.children, targets, counts);
             break;
-        case 'definition-list':
+        case 'definition_list':
             for (const it of node.items) {
                 for (const t of it.terms)
                     resolveInlines(t, targets, counts);

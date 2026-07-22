@@ -41,7 +41,7 @@ export function mathBlock(opts = {}) {
     return {
         name: 'math-block',
         blockRenderers: {
-            'code-block': (node, ctx) => {
+            'code_block': (node, ctx) => {
                 const code = node;
                 if (code.lang !== language)
                     return undefined;
@@ -57,7 +57,7 @@ export function mathBlock(opts = {}) {
         // (MathML / HTML) inside the `math display` div so the page is
         // self-contained; otherwise keep the `\[…\]` source - never blank.
         staticBlockRenderers: {
-            'code-block': (node, ctx) => {
+            'code_block': (node, ctx) => {
                 const code = node;
                 if (code.lang !== language)
                     return undefined;

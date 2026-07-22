@@ -117,7 +117,7 @@ export function tableOfContents(opts = {}) {
                 ? `<details class="${escapeHtml(cssClass)}"${open ? ' open' : ''}>\n` +
                     `<summary>${escapeHtml(summary)}</summary>\n${list}</details>`
                 : `<nav class="${escapeHtml(cssClass)}">\n${list}</nav>`;
-            const toc = { type: 'raw-block', format: 'html', content: html };
+            const toc = { type: 'raw_block', format: 'html', content: html };
             if (position === 'top')
                 doc.children.unshift(toc);
             else

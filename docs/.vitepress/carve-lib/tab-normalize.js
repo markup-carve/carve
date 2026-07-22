@@ -28,7 +28,7 @@ export function tabNormalize(width = 2) {
             return;
         const n = node;
         // Only code CONTENT carries expandable tabs.
-        if (n.type === 'code-block' && typeof n.content === 'string') {
+        if (n.type === 'code_block' && typeof n.content === 'string') {
             n.content = expand(n.content);
         }
         else if (n.type === 'code' && typeof n.value === 'string') {

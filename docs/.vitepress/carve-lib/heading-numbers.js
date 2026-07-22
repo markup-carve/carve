@@ -101,7 +101,7 @@ function walkHeadings(nodes, inBlockquote, fn) {
                 // record their ids for first-id-wins; it skips numbering them.
                 fn(b, inBlockquote);
                 break;
-            case 'blockquote':
+            case 'block_quote':
                 descend(b.children, true);
                 break;
             case 'list': {
@@ -113,7 +113,7 @@ function walkHeadings(nodes, inBlockquote, fn) {
             case 'admonition':
                 descend(b.children, inBlockquote);
                 break;
-            case 'definition-list': {
+            case 'definition_list': {
                 for (const item of b.items ?? [])
                     for (const def of item.definitions ?? [])
                         descend(def, inBlockquote);
@@ -124,7 +124,7 @@ function walkHeadings(nodes, inBlockquote, fn) {
                 // resolver assigns its heading an id (as a quoted heading), so mirror
                 // that descent for first-id-wins. Other targets have no headings.
                 const target = b.target;
-                if (target?.type === 'blockquote')
+                if (target?.type === 'block_quote')
                     descend(target.children, true);
                 break;
             }

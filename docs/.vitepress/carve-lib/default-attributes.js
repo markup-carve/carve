@@ -13,22 +13,22 @@
 const TYPE_MAP = {
     paragraph: ['paragraph'],
     heading: ['heading'],
-    code_block: ['code-block'],
-    block_quote: ['blockquote'],
+    code_block: ['code_block'],
+    block_quote: ['block_quote'],
     list: ['list'],
     table: ['table'],
     div: ['div', 'admonition'],
-    thematic_break: ['thematic-break'],
+    thematic_break: ['thematic_break'],
     link: ['link'],
     image: ['image'],
     span: ['span'],
     code: ['code'],
     footnote: ['footnote'],
     footnote_ref: ['footnote'],
-    emphasis: ['italic'],
+    emphasis: ['emphasis'],
     strong: ['strong'],
-    superscript: ['super'],
-    subscript: ['sub'],
+    superscript: ['superscript'],
+    subscript: ['subscript'],
     strike: ['strike'],
 };
 /** Ensure `attrs.order` records a slot once, at first appearance. */
@@ -99,7 +99,7 @@ function visit(node, byType) {
                 for (const c of it.children)
                     visit(c, byType);
             break;
-        case 'definition-list':
+        case 'definition_list':
             for (const it of block.items) {
                 for (const t of it.terms)
                     for (const c of t)
@@ -119,7 +119,7 @@ function visit(node, byType) {
         case 'figure':
             visit(block.target, byType);
             break;
-        case 'blockquote': {
+        case 'block_quote': {
             const attribution = block.attribution;
             if (attribution)
                 for (const c of attribution)

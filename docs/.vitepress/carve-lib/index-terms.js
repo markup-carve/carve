@@ -159,7 +159,7 @@ function walkBlocks(node, fn) {
 function walkExtensions(node, name, fn) {
     if (!node || typeof node !== 'object')
         return;
-    if (node.type === 'extension' && node.name === name) {
+    if (node.type === 'inline_extension' && node.name === name) {
         fn(node);
         return;
     }

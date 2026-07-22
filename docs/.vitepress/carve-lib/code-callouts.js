@@ -15,7 +15,7 @@ export function codeCallouts() {
             return doc;
         },
         blockRenderers: {
-            'code-block': (node, ctx) => renderCode(node, ctx),
+            'code_block': (node, ctx) => renderCode(node, ctx),
             paragraph: (node, ctx) => calloutLists.has(node) ? renderCalloutList(node, ctx) : undefined,
         },
     };
@@ -29,7 +29,7 @@ function bindBlocks(blocks, calloutLists) {
     for (let i = 0; i < blocks.length; i++) {
         const b = blocks[i];
         descend(b, calloutLists);
-        if (b.type !== 'code-block' || !hasMarkers(b.content))
+        if (b.type !== 'code_block' || !hasMarkers(b.content))
             continue;
         const next = blocks[i + 1];
         if (next && next.type === 'paragraph' && isCalloutCandidate(next)) {
@@ -104,7 +104,7 @@ function listAttrs(attrs) {
 function splitLines(nodes) {
     const lines = [[]];
     for (const n of nodes) {
-        if (n.type === 'soft-break')
+        if (n.type === 'soft_break')
             lines.push([]);
         else
             lines[lines.length - 1].push(n);

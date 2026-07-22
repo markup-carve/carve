@@ -184,7 +184,7 @@ export function citations(opts = {}) {
             return doc;
         },
         inlineRenderers: {
-            'citation-group': (node, ctx) => {
+            'citation_group': (node, ctx) => {
                 reserveIds(ctx);
                 return renderGroup(node, ctx, mode, numbers, defs, hasBib, citeIds, refIds);
             },
@@ -275,7 +275,7 @@ const matchCitation = (text, pos, ctx) => {
     }
     if (items.length === 0)
         return null;
-    const node = { type: 'citation-group', items, raw: text.slice(pos, close + 1) };
+    const node = { type: 'citation_group', items, raw: text.slice(pos, close + 1) };
     if (mode)
         node.mode = mode;
     return { node: node, end: close + 1 };
@@ -319,7 +319,7 @@ function collectDefs(blocks, defs) {
 function splitOnSoftBreaks(nodes) {
     const lines = [[]];
     for (const n of nodes) {
-        if (n.type === 'soft-break')
+        if (n.type === 'soft_break')
             lines.push([]);
         else
             lines[lines.length - 1].push(n);
@@ -331,7 +331,7 @@ function joinWithSoftBreaks(lines) {
     const out = [];
     lines.forEach((line, i) => {
         if (i > 0)
-            out.push({ type: 'soft-break' });
+            out.push({ type: 'soft_break' });
         // Non-spread push: a single soft-break-delimited segment can be unbounded.
         for (const n of line)
             out.push(n);
@@ -340,7 +340,7 @@ function joinWithSoftBreaks(lines) {
 }
 function asDefinition(kids) {
     const g = kids[0];
-    if (!g || g.type !== 'citation-group')
+    if (!g || g.type !== 'citation_group')
         return null;
     const cg = g;
     if (cg.items.length !== 1)
@@ -533,7 +533,7 @@ function hasClass(b, cls) {
 function walkCitationGroups(node, fn) {
     if (!node || typeof node !== 'object')
         return;
-    if (node.type === 'citation-group') {
+    if (node.type === 'citation_group') {
         fn(node);
         return;
     }

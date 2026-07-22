@@ -5,7 +5,7 @@ function shiftBlock(node, shift) {
             // Cap at h6 (matches carve-php's Heading::setLevel clamp).
             node.level = Math.min(6, node.level + shift);
             break;
-        case 'blockquote':
+        case 'block_quote':
         case 'div':
         case 'admonition':
             node.children.forEach((c) => shiftBlock(c, shift));
@@ -14,14 +14,14 @@ function shiftBlock(node, shift) {
             for (const it of node.items)
                 it.children.forEach((c) => shiftBlock(c, shift));
             break;
-        case 'definition-list':
+        case 'definition_list':
             for (const it of node.items)
                 for (const d of it.definitions)
                     for (const b of d)
                         shiftBlock(b, shift);
             break;
         case 'figure':
-            if (node.target.type === 'blockquote')
+            if (node.target.type === 'block_quote')
                 shiftBlock(node.target, shift);
             break;
         default:

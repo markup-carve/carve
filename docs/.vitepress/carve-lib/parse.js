@@ -693,9 +693,9 @@ function parseBlocks(lexer, baseIndent) {
             // {title=...} line wins, and so the title lives on the node attrs --
             // rendered by every code-block path, including inside a code-group or a
             // caption figure (where parseFence returns a Figure wrapping the block).
-            const cb = node.type === 'code-block'
+            const cb = node.type === 'code_block'
                 ? node
-                : node.type === 'figure' && node.target.type === 'code-block'
+                : node.type === 'figure' && node.target.type === 'code_block'
                     ? node.target
                     : undefined;
             // An explicit {title=} wins: for a captioned block it merged onto the
@@ -947,7 +947,7 @@ function parseBlockInner(lexer) {
     }
     if (RE_HR.test(line)) {
         lexer.consume();
-        return { type: 'thematic-break' };
+        return { type: 'thematic_break' };
     }
     if (RE_HEADING.test(line))
         return parseHeading(lexer);
@@ -1128,7 +1128,7 @@ function parseFence(lexer) {
         // Strip the common indent of the opening fence (Djot rule)
         lines.push(ln.slice(Math.min(indent, leadingWhitespace(ln))));
     }
-    const cb = { type: 'code-block', content: lines.join('\n') };
+    const cb = { type: 'code_block', content: lines.join('\n') };
     if (lang)
         cb.lang = lang;
     if (header !== undefined)
@@ -1174,7 +1174,7 @@ function parseRawBlock(lexer) {
         lexer.consume();
         lines.push(ln);
     }
-    return { type: 'raw-block', format, content: lines.join('\n') };
+    return { type: 'raw_block', format, content: lines.join('\n') };
 }
 // Block comment: a `%%%`+ opener, closed by a line of the SAME length
 // (more `%` nest). Not rendered.
@@ -1364,7 +1364,7 @@ function parseLineBlock(lexer) {
         stanzas.push(stanza);
     const children = stanzas.map((lines) => ({
         type: 'paragraph',
-        children: parseInline(lines.join('\n'), lexer.abbrDefs, lexer.linkDefs).map((node) => node.type === 'soft-break' ? { type: 'hard-break' } : node),
+        children: parseInline(lines.join('\n'), lexer.abbrDefs, lexer.linkDefs).map((node) => node.type === 'soft_break' ? { type: 'hard_break' } : node),
     }));
     // No inline opener attributes (strict djot); a preceding block-attribute
     // line merges onto this div in parseBlocks.
@@ -1443,7 +1443,7 @@ function parseHardBreaksBlock(lexer) {
     const children = parseBlocks(subLexer, 0);
     for (const child of children) {
         if (child.type === 'paragraph') {
-            child.children = child.children.map((node) => node.type === 'soft-break' ? { type: 'hard-break' } : node);
+            child.children = child.children.map((node) => node.type === 'soft_break' ? { type: 'hard_break' } : node);
         }
     }
     return {
@@ -1707,12 +1707,12 @@ function parseDefinitionList(lexer) {
                 break;
         }
     }
-    return { type: 'definition-list', items };
+    return { type: 'definition_list', items };
 }
 function parseAbbrDef(lexer) {
     const line = lexer.consume();
     const m = RE_ABBR_DEF.exec(line);
-    return { type: 'abbreviation-def', abbr: m[1], expansion: m[2] };
+    return { type: 'abbreviation_def', abbr: m[1], expansion: m[2] };
 }
 /**
  * Track verbatim/paragraph state across a blockquote's collected inner lines so a
@@ -1890,7 +1890,7 @@ function parseBlockQuote(lexer) {
     }
     const subLexer = nestedSubLexer(lexer, inner.join('\n'), firstLineIndex, innerLineNumbers);
     const children = parseBlocks(subLexer, 0);
-    const bq = { type: 'blockquote', children };
+    const bq = { type: 'block_quote', children };
     // Optional caption with ^
     // Allow one blank line between
     let lookahead = 0;
@@ -2357,7 +2357,7 @@ function parseList(lexer) {
             }
             const sub = nestedSubLexer(lexer, attached.join('\n'), attachedStartLineIndex, attachedLineNumbers);
             const fbChildren = parseBlocks(sub, 0);
-            const fbItem = { type: 'list-item', children: fbChildren };
+            const fbItem = { type: 'list_item', children: fbChildren };
             attachBlockPos(lexer, fbItem, itemStartLineIndex, lexer.pos);
             if (checked !== undefined)
                 fbItem.checked = checked;
@@ -2658,7 +2658,7 @@ function parseList(lexer) {
         if (blockLines.length > 0) {
             children.push(...parseBlocks(mkSub(blockLines.join('\n'), itemStartLineIndex + 1 + firstBlockIdx, nestedLineNumbers.slice(firstBlockIdx)), 0));
         }
-        const item = { type: 'list-item', children };
+        const item = { type: 'list_item', children };
         attachBlockPos(lexer, item, itemStartLineIndex, lexer.pos);
         if (checked !== undefined)
             item.checked = checked;
@@ -2862,10 +2862,10 @@ function parseTable(lexer) {
     }
     const rows = rawRows.map((rc, idx) => {
         const row = {
-            type: 'table-row',
+            type: 'table_row',
             cells: rc.map((c) => {
                 const cell = {
-                    type: 'table-cell',
+                    type: 'table_cell',
                     header: c.header,
                     children: c.span
                         ? []
@@ -3236,6 +3236,20 @@ const RE_SPAN_TAIL = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\}/;
  * `[[[[...` (with or without a trailing `]`). Unbalanced `[` are absent from
  * the map.
  */
+// The closed-verbatim-span single-space strip: one leading and one trailing
+// space are removed when the content BOTH begins and ends with a space — but
+// NOT when it consists entirely of spaces. The all-space guard matches the
+// executable spec's `codeText()` and the CommonMark rule it derives from
+// ("...but does not consist entirely of space characters"). Without the guard
+// `` `  ` `` stripped to the empty string, and an empty verbatim span has no
+// representable Carve source (a bare `` `` `` reparses as a two-backtick
+// opener), so `carve fmt` could not round-trip it. Shared by the code-span,
+// math and inline-literal scanners so the three cannot drift apart.
+function stripVerbatimPadding(content) {
+    if (content.trim() === '')
+        return content;
+    return content.replace(/^ (.*) $/, '$1');
+}
 // Resolve the verbatim (code) span opening at `i` (a backtick). The opener is
 // the MAXIMAL run of backticks (`openLen`); it closes on a run of EXACTLY that
 // length. An opener with no equal-length closer is opaque to the end of the
@@ -3420,11 +3434,11 @@ const RE_CRITIC_CMT = /^\{#([^}]*)#\}/;
 // e.g. `{=html}`) does not match here.
 const RE_FORCED_EMPHASIS = /^\{([/*_^,~=])([\s\S]+?)\1\}/;
 const FORCED_TYPE = {
-    '/': 'italic',
+    '/': 'emphasis',
     '*': 'strong',
     _: 'underline',
-    '^': 'super',
-    ',': 'sub',
+    '^': 'superscript',
+    ',': 'subscript',
     '~': 'strike',
     '=': 'highlight',
 };
@@ -3607,7 +3621,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
         // Hard line break: a backslash at end of line (before a newline).
         if (c === '\\' && text[i + 1] === '\n') {
             flush();
-            out.push(withPos({ type: 'hard-break' }, source, text, i, i + 2));
+            out.push(withPos({ type: 'hard_break' }, source, text, i, i + 2));
             i += 2;
             continue;
         }
@@ -3616,7 +3630,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
         // input (`para\` at EOF -> `<br>`), matching djot and carve's cheatsheet.
         if (c === '\\' && i + 1 >= text.length) {
             flush();
-            out.push(withPos({ type: 'hard-break' }, source, text, i, i + 1));
+            out.push(withPos({ type: 'hard_break' }, source, text, i, i + 1));
             i++;
             continue;
         }
@@ -3716,12 +3730,12 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                 i = text.length;
                 continue;
             }
-            const inner = text.slice(i + openLen, end - openLen).replace(/^ (.*) $/, '$1');
+            const inner = stripVerbatimPadding(text.slice(i + openLen, end - openLen));
             // A verbatim span tagged `{=format}` is raw inline passthrough.
             const raw = RE_RAW_INLINE.exec(text.slice(end));
             if (raw) {
                 const len = end - i + raw[0].length;
-                out.push(withPos({ type: 'raw-inline', format: raw[1], content: inner }, source, text, i, i + len));
+                out.push(withPos({ type: 'raw_inline', format: raw[1], content: inner }, source, text, i, i + len));
                 i += len;
                 continue;
             }
@@ -3740,7 +3754,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                 const innerEnd = end - openLen;
                 if (closed && text[end] !== '`' && innerEnd > tick + openLen && text[innerEnd - 1] !== '`') {
                     flush();
-                    const content = text.slice(tick + openLen, innerEnd).replace(/^ (.*) $/, '$1');
+                    const content = stripVerbatimPadding(text.slice(tick + openLen, innerEnd));
                     const len = end - i;
                     out.push(withPos({ type: 'math', display, content }, source, text, i, i + len));
                     i += len;
@@ -3759,8 +3773,8 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             const { end, closed, openLen } = verbatimSpanEnd(text, i + 1);
             if (closed) {
                 flush();
-                const content = text.slice(i + 1 + openLen, end - openLen).replace(/^ (.*) $/, '$1');
-                out.push(withPos({ type: 'literal-inline', content }, source, text, i, end));
+                const content = stripVerbatimPadding(text.slice(i + 1 + openLen, end - openLen));
+                out.push(withPos({ type: 'literal_inline', content }, source, text, i, end));
                 i = end;
                 continue;
             }
@@ -3991,7 +4005,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             if (m) {
                 flush();
                 const ext = {
-                    type: 'extension',
+                    type: 'inline_extension',
                     name: m[1],
                     content: scanInline(m[2], shiftSource(source, text, i + m[0].indexOf('[') + 1), inFootnote),
                 };
@@ -4015,7 +4029,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             const cr = RE_CROSSREF.exec(rest);
             if (cr) {
                 flush();
-                const cref = { type: 'crossref', target: cr[1] };
+                const cref = { type: 'heading_ref', target: cr[1] };
                 cref.pos = sourcePos(source, text, i, i + cr[0].length);
                 out.push(cref);
                 i += cr[0].length;
@@ -4071,7 +4085,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             if (sub) {
                 flush();
                 out.push({
-                    type: 'critic-substitute',
+                    type: 'substitution',
                     oldText: sub[1],
                     newText: sub[2],
                     pos: sourcePos(source, text, i, i + sub[0].length),
@@ -4082,14 +4096,14 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             const ins = insSuf && insSuf[i] ? RE_CRITIC_INS.exec(rest) : null;
             if (ins) {
                 flush();
-                out.push(withPos({ type: 'critic-insert', children: scanInline(ins[1], shiftSource(source, text, i + 2), inFootnote) }, source, text, i, i + ins[0].length));
+                out.push(withPos({ type: 'insert', children: scanInline(ins[1], shiftSource(source, text, i + 2), inFootnote) }, source, text, i, i + ins[0].length));
                 i += ins[0].length;
                 continue;
             }
             const del = delSuf && delSuf[i] ? RE_CRITIC_DEL.exec(rest) : null;
             if (del) {
                 flush();
-                out.push(withPos({ type: 'critic-delete', children: scanInline(del[1], shiftSource(source, text, i + 2), inFootnote) }, source, text, i, i + del[0].length));
+                out.push(withPos({ type: 'delete', children: scanInline(del[1], shiftSource(source, text, i + 2), inFootnote) }, source, text, i, i + del[0].length));
                 i += del[0].length;
                 continue;
             }
@@ -4155,7 +4169,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
             // `\#` never reaches here (the escape branch consumes it as literal).
             if (captionContext && !captionNumberEmitted) {
                 flush();
-                out.push(withPos({ type: 'caption-number' }, source, text, i, i + 1));
+                out.push(withPos({ type: 'caption_number' }, source, text, i, i + 1));
                 captionNumberEmitted = true;
                 i += 1;
                 continue;
@@ -4172,7 +4186,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
         // Soft break (single newline inside paragraph)
         if (c === '\n') {
             flush();
-            out.push(withPos({ type: 'soft-break' }, source, text, i, i + 1));
+            out.push(withPos({ type: 'soft_break' }, source, text, i, i + 1));
             i++;
             continue;
         }
@@ -4195,7 +4209,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
 }
 function matchEmphasis(text, i, source, inFootnote = false, noClose = new Map()) {
     const c = text[i];
-    // Bold-italic /*...*/  (priority over /italic/ and *bold*)
+    // Bold-italic /*...*/  (priority over /emphasis/ and *bold*)
     if (c === '/' && text[i + 1] === '*') {
         const start = i + 2;
         // A bold-italic span requires a non-whitespace char right after `/*`
@@ -4216,8 +4230,9 @@ function matchEmphasis(text, i, source, inFootnote = false, noClose = new Map())
                     searchPos = close + 1;
                     continue;
                 }
+                const children = scanInline(inner, shiftSource(source, text, start), inFootnote);
                 return {
-                    node: { type: 'bold-italic', children: scanInline(inner, shiftSource(source, text, start), inFootnote) },
+                    node: { type: 'strong', children: [{ type: 'emphasis', children }] },
                     end: close + 2,
                 };
             }
@@ -4229,7 +4244,7 @@ function matchEmphasis(text, i, source, inFootnote = false, noClose = new Map())
     // superscript and subscript exist only in the braced forms `{^x^}`/`{,x,}`
     // (grammar PART 9 §9 rationale note) -- a bare caret or comma is literal.
     const pairs = [
-        ['/', 'italic'],
+        ['/', 'emphasis'],
         ['*', 'strong'],
         ['_', 'underline'],
         ['~', 'strike'],

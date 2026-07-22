@@ -23,13 +23,13 @@ function renderBlock(node, ctx) {
             return `${renderInlines(node.children, ctx)}\n\n`;
         case 'paragraph':
             return `${renderInlines(node.children, ctx)}\n\n`;
-        case 'code-block':
+        case 'code_block':
             return `${stripControls(node.content)}\n\n`;
-        case 'blockquote':
+        case 'block_quote':
             return `"${trimNonNbsp(renderBlocks(node.children, ctx))}"\n\n`;
         case 'list':
             return renderList(node, ctx);
-        case 'thematic-break':
+        case 'thematic_break':
             return '---\n\n';
         case 'table':
             return renderTable(node, ctx);
@@ -48,7 +48,7 @@ function renderBlock(node, ctx) {
             return node.label
                 ? `${stripControls(node.label)}\n\n${renderBlocks(node.children, ctx)}`
                 : renderBlocks(node.children, ctx);
-        case 'definition-list':
+        case 'definition_list':
             return renderDefinitionList(node.items, ctx, true);
         case 'figure':
             return renderFigure(node, ctx);
@@ -56,8 +56,8 @@ function renderBlock(node, ctx) {
             // Block-level (standalone) image: emit the trailing block separator so a
             // following block is not glued to it, matching carve-php / carve-rs.
             return `${stripControls(node.alt)}\n\n`;
-        case 'raw-block':
-        case 'abbreviation-def':
+        case 'raw_block':
+        case 'abbreviation_def':
         case 'comment':
             return '';
         default: {
@@ -118,7 +118,7 @@ function renderFigure(node, ctx) {
     // image target used to glue it on. A blockquote target keeps the blank-line
     // separation; a table drops the caption entirely. End with the block
     // separator so a following block is not glued (matching carve-php).
-    const sep = node.target.type === 'blockquote' ? '\n\n' : node.target.type === 'table' ? '' : '\n';
+    const sep = node.target.type === 'block_quote' ? '\n\n' : node.target.type === 'table' ? '' : '\n';
     return `${target}${sep}${renderInlines(node.caption, ctx)}\n\n`;
 }
 function renderFootnoteDefs(ast, ctx) {
@@ -145,18 +145,17 @@ function renderInline(node, ctx) {
     switch (node.type) {
         case 'text':
             return cleanEscapedText(node);
-        case 'italic':
+        case 'emphasis':
         case 'strong':
         case 'underline':
-        case 'super':
-        case 'sub':
+        case 'superscript':
+        case 'subscript':
         case 'highlight':
-        case 'bold-italic':
         case 'span':
-        case 'critic-insert':
+        case 'insert':
         case 'strike':
             return renderInlines(node.children, ctx);
-        case 'critic-delete':
+        case 'delete':
             return `~${renderInlines(node.children, ctx)}~`;
         case 'code':
             return stripControls(node.value);
@@ -166,9 +165,9 @@ function renderInline(node, ctx) {
             return stripControls(node.alt);
         case 'math':
             return stripControls(node.content);
-        case 'raw-inline':
+        case 'raw_inline':
             return '';
-        case 'literal-inline':
+        case 'literal_inline':
             // §27: always emitted (unlike raw passthrough above), as plain prose.
             return stripControls(node.content);
         case 'symbol':
@@ -181,26 +180,26 @@ function renderInline(node, ctx) {
             return `@${stripControls(node.user)}`;
         case 'tag':
             return `#${stripControls(node.name)}`;
-        case 'extension':
+        case 'inline_extension':
             return renderInlines(node.content, ctx);
         case 'abbreviation':
             return stripControls(node.abbr);
         case 'footnote':
             return node.inline ? `(${renderInlines(node.inline, ctx)})` : `[${stripControls(node.id ?? '')}]`;
-        case 'soft-break':
+        case 'soft_break':
             return ' ';
-        case 'hard-break':
+        case 'hard_break':
             return '\n';
-        case 'critic-substitute':
+        case 'substitution':
             // Keep both sides (old struck like critic-delete, then new).
             return `~${stripControls(node.oldText)}~${stripControls(node.newText)}`;
         case 'critic-comment':
             return '';
-        case 'crossref':
+        case 'heading_ref':
             return `</#${stripControls(node.target)}>`;
-        case 'caption-number':
+        case 'caption_number':
             return node.n === undefined ? '#' : String(node.n);
-        case 'citation-group':
+        case 'citation_group':
             // Tier-2 ext node; the core renderer has no numbering, so emit the source.
             return stripControls(node.raw);
         case 'comment':

@@ -55,7 +55,7 @@ export function fencedRender(opts) {
     return {
         name: 'fenced-render',
         blockRenderers: {
-            'code-block': (node, ctx) => {
+            'code_block': (node, ctx) => {
                 const code = node;
                 if (!languages.includes(code.lang ?? ''))
                     return undefined;
@@ -82,7 +82,7 @@ export function fencedRender(opts) {
             // element so author attrs survive; otherwise degrade to the source as a
             // `<pre><code class="language-…">` block - never blank, and re-renderable
             // by a host that loads the client library.
-            'code-block': (node, ctx) => {
+            'code_block': (node, ctx) => {
                 const code = node;
                 if (!languages.includes(code.lang ?? ''))
                     return undefined;

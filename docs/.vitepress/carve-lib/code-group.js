@@ -18,7 +18,7 @@ function extractItems(node) {
     const items = [];
     let position = 0;
     for (const child of node.children) {
-        if (child.type !== 'code-block')
+        if (child.type !== 'code_block')
             continue;
         position++;
         const cb = child;

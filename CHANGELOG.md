@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Corpus coverage for all-space verbatim content.** The single-space strip on
+  a verbatim span drops one leading and one trailing space, but not when the
+  content is entirely spaces - those spans keep every space. No corpus pair
+  exercised this, which is why a formatter round-trip bug (spans growing by two
+  spaces per pass, and all-space content collapsing to an unwritable empty span)
+  shipped in all three engines undetected. Pinned for code spans, the inline
+  literal and math.
 - **Inline literal** (`` !`…` ``, PART 9 §27): a `!` prefix on a verbatim code
   span, mirroring the `$`-math prefix. Content is captured verbatim and
   HTML-escaped, emitted by every renderer, but rendered as prose with the

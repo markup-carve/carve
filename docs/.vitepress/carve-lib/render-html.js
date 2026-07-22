@@ -242,7 +242,7 @@ function renderDocumentBody(ast, opts) {
     // flushed at the marker instead of at document end (see the intercept below).
     let footnotesPlaced = false;
     for (const node of ast.children) {
-        if (node.type === 'abbreviation-def')
+        if (node.type === 'abbreviation_def')
             continue;
         // `::: footnotes` flushes the endnotes section HERE instead of at document
         // end. Only the first marker in a document that actually has footnotes
@@ -309,7 +309,7 @@ function walkBlockInlines(node, visit) {
         case 'paragraph':
             visit(node.children);
             break;
-        case 'blockquote':
+        case 'block_quote':
             if (node.attribution)
                 visit(node.attribution);
             node.children.forEach((c) => walkBlockInlines(c, visit));
@@ -326,7 +326,7 @@ function walkBlockInlines(node, visit) {
         case 'div':
             node.children.forEach((c) => walkBlockInlines(c, visit));
             break;
-        case 'definition-list':
+        case 'definition_list':
             for (const it of node.items) {
                 for (const t of it.terms)
                     visit(t);
@@ -344,7 +344,7 @@ function walkBlockInlines(node, visit) {
             break;
         case 'figure':
             visit(node.caption);
-            if (node.target.type === 'blockquote' || node.target.type === 'table')
+            if (node.target.type === 'block_quote' || node.target.type === 'table')
                 walkBlockInlines(node.target, visit);
             break;
         default:
@@ -678,9 +678,9 @@ function renderBlock(node, opts, level) {
             const inner = renderInlines(node.children, opts);
             return `${pad}<p${renderAttrs(node.attrs)}${sourceLineAttr(opts, node.pos?.startLine, node.attrs)}>${inner}</p>`;
         }
-        case 'thematic-break':
+        case 'thematic_break':
             return `${pad}<hr${renderAttrs(node.attrs)}${sourceLineAttr(opts, node.pos?.startLine, node.attrs)}>`;
-        case 'code-block': {
+        case 'code_block': {
             // The opener "header" is resolved to a `title` attribute at parse time
             // (see parseBlocks), so it renders here AND wherever else a code block is
             // emitted (e.g. inside a code-group).
@@ -688,7 +688,7 @@ function renderBlock(node, opts, level) {
             const escaped = escapeHtml(node.content);
             return `${pad}<pre${renderAttrs(node.attrs)}${sourceLineAttr(opts, node.pos?.startLine, node.attrs)}><code${langAttr}>${escaped}\n</code></pre>`;
         }
-        case 'blockquote':
+        case 'block_quote':
             return renderBlockQuote(node, opts, level);
         case 'list':
             return renderList(node, opts, level);
@@ -714,7 +714,7 @@ function renderBlock(node, opts, level) {
             const body = node.children.map((c) => renderBlock(c, opts, level + 1)).join('\n');
             return `${open}\n${floor ? `${floor}\n` : ''}${body}\n${pad}</div>`;
         }
-        case 'definition-list': {
+        case 'definition_list': {
             const lines = [
                 `${pad}<dl${renderAttrs(node.attrs)}${sourceLineAttr(opts, node.pos?.startLine, node.attrs)}>`,
             ];
@@ -739,9 +739,9 @@ function renderBlock(node, opts, level) {
         }
         case 'figure':
             return renderFigure(node, opts, level);
-        case 'abbreviation-def':
+        case 'abbreviation_def':
             return '';
-        case 'raw-block':
+        case 'raw_block':
             // Raw HTML passthrough; escape it instead when raw HTML is disabled
             // (untrusted input). Non-HTML raw formats are always dropped.
             return node.format === 'html'
@@ -1056,11 +1056,11 @@ function renderFigure(node, opts, level) {
     if (node.target.type === 'image') {
         inner = `${pad}  ${renderImage(node.target, opts)}`;
     }
-    else if (node.target.type === 'blockquote') {
+    else if (node.target.type === 'block_quote') {
         const bq = renderBlockQuote(node.target, opts, level + 1);
         inner = bq;
     }
-    else if (node.target.type === 'code-block' || node.target.type === 'paragraph') {
+    else if (node.target.type === 'code_block' || node.target.type === 'paragraph') {
         inner = renderBlock(node.target, opts, level + 1);
     }
     else {
@@ -1085,7 +1085,7 @@ function renderInline(node, opts) {
     switch (node.type) {
         case 'text':
             return escapeHtml(node.value);
-        case 'italic':
+        case 'emphasis':
             return `<em${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</em>`;
         case 'strong':
             return `<strong${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</strong>`;
@@ -1093,14 +1093,12 @@ function renderInline(node, opts) {
             return `<u${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</u>`;
         case 'strike':
             return `<s${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</s>`;
-        case 'super':
+        case 'superscript':
             return `<sup${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</sup>`;
-        case 'sub':
+        case 'subscript':
             return `<sub${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</sub>`;
         case 'highlight':
             return `<mark${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</mark>`;
-        case 'bold-italic':
-            return `<strong${renderAttrs(node.attrs)}><em>${renderInlines(node.children, opts)}</em></strong>`;
         case 'code':
             return `<code${renderAttrs(node.attrs)}>${escapeHtml(node.value)}</code>`;
         case 'link': {
@@ -1129,7 +1127,7 @@ function renderInline(node, opts) {
                 : `\\(${escapeHtml(node.content)}\\)`;
             return `<span${renderAttrs2(node.attrs, { baseClass: base })}>${body}</span>`;
         }
-        case 'raw-inline':
+        case 'raw_inline':
             // Verbatim only when the format matches this output; else dropped.
             // Escape it instead when raw HTML is disabled (untrusted input).
             return node.format === 'html'
@@ -1137,7 +1135,7 @@ function renderInline(node, opts) {
                     ? escapeHtml(node.content)
                     : node.content
                 : '';
-        case 'literal-inline': {
+        case 'literal_inline': {
             // §27: content is escaped and ALWAYS emitted (never target-routed like
             // raw passthrough), with the `<code>` wrapper dropped. An element is
             // emitted only when an attribute needs somewhere to live.
@@ -1205,7 +1203,7 @@ function renderInline(node, opts) {
             const href = sanitizeUrl(opts.tagUrl.replaceAll('{name}', encodeURIComponent(node.name)), opts);
             return `<a class="tag" href="${escapeAttr(href)}">${text}</a>`;
         }
-        case 'extension': {
+        case 'inline_extension': {
             // Per-extension resolution in registration order (mirrors the block
             // path): for each extension, static mode tries its `staticInlineRenderers`
             // (the inline `renderStatic` hook, keyed by node type `extension`) first,
@@ -1246,24 +1244,24 @@ function renderInline(node, opts) {
             return node.number === undefined
                 ? escapeHtml(`[^${node.id ?? ''}]`)
                 : `<a id="${node.refId}" href="#fn${node.number}" role="doc-noteref"${renderAttrs2(node.attrs, { dropId: true })}><sup>${node.number}</sup></a>`;
-        case 'soft-break':
+        case 'soft_break':
             return '\n';
-        case 'hard-break':
+        case 'hard_break':
             return '<br>\n';
-        case 'critic-insert':
+        case 'insert':
             return `<ins${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</ins>`;
-        case 'critic-delete':
+        case 'delete':
             return `<del${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</del>`;
-        case 'critic-substitute':
+        case 'substitution':
             return `<del>${escapeHtml(node.oldText)}</del><ins>${escapeHtml(node.newText)}</ins>`;
         case 'critic-comment':
             return `<span class="critic-comment">${escapeHtml(node.text)}</span>`;
-        case 'crossref':
+        case 'heading_ref':
             return `&lt;/#${escapeHtml(node.target)}&gt;`;
-        case 'caption-number':
+        case 'caption_number':
             // Filled by resolve(); an unresolved placeholder renders empty.
             return node.n === undefined ? '' : String(node.n);
-        case 'citation-group': {
+        case 'citation_group': {
             // Extension-produced node: per-extension resolution in registration order
             // (mirrors the block path). For each extension, static mode tries its
             // `staticInlineRenderers` first, then its `inlineRenderers`; each may

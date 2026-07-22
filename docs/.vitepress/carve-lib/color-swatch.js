@@ -206,7 +206,7 @@ function inlineText(nodes) {
         // A code span (`.value`) and an inline literal (`.content`, a string) both
         // carry verbatim text; the literal form is the natural way to pass a color
         // whose `#` would otherwise parse as a tag, e.g. `` :color[!`#ff8800`] ``.
-        if (n.type === 'literal-inline' && typeof n.content === 'string')
+        if (n.type === 'literal_inline' && typeof n.content === 'string')
             s += n.content;
         if (typeof n.name === 'string' && n.type === 'tag')
             s += `#${n.name}`;

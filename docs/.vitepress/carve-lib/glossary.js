@@ -51,7 +51,7 @@ function isGlossary(b) {
     return b.type === 'admonition' && b.kind === 'glossary';
 }
 function defListsOf(b) {
-    return b.children.filter((c) => c.type === 'definition-list');
+    return b.children.filter((c) => c.type === 'definition_list');
 }
 function renderTerm(node, ctx, defined) {
     const word = ctx.renderInlines(node.content);
@@ -90,7 +90,7 @@ function renderGlossary(node, ctx, idSeen) {
     let firstDl = true;
     const parts = [];
     for (const child of node.children) {
-        if (child.type !== 'definition-list') {
+        if (child.type !== 'definition_list') {
             parts.push(ctx.renderChildren([child], ctx.level));
             continue;
         }
