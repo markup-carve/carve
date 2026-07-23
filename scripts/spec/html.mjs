@@ -270,7 +270,11 @@ function renderItem(item, list, depth, ctx) {
   for (let i = 0; i < blocks.length; i++) {
     const b = blocks[i]
     if (b.t === 'para') {
-      const html = b.lines.map((l) => renderInline(l)).join('\n')
+      // render the whole paragraph in one inline pass (lines joined by soft
+      // breaks) so an inline construct spanning a soft break -- e.g. a
+      // multi-line `` ``` ``-run folded in as lazy text -- is one span, not one
+      // per line. Matches the top-level para path in renderBlock.
+      const html = renderInline(b.lines.join('\n'))
       parts.push({ inlineable: true, html: list.tight ? html : `<p>${html}</p>` })
     } else {
       parts.push({ inlineable: false, html: renderBlock(b, depth + 1, ctx) })

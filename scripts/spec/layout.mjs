@@ -1233,8 +1233,11 @@ function collectItems(lines, i, list, state) {
         i++
         continue
       }
-      if (!nm && openPara && itemLines.length > 0 && !startsVisibleBlock(line) && !isTableRow(line) && !COLON_FENCE.test(line)) {
-        // lazy fold into the open item paragraph (SS10 I2 / SS24 C3)
+      if (!nm && openPara && itemLines.length > 0 && !startsVisibleBlock(line) && !isTableRow(line) && !COLON_FENCE.test(line) && !(FENCE.test(line) && hasCloser(lines, i))) {
+        // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
+        // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/
+        // heading does via startsVisibleBlock -- FENCE only matches at column 0,
+        // so an indented (below-content) fence still folds as lazy text.
         itemLines.push(LAZY + line.replace(/^[ \t]+/, ''))
         i++
         continue

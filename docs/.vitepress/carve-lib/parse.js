@@ -2378,7 +2378,6 @@ function parseList(lexer) {
         let firstBlockIdx = -1;
         let pendingBlanks = 0;
         let pendingBlankLineNumbers = [];
-        let postBlankContinuationOpen = false;
         // Indices in `nested` that hold a `+`-injected blank separator. These keep
         // the attached block parsing standalone but never loosen the list (Bug B).
         const plusSeparators = new Set();
@@ -2396,7 +2395,6 @@ function parseList(lexer) {
             if (isBlankLine(l)) {
                 pendingBlanks++;
                 pendingBlankLineNumbers.push(lexer.lineNumber(lexer.pos));
-                postBlankContinuationOpen = false;
                 lexer.consume();
                 continue;
             }
@@ -2451,44 +2449,18 @@ function parseList(lexer) {
                 }
                 continue;
             }
-            // A block opener (block quote, heading, fence, div, table) indented past
-            // the base but BELOW the content column still interrupts the item's lead
-            // paragraph and nests as a child block (matching carve-php) -- only ordered
-            // MARKERS fold below the content column, since they do not interrupt. The
-            // opener regexes key off column 0, so test the line dedented to column 0,
-            // and exclude list markers (their fold/nest is handled in the else-branch).
+            // Content-column model (carve#295): a continuation belongs to the item
+            // only if it reaches the item's content column - the SAME rule the
+            // no-blank case uses; the blank line only decides tight vs loose. There is
+            // no `baseIndent + 2` relaxation and no below-column block-opener nesting.
+            // A block opener is recognized only AT the content column (the item body's
+            // column 0), exactly as at the top level; a line that reaches the content
+            // column but carries residual indent is lazy paragraph text, and a line
+            // below the content column ends the item body and parses at document level
+            // (falling through to the lazy-fold / detach branch below). Intentional
+            // divergence from djot, which attaches at any indent past the marker.
             const lw = indentColumns(l);
-            let belowColBlockOpener = false;
-            if (lw > baseIndent && lw < contentCol) {
-                const d0 = sliceColumns(l, lw);
-                // A block opener indented past the base but below the content column
-                // interrupts the item's lead paragraph and nests (matching carve-php).
-                // Restricted to NON-container openers (block quote, heading, thematic
-                // break, table, defs): these need no closing fence, so the single line
-                // dedented to column 0 is enough. Fenced/`:::` containers are excluded --
-                // their verbatim/closer-sensitive bodies are only handled cleanly AT the
-                // content column; below it they keep the existing behavior. List markers
-                // are excluded too (their fold/nest is decided in the else-branch).
-                belowColBlockOpener =
-                    !RE_ORDERED.test(d0) &&
-                        !RE_UNORDERED.test(d0) &&
-                        !RE_TASK.test(d0) &&
-                        // An abutting-attr bullet (`-{.x} item`) is a list marker too, so it
-                        // folds below the content column like a plain bullet (it does not
-                        // interrupt). Excluded here so it is not treated as a nesting opener.
-                        extractItemAttr(d0) === null &&
-                        !RE_FENCE.test(d0) &&
-                        !RE_RAW_FENCE.test(d0) &&
-                        !RE_DIV_OPEN.test(d0) &&
-                        !RE_ADMONITION_OPEN.test(d0) &&
-                        lineOpensBlock(d0);
-            }
-            // After a real blank line, carve-php/carve-rs accept any line indented at
-            // least two columns as continuation content for the still-open item. This
-            // is intentionally looser than tight same-paragraph nesting, where a list
-            // marker below the marker's content column still folds as literal text.
-            const postBlankContinuation = (pendingBlanks > 0 || postBlankContinuationOpen) && lw >= baseIndent + 2;
-            if (lw >= contentCol || postBlankContinuation || belowColBlockOpener) {
+            if (lw >= contentCol) {
                 for (let k = 0; k < pendingBlanks; k++) {
                     nested.push('');
                     nestedLineNumbers.push(pendingBlankLineNumbers[k]);
@@ -2518,7 +2490,6 @@ function parseList(lexer) {
                 nested.push(dedented);
                 nestedLineNumbers.push(lexer.lineNumber(lexer.pos));
                 trackItemLazyState(dedented, lazyState);
-                postBlankContinuationOpen = postBlankContinuation;
                 lexer.consume();
             }
             else if (pendingBlanks === 0 &&
@@ -2551,7 +2522,6 @@ function parseList(lexer) {
                 nested.push(l);
                 nestedLineNumbers.push(lexer.lineNumber(lexer.pos));
                 trackItemLazyState(l, lazyState);
-                postBlankContinuationOpen = false;
                 lexer.consume();
             }
             else {

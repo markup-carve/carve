@@ -4283,3 +4283,105 @@ And an unclosed line does not swallow a following well-formed row: the row still
 ```
 
 :::
+
+## Post-blank list continuation (content-column model)
+
+A block opener or sublist marker attaches to a list item only when it reaches the item's *content column* (§24 C3): `- ` -> column 2, `1. ` -> column 3. One rule, blank line or not - the blank only decides tight vs loose. Below the content column a line lazily continues the item paragraph (no blank) or, after a blank, ends the item and parses at document level; above the content column the residual indent means it is no longer a block opener, so it folds in as lazy paragraph text. This is an intentional divergence from djot, which attaches at any indent past the marker (see #295).
+
+Below the content column, after a blank line, the block opener ends the item and parses at the document level.
+
+::: compare
+
+```carve
+- one
+
+ > q
+```
+
+```html
+<ul>
+  <li>one</li>
+</ul>
+<p>&gt; q</p>
+```
+
+:::
+
+At the content column, it nests into the item.
+
+::: compare
+
+```carve
+- one
+
+  > q
+```
+
+```html
+<ul>
+  <li>one
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+:::
+
+Above the content column, the residual indent makes it lazy paragraph text inside the item, not a block opener.
+
+::: compare
+
+```carve
+- one
+
+   # h
+```
+
+```html
+<ul>
+  <li><p>one</p>
+    <p># h</p>
+  </li>
+</ul>
+```
+
+:::
+
+With no blank line, a line below the content column lazily continues the open item paragraph.
+
+::: compare
+
+```carve
+- one
+ > q
+```
+
+```html
+<ul>
+  <li>one
+&gt; q</li>
+</ul>
+```
+
+:::
+
+A block opener at column 0 is a document-level block: it interrupts and ends the list, exactly as a quote or heading there would.
+
+::: compare
+
+````carve
+- one
+```
+c
+```
+````
+
+````html
+<ul>
+  <li>one</li>
+</ul>
+<pre><code>c
+</code></pre>
+````
+
+:::
