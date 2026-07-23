@@ -170,6 +170,7 @@ export default defineConfig({
               ],
             },
             { text: 'Diagrams & Charts', link: '/diagrams' },
+            { text: 'SVG Images', link: '/svg-images' },
           ],
         },
         {
