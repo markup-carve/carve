@@ -2433,13 +2433,30 @@ EOF = (* end of file *) ;
          indentation. `-<TAB>a` is NOT a list item (paragraph text).
       C3 CONTENT COLUMN. content_column(item) := the visual column where
          the item's content starts (marker width + separator: `- ` -> 2,
-         `1. ` -> 3, `10. ` -> 4). A LIST-MARKER child -- bullet (`-`/`*`,
-         task) OR ordered, SYMMETRIC -- must reach the parent item's
-         content_column to open a sublist; below it the line folds as lazy
-         item text (list markers never interrupt, §10 I2). Every OTHER
-         block opener (quote, heading, fence, table, ...) nests at ANY
-         indent past the parent item's base column (unambiguous as blocks,
-         never lazy text).
+         `1. ` -> 3, `10. ` -> 4). A child -- a LIST MARKER (bullet `-`/`*`,
+         task, or ordered, SYMMETRIC) opening a sublist, OR any OTHER block
+         opener (quote, heading, fence, table, ...) -- must reach the parent
+         item's content_column to belong to the item. The content_column is
+         the item body's COLUMN 0: a block opener is recognized there exactly
+         as a block opener is recognized only at column 0 at the top level.
+         This one rule holds whether or not a blank line precedes the child;
+         the blank only decides tight vs loose (§17), and there is no relaxed
+         `base_column + 2` channel.
+           - BELOW content_column: the line is outside the item body. A list
+             marker folds as lazy item text (markers never interrupt, §10 I2);
+             every other line, likewise, never nests -- with no blank it
+             lazily continues the open item paragraph (§10 I2), and after a
+             blank it ends the item and parses at DOCUMENT level.
+           - AT content_column: dedented to the body's column 0, a block
+             opener nests and a list marker opens a sublist.
+           - ABOVE content_column: the residual indent means the line is no
+             longer a block opener -- exactly as ` # h` with a leading space is
+             a paragraph, not a heading, at the top level -- so it folds in as
+             lazy paragraph text.
+         This is an INTENTIONAL divergence from djot, which attaches a block
+         opener at any indent past the marker; carve requires the content
+         column, consistent with its column-0 block-opener rule
+         (docs/divergence-from-djot, carve#295).
       C4 RULE B (TOP LEVEL, ANY INDENT). A bullet (`-`/`*` + space +
          content) opens a list at ANY indentation at the TOP LEVEL -- no
          column-0 restriction (unlike CommonMark, `    - x` is a list, not

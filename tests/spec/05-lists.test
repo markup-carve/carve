@@ -92,34 +92,12 @@ not a list</p>
 ```
 1. one
 
-  - sub a
-  - sub b
-
-1. two
+   > q
 .
 <ol>
-  <li><p>one</p>
-    <ul>
-      <li>sub a</li>
-      <li>sub b</li>
-    </ul>
+  <li>one
+    <blockquote><p>q</p></blockquote>
   </li>
-  <li><p>two</p></li>
-</ol>
-```
-
-```
-1. one
-
-  text
-
-1. two
-.
-<ol>
-  <li><p>one</p>
-    <p>text</p>
-  </li>
-  <li><p>two</p></li>
 </ol>
 ```
 
@@ -129,8 +107,19 @@ not a list</p>
   > q
 .
 <ol>
-  <li>one
-    <blockquote><p>q</p></blockquote>
+  <li>one</li>
+</ol>
+<p>&gt; q</p>
+```
+
+```
+1. one
+
+    > q
+.
+<ol>
+  <li><p>one</p>
+    <p>&gt; q</p>
   </li>
 </ol>
 ```

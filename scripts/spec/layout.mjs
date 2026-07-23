@@ -1191,27 +1191,15 @@ function collectItems(lines, i, list, state) {
           i = j
           continue
         }
-        if (col >= baseIndent + 2 && col < contentCol) {
-          // after a blank the lazy-fold channel is closed, so the content
-          // column relaxes: ANY continuation indented at least TWO columns
-          // past the marker column attaches, even when it stops short of the
-          // content column (SS17 L2). The item's content column narrows to
-          // where that content actually starts. One column is NOT enough:
-          // `- a` + blank + ` - b` stays two sibling lists.
-          contentCol = col
-          const dedented = dedent(lines[j], contentCol)
-          itemLines.push('')
-          if (nm || opensSubBlock(dedented, itemRest(lines, j, baseIndent, contentCol))) {
-            // sub-list or sub-BLOCK: attaches, stays tight (SS17 L2)
-            openPara = false
-          } else {
-            // a second PARAGRAPH inside the item -> loose (SS17 L1)
-            list.tight = false
-            openPara = true
-          }
-          i = j
-          continue
-        }
+        // A continuation BELOW the content column is outside the item body:
+        // the list ends and the line parses at document level (PART 9 SS17,
+        // content-column model). A block opener recognized only at the item's
+        // content column - the item body's column 0 - exactly as a block
+        // opener is recognized only at column 0 at the top level; there is no
+        // relaxed `baseIndent + 2` channel. (Reaching the content column is
+        // what the col >= contentCol branch above already handles; a line that
+        // reaches it but carries residual indent is lazy paragraph text, again
+        // mirroring the top level.) Falls through to detach below.
         if (nm && nm.indent >= contentCol) {
           // sub-list after a blank: attaches, stays tight (SS17 L2)
           itemLines.push('')

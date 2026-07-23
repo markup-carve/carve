@@ -711,57 +711,27 @@ An ordered child *below* the content column does not nest: an ordered marker doe
 
 :::
 
-After a blank line the lazy-fold channel is closed, so the content-column rule relaxes: any continuation indented at least two columns — even below an ordered marker's content column — belongs to the open item. The item turns loose and the indented block nests inside it; the list does not split into siblings.
+After a blank line the **same content-column rule** applies: a continuation belongs to the item only if it reaches the item's content column (three columns under `1. `), exactly as without a blank. The blank line only decides whether the item is tight or loose; it never relaxes the column a block must reach. A block opener at the content column attaches and stays tight — unlike a second paragraph, a nested block does not loosen the list.
 
 ::: compare
 
 ```carve
 1. one
 
-  - sub a
-  - sub b
-
-1. two
+   > q
 ```
 
 ```html
 <ol>
-  <li><p>one</p>
-    <ul>
-      <li>sub a</li>
-      <li>sub b</li>
-    </ul>
+  <li>one
+    <blockquote><p>q</p></blockquote>
   </li>
-  <li><p>two</p></li>
 </ol>
 ```
 
 :::
 
-The relaxed rule is not specific to sub-lists: a plain paragraph indented two columns attaches the same way, and turns the item loose because a second paragraph inside an item always does (§17 L1).
-
-::: compare
-
-```carve
-1. one
-
-  text
-
-1. two
-```
-
-```html
-<ol>
-  <li><p>one</p>
-    <p>text</p>
-  </li>
-  <li><p>two</p></li>
-</ol>
-```
-
-:::
-
-A block opener attaches on the same two-column rule, and stays tight: unlike a second paragraph, a nested block does not loosen the list.
+*Below* the content column the line is outside the item body: the list ends and the block parses at document level. A two-column indent is not enough under an ordered marker whose content column is three — the same threshold the no-blank case uses.
 
 ::: compare
 
@@ -773,8 +743,27 @@ A block opener attaches on the same two-column rule, and stays tight: unlike a s
 
 ```html
 <ol>
-  <li>one
-    <blockquote><p>q</p></blockquote>
+  <li>one</li>
+</ol>
+<p>&gt; q</p>
+```
+
+:::
+
+*Above* the content column the residual indentation means the line is no longer a block opener — just as ` # h` is a paragraph, not a heading, at the top level — so it folds in as a second paragraph and turns the item loose (§17 L1).
+
+::: compare
+
+```carve
+1. one
+
+    > q
+```
+
+```html
+<ol>
+  <li><p>one</p>
+    <p>&gt; q</p>
   </li>
 </ol>
 ```
