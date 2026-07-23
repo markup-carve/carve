@@ -79,6 +79,7 @@ const EXCLUDED = {
   colorSwatch: 'needs :color[…] markers, nothing to show zero-config',
   headingNumbers: 'needs section-numbering config / overlaps core heading numbering',
   codeCallouts: 'needs <n> markers inside a fenced code block plus a bound list, nothing to show zero-config',
+  imgFence: 'needs an ```img``` fence with an SVG body to show anything zero-config; js-first extension (spec/docs deferred)',
 
   // 3. FencedRender presets with no client library loaded in the docs.
   d2: 'needs the D2 client library, not loaded in the docs',

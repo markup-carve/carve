@@ -1996,6 +1996,27 @@ function matchListMarker(line, isTask, isOrdered) {
         return null;
     return RE_UNORDERED.exec(line);
 }
+// The visual content column of a list-marker line (`- x` -> 2, `1. x` -> 3,
+// `- [ ] x` -> 6), or -1 if the line is not a list marker. Each marker regex
+// captures the item content as its LAST group, so the content column is the
+// column width of everything before that content. Used to decide, in the
+// looseness scan, whether a line belongs to an item's sub-list (carve#322).
+function markerContentColumn(line) {
+    // Mirror parseList's own content-column computation so the looseness scan
+    // uses the SAME threshold the recursive sub-list parse uses -- including the
+    // task convention (content column is base + 2, the bullet width, NOT the
+    // `- [ ] ` checkbox width) and an abutting `{...}` attribute (stripped first).
+    const la = extractItemAttr(line);
+    const mline = la ? la.stripped : line;
+    const base = indentColumns(line);
+    if (RE_TASK.test(mline))
+        return base + 2 + (la ? line.length - mline.length : 0);
+    const m = RE_ORDERED.exec(mline) ?? RE_UNORDERED.exec(mline);
+    if (!m)
+        return -1;
+    const content = m[m.length - 1];
+    return base + (line.length - leadingWhitespace(line) - content.length);
+}
 function romanToInt(s) {
     const map = { i: 1, v: 5, x: 10, l: 50, c: 100, d: 500, m: 1000 };
     const t = s.toLowerCase();
@@ -2561,7 +2582,23 @@ function parseList(lexer) {
             let j = k + 1;
             while (j < nested.length && nested[j] === '')
                 j++;
-            if (j < nested.length && !lineOpensBlock(nested[j])) {
+            if (j >= nested.length)
+                continue;
+            // A blank followed by content the item's SUB-LIST consumes does not
+            // loosen THIS item: that content belongs to the sub-list, whose looseness
+            // is decided by its own recursive parse. Counting it here wrongly
+            // propagates a child's looseness up to the parent (carve#322). The
+            // threshold is the sub-list's content column: a line at or past it is the
+            // sub-list's, a line BELOW it (an above-content-column line, §24 C3, or a
+            // dedented column-0 paragraph) is the item's OWN block and still loosens.
+            // Matches carve-php / carve-rs, and the sibling-blank invariant where the
+            // outer item stays tight.
+            if (firstBlockIdx !== -1) {
+                const subCol = markerContentColumn(nested[firstBlockIdx]);
+                if (subCol >= 0 && indentColumns(nested[j]) >= subCol)
+                    continue;
+            }
+            if (!lineOpensBlock(nested[j])) {
                 loose = true;
                 break;
             }

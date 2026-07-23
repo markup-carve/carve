@@ -27,6 +27,8 @@ export { codeCallouts } from './code-callouts.js';
 export { index } from './index-terms.js';
 export { citations, type CitationsOptions, type CslEntry, type CslName, } from './citations.js';
 export { fencedRender, mermaid, d2, graphviz, wavedrom, abc, plantuml, vegaLite, chart, presets, type FencedRenderOptions, type FencedRenderContentMode, } from './fenced-render.js';
+export { imgFence, type ImgFenceOptions } from './svg-fence.js';
+export { sanitizeSvg, type SanitizeSvgOptions, type SanitizeResult } from './svg-sanitize.js';
 export { mathBlock, type MathBlockOptions } from './math-block.js';
 export { spoiler } from './spoiler.js';
 export { colorSwatch, type ColorSwatchOptions, type SwatchPosition, type SwatchShape, } from './color-swatch.js';

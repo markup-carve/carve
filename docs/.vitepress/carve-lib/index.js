@@ -39,6 +39,8 @@ export { codeCallouts } from './code-callouts.js';
 export { index } from './index-terms.js';
 export { citations, } from './citations.js';
 export { fencedRender, mermaid, d2, graphviz, wavedrom, abc, plantuml, vegaLite, chart, presets, } from './fenced-render.js';
+export { imgFence } from './svg-fence.js';
+export { sanitizeSvg } from './svg-sanitize.js';
 export { mathBlock } from './math-block.js';
 export { spoiler } from './spoiler.js';
 export { colorSwatch, } from './color-swatch.js';

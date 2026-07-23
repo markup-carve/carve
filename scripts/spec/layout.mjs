@@ -1122,6 +1122,11 @@ function collectItems(lines, i, list, state) {
     if (head.attrs && head.attrs.replace(/[{} ]/g, '') !== '') item.attrs = head.attrs
     if (list.task) item.checked = /^[xX]$/.test(head.task)
     let openPara = true // the marker line's text opens the item paragraph
+    // Content column of the FIRST sub-list opened in this item (-1 = none). A
+    // blank followed by content at or past this column belongs to the sub-list,
+    // not this item, so a descendant's looseness must not propagate up to this
+    // item (carve#322).
+    let subCol = -1
     i++
     // FIRST-BLOCK form (SS17 L4): a bare `+` as the sole marker-line content
     // opens an item whose body is the following flush-left block(s)
@@ -1176,6 +1181,16 @@ function collectItems(lines, i, list, state) {
           break
         }
         if (col >= contentCol && !(nm && nm.indent >= contentCol)) {
+          if (subCol >= 0 && col >= subCol) {
+            // Content at or past the first sub-list's content column belongs to
+            // the SUB-LIST, not this item -- a blank inside the sub-list must
+            // not loosen this (ancestor) item (carve#322). Attach, stay tight;
+            // the recursive parse of itemLines decides the sub-list's looseness.
+            itemLines.push('')
+            openPara = false
+            i = j
+            continue
+          }
           const dedented = dedent(lines[j], contentCol)
           if (opensSubBlock(dedented, itemRest(lines, j, baseIndent, contentCol))) {
             // sub-BLOCK after a blank: attaches, stays tight (SS17 L2)
@@ -1202,6 +1217,7 @@ function collectItems(lines, i, list, state) {
         // mirroring the top level.) Falls through to detach below.
         if (nm && nm.indent >= contentCol) {
           // sub-list after a blank: attaches, stays tight (SS17 L2)
+          if (subCol < 0) subCol = nm.indent + nm.markerWidth
           itemLines.push('')
           openPara = false
           i = j
@@ -1215,6 +1231,8 @@ function collectItems(lines, i, list, state) {
       if (col >= contentCol) {
         const dedented = dedent(line, contentCol)
         itemLines.push(dedented)
+        // record the first sub-list's content column (carve#322)
+        if (subCol < 0 && nm && nm.indent >= contentCol) subCol = nm.indent + nm.markerWidth
         // does the deepest structure now hold an OPEN paragraph that lazy
         // text may fold into? markers open a sub-item paragraph; quotes an
         // open quoted paragraph; fences/breaks close everything (SS10 I2/I6)
