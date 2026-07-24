@@ -47,7 +47,7 @@ const impls = [
       if (feature === 'symbol-map') {
         return [
           'cargo', 'run', '--quiet', '--',
-          '--symbol', 'rocket=🚀', '--symbol', 'tada=🎉', '--symbol', 'UPPER=⬆️',
+          '--symbol', 'rocket=🚀', '--symbol', 'tada=🎉', '--symbol', '+1=👍', '--symbol', 'UPPER=⬆️',
         ]
       }
       return null
@@ -103,7 +103,7 @@ const impls = [
             import { carveToHtml } from './dist/index.js';
             const source = readFileSync(process.argv[1], 'utf8');
             process.stdout.write(carveToHtml(source, {
-              symbols: { rocket: '🚀', tada: '🎉', UPPER: '⬆️' },
+              symbols: { rocket: '🚀', tada: '🎉', '+1': '👍', UPPER: '⬆️' },
             }));
           `,
         ]
@@ -131,8 +131,8 @@ const impls = [
           '-r',
           `
             require 'vendor/autoload.php';
-            $converter = new Carve\\CarveConverter();
-            $converter->addExtension(new Carve\\Extension\\MentionsExtension(
+            $converter = new MarkupCarve\\Carve\\CarveConverter();
+            $converter->addExtension(new MarkupCarve\\Carve\\Extension\\MentionsExtension(
               mentionUrl: '/users/{name}',
               tagUrl: '/topics/{name}',
             ));
@@ -146,8 +146,8 @@ const impls = [
           '-r',
           `
             require 'vendor/autoload.php';
-            $converter = new Carve\\CarveConverter();
-            $converter->addExtension(new Carve\\Extension\\SmartQuotesExtension(locale: 'de'));
+            $converter = new MarkupCarve\\Carve\\CarveConverter();
+            $converter->addExtension(new MarkupCarve\\Carve\\Extension\\SmartQuotesExtension(locale: 'de'));
             echo $converter->convert(file_get_contents($argv[1]));
           `,
         ]
@@ -158,8 +158,8 @@ const impls = [
           '-r',
           `
             require 'vendor/autoload.php';
-            $converter = new Carve\\CarveConverter();
-            $converter->addExtension(new Carve\\Extension\\AutolinkExtension());
+            $converter = new MarkupCarve\\Carve\\CarveConverter();
+            $converter->addExtension(new MarkupCarve\\Carve\\Extension\\AutolinkExtension());
             echo $converter->convert(file_get_contents($argv[1]));
           `,
         ]
