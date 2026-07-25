@@ -4635,3 +4635,112 @@ A `|`-delimited table row is a block opener under the same content-column rule: 
 ```
 
 :::
+
+## Colon-fence as a block opener in a list item
+
+A `:::` colon-fence (admonition / div) is a block opener like every other (§24 C3): it nests only when it reaches the item's content column, and folds as lazy text below or above it.
+
+:::: compare
+
+```carve
+- one
+ ::: note
+ b
+ :::
+```
+
+```html
+<ul>
+  <li>one
+::: note
+b
+:::</li>
+</ul>
+```
+
+::::
+
+:::: compare
+
+```carve
+- one
+  ::: note
+  b
+  :::
+```
+
+```html
+<ul>
+  <li>one
+    <aside class="admonition note">
+      <p>b</p>
+    </aside>
+  </li>
+</ul>
+```
+
+::::
+
+:::: compare
+
+```carve
+- one
+   ::: note
+   b
+   :::
+```
+
+```html
+<ul>
+  <li>one
+::: note
+b
+:::</li>
+</ul>
+```
+
+::::
+
+## Fence folds as lazy inline code above the content column
+
+A fenced code block indented past the content column is no longer a block opener; its lines fold as lazy paragraph text, so the backtick run becomes an inline code span (with its content's leading indentation stripped like any inline verbatim span).
+
+:::: compare
+
+````carve
+- one
+
+   ```
+   c
+   ```
+````
+
+```html
+<ul>
+  <li><p>one</p>
+    <p><code>
+c
+</code></p>
+  </li>
+</ul>
+```
+
+::::
+
+## Abbreviation title escapes its markup characters
+
+An abbreviation's expansion becomes the `title` attribute, so `&`, `<`, `>` and `"` in it are entity-escaped like any attribute value.
+
+::: compare
+
+```carve
+*[HTML]: Hyper & Text < Markup > "quoted"
+
+The HTML spec.
+```
+
+```html
+<p>The <abbr title="Hyper &amp; Text &lt; Markup &gt; &quot;quoted&quot;">HTML</abbr> spec.</p>
+```
+
+:::

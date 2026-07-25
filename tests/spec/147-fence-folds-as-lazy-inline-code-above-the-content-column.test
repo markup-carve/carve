@@ -1,0 +1,17 @@
+Fence folds as lazy inline code above the content column
+
+````
+- one
+
+   ```
+   c
+   ```
+.
+<ul>
+  <li><p>one</p>
+    <p><code>
+c
+</code></p>
+  </li>
+</ul>
+````

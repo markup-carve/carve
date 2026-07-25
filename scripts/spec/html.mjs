@@ -533,7 +533,7 @@ function applyAbbreviations(html, ctx) {
     let s = p
     for (const [term, expansion] of ctx.abbrDefs) {
       const re = new RegExp(`(^|[^\\p{L}\\p{N}])(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?![\\p{L}\\p{N}])`, 'gu')
-      s = s.replace(re, (_, pre, hit) => `${pre}<abbr title="${expansion.replaceAll('"', '&quot;')}">${hit}</abbr>`)
+      s = s.replace(re, (_, pre, hit) => `${pre}<abbr title="${escapeAttr(expansion)}">${hit}</abbr>`)
     }
     parts[i] = s
   }

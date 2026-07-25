@@ -1,0 +1,44 @@
+Colon-fence as a block opener in a list item
+
+```
+- one
+ ::: note
+ b
+ :::
+.
+<ul>
+  <li>one
+::: note
+b
+:::</li>
+</ul>
+```
+
+```
+- one
+  ::: note
+  b
+  :::
+.
+<ul>
+  <li>one
+    <aside class="admonition note">
+      <p>b</p>
+    </aside>
+  </li>
+</ul>
+```
+
+```
+- one
+   ::: note
+   b
+   :::
+.
+<ul>
+  <li>one
+::: note
+b
+:::</li>
+</ul>
+```
