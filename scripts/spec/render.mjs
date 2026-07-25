@@ -470,9 +470,22 @@ const isWs = (c) => c === undefined || /\s/.test(c)
 // cross-delimiter guard the reference engines apply (path protection:
 // /a/_b_, snake_/case/, a_/_a_). The other delimiters `* ~ =` DO open after
 // `/` (e.g. `a/~y~` -> `a/<s>y</s>`), so the guard is `/ _`-specific.
-function bareOpener(d, prev, next) {
-  if (prev !== undefined && (isWordCh(prev) || prev === '_' || prev === d)) return false
-  if ((d === '/' || d === '_') && prev === '/') return false
+function bareOpener(d, prev, prev2, next) {
+  if (prev !== undefined && (isWordCh(prev) || prev === d)) return false
+  // Path protection for `/` and `_`: they do NOT open immediately after a `/`
+  // or `_` UNLESS that preceding delimiter sits at a clean left boundary (its
+  // own preceding char is whitespace/undefined) -- i.e. the preceding delimiter
+  // is itself a true opener (`/_x_/`, `_/x/_` nest), not a closer or mid-path
+  // delimiter (`/a/_b_`, `snake_/case/`, `a_/_a_` stay literal). The other
+  // delimiters `* ~ =` open after `/` or `_` unconditionally (`_*x*_`, `*x*_y_`).
+  if (
+    (d === '/' || d === '_') &&
+    (prev === '/' || prev === '_') &&
+    prev2 !== undefined &&
+    !isWs(prev2)
+  ) {
+    return false
+  }
   return !isWs(next) && next !== d
 }
 function bareCloser(d, prev, next) {
@@ -519,8 +532,9 @@ function resolveEmphasis(toks, src) {
   for (const t of toks) {
     if (t.k !== 'd') continue
     const prev = t.at > 0 ? src[t.at - 1] : undefined
+    const prev2 = t.at > 1 ? src[t.at - 2] : undefined
     const next = src[t.at + 1]
-    t.canOpen = bareOpener(t.ch, prev, next)
+    t.canOpen = bareOpener(t.ch, prev, prev2, next)
     t.canClose = bareCloser(t.ch, prev, next)
   }
   // One pass with a delimiter stack. `openers` holds indices (into toks) of

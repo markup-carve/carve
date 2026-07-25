@@ -3018,15 +3018,19 @@ function startsInterruptingBlock(lexer) {
             return RE_HR.test(ln);
         case ':':
             // An admonition/div/line-block that has a `:::` closer ahead (the `::: |`
-            // line-block shares the bare `:::` closer). A definition-list term (`::`)
-            // is NOT in the §10 interrupter set (like an ordered list), so it does
-            // not interrupt a paragraph or heading -- it folds as lazy text.
+            // line-block shares the bare `:::` closer).
             if ((RE_ADMONITION_OPEN.test(ln) && !RE_ADMONITION_CLOSE.test(ln)) ||
                 RE_DIV_OPEN.test(ln) ||
                 RE_LINE_BLOCK_OPEN.test(ln) ||
                 RE_HARDBREAKS_OPEN.test(ln))
                 return divHasCloser(lexer);
-            return false;
+            // A definition-list term (`::`) is a first-class block opener (carve#295):
+            // it interrupts an open paragraph like a heading or quote, so `text` /
+            // `:: term` opens a def-list, and at a list item's content column a def-list
+            // nests. `RE_DEFLIST_TERM` is `^`-anchored, so an indented `:: term` (below
+            // the content column) still fails here and folds as lazy text, matching
+            // how heading/quote behave at the same position.
+            return RE_DEFLIST_TERM.test(ln);
         case '[':
             // link or footnote reference definition (invisible)
             return RE_LINK_DEF.test(ln) || RE_FOOTNOTE_DEF.test(ln);

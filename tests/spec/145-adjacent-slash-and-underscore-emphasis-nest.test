@@ -1,0 +1,7 @@
+Adjacent slash and underscore emphasis nest
+
+```
+/_x_/ and _/x/_
+.
+<p><em><u>x</u></em> and <u><em>x</em></u></p>
+```

@@ -2435,8 +2435,15 @@ EOF = (* end of file *) ;
          the item's content starts (marker width + separator: `- ` -> 2,
          `1. ` -> 3, `10. ` -> 4). A child -- a LIST MARKER (bullet `-`/`*`,
          task, or ordered, SYMMETRIC) opening a sublist, OR any OTHER block
-         opener (quote, heading, fence, table, ...) -- must reach the parent
-         item's content_column to belong to the item. The content_column is
+         opener -- must reach the parent item's content_column to belong to the
+         item. The block-opener set is UNIFORM and closed: block quote (`>`),
+         heading (`#`), thematic break, fenced code, colon fence / admonition
+         (`:::`), TABLE (a `|`-delimited row), and DEFINITION LIST (a `:: term`
+         opener; the two-line `:: `/`:  ` marker is recognized by the same
+         look-ahead the top level uses, and only the `:: ` TERM line opens the
+         block). None of these is special-cased: a def-list or table interrupts
+         at column 0 and nests at content_column exactly as a quote or heading
+         does (carve#295). The content_column is
          the item body's COLUMN 0: a block opener is recognized there exactly
          as a block opener is recognized only at column 0 at the top level.
          This one rule holds whether or not a blank line precedes the child;

@@ -4481,3 +4481,157 @@ An item's own second paragraph after a blank still loosens it - non-propagation 
 ```
 
 :::
+
+## Definition list as a first-class block opener
+
+A `:: term` definition-list opener is a block opener like every other (quote, heading, fence, table) under the content-column rule (PART 9 §24 C3): it *interrupts* an open list item at column 0, and *nests* at the item's content column. The two-line `:: `/`:  ` marker is recognized by look-ahead; only the `:: ` term line opens the block.
+
+At the content column, the definition list nests inside the item.
+
+::: compare
+
+```carve
+- one
+  :: term
+  :  def
+```
+
+```html
+<ul>
+  <li>one
+    <dl>
+      <dt>term</dt>
+      <dd>def</dd>
+    </dl>
+  </li>
+</ul>
+```
+
+:::
+
+At column 0 (below the content column), it interrupts: the list ends and the definition list parses at document level.
+
+::: compare
+
+```carve
+- one
+:: term
+:  def
+```
+
+```html
+<ul>
+  <li>one</li>
+</ul>
+<dl>
+  <dt>term</dt>
+  <dd>def</dd>
+</dl>
+```
+
+:::
+
+Below the content column but not at column 0, it folds in as lazy item text.
+
+::: compare
+
+```carve
+- one
+ :: term
+ :  def
+```
+
+```html
+<ul>
+  <li>one
+:: term
+:  def</li>
+</ul>
+```
+
+:::
+
+A blank line before a nested definition list keeps the outer item tight (§17), like any other nested sub-block.
+
+::: compare
+
+```carve
+- one
+
+  :: t
+  :  d
+```
+
+```html
+<ul>
+  <li>one
+    <dl>
+      <dt>t</dt>
+      <dd>d</dd>
+    </dl>
+  </li>
+</ul>
+```
+
+:::
+
+## Table as a block opener in a list item
+
+A `|`-delimited table row is a block opener under the same content-column rule: it nests at the content column and folds as lazy text below it.
+
+::: compare
+
+```carve
+- one
+  |= H |
+  | x |
+```
+
+```html
+<ul>
+  <li>one
+    <table>
+      <thead><tr><th>H</th></tr></thead>
+      <tbody>
+        <tr><td>x</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+```
+
+:::
+
+::: compare
+
+```carve
+- one
+ |= H |
+ | x |
+```
+
+```html
+<ul>
+  <li>one
+|= H |
+| x |</li>
+</ul>
+```
+
+:::
+
+## Adjacent slash and underscore emphasis nest
+
+`/` and `_` open immediately after each other when the preceding delimiter is a true opener, so adjacent pairs nest (they only stay literal as path protection when the preceding delimiter is a closer, e.g. `/a/_b_`).
+
+::: compare
+
+```carve
+/_x_/ and _/x/_
+```
+
+```html
+<p><em><u>x</u></em> and <u><em>x</em></u></p>
+```
+
+:::

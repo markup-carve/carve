@@ -308,8 +308,15 @@ function isBlank(line) {
 // A line that begins a VISIBLE block (PART 9 SS10 I1) in the executable
 // subset. Fence interruption needs the closer lookahead (I4) - handled by
 // the caller which owns the remaining lines.
+// A definition-list TERM opener `:: ` (two colons + space; not the `:::` colon
+// fence). A `:: term` is a first-class block opener under PART 9 SS24 C3
+// (carve#295): it interrupts an open paragraph/item at column 0 and nests at
+// the content column, exactly as a heading/quote/fence does. The two-line
+// marker means only the TERM line opens the block; the `:  def` line is its
+// body, handled by the def-list parser once opened.
+const DEFLIST_TERM = /^:: /
 function startsVisibleBlock(line) {
-  return HEADING.test(line) || HR.test(line) || QUOTE.test(line)
+  return HEADING.test(line) || HR.test(line) || QUOTE.test(line) || DEFLIST_TERM.test(line)
 }
 
 // A sub-BLOCK attached to an open list item after a blank line: it nests and
@@ -322,7 +329,7 @@ function startsVisibleBlock(line) {
 // look like a block.
 function opensSubBlock(line, rest) {
   if (QUOTE.test(line) || HEADING.test(line) || HR.test(line) ||
-      isTableRow(line)) return true
+      isTableRow(line) || DEFLIST_TERM.test(line)) return true
   const f = FENCE.exec(line)
   // an INVALID info string is not a fence at all (PART 2 INVALID-FENCE
   // FALLBACK) -- the line is prose and loosens the item

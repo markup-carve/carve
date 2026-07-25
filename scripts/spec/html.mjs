@@ -503,8 +503,11 @@ function resolveCrossrefs(html, ctx) {
     if (!hit) {
       const cap = ctx.captionIds.get(id.toLowerCase())
       if (cap) return textOnly ? cap : `<a href="#${id}">${cap}</a>`
-      // unresolved: literal source text (PART 9 SS19)
-      return `&lt;/#${id}&gt;`
+      // unresolved: literal source text (PART 9 SS19), HTML-escaped -- an
+      // unresolved id may carry `<`/`>`/`&` (e.g. `</#<script>`) which must not
+      // reach the output raw.
+      const esc = id.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+      return `&lt;/#${esc}&gt;`
     }
     // one-level resolution: nested sentinels in the cloned text flatten to
     // their literal source (PART 9R R4)
