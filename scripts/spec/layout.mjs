@@ -647,7 +647,11 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
             const cur = lines[i] ?? ''
             if (isEntry(cur) || isBlank(cur) || CONT_MARKER.test(cur) || /^ {3,}\S/.test(cur)) break
             if (!foldablePlain(cur)) break
-            dt += '\n' + cur.replace(/^[ \t]+/, '')
+            // A line folded into an item BELOW its content column arrives here
+            // LAZY-prefixed (the item-fold pass at C3). Strip that framing marker
+            // before it joins the term text, or it leaks into the rendered <dt>.
+            const cc = cur.startsWith(LAZY) ? cur.slice(LAZY.length) : cur
+            dt += '\n' + cc.replace(/^[ \t]+/, '')
             i++
           }
           node.items.push({ dt })
