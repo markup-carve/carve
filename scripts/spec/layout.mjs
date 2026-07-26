@@ -635,8 +635,15 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         !FENCE.test(cur) &&
         !CAPTION.test(cur)
       const isEntry = (s) => /^::?[ ]/.test(s) && !/^:::/.test(s)
+      // A definition/term line folded into an open item BELOW its content column
+      // arrives LAZY-framed (the item-fold pass at C3). A `:  def` marker is a
+      // LENIENT def-list entry: it attaches as a fresh <dd> to its open term even
+      // when it lands at or below column 0 (PART 9 §24 C3 def-list exception), so
+      // the frame must be stripped before matching entries -- otherwise the framed
+      // line is mistaken for a plain continuation and folds into the <dt>.
+      const unlazy = (s) => (s.startsWith(LAZY) ? s.slice(LAZY.length) : s)
       while (i < n) {
-        const cur0 = lines[i] ?? ''
+        const cur0 = unlazy(lines[i] ?? '')
         let dm
         if ((dm = /^:: (.*)$/.exec(cur0))) {
           // term (dt): folds plain wrapped continuation lines like a heading so
@@ -645,13 +652,18 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           i++
           while (i < n) {
             const cur = lines[i] ?? ''
-            if (isEntry(cur) || isBlank(cur) || CONT_MARKER.test(cur) || /^ {3,}\S/.test(cur)) break
+            if (isEntry(unlazy(cur)) || isBlank(cur) || CONT_MARKER.test(cur) || /^ {3,}\S/.test(cur)) break
             if (!foldablePlain(cur)) break
             // A line folded into an item BELOW its content column arrives here
             // LAZY-prefixed (the item-fold pass at C3). Strip that framing marker
-            // before it joins the term text, or it leaks into the rendered <dt>.
-            const cc = cur.startsWith(LAZY) ? cur.slice(LAZY.length) : cur
-            dt += '\n' + cc.replace(/^[ \t]+/, '')
+            // AND its dedented residual indent before it joins the term text.
+            // A line at or above the content column is NOT framed: its over-indent
+            // is meaningful continuation whitespace (the engines preserve it), so
+            // leave it intact -- only the LAZY (below-column) branch strips.
+            const cc = cur.startsWith(LAZY)
+              ? cur.slice(LAZY.length).replace(/^[ \t]+/, '')
+              : cur
+            dt += '\n' + cc
             i++
           }
           node.items.push({ dt })

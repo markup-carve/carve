@@ -1,0 +1,13 @@
+Image trailing attribute is strict about the glue
+
+```
+![alt](img.png){.x}
+.
+<img src="img.png" alt="alt" class="x">
+```
+
+```
+![alt](img.png) {.x}
+.
+<p><img src="img.png" alt="alt"> {.x}</p>
+```

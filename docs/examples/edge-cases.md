@@ -4744,3 +4744,160 @@ The HTML spec.
 ```
 
 :::
+
+## Indented ordered marker content column includes the marker indent
+
+The content column of a list item includes the marker's own leading indentation (PART 9 §24 C3): `    1. ` is base column 4 plus marker width 3, so its content column is 7. A block opener dedented below that column but not to column 0 is *lazy* text, not a new block. A `| x |` table row at column 2 therefore folds into the item as lazy paragraph text instead of ending the item and escaping the row to a document-level table.
+
+::: compare
+
+```carve
+    1. y
+  | x |
+```
+
+```html
+<ol>
+  <li>y
+| x |</li>
+</ol>
+```
+
+:::
+
+## Leading attribute brace before an inline span stays literal
+
+An unattached `{…}` attribute block that opens a line has nothing to its left to attach to, so it stays literal text; a following inline span still parses normally. The line is not consumed or dropped.
+
+::: compare
+
+```carve
+{k=v}{+i+}
+```
+
+```html
+<p>{k=v}<ins>i</ins></p>
+```
+
+:::
+
+## Attribute block after a mention stays literal
+
+Mentions and tags are inert stable spans that do not take attributes (they share the soft-break / hard-break / plain-text class in this respect). A `{…}` glued after one stays literal text rather than attaching or vanishing.
+
+::: compare
+
+```carve
+@u{k=v.w}
+```
+
+```html
+<p><span class="mention"><strong>@u</strong></span>{k=v.w}</p>
+```
+
+:::
+
+## Under-indented definition attaches, over-indented definition folds
+
+A `:  def` line is a lenient definition-list entry (PART 9 §24 C3): it attaches as a fresh `<dd>` to its open `:: term` when its column is at or below the term's, even under the item's content column. Only a definition line indented *above* the term folds into the term text as a lazy continuation.
+
+Under-indented (below the content column, still above column 0): the definition attaches.
+
+::: compare
+
+```carve
+- one
+  :: term
+ :  def
+```
+
+```html
+<ul>
+  <li>one
+    <dl>
+      <dt>term</dt>
+      <dd>def</dd>
+    </dl>
+  </li>
+</ul>
+```
+
+:::
+
+At column 0, the definition still attaches: the `:  ` marker is a lenient exception to the column-0 interrupt rule, so it does not end the item and orphan the definition.
+
+::: compare
+
+```carve
+- one
+  :: term
+:  def
+```
+
+```html
+<ul>
+  <li>one
+    <dl>
+      <dt>term</dt>
+      <dd>def</dd>
+    </dl>
+  </li>
+</ul>
+```
+
+:::
+
+Over-indented (above the term): the line folds into the term, preserving its over-indent whitespace.
+
+::: compare
+
+```carve
+- one
+  :: term
+   :  def
+```
+
+```html
+<ul>
+  <li>one
+    <dl>
+      <dt>term
+ :  def</dt>
+    </dl>
+  </li>
+</ul>
+```
+
+:::
+
+## Image trailing attribute is strict about the glue
+
+A trailing `{…}` attaches to a sole image only when glued directly to the closing paren. A space between the image and the block breaks the glue, so the `{…}` stays literal text alongside the image.
+
+Glued: the attributes attach to the image.
+
+::: compare
+
+```carve
+![alt](img.png){.x}
+```
+
+```html
+<img src="img.png" alt="alt" class="x">
+```
+
+:::
+
+Spaced: the block stays literal.
+
+::: compare
+
+```carve
+![alt](img.png) {.x}
+```
+
+```html
+<p><img src="img.png" alt="alt"> {.x}</p>
+```
+
+:::

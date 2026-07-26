@@ -1,0 +1,7 @@
+Leading attribute brace before an inline span stays literal
+
+```
+{k=v}{+i+}
+.
+<p>{k=v}<ins>i</ins></p>
+```

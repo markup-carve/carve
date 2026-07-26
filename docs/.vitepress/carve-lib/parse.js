@@ -191,7 +191,12 @@ const isTableRow = (line) => {
 // it from a `+ ` list item (which never ends with `|`). Only consumed
 // inside parseTable, after a standard `|` row has opened the table.
 const RE_TABLE_CONT = /^\+.*\|\s*$/;
-const RE_BARE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)"|\s+'([^']*)')?\)\s*(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
+// The trailing attribute block must be GLUED to the `)` (no intervening space)
+// to attach, per the inline glue rule; a space before `{…}` makes it literal
+// and the line falls back to a paragraph (inline image + literal braces),
+// matching carve-rs/carve-php. Hence `\)` is directly followed by the optional
+// attr group, with no `\s*` between them.
+const RE_BARE_IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)"|\s+'([^']*)')?\)(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
 // Frontmatter open fence: `---` with an optional format token (`---toml`,
 // `---json`); bare `---` uses the default format. The space before the token is
 // optional (lenient input: both `---toml` and `--- toml` are accepted; the
@@ -2183,16 +2188,27 @@ function trackItemLazyState(content, state) {
         if (c && c[1].length >= state.commentLen)
             state.inComment = false;
         state.lazyFoldable = false;
+        state.inDefList = false;
         return;
     }
     if (state.inFence) {
         if (state.fenceClose.test(content))
             state.inFence = false;
         state.lazyFoldable = false;
+        state.inDefList = false;
         return;
     }
     if (isBlankLine(content)) {
+        // A blank is a separator; a `:  def` may follow it (djot allows a blank
+        // between a term and its definition), so leave inDefList unchanged.
         state.lazyFoldable = false;
+        return;
+    }
+    // A definition-list term or definition marker opens (or continues) a def
+    // list in this item, and leaves an open paragraph for its body.
+    if (RE_DEFLIST_TERM.test(content) || RE_DEFLIST_DEF.test(content)) {
+        state.inDefList = true;
+        state.lazyFoldable = true;
         return;
     }
     // A code fence or raw fence opens a verbatim block with no open paragraph.
@@ -2202,6 +2218,7 @@ function trackItemLazyState(content, state) {
         state.inFence = true;
         state.fenceClose = new RegExp(`^${marker[0]}{${marker.length},}\\s*$`);
         state.lazyFoldable = false;
+        state.inDefList = false;
         return;
     }
     const raw = RE_RAW_FENCE.exec(content);
@@ -2210,6 +2227,7 @@ function trackItemLazyState(content, state) {
         state.inFence = true;
         state.fenceClose = new RegExp(`^${marker[0]}{${marker.length},}\\s*$`);
         state.lazyFoldable = false;
+        state.inDefList = false;
         return;
     }
     const comment = /^(%{3,})\s*$/.exec(content);
@@ -2217,17 +2235,20 @@ function trackItemLazyState(content, state) {
         state.inComment = true;
         state.commentLen = comment[1].length;
         state.lazyFoldable = false;
+        state.inDefList = false;
         return;
     }
     // A table row, heading, or thematic break leaves no open trailing paragraph.
     if (isTableRow(content) || RE_HEADING.test(content) || RE_HR.test(content)) {
         state.lazyFoldable = false;
+        state.inDefList = false;
         return;
     }
     // A blockquote line keeps the fold open: the quote's trailing paragraph
     // absorbs the dedented line via the quote's own lazy continuation.
     if (RE_BLOCKQUOTE.test(content)) {
         state.lazyFoldable = true;
+        state.inDefList = false;
         return;
     }
     // A div / admonition / line-block OPENER is structural; it opens no paragraph
@@ -2238,10 +2259,12 @@ function trackItemLazyState(content, state) {
         RE_LINE_BLOCK_OPEN.test(content) ||
         RE_HARDBREAKS_OPEN.test(content)) {
         state.lazyFoldable = false;
+        state.inDefList = false;
         return;
     }
     // Everything else (plain prose, list-marker content, div body text) leaves an
-    // open paragraph the dedented line can continue.
+    // open paragraph the dedented line can continue. Prose folds into a def body,
+    // so an open def list stays open (inDefList unchanged).
     state.lazyFoldable = true;
 }
 function parseList(lexer) {
@@ -2410,6 +2433,7 @@ function parseList(lexer) {
             inComment: false,
             commentLen: 0,
             lazyFoldable: !isBlankLine(content),
+            inDefList: RE_DEFLIST_TERM.test(content) || RE_DEFLIST_DEF.test(content),
         };
         while (!lexer.eof()) {
             const l = lexer.peek();
@@ -2540,9 +2564,23 @@ function parseList(lexer) {
                 // Lazy continuation: a line with no blank before it that starts no block
                 // (or is the indented ordered marker above) folds into the item's lead
                 // paragraph (djot rule). A block-starting line or a blank ends the list.
-                nested.push(l);
+                //
+                // Exception: an UNDER-indented (below content-column) def/term marker
+                // line inside an OPEN definition list re-aligns to column 0 instead of
+                // folding as prose, so it attaches as a `<dd>`/`<dt>` (decision D).
+                // rs/php attach an under-indented `:  def`; carve-js must match. An
+                // OVER-indented marker never reaches here (it goes through sliceColumns
+                // and folds), so only the genuinely-under-indented case is realigned.
+                let lazyLine = l;
+                if (lazyState.inDefList && indentColumns(l) < contentCol) {
+                    const stripped = l.replace(/^[ \t]+/, '');
+                    if (RE_DEFLIST_DEF.test(stripped) || RE_DEFLIST_TERM.test(stripped)) {
+                        lazyLine = stripped;
+                    }
+                }
+                nested.push(lazyLine);
                 nestedLineNumbers.push(lexer.lineNumber(lexer.pos));
-                trackItemLazyState(l, lazyState);
+                trackItemLazyState(lazyLine, lazyState);
                 lexer.consume();
             }
             else {
@@ -3223,6 +3261,12 @@ const RE_SYMBOL = /^:([a-zA-Z0-9+-][\w+-]*):/;
 const RE_AUTOLINK = /^<([a-zA-Z][a-zA-Z0-9+.\-]*:[^>\s<"\\`{}|^]+|[A-Za-z0-9._+\-]+@[A-Za-z0-9._+\-]+\.[A-Za-z]+)>/;
 const RE_CROSSREF = /^<\/#([^>\s]+)>/;
 const RE_INLINE_ATTR = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\}/;
+// Inline node types a trailing `{...}` must NOT attach to: their renderers emit
+// no attributes, so an attached block would be silently dropped. `text` is
+// literal by the §14 rule; `soft_break`/`hard_break` are whitespace; `mention`
+// and `tag` are inert stable spans that do not take attributes. After any of
+// these the `{...}` stays literal text (matches carve-rs / carve-php).
+const ATTR_INERT_PREV = new Set(['text', 'soft_break', 'hard_break', 'mention', 'tag']);
 // Tail patterns parsed after a `[…]` (or `![…]`) whose close bracket was
 // found by balance (buildBracketMap), so the inner text may hold nested
 // brackets the [^\]]* regexes can't span. Link/image titles accept double OR
@@ -4149,7 +4193,12 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                 // §15), not an empty attribute block to attach. Without this guard a
                 // payload like `{=hl=}`, `{ }`, or `{???}` after a non-text node is
                 // silently consumed and dropped.
-                if (prev.type !== 'text' && !isEmptyAttrs(parsed)) {
+                // The block also stays literal after an inert node whose renderer emits
+                // NO attributes -- a soft/hard break, a mention, or a tag -- otherwise
+                // the attrs attach and are silently discarded at render (mentions/tags
+                // are stable inert spans that do not take attributes). Matches
+                // carve-rs / carve-php, which keep the `{...}` literal in these cases.
+                if (!ATTR_INERT_PREV.has(prev.type) && !isEmptyAttrs(parsed)) {
                     ;
                     prev.attrs = mergeAttrs(prev.attrs, parsed);
                     i += attr[0].length;

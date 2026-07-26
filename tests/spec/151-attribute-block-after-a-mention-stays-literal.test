@@ -1,0 +1,7 @@
+Attribute block after a mention stays literal
+
+```
+@u{k=v.w}
+.
+<p><span class="mention"><strong>@u</strong></span>{k=v.w}</p>
+```

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The executable-spec oracle now applies the lenient definition-list rule (PART 9
+  §24 C3): a `:  def` line attaches as a `<dd>` to its open `:: term` at or below
+  the term's column (even under the item content column), and an over-indented
+  definition folds into the term while preserving its whitespace. Aligns the
+  oracle with carve-js / carve-php / carve-rs across the definition-column family.
+
 - Static diagram output now uses a uniform wrapper across engines: a supplied
   renderer's output is wrapped in a `<div class="{cssClass}">` carrying the
   fence's merged attributes. Previously carve-js emitted `<pre>`, carve-php a
@@ -16,6 +22,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Corpus pins for five previously unpinned cross-engine behaviors** now
+  confirmed converged across carve-js, carve-php, carve-rs and the oracle: a
+  block opener dedented below an indented marker's content column folds as lazy
+  text (149); a leading unattached `{…}` brace before an inline span stays
+  literal (150); a `{…}` after an inert mention/tag stays literal (151); the
+  lenient definition-list rule where a `:  def` attaches at or below the term's
+  column and folds only when over-indented (152); and the image trailing-attribute
+  glue rule where a spaced `{…}` stays literal while a glued one attaches (153).
 - **Protection for byte-exact corpus fixtures.** Several pairs assert the
   handling of characters an editor or formatter would "clean up": a trailing
   no-break space, a trailing ASCII space, and the zero-width / bidi controls in
