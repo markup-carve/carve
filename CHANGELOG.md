@@ -22,6 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Corpus pin for a newly-aligned definition-term wrapping behavior** (154). A
+  `:: term` continued by a wrapped line that sits below the item content column
+  is a lazy continuation, so its leading whitespace is stripped before it folds
+  into the `<dt>` - matching a lazy paragraph continuation. carve-js previously
+  kept the stray space; it now strips (carve-js#385), so all four producers
+  (carve-js, carve-php, carve-rs, oracle) agree byte-for-byte. The pin covers
+  continuation columns 0 and 1.
 - **Corpus pins for five previously unpinned cross-engine behaviors** now
   confirmed converged across carve-js, carve-php, carve-rs and the oracle: a
   block opener dedented below an indented marker's content column folds as lazy

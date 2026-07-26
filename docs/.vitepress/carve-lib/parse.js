@@ -2565,18 +2565,20 @@ function parseList(lexer) {
                 // (or is the indented ordered marker above) folds into the item's lead
                 // paragraph (djot rule). A block-starting line or a blank ends the list.
                 //
-                // Exception: an UNDER-indented (below content-column) def/term marker
-                // line inside an OPEN definition list re-aligns to column 0 instead of
-                // folding as prose, so it attaches as a `<dd>`/`<dt>` (decision D).
-                // rs/php attach an under-indented `:  def`; carve-js must match. An
-                // OVER-indented marker never reaches here (it goes through sliceColumns
-                // and folds), so only the genuinely-under-indented case is realigned.
+                // Exception: an UNDER-indented (below content-column) line inside an
+                // OPEN definition list has its leading whitespace stripped before it
+                // folds. A def/term marker re-aligns to column 0 and attaches as a
+                // `<dd>`/`<dt>` (decision D); a plain continuation folds into the open
+                // term/definition with its leading whitespace removed, exactly as a
+                // lazy paragraph continuation does. rs/php strip here, so carve-js
+                // must match, otherwise a below-column term-fold like `:: term`/` x`
+                // would keep the stray space (`<dt>term\n x</dt>`). An OVER-indented
+                // line never reaches here (it goes through sliceColumns and folds with
+                // its residual indent preserved), so only the genuinely-under-indented
+                // case is stripped.
                 let lazyLine = l;
                 if (lazyState.inDefList && indentColumns(l) < contentCol) {
-                    const stripped = l.replace(/^[ \t]+/, '');
-                    if (RE_DEFLIST_DEF.test(stripped) || RE_DEFLIST_TERM.test(stripped)) {
-                        lazyLine = stripped;
-                    }
+                    lazyLine = l.replace(/^[ \t]+/, '');
                 }
                 nested.push(lazyLine);
                 nestedLineNumbers.push(lexer.lineNumber(lexer.pos));
