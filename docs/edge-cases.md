@@ -59,10 +59,18 @@ Use /italic/ for emphasis.
 | `/italic/` | *italic* | Valid emphasis |
 | `/etc/nginx/` | *etc/nginx* | Also valid (inner `/` is content) |
 | `` `/etc/nginx/` `` | `/etc/nginx/` | Code span - recommended for paths |
+| `` !`/etc/nginx/` `` | /etc/nginx/ | Inline literal - literal text, no code styling |
 | `the/path/here` | the/path/here | No whitespace before opener |
 | `/ spaced /` | / spaced / | Whitespace after opener - invalid |
 
 **Best practice:** Paths, URLs, and file references should use backticks - they're technical/code content.
+
+If you want the path to read as ordinary prose rather than monospace code, use
+the inline literal `` !`…` `` prefix instead (PART 9 §27): it suppresses *all*
+markup inside the span - so `_`, `/`, `*` stay literal - but emits plain text
+with no `<code>` wrapper. So `` !`/etc/nginx_foo/` `` renders the bare string
+`/etc/nginx_foo/` with no emphasis and no code styling, whereas the backtick
+form `` `/etc/nginx_foo/` `` renders it as a `<code>` span.
 
 ---
 
