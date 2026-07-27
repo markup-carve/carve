@@ -327,12 +327,20 @@ const sem = g.createSemantics().addOperation('h', {
     return '\u2026'
   },
   dashRun(_a, _b) {
-    // PART 9 SS8: a run of n hyphens -> em/en dash mix (djot algorithm):
-    // n%3==0 all em; n%2==0 all en; else one em + (n-3)/2 en
+    // PART 9 SS8: a run of n hyphens -> em/en dash mix (djot allocateDashes):
+    // n%3==0 all em; n%2==0 all en; else maximize em-dashes with the remainder
+    // as en, where a remainder of 1 trades one em-dash for two en-dashes. Must
+    // match carve-js / carve-php exactly (e.g. n=11 -> 3 em + 1 en, not 1 em).
     const n = this.sourceString.length
     if (n % 3 === 0) return '\u2014'.repeat(n / 3)
     if (n % 2 === 0) return '\u2013'.repeat(n / 2)
-    return '\u2014' + '\u2013'.repeat((n - 3) / 2)
+    let em = Math.floor(n / 3)
+    let rem = n - em * 3
+    if (rem === 1) {
+      em -= 1
+      rem = 4
+    }
+    return '\u2014'.repeat(em) + '\u2013'.repeat(rem / 2)
   },
   dquote(_q) {
     return smartQuote(this, '\u201c', '\u201d', false)
