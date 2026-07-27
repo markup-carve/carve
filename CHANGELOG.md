@@ -114,6 +114,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   static-capable in every engine with the same config - no spec edit, no
   lockstep. Canonical presets are just the pre-named classes. This supersedes
   the closed-key-set design.
+- **SVG `img` fence** (Tier-3, off by default): a `` ```img `` block renders a
+  sanitized SVG, sandboxed by default (a `data:image/svg+xml` `<img>`), with an
+  opt-in inline mode for theming (#311).
 
 First normative grammar and corpus snapshot. This release locks the Carve
 specification at its initial stable version: the grammar (`resources/grammar.ebnf`),
