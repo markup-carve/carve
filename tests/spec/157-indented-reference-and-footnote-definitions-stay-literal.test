@@ -1,0 +1,19 @@
+Indented reference and footnote definitions stay literal
+
+```
+ Read [intro][x].
+
+ [x]: /intro "T"
+.
+<p>Read [intro][x].</p>
+<p>[x]: /intro “T”</p>
+```
+
+```
+ Note[^fn].
+
+ [^fn]: body.
+.
+<p>Note[^fn].</p>
+<p>[^fn]: body.</p>
+```

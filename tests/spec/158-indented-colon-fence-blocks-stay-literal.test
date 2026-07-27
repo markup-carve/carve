@@ -1,0 +1,43 @@
+Indented colon-fence blocks stay literal
+
+```
+ :::
+ A box.
+ :::
+.
+<p>:::
+A box.
+:::</p>
+```
+
+```
+ ::: |
+ Roses,
+ Violets.
+ :::
+.
+<p>::: |
+Roses,
+Violets.
+:::</p>
+```
+
+```
+ ::: note
+ Body.
+ :::
+.
+<p>::: note
+Body.
+:::</p>
+```
+
+```
+:::
+A box.
+:::
+.
+<div>
+  <p>A box.</p>
+</div>
+```

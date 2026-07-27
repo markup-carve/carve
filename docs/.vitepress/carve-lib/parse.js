@@ -570,6 +570,14 @@ function collectLinkDefs(lexer) {
     // here — a rarer residual case.)
     const listCols = [];
     let prevBlank = true;
+    // Track whether we are inside a footnote body. A footnote continuation is
+    // indented, so an indented link def inside a note body must still be collected
+    // (the note's content column, not column 0) -- matching the spec oracle, which
+    // collects it structurally. Without this the strict top-level rejection below
+    // would drop it. A flush footnote opener enters the body; a non-blank line
+    // back at column 0 (a new top-level block) leaves it; blank/indented lines
+    // stay inside.
+    let inFootnoteBody = false;
     for (let idx = 0; idx < lexer.lines.length; idx++) {
         // Skip leading frontmatter — `lexer.pos` is its end (0 when there is
         // none, including an unclosed opener that is NOT frontmatter), so a
@@ -646,6 +654,12 @@ function collectLinkDefs(lexer) {
             fence = { ch: open[2][0], len: open[2].length, contentCol, quoted: rawIsQuoted };
             continue;
         }
+        // Maintain footnote-body context (see `inFootnoteBody` above): a flush
+        // footnote opener enters the body; a non-blank line at column 0 leaves it.
+        if (RE_FOOTNOTE_DEF.test(raw))
+            inFootnoteBody = true;
+        else if (raw.trim() !== '' && leadingWhitespace(raw) === 0)
+            inFootnoteBody = false;
         // An abbreviation def (`*[ABBR]: ...`) is not a link def.
         if (RE_ABBR_DEF.test(line))
             continue;
@@ -653,7 +667,18 @@ function collectLinkDefs(lexer) {
         // parseFootnoteDef; skip here so RE_LINK_DEF can't capture `^label`.
         if (RE_FOOTNOTE_DEF.test(line))
             continue;
-        const m = RE_LINK_DEF.exec(line);
+        // Strict column-0 rule: a definition is a block opener recognized ONLY at
+        // its container's content column. At the true document top level
+        // (contentCol 0, outside any footnote body) a def indented above column 0 is
+        // literal paragraph text -- not collected here (and rendered literally by the
+        // block parser, whose RE_LINK_DEF consumption is likewise flush-only), so the
+        // flat pre-pass does not resolve a reference against an indented non-def line.
+        // Nested defs (list items, footnote bodies, blockquotes) keep the lenient
+        // collection: their real content column is >0 or the flat pass cannot model
+        // it, and the oracle resolves them, so `deIndented` residual whitespace must
+        // NOT reject them.
+        const topLevelIndentedDef = contentCol === 0 && !inFootnoteBody && /^[ \t]/.test(deIndented);
+        const m = topLevelIndentedDef ? null : RE_LINK_DEF.exec(line);
         if (m) {
             const def = { href: m[2] };
             const title = m[3] ?? m[4];
@@ -739,7 +764,11 @@ function parseBlocks(lexer, baseIndent) {
  * line (which then floats forward via parseBlocks).
  */
 function peekBlockAttributes(lexer) {
-    if (!/^\s*\{/.test(lexer.peek()))
+    // Strict column-0 rule: a block-attribute line opens ONLY at its container's
+    // content column (column 0 in every parseBlocks context, since nested content
+    // is dedented into a sub-lexer). A `{...}` indented ABOVE that column does not
+    // attach -- it is literal paragraph text. So require the `{` flush, not `\s*{`.
+    if (!/^\{/.test(lexer.peek()))
         return false;
     let collected = '';
     let n = 0;
@@ -762,7 +791,9 @@ function peekBlockAttributes(lexer) {
     return parseBlockAttributeRun(collected) !== null;
 }
 function tryCollectBlockAttributes(lexer) {
-    if (!/^\s*\{/.test(lexer.peek()))
+    // Strict column-0 rule (see peekBlockAttributes): only a flush `{` opens a
+    // block-attribute line; an indented one is literal paragraph text.
+    if (!/^\{/.test(lexer.peek()))
         return null;
     let collected = '';
     let n = 0;
@@ -946,7 +977,14 @@ function parseBlockInner(lexer) {
         return parseFootnoteDef(lexer);
     // Reference-link definitions were collected in the first pass; the
     // line itself produces no block (consume it so it is not a paragraph).
-    if (RE_LINK_DEF.test(line)) {
+    // Strict column-0 rule: RE_LINK_DEF is whitespace-tolerant (its leading
+    // `[^\S ]*` matches spaces/tabs so a quoted/nested def is still
+    // recognized in other passes), but a def is a block opener and opens ONLY at
+    // its container's content column (column 0 here). An INDENTED `[x]: …` line is
+    // literal paragraph text -- and, since RE_LINK_DEF also matches `[^fn]: …`, an
+    // indented footnote def (missed by the flush-anchored RE_FOOTNOTE_DEF above)
+    // must not be swallowed here either. Require the def flush at column 0.
+    if (leadingWhitespace(line) === 0 && RE_LINK_DEF.test(line)) {
         lexer.consume();
         return null;
     }

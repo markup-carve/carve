@@ -1,0 +1,17 @@
+Outer item with an internal blank before an attached block is loose
+
+```
+- a
+  - b
+
+   > q
+.
+<ul>
+  <li><p>a</p>
+    <ul>
+      <li>b</li>
+    </ul>
+    <p>&gt; q</p>
+  </li>
+</ul>
+```

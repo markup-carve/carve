@@ -4951,3 +4951,297 @@ wrapped</dt>
 ```
 
 :::
+
+## Indented attribute line stays literal
+
+A top-level block opener only fires at column 0. An attribute brace indented by
+even a single space is not a floating attribute block, so it does not attach to
+what follows: the brace and the block below it fold together as one literal
+paragraph (the newline shows as a space when the two lines join).
+
+An indented `{…}` above a paragraph stays literal.
+
+::: compare
+
+```carve
+ {.note}
+ This paragraph.
+```
+
+```html
+<p>{.note}
+This paragraph.</p>
+```
+
+:::
+
+An indented `{…}` above a list does not attach to the list either; the whole run
+is one literal paragraph and the bullet lines never open a list.
+
+::: compare
+
+```carve
+ {.todo}
+ - one
+ - two
+```
+
+```html
+<p>{.todo}
+- one
+- two</p>
+```
+
+:::
+
+Control - flush left at column 0 the same brace is a floating attribute block and
+attaches to the paragraph below it.
+
+::: compare
+
+```carve
+{.note}
+Para
+```
+
+```html
+<p class="note">Para</p>
+```
+
+:::
+
+## Indented image and caption stay literal
+
+A lone image on its own line at column 0 becomes a `<figure>` when a `^ ` caption
+line follows. Indented by a space, neither the image line nor the caption is a
+top-level opener, so the pair folds into a literal paragraph with the raw `^ `
+still in the text.
+
+::: compare
+
+```carve
+ ![Apollo](a.jpg)
+ ^ Figure 1: moon
+```
+
+```html
+<p><img src="a.jpg" alt="Apollo">
+^ Figure 1: moon</p>
+```
+
+:::
+
+An indented attribute brace above the indented image and caption is likewise
+literal; all three lines join as one paragraph.
+
+::: compare
+
+```carve
+ {.gallery}
+ ![Apollo](a.jpg)
+ ^ Figure 1: moon
+```
+
+```html
+<p>{.gallery}
+<img src="a.jpg" alt="Apollo">
+^ Figure 1: moon</p>
+```
+
+:::
+
+Control - flush left at column 0 the same image and caption form the `<figure>`.
+
+::: compare
+
+```carve
+![Apollo](a.jpg)
+^ Figure 1: moon
+```
+
+```html
+<figure>
+  <img src="a.jpg" alt="Apollo">
+  <figcaption>Figure 1: moon</figcaption>
+</figure>
+```
+
+:::
+
+## Indented reference and footnote definitions stay literal
+
+A reference-link definition and a footnote definition are top-level block
+constructs that register at column 0. Indented by a space the definition line is
+an ordinary paragraph: it registers nothing, so the reference or footnote that
+used it never resolves and both render as literal text.
+
+An indented reference definition does not register; the link stays unresolved.
+
+::: compare
+
+```carve
+ Read [intro][x].
+
+ [x]: /intro "T"
+```
+
+```html
+<p>Read [intro][x].</p>
+<p>[x]: /intro “T”</p>
+```
+
+:::
+
+An indented footnote definition does not register; the footnote reference stays
+literal.
+
+::: compare
+
+```carve
+ Note[^fn].
+
+ [^fn]: body.
+```
+
+```html
+<p>Note[^fn].</p>
+<p>[^fn]: body.</p>
+```
+
+:::
+
+## Indented colon-fence blocks stay literal
+
+A `:::` line opens a container only at column 0. Indented by a space it is not a
+fence opener, so the marker, the body, and the closing marker all fold into one
+literal paragraph. This holds for a bare div, a `::: |` line block, and a named
+admonition alike.
+
+An indented bare `:::` div stays literal.
+
+:::: compare
+
+```carve
+ :::
+ A box.
+ :::
+```
+
+```html
+<p>:::
+A box.
+:::</p>
+```
+
+::::
+
+An indented `::: |` line block stays literal.
+
+:::: compare
+
+```carve
+ ::: |
+ Roses,
+ Violets.
+ :::
+```
+
+```html
+<p>::: |
+Roses,
+Violets.
+:::</p>
+```
+
+::::
+
+An indented `::: note` admonition stays literal.
+
+:::: compare
+
+```carve
+ ::: note
+ Body.
+ :::
+```
+
+```html
+<p>::: note
+Body.
+:::</p>
+```
+
+::::
+
+Control - flush left at column 0 the same `:::` opens a div.
+
+:::: compare
+
+```carve
+:::
+A box.
+:::
+```
+
+```html
+<div>
+  <p>A box.</p>
+</div>
+```
+
+::::
+
+## Below-content-column div body in a list item stays literal
+
+Inside a list item the block openers key on the item content column, not column
+0. A `::: note` sitting at the marker on the item's first line opens no
+container when its body and closing marker sit *below* the content column: they
+are lazy paragraph continuations, so the whole run - including the `::: note`
+opener line - folds into the item as literal text rather than an admonition.
+
+:::: compare
+
+```carve
+- ::: note
+ - para text
+ :::
+```
+
+```html
+<ul>
+  <li>::: note
+- para text
+:::</li>
+</ul>
+```
+
+::::
+
+## Outer item with an internal blank before an attached block is loose
+
+An outer list item that contains its own blank line before a block attached
+below its nested list is loose: the item's leading text is wrapped in a `<p>`.
+The blank line separates the item's own content from the trailing blockquote-like
+paragraph, so the item is not tight even though its nested child list is.
+
+::: compare
+
+```carve
+- a
+  - b
+
+   > q
+```
+
+```html
+<ul>
+  <li><p>a</p>
+    <ul>
+      <li>b</li>
+    </ul>
+    <p>&gt; q</p>
+  </li>
+</ul>
+```
+
+:::

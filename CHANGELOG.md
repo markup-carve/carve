@@ -22,6 +22,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Corpus pins for the strict column-0 rule and one list-looseness fix** now
+  confirmed converged across carve-js, carve-php, carve-rs and the oracle
+  (155-160). A top-level block opener only fires at column 0: indented by even a
+  single space it stays literal paragraph text. Pinned across the construct
+  families - an indented attribute line before a paragraph or list (155), an
+  indented image with a `^ ` caption, alone or under an indented attribute brace
+  (156), an indented reference-link or footnote definition, which then registers
+  nothing (157), and an indented `:::` div, `::: |` line block, or `::: note`
+  admonition (158). Each of 155, 156, and 158 also pins a flush-left control
+  proving the column-0 form still fires (attribute attaches, figure forms, div
+  opens). Inside a list item the openers key on the content column: a `::: note`
+  whose body sits below it folds as literal text (159). Finally, an outer list
+  item carrying its own internal blank before a block attached under its nested
+  list is loose, wrapping its lead text in a `<p>` (160, the list-looseness fix).
 - **Corpus pin for a newly-aligned definition-term wrapping behavior** (154). A
   `:: term` continued by a wrapped line that sits below the item content column
   is a lazy continuation, so its leading whitespace is stripped before it folds

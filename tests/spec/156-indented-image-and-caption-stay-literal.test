@@ -1,0 +1,29 @@
+Indented image and caption stay literal
+
+```
+ ![Apollo](a.jpg)
+ ^ Figure 1: moon
+.
+<p><img src="a.jpg" alt="Apollo">
+^ Figure 1: moon</p>
+```
+
+```
+ {.gallery}
+ ![Apollo](a.jpg)
+ ^ Figure 1: moon
+.
+<p>{.gallery}
+<img src="a.jpg" alt="Apollo">
+^ Figure 1: moon</p>
+```
+
+```
+![Apollo](a.jpg)
+^ Figure 1: moon
+.
+<figure>
+  <img src="a.jpg" alt="Apollo">
+  <figcaption>Figure 1: moon</figcaption>
+</figure>
+```

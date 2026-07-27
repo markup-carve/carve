@@ -844,6 +844,16 @@ export function promoteBlockImages(blocks, figuresOnly = false) {
             // A REAL image only (see above): an unresolved reference is literal text,
             // not a figure target.
             !b.children[0].ref &&
+            // Strict column-0 rule: an image+caption forms a <figure> ONLY when the
+            // image begins at its container's content column. parseParagraph strips a
+            // paragraph's leading indentation, so the AST text alone can't tell an
+            // indented image+caption (which must stay literal) from a flush one; the
+            // image's source column does. A flush image (top level OR the dedented
+            // content column of any container) has startColumn === 1 -- an image
+            // indented ABOVE that column has startColumn > 1 and does not promote. When
+            // positions are suppressed (pos undefined) fall back to the prior behavior.
+            (b.children[0].pos === undefined ||
+                b.children[0].pos.startColumn === 1) &&
             b.children[1].type === 'soft_break' &&
             b.children[2].type === 'text' &&
             // Mirror the caption delimiter (§4/§553): `^` + one-or-more spaces (a
