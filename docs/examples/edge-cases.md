@@ -5245,3 +5245,140 @@ paragraph, so the item is not tight even though its nested child list is.
 ```
 
 :::
+
+## Unresolved footnote reference with a trailing attribute stays literal
+
+A `[^a]` footnote reference with no matching definition is not a footnote and
+does not become an attributed span: it stays literal text, and a following
+`{...}` attribute block does not attach to it.
+
+::: compare
+
+```carve
+Text[^a]{.ref}.
+```
+
+```html
+<p>Text[^a].</p>
+```
+
+:::
+
+A resolved footnote reference is unaffected.
+
+::: compare
+
+```carve
+Text[^a].
+
+[^a]: note.
+```
+
+```html
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+A genuine bracketed span with attributes still works.
+
+::: compare
+
+```carve
+A [span]{.c} here.
+```
+
+```html
+<p>A <span class="c">span</span> here.</p>
+```
+
+:::
+
+## Tight list item keeps trailing text after a block bare
+
+In a tight list item, text that follows a closed block (a fenced code block, a
+div, or an admonition) is part of the item's inline content and is not wrapped
+in a `<p>`, matching the item's tightness. Only a blank-separated (loose) item
+wraps its paragraphs.
+
+::: compare
+
+````carve
+- item
+  ```
+  c
+  ```
+  tail
+````
+
+```html
+<ul>
+  <li>item
+    <pre><code>c
+</code></pre>
+    tail
+  </li>
+</ul>
+```
+
+:::
+
+The same holds after a div body, and for an ordered item.
+
+::: compare
+
+```carve
+- item
+  :::note
+  body
+  :::
+  tail
+```
+
+```html
+<ul>
+  <li>item
+    <aside class="admonition note">
+      <p>body</p>
+    </aside>
+    tail
+  </li>
+</ul>
+```
+
+:::
+
+A blank line makes the item loose, so its leading text and the trailing text
+are each wrapped.
+
+::: compare
+
+````carve
+- item
+
+  ```
+  c
+  ```
+
+  tail
+````
+
+```html
+<ul>
+  <li><p>item</p>
+    <pre><code>c
+</code></pre>
+    <p>tail</p>
+  </li>
+</ul>
+```
+
+:::

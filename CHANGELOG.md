@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- The executable-spec oracle's hyphen-run smart typography now uses the canonical
+  allocateDashes decomposition (all em when divisible by 3, all en when even,
+  otherwise the most em-dashes with the remainder as en, trading one em-dash for
+  two en-dashes when the remainder is 1). It previously emitted a single em-dash
+  for every odd non-multiple-of-3 run, diverging from carve-js and carve-php at
+  runs of 11 and 13 hyphens.
+
 - The executable-spec oracle now applies the lenient definition-list rule (PART 9
   §24 C3): a `:  def` line attaches as a `<dd>` to its open `:: term` at or below
   the term's column (even under the item content column), and an over-indented
@@ -21,6 +28,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `<div>`, and carve-rs bare output that dropped the css class (carve#302).
 
 ### Added
+
+- **Corpus pins for three converged edge cases** confirmed across carve-js,
+  carve-php, carve-rs and the oracle: a longer hyphen-run ladder (7, 8, 10, 11,
+  13) extending the smart-typography dashes example so the allocation is pinned
+  with no leftover literal hyphen; an unresolved `[^a]` footnote reference with a
+  trailing `{...}` attribute stays literal text and does not become an attributed
+  span (161); and a tight list item keeps trailing text after a closed block (a
+  fenced code block, div, or admonition) bare, wrapping it in a `<p>` only when a
+  blank line makes the item loose (162).
 
 - **Corpus pins for the strict column-0 rule and one list-looseness fix** now
   confirmed converged across carve-js, carve-php, carve-rs and the oracle

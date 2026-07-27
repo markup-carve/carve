@@ -2333,6 +2333,20 @@ a---- b----- c------
 
 :::
 
+Longer runs follow the same allocation with no leftover hyphen: seven is one em plus two en, eight is four en, ten is five en, eleven is three em plus one en, and thirteen is three em plus two en.
+
+::: compare
+
+```carve
+a------- b-------- c---------- d----------- e-------------
+```
+
+```html
+<p>a—–– b–––– c––––– d———– e———––</p>
+```
+
+:::
+
 ## Smart typography arrows and symbols
 
 Arrows, comparisons, plus/minus and symbols are converted. Fractions are

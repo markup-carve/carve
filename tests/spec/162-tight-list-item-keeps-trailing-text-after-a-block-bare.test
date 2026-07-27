@@ -1,0 +1,52 @@
+Tight list item keeps trailing text after a block bare
+
+````
+- item
+  ```
+  c
+  ```
+  tail
+.
+<ul>
+  <li>item
+    <pre><code>c
+</code></pre>
+    tail
+  </li>
+</ul>
+````
+
+```
+- item
+  :::note
+  body
+  :::
+  tail
+.
+<ul>
+  <li>item
+    <aside class="admonition note">
+      <p>body</p>
+    </aside>
+    tail
+  </li>
+</ul>
+```
+
+````
+- item
+
+  ```
+  c
+  ```
+
+  tail
+.
+<ul>
+  <li><p>item</p>
+    <pre><code>c
+</code></pre>
+    <p>tail</p>
+  </li>
+</ul>
+````
