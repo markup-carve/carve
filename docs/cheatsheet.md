@@ -108,6 +108,11 @@ two
 :::
 ````
 
+> Block markers must start at column 0 (or, inside a list, at the item's content
+> column). A marker indented past that - an indented `#`, `>`, `-`, `` ``` ``, or
+> `:::` - is literal paragraph text, not a block. Markdown tolerates 0-3 spaces
+> of leading indent here; Carve does not.
+
 ## Tables
 
 ```carve

@@ -61,7 +61,7 @@ differs by processor. The narrative below details each tier.
 - Tier 1: corpus categories 01–88 (admonitions, footnotes, cross-references,
   list-item attributes, `::: |` verse, `<…>` autolinks, the
   `:name[…]` / `::: name` extension syntax). Recognized `:::` type words
-  (the eight admonitions + `line-block`) are catalogued in [`examples/extensions.md`](/examples/extensions). Smart
+  (the eight admonitions + `line-block`) are cataloged in [`examples/extensions.md`](/examples/extensions). Smart
   typography and `@mention` / `#tag` / `:symbol:` parsing are also default-on and
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, symbol map (e.g. emoji glyphs),

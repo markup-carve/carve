@@ -123,7 +123,7 @@ An inline element lives inside a line of text.
 
 - Emphasis `/…/`, strong `*…*`, underline `_…_`
 - Strikethrough `~…~`, highlight `=…=`, subscript `{,…,}`, superscript `{^…^}`
-- Inline code - `` `…` ``
+- Inline code - `` `…` ``, inline literal - `` !`…` `` (verbatim text, no code styling)
 - Link `[…](…)`, reference link `[…][…]`, image `![…](…)`
 - Span `[…]{…}`, autolink `<…>`, footnote reference `[^…]`
 - Math, `:symbol:`, `@mention`, `#tag`

@@ -265,4 +265,5 @@ When moving a document from Markdown to Carve:
 - [ ] Convert GFM table delimiter rows to `|=` header cells
 - [ ] Replace `~~strike~~` with `~strike~` (single tilde)
 - [ ] Move any heading `{#id}` onto the line above the heading (trailing is literal)
+- [ ] Check the indentation of top-level block markers: a leading-indented `#`, `>`, `-`, `` ``` ``, or `:::` is literal paragraph text in Carve, not a block. Markdown tolerates 0-3 spaces of indent; Carve requires a block marker at column 0 (or, inside a list, at the item's content column)
 - [ ] Decide on raw HTML: bare `<tags>` become literal text, so replace them with Carve constructs (or use the explicit `{=html}` passthrough for trusted content; disable it with `allowRawHtml: false` for untrusted input)
