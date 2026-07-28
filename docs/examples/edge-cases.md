@@ -5499,13 +5499,13 @@ implementation that loses the literal at that point silently flips the direction
 
 A \{ before a quote still opens it: \{"open"
 
-Unescaped for contrast: {"open"} and *'q'*
+Unescaped for contrast: {"open"}
 ```
 
 ```html
 <p>{“quoted”} and &lt;”q”&gt; and *’q’*</p>
 <p>A { before a quote still opens it: {“open”</p>
-<p>Unescaped for contrast: {“open”} and <strong>‘q’</strong></p>
+<p>Unescaped for contrast: {“open”}</p>
 ```
 
 :::
