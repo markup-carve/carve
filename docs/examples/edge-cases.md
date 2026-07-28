@@ -1019,6 +1019,31 @@ b
 
 :::
 
+Plain text on the line after a fenced code block closes is the item's own
+trailing text. With no blank line anywhere the item stays tight, so that text
+is not wrapped in a paragraph.
+
+::: compare
+
+````carve
+- ```
+  x
+  ```
+  after
+````
+
+````html
+<ul>
+  <li>
+    <pre><code>x
+</code></pre>
+    after
+  </li>
+</ul>
+````
+
+:::
+
 ## Doubled emphasis delimiters
 
 A bare single-character emphasis delimiter immediately adjacent to the same
@@ -1659,6 +1684,22 @@ An ordered marker ends the heading the same way (symmetric with the bullet).
     <li>one</li>
   </ol>
 </section>
+```
+
+:::
+
+A marker followed by whitespace only is not a heading — the content after the
+required space must carry at least one non-whitespace character, so the trailing
+spaces leave the line as paragraph text.
+
+::: compare
+
+```carve
+#  
+```
+
+```html
+<p>#</p>
 ```
 
 :::

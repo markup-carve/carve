@@ -26,7 +26,10 @@ export class Refuse extends Error {
 // pathologically nested document REFUSES instead of overflowing the JS stack.
 const MAX_NESTING_DEPTH = 200
 
-const HEADING = /^(#{1,6}) (.*)$/
+// Content after the marker+space must carry at least one non-ASCII-whitespace
+// character: `#  ` / `#   ` (marker + whitespace only) is NOT a heading, exactly
+// like a caption. A leading tab is content (`# \tx` is a heading with `\tx`).
+const HEADING = /^(#{1,6}) ((?=.*[^ \t\n\r\f]).*)$/
 const HR = /^(-{3,}|\*{3,}|_{3,})[ \t]*$/
 const FENCE = /^(`{3,}|~{3,})(.*)$/
 const PURE_FENCE = /^(`{3,}|~{3,})[ \t]*$/

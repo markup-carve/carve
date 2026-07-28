@@ -78,3 +78,18 @@ b
   <li>c</li>
 </ul>
 ````
+
+````
+- ```
+  x
+  ```
+  after
+.
+<ul>
+  <li>
+    <pre><code>x
+</code></pre>
+    after
+  </li>
+</ul>
+````
