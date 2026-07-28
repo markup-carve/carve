@@ -1795,6 +1795,50 @@ EOF = (* end of file *) ;
         fractions (recorded in dismissed-syntax.md). Converted set:
         dashes, ellipsis, smart quotes, arrows, comparisons, `+-`, and
         symbols (`(c)`,`(r)`,`(tm)`).
+      - UNCONDITIONAL BY DEFAULT -- NORMATIVE. The substitution belongs to
+        the default inline layer, not to an opt-in feature: a conformant
+        implementation performs it with NO extension registered. A locale
+        or glyph extension (a German / Swiss quote set, say) selects WHICH
+        characters are emitted; it does NOT decide WHETHER the substitution
+        runs, and removing such an extension does not disable the
+        transform. Stated explicitly because the existence of a
+        smart-quotes extension otherwise reads as "the transform is that
+        extension" -- it is not (carve#338).
+      - OPTIONAL OFF SWITCH -- NORMATIVE WHERE OFFERED. A host MAY expose
+        one document-global switch, `smartTypography`, defaulting to TRUE
+        (idiomatic spellings: `smartTypography: false` in carve-js and
+        carve-php, `Options::with_smart_typography(false)` in carve-rs).
+        A host that omits the switch stays conformant. Where it IS offered
+        and set to FALSE:
+        * every `smart_typography` production is suppressed -- dashes,
+          ellipsis, smart quotes, arrows, comparisons, and the typographic
+          symbols `(c)` `(r)` `(tm)` `+-` -- and each trigger character
+          survives as the ASCII the author typed;
+        * the `:name:` symbol production is UNAFFECTED; it is not a
+          `smart_typography` production, and its precedence over the
+          typographic forms is unchanged;
+        * escape handling is UNAFFECTED: `\"`, `\-`, `\.` still consume the
+          backslash and yield the bare character (PART 7). Turning the
+          switch off changes which UNESCAPED characters convert, nothing
+          about escapes;
+        * heading ids are BYTE-IDENTICAL either way. Ids are computed from
+          the ASCII source (the reverse pass in HEADING IDENTIFIERS above),
+          so with the switch off that pass has nothing to reverse -- it is
+          a no-op, not a different result;
+        * the switch is DOCUMENT-GLOBAL and applies to EVERY target.
+          PER-TARGET DEFAULTS ARE NON-CONFORMANT (on for HTML, off for
+          Markdown / plain / ANSI): one source must carry the same text on
+          every target, and a target-dependent default would let
+          `to_html(x)` and `to_markdown(x)` disagree about what the
+          document says.
+        Pinned in tests/corpus-optional (feature `smart-typography-off`).
+      - THE LAYER IS UNOBSERVABLE. An implementation MAY apply the
+        substitution at inline-parse time (carve-js, carve-php) or inside
+        each renderer (carve-rs); both are conformant, because the rendered
+        output is identical in every target. Render time is RECOMMENDED but
+        not required: it keeps the author's ASCII in the AST, which is what
+        a canonical writer needs to reproduce the source spelling. See
+        divergence-from-djot.md section 12.
 
    9. EMPHASIS SPAN RESOLUTION -- FORMAL GUARDS + DELIMITER-STACK
       OPERATIONAL SEMANTICS (governs the *_content productions in PART 3;

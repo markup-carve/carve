@@ -394,6 +394,74 @@ Djot instead attaches at any indent, which means a block one space under the
 marker - visually left of the item's own text - still becomes a child. The
 `+` continuation marker (§3) still attaches a flush-left block regardless.
 
+## 12. Smart punctuation is a text transform, not AST nodes
+
+**Djot:** smart punctuation is structural. The AST has `double_quoted` and
+`single_quoted` *container* nodes, plus a `smart_punctuation` node that retains
+the original source text. The HTML writer maps those to glyphs; the Djot writer
+emits the author's `"`, `--` and `...` back verbatim.
+
+**Carve:** the substitution is a plain text transform. A converted quote, dash
+or ellipsis is ordinary `text`; there is no node type for it, and
+[node-type profiles](/profiles) name none. The rules themselves are the same as
+Djot's: unconditional, per-character quote direction from the preceding
+character, `\"` for a literal.
+
+**Why.** The node types buy Djot exactly one thing - a writer that reproduces
+the author's spelling - and they charge every consumer for it. A filter, a
+profile allowlist, a renderer and every AST walker have to know three extra
+container types whose only content is punctuation, and a link label containing a
+quote becomes a nested container rather than a string. Carve keeps the AST
+vocabulary small enough to hold in your head, so punctuation stays text.
+
+The cost is real and worth naming: because the transform is not represented,
+`carve fmt` normalizes ASCII punctuation to its typographic form. Formatting
+`He said "hello"` writes back `He said “hello”`. That is a normalization, not a
+loss of meaning - the reformatted source renders byte-identically, and a second
+pass is stable - but it is the one place where Djot's model is better, and the
+gap is tracked rather than denied.
+
+### Turning it off
+
+The transform runs with no extension registered. A smart-quotes / locale
+extension picks *which* glyphs are emitted, not *whether* the substitution
+happens - removing it does not turn the transform off.
+
+Hosts may offer one document-global switch, `smartTypography` (default `true`),
+which suppresses the whole converted set - dashes, ellipsis, quotes, arrows,
+comparisons, `(c)` `(r)` `(tm)` `+-` - leaving the author's ASCII in place:
+
+::: code-group
+
+```js [carve-js]
+carveToHtml(source, { smartTypography: false })
+```
+
+```php [carve-php]
+$converter = CarveConverter::create(smartTypography: false);
+```
+
+```rust [carve-rs]
+let options = Options::default().with_smart_typography(false);
+```
+
+:::
+
+The switch is document-global on purpose. Defaulting it per target - on for
+HTML, off for Markdown and plain text - was considered and rejected: one source
+must carry the same text on every target, and a target-dependent default would
+let `to_html(x)` and `to_markdown(x)` disagree about what the document says.
+
+Turning it off is for **machine-facing** output: a corpus rendered to Markdown
+or plain text for a model to read, generated documentation that has to stay
+diff-stable, or anything re-parsed downstream, where a curly quote is a
+character the consumer did not ask for and cannot reverse. For output aimed at
+human readers - which is the default case - leave it on.
+
+The switch changes nothing else. Escapes still work (`\"` yields a straight
+quote either way), `:name:` symbols are untouched, and heading ids are
+byte-identical, because ids are computed from the ASCII source in both modes.
+
 ## What Carve adds on top (not breaks)
 
 These aren't divergences - Djot has no equivalent - but they're why Carve exists

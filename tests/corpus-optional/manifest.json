@@ -140,6 +140,11 @@
       "slug": "28-tabs-panel-title",
       "feature": "tabs",
       "description": "A tab's quoted title is content: it stays inside the panel as the admonition-title line while the [label] becomes the tab button."
+    },
+    {
+      "slug": "29-smart-typography-off",
+      "feature": "smart-typography-off",
+      "description": "With the optional document-global smartTypography switch set to false, the whole converted set stays as authored ASCII; escapes, code spans and heading ids are unchanged (carve#338)."
     }
   ]
 }

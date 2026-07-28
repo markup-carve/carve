@@ -24,6 +24,8 @@ Examples:
 - `symbol-map` → `:name:` symbol map (e.g. shortcode-to-glyph for emoji)
 - `smart-quotes-locale-de` → locale-aware quote extension/config
 - `bare-url-autolink` → bare-URL autolink extension/config
+- `smart-typography-off` → the optional document-global `smartTypography: false`
+  switch (PART 9 §8); implementations that do not offer the switch skip the case
 
 The filenames are stable (`NN-slug.crv` / `NN-slug.html`) so runners can pair
 them by basename after filtering through the manifest.

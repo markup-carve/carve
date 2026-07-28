@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Smart typography is now specified as unconditional by default (PART 9 §8): a
+  conformant implementation performs the substitution with no extension
+  registered, and a locale/glyph extension selects which characters are emitted
+  rather than whether the transform runs. Hosts may offer one document-global
+  `smartTypography` switch (default `true`) that suppresses the whole converted
+  set; per-target defaults are non-conformant. Escapes, `:name:` symbols and
+  heading ids are unaffected in either mode. Pinned by the optional corpus
+  feature `smart-typography-off`, and explained in
+  `docs/divergence-from-djot.md` section 12, which also records why Carve keeps
+  smart punctuation as plain text instead of Djot's `double_quoted` /
+  `smart_punctuation` AST nodes.
+
 ## [0.1.1] - 2026-07-27
 
 ### Fixed
