@@ -15,6 +15,22 @@ Compact list blocks
 ```
 
 ```
+- fruit
+
+  - apples
+- vegetables
+.
+<ul>
+  <li>fruit
+    <ul>
+      <li>apples</li>
+    </ul>
+  </li>
+  <li>vegetables</li>
+</ul>
+```
+
+```
 - item
 
   second para

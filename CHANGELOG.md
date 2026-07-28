@@ -7,7 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `scripts/compare-impls.mjs` now compares every render target, not just HTML.
+  `--targets=all` (the new default) covers `html`, `markdown`, `plain`, `carve`
+  and `ansi`; only `html` has expected-output fixtures, so the other four are
+  compared implementation-against-implementation (trailing-newline-insensitively,
+  as elsewhere in the project). Identical output across the three engines was an
+  invariant that four of five targets had nothing checking it.
+
 ### Added
+
+- **Corpus pin for the compact sub-list rule with a following sibling**
+  (85-compact-list-blocks-2). §17 L2 keeps an item tight when a blank line
+  precedes its sub-block, and the existing pin used a block quote with no
+  sibling after it. The sub-list variant with a following item was unpinned, and
+  carve-rs got it wrong: the blank leaked past the sub-list and the sibling
+  marker read it as a blank between items, rendering the whole list loose
+  (carve-rs#286). Because the canonical writer emits exactly this shape for
+  ordinary nested lists, carve-rs was also breaking
+  `to_html(fmt(x)) == to_html(x)` on a plain two-level list.
 
 - **The canonical source writer is now specified** (new PART 11). `carve fmt`
   and the `carve` render target had no normative text at all, so their behavior
