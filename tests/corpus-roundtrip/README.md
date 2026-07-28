@@ -13,20 +13,22 @@ the writer's escaping decisions, and whether formatting a document preserves it.
 - **The minimal-escape form** where it re-parses identically (PART 11 §2). This
   is the interesting half: `50% faster: yes (ok)` must come back unchanged, not
   as `50\% faster\: yes \(ok\)`.
-- **The conservative whole-line form** where the minimal form would change
-  meaning (PART 11 §4 W4). `04-literal-punctuation` and
-  `06-column-zero-literals` are those cases - their escapes are load-bearing,
-  and a writer that drops them corrupts the document.
+- **The conservative form** where the minimal form would change meaning
+  (PART 11 §4 W4). `04-literal-punctuation`, `06-column-zero-literals` and
+  `07-mention-and-tag-literals` are those cases - their escapes are
+  load-bearing, and a writer that drops them corrupts the document.
 
-`04` also shows the cost the whole-line fallback accepts: the trailing `.` in
-that line does not need escaping on its own, but the line falls back as a unit,
-so it is escaped along with the rest. That keeps the output a function of the
-line, which is what lets three engines agree byte-for-byte.
+`04` shows the cost the fallback accepts: the trailing `.` needs no escape on
+its own, but the decision is document-scoped, so it is escaped along with the
+rest. That bluntness is deliberate - see PART 11 §4, "why document scope". A
+finer rule cannot be implemented, because anything smaller than a document
+loses the link-reference and footnote definitions and reports differences that
+escaping never caused.
 
-`07` covers the case that proves the candidate set has to be complete: a line
-carrying both literal `\@user` / `\#tag` text and a real `@who` mention. If `@`
-were missing from the set, W4 would have nothing to escape with and the literal
-would silently become a mention.
+`07` proves the candidate set has to be complete: a document carrying both
+literal `\@user` / `\#tag` text and a real `@who` mention. If `@` were missing
+from the set, W4 would have nothing to escape with and the literal would
+silently become a mention.
 
 ## Why the byte assertions are skipped
 

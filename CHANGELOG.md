@@ -9,6 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 11 amended after implementing it.** Three corrections, each forced by
+  the parser rather than chosen:
+
+  The escaping decision is **document-scoped**, not per line. A line re-parsed
+  on its own has lost the document's link-reference and footnote definitions, so
+  a paragraph carrying `[text][ref]` comes back with an empty destination and
+  reports a difference escaping never caused. Any scope smaller than the
+  document has that defect.
+
+  The two renders are **compared with each other**, not the minimal render
+  against the document being written. Comparing against the source document
+  inherits the writer's existing round-trip gaps and flips the escaping decision
+  between passes, breaking idempotence for a reason unrelated to escaping.
+
+  The **caret is unconditional**. It opens nothing on its own, but its escape
+  carries information the AST records separately - a text node whose leading
+  caret came from an escape is marked, so an image followed by a caret line is
+  not promoted to a figure. Comparing that mark would escalate every document
+  whose text begins with a caret; ignoring it would silently turn the image case
+  into a figure.
+
+- **PART 11 §1 now records a known gap.** The first invariant,
+  `parse(fmt(x)) == parse(x)`, is not met by any engine today: a table with a
+  colspan, a doubled alignment marker, some list-item attribute forms and one
+  line-block shape re-parse to a different document while rendering identical
+  HTML. Nothing caught it because every existing check compares HTML, which is
+  equal in all of those cases.
+
+### Changed
+
 - `scripts/compare-impls.mjs` now compares every render target, not just HTML.
   `--targets=all` (the new default) covers `html`, `markdown`, `plain`, `carve`
   and `ansi`; only `html` has expected-output fixtures, so the other four are

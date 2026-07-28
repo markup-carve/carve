@@ -2826,6 +2826,15 @@ EOF = (* end of file *) ;
       that gains an escape per pass violates it, which is how over-escaping is
       usually first noticed.
 
+      KNOWN GAP -- the first invariant is NOT met by every implementation
+      today. A table carrying a colspan, a doubled alignment marker, some
+      list-item attribute forms and one line-block shape re-parse to a
+      DIFFERENT document while rendering identical HTML, in every engine.
+      Nothing caught it because every existing check compares rendered HTML,
+      which is equal in all of those cases. It is stated here rather than left
+      implied: an implementation that satisfies §2 can still fail §1, and §4's
+      comparison is built to be unaffected by that.
+
    2. THE ESCAPING RULE -- NORMATIVE. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
 
@@ -2849,20 +2858,41 @@ EOF = (* end of file *) ;
 
    4. THE CONFORMANT STRATEGY -- PINNED OUTPUT, FREE IMPLEMENTATION. An
       implementation MAY compute §2 however it likes, but the OUTPUT is pinned
-      to this decision, taken per emitted line:
+      to this decision, taken over the WHOLE DOCUMENT:
 
-      W1 Build the MINIMAL form: escape only the UNCONDITIONAL set (§5).
-      W2 Re-parse that line in its block context and compare the resulting
-         inline nodes with the nodes being written.
-      W3 If they match, emit the minimal form.
-      W4 Otherwise emit the CONSERVATIVE form: additionally escape every
-         CANDIDATE-set character (§5) on that line.
+      W1 Render the document twice: the MINIMAL form, escaping only the
+         UNCONDITIONAL set (§5), and the CONSERVATIVE form, additionally
+         escaping every CANDIDATE-set character (§5).
+      W2 If the two are byte-identical, emit either.
+      W3 Otherwise parse BOTH and compare the resulting documents, ignoring
+         source positions and key order.
+      W4 Equal -> emit the minimal form. Different -> emit the conservative
+         form.
 
       Two forms and one comparison, with the choice made by the parser rather
       than by a table -- so the writer cannot drift from the grammar as the
-      grammar grows. W4 is deliberately whole-line rather than per-character:
-      it keeps the output a function of the line alone, so every
-      implementation lands on the same bytes.
+      grammar grows.
+
+      WHY DOCUMENT SCOPE. An earlier draft of this section decided per line.
+      That cannot be implemented: a line re-parsed on its own has lost the
+      document's link-reference and footnote definitions, so a paragraph
+      carrying `[text][ref]` comes back with an empty destination and reports a
+      difference escaping never caused. Any scope smaller than the document has
+      the same defect. The cost is bluntness -- one genuinely-escaped character
+      anywhere makes the whole document conservative -- which is still strictly
+      better than escaping everything unconditionally, and finer granularity
+      would cost a full parse per block.
+
+      WHY THE TWO RENDERS ARE COMPARED WITH EACH OTHER, and not the minimal
+      render with the document being written. The writer is not required to be
+      AST-faithful for every construct, and in practice is not: a table with a
+      colspan, a doubled alignment marker, some list-item attribute forms and
+      one line-block shape all re-parse to a DIFFERENT document while rendering
+      identical HTML. Comparing against the source document would inherit those
+      defects, flip the escaping decision between passes and break §1's
+      idempotence for a reason that has nothing to do with escaping. Comparing
+      the two renders isolates the only question this decision asks: does
+      dropping the candidate escapes change anything?
 
    5. THE TWO SETS.
 
@@ -2875,13 +2905,24 @@ EOF = (* end of file *) ;
         source run BARE, which is what makes `fmt` reproduce the author's
         spelling.
 
+        The CARET is also unconditional, for a different reason: it opens
+        nothing on its own, but its escape carries information the AST records
+        separately. A text node whose LEADING caret came from an escape is
+        marked as such, so an image followed by a caret line stays a paragraph
+        instead of being promoted to a figure. Comparing that mark in W3 would
+        escalate every document whose text begins with a caret; ignoring it
+        would silently turn the image case into a figure. Escaping the caret in
+        BOTH forms keeps the two renders identical on that point, at the cost
+        of one escape on a character that is rare in prose.
+
       CANDIDATE -- escaped only when W2 fails on that line:
-        `* _ ~ / = ^ ,`      emphasis and the braced pair delimiters
+        `* _ ~ / = ,`        emphasis and the braced pair delimiters
         `[ ] ( ) { } <`      links, images, spans, attributes, autolinks
         `@ #`                mentions and tags (§7 boundary rules); `#` also
                              opens a heading at column 0
         `> + - . ) : | % !`  block openers at column 0, plus the inline forms
-                             `^[`, `%%` and `::`
+                             `%%` and `::` (the inline-footnote `^[` is covered
+                             by the unconditional caret above)
         `$`                  math
 
       A character in neither set is never escaped.
