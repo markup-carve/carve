@@ -22,9 +22,14 @@ const repo = resolve(here, '..')
 const grammarPath = resolve(repo, 'resources/grammar.ebnf')
 const grammar = readFileSync(grammarPath, 'utf8')
 
-// PART 9 is the last PART; collect its section numbers from the
-// "   N. TITLE" headings that follow the PART 9 banner.
-const part9 = grammar.slice(grammar.indexOf('PART 9: SEMANTIC CONSTRAINTS'))
+// Collect PART 9's section numbers from the "   N. TITLE" headings between its
+// banner and the next PART banner. Bounding the slice matters: PART 10 and
+// PART 11 have their own numbered items, and letting those leak in would make a
+// dangling "PART 9 §N" reference resolve against a section that lives
+// somewhere else entirely.
+const part9Start = grammar.indexOf('PART 9: SEMANTIC CONSTRAINTS')
+const part10Start = grammar.indexOf('PART 10: HTML SERIALIZATION', part9Start)
+const part9 = grammar.slice(part9Start, part10Start === -1 ? undefined : part10Start)
 const part9Sections = new Set(
   [...part9.matchAll(/^ {3}(\d+)\. {1,3}[A-Z]/gm)].map((m) => Number(m[1])),
 )

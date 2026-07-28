@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The canonical source writer is now specified** (new PART 11). `carve fmt`
+  and the `carve` render target had no normative text at all, so their behavior
+  was defined only by three implementations happening to agree. PART 11 pins the
+  invariants (`parse(fmt(x)) == parse(x)` and idempotence), states the escaping
+  rule - a character is escaped if and only if omitting the escape would change
+  the re-parsed AST - and records why a static per-character table cannot
+  implement it: `[` is literal alone but an opener in `[a](b)`, `^` is literal
+  at column 0 but an opener in `^[note]`. The conformant strategy pins the
+  output while leaving the computation free: build the minimal form, re-parse
+  it, and fall back to escaping the whole line only when the re-parse differs.
+  A new `tests/corpus-roundtrip/` corpus pins Carve-source-in, Carve-source-out
+  pairs; the invariant assertions run today, the byte assertions are skipped
+  until an engine implements minimal escaping.
+
 - Smart typography now has a normative AST representation (PART 9 §8): a
   recognized substitution is a `smart_punctuation` inline node carrying both the
   resolved kind and the author's source run. Presentation renderers emit the

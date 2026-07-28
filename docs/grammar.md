@@ -14,6 +14,7 @@ This is the canonical formal specification of Carve. It is **layered**, and each
 | PART 9 | Semantic constraints a context-free production cannot carry (emphasis resolution, paragraph interruption, table span walk, attribute floating, tabs) | Operational semantics: labeled rules over declared state |
 | PART 9R | Whole-document resolution (references, footnotes, crossrefs, numbering) | Two-pass rules over declared symbol tables |
 | PART 10 | HTML serialization | Tree-transform conventions |
+| PART 11 | Canonical source writer (`carve fmt`): round-trip invariants and the escaping rule | Invariants over `parse`/`fmt` + a decision procedure |
 
 ::: info Why layers instead of one grammar?
 Light markup languages are provably not context-free: fence-length matching is a counting constraint, indentation is 2D, and reference resolution needs a whole-document symbol table. No single EBNF can express Carve (or Djot, or CommonMark). What CAN be done - and what this file does - is state every rule in *some* exact formalism, so nothing normative rests on English prose.

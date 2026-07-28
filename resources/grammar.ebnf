@@ -2806,4 +2806,95 @@ EOF = (* end of file *) ;
       when no URL template is configured; a configured template links to them. The footnote
       backlink glyph is `↩` (§16). Math wraps content in `\(…\)` /
       `\[…\]` inside `<span class="math inline|display">` (§18).
+
+   ============================================================================
+   PART 11: CANONICAL SOURCE WRITER (NORMATIVE)
+   ============================================================================
+
+   The canonical writer (`carve fmt`, the `carve` render target) serializes a
+   document back to Carve source. Nothing here specified it before, so its
+   behavior was defined only by three implementations happening to agree.
+
+   1. THE INVARIANTS. For any document x:
+
+        parse(fmt(x)) == parse(x)        -- meaning is preserved
+        fmt(fmt(x))   == fmt(x)          -- the writer is idempotent
+
+      The first is about the AST, not the bytes: `fmt` MAY normalize the
+      author's spelling (indentation, marker alignment, escape form) but MUST
+      NOT change what the document says. The second forbids growth -- a value
+      that gains an escape per pass violates it, which is how over-escaping is
+      usually first noticed.
+
+   2. THE ESCAPING RULE -- NORMATIVE. A character is escaped IF AND ONLY IF
+      omitting the escape would change the re-parsed AST.
+
+      Escaping MORE than that is a defect, not a safe default. It is how a
+      formatter turns `50% faster: yes (ok)` into `50\% faster\: yes \(ok\)`,
+      which re-parses identically -- so nothing there needed escaping.
+
+      Escaping LESS is a correctness bug: the document changes meaning.
+
+   3. WHY A STATIC CHARACTER TABLE CANNOT IMPLEMENT §2. Whether a character
+      is significant depends on the line, not on the character:
+
+        `[`  literal alone, an opener in `[a](b)`
+        `(`  literal in `[a] (b)`, an opener in `[a](b)`
+        `^`  literal at column 0 before a space, an opener in `^[note]`
+        `-`  literal mid-word, a list marker at column 0, an en dash doubled
+        `_`  literal alone, an opener only when a closer follows on the line
+
+      A writer that decides per character with no context must therefore
+      over-escape to stay correct, which is the defect §2 forbids.
+
+   4. THE CONFORMANT STRATEGY -- PINNED OUTPUT, FREE IMPLEMENTATION. An
+      implementation MAY compute §2 however it likes, but the OUTPUT is pinned
+      to this decision, taken per emitted line:
+
+      W1 Build the MINIMAL form: escape only the UNCONDITIONAL set (§5).
+      W2 Re-parse that line in its block context and compare the resulting
+         inline nodes with the nodes being written.
+      W3 If they match, emit the minimal form.
+      W4 Otherwise emit the CONSERVATIVE form: additionally escape every
+         CANDIDATE-set character (§5) on that line.
+
+      Two forms and one comparison, with the choice made by the parser rather
+      than by a table -- so the writer cannot drift from the grammar as the
+      grammar grows. W4 is deliberately whole-line rather than per-character:
+      it keeps the output a function of the line alone, so every
+      implementation lands on the same bytes.
+
+   5. THE TWO SETS.
+
+      UNCONDITIONAL -- always escaped in a text node, never re-derivable:
+        the backslash itself; the backtick (opens a code span in any
+        position); and `"` / `'`. A BARE quote re-derives as smart
+        punctuation (PART 9 §8), so a quote that reached the writer as TEXT
+        is one the author escaped, and it stays escaped. A quote carried by a
+        `smart_punctuation` node is NOT text: the writer emits that node's
+        source run BARE, which is what makes `fmt` reproduce the author's
+        spelling.
+
+      CANDIDATE -- escaped only when W2 fails on that line:
+        `* _ ~ / = ^ ,`      emphasis and the braced pair delimiters
+        `[ ] ( ) { } <`      links, images, spans, attributes, autolinks
+        `@ #`                mentions and tags (§7 boundary rules); `#` also
+                             opens a heading at column 0
+        `> + - . ) : | % !`  block openers at column 0, plus the inline forms
+                             `^[`, `%%` and `::`
+        `$`                  math
+
+      A character in neither set is never escaped.
+
+      The set must cover EVERY construct opener, or W4 has nothing to fall
+      back to and the document is unrecoverable: `\@user` would emit as
+      `@user`, W2 would correctly see a `mention` where the source had text,
+      and W4 could not fix it. When a new opener is added to the grammar, its
+      character belongs here.
+
+   6. WHAT IS NOT THE WRITER'S JOB. `fmt` does not re-wrap prose, reorder
+      attributes, or respell a construct to a synonym (`*` vs `-` bullets,
+      fence length, ordered-list dialect). Those are the author's choices and
+      the AST records them; changing one would satisfy §1 while still
+      surprising the author.
 *)
