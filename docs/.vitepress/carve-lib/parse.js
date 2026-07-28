@@ -50,7 +50,15 @@ const RE_UNORDERED = /^([^\S\u00a0]*)[-*] +([\S\u00a0].*)$/;
 // Ordered marker: decimal, a single letter (alpha), or a roman-numeral
 // run, then `.` or `)`. The dialect is fixed by the FIRST item (see
 // olKindOf); letter/roman markers are ambiguous w.r.t. paragraphs (§10).
-const RE_ORDERED = /^([^\S\u00a0]*)([0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])([.)]) +([\S\u00a0].*)$/;
+// BARE-DOT MARKER (Carve addition; proposal for issue 315): the numeric
+// part may be EMPTY when the delimiter is `.` -- a bare `. ` is a decimal
+// ordered marker that auto-counts from 1. The empty-value branch is the
+// zero-width lookahead `(?=\.)`, so it fires ONLY before a `.`; a bare `)`
+// can never match (there is no bare-`)` branch). Capture groups are
+// unchanged -- o[1]=indent, o[2]=value ('' for bare dot), o[3]=delim
+// (always `.` for bare dot), o[4]=content -- so every existing call site
+// keeps working.
+const RE_ORDERED = /^([^\S\u00a0]*)([0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z]|(?=\.))([.)]) +([\S\u00a0].*)$/;
 // Task states (matches djot-php): `x`/`X` are checked; ` `, `-`, `_`,
 // `>`, `?` are all accepted and render as an unchecked checkbox.
 const RE_TASK = /^([^\S\u00a0]*)[-*] +\[([ xX\-_>?])\] +([\S\u00a0].*)$/;
@@ -2081,7 +2089,10 @@ function romanToInt(s) {
 function olKindMatches(marker, kind) {
     switch (kind) {
         case 'dec':
-            return /^[0-9]+$/.test(marker);
+            // `[0-9]*` (not `+`) so the bare-dot marker (empty value, proposal
+            // for issue 315) also classifies as decimal and continues a `.`
+            // decimal list; explicit-decimal markers still match too.
+            return /^[0-9]*$/.test(marker);
         case 'alo':
             return /^[a-z]$/.test(marker);
         case 'aup':
@@ -2097,6 +2108,10 @@ function olKindMatches(marker, kind) {
 // marker is roman of the same case, or when it is `i`/`I` (the common
 // roman start); any other single letter is alphabetic.
 function olKindOf(marker, nextMarker) {
+    // Bare-dot marker (empty value, proposal for issue 315) is decimal by
+    // definition, starting from 1.
+    if (marker === '')
+        return 'dec';
     if (/^[0-9]+$/.test(marker))
         return 'dec';
     const upper = marker === marker.toUpperCase();
@@ -2124,8 +2139,12 @@ function olKindOf(marker, nextMarker) {
     return upper ? 'aup' : 'alo';
 }
 function olStartOf(marker, kind) {
-    if (kind === 'dec')
-        return parseInt(marker, 10);
+    if (kind === 'dec') {
+        // Bare-dot marker (empty value, proposal for issue 315) has no number,
+        // so it starts at 1 (the `<ol>` omits `start`).
+        const n = parseInt(marker, 10);
+        return Number.isNaN(n) ? 1 : n;
+    }
     if (kind === 'rlo' || kind === 'rup')
         return romanToInt(marker);
     return marker.toLowerCase().charCodeAt(0) - 96; // a=1

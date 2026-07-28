@@ -420,9 +420,50 @@ ordered_item = ordered_marker, [item_attributes], space, list_item_content ;
    parenthesized `(1)` / `(a)` form is INTENTIONALLY NOT a marker -- it is
    too easily confused with a prose parenthetical -- so `(1) text` stays
    literal paragraph text (pinned by corpus parenthesized-ordered-marker). *)
-ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')') ;
+ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')')
+               | '.' ;  (* bare-dot marker -- see BARE-DOT MARKER note below *)
 roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
               | ('I' | 'V' | 'X' | 'L' | 'C' | 'D' | 'M')+ ;
+(* BARE-DOT ORDERED MARKER (Carve addition; NORMATIVE -- extends PART 9 §11;
+   proposal for issue 315). A bare `.` with NO numeric/alpha/roman value is a
+   valid ordered marker: `. text` is an ordered item. Semantics:
+   - DIALECT & VALUE: the bare dot is DECIMAL, delimiter `.`, with the start
+     OMITTED (it counts from 1; items auto-number 1, 2, 3, ...). There is no
+     way to set an explicit start with the bare form -- that is exactly what
+     the numeric `1.` form is for. The rendered `<ol>` carries no `start`
+     (start = 1) and no `type` (decimal).
+   - `.`-ONLY, NO BARE `)` -- ASYMMETRIC BY DESIGN. Only the `.` delimiter may
+     drop its value; a bare `) text` is NOT a marker and stays paragraph text.
+     A leading `) ` collides with prose parentheticals far more often than a
+     leading `. ` does, and AsciiDoc (the source of this shorthand) uses `.`
+     only. This mirrors the existing `(1)`-is-not-a-marker asymmetry above.
+   - SAME LIST AS EXPLICIT DECIMAL-DOT. The bare dot shares the decimal-dot
+     dialect+delimiter, so it CONTINUES an explicit decimal-dot list and vice
+     versa: `. a` + `2. b` is one `<ol>`, and `1. a` + `. b` is one `<ol>`
+     (§11 N1/N2). A different delimiter (`)`) or a non-decimal dialect (`a.`,
+     `i.`) still opens a sibling list per §11.
+   - NO PARAGRAPH INTERRUPTION. The bare dot inherits the §10 rule unchanged:
+     like every Carve list marker it does NOT interrupt a paragraph -- it needs
+     a blank line before it. A `. ` line folded onto an open paragraph is lazy
+     continuation text, not a new list.
+   - CONTENT REQUIRED (as for every marker; see the MARKER REQUIRES CONTENT
+     note above). `. ` is an item only when followed by a space AND non-empty
+     content. A lone `.`, a `. ` with trailing whitespace only, and `.x` (no
+     space) all stay paragraph text.
+   - `..` IS NOT ASCIIDOC NESTING. AsciiDoc's `..`/`...` deeper-nesting idiom
+     does NOT port -- Carve nests by indentation. In `.. text` the first dot is
+     NOT followed by a space, so it is not a bare-dot marker and the whole line
+     stays a paragraph (`<p>.. text</p>`); indent the sub-item instead. (A line
+     that genuinely repeats the marker with a space between, `. . x`, is the
+     ordinary marker-line nested-list form, identical to `- - x`.)
+   - BREAKING CHANGE. After a blank line, a paragraph that begins with `. `
+     (an ellipsis fragment, a wrapped sentence, a deliberate leading dot) was
+     previously a paragraph and now opens an `<ol>`. This is the primary cost
+     of the feature.
+   - LI-ATTRIBUTES. The abutting `.{...}` li-attribute form is NOT supported
+     for the bare dot (the attribute block would swallow the required space);
+     use an explicit `1.{...}` marker when a bare `<li>` attribute is needed.
+   Pinned by corpus bare-dot-ordered-markers. *)
 
 (* LIST-ITEM ATTRIBUTES (Carve addition; NORMATIVE -- extends PART 9 §15). An
    attribute block ABUTTING the marker (no space between marker and `{`)
@@ -1921,7 +1962,10 @@ EOF = (* end of file *) ;
          item; a later marker outside the dialect, or with the other
          delimiter, starts a new sibling list. The first item also sets the
          `<ol>` `type` (a/A/i/I; decimal omits it) and `start` (the
-         marker's value; omitted when 1).
+         marker's value; omitted when 1). The bare-dot marker (`. `, see the
+         BARE-DOT ORDERED MARKER note in PART 2) classifies as decimal-dot
+         with start 1, so it and an explicit decimal-dot marker are the same
+         dialect and continue one list.
       N3 AMBIGUOUS-LETTER TIE-BREAK. A single roman-letter first marker
          (i/v/x/l/c/d/m) is ROMAN when the next sibling is the consecutive
          roman numeral (`iv.`+`v.`, `i.`+`ii.`) and ALPHA when the next is

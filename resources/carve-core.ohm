@@ -96,14 +96,17 @@ CarveCore {
   paragraph  = paraLine+
   paraLine   = ~blankLine ~structural inline+ lineEnd
   structural = headingStart | thematicBreak | btOpen | tdOpen
-             | colonFence | ordMarker
+             | colonFence | ordMarker | bareDotMarker
   headingStart = hashes " "
   colonFence = ":::"
   // an ordered-list marker line (digit/letter run + `)` + space) is a
   // Full-Carve list: Core refuses the document rather than rendering a
   // paragraph. (The `.`-delimited form already fails: `.` is not a Core
-  // character.)
+  // character.) The bare-dot marker (`. `, Carve addition, proposal for
+  // issue 315) is likewise a Full-Carve list, so a leading `. ` is also
+  // treated as structural and Core refuses rather than emitting a paragraph.
   ordMarker  = alnumCh+ ")" " "
+  bareDotMarker = "." " "
 
   // ==========================================================================
   // INLINE (Core)

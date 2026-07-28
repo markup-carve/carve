@@ -1,0 +1,37 @@
+Bare-dot ordered markers
+
+```
+. first
+. second
+. third
+.
+<ol>
+  <li>first</li>
+  <li>second</li>
+  <li>third</li>
+</ol>
+```
+
+```
+1. a
+. b
+. c
+.
+<ol>
+  <li>a</li>
+  <li>b</li>
+  <li>c</li>
+</ol>
+```
+
+```
+.
+
+.x is prose
+
+.. text
+.
+<p>.</p>
+<p>.x is prose</p>
+<p>.. text</p>
+```

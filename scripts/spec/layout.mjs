@@ -42,7 +42,12 @@ const FOOTNOTE_DEF = /^\[\^([^\]]+)\]: [ \t]*(\S.*)$/
 const ABBR_DEF = /^\*\[([^\]]+)\]: \s*(.+)$/
 const CAPTION = /^\^ (.*)$/
 const BULLET = /^([ \t]*)([-*])(\{[^}]*\})? (?:\[([ xX_>?-])\] )?(.+)$/
-const ORDERED = /^([ \t]*)([0-9]+|[a-z]+|[A-Z]+)([.)])(\{[^}]*\})? (.+)$/
+// BARE-DOT MARKER (Carve addition; proposal for issue 315): the value part may
+// be EMPTY when the delimiter is `.` (never `)`). The `(?=\.)` lookahead
+// branch captures the empty string only before a `.`, so a bare `. ` is a
+// decimal ordered marker (classifyOrdered maps `''` -> decimal, start 1) while
+// `) ` never matches. Capture groups are unchanged.
+const ORDERED = /^([ \t]*)([0-9]+|[a-z]+|[A-Z]+|(?=\.))([.)])(\{[^}]*\})? (.+)$/
 const CONT_MARKER = /^\+[ \t]*$/
 // marks a lazily-folded line (PART 9 SS10 I2): always paragraph text, never
 // re-classified as structure when an item's content is re-parsed
@@ -87,6 +92,11 @@ function alphaToInt(s) {
 // Classify an ordered marker token into candidate dialects.
 function classifyOrdered(token) {
   const out = []
+  // Bare-dot marker (empty value, proposal for issue 315): decimal, start 1.
+  if (token === '') {
+    out.push({ dialect: 'decimal', value: 1 })
+    return out
+  }
   if (/^[0-9]+$/.test(token)) {
     out.push({ dialect: 'decimal', value: parseInt(token, 10) })
     return out
@@ -1105,6 +1115,11 @@ function matchMarker(line) {
     }
   }
   m = ORDERED.exec(line)
+  // A bare-dot marker (empty value, proposal for issue 315) does NOT take an
+  // abutting `{...}` li-attribute block: `.{...} x` stays paragraph text (the
+  // block would swallow the required space). Only an explicit value carries
+  // li-attributes, matching the reference engine and the normative note.
+  if (m && m[2] === '' && m[4]) m = null
   if (m && m[4] && m[4].replace(/[{} ]/g, '') !== '' && parseAttrList(m[4]) === null) m = null
   if (m) {
     const { col } = indentCols(m[1])
@@ -1112,7 +1127,9 @@ function matchMarker(line) {
     if (dialects.length === 0) return null
     return {
       indent: col,
-      ordered: m[2],
+      // A boolean flag (not the token) so the bare-dot marker (empty value,
+      // proposal for issue 315) is still truthy; the value lives in `dialects`.
+      ordered: true,
       delim: m[3],
       attrs: m[4] ?? null,
       dialects,

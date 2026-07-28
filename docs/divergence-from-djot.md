@@ -167,6 +167,25 @@ punctuation (`typo ,oops, happens` must not become a subscript).
 technical writing especially, biasing toward the literal reading avoids
 surprise lists.
 
+## 5b. Bare-dot ordered markers (Carve addition)
+
+**Djot:** every ordered marker carries an explicit value (`1.`, `a.`, `i.`).
+
+**Carve:** a bare `.` with no number is also an ordered marker - the
+AsciiDoc-style shorthand. `. first` / `. second` renders as a decimal `<ol>`
+that counts from 1. This is an addition beyond Djot, not a break of existing
+Djot syntax.
+
+- **Decimal, start 1, no explicit start.** The bare dot is always decimal,
+  delimiter `.`, counting from 1; use `1.` when you need a different start.
+- **`.` only, no bare `)`.** Only the `.` delimiter may drop its number; a
+  leading `) text` stays paragraph text (a `) ` collides with prose
+  parentheticals, mirroring the `(1)` asymmetry above).
+- **Same list as `1.`.** The bare dot shares the decimal-dot dialect, so
+  `. a` + `2. b` and `1. a` + `. b` each continue one `<ol>`.
+- **`..` is not AsciiDoc nesting.** `.. text` has no space after the first dot,
+  so it stays a paragraph; Carve nests by indentation.
+
 ## 6. Plain-text comments
 
 **Djot:** `{% comment %}`.

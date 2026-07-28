@@ -5480,3 +5480,71 @@ are each wrapped.
 ```
 
 :::
+
+## Bare-dot ordered markers
+
+A bare `.` marker (no number) is a decimal ordered item that auto-counts from
+1 - the AsciiDoc-style shorthand. It is a Carve addition beyond Djot (proposal
+for issue 315). There is no bare `)` counterpart: only `.` may drop its number.
+
+::: compare
+
+```carve
+. first
+. second
+. third
+```
+
+```html
+<ol>
+  <li>first</li>
+  <li>second</li>
+  <li>third</li>
+</ol>
+```
+
+:::
+
+The bare dot is the *same* decimal-dot list as an explicit `1.`/`2.` list, so
+the two forms mix and continue one `<ol>` (a delimiter or dialect change would
+still start a sibling list, per §11).
+
+::: compare
+
+```carve
+1. a
+. b
+. c
+```
+
+```html
+<ol>
+  <li>a</li>
+  <li>b</li>
+  <li>c</li>
+</ol>
+```
+
+:::
+
+The marker still requires a space and non-empty content, so a lone `.`, a `.x`
+with no space, and the AsciiDoc `.. text` nested-dot idiom (no space after the
+first dot) all stay paragraph text. Carve nests by indentation, not by `..`.
+
+::: compare
+
+```carve
+.
+
+.x is prose
+
+.. text
+```
+
+```html
+<p>.</p>
+<p>.x is prose</p>
+<p>.. text</p>
+```
+
+:::
