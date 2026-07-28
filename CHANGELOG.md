@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Corpus pin for the compact sub-list rule with a following sibling**
+  (85-compact-list-blocks-2). §17 L2 keeps an item tight when a blank line
+  precedes its sub-block, and the existing pin used a block quote with no
+  sibling after it. The sub-list variant with a following item was unpinned, and
+  carve-rs got it wrong: the blank leaked past the sub-list and the sibling
+  marker read it as a blank between items, rendering the whole list loose
+  (carve-rs#286). Because the canonical writer emits exactly this shape for
+  ordinary nested lists, carve-rs was also breaking
+  `to_html(fmt(x)) == to_html(x)` on a plain two-level list.
+
 - Smart typography now has a normative AST representation (PART 9 §8): a
   recognized substitution is a `smart_punctuation` inline node carrying both the
   resolved kind and the author's source run. Presentation renderers emit the

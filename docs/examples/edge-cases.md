@@ -1996,6 +1996,30 @@ A blank line is still required to start a block inside a list item, but it no lo
 
 :::
 
+A **sub-list** is one of those blocks, and the rule holds when a sibling item follows it: the blank belongs to the sub-list, not to the gap between items, so the whole list stays tight.
+
+::: compare
+
+```carve
+- fruit
+
+  - apples
+- vegetables
+```
+
+```html
+<ul>
+  <li>fruit
+    <ul>
+      <li>apples</li>
+    </ul>
+  </li>
+  <li>vegetables</li>
+</ul>
+```
+
+:::
+
 A genuine second prose paragraph still makes the list loose (and so does a blank line between items).
 
 ::: compare
