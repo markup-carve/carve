@@ -553,7 +553,11 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           continue
         }
         if (cm) break // different # count: a new heading
-        const l = lines[i]
+        // A continuation line that folded in from an OUTER lazy context arrives
+        // LAZY-framed; strip that internal marker before it is tested as a block
+        // opener (so a folded `^ cap` still ends the heading) and before it lands
+        // in the heading text/id -- otherwise the sentinel leaks into output.
+        const l = lines[i].startsWith(LAZY) ? lines[i].slice(LAZY.length) : lines[i]
         if (HR.test(l) || FENCE.test(l) || QUOTE.test(l) || BULLET.test(l) || ORDERED.test(l) ||
             COLON_FENCE.test(l) || CAPTION.test(l) || l[0] === '|' || l[0] === '{' ||
             COMMENT_LINE.test(l) || COMMENT_FENCE.test(l)) break
@@ -1150,6 +1154,17 @@ function collectItems(lines, i, list, state) {
     // not this item, so a descendant's looseness must not propagate up to this
     // item (carve#322).
     let subCol = -1
+    // Open fenced code block (its delimiter run) inside the item's own content,
+    // so an interior blank line is verbatim content, not an item-loosening
+    // separator (carve#326 C). Only a valid fence opener sets it; its matching
+    // closer clears it.
+    let fence = null
+    {
+      // A fence can open on the MARKER LINE (`- ``` `), where its opener is the
+      // marker-line content, not a collected continuation line -- seed from it.
+      const fo = FENCE.exec(head.text)
+      if (fo && parseFenceInfo(fo[2]) !== null) fence = fo[1]
+    }
     i++
     // FIRST-BLOCK form (SS17 L4): a bare `+` as the sole marker-line content
     // opens an item whose body is the following flush-left block(s)
@@ -1190,6 +1205,13 @@ function collectItems(lines, i, list, state) {
         continue
       }
       if (isBlank(line)) {
+        // A blank line INSIDE an open fenced code block is verbatim content:
+        // keep it in the item body and stay tight (no looseness decision).
+        if (fence) {
+          itemLines.push('')
+          i++
+          continue
+        }
         // decide with the NEXT content line
         let j = i + 1
         while (j < n && isBlank(lines[j])) j++
@@ -1254,6 +1276,15 @@ function collectItems(lines, i, list, state) {
       if (col >= contentCol) {
         const dedented = dedent(line, contentCol)
         itemLines.push(dedented)
+        // Track an open fenced code block (its matching closer clears it) so the
+        // blank-line branch above knows an interior blank is fence content.
+        if (fence) {
+          const c = PURE_FENCE.exec(dedented)
+          if (c && c[1][0] === fence[0] && c[1].length >= fence.length) fence = null
+        } else {
+          const fo = FENCE.exec(dedented)
+          if (fo && parseFenceInfo(fo[2]) !== null) fence = fo[1]
+        }
         // record the first sub-list's content column (carve#322)
         if (subCol < 0 && nm && nm.indent >= contentCol) subCol = nm.indent + nm.markerWidth
         // does the deepest structure now hold an OPEN paragraph that lazy

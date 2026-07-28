@@ -11,7 +11,12 @@ import { utf8ByteLength } from './abbr-budget.js';
 // previous values in a finally so nested and sequential parses stay isolated.
 let activeMatchers = [];
 let activeMatcherCtx = null;
-const RE_HEADING = /^(#{1,6}) +(.+?)(?:\s+\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
+// Content must carry at least one non-ASCII-whitespace character, mirroring
+// RE_CAPTION: `# ` / `#   ` (marker + whitespace only) and `#\t…` are NOT
+// headings, exactly like the caption rule. Leading spaces are folded into the
+// ` +` delimiter, so the content group starts at the first non-space; a NBSP
+// (U+00A0) counts as content, as everywhere else in the parser.
+const RE_HEADING = /^(#{1,6}) +((?=[ \t\f]*[^ \t\n\r\f]).+?)(?:\s+\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?\s*$/;
 // Thematic break: a COL-0 line of 3+ CONTIGUOUS identical `-`, `*`, or `_`
 // (`---`, `***`, `___`, `----`), followed only by optional trailing
 // whitespace and end of line (grammar §262 thematic_break). No leading
@@ -2194,6 +2199,10 @@ function lazyContinuationEndsList(line) {
         RE_LINK_DEF.test(line) ||
         RE_HR.test(line) ||
         RE_HEADING.test(line) ||
+        // A caption line (`^ …`) ends the item's lazy continuation rather than
+        // folding in, matching carve-php / carve-rs (a caption is a heading/figure
+        // terminator, not plain prose the item absorbs).
+        RE_CAPTION.test(line) ||
         RE_DEFLIST_TERM.test(line) ||
         RE_BLOCKQUOTE.test(line) ||
         RE_TASK.test(line) ||
@@ -2277,7 +2286,15 @@ function trackItemLazyState(content, state) {
         return;
     }
     // A table row, heading, or thematic break leaves no open trailing paragraph.
-    if (isTableRow(content) || RE_HEADING.test(content) || RE_HR.test(content)) {
+    // A heading folds trailing plain text as continuation (PART 2 headings,
+    // carve#326), so a following dedented plain line folds INTO the heading --
+    // unlike a table or thematic break, which leave no foldable trailing content.
+    if (RE_HEADING.test(content)) {
+        state.lazyFoldable = true;
+        state.inDefList = false;
+        return;
+    }
+    if (isTableRow(content) || RE_HR.test(content)) {
         state.lazyFoldable = false;
         state.inDefList = false;
         return;
@@ -2649,7 +2666,42 @@ function parseList(lexer) {
         // table) keeps the item tight, so an item can carry a sub-block without the
         // list going loose. Only the tight/loose RENDERING changes; block structure
         // is unchanged. (Canonical djot renders these loose; Carve deviates here.)
+        // A blank line INSIDE a fenced code block is verbatim content, not an
+        // interior block separator, so it must not loosen the item (carve#326 case
+        // C; matches carve-rs / carve-php). Precompute which lines fall inside a
+        // CLOSED fence in a single pass, then skip those blanks in the scan below.
+        // Only a fence with a matching closer forms a code block; an UNCLOSED opener
+        // is inline verbatim inside a paragraph, so a following blank still loosens
+        // (matches carve-rs). The opener may be the item's lead (a marker-line
+        // fence, `- ``` `, which is not in `nested`), so the pass prepends `content`
+        // and a `nested[k]` corresponds to `fenceLines[k + 1]`. Marking closed
+        // ranges is O(n) total (ranges never overlap), keeping the scan linear.
+        const fenceLines = [content, ...nested];
+        const inFence = new Array(fenceLines.length).fill(false);
+        let fenceOpenIdx = -1;
+        let fenceOpenCh = '';
+        let fenceOpenLen = 0;
+        for (let k = 0; k < fenceLines.length; k++) {
+            if (fenceOpenIdx >= 0) {
+                const cl = RE_FENCE_CLOSER.exec(fenceLines[k]);
+                if (cl && cl[1][0] === fenceOpenCh && cl[1].length >= fenceOpenLen) {
+                    for (let i = fenceOpenIdx; i <= k; i++)
+                        inFence[i] = true;
+                    fenceOpenIdx = -1;
+                }
+            }
+            else {
+                const fo = RE_FENCE.exec(fenceLines[k]);
+                if (fo) {
+                    fenceOpenIdx = k;
+                    fenceOpenCh = fo[2][0];
+                    fenceOpenLen = fo[2].length;
+                }
+            }
+        }
         for (let k = 0; k < nested.length; k++) {
+            if (inFence[k + 1])
+                continue;
             if (nested[k] !== '')
                 continue;
             // A `+`-injected separator never loosens, even when the block it attaches
