@@ -46,6 +46,13 @@ An **`admonition`** is likewise its own type rather than a `div` carrying a
 class. A profile that wants to deny callouts while allowing generic
 containers has no way to express that if the kind lives in a class string.
 
+A **`smart_punctuation`** node - the AST form of a typographic substitution,
+carrying the resolved kind and the author's source run (PART 9 §8) - is
+classified as **`text`**. It is ordinary visible prose with no capability of its
+own: an em dash is not a different trust level from the words around it. Denying
+it would express nothing a `text` denial does not already express, so it is not
+separately nameable here.
+
 Types serving a formatter rather than a document are **not** in this
 vocabulary and cannot be named in a profile. An implementation may carry a
 node preserving literal source for round-trip formatting (carve-php calls it

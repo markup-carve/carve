@@ -9,17 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Smart typography now has a normative AST representation (PART 9 §8): a
+  recognized substitution is a `smart_punctuation` inline node carrying both the
+  resolved kind and the author's source run. Presentation renderers emit the
+  glyph; the canonical Carve writer emits the source run, so `fmt` reproduces
+  the document instead of normalizing its punctuation. Writing the glyph
+  straight into the text buffer is no longer conformant. The eighteen kind names
+  are spec surface, a quote node also records its resolved (locale-dependent)
+  glyph, and a dash run partitions into one node per glyph so `----` round-trips
+  to four hyphens. For profiles the node is classified as `text`.
+
 - Smart typography is now specified as unconditional by default (PART 9 §8): a
   conformant implementation performs the substitution with no extension
   registered, and a locale/glyph extension selects which characters are emitted
   rather than whether the transform runs. Hosts may offer one document-global
-  `smartTypography` switch (default `true`) that suppresses the whole converted
-  set; per-target defaults are non-conformant. Escapes, `:name:` symbols and
-  heading ids are unaffected in either mode. Pinned by the optional corpus
-  feature `smart-typography-off`, and explained in
-  `docs/divergence-from-djot.md` section 12, which also records why Carve keeps
-  smart punctuation as plain text instead of Djot's `double_quoted` /
-  `smart_punctuation` AST nodes.
+  `smartTypography` switch (default `true`); with the node representation above
+  it is a rendering decision, so parsing is unchanged and the presentation
+  renderers emit each node's source run instead of its glyph. Per-target
+  defaults are non-conformant. Escapes, `:name:` symbols and heading ids are
+  unaffected in either mode. Pinned by the optional corpus feature
+  `smart-typography-off`, and explained in `docs/divergence-from-djot.md`
+  section 12, which also records why Carve uses one leaf node where Djot uses
+  two container types plus a leaf.
 
 ## [0.1.1] - 2026-07-27
 

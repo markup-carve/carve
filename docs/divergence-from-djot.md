@@ -3,7 +3,8 @@
 Carve starts from [Djot](https://djot.net) - John MacFarlane's predictable,
 backtracking-free reimagining of Markdown - and keeps almost all of it: the
 linear parse model, generic containers, arbitrary attributes, footnotes, math,
-and smart typography all carry over unchanged. Definition lists are one of the
+and smart typography all carry over - the last of those with the same rules but
+a smaller AST shape (see section 12 below). Definition lists are one of the
 deliberate breaks (see section 9 below).
 
 So why diverge at all? Because a handful of Djot's choices optimize for
@@ -394,32 +395,41 @@ Djot instead attaches at any indent, which means a block one space under the
 marker - visually left of the item's own text - still becomes a child. The
 `+` continuation marker (§3) still attaches a flush-left block regardless.
 
-## 12. Smart punctuation is a text transform, not AST nodes
+## 12. Smart punctuation is one leaf node, not three container types
 
-**Djot:** smart punctuation is structural. The AST has `double_quoted` and
-`single_quoted` *container* nodes, plus a `smart_punctuation` node that retains
-the original source text. The HTML writer maps those to glyphs; the Djot writer
-emits the author's `"`, `--` and `...` back verbatim.
+Both languages agree on the important half: a typographic substitution has to be
+*represented* in the AST, or the formatter cannot reproduce what the author
+typed. The substitution rules are also the same - unconditional, per-character
+quote direction from the preceding character, `\"` for a literal. The divergence
+is the shape of the representation.
 
-**Carve:** the substitution is a plain text transform. A converted quote, dash
-or ellipsis is ordinary `text`; there is no node type for it, and
-[node-type profiles](/profiles) name none. The rules themselves are the same as
-Djot's: unconditional, per-character quote direction from the preceding
-character, `\"` for a literal.
+**Djot:** three types. `double_quoted` and `single_quoted` are *containers* that
+wrap the quoted content, and `smart_punctuation` is a leaf retaining the source
+text for dashes and ellipses.
 
-**Why.** The node types buy Djot exactly one thing - a writer that reproduces
-the author's spelling - and they charge every consumer for it. A filter, a
-profile allowlist, a renderer and every AST walker have to know three extra
-container types whose only content is punctuation, and a link label containing a
-quote becomes a nested container rather than a string. Carve keeps the AST
-vocabulary small enough to hold in your head, so punctuation stays text.
+**Carve:** one type. `smart_punctuation` is always a leaf, carrying the resolved
+`kind` (`ellipsis`, `em_dash`, `left_double_quote`, …) and the author's source
+run (`...`, `--`, `"`). A quote node additionally carries its resolved glyph,
+because the glyph is locale-dependent and is decided during parsing. A dash run
+becomes one node per resolved glyph, each holding the hyphens it came from, so
+`----` round-trips to exactly four hyphens.
 
-The cost is real and worth naming: because the transform is not represented,
-`carve fmt` normalizes ASCII punctuation to its typographic form. Formatting
-`He said "hello"` writes back `He said “hello”`. That is a normalization, not a
-loss of meaning - the reformatted source renders byte-identically, and a second
-pass is stable - but it is the one place where Djot's model is better, and the
-gap is tracked rather than denied.
+Renderers split on which half they read: HTML, Markdown, plain text and ANSI
+emit the glyph; the canonical Carve writer emits the source run. That is what
+makes `carve fmt` non-destructive - formatting `He said "hello"` writes back
+`He said "hello"`, not the curly form.
+
+**Why one leaf instead of two containers.** A container type says the quotes
+have *scope*, and in Carve they do not. Quote direction is decided per character
+from what precedes it, so an unpaired quote is completely ordinary and `a"b` is
+just a right quote mid-word - there is no span to wrap. Making quotes containers
+would force every walker to handle a node whose children are the quoted prose,
+turn a link label containing a quote into a nested container rather than a
+string, and raise the question of what an unmatched opener contains. A leaf
+carrying both halves buys the same round-trip with none of that.
+
+For [profiles](/profiles) the node is classified as `text`: it is visible prose
+with no capability of its own, so it is not separately nameable.
 
 ### Turning it off
 
@@ -427,9 +437,13 @@ The transform runs with no extension registered. A smart-quotes / locale
 extension picks *which* glyphs are emitted, not *whether* the substitution
 happens - removing it does not turn the transform off.
 
-Hosts may offer one document-global switch, `smartTypography` (default `true`),
-which suppresses the whole converted set - dashes, ellipsis, quotes, arrows,
-comparisons, `(c)` `(r)` `(tm)` `+-` - leaving the author's ASCII in place:
+Hosts may offer one document-global switch, `smartTypography` (default `true`).
+With the node representation above, turning it off is a rendering decision
+rather than a parsing one: the nodes are still produced, and the presentation
+renderers emit each node's source run instead of its glyph, exactly as the
+canonical writer already does. The AST does not depend on the switch; the output
+is the author's ASCII across the whole converted set - dashes, ellipsis, quotes,
+arrows, comparisons, `(c)` `(r)` `(tm)` `+-`:
 
 ::: code-group
 
@@ -459,8 +473,11 @@ character the consumer did not ask for and cannot reverse. For output aimed at
 human readers - which is the default case - leave it on.
 
 The switch changes nothing else. Escapes still work (`\"` yields a straight
-quote either way), `:name:` symbols are untouched, and heading ids are
-byte-identical, because ids are computed from the ASCII source in both modes.
+quote either way) and `:name:` symbols are untouched. Heading ids are
+byte-identical in both modes: the id pass normalizes typographic output back to
+ASCII before slugging (section 1 above), so `# Don't repeat yourself` gives
+`Don-t-repeat-yourself` whether the heading
+renders with a curly apostrophe or a straight one.
 
 ## What Carve adds on top (not breaks)
 

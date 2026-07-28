@@ -1810,10 +1810,13 @@ EOF = (* end of file *) ;
         carve-php, `Options::with_smart_typography(false)` in carve-rs).
         A host that omits the switch stays conformant. Where it IS offered
         and set to FALSE:
-        * every `smart_typography` production is suppressed -- dashes,
-          ellipsis, smart quotes, arrows, comparisons, and the typographic
-          symbols `(c)` `(r)` `(tm)` `+-` -- and each trigger character
-          survives as the ASCII the author typed;
+        * PARSING IS UNCHANGED. The nodes below are still produced, so the
+          AST does not depend on the switch. What changes is rendering: a
+          presentation renderer emits the node's SOURCE RUN instead of its
+          glyph, exactly as the canonical writer already does. Every trigger
+          character therefore survives as the ASCII the author typed --
+          dashes, ellipsis, quotes, arrows, comparisons, and the typographic
+          symbols `(c)` `(r)` `(tm)` `+-`;
         * the `:name:` symbol production is UNAFFECTED; it is not a
           `smart_typography` production, and its precedence over the
           typographic forms is unchanged;
@@ -1832,13 +1835,36 @@ EOF = (* end of file *) ;
           `to_html(x)` and `to_markdown(x)` disagree about what the
           document says.
         Pinned in tests/corpus-optional (feature `smart-typography-off`).
-      - THE LAYER IS UNOBSERVABLE. An implementation MAY apply the
-        substitution at inline-parse time (carve-js, carve-php) or inside
-        each renderer (carve-rs); both are conformant, because the rendered
-        output is identical in every target. Render time is RECOMMENDED but
-        not required: it keeps the author's ASCII in the AST, which is what
-        a canonical writer needs to reproduce the source spelling. See
-        divergence-from-djot.md section 12.
+      - AST REPRESENTATION -- NORMATIVE. A recognized substitution is its
+        own inline node, `smart_punctuation`, carrying BOTH halves: the
+        resolved KIND and the author's SOURCE RUN. A presentation renderer
+        (HTML, Markdown, plain text, ANSI) emits the glyph for the kind; the
+        canonical Carve writer emits the source run, so `fmt` reproduces the
+        document instead of normalizing its punctuation. Writing the glyph
+        straight into the text buffer is NOT conformant: it discards the
+        spelling, after which `...` cannot be told from a literal U+2026 and
+        the writer has nothing to reproduce.
+        * KIND NAMES ARE SPEC SURFACE -- an implementation inventing its own
+          spelling breaks every AST consumer. The fourteen table-resolved
+          kinds are `ellipsis`, `em_dash`, `en_dash`, `left_right_arrow`,
+          `rightwards_arrow`, `leftwards_arrow`, `rightwards_double_arrow`,
+          `less_than_or_equal`, `greater_than_or_equal`, `not_equal`,
+          `plus_minus`, `copyright`, `registered`, `trademark`. The four
+          quote kinds are `left_double_quote`, `right_double_quote`,
+          `left_single_quote`, `right_single_quote`.
+        * A QUOTE NODE ALSO CARRIES ITS RESOLVED GLYPH. Quote characters are
+          locale-dependent (a German or Swiss set), and the choice is made
+          during parsing, so the node records the character rather than
+          leaving it to the kind table. Every other kind resolves through the
+          table above, which is why the quote kinds are absent from it.
+        * A DASH RUN PARTITIONS INTO ONE NODE PER RESOLVED GLYPH, each
+          carrying the hyphens it came from, so `----` (two en dashes)
+          round-trips to exactly four hyphens.
+        * FOR PROFILES the node folds into the `text` trust class. It is
+          ordinary visible prose, not a distinct capability, so it is not
+          separately nameable in a profile (profiles.md).
+        See divergence-from-djot.md section 12 for how this compares to
+        Djot's container-node model.
 
    9. EMPHASIS SPAN RESOLUTION -- FORMAL GUARDS + DELIMITER-STACK
       OPERATIONAL SEMANTICS (governs the *_content productions in PART 3;
