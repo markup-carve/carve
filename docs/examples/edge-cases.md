@@ -962,6 +962,63 @@ under the marker.
 
 :::
 
+A heading folds its trailing flush-left plain text as continuation, at any
+nesting depth — even when the heading opens on a deeper sub-list item's marker
+line and the following line is flush left.
+
+::: compare
+
+```carve
+- a
+  - b
+    # N
+lazy
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <h1 id="N-lazy">N
+lazy</h1>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+A blank line inside a fenced code block is verbatim content, not an interior
+block separator, so it does not loosen the list — a sibling item after such a
+fence stays tight because no blank line actually separates the two items.
+
+::: compare
+
+````carve
+- ```
+  a
+
+  b
+  ```
+- c
+````
+
+````html
+<ul>
+  <li>
+    <pre><code>a
+
+b
+</code></pre>
+  </li>
+  <li>c</li>
+</ul>
+````
+
+:::
+
 ## Doubled emphasis delimiters
 
 A bare single-character emphasis delimiter immediately adjacent to the same
