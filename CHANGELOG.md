@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `scripts/compare-impls.mjs` now compares every render target, not just HTML.
+  `--targets=all` (the new default) covers `html`, `markdown`, `plain`, `carve`
+  and `ansi`; only `html` has expected-output fixtures, so the other four are
+  compared implementation-against-implementation (trailing-newline-insensitively,
+  as elsewhere in the project). Identical output across the three engines was an
+  invariant that four of five targets had nothing checking it.
+
 ### Added
 
 - Smart typography now has a normative AST representation (PART 9 §8): a

@@ -111,7 +111,35 @@ available in each implementation today.
 npm run compare:impls
 npm run compare:impls -- --corpus=optional
 npm run compare:impls -- --limit=20 --bench
+npm run compare:impls -- --targets=html          # fast path, HTML only
 ```
+
+### Targets
+
+The runner compares every render target, not just HTML: `--targets=all` (the
+default) covers `html`, `markdown`, `plain`, `carve` and `ansi`. Pass a
+comma-separated subset to narrow it.
+
+Only `html` has expected-output fixtures. The other four are compared
+**implementation against implementation**, because identical output across the
+three engines is the invariant that matters there, and committing four more
+expected files per corpus case would not add to it. The `Target agreement`
+block in the output reports per-target `compared` / `diffs` / `errors` counts,
+and each disagreement prints a `DIFF [target] slug` line naming the engines that
+ran.
+
+Comparison is trailing-newline-insensitive, matching the corpus runner and the
+profile parity battery: renderers legitimately differ on a final `\n`, so a
+byte-strict comparison would flag that known difference on every case and bury
+the real divergences.
+
+Running all five targets costs roughly five times a single-target run, since
+every case is a fresh process per engine per target. Use `--targets=html` for a
+quick check and `--limit=` while iterating.
+
+The optional corpus runs the `html` target only. Its per-feature adapters
+configure HTML conversion specifically, so a non-HTML target there would compare
+"feature configured" against "feature missing" and report a meaningless diff.
 
 By default the script expects sibling checkouts:
 
