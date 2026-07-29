@@ -943,23 +943,33 @@ link_text = inline_content ;
    and `[a https://b c](/u)` (with an autolink extension) links the literal
    text `a https://b c` to `/u` rather than emitting a nested anchor. Mirrors
    CommonMark "links may not contain other links". *)
-link_destination = {(url_char - ')') | '\' | unicode_url_char}+ ;
+link_destination = {destination_escape | balanced_parens
+                   | (url_char - '(' - ')') | '\' | unicode_url_char}+ ;
+balanced_parens = '(', {destination_escape | balanced_parens
+                       | (url_char - '(' - ')') | '\' | unicode_url_char}, ')' ;
+destination_escape = '\', ('(' | ')' | '\') ;
 (* The destination is ANY run of URL characters: absolute (`https://…`),
    relative (`/path`, `./file`), or a bare fragment (`#section`) -- there is
    no scheme requirement. It ends at the first whitespace (a following
-   quoted run is the title) or at the first `)`; there is NO balanced-paren
-   rule and NO escape inside the destination (`[x](http://a/b(c))` links to
-   `http://a/b(c` and leaves the second `)` literal) -- percent-encode a
-   literal `)` as `%29`. A BACKSLASH is an ordinary destination character
-   kept verbatim (`[t](a\b)` links to `a\b`); there is no destination escape
-   processing, so `\)` does not escape the `)` -- it still ends the run
-   (`[t](a\)b)` links to `a\` and leaves `b)` literal). Note `url_char`
-   itself (used by autolinks) still EXCLUDES `\`, so `<http://a\b>` is not
-   an autolink; the backslash is a destination-only literal. There is NO
-   angle-bracket-wrapped destination form. A newline counts as whitespace,
-   so it ENDS the destination: a `(` whose run reaches the end of the line
-   without a closing `)` is not a link and stays literal (the `[t](url` /
-   `more)` two-line case). *)
+   quoted run is the title) or at the first `)` that has NO unmatched `(`
+   left to pair with. Parentheses BALANCE, to any depth, so
+   `[x](http://a/b(c))` links to `http://a/b(c)` and `[y](e)f)` links to `e`
+   and leaves `f)` literal. This matches djot and CommonMark, both of which
+   balance destination parentheses; URLs carrying parentheses (Wikipedia,
+   MDN) are thus written plainly, with no escape and no second spelling.
+   The ONLY escapes inside a destination are `\(`, `\)` and `\\`, which
+   stand for the literal character and do not affect nesting
+   (`[t](a\)b)` links to `a)b`). A BACKSLASH before anything else is an
+   ordinary destination character kept verbatim (`[t](a\b)` links to `a\b`),
+   so URLs full of backslashes need no doubling. Note `url_char` itself
+   (used by autolinks) still EXCLUDES `\`, so `<http://a\b>` is not an
+   autolink; the backslash is a destination-only literal. There is NO
+   angle-bracket-wrapped destination form -- balanced parentheses and the
+   three escapes cover what one would be for, and whitespace is
+   percent-encoded (`%20`). A newline counts as whitespace, so it ENDS the
+   destination: a `(` whose run reaches the end of the line without a
+   closing `)` is not a link and stays literal (the `[t](url` / `more)`
+   two-line case). *)
 unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
 (* Titles accept double OR single quotes -- a deliberate enhancement
    over djot (which has no single-quote titles; it would fold `'...'`

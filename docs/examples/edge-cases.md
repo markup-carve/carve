@@ -3091,13 +3091,13 @@ the safe destination is kept and the override is ignored:
 
 :::
 
-## Link destination stops at the first parenthesis
+## Link destination parentheses balance
 
-A `(...)` link destination ends at the **first** `)` -- there is no
-balanced-parenthesis rule (this matches the grammar's `link_destination` and is
-identical across all three implementations). A `)` that must live inside a URL
-is supplied via a reference definition instead, where the destination runs to
-the end of the line.
+A `(` inside a `(...)` destination is matched against a later `)`, so the
+destination ends at the first `)` that has **no opener left to pair with**.
+URLs carrying parentheses -- Wikipedia and MDN produce them constantly -- are
+therefore written plainly, with no escape and no second spelling. Djot and
+CommonMark both balance destination parentheses the same way.
 
 ::: compare
 
@@ -3106,7 +3106,38 @@ the end of the line.
 ```
 
 ```html
-<p><a href="http://a/b(c">x</a>)</p>
+<p><a href="http://a/b(c)">x</a></p>
+```
+
+:::
+
+Nesting is tracked to any depth, and a `)` with nothing to close ends the
+destination -- the rest stays literal text.
+
+::: compare
+
+```carve
+[x](a(b(c))d) and [y](e)f)
+```
+
+```html
+<p><a href="a(b(c))d">x</a> and <a href="e">y</a>f)</p>
+```
+
+:::
+
+An unbalanced parenthesis that belongs *inside* the URL is backslash-escaped.
+Only `\(`, `\)` and `\\` are escapes here, so a backslash in front of anything
+else is an ordinary character and URLs full of backslashes are unaffected.
+
+::: compare
+
+```carve
+[x](http://a/b\)c) and [y](a\\b) and [z](a\qb)
+```
+
+```html
+<p><a href="http://a/b)c">x</a> and <a href="a\b">y</a> and <a href="a\qb">z</a></p>
 ```
 
 :::
