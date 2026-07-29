@@ -141,6 +141,29 @@ The optional corpus runs the `html` target only. Its per-feature adapters
 configure HTML conversion specifically, so a non-HTML target there would compare
 "feature configured" against "feature missing" and report a meaningless diff.
 
+### Generated documents
+
+`compare-impls` runs the committed corpus - documents somebody wrote.
+`npm run property:check` generates documents nobody wrote, from an alphabet of
+construct fragments, and asserts the two PART 11 invariants over them:
+
+```bash
+npm run property:check                      # invariants only, vendored engine
+npm run property:check -- --engines         # also compare the three writers
+npm run property:check -- --count=2000 --seed=7
+```
+
+It is deterministic by seed, so a failure is reproducible and one build's counts
+are comparable against another's - which is how it is used: run it against a
+branch and against the base, and compare, rather than reading the absolute
+number as a pass/fail.
+
+The reason it exists is that the corpus cannot reach some shapes. Generated
+input combines constructs at indentations a human would not type, and that is
+where the writer's normalization changes meaning. Its first run surfaced 48
+invariant failures (carve#359) and 41 cross-engine divergences (carve#352) that
+the corpus had not.
+
 By default the script expects sibling checkouts:
 
 - `../carve-rs`

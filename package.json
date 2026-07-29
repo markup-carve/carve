@@ -10,6 +10,7 @@
     "docs:preview": "vitepress preview docs",
     "corpus:build": "node scripts/generate-corpus.mjs",
     "compare:impls": "node scripts/compare-impls.mjs",
+    "property:check": "node scripts/property-check.mjs",
     "core:check": "node scripts/formal-core-check.mjs",
     "sync-carve-lib": "node scripts/sync-carve-lib.mjs",
     "sync-carve-wasm": "node scripts/sync-carve-wasm.mjs",
