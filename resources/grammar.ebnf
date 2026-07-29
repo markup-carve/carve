@@ -2969,4 +2969,73 @@ EOF = (* end of file *) ;
       fence length, ordered-list dialect). Those are the author's choices and
       the AST records them; changing one would satisfy §1 while still
       surprising the author.
+
+   ============================================================================
+   PART 12: AST SERIALIZATION (NORMATIVE)
+   ============================================================================
+
+   A parsed document is exchangeable: an implementation MAY serialize its AST
+   to JSON, and a consumer written against one implementation MUST be able to
+   read another's output. Nothing specified this before, and the engines'
+   INTERNAL field names already differ for the same node - one calls a link's
+   destination `href`, another `destination` - so three dialects were the
+   default outcome rather than a risk.
+
+   1. THE SHAPE IS carve-js's. It is the reference implementation, its AST is
+      already plain data, and the one serializer in the wild (carve-rb, over
+      carve-rs's tree) independently arrived at the same field names. An
+      implementation whose internals differ MAPS on the way out; it does not
+      export its internals.
+
+   2. EVERY NODE IS AN OBJECT with a `type` holding the node-type identifier
+      from profiles.md - the same snake_case strings PART 9 §8 already calls
+      spec surface for kind names. A document is
+      `{"type":"document","children":[...]}`.
+
+   3. FIELD NAMES ARE SPEC SURFACE, exactly as kind names are. The normative
+      set per node type is the carve-js interface for that type. Notably:
+        link       `href`, `children`, and `ref` when the author wrote a
+                   reference link
+        image      `src`, `alt`, `title`
+        code       `value`
+        text       `value`
+        heading    `level`, `children`
+        list       `ordered`, `tight`, `start`, `items`
+      An implementation MUST NOT invent a synonym, and MUST NOT expose an
+      internal field the reference does not have. A consumer reading `href`
+      must not have to know which engine produced the document.
+
+   4. POSITIONS ARE REQUIRED. Every node carries `pos`:
+
+        {"startLine":1,"endLine":1,"startColumn":2,"endColumn":5,
+         "startOffset":1,"endOffset":4}
+
+      Lines and columns are 1-based; offsets are 0-based byte offsets into the
+      source. `endColumn` and `endOffset` are exclusive.
+
+      This is the field that makes a serialized AST worth exchanging: an
+      editor, a language server or a tool grounding output back to source needs
+      to say WHERE, and a tree without positions can only be re-parsed rather
+      than navigated. Making it optional would mean every consumer has to
+      handle its absence, which in practice means not using it.
+
+      IMPLEMENTATION COST -- NOT A DESIGN CONCESSION, A SCHEDULING NOTE. Only
+      carve-js records positions today. carve-php has none on its nodes;
+      carve-rs has none either, though its parser already keeps a line map for
+      the source-line render option, so line granularity exists there and
+      columns and offsets do not. Both therefore need position tracking before
+      they can serialize conformantly. An implementation that cannot yet
+      produce positions MUST NOT emit `pos` with invented values, and MUST NOT
+      omit it silently: it does not yet serialize conformantly, and should say
+      so.
+
+   5. WHAT IS NOT IN THE SERIALIZED FORM. Formatter-internal nodes (PART 11,
+      and the `raw_text` case profiles.md excludes) are not part of the
+      document and are not serialized. Resolution results that a consumer can
+      recompute - footnote numbering, caption numbers - ARE serialized, because
+      recomputing them requires reimplementing PART 9R.
+
+   6. ROUND TRIP. `parse(x)` serialized and deserialized MUST equal `parse(x)`.
+      A serializer that loses a field is not a lossy convenience; it is a
+      consumer breaking silently one document later.
 *)

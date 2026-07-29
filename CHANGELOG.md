@@ -9,6 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The AST serialization format is now specified** (new PART 12). A parsed
+  document is exchangeable: an implementation may serialize its AST to JSON, and
+  a consumer written against one engine must be able to read another's output.
+  Nothing specified this before, and the engines' internal field names already
+  differed for the same node - one calls a link's destination `href`, another
+  `destination` - so three incompatible dialects were the default outcome rather
+  than a risk.
+
+  The shape is carve-js's, because it is the reference implementation, its AST is
+  already plain data, and the one serializer in the wild (carve-rb, over
+  carve-rs's tree) independently arrived at the same field names. Field names are
+  spec surface exactly as node-type and smart-punctuation kind names are.
+
+  Positions are required. `pos` is what makes a serialized AST worth exchanging -
+  an editor, a language server or a tool grounding output back to source needs to
+  say where - and an optional field is one every consumer must handle the absence
+  of, which in practice means not using it. Only carve-js records positions
+  today: carve-php has none, and carve-rs has a parser-internal line map but no
+  columns or offsets, so both need position tracking before they can serialize
+  conformantly.
+
+### Added
+
 - **The optional corpus can pin a target other than HTML** (carve#360). A case's
   manifest entry may name a `target` - `markdown`, `plain` or `ansi` - and is
   paired with an expected file carrying that target's extension; an entry
