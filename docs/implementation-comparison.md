@@ -152,6 +152,44 @@ the case is skipped for that engine, the same visible skip an unsupported
 feature gets. That is why the PHP adapters, which drive `CarveConverter::convert()`
 and so speak HTML, sit out the Markdown-target cases.
 
+### Round-trip inputs
+
+`--roundtrip` formats each corpus case, then feeds that output back in as a
+fresh input:
+
+```bash
+node scripts/compare-impls.mjs --roundtrip
+```
+
+Every case then covers two inputs instead of one, and the second is a document
+nobody wrote. That matters because the formatter emits shapes an author rarely
+types by hand - normalized indentation, inserted blank lines, escape runs - so
+its output is exactly where the engines are least likely to have been compared.
+The case that prompted it (carve#353) was a nested list whose formatted form the
+engines then parsed differently, tight in one and loose in another: an
+HTML-level parser divergence the corpus structurally could not see, because the
+input only exists after formatting.
+
+Three numbers come out of it:
+
+```text
+roundtrip_compared=499 roundtrip_diffs=0 semantic_failures=0 idempotence_failures=0
+```
+
+`roundtrip_diffs` is a cross-engine disagreement on the HTML of formatted
+source, and belongs with the target-agreement block. The other two are each
+engine failing its own stated invariant (PART 11 §1) and are reported apart from
+it:
+
+- `semantic_failures` - `to_html(fmt(x)) != to_html(x)`, the formatter changing
+  what the document renders as.
+- `idempotence_failures` - `fmt(fmt(x)) != fmt(x)`, a second pass that is not a
+  no-op.
+
+A per-engine failure is not a divergence: all three engines can agree and still
+be wrong together, which is why the counts are separate rather than folded into
+`cross_impl_diffs`.
+
 ### Generated documents
 
 `compare-impls` runs the committed corpus - documents somebody wrote.

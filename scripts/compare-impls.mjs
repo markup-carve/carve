@@ -9,6 +9,11 @@ import { DEFAULT_TARGET, expectedFileFor, targetOf } from './lib/corpus-targets.
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const args = new Set(process.argv.slice(2))
 const bench = args.has('--bench')
+// Round-trip mode: format each case, then treat that output as a fresh input.
+// The formatter emits shapes an author would rarely type - normalized
+// indentation, inserted blank lines, escape runs - so its output is exactly
+// where the engines are least likely to have been compared (carve#353).
+const roundtrip = args.has('--roundtrip')
 const limitArg = process.argv.find((a) => a.startsWith('--limit='))
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) : Infinity
 const corpusArg = process.argv.find((a) => a.startsWith('--corpus='))
@@ -426,6 +431,64 @@ for (const pair of pairs) {
   }
 }
 
+let roundtripDiffs = 0
+let semanticFailures = 0
+let idempotenceFailures = 0
+let roundtripCompared = 0
+
+if (roundtrip) {
+  // Each engine formats the case, then re-renders its own output. The formatted
+  // source is a fresh input the corpus never contained, so this doubles the
+  // inputs every case covers.
+  const tmp = mkdtempSync(join(tmpdir(), 'carve-roundtrip-'))
+  try {
+    for (const pair of pairs) {
+      const rendered = []
+      for (const impl of active) {
+        const carveCmd = commandFor(impl, pair, 'carve')
+        const htmlCmd = commandFor(impl, pair, 'html')
+        if (!carveCmd || !htmlCmd) continue
+
+        const formatted = run(carveCmd, impl.cwd, [pair.file])
+        if (!formatted.ok) continue
+
+        // fmt(x) written back out as a real file, so each engine re-reads it
+        // exactly as it would any other input.
+        const once = join(tmp, `${impl.name}-once.crv`)
+        writeFileSync(once, formatted.stdout.endsWith('\n') ? formatted.stdout : `${formatted.stdout}\n`)
+
+        const htmlOfFormatted = run(htmlCmd, impl.cwd, [once])
+        const htmlOfSource = run(htmlCmd, impl.cwd, [pair.file])
+        const formattedTwice = run(carveCmd, impl.cwd, [once])
+
+        // Per-engine properties, reported apart from cross-engine agreement:
+        // these are the formatter's own stated invariants (PART 11 section 1),
+        // not a disagreement between engines.
+        if (htmlOfFormatted.ok && htmlOfSource.ok && htmlOfFormatted.stdout !== htmlOfSource.stdout) {
+          semanticFailures++
+          console.log(`INVARIANT to_html(fmt(x)) != to_html(x) [${impl.name}] ${pair.slug}`)
+        }
+        if (formattedTwice.ok && formattedTwice.stdout !== formatted.stdout) {
+          idempotenceFailures++
+          console.log(`INVARIANT fmt(fmt(x)) != fmt(x) [${impl.name}] ${pair.slug}`)
+        }
+        if (htmlOfFormatted.ok) rendered.push([impl.name, htmlOfFormatted.stdout])
+      }
+
+      if (rendered.length < 2) continue
+      roundtripCompared++
+      if (new Set(rendered.map(([, out]) => out)).size > 1) {
+        roundtripDiffs++
+        console.log(
+          `ROUNDTRIP DIFF ${pair.slug} (${pair.feature}): ${rendered.map(([name]) => name).join(', ')}`,
+        )
+      }
+    }
+  } finally {
+    rmSync(tmp, { recursive: true, force: true })
+  }
+}
+
 console.log('\nImplementation summary')
 const profile = corpusName === 'optional' ? 'optional/opt-in' : 'default/no-opt-in'
 console.log(
@@ -450,6 +513,14 @@ for (const impl of active) {
   )
 }
 console.log(`cross_impl_diffs=${crossImplDiffs}`)
+if (roundtrip) {
+  // Reported apart from the target-agreement block above: the first line is a
+  // cross-engine disagreement, the other two are each engine failing its own
+  // stated invariant.
+  console.log(
+    `roundtrip_compared=${roundtripCompared} roundtrip_diffs=${roundtripDiffs} semantic_failures=${semanticFailures} idempotence_failures=${idempotenceFailures}`,
+  )
+}
 
 console.log('\nTarget agreement (implementations compared against each other)')
 for (const target of activeTargets) {

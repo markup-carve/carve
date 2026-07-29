@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`compare-impls --roundtrip`** (carve#353). Formats each corpus case, then
+  feeds that output back in as a fresh input, so every case covers two inputs
+  instead of one - and the second is a document nobody wrote. The formatter
+  emits shapes an author rarely types (normalized indentation, inserted blank
+  lines, escape runs), which is exactly where the engines are least likely to
+  have been compared.
+
+  It also asserts the two PART 11 §1 invariants per engine while the outputs are
+  in hand: `to_html(fmt(x)) == to_html(x)` and `fmt(fmt(x)) == fmt(x)`. Those are
+  per-engine properties, reported separately from cross-engine agreement - all
+  three engines can agree and still be wrong together.
+
 ### Fixed
 
 - **The executable spec's quote open/close decision matches the engines**
