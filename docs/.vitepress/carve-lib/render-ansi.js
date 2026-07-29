@@ -91,6 +91,8 @@ function renderBlock(node, ctx) {
             }
             return `${labelLine}${body}`;
         }
+        case 'line_block':
+            return renderBlocks(node.children, ctx);
         case 'div': {
             if (!node.label)
                 return renderBlocks(node.children, ctx);
@@ -286,6 +288,8 @@ function renderInline(node, ctx) {
     switch (node.type) {
         case 'text':
             return cleanEscapedText(node);
+        case 'escaped_text':
+            return node.value;
         case 'emphasis':
             return style(renderInlines(node.children, ctx), ITALIC);
         case 'strong':

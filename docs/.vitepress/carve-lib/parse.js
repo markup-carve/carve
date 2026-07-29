@@ -72,7 +72,14 @@ function extractItemAttr(line) {
         return null;
     if (!isValidAttrPayload(m[3]))
         return null;
-    return { stripped: m[1] + m[2] + m[4], attrs: parseAttrs(m[3]) };
+    const attrs = parseAttrs(m[3]);
+    // The blessed empty block (`-{} text`) exists to STRIP the braces, not to
+    // record anything: it declares no id, class or key. Recording an empty attrs
+    // object would make `-{} x` and `- x` different documents that render the
+    // same, and the writer emits the shorter of the two - so a formatted item
+    // came back without the object and `parse(fmt(x)) == parse(x)` did not hold
+    // (issue 359). carve-rs already records nothing here.
+    return { stripped: m[1] + m[2] + m[4], attrs: isEmptyAttrs(attrs) ? undefined : attrs };
 }
 const TRIM_STRUCTURAL_RE = /^[^\S\u00a0]+|[^\S\u00a0]+$/g;
 function trimStructural(text) {
@@ -1416,10 +1423,9 @@ function parseLineBlock(lexer) {
         children: parseInline(lines.join('\n'), lexer.abbrDefs, lexer.linkDefs).map((node) => node.type === 'soft_break' ? { type: 'hard_break' } : node),
     }));
     // No inline opener attributes (strict djot); a preceding block-attribute
-    // line merges onto this div in parseBlocks.
+    // line merges onto this node in parseBlocks.
     const node = {
-        type: 'div',
-        attrs: { classes: ['line-block'], order: ['.class'] },
+        type: 'line_block',
         children,
     };
     return node;
@@ -3372,7 +3378,65 @@ const ATTR_INERT_PREV = new Set(['text', 'soft_break', 'hard_break', 'mention', 
 // decides span (valid block, possibly empty) vs literal (invalid content).
 // Destination is non-empty (grammar `link_destination = {...}+`), so `[a]()`
 // is NOT a link -- it stays literal (matches carve-php / carve-rs).
-const RE_LINK_TAIL = /^\(([^)\s]+)(?:\s+"((?:[^"\\]|\\.)*)"|\s+'((?:[^'\\]|\\.)*)')?\)(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
+const RE_LINK_REST = /^(?:\s+"((?:[^"\\]|\\.)*)"|\s+'((?:[^'\\]|\\.)*)')?\)(?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
+/**
+ * Read a destination out of a link or image tail, starting at the `(`.
+ *
+ * A parenthesis inside a destination is balanced against the one that closes
+ * the tail, so `[a](x(y)z)` is a whole link rather than a truncated one. This
+ * is what djot and CommonMark both do, and URLs that carry parentheses -
+ * Wikipedia and MDN produce them constantly - are the reason they do.
+ *
+ * The scan ends at whitespace, which begins a title, or at a `)` with no
+ * opener left to match. A destination that needs either of those characters
+ * literally escapes it; `\(`, `\)` and `\\` are the only escapes here, so a
+ * backslash in front of anything else stays a literal backslash and URLs full
+ * of them are unaffected.
+ *
+ * Returns the raw destination and where the scan stopped, or null when the
+ * tail does not open with `(`.
+ */
+function scanDestination(tail) {
+    if (tail[0] !== '(')
+        return null;
+    let dest = '';
+    let depth = 0;
+    let i = 1;
+    for (; i < tail.length; i++) {
+        const c = tail[i];
+        if (c === '\\' && (tail[i + 1] === '(' || tail[i + 1] === ')' || tail[i + 1] === '\\')) {
+            dest += tail[i + 1];
+            i++;
+            continue;
+        }
+        if (c === '(')
+            depth++;
+        else if (c === ')') {
+            if (depth === 0)
+                break;
+            depth--;
+        }
+        else if (/\s/.test(c))
+            break;
+        dest += c;
+    }
+    return { dest, end: i };
+}
+/**
+ * The whole tail of a link or image: `(destination)`, optionally with a title
+ * and an attribute block. Returns the shape the regex it replaced returned --
+ * full match, destination, the two title spellings, attribute payload -- so
+ * the call sites read the same either way.
+ */
+function execLinkTail(tail) {
+    const scanned = scanDestination(tail);
+    if (scanned === null || scanned.dest === '')
+        return null;
+    const rest = RE_LINK_REST.exec(tail.slice(scanned.end));
+    if (rest === null)
+        return null;
+    return [tail.slice(0, scanned.end + rest[0].length), scanned.dest, rest[1], rest[2], rest[3]];
+}
 const RE_REF_TAIL = /^\[([^\]]*)\](?:\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')+)\})?/;
 const RE_SPAN_TAIL = /^\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\}/;
 /**
@@ -3452,7 +3516,7 @@ function buildBracketMap(s) {
 }
 // Suffix-existence tables used to skip the inline tail regexes when their
 // mandatory close delimiter is absent from the rest of the input. Each tail
-// pattern (RE_LINK_TAIL, RE_SPAN_TAIL, the critic and forced-emphasis
+// pattern (the link tail, RE_SPAN_TAIL, the critic and forced-emphasis
 // patterns) requires a specific literal (`)`, `}`, `+}`, `-}`) inside its
 // match; if no such literal occurs at or after the position where the regex
 // would be anchored, the regex CANNOT match, so running it is pure wasted work.
@@ -3674,6 +3738,11 @@ function lastEmittedGlyph(out) {
         if (glyph)
             return glyph;
     }
+    // An escaped character is its own node but still the character before the
+    // quote, and quote flanking reads that character: `\{"quoted"` opens on the
+    // brace exactly as an unescaped `{` would (corpus 163).
+    if (previous && previous.type === 'escaped_text')
+        return previous.value;
     return 'x';
 }
 function smartToken(text, i, prev) {
@@ -3824,7 +3893,13 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                 // marker (`\^ cap` after an image stays a paragraph, not a figure).
                 if (nxt === '^' && buf === '')
                     bufEscapedCaret = true;
-                append(nxt);
+                // The escape is its own node: the backslash carries intent the literal
+                // character does not. `\-\-` was written precisely so a downstream
+                // processor would not read an en dash, and flattening it into text lost
+                // that (carve#350).
+                const escStart = i;
+                flush();
+                out.push(withPos({ type: 'escaped_text', value: nxt }, source, text, escStart, i + 2));
                 i += 2;
                 continue;
             }
@@ -3987,7 +4062,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                 const alt = rest.slice(2, close);
                 const tail = rest.slice(close + 1);
                 // A link/image tail needs a literal `)`; skip when none lies ahead.
-                const ml = rparenSuf && rparenSuf[i + close + 1] ? RE_LINK_TAIL.exec(tail) : null;
+                const ml = rparenSuf && rparenSuf[i + close + 1] ? execLinkTail(tail) : null;
                 if (ml) {
                     flush();
                     const img = { type: 'image', src: ml[1], alt };
@@ -4092,7 +4167,7 @@ function scanInlineInner(text, source, inFootnote, captionContext) {
                     continue;
                 }
                 // Inline link [text](url "title"){attrs}
-                const ml = rparenSuf && rparenSuf[i + close + 1] ? RE_LINK_TAIL.exec(tail) : null;
+                const ml = rparenSuf && rparenSuf[i + close + 1] ? execLinkTail(tail) : null;
                 if (ml) {
                     flush();
                     const link = {

@@ -5,18 +5,9 @@ export type DisallowedAction = 'strip' | 'to_text' | 'error';
  * Canonical block node-type vocabulary (snake_case). These are the strings a
  * profile's allow/deny lists use; they are portable across implementations.
  */
-export declare const CANONICAL_BLOCK_TYPES: readonly ["paragraph", "heading", "code_block", "block_quote", "list", "list_item", "table", "table_row", "table_cell", "thematic_break", "div", "raw_block", "footnote", "definition_list", "definition_term", "definition_description", "section", "line_block", "comment", "figure", "caption"];
+export declare const CANONICAL_BLOCK_TYPES: readonly ["paragraph", "heading", "code_block", "block_quote", "list", "list_item", "table", "table_row", "table_cell", "thematic_break", "div", "raw_block", "footnote", "definition_list", "definition_term", "definition_description", "section", "admonition", "line_block", "comment", "figure", "caption"];
 /** Canonical inline node-type vocabulary (snake_case). */
-export declare const CANONICAL_INLINE_TYPES: readonly ["text", "emphasis", "strong", "underline", "strike", "inline_extension", "mention", "code", "link", "image", "soft_break", "hard_break", "raw_inline", "escaped_text", "footnote_ref", "inline_footnote", "span", "superscript", "subscript", "highlight", "insert", "delete", "symbol", "math", "abbreviation"];
-/**
- * Map a carve-js internal `node.type` to its canonical snake_case name.
- *
- * Returns `undefined` for types that have no canonical mapping (e.g.
- * `crossref`, `caption-number`, `abbreviation-def`, `critic-*`);
- * such nodes are denied-by-default by the profile resolver, matching
- * carve-php's "unknown type -> denied" rule. The exception is `document`,
- * which the resolver always treats as allowed.
- */
+export declare const CANONICAL_INLINE_TYPES: readonly ["text", "autolink", "emphasis", "strong", "underline", "strike", "inline_extension", "mention", "code", "link", "image", "soft_break", "hard_break", "raw_inline", "escaped_text", "footnote_ref", "inline_footnote", "span", "superscript", "subscript", "highlight", "insert", "delete", "symbol", "math", "abbreviation"];
 export declare function canonicalType(type: string): string | undefined;
 /**
  * Link URL policy for Profile-based filtering. Controls which URLs are

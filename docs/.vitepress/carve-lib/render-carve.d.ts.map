@@ -1,1 +1,1 @@
-{"version":3,"file":"render-carve.d.ts","sourceRoot":"","sources":["../src/render-carve.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAIV,QAAQ,EAUT,MAAM,UAAU,CAAA;AAGjB,MAAM,WAAW,kBAAkB;CAAG;AAWtC,wBAAgB,WAAW,CAAC,GAAG,EAAE,QAAQ,EAAE,KAAK,GAAE,kBAAuB,GAAG,MAAM,CASjF"}
+{"version":3,"file":"render-carve.d.ts","sourceRoot":"","sources":["../src/render-carve.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAIV,QAAQ,EAUT,MAAM,UAAU,CAAA;AAGjB,MAAM,WAAW,kBAAkB;CAAG;AActC,wBAAgB,WAAW,CAAC,GAAG,EAAE,QAAQ,EAAE,KAAK,GAAE,kBAAuB,GAAG,MAAM,CASjF"}

@@ -155,6 +155,10 @@ export function inlineText(nodes) {
         switch (n.type) {
             case 'text':
             case 'code':
+            // The escape is authoring syntax; the heading still contains the
+            // character, and the id has always been slugified from what the reader
+            // sees.
+            case 'escaped_text':
                 out += n.value;
                 break;
             // The visible glyph, not the source run: a heading id has always been

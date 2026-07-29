@@ -550,7 +550,7 @@ function renderAttrs(attrs) {
  * With no attrs and no baseClass it returns '' — unchanged output.
  */
 function renderAttrs2(attrs, opts = {}) {
-    if (!attrs && !opts.baseClass)
+    if (!attrs && !opts.baseClass && !opts.trailingClass)
         return '';
     // Build a synthetic Attrs and delegate to renderAttrs so author
     // attributes still emit in source order (PART 10 §1): merge a
@@ -562,6 +562,14 @@ function renderAttrs2(attrs, opts = {}) {
         a.classes = [opts.baseClass, ...(a.classes ?? [])];
         if (a.order && !a.order.includes('.class'))
             a.order = ['.class', ...a.order];
+    }
+    // A structural class the CONSTRUCT owns (not one the author wrote) trails the
+    // author's own attributes: `{.foo #v}` on a line block renders
+    // `class="foo line-block" id="v"`, matching carve-php and carve-rs.
+    if (opts.trailingClass) {
+        a.classes = [...(a.classes ?? []), opts.trailingClass];
+        if (a.order && !a.order.includes('.class'))
+            a.order = [...a.order, '.class'];
     }
     if (opts.dropId) {
         delete a.id;
@@ -714,6 +722,17 @@ function renderBlock(node, opts, level) {
             }
             const body = node.children.map((c) => renderBlock(c, opts, level + 1)).join('\n');
             return `${open}\n${floor ? `${floor}\n` : ''}${body}\n${pad}</div>`;
+        }
+        case 'line_block': {
+            // A line block renders as a div carrying the `line-block` class. The
+            // class is part of the OUTPUT contract, not of the AST: the node type is
+            // what records that every newline inside is a hard break, so a plain div
+            // an author gave that class stays an ordinary div.
+            const open = `${pad}<div${renderAttrs2(node.attrs, { trailingClass: 'line-block' })}${sourceLineAttr(opts, node.pos?.startLine, node.attrs)}>`;
+            if (node.children.length === 0)
+                return `${open}\n${pad}</div>`;
+            const body = node.children.map((c) => renderBlock(c, opts, level + 1)).join('\n');
+            return `${open}\n${body}\n${pad}</div>`;
         }
         case 'definition_list': {
             const lines = [
@@ -1085,6 +1104,9 @@ function renderInlines(nodes, opts) {
 function renderInline(node, opts) {
     switch (node.type) {
         case 'text':
+            return escapeHtml(node.value);
+        case 'escaped_text':
+            // The backslash is authoring syntax; the reader sees the character.
             return escapeHtml(node.value);
         case 'emphasis':
             return `<em${renderAttrs(node.attrs)}>${renderInlines(node.children, opts)}</em>`;

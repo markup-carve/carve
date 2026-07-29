@@ -622,6 +622,7 @@ function extractTextContent(node) {
         case 'thematic_break':
             return '---';
         case 'text':
+        case 'escaped_text':
             return node['value'] ?? '';
         case 'code':
             return node['value'] ?? '';

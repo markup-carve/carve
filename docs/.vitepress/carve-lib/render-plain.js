@@ -49,6 +49,8 @@ function renderBlock(node, ctx) {
             return node.label
                 ? `${stripControls(node.label)}\n\n${renderBlocks(node.children, ctx)}`
                 : renderBlocks(node.children, ctx);
+        case 'line_block':
+            return renderBlocks(node.children, ctx);
         case 'definition_list':
             return renderDefinitionList(node.items, ctx, true);
         case 'figure':
@@ -146,6 +148,8 @@ function renderInline(node, ctx) {
     switch (node.type) {
         case 'text':
             return cleanEscapedText(node);
+        case 'escaped_text':
+            return node.value;
         case 'emphasis':
         case 'strong':
         case 'underline':

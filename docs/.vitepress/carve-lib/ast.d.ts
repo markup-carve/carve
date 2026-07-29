@@ -185,6 +185,19 @@ export interface Div extends BaseNode {
     children: BlockNode[];
 }
 /**
+ * Line block (§4.4): a `::: |` fence whose every newline is a hard break.
+ *
+ * Its own type rather than a `div` carrying a `.line-block` class, because the
+ * two are not the same document: a plain div with that class keeps soft breaks,
+ * and a writer given only the class cannot tell which one to emit. The block
+ * vocabulary in the spec's profiles.md lists `line_block` for the same reason -
+ * a profile denying it must be able to name it.
+ */
+export interface LineBlock extends BaseNode {
+    type: 'line_block';
+    children: BlockNode[];
+}
+/**
  * Definition list (§4.5): `:: term` lines (one or more) followed by
  * `:  definition` lines (one or more) form an entry; entries render to a
  * `<dl>` of `<dt>` (terms) then `<dd>` (definitions). `::` is exactly two
@@ -226,7 +239,7 @@ export interface Comment extends BaseNode {
     block: boolean;
     content: string;
 }
-export type BlockNode = Heading | Paragraph | BlockQuote | List | CodeBlock | ThematicBreak | Table | Admonition | Div | DefinitionList | Figure | Image | AbbreviationDef | RawBlock | Comment;
+export type BlockNode = Heading | Paragraph | BlockQuote | List | CodeBlock | ThematicBreak | Table | Admonition | Div | LineBlock | DefinitionList | Figure | Image | AbbreviationDef | RawBlock | Comment;
 /**
  * Canonical glyph per smart-typography kind.
  *
@@ -259,6 +272,22 @@ export interface SmartPunctuation extends BaseNode {
     value: string;
     /** Resolved glyph, set when the parser fixed it (quotes). */
     glyph?: string;
+}
+/**
+ * A character the author escaped with a backslash (`\-`, `\"`).
+ *
+ * Its own type rather than plain text, because the escape carries intent the
+ * literal character alone cannot: the author wrote `\-\-` precisely so a
+ * downstream processor would NOT turn it into an en dash. Flattening it into
+ * text lost that, and the Markdown target emitted the trigger bare where
+ * carve-php reproduced the escape (carve#350). The inline vocabulary in the
+ * spec's profiles.md lists `escaped_text` for the same reason.
+ *
+ * The value is the literal character, without the backslash.
+ */
+export interface EscapedText extends BaseNode {
+    type: 'escaped_text';
+    value: string;
 }
 export interface Text extends BaseNode {
     type: 'text';
@@ -492,6 +521,6 @@ export interface CriticComment extends BaseNode {
     type: 'critic-comment';
     text: string;
 }
-export type InlineNode = Text | SmartPunctuation | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | LiteralInline | SymbolInline | AutoLink | CrossRef | CaptionNumber | CitationGroup | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment | Comment;
+export type InlineNode = Text | EscapedText | SmartPunctuation | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | LiteralInline | SymbolInline | AutoLink | CrossRef | CaptionNumber | CitationGroup | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment | Comment;
 export type AnyNode = Document | BlockNode | InlineNode;
 //# sourceMappingURL=ast.d.ts.map

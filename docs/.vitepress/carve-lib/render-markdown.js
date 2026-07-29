@@ -2,7 +2,7 @@ import { SMART_PUNCTUATION_GLYPHS } from './ast.js';
 import { AbbrBudget, utf8ByteLength } from './abbr-budget.js';
 const MAX_RENDER_DEPTH = 200;
 const TRIM_NON_NBSP_RE = /^[^\S\u00a0]+|[^\S\u00a0]+$/g;
-export function renderMarkdown(ast, _opts = {}) {
+export function renderMarkdown(ast, opts = {}) {
     const headingIds = new Set();
     const referencedHeadingIds = new Set();
     walkBlocks(ast.children, (node) => {
@@ -27,6 +27,7 @@ export function renderMarkdown(ast, _opts = {}) {
         blockDepth: 0,
         inlineDepth: 0,
         abbrBudget: new AbbrBudget(ast.srcByteLength),
+        smartTypography: opts.smartTypography ?? 'glyph',
     };
     const out = renderBlocks(ast.children, ctx);
     const footnotes = renderFootnoteDefs(ast, ctx);
@@ -56,7 +57,7 @@ function renderBlock(node, ctx) {
         case 'code_block': {
             const content = stripControls(node.content);
             const fence = safeFence(content, 3);
-            const info = markdownFenceInfo(node.lang, node.header);
+            const info = markdownFenceInfo(node.lang, node.header, node.label);
             return `${fence}${info}\n${content}\n${fence}\n\n`;
         }
         case 'block_quote': {
@@ -88,6 +89,8 @@ function renderBlock(node, ctx) {
             return node.label
                 ? `**${escapeText(node.label)}**\n\n${renderBlocks(node.children, ctx)}`
                 : renderBlocks(node.children, ctx);
+        case 'line_block':
+            return renderBlocks(node.children, ctx);
         case 'definition_list':
             return renderDefinitionList(node.items, ctx, true);
         case 'figure':
@@ -112,6 +115,11 @@ function renderList(node, ctx) {
     ctx.listDepth++;
     let out = '';
     let counter = node.start ?? 1;
+    // The authored bullet, not a normalized one. A change of bullet is what
+    // SEPARATES two adjacent lists in CommonMark, so emitting `-` for a `*` list
+    // merges lists the source kept apart - the same section 11 rule the AST
+    // records `bulletChar` for and `renderCarve` already honors (carve#352).
+    const bullet = node.bulletChar ?? '-';
     for (const item of node.items) {
         const indent = '  '.repeat(ctx.listDepth - 1);
         let prefix;
@@ -120,10 +128,10 @@ function renderList(node, ctx) {
             counter++;
         }
         else if (item.checked !== undefined) {
-            prefix = `- ${item.checked ? '[x]' : '[ ]'} `;
+            prefix = `${bullet} ${item.checked ? '[x]' : '[ ]'} `;
         }
         else {
-            prefix = '- ';
+            prefix = `${bullet} `;
         }
         const content = trimNonNbsp(renderListItem(item, ctx));
         const lines = content.split('\n');
@@ -230,6 +238,13 @@ function renderInline(node, ctx) {
             if (/^<\/#[^>]+>$/.test(node.value))
                 return node.value;
             return escapeText(cleanEscapedText(node));
+        case 'escaped_text':
+            // Reproduce the author's escape. `\-\-` was written precisely so a
+            // downstream processor with smart punctuation on would not read an en
+            // dash; emitting the character bare loses exactly that (carve#350).
+            // The underscore still goes through the sentinel, so the intraword rule
+            // can drop the backslash where CommonMark ignores it anyway.
+            return node.value === '_' ? UNDERSCORE_ESCAPE : '\\' + node.value;
         case 'emphasis':
             return `*${renderInlines(node.children, ctx)}*`;
         case 'strong':
@@ -317,7 +332,11 @@ function renderInline(node, ctx) {
         case 'comment':
             return '';
         case 'smart_punctuation':
-            return node.glyph ?? SMART_PUNCTUATION_GLYPHS[node.kind] ?? node.value;
+            // Source mode reproduces what the author typed; the glyph is a
+            // presentation choice a machine consumer cannot reverse.
+            return ctx.smartTypography === 'source'
+                ? node.value
+                : (node.glyph ?? SMART_PUNCTUATION_GLYPHS[node.kind] ?? node.value);
         default: {
             const t = node;
             throw new Error(`renderMarkdown: unknown inline ${t.type}`);
@@ -341,14 +360,19 @@ function renderImage(node) {
         ? `![${alt}](${src})`
         : `![${alt}](${src} "${escapeMdTitle(node.title)}")`;
 }
-function markdownFenceInfo(lang, header) {
+function markdownFenceInfo(lang, header, label) {
     // Keep only the first whitespace-delimited token (the language word); drop it
     // if it still contains a backtick (would break the fence).
     const rawToken = lang === undefined ? '' : (stripControls(lang).split(/\s/)[0] ?? '');
     const token = rawToken.includes('`') ? '' : rawToken;
+    // A grouping `[label]` rides along after the language and title. Dropping it
+    // was silent data loss: an info string is free-form after the first word, so
+    // every consumer ignores what it does not understand, and carve-php was
+    // already emitting it (carve#352).
+    const grouping = label === undefined || label === '' ? '' : ` [${stripControls(label).replace(/[[\]`]/g, '')}]`;
     if (header === undefined)
-        return token;
-    return `${token} "${escapeMdTitle(header)}"`;
+        return `${token}${grouping}`;
+    return `${token} "${escapeMdTitle(header)}"${grouping}`;
 }
 function escapeMarkdownLabel(text) {
     return stripControls(text).replace(/[\\[\]]/g, '\\$&');
@@ -492,6 +516,7 @@ function walkBlocks(blocks, visit) {
             case 'block_quote':
             case 'admonition':
             case 'div':
+            case 'line_block':
                 walkBlocks(block.children, visit);
                 break;
             case 'list':
