@@ -6,6 +6,7 @@
  * structures (table, blockquote, figure, admonition) get two-space
  * indented children for readability.
  */
+import { SMART_PUNCTUATION_GLYPHS } from './ast.js';
 import { AbbrBudget, utf8ByteLength } from './abbr-budget.js';
 import { collectDocumentIds } from './document-ids.js';
 // Per-render abbreviation-expansion budget (DoS guard). Set at the top of
@@ -1289,6 +1290,10 @@ function renderInline(node, opts) {
         case 'comment':
             // Comments are not rendered (§4.13); inline form mirrors the block one.
             return '';
+        case 'smart_punctuation':
+            // The resolved glyph, escaped like any other text: a locale quote glyph
+            // can carry a non-breaking space (French guillemets are `«` + U+00A0).
+            return escapeHtml(node.glyph ?? SMART_PUNCTUATION_GLYPHS[node.kind] ?? node.value);
         default: {
             const t = node;
             throw new Error(`renderHtml: unknown inline ${t.type}`);

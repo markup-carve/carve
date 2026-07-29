@@ -1,3 +1,4 @@
+import { SMART_PUNCTUATION_GLYPHS } from './ast.js';
 /** Citation key characters (Pandoc-compatible). */
 const KEY = String.raw `[\w][\w:.#$%&+?<>~/-]*`;
 // One `;`-item: optional prefix, optional single `-` marker, `@key`,
@@ -285,6 +286,59 @@ const ATTR_RE = /^\{([^}]*)\}\s*/;
 // The `{author= year=}` block sits in the entry prose, so the core typographic
 // pass may have turned its straight quotes into curly ones (#196). Accept both.
 const KV_RE = (k) => new RegExp(`${k}\\s*=\\s*["“”]([^"“”]*)["“”]`);
+/** Visible text of one inline node, for the leading-run scan below. */
+function runPieceText(n) {
+    if (n.type === 'text')
+        return n.value;
+    if (n.type === 'smart_punctuation')
+        return n.glyph ?? SMART_PUNCTUATION_GLYPHS[n.kind] ?? n.value;
+    return null;
+}
+/**
+ * Consume a leading `{author= year=}` block that spans several nodes.
+ *
+ * Smart typography is its own node, so the quotes inside the block split the
+ * entry text into `{author=`, a quote node, `Smith`, ... and a regex over a
+ * single text node can no longer see the whole block. Flatten the leading run
+ * of text and smart-punctuation nodes, match against that, then remove exactly
+ * the matched prefix - slicing the text node it ends in and leaving everything
+ * after it untouched, so smart punctuation in the entry prose survives.
+ *
+ * Returns the matched inside of the braces, or null when there is no block.
+ */
+function takeLeadingAttrBlock(rest) {
+    let flat = '';
+    let spanned = 0;
+    for (const n of rest) {
+        const piece = runPieceText(n);
+        if (piece === null)
+            break;
+        flat += piece;
+        spanned++;
+    }
+    const am = ATTR_RE.exec(flat);
+    if (!am)
+        return null;
+    let remaining = am[0].length;
+    let index = 0;
+    while (index < spanned && remaining > 0) {
+        const piece = runPieceText(rest[index]);
+        if (piece.length <= remaining) {
+            remaining -= piece.length;
+            index++;
+            continue;
+        }
+        // Ends inside this node: it can only be a text node, since a smart
+        // punctuation node is atomic and always falls wholly inside the block.
+        const node = rest[index];
+        if (node.type !== 'text')
+            break;
+        node.value = piece.slice(remaining);
+        remaining = 0;
+    }
+    rest.splice(0, index);
+    return am[1];
+}
 /** Return a new block list with definition lines removed, populating `defs`.
  *  Consecutive `[@key]: entry` lines parse as one paragraph (soft-break
  *  separated), so split each paragraph into lines and collect per line. */
@@ -364,25 +418,24 @@ function asDefinition(kids) {
     if (cgAttrs?.year !== undefined)
         value.year = cgAttrs.year;
     // Fallback: a leading `{…}` left in the entry text (when it did not attach).
-    const head = rest[0];
-    if (value.author === undefined && head?.type === 'text') {
-        const am = ATTR_RE.exec(head.value);
-        if (am) {
-            const inside = am[1];
+    if (value.author === undefined) {
+        const inside = takeLeadingAttrBlock(rest);
+        if (inside !== null) {
             const author = KV_RE('author').exec(inside)?.[1];
             const year = KV_RE('year').exec(inside)?.[1];
             if (author !== undefined)
                 value.author = author;
             if (year !== undefined)
                 value.year = year;
-            head.value = head.value.slice(am[0].length);
-            if (head.value === '')
-                rest.shift();
         }
     }
     // Strip a leading space left behind by a consumed attr block.
-    if (head?.type === 'text')
+    const head = rest[0];
+    if (head?.type === 'text') {
         head.value = head.value.replace(/^\s+/, '');
+        if (head.value === '')
+            rest.shift();
+    }
     return { key: it.key, value };
 }
 // ----- render ---------------------------------------------------------------
@@ -518,6 +571,8 @@ function flattenText(nodes) {
     for (const n of nodes) {
         if (n.type === 'text')
             out += n.value;
+        else if (n.type === 'smart_punctuation')
+            out += n.glyph ?? SMART_PUNCTUATION_GLYPHS[n.kind] ?? n.value;
         else if ('children' in n && Array.isArray(n.children))
             out += flattenText(n.children);
     }

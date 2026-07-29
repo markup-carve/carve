@@ -119,6 +119,11 @@ export function canonicalType(type) {
         // ----- inline -----
         case 'text':
             return 'text';
+        // Smart typography is ordinary visible prose, so it shares text's trust
+        // class rather than becoming a nameable type of its own (the same way the
+        // inline literal folds into `code`).
+        case 'smart_punctuation':
+            return 'text';
         case 'emphasis':
             return 'emphasis';
         case 'strong':

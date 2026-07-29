@@ -1,3 +1,4 @@
+import { SMART_PUNCTUATION_GLYPHS } from './ast.js';
 const MAX_RENDER_DEPTH = 200;
 const TRIM_NON_NBSP_RE = /^[^\S\u00a0]+|[^\S\u00a0]+$/g;
 export function renderPlainText(ast, _opts = {}) {
@@ -204,6 +205,8 @@ function renderInline(node, ctx) {
             return stripControls(node.raw);
         case 'comment':
             return '';
+        case 'smart_punctuation':
+            return node.glyph ?? SMART_PUNCTUATION_GLYPHS[node.kind] ?? node.value;
         default: {
             const t = node;
             throw new Error(`renderPlainText: unknown inline ${t.type}`);

@@ -1,17 +1,96 @@
+import { parse } from './parse.js';
 const MAX_RENDER_DEPTH = 200;
 const TRIM_NON_NBSP_RE = /^[^\S\u00a0]+|[^\S\u00a0]+$/g;
 export function renderCarve(ast, _opts = {}) {
-    const ctx = { blockDepth: 0, inlineDepth: 0, listDepth: 0 };
-    const parts = [];
-    if (ast.frontmatter)
-        parts.push(renderFrontmatter(ast.frontmatter));
-    const body = renderBlocks(ast.children, ctx);
-    if (body)
-        parts.push(body);
-    const footnotes = renderFootnoteDefs(ast, ctx);
-    if (footnotes)
-        parts.push(footnotes);
-    return normalize(parts.join('\n\n'));
+    // PART 11 section 4: emit the minimal-escape form when dropping the candidate
+    // escapes changes nothing, and fall back to the conservative form when it
+    // does. The check is the parser's, not a table's, so the writer cannot drift
+    // as the grammar grows.
+    const minimal = renderWithEscapes(ast, 'minimal');
+    const conservative = renderWithEscapes(ast, 'conservative');
+    if (minimal === conservative)
+        return minimal;
+    return escapingIsRedundant(minimal, conservative) ? minimal : conservative;
+}
+function renderWithEscapes(ast, mode) {
+    const previous = escapeMode;
+    escapeMode = mode;
+    try {
+        const ctx = { blockDepth: 0, inlineDepth: 0, listDepth: 0 };
+        const parts = [];
+        if (ast.frontmatter)
+            parts.push(renderFrontmatter(ast.frontmatter));
+        const body = renderBlocks(ast.children, ctx);
+        if (body)
+            parts.push(body);
+        const footnotes = renderFootnoteDefs(ast, ctx);
+        if (footnotes)
+            parts.push(footnotes);
+        return normalize(parts.join('\n\n'));
+    }
+    finally {
+        escapeMode = previous;
+    }
+}
+/**
+ * True when the two renders mean the same thing, so the escapes the
+ * conservative form adds are redundant and the minimal form can be emitted.
+ *
+ * The comparison is minimal-against-conservative rather than
+ * minimal-against-the-original-AST, deliberately. The writer does not satisfy
+ * `parse(fmt(x)) == parse(x)` for every construct today - tables with a colspan,
+ * doubled alignment markers, some list-item attributes and one line-block shape
+ * all re-parse to a different AST while rendering identical HTML. Comparing
+ * against the original document would inherit those defects and make the
+ * escaping decision flip between passes, breaking idempotence for a reason that
+ * has nothing to do with escaping. Comparing the two renders isolates the only
+ * question this decision is about: does dropping the candidate escapes change
+ * anything?
+ *
+ * It is also document-scoped rather than per-line. Verifying anything smaller
+ * loses the document's link and footnote definitions, so a paragraph carrying a
+ * reference link comes back with an empty href and reports a difference that
+ * escaping never caused.
+ */
+function escapingIsRedundant(minimal, conservative) {
+    try {
+        return stableJson(parse(minimal)) === stableJson(parse(conservative));
+    }
+    catch {
+        // A writer bug that produces unparseable source must not throw out of the
+        // renderer: fall back to the conservative form, which is what the writer
+        // emitted before minimal escaping existed.
+        return false;
+    }
+}
+function stableJson(value) {
+    return JSON.stringify(canonical(value));
+}
+/**
+ * Key-order-insensitive view of a node tree.
+ *
+ * A parsed document and a re-parsed one carry the same fields in different
+ * insertion order - `attrs` before `children` in one, after it in the other -
+ * so a plain JSON.stringify comparison reports a difference that does not
+ * exist and escalates the whole document to conservative escaping for nothing.
+ *
+ * `pos` and `srcByteLength` describe where the text sat rather than what it
+ * says, and the writer legitimately renormalizes indentation, so they are
+ * dropped rather than compared.
+ */
+function canonical(value) {
+    if (Array.isArray(value))
+        return value.map(canonical);
+    if (value && typeof value === 'object') {
+        const out = {};
+        for (const key of Object.keys(value).sort()) {
+            if (key === 'pos' || key === 'srcByteLength')
+                continue;
+            out[key] = canonical(value[key]);
+        }
+        return out;
+    }
+    return value;
 }
 function renderBlocks(blocks, ctx) {
     if (ctx.blockDepth >= MAX_RENDER_DEPTH)
@@ -389,6 +468,9 @@ function renderInline(node, ctx, prevChar = '', nextChar = '') {
             return node.raw;
         case 'comment':
             return ` %% ${node.content}`;
+        case 'smart_punctuation':
+            // The whole point: reproduce the author's source run verbatim.
+            return node.value;
         default: {
             const t = node;
             throw new Error(`renderCarve: unknown inline ${t.type}`);
@@ -591,8 +673,29 @@ function cleanEscapedText(node) {
 // `,` needs no escape: there is no bare subscript delimiter, and the braced
 // `{,` opener is neutralized by the `{` escape. `^` stays escaped for the
 // inline-footnote (`^[`) and caption (line-leading `^`) channels.
+// PART 11 section 5. The UNCONDITIONAL set is escaped in every mode: a
+// backslash and a backtick are never re-derivable, and a bare quote
+// re-derives as smart punctuation (PART 9 section 8), so a quote that reached
+// the writer as TEXT is one the author escaped and stays escaped. The
+// CANDIDATE set is every other character the grammar can read as an opener,
+// escaped only when the minimal form fails to round-trip.
+// The caret joins this set even though it opens nothing on its own. Its
+// escape carries information the AST records separately - a text node whose
+// LEADING caret came from an escape is flagged, so an image followed by a
+// caret line is not promoted to a figure. Comparing that flag would escalate
+// any document whose text starts with a caret; ignoring it would silently
+// turn the image case into a figure. Escaping the caret in both modes keeps
+// the two renders identical on that point and sidesteps the question, at the
+// cost of one escape on a character that is rare in prose.
+const UNCONDITIONAL_ESCAPES = /[\\`"'^]/g;
+const CANDIDATE_ESCAPES = /[\\`*_{}\[\]()#+\-.!~^/<>@%|=:;"']/g;
+// Which set the writer is escaping right now. renderCarve renders the document
+// minimally, checks that it re-parses to the same AST, and re-renders
+// conservatively only when it does not (PART 11 section 4).
+let escapeMode = 'conservative';
 function escapeText(text) {
-    return text.replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '').replace(/[\\`*_{}\[\]()#+\-.!~^/<>@%|=:;"']/g, '\\$&');
+    const escapes = escapeMode === 'minimal' ? UNCONDITIONAL_ESCAPES : CANDIDATE_ESCAPES;
+    return text.replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '').replace(escapes, '\\$&');
 }
 function escapePlainLine(text) {
     return text.replace(/\n/g, ' ');

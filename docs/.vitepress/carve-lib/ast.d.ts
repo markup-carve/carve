@@ -227,6 +227,39 @@ export interface Comment extends BaseNode {
     content: string;
 }
 export type BlockNode = Heading | Paragraph | BlockQuote | List | CodeBlock | ThematicBreak | Table | Admonition | Div | DefinitionList | Figure | Image | AbbreviationDef | RawBlock | Comment;
+/**
+ * Canonical glyph per smart-typography kind.
+ *
+ * Presentation renderers resolve a kind through this table; the Carve renderer
+ * ignores it and emits the author's source run instead. Quote kinds are absent
+ * on purpose: their glyph is locale-dependent and is recorded on the node.
+ */
+export declare const SMART_PUNCTUATION_GLYPHS: Record<string, string>;
+/**
+ * A smart-typography substitution, carrying what it resolved to AND what the
+ * author wrote.
+ *
+ * The substitution used to be written straight into the text buffer, which
+ * discarded the source spelling: by the time the AST existed, `...` could not be
+ * told from a literal ellipsis and the Carve renderer had nothing to reproduce.
+ * Keeping both halves lets presentation renderers emit the glyph while the Carve
+ * renderer emits the source, so `fmt` reproduces the document instead of
+ * normalizing it.
+ *
+ * `kind` is the resolved sort (`ellipsis`, `em_dash`, `rightwards_arrow`,
+ * `left_double_quote`, ...). Quote glyphs are locale-dependent and resolved
+ * during parsing, so a quote node also carries `glyph`; every other kind resolves
+ * through SMART_PUNCTUATION_GLYPHS. For profiles this folds into the `text` trust
+ * class - it is ordinary visible prose, not a distinct capability.
+ */
+export interface SmartPunctuation extends BaseNode {
+    type: 'smart_punctuation';
+    kind: string;
+    /** The author's source run, e.g. `...`, `->`, `"`. */
+    value: string;
+    /** Resolved glyph, set when the parser fixed it (quotes). */
+    glyph?: string;
+}
 export interface Text extends BaseNode {
     type: 'text';
     value: string;
@@ -459,6 +492,6 @@ export interface CriticComment extends BaseNode {
     type: 'critic-comment';
     text: string;
 }
-export type InlineNode = Text | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | LiteralInline | SymbolInline | AutoLink | CrossRef | CaptionNumber | CitationGroup | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment | Comment;
+export type InlineNode = Text | SmartPunctuation | Emphasis | InlineCode | Link | Image | Span | Math | RawInline | LiteralInline | SymbolInline | AutoLink | CrossRef | CaptionNumber | CitationGroup | Mention | Tag | Extension | Abbreviation | Footnote | SoftBreak | HardBreak | CriticInsert | CriticDelete | CriticSubstitute | CriticComment | Comment;
 export type AnyNode = Document | BlockNode | InlineNode;
 //# sourceMappingURL=ast.d.ts.map
