@@ -7,7 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **The optional corpus can pin a target other than HTML** (carve#360). A case's
+  manifest entry may name a `target` - `markdown`, `plain` or `ansi` - and is
+  paired with an expected file carrying that target's extension; an entry
+  without one keeps its `NN-slug.html` pair, so all 29 existing cases are
+  unchanged and a runner that predates targets needs no change.
+
+  This closes a gap wider than the feature that prompted it: **no corpus,
+  mandatory or optional, pinned any target but HTML.** 498 mandatory and 29
+  optional cases, all HTML, which is how carve-php and carve-js came to disagree
+  about escaping intraword underscores with nothing failing.
+
+- **First two Markdown-target cases.** `30-symbol-map-markdown` pins that a
+  symbol keeps its `:name:` source spelling on the Markdown target while the map
+  resolves for HTML. All three engines already agree on that byte-for-byte and
+  nothing asserted it. Smart punctuation in the same case still resolves to its
+  glyph, which is the contrast the case is built around.
+  `31-markdown-typography-source` pins the new optional feature below.
+
 ### Changed
+
+- **PART 9 §8 admits source output on the Markdown target as a named optional
+  feature** (`markdown-typography-source`, carve#360). Read strictly, §8 made
+  the glyph the only conformant Markdown output, so an implementation offering
+  the setting was non-conformant. The glyph stays the default on every target;
+  the feature is per-render-call, Markdown only, and changes no default, which
+  leaves the `smartTypography` switch's ban on per-target defaults intact. The
+  other presentation targets MUST NOT offer it - Markdown is re-parseable
+  source, which is what makes the canonical writer's round-trip argument apply
+  to it, and what does not apply to a terminal presentation.
 
 - **The PART 11 byte assertions now run.** `tests/roundtrip.test.mjs` skipped
   seven byte comparisons while no engine implemented minimal escaping; the

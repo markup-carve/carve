@@ -1844,6 +1844,37 @@ EOF = (* end of file *) ;
         straight into the text buffer is NOT conformant: it discards the
         spelling, after which `...` cannot be told from a literal U+2026 and
         the writer has nothing to reproduce.
+        * SOURCE OUTPUT ON THE MARKDOWN TARGET -- OPTIONAL, NORMATIVE WHERE
+          OFFERED. The glyph above is the DEFAULT on every presentation
+          target and stays so. An implementation MAY additionally offer, as
+          the named optional feature `markdown-typography-source`, a
+          Markdown-renderer setting that emits the SOURCE RUN instead. An
+          implementation that omits it stays conformant. Where it IS
+          offered:
+          - IT IS NOT A DEFAULT AND NOT DOCUMENT-GLOBAL. It is asked for per
+            render call, on the Markdown target only. The `smartTypography`
+            switch above is untouched, and so is its rule that per-target
+            DEFAULTS are non-conformant: nothing here changes what any
+            target emits unless a caller asks;
+          - PARSING IS UNCHANGED, exactly as for the off switch. The same
+            nodes are produced and the AST does not depend on the setting;
+          - THE OTHER PRESENTATION TARGETS MUST NOT OFFER IT. Markdown is
+            re-parseable source, which is what makes the canonical writer's
+            argument apply to it: the source run survives a re-parse as the
+            same node, while the glyph cannot be told from a literal one.
+            HTML, plain text and ANSI are terminal presentations, where the
+            glyph is the only sensible output and a source run would just be
+            worse typography;
+          - IT REVERSES ONLY WHAT THE RENDERER SUBSTITUTED. A quote the
+            author typed as a typographic character is not a
+            `smart_punctuation` node and is emitted unchanged either way.
+          Rationale: Markdown is the target generated for machines to read,
+          and the glyph breaks exact-match search against the source - a
+          quote substituted around a code-ish value (`= 'verification-link-
+          sent'`) can no longer be found by searching for what the author
+          wrote, and the reader cannot undo it because the glyph is all that
+          survives. Pinned in tests/corpus-optional (feature
+          `markdown-typography-source`, target `markdown`).
         * KIND NAMES ARE SPEC SURFACE -- an implementation inventing its own
           spelling breaks every AST consumer. The fourteen table-resolved
           kinds are `ellipsis`, `em_dash`, `en_dash`, `left_right_arrow`,

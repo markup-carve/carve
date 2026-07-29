@@ -74,7 +74,7 @@
     {
       "slug": "15-citations-locator-labels",
       "feature": "citations-numbered",
-      "description": "Multiple locator labels (chap., \u00a7) parse to their canonical citeproc names."
+      "description": "Multiple locator labels (chap., §) parse to their canonical citeproc names."
     },
     {
       "slug": "16-citations-locator-default-page",
@@ -145,6 +145,18 @@
       "slug": "29-smart-typography-off",
       "feature": "smart-typography-off",
       "description": "With the optional document-global smartTypography switch set to false, the whole converted set stays as authored ASCII; escapes, code spans and heading ids are unchanged (carve#338)."
+    },
+    {
+      "slug": "30-symbol-map-markdown",
+      "feature": "symbol-map",
+      "target": "markdown",
+      "description": "On the Markdown target a symbol keeps its :name: source spelling: the map resolves for HTML only, so the output re-parses to the same symbol node. Smart punctuation in the same case still resolves to its glyph (PART 9 section 8), which is the contrast."
+    },
+    {
+      "slug": "31-markdown-typography-source",
+      "feature": "markdown-typography-source",
+      "target": "markdown",
+      "description": "With the optional Markdown-renderer setting that emits the author source run instead of the glyph, quotes, dashes and the ellipsis stay as the ASCII that was typed (PART 9 section 8; carve#360)."
     }
   ]
 }

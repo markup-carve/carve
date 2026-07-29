@@ -327,6 +327,12 @@ Implementations MUST agree here or cross-implementation anchors drift.
 - Conformance: Tier-1 = existing corpus (mandatory); Tier-2 =
   `tests/corpus-optional` + `manifest.json`, run per enabled feature; Tier-3 =
   never in any corpus.
+- A Tier-2 case pins the HTML target unless its manifest entry names another
+  `target` (`markdown`, `plain`, `ansi`), in which case the expected file
+  carries that target's extension. See
+  [`tests/corpus-optional/README.md`](https://github.com/markup-carve/carve/blob/main/tests/corpus-optional/README.md).
+  Carve-source expectations are not a target here; they live in
+  `tests/corpus-roundtrip`.
 
 ## 4. Citations (Tier-2)
 
