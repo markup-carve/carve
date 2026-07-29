@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The PART 11 byte assertions now run.** `tests/roundtrip.test.mjs` skipped
+  seven byte comparisons while no engine implemented minimal escaping; the
+  vendored carve-lib does now (carve-js#397) and reproduces all seven fixtures
+  exactly. Only the §1 invariants were being checked before, and those are equal
+  for an over-escaping writer too - the escaping decision itself had nothing
+  asserting it. The fixtures were derived from PART 11 before any engine
+  implemented it, so agreement measures the engine against the spec.
+
+- **Vendored carve-lib refreshed** to carve-js `6bd64d1`, which brings smart
+  typography as AST nodes (carve-js#396) and the PART 11 writer (carve-js#397).
+
 - **PART 11 amended after implementing it.** Three corrections, each forced by
   the parser rather than chosen:
 

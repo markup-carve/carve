@@ -3,18 +3,20 @@
  *
  * Each case is a `.crv` input paired with a `.expected.crv` holding the output
  * PART 11 requires: the minimal-escape form where it re-parses identically, the
- * conservative whole-line form where it does not.
+ * conservative form where it does not.
  *
  * Two things are asserted separately, on purpose:
  *
- *   - The INVARIANTS (PART 11 §1) run against the vendored reference now.
- *     They hold today and guard against a writer that changes meaning - the
- *     class of bug that shipped in carve-rs as a nested list being reformatted
- *     from tight to loose (carve-rs#286).
+ *   - The INVARIANTS (PART 11 §1) guard against a writer that changes meaning -
+ *     the class of bug that shipped in carve-rs as a nested list being
+ *     reformatted from tight to loose (carve-rs#286).
  *
- *   - The BYTES (PART 11 §2, §4) are skipped until an engine implements
- *     minimal escaping. The vendored carve-lib over-escapes, so asserting them
- *     now would either fail or, worse, pin the defect as expected output.
+ *   - The BYTES (PART 11 §2, §4) pin the escaping decision itself. They were
+ *     skipped while no engine implemented minimal escaping; the vendored
+ *     carve-lib does now (carve-js#397), and it reproduces all seven fixtures
+ *     exactly. The fixtures were derived from PART 11 rather than from any
+ *     writer's output, so this is a check of the engine against the spec, not
+ *     of the engine against itself.
  */
 
 import { test } from 'node:test'
@@ -79,7 +81,7 @@ for (const { slug, source, expected } of cases) {
     )
   })
 
-  test.skip(`${slug}: fmt(x) == expected bytes (needs PART 11 minimal escaping)`, () => {
+  test(`${slug}: fmt(x) == expected bytes (PART 11 §2, §4)`, () => {
     assert.equal(carveToCarve(source), expected)
   })
 }

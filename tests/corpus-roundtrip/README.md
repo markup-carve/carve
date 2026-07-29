@@ -30,16 +30,22 @@ literal `\@user` / `\#tag` text and a real `@who` mention. If `@` were missing
 from the set, W4 would have nothing to escape with and the literal would
 silently become a mention.
 
-## Why the byte assertions are skipped
+## What the byte assertions are worth
 
-`../roundtrip.test.mjs` asserts the PART 11 §1 invariants against the vendored
-reference today - those hold, and they guard the class of bug that shipped in
-carve-rs as a nested list being reformatted from tight to loose.
+`../roundtrip.test.mjs` asserts the PART 11 §1 invariants and the expected bytes
+against the vendored reference.
 
-The byte comparisons are skipped until an engine implements minimal escaping.
-Asserting them against the current over-escaping writer would either fail the
-suite or, if the fixtures were generated from that writer, pin the defect as
-the expected output.
+The byte comparisons were skipped while no engine implemented minimal escaping -
+asserting them against an over-escaping writer would either fail the suite or,
+if the fixtures had been generated from that writer, pin the defect as the
+expected output. carve-js#397 implements PART 11 §4, so they now run, and the
+vendored build reproduces all seven fixtures exactly.
+
+That is worth something only because of where the fixtures came from: they were
+derived from PART 11 by hand before any engine implemented it, so agreement
+means the engine matches the spec, not that the spec was written down from the
+engine. The other two engines still over-escape; these bytes are what they are
+measured against.
 
 ## Regenerating
 
