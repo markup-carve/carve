@@ -46,6 +46,25 @@ An **`admonition`** is likewise its own type rather than a `div` carrying a
 class. A profile that wants to deny callouts while allowing generic
 containers has no way to express that if the kind lives in a class string.
 
+A **`tag`** node - the AST form of `#tag` - is deliberately **NOT** its own
+vocabulary entry: it is classified as **`mention`**, and all three
+implementations agree on that. `@user` and `#tag` are parsed by the same
+boundary rules (PART 9 §7) and render through the same inert-span mechanism, so
+they are one trust class rather than two. Denying `mention` denies both:
+
+```js
+const p = Profile.minimal()
+p.denyInline(['mention'])
+applyProfile(parse('hi @user'), p).violations  // [{ nodeType: 'mention', ... }]
+applyProfile(parse('hi #tag'), p).violations   // [{ nodeType: 'mention', ... }]
+```
+
+The consequence is worth stating plainly, because it is a real limit: a host
+CANNOT allow mentions while denying tags. `tag` is not addressable, so naming it
+in `allowedInline` or `deniedInline` does nothing at all - silently, since an
+unrecognized identifier is not an error. A host that needs one without the other
+has to deny `mention` and reintroduce the wanted construct through an extension.
+
 A **`smart_punctuation`** node - the AST form of a typographic substitution,
 carrying the resolved kind and the author's source run (PART 9 §8) - is
 classified as **`text`**. It is ordinary visible prose with no capability of its
