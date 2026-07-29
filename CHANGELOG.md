@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The executable spec's quote open/close decision matches the engines**
+  (carve#348). Three bugs in one lookbehind, all in `scripts/spec/render.mjs`:
+
+  A quote directly inside bare emphasis saw the delimiter rather than the start
+  of the emphasis content, so `*'q'*` closed where all three engines open. The
+  lookbehind now skips `*`, `_` and `~` - but not `/` or `=`, which are opening
+  contexts in their own right (`a="b"`).
+
+  A quote at the very start of the input always closed: the guard read
+  `prev !== ''`, so `"hello"` rendered `”hello”`. Nothing before a quote is the
+  most opening context there is.
+
+  A quote directly after another quote could not tell which half it followed.
+  The glyph the previous quote resolved to is now carried, so `"'nested'"`
+  opens the inner pair while `""` stays a closing pair.
+
+### Added
+
+- Corpus case `19-smart-typography-dashes-and-quotes-9` pins all four shapes.
+  Its expected output was taken from the engines, which agree byte for byte.
+
 ### Changed
 
 - **PART 11 §1: the round-trip invariant is equality MODULO ESCAPING.**

@@ -735,20 +735,55 @@ export function renderBlockAttrs(lists) {
 // corpus 37-3 pins a line-initial pair as two closers). A single quote
 // directly before a digit is always an apostrophe ('70s, '24).
 const QUOTE_OPEN_PREV = new Set([' ', '\t', '=', ':', '-', '/', '(', '[', '{'])
+const QUOTE_CHARS = new Set(['"', "'"])
+// The glyph the previous quote token resolved to, so a quote directly after
+// another one can tell which half it follows: after an OPENING quote it opens
+// (`"'q'"` nests), after a closing one it closes (`""` is a pair). The
+// character alone cannot say - both spellings are the same byte.
+let lastQuoteGlyph = ''
+// Bare emphasis delimiters (PART 9 §9). A quote directly inside one sees what
+// precedes the delimiter, not the delimiter itself: the engines decide on the
+// start of the emphasis CONTENT, so `*'q'*` opens while `a*'q'*` - where the
+// `*` is intraword and opens nothing - closes (carve#348).
+// Only the delimiters that are NOT already an opening context in their own
+// right. `/` and `=` are in the set above - `a="b"` and a line-leading `/"q"`
+// open on them directly - so skipping those would land the lookbehind on the
+// word before and close the quote.
+const EMPHASIS_DELIMS = new Set(['*', '_', '~'])
 function smartQuote(node, open, close, single) {
   const src = node.source.sourceString
   const at = node.source.startIdx
-  const prev = at > 0 ? src[at - 1] : quotePrevCtx
+  let back = at - 1
+  while (back >= 0 && EMPHASIS_DELIMS.has(src[back])) back--
+  const prev = back >= 0 ? src[back] : quotePrevCtx
   const next = src[at + 1] ?? ''
-  if (single && /[0-9]/.test(next) && !/[\p{L}\p{N}]/u.test(prev)) return close // apostrophe
-  if (QUOTE_OPEN_PREV.has(prev) && prev !== '') return open
-  return close
+  if (single && /[0-9]/.test(next) && !/[\p{L}\p{N}]/u.test(prev)) {
+    lastQuoteGlyph = close
+    return close // apostrophe
+  }
+  // Nothing before the quote is the MOST opening context there is - start of
+  // the input, or of a recursive inline parse with no carried context. This
+  // used to fall through to `close`, so every line beginning with a quote got
+  // a closing glyph (`"hello"` rendered as `”hello”`).
+  const decided =
+    prev === ''
+      ? open
+      : QUOTE_CHARS.has(prev)
+        ? lastQuoteGlyph === '\u201c' || lastQuoteGlyph === '\u2018'
+          ? open
+          : close
+        : QUOTE_OPEN_PREV.has(prev)
+          ? open
+          : close
+  lastQuoteGlyph = decided
+  return decided
 }
 
 let quotePrevCtx = '' // preceding character for recursive inline parses
 
 export function renderInline(text, prevCtx = '') {
   const saved = quotePrevCtx
+  lastQuoteGlyph = ''
   quotePrevCtx = prevCtx
   try {
     return renderInlineInner(text)
