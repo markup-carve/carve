@@ -2915,7 +2915,7 @@ EOF = (* end of file *) ;
         BOTH forms keeps the two renders identical on that point, at the cost
         of one escape on a character that is rare in prose.
 
-      CANDIDATE -- escaped only when W2 fails on that line:
+      CANDIDATE -- escaped only when W4 selects the conservative form:
         `* _ ~ / = ,`        emphasis and the braced pair delimiters
         `[ ] ( ) { } <`      links, images, spans, attributes, autolinks
         `@ #`                mentions and tags (§7 boundary rules); `#` also
@@ -2929,7 +2929,7 @@ EOF = (* end of file *) ;
 
       The set must cover EVERY construct opener, or W4 has nothing to fall
       back to and the document is unrecoverable: `\@user` would emit as
-      `@user`, W2 would correctly see a `mention` where the source had text,
+      `@user`, W3 would correctly see a `mention` where the source had text,
       and W4 could not fix it. When a new opener is added to the grammar, its
       character belongs here.
 

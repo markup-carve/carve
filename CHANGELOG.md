@@ -37,8 +37,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   HTML. Nothing caught it because every existing check compares HTML, which is
   equal in all of those cases.
 
-### Changed
-
 - `scripts/compare-impls.mjs` now compares every render target, not just HTML.
   `--targets=all` (the new default) covers `html`, `markdown`, `plain`, `carve`
   and `ansi`; only `html` has expected-output fixtures, so the other four are
