@@ -267,8 +267,14 @@ CarveCore {
   linkTail   = "(" dest destTitle? ")" attrs?
   refTail    = "[" refLabel? "]" attrs?
   refLabel   = (~"]" ~newline any)+
+  // A destination's parentheses BALANCE (grammar link_destination), so a URL
+  // carrying one is written plainly; the run ends at the first `)` with no
+  // opener left to pair with. An escaped parenthesis, and an escaped
+  // backslash, are the only escapes, and neither opens nor closes a level.
   dest       = destChar*
-  destChar   = ~(")" | " " | "\t" | newline) any
+  destChar   = destEsc | destParens | (~("(" | ")" | " " | "\t" | newline) any)
+  destEsc    = "\\" ("(" | ")" | "\\")
+  destParens = "(" destChar* ")"
   destTitle  = " "+ (quoted | squoted)
   squoted    = "'" sqChar* "'"
   sqChar     = sqEsc | (~"'" ~newline any)

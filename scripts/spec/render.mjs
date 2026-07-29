@@ -41,6 +41,16 @@ const DENY = new Set(['javascript', 'vbscript', 'data', 'file',
   'ms-search', 'search-ms', 'ms-cxh', 'ms-cxh-full', 'shell', 'vscode',
   'vscode-insiders', 'jar'])
 
+/**
+ * Resolve the three escapes a link destination has (grammar
+ * `destination_escape`). Balanced parentheses are already part of the run and
+ * need no unescaping; a backslash before anything else is an ordinary
+ * character and is left alone.
+ */
+export function destValue(dest) {
+  return dest.sourceString.replace(/\\([()\\])/g, '$1')
+}
+
 export function checkUrl(url) {
   const probe = url.replace(/[\x00-\x20\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+/g, '')
   const m = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(probe)
@@ -219,7 +229,7 @@ const sem = g.createSemantics().addOperation('h', {
   image(_b, _o, alt, _c, _p, dest, title, _cp, attrs) {
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
     const a = renderAttrs(attrsOf(attrs))
-    return `<img src="${escapeAttr(checkUrl(dest.sourceString))}" alt="${escapeAttr(alt.sourceString)}"${t}${a}>`
+    return `<img src="${escapeAttr(checkUrl(destValue(dest)))}" alt="${escapeAttr(alt.sourceString)}"${t}${a}>`
   },
   autolink(_o, body, _c, attrs) {
     const raw = body.sourceString
@@ -375,7 +385,7 @@ sem.addOperation('applyTail(text)', {
     if (text.includes('\uE000fn:')) throw new Refuse('footnote inside link text')
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
     const a = renderAttrs(attrsOf(attrs))
-    return `<a href="${escapeAttr(checkUrl(dest.sourceString))}"${t}${a}>${text}</a>`
+    return `<a href="${escapeAttr(checkUrl(destValue(dest)))}"${t}${a}>${text}</a>`
   },
   refTail(_o, label, _c, attrs) {
     const { text } = this.args
