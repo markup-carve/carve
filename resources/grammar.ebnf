@@ -3041,9 +3041,8 @@ EOF = (* end of file *) ;
       the AST records them; changing one would satisfy §1 while still
       surprising the author.
 
-   7. NO TRAILING WHITESPACE -- NORMATIVE. `fmt` never emits a line whose only
-      content is whitespace, and never leaves whitespace at the end of a line
-      that has content.
+   7. NO WHITESPACE-ONLY LINE -- NORMATIVE. `fmt` never emits a line whose only
+      content is ASCII spaces or tabs. Such a line is emitted EMPTY.
 
       The case this decides is a blank line INSIDE a list item, where the item's
       continuation is indented. Indenting the blank line to the content column
@@ -3057,6 +3056,24 @@ EOF = (* end of file *) ;
       diff on a file nobody edited. A formatter whose output cannot survive the
       tools it will be stored under is not idempotent in practice, whatever §1
       says about it in isolation.
+
+      WHAT THIS DOES NOT SAY, and said wrongly for one release of this text: it
+      does NOT extend to whitespace at the end of a line that HAS content. That
+      whitespace can be document content, and §1 outranks tidiness:
+
+        `a` + SPACE + newline + `b`   renders  `<p>a \nb</p>`
+        `a` + newline + `b`           renders  `<p>a\nb</p>`
+
+      The space survives into the output, so stripping it breaks
+      `to_html(fmt(x)) == to_html(x)`. carve-rs already limited its stripping to
+      lines that END a block for this reason (carve#359); a writer that strips
+      before a soft break corrupts the document. Where the PARSER discards
+      trailing whitespace the writer may too, and nowhere else.
+
+      A trailing NO-BREAK space is likewise content, not layout -- the author
+      wrote it and it renders as `&nbsp;` -- so an implementation whose
+      whitespace test treats U+00A0 as whitespace must exclude it here. Corpus
+      case 139 pins that.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
       the canonical writer and does not follow §2. It has a different
