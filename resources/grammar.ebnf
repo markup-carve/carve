@@ -3056,13 +3056,21 @@ EOF = (* end of file *) ;
       internal field the reference does not have. A consumer reading `href`
       must not have to know which engine produced the document.
 
-   4. POSITIONS ARE REQUIRED. Every node carries `pos`:
+   4. POSITIONS ARE REQUIRED. Every node EXCEPT the document root carries
+      `pos`:
 
         {"startLine":1,"endLine":1,"startColumn":2,"endColumn":5,
          "startOffset":1,"endOffset":4}
 
       Lines and columns are 1-based; offsets are 0-based byte offsets into the
       source. `endColumn` and `endOffset` are exclusive.
+
+      The document root is exempt because it spans the whole source by
+      definition, so a span on it carries no information a consumer does not
+      already have. The first draft of this section said "every node" without
+      that carve-out, which made the reference implementation non-conformant
+      with a rule written a day earlier - the conformance checker found it on
+      its first run.
 
       This is the field that makes a serialized AST worth exchanging: an
       editor, a language server or a tool grounding output back to source needs
