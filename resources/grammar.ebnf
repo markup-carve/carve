@@ -2857,14 +2857,38 @@ EOF = (* end of file *) ;
       that gains an escape per pass violates it, which is how over-escaping is
       usually first noticed.
 
-      KNOWN GAP -- the first invariant is NOT met by every implementation
-      today. A table carrying a colspan, a doubled alignment marker, some
-      list-item attribute forms and one line-block shape re-parse to a
-      DIFFERENT document while rendering identical HTML, in every engine.
-      Nothing caught it because every existing check compares rendered HTML,
-      which is equal in all of those cases. It is stated here rather than left
-      implied: an implementation that satisfies §2 can still fail §1, and §4's
-      comparison is built to be unaffected by that.
+      EQUALITY IS MODULO ESCAPING -- NORMATIVE. `escaped_text` and `text`
+      compare EQUAL, and an adjacent run of them compares as the single text
+      node holding the same characters in the same order. `a\-b` and `a-b`
+      are the same document for the purpose of this invariant, and differ only
+      in what the author wrote to get there.
+
+      Without that clause the first invariant would be unattainable by
+      construction, not merely unmet. §5 requires the writer to escape `"` and
+      `'` UNCONDITIONALLY: a bare quote reaching the writer as text would
+      otherwise re-derive as smart punctuation (PART 9 §8) and change the
+      document. So a text node holding a quote MUST come back carrying an
+      escape, which parses to `escaped_text`. Read strictly, §1 and §5 would
+      contradict each other for every document containing a quote.
+
+      This is also the comparison §4 already performs internally: the two
+      renders it weighs differ precisely in their escaping, so telling them
+      apart BY the escaping would escalate every document. The invariant and
+      the strategy therefore ask the same question -- does dropping the escapes
+      change anything ELSE?
+
+      What escaping still MUST preserve is the rendered result: the escape is
+      authoring syntax, so `to_html(fmt(x)) == to_html(x)` admits no such
+      latitude, and neither does idempotence.
+
+      KNOWN GAP -- the first invariant is not met by every implementation on
+      every input. The four constructs first recorded here (a table carrying a
+      colspan, a doubled alignment marker, a list-item attribute form and a
+      line-block shape) are fixed; a corpus-wide sweep finds others, tracked in
+      carve#369. Nothing caught any of them because every existing check
+      compares rendered HTML, which is equal in all of those cases. It is
+      stated rather than left implied: an implementation that satisfies §2 can
+      still fail §1, and §4's comparison is built to be unaffected by that.
 
    2. THE ESCAPING RULE -- NORMATIVE. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
@@ -2969,6 +2993,33 @@ EOF = (* end of file *) ;
       fence length, ordered-list dialect). Those are the author's choices and
       the AST records them; changing one would satisfy §1 while still
       surprising the author.
+
+   7. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
+      the canonical writer and does not follow §2. It has a different
+      re-parser to answer to, so it escapes on a different rule:
+
+      M1 Markdown metacharacters in text are escaped, unconditionally.
+      M2 An `escaped_text` node is emitted AS AN ESCAPE, whatever the
+         character. The author escaped it; the escape carries intent the
+         character alone does not.
+      M3 Nothing else is escaped. A character the author did not escape and
+         Markdown does not read as markup is emitted bare.
+
+      M2 is the rule that needs stating. `\-\-` was written precisely so a
+      processor with smart punctuation on (SmartyPants, markdown-it with
+      typographer, pandoc's default) would NOT read an en dash. Emitting `--`
+      bare loses the author's intent exactly where it was explicit, and the
+      characters this matters for -- `"` `'` `-` `.` -- are not Markdown
+      metacharacters, so M1 does not cover them. This was divergent across
+      implementations with nothing to notice it (carve#350).
+
+      A document that escapes nothing gains no backslashes from M2, so the
+      cost falls only on documents that asked for it.
+
+      An implementation whose AST has no `escaped_text` node cannot honour M2:
+      it cannot tell an escaped character from a literal one. That is a defect
+      in the AST, not licence to skip the rule -- `escaped_text` is in the
+      inline vocabulary (docs/profiles.md).
 
    ============================================================================
    PART 12: AST SERIALIZATION (NORMATIVE)

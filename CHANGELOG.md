@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **PART 11 §1: the round-trip invariant is equality MODULO ESCAPING.**
+  `escaped_text` and `text` compare equal, and an adjacent run of them compares
+  as the single text node holding the same characters. Without this the
+  invariant is unattainable by construction rather than merely unmet: §5
+  requires the writer to escape `"` and `'` unconditionally (a bare quote in a
+  text node would otherwise re-derive as smart punctuation), so a text node
+  holding a quote MUST come back carrying an escape - which parses to
+  `escaped_text`. Read strictly, §1 and §5 contradicted each other for every
+  document containing a quote. It is also the comparison §4 already performs
+  internally.
+
+- **PART 11 §1's known gap updated.** The four constructs it recorded are
+  fixed; a corpus-wide sweep finds others, now tracked in carve#369.
+
+### Added
+
+- **PART 11 §7: the Markdown target's escaping rule** (carve#350). There was no
+  normative text for it at all. Markdown metacharacters are escaped
+  unconditionally; an `escaped_text` node is emitted as an escape whatever the
+  character; nothing else is escaped. The middle rule is the one that was
+  divergent: `\-\-` was written precisely so a downstream processor with smart
+  punctuation on would not read an en dash, and the characters this matters for
+  (`"` `'` `-` `.`) are not Markdown metacharacters, so the first rule does not
+  cover them.
+
 ### Added
 
 - **The AST serialization format is now specified** (new PART 12). A parsed
