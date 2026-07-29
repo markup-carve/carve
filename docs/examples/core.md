@@ -2347,6 +2347,33 @@ a------- b-------- c---------- d----------- e-------------
 
 :::
 
+The open/close decision reads the character before the quote. A bare emphasis
+delimiter is not that character - the quote sees the start of the emphasis
+CONTENT - and nothing at all before a quote opens it. A quote directly after
+another one follows whichever half that one resolved to, so a nested pair opens
+while an empty pair stays closed.
+
+::: compare
+
+```carve
+*'q'*
+
+"hello"
+
+"'nested'"
+
+a*'q'*
+```
+
+```html
+<p><strong>‘q’</strong></p>
+<p>“hello”</p>
+<p>“‘nested’”</p>
+<p>a*’q’*</p>
+```
+
+:::
+
 ## Smart typography arrows and symbols
 
 Arrows, comparisons, plus/minus and symbols are converted. Fractions are
