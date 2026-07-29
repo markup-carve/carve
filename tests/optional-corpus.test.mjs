@@ -17,6 +17,7 @@ import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { expectedFileFor, targetOf } from '../scripts/lib/corpus-targets.mjs'
 import {
   carveToAnsi,
   carveToHtml,
@@ -42,16 +43,15 @@ const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
 
 /*
  * The extension is part of the pairing rule, not a label: a runner locates the
- * expected file from the slug and the target alone. `carve` is deliberately
- * absent - Carve-source expectations live in ../corpus-roundtrip/, and giving
- * them a second home here would mean two files named `NN-slug.crv` in one
- * directory, one of them the input.
+ * expected file from the slug and the target alone. It is shared with
+ * scripts/compare-impls.mjs rather than restated, because a second copy is how
+ * that runner came to pair every optional case with a `.html` file.
  */
 const targets = {
-  html: { extension: 'html', render: carveToHtml },
-  markdown: { extension: 'md', render: carveToMarkdown },
-  plain: { extension: 'txt', render: carveToPlainText },
-  ansi: { extension: 'ansi', render: carveToAnsi },
+  html: { render: carveToHtml },
+  markdown: { render: carveToMarkdown },
+  plain: { render: carveToPlainText },
+  ansi: { render: carveToAnsi },
 }
 
 /*
@@ -86,20 +86,23 @@ const featureRunners = {
 
 for (const entry of manifest.cases) {
   const slug = basename(entry.slug)
-  const targetName = entry.target ?? 'html'
+  const targetName = targetOf(entry)
   const target = targets[targetName]
 
   // An unknown target is a manifest error, not an unsupported feature: silently
   // skipping it would read as "this implementation does not do that yet".
-  if (!target) {
+  let expectedFile
+  try {
+    expectedFile = expectedFileFor(slug, targetName)
+  } catch (error) {
     test(`${slug} (${entry.feature})`, () => {
-      assert.fail(`unknown target '${targetName}' - expected one of ${Object.keys(targets).join(', ')}`)
+      assert.fail(error.message)
     })
     continue
   }
 
   const crvPath = resolve(corpusDir, `${slug}.crv`)
-  const expectedPath = resolve(corpusDir, `${slug}.${target.extension}`)
+  const expectedPath = resolve(corpusDir, expectedFile)
   const runner = featureRunners[entry.feature]
 
   if (!runner) {
@@ -109,7 +112,7 @@ for (const entry of manifest.cases) {
 
   test(`${slug} (${entry.feature}, ${targetName})`, () => {
     assert.ok(existsSync(crvPath), `missing ${slug}.crv pair`)
-    assert.ok(existsSync(expectedPath), `missing ${slug}.${target.extension} pair`)
+    assert.ok(existsSync(expectedPath), `missing ${expectedFile} pair`)
     const source = readFileSync(crvPath, 'utf8')
     const expected = readFileSync(expectedPath, 'utf8')
     assert.equal(runner(source, target.render).trim(), expected.trim())

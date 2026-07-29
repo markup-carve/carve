@@ -137,6 +137,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   section 12, which also records why Carve uses one leaf node where Djot uses
   two container types plus a leaf.
 
+### Fixed
+
+- **`npm run compare:impls -- --corpus=optional` runs again.** The optional
+  corpus learned per-case targets (carve#360) but `scripts/compare-impls.mjs`
+  kept forcing every optional case to HTML and opening `NN-slug.html`, so the
+  run died with `ENOENT ... 30-symbol-map-markdown.html` at the first
+  Markdown-target case - the whole optional comparison, not just that case.
+
+  A case now runs on the target its manifest entry pins, paired with the
+  expected file for that target, and `--targets` filters which cases run instead
+  of overriding what they render (a filtered run reports `filtered_out=`). The
+  per-engine adapters take the target too, so the Markdown cases compare
+  Markdown; an adapter that is not wired for the target reports no adapter and
+  the case is skipped for that engine, the same visible skip an unsupported
+  feature already gets. A missing expected file is a hard error naming the file
+  and target, not a silent downgrade to an engines-agree check.
+
+  The pairing rule now lives in `scripts/lib/corpus-targets.mjs` and is shared
+  with `tests/optional-corpus.test.mjs`, with `tests/corpus-targets.test.mjs`
+  pinning it. Two runners holding private copies of the rule is what let one of
+  them fall a release behind the manifest.
+
+- **`cross_impl_diffs` counts every target.** It only counted HTML, so a
+  Markdown, plain-text, Carve or ANSI divergence printed its `DIFF [target]`
+  line while the headline figure - the one the docs snapshot pins and a reader
+  takes away - still said zero.
+
 ## [0.1.1] - 2026-07-27
 
 ### Fixed

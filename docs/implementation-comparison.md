@@ -120,13 +120,14 @@ The runner compares every render target, not just HTML: `--targets=all` (the
 default) covers `html`, `markdown`, `plain`, `carve` and `ansi`. Pass a
 comma-separated subset to narrow it.
 
-Only `html` has expected-output fixtures. The other four are compared
-**implementation against implementation**, because identical output across the
-three engines is the invariant that matters there, and committing four more
-expected files per corpus case would not add to it. The `Target agreement`
-block in the output reports per-target `compared` / `diffs` / `errors` counts,
-and each disagreement prints a `DIFF [target] slug` line naming the engines that
-ran.
+In the core corpus only `html` has expected-output fixtures. The other four are
+compared **implementation against implementation**, because identical output
+across the three engines is the invariant that matters there, and committing
+four more expected files per corpus case would not add to it. The `Target
+agreement` block in the output reports per-target `compared` / `diffs` /
+`errors` counts, and each disagreement prints a `DIFF [target] slug` line naming
+the engines that ran. `cross_impl_diffs` is the total across every target
+compared, not the HTML count.
 
 Comparison is trailing-newline-insensitive, matching the corpus runner and the
 profile parity battery: renderers legitimately differ on a final `\n`, so a
@@ -137,9 +138,19 @@ Running all five targets costs roughly five times a single-target run, since
 every case is a fresh process per engine per target. Use `--targets=html` for a
 quick check and `--limit=` while iterating.
 
-The optional corpus runs the `html` target only. Its per-feature adapters
-configure HTML conversion specifically, so a non-HTML target there would compare
-"feature configured" against "feature missing" and report a meaningless diff.
+The optional corpus works the other way round: a case pins its own target in
+[`manifest.json`](https://github.com/markup-carve/carve/blob/main/tests/corpus-optional/manifest.json)
+and carries the expected file for it (`html` unless the entry says otherwise -
+see [the corpus README](https://github.com/markup-carve/carve/blob/main/tests/corpus-optional/README.md)).
+Each case runs on the target it pins, so every optional target is scored against
+a fixture, and `--targets` filters which cases run rather than overriding what
+they render. A run that filters cases out reports `filtered_out=` so the pair
+count does not read as "all of these ran".
+
+A feature adapter that is not wired for the pinned target reports no adapter and
+the case is skipped for that engine, the same visible skip an unsupported
+feature gets. That is why the PHP adapters, which drive `CarveConverter::convert()`
+and so speak HTML, sit out the Markdown-target cases.
 
 ### Generated documents
 
@@ -201,10 +212,13 @@ extension_profile_note=this run compares default/no-opt-in output. Use --corpus=
 Optional raw output:
 
 > **Note:** the snapshot below is from 2026-06-19 (4 optional corpus pairs).
-> The optional corpus has since grown to 24 pairs (citations-numbered enrichment
+> The optional corpus has since grown to 31 pairs (citations-numbered enrichment
 > cases 13-24 for typed locators, integral marker, and suppress-author; code
-> callouts cases 10-12; trailing-comma case 24). Regenerate with
-> `npm run compare:impls -- --corpus=optional` to get current counts.
+> callouts cases 10-12; trailing-comma case 24; the Markdown-target cases 30-31).
+> The `Optional feature coverage` block also names each case's pinned target now
+> (`feature (target): engines`), and the summary line carries a `targets=` field.
+> Regenerate with `npm run compare:impls -- --corpus=optional` to get current
+> counts.
 
 ```text
 Implementation summary

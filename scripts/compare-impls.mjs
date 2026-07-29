@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { DEFAULT_TARGET, expectedFileFor, targetOf } from './lib/corpus-targets.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const args = new Set(process.argv.slice(2))
@@ -24,11 +25,14 @@ if (!Object.hasOwn(corpusDirs, corpusName)) {
 }
 
 const corpusDir = join(root, corpusDirs[corpusName])
+const isOptional = corpusName === 'optional'
 
-// Render targets to compare. `html` is the only one with expected-output
-// fixtures; the rest are compared ENGINE-AGAINST-ENGINE, because byte-identical
-// output across implementations is the invariant that matters and committing
-// four more expected files per corpus case would not add to it.
+// Render targets to compare. In the core corpus `html` is the only one with
+// expected-output fixtures; the rest are compared ENGINE-AGAINST-ENGINE, because
+// byte-identical output across implementations is the invariant that matters and
+// committing four more expected files per corpus case would not add to it. In
+// the optional corpus each case pins its own target and carries the matching
+// expected file (tests/corpus-optional/README.md).
 const ALL_TARGETS = ['html', 'markdown', 'plain', 'carve', 'ansi']
 const targetsArg = process.argv.find((a) => a.startsWith('--targets='))
 const targetsRequest = targetsArg ? targetsArg.slice('--targets='.length) : 'all'
@@ -48,13 +52,15 @@ if (unknownTargets.length || targets.length === 0) {
   process.exit(2)
 }
 
-// The optional corpus is driven by per-feature adapters that are wired for HTML
-// only, so a non-HTML target there would compare "feature configured" against
-// "feature missing" and report a meaningless diff.
+// In the optional corpus the manifest pins a target per case, so the target set
+// is not a free choice: each case runs on the target it pins and `--targets`
+// narrows which of those cases run. Forcing every case to html instead - which
+// this script did until carve#360 grew Markdown-target cases - pairs a
+// Markdown case with a `.html` file that was never written.
 let targetNote = ''
-if (corpusName === 'optional' && targets.some((t) => t !== 'html')) {
-  targetNote = 'optional corpus runs the html target only; the feature adapters are html-specific'
-  targets = ['html']
+if (isOptional) {
+  targetNote =
+    'optional corpus renders each case on the target its manifest entry pins (html unless stated); --targets filters that set'
 }
 
 // Command suffix per target. An empty suffix is the default (HTML) render.
@@ -82,7 +88,9 @@ const impls = [
     cwd: process.env.CARVE_RS_DIR ?? resolve(root, '../carve-rs'),
     prepare: null,
     defaultCommand: (target = 'html') => ['cargo', 'run', '--quiet', '--', ...CLI_FLAGS[target]],
-    optionalCommand(feature) {
+    optionalCommand(feature, target = DEFAULT_TARGET) {
+      const flags = CLI_FLAGS[target]
+      if (!flags) return null
       if (feature === 'social-link-templates') {
         return [
           'cargo',
@@ -93,12 +101,14 @@ const impls = [
           '/users/{name}',
           '--tag-url',
           '/topics/{name}',
+          ...flags,
         ]
       }
       if (feature === 'symbol-map') {
         return [
           'cargo', 'run', '--quiet', '--',
           '--symbol', 'rocket=🚀', '--symbol', 'tada=🎉', '--symbol', '+1=👍', '--symbol', 'UPPER=⬆️',
+          ...flags,
         ]
       }
       return null
@@ -127,7 +137,9 @@ const impls = [
         process.stdout.write(${JS_ENTRY[target]}(source));
       `,
     ],
-    optionalCommand(feature) {
+    optionalCommand(feature, target = DEFAULT_TARGET) {
+      const entry = JS_ENTRY[target]
+      if (!entry) return null
       if (feature === 'social-link-templates') {
         return [
           'node',
@@ -135,9 +147,9 @@ const impls = [
           '-e',
           `
             import { readFileSync } from 'node:fs';
-            import { carveToHtml } from './dist/index.js';
+            import { ${entry} } from './dist/index.js';
             const source = readFileSync(process.argv[1], 'utf8');
-            process.stdout.write(carveToHtml(source, {
+            process.stdout.write(${entry}(source, {
               mentionUrl: '/users/{name}',
               tagUrl: '/topics/{name}',
             }));
@@ -151,9 +163,9 @@ const impls = [
           '-e',
           `
             import { readFileSync } from 'node:fs';
-            import { carveToHtml } from './dist/index.js';
+            import { ${entry} } from './dist/index.js';
             const source = readFileSync(process.argv[1], 'utf8');
-            process.stdout.write(carveToHtml(source, {
+            process.stdout.write(${entry}(source, {
               symbols: { rocket: '🚀', tada: '🎉', '+1': '👍', UPPER: '⬆️' },
             }));
           `,
@@ -175,7 +187,13 @@ const impls = [
     cwd: process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php'),
     prepare: null,
     defaultCommand: (target = 'html') => ['php', 'bin/carve', ...CLI_FLAGS[target]],
-    optionalCommand(feature) {
+    optionalCommand(feature, target = DEFAULT_TARGET) {
+      // These adapters drive CarveConverter::convert(), which is the HTML
+      // target. Rendering another target needs a different converter factory
+      // per case, so an unwired target reports "no adapter" - the same visible
+      // skip an unsupported feature gets - rather than comparing this engine's
+      // HTML against another engine's Markdown.
+      if (target !== 'html') return null
       if (feature === 'social-link-templates') {
         return [
           'php',
@@ -248,8 +266,8 @@ function run(cmd, cwd, extraArgs = [], timeout = 15000) {
   }
 }
 
-function commandFor(impl, pair, target = 'html') {
-  if (corpusName === 'optional') return impl.optionalCommand(pair.feature)
+function commandFor(impl, pair, target = DEFAULT_TARGET) {
+  if (isOptional) return impl.optionalCommand(pair.feature, target)
   return impl.defaultCommand(target)
 }
 
@@ -267,25 +285,68 @@ function available(impl) {
 }
 
 function loadPairs() {
-  if (corpusName !== 'optional') {
+  if (!isOptional) {
     return readdirSync(corpusDir)
       .filter((f) => f.endsWith('.crv'))
       .sort()
       .slice(0, limit)
-      .map((f) => ({ slug: basename(f, '.crv'), feature: 'core', file: join(corpusDir, f) }))
+      .map((f) => ({
+        slug: basename(f, '.crv'),
+        feature: 'core',
+        target: DEFAULT_TARGET,
+        file: join(corpusDir, f),
+      }))
   }
 
   const manifest = JSON.parse(readFileSync(join(corpusDir, 'manifest.json'), 'utf8'))
-  return manifest.cases
-    .slice(0, limit)
-    .map((entry) => ({
-      slug: basename(entry.slug),
+  return manifest.cases.slice(0, limit).map((entry) => {
+    const slug = basename(entry.slug)
+    const target = targetOf(entry)
+    // Surfaces a manifest typo here rather than as a confusing missing-file
+    // error further down.
+    expectedFileFor(slug, target)
+    return {
+      slug,
       feature: entry.feature,
-      file: join(corpusDir, `${basename(entry.slug)}.crv`),
-    }))
+      target,
+      file: join(corpusDir, `${slug}.crv`),
+    }
+  })
 }
 
 const pairs = loadPairs()
+
+// In the optional corpus a case runs on the one target its manifest entry pins,
+// and `--targets` filters which cases that leaves. In the core corpus every case
+// runs on every requested target.
+function targetsFor(pair) {
+  if (!isOptional) return targets
+  return targets.includes(pair.target) ? [pair.target] : []
+}
+
+const activeTargets = ALL_TARGETS.filter((target) =>
+  isOptional ? pairs.some((pair) => targetsFor(pair).includes(target)) : targets.includes(target),
+)
+
+/**
+ * The expected output for a pair on a target, or null when the pair has no
+ * fixture on it (every core-corpus target but html - those are compared
+ * engine-against-engine only).
+ *
+ * A fixture that should exist and does not is a hard error: continuing without
+ * it would quietly downgrade a scored case to an engines-agree check.
+ */
+function expectedFor(pair, target) {
+  if (!isOptional && target !== DEFAULT_TARGET) return null
+  const path = join(corpusDir, expectedFileFor(pair.slug, target))
+  if (!existsSync(path)) {
+    console.error(
+      `Missing expected output ${basename(path)} for ${pair.slug} (target ${target}).`,
+    )
+    process.exit(2)
+  }
+  return readFileSync(path, 'utf8').trim()
+}
 
 const active = []
 for (const impl of impls) {
@@ -304,13 +365,13 @@ const stats = Object.fromEntries(
 )
 let crossImplDiffs = 0
 const targetStats = Object.fromEntries(
-  targets.map((t) => [t, { compared: 0, diffs: 0, errors: 0 }]),
+  activeTargets.map((t) => [t, { compared: 0, diffs: 0, errors: 0 }]),
 )
 
 for (const pair of pairs) {
-  for (const target of targets) {
-    const expected =
-      target === 'html' ? readFileSync(join(corpusDir, `${pair.slug}.html`), 'utf8').trim() : null
+  const pairTargets = targetsFor(pair)
+  for (const target of pairTargets) {
+    const expected = expectedFor(pair, target)
     const outputs = []
     const ran = []
 
@@ -319,7 +380,7 @@ for (const pair of pairs) {
       if (!command) {
         // Skips are a per-pair property, not a per-target one; counting them
         // once per target would multiply the same gap by the target count.
-        if (target === targets[0]) stats[impl.name].skipped++
+        if (target === pairTargets[0]) stats[impl.name].skipped++
         continue
       }
       stats[impl.name].runnable++
@@ -332,7 +393,8 @@ for (const pair of pairs) {
         ran.push(impl.name)
         continue
       }
-      // Only the html target has an expected-output fixture to score against.
+      // Scored only where the case has an expected-output fixture: every
+      // optional case, and the html target of the core corpus.
       if (expected !== null) {
         if (result.stdout === expected) stats[impl.name].ok++
         else stats[impl.name].mismatch++
@@ -355,7 +417,10 @@ for (const pair of pairs) {
     const unique = new Set(outputs.map(([, out]) => out))
     if (unique.size > 1) {
       targetStats[target].diffs++
-      if (target === 'html') crossImplDiffs++
+      // Every target counts. Counting html alone let a Markdown or ANSI
+      // divergence print its DIFF line while the headline said zero, which is
+      // the number a reader takes away and the one the docs snapshot pins.
+      crossImplDiffs++
       console.log(`DIFF [${target}] ${pair.slug} (${pair.feature}): ${ran.join(', ')}`)
     }
   }
@@ -364,14 +429,22 @@ for (const pair of pairs) {
 console.log('\nImplementation summary')
 const profile = corpusName === 'optional' ? 'optional/opt-in' : 'default/no-opt-in'
 console.log(
-  `profile=${profile} corpus=${corpusName} corpus_pairs=${pairs.length} targets=${targets.join(',')}`,
+  `profile=${profile} corpus=${corpusName} corpus_pairs=${pairs.length} targets=${activeTargets.join(',')}`,
 )
 if (targetNote) console.log(`target_note=${targetNote}`)
+// A `--targets` subset can exclude a case's pinned target outright. Saying so
+// keeps corpus_pairs from reading as "all of these ran".
+const filteredOut = pairs.filter((pair) => targetsFor(pair).length === 0)
+if (filteredOut.length) {
+  console.log(
+    `filtered_out=${filteredOut.length} (pinned targets outside --targets: ${[...new Set(filteredOut.map((p) => p.target))].join(',')})`,
+  )
+}
 for (const impl of active) {
   const s = stats[impl.name]
   const avg = s.runnable ? (s.ms / s.runnable).toFixed(2) : '0.00'
-  // pass/mismatch score the html fixtures only, so they are reported against
-  // the pair count rather than the run count (which spans every target).
+  // pass/mismatch score the fixtures only, so they are reported against the
+  // pair count rather than the run count (which spans every target).
   console.log(
     `${impl.name}: pass=${s.ok}/${s.ok + s.mismatch} mismatch=${s.mismatch} error=${s.error} skipped=${s.skipped} runs=${s.runnable} avg_ms=${avg}`,
   )
@@ -379,23 +452,25 @@ for (const impl of active) {
 console.log(`cross_impl_diffs=${crossImplDiffs}`)
 
 console.log('\nTarget agreement (implementations compared against each other)')
-for (const target of targets) {
+for (const target of activeTargets) {
   const t = targetStats[target]
-  const fixtures = target === 'html' ? ' fixtures=yes' : ' fixtures=none'
+  const fixtures = isOptional || target === DEFAULT_TARGET ? ' fixtures=yes' : ' fixtures=none'
   console.log(`${target}: compared=${t.compared} diffs=${t.diffs} errors=${t.errors}${fixtures}`)
 }
 console.log(
-  'target_agreement_note=only html has expected-output fixtures; the other targets assert that the implementations agree with each other.',
+  isOptional
+    ? 'target_agreement_note=every optional case has an expected-output fixture on the target it pins; the counts here also assert that the implementations agree with each other.'
+    : 'target_agreement_note=only html has expected-output fixtures; the other targets assert that the implementations agree with each other.',
 )
 
-if (corpusName === 'optional') {
+if (isOptional) {
   console.log('\nOptional feature coverage')
   for (const pair of pairs) {
     const supported = active
-      .filter((impl) => commandFor(impl, pair))
+      .filter((impl) => commandFor(impl, pair, pair.target))
       .map((impl) => impl.name)
       .join(', ')
-    console.log(`${pair.feature}: ${supported || 'none'}`)
+    console.log(`${pair.feature} (${pair.target}): ${supported || 'none'}`)
   }
 }
 
