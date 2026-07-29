@@ -3044,6 +3044,24 @@ EOF = (* end of file *) ;
    7. NO WHITESPACE-ONLY LINE -- NORMATIVE. `fmt` never emits a line whose only
       content is ASCII spaces or tabs. Such a line is emitted EMPTY.
 
+      EXCEPT where those spaces are VERBATIM CONTENT. Inside a code block or a
+      raw block the lines are data, and a line of three spaces renders as three
+      spaces:
+
+        ```           ->  <pre><code>a
+        a                 [three spaces]
+        [3 spaces]        b
+        b                 </code></pre>
+        ```
+
+      so emptying it would change the document. The rule there applies to the
+      STRUCTURAL INDENT only: a verbatim line sitting inside a list item carries
+      the item's content-column indent, and when the verbatim content on that
+      line is EMPTY the indent alone is what remains -- that is layout, and it is
+      omitted. When the verbatim content is itself whitespace, indent and content
+      are both reproduced, and the resulting line is whitespace-only by
+      necessity.
+
       The case this decides is a blank line INSIDE a list item, where the item's
       continuation is indented. Indenting the blank line to the content column
       keeps the block structure visible in the source, and carve-rs and
