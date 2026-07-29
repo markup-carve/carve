@@ -265,6 +265,11 @@ function run(cmd, cwd, extraArgs = [], timeout = 15000) {
     ok: result.status === 0,
     status: result.status,
     stdout: (result.stdout ?? '').trim(),
+    // Untrimmed, for anything that feeds output back in as input. `trim()`
+    // removes Unicode whitespace, U+00A0 among it, so a document ending in a
+    // no-break space loses it on the way through -- see the write in the
+    // roundtrip pass.
+    rawStdout: result.stdout ?? '',
     stderr: (result.stderr ?? '').trim(),
     elapsedMs,
     error: result.error?.message,
@@ -453,9 +458,12 @@ if (roundtrip) {
         if (!formatted.ok) continue
 
         // fmt(x) written back out as a real file, so each engine re-reads it
-        // exactly as it would any other input.
+        // exactly as it would any other input. This has to be the UNTRIMMED
+        // output: trimming would strip a trailing no-break space, and the
+        // reparse would then differ for a reason the engine had no part in.
         const once = join(tmp, `${impl.name}-once.crv`)
-        writeFileSync(once, formatted.stdout.endsWith('\n') ? formatted.stdout : `${formatted.stdout}\n`)
+        const raw = formatted.rawStdout
+        writeFileSync(once, raw.endsWith('\n') ? raw : `${raw}\n`)
 
         const htmlOfFormatted = run(htmlCmd, impl.cwd, [once])
         const htmlOfSource = run(htmlCmd, impl.cwd, [pair.file])
@@ -468,7 +476,7 @@ if (roundtrip) {
           semanticFailures++
           console.log(`INVARIANT to_html(fmt(x)) != to_html(x) [${impl.name}] ${pair.slug}`)
         }
-        if (formattedTwice.ok && formattedTwice.stdout !== formatted.stdout) {
+        if (formattedTwice.ok && formattedTwice.rawStdout !== formatted.rawStdout) {
           idempotenceFailures++
           console.log(`INVARIANT fmt(fmt(x)) != fmt(x) [${impl.name}] ${pair.slug}`)
         }
