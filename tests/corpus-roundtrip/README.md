@@ -33,13 +33,24 @@ silently become a mention.
 ## What the byte assertions are worth
 
 `../roundtrip.test.mjs` asserts the PART 11 §1 invariants and the expected bytes
-against the vendored reference.
+against the vendored reference. The §1 comparisons run MODULO ESCAPING, as §1
+requires: an escape both retypes a text node and splits the run it sat in, so a
+raw AST comparison would report a difference for every escape the writer emitted
+- the one thing these fixtures exist to pin.
+
+Two byte assertions are reported as PENDING rather than passing: `04` and `07`
+are the conservative-form cases, and the engines currently emit a MIXED form,
+escaping a candidate only where leaving it bare would change the parse. That is
+the §2-versus-§4 tension in carve#374. The fixtures keep the form PART 11 pins
+and the assertion stays visible; re-pinning them to the engines' output would
+settle an open spec question by accident, which is exactly what "Regenerating"
+below warns against.
 
 The byte comparisons were skipped while no engine implemented minimal escaping -
 asserting them against an over-escaping writer would either fail the suite or,
 if the fixtures had been generated from that writer, pin the defect as the
 expected output. carve-js#397 implements PART 11 §4, so they now run, and the
-vendored build reproduces all seven fixtures exactly.
+vendored build reproduces the fixtures exactly, the two noted below aside.
 
 That is worth something only because of where the fixtures came from: they were
 derived from PART 11 by hand before any engine implemented it, so agreement

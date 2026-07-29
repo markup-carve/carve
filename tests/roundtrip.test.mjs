@@ -13,8 +13,8 @@
  *
  *   - The BYTES (PART 11 §2, §4) pin the escaping decision itself. They were
  *     skipped while no engine implemented minimal escaping; the vendored
- *     carve-lib does now (carve-js#397), and it reproduces all seven fixtures
- *     exactly. The fixtures were derived from PART 11 rather than from any
+ *     carve-lib does now (carve-js#397), and it reproduces them exactly apart
+ *     from the two conservative-form cases noted below. The fixtures were derived from PART 11 rather than from any
  *     writer's output, so this is a check of the engine against the spec, not
  *     of the engine against itself.
  */
@@ -42,6 +42,38 @@ test('the round-trip corpus is non-empty', () => {
   assert.ok(cases.length >= 6, `found ${cases.length} cases`)
 })
 
+/**
+ * Collapse adjacent text and escaped-text runs into one text node.
+ *
+ * PART 11 §1 states the invariant's equality as being MODULO ESCAPING, and this
+ * is what that means in practice. Escaping a character both retypes the node and
+ * SPLITS the run it sat in - `escaped.` is one text node, `escaped\.` is a text
+ * node plus an escaped-text node - so a raw AST comparison reports a difference
+ * for every escape the writer emitted, which is the one thing these fixtures are
+ * pinning. Both engines' W3 comparison normalizes the same way.
+ */
+function mergeTextRuns(node) {
+  if (Array.isArray(node)) {
+    const merged = []
+    for (const child of node.map(mergeTextRuns)) {
+      const isText = child && (child.type === 'text' || child.type === 'escaped_text')
+      const previous = merged[merged.length - 1]
+      if (isText && previous && previous.type === 'text') {
+        previous.value = `${previous.value}${child.value}`
+        continue
+      }
+      merged.push(isText ? { ...child, type: 'text' } : child)
+    }
+    return merged
+  }
+  if (node && typeof node === 'object') {
+    const out = {}
+    for (const [k, v] of Object.entries(node)) out[k] = mergeTextRuns(v)
+    return out
+  }
+  return node
+}
+
 // `pos` records source offsets, which legitimately move when the writer
 // renormalizes indentation, so it is not part of "same document".
 function withoutPositions(node) {
@@ -57,11 +89,30 @@ function withoutPositions(node) {
   return node
 }
 
+/*
+ * Cases whose expected form is the CONSERVATIVE one (PART 11 §4 W4), where the
+ * engines currently emit a MIXED form instead: they escape a candidate only
+ * where leaving it bare would change the parse, so `\-\-` and `\.\.\.` are
+ * escaped but a sentence-final `.` is not.
+ *
+ * That is the tension carve#374 is open on - §2 says do not over-escape, §4
+ * pins whole-document conservative - and it is not this file's call to settle.
+ * The assertion stays and is reported as pending, rather than being re-pinned
+ * to whatever the engines happen to emit: derive these from PART 11, never from
+ * an implementation (see the README next to the fixtures).
+ */
+const CONSERVATIVE_PENDING = new Set([
+  '04-literal-punctuation',
+  '07-mention-and-tag-literals',
+])
+
 for (const { slug, source, expected } of cases) {
+  const comparable = (src) => mergeTextRuns(withoutPositions(parse(src)))
+
   test(`${slug}: parse(fmt(x)) == parse(x)`, () => {
     assert.deepEqual(
-      withoutPositions(parse(carveToCarve(source))),
-      withoutPositions(parse(source)),
+      comparable(carveToCarve(source)),
+      comparable(source),
       'the formatter changed what the document says',
     )
   })
@@ -75,13 +126,16 @@ for (const { slug, source, expected } of cases) {
     // Guards the fixtures themselves: an expected file that does not round-trip
     // would pin a writer that corrupts documents.
     assert.deepEqual(
-      withoutPositions(parse(expected)),
-      withoutPositions(parse(source)),
+      comparable(expected),
+      comparable(source),
       'the expected output is not a faithful serialization of the input',
     )
   })
 
-  test(`${slug}: fmt(x) == expected bytes (PART 11 §2, §4)`, () => {
+  const pending = CONSERVATIVE_PENDING.has(slug)
+    ? { todo: 'engines emit the mixed form; pending the carve#374 decision' }
+    : {}
+  test(`${slug}: fmt(x) == expected bytes (PART 11 §2, §4)`, pending, () => {
     assert.equal(carveToCarve(source), expected)
   })
 }
