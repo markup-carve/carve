@@ -89,23 +89,6 @@ function withoutPositions(node) {
   return node
 }
 
-/*
- * Cases whose expected form is the CONSERVATIVE one (PART 11 §4 W4), where the
- * engines currently emit a MIXED form instead: they escape a candidate only
- * where leaving it bare would change the parse, so `\-\-` and `\.\.\.` are
- * escaped but a sentence-final `.` is not.
- *
- * That is the tension carve#374 is open on - §2 says do not over-escape, §4
- * pins whole-document conservative - and it is not this file's call to settle.
- * The assertion stays and is reported as pending, rather than being re-pinned
- * to whatever the engines happen to emit: derive these from PART 11, never from
- * an implementation (see the README next to the fixtures).
- */
-const CONSERVATIVE_PENDING = new Set([
-  '04-literal-punctuation',
-  '07-mention-and-tag-literals',
-])
-
 for (const { slug, source, expected } of cases) {
   const comparable = (src) => mergeTextRuns(withoutPositions(parse(src)))
 
@@ -132,10 +115,7 @@ for (const { slug, source, expected } of cases) {
     )
   })
 
-  const pending = CONSERVATIVE_PENDING.has(slug)
-    ? { todo: 'engines emit the mixed form; pending the carve#374 decision' }
-    : {}
-  test(`${slug}: fmt(x) == expected bytes (PART 11 §2, §4)`, pending, () => {
+  test(`${slug}: fmt(x) == expected bytes (PART 11 §2)`, () => {
     assert.equal(carveToCarve(source), expected)
   })
 }

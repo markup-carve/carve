@@ -2909,6 +2909,20 @@ EOF = (* end of file *) ;
 
       Escaping LESS is a correctness bug: the document changes meaning.
 
+      THE UNIT IS THE OPENER, NOT THE CHARACTER. Where a construct opens on a
+      RUN of characters, the whole run is escaped. `--` opens an en dash
+      (PART 9 §8), and `\--` suppresses it just as `\-\-` does, so a
+      character-at-a-time reading of the rule would call the second escape
+      unnecessary and require `\--`. It does not: the escaped form of a
+      suppressed opener is the whole opener escaped. A half-escaped run is a
+      shape that happens to work rather than one that says what it means, it
+      breaks as soon as the surrounding text shifts what the run abuts, and
+      `\.\.\.` versus `\...` is the same question with the same answer.
+
+      So the escape decision is taken per OPENER OCCURRENCE: would omitting the
+      escapes on this occurrence let the construct form? Yes -> escape the run.
+      No -> emit it bare.
+
    3. WHY A STATIC CHARACTER TABLE CANNOT IMPLEMENT §2. Whether a character
       is significant depends on the line, not on the character:
 
@@ -2921,9 +2935,28 @@ EOF = (* end of file *) ;
       A writer that decides per character with no context must therefore
       over-escape to stay correct, which is the defect §2 forbids.
 
-   4. THE CONFORMANT STRATEGY -- PINNED OUTPUT, FREE IMPLEMENTATION. An
-      implementation MAY compute §2 however it likes, but the OUTPUT is pinned
-      to this decision, taken over the WHOLE DOCUMENT:
+   4. A PERMITTED STRATEGY -- NOT THE PINNED OUTPUT. The output is pinned by
+      §2 and by §2 alone: a character is escaped if and only if omitting the
+      escape would change the re-parsed AST. This section describes ONE way to
+      compute that, which an implementation MAY use and is NOT required to.
+      Where the two differ, §2 wins.
+
+      That ordering was reversed until carve#374. This section used to pin the
+      output, and it yields a form §2 forbids: for a document containing one
+      genuinely-escaped candidate character, the procedure below escapes EVERY
+      candidate in the document, including characters whose bareness changes
+      nothing. carve-php implemented this section and emitted
+      `\*x\* and \(b\)`; carve-rs and carve-js implemented §2 and emitted
+      `\*x\* and (b)`. Both were reading the spec correctly, which is how the
+      contradiction surfaced.
+
+      §2 is the rule worth keeping, because it is the one an author can see the
+      difference in, and because §3's argument does not lead here: it shows a
+      static character TABLE cannot implement §2, not that per-character
+      decisions are impossible. A writer that knows whether a construct would
+      START at a given position decides exactly, and two engines do.
+
+      The procedure, then, as a strategy:
 
       W1 Render the document twice: the MINIMAL form, escaping only the
          UNCONDITIONAL set (§5), and the CONSERVATIVE form, additionally
@@ -2936,17 +2969,21 @@ EOF = (* end of file *) ;
 
       Two forms and one comparison, with the choice made by the parser rather
       than by a table -- so the writer cannot drift from the grammar as the
-      grammar grows.
+      grammar grows. What it buys is safety without a table; what it costs is
+      precision, and §2 is where the precision is required.
 
-      WHY DOCUMENT SCOPE. An earlier draft of this section decided per line.
-      That cannot be implemented: a line re-parsed on its own has lost the
-      document's link-reference and footnote definitions, so a paragraph
-      carrying `[text][ref]` comes back with an empty destination and reports a
-      difference escaping never caused. Any scope smaller than the document has
-      the same defect. The cost is bluntness -- one genuinely-escaped character
-      anywhere makes the whole document conservative -- which is still strictly
-      better than escaping everything unconditionally, and finer granularity
-      would cost a full parse per block.
+      WHY THIS SCOPE, FOR AN IMPLEMENTATION THAT USES IT. An earlier draft
+      decided per line. That cannot be implemented: a line re-parsed on its own
+      has lost the document's link-reference and footnote definitions, so a
+      paragraph carrying `[text][ref]` comes back with an empty destination and
+      reports a difference escaping never caused. Any scope smaller than the
+      document has the same defect for the same reason.
+
+      So an implementation that computes §2 by COMPARING TWO RENDERS is stuck
+      with document scope, and therefore with over-escaping. That is the trade
+      it accepts, and it is why this is a strategy rather than the requirement:
+      an implementation that instead asks, per position, whether a construct
+      would start there needs no comparison and no scope at all.
 
       WHY THE TWO RENDERS ARE COMPARED WITH EACH OTHER, and not the minimal
       render with the document being written. The writer is not required to be
@@ -3004,7 +3041,24 @@ EOF = (* end of file *) ;
       the AST records them; changing one would satisfy §1 while still
       surprising the author.
 
-   7. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
+   7. NO TRAILING WHITESPACE -- NORMATIVE. `fmt` never emits a line whose only
+      content is whitespace, and never leaves whitespace at the end of a line
+      that has content.
+
+      The case this decides is a blank line INSIDE a list item, where the item's
+      continuation is indented. Indenting the blank line to the content column
+      keeps the block structure visible in the source, and carve-rs and
+      carve-php did that; carve-js emitted an empty line (carve#375).
+
+      The empty line is required. A whitespace-only line is not stable: editors
+      that strip trailing whitespace on save, `git apply --whitespace=fix`, and
+      CI whitespace checks all rewrite it, so a formatter emitting one produces
+      output that ordinary tooling changes behind it -- and `fmt` then reports a
+      diff on a file nobody edited. A formatter whose output cannot survive the
+      tools it will be stored under is not idempotent in practice, whatever §1
+      says about it in isolation.
+
+   8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
       the canonical writer and does not follow §2. It has a different
       re-parser to answer to, so it escapes on a different rule:
 
