@@ -115,7 +115,7 @@ function renderBlock(node, ctx) {
             return withAttrs(`${'#'.repeat(node.level)} ${text}`);
         }
         case 'paragraph':
-            return withAttrs(renderInlines(node.children, ctx));
+            return withAttrs(guardThematicBreakLines(renderInlines(node.children, ctx)));
         case 'code_block': {
             const fence = safeFence(node.content, 3);
             const info = codeFenceInfo(node.lang, node.header, node.label);
@@ -693,6 +693,32 @@ const CANDIDATE_ESCAPES = /[\\`*_{}\[\]()#+\-.!~^/<>@%|=:;"']/g;
 // minimally, checks that it re-parses to the same AST, and re-renders
 // conservatively only when it does not (PART 11 section 4).
 let escapeMode = 'conservative';
+/**
+ * Protect a paragraph line that would re-parse as a thematic break.
+ *
+ * Source indentation is not in the AST, so an indented `---` - a paragraph
+ * holding an em dash - is emitted at column 0, where it stops being a paragraph
+ * and becomes a thematic break.
+ *
+ * Text nodes are already covered: the conservative form escapes the hyphens, so
+ * the round-trip check sees the difference and picks that form. A
+ * `smart_punctuation` run is not, because its source run is emitted verbatim in
+ * BOTH forms - that is the point of the node - so the check never sees a
+ * difference to act on. Escaping the run in the conservative form does not work
+ * either: it would make that form change the document, and the check would then
+ * never be able to prefer the minimal one.
+ *
+ * So the guard sits on the rendered line instead, where it does not care which
+ * node produced the hyphens.
+ */
+function guardThematicBreakLines(body) {
+    if (!body.includes('-'))
+        return body;
+    return body
+        .split('\n')
+        .map((line) => (/^-{3,}[ \t]*$/.test(line) ? ` ${line}` : line))
+        .join('\n');
+}
 function escapeText(text) {
     const escapes = escapeMode === 'minimal' ? UNCONDITIONAL_ESCAPES : CANDIDATE_ESCAPES;
     return text.replace(/[\u0000-\u0008\u000b-\u001f\u007f-\u009f]/g, '').replace(escapes, '\\$&');

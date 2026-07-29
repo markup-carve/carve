@@ -47,8 +47,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   asserting it. The fixtures were derived from PART 11 before any engine
   implemented it, so agreement measures the engine against the spec.
 
-- **Vendored carve-lib refreshed** to carve-js `6bd64d1`, which brings smart
-  typography as AST nodes (carve-js#396) and the PART 11 writer (carve-js#397).
+- **Vendored carve-lib refreshed** to carve-js `aa109b8`, which brings smart
+  typography as AST nodes (carve-js#396), the PART 11 writer (carve-js#397),
+  the Markdown renderer no longer de-escaping underscores inside verbatim
+  content (carve-js#401) and the writer no longer turning an em-dash paragraph
+  into a thematic break (carve-js#402).
 
 - **PART 11 amended after implementing it.** Three corrections, each forced by
   the parser rather than chosen:
