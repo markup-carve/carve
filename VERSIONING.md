@@ -21,12 +21,16 @@ document migration. A document records the spec version it was last processed
 under via `carve fmt --stamp`, so upgrading means reviewing the `[behavior]`
 entries between that stamp and the target version.
 
-Tooling can read the marker back: `Stamp::read()` and `Stamp::needsReview()` in
-carve-php, plus `carve --stamp-check`, which exits non-zero for a document that
-predates the engine's spec version - usable as a CI gate over a directory of
-stored documents ([carve-php#473](https://github.com/markup-carve/carve-php/pull/473)).
-carve-js writes the marker but has no reader yet, so the mechanical check is
-carve-php only today.
+Tooling can read the marker back. `carve --stamp-check` exits non-zero for a
+document that predates the engine's spec version, so it works as a CI gate over a
+directory of stored documents, and the programmatic pair is `Stamp::read()` /
+`Stamp::needsReview()` in carve-php and `readStamp()` / `needsReview()` in
+carve-js. Both engines emit the same output for the same document, so either can
+check what the other wrote.
+
+Reading is not universal yet: carve-rs writes the marker but has no reader, and
+the Go, Ruby and Python bindings inherit that because they drive carve-rs. The
+[versioning page](docs/versioning.md) carries the per-implementation table.
 
 ## Stability scope (0.1)
 

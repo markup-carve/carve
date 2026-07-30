@@ -63,10 +63,28 @@ An **unstamped** document counts as needing review: its provenance is unknown,
 and assuming it is current is the unsafe direction. Hand-written documents are
 unstamped until `carve fmt --stamp` touches them.
 
-The reader shipped in
-[carve-php#473](https://github.com/markup-carve/carve-php/pull/473). carve-js
-writes the marker today but has no reader yet, so the mechanical check is
-carve-php only.
+### Which implementations can read it
+
+Writing the marker is universal; reading it back is not yet. The mechanical check
+above works in carve-php ([#473](https://github.com/markup-carve/carve-php/pull/473))
+and carve-js ([#436](https://github.com/markup-carve/carve-js/pull/436)), which
+expose the same two CLI flags and the same output, so either can check a document
+the other wrote.
+
+| implementation | writes | reads |
+|---|---|---|
+| carve-php | yes | yes - `Stamp::read` / `Stamp::needsReview`, `--stamp-info` / `--stamp-check` |
+| carve-js | yes | yes - `readStamp` / `needsReview`, same two flags |
+| carve-rs | yes (`--stamp`, `--stamp-block`) | not yet |
+| carve-go, carve-rb, carve-py | via the engine | not yet - they wrap carve-rs |
+
+carve-rs is the one that matters most for coverage: the Go, Ruby and Python
+bindings all drive it, so a reader there reaches four implementations at once.
+
+The marker format is the contract, not any one API, so a document stamped by any
+engine is readable by any engine that has a reader. That was verified across
+carve-php and carve-js in both directions, in both the line and block forms, and
+carve-js pins carve-php's exact bytes as test fixtures.
 
 ## Changelog
 
