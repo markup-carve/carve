@@ -84,30 +84,26 @@ unstamped until `carve fmt --stamp` touches them.
 
 ### Which implementations can read it
 
-Writing the marker is universal; reading it back is not yet. The mechanical check
-above works in carve-php ([#473](https://github.com/markup-carve/carve-php/pull/473)),
-carve-js ([#436](https://github.com/markup-carve/carve-js/pull/436)) and carve-rs
-([#329](https://github.com/markup-carve/carve-rs/pull/329)), which expose the same
-two CLI flags and the same output, so any of them can check a document another
-wrote.
+Every implementation both writes and reads the marker, behind the same two CLI
+flags with the same output where there is a CLI, so any of them can check a
+document another wrote.
 
-| implementation | writes | reads |
-|---|---|---|
-| carve-php | yes | yes - `Stamp::read` / `Stamp::needsReview`, `--stamp-info` / `--stamp-check` |
-| carve-js | yes | yes - `readStamp` / `needsReview`, same two flags |
-| carve-rs | yes (`--stamp`, `--stamp-block`) | yes - `read_stamp` / `needs_review`, same two flags |
-| carve-go, carve-rb, carve-py | via the engine | not yet - the engine can, but none of them exposes it |
+| implementation | reads it with |
+|---|---|
+| carve-php | `Stamp::read` / `Stamp::needsReview`, `--stamp-info` / `--stamp-check` |
+| carve-js | `readStamp` / `needsReview`, same two flags |
+| carve-rs | `read_stamp` / `needs_review`, same two flags |
+| carve-go | `ReadStamp` / `NeedsReview` |
+| carve-rb | `Carve.read_stamp` / `Carve.needs_review?` |
+| carve-py | `carve.read_stamp` / `carve.needs_review` |
 
-The three bindings drive carve-rs, so the capability is now one step away rather
-than absent: carve-go passes CLI flags to an embedded wasm engine and needs that
-artifact rebuilt past carve-rs#329 plus the flags surfaced on `Options`;
-carve-rb and carve-py link the crate and need `read_stamp` exposed through their
-bindings.
+The three bindings drive carve-rs, so each answers exactly what that engine
+answers: carve-go reads `--stamp-check`'s exit status across the wasm boundary,
+while carve-rb and carve-py call the crate directly.
 
 The marker format is the contract, not any one API, so a document stamped by any
-engine is readable by any engine that has a reader. That was verified across
-carve-php, carve-js and carve-rs in all six directions, in both the line and
-block forms, and
+engine is readable by any other. That was verified rather than assumed - each
+engine reads the markers the others write, in both the line and block forms, and
 carve-js pins carve-php's exact bytes as test fixtures.
 
 ## Changelog

@@ -28,9 +28,9 @@ directory of stored documents. All three engines implement it - `Stamp::read()` 
 `read_stamp()` / `needs_review()` in carve-rs - behind the same two flags with the
 same output, so any of them can check what another wrote.
 
-Reading is not universal yet: the Go, Ruby and Python bindings drive carve-rs but
-none of them surfaces the reader. The [versioning page](docs/versioning.md)
-carries the per-implementation table.
+Every implementation reads it, including the Go, Ruby and Python bindings over
+carve-rs. The [versioning page](docs/versioning.md) carries the
+per-implementation table of what each one calls it.
 
 ## Stability scope (0.1)
 
