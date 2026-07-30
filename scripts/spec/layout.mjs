@@ -210,8 +210,10 @@ function findColonCloser(lines, openIdx, len) {
   return -1
 }
 
-const COMMENT_LINE = /^[ \t]*%%(?!%)/
-const COMMENT_FENCE = /^[ \t]*(%{3,})[ \t]*$/
+const COMMENT_LINE = /^[ \t]*%%/
+// A fence line is DELIMITER + INSIGNIFICANT TAIL (SS28): only the leading run
+// of `%` is structural, so `%%% TODO` opens and `%%% end` closes.
+const COMMENT_FENCE = /^[ \t]*(%{3,})(.*)$/
 
 const CONT_ROW = /^\+.*\|[ \t]*$/ // `+` replaces the leading pipe; must close with one
 const DELIM_CELL = /^[ \t]*:?-+:?[ \t]*$/
@@ -463,9 +465,13 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           const c = COMMENT_FENCE.exec(lines[j])
           if (c && c[1].length === cfm[1].length) break
         }
-        if (j >= n) throw new Refuse('unterminated comment block')
-        i = j + 1
-        continue
+        if (j < n) {
+          i = j + 1
+          continue
+        }
+        // No matching closer ahead: the opener does NOT open a block (SS28).
+        // It degrades to a line comment, so the FOLLOWING blocks still render
+        // instead of being swallowed to EOF -- fall through to COMMENT_LINE.
       }
       if (COMMENT_LINE.test(line)) {
         i++
