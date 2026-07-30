@@ -32,8 +32,8 @@ For this repo in particular:
 - Spec or examples changes should normally keep `npm test` green.
 - If you change `docs/examples.md`, regenerate the corpus and verify the
   resulting fixture diff is intentional.
-- If you re-vendor `docs/.vitepress/carve-lib/`, do it only from merged
-  `carve-js` `main`, not from a stale local branch.
+- If you move the pinned `@markup-carve/carve` commit (`npm run bump-carve-pin`),
+  pin only a commit merged to `carve-js` `main`, not a local branch build.
 
 ## Typical change order
 

@@ -29,7 +29,7 @@ import {
   listTable,
   spoiler,
   tabs,
-} from '../docs/.vitepress/carve-lib/index.js'
+} from '@markup-carve/carve'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus-optional')

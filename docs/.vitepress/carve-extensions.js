@@ -9,8 +9,8 @@
 // guard below detects any factory that is neither, and a CI test fails until a
 // maintainer files it. See tests/playground-extensions.test.mjs.
 //
-// The extension objects are imported from the vendored carve-lib (kept in sync
-// via `npm run sync-carve-lib`) so they come from the same Carve build the
+// The extension objects are imported from the pinned `@markup-carve/carve`
+// dependency (see package.json) so they come from the same Carve build the
 // Playground renders with.
 import {
   details,
@@ -26,9 +26,9 @@ import {
   headingPermalinks,
   citations,
   externalLinks,
-} from './carve-lib/index.js'
+} from '@markup-carve/carve'
 
-import * as lib from './carve-lib/index.js'
+import * as lib from '@markup-carve/carve'
 
 // The showcase set: authoring features a visitor actually writes, each of
 // which works zero-config and has a visible effect on the demo render.
@@ -145,7 +145,7 @@ function looksLikeExtensionFactory(factory) {
 }
 
 /**
- * The guard. Introspects every export of the vendored carve-lib, detects which
+ * The guard. Introspects every export of the pinned carve-js build, detects which
  * are extension factories, and returns any factory name that is neither in
  * ENABLED nor a key of EXCLUDED. A non-empty result means a new carve-js
  * extension landed and nobody classified it for the docs — the CI guard test

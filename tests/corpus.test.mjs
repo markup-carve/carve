@@ -2,14 +2,14 @@
  * Spec-corpus conformance test.
  *
  * Pairs every tests/corpus/NN-slug.crv with its NN-slug.html, feeds the
- * .crv through the vendored reference implementation
- * (docs/.vitepress/carve-lib), and asserts a byte-identical match
- * against the .html (after trimming).
+ * .crv through the pinned reference implementation (`@markup-carve/carve`,
+ * pinned to a carve-js commit in package.json), and asserts a byte-identical
+ * match against the .html (after trimming).
  *
  * The corpus is generated from docs/examples/{core,extensions,edge-cases}.md
  * by `npm run corpus:build`; CI regenerates it first, so a mismatch here
- * means either the examples drifted from the committed corpus or the
- * vendored carve-lib lags carve-js. Both are real regressions.
+ * means either the examples drifted from the committed corpus or the pinned
+ * carve-js build lags the spec. Both are real regressions.
  *
  * Uses the Node built-in test runner (node:test) so the docs site
  * needs no extra test dependency.
@@ -20,7 +20,7 @@ import assert from 'node:assert/strict'
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
 import { resolve, dirname, basename } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToHtml } from '../docs/.vitepress/carve-lib/index.js'
+import { carveToHtml } from '@markup-carve/carve'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus')

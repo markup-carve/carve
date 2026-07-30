@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { withBase } from 'vitepress'
-// @ts-expect-error - vendored ESM module without TS resolution context
-import { carveToHtml } from '../../carve-lib/index.js'
-// @ts-expect-error - vendored ESM module without TS resolution context
-import { markdownToCarve } from '../../carve-lib/markdown-migrate.js'
+import { carveToHtml, markdownToCarve } from '@markup-carve/carve'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { carveExtensions } from '../../carve-extensions.js'
 // @ts-expect-error - local ESM helper without TS resolution context
@@ -261,7 +258,7 @@ function wireSpoilers(): void {
 }
 
 // --- Syntax highlighting: Shiki, lazy-loaded, dual-theme. ---
-// The carve-lib renderer emits plain `<code class="language-x">`; highlight it
+// The carve renderer emits plain `<code class="language-x">`; highlight it
 // client-side so the Playground output matches the rest of the docs. Shiki is
 // already bundled (VitePress uses it) and loaded lazily here so it costs
 // nothing until the first render. Dual-theme output uses CSS variables, so

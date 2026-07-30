@@ -13,7 +13,7 @@
  *     that desyncs fence pairing and dumps the rest of the document into a
  *     code block as raw text.
  *
- * Each example is rendered through the vendored carve-lib, linted for those
+ * Each example is rendered through the pinned carve-js build, linted for those
  * signatures, then byte-compared against a committed golden snapshot so any
  * other drift surfaces as a reviewable diff. Regenerate snapshots after an
  * intentional edit with `npm run examples:snapshot`.
@@ -23,7 +23,7 @@ import assert from 'node:assert/strict'
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToHtml } from '../docs/.vitepress/carve-lib/index.js'
+import { carveToHtml } from '@markup-carve/carve'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..')

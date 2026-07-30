@@ -34,6 +34,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      # Installs ohm-js (the executable spec) and the pinned
+      # `@markup-carve/carve` reference build the conformance steps render
+      # through. The pin is an exact carve-js commit in package.json.
+      - name: Install
+        run: npm ci
+
       # Regenerate the corpus from docs/examples.md and fail if it
       # drifted from what is committed — keeps examples and fixtures
       # in lockstep.
@@ -42,18 +48,14 @@ jobs:
           npm run corpus:build
           git diff --exit-code -- tests/corpus tests/spec
 
-      # Run every corpus pair through the vendored carve-lib. A red
-      # run means the vendored reference lags carve-js (re-run
-      # `npm run sync-carve-lib`) or the spec changed.
+      # Run every corpus pair through the pinned carve-js build. A red run
+      # means that build lags the spec (bump the pin with
+      # `npm run bump-carve-pin`) or the spec changed.
       - name: Conformance
         run: npm test
 
-      # The gate needs ohm-js (the conformance steps above run against the
-      # vendored carve-lib and need no install).
       - name: Executable-spec gate (formal Core grammar vs corpus)
-        run: |
-          npm ci
-          npm run core:check
+        run: npm run core:check
 
   docs-build:
     name: docs build

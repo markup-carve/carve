@@ -22,13 +22,19 @@ battery and keep all three in agreement.
 
 ## The lockstep
 
-`carve` vendors a **compiled copy of carve-js** at `docs/.vitepress/carve-lib/`.
-`scripts/sync-carve-lib.mjs` is the **single source for re-vendoring**: it builds
-`../carve-js` (a hardcoded sibling checkout) and copies its `dist/`. The corpus is
-generated separately by `scripts/generate-corpus.mjs`, which extracts the
-` ```carve ` / ` ```html ` pairs from `docs/examples.md` **verbatim**; CI then
-verifies those pairs against the vendored carve-lib (`npm run corpus:build` +
-`git diff --exit-code` + `npm test`).
+`carve` consumes carve-js as a **git dependency pinned to an exact commit**:
+`@markup-carve/carve` in `devDependencies` (`github:markup-carve/carve-js#<sha>`).
+`npm run bump-carve-pin [sha|ref]` moves the pin; that one line is the whole
+statement of which reference build the corpus and the Playground run against.
+The corpus is generated separately by `scripts/generate-corpus.mjs`, which
+extracts the ` ```carve ` / ` ```html ` pairs from `docs/examples.md`
+**verbatim**; CI then verifies those pairs against the pinned build
+(`npm run corpus:build` + `git diff --exit-code` + `npm test`).
+
+The compiled `dist/` used to be vendored at `docs/.vitepress/carve-lib/`. It is
+not any more: a few hundred rebuilt artifacts per refresh were unreviewable, the
+carve-js commit they came from was recorded only in changelog prose, and a
+re-vendor from a stale checkout silently reverted merged impl behavior.
 
 Each implementation carries a git submodule pointing back at `carve`
 (`spec` in carve-js, `tests/spec` in carve-php). Keeping those current is
@@ -41,9 +47,9 @@ in each impl repo — weekly + manual dispatch, idempotent on a single
 1. **carve-js first.** Land the behavior in the reference impl with unit tests.
    Merge to `main`.
 2. **carve next.** Add the `docs/examples.md` pair(s), then
-   `npm run sync-carve-lib` (re-vendor from the *merged* carve-js main),
+   `npm run bump-carve-pin` (pin the *merged* carve-js main),
    `npm run corpus:build`, and `npm test`. Commit the examples, the regenerated
-   corpus, and the re-vendored carve-lib together.
+   corpus, and the moved pin together.
 3. **carve-php (and any other impl).** Bump `tests/spec` to the new carve main
    (the automation does this), make the impl match the new pairs, and promote any
    newly passing categories in `tests/CarveCorpusTest.php`.
@@ -55,10 +61,10 @@ in each impl repo — weekly + manual dispatch, idempotent on a single
   reuse or close the existing one rather than stacking another.
 - **One dedicated branch per task.** The bump automation deliberately reuses a
   single `automation/bump-spec` branch so re-runs update one PR.
-- **Never re-vendor carve-lib from a carve-js that lags `main`.** Re-vendoring
-  reverts impl changes that were merged after the vendored snapshot. Always
-  re-vendor from merged carve-js `main`, and confirm the vendored diff contains
-  *only* the intended change before committing.
+- **Never pin a carve-js commit that is not merged to `main`.** Pinning a
+  branch build reverts impl changes that landed after it. `npm run bump-carve-pin`
+  defaults to carve-js `main` for exactly this reason; pass an explicit sha only
+  when it is an ancestor of `main`.
 
 ## Known cross-impl divergences
 

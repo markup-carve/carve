@@ -20,4 +20,4 @@ and renders the generated HTML during the VitePress build.
 
 - Every construct in the [Quick Reference](/) and every pair in the [Examples](./examples) flows through the same parser → AST → renderer pipeline you see here.
 - Edits round-trip in single-digit milliseconds. Carve's linear-time parsing is the reason.
-- The current build is vendored from `@markup-carve/carve` (see [`docs/.vitepress/carve-lib/`](https://github.com/markup-carve/carve/tree/main/docs/.vitepress/carve-lib) in the repo).
+- The current build comes from [`@markup-carve/carve`](https://github.com/markup-carve/carve-js), pinned to an exact carve-js commit in the repo's `package.json`.

@@ -13,7 +13,7 @@
     "property:check": "node scripts/property-check.mjs",
     "ast:check": "node scripts/ast-conformance.mjs",
     "core:check": "node scripts/formal-core-check.mjs",
-    "sync-carve-lib": "node scripts/sync-carve-lib.mjs",
+    "bump-carve-pin": "node scripts/bump-carve-pin.mjs",
     "sync-carve-wasm": "node scripts/sync-carve-wasm.mjs",
     "lint:mermaid": "mermaid-lint --ext crv --quiet",
     "test": "node --test tests/corpus.test.mjs tests/optional-corpus.test.mjs tests/corpus-targets.test.mjs tests/normativity.test.mjs tests/examples.test.mjs tests/playground-extensions.test.mjs tests/node-vocabulary.test.mjs tests/fixture-bytes.test.mjs tests/roundtrip.test.mjs",
@@ -21,9 +21,10 @@
     "examples:snapshot": "UPDATE_EXAMPLES=1 node --test tests/examples.test.mjs"
   },
   "devDependencies": {
+    "@markup-carve/carve": "github:markup-carve/carve-js#30aa1d8ce5143b71da21282eb51ad6f9c5d2b3a3",
+    "@markup-carve/carve-grammars": "github:markup-carve/carve-grammars",
     "@markup-carve/vite-plugin-carve": "git+https://github.com/markup-carve/vite-plugin-carve.git",
     "@mermaid-lint/cli": "^0.35.0",
-    "@markup-carve/carve-grammars": "github:markup-carve/carve-grammars",
     "markdown-it-container": "^4.0.0",
     "ohm-js": "^17.5.0",
     "vitepress": "^1.5.0"

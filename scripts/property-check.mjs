@@ -60,7 +60,7 @@ function generate() {
   return Array.from({ length: len }, () => pick(ATOMS)).join(rnd() < 0.4 ? ' ' : '\n') + '\n'
 }
 
-const lib = await import(resolve(root, 'docs/.vitepress/carve-lib/index.js'))
+const lib = await import('@markup-carve/carve')
 
 const docs = Array.from({ length: count }, generate)
 const failures = { idempotence: [], meaning: [], threw: [] }

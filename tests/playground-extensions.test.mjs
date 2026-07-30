@@ -4,7 +4,7 @@
  * carve-js ships a growing set of extension factories. The docs Playground (and
  * the build-time vite-plugin-carve render) only loads the subset listed in
  * docs/.vitepress/carve-extensions.js. To stop a newly added carve-js extension
- * from being silently missed when carve-lib is re-vendored, that file classifies
+ * from being silently missed when the carve-js pin is bumped, that file classifies
  * EVERY exported extension factory as either ENABLED (shown) or EXCLUDED (off,
  * with a reason). `unclassifiedExtensions()` returns any factory that is neither.
  *
@@ -25,7 +25,7 @@ test('every carve-js extension is classified as ENABLED or EXCLUDED', () => {
     unclassified,
     [],
     `Unclassified carve-js extension(s): ${unclassified.join(', ')}.\n` +
-      `A new extension factory landed in the vendored carve-lib. Add each name to\n` +
+      `A new extension factory landed in the pinned carve-js build. Add each name to\n` +
       `either ENABLED (show it in the Playground demo) or EXCLUDED (with a short\n` +
       `reason) in docs/.vitepress/carve-extensions.js.`,
   )
