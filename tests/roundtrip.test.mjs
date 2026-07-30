@@ -12,11 +12,11 @@
  *     reformatted from tight to loose (carve-rs#286).
  *
  *   - The BYTES (PART 11 §2, §4) pin the escaping decision itself. They were
- *     skipped while no engine implemented minimal escaping; the vendored
- *     the pinned build does now (carve-js#397), and it reproduces them exactly apart
- *     from the two conservative-form cases noted below. The fixtures were derived from PART 11 rather than from any
- *     writer's output, so this is a check of the engine against the spec, not
- *     of the engine against itself.
+ *     skipped while no engine implemented minimal escaping; the pinned carve-js
+ *     build does now (carve-js#397), and it reproduces them exactly apart from
+ *     the two conservative-form cases noted below. The fixtures were derived
+ *     from PART 11 rather than from any writer's output, so this is a check of
+ *     the engine against the spec, not of the engine against itself.
  */
 
 import { test } from 'node:test'
