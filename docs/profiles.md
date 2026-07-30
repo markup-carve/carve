@@ -46,6 +46,16 @@ An **`admonition`** is likewise its own type rather than a `div` carrying a
 class. A profile that wants to deny callouts while allowing generic
 containers has no way to express that if the kind lives in a class string.
 
+### The AST has more node types than a profile can deny
+
+This page answers "what can a profile deny", which is a smaller set than "what
+appears in the tree". A serialized AST (PART 12) therefore carries type names
+this vocabulary does not list - `tag`, `abbreviation_def`, `smart_punctuation`,
+`literal_inline` and the `document` root - because denying them would mean
+nothing: they are either folded into another trust class or render nothing at
+all. A consumer reading an AST should expect them; a profile author should not
+look for them here.
+
 A **`tag`** node - the AST form of `#tag` - is deliberately **NOT** its own
 vocabulary entry: it is classified as **`mention`**, and all three
 implementations agree on that. `@user` and `#tag` are parsed by the same

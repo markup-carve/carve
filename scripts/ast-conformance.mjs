@@ -54,11 +54,24 @@ function vocabulary() {
     for (const m of section[1].matchAll(/`([a-z_]+)`/g)) types.add(m[1])
   }
   // Types the vocabulary paragraphs do not list because they are not
-  // profile-deniable: the document root, and smart punctuation, which PART 9 §8
-  // folds into the `text` trust class.
+  // profile-deniable. profiles.md answers "what can a profile deny", which is a
+  // SMALLER set than "what appears in the AST" - so PART 12 §2's "the node-type
+  // identifier from profiles.md" reads tighter than the tree actually is.
+  //
+  //   document            the root, which no profile denies
+  //   smart_punctuation   PART 9 §8 folds it into the `text` trust class
+  //   literal_inline      likewise
+  //   tag                 profiles.md classifies `#tag` as `mention` on purpose,
+  //                       since `@user` and `#tag` are one trust class - but the
+  //                       AST keeps them distinct and every engine emits `tag`
+  //   abbreviation_def    the definition line renders nothing, so denying it
+  //                       would mean nothing; the inline `abbreviation` it feeds
+  //                       is what a profile controls
   types.add('document')
   types.add('smart_punctuation')
   types.add('literal_inline')
+  types.add('tag')
+  types.add('abbreviation_def')
   return types
 }
 
