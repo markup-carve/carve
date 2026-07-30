@@ -3041,6 +3041,23 @@ EOF = (* end of file *) ;
       the AST records them; changing one would satisfy §1 while still
       surprising the author.
 
+      NESTED BOLD ITALIC joins that list, and needed the AST to catch up before
+      it could. `/*x*/` is a single production (`bold_italic`, PART 3) while
+      `*/x/*` is ordinary nesting, and BOTH yield the same `strong` wrapping
+      `emphasis`. So §1 held for either spelling and nothing pinned which one to
+      emit: carve-rs reproduced the author's, carve-js and carve-php normalized
+      to `*/x/*` (carve#375).
+
+      The AST therefore RECORDS the combined form -- a `strong` parsed from
+      `bold_italic` carries `boldItalic` (PART 12 §3) -- and the writer
+      reproduces it. Without that mark the rule could not be stated as an
+      author's choice at all, because there would be nothing to preserve.
+
+      `/*x*/` is also the spelling Carve teaches (docs/cheatsheet.md,
+      docs/migrate-from-markdown.md), so normalizing it away rewrote the
+      documented form into one documented nowhere. That is the concrete harm
+      behind the general rule.
+
    7. NO WHITESPACE-ONLY LINE -- NORMATIVE. `fmt` never emits a line whose only
       content is ASCII spaces or tabs. Such a line is emitted EMPTY.
 
@@ -3176,7 +3193,11 @@ EOF = (* end of file *) ;
         code       `value`
         text       `value`
         heading    `level`, `children`
-        list       `ordered`, `tight`, `start`, `items`
+        list       `ordered`, `tight`, `start`, `items`, and the AUTHOR-CHOICE
+                   fields `bulletChar` and `delim` (PART 11 §6) when the author's
+                   spelling is not the default
+        strong     `children`, and `boldItalic` when the author wrote the
+                   combined `/*…*/` form rather than nesting `*` around `/`
       An implementation MUST NOT invent a synonym, and MUST NOT expose an
       internal field the reference does not have. A consumer reading `href`
       must not have to know which engine produced the document.
