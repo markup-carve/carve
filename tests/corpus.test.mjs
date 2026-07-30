@@ -1,18 +1,28 @@
 /*
  * Spec-corpus conformance test.
  *
- * Pairs every tests/corpus/NN-slug.crv with its NN-slug.html, feeds the
- * .crv through the pinned reference implementation (`@markup-carve/carve`,
- * pinned to a carve-js commit in package.json), and asserts a byte-identical
- * match against the .html (after trimming).
+ * Pairs every tests/corpus/NN-slug.crv with its NN-slug.html, feeds the .crv
+ * through the EXECUTABLE SPEC (scripts/spec: the layout automaton plus the
+ * PART 9R/PART 10 renderer, driven by resources/carve-core.ohm), and asserts a
+ * byte-identical match against the .html (after trimming).
  *
- * The corpus is generated from docs/examples/{core,extensions,edge-cases}.md
- * by `npm run corpus:build`; CI regenerates it first, so a mismatch here
- * means either the examples drifted from the committed corpus or the pinned
- * carve-js build lags the spec. Both are real regressions.
+ * The oracle is deliberately the executable spec and NOT an engine build. The
+ * corpus states what the spec requires, so the spec repo must be able to prove
+ * its own fixtures are self-consistent without waiting for an implementation to
+ * ship the rule. Each engine verifies ITSELF against this corpus through its own
+ * `spec` / `tests/spec` submodule, which is where an engine-versus-corpus
+ * disagreement belongs.
  *
- * Uses the Node built-in test runner (node:test) so the docs site
- * needs no extra test dependency.
+ * Inputs listed in scripts/spec/refused-allow.mjs are deliberately outside the
+ * executable subset and are skipped here; the refusal ratchet in
+ * `npm run core:check` is what keeps that list honest in both directions.
+ *
+ * The corpus is generated from docs/examples/{core,extensions,edge-cases}.md by
+ * `npm run corpus:build`; CI regenerates it first, so a mismatch here means the
+ * examples drifted from the committed corpus or the spec changed.
+ *
+ * Uses the Node built-in test runner (node:test) so the docs site needs no
+ * extra test dependency.
  */
 
 import { test } from 'node:test'
@@ -20,7 +30,9 @@ import assert from 'node:assert/strict'
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
 import { resolve, dirname, basename } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToHtml } from '@markup-carve/carve'
+import { parse, Refuse } from '../scripts/spec/layout.mjs'
+import { renderDoc } from '../scripts/spec/html.mjs'
+import { REFUSED_ALLOW } from '../scripts/spec/refused-allow.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus')
@@ -41,38 +53,23 @@ if (slugs.length === 0) {
 }
 
 for (const slug of slugs) {
-  test(slug, () => {
+  test(slug, { skip: REFUSED_ALLOW.has(slug) ? 'deliberately out of the executable subset' : false }, () => {
     const crv = readFileSync(resolve(corpusDir, `${slug}.crv`), 'utf8')
     const htmlPath = resolve(corpusDir, `${slug}.html`)
     assert.ok(existsSync(htmlPath), `missing ${slug}.html pair`)
     const expected = readFileSync(htmlPath, 'utf8')
-    assert.equal(carveToHtml(crv).trim(), expected.trim())
+    let got
+    try {
+      got = renderDoc(parse(crv))
+    } catch (e) {
+      if (e instanceof Refuse || e.refuse) {
+        assert.fail(
+          `the executable spec refused this input: ${e.message}\n` +
+            `Cover it in scripts/spec, or add "${slug}" to scripts/spec/refused-allow.mjs deliberately.`,
+        )
+      }
+      throw e
+    }
+    assert.equal(got.trim(), expected.trim())
   })
 }
-
-test('mentions and tags render as non-link spans by default', () => {
-  assert.equal(
-    carveToHtml('Hey @alice, see #release-1.0.').trim(),
-    '<p>Hey <span class="mention"><strong>@alice</strong></span>, see <span class="tag"><strong>#release-1.0</strong></span>.</p>',
-  )
-})
-
-test('mentions and tags render as links when URL templates are configured', () => {
-  assert.equal(
-    carveToHtml('Hey @alice, see #release-1.0.', {
-      mentionUrl: 'https://github.com/{user}',
-      tagUrl: '/topics/{name}',
-    }).trim(),
-    '<p>Hey <a class="mention" href="https://github.com/alice">@alice</a>, see <a class="tag" href="/topics/release-1.0">#release-1.0</a>.</p>',
-  )
-})
-
-test('mention and tag URL templates replace every placeholder occurrence', () => {
-  assert.equal(
-    carveToHtml('Hey @john.doe, see #release-1.0.', {
-      mentionUrl: '/users/{user}?q={user}',
-      tagUrl: '/topics/{name}?tag={name}',
-    }).trim(),
-    '<p>Hey <a class="mention" href="/users/john.doe?q=john.doe">@john.doe</a>, see <a class="tag" href="/topics/release-1.0?tag=release-1.0">#release-1.0</a>.</p>',
-  )
-})

@@ -48,9 +48,10 @@ jobs:
           npm run corpus:build
           git diff --exit-code -- tests/corpus tests/spec
 
-      # Run every corpus pair through the pinned carve-js build. A red run
-      # means that build lags the spec (bump the pin with
-      # `npm run bump-carve-pin`) or the spec changed.
+      # Corpus conformance runs through the EXECUTABLE SPEC (scripts/spec), so
+      # this gate does not wait for an engine to ship a rule. The pinned
+      # carve-js build still backs the Tier-2, round-trip, prose-example and
+      # render-option suites in the same run.
       - name: Conformance
         run: npm test
 

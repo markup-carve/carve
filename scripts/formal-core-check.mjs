@@ -40,6 +40,8 @@ import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parse, Refuse } from './spec/layout.mjs'
 import { renderDoc } from './spec/html.mjs'
+// Shared with tests/corpus.test.mjs so both gates agree on deliberate refusals.
+import { REFUSED_ALLOW } from './spec/refused-allow.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repo = resolve(here, '..')
@@ -47,10 +49,6 @@ const corpusDir = resolve(repo, 'tests/corpus')
 const inputs = readdirSync(corpusDir)
   .filter((f) => f.endsWith('.crv'))
   .sort()
-
-// Committed allowlist of inputs permitted to be REFUSED (basenames, no
-// extension). Empty: every corpus input is inside the executable subset.
-const REFUSED_ALLOW = new Set([])
 
 const listMode = process.argv.includes('--list')
 const diffMode = process.argv.includes('--diff')

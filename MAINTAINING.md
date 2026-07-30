@@ -28,8 +28,24 @@ battery and keep all three in agreement.
 statement of which reference build the corpus and the Playground run against.
 The corpus is generated separately by `scripts/generate-corpus.mjs`, which
 extracts the ` ```carve ` / ` ```html ` pairs from `docs/examples.md`
-**verbatim**; CI then verifies those pairs against the pinned build
-(`npm run corpus:build` + `git diff --exit-code` + `npm test`).
+**verbatim** (`npm run corpus:build` + `git diff --exit-code`).
+
+**The corpus oracle is the executable spec, not an engine.** `tests/corpus.test.mjs`
+renders every pair through `scripts/spec` (the layout automaton plus the
+PART 9R / PART 10 renderer driven by `resources/carve-core.ohm`), and
+`npm run core:check` adds the refusal ratchet over the same oracle. So this repo
+can prove its own fixtures are self-consistent without waiting for an
+implementation to ship the rule, and each engine verifies ITSELF against the
+corpus through its own spec submodule — which is where an engine-versus-corpus
+disagreement belongs.
+
+The pinned build is still exercised, just not as the corpus oracle: the Tier-2
+`tests/optional-corpus.test.mjs`, the PART 11 `tests/roundtrip.test.mjs`, the
+prose `tests/examples.test.mjs` and the option cases in
+`tests/reference-build.test.mjs` all run through it, because none of those can be
+expressed by Core-only fixtures. `npm run engine:report` prints how the pinned
+build compares to the whole corpus; it is a report for pin bumps, deliberately
+NOT a blocking gate.
 
 The compiled `dist/` used to be vendored at `docs/.vitepress/carve-lib/`. It is
 not any more: a few hundred rebuilt artifacts per refresh were unreviewable, the
@@ -46,10 +62,19 @@ in each impl repo — weekly + manual dispatch, idempotent on a single
 
 1. **carve-js first.** Land the behavior in the reference impl with unit tests.
    Merge to `main`.
-2. **carve next.** Add the `docs/examples.md` pair(s), then
-   `npm run bump-carve-pin` (pin the *merged* carve-js main),
-   `npm run corpus:build`, and `npm test`. Commit the examples, the regenerated
-   corpus, and the moved pin together.
+2. **carve next.** Add the `docs/examples.md` pair(s), cover the rule in
+   `scripts/spec` so the executable spec renders it, then `npm run corpus:build`
+   and `npm test`. Commit the examples, the regenerated corpus and the
+   executable-spec change together. Bump the pin
+   (`npm run bump-carve-pin`, *merged* carve-js main only) when the reference
+   build should follow — required if the change touches the Tier-2 corpus, the
+   PART 11 round-trip fixtures or the prose examples, since those still run
+   through the pinned build.
+
+   A **Core-only** rule no longer needs step 1 to have landed first: the
+   executable spec gates it. Keeping carve-js first is still the smoother path
+   for a cross-cutting change, because the engine work usually exposes the edge
+   cases the examples should pin.
 3. **carve-php (and any other impl).** Bump `tests/spec` to the new carve main
    (the automation does this), make the impl match the new pairs, and promote any
    newly passing categories in `tests/CarveCorpusTest.php`.
