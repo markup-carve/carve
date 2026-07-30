@@ -23,14 +23,14 @@ entries between that stamp and the target version.
 
 Tooling can read the marker back. `carve --stamp-check` exits non-zero for a
 document that predates the engine's spec version, so it works as a CI gate over a
-directory of stored documents, and the programmatic pair is `Stamp::read()` /
-`Stamp::needsReview()` in carve-php and `readStamp()` / `needsReview()` in
-carve-js. Both engines emit the same output for the same document, so either can
-check what the other wrote.
+directory of stored documents. All three engines implement it - `Stamp::read()` /
+`Stamp::needsReview()` in carve-php, `readStamp()` / `needsReview()` in carve-js,
+`read_stamp()` / `needs_review()` in carve-rs - behind the same two flags with the
+same output, so any of them can check what another wrote.
 
-Reading is not universal yet: carve-rs writes the marker but has no reader, and
-the Go, Ruby and Python bindings inherit that because they drive carve-rs. The
-[versioning page](docs/versioning.md) carries the per-implementation table.
+Reading is not universal yet: the Go, Ruby and Python bindings drive carve-rs but
+none of them surfaces the reader. The [versioning page](docs/versioning.md)
+carries the per-implementation table.
 
 ## Stability scope (0.1)
 
