@@ -63,9 +63,10 @@ An **unstamped** document counts as needing review: its provenance is unknown,
 and assuming it is current is the unsafe direction. Hand-written documents are
 unstamped until `carve fmt --stamp` touches them.
 
-The reader is landing in
+The reader shipped in
 [carve-php#473](https://github.com/markup-carve/carve-php/pull/473). carve-js
-writes the marker today but has no reader yet.
+writes the marker today but has no reader yet, so the mechanical check is
+carve-php only.
 
 ## Changelog
 

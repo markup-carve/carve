@@ -24,9 +24,9 @@ entries between that stamp and the target version.
 Tooling can read the marker back: `Stamp::read()` and `Stamp::needsReview()` in
 carve-php, plus `carve --stamp-check`, which exits non-zero for a document that
 predates the engine's spec version - usable as a CI gate over a directory of
-stored documents. (Landing in
-[carve-php#473](https://github.com/markup-carve/carve-php/pull/473); carve-js
-still writes the marker without a reader.)
+stored documents ([carve-php#473](https://github.com/markup-carve/carve-php/pull/473)).
+carve-js writes the marker but has no reader yet, so the mechanical check is
+carve-php only today.
 
 ## Stability scope (0.1)
 
