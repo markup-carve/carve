@@ -118,6 +118,23 @@ document targets, versus what last processed it - and the rule is about intent.
 See [versioning](./versioning) for what a version difference means for a stored
 document.
 
+### Which implementations provide these rules
+
+The table above is carve-js. The other engines do not currently match it, and
+`carve lint` is not the same command everywhere:
+
+| implementation | `carve lint` | covers |
+|---|---|---|
+| carve-js | yes | the rules above, plus the Djot/Markdown migration checks |
+| carve-php | yes | Markdown-habit checks only (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`, `heading-lazy-continuation`); none of the semantic rules above |
+| carve-rs | no | the binary has no `lint` command |
+
+Rule ids do not currently line up either: carve-php and carve-js both flag
+`**bold**` and `~~strike~~`, under different names. So a CI filter or an editor
+suppression keyed on a rule id is engine-specific today. Tracked in
+[carve#268](https://github.com/markup-carve/carve/issues/268), which is where the
+question of whether a rule id is contract belongs.
+
 The CLI also reports Djot/Markdown delimiter collisions from the migration
 checker — mis-rendering constructs by default, plus the Djot semantic shifts
 under `--from-djot` — so `carve lint` is the broadest single validation
