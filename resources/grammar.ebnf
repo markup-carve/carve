@@ -3120,6 +3120,32 @@ EOF = (* end of file *) ;
       in the AST, not licence to skip the rule -- `escaped_text` is in the
       inline vocabulary (docs/profiles.md).
 
+   9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE. A `hard_break` is emitted
+      as a BACKSLASH before the newline, never as two trailing spaces.
+
+      Both spellings mean the same thing to a CommonMark reader:
+
+        `a` SPACE SPACE newline `b`   ->  <p>a<br />b</p>
+        `a` BACKSLASH newline `b`     ->  <p>a<br />b</p>
+
+      The difference is what survives handling. Trailing whitespace is removed by
+      editors that strip it on save, by `git apply --whitespace=fix`, and by CI
+      whitespace checks -- and removing ONE of the two spaces is enough:
+
+        `a` SPACE newline `b`         ->  <p>a b</p>
+
+      so the break does not degrade, it VANISHES, silently, in a file nobody
+      edited. The backslash form cannot be damaged that way, and it is the only
+      hard-break spelling this target emits that ordinary tooling will not touch.
+
+      The cost is pre-CommonMark processors, which show a literal backslash
+      instead of a break. That is a visible artifact in a rare consumer, against
+      silent data loss in a common one.
+
+      This is a property of the MARKDOWN target only. The canonical writer spells
+      a hard break the way the Carve grammar does (`hard_break`, PART 3), and
+      §7's no-whitespace-only-line rule already covers the writer's side.
+
    ============================================================================
    PART 12: AST SERIALIZATION (NORMATIVE)
    ============================================================================
