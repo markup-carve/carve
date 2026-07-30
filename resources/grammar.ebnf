@@ -3262,8 +3262,29 @@ EOF = (* end of file *) ;
         {"startLine":1,"endLine":1,"startColumn":2,"endColumn":5,
          "startOffset":1,"endOffset":4}
 
-      Lines and columns are 1-based; offsets are 0-based byte offsets into the
-      source. `endColumn` and `endOffset` are exclusive.
+      Lines are 1-based. Columns are 1-based and offsets 0-based, both counted
+      in UNICODE CODEPOINTS. `endColumn` and `endOffset` are exclusive.
+
+      The unit is stated because there is no convention to inherit: every
+      implementation otherwise reports whatever its own strings are indexed by,
+      and the differences are invisible on ASCII. Measured on `\u{1F600} *b*`,
+      where the delimiter sits at codepoint 2, UTF-16 unit 3 and byte 5:
+      djot.js and commonmark.js report 3, carve-js reported 3, and a byte-indexed
+      engine would report 5 -- three implementations, three answers, all
+      believing they were right.
+
+      Codepoints rather than bytes or UTF-16 code units because a codepoint index
+      always lands on a CHARACTER BOUNDARY. A byte offset can point inside a
+      UTF-8 sequence and a UTF-16 offset inside a surrogate pair; either lets a
+      consumer slice a document into invalid text. This also follows djot's
+      reference implementation, which builds a byte-to-charpos table specifically
+      so it can report characters from a byte-indexed language -- the format's
+      author paid that conversion deliberately rather than exporting the host's
+      unit.
+
+      Every implementation therefore converts, and each pays it once per document
+      rather than per position: the mapping is a single pass, and it is the
+      identity for any document without an astral character.
 
       The document root is exempt because it spans the whole source by
       definition, so a span on it carries no information a consumer does not

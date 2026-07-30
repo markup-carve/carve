@@ -71,6 +71,9 @@ function* walk(node, path = '$') {
 }
 
 function checkDocument(doc, source, findings) {
+  // Offsets are codepoint indices (PART 12 §4), so the source has to be indexed
+  // the same way to check them.
+  const codepoints = [...source]
   for (const [node, path] of walk(doc)) {
     if (!KNOWN_TYPES.has(node.type)) {
       findings.push(`unknown node type "${node.type}" at ${path}`)
@@ -91,8 +94,22 @@ function checkDocument(doc, source, findings) {
       if (pos.endOffset < pos.startOffset) {
         findings.push(`pos.endOffset < startOffset on "${node.type}" at ${path}`)
       }
-      if (pos.endOffset > source.length) {
+      if (pos.endOffset > codepoints.length) {
         findings.push(`pos.endOffset past end of source on "${node.type}" at ${path}`)
+      }
+      // THE UNIT, checked rather than assumed. PART 12 §4 counts codepoints, and
+      // codepoints, UTF-16 units and bytes all agree on ASCII - so nothing here
+      // distinguished them until this compared a span against the text it
+      // claims to cover. A text node is the only node whose exact source text is
+      // known from the AST alone.
+      if (node.type === 'text' && typeof node.value === 'string') {
+        const slice = codepoints.slice(pos.startOffset, pos.endOffset).join('')
+        if (slice !== node.value) {
+          findings.push(
+            `pos does not cover the text it belongs to on "${node.type}" at ${path}: ` +
+              `offsets give ${JSON.stringify(slice)}, node says ${JSON.stringify(node.value)}`,
+          )
+        }
       }
     }
     if (pos.startLine < 1 || pos.startColumn < 1) {
@@ -113,11 +130,30 @@ function shapeOf(doc) {
 }
 
 const corpusDir = resolve(root, 'tests/corpus')
-const samples = readdirSync(corpusDir)
-  .filter((f) => f.endsWith('.crv'))
-  .sort()
-  .slice(0, limit)
-  .map((f) => ({ name: f, source: readFileSync(resolve(corpusDir, f), 'utf8') }))
+
+/**
+ * Synthetic samples carrying ASTRAL characters, because no corpus case does.
+ *
+ * Codepoints, UTF-16 code units and bytes agree on ASCII, and codepoints and
+ * UTF-16 agree across the whole Basic Multilingual Plane - so a document needs a
+ * SURROGATE PAIR before the position unit PART 12 §4 pins is observable at all.
+ * Without these the unit check above would pass for an engine reporting UTF-16,
+ * which is exactly the kind of check that cannot fail.
+ */
+const ASTRAL_SAMPLES = [
+  { name: '<astral: emphasis after an emoji>', source: '\u{1F600} plain *bold* tail\n' },
+  { name: '<astral: inside a blockquote>', source: '# H\n\n> \u{1F600} quoted *b*\n' },
+  { name: '<astral: across two lines>', source: '\u{1F600} one\n\u{1F600}\u{1F600} two\n' },
+]
+
+const samples = [
+  ...ASTRAL_SAMPLES,
+  ...readdirSync(corpusDir)
+    .filter((f) => f.endsWith('.crv'))
+    .sort()
+    .slice(0, limit)
+    .map((f) => ({ name: f, source: readFileSync(resolve(corpusDir, f), 'utf8') })),
+]
 
 console.log(`PART 12 conformance over ${samples.length} corpus documents\n`)
 
