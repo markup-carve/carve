@@ -2621,6 +2621,22 @@ EOF = (* end of file *) ;
         whitespace"). A `data:` exception for images, if offered, MUST be
         opt-in. An attribute-block `href`/`src` override (PART 4) MUST NOT
         reintroduce a rejected scheme.
+
+        THIS APPLIES TO EVERY TARGET THAT EMITS A RESOLVABLE URL, not only to
+        the HTML renderer. A Markdown target's link and image destinations are
+        resolved by whatever renders that Markdown, so a scheme blanked here
+        and passed through there is not blocked -- it is deferred by one step.
+        Measured before this was written down: all three engines blanked
+        `ms-msdt:` in HTML and emitted it verbatim in Markdown, because each
+        had mirrored the four-scheme core of the denylist into that target and
+        not the OS-handler class. One also failed to strip Unicode whitespace
+        in the Markdown probe, so `<U+202F>javascript:` survived there while
+        being blanked in its own HTML output (carve#352, corpus 119).
+
+        The rule was scoped to "an HTML renderer" because that is where the
+        sink was first identified; the scoping was not a decision that other
+        targets are safe. A target that emits no URL, such as plain text, has
+        nothing to blank and is unaffected.
       - ATTRIBUTE NAME/VALUE HARDENING. On EVERY rendered element -- including
         elements emitted by extensions -- an HTML renderer MUST drop
         attributes whose name begins with `on` (case-insensitive) and the
