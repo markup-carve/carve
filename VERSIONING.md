@@ -8,6 +8,30 @@ All Carve repositories use [Semantic Versioning](https://semver.org/) (`MAJOR.MI
 introduce breaking changes to grammar, output, or the extension API. Patch
 releases fix bugs without changing behavior.
 
+## Stored documents
+
+This file is about **repository and release** versioning. The companion question -
+what a spec change means for `.crv` files that already exist - is answered by the
+[versioning and changelog page](docs/versioning.md), which is the source of truth
+for "did the language change in a way that affects my documents?".
+
+The short version: every changelog entry is tagged `[behavior]`,
+`[clarification]` or `[addition]`, and only `[behavior]` entries can require
+document migration. A document records the spec version it was last processed
+under via `carve fmt --stamp`, so upgrading means reviewing the `[behavior]`
+entries between that stamp and the target version.
+
+Tooling can read the marker back. `carve --stamp-check` exits non-zero for a
+document that predates the engine's spec version, so it works as a CI gate over a
+directory of stored documents. All three engines implement it - `Stamp::read()` /
+`Stamp::needsReview()` in carve-php, `readStamp()` / `needsReview()` in carve-js,
+`read_stamp()` / `needs_review()` in carve-rs - behind the same two flags with the
+same output, so any of them can check what another wrote.
+
+Reading is not universal yet: the Go, Ruby and Python bindings drive carve-rs but
+none of them surfaces the reader. The [versioning page](docs/versioning.md)
+carries the per-implementation table.
+
 ## Stability scope (0.1)
 
 What the 0.1 release guarantees, by tier (the line is drawn at the

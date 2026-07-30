@@ -17,8 +17,7 @@
  * Sibling checkouts, same convention as compare-impls.mjs:
  *   ../carve-js   (reference, required)
  *   ../carve-rb   (serializes carve-rs's tree through the Ruby binding)
- *   carve-php has no serializer yet and is reported as unsupported, not skipped
- *   silently.
+ *   carve-php  (serializes through `bin/carve --json`)
  */
 
 import { execFileSync } from 'node:child_process'
@@ -186,9 +185,45 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
   console.log('carve-rb: checkout not found, not checked\n')
 }
 
-// ---- carve-php: no serializer ----------------------------------------------
-if (existsSync(phpDir)) {
-  console.log('carve-php: NO SERIALIZER - cannot be checked for conformance yet (PART 12 §4)\n')
+// ---- carve-php: serializes through bin/carve --json -------------------------
+//
+// This branch used to print "NO SERIALIZER - cannot be checked", which stopped
+// being true when carve-php shipped AstCodec and `--json`. A checker that
+// excuses an implementation it could actually check is worse than no checker:
+// it reports conformance work as pending while a non-conformant serializer is
+// already in use.
+if (existsSync(resolve(phpDir, 'bin/carve'))) {
+  const phpFindings = []
+  for (const { name, source } of samples.slice(0, 12)) {
+    let doc
+    try {
+      const out = execFileSync('php', ['bin/carve', '--json'], {
+        cwd: phpDir,
+        input: source,
+        encoding: 'utf8',
+        env: { ...process.env },
+      })
+      doc = JSON.parse(out)
+    } catch (error) {
+      phpFindings.push(`${name}: could not serialize - ${String(error.message).split('\n')[0]}`)
+      continue
+    }
+    if (phpFindings.length < 20) checkDocument(doc, source, phpFindings)
+    for (const [type, keysets] of shapeOf(doc)) {
+      const reference = referenceShape.get(type)
+      if (!reference) continue
+      for (const keys of keysets) {
+        if (!reference.has(keys)) {
+          phpFindings.push(`${name}: "${type}" fields [${keys}] not in the reference shape`)
+        }
+      }
+    }
+  }
+  report('carve-php (over bin/carve --json)', phpFindings)
+} else if (existsSync(phpDir)) {
+  console.log('carve-php: checkout found but bin/carve is missing, not checked\n')
+} else {
+  console.log('carve-php: checkout not found, not checked\n')
 }
 
 function report(label, findings) {
