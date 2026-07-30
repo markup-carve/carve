@@ -42,6 +42,26 @@ const jsDir = process.env.CARVE_JS_DIR ?? resolve(root, '../carve-js')
 const rbDir = process.env.CARVE_RB_DIR ?? resolve(root, '../carve-rb')
 const phpDir = process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php')
 
+/*
+ * How many distinct findings to PRINT. This bounds output only - every document
+ * is still checked and every finding still counted.
+ *
+ * It did not used to work that way. Each engine stopped collecting once it had
+ * accumulated a fixed number of findings (40 for the reference, 20 for the
+ * others), by passing a throwaway array to the checker for every later
+ * document. Those documents were parsed, walked, and their findings dropped on
+ * the floor - and since the summary line printed the capped total, a run that
+ * had stopped looking was indistinguishable from a clean one.
+ *
+ * That hid a real defect. carve-js emitted the node type `critic-comment`,
+ * hyphenated, which this file's own vocabulary gate is meant to reject - and it
+ * never fired, because the one corpus document exercising it sorts past where
+ * the reference hit its cap. The gate only started reporting once unrelated
+ * position fixes dropped the finding count below 40 and the document came back
+ * into view.
+ */
+const DISPLAY_LIMIT = 8
+
 const POS_KEYS = ['startLine', 'endLine', 'startColumn', 'endColumn', 'startOffset', 'endOffset']
 
 /** The node-type vocabulary, read from the spec rather than restated here. */
@@ -203,7 +223,7 @@ for (const { name, source } of samples) {
     jsFindings.push(`${name}: parse threw - ${error.message}`)
     continue
   }
-  checkDocument(doc, source, jsFindings.length < 40 ? jsFindings : [])
+  checkDocument(doc, source, jsFindings)
 
   // PART 12 §6: serialize then deserialize must equal the parse.
   const round = JSON.parse(JSON.stringify(doc))
@@ -234,7 +254,7 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
       rbFindings.push(`${name}: could not serialize - ${String(error.message).split('\n')[0]}`)
       continue
     }
-    if (rbFindings.length < 20) checkDocument(doc, source, rbFindings)
+    checkDocument(doc, source, rbFindings)
     for (const [type, keysets] of shapeOf(doc)) {
       const reference = referenceShape.get(type)
       if (!reference) continue
@@ -273,7 +293,7 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
       phpFindings.push(`${name}: could not serialize - ${String(error.message).split('\n')[0]}`)
       continue
     }
-    if (phpFindings.length < 20) checkDocument(doc, source, phpFindings)
+    checkDocument(doc, source, phpFindings)
     for (const [type, keysets] of shapeOf(doc)) {
       const reference = referenceShape.get(type)
       if (!reference) continue
@@ -303,8 +323,15 @@ function report(label, findings) {
     counts.set(key, (counts.get(key) ?? 0) + 1)
   }
   console.log(`${label}: ${findings.length} findings, ${counts.size} distinct`)
-  for (const [key, n] of [...counts].sort((a, b) => b[1] - a[1]).slice(0, 8)) {
+  const ranked = [...counts].sort((a, b) => b[1] - a[1])
+  for (const [key, n] of ranked.slice(0, DISPLAY_LIMIT)) {
     console.log(`  ${String(n).padStart(4)}x ${key}`)
+  }
+  // Say so when the display is truncated. This used to end here, so a run with
+  // nine distinct findings looked exactly like a run with eight.
+  const hidden = ranked.length - DISPLAY_LIMIT
+  if (hidden > 0) {
+    console.log(`  ... and ${hidden} more distinct finding${hidden === 1 ? '' : 's'} not shown`)
   }
   console.log('')
 }

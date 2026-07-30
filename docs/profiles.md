@@ -34,13 +34,20 @@ spelling.
 `soft_break`, `hard_break`, `raw_inline`, `escaped_text`, `footnote_ref`,
 `inline_footnote`, `heading_ref`, `citation_group`, `caption_number`,
 `span`, `superscript`, `subscript`, `highlight`, `insert`, `delete`,
-`substitution`, `symbol`, `math`, `abbreviation`.
+`substitution`, `critic_comment`, `symbol`, `math`, `abbreviation`.
 
 An **`autolink`** is its own type, not a `link`. The two differ in what the
 author wrote and in what a formatter must be able to reproduce: an autolink
 carries no label, shows its own target, and drops an added `mailto:` scheme
 when displayed. Folding it into `link` loses the authored form, so a
 round-trip could not restore it.
+
+A **`critic_comment`** is its own type rather than a `comment`, for the same
+reason `autolink` is not a `link`: the two are written differently and a
+formatter has to be able to reproduce which one the author used. It is also
+what makes editorial comments deniable on their own - a profile that accepts
+the other editorial marks but not side commentary has no way to say so if the
+type is shared with structural comments.
 
 An **`admonition`** is likewise its own type rather than a `div` carrying a
 class. A profile that wants to deny callouts while allowing generic
