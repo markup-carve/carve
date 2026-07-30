@@ -317,9 +317,20 @@ stack in a single left-to-right pass: linear time, no backtracking.
   paragraph)
 
 **Block comments:**
-- `%%%` must be on **its own line** to open/close
+- `%%%` must start the line to open/close; the **leading run of `%` is the
+  delimiter and any trailing text on that line is ignored**, so `%%% TODO`,
+  `%%% notes` and `%%%html` all open a comment and `%%% end` closes one
+- `%%%` has **no info string** — a raw passthrough block is a *code* fence with
+  an `=FORMAT` info string (```` ```=html ````), so `%%% html` is a comment and
+  its body stays hidden, never raw output
 - Content can contain anything except the same-length delimiter
 - Use more `%` to nest: `%%%%` can contain `%%%`
+- An **unterminated** `%%%` (no matching closer anywhere ahead) does **not** open
+  a block: the line falls back to a `%%` line comment, so the following blocks
+  still render instead of vanishing. Same rule as `:::`, and for the same
+  reason — an unclosed opener must not swallow the rest of the document
+- `carve fmt` keeps an opener's trailing text as the comment's first body line
+  (nothing is lost); a closer's trailing text is dropped
 
 **Provenance marker (tool-written):**
 - Tooling such as `carve fmt --stamp` writes a trailing comment recording the

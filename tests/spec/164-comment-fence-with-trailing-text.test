@@ -1,0 +1,14 @@
+Comment fence with trailing text
+
+```
+before
+
+%%% html
+secret
+%%% end
+
+after
+.
+<p>before</p>
+<p>after</p>
+```

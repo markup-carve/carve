@@ -71,5 +71,56 @@ export interface RenderOptions {
      */
     allowRawHtml?: boolean;
 }
+/**
+ * Dangerous URL schemes blocked by default on links/images/autolinks and
+ * `{href=…}` / `{src=…}` attribute overrides (denylist). Two classes:
+ *
+ *  1. Script / inline-content schemes: `javascript`, `vbscript`, `data`,
+ *     `file` - the classic XSS / local-file vectors.
+ *  2. OS protocol-handler / command-execution schemes (the CVE-2026-20841
+ *     class): a markup link a consumer routes to the operating-system handler
+ *     can open a macro document or run a command - e.g. `ms-office:ofe|u|…`,
+ *     `ms-msdt:` (Follina), `search-ms:`, `shell:`, `vscode://`, `jar:`. These
+ *     never have a legitimate use in a content-markup document, so they are
+ *     blanked exactly like the script class above.
+ *
+ * This is the SINGLE source of truth referenced by both the link/image URL
+ * sanitizer and the attribute-override value sanitizer, so the spec corpus and
+ * sibling engines can pin the exact set. Match is case-insensitive and
+ * obfuscation-resistant (see `SCHEME_PROBE_STRIP_RE`). Legitimate non-command
+ * schemes (`http`, `https`, `mailto`, `tel`, `ftp`, `sms`, …) stay allowed.
+ */
+export declare const DANGEROUS_URL_SCHEMES: string[];
+/**
+ * Neutralize a dangerous URL on a link `href` or image `src`, defeating
+ * `javascript:` / `data:` style injection.
+ *
+ * Default policy is a DENYLIST: a URL whose scheme is `javascript`,
+ * `vbscript`, `data`, or `file` collapses to an empty string (link text /
+ * image alt still shows, element inert); every other scheme and any
+ * scheme-less URL (relative, query, fragment, protocol-relative `//host`)
+ * passes. Pass `allowedUrlSchemes` to switch to a strict ALLOWLIST instead;
+ * pass `deniedUrlSchemes` to customize the denylist.
+ *
+ * Scheme detection ignores leading C0 control characters, whitespace, and
+ * Unicode separators, which browsers strip (or that obfuscate) before a
+ * scheme is parsed - so `\tjavascript:`, ` javascript:`, and a NBSP-prefixed
+ * scheme are caught, not bypassed. The returned value is still passed through
+ * `escapeAttr` by the caller.
+ */
+/**
+ * Characters dropped before scheme detection: C0 controls + ASCII space
+ * plus ALL Unicode whitespace/separators that some contexts tolerate around a
+ * scheme. The `\s` class (with the `u` flag) covers every Unicode space
+ * separator - NBSP (U+00A0), NARROW NO-BREAK SPACE (U+202F), the U+2000..U+200A
+ * spaces, MEDIUM MATHEMATICAL SPACE (U+205F), IDEOGRAPHIC SPACE (U+3000), OGHAM
+ * SPACE MARK (U+1680), line/paragraph separators (U+2028 / U+2029), the BOM /
+ * zero-width no-break space (U+FEFF), and ASCII whitespace - while the explicit
+ * C0 ranges still strip the non-whitespace controls `\s` omits (U+0000..U+0008,
+ * U+000E..U+001F). This is the most thorough strip: it defeats obfuscated
+ * schemes like " javascript:" prefixed with a NARROW NO-BREAK SPACE (U+202F)
+ * that the previous fixed list would have missed.
+ */
+export declare const SCHEME_PROBE_STRIP_RE: RegExp;
 export declare function renderHtml(ast: Document, opts?: RenderOptions): string;
 //# sourceMappingURL=render-html.d.ts.map

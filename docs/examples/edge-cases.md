@@ -5564,3 +5564,49 @@ Unescaped for contrast: {"open"}
 ```
 
 :::
+
+## Comment fence with trailing text
+
+A `%%%` fence line is a delimiter plus an insignificant tail: only the leading run of `%` is structural, so `%%% html` opens a comment and `%%% end` closes one. No separating space is required, and `%%%` has no info string - a raw passthrough block is a *code* fence with an `=FORMAT` info string - so the body stays hidden and the following block still renders.
+
+::: compare
+
+```carve
+before
+
+%%% html
+secret
+%%% end
+
+after
+```
+
+```html
+<p>before</p>
+<p>after</p>
+```
+
+:::
+
+## Unterminated comment fence
+
+A `%%%` opener with no matching closer ahead does not open a block. The line degrades to a `%%` line comment, so every following block still renders - the same rule as an unclosed `:::`, and for the same reason: an unterminated opener must not swallow the rest of the document. A tail on the opener (`%%% TODO`) changes nothing here.
+
+::: compare
+
+```carve
+before
+
+%%%
+secret
+
+after
+```
+
+```html
+<p>before</p>
+<p>secret</p>
+<p>after</p>
+```
+
+:::

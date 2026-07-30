@@ -304,6 +304,18 @@ export interface Text extends BaseNode {
 export interface Emphasis extends BaseNode {
     type: 'emphasis' | 'strong' | 'underline' | 'strike' | 'superscript' | 'subscript' | 'highlight';
     children: InlineNode[];
+    /**
+     * Set on a `strong` the author wrote as the COMBINED bold-italic form -- a
+     * slash-star opener and its mirror closer -- rather than by nesting `*` around
+     * `/`. Both spellings parse to the same `strong` wrapping `emphasis`, so
+     * without this the writer cannot tell them apart, and it normalized the
+     * spelling Carve documents into one documented nowhere
+     * (PART 11 section 6, PART 12 section 3; carve#375).
+     *
+     * Same role as `bulletChar` and `delim` on a list: source fidelity for a
+     * choice the tree would otherwise lose.
+     */
+    boldItalic?: true;
 }
 export interface InlineCode extends BaseNode {
     type: 'code';

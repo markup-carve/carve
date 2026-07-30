@@ -230,7 +230,12 @@ const RE_RAW_FENCE = /^(`{3,}|~{3,})\s*=([a-zA-Z][\w-]*)\s*$/;
 // indented line whose first non-whitespace content is `%%` is a comment line
 // (it interrupts an open paragraph and renders nothing), matching carve-php /
 // carve-rs and the grammar's `comment_line = [whitespace], "%%", …`.
-const RE_COMMENT_BLOCK = /^%{3,}\s*$/;
+// A comment fence line: the leading run of 3+ `%` is the DELIMITER and any
+// trailing text on the line is insignificant (PART 9 §28), so `%%% TODO` and
+// `%%% html` are fences, not raw blocks — `%%%` carries no info string (the raw
+// block is a code fence with an `=FORMAT` info string). Capture group 1 is the
+// delimiter run, whose length must match to close.
+const RE_COMMENT_BLOCK = /^(%{3,})(.*)$/;
 const RE_COMMENT_LINE = /^[ \t]*%%/;
 // A bare fence-closer line (` ``` ` / `~~~`, no info), used only by the
 // paragraph-interruption closer lookahead's negative cache (§10).
@@ -290,6 +295,11 @@ class Lexer {
     // line exists onward. Once proven, every later fence opener (pos only
     // advances) short-circuits, keeping "many unclosed fences" input linear.
     noFenceCloserFrom = Infinity;
+    // Negative cache for commentBlockHasCloser, mirroring divHasCloser for the
+    // `%%%` opener. A comment closer matches on EXACT delimiter length, so only
+    // the per-length map can short-circuit; without it, input like thousands of
+    // unclosed `%%%` openers rescans to EOF for each one → O(n²).
+    commentNoCloserOfLenFrom = new Map();
     constructor(source, opts = {}, lineNumberOffset = 0) {
         this.lineNumberOffset = lineNumberOffset;
         this.defaultFrontmatterFormat = opts.defaultFrontmatterFormat ?? 'yaml';
@@ -954,9 +964,14 @@ function parseBlockInner(lexer) {
         return parseRawBlock(lexer);
     if (RE_FENCE.test(line))
         return parseFence(lexer);
-    // Comments (not rendered). Block (`%%%`) before line (`%%`).
-    if (RE_COMMENT_BLOCK.test(line))
+    // Comments (not rendered). Block (`%%%`) before line (`%%`). A `%%%` opener
+    // with NO matching closer ahead does not open a block (PART 9 §28) — it falls
+    // through to the line-comment rule below, so the following blocks still
+    // render instead of being swallowed to EOF.
+    const commentFence = RE_COMMENT_BLOCK.exec(line);
+    if (commentFence && commentBlockHasCloser(lexer, commentFence[1].length)) {
         return parseCommentBlock(lexer);
+    }
     if (RE_COMMENT_LINE.test(line)) {
         const l = lexer.consume();
         return { type: 'comment', block: false, content: l.replace(/^[ \t]*%%/, '').replace(/^\s/, '') };
@@ -1232,18 +1247,48 @@ function parseRawBlock(lexer) {
     }
     return { type: 'raw_block', format, content: lines.join('\n') };
 }
-// Block comment: a `%%%`+ opener, closed by a line of the SAME length
-// (more `%` nest). Not rendered.
+/**
+ * From a `%%%` opener at peek(0), is there a matching closer ahead? A comment
+ * closer matches on EXACT delimiter length (longer fences nest), so the scan is
+ * per-length. Used to reject an unclosed `%%%` as a block opener (PART 9 §28):
+ * without this an unclosed opener swallows the rest of the document, silently
+ * dropping every following block.
+ */
+function commentBlockHasCloser(lexer, fence) {
+    const start = lexer.pos + 1;
+    if (start >= (lexer.commentNoCloserOfLenFrom.get(fence) ?? Infinity))
+        return false;
+    for (let i = start; i < lexer.lines.length; i++) {
+        const c = RE_COMMENT_BLOCK.exec(lexer.lines[i]);
+        if (c && c[1].length === fence)
+            return true;
+    }
+    // No closer of this length ahead. pos only advances, so the smallest such
+    // start is a monotone frontier — cache it to keep later openers O(1).
+    const prev = lexer.commentNoCloserOfLenFrom.get(fence) ?? Infinity;
+    if (start < prev)
+        lexer.commentNoCloserOfLenFrom.set(fence, start);
+    return false;
+}
+// Block comment: a `%%%`+ opener, closed by a line whose delimiter run has the
+// SAME length (more `%` nest). Not rendered.
 function parseCommentBlock(lexer) {
-    // A comment fence delimiter is STRUCTURAL, not content: match the opener and
-    // closer with native trim (treating any whitespace, incl. U+00A0, as
-    // insignificant) so a stray non-breaking space cannot desync the closer and
-    // swallow the rest of the document.
-    const open = lexer.consume().trim();
+    // A comment fence delimiter is STRUCTURAL, not content: only the leading run
+    // of `%` is matched, so neither trailing text (`%%% TODO`) nor a stray
+    // non-breaking space can desync the closer and swallow the rest of the
+    // document. The opener's trailing text is kept as the body's first line so
+    // `carve fmt` round-trips the words instead of deleting them; a closer's
+    // trailing text is discarded, like a code fence's closing info.
+    const m = RE_COMMENT_BLOCK.exec(lexer.consume());
+    const fence = m[1].length;
     const lines = [];
+    const openerTail = m[2].trim();
+    if (openerTail !== '')
+        lines.push(openerTail);
     while (!lexer.eof()) {
         const ln = lexer.peek();
-        if (ln.trim() === open) {
+        const c = RE_COMMENT_BLOCK.exec(ln);
+        if (c && c[1].length === fence) {
             lexer.consume();
             break;
         }
@@ -2996,13 +3041,21 @@ function parseTable(lexer) {
         rowAttrsList.splice(1, 1);
         for (const c of rawRows[0])
             c.header = true;
-        for (const rc of rawRows) {
-            rc.forEach((c, i) => {
-                const a = aligns[i];
-                if (a && !c.align)
-                    c.align = a;
-            });
-        }
+        // Column alignment lands on the HEADER cells only, matching what the native
+        // `|=<` markers produce. Propagating it onto body cells too made the same
+        // logical table parse to two different trees depending on which separator
+        // syntax was used, and the writer then serialized the propagated values as
+        // per-cell markers the author never wrote (carve#352, corpus 09-tables-3).
+        //
+        // Nothing is lost: the HTML renderer already inherits column alignment for a
+        // body cell whose own align is unset, which is how the native path has always
+        // rendered aligned body cells. A genuine per-cell override still sets
+        // `c.align` itself and is untouched here.
+        rawRows[0].forEach((c, i) => {
+            const a = aligns[i];
+            if (a && !c.align)
+                c.align = a;
+        });
     }
     const rows = rawRows.map((rc, idx) => {
         const row = {
@@ -4510,7 +4563,14 @@ function matchEmphasis(text, i, source, inFootnote = false, noClose = new Map())
                 }
                 const children = scanInline(inner, shiftSource(source, text, start), inFootnote);
                 return {
-                    node: { type: 'strong', children: [{ type: 'emphasis', children }] },
+                    // `boldItalic` records that the author used the combined form. The
+                    // nested spelling `*/x/*` yields the same tree, so the writer needs the
+                    // mark to reproduce what was written (PART 11 §6).
+                    node: {
+                        type: 'strong',
+                        boldItalic: true,
+                        children: [{ type: 'emphasis', children }],
+                    },
                     end: close + 2,
                 };
             }

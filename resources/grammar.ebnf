@@ -736,12 +736,19 @@ local_hard_break_block_open = colon_fence:open, space, backslash ;
    paragraphs) and renders nothing. *)
 comment_line = [whitespace], "%%", {character}, newline ;
 
+(* A `%%%` fence line is a DELIMITER plus an INSIGNIFICANT TAIL: only the
+   leading run of `%` is structural, so `%%% TODO` opens and `%%% end` closes.
+   `%%%` carries NO info string -- a raw passthrough block is a CODE fence with
+   an `=FORMAT` info string -- so `%%% html` is a comment, not a raw block.
+   A block opens only when a matching closer exists AHEAD; otherwise the line
+   degrades to a `comment_line`. Both rules are NORMATIVE in PART 9 §28. *)
 comment_block = comment_block_open, newline,
                 {character | newline},
-                comment_block_close, newline ;
+                comment_block_close, newline
+                where exists(comment_block_close) ;  (* PART 9 §28: else comment_line *)
 
-comment_block_open = ("%%%", {'%'}):open ;  (* 3+ percent signs *)
-comment_block_close = ("%%%", {'%'}):close
+comment_block_open = ("%%%", {'%'}):open, {character - newline} ;  (* 3+ `%`, tail ignored *)
+comment_block_close = ("%%%", {'%'}):close, {character - newline}
                       where len(close) = len(open) ;  (* FORMAL (PART 9 §2): exact length match *)
 
 (* trailing (inline) line comment: from a %% marker to end of line, content
@@ -1668,7 +1675,9 @@ EOF = (* end of file *) ;
       productions (GUARD NOTATION, header):
       - code_fence_close: same fence character, len(close) >= len(open);
       - colon_fence_close (§12): len(close) >= len(open);
-      - comment_block_close: len(close) = len(open).
+      - comment_block_close: len(close) = len(open). Only the LEADING RUN of
+        `%` is compared -- trailing text on either fence line is insignificant,
+        and an opener with no matching closer ahead opens nothing (§28).
 
    3. NO SAME-TYPE NESTING
       - /nested /italic/ here/ is invalid
@@ -2750,6 +2759,35 @@ EOF = (* end of file *) ;
         !`/kaet/`        -> /kaet/
         !`/kaet/`{.ipa}  -> <span class="ipa">/kaet/</span>
         !`a<b>`          -> a&lt;b&gt;
+
+   28. BLOCK COMMENT FENCES -- NORMATIVE (governs `comment_block`,
+      `comment_block_open` and `comment_block_close` in PART 2). A `%%%` fence
+      line is DELIMITER PLUS INSIGNIFICANT TAIL: the LEADING RUN of 3+ `%` is
+      the delimiter, and ANY remaining text on the line is IGNORED. So
+      `%%% TODO`, `%%% notes` and `%%%html` all open a block comment, and
+      `%%% end` closes one. No separating space is required.
+      - `%%%` HAS NO INFO STRING. A raw passthrough block (§20) is a CODE
+        fence with an `=FORMAT` info string (```` ```=html ````), never a
+        percent fence, so `%%% html` is a COMMENT and its body stays hidden.
+      - The CLOSER matches on EXACT delimiter length (§2), so a longer opener
+        nests shorter fences and a too-short line is content, not a closer.
+      - A `%%%` opener with NO MATCHING CLOSER AHEAD does NOT open a block.
+        The line degrades to a `comment_line` (its first two `%` are the line
+        marker), so every FOLLOWING BLOCK STILL RENDERS. This mirrors the
+        `:::` rule (§12: "a bare opener with no matching closer ahead is
+        literal text") and exists for the same reason: an unterminated opener
+        must not swallow the rest of the document. An implementation that
+        surfaces diagnostics SHOULD report an unterminated comment fence;
+        emitting one is OPTIONAL, since not every implementation has a
+        warning channel.
+      - TAIL DISPOSITION (serialization, PART 10): the OPENER's tail is kept as
+        the comment body's FIRST LINE, so `carve fmt` round-trips the words
+        rather than deleting them; the CLOSER's tail is DISCARDED, as a code
+        fence's closing info is. Neither is ever rendered.
+      Examples (corpus-pinned):
+        "%%% html\nsecret\n%%%\n\nafter"  -> <p>after</p>
+        "%%%\nsecret\n%%% end\n\nafter"   -> <p>after</p>
+        "%%% TODO\nsecret\n\nafter"       -> <p>secret</p><p>after</p>
 *)
 
 

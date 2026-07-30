@@ -37,7 +37,7 @@ let docIds = null;
  * obfuscation-resistant (see `SCHEME_PROBE_STRIP_RE`). Legitimate non-command
  * schemes (`http`, `https`, `mailto`, `tel`, `ftp`, `sms`, …) stay allowed.
  */
-const DANGEROUS_URL_SCHEMES = [
+export const DANGEROUS_URL_SCHEMES = [
     // Script / inline-content / local-file vectors.
     'javascript',
     'vbscript',
@@ -94,7 +94,7 @@ const DANGEROUS_URL_SCHEMES = [
  * schemes like " javascript:" prefixed with a NARROW NO-BREAK SPACE (U+202F)
  * that the previous fixed list would have missed.
  */
-const SCHEME_PROBE_STRIP_RE = /[\u0000-\u0008\u000e-\u001f\s]+/gu;
+export const SCHEME_PROBE_STRIP_RE = /[\u0000-\u0008\u000e-\u001f\s]+/gu;
 function sanitizeUrl(url, opts) {
     if (opts.sanitizeUrls === false)
         return url;

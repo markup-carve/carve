@@ -1,5 +1,6 @@
 import { SMART_PUNCTUATION_GLYPHS } from './ast.js';
 import { AbbrBudget, utf8ByteLength } from './abbr-budget.js';
+import { DANGEROUS_URL_SCHEMES, SCHEME_PROBE_STRIP_RE } from './render-html.js';
 const MAX_RENDER_DEPTH = 200;
 const TRIM_NON_NBSP_RE = /^[^\S\u00a0]+|[^\S\u00a0]+$/g;
 export function renderMarkdown(ast, opts = {}) {
@@ -28,6 +29,7 @@ export function renderMarkdown(ast, opts = {}) {
         inlineDepth: 0,
         abbrBudget: new AbbrBudget(ast.srcByteLength),
         smartTypography: opts.smartTypography ?? 'glyph',
+        definedFootnotes: new Set(Object.keys(ast.footnoteDefs ?? {})),
     };
     const out = renderBlocks(ast.children, ctx);
     const footnotes = renderFootnoteDefs(ast, ctx);
@@ -57,7 +59,14 @@ function renderBlock(node, ctx) {
         case 'code_block': {
             const content = stripControls(node.content);
             const fence = safeFence(content, 3);
-            const info = markdownFenceInfo(node.lang, node.header, node.label);
+            // The EFFECTIVE title, not the authored header. An attribute line above the
+            // fence overrides a title written in the header, and the HTML target uses
+            // the winner - so emitting `node.header` here described the document
+            // differently in the two targets, announcing a title that had lost
+            // (carve#352, corpus 11-fenced-code-10). The parser resolves the override
+            // into `attrs`, so that is where the answer already is.
+            const effectiveTitle = node.attrs?.keyValues?.['title'] ?? node.header;
+            const info = markdownFenceInfo(node.lang, effectiveTitle, node.label);
             return `${fence}${info}\n${content}\n${fence}\n\n`;
         }
         case 'block_quote': {
@@ -120,11 +129,18 @@ function renderList(node, ctx) {
     // merges lists the source kept apart - the same section 11 rule the AST
     // records `bulletChar` for and `renderCarve` already honors (carve#352).
     const bullet = node.bulletChar ?? '-';
+    // The authored ordered-list delimiter, for the same reason as the bullet above:
+    // in CommonMark a change of delimiter SEPARATES two adjacent lists, so emitting
+    // `1.` for a `1)` list merges lists the source kept apart. Measured against
+    // commonmark.js - `1. a` followed by `1) c` gives two `<ol>` elements, the same
+    // input with one delimiter gives one. The AST records `delim` and `renderCarve`
+    // already reproduces it (carve#352, corpus 31).
+    const delim = node.delim === ')' ? ')' : '.';
     for (const item of node.items) {
         const indent = '  '.repeat(ctx.listDepth - 1);
         let prefix;
         if (node.ordered) {
-            prefix = `${counter}. `;
+            prefix = `${counter}${delim} `;
             counter++;
         }
         else if (item.checked !== undefined) {
@@ -160,22 +176,40 @@ function renderTable(node, ctx) {
     let header;
     const rows = [];
     let columns = 0;
-    // Per-column alignment, taken from the first non-header row (matching
-    // carve-php), so the Markdown separator preserves `:---` / `:---:` / `---:`
-    // instead of dropping alignment.
+    // Per-column alignment for the Markdown delimiter row, which is the only place
+    // Markdown can express it.
+    //
+    // COLUMN alignment is declared on the HEADER cells - that is where `|=> Age`
+    // puts it, and the HTML renderer applies it to every cell in the column. This
+    // used to read the first NON-header row instead, where `align` is set only by a
+    // per-CELL override, so ordinary aligned tables lost their alignment entirely
+    // and a table with one overridden cell reported that cell's alignment as the
+    // whole column's (carve#352, corpus 48/49/52/53).
+    //
+    // A per-cell override cannot be expressed in a Markdown table at all, so it is
+    // deliberately not consulted here; the column keeps what the header declared.
     const aligns = [];
     for (const row of node.rows) {
         const cells = row.cells.map((cell) => trimNonNbsp(renderInlines(cell.children, ctx)));
         columns = Math.max(columns, cells.length);
         const rendered = `| ${cells.join(' | ')} |`;
-        if (row.cells.every((cell) => cell.header))
+        if (row.cells.every((cell) => cell.header)) {
             header = rendered;
-        else {
-            rows.push(rendered);
             row.cells.forEach((cell, i) => {
                 if (aligns[i] === undefined)
                     aligns[i] = cell.align;
             });
+        }
+        else {
+            rows.push(rendered);
+            // A headerless table still declares its columns somewhere, so fall back to
+            // the first row that carries an alignment.
+            if (header === undefined) {
+                row.cells.forEach((cell, i) => {
+                    if (aligns[i] === undefined)
+                        aligns[i] = cell.align;
+                });
+            }
         }
     }
     const separator = (i) => {
@@ -305,14 +339,28 @@ function renderInline(node, ctx) {
             const title = stripControls(node.expansion).replace(/[&<>"]/g, (c) => c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : '&quot;');
             return `<abbr title="${title}">${text}</abbr>`;
         }
-        case 'footnote':
-            return node.inline
-                ? `^[${renderInlines(node.inline, ctx)}]`
-                : `[^${stripControls(node.id ?? '')}]`;
+        case 'footnote': {
+            if (node.inline)
+                return `^[${renderInlines(node.inline, ctx)}]`;
+            const id = stripControls(node.id ?? '');
+            // An UNRESOLVED reference did not form a footnote, so what is emitted is
+            // ordinary text -- and its brackets are Markdown metacharacters, which
+            // PART 11 section 8 M1 escapes UNCONDITIONALLY. Emitting them bare handed
+            // the re-parser markup the document never had. carve-php already did this
+            // (carve#352, corpus 132/133/157/161).
+            if (!ctx.definedFootnotes.has(id))
+                return `\\[^${id}\\]`;
+            return `[^${id}]`;
+        }
         case 'soft_break':
             return '\n';
         case 'hard_break':
-            return '  \n';
+            // A BACKSLASH, not two trailing spaces (PART 11 section 9). Both mean
+            // `<br />` to a CommonMark reader, but trailing whitespace is removed by
+            // editors that strip on save, by `git apply --whitespace=fix` and by CI
+            // whitespace checks - and losing ONE of the two spaces is enough for the
+            // break to vanish rather than degrade, silently, in a file nobody edited.
+            return '\\\n';
         case 'insert':
             return `<ins>${renderInlines(node.children, ctx)}</ins>`;
         case 'delete':
@@ -321,7 +369,14 @@ function renderInline(node, ctx) {
             // Emit BOTH sides like the HTML renderer; dropping oldText loses content.
             return `<del>${escapeText(node.oldText)}</del><ins>${escapeText(node.newText)}</ins>`;
         case 'critic-comment':
-            return '';
+            // Visible content: the HTML target renders it as
+            // `<span class="critic-comment"> note </span>`, so dropping it here made two
+            // targets of one engine disagree about whether the document says it. Markdown
+            // has no critic syntax, so the text is what degrades gracefully -- and it is
+            // escaped like any other text, since it lands in a Markdown document.
+            // carve-php kept it (carve#352, corpus 33-editorial-markup); the plain and
+            // ANSI targets were fixed in carve-js#429.
+            return escapeText(node.text);
         case 'heading_ref':
             return `</#${stripControls(node.target)}>`;
         case 'caption_number':
@@ -370,7 +425,14 @@ function markdownFenceInfo(lang, header, label) {
     // every consumer ignores what it does not understand, and carve-php was
     // already emitting it (carve#352).
     const grouping = label === undefined || label === '' ? '' : ` [${stripControls(label).replace(/[[\]`]/g, '')}]`;
-    if (header === undefined)
+    // A title needs a LANGUAGE in front of it. In Markdown the info string's first
+    // token IS the language, so `` ``` "notes.txt" `` makes a CommonMark reader
+    // emit `class="language-&quot;notes.txt&quot;"` -- measured against
+    // commonmark.js. Markdown has no way to express a fence title on its own, so
+    // dropping it beats emitting a bogus language; with a language present the
+    // title is ignored by every consumer and rides along safely. carve-php had this
+    // guard and was right about it (carve#352, corpus 11-fenced-code-8).
+    if (header === undefined || token === '')
         return `${token}${grouping}`;
     return `${token} "${escapeMdTitle(header)}"${grouping}`;
 }
@@ -430,14 +492,21 @@ function escapeText(text) {
     // which only normalize() can see. See UNDERSCORE_ESCAPE.
     return text.replace(/[\\`*_[\]#]/g, (ch) => (ch === '_' ? UNDERSCORE_ESCAPE : `\\${ch}`));
 }
-/** Dangerous URL schemes blanked on Markdown link/image destinations, mirroring
- *  the HTML renderer so a `javascript:` URL does not survive into Markdown (and
- *  from there a downstream Markdown -> HTML render). */
-const MD_DANGEROUS_SCHEMES = new Set(['javascript', 'vbscript', 'data', 'file']);
+/**
+ * Dangerous URL schemes blanked on Markdown link/image destinations.
+ *
+ * The set and the probe come from the HTML renderer rather than being restated
+ * here. A local copy listed only the four script/inline-content/local-file
+ * schemes and probed with an ASCII-only strip, so the twenty OS
+ * protocol-handler schemes -- `ms-msdt`, `search-ms`, `jar`, `vscode` and the
+ * rest -- survived into Markdown, and from there into whatever renders it. That
+ * is not a narrower policy, it is the same sink one step removed (PART 9 §25,
+ * carve#385).
+ */
 function sanitizeMdUrl(url) {
-    const probe = url.replace(/[\u0000-\u0020]/g, '');
+    const probe = url.replace(SCHEME_PROBE_STRIP_RE, '');
     const m = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(probe);
-    if (m && MD_DANGEROUS_SCHEMES.has(m[1].toLowerCase()))
+    if (m && DANGEROUS_URL_SCHEMES.includes(m[1].toLowerCase()))
         return '';
     return url;
 }
