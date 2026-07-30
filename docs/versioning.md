@@ -40,6 +40,25 @@ When upgrading a document across spec versions, you only need to act on
 **`[behavior]`** entries between the document's stamped `carve-version` and the
 target version.
 
+### Declaring a target version
+
+The marker above is written by tooling. An author who wants to state which
+version a document targets does it in frontmatter:
+
+```
+---
+carve-version: 0.1
+---
+```
+
+The key is optional. `carve lint` reads it and reports
+[`carve-version-unsupported`](./validation#declaring-a-target-version) when a
+document targets a version the processor does not implement, which is otherwise a
+silent degradation: the constructs the author relied on parse as something else
+and nothing says so. The two fields do not compete - the frontmatter key is the
+author's intent, the trailing marker is what last processed the file - and a
+document carrying only the marker is still checked.
+
 ### Checking documents mechanically
 
 The marker is machine-readable, so this does not have to be done by eye. In
