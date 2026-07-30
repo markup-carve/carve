@@ -40,6 +40,33 @@ When upgrading a document across spec versions, you only need to act on
 **`[behavior]`** entries between the document's stamped `carve-version` and the
 target version.
 
+### Checking documents mechanically
+
+The marker is machine-readable, so this does not have to be done by eye. In
+carve-php:
+
+```php
+use MarkupCarve\Carve\Stamp;
+
+Stamp::read($source);        // ['version' => '0.1', 'generatedBy' => 'carve-php 0.1.0'] or null
+Stamp::needsReview($source); // true when the document predates the engine's spec version
+```
+
+and from the CLI, for a repository of stored documents:
+
+```bash
+carve --stamp-info doc.crv    # report the version and the writer
+carve --stamp-check doc.crv   # exit 1 when the document predates this spec version
+```
+
+An **unstamped** document counts as needing review: its provenance is unknown,
+and assuming it is current is the unsafe direction. Hand-written documents are
+unstamped until `carve fmt --stamp` touches them.
+
+The reader is landing in
+[carve-php#473](https://github.com/markup-carve/carve-php/pull/473). carve-js
+writes the marker today but has no reader yet.
+
 ## Changelog
 
 ### 0.1
