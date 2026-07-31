@@ -38,6 +38,26 @@ const root = resolve(here, '..')
 const limitArg = process.argv.find((a) => a.startsWith('--limit='))
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) : Infinity
 
+/*
+ * The satellite engines serialize through a SUBPROCESS PER DOCUMENT, so they
+ * cost about a tenth of a second each where the reference costs nothing.
+ *
+ * That is why they used to run over only the first twelve samples - and why
+ * this script reported "carve-php: conformant" while carve-php had eight nodes
+ * with no position. All eight sit in documents 41, 56, 63, 96 and 104; the
+ * first twelve documents alphabetically contain none of them. The cap was not
+ * a sampling decision, it was a check that could not fail, and it printed a
+ * clean bill of health for an engine the full corpus finds non-conformant.
+ *
+ * They now run over everything by default (about 45 seconds each). A smaller
+ * cap stays available for a quick local pass, and the report NAMES the count it
+ * ran over, so a partial run can never again read as a complete one.
+ */
+const satelliteLimitArg = process.argv.find((a) => a.startsWith('--satellite-limit='))
+const satelliteLimit = satelliteLimitArg
+  ? Number(satelliteLimitArg.slice('--satellite-limit='.length))
+  : Infinity
+
 const jsDir = process.env.CARVE_JS_DIR ?? resolve(root, '../carve-js')
 const rbDir = process.env.CARVE_RB_DIR ?? resolve(root, '../carve-rb')
 const phpDir = process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php')
@@ -204,6 +224,8 @@ const samples = [
     .map((f) => ({ name: f, source: readFileSync(resolve(corpusDir, f), 'utf8') })),
 ]
 
+const satelliteSamples = samples.slice(0, satelliteLimit)
+
 console.log(`PART 12 conformance over ${samples.length} corpus documents\n`)
 
 // ---- reference: carve-js ---------------------------------------------------
@@ -241,7 +263,7 @@ report('carve-js (reference)', jsFindings)
 // ---- carve-rb: serializes carve-rs's tree ----------------------------------
 if (existsSync(resolve(rbDir, 'lib/carve'))) {
   const rbFindings = []
-  for (const { name, source } of samples.slice(0, 12)) {
+  for (const { name, source } of satelliteSamples) {
     let doc
     try {
       const out = execFileSync(
@@ -265,7 +287,7 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
       }
     }
   }
-  report('carve-rb (over carve-rs)', rbFindings)
+  report(`carve-rb (over carve-rs, ${satelliteSamples.length} documents)`, rbFindings)
 } else {
   console.log('carve-rb: checkout not found, not checked\n')
 }
@@ -279,7 +301,7 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
 // already in use.
 if (existsSync(resolve(phpDir, 'bin/carve'))) {
   const phpFindings = []
-  for (const { name, source } of samples.slice(0, 12)) {
+  for (const { name, source } of satelliteSamples) {
     let doc
     try {
       const out = execFileSync('php', ['bin/carve', '--json'], {
@@ -304,7 +326,7 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
       }
     }
   }
-  report('carve-php (over bin/carve --json)', phpFindings)
+  report(`carve-php (over bin/carve --json, ${satelliteSamples.length} documents)`, phpFindings)
 } else if (existsSync(phpDir)) {
   console.log('carve-php: checkout found but bin/carve is missing, not checked\n')
 } else {
