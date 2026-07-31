@@ -200,9 +200,16 @@ function checkDocument(doc, source, findings) {
       // longer than the text it produces and can never equal its own slice. That
       // is the format working, not a wrong span, and asserting on it would
       // produce a false positive nobody would act on.
+      // A value carrying the U+E000 INDENT SENTINEL is skipped for the same
+      // reason. A line block rewrites each leading space to that private-use
+      // character, so the node's value differs from its slice in exactly those
+      // positions while spanning the same codepoints. The span is not wrong -
+      // it covers precisely the source the node came from - and the engine's
+      // internal spelling of an indent is not something this check can compare.
       if (
         node.type === 'text' &&
         typeof node.value === 'string' &&
+        !node.value.includes('\ue000') &&
         !codepoints.slice(pos.startOffset, pos.endOffset).includes('\\')
       ) {
         const slice = codepoints.slice(pos.startOffset, pos.endOffset).join('')
