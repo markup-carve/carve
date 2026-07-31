@@ -938,9 +938,34 @@ collapsed_reference_link = '[', link_text, ']', '[', ']', [attributes] ;
 
 link_text = inline_content ;
 (* SEMANTIC CONSTRAINT: the link text ends at the matching `]` -- the close
-   is balanced-bracket, escape- and code-span-aware (PART 9 §16's rule for
+   is balanced-bracket, escape- and LITERAL-SPAN-aware (PART 9 §16's rule for
    inline notes is the same scan); an unescaped bare `]` inside plain text
    closes it. Not expressible context-free. *)
+(* WHICH SPANS THE SCAN SKIPS -- NORMATIVE. The scan skips the interior of
+   every construct whose content is LITERAL, meaning the parser resolves no
+   escapes inside it:
+
+     `code`            inline code
+     !`literal`        inline literal (PART 9 §27)
+     {# comment #}     editorial comment
+
+   A `]` inside any of them is content, not the close.
+
+   The list is exactly the spans whose content is LITERAL, and that is the
+   whole test: a `]` there cannot be escaped, because an escape inside them is
+   not an escape. `{+ +}`, `{- -}` and `{~ ~> ~}` take `inline_content`, so
+   `[{+a\]b+}](u)` already works and they are deliberately NOT in the list.
+
+   This was previously written as "code-span-aware", which named only the
+   first. The others were left to end the label early, and because their
+   content is literal there is no way to write the `]` around it: an escape
+   inside them is not an escape, so `[{#a\]b#}](u)` produces a link whose
+   comment text really contains a backslash. A writer serializing such a
+   document therefore had to choose between keeping the link and keeping the
+   author's text, with no correct answer available (carve#403).
+
+   Stated as a property rather than as three names: any future construct whose
+   content is literal joins the list by construction. *)
 (* SEMANTIC CONSTRAINT (links never nest): a link MUST NOT contain another
    link. The link text is inline content, so parsing it may yield a link --
    written explicitly (`[[x](y)](z)`), as a crossref/auto_text_link, or
@@ -978,6 +1003,34 @@ destination_escape = '\', ('(' | ')' | '\') ;
    closing `)` is not a link and stays literal (the `[t](url` / `more)`
    two-line case). *)
 unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
+(* WHITESPACE HERE IS UNICODE WHITESPACE -- NORMATIVE, and it always was:
+   `unicode_url_char` says "non-whitespace" without qualifying it to ASCII.
+   So a NARROW NO-BREAK SPACE, an IDEOGRAPHIC SPACE and a THIN SPACE end an
+   inline destination exactly as a plain space does, and an unbracketed
+   destination cannot contain one. Stated explicitly because two engines read
+   it as ASCII-only and produced a link whose href carried an invisible
+   character (carve#404).
+
+   ZERO-WIDTH characters (U+200B, U+FEFF) are NOT whitespace and ARE ordinary
+   destination characters. The test is the Unicode White_Space property, not
+   "is invisible".
+
+   THE SAME RULE APPLIES IN A REFERENCE DEFINITION, because the definition is
+   built from this same `link_destination`. Whitespace ENDS the destination
+   there too:
+
+     [r]: https://e.com<U+202F>/path   ->  destination `https://e.com`
+
+   with `/path` following the destination and, not being a quoted title,
+   ignored -- exactly as `[r]: https://e.com /path` behaves. Whitespace
+   between the mandatory separator space and the destination is leading
+   whitespace and is skipped. A definition whose destination is EMPTY once
+   that is done is NOT a definition: the line stays literal, as `[r]:`
+   already does.
+
+   There is deliberately no "trim the ends, keep the interior" variant. It
+   reads as the friendlier rule and it contradicts `link_destination`, which
+   admits no whitespace at all -- leaving `[r]: a b` specified two ways. *)
 (* Titles accept double OR single quotes -- a deliberate enhancement
    over djot (which has no single-quote titles; it would fold `'...'`
    into the URL). The non-delimiting quote may appear inside the title. *)
@@ -1363,7 +1416,29 @@ editorial_markup = addition | deletion | substitution | editorial_comment ;
 addition = "{+", inline_content, "+}", [attributes] ;
 deletion = "{-", inline_content, "-}", [attributes] ;
 substitution = "{~", inline_content, "~>", inline_content, "~}" ;
-editorial_comment = "{#", inline_content, "#}" ;
+editorial_comment = "{#", comment_content, "#}" ;
+comment_content = (* any text until the matching `#}`, preserved literally *) ;
+(* CONTENT IS LITERAL -- NORMATIVE. Nothing inside is parsed as markup, spaces
+   are preserved, and no escape is resolved: `{# a *b* c #}` holds the eight
+   characters ` a *b* c ` and renders them, asterisks included. This says what
+   all three implementations already do; the production read `inline_content`,
+   which none of them implemented.
+
+   It follows from what the construct is. An editorial comment is the author's
+   aside about the text, not more text -- emphasis inside it would be markup
+   the reader never sees rendered, and a formatter could not tell it from
+   emphasis the author wrote outside. It is also what lets `link_text`'s scan
+   skip the span: with no escape available, a `]` inside is uncloseable any
+   other way.
+
+   `addition` and `deletion` are NOT literal: they take `inline_content`, and
+   `{+a *b* c+}` really does emphasize `b`.
+
+   `substitution` is an OPEN divergence, deliberately left alone here. Its
+   production says `inline_content`, and all three implementations render
+   `{~*b*~>*e*~}` with the asterisks literal - so either the production or
+   every engine is wrong, and which one is a behavior question rather than a
+   transcription error. Not folded into this clause. *)
 (* ATTRIBUTES -- NORMATIVE: an addition / deletion is an ordinary inline node,
    so a trailing `{...}` attribute block attaches to its `<ins>` / `<del>`,
    exactly like a span, code span, link, or emphasis: `{+a+}{.a}` ->
@@ -3217,6 +3292,54 @@ EOF = (* end of file *) ;
       a hard break the way the Carve grammar does (`hard_break`, PART 3), and
       §7's no-whitespace-only-line rule already covers the writer's side.
 
+  10. A LIST ITEM'S CONTINUATION LINES ARE ALIGNED -- NORMATIVE. Every
+      continuation line of a list item is indented to the WIDTH OF THE MARKER,
+      including one whose text would otherwise read as a list marker. Such a
+      line is kept literal by ESCAPING it, per §2, not by indenting it less:
+
+        1. outer
+           1\. inner
+
+      The alternative -- leaving the line at an indent below the nesting
+      threshold so no escape is needed -- looks appealing because it removes an
+      escape the author did not write. It is rejected because its correctness
+      depends on the WIDTH of the marker above it. Two spaces sit below the
+      threshold under `1. ` and reach it under `- `, so the same rule produces
+      a continuation in one list and a nested list in the other, silently
+      changing what the document says (carve#352).
+
+      This does not conflict with §2. §2 governs whether a character is escaped
+      GIVEN the line the writer emits; §10 fixes the line. A writer may not
+      manufacture a layout whose only merit is dodging an escape.
+
+  11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE. A resolved
+      cross-reference is emitted as a Markdown link to the target heading's id,
+      and the target heading gains an explicit `{#id}` suffix. Both halves are
+      required, and neither is emitted without the other:
+
+        # H                       ->  # H {#H}
+        See </#h>.                ->  See [H](#H).
+
+      A heading NOTHING references gains no suffix. Markdown has no portable
+      heading-id syntax, so an id every processor must be told about is noise
+      unless something links to it.
+
+      THE ID IS THE ONE THE DOCUMENT ASSIGNED, not a fresh slug of the heading
+      text. The two differ whenever the core disambiguated a repeat (`Setup`
+      and `Setup-2`), and a renderer that re-derives the slug does not merely
+      mislabel the heading: it fails to recognize the reference as pointing at
+      a known heading at all, so it drops the `{#id}` AND degrades the link to
+      bare text -- one cause presenting as two unrelated symptoms.
+
+      A CROSS-REFERENCE CONTRIBUTES NOTHING TO A HEADING'S SLUG. By the time
+      this target runs, resolution has replaced `</#a>` with a link carrying
+      the target heading's text, so counting it slugs `# A </#a>` as `A-A`.
+
+      THE SCAN INCLUDES FOOTNOTE DEFINITION BODIES. They render as block
+      content, so a reference inside one is a reference; missing them leaves a
+      heading without the id that the link this target also emits depends on
+      (carve#352).
+
    ============================================================================
    PART 12: AST SERIALIZATION (NORMATIVE)
    ============================================================================
@@ -3233,6 +3356,20 @@ EOF = (* end of file *) ;
       carve-rs's tree) independently arrived at the same field names. An
       implementation whose internals differ MAPS on the way out; it does not
       export its internals.
+
+      THE TYPE NAME COMES FROM profiles.md, NOT FROM carve-js -- NORMATIVE.
+      This clause is about the SHAPE of a node: which fields it carries and
+      what they are called. Where carve-js's `type` string disagrees with the
+      vocabulary in profiles.md, the vocabulary wins.
+
+      Read without that limit, §1 made carve-js's spelling normative even when
+      it collided with the vocabulary. An inline footnote reference is the
+      case that surfaced it: carve-js called it `footnote`, which is ALREADY
+      the block type for the definition, so one identifier named two different
+      nodes and `footnote_ref` -- listed in profiles.md as an inline type --
+      named none. carve-php emitted `footnote_ref`. Deferring to carve-js there
+      would have resolved the disagreement by deleting a distinction the
+      vocabulary makes on purpose (carve#405).
 
    2. EVERY NODE IS AN OBJECT with a `type` holding the node-type identifier
       from profiles.md - the same snake_case strings PART 9 §8 already calls

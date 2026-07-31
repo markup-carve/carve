@@ -129,11 +129,24 @@ The table above is carve-js. The other engines do not currently match it, and
 | carve-php | yes | Markdown-habit checks only (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`, `heading-lazy-continuation`); none of the semantic rules above |
 | carve-rs | no | the binary has no `lint` command |
 
-Rule ids do not currently line up either: carve-php and carve-js both flag
-`**bold**` and `~~strike~~`, under different names. So a CI filter or an editor
-suppression keyed on a rule id is engine-specific today. Tracked in
-[carve#268](https://github.com/markup-carve/carve/issues/268), which is where the
-question of whether a rule id is contract belongs.
+### A rule id is a contract
+
+**A lint rule id is spec surface.** Two implementations reporting the same
+condition MUST use the same id, for the same reason two implementations parsing
+the same document must use the same node type: anything keyed on the id — a CI
+filter, an editor suppression, a `# carve-lint-disable` comment — is otherwise
+unshareable, and a document's tooling config stops being portable the moment a
+second engine touches it.
+
+This does NOT require every engine to implement every rule. Coverage differs and
+that is fine; the table above says so. What it forbids is two engines detecting
+the same thing under different names.
+
+Ids do not line up today: carve-php and carve-js both flag `**bold**` and
+`~~strike~~`, under different names, so a suppression written against one is
+silently inert against the other. Aligning them is a breaking change to any
+existing config and is tracked in
+[carve#268](https://github.com/markup-carve/carve/issues/268).
 
 The CLI also reports Djot/Markdown delimiter collisions from the migration
 checker — mis-rendering constructs by default, plus the Djot semantic shifts
