@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **PART 12 §4: position tracking may be opt-in, serialization may not.** An
+  implementation may gate position tracking behind a parse option and must
+  enable it when asked to serialize. What is forbidden is a serialized document
+  without positions, not a parse without them.
+
+  The cost is what forced this. Recording a span for every node is not free -
+  carve-rs builds its line map only when the source-line render option asks for
+  it, precisely so an ordinary parse does not pay - and serialization is an
+  operation most callers never perform. Charging every parse in the fastest
+  engine for a feature used by exporters and language servers is the wrong
+  trade, and a spec demanding it would be quietly ignored or quietly
+  unimplemented.
+
+  The contract a consumer relies on is unchanged: JSON it is handed carries
+  positions.
+
 ### Added
 
 - **`compare-impls --roundtrip`** (carve#353). Formats each corpus case, then

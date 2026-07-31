@@ -3436,15 +3436,30 @@ EOF = (* end of file *) ;
       than navigated. Making it optional would mean every consumer has to
       handle its absence, which in practice means not using it.
 
-      IMPLEMENTATION COST -- NOT A DESIGN CONCESSION, A SCHEDULING NOTE. Only
-      carve-js records positions today. carve-php has none on its nodes;
-      carve-rs has none either, though its parser already keeps a line map for
-      the source-line render option, so line granularity exists there and
-      columns and offsets do not. Both therefore need position tracking before
-      they can serialize conformantly. An implementation that cannot yet
-      produce positions MUST NOT emit `pos` with invented values, and MUST NOT
-      omit it silently: it does not yet serialize conformantly, and should say
-      so.
+      POSITION TRACKING MAY BE OPT-IN, SERIALIZATION MAY NOT. An implementation
+      MAY gate position tracking behind a parse option, and MUST enable it when
+      asked to serialize. What is forbidden is a serialized document without
+      positions, not a parse without them.
+
+      This is a concession to where the cost falls. Recording a span for every
+      node is not free -- carve-rs builds its line map only when the
+      source-line render option asks for it, precisely so an ordinary parse does
+      not pay -- and serialization is an operation most callers never perform.
+      Charging every parse in the fastest engine for a feature used by
+      exporters, editors and language servers would be the wrong trade, and a
+      spec that demanded it would be quietly ignored or quietly unimplemented.
+
+      The contract a consumer relies on is unchanged: JSON it is handed carries
+      positions. How the producer arranged that is the producer's business.
+
+      IMPLEMENTATION STATUS. Only carve-js records positions today. carve-php
+      has none on its nodes; carve-rs has none either, though its parser keeps a
+      line map for the source-line render option, so line granularity exists
+      there and columns and offsets do not. Both therefore need position
+      tracking before they can serialize conformantly. An implementation that
+      cannot yet produce positions MUST NOT emit `pos` with invented values, and
+      MUST NOT omit it silently: it does not yet serialize conformantly, and
+      should say so.
 
    5. WHAT IS NOT IN THE SERIALIZED FORM. Formatter-internal nodes (PART 11,
       and the `raw_text` case profiles.md excludes) are not part of the
