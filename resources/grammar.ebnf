@@ -3376,6 +3376,37 @@ EOF = (* end of file *) ;
       spec surface for kind names. A document is
       `{"type":"document","children":[...]}`.
 
+      THE ROOT'S OWN FIELDS ARE FIXED -- NORMATIVE. Beyond `type` and
+      `children` the root carries `srcByteLength` always, and carries
+      `frontmatter` and `footnoteDefs` exactly when the document has them. It
+      carries nothing else.
+
+        {"type":"document","children":[...],"srcByteLength":42,
+         "frontmatter":{...},"footnoteDefs":{...}}
+
+      This was left open once and every engine answered differently: carve-js
+      emitted all five, carve-php emitted three and DROPPED a document's
+      frontmatter and footnote definitions on the way out, and carve-rb spelled
+      two of them `source_len` and `footnote_defs`. A consumer reading
+      `srcByteLength` got nothing from one engine, and a document round-tripped
+      through another came back without its frontmatter (carve#411).
+
+      Frontmatter and footnote definitions sit on the ROOT rather than in
+      `children` because neither is a position in the document's flow. A
+      footnote definition renders where the reference to it appears, not where
+      it was written, and frontmatter renders nowhere at all -- putting either
+      in `children` would give it a place in a sequence it does not occupy. The
+      open issue weighed moving footnote definitions into the tree on the
+      grounds that they are content rather than metadata, which is true and is
+      not the question: `children` is an ORDER, and content with no place in
+      that order does not belong in it.
+
+      `srcByteLength` counts BYTES of the source, and is the one field here
+      that is not codepoints (PART 12 §4) -- it answers "how much source was
+      this", not "where in it", so a byte count is the honest unit. It is named
+      here because it was never written down: three engines emitted it, or a
+      renaming of it, purely by copying the reference.
+
    3. FIELD NAMES ARE SPEC SURFACE, exactly as kind names are. The normative
       set per node type is the carve-js interface for that type. Notably:
         link       `href`, `children`, and `ref` when the author wrote a
