@@ -130,7 +130,40 @@ function* walk(node, path = '$') {
   }
 }
 
+/**
+ * PART 12 section 2: the root carries `type`, `children` and `srcByteLength`,
+ * plus `frontmatter` and `footnoteDefs` when the document has them, and nothing
+ * else.
+ *
+ * Checked separately from the per-type shape comparison because the root is the
+ * one node with no other node of its type to compare against - which is exactly
+ * why the engines diverged here unnoticed: carve-php dropped a document's
+ * frontmatter and footnote definitions on the way out, and carve-rb spelled two
+ * root fields `source_len` and `footnote_defs` (carve#411).
+ */
+const ROOT_REQUIRED = ['type', 'children', 'srcByteLength']
+const ROOT_OPTIONAL = ['frontmatter', 'footnoteDefs']
+
+function checkRoot(doc, source, findings) {
+  for (const key of ROOT_REQUIRED) {
+    if (!(key in doc)) findings.push(`root is missing "${key}" (PART 12 section 2)`)
+  }
+  // "Optional" means optional to the DOCUMENT, not to the engine. A source that
+  // opens with a frontmatter fence must come back with `frontmatter`, or the
+  // serializer has silently dropped content - the failure carve#411 found in
+  // carve-php, and one a presence-only check cannot see.
+  if (/^---\r?\n/.test(source) && !('frontmatter' in doc)) {
+    findings.push('source has frontmatter but the root does not carry it (PART 12 section 2)')
+  }
+  for (const key of Object.keys(doc)) {
+    if (!ROOT_REQUIRED.includes(key) && !ROOT_OPTIONAL.includes(key)) {
+      findings.push(`root carries "${key}", which PART 12 section 2 does not describe`)
+    }
+  }
+}
+
 function checkDocument(doc, source, findings) {
+  checkRoot(doc, source, findings)
   // Offsets are codepoint indices (PART 12 §4), so the source has to be indexed
   // the same way to check them.
   const codepoints = [...source]
