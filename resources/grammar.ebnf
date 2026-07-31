@@ -3493,14 +3493,27 @@ EOF = (* end of file *) ;
       The contract a consumer relies on is unchanged: JSON it is handed carries
       positions. How the producer arranged that is the producer's business.
 
-      IMPLEMENTATION STATUS. Only carve-js records positions today. carve-php
-      has none on its nodes; carve-rs has none either, though its parser keeps a
-      line map for the source-line render option, so line granularity exists
-      there and columns and offsets do not. Both therefore need position
-      tracking before they can serialize conformantly. An implementation that
-      cannot yet produce positions MUST NOT emit `pos` with invented values, and
-      MUST NOT omit it silently: it does not yet serialize conformantly, and
-      should say so.
+      IMPLEMENTATION STATUS. carve-php serializes conformantly: it records
+      positions behind a parse option and enables them whenever it serializes,
+      which is the arrangement the paragraph above permits.
+
+      carve-js records positions but not on every node. The types that come out
+      without one are all REASSEMBLED rather than sliced from the source -- the
+      hard break a line block synthesizes from a soft one, and table rows and
+      cells put back together from several lines. They are absent rather than
+      wrong, which is the half of the rule below that matters, and they are
+      tracked in carve-js#441.
+
+      carve-rs has none at all: 47 node structs with no position field, and
+      several of its inline variants are tuple-shaped, so there is nowhere to
+      put one without changing the variant itself. Its parser does keep a line
+      map for the source-line render option, so line granularity exists there
+      and columns and offsets do not. Tracked in carve-rs#333, which also
+      records the six trap classes carve-js hit, in the order they bit.
+
+      An implementation that cannot yet produce positions MUST NOT emit `pos`
+      with invented values, and MUST NOT omit it silently: it does not yet
+      serialize conformantly, and should say so.
 
    5. WHAT IS NOT IN THE SERIALIZED FORM. Formatter-internal nodes (PART 11,
       and the `raw_text` case profiles.md excludes) are not part of the
