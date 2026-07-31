@@ -95,6 +95,11 @@ node preserving literal source for round-trip formatting (carve-php calls it
 `raw_text`); denying it would break `fmt` while expressing nothing about the
 document's content.
 
+A **`frontmatter`** block - the AST form of a document's leading metadata
+fence - is likewise not in this vocabulary. It renders nothing, so denying it
+would express nothing; an implementation that parses frontmatter allows the
+node unconditionally.
+
 The inline literal of PART 9 §27 (`` !`…` ``) is classified as **`code`** for
 profiles — it is a code span with the `<code>` wrapper dropped, sharing code's
 verbatim capture, escaping, and trailing-attribute surface, so it is allowed
@@ -128,8 +133,20 @@ For a node of type `T`, in its axis (inline or block):
    `T` is in it.
 3. Else → **allowed**.
 
-A type that is neither a known block nor inline type is **denied**. `document`
-is always allowed. Deny always beats allow; an allowlist is a closed set.
+These three steps are exhaustive. A node whose type is **not** in the
+vocabulary above resolves through them unchanged: it cannot appear in a deny
+list, so step 1 never matches; step 2 excludes it whenever an allow list is
+set; and step 3 allows it otherwise. An implementation MUST NOT add a fourth
+step denying unrecognized types.
+
+The consequence is the point: a profile that denies nothing and sets no allow
+list is **lossless**, for every document, including documents using node types
+the implementation's vocabulary predates. A vocabulary gap makes a type
+un-nameable, never invisible. An allow list still excludes unknown types, so a
+restrictive profile loses no safety.
+
+`document` is always allowed and cannot be denied. Deny always beats allow;
+an allowlist is a closed set.
 
 ### Actions on a disallowed node
 
