@@ -95,11 +95,6 @@ node preserving literal source for round-trip formatting (carve-php calls it
 `raw_text`); denying it would break `fmt` while expressing nothing about the
 document's content.
 
-A **`frontmatter`** block - the AST form of a document's leading metadata
-fence - is likewise not in this vocabulary. It renders nothing, so denying it
-would express nothing; an implementation that parses frontmatter allows the
-node unconditionally.
-
 The inline literal of PART 9 §27 (`` !`…` ``) is classified as **`code`** for
 profiles — it is a code span with the `<code>` wrapper dropped, sharing code's
 verbatim capture, escaping, and trailing-attribute surface, so it is allowed
