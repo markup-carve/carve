@@ -25,9 +25,9 @@ spelling.
 
 **Block:** `paragraph`, `heading`, `code_block`, `block_quote`, `list`,
 `list_item`, `table`, `table_row`, `table_cell`, `thematic_break`, `div`,
-`admonition`, `raw_block`, `footnote`, `definition_list`, `definition_term`,
-`definition_description`, `section`, `line_block`, `comment`, `figure`,
-`caption`.
+`admonition`, `raw_block`, `footnote`, `frontmatter`, `definition_list`,
+`definition_term`, `definition_description`, `section`, `line_block`,
+`comment`, `figure`, `caption`.
 
 **Inline:** `text`, `emphasis`, `strong`, `underline`, `strike`,
 `inline_extension`, `mention`, `code`, `link`, `autolink`, `image`,

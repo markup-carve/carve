@@ -3524,4 +3524,53 @@ EOF = (* end of file *) ;
    6. ROUND TRIP. `parse(x)` serialized and deserialized MUST equal `parse(x)`.
       A serializer that loses a field is not a lossy convenience; it is a
       consumer breaking silently one document later.
+
+   7. THE DOCUMENT ROOT CARRIES EXACTLY THREE FIELDS -- NORMATIVE:
+      `type`, `children`, `srcByteLength`. Nothing else. An implementation MUST
+      NOT hang document-level data off the root; content goes in the tree,
+      where every other piece of content already lives.
+
+      Two things had drifted there. carve-js carried `frontmatter` and
+      `footnoteDefs`; carve-rb (over carve-rs) carried `frontmatter`. carve-php
+      carried neither, because it already put both in the tree (carve#411).
+
+      WHY THE TREE AND NOT THE ROOT. §4 requires every node except the root to
+      carry `pos`, on the grounds that a tree without positions can only be
+      re-parsed rather than navigated. A root FIELD cannot carry `pos`.
+      Frontmatter and a footnote definition are source constructs occupying
+      real bytes: an editor jumps to them, a formatter reproduces them, a
+      language server renames a label. Putting them on the root would make them
+      the only content in the document that cannot be navigated to. That
+      applies to frontmatter exactly as much as to a footnote body, which is
+      why the two do NOT split along a metadata/content line.
+
+      FRONTMATTER IS A BLOCK NODE, `type: "frontmatter"`, carrying:
+        format   the info word on the opening fence (`frontmatter_format` in
+                 PART 2), or `"yaml"` when the fence carries none
+        content  the text between the fences, VERBATIM
+      It is the FIRST child when present, since that is where it is written.
+
+      CONTENT IS RAW, NOT PARSED -- NORMATIVE. `content` is the source text.
+      An implementation MUST NOT emit parsed key/value pairs in its place:
+      parsing YAML or TOML is not the markup parser's job, the raw text plus
+      `format` lets any consumer do it, and a parsed map cannot represent a
+      document whose frontmatter is malformed. carve-rs holds a parsed map
+      internally; that is an internal choice, and §1 already requires mapping
+      on the way out rather than exporting internals.
+
+      A FOOTNOTE DEFINITION IS A BLOCK NODE, `type: "footnote"`, carrying:
+        label     the label as written, without the `[^` and `]:`
+        children  the definition body, parsed as blocks
+      `label`, not `id`: PART 9 §16 calls it a label throughout, and `id`
+      collides with the attribute of that name.
+
+      A DEFINITION IS A CHILD OF THE DOCUMENT even when it was authored inside
+      a container. PART 9 §16 already makes a definition document-level
+      metadata that is collected out of its blockquote or list item, leaving
+      that container empty; the serialized tree follows the same rule rather
+      than inventing a second one. Its `pos` still records where it was
+      WRITTEN, so nothing about navigation is lost by the move.
+
+      Definitions appear in DOCUMENT ORDER by source position. Numbering is a
+      resolution result and stays on the reference (§5).
 *)
