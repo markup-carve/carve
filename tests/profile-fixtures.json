@@ -53,5 +53,20 @@
         "carve": "- one\n- two\n",
         "profile": "minimal",
         "html": "<ul>\n  <li>one</li>\n  <li>two</li>\n</ul>\n"
+    },
+    "full-unmapped-type": {
+        "carve": "Body with a {~old~>new~} substitution and a :smile: symbol.\n",
+        "profile": "full",
+        "html": "<p>Body with a <del>old</del><ins>new</ins> substitution and a :smile: symbol.</p>\n"
+    },
+    "full-smart-typography": {
+        "carve": "A \"quoted\" phrase -- an en dash --- and an em dash.\n",
+        "profile": "full",
+        "html": "<p>A \u201cquoted\u201d phrase \u2013 an en dash \u2014 and an em dash.</p>\n"
+    },
+    "comment-substitution-degraded": {
+        "carve": "Body with a {~old~>new~} substitution.\n",
+        "profile": "comment",
+        "html": "<p>Body with a oldnew substitution.</p>\n"
     }
 }
