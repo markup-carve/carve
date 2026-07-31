@@ -23,8 +23,8 @@
   },
   "devDependencies": {
     "@markup-carve/carve": "github:markup-carve/carve-js#30aa1d8ce5143b71da21282eb51ad6f9c5d2b3a3",
-    "@markup-carve/carve-grammars": "github:markup-carve/carve-grammars",
-    "@markup-carve/vite-plugin-carve": "git+https://github.com/markup-carve/vite-plugin-carve.git",
+    "@markup-carve/carve-grammars": "github:markup-carve/carve-grammars#5a491cc843757b96273242ca596c67866b5d7d17",
+    "@markup-carve/vite-plugin-carve": "github:markup-carve/vite-plugin-carve#0cdfd0833bc79b0e224ad81424114b42ba135258",
     "@mermaid-lint/cli": "^0.35.0",
     "markdown-it-container": "^4.0.0",
     "ohm-js": "^17.5.0",
