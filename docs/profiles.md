@@ -184,7 +184,20 @@ author into a byline - which is why [Security](/security) PART 9 §25 requires a
 safe loader for it and escaping for any value later rendered. A profile that
 denies `frontmatter` keeps untrusted metadata out of that path entirely.
 
-A caller who denies one of these and diffs the HTML will see no change. Check
+**`escaped_text` reaches the same place by a different route.** It is not that
+it renders nothing - it renders the character. It is that `to_text` degrades it
+to that same character, so a denial and an allowance produce identical output:
+
+```
+carveToHtml("a \\* b")                          -> "<p>a * b</p>"
+carveToHtml("a \\* b", denyInline:escaped_text) -> "<p>a * b</p>"   + a violation
+```
+
+What a host learns by denying it is that the document used escapes at all -
+authoring intent the rendered character does not carry. The escape is syntax;
+the character is content.
+
+A caller who denies any of these and diffs the HTML will see no change. Check
 the tree or the violations instead.
 
 ### A profile is not a substitute for disabling raw-HTML passthrough
