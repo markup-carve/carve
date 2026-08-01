@@ -47,3 +47,25 @@ not a div
 not a div
 :::</p>
 ```
+
+```
+::::: outer
+
+:::: middle
+
+::: note
+X
+:::
+
+::::
+
+:::::
+.
+<div class="outer">
+  <div class="middle">
+    <aside class="admonition note">
+      <p>X</p>
+    </aside>
+  </div>
+</div>
+```

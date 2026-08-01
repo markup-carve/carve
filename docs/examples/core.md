@@ -2697,6 +2697,39 @@ not a div
 
 ::::
 
+A container's fence must be wider than every fence in its SUBTREE, not just the
+next level down. Three deep is where a one-level lookahead stops working: the
+outer two come out at equal width, and equal-width fences do not nest, so the
+middle container stops being nested (carve#442).
+
+:::::: compare
+
+```carve
+::::: outer
+
+:::: middle
+
+::: note
+X
+:::
+
+::::
+
+:::::
+```
+
+```html
+<div class="outer">
+  <div class="middle">
+    <aside class="admonition note">
+      <p>X</p>
+    </aside>
+  </div>
+</div>
+```
+
+::::::
+
 ## Definition lists
 
 `:: term` (one or more) then `:  definition` (one or more) form an entry,
