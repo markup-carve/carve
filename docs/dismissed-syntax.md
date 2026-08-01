@@ -28,6 +28,7 @@ Visit "Google"(https://google.com "Search engine") today.
 
 ---
 
+{#link-syntax-arrow}
 ## Link Syntax: `[text -> url]`
 
 **Proposed:**
@@ -47,6 +48,7 @@ Visit [Google -> https://google.com] for search.
 
 ---
 
+{#link-syntax-wiki}
 ## Link Syntax: `[[url | text]]`
 
 **Proposed (wiki-style):**

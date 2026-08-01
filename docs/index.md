@@ -1,4 +1,5 @@
 ---
+title: Carve
 layout: home
 
 hero:
