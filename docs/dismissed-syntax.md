@@ -464,6 +464,65 @@ reserved here, and a future proposal is free to use the slot on its own merits.
 
 ---
 
+## Mentions: a bracketed `@[Display Name]` form for labels with spaces
+
+**Proposed:**
+```
+cc @[Mark Scherer]
+cc @[Mark Scherer](/users/42)
+```
+
+**Rationale for proposal:**
+- A mention name is `name_word, {'.', name_word}` (PART 19), so it cannot hold a
+  space, an apostrophe or a slash. Real display names hold all three:
+  `Mark Scherer`, `o'brien`.
+- Editors store mentions that way. A ProseMirror/Tiptap mention node carries the
+  label the user picked plus an id, so an application bridging an editor to Carve
+  has a display name in hand and no form to write it in.
+- Brackets carrying a label is a convention Carve already has: `^[content]` for an
+  inline footnote, `:kbd[x]` for a semantic span, `[text]{.class}` for an
+  attributed one.
+- The opener looks unclaimed: `@[foo]` renders as literal text today.
+
+**Why rejected:**
+- **It supplies the wrong half.** A mention's name *is* its identity, not its
+  presentation - the AST publishes a mention as one field, its user, and a Tier-2
+  URL template interpolates that name into a URL. `@[Mark Scherer]` gives a label
+  and no key, so a configured template would build a profile URL out of a display
+  name.
+- **The two-slot form is already taken, and already useful.**
+  `@[Mark Scherer](/users/42)` parses today as a literal `@` followed by an
+  ordinary link, and all three engines render it identically as
+  `@<a href="/users/42">Mark Scherer</a>`. Giving it a new meaning would silently
+  change existing documents rather than claim empty space.
+- **The construct exists already, under the name that fits it.**
+  `[Mark Scherer]{.mention data-id=42}` and `[Mark Scherer](/users/42){.mention}`
+  both render as a classed span and anchor, and both round trip through source and
+  through the ProseMirror bridge with nothing dropped or degraded. A labeled
+  reference to a person is a span or a link that carries a class; the thing that
+  makes it a mention to a host is the class, which the host is styling and
+  resolving either way.
+- **A new inline form is never one production.** It would ripple through the
+  tree-sitter, TextMate, Prism and highlight.js grammars, every editor plugin, the
+  corpus, and all engines, to buy a spelling for something already spellable.
+
+**Decision:** Dismissed. A mention names an identifier. Where a document needs a
+display label bound to an identity, that is a span or a link carrying a class and
+attributes, and the mention syntax stays a name.
+
+This does **not** cover what a renderer should do when a label that is not a valid
+name reaches it anyway, through a bridge or a hand-built AST. Silently deleting the
+offending characters - turning `o'brien` into `obrien`, a different and plausible
+user - is a defect rather than a design; see markup-carve/carve-php#535.
+
+**The `@[` slot:** `@[` is **not** claimed by any construct. `@[foo]` is ordinary
+literal text in carve-php, carve-js and carve-rs alike. Note that the slot is only
+free while the bracket stands alone: `@` followed by a link is a real rendering
+today, so a future proposal may take `@[label]` on its own merits but cannot take
+`@[label](url)` without breaking documents.
+
+---
+
 ## Summary
 
 Most rejected ideas fall into these categories:
