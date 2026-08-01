@@ -53,6 +53,31 @@ An **`admonition`** is likewise its own type rather than a `div` carrying a
 class. A profile that wants to deny callouts while allowing generic
 containers has no way to express that if the kind lives in a class string.
 
+Which fences are callouts is the **Tier-1 canonical list** - `note`, `tip`,
+`warning`, `danger`, `info`, `success`, `example`, `quote`. A fence opened with
+any other word (`::: sidebar`, `::: figure-group`, a name your own extension
+claims) is a **generic container**: it renders as `<div class="name">` rather
+than an `<aside class="admonition name">`, and it is classified as **`div`** for
+profiles. So `denyBlock(['admonition'])` removes callouts and leaves those
+containers standing, which is the capability the paragraph above promises:
+
+```js
+const p = Profile.full()
+p.denyBlock(['admonition'])
+applyProfile(parse('::: note\nbody\n:::\n'), p).violations     // [{ nodeType: 'admonition', ... }]
+applyProfile(parse('::: sidebar\nbody\n:::\n'), p).violations  // []
+```
+
+This is a TRUST CLASS, not an AST type. A serialized AST publishes `::: sidebar`
+as an `admonition` node carrying `kind: "sidebar"`, because that is what the
+parser built; the profile classifies it as `div` because that is the capability
+it carries. The two vocabularies are different sizes and the next section says
+why - `tag` is the same shape, its own AST type classified as `mention`.
+
+Denying `div` still removes callouts, through the subtype rule: an `admonition`
+answers to its own name and to `div`. A host that wants today's "deny every
+named fence" behavior denies both.
+
 ### The AST has more node types than a profile can deny
 
 This page answers "what can a profile deny", which is a smaller set than "what
