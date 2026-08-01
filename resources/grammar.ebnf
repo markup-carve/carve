@@ -3376,41 +3376,14 @@ EOF = (* end of file *) ;
       spec surface for kind names. A document is
       `{"type":"document","children":[...]}`.
 
-      THE ROOT'S OWN FIELDS ARE FIXED -- NORMATIVE, and §7 states them:
-      `type`, `children`, `srcByteLength`, nothing else.
+      The root's own fields are fixed by §7: `type`, `children` and
+      `srcByteLength`, and nothing else.
 
         {"type":"document","children":[...],"srcByteLength":42}
 
       `srcByteLength` counts BYTES of the source, and is the one field here that
       is not codepoints (PART 12 §4) -- it answers "how much source was this",
       not "where in it".
-
-      This paragraph used to also put `frontmatter` and `footnoteDefs` on the
-      root, and §7 -- written a day later -- moved both into `children` as block
-      nodes. Both were marked NORMATIVE, so the section contradicted itself:
-      an implementer reading §2 built the shape §7 forbids. §7 is the rule; this
-      is the pointer to it.
-
-      The frontmatter CONTENT rule survived that move unchanged and is restated
-      in §7: `content` is the RAW block plus its format, never a parsed mapping.
-      Parsing YAML (or TOML, or JSON) is not this format's job, and a parsed map
-      cannot be serialized back to the bytes the author wrote -- key order,
-      comments and anchors are all gone.
-
-      This was left open once (carve#411) and the three engines answered
-      differently in three ways -- placement, spelling and CONTENT:
-
-        carve-js   root, `frontmatter` = {format, content}
-        carve-rb   root, `frontmatter` = the PARSED key/value mapping
-        carve-php  neither on the root; a `frontmatter` block and a `footnote`
-                   block inside `children`
-
-      The content disagreement is the one that matters most and the issue did
-      not record it: two engines publish a field of the same name holding
-      different data, so a consumer reading `frontmatter.content` gets a string
-      from one and `undefined` from the other. Placement at least fails loudly.
-
-      §7 settled it on carve-php's answer: both in the tree, as block nodes.
 
    3. FIELD NAMES ARE SPEC SURFACE, exactly as kind names are. The normative
       set per node type is the carve-js interface for that type. Notably:

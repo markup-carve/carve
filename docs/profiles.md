@@ -158,6 +158,35 @@ an allowlist is a closed set.
 follows `disallowedAction` (`error` reports a violation; `to_text`/`strip`
 truncate/flatten).
 
+### Some types are deniable in the tree but invisible in rendered output
+
+`comment` and `frontmatter` render nothing. Denying either removes the node
+from the tree and reports a violation, but the rendered HTML is **byte-identical
+either way**:
+
+```
+carveToHtml("%% hidden\n\nBody.\n")                   -> "<p>Body.</p>"
+carveToHtml("%% hidden\n\nBody.\n", denyBlock:comment) -> "<p>Body.</p>"
+```
+
+This is not a no-op, and the distinction matters because the two look the same
+from the render path. Denying them changes:
+
+- **the serialized AST** - the node is gone from `children`, which is what a
+  consumer of `parse()` sees. A pipeline that hands untrusted documents to a
+  PDF renderer, an LSP, or a converter gets the tree, not the HTML.
+- **the violation report** - under `error`, a host learns the document carried
+  metadata or side commentary it did not ask for, and can refuse it.
+
+Frontmatter is the case where this is load-bearing rather than tidy. Carve's own
+renderers never emit it, but hosts routinely do - a title into a template, an
+author into a byline - which is why [Security](/security) PART 9 §25 requires a
+safe loader for it and escaping for any value later rendered. A profile that
+denies `frontmatter` keeps untrusted metadata out of that path entirely.
+
+A caller who denies one of these and diffs the HTML will see no change. Check
+the tree or the violations instead.
+
 ### A profile is not a substitute for disabling raw-HTML passthrough
 
 A profile restricts node **types**; it does **not** by itself turn off raw-HTML
