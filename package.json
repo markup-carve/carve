@@ -5,8 +5,8 @@
   "type": "module",
   "description": "Documentation site for Carve, a post-Markdown markup language",
   "scripts": {
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
+    "docs:dev": "node scripts/publish-schema.mjs && vitepress dev docs",
+    "docs:build": "node scripts/publish-schema.mjs && vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "corpus:build": "node scripts/generate-corpus.mjs",
     "compare:impls": "node scripts/compare-impls.mjs",
@@ -17,15 +17,16 @@
     "bump-carve-pin": "node scripts/bump-carve-pin.mjs",
     "sync-carve-wasm": "node scripts/sync-carve-wasm.mjs",
     "lint:mermaid": "mermaid-lint --ext crv --quiet",
-    "test": "node --test tests/corpus.test.mjs tests/reference-build.test.mjs tests/optional-corpus.test.mjs tests/corpus-targets.test.mjs tests/normativity.test.mjs tests/examples.test.mjs tests/playground-extensions.test.mjs tests/node-vocabulary.test.mjs tests/fixture-bytes.test.mjs tests/roundtrip.test.mjs",
+    "test": "node --test tests/corpus.test.mjs tests/reference-build.test.mjs tests/optional-corpus.test.mjs tests/corpus-targets.test.mjs tests/normativity.test.mjs tests/examples.test.mjs tests/playground-extensions.test.mjs tests/node-vocabulary.test.mjs tests/ast-schema.test.mjs tests/fixture-bytes.test.mjs tests/roundtrip.test.mjs",
     "test:conformance": "npm run corpus:build && npm test",
     "examples:snapshot": "UPDATE_EXAMPLES=1 node --test tests/examples.test.mjs"
   },
   "devDependencies": {
-    "@markup-carve/carve": "github:markup-carve/carve-js#30aa1d8ce5143b71da21282eb51ad6f9c5d2b3a3",
+    "@markup-carve/carve": "github:markup-carve/carve-js#e170b59715c45214b2104ce6f4ed276aabf5b5b7",
     "@markup-carve/carve-grammars": "github:markup-carve/carve-grammars",
     "@markup-carve/vite-plugin-carve": "git+https://github.com/markup-carve/vite-plugin-carve.git",
     "@mermaid-lint/cli": "^0.35.0",
+    "ajv": "^8.20.0",
     "markdown-it-container": "^4.0.0",
     "ohm-js": "^17.5.0",
     "vitepress": "^1.5.0"

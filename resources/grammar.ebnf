@@ -3376,33 +3376,26 @@ EOF = (* end of file *) ;
       spec surface for kind names. A document is
       `{"type":"document","children":[...]}`.
 
-      THE ROOT'S OWN FIELDS ARE FIXED -- NORMATIVE. Beyond `type` and
-      `children` the root carries `srcByteLength` always, and carries
-      `frontmatter` and `footnoteDefs` exactly when the document has them. It
-      carries nothing else.
+      THE ROOT'S OWN FIELDS ARE FIXED -- NORMATIVE, and §7 states them:
+      `type`, `children`, `srcByteLength`, nothing else.
 
-        {"type":"document","children":[...],"srcByteLength":42,
-         "frontmatter":{"format":"yaml","content":"title: x"},
-         "footnoteDefs":{"r":[...]}}
-
-      `frontmatter` holds the RAW block and its format, not a parsed mapping.
-      Parsing YAML (or TOML, or JSON) is not this format's job, and a parsed map
-      cannot be serialized back to the bytes the author wrote -- key order,
-      comments and anchors are all gone. A consumer that wants the values runs
-      its own parser over `content`, which is the only form that keeps both
-      answers available.
+        {"type":"document","children":[...],"srcByteLength":42}
 
       `srcByteLength` counts BYTES of the source, and is the one field here that
       is not codepoints (PART 12 §4) -- it answers "how much source was this",
       not "where in it".
 
-      Frontmatter and footnote definitions sit on the ROOT rather than in
-      `children` because neither is a position in the document's flow. A
-      footnote definition renders where the REFERENCE to it appears, not where
-      it was written, and frontmatter renders nowhere at all. Putting either in
-      `children` gives it a place in a sequence it does not occupy: a consumer
-      walking `children` to render a document must then know to skip two of the
-      types it finds there.
+      This paragraph used to also put `frontmatter` and `footnoteDefs` on the
+      root, and §7 -- written a day later -- moved both into `children` as block
+      nodes. Both were marked NORMATIVE, so the section contradicted itself:
+      an implementer reading §2 built the shape §7 forbids. §7 is the rule; this
+      is the pointer to it.
+
+      The frontmatter CONTENT rule survived that move unchanged and is restated
+      in §7: `content` is the RAW block plus its format, never a parsed mapping.
+      Parsing YAML (or TOML, or JSON) is not this format's job, and a parsed map
+      cannot be serialized back to the bytes the author wrote -- key order,
+      comments and anchors are all gone.
 
       This was left open once (carve#411) and the three engines answered
       differently in three ways -- placement, spelling and CONTENT:
@@ -3416,6 +3409,8 @@ EOF = (* end of file *) ;
       not record it: two engines publish a field of the same name holding
       different data, so a consumer reading `frontmatter.content` gets a string
       from one and `undefined` from the other. Placement at least fails loudly.
+
+      §7 settled it on carve-php's answer: both in the tree, as block nodes.
 
    3. FIELD NAMES ARE SPEC SURFACE, exactly as kind names are. The normative
       set per node type is the carve-js interface for that type. Notably:

@@ -15,3 +15,6 @@ docs/superpowers/
 
 # Local scratch screenshots (browser-mcp / docs proofs)
 screenshots/
+
+# Generated at docs build from resources/ast-schema.json (scripts/publish-schema.mjs)
+docs/public/ast-schema.json

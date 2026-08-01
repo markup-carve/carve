@@ -9,8 +9,16 @@
  * `href`, carve-php calls it `destination` - and how a serializer can ship
  * without positions while the spec requires them.
  *
- * The reference is carve-js: its AST is plain data and PART 12 pins its shape.
- * Other engines are compared structurally against it.
+ * Every engine is checked against resources/ast-schema.json, the published
+ * encoding of that contract, plus the two things a schema cannot express:
+ * whether a node carries a POSITION at all, and whether the span it reports
+ * actually covers the text the node came from.
+ *
+ * carve-js is still the reference in the sense PART 12 §1 means - the schema
+ * describes its shape - but it is no longer the yardstick this script measures
+ * with. Comparing engines against whatever the reference happened to emit meant
+ * the reference could not itself be wrong, and a type it never emits was not
+ * checked at all.
  *
  *   node scripts/ast-conformance.mjs [--limit=N]
  *
@@ -22,18 +30,36 @@
  * quickly; CI should not pass one.
  *
  * Sibling checkouts, same convention as compare-impls.mjs:
- *   ../carve-js   (reference, required)
- *   ../carve-rb   (serializes carve-rs's tree through the Ruby binding)
- *   carve-php  (serializes through `bin/carve --json`)
+ *   ../carve-js    (reference, required)
+ *   ../carve-rs    (serializes through its own `carve --json`)
+ *   ../carve-rb    (serializes carve-rs's tree through the Ruby binding)
+ *   ../carve-php   (serializes through `bin/carve --json`)
  */
 
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { Ajv2020 } from 'ajv/dist/2020.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
+
+/*
+ * The published contract, as data: resources/ast-schema.json.
+ *
+ * This used to be a hand-rolled comparison against whatever the reference
+ * happened to emit over the corpus - so a field the reference never produced in
+ * 504 documents was unchecked, and a node type the reference does not emit at
+ * all was skipped in silence (`if (!reference) continue`). An engine could
+ * publish `definition_term` nodes, or a `mention` carrying four extra internal
+ * fields, and this script had nothing to say.
+ *
+ * The schema is checked against the reference in tests/ast-schema.test.mjs, so
+ * "the schema says X" and "the reference does X" cannot drift apart quietly.
+ */
+const schema = JSON.parse(readFileSync(resolve(root, 'resources/ast-schema.json'), 'utf8'))
+const validateSchema = new Ajv2020({ allErrors: true, strict: true }).compile(schema)
 
 const limitArg = process.argv.find((a) => a.startsWith('--limit='))
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) : Infinity
@@ -60,6 +86,7 @@ const satelliteLimit = satelliteLimitArg
 
 const jsDir = process.env.CARVE_JS_DIR ?? resolve(root, '../carve-js')
 const rbDir = process.env.CARVE_RB_DIR ?? resolve(root, '../carve-rb')
+const rsDir = process.env.CARVE_RS_DIR ?? resolve(root, '../carve-rs')
 const phpDir = process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php')
 
 /*
@@ -84,39 +111,6 @@ const DISPLAY_LIMIT = 8
 
 const POS_KEYS = ['startLine', 'endLine', 'startColumn', 'endColumn', 'startOffset', 'endOffset']
 
-/** The node-type vocabulary, read from the spec rather than restated here. */
-function vocabulary() {
-  const profiles = readFileSync(resolve(root, 'docs/profiles.md'), 'utf8')
-  const types = new Set()
-  for (const label of ['Block', 'Inline']) {
-    const section = profiles.match(new RegExp(`\\*\\*${label}:\\*\\*([\\s\\S]*?)\\n\\n`))
-    if (!section) continue
-    for (const m of section[1].matchAll(/`([a-z_]+)`/g)) types.add(m[1])
-  }
-  // Types the vocabulary paragraphs do not list because they are not
-  // profile-deniable. profiles.md answers "what can a profile deny", which is a
-  // SMALLER set than "what appears in the AST" - so PART 12 §2's "the node-type
-  // identifier from profiles.md" reads tighter than the tree actually is.
-  //
-  //   document            the root, which no profile denies
-  //   smart_punctuation   PART 9 §8 folds it into the `text` trust class
-  //   literal_inline      likewise
-  //   tag                 profiles.md classifies `#tag` as `mention` on purpose,
-  //                       since `@user` and `#tag` are one trust class - but the
-  //                       AST keeps them distinct and every engine emits `tag`
-  //   abbreviation_def    the definition line renders nothing, so denying it
-  //                       would mean nothing; the inline `abbreviation` it feeds
-  //                       is what a profile controls
-  types.add('document')
-  types.add('smart_punctuation')
-  types.add('literal_inline')
-  types.add('tag')
-  types.add('abbreviation_def')
-  return types
-}
-
-const KNOWN_TYPES = vocabulary()
-
 function* walk(node, path = '$') {
   if (Array.isArray(node)) {
     for (const [i, child] of node.entries()) yield* walk(child, `${path}[${i}]`)
@@ -131,46 +125,56 @@ function* walk(node, path = '$') {
 }
 
 /**
- * PART 12 section 2: the root carries `type`, `children` and `srcByteLength`,
- * plus `frontmatter` and `footnoteDefs` when the document has them, and nothing
- * else.
+ * Shape, against the published schema.
  *
- * Checked separately from the per-type shape comparison because the root is the
- * one node with no other node of its type to compare against - which is exactly
- * why the engines diverged here unnoticed: carve-php dropped a document's
- * frontmatter and footnote definitions on the way out, and carve-rb spelled two
- * root fields `source_len` and `footnote_defs` (carve#411).
+ * Covers the root (PART 12 §7: `type`, `children`, `srcByteLength`, nothing
+ * else), every node's field set, and the type identifiers themselves. The root
+ * needs a rule of its own precisely because it is the one node with no sibling
+ * of its type to compare against, which is how the engines diverged there
+ * unnoticed: carve-php dropped a document's frontmatter and footnote
+ * definitions on the way out, and carve-rb spelled two root fields
+ * `source_len` and `footnote_defs` (carve#411).
  */
-const ROOT_REQUIRED = ['type', 'children', 'srcByteLength']
-const ROOT_OPTIONAL = ['frontmatter', 'footnoteDefs']
+function checkShape(doc, findings) {
+  if (validateSchema(doc)) return
+  for (const error of validateSchema.errors ?? []) {
+    // `must match "then" schema` is ajv reporting the if/then dispatch failing
+    // as a whole; the specific reason is already in the list beside it.
+    if (error.keyword === 'if') continue
+    const extra = error.params?.additionalProperty ? ` (${error.params.additionalProperty})` : ''
+    findings.push(`schema: ${error.instancePath || '/'} ${error.message}${extra}`)
+  }
+}
 
-function checkRoot(doc, source, findings) {
-  for (const key of ROOT_REQUIRED) {
-    if (!(key in doc)) findings.push(`root is missing "${key}" (PART 12 section 2)`)
-  }
-  // "Optional" means optional to the DOCUMENT, not to the engine. A source that
-  // opens with a frontmatter fence must come back with `frontmatter`, or the
-  // serializer has silently dropped content - the failure carve#411 found in
-  // carve-php, and one a presence-only check cannot see.
-  if (/^---\r?\n/.test(source) && !('frontmatter' in doc)) {
-    findings.push('source has frontmatter but the root does not carry it (PART 12 section 2)')
-  }
-  for (const key of Object.keys(doc)) {
-    if (!ROOT_REQUIRED.includes(key) && !ROOT_OPTIONAL.includes(key)) {
-      findings.push(`root carries "${key}", which PART 12 section 2 does not describe`)
-    }
+/**
+ * Content the schema cannot see: a document whose SOURCE has frontmatter must
+ * come back with a frontmatter node.
+ *
+ * A serializer that drops the block entirely produces a perfectly valid
+ * document - which is the failure carve#411 found in carve-php, and one no
+ * shape check can catch.
+ */
+function checkFrontmatterSurvives(doc, source, findings) {
+  if (!/^---\r?\n/.test(source)) return
+  const hasNode = Array.isArray(doc.children) && doc.children.some((n) => n?.type === 'frontmatter')
+  // The pre-§7 root form still counts as carrying it, so an engine that has not
+  // moved it into the tree is reported ONCE by the schema rather than twice.
+  if (!hasNode && !('frontmatter' in doc)) {
+    findings.push('source has frontmatter but the tree does not carry it (PART 12 section 7)')
   }
 }
 
 function checkDocument(doc, source, findings) {
-  checkRoot(doc, source, findings)
+  checkShape(doc, findings)
+  checkFrontmatterSurvives(doc, source, findings)
   // Offsets are codepoint indices (PART 12 §4), so the source has to be indexed
   // the same way to check them.
   const codepoints = [...source]
   for (const [node, path] of walk(doc)) {
-    if (!KNOWN_TYPES.has(node.type)) {
-      findings.push(`unknown node type "${node.type}" at ${path}`)
-    }
+    // An unknown type is the schema's job now (it enumerates them, and the
+    // enumeration is checked against docs/profiles.md in
+    // tests/ast-schema.test.mjs). Checking it here too reported one defect
+    // twice, in two wordings.
     const pos = node.pos
     if (pos === undefined) {
       // The document root is exempt: it spans the whole source by definition
@@ -227,17 +231,6 @@ function checkDocument(doc, source, findings) {
   }
 }
 
-/** Field names per node type, so another engine can be compared against them. */
-function shapeOf(doc) {
-  const shape = new Map()
-  for (const [node] of walk(doc)) {
-    const keys = Object.keys(node).filter((k) => k !== 'pos').sort().join(',')
-    if (!shape.has(node.type)) shape.set(node.type, new Set())
-    shape.get(node.type).add(keys)
-  }
-  return shape
-}
-
 const corpusDir = resolve(root, 'tests/corpus')
 
 /**
@@ -275,12 +268,22 @@ if (!existsSync(resolve(jsDir, 'dist/index.js'))) {
 }
 const lib = await import(resolve(jsDir, 'dist/index.js'))
 
+if (typeof lib.toAstJson !== 'function') {
+  console.error(`the build at ${jsDir} has no toAstJson - it predates PART 12 serialization.`)
+  process.exit(2)
+}
+
 const jsFindings = []
-const referenceShape = new Map()
 for (const { name, source } of samples) {
   let doc
   try {
-    doc = lib.parse(source)
+    // The SERIALIZED form, not the runtime tree. They differ: this engine keeps
+    // frontmatter and footnote definitions on the root at runtime and maps them
+    // into `children` on the way out, exactly as PART 12 §1 requires of an
+    // implementation whose internals differ. Checking the runtime tree measured
+    // a shape no consumer ever receives, and so could not see the wire form
+    // every other engine here is measured against.
+    doc = lib.toAstJson(lib.parse(source))
   } catch (error) {
     jsFindings.push(`${name}: parse threw - ${error.message}`)
     continue
@@ -292,13 +295,48 @@ for (const { name, source } of samples) {
   if (JSON.stringify(round) !== JSON.stringify(doc)) {
     jsFindings.push(`${name}: JSON round trip is not identity`)
   }
-
-  for (const [type, keysets] of shapeOf(doc)) {
-    if (!referenceShape.has(type)) referenceShape.set(type, new Set())
-    for (const k of keysets) referenceShape.get(type).add(k)
-  }
 }
 report('carve-js (reference)', jsFindings)
+
+// ---- carve-rs: serializes through its own `carve --json` --------------------
+//
+// Reached DIRECTLY now rather than only through carve-rb. The binding used to be
+// the only route, which meant a finding could belong to either side and the
+// report could not say which - and any engine over carve-rs that is not Ruby
+// (carve-go, carve-py, carve-wasm) was measured by proxy or not at all.
+//
+// Uses an already-built binary rather than `cargo run`, so a checkout that has
+// not been built says so instead of silently compiling for two minutes.
+const rsBinary = ['target/release/carve', 'target/debug/carve']
+  .map((p) => resolve(rsDir, p))
+  .find((p) => existsSync(p))
+if (rsBinary) {
+  const rsFindings = []
+  for (const { name, source } of satelliteSamples) {
+    let doc
+    try {
+      doc = JSON.parse(
+        execFileSync(rsBinary, ['--json'], {
+          input: source,
+          encoding: 'utf8',
+          // Capture stderr rather than letting it through: an engine that
+          // refuses every document would otherwise print 500 identical lines
+          // over the report instead of one counted finding.
+          stdio: ['pipe', 'pipe', 'pipe'],
+        }),
+      )
+    } catch (error) {
+      rsFindings.push(`${name}: could not serialize - ${String(error.message).split('\n')[0]}`)
+      continue
+    }
+    checkDocument(doc, source, rsFindings)
+  }
+  report(`carve-rs (over ${rsBinary.replace(rsDir + '/', '')}, ${satelliteSamples.length} documents)`, rsFindings)
+} else if (existsSync(rsDir)) {
+  console.log('carve-rs: checkout found but not built (cargo build --release), not checked\n')
+} else {
+  console.log('carve-rs: checkout not found, not checked\n')
+}
 
 // ---- carve-rb: serializes carve-rs's tree ----------------------------------
 if (existsSync(resolve(rbDir, 'lib/carve'))) {
@@ -309,7 +347,13 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
       const out = execFileSync(
         'ruby',
         ['-Ilib', '-e', 'require "carve"; require "json"; puts JSON.generate(Carve.parse(STDIN.read))'],
-        { cwd: rbDir, input: source, encoding: 'utf8', env: { ...process.env } },
+        {
+          cwd: rbDir,
+          input: source,
+          encoding: 'utf8',
+          env: { ...process.env },
+          stdio: ['pipe', 'pipe', 'pipe'],
+        },
       )
       doc = JSON.parse(out)
     } catch (error) {
@@ -317,15 +361,6 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
       continue
     }
     checkDocument(doc, source, rbFindings)
-    for (const [type, keysets] of shapeOf(doc)) {
-      const reference = referenceShape.get(type)
-      if (!reference) continue
-      for (const keys of keysets) {
-        if (!reference.has(keys)) {
-          rbFindings.push(`${name}: "${type}" fields [${keys}] not in the reference shape`)
-        }
-      }
-    }
   }
   report(`carve-rb (over carve-rs, ${satelliteSamples.length} documents)`, rbFindings)
 } else {
@@ -349,6 +384,7 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
         input: source,
         encoding: 'utf8',
         env: { ...process.env },
+        stdio: ['pipe', 'pipe', 'pipe'],
       })
       doc = JSON.parse(out)
     } catch (error) {
@@ -356,15 +392,6 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
       continue
     }
     checkDocument(doc, source, phpFindings)
-    for (const [type, keysets] of shapeOf(doc)) {
-      const reference = referenceShape.get(type)
-      if (!reference) continue
-      for (const keys of keysets) {
-        if (!reference.has(keys)) {
-          phpFindings.push(`${name}: "${type}" fields [${keys}] not in the reference shape`)
-        }
-      }
-    }
   }
   report(`carve-php (over bin/carve --json, ${satelliteSamples.length} documents)`, phpFindings)
 } else if (existsSync(phpDir)) {
