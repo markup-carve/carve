@@ -228,9 +228,20 @@ function renderBlock(b, depth, ctx) {
       // a heading inside a container: no section wrapper (SS13 wraps
       // top-level headings only); the id lands on the <h*> itself
       const html = renderInline(b.text)
-      const id = ctx.slug(b.text.replace(/<\/#[^>]*>/g, '').replace(/[ \t]+$/, ''))
+      // PART 10 SS1: the author's own attributes keep their source order,
+      // and a GENERATED attribute joins at the end. So an authored {#id}
+      // renders in place through renderBlockAttrs, while an auto slug is
+      // appended after everything the author wrote.
+      let authored = null
+      for (const list of b.battrs ?? []) {
+        for (const a of list) if (a[0] === 'id') authored = a[1]
+      }
+      const attrStr = b.battrs ? renderBlockAttrs(b.battrs) : ''
+      const id =
+        authored ?? ctx.slug(b.text.replace(/<\/#[^>]*>/g, '').replace(/[ \t]+$/, ''))
       ctx.headingIds.set(id.toLowerCase(), { id, html })
-      return `${pad}<h${b.level} id="${escapeAttr(id)}">${html}</h${b.level}>`
+      const idAttr = authored === null ? ` id="${escapeAttr(id)}"` : ''
+      return `${pad}<h${b.level}${attrStr}${idAttr}>${html}</h${b.level}>`
     }
     case 'footnotes-placement':
       return '\uE000fnplacement\uE001'

@@ -44,6 +44,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   survive the wrapper being switched off - the id returns to the `<h*>` and
   nothing else moves, leaving one placement rule for the whole document.
 
+- **PART 10 §1 says where a generated attribute goes** (carve#427). The author's
+  own attributes keep their source order and anything the engine minted follows
+  them, so an unwrapped heading renders `<h1 a="b" class="c" id="Auto">` for an
+  auto slug and `<h1 id="x" a="b">` for an id the author wrote. Provenance is
+  the discriminator, not the attribute's name.
+
+  All three engines disagreed here, with nothing able to catch it: carve-js
+  appended a generated id but left an authored one in place, carve-php put the
+  id last in both cases, carve-rs put it first in both. No two agreed on both
+  cases. The combination was reachable only through a heading inside a
+  container, and no corpus case gave such a heading attributes - so each engine
+  picked an answer and stayed green. The executable spec was a fourth answer
+  again: it dropped the attributes entirely. carve-js is canonical; the rest
+  converge on it.
+
+  The `sections` switch is what surfaced this. With it off every heading takes
+  the unwrapped path, so a divergence that used to require a blockquote would
+  have shipped on ordinary documents.
+
 - **PART 11 R1 describes the implicit heading fallback it always had**
   (carve#427). A `[text][]` that matches no link definition resolves against the
   document's headings by their rendered text. The rule was documented in prose

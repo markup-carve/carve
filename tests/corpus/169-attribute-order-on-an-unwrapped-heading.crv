@@ -1,0 +1,10 @@
+> {a=b .c}
+> # Auto
+
+> {#x a=b}
+> # Written
+
+:::
+{a=b .c}
+# Divved
+:::

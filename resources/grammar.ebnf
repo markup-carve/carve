@@ -3027,6 +3027,35 @@ EOF = (* end of file *) ;
       stays on the <h*> with the rest.) A mandatory base class (math `math inline|display`) is
       prepended to that class slot.
 
+      A GENERATED ATTRIBUTE JOINS AT THE END. The two rules above cover
+      an all-authored Attrs and an all-programmatic one; the MIXED case
+      is a generated attribute added to attributes the author wrote, and
+      it takes the authored order first, then the generated attribute.
+      In practice this is one attribute -- the auto-slug id an unwrapped
+      heading carries (§13):
+        > {a=b .c}      -> <h1 a="b" class="c" id="Auto">
+        > # Auto
+      An attribute the author WROTE keeps its authored position even
+      when it is the id, because it is not generated:
+        > {#x a=b}      -> <h1 id="x" a="b">
+        > # Written
+      So the discriminator is provenance, not the attribute's name: the
+      author's own order is never rearranged, and anything the engine
+      minted follows it. Pinned by the corpus.
+
+      This rule was added after all three engines were found to disagree
+      here with nothing to catch it -- carve-js appended a generated id
+      but kept an authored one in place, carve-php put the id last in
+      both cases, carve-rs put it first in both. No two agreed on both
+      cases. The combination was reachable only through a heading inside
+      a container, which no corpus case gave attributes, so each engine
+      picked a different answer and stayed green. carve-js is canonical
+      here (PART 9 §13 and the corpus follow it); carve-php and carve-rs
+      converge on it. The `sections` option is what forced the issue:
+      with it off every heading takes the unwrapped path, so a
+      divergence that used to need a blockquote would have shown up on
+      ordinary documents.
+
    2. ATTRIBUTE QUOTING + ESCAPING. Attribute values are double-quoted.
       In an attribute value escape `&`->&amp;, `<`->&lt;, `>`->&gt;,
       `"`->&quot;, `'`->&apos;. In text/content escape `&`,`<`,`>` (NOT
