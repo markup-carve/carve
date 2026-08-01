@@ -38,7 +38,9 @@ Read this first.
 :::
 ```
 
-renders the heading as `<h2 class="featured">` inside `<section id="install">` (an explicit heading id hoists to the `<section>` wrapper, PART 9 §13) and the admonition as `<aside class="admonition note callout">`.
+renders the heading as `<h2 class="featured">` inside `<section id="install">` and the admonition as `<aside class="admonition note callout">`.
+
+The split in that first line is the rule, not a quirk of this example: on a top-level heading the **id** hoists to the `<section>` wrapper and **every other attribute stays on the `<h*>`** (PART 9 §13). It makes no difference whether the id was written as `{#install}` or slugged from the heading text - both hoist. The id names the region a `#fragment` URL targets, and that region is the section; `.featured` describes the heading the author wrote it on, so a subtree-wide class belongs on a div instead. A heading inside a container (blockquote, div, list item) gets no wrapper at all, so there its id stays on the `<h*>` with the rest.
 
 This is uniform across every block - headings, block quotes, lists, code blocks, divs/admonitions, line-blocks, local hard-break blocks, tables. They all take their attributes on the preceding line; none take a trailing attribute on the block's own line. (For a code block the fence line accepts only structured metadata - `lang`, optional `"header"`, optional `[label]`, in that order. A `:::` container fence takes the same two metadata tokens after its type word - see [Container fences: titles and labels](#container-fences-titles-and-labels) below. A trailing `{…}` after the language word makes the line *not a fence at all*; the backticks then fall back to ordinary inline parsing. For a heading, a trailing `{…}` is ordinary inline text. Put the attributes on the line above, like any other block.)
 

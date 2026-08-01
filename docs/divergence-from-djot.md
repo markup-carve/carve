@@ -83,6 +83,38 @@ replaces every other ASCII run with a single `-` (`# a; b: c` → `a-b-c`,
 `# C++ & Rust` → `C-Rust`). An allowlist gives cleaner, more predictable
 anchors than enumerating punctuation to drop.
 
+## 1c. Only the id hoists to the `<section>` wrapper
+
+Both languages wrap a top-level heading, and the content following it, in a
+`<section>` that carries the heading's id. They disagree about the heading's
+*other* attributes.
+
+**Djot:** the resolution recorded in `jgm/djot.js#43` is that all of a heading's
+attributes migrate to the section. The implementation applies that only when the
+heading carries an explicit `{#id}`; with an auto-generated id the non-id
+attributes stay on the heading, so djot's two cases contradict each other and
+each other's stated rule (`jgm/djot.js#144`, open).
+
+**Carve:** the id hoists, everything else stays on the `<h*>`, and the two id
+cases agree:
+
+```
+{a=b .c}      →  <section id="abc"><h1 a="b" class="c">abc</h1></section>
+# abc
+
+{a=b .c #x}   →  <section id="x"><h1 a="b" class="c">abc</h1></section>
+# abc
+```
+
+The id is the one attribute that is about the *region*: it names what a
+`#fragment` URL scrolls to, and that is the section. The rest describe the
+heading the author attached them to - `{.featured}` marks the heading, and an
+author who wants to style the whole subtree writes a div around it. Keeping the
+rule independent of how the id was produced also means it survives the wrapper
+being switched off: with `sections: false` (PART 9 §13) the id simply returns to
+the `<h*>` and nothing else moves, which is already how every heading inside a
+blockquote, div, or list item renders in both languages.
+
 ## 2. A list marker must have content
 
 **Djot / CommonMark:** a bare `-` (or `- ` with only trailing whitespace) starts

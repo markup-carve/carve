@@ -7,7 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **An optional `sections` switch on the HTML renderer** (carve#427). Setting it
+  to `false` renders headings flat, with the id back on the `<h*>` and the blocks
+  that would have been section children left as siblings. The default is
+  unchanged and is what the corpus pins; the switch is HTML-only, because no
+  other target emits `<section>` and the AST has no `section` node.
+
+  The wrapper is the one output change that breaks sites whose source migrated
+  cleanly: any CSS or JS assuming rendered blocks are direct children of the
+  content container - the `.stack > * + *` spacing idiom, `:first-child`,
+  `nth-child()` counting, `element.children` walks - stops matching once a
+  `<section>` sits in between. Djot users can unwrap the node with a filter.
+  Carve users cannot, because Carve synthesizes the element at render time from
+  a flat AST, so there is nothing to intercept - which left HTML post-processing
+  as the only escape.
+
+  Now specified rather than left to engines; no engine ships it yet, so the
+  optional-corpus case for it is visible as skipped.
+
 ### Changed
+
+- **PART 9 §13 says where non-id heading attributes go, and what containers do**
+  (carve#427). Two rules every engine already implemented, neither of which the
+  spec stated. On a top-level heading the id hoists to the `<section>` and every
+  other attribute stays on the `<h*>`, identically for a slugged and a written
+  id. A heading inside a blockquote, div, admonition, or list item is not
+  wrapped at all: it emits `<h* id="…">` in place, still slugged, still sharing
+  the one dedup namespace, still a `</#id>` target.
+
+  Djot resolved the first question the other way (all attributes migrate to the
+  section) and then implemented that only when an explicit id is present, so its
+  two id cases contradict each other and its own stated rule
+  (`jgm/djot.js#144`). Carve's two cases agree, which is what lets the rule
+  survive the wrapper being switched off - the id returns to the `<h*>` and
+  nothing else moves, leaving one placement rule for the whole document.
+
+- **PART 11 R1 describes the implicit heading fallback it always had**
+  (carve#427). A `[text][]` that matches no link definition resolves against the
+  document's headings by their rendered text. The rule was documented in prose
+  and implemented in every engine, but the resolution pass never mentioned it -
+  including the parts a second implementation cannot guess: link definitions win
+  a tie, matching folds case and collapses whitespace (unlike the exact,
+  case-sensitive link-definition matching in the same rule), and a heading with
+  a blockquote ancestor is declined in either nesting order.
+
 
 - **PART 12 §4: position tracking may be opt-in, serialization may not.** An
   implementation may gate position tracking behind a parse option and must

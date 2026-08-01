@@ -276,7 +276,7 @@ the [Case Study](https://markup-carve.github.io/carve/case-study/) and the
 | Wiki-style links | n/a (no auto wiki links) | `[Page Name][]` (reference link; needs a `[Page Name]: url` definition) | `[Page Name][]` (auto-resolves, no definition) |
 | Cross-references | n/a (manual `[](#id)`) | n/a (manual `[](#id)`) | `</#id>` (auto-fills link text from the target heading) |
 | Heading IDs | n/a (auto only on some renderers, e.g. GitHub) | Auto-generated (Unicode, case-preserving) | Auto-generated (Unicode, case-preserving, CSS-selector-safe; case-insensitive references; opt-in lowercase + ASCII fold) |
-| Heading structure | n/a (flat `<h1>`–`<h6>`, no wrappers) | `<section id="…"><h*>…</h*></section>` with level-aware nesting | `<section id="…"><h*>…</h*></section>` with level-aware nesting (matches djot — id on `<section>`, not on `<h*>`) |
+| Heading structure | n/a (flat `<h1>`–`<h6>`, no wrappers) | `<section id="…"><h*>…</h*></section>` with level-aware nesting | `<section id="…"><h*>…</h*></section>` with level-aware nesting; only the id hoists, other attributes stay on the `<h*>`; optional `sections: false` renders flat with the id back on the `<h*>` |
 
 ### Lists & tables
 

@@ -157,6 +157,11 @@
       "feature": "markdown-typography-source",
       "target": "markdown",
       "description": "With the optional Markdown-renderer setting that emits the author source run instead of the glyph, quotes, dashes and the ellipsis stay as the ASCII that was typed (PART 9 section 8; carve#360)."
+    },
+    {
+      "slug": "32-section-wrapper-off",
+      "feature": "section-wrapper-off",
+      "description": "With the optional HTML-renderer sections switch set to false, no <section> is emitted: each heading carries the id it would have hoisted, alongside its other attributes, and the blocks that would have been section children stay siblings. Ids, dedup, crossrefs and implicit heading references are unchanged, and a heading inside a container renders exactly as it does with the wrapper on (PART 9 section 13; carve#427)."
     }
   ]
 }

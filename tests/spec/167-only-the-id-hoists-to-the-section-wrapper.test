@@ -1,0 +1,16 @@
+Only the id hoists to the section wrapper
+
+```
+{a=b .c}
+# Auto slug
+
+{a=b .c #explicit}
+# Written id
+.
+<section id="Auto-slug">
+  <h1 a="b" class="c">Auto slug</h1>
+</section>
+<section id="explicit">
+  <h1 a="b" class="c">Written id</h1>
+</section>
+```

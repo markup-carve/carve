@@ -1,0 +1,12 @@
+{a=b .c}
+# Auto slug
+
+Body.
+
+## Nested level
+
+More.
+
+> # Quoted
+
+See </#Auto-slug> and [Nested level][].

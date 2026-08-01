@@ -2239,8 +2239,66 @@ EOF = (* end of file *) ;
         `<section>`, not on the `<h*>`. The dedup namespace (syntax.md
         §4.1 / heading-id-tracker rules) is unchanged -- explicit ids are
         reserved before auto-ids in document order.
+      - ATTRIBUTES OTHER THAN THE ID STAY ON THE `<h*>`. The id is the
+        only attribute that hoists, and it hoists the same way whether
+        it was written (`{#x}`) or slugged from the heading text:
+          {a=b .c}       -> <section id="abc"><h1 a="b" class="c">
+          # abc
+          {a=b .c #x}    -> <section id="x"><h1 a="b" class="c">
+          # abc
+        The id hoists because it names the region a fragment URL
+        targets, and that region is the section. Every other attribute
+        describes the heading the author wrote it on: `{.featured}`
+        marks the heading, not the whole subtree beneath it -- an
+        author who wants the subtree has a div (PART 2, `div_open`).
+        This is a KNOWN DIVERGENCE from djot, which resolved
+        `jgm/djot.js#43` the other way (all attributes migrate to the
+        section) and then implemented that resolution only when an
+        explicit id is present, so djot's two id cases disagree with
+        each other (`jgm/djot.js#144`). Carve's two cases agree. See
+        divergence-from-djot.md.
+      - HEADINGS INSIDE CONTAINERS DO NOT WRAP. The algorithm walks
+        TOP-LEVEL blocks (and the sections it opens), so a heading
+        inside a blockquote, div, admonition, list item, definition,
+        table cell, or footnote definition emits a bare `<h* id="...">`
+        with the id ON THE HEADING and no `<section>` around it. A
+        `<section>` models THIS document's outline: quoted material
+        carries another document's outline, and a div or list item is
+        author grouping within one section rather than a new one.
+        Everything else about such a heading is unchanged -- it is
+        slugged, it shares the one document-order dedup namespace with
+        top-level headings (`# abc` then `> # abc` gives `abc` then
+        `abc-2`), and it is a valid `</#id>` crossref target. The one
+        exception is the implicit `[Heading][]` reference index, which
+        declines headings under a blockquote (PART 11 R1).
+        Consequence worth stating: when the `sections` option below is
+        off, the top-level shape becomes identical to this one, so id
+        placement and attribute placement follow ONE rule everywhere in
+        the document.
       - Empty document or doc with no headings: zero <section> elements
         are emitted.
+      - THE `sections` RENDER OPTION. A host MAY offer a boolean
+        `sections` option on the HTML renderer. It defaults to TRUE
+        (this section's behavior), and the conformance corpus pins the
+        default. When FALSE the renderer emits NO `<section>` element:
+        each heading emits `<h{N} id="{slug}">` carrying the id it
+        would otherwise have hoisted, alongside its other attributes,
+        and the blocks that would have been the section's children stay
+        where they are as siblings -- which also means they lose the
+        two-space indentation PART 10 §4 gives a container's children,
+        because they no longer have that container.
+          # A          sections: true      sections: false
+          p            <section id="A">    <h1 id="A">A</h1>
+                         <h1>A</h1>        <p>p</p>
+                         <p>p</p>
+                       </section>
+        Nothing else changes. Ids, the dedup namespace, `</#id>`
+        crossrefs, implicit `[Heading][]` references, `::: toc`,
+        endnotes placement (§16), and HeadingNumbers all resolve
+        against the SLUG rather than against the element that carries
+        it, so they behave identically under either setting. The option
+        is HTML-only: no other render target emits `<section>`, and the
+        AST has no `section` node for it to affect (PART 12).
       - The two-pass id resolution (collect explicit ids first, then
         auto-slug headings with collision-dedup) is unaffected by this
         rule -- only the EMISSION site of the id moves from <h*> to
@@ -2901,6 +2959,28 @@ EOF = (* end of file *) ;
       attributes transfer to the link; link attributes override per key.
       Unresolved -> the bracketed run renders as literal source text. Carve
       has NO shortcut reference: a bare [label] never resolves (PART 9 §14).
+      IMPLICIT HEADING FALLBACK: a [text][] whose label matches no
+      linkDefs entry falls back to the heading index -- the document's
+      headings keyed by their rendered plain text -- and resolves to
+      `#{slug}` of the FIRST heading with that text. linkDefs WINS on a
+      tie, so an explicit `[label]: url` definition always beats a
+      same-named heading. Matching against the heading index is LOOSER
+      than the linkDefs matching above: the label and the heading text
+      are both trimmed, their internal whitespace runs collapsed to one
+      space, and then compared case-INSENSITIVELY, so `[getting
+      started][]` finds `# Getting Started`. That asymmetry is
+      deliberate -- a linkDefs label is an identifier the author wrote
+      twice and can keep identical, while a heading ref is prose the
+      author is quoting from elsewhere in the document. The index holds
+      headings at top level and
+      inside divs, admonitions, list items, and definitions, but
+      DECLINES any heading with a blockquote ancestor, in either
+      nesting order: quoted text names the quoted document's headings,
+      not this document's, and a quotation is the one container whose
+      wording an author does not control. Declining it here does not
+      make such a heading unreachable -- it is still slugged, still
+      deduped in the one namespace, and still a `</#id>` crossref
+      target (R4), which addresses it by id rather than by wording.
    R2 FOOTNOTES (rendering in PART 9 §16). A [^label] use with a matching
       footnoteDefs entry is numbered by FIRST-REFERENCE order from
       footnoteSeq; repeat references reuse the number (k-th repeat gets
@@ -2941,8 +3021,10 @@ EOF = (* end of file *) ;
       recorded order falls back to a fixed `class`, then `id`, then
       key=value order. All classes accumulate (space-joined) into one
       `class` slot at its first-appearance position. An element with no
-      effective attributes emits none. (Heading ids move to <section>,
-      §13.) A mandatory base class (math `math inline|display`) is
+      effective attributes emits none. (A top-level heading's id moves
+      to <section> and its other attributes do not, §13; with the
+      `sections` option off, or for a heading inside a container, the id
+      stays on the <h*> with the rest.) A mandatory base class (math `math inline|display`) is
       prepended to that class slot.
 
    2. ATTRIBUTE QUOTING + ESCAPING. Attribute values are double-quoted.
