@@ -58,9 +58,9 @@ containers has no way to express that if the kind lives in a class string.
 This page answers "what can a profile deny", which is a smaller set than "what
 appears in the tree". A serialized AST (PART 12) therefore carries type names
 this vocabulary does not list - `tag`, `abbreviation_def`, `smart_punctuation`,
-`literal_inline` and the `document` root - because denying them would mean
-nothing: they are either folded into another trust class or render nothing at
-all. A consumer reading an AST should expect them; a profile author should not
+`literal_inline`, `raw_text` and the `document` root - because denying them would
+mean nothing: they are either folded into another trust class, render nothing at
+all, or serve a formatter rather than the document. A consumer reading an AST should expect them; a profile author should not
 look for them here.
 
 A **`tag`** node - the AST form of `#tag` - is deliberately **NOT** its own

@@ -5,180 +5,24 @@
   "description": "The JSON encoding of a parsed Carve document, normative in PART 12 of the grammar (resources/grammar.ebnf). One shape, so a consumer written against one implementation reads another's output: field names and node-type identifiers are spec surface, and an implementation whose internals differ maps on the way out rather than exporting them.\n\nVersion 0.1. Generated JSON is validated against this file over the whole spec corpus by tests/ast-schema.test.mjs.",
   "$ref": "#/$defs/document",
   "$defs": {
-    "pos": {
+    "abbreviation": {
       "type": "object",
-      "title": "Source span",
-      "description": "A node's span in the source (PART 12 section 4). Lines and columns are 1-based, offsets 0-based, `endColumn` and `endOffset` exclusive, and columns and offsets are counted in UNICODE CODEPOINTS - not bytes, not UTF-16 code units.\n\nSection 4 REQUIRES this on every node except the document root. It is declared optional here because a JSON Schema can only answer 'is this shape valid', and an engine that cannot yet place a node must omit `pos` rather than invent one. Whether a producer places every node is a separate, per-node question, reported by the conformance runner (`scripts/ast-conformance.mjs`) rather than by this schema.",
+      "title": "abbreviation (inline)",
       "required": [
-        "startLine",
-        "endLine",
-        "startColumn",
-        "endColumn",
-        "startOffset",
-        "endOffset"
+        "type",
+        "abbr",
+        "expansion"
       ],
       "properties": {
-        "startLine": {
-          "type": "integer",
-          "minimum": 1
+        "type": {
+          "const": "abbreviation"
         },
-        "endLine": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "startColumn": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "endColumn": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "startOffset": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "endOffset": {
-          "type": "integer",
-          "minimum": 0
-        }
-      },
-      "additionalProperties": false
-    },
-    "attrs": {
-      "type": "object",
-      "title": "Attribute block",
-      "description": "The `{#id .class key=value}` block attached to the node. A boolean attribute (`{disabled}`) is a key with an empty-string value.",
-      "properties": {
-        "id": {
+        "abbr": {
           "type": "string"
         },
-        "classes": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "keyValues": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "order": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Source-appearance order of the slots: `#id`, `.class`, or a bare key name. Absent on a programmatically built tree."
-        }
-      },
-      "additionalProperties": false
-    },
-    "citation": {
-      "type": "object",
-      "title": "Citation item",
-      "description": "One `@key` inside a citation group. A plain object, like `definition_item`.",
-      "required": [
-        "key",
-        "suppressAuthor"
-      ],
-      "properties": {
-        "key": {
+        "expansion": {
           "type": "string"
         },
-        "prefix": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "locator": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          },
-          "description": "Raw inline locator after `, ` (e.g. `p. 33`), kept for byte-stable visible output."
-        },
-        "locatorLabel": {
-          "type": "string",
-          "description": "Canonical citeproc locator label parsed from `locator` (e.g. `page`)."
-        },
-        "locatorValue": {
-          "type": "string",
-          "description": "Locator value parsed from `locator` (e.g. `33-35, 38`)."
-        },
-        "suffix": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "suppressAuthor": {
-          "type": "boolean",
-          "description": "`-@key`: suppress the author in author-date mode."
-        },
-        "number": {
-          "type": "integer",
-          "description": "Assigned during resolution in numbered mode."
-        },
-        "useIndex": {
-          "type": "integer",
-          "description": "Per-key, document-wide use-site index (1-based); drives back-link anchors."
-        }
-      },
-      "additionalProperties": false
-    },
-    "frontmatter": {
-      "type": "object",
-      "title": "frontmatter (block)",
-      "description": "Frontmatter as written. The FIRST child when present (PART 12 section 7).",
-      "required": [
-        "type",
-        "format",
-        "content"
-      ],
-      "properties": {
-        "type": {
-          "const": "frontmatter"
-        },
-        "format": {
-          "type": "string",
-          "description": "The info word on the opening fence, or `yaml` when it carries none."
-        },
-        "content": {
-          "type": "string",
-          "description": "The text between the fences, VERBATIM. Never a parsed mapping (PART 12 section 7)."
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "footnote": {
-      "type": "object",
-      "title": "footnote (block)",
-      "description": "A footnote DEFINITION. A child of the document even when authored inside a container (PART 9 section 16); its `pos` still records where it was written.",
-      "required": [
-        "type",
-        "label",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "footnote"
-        },
-        "label": {
-          "type": "string",
-          "description": "The label as written, without `[^` and `]:` (PART 12 section 7)."
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/blockNode"
-          }
-        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
@@ -188,335 +32,24 @@
       },
       "additionalProperties": false
     },
-    "paragraph": {
+    "abbreviation_def": {
       "type": "object",
-      "title": "paragraph (block)",
+      "title": "abbreviation_def (block)",
+      "description": "The `*[ABBR]: expansion` definition line. Renders nothing itself; it feeds the inline `abbreviation`.",
       "required": [
         "type",
-        "children"
+        "abbr",
+        "expansion"
       ],
       "properties": {
         "type": {
-          "const": "paragraph"
+          "const": "abbreviation_def"
         },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "heading": {
-      "type": "object",
-      "title": "heading (block)",
-      "required": [
-        "type",
-        "level",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "heading"
-        },
-        "level": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 6
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "block_quote": {
-      "type": "object",
-      "title": "block_quote (block)",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "block_quote"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/blockNode"
-          }
-        },
-        "attribution": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          },
-          "description": "The `-- attribution` line, when the quote carries one."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "list": {
-      "type": "object",
-      "title": "list (block)",
-      "description": "`delim` and `bulletChar` are author-choice fields: a sibling list with a different marker is a DIFFERENT list, so a writer has to reproduce the spelling.",
-      "required": [
-        "type",
-        "ordered",
-        "tight",
-        "items"
-      ],
-      "properties": {
-        "type": {
-          "const": "list"
-        },
-        "ordered": {
-          "type": "boolean"
-        },
-        "tight": {
-          "type": "boolean"
-        },
-        "items": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/list_item"
-          }
-        },
-        "start": {
-          "type": "integer",
-          "description": "First number of an ordered list, when it is not 1."
-        },
-        "olType": {
-          "enum": [
-            "a",
-            "A",
-            "i",
-            "I"
-          ],
-          "description": "Ordered-list numbering style; absent means decimal."
-        },
-        "delim": {
-          "enum": [
-            ".",
-            ")"
-          ],
-          "description": "Ordered-marker delimiter AS AUTHORED (PART 11 section 6). Absent means the default `.`."
-        },
-        "bulletChar": {
-          "enum": [
-            "-",
-            "*"
-          ],
-          "description": "Bullet character AS AUTHORED (PART 11 section 6). Absent means the default `-`."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "list_item": {
-      "type": "object",
-      "title": "list_item (block)",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "list_item"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/blockNode"
-          }
-        },
-        "checked": {
-          "type": "boolean",
-          "description": "Present only on a task-list item; absent on a plain bullet."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "code_block": {
-      "type": "object",
-      "title": "code_block (block)",
-      "required": [
-        "type",
-        "content"
-      ],
-      "properties": {
-        "type": {
-          "const": "code_block"
-        },
-        "content": {
+        "abbr": {
           "type": "string"
         },
-        "lang": {
+        "expansion": {
           "type": "string"
-        },
-        "header": {
-          "type": "string",
-          "description": "Quoted title from the info string (```php \"src/Auth.php\")."
-        },
-        "label": {
-          "type": "string",
-          "description": "Bracketed grouping label from the info string (```php [NPM]). Structured metadata, not part of the language class."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "thematic_break": {
-      "type": "object",
-      "title": "thematic_break (block)",
-      "required": [
-        "type"
-      ],
-      "properties": {
-        "type": {
-          "const": "thematic_break"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "table": {
-      "type": "object",
-      "title": "table (block)",
-      "required": [
-        "type",
-        "rows"
-      ],
-      "properties": {
-        "type": {
-          "const": "table"
-        },
-        "rows": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/table_row"
-          }
-        },
-        "caption": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "table_row": {
-      "type": "object",
-      "title": "table_row (block)",
-      "required": [
-        "type",
-        "cells"
-      ],
-      "properties": {
-        "type": {
-          "const": "table_row"
-        },
-        "cells": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/table_cell"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "table_cell": {
-      "type": "object",
-      "title": "table_cell (block)",
-      "required": [
-        "type",
-        "header",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "table_cell"
-        },
-        "header": {
-          "type": "boolean"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "span": {
-          "enum": [
-            "rowspan",
-            "colspan"
-          ],
-          "description": "Set by a `^` (rowspan) or `<` (colspan) continuation cell."
-        },
-        "align": {
-          "enum": [
-            "left",
-            "right",
-            "center"
-          ],
-          "description": "Explicit per-cell alignment; absent means the cell inherits its column's."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
@@ -568,784 +101,32 @@
       },
       "additionalProperties": false
     },
-    "div": {
+    "attrs": {
       "type": "object",
-      "title": "div (block)",
-      "required": [
-        "type",
-        "children"
-      ],
+      "title": "Attribute block",
+      "description": "The `{#id .class key=value}` block attached to the node. A boolean attribute (`{disabled}`) is a key with an empty-string value.",
       "properties": {
-        "type": {
-          "const": "div"
+        "id": {
+          "type": "string"
         },
-        "children": {
+        "classes": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/blockNode"
+            "type": "string"
           }
         },
-        "label": {
-          "type": "string",
-          "description": "Opener `[label]` grouping id. Inert in core."
+        "keyValues": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "line_block": {
-      "type": "object",
-      "title": "line_block (block)",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "line_block"
-        },
-        "children": {
+        "order": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/blockNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "definition_list": {
-      "type": "object",
-      "title": "definition_list (block)",
-      "description": "Its items are the `<dt>` / `<dd>` sequence, in document order: a run of `definition_term` nodes followed by the `definition_description` nodes they share. The grouping is not published because it is not a shared fact - two engines that published it grouped the same document differently while rendering the same list - and because a plain object can carry no `pos`, which left a term the only content in a serialized document an editor could not navigate to (PART 12 §4).",
-      "required": [
-        "type",
-        "items"
-      ],
-      "properties": {
-        "type": {
-          "const": "definition_list"
-        },
-        "items": {
-          "type": "array",
-          "items": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/definition_term"
-              },
-              {
-                "$ref": "#/$defs/definition_description"
-              }
-            ]
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "definition_term": {
-      "type": "object",
-      "title": "definition_term (block)",
-      "description": "A `<dt>`: the inline content of one `:: term` line. Consecutive terms belong to the descriptions that follow them, which is what the rendered list shows.",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "definition_term"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "definition_description": {
-      "type": "object",
-      "title": "definition_description (block)",
-      "description": "A `<dd>`: the block content of one `:  definition`. It belongs to the run of terms before it.",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "definition_description"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/blockNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "figure": {
-      "type": "object",
-      "title": "figure (block)",
-      "required": [
-        "type",
-        "target",
-        "caption"
-      ],
-      "properties": {
-        "type": {
-          "const": "figure"
-        },
-        "target": {
-          "description": "The captioned block: an image, block quote, table, code block or paragraph.",
-          "oneOf": [
-            {
-              "$ref": "#/$defs/image"
-            },
-            {
-              "$ref": "#/$defs/block_quote"
-            },
-            {
-              "$ref": "#/$defs/table"
-            },
-            {
-              "$ref": "#/$defs/code_block"
-            },
-            {
-              "$ref": "#/$defs/paragraph"
-            }
-          ]
-        },
-        "caption": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "abbreviation_def": {
-      "type": "object",
-      "title": "abbreviation_def (block)",
-      "description": "The `*[ABBR]: expansion` definition line. Renders nothing itself; it feeds the inline `abbreviation`.",
-      "required": [
-        "type",
-        "abbr",
-        "expansion"
-      ],
-      "properties": {
-        "type": {
-          "const": "abbreviation_def"
-        },
-        "abbr": {
-          "type": "string"
-        },
-        "expansion": {
-          "type": "string"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "raw_block": {
-      "type": "object",
-      "title": "raw_block (block)",
-      "required": [
-        "type",
-        "format",
-        "content"
-      ],
-      "properties": {
-        "type": {
-          "const": "raw_block"
-        },
-        "format": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "comment": {
-      "type": "object",
-      "title": "comment (block or inline)",
-      "description": "An author comment. Renders nothing, and is serialized because a writer has to reproduce it.",
-      "required": [
-        "type",
-        "block",
-        "content"
-      ],
-      "properties": {
-        "type": {
-          "const": "comment"
-        },
-        "block": {
-          "type": "boolean",
-          "description": "True for the fenced `%%%` block form, false for an inline `%%` comment."
-        },
-        "content": {
-          "type": "string"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "image": {
-      "type": "object",
-      "title": "image (block or inline)",
-      "description": "Also valid in BLOCK position: a lone image paragraph is a block-level image.",
-      "required": [
-        "type",
-        "src",
-        "alt"
-      ],
-      "properties": {
-        "type": {
-          "const": "image"
-        },
-        "src": {
-          "type": "string"
-        },
-        "alt": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        },
-        "ref": {
-          "type": "string",
-          "description": "Unresolved reference label of `![alt][ref]`."
-        },
-        "rawRef": {
-          "type": "string"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "text": {
-      "type": "object",
-      "title": "text (inline)",
-      "required": [
-        "type",
-        "value"
-      ],
-      "properties": {
-        "type": {
-          "const": "text"
-        },
-        "value": {
-          "type": "string"
-        },
-        "escapedLeadingCaret": {
-          "type": "boolean",
-          "description": "The node's leading `^` came from an escaped `\\^`, so it is literal and must not be read as a caption marker."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "escaped_text": {
-      "type": "object",
-      "title": "escaped_text (inline)",
-      "description": "A character the author escaped (`\\-`). Its own type because the escape carries intent the character alone does not.",
-      "required": [
-        "type",
-        "value"
-      ],
-      "properties": {
-        "type": {
-          "const": "escaped_text"
-        },
-        "value": {
-          "type": "string",
-          "description": "The literal character, WITHOUT the backslash."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "smart_punctuation": {
-      "type": "object",
-      "title": "smart_punctuation (inline)",
-      "description": "Carries BOTH the resolved sort and the source spelling, so a writer can reproduce the document rather than normalize it.",
-      "required": [
-        "type",
-        "kind",
-        "value"
-      ],
-      "properties": {
-        "type": {
-          "const": "smart_punctuation"
-        },
-        "kind": {
-          "type": "string",
-          "description": "The resolved sort: `ellipsis`, `em_dash`, `left_double_quote`, ..."
-        },
-        "value": {
-          "type": "string",
-          "description": "The author's source run, e.g. `...`, `->`, `\"`."
-        },
-        "glyph": {
-          "type": "string",
-          "description": "Resolved glyph, present when the parser fixed it (quotes are locale-dependent)."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "emphasis": {
-      "type": "object",
-      "title": "emphasis (inline)",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "emphasis"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "underline": {
-      "type": "object",
-      "title": "underline (inline)",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "underline"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "strike": {
-      "type": "object",
-      "title": "strike (inline)",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "strike"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "superscript": {
-      "type": "object",
-      "title": "superscript (inline)",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "superscript"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "subscript": {
-      "type": "object",
-      "title": "subscript (inline)",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "subscript"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "highlight": {
-      "type": "object",
-      "title": "highlight (inline)",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "highlight"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "strong": {
-      "type": "object",
-      "title": "strong (inline)",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "strong"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "boldItalic": {
-          "const": true,
-          "description": "Present when the author wrote the combined `/*...*/` form rather than nesting `*` around `/` (PART 11 section 6)."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "code": {
-      "type": "object",
-      "title": "code (inline)",
-      "required": [
-        "type",
-        "value"
-      ],
-      "properties": {
-        "type": {
-          "const": "code"
-        },
-        "value": {
-          "type": "string"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "link": {
-      "type": "object",
-      "title": "link (inline)",
-      "description": "`href` is the destination field name for every implementation (PART 12 section 3): a consumer must not have to know which engine produced the document.",
-      "required": [
-        "type",
-        "href",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "link"
-        },
-        "href": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "ref": {
-          "type": "string",
-          "description": "Unresolved reference label of `[text][ref]`. Present only between parse and resolve."
-        },
-        "rawRef": {
-          "type": "string",
-          "description": "Verbatim source of an unresolved reference, so it can be restored as literal text."
-        },
-        "fromCrossref": {
-          "type": "boolean",
-          "description": "Set when the link was produced from a `</#id>` cross-reference."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "span": {
-      "type": "object",
-      "title": "span (inline)",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "span"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "math": {
-      "type": "object",
-      "title": "math (inline)",
-      "required": [
-        "type",
-        "display",
-        "content"
-      ],
-      "properties": {
-        "type": {
-          "const": "math"
-        },
-        "display": {
-          "type": "boolean"
-        },
-        "content": {
-          "type": "string"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "raw_inline": {
-      "type": "object",
-      "title": "raw_inline (inline)",
-      "required": [
-        "type",
-        "format",
-        "content"
-      ],
-      "properties": {
-        "type": {
-          "const": "raw_inline"
-        },
-        "format": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "literal_inline": {
-      "type": "object",
-      "title": "literal_inline (inline)",
-      "description": "`` !`...` `` - verbatim content emitted by every renderer and escaped on output, unlike raw passthrough.",
-      "required": [
-        "type",
-        "content"
-      ],
-      "properties": {
-        "type": {
-          "const": "literal_inline"
-        },
-        "content": {
-          "type": "string"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "symbol": {
-      "type": "object",
-      "title": "symbol (inline)",
-      "required": [
-        "type",
-        "name"
-      ],
-      "properties": {
-        "type": {
-          "const": "symbol"
-        },
-        "name": {
-          "type": "string",
-          "description": "The shortcode between the colons, without them."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
+            "type": "string"
+          },
+          "description": "Source-appearance order of the slots: `#id`, `.class`, or a bare key name. Absent on a programmatically built tree."
         }
       },
       "additionalProperties": false
@@ -1368,398 +149,6 @@
         "text": {
           "type": "string",
           "description": "Display text: the raw content between `<` and `>`."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "heading_ref": {
-      "type": "object",
-      "title": "heading_ref (inline)",
-      "required": [
-        "type",
-        "target"
-      ],
-      "properties": {
-        "type": {
-          "const": "heading_ref"
-        },
-        "target": {
-          "type": "string",
-          "description": "Raw id between `</#` and `>`."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "caption_number": {
-      "type": "object",
-      "title": "caption_number (inline)",
-      "required": [
-        "type"
-      ],
-      "properties": {
-        "type": {
-          "const": "caption_number"
-        },
-        "n": {
-          "type": "integer",
-          "description": "Assigned during resolution; absent before it. A resolution result, serialized because recomputing it means reimplementing PART 9R."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "citation_group": {
-      "type": "object",
-      "title": "citation_group (inline)",
-      "required": [
-        "type",
-        "items",
-        "raw"
-      ],
-      "properties": {
-        "type": {
-          "const": "citation_group"
-        },
-        "items": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/citation"
-          }
-        },
-        "raw": {
-          "type": "string",
-          "description": "Verbatim source `[...]`, for the undefined-key literal fallback."
-        },
-        "mode": {
-          "const": "integral",
-          "description": "Set by a leading `+` after `[`. Absent means parenthetical."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "mention": {
-      "type": "object",
-      "title": "mention (inline)",
-      "required": [
-        "type",
-        "user"
-      ],
-      "properties": {
-        "type": {
-          "const": "mention"
-        },
-        "user": {
-          "type": "string"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "tag": {
-      "type": "object",
-      "title": "tag (inline)",
-      "description": "The AST form of `#tag`. Not a profile vocabulary entry - a profile classifies it as `mention`, since `@user` and `#tag` are one trust class.",
-      "required": [
-        "type",
-        "name"
-      ],
-      "properties": {
-        "type": {
-          "const": "tag"
-        },
-        "name": {
-          "type": "string"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "inline_extension": {
-      "type": "object",
-      "title": "inline_extension (inline)",
-      "required": [
-        "type",
-        "name",
-        "content"
-      ],
-      "properties": {
-        "type": {
-          "const": "inline_extension"
-        },
-        "name": {
-          "type": "string"
-        },
-        "content": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "abbreviation": {
-      "type": "object",
-      "title": "abbreviation (inline)",
-      "required": [
-        "type",
-        "abbr",
-        "expansion"
-      ],
-      "properties": {
-        "type": {
-          "const": "abbreviation"
-        },
-        "abbr": {
-          "type": "string"
-        },
-        "expansion": {
-          "type": "string"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "footnote_ref": {
-      "type": "object",
-      "title": "footnote_ref (inline)",
-      "description": "A reference to a definition. Split from `inline_footnote` because a profile has to be able to deny one without the other (carve#405).",
-      "required": [
-        "type"
-      ],
-      "properties": {
-        "type": {
-          "const": "footnote_ref"
-        },
-        "id": {
-          "type": "string",
-          "description": "Reference label of `[^label]`, matched against the document's `footnote` definitions."
-        },
-        "number": {
-          "type": "integer",
-          "description": "Assigned during resolution, by document reference order."
-        },
-        "refId": {
-          "type": "string",
-          "description": "Assigned during resolution: the backlink target id."
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "inline_footnote": {
-      "type": "object",
-      "title": "inline_footnote (inline)",
-      "description": "`^[content]` - a footnote whose body is written at the point of use.",
-      "required": [
-        "type",
-        "inline"
-      ],
-      "properties": {
-        "type": {
-          "const": "inline_footnote"
-        },
-        "inline": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "number": {
-          "type": "integer"
-        },
-        "refId": {
-          "type": "string"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "soft_break": {
-      "type": "object",
-      "title": "soft_break (inline)",
-      "required": [
-        "type"
-      ],
-      "properties": {
-        "type": {
-          "const": "soft_break"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "hard_break": {
-      "type": "object",
-      "title": "hard_break (inline)",
-      "required": [
-        "type"
-      ],
-      "properties": {
-        "type": {
-          "const": "hard_break"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "insert": {
-      "type": "object",
-      "title": "insert (inline)",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "insert"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "delete": {
-      "type": "object",
-      "title": "delete (inline)",
-      "required": [
-        "type",
-        "children"
-      ],
-      "properties": {
-        "type": {
-          "const": "delete"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "substitution": {
-      "type": "object",
-      "title": "substitution (inline)",
-      "required": [
-        "type",
-        "oldText",
-        "newText"
-      ],
-      "properties": {
-        "type": {
-          "const": "substitution"
-        },
-        "oldText": {
-          "type": "string"
-        },
-        "newText": {
-          "type": "string"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "critic_comment": {
-      "type": "object",
-      "title": "critic_comment (inline)",
-      "description": "Its own type rather than a `comment`, so a profile that accepts editorial marks but not side commentary can say so.",
-      "required": [
-        "type",
-        "text"
-      ],
-      "properties": {
-        "type": {
-          "const": "critic_comment"
-        },
-        "text": {
-          "type": "string"
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
@@ -2154,6 +543,760 @@
         }
       ]
     },
+    "block_quote": {
+      "type": "object",
+      "title": "block_quote (block)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "block_quote"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockNode"
+          }
+        },
+        "attribution": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          },
+          "description": "The `-- attribution` line, when the quote carries one."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "caption_number": {
+      "type": "object",
+      "title": "caption_number (inline)",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "caption_number"
+        },
+        "n": {
+          "type": "integer",
+          "description": "Assigned during resolution; absent before it. A resolution result, serialized because recomputing it means reimplementing PART 9R."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "citation": {
+      "type": "object",
+      "title": "Citation item",
+      "description": "One `@key` inside a citation group. A plain object, like `definition_item`.",
+      "required": [
+        "key",
+        "suppressAuthor"
+      ],
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "locator": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          },
+          "description": "Raw inline locator after `, ` (e.g. `p. 33`), kept for byte-stable visible output."
+        },
+        "locatorLabel": {
+          "type": "string",
+          "description": "Canonical citeproc locator label parsed from `locator` (e.g. `page`)."
+        },
+        "locatorValue": {
+          "type": "string",
+          "description": "Locator value parsed from `locator` (e.g. `33-35, 38`)."
+        },
+        "suffix": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "suppressAuthor": {
+          "type": "boolean",
+          "description": "`-@key`: suppress the author in author-date mode."
+        },
+        "number": {
+          "type": "integer",
+          "description": "Assigned during resolution in numbered mode."
+        },
+        "useIndex": {
+          "type": "integer",
+          "description": "Per-key, document-wide use-site index (1-based); drives back-link anchors."
+        }
+      },
+      "additionalProperties": false
+    },
+    "citation_group": {
+      "type": "object",
+      "title": "citation_group (inline)",
+      "required": [
+        "type",
+        "items",
+        "raw"
+      ],
+      "properties": {
+        "type": {
+          "const": "citation_group"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/citation"
+          }
+        },
+        "raw": {
+          "type": "string",
+          "description": "Verbatim source `[...]`, for the undefined-key literal fallback."
+        },
+        "mode": {
+          "const": "integral",
+          "description": "Set by a leading `+` after `[`. Absent means parenthetical."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "code": {
+      "type": "object",
+      "title": "code (inline)",
+      "required": [
+        "type",
+        "value"
+      ],
+      "properties": {
+        "type": {
+          "const": "code"
+        },
+        "value": {
+          "type": "string"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "code_block": {
+      "type": "object",
+      "title": "code_block (block)",
+      "required": [
+        "type",
+        "content"
+      ],
+      "properties": {
+        "type": {
+          "const": "code_block"
+        },
+        "content": {
+          "type": "string"
+        },
+        "lang": {
+          "type": "string"
+        },
+        "header": {
+          "type": "string",
+          "description": "Quoted title from the info string (```php \"src/Auth.php\")."
+        },
+        "label": {
+          "type": "string",
+          "description": "Bracketed grouping label from the info string (```php [NPM]). Structured metadata, not part of the language class."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "comment": {
+      "type": "object",
+      "title": "comment (block or inline)",
+      "description": "An author comment. Renders nothing, and is serialized because a writer has to reproduce it.",
+      "required": [
+        "type",
+        "block",
+        "content"
+      ],
+      "properties": {
+        "type": {
+          "const": "comment"
+        },
+        "block": {
+          "type": "boolean",
+          "description": "True for the fenced `%%%` block form, false for an inline `%%` comment."
+        },
+        "content": {
+          "type": "string"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "critic_comment": {
+      "type": "object",
+      "title": "critic_comment (inline)",
+      "description": "Its own type rather than a `comment`, so a profile that accepts editorial marks but not side commentary can say so.",
+      "required": [
+        "type",
+        "text"
+      ],
+      "properties": {
+        "type": {
+          "const": "critic_comment"
+        },
+        "text": {
+          "type": "string"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "definition_description": {
+      "type": "object",
+      "title": "definition_description (block)",
+      "description": "A `<dd>`: the block content of one `:  definition`. It belongs to the run of terms before it.",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "definition_description"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "definition_list": {
+      "type": "object",
+      "title": "definition_list (block)",
+      "description": "Its items are the `<dt>` / `<dd>` sequence, in document order: a run of `definition_term` nodes followed by the `definition_description` nodes they share. The grouping is not published because it is not a shared fact - two engines that published it grouped the same document differently while rendering the same list - and because a plain object can carry no `pos`, which left a term the only content in a serialized document an editor could not navigate to (PART 12 \u00a74).",
+      "required": [
+        "type",
+        "items"
+      ],
+      "properties": {
+        "type": {
+          "const": "definition_list"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/definition_term"
+              },
+              {
+                "$ref": "#/$defs/definition_description"
+              }
+            ]
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "definition_term": {
+      "type": "object",
+      "title": "definition_term (block)",
+      "description": "A `<dt>`: the inline content of one `:: term` line. Consecutive terms belong to the descriptions that follow them, which is what the rendered list shows.",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "definition_term"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "delete": {
+      "type": "object",
+      "title": "delete (inline)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "delete"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "div": {
+      "type": "object",
+      "title": "div (block)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "div"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockNode"
+          }
+        },
+        "label": {
+          "type": "string",
+          "description": "Opener `[label]` grouping id. Inert in core."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "document": {
+      "type": "object",
+      "title": "document (root)",
+      "description": "The root carries EXACTLY three fields (PART 12 section 7). Frontmatter and footnote definitions are block nodes in `children`, not root fields, because a root field cannot carry the `pos` section 4 requires of everything else - and both are source an editor navigates to.\n\nThe root is the one node with no `pos`: it spans the whole source by definition.",
+      "required": [
+        "type",
+        "children",
+        "srcByteLength"
+      ],
+      "properties": {
+        "type": {
+          "const": "document"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockNode"
+          }
+        },
+        "srcByteLength": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "BYTE length of the source - the one field here counted in bytes rather than codepoints. It answers 'how much source was this', not 'where in it'."
+        }
+      },
+      "additionalProperties": false
+    },
+    "emphasis": {
+      "type": "object",
+      "title": "emphasis (inline)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "emphasis"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "escaped_text": {
+      "type": "object",
+      "title": "escaped_text (inline)",
+      "description": "A character the author escaped (`\\-`). Its own type because the escape carries intent the character alone does not.",
+      "required": [
+        "type",
+        "value"
+      ],
+      "properties": {
+        "type": {
+          "const": "escaped_text"
+        },
+        "value": {
+          "type": "string",
+          "description": "The literal character, WITHOUT the backslash."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "figure": {
+      "type": "object",
+      "title": "figure (block)",
+      "required": [
+        "type",
+        "target",
+        "caption"
+      ],
+      "properties": {
+        "type": {
+          "const": "figure"
+        },
+        "target": {
+          "description": "The captioned block: an image, block quote, table, code block or paragraph.",
+          "oneOf": [
+            {
+              "$ref": "#/$defs/image"
+            },
+            {
+              "$ref": "#/$defs/block_quote"
+            },
+            {
+              "$ref": "#/$defs/table"
+            },
+            {
+              "$ref": "#/$defs/code_block"
+            },
+            {
+              "$ref": "#/$defs/paragraph"
+            }
+          ]
+        },
+        "caption": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "footnote": {
+      "type": "object",
+      "title": "footnote (block)",
+      "description": "A footnote DEFINITION. A child of the document even when authored inside a container (PART 9 section 16); its `pos` still records where it was written.",
+      "required": [
+        "type",
+        "label",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "footnote"
+        },
+        "label": {
+          "type": "string",
+          "description": "The label as written, without `[^` and `]:` (PART 12 section 7)."
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "footnote_ref": {
+      "type": "object",
+      "title": "footnote_ref (inline)",
+      "description": "A reference to a definition. Split from `inline_footnote` because a profile has to be able to deny one without the other (carve#405).",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "footnote_ref"
+        },
+        "id": {
+          "type": "string",
+          "description": "Reference label of `[^label]`, matched against the document's `footnote` definitions."
+        },
+        "number": {
+          "type": "integer",
+          "description": "Assigned during resolution, by document reference order."
+        },
+        "refId": {
+          "type": "string",
+          "description": "Assigned during resolution: the backlink target id."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "frontmatter": {
+      "type": "object",
+      "title": "frontmatter (block)",
+      "description": "Frontmatter as written. The FIRST child when present (PART 12 section 7).",
+      "required": [
+        "type",
+        "format",
+        "content"
+      ],
+      "properties": {
+        "type": {
+          "const": "frontmatter"
+        },
+        "format": {
+          "type": "string",
+          "description": "The info word on the opening fence, or `yaml` when it carries none."
+        },
+        "content": {
+          "type": "string",
+          "description": "The text between the fences, VERBATIM. Never a parsed mapping (PART 12 section 7)."
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "hard_break": {
+      "type": "object",
+      "title": "hard_break (inline)",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "hard_break"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "heading": {
+      "type": "object",
+      "title": "heading (block)",
+      "required": [
+        "type",
+        "level",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "heading"
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "heading_ref": {
+      "type": "object",
+      "title": "heading_ref (inline)",
+      "required": [
+        "type",
+        "target"
+      ],
+      "properties": {
+        "type": {
+          "const": "heading_ref"
+        },
+        "target": {
+          "type": "string",
+          "description": "Raw id between `</#` and `>`."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "highlight": {
+      "type": "object",
+      "title": "highlight (inline)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "highlight"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "image": {
+      "type": "object",
+      "title": "image (block or inline)",
+      "description": "Also valid in BLOCK position: a lone image paragraph is a block-level image.",
+      "required": [
+        "type",
+        "src",
+        "alt"
+      ],
+      "properties": {
+        "type": {
+          "const": "image"
+        },
+        "src": {
+          "type": "string"
+        },
+        "alt": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "ref": {
+          "type": "string",
+          "description": "Unresolved reference label of `![alt][ref]`."
+        },
+        "rawRef": {
+          "type": "string"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
     "inlineNode": {
       "type": "object",
       "title": "Any inline node",
@@ -2187,6 +1330,7 @@
             "math",
             "mention",
             "raw_inline",
+            "raw_text",
             "smart_punctuation",
             "soft_break",
             "span",
@@ -2730,18 +1874,105 @@
         }
       ]
     },
-    "document": {
+    "inline_extension": {
       "type": "object",
-      "title": "document (root)",
-      "description": "The root carries EXACTLY three fields (PART 12 section 7). Frontmatter and footnote definitions are block nodes in `children`, not root fields, because a root field cannot carry the `pos` section 4 requires of everything else - and both are source an editor navigates to.\n\nThe root is the one node with no `pos`: it spans the whole source by definition.",
+      "title": "inline_extension (inline)",
       "required": [
         "type",
-        "children",
-        "srcByteLength"
+        "name",
+        "content"
       ],
       "properties": {
         "type": {
-          "const": "document"
+          "const": "inline_extension"
+        },
+        "name": {
+          "type": "string"
+        },
+        "content": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "inline_footnote": {
+      "type": "object",
+      "title": "inline_footnote (inline)",
+      "description": "`^[content]` - a footnote whose body is written at the point of use.",
+      "required": [
+        "type",
+        "inline"
+      ],
+      "properties": {
+        "type": {
+          "const": "inline_footnote"
+        },
+        "inline": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "number": {
+          "type": "integer"
+        },
+        "refId": {
+          "type": "string"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "insert": {
+      "type": "object",
+      "title": "insert (inline)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "insert"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "line_block": {
+      "type": "object",
+      "title": "line_block (block)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "line_block"
         },
         "children": {
           "type": "array",
@@ -2749,10 +1980,804 @@
             "$ref": "#/$defs/blockNode"
           }
         },
-        "srcByteLength": {
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "link": {
+      "type": "object",
+      "title": "link (inline)",
+      "description": "`href` is the destination field name for every implementation (PART 12 section 3): a consumer must not have to know which engine produced the document.",
+      "required": [
+        "type",
+        "href",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "link"
+        },
+        "href": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "ref": {
+          "type": "string",
+          "description": "Unresolved reference label of `[text][ref]`. Present only between parse and resolve."
+        },
+        "rawRef": {
+          "type": "string",
+          "description": "Verbatim source of an unresolved reference, so it can be restored as literal text."
+        },
+        "fromCrossref": {
+          "type": "boolean",
+          "description": "Set when the link was produced from a `</#id>` cross-reference."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "list": {
+      "type": "object",
+      "title": "list (block)",
+      "description": "`delim` and `bulletChar` are author-choice fields: a sibling list with a different marker is a DIFFERENT list, so a writer has to reproduce the spelling.",
+      "required": [
+        "type",
+        "ordered",
+        "tight",
+        "items"
+      ],
+      "properties": {
+        "type": {
+          "const": "list"
+        },
+        "ordered": {
+          "type": "boolean"
+        },
+        "tight": {
+          "type": "boolean"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/list_item"
+          }
+        },
+        "start": {
           "type": "integer",
-          "minimum": 0,
-          "description": "BYTE length of the source - the one field here counted in bytes rather than codepoints. It answers 'how much source was this', not 'where in it'."
+          "description": "First number of an ordered list, when it is not 1."
+        },
+        "olType": {
+          "enum": [
+            "a",
+            "A",
+            "i",
+            "I"
+          ],
+          "description": "Ordered-list numbering style; absent means decimal."
+        },
+        "delim": {
+          "enum": [
+            ".",
+            ")"
+          ],
+          "description": "Ordered-marker delimiter AS AUTHORED (PART 11 section 6). Absent means the default `.`."
+        },
+        "bulletChar": {
+          "enum": [
+            "-",
+            "*"
+          ],
+          "description": "Bullet character AS AUTHORED (PART 11 section 6). Absent means the default `-`."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "list_item": {
+      "type": "object",
+      "title": "list_item (block)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "list_item"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockNode"
+          }
+        },
+        "checked": {
+          "type": "boolean",
+          "description": "Present only on a task-list item; absent on a plain bullet."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "literal_inline": {
+      "type": "object",
+      "title": "literal_inline (inline)",
+      "description": "`` !`...` `` - verbatim content emitted by every renderer and escaped on output, unlike raw passthrough.",
+      "required": [
+        "type",
+        "content"
+      ],
+      "properties": {
+        "type": {
+          "const": "literal_inline"
+        },
+        "content": {
+          "type": "string"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "math": {
+      "type": "object",
+      "title": "math (inline)",
+      "required": [
+        "type",
+        "display",
+        "content"
+      ],
+      "properties": {
+        "type": {
+          "const": "math"
+        },
+        "display": {
+          "type": "boolean"
+        },
+        "content": {
+          "type": "string"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "mention": {
+      "type": "object",
+      "title": "mention (inline)",
+      "required": [
+        "type",
+        "user"
+      ],
+      "properties": {
+        "type": {
+          "const": "mention"
+        },
+        "user": {
+          "type": "string"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "paragraph": {
+      "type": "object",
+      "title": "paragraph (block)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "paragraph"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "pos": {
+      "type": "object",
+      "title": "Source span",
+      "description": "A node's span in the source (PART 12 section 4). Lines and columns are 1-based, offsets 0-based, `endColumn` and `endOffset` exclusive, and columns and offsets are counted in UNICODE CODEPOINTS - not bytes, not UTF-16 code units.\n\nSection 4 REQUIRES this on every node except the document root. It is declared optional here because a JSON Schema can only answer 'is this shape valid', and an engine that cannot yet place a node must omit `pos` rather than invent one. Whether a producer places every node is a separate, per-node question, reported by the conformance runner (`scripts/ast-conformance.mjs`) rather than by this schema.",
+      "required": [
+        "startLine",
+        "endLine",
+        "startColumn",
+        "endColumn",
+        "startOffset",
+        "endOffset"
+      ],
+      "properties": {
+        "startLine": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "endLine": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "startColumn": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "endColumn": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "startOffset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "endOffset": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "raw_block": {
+      "type": "object",
+      "title": "raw_block (block)",
+      "required": [
+        "type",
+        "format",
+        "content"
+      ],
+      "properties": {
+        "type": {
+          "const": "raw_block"
+        },
+        "format": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "raw_inline": {
+      "type": "object",
+      "title": "raw_inline (inline)",
+      "required": [
+        "type",
+        "format",
+        "content"
+      ],
+      "properties": {
+        "type": {
+          "const": "raw_inline"
+        },
+        "format": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "raw_text": {
+      "type": "object",
+      "title": "raw_text (inline)",
+      "description": "Literal source an implementation preserves so `fmt` can reproduce it verbatim - an unresolvable construct such as `[a][]`. OPTIONAL: profiles.md permits but does not require it, so a consumer must tolerate it and must not depend on it. Not deniable by a profile.",
+      "required": [
+        "type",
+        "content"
+      ],
+      "properties": {
+        "type": {
+          "const": "raw_text"
+        },
+        "content": {
+          "type": "string"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "smart_punctuation": {
+      "type": "object",
+      "title": "smart_punctuation (inline)",
+      "description": "Carries BOTH the resolved sort and the source spelling, so a writer can reproduce the document rather than normalize it.",
+      "required": [
+        "type",
+        "kind",
+        "value"
+      ],
+      "properties": {
+        "type": {
+          "const": "smart_punctuation"
+        },
+        "kind": {
+          "type": "string",
+          "description": "The resolved sort: `ellipsis`, `em_dash`, `left_double_quote`, ..."
+        },
+        "value": {
+          "type": "string",
+          "description": "The author's source run, e.g. `...`, `->`, `\"`."
+        },
+        "glyph": {
+          "type": "string",
+          "description": "Resolved glyph, present when the parser fixed it (quotes are locale-dependent)."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "soft_break": {
+      "type": "object",
+      "title": "soft_break (inline)",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "soft_break"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "span": {
+      "type": "object",
+      "title": "span (inline)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "span"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "strike": {
+      "type": "object",
+      "title": "strike (inline)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "strike"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "strong": {
+      "type": "object",
+      "title": "strong (inline)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "strong"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "boldItalic": {
+          "const": true,
+          "description": "Present when the author wrote the combined `/*...*/` form rather than nesting `*` around `/` (PART 11 section 6)."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "subscript": {
+      "type": "object",
+      "title": "subscript (inline)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "subscript"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "substitution": {
+      "type": "object",
+      "title": "substitution (inline)",
+      "required": [
+        "type",
+        "oldText",
+        "newText"
+      ],
+      "properties": {
+        "type": {
+          "const": "substitution"
+        },
+        "oldText": {
+          "type": "string"
+        },
+        "newText": {
+          "type": "string"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "superscript": {
+      "type": "object",
+      "title": "superscript (inline)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "superscript"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "symbol": {
+      "type": "object",
+      "title": "symbol (inline)",
+      "required": [
+        "type",
+        "name"
+      ],
+      "properties": {
+        "type": {
+          "const": "symbol"
+        },
+        "name": {
+          "type": "string",
+          "description": "The shortcode between the colons, without them."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "table": {
+      "type": "object",
+      "title": "table (block)",
+      "required": [
+        "type",
+        "rows"
+      ],
+      "properties": {
+        "type": {
+          "const": "table"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/table_row"
+          }
+        },
+        "caption": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "table_cell": {
+      "type": "object",
+      "title": "table_cell (block)",
+      "required": [
+        "type",
+        "header",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "table_cell"
+        },
+        "header": {
+          "type": "boolean"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "span": {
+          "enum": [
+            "rowspan",
+            "colspan"
+          ],
+          "description": "Set by a `^` (rowspan) or `<` (colspan) continuation cell."
+        },
+        "align": {
+          "enum": [
+            "left",
+            "right",
+            "center"
+          ],
+          "description": "Explicit per-cell alignment; absent means the cell inherits its column's."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "table_row": {
+      "type": "object",
+      "title": "table_row (block)",
+      "required": [
+        "type",
+        "cells"
+      ],
+      "properties": {
+        "type": {
+          "const": "table_row"
+        },
+        "cells": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/table_cell"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tag": {
+      "type": "object",
+      "title": "tag (inline)",
+      "description": "The AST form of `#tag`. Not a profile vocabulary entry - a profile classifies it as `mention`, since `@user` and `#tag` are one trust class.",
+      "required": [
+        "type",
+        "name"
+      ],
+      "properties": {
+        "type": {
+          "const": "tag"
+        },
+        "name": {
+          "type": "string"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "text": {
+      "type": "object",
+      "title": "text (inline)",
+      "required": [
+        "type",
+        "value"
+      ],
+      "properties": {
+        "type": {
+          "const": "text"
+        },
+        "value": {
+          "type": "string"
+        },
+        "escapedLeadingCaret": {
+          "type": "boolean",
+          "description": "The node's leading `^` came from an escaped `\\^`, so it is literal and must not be read as a caption marker."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "thematic_break": {
+      "type": "object",
+      "title": "thematic_break (block)",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "thematic_break"
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "underline": {
+      "type": "object",
+      "title": "underline (inline)",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "underline"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
         }
       },
       "additionalProperties": false
