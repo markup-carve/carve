@@ -1330,7 +1330,6 @@
             "math",
             "mention",
             "raw_inline",
-            "raw_text",
             "smart_punctuation",
             "soft_break",
             "span",
@@ -2308,30 +2307,6 @@
         },
         "format": {
           "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "attrs": {
-          "$ref": "#/$defs/attrs"
-        },
-        "pos": {
-          "$ref": "#/$defs/pos"
-        }
-      },
-      "additionalProperties": false
-    },
-    "raw_text": {
-      "type": "object",
-      "title": "raw_text (inline)",
-      "description": "Literal source an implementation preserves so `fmt` can reproduce it verbatim - an unresolvable construct such as `[a][]`. OPTIONAL: profiles.md permits but does not require it, so a consumer must tolerate it and must not depend on it. Not deniable by a profile.",
-      "required": [
-        "type",
-        "content"
-      ],
-      "properties": {
-        "type": {
-          "const": "raw_text"
         },
         "content": {
           "type": "string"
