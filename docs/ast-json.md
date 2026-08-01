@@ -162,9 +162,9 @@ spans that do not cover the text they claim.
 | engine | shape | positions |
 |---|---|---|
 | carve-js | conformant over the corpus | blocks and inlines, except reassembled regions (table cells, line-block content) and the synthesized `frontmatter` / `footnote` wire nodes |
-| carve-php | field-name divergences remain (`mention`, `attrs`, `figure`) | recorded behind a parse option, enabled whenever it serializes |
-| carve-rs | conformant | blocks only; the inline half is in progress |
-| carve-rb | publishes carve-rs's tree; `emphasis` carries a `kind` the type already encodes | whatever carve-rs records |
+| carve-php | field-name divergences remain - `attrs` published as a flat map, `figure` carrying `children` instead of `target` + `caption`, `mention` exposing its rendering internals ([carve-php#510](https://github.com/markup-carve/carve-php/issues/510)) | recorded behind a parse option, enabled whenever it serializes |
+| carve-rs | conformant | blocks only; the inline half is in progress ([carve-rs#352](https://github.com/markup-carve/carve-rs/issues/352)) |
+| carve-rb | publishes carve-rs's tree through a serializer forked into the binding; `emphasis` carries a `kind` the type already encodes, and `fromCrossref` is spelled `from_crossref` ([carve-rb#26](https://github.com/markup-carve/carve-rb/issues/26)) | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
 is only a claim worth making if the disagreements are visible.
