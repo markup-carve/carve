@@ -44,6 +44,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   survive the wrapper being switched off - the id returns to the `<h*>` and
   nothing else moves, leaving one placement rule for the whole document.
 
+- **PART 10 §1 also says a render annotation goes after the generated
+  attribute** (carve#427). `data-source-line` records where a block was written
+  rather than describing the element, so it is emitted last of all:
+  `<h2 id="Nested" data-source-line="1">`.
+
+  A third category, and stating it is what stops an engine being conformant and
+  divergent at once. An engine that appends the stamp at render time gets the
+  order for free; one that attaches it at parse time carries it inside the
+  authored run, where "generated last" alone puts the id behind it. carve-rs did
+  exactly that, and a test caught it rather than this text.
+
 - **PART 10 §1 says where a generated attribute goes** (carve#427). The author's
   own attributes keep their source order and anything the engine minted follows
   them, so an unwrapped heading renders `<h1 a="b" class="c" id="Auto">` for an

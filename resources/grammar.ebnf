@@ -3043,6 +3043,21 @@ EOF = (* end of file *) ;
       author's own order is never rearranged, and anything the engine
       minted follows it. Pinned by the corpus.
 
+      A RENDER ANNOTATION IS EMITTED LAST -- after the generated
+      attribute, not merely after the authored ones. The one such
+      annotation in the core is `data-source-line` (§13-adjacent, the
+      `sourceLine` render option), which records where a block was
+      written rather than describing the element:
+        > ## Nested   -> <h2 id="Nested" data-source-line="1">
+      This is a THIRD category, and stating it is what stops an engine
+      from being conformant and divergent at once. An engine that
+      appends the stamp at RENDER time (carve-js) gets the order for
+      free, because the stamp is written outside the attribute walk. An
+      engine that attaches it at PARSE time (carve-rs) carries it inside
+      the authored run, where the "generated last" rule alone would put
+      the id behind it -- which is exactly what carve-rs did until it
+      was caught by a test rather than by this text.
+
       This rule was added after all three engines were found to disagree
       here with nothing to catch it -- carve-js appended a generated id
       but kept an authored one in place, carve-php put the id last in

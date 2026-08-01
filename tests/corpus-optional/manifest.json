@@ -162,6 +162,11 @@
       "slug": "32-section-wrapper-off",
       "feature": "section-wrapper-off",
       "description": "With the optional HTML-renderer sections switch set to false, no <section> is emitted: each heading carries the id it would have hoisted, alongside its other attributes, and the blocks that would have been section children stay siblings. Ids, dedup, crossrefs and implicit heading references are unchanged, and a heading inside a container renders exactly as it does with the wrapper on (PART 9 section 13; carve#427)."
+    },
+    {
+      "slug": "33-source-line-after-generated-id",
+      "feature": "source-line-after-generated-id",
+      "description": "The data-source-line render annotation is emitted AFTER the generated heading id, not merely after the author's attributes (PART 10 section 1). An engine that stamps the line at parse time carries it inside the authored run, where the generated-last rule alone would put the id behind it; carve-rs did exactly that until a test caught it (carve#427)."
     }
   ]
 }

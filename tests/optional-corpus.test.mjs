@@ -77,6 +77,15 @@ const featureRunners = {
   'citations-numbered': (source, render) => render(source, { extensions: [citations()] }),
   'citations-author-date': (source, render) =>
     render(source, { extensions: [citations({ mode: 'author-date' })] }),
+  /*
+   * The one feature here that is a RENDER OPTION rather than an extension: it
+   * takes no extension instance, just the switch. Kept in the same table so an
+   * engine without the option shows up as a skipped case rather than silently
+   * passing on wrapped output.
+   */
+  'section-wrapper-off': (source, render) => render(source, { sections: false }),
+  'source-line-after-generated-id': (source, render) =>
+    render(source, { sections: false, sourceLine: true }),
   'code-callouts': (source, render) => render(source, { extensions: [codeCallouts()] }),
   details: (source, render) => render(source, { extensions: [details()] }),
   'list-table': (source, render) => render(source, { extensions: [listTable()] }),
