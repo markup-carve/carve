@@ -3376,46 +3376,14 @@ EOF = (* end of file *) ;
       spec surface for kind names. A document is
       `{"type":"document","children":[...]}`.
 
-      THE ROOT'S OWN FIELDS ARE FIXED -- NORMATIVE. Beyond `type` and
-      `children` the root carries `srcByteLength` always, and carries
-      `frontmatter` and `footnoteDefs` exactly when the document has them. It
-      carries nothing else.
+      The root's own fields are fixed by §7: `type`, `children` and
+      `srcByteLength`, and nothing else.
 
-        {"type":"document","children":[...],"srcByteLength":42,
-         "frontmatter":{"format":"yaml","content":"title: x"},
-         "footnoteDefs":{"r":[...]}}
-
-      `frontmatter` holds the RAW block and its format, not a parsed mapping.
-      Parsing YAML (or TOML, or JSON) is not this format's job, and a parsed map
-      cannot be serialized back to the bytes the author wrote -- key order,
-      comments and anchors are all gone. A consumer that wants the values runs
-      its own parser over `content`, which is the only form that keeps both
-      answers available.
+        {"type":"document","children":[...],"srcByteLength":42}
 
       `srcByteLength` counts BYTES of the source, and is the one field here that
       is not codepoints (PART 12 §4) -- it answers "how much source was this",
       not "where in it".
-
-      Frontmatter and footnote definitions sit on the ROOT rather than in
-      `children` because neither is a position in the document's flow. A
-      footnote definition renders where the REFERENCE to it appears, not where
-      it was written, and frontmatter renders nowhere at all. Putting either in
-      `children` gives it a place in a sequence it does not occupy: a consumer
-      walking `children` to render a document must then know to skip two of the
-      types it finds there.
-
-      This was left open once (carve#411) and the three engines answered
-      differently in three ways -- placement, spelling and CONTENT:
-
-        carve-js   root, `frontmatter` = {format, content}
-        carve-rb   root, `frontmatter` = the PARSED key/value mapping
-        carve-php  neither on the root; a `frontmatter` block and a `footnote`
-                   block inside `children`
-
-      The content disagreement is the one that matters most and the issue did
-      not record it: two engines publish a field of the same name holding
-      different data, so a consumer reading `frontmatter.content` gets a string
-      from one and `undefined` from the other. Placement at least fails loudly.
 
    3. FIELD NAMES ARE SPEC SURFACE, exactly as kind names are. The normative
       set per node type is the carve-js interface for that type. Notably:
