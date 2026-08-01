@@ -107,7 +107,7 @@ const phpDir = process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php')
  * position fixes dropped the finding count below 40 and the document came back
  * into view.
  */
-const DISPLAY_LIMIT = 8
+const DISPLAY_LIMIT = Number(process.env.CARVE_DISPLAY_LIMIT ?? 8)
 
 const POS_KEYS = ['startLine', 'endLine', 'startColumn', 'endColumn', 'startOffset', 'endOffset']
 
