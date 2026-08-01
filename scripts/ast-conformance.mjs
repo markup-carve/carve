@@ -277,10 +277,28 @@ const lib = await import(resolve(jsDir, 'dist/index.js'))
 
 const jsFindings = []
 const referenceShape = new Map()
+
+/**
+ * carve-js's SERIALIZED form, not its parse tree.
+ *
+ * PART 12 governs what an implementation exchanges, and §1 explicitly lets an
+ * engine keep different internals and map on the way out. carve-js does exactly
+ * that: `parse()` keeps `frontmatter` and `footnoteDefs` on the root, and
+ * `toAstJson` moves them into the tree as the block nodes §7 requires.
+ *
+ * This script read the parse tree, so it measured carve-js's INTERNALS against
+ * the serialized output of the other two - and then used those internals as the
+ * reference shape everything else was compared to. carve-js looked
+ * non-conformant on §7 while being the only engine with the mapping already
+ * written, and carve-php was reported as diverging from a shape no engine
+ * publishes (carve-js#480).
+ */
+const serialize = (doc) => (typeof lib.toAstJson === 'function' ? lib.toAstJson(doc) : doc)
+
 for (const { name, source } of samples) {
   let doc
   try {
-    doc = lib.parse(source)
+    doc = serialize(lib.parse(source))
   } catch (error) {
     jsFindings.push(`${name}: parse threw - ${error.message}`)
     continue
