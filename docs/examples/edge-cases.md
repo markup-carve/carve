@@ -516,6 +516,102 @@ Nested.
 
 :::::
 
+Equal-length fences do **not** nest. A closer has to be bare, so `::: tip`
+cannot close the block it sits in, and equal length means it cannot open one
+inside it either: the line is content. The first bare `:::` then closes the
+outer block, and the second opens a container of its own that never closes,
+which is the unclosed-opener case below. Djot nests this form.
+
+:::: compare
+
+```carve
+::: note
+::: tip
+Inner.
+:::
+:::
+```
+
+```html
+<aside class="admonition note">
+  <p>::: tip
+Inner.</p>
+</aside>
+<p>:::</p>
+```
+
+::::
+
+Widening the fence for the deeper level, rather than the shallower one, does
+not nest either. A bare fence longer than the open block is a closer, not an
+opener, so the `::::` line ends the `:::` div instead of starting a child.
+
+::::: compare
+
+```carve
+:::
+Outer
+
+::::
+Inner
+::::
+:::
+```
+
+```html
+<div>
+  <p>Outer</p>
+</div>
+<p>Inner
+::::
+:::</p>
+```
+
+:::::
+
+An opener with no closer ahead of it opens nothing. The whole block stays a
+paragraph, opener line included. Djot instead closes the container at end of
+file.
+
+:::: compare
+
+```carve
+::: note
+X
+```
+
+```html
+<p>::: note
+X</p>
+```
+
+::::
+
+One closer closes one container, not every container open above it. Here the
+`:::` closes `c`; `a` and `b` never get a closer of their own, so they degrade
+to text by the rule above. Djot's bare closer closes every open container of
+equal-or-lesser length, which would close all three.
+
+:::::: compare
+
+```carve
+::::: a
+:::: b
+::: c
+X
+:::
+```
+
+```html
+<p>::::: a
+:::: b</p>
+<div class="c">
+  <p>X</p>
+</div>
+```
+
+::::::
+
 ## Attribute edge cases
 
 Classes accumulate; `#id` and `key=value` (bare or quoted) attach in
