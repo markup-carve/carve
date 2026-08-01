@@ -3504,12 +3504,19 @@ EOF = (* end of file *) ;
       wrong, which is the half of the rule below that matters, and they are
       tracked in carve-js#441.
 
-      carve-rs has none at all: 47 node structs with no position field, and
-      several of its inline variants are tuple-shaped, so there is nowhere to
-      put one without changing the variant itself. Its parser does keep a line
-      map for the source-line render option, so line granularity exists there
-      and columns and offsets do not. Tracked in carve-rs#333, which also
+      carve-rs records positions on BLOCK nodes and none on inline ones. Over
+      the corpus that places 869 block nodes and leaves 54, and the ones left
+      are refusals rather than gaps: line-block content is reassembled around
+      an indentation sentinel, so it is not a slice of the source and cannot
+      honestly be placed. Its inline variants are tuple-shaped, so there is
+      nowhere to put a position without changing the variant itself, which is
+      why the inline half has not started. Tracked in carve-rs#333, which also
       records the six trap classes carve-js hit, in the order they bit.
+
+      carve-rb serializes carve-rs's tree, so it publishes exactly what that
+      engine records - the block positions and not the inline ones. It is the
+      route by which the conformance checker reaches carve-rs at all, since
+      carve-rs has no JSON serializer of its own.
 
       An implementation that cannot yet produce positions MUST NOT emit `pos`
       with invented values, and MUST NOT omit it silently: it does not yet
