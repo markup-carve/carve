@@ -30,6 +30,16 @@ literal `\@user` / `\#tag` text and a real `@who` mention. If `@` were missing
 from the set, W4 would have nothing to escape with and the literal would
 silently become a mention.
 
+`09` and `10` pin **container fence width**, which is the other thing a writer
+can get wrong without touching a single character of text. A colon fence closes
+on a bare fence of equal-or-greater length, so a container has to be wider than
+every container anywhere below it, not just wider than its direct children.
+`09` nests three of them (div, admonition, line block); `10` nests four and puts
+the innermost one under a list item, where a writer that walks only direct child
+blocks cannot see it. Both documents came back from `fmt` with equal-width
+fences before the writers were fixed, which silently unnests the middle
+container - the failure these two exist to catch.
+
 ## What the byte assertions are worth
 
 `../roundtrip.test.mjs` asserts the PART 11 §1 invariants and the expected bytes
