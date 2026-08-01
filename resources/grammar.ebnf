@@ -3548,4 +3548,53 @@ EOF = (* end of file *) ;
 
       Definitions appear in DOCUMENT ORDER by source position. Numbering is a
       resolution result and stays on the reference (§5).
+
+   8. A DEFINITION LIST'S ENTRIES ARE NODES -- NORMATIVE. `definition_list`
+      carries `items`: the `<dt>` / `<dd>` sequence in DOCUMENT ORDER, as
+      `definition_term` and `definition_description` nodes.
+
+        {"type":"definition_list","items":[
+          {"type":"definition_term","children":[...]},
+          {"type":"definition_term","children":[...]},
+          {"type":"definition_description","children":[...]}]}
+
+      A `definition_term` carries INLINE children, a `definition_description`
+      BLOCK children, and either may carry `attrs` and `pos` like any other
+      node. A run of terms belongs to the descriptions that follow it, which is
+      the rule the rendered list already shows -- so the grouping is derivable
+      and is not published.
+
+      NOT publishing it is the decision, and it has three reasons.
+
+      A plain `{terms, definitions}` object CANNOT CARRY `pos`. §4 requires one
+      on every node but the root because a tree without positions can only be
+      re-parsed rather than navigated, and a term is exactly what an editor
+      jumps to and a language server renames. Under the object form a term was
+      the only content in a serialized document that could not be navigated to
+      -- the same argument §7 makes for frontmatter and footnote definitions,
+      which is why they are block nodes rather than root fields.
+
+      `definition_term` and `definition_description` are in the profiles.md
+      block vocabulary, so a profile can NAME them. Under the object form those
+      two entries named nothing: a host writing `denyBlock(['definition_term'])`
+      got silence, which profiles.md calls the specific failure a normative
+      vocabulary exists to prevent.
+
+      And the grouping was NOT A SHARED FACT. Given
+
+        :: a
+        :: b
+        :  x
+        :  y
+
+      carve-js published one entry with two terms and two definitions,
+      carve-rs published three entries split differently, and carve-php
+      published the flat node sequence -- while all three rendered the same
+      `<dl>`. A structure two producers disagree about, which no output depends
+      on, is an internal; §1 already says an implementation whose internals
+      differ maps on the way out.
+
+      An engine whose parser groups differently therefore has one more thing to
+      fix than the serializer: carve-rs opened a new entry per `::` line, so
+      §6's round trip only holds once the parser groups the way the list shows.
 *)

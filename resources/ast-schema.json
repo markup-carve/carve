@@ -75,44 +75,6 @@
       },
       "additionalProperties": false
     },
-    "definition_item": {
-      "type": "object",
-      "title": "Definition-list entry",
-      "description": "One `:: term` / `:  definition` entry. These are PLAIN OBJECTS in the reference shape, not nodes: they carry no `type` and no `pos`, so a consumer cannot navigate to a term. The profile vocabulary does list `definition_term` and `definition_description`, and carve-php emits them as nodes - the two are not reconciled yet.",
-      "required": [
-        "terms",
-        "definitions"
-      ],
-      "properties": {
-        "terms": {
-          "type": "array",
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/$defs/inlineNode"
-            }
-          }
-        },
-        "definitions": {
-          "type": "array",
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/$defs/blockNode"
-            }
-          }
-        },
-        "definitionLines": {
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "description": "1-based source line of each definition's marker line, parallel to `definitions`."
-        }
-      },
-      "additionalProperties": false
-    },
     "citation": {
       "type": "object",
       "title": "Citation item",
@@ -665,7 +627,7 @@
     "definition_list": {
       "type": "object",
       "title": "definition_list (block)",
-      "description": "Its items are plain objects rather than nodes in the reference shape - see `definition_item`.",
+      "description": "Its items are the `<dt>` / `<dd>` sequence, in document order: a run of `definition_term` nodes followed by the `definition_description` nodes they share. The grouping is not published because it is not a shared fact - two engines that published it grouped the same document differently while rendering the same list - and because a plain object can carry no `pos`, which left a term the only content in a serialized document an editor could not navigate to (PART 12 §4).",
       "required": [
         "type",
         "items"
@@ -677,7 +639,68 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/definition_item"
+            "anyOf": [
+              {
+                "$ref": "#/$defs/definition_term"
+              },
+              {
+                "$ref": "#/$defs/definition_description"
+              }
+            ]
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "definition_term": {
+      "type": "object",
+      "title": "definition_term (block)",
+      "description": "A `<dt>`: the inline content of one `:: term` line. Consecutive terms belong to the descriptions that follow them, which is what the rendered list shows.",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "definition_term"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "definition_description": {
+      "type": "object",
+      "title": "definition_description (block)",
+      "description": "A `<dd>`: the block content of one `:  definition`. It belongs to the run of terms before it.",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "definition_description"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockNode"
           }
         },
         "attrs": {
@@ -1762,7 +1785,9 @@
             "block_quote",
             "code_block",
             "comment",
+            "definition_description",
             "definition_list",
+            "definition_term",
             "div",
             "figure",
             "footnote",
@@ -1861,6 +1886,21 @@
           "if": {
             "properties": {
               "type": {
+                "const": "definition_description"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/definition_description"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
                 "const": "definition_list"
               }
             },
@@ -1870,6 +1910,21 @@
           },
           "then": {
             "$ref": "#/$defs/definition_list"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "definition_term"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/definition_term"
           }
         },
         {

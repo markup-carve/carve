@@ -161,24 +161,51 @@ spans that do not cover the text they claim.
 
 | engine | shape | positions |
 |---|---|---|
-| carve-js | conformant over the corpus | blocks and inlines, except reassembled regions (table cells, line-block content) and the synthesized `frontmatter` / `footnote` wire nodes |
-| carve-php | field-name divergences remain - `attrs` published as a flat map, `figure` carrying `children` instead of `target` + `caption`, `mention` exposing its rendering internals ([carve-php#510](https://github.com/markup-carve/carve-php/issues/510)) | recorded behind a parse option, enabled whenever it serializes |
-| carve-rs | conformant | blocks only; the inline half is in progress ([carve-rs#352](https://github.com/markup-carve/carve-rs/issues/352)) |
-| carve-rb | publishes carve-rs's tree through a serializer forked into the binding; `emphasis` carries a `kind` the type already encodes, and `fromCrossref` is spelled `from_crossref` ([carve-rb#26](https://github.com/markup-carve/carve-rb/issues/26)) | whatever carve-rs records |
+| carve-js | conformant | blocks and inlines, except reassembled regions (table cells, line-block content) |
+| carve-rs | conformant | blocks and most inlines; reconstructed regions and a definition list's own parts are unplaced ([carve-rs#333](https://github.com/markup-carve/carve-rs/issues/333)) |
+| carve-php | two field-name divergences left: the root carries `abbreviations`, and `inline_extension` publishes `extensionType`/`children` ([carve-php#510](https://github.com/markup-carve/carve-php/issues/510)) | recorded behind a parse option, enabled whenever it serializes |
+| carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
 is only a claim worth making if the disagreements are visible.
 
-## Open questions
+## Definition lists
 
-Two shapes are not settled, and the schema records the reference form rather than
-pretending otherwise:
+A definition list's `items` hold the `<dt>` / `<dd>` sequence as nodes, in
+document order:
 
-**Definition-list entries are plain objects**, carrying `terms` and
-`definitions`, with no `type` and no `pos` - so a consumer cannot navigate to a
-term. The profile vocabulary does list `definition_term` and
-`definition_description`, and carve-php emits them as nodes.
+```json
+{"type": "definition_list", "items": [
+  {"type": "definition_term", "children": [ ... ]},
+  {"type": "definition_term", "children": [ ... ]},
+  {"type": "definition_description", "children": [ ... ]}
+]}
+```
 
-**Citation items are plain objects** for the same reason.
+A run of terms belongs to the descriptions that follow it - the rule the
+rendered list already shows. The grouping is **not** published, for three
+reasons:
 
-Both are the last places where content in the tree is not a node.
+- a plain `{terms, definitions}` object can carry no `pos`, which left a term
+  the only content in a serialized document an editor could not navigate to -
+  the same argument §7 used to move frontmatter and footnote definitions out of
+  root fields;
+- `definition_term` and `definition_description` are in the [normative block
+  vocabulary](/profiles), so a profile can name them. Under the object form
+  those two entries named nothing and a profile denying either was a silent
+  no-op;
+- the grouping was **not a shared fact**. Given the same four lines, carve-js
+  published one entry with two terms and two definitions while carve-rs
+  published three entries split differently - and all three engines rendered
+  the same `<dl>`. A structure two producers disagree about, which no output
+  depends on, is an internal.
+
+## Open question
+
+**Citation items are plain objects**, carrying `key`, `prefix`, `locator` and
+`suffix` with no `type` and no `pos`. The definition-list argument applies only
+partly: a citation item is not in the profile vocabulary, so nothing names it
+and no denial is silently lost - but a locator is still content a consumer might
+want to navigate to.
+
+It is the last place where content in the tree is not a node.
