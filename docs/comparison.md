@@ -9,7 +9,7 @@ turning your content into a JavaScript program.
 > landscape (AsciiDoc, reStructuredText, Textile, and more), see
 > [Modern Markup Languages Comparison](./markup-languages).
 
-::: tip Legend
+::: tip "Legend"
 ✅ native &nbsp;·&nbsp; 🧩 plugin / extension needed &nbsp;·&nbsp; ⚠️ partial / convention &nbsp;·&nbsp; ❌ not available
 :::
 
@@ -96,7 +96,7 @@ for the detailed breakdown and caveats.
 - **MDX** - your docs *are* an app; you want to embed live React/JS components and accept that content runs code.
 - **Carve** - you write **cross-referenced, content-rich docs** (handbooks, specs, knowledge bases) and want batteries-included syntax, predictable output, and the same result across php / js / rs - without a build step that executes JavaScript.
 
-::: info Want the full reasoning?
+::: info "Want the full reasoning?"
 See [Technical Rationale](/technical-rationale) for the parser contract and
 [Divergence from Djot](/divergence-from-djot) for the specific design calls
 (case-preserving heading ids, content-required list markers, the `+` continuation marker).

@@ -7,7 +7,7 @@ description: A task-oriented guide for Markdown and GFM authors switching to Car
 
 This guide is for authors who already know CommonMark or GitHub-Flavored Markdown (GFM) and want to rewrite documents in Carve. It focuses on what to change, not on why Carve differs from Markdown - for the design rationale see [Carve vs Markdown/Djot/MDX](/comparison).
 
-::: tip Automated conversion
+::: tip "Automated conversion"
 There is no `migrate` CLI command; the Markdown converter is a library API. In carve-js call `markdownToCarve` (exported from `@markup-carve/carve`); in carve-php use `MarkupCarve\Carve\Converter\MarkdownToCarve`:
 
 ```js
@@ -71,7 +71,7 @@ _underline_
 
 :::
 
-::: warning Emphasis is the most common migration error
+::: warning "Emphasis is the most common migration error"
 The auto-converter rewrites emphasis for you, but watch for cases where your Markdown used `_` for italics - in Carve `_underline_` renders as `<u>`, not `<em>`.
 :::
 
@@ -251,7 +251,7 @@ const html = carveToHtml(source, { allowRawHtml: false })
 
 The equivalent switch exists per engine (carve-rs `Options::with_raw_html(false)`, etc.). See [Security](/security) for the full model.
 
-::: warning Trust boundary
+::: warning "Trust boundary"
 Bare tags are safe (literal) regardless. The setting above only governs the explicit ```` ```=html ```` / `{=html}` passthrough - leave it disabled for user-generated content.
 :::
 

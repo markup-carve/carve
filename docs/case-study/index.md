@@ -5,7 +5,7 @@ description: The original design research behind Carve - historical, not normati
 
 # Case Study
 
-::: info Historical document
+::: info "Historical document"
 This case study records the design research Carve grew out of: the landscape it
 came from, the principles that guided it, and the reasoning behind each syntax
 decision. It is **not the normative specification** and is not kept in lockstep

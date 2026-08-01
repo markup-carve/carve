@@ -302,21 +302,21 @@ reversed in the browser.
 | **Carve** | ~1 MB (budget-capped, then degrades to plain text) | < 1 s |
 | typical Markdown parser | unbounded, or a ReDoS hang | seconds → DoS |
 
-::: warning One thing you must still configure
+::: warning "One thing you must still configure"
 **Raw HTML is on by default.** ` ```=html ` blocks and `` `…`{=html} `` inline
 raw are emitted verbatim unless you disable raw passthrough (or run a safe
 mode). For untrusted input, turn raw HTML off - the URL, attribute, and DoS
 defenses above are always on, but raw passthrough is the one switch you own.
 :::
 
-::: tip Prefer the `img` fence over raw `=html` for SVG
+::: tip "Prefer the `img` fence over raw `=html` for SVG"
 To put SVG on the page without the raw-HTML passthrough, use the
 [`img` fence](/svg-images). It sanitizes the SVG and, by default, emits a
 browser-sandboxed `data:image/svg+xml` `<img>` - safe for untrusted input.
 Themeable inline `<svg>` is an opt-in the host enables only for trusted content.
 :::
 
-::: tip Defense in depth still applies
+::: tip "Defense in depth still applies"
 Carve's URL/CSS hardening is a **denylist** of known-dangerous constructs, not a
 full allowlist sanitizer. For genuinely hostile input that may carry arbitrary
 attributes, keep running the rendered HTML through a DOM sanitizer (e.g.
@@ -347,7 +347,7 @@ auto-detection, so a bare tag is never live markup. The only way to emit raw
 HTML is the **explicit** `` ```=html `` construct, which you disable for
 untrusted input.
 
-::: tip Two things this CVE also reminds you of
+::: tip "Two things this CVE also reminds you of"
 Even with Carve's inert output, a *preview* application still owns its sandbox:
 render into an `iframe[sandbox]` with no same-origin / no localhost access and a
 Content-Security-Policy. And keep raw-HTML passthrough off for untrusted files.
@@ -370,7 +370,7 @@ always-on scheme denylist blanks these to `href=""`:
 So `[open](ms-office:ofe|u|http://evil/x.docm)` becomes `<a href="">open</a>` —
 the OS handler is never reachable.
 
-::: warning A denylist is a moving target
+::: warning "A denylist is a moving target"
 Blocking the *known* command-execution schemes closes the documented class, but
 new OS handlers appear. If your application turns link clicks into OS-handler
 invocations (a desktop preview, an editor), enable the scheme **allowlist**
