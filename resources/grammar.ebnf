@@ -196,9 +196,9 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
 (* COLUMN ZERO -- NORMATIVE. A heading_marker sits at COLUMN 0 of its line (no
    leading spaces or tabs); carve does NOT accept CommonMark's 0-3 space indent.
    An indented `#`-line is ordinary paragraph text: "   # H" is <p># H</p>, not
-   a heading. This applies to a continuation line too -- an indented
-   heading_marker is not a continuation marker, so it folds into the heading as
-   literal text rather than being stripped. (Within a container the column is
+   a heading -- including one written directly under an open heading, which used
+   to fold in as literal text and now simply starts its own paragraph (see
+   SINGLE-LINE HEADINGS). (Within a container the column is
    measured after the container's own markers are stripped, e.g. "> # H" is a
    quoted heading.) Matches Djot (which dropped CommonMark's indent fuzz);
    pinned by corpus 101-heading-marker-column-zero. *)
