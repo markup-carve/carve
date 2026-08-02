@@ -51,7 +51,7 @@ const INVENTORY = [
   { base: '139-trailing-whitespace-boundaries-4', crv: ['NBSP'], html: [] },
   { base: '16-reference-link-9', crv: ['trailing-WS'], html: [] },
   { base: '29-non-breaking-space-3', crv: ['NBSP'], html: [] },
-  { base: '82-multi-line-headings-5', crv: ['trailing-WS'], html: [] },
+  { base: '82-single-line-headings-5', crv: ['trailing-WS'], html: [] },
 ]
 
 function scan(text) {

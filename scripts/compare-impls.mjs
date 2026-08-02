@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { basename, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { DEFAULT_TARGET, expectedFileFor, targetOf } from './lib/corpus-targets.mjs'
+import { phpDir, rustDir } from './lib/engine-locations.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const args = new Set(process.argv.slice(2))
@@ -90,7 +91,7 @@ const JS_ENTRY = {
 const impls = [
   {
     name: 'rust',
-    cwd: process.env.CARVE_RS_DIR ?? resolve(root, '../carve-rs'),
+    cwd: rustDir(),
     prepare: null,
     defaultCommand: (target = 'html') => ['cargo', 'run', '--quiet', '--', ...CLI_FLAGS[target]],
     optionalCommand(feature, target = DEFAULT_TARGET) {
@@ -189,7 +190,7 @@ const impls = [
   },
   {
     name: 'php',
-    cwd: process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php'),
+    cwd: phpDir(),
     prepare: null,
     defaultCommand: (target = 'html') => ['php', 'bin/carve', ...CLI_FLAGS[target]],
     optionalCommand(feature, target = DEFAULT_TARGET) {

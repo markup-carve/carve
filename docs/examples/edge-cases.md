@@ -1080,8 +1080,8 @@ lazy
   <li>a
     <ul>
       <li>b
-        <h1 id="N-lazy">N
-lazy</h1>
+        <h1 id="N">N</h1>
+        lazy
       </li>
     </ul>
   </li>
@@ -1707,9 +1707,9 @@ int main() {}
 
 :::
 
-## Multi-line headings
+## Single-line headings
 
-A heading spills onto following lines until a blank line. Three heading-specific rules: a continuation line carries the **same** number of `#` (stripped) or **none** (djot); a line with a **different** `#` count — more *or* fewer — starts a new heading; and a blank line or a caption (`^ …`, which attaches via §4) ends it. Everything else that ends a heading is *general block structure*, not a heading rule: a heading is a bounded title, so any block-opener (quote, table, fenced code, `:::` div, thematic break, `%%%` comment) ends it and starts that block, and a list marker — with no open paragraph in a title to fold into (§10) — starts a sibling list, exactly as at the top level. The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
+A heading **ends at the newline**. Nothing folds into it: the next line begins whatever block it begins, exactly as after any other closed block. This diverges from djot deliberately — djot folds a following plain line into the heading, which is a silent corruption for anyone arriving from Markdown, and `divergence-from-djot` §7 already broke from djot on the mirror case. A caption (`^ …`) still attaches via §4, because attachment is not continuation. The heading id is built from the single line. (Setext underline headings remain intentionally excluded.)
 
 ::: compare
 
@@ -1719,15 +1719,15 @@ outside
 ```
 
 ```html
-<section id="Title-outside">
-  <h1>Title
-outside</h1>
+<section id="Title">
+  <h1>Title</h1>
+  <p>outside</p>
 </section>
 ```
 
 :::
 
-A continuation line must carry the **same** number of `#` as the opener (or none). A line with a different count starts a new heading: `## still A` folds in, but `# B` (fewer `#`) is a new heading.
+Repeated headings are simply separate headings — the `#` count no longer decides whether one folds into another.
 
 ::: compare
 
@@ -1738,9 +1738,11 @@ A continuation line must carry the **same** number of `#` as the opener (or none
 ```
 
 ```html
-<section id="A-still-A">
-  <h2>A
-still A</h2>
+<section id="A">
+  <h2>A</h2>
+</section>
+<section id="still-A">
+  <h2>still A</h2>
 </section>
 <section id="B">
   <h1>B</h1>
@@ -5862,3 +5864,104 @@ picked different answers here and every one of them stayed green (PART 10 §1).
 ```
 
 :::::
+
+## Attribute braces on a list-item marker line
+
+Three shapes that look alike and mean different things (PART 9 §15 A8). What
+decides is whether content follows the brace run on that line, not the column
+the braces sit in.
+
+`-{…} text` with no space after the marker attributes the **item**. With a
+space and text after the braces, the braces are part of that text. With a space
+and *nothing* after them, it is an ordinary attribute line that floats to the
+next block - a container does not get its own attribute rules.
+
+Worth pinning because the two halves were each pinned already and their boundary
+was not: carve-rs read the third shape as literal text while the other engines
+read it as an attribute line, and neither could be shown wrong (carve#454).
+
+::: compare
+
+```carve
+-{.item} An attributed item.
+- {.c} literal text
+
+- {a=b .c}
+  # Attributed heading
+```
+
+```html
+<ul>
+  <li class="item"><p>An attributed item.</p></li>
+  <li><p>{.c} literal text</p></li>
+  <li>
+    <h1 a="b" class="c" id="Attributed-heading">Attributed heading</h1>
+  </li>
+</ul>
+```
+
+:::
+
+
+## Implicit heading references with no definition
+
+A `[text][]` that matches no link definition falls back to the document's
+headings by their rendered text (PART 11 R1). The match is looser than the
+exact, case-sensitive link-definition match in the same rule: it trims,
+collapses whitespace and folds case, because a definition label is an
+identifier the author wrote twice while a heading reference is prose quoted
+from elsewhere in the document.
+
+A heading under a blockquote is declined - quoted text names the quoted
+document's headings, not this one's - while a list item resolves, because that
+is the author's own grouping. An unmatched label stays literal, and a real link
+definition wins the tie.
+
+Worth pinning because every case that existed paired `[X][]` with an `[X]: url`
+definition, so the fallback branch had no coverage at all and the executable
+spec had never implemented it (carve#453).
+
+::: compare
+
+```carve
+# Getting Started
+
+See [getting started][] and [Missing][].
+
+> # Quoted
+
+See [Quoted][].
+
+- # In an item
+
+See [In an item][].
+
+# Defined
+
+[Defined]: /wins
+
+See [Defined][].
+```
+
+```html
+<section id="Getting-Started">
+  <h1>Getting Started</h1>
+  <p>See <a href="#Getting-Started">getting started</a> and [Missing][].</p>
+  <blockquote>
+    <h1 id="Quoted">Quoted</h1>
+  </blockquote>
+  <p>See [Quoted][].</p>
+  <ul>
+    <li>
+      <h1 id="In-an-item">In an item</h1>
+    </li>
+  </ul>
+  <p>See <a href="#In-an-item">In an item</a>.</p>
+</section>
+<section id="Defined">
+  <h1>Defined</h1>
+  <p>See <a href="/wins">Defined</a>.</p>
+</section>
+```
+
+:::

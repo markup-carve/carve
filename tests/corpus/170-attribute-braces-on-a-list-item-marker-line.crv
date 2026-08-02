@@ -1,0 +1,5 @@
+-{.item} An attributed item.
+- {.c} literal text
+
+- {a=b .c}
+  # Attributed heading

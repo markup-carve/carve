@@ -543,33 +543,24 @@ Normative statement: `resources/grammar.ebnf` PART 9 §10. Verified by corpus
 
 ## 18. Multi-Line Headings (Text Folds INTO an Open Heading)
 
-**Rule (normative, grammar PART 2):** a heading's text spills onto following
-lines until a blank line - like Djot, and consistent with lazy blockquote
-continuation. While a heading is open:
+**Rule (normative, grammar PART 2):** a heading **ends at the newline**.
+Nothing folds into it - the next line begins whatever block it begins, exactly
+as after any other closed block. A caption (`^ `) still attaches to it (§4),
+because attachment is not continuation.
 
-- a plain text line **folds into the heading text** (it does *not* start a
-  paragraph);
-- a continuation line with the **same** number of `#` markers (or none) folds in
-  (markers stripped);
-- a marker with a **different** number of `#` than the open heading - more *or
-  fewer* - starts a *new* heading;
-- a blank line, a caption (`^ `), or a fenced comment (`%%%`) ends it;
-- a **block-opener** (blockquote, table, fence, `:::` div, thematic break)
-  **ends** the heading and starts that block;
-- a **list marker** — bullet *or* ordered — **ends** the heading and starts a
-  top-level sibling list (a list marker folds only into a *paragraph*, §17, not
-  a heading; this matches Djot).
-
-The heading id derives from the **full folded text**.
+The heading id derives from that single line.
 
 ```carve
 # Title
 outside
 ```
 
-This is **one** heading - `<h1>Title␤outside</h1>` with id `Title-outside` -
-NOT a heading plus a paragraph. The biggest authoring trap in the heading syntax: always put
-a blank line after a heading. (Corpus `79-multi-line-headings`.)
+Heading **plus** paragraph: `<h1 id="Title">Title</h1>` then `<p>outside</p>`.
+
+This used to be one heading holding both lines, with id `Title-outside`, and
+this document called it the biggest authoring trap in the heading syntax. It is
+gone rather than documented: see `divergence-from-djot` §14 for why, and corpus
+`82-single-line-headings` for the pins.
 
 ```carve
 # Title
@@ -577,7 +568,7 @@ a blank line after a heading. (Corpus `79-multi-line-headings`.)
 outside
 ```
 
-Heading + paragraph, as intended.
+Identical output - the blank line is no longer load-bearing.
 
 ---
 

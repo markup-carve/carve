@@ -1,12 +1,12 @@
-Multi-line headings
+Single-line headings
 
 ```
 # Title
 outside
 .
-<section id="Title-outside">
-  <h1>Title
-outside</h1>
+<section id="Title">
+  <h1>Title</h1>
+  <p>outside</p>
 </section>
 ```
 
@@ -15,9 +15,11 @@ outside</h1>
 ## still A
 # B
 .
-<section id="A-still-A">
-  <h2>A
-still A</h2>
+<section id="A">
+  <h2>A</h2>
+</section>
+<section id="still-A">
+  <h2>still A</h2>
 </section>
 <section id="B">
   <h1>B</h1>
