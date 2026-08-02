@@ -114,6 +114,49 @@ npm run compare:impls -- --limit=20 --bench
 npm run compare:impls -- --targets=html          # fast path, HTML only
 ```
 
+### Combinations, not just cases
+
+`npm run combinatorial:check` is a second differential runner over a different
+input set. `compare:impls` renders the CORPUS through every engine; the
+combinatorial check renders a generated product of AXES - heading level,
+attribute provenance, container nesting, trailing body - and diffs the same way.
+
+The distinction is the point. The corpus pins constructs; nothing in it pins
+what happens when two constructs meet, and a pair space is larger than a
+hand-written case list. Every cross-engine divergence in carve#427 lived in that
+gap: nested headings were covered, attributes were covered, and no case gave a
+nested heading attributes, so four implementations held four different answers
+with every suite green.
+
+There are no expected-output files. The oracle is agreement, plus structural
+invariants (no dangling `href="#id"`, no duplicate DOM id, every heading
+reachable by a fragment) that hold whatever the agreed answer turns out to be -
+those fire even when every engine agrees and all of them are wrong, which has
+happened here before.
+
+A divergence it reports is a QUESTION, not a verdict. Decide the canonical
+answer, then promote it to a corpus case in `docs/examples/edge-cases.md` so it
+is pinned from then on.
+
+```bash
+npm run combinatorial:check
+CARVE_RS_DIR=/path/to/carve-rs CARVE_PHP_DIR=/path/to/carve-php npm run combinatorial:check
+```
+
+The output names each engine's revision, branch and dirty state. That is not
+decoration: a CLI engine is whatever its checkout happens to be sitting on, and
+the first run of this script reported two divergence classes that were nothing
+but an out-of-date working copy. Check those lines before investigating a
+finding.
+
+It is deliberately NOT wired into CI yet - it currently reports real
+divergences, so it would land red. Wire it once those are resolved.
+
+Render options (`sections`, `sourceLine`) are not an axis yet: neither the
+carve-rs nor the carve-php CLI exposes them and the executable spec implements
+neither, so there is nothing to compare across. Adding those flags promotes the
+option axis to a real differential.
+
 ### Targets
 
 The runner compares every render target, not just HTML: `--targets=all` (the
