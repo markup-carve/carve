@@ -244,8 +244,8 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    block-attribute line (PART 9 §15), the uniform block rule; an explicit
    `#id` from that line lives on the `<section>` wrapper (PART 9 §13).
    Pinned by corpus 02-headings (the preceding-line and literal-trailing
-   pairs) and 82-multi-line-headings (the five folding cases, kept as the
-   regression guard for the behavior that replaced them). *)
+   pairs) and 82-single-line-headings (the five cases that used to fold, kept
+   as the regression guard for the behavior that replaced them). *)
 
 (* HEADING IDENTIFIERS -- NORMATIVE. A heading without an explicit {#id} gets an
    automatic identifier from its folded plain text (symbols `:name:` and footnote
@@ -514,9 +514,12 @@ definition_entry = definition_term+, [blank_line], definition_body,
    parity). A blank NOT followed by a `:  ` definition ends the entry. *)
 definition_term = "::", space, inline_content, newline, {term_continuation_line} ;
 term_continuation_line = inline_content, newline ;
-(* A term folds a following plain line like a heading (soft break); a blank
-   line, a new `::`/`:  ` marker, or a block opener ends it. A term holds inline
-   content only -- no block body. *)
+(* A term folds a following plain line as a soft break; a blank line, a new
+   `::`/`:  ` marker, or a block opener ends it. A term holds inline content
+   only -- no block body. (This used to read "like a heading". A heading no
+   longer folds anything -- see SINGLE-LINE HEADINGS -- so the analogy is gone;
+   whether a term should follow it and become single-line too is open, see
+   markup-carve/carve#434.) *)
 definition_body = (':', space, space, first_block_content)
                 | (':', space, space, inline_content, newline,
                    { definition_continuation
@@ -2075,7 +2078,7 @@ EOF = (* end of file *) ;
          marker is too common in prose, and the symmetric rule removes the
          hard-wrapped-bullet false positive. Pinned by corpus 05-lists-12/13,
          76-paragraph-interruption, 77-blockquote-lazy-continuation,
-         79-multi-line-headings.) TIGHT NESTED LISTS UNAFFECTED: an
+         82-single-line-headings.) TIGHT NESTED LISTS UNAFFECTED: an
          indented marker inside an open list ITEM opens a sublist with no
          blank line -- that is §24 C3 (content column), not this relation.
       I3 IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)")

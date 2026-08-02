@@ -27,8 +27,10 @@ CarveCore {
   // approximates): tables (2D span walk), divs/admonitions, smart
   // typography, mentions/tags, inline extensions (:name[...]), emoji,
   // editorial markup, comments, block-attribute lines, definition lists,
-  // citations, includes, frontmatter, inline footnotes (^[...]), and
-  // multi-line heading folding.
+  // citations, includes, frontmatter, and inline footnotes (^[...]).
+  //
+  // (Heading folding used to be listed here. It is gone from the language,
+  // not just from this pipeline: a heading ends at its newline, §PART 2.)
   //
   // Word boundaries without lookbehind (PEGs have none):
   //  - left boundary / no-intraword: `word` absorbs a delimiter glued
