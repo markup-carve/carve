@@ -41,7 +41,10 @@ const LINK_DEF = /^\[([^\]^@][^\]]*)\]: \s*(\S+)(?:\s+"((?:\\"|[^"])*)")?(?:\s.*
 const FOOTNOTE_DEF = /^\[\^([^\]]+)\]: [ \t]*(\S.*)$/
 const ABBR_DEF = /^\*\[([^\]]+)\]: \s*(.+)$/
 const CAPTION = /^\^ (.*)$/
-const BULLET = /^([ \t]*)([-*])(\{[^}]*\})? (?:\[([ xX_>?-])\] )?(.+)$/
+// The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
+// engine, so a tab here must not open a list (PART 9 SS11). Its width is the
+// item's content column for a non-task bullet.
+const BULLET = /^([ \t]*)([-*])(\{[^}]*\})?( +)(?:\[([ xX_>?-])\] )?(.+)$/
 // The value is optional before a `.`: a bare `. ` is a decimal marker
 // counting from 1 (PART 9 ordered_marker, BARE DOT). A bare `)` is not a
 // marker, so the empty alternative is guarded by a lookahead at the dot.
@@ -1154,14 +1157,16 @@ function matchMarker(line) {
   if (m && m[3] && m[3].replace(/[{} ]/g, '') !== '' && parseAttrList(m[3]) === null) m = null
   if (m) {
     const { col } = indentCols(m[1])
+    const whitespaceWidth = m[4].length
     return {
       indent: col,
       bullet: m[2],
       attrs: m[3] ?? null, // marker-glued item attribute block (SS15 ext)
-      task: m[4],
-      text: m[5],
-      // the task box is item CONTENT, not marker (PART 9 SS24 C3)
-      markerWidth: m[2].length + 1,
+      task: m[5],
+      text: m[6],
+      // The task box is item CONTENT, not marker (PART 9 SS24 C3), so extra
+      // spaces before it do not move the item content column.
+      markerWidth: m[5] !== undefined ? m[2].length + 1 : m[2].length + whitespaceWidth,
     }
   }
   m = ORDERED.exec(line)

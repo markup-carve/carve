@@ -1324,6 +1324,67 @@ is not wrapped in a paragraph.
 
 :::
 
+A bullet's content column is where the marker actually ends, not a fixed 2. A
+bullet followed by extra spaces puts its content further right, and a block
+belongs to the item only if it reaches that column.
+
+::: compare
+
+```carve
+-   item
+    # Wide
+```
+
+```html
+<ul>
+  <li>item
+    <h1 id="Wide">Wide</h1>
+  </li>
+</ul>
+```
+
+:::
+
+Below that column the line is lazy paragraph text instead, so its marker
+survives literally — the same content-column rule as everywhere else, measured
+from the marker rather than assumed.
+
+::: compare
+
+```carve
+-   item
+  # H
+```
+
+```html
+<ul>
+  <li>item
+# H</li>
+</ul>
+```
+
+:::
+
+A task item is the exception: its content column stays at 2. The checkbox is
+content rather than marker, and extra spaces before it do not move the column
+either, so neither 6 nor 8 is where the body starts.
+
+::: compare
+
+```carve
+-   [ ] item
+    # H
+```
+
+```html
+<ul>
+  <li><input type="checkbox" disabled> item
+# H</li>
+</ul>
+```
+
+:::
+
 ## Doubled emphasis delimiters
 
 A bare single-character emphasis delimiter immediately adjacent to the same

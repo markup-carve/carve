@@ -93,3 +93,34 @@ b
   </li>
 </ul>
 ````
+
+```
+-   item
+    # Wide
+.
+<ul>
+  <li>item
+    <h1 id="Wide">Wide</h1>
+  </li>
+</ul>
+```
+
+```
+-   item
+  # H
+.
+<ul>
+  <li>item
+# H</li>
+</ul>
+```
+
+```
+-   [ ] item
+    # H
+.
+<ul>
+  <li><input type="checkbox" disabled> item
+# H</li>
+</ul>
+```
