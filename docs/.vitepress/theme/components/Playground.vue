@@ -41,7 +41,11 @@ const fullscreen = ref(false)
 // it?" is not a question this component can answer. Reloading the playground
 // without a fragment gives a normal, raw-HTML-enabled session back.
 const fromSharedLink = ref(false)
-const shareStatus = ref<string | null>(null)
+// Feedback for the share button. It reports through the icon (plus an
+// aria-live line for screen readers) rather than a text label beside it: a
+// label that appears and disappears would reflow the toolbar row each time.
+const shareState = ref<'idle' | 'copied' | 'error'>('idle')
+const shareMessage = ref('')
 let shareStatusTimer: ReturnType<typeof setTimeout> | undefined
 
 async function applyShareLink(): Promise<void> {
@@ -61,27 +65,35 @@ function shareUrl(encoded: string): string {
   return `${origin}${pathname}${search}#${encoded}`
 }
 
-function flashShareStatus(message: string): void {
-  shareStatus.value = message
+function flashShareStatus(state: 'copied' | 'error', message: string): void {
+  shareState.value = state
+  shareMessage.value = message
   clearTimeout(shareStatusTimer)
-  shareStatusTimer = setTimeout(() => (shareStatus.value = null), 2500)
+  shareStatusTimer = setTimeout(() => {
+    shareState.value = 'idle'
+    shareMessage.value = ''
+  }, 2500)
 }
+
+const shareTitle = computed<string>(() =>
+  shareState.value === 'idle' ? 'Copy a link to this document' : shareMessage.value,
+)
 
 async function copyShareLink(): Promise<void> {
   const encoded = await encodeShare({ source: source.value, engine: engine.value })
   if (encoded === null) {
-    flashShareStatus('Too long to share as a link')
+    flashShareStatus('error', 'Too long to share as a link')
     return
   }
   const url = shareUrl(encoded)
   window.history.replaceState(null, '', url)
   try {
     await navigator.clipboard.writeText(url)
-    flashShareStatus('Link copied')
+    flashShareStatus('copied', 'Link copied')
   } catch {
     // Clipboard access can be refused (permissions, insecure origin). The
     // address bar now holds the link either way, so say so instead of failing.
-    flashShareStatus('Link is in the address bar')
+    flashShareStatus('copied', 'Link is in the address bar')
   }
 }
 
@@ -539,13 +551,52 @@ void mermaidInit
         </a>
       </div>
       <div class="pg-toolbar-right">
-        <span v-if="fromSharedLink" class="pg-shared-note" role="note" title="A document that arrived in a link renders with raw HTML disabled">
-          Shared link: raw HTML off
-        </span>
-        <span v-if="shareStatus" class="pg-share-status" role="status">{{ shareStatus }}</span>
-        <button class="pg-btn" type="button" @click="copyShareLink">
-          Copy link
+        <button
+          class="pg-btn pg-icon-btn"
+          type="button"
+          :class="{ 'is-copied': shareState === 'copied', 'is-error': shareState === 'error' }"
+          :title="shareTitle"
+          aria-label="Copy a link to this document"
+          @click="copyShareLink"
+        >
+          <svg
+            v-if="shareState === 'idle'"
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <line x1="8.6" y1="10.7" x2="15.4" y2="6.3" />
+            <line x1="8.6" y1="13.3" x2="15.4" y2="17.7" />
+          </svg>
+          <svg
+            v-else
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <polyline v-if="shareState === 'copied'" points="20 6 9 17 4 12" />
+            <template v-else>
+              <line x1="6" y1="6" x2="18" y2="18" />
+              <line x1="18" y1="6" x2="6" y2="18" />
+            </template>
+          </svg>
         </button>
+        <span class="pg-sr-only" role="status" aria-live="polite">{{ shareMessage }}</span>
         <button class="pg-btn pg-import" type="button" @click="openImport">
           Import Markdown
         </button>
@@ -566,7 +617,17 @@ void mermaidInit
         />
       </div>
       <div class="pane">
-        <label>Rendered HTML</label>
+        <div class="pane-label-row">
+          <label>Rendered HTML</label>
+          <span
+            v-if="fromSharedLink"
+            class="pg-shared-note"
+            role="note"
+            title="This document arrived in a link, so raw HTML is not rendered and the Rust engine is not offered"
+          >
+            shared link: raw HTML off
+          </span>
+        </div>
         <div
           ref="outputEl"
           class="output vp-doc carve-render"
@@ -683,14 +744,39 @@ void mermaidInit
   border-color: var(--vp-c-brand-1);
   color: var(--vp-c-brand-1);
 }
-.pg-share-status {
-  font-size: 0.78rem;
+/* Share button: icon only, so the toolbar keeps the one-row layout it had
+   before. It is square, and the success/failure states only recolor it - a
+   state that changed the button's width would shift the whole row. */
+.pg-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  padding: 0.35rem 0;
+}
+.pg-icon-btn.is-copied {
+  border-color: var(--vp-c-brand-1);
   color: var(--vp-c-brand-1);
 }
+.pg-icon-btn.is-error {
+  border-color: var(--vp-c-danger-1, #d64550);
+  color: var(--vp-c-danger-1, #d64550);
+}
+/* The icon carries the outcome visually; this carries it for a screen reader. */
+.pg-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
 /* Why the output is not what the sender saw, if their document used raw HTML.
-   Stated rather than hidden: silence would read as a rendering bug. */
+   Stated rather than hidden: silence would read as a rendering bug. It sits in
+   the rendered pane's label row, beside what it describes, because a sentence
+   in the toolbar wraps the button row onto a second line. */
 .pg-shared-note {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--vp-c-text-2);
   white-space: nowrap;
 }
