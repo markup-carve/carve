@@ -654,8 +654,10 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         const cur0 = unlazy(lines[i] ?? '')
         let dm
         if ((dm = /^:: (.*)$/.exec(cur0))) {
-          // term (dt): folds plain wrapped continuation lines like a heading so
-          // a wrapped term line does not strand its definition.
+          // term (dt): folds plain wrapped continuation lines so a wrapped term
+          // line does not strand its definition. (This used to say "like a
+          // heading". A heading ends at its newline and folds nothing; the term
+          // is the key half of a key-value entry, and keeps its fold.)
           let dt = dm[1].trim()
           i++
           while (i < n) {
