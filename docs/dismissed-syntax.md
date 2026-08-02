@@ -4,7 +4,7 @@ Ideas that were considered during Carve's design but ultimately rejected. Docume
 
 ---
 
-## Link Syntax: `"text"(url)`
+## Link Syntax: `"text"(url)` (quoted text)
 
 **Proposed:**
 ```
@@ -28,7 +28,7 @@ Visit "Google"(https://google.com "Search engine") today.
 
 ---
 
-## Link Syntax: `[text -> url]`
+## Link Syntax: `[text -> url]` (arrow)
 
 **Proposed:**
 ```
@@ -47,7 +47,7 @@ Visit [Google -> https://google.com] for search.
 
 ---
 
-## Link Syntax: `[[url | text]]`
+## Link Syntax: `[[url | text]]` (wiki-style)
 
 **Proposed (wiki-style):**
 ```
