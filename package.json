@@ -23,7 +23,7 @@
     "examples:snapshot": "UPDATE_EXAMPLES=1 node --test tests/examples.test.mjs"
   },
   "devDependencies": {
-    "@markup-carve/carve": "github:markup-carve/carve-js#af5a4002571206bbf121e3ae71da32c25cf2e962",
+    "@markup-carve/carve": "github:markup-carve/carve-js#50bddaf9161daba542a0befbe6fe22f0e49cb52e",
     "@markup-carve/carve-grammars": "github:markup-carve/carve-grammars",
     "@markup-carve/vite-plugin-carve": "git+https://github.com/markup-carve/vite-plugin-carve.git",
     "@mermaid-lint/cli": "^0.35.0",
