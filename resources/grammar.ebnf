@@ -2404,6 +2404,26 @@ EOF = (* end of file *) ;
          included) -- the preceding block-attribute line is the sole
          block-level attribute channel. A trailing `{…}` on a heading line
          is literal inline content (PART 2, headings).
+      A8 ON A LIST-ITEM MARKER LINE, ALONE MEANS ATTRIBUTE LINE. A
+         `-{…} text` with no space after the marker attributes the LIST
+         ITEM (PART 2, list items; the marker still needs content, so a
+         bare `-{…}` is not a list item at all). WITH a space, what follows
+         the brace run on that line decides:
+           - {.c} text      -> literal: <li>{.c} text</li>
+           - {a=b .c}       -> an A1 attribute line, floating (A2) to the
+             # H               heading below: <li><h1 a="b" class="c" …>
+         The discriminator is whether CONTENT FOLLOWS the braces on that
+         line, not the column they sit in. Braces trailed by text are part
+         of that text; braces alone are a line of their own that happens to
+         start after a marker, and A1/A2 apply to it exactly as they would
+         at the top level -- a container does not get its own attribute
+         rules.
+         Decided in carve#454. The two halves were each pinned (corpus
+         88-list-item-attributes-7 for the literal form, 84 for A1/A2) and
+         their boundary was not, so carve-rs read the marker line as
+         literal while carve-js, carve-php and the executable spec read it
+         as an attribute line. None of them could be shown wrong until the
+         boundary was stated.
       Implementation status: php, js, and rs implement §15 in full. Pinned
       by corpus 84-block-attribute-lines.
 
