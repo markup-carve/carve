@@ -52,6 +52,7 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 
 - unordered      1. ordered  (dialects: a. A. i. I. and the ) delimiter;
 - [ ] task        - [x] done  more task states: [-] [_] [>] [?])
+. bare dot                   (decimal from 1; only `.` may drop its value)
 -{.c} styled item            (attrs abutting the marker target the <li>)
 
 - step one                   (lone + attaches the next flush-left block

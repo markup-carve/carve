@@ -432,7 +432,40 @@ ordered_item = ordered_marker, [item_attributes], space, list_item_content ;
    parenthesized `(1)` / `(a)` form is INTENTIONALLY NOT a marker -- it is
    too easily confused with a prose parenthetical -- so `(1) text` stays
    literal paragraph text (pinned by corpus parenthesized-ordered-marker). *)
-ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')') ;
+ordered_marker = (digit+ | letter | roman_numeral), ('.' | ')')
+               | '.' ;
+(* BARE DOT -- NORMATIVE (Carve addition; no Djot or CommonMark equivalent).
+   The VALUE may be omitted when the delimiter is `.`: a bare `. ` is a decimal
+   ordered marker counting from 1, the AsciiDoc-style shorthand.
+
+     . first          -> <ol><li>first</li><li>second</li></ol>
+     . second
+
+   ONLY `.` MAY DROP ITS VALUE. `) text` stays paragraph text: a leading `) `
+   collides with prose parentheticals far more often than a leading `. ` does,
+   which is the same asymmetry that keeps `(1)` from being a marker.
+
+   IT IS A SPELLING, NOT A DIALECT. The bare dot IS decimal-dot, so it opens
+   and continues one list with the explicit form -- `. a` then `2. b` is one
+   `<ol>`, and so is `1. a` then `. b`. It carries no value, so it cannot set a
+   start: the `<ol>` omits `start` and `type`, and `3.` is how a start is
+   written. li-attributes attach exactly as they do to every other marker
+   (`.{#x} text`), because the shape is marker, [attributes], space, content
+   and the block sits BEFORE the required space rather than competing with it.
+
+   COST -- NORMATIVE. After a blank line a paragraph beginning `. ` opens a
+   list, where it was prose before; so does one beginning with `.{` plus a
+   valid attribute block and a space. Escape the marker (`\. text`) to keep the
+   line prose.
+
+   AUTHORED FORM (PART 11 §6). The two spellings parse to the same list, so a
+   canonical writer cannot tell them apart from the tree alone and MUST record
+   which one opened the list to write it back. Author NUMBERING is not authored
+   form and never was -- `1.`/`1.`/`1.` comes back renumbered. Whether that
+   record is published in the serialized AST (PART 12) is a separate question:
+   it is not part of the interchange shape until the schema names it, so an
+   implementation that keeps it internally still round-trips source -> fmt and
+   loses only the spelling through a JSON round trip. *)
 roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
               | ('I' | 'V' | 'X' | 'L' | 'C' | 'D' | 'M')+ ;
 

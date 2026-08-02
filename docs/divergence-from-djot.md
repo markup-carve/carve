@@ -618,6 +618,11 @@ as more than restyled Djot:
 - **Inline footnotes** - `^[content]` carries a note in place (pandoc-style),
   numbered into the same endnotes as a reference `[^label]`. Canonical djot has
   only reference footnotes; `^[…]` is a carve addition (grammar §16).
+- **Bare-dot ordered markers** - `. item` is a decimal ordered item counting
+  from 1, the AsciiDoc-style shorthand for the list nobody numbers by hand. It
+  is a spelling of decimal-dot, not a dialect, so it mixes with `1.` in one
+  list; only `.` may drop its value, since a leading `) ` collides with prose
+  parentheticals far more often (grammar, ordered_marker).
 - **Boolean attributes** - a bare word in `{…}` (`[Tab]{kbd}`, `{.note open}`)
   is a value-less attribute rendered `name=""`. Canonical djot rejects bare
   words (the whole block stays literal); carve accepts them, following djot-php

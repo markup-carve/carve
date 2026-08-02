@@ -42,7 +42,10 @@ const FOOTNOTE_DEF = /^\[\^([^\]]+)\]: [ \t]*(\S.*)$/
 const ABBR_DEF = /^\*\[([^\]]+)\]: \s*(.+)$/
 const CAPTION = /^\^ (.*)$/
 const BULLET = /^([ \t]*)([-*])(\{[^}]*\})? (?:\[([ xX_>?-])\] )?(.+)$/
-const ORDERED = /^([ \t]*)([0-9]+|[a-z]+|[A-Z]+)([.)])(\{[^}]*\})? (.+)$/
+// The value is optional before a `.`: a bare `. ` is a decimal marker
+// counting from 1 (PART 9 ordered_marker, BARE DOT). A bare `)` is not a
+// marker, so the empty alternative is guarded by a lookahead at the dot.
+const ORDERED = /^([ \t]*)([0-9]+|[a-z]+|[A-Z]+|(?=\.))([.)])(\{[^}]*\})? (.+)$/
 const CONT_MARKER = /^\+[ \t]*$/
 // marks a lazily-folded line (PART 9 SS10 I2): always paragraph text, never
 // re-classified as structure when an item's content is re-parsed
@@ -87,6 +90,11 @@ function alphaToInt(s) {
 // Classify an ordered marker token into candidate dialects.
 function classifyOrdered(token) {
   const out = []
+  // The bare dot has no value to classify: decimal by definition, starting at 1.
+  if (token === '') {
+    out.push({ dialect: 'decimal', value: 1 })
+    return out
+  }
   if (/^[0-9]+$/.test(token)) {
     out.push({ dialect: 'decimal', value: parseInt(token, 10) })
     return out
@@ -1115,7 +1123,7 @@ function parseListRun(lines, i, blocks, state, peekInterrupts) {
       tight: true,
       items: [],
     }
-    if (head.ordered) {
+    if (head.isOrdered) {
       list.ord = { delim: head.delim, dialects: head.dialects }
     }
     i = collectItems(lines, i, list, state)
@@ -1152,6 +1160,10 @@ function matchMarker(line) {
     if (dialects.length === 0) return null
     return {
       indent: col,
+      // `ordered` carries the marker TOKEN, which is the empty string for a
+      // bare dot - so orderedness is a flag of its own rather than the token's
+      // truthiness, or `. a` would classify as a bullet list.
+      isOrdered: true,
       ordered: m[2],
       delim: m[3],
       attrs: m[4] ?? null,
@@ -1166,11 +1178,11 @@ function matchMarker(line) {
 function sameAxes(list, head) {
   // PART 9 SS11 N1: bullet char, ordered dialect+delim, plain-vs-task
   if (list.ord) {
-    if (!head.ordered || head.delim !== list.ord.delim) return false
+    if (!head.isOrdered || head.delim !== list.ord.delim) return false
     const heads = new Set(head.dialects.map((d) => d.dialect))
     return list.ord.dialects.some((d) => heads.has(d.dialect))
   }
-  if (head.ordered) return false
+  if (head.isOrdered) return false
   if (head.bullet !== list.bullet) return false
   return (head.task !== undefined) === list.task
 }
