@@ -164,6 +164,73 @@ function checkFrontmatterSurvives(doc, source, findings) {
   }
 }
 
+
+/**
+ * A document's structural signature: the tree of node TYPES, with values,
+ * attributes and positions removed.
+ *
+ * The schema says whether a tree is well formed; it cannot say whether two
+ * engines produced the SAME tree. Both can be valid and structurally
+ * different - which is what PART 12 §1 actually forbids, because "a consumer
+ * written against one implementation MUST be able to read another's output"
+ * is a statement about shape, not about validity.
+ *
+ * That gap let carve-php ship a table cell split into three text nodes where
+ * the reference emits one (carve-php#612), and carve-rs the same cell as five
+ * (carve-rs#413). Every span in both was correct and every document validated,
+ * so nothing here reported anything.
+ */
+function shapeOf(node) {
+  if (Array.isArray(node)) return node.map(shapeOf)
+  if (!node || typeof node !== 'object') return null
+  const children = []
+  // Sorted by key: engines serialize their fields in different orders, and a
+  // signature that inherited that order would report every one of them as a
+  // shape difference.
+  for (const [key, value] of Object.entries(node).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))) {
+    if (POS_KEYS.includes(key) || key === 'pos' || key === 'srcByteLength') continue
+    if (Array.isArray(value)) {
+      const sub = value.map(shapeOf).filter((s) => s !== null)
+      if (sub.length) children.push([key, sub])
+    } else if (value && typeof value === 'object') {
+      const sub = shapeOf(value)
+      if (sub !== null) children.push([key, [sub]])
+    }
+  }
+  return typeof node.type === 'string' || children.length ? { type: node.type ?? '?', children } : null
+}
+
+/** Render a shape as a compact path list, so a mismatch names where it is. */
+function shapePaths(shape, path = '$') {
+  if (!shape) return []
+  const out = [`${path}:${shape.type}`]
+  for (const [key, subs] of shape.children) {
+    subs.forEach((s, i) => out.push(...shapePaths(s, `${path}.${key}[${i}]`)))
+  }
+  return out
+}
+
+/**
+ * Compare an engine's tree against the reference's and report the FIRST place
+ * they diverge, which is the one worth reading.
+ */
+function checkShapeParity(name, doc, findings) {
+  const reference = referenceShapes.get(name)
+  if (!reference) return
+  const mine = shapePaths(shapeOf(doc))
+  const theirs = shapePaths(reference)
+  if (mine.length === theirs.length && mine.every((p, i) => p === theirs[i])) return
+  const at = mine.findIndex((p, i) => p !== theirs[i])
+  const where = at === -1 ? Math.min(mine.length, theirs.length) : at
+  findings.push(
+    `${name}: tree differs from the reference at ${theirs[where] ?? '(end)'} ` +
+      `- reference has ${theirs.length} nodes, this has ${mine.length} ` +
+      `(got ${mine[where] ?? '(end)'})`,
+  )
+}
+
+const referenceShapes = new Map()
+
 function checkDocument(doc, source, findings) {
   checkShape(doc, findings)
   checkFrontmatterSurvives(doc, source, findings)
@@ -289,6 +356,7 @@ for (const { name, source } of samples) {
     continue
   }
   checkDocument(doc, source, jsFindings)
+  referenceShapes.set(name, shapeOf(doc))
 
   // PART 12 §6: serialize then deserialize must equal the parse.
   const round = JSON.parse(JSON.stringify(doc))
@@ -330,6 +398,7 @@ if (rsBinary) {
       continue
     }
     checkDocument(doc, source, rsFindings)
+    checkShapeParity(name, doc, rsFindings)
   }
   report(`carve-rs (over ${rsBinary.replace(rsDir + '/', '')}, ${satelliteSamples.length} documents)`, rsFindings)
 } else if (existsSync(rsDir)) {
@@ -361,6 +430,7 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
       continue
     }
     checkDocument(doc, source, rbFindings)
+    checkShapeParity(name, doc, rbFindings)
   }
   report(`carve-rb (over carve-rs, ${satelliteSamples.length} documents)`, rbFindings)
 } else {
@@ -392,6 +462,7 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
       continue
     }
     checkDocument(doc, source, phpFindings)
+    checkShapeParity(name, doc, phpFindings)
   }
   report(`carve-php (over bin/carve --json, ${satelliteSamples.length} documents)`, phpFindings)
 } else if (existsSync(phpDir)) {
