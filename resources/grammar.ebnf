@@ -2137,11 +2137,12 @@ EOF = (* end of file *) ;
          \n - item" folds into ONE quote whose paragraph is
          "quoted\n- item" (NOT quote + <ul>); "> text \n > # H" is a quoted
          heading; a quoted bullet ("> p \n > - x") folds the same way.
-         HEADING is the SOLE exception: a bounded title holds no block, so
-         a list marker ENDS an open heading and starts a sibling list
-         ("# H \n - item" -> heading + <ul>), any block-opener ends it, and
-         only plain text (or a same-`#` marker line) folds in (PART 2,
-         MULTI-LINE HEADINGS) -- matching djot.
+         HEADING is the SOLE exception: a bounded title holds no block and
+         ENDS AT THE NEWLINE, so nothing folds into it at all -- a list
+         marker starts a sibling list ("# H \n - item" -> heading + <ul>),
+         and every other line likewise begins its own block (PART 2,
+         SINGLE-LINE HEADINGS). Djot folds a plain or same-`#` line in; this
+         is the deliberate divergence, not a restatement of it.
 
    11. LIST MARKER CHANGE STARTS A NEW LIST -- OPERATIONAL (governs `list`
       in PART 2). §10 decides FIRST whether marker lines establish a list

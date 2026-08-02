@@ -542,7 +542,7 @@ Normative statement: `resources/grammar.ebnf` PART 9 §10. Verified by corpus
 
 ---
 
-## 18. Multi-Line Headings (Text Folds INTO an Open Heading)
+## 18. Single-Line Headings (Nothing Folds INTO a Heading)
 
 **Rule (normative, grammar PART 2):** a heading **ends at the newline**.
 Nothing folds into it - the next line begins whatever block it begins, exactly
