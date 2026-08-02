@@ -25,11 +25,10 @@ Tight list item keeps trailing text after a block bare
 .
 <ul>
   <li>item
-    <aside class="admonition note">
-      <p>body</p>
-    </aside>
-    tail
-  </li>
+:::note
+body
+:::
+tail</li>
 </ul>
 ```
 

@@ -490,8 +490,11 @@ A delimiter pair with no content is literal text, not emphasis.
 
 ## Nested containers
 
-A longer colon fence nests: `::::` contains `:::` blocks, and only a bare
-closer of equal-or-greater length closes a block.
+A bare colon fence closes a container only when it is EXACTLY as long as that
+container's opener. Nesting therefore needs the two fences to differ, and the
+canonical direction is one colon wider per level inward. A longer-outer
+document like the one below parses too - exact matching does not care which
+way the lengths run.
 
 ::::: compare
 
@@ -516,11 +519,9 @@ Nested.
 
 :::::
 
-Equal-length fences do **not** nest. A closer has to be bare, so `::: tip`
-cannot close the block it sits in, and equal length means it cannot open one
-inside it either: the line is content. The first bare `:::` then closes the
-outer block, and the second opens a container of its own that never closes,
-which is the unclosed-opener case below. Djot nests this form.
+Equal-length fences nest. `::: tip` is not a closer - a closer is bare - so it
+opens a container inside the note, and the two bare fences close them
+innermost-first.
 
 :::: compare
 
@@ -534,17 +535,17 @@ Inner.
 
 ```html
 <aside class="admonition note">
-  <p>::: tip
-Inner.</p>
+  <aside class="admonition tip">
+    <p>Inner.</p>
+  </aside>
 </aside>
-<p>:::</p>
 ```
 
 ::::
 
-Widening the fence for the deeper level, rather than the shallower one, does
-not nest either. A bare fence longer than the open block is a closer, not an
-opener, so the `::::` line ends the `:::` div instead of starting a child.
+Widening the fence for the deeper level is the canonical direction. A bare
+`::::` does not match the open `:::`, so it is not a closer; it opens a child.
+This is the form `carve fmt` emits.
 
 ::::: compare
 
@@ -561,17 +562,17 @@ Inner
 ```html
 <div>
   <p>Outer</p>
+  <div>
+    <p>Inner</p>
+  </div>
 </div>
-<p>Inner
-::::
-:::</p>
 ```
 
 :::::
 
-An opener with no closer ahead of it opens nothing. The whole block stays a
-paragraph, opener line included. Djot instead closes the container at end of
-file.
+An opener always opens. A container still open at the end of the input closes
+there, so a forgotten closer costs you the container's extent, not the rest of
+the document. Lint and the language server flag it.
 
 :::: compare
 
@@ -581,16 +582,17 @@ X
 ```
 
 ```html
-<p>::: note
-X</p>
+<aside class="admonition note">
+  <p>X</p>
+</aside>
 ```
 
 ::::
 
 One closer closes one container, not every container open above it. Here the
-`:::` closes `c`; `a` and `b` never get a closer of their own, so they degrade
-to text by the rule above. Djot's bare closer closes every open container of
-equal-or-lesser length, which would close all three.
+`:::` closes `c`; `a` and `b` have no closer of their own and close at the end
+of the input by the rule above. Djot's bare closer instead closes every open
+container of equal-or-lesser length in one go.
 
 :::::: compare
 
@@ -603,10 +605,12 @@ X
 ```
 
 ```html
-<p>::::: a
-:::: b</p>
-<div class="c">
-  <p>X</p>
+<div class="a">
+  <div class="b">
+    <div class="c">
+      <p>X</p>
+    </div>
+  </div>
 </div>
 ```
 
@@ -1415,10 +1419,10 @@ body
 ```
 
 ```html
-<p>text</p>
-<aside class="admonition note">
-  <p>body</p>
-</aside>
+<p>text
+:::note
+body
+:::</p>
 ```
 
 ::::
@@ -1622,9 +1626,10 @@ stuff
 ```
 
 ```html
-<p>Text
-:::
-stuff</p>
+<p>Text</p>
+<div>
+  <p>stuff</p>
+</div>
 ```
 
 ::::
@@ -2058,10 +2063,9 @@ tail
 ```html
 <ul>
   <li>item
-    <aside class="admonition note">
-      <p>body</p>
-    </aside>
-  </li>
+:::note
+body
+:::</li>
 </ul>
 <p>tail</p>
 ```
@@ -3503,10 +3507,12 @@ ordinary nested list:
 
 ```html
 <ul>
-  <li>::: note
-    <ul>
-      <li>para text</li>
-    </ul>
+  <li>
+    <aside class="admonition note">
+      <ul>
+        <li>para text</li>
+      </ul>
+    </aside>
   </li>
 </ul>
 ```
@@ -3527,13 +3533,16 @@ paragraph:
 
 ```html
 <ul>
-  <li>::: note
-    <ul>
-      <li>para text</li>
-    </ul>
+  <li>
+    <aside class="admonition note">
+      <ul>
+        <li>para text</li>
+      </ul>
+    </aside>
   </li>
 </ul>
-<p>:::</p>
+<div>
+</div>
 ```
 
 ::::
@@ -5582,7 +5591,7 @@ wraps its paragraphs.
 
 The same holds after a div body, and for an ordered item.
 
-::: compare
+:::: compare
 
 ```carve
 - item
@@ -5595,15 +5604,14 @@ The same holds after a div body, and for an ordered item.
 ```html
 <ul>
   <li>item
-    <aside class="admonition note">
-      <p>body</p>
-    </aside>
-    tail
-  </li>
+:::note
+body
+:::
+tail</li>
 </ul>
 ```
 
-:::
+::::
 
 A blank line makes the item loose, so its leading text and the trailing text
 are each wrapped.

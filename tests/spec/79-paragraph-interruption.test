@@ -77,10 +77,10 @@ text
 body
 :::
 .
-<p>text</p>
-<aside class="admonition note">
-  <p>body</p>
-</aside>
+<p>text
+:::note
+body
+:::</p>
 ```
 
 ```
@@ -180,7 +180,8 @@ Text
 :::
 stuff
 .
-<p>Text
-:::
-stuff</p>
+<p>Text</p>
+<div>
+  <p>stuff</p>
+</div>
 ```

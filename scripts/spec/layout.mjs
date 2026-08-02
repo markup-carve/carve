@@ -179,6 +179,7 @@ function parseColonOpener(tail) {
   let s = tail
   const out = { type: null, title: null, label: null, mode: 'div' }
   if (/^[ \t]*$/.test(s)) return out // bare generic div
+  if (/^[A-Za-z_-]/.test(s)) return null // type words must be separated
   s = s.replace(/^[ \t]+/, '')
   if (/^\|[ \t]*$/.test(s)) return { ...out, mode: 'line-block' }
   if (/^\\[ \t]*$/.test(s)) return { ...out, mode: 'hardbreaks' }
@@ -203,11 +204,52 @@ function parseColonOpener(tail) {
 }
 
 function findColonCloser(lines, openIdx, len) {
+  const stack = [len]
   for (let j = openIdx + 1; j < lines.length; j++) {
     const c = COLON_CLOSER.exec(lines[j])
-    if (c && c[1].length >= len) return j
+    if (c) {
+      const closeLen = c[1].length
+      if (closeLen === stack[stack.length - 1]) {
+        stack.pop()
+        if (stack.length === 0) return j
+      } else {
+        stack.push(closeLen)
+      }
+      continue
+    }
+    const o = COLON_FENCE.exec(lines[j])
+    if (o && parseColonOpener(o[2]) !== null) stack.push(o[1].length)
   }
   return -1
+}
+
+function isColonBlockOpener(line) {
+  const cf = COLON_FENCE.exec(line)
+  return !!(cf && parseColonOpener(cf[2]) !== null)
+}
+
+function isColonParagraphInterrupt(line) {
+  return isColonBlockOpener(line) && !COLON_CLOSER.test(line)
+}
+
+function bareColonHasFollowingBody(lines, idx) {
+  if (!COLON_CLOSER.test(lines[idx] ?? '')) return false
+  for (let j = idx + 1; j < lines.length; j++) {
+    if (!isBlank(lines[j])) return true
+  }
+  return false
+}
+
+function paraHasInvalidColonOpener(para) {
+  return para.some((l) => {
+    const cf = COLON_FENCE.exec(l)
+    return cf && parseColonOpener(cf[2]) === null
+  })
+}
+
+function colonInterruptsParagraph(lines, idx, para) {
+  if (isColonParagraphInterrupt(lines[idx])) return true
+  return bareColonHasFollowingBody(lines, idx) && !paraHasInvalidColonOpener(para)
 }
 
 const COMMENT_LINE = /^[ \t]*%%/
@@ -327,39 +369,14 @@ function startsVisibleBlock(line) {
 // A sub-BLOCK attached to an open list item after a blank line: it nests and
 // leaves the list TIGHT (SS17 L2), unlike a second paragraph, which loosens it
 // (SS17 L1). Colon fences and table rows count -- they are blocks, not prose.
-// `rest` is the remainder of THIS item (see itemRest), already dedented to the
-// item's content column, and is only consulted to confirm a colon fence
-// actually closes. It must not run past the item: a closer belonging to a
-// sibling item or to the document would otherwise make an unclosed opener
-// look like a block.
-function opensSubBlock(line, rest) {
+function opensSubBlock(line) {
   if (QUOTE.test(line) || HEADING.test(line) || HR.test(line) ||
       isTableRow(line) || DEFLIST_TERM.test(line)) return true
   const f = FENCE.exec(line)
   // an INVALID info string is not a fence at all (PART 2 INVALID-FENCE
   // FALLBACK) -- the line is prose and loosens the item
   if (f) return parseFenceInfo(f[2]) !== null
-  const cf = COLON_FENCE.exec(line)
-  if (!cf) return false
-  // a colon fence is a BLOCK only when the opener is well-formed AND a closer
-  // follows (PART 9 SS12); otherwise the line is ordinary prose and loosens
-  // the item like any second paragraph
-  return parseColonOpener(cf[2]) !== null && findColonCloser(rest, -1, cf[1].length) !== -1
-}
-
-// the lines after `j` that still belong to the item opened at `baseIndent`,
-// dedented to `contentCol`: everything up to the first non-blank line that
-// dedents back to the marker column or further out
-function itemRest(lines, j, baseIndent, contentCol) {
-  const out = []
-  for (let k = j + 1; k < lines.length; k++) {
-    const l = lines[k]
-    // a `+` at the marker column pulls the following flush-left block INTO
-    // the item (SS17 L3/L4), so the item does not end there
-    if (!isBlank(l) && indentCols(l).col <= baseIndent && !CONT_MARKER.test(l.trim())) break
-    out.push(dedent(l, contentCol))
-  }
-  return out
+  return isColonBlockOpener(line)
 }
 
 export function parse(src) {
@@ -416,10 +433,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     if (line === undefined) return false
     if (startsVisibleBlock(line)) return true
     if (isTableRow(line)) return true
-    {
-      const cf = COLON_FENCE.exec(line)
-      if (cf && parseColonOpener(cf[2]) && findColonCloser(lines, idx, cf[1].length) !== -1) return true
-    }
+    if (isColonParagraphInterrupt(line) || bareColonHasFollowingBody(lines, idx)) return true
     const fence = FENCE.exec(line)
     if (fence && hasCloser(lines, idx)) return true // I4
     if (LINK_DEF.test(line) || FOOTNOTE_DEF.test(line) || ABBR_DEF.test(line)) return true // I5
@@ -568,7 +582,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         // in the heading text/id -- otherwise the sentinel leaks into output.
         const l = lines[i].startsWith(LAZY) ? lines[i].slice(LAZY.length) : lines[i]
         if (HR.test(l) || FENCE.test(l) || QUOTE.test(l) || BULLET.test(l) || ORDERED.test(l) ||
-            COLON_FENCE.test(l) || CAPTION.test(l) || l[0] === '|' || l[0] === '{' ||
+            isColonParagraphInterrupt(l) || CAPTION.test(l) || l[0] === '|' || l[0] === '{' ||
             COMMENT_LINE.test(l) || COMMENT_FENCE.test(l)) break
         parts.push(strip(l))
         i++
@@ -765,33 +779,39 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
       const cf = COLON_FENCE.exec(line)
       if (cf) {
         const opener = parseColonOpener(cf[2])
-        const close = opener ? findColonCloser(lines, i, cf[1].length) : -1
-        if (opener && close !== -1) {
-          const body = lines.slice(i + 1, close)
-          i = close + 1
-          if (opener.mode === 'line-block') {
-            push({ t: 'line-block', lines: body })
-          } else if (opener.mode === 'hardbreaks') {
-            push({ t: 'hardbreaks', children: parseBlocks(body, state, false) })
-          } else if (opener.type === 'footnotes') {
-            // placement directive: relocates the endnotes section
-            if (body.some((l) => !isBlank(l))) throw new Refuse('non-empty ::: footnotes body')
-            push({ t: 'footnotes-placement' })
-          } else if (opener.type === 'toc') {
-            throw new Refuse('::: toc directive')
+        if (opener) {
+          const close = findColonCloser(lines, i, cf[1].length)
+          const end = close === -1 ? n : close
+          const body = lines.slice(i + 1, end)
+          if (close === -1 && body.length > 0 && body.every((l) => isBlank(l) || l.startsWith(LAZY))) {
+            // A marker-line opener whose only "body" came from below-content
+            // lazy folding did not actually acquire container body lines.
           } else {
-            push({
-              t: 'colon-div',
-              type: opener.type,
-              title: opener.title,
-              label: opener.label,
-              children: parseBlocks(body, state, false),
-            })
+            i = close === -1 ? n : close + 1
+            if (opener.mode === 'line-block') {
+              push({ t: 'line-block', lines: body })
+            } else if (opener.mode === 'hardbreaks') {
+              push({ t: 'hardbreaks', children: parseBlocks(body, state, false) })
+            } else if (opener.type === 'footnotes') {
+              // placement directive: relocates the endnotes section
+              if (body.some((l) => !isBlank(l))) throw new Refuse('non-empty ::: footnotes body')
+              push({ t: 'footnotes-placement' })
+            } else if (opener.type === 'toc') {
+              throw new Refuse('::: toc directive')
+            } else {
+              push({
+                t: 'colon-div',
+                type: opener.type,
+                title: opener.title,
+                label: opener.label,
+                children: parseBlocks(body, state, false),
+              })
+            }
+            continue
           }
-          continue
         }
-        // invalid opener or no closer: ordinary paragraph text (falls
-        // through to the paragraph collector)
+        // invalid opener: ordinary paragraph text (falls through to the
+        // paragraph collector)
       }
     }
 
@@ -888,7 +908,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         if (isOpener) openFence = f[1]
         prevBlank = isBlank(l)
         if (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
-            COLON_FENCE.test(l) || l[0] === '|' || l[0] === '{') qOpenPara = false
+            isColonParagraphInterrupt(l) || l[0] === '|' || l[0] === '{') qOpenPara = false
         else qOpenPara = true
       }
       while (i < n) {
@@ -973,8 +993,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         if (startsVisibleBlock(lines[i])) break // I1
         if (isTableRow(lines[i])) break // I1: valid table row
         {
-          const cf = COLON_FENCE.exec(lines[i])
-          if (cf && parseColonOpener(cf[2]) && findColonCloser(lines, i, cf[1].length) !== -1) break // I1/I4
+          if (colonInterruptsParagraph(lines, i, para)) break // I1/I4
         }
         const f = FENCE.exec(lines[i])
         if (f && parseFenceInfo(f[2]) && hasCloser(lines, i)) break // I4: interrupts
@@ -1246,7 +1265,7 @@ function collectItems(lines, i, list, state) {
             continue
           }
           const dedented = dedent(lines[j], contentCol)
-          if (opensSubBlock(dedented, itemRest(lines, j, baseIndent, contentCol))) {
+          if (opensSubBlock(dedented)) {
             // sub-BLOCK after a blank: attaches, stays tight (SS17 L2)
             itemLines.push('')
             openPara = false

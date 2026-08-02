@@ -128,10 +128,9 @@ tail
 .
 <ul>
   <li>item
-    <aside class="admonition note">
-      <p>body</p>
-    </aside>
-  </li>
+:::note
+body
+:::</li>
 </ul>
 <p>tail</p>
 ```

@@ -634,20 +634,48 @@ caption_slot = [blank_line], caption ;
    in the resolution pass. A caption with no bare `#` is unchanged. *)
 
 (* --- Admonitions --- *)
-(* A fence is a run of 3+ colons. A longer opener nests shorter blocks. *)
+(* A fence is a run of 3+ colons. The run length is a DEPTH count, not a
+   quoting device: a nested container's fence differs in length from its
+   parent's, and the canonical direction is +1 colon per level inward. *)
 colon_fence = ":::", {":"} ;
 colon_fence_close = colon_fence:close
-                    where len(close) >= len(open) ;
+                    where len(close) = len(open) ;
 (* FORMAL (PART 9 §12, now a guard): `open` is the colon_fence captured by
-   the enclosing block's opener (admonition_open / div_open /
-   line_block_open / local_hard_break_block_open). A block is closed only
-   by a bare fence of equal-or-greater length, so a `:::` inside a `::::`
-   block is content. Equal-length fences do not nest. *)
+   the INNERMOST open block's opener (admonition_open / div_open /
+   line_block_open / local_hard_break_block_open). A block is closed only by
+   a bare fence of EXACTLY its opener's length.
+
+   Consequences, all of which follow from the one guard:
+     - equal-length fences NEST (`::: note` may hold `::: tip`);
+     - a bare fence whose length does not match the innermost open block is
+       not a closer at all -- it is an ordinary opener, and opens a block;
+     - which direction the lengths run is therefore free. Longer-outer
+       documents and longer-inner ones both parse. `carve fmt` emits the
+       inward-widening form (PART 11).
+
+   Earlier drafts used len(close) >= len(open), which made a container's
+   fence a quoting relation borrowed from the code fence. It forced a
+   canonical writer to know the maximum container depth of its whole
+   subtree, and it made equal-length nesting silently produce literal text.
+   Code fences keep >= (PART 9 §2) because their length axis really is
+   quoting: opaque content that never nests, which must be able to hold a
+   shorter fence. *)
 
 admonition = admonition_open, newline,
              {block - admonition_close},
-             admonition_close, newline ;
-(* the body may be EMPTY, like the generic div's (PART 9 §12) *)
+             [admonition_close, newline] ;
+(* the body may be EMPTY, like the generic div's (PART 9 §12).
+
+   UNCLOSED (PART 9 §12). The closer is OPTIONAL: an opener always opens, and
+   a block still open at END OF INPUT closes there, innermost first. This is
+   djot's behavior and it is the counterweight to the exact-length closer --
+   a mistyped closer leaves a container open, and the earlier rule (the
+   opener and everything after it degrade to literal text) turned one wrong
+   character into a corrupted document. An unclosed opener SHOULD be
+   diagnosed by lint and by the language server; it is not an error for the
+   parser. Note this is NOT the `%%%` comment-block rule (§28), where an
+   opener with no exact closer ahead opens nothing: a comment block is
+   invisible either way, so failing closed costs nothing there. *)
 
 (* STRICT (djot): the opener line carries NO inline `{...}` attributes -- it
    is colon_fence, type, an optional quoted "header", an optional [label],
@@ -693,7 +721,7 @@ quoted_title = '"', {character - '"'}, '"' ;
    a code fence admits a bare `[label]` (a label AFTER a type word still needs a
    space -- admonition_open). Shares the colon-fence closer and the fence-length
    nesting rule (PART 9 §12). *)
-div = div_open, newline, {block - admonition_close}, admonition_close, newline ;
+div = div_open, newline, {block - admonition_close}, [admonition_close, newline] ;
 div_open = colon_fence:open, [[space], label] ;
 
 (* --- Line block (verse) -- a RECOGNIZED `:::` type that preserves the
@@ -707,7 +735,7 @@ div_open = colon_fence:open, [[space], label] ;
    inline attributes, so the inline `::: {.line-block}` form is a PARAGRAPH, not
    a line block; extra attributes attach via a PRECEDING block-attribute line.
    Normative rendering: PART 9 §23. *)
-line_block = line_block_open, newline, line_block_body, admonition_close, newline ;
+line_block = line_block_open, newline, line_block_body, [admonition_close, newline] ;
 line_block_open = colon_fence:open, space, "|" ;
 (* The body is a sequence of stanzas separated by blank lines; each stanza is
    a run of consecutive non-blank lines. Inline content parses normally; the
@@ -725,7 +753,7 @@ line_block_line = {whitespace}, inline_content, newline ;
    whitespace and it does NOT inherit into nested block content. *)
 local_hard_break_block = local_hard_break_block_open, newline,
                          {block - admonition_close},
-                         admonition_close, newline ;
+                         [admonition_close, newline] ;
 local_hard_break_block_open = colon_fence:open, space, backslash ;
 
 (* --- Comments --- *)
@@ -1749,7 +1777,9 @@ EOF = (* end of file *) ;
    2. MATCHING FENCES -- FORMALIZED. Stated as `where` guards on the
       productions (GUARD NOTATION, header):
       - code_fence_close: same fence character, len(close) >= len(open);
-      - colon_fence_close (§12): len(close) >= len(open);
+      - colon_fence_close (§12): len(close) = len(open), matched against the
+        INNERMOST open colon fence; the closer is optional and an unclosed
+        container ends at end of input;
       - comment_block_close: len(close) = len(open). Only the LEADING RUN of
         `%` is compared -- trailing text on either fence line is insignificant,
         and an opener with no matching closer ahead opens nothing (§28).
