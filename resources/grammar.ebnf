@@ -517,9 +517,11 @@ term_continuation_line = inline_content, newline ;
 (* A term folds a following plain line as a soft break; a blank line, a new
    `::`/`:  ` marker, or a block opener ends it. A term holds inline content
    only -- no block body. (This used to read "like a heading". A heading no
-   longer folds anything -- see SINGLE-LINE HEADINGS -- so the analogy is gone;
-   whether a term should follow it and become single-line too is open, see
-   markup-carve/carve#434.) *)
+   longer folds anything -- see SINGLE-LINE HEADINGS -- so the analogy is gone,
+   and the term KEEPS its fold deliberately: what made the heading's fold a
+   defect was having TWO ways to spill, one of them silent, and a term has only
+   this one. Wrapping a long term stays possible; §434's follow-up question is
+   answered here rather than left open.) *)
 definition_body = (':', space, space, first_block_content)
                 | (':', space, space, inline_content, newline,
                    { definition_continuation
