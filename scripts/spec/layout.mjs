@@ -87,6 +87,18 @@ function alphaToInt(s) {
   return s.toLowerCase().charCodeAt(0) - 96
 }
 
+// Does this line OPEN an ordered item? `ORDERED` alone answers on shape, and
+// its optional attribute block is not validated there - so `.{+a+} text`, whose
+// payload yields no attributes, matched as a marker at the boundary checks below
+// while `matchMarker` rejected it and parsed the line as prose. The two now
+// agree: an abutting block that yields nothing is not part of a marker (§15 A8),
+// whatever the marker's value.
+function isOrderedMarkerLine(line) {
+  const m = ORDERED.exec(line)
+  if (!m) return false
+  return !(m[4] && m[4].replace(/[{} ]/g, '') !== '' && parseAttrList(m[4]) === null)
+}
+
 // Classify an ordered marker token into candidate dialects.
 function classifyOrdered(token) {
   const out = []
@@ -572,7 +584,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           bodyLines[bodyLines.length - 1] !== '' &&
           !startsVisibleBlock(lines[i]) &&
           !LINK_DEF.test(lines[i]) && !FOOTNOTE_DEF.test(lines[i]) && !ABBR_DEF.test(lines[i]) &&
-          !BULLET.test(lines[i]) && !ORDERED.test(lines[i]) && !FENCE.test(lines[i]) &&
+          !BULLET.test(lines[i]) && !isOrderedMarkerLine(lines[i]) && !FENCE.test(lines[i]) &&
           !CAPTION.test(lines[i])
         ) {
           // lazy continuation of the definition's open paragraph (SS16)
@@ -679,7 +691,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         !FOOTNOTE_DEF.test(cur) &&
         !ABBR_DEF.test(cur) &&
         !BULLET.test(cur) &&
-        !ORDERED.test(cur) &&
+        !isOrderedMarkerLine(cur) &&
         !FENCE.test(cur) &&
         !CAPTION.test(cur)
       const isEntry = (s) => /^::?[ ]/.test(s) && !/^:::/.test(s)
