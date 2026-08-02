@@ -29,6 +29,9 @@ CarveCore {
   // editorial markup, comments, block-attribute lines, definition lists,
   // citations, includes, frontmatter, and inline footnotes (^[...]).
   //
+  // (Heading folding used to be listed here. It is gone from the language,
+  // not just from this pipeline: a heading ends at its newline, §PART 2.)
+  //
   // Word boundaries without lookbehind (PEGs have none):
   //  - left boundary / no-intraword: `word` absorbs a delimiter glued
   //    between two word chars (wordGlue), so an intraword delimiter can
