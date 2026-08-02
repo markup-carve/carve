@@ -6,6 +6,8 @@ import { carveToHtml, markdownToCarve } from '@markup-carve/carve'
 import { carveExtensions } from '../../carve-extensions.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { renderMathIn } from '../../render-math.js'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { encodeShare, decodeShare } from '../../share-link.js'
 
 // Render the JS engine with every documented extension enabled, so the demo
 // showcases the full feature set (real Mermaid extension, wikilinks, tabs,
@@ -24,6 +26,64 @@ const PHP_SANDBOX_URL = 'https://sandbox.dereuromark.de/sandbox/carve'
 
 const source = ref(DEFAULT_SOURCE)
 const fullscreen = ref(false)
+
+// --- Share links ---
+//
+// The document lives in the URL fragment, so a playground state is
+// bookmarkable and sendable with no server involved. The fragment is written
+// with history.replaceState (never pushState): editing is not navigation, and
+// a per-keystroke history entry would make Back unusable.
+//
+// SECURITY. A shared document is written by whoever sent the link, so it
+// renders with raw HTML DISABLED - otherwise a link would be a way to run
+// script on this origin. That stays off for the rest of the session: once the
+// textarea has held someone else's document, "did the visitor rewrite all of
+// it?" is not a question this component can answer. Reloading the playground
+// without a fragment gives a normal, raw-HTML-enabled session back.
+const fromSharedLink = ref(false)
+const shareStatus = ref<string | null>(null)
+let shareStatusTimer: ReturnType<typeof setTimeout> | undefined
+
+async function applyShareLink(): Promise<void> {
+  if (typeof window === 'undefined') return
+  const state = await decodeShare(window.location.hash)
+  if (!state) return
+  fromSharedLink.value = true
+  source.value = state.source
+  // The Rust engine renders through a WASM binding with no options, so raw
+  // HTML cannot be turned off there. A shared document therefore stays on the
+  // JS engine (see the disabled button in the toolbar).
+  engine.value = 'js'
+}
+
+function shareUrl(encoded: string): string {
+  const { origin, pathname, search } = window.location
+  return `${origin}${pathname}${search}#${encoded}`
+}
+
+function flashShareStatus(message: string): void {
+  shareStatus.value = message
+  clearTimeout(shareStatusTimer)
+  shareStatusTimer = setTimeout(() => (shareStatus.value = null), 2500)
+}
+
+async function copyShareLink(): Promise<void> {
+  const encoded = await encodeShare({ source: source.value, engine: engine.value })
+  if (encoded === null) {
+    flashShareStatus('Too long to share as a link')
+    return
+  }
+  const url = shareUrl(encoded)
+  window.history.replaceState(null, '', url)
+  try {
+    await navigator.clipboard.writeText(url)
+    flashShareStatus('Link copied')
+  } catch {
+    // Clipboard access can be refused (permissions, insecure origin). The
+    // address bar now holds the link either way, so say so instead of failing.
+    flashShareStatus('Link is in the address bar')
+  }
+}
 
 // Import from Markdown: open a paste dialog, then markdownToCarve() rewrites
 // the pasted Markdown into Carve and replaces the source (so it flows through
@@ -123,7 +183,13 @@ const rendered = computed<{ html: string; ms: number | null }>(() => {
     const useWasm = engine.value === 'rust' && wasmToHtml
     const t0 = performance.now()
     let out = (
-      useWasm ? wasmToHtml!(source.value) : carveToHtml(source.value, { extensions: JS_EXTENSIONS })
+      useWasm
+        ? wasmToHtml!(source.value)
+        : carveToHtml(source.value, {
+            extensions: JS_EXTENSIONS,
+            // A document that arrived in a URL is not this visitor's document.
+            allowRawHtml: !fromSharedLink.value,
+          })
     ) as string
     const ms = performance.now() - t0
     // The demo references images with a doc-relative path; resolve it against
@@ -175,9 +241,14 @@ async function renderMermaid(): Promise<void> {
   const mermaid = (await import('mermaid')).default
   const dark = document.documentElement.classList.contains('dark')
   // Re-initialize per render so a theme toggle is picked up.
+  //
+  // `loose` is what makes a diagram's click directives and HTML labels active,
+  // and the rendered SVG goes in through innerHTML. That is fine for a diagram
+  // this visitor typed and not fine for one that arrived in a link, so a
+  // shared document renders under mermaid's own `strict` sanitizer instead.
   mermaid.initialize({
     startOnLoad: false,
-    securityLevel: 'loose',
+    securityLevel: fromSharedLink.value ? 'strict' : 'loose',
     theme: dark ? 'dark' : 'default',
   })
   mermaidInit = true
@@ -404,10 +475,13 @@ function schedulePostProcess(): void {
 watch(html, schedulePostProcess)
 onMounted(() => {
   mounted.value = true
-  void nextTick(postProcessOutput)
+  // Before the first post-process, so a shared document is what gets
+  // highlighted, mermaid-rendered and math-rendered.
+  void applyShareLink().then(() => nextTick(postProcessOutput))
   window.addEventListener('keydown', onKeydown)
 })
 onBeforeUnmount(() => {
+  clearTimeout(shareStatusTimer)
   window.removeEventListener('keydown', onKeydown)
   clearTimeout(debounce)
 })
@@ -444,6 +518,12 @@ void mermaidInit
           type="button"
           :class="{ active: engine === 'rust' }"
           :aria-pressed="engine === 'rust'"
+          :disabled="fromSharedLink"
+          :title="
+            fromSharedLink
+              ? 'The WASM build renders with raw HTML enabled, so it is not offered for a document that arrived in a link'
+              : undefined
+          "
           @click="engine = 'rust'"
         >
           Rust (WASM)
@@ -459,6 +539,13 @@ void mermaidInit
         </a>
       </div>
       <div class="pg-toolbar-right">
+        <span v-if="fromSharedLink" class="pg-shared-note" role="note" title="A document that arrived in a link renders with raw HTML disabled">
+          Shared link: raw HTML off
+        </span>
+        <span v-if="shareStatus" class="pg-share-status" role="status">{{ shareStatus }}</span>
+        <button class="pg-btn" type="button" @click="copyShareLink">
+          Copy link
+        </button>
         <button class="pg-btn pg-import" type="button" @click="openImport">
           Import Markdown
         </button>
@@ -569,6 +656,7 @@ void mermaidInit
 .pg-toolbar-right {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.8rem;
 }
 .pg-status {
@@ -580,6 +668,9 @@ void mermaidInit
 .pg-btn {
   font-size: 0.8rem;
   font-weight: 600;
+  /* The toolbar is tight enough with four controls that a two-word label
+     breaks across lines and doubles the row height. */
+  white-space: nowrap;
   padding: 0.35rem 0.8rem;
   border: 1px solid var(--vp-c-divider);
   border-radius: 8px;
@@ -591,6 +682,25 @@ void mermaidInit
 .pg-btn:hover {
   border-color: var(--vp-c-brand-1);
   color: var(--vp-c-brand-1);
+}
+.pg-share-status {
+  font-size: 0.78rem;
+  color: var(--vp-c-brand-1);
+}
+/* Why the output is not what the sender saw, if their document used raw HTML.
+   Stated rather than hidden: silence would read as a rendering bug. */
+.pg-shared-note {
+  font-size: 0.78rem;
+  color: var(--vp-c-text-2);
+  white-space: nowrap;
+}
+.pg-engine:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.pg-engine:disabled:hover {
+  border-color: var(--vp-c-divider);
+  color: inherit;
 }
 .pg-btn-primary {
   background: var(--vp-c-brand-1);
