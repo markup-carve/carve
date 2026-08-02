@@ -109,6 +109,23 @@ const phpDir = process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php')
  */
 const DISPLAY_LIMIT = Number(process.env.CARVE_DISPLAY_LIMIT ?? 8)
 
+/**
+ * Engines that were not measured at all.
+ *
+ * A skip used to read as one line of prose in the middle of the output, so a
+ * run with no satellites present looked almost exactly like a run where every
+ * satellite passed - and since this script does not run in CI (carve#475),
+ * that was the normal case. `test/corpus.test.ts` already carries the same
+ * lesson in a comment: silently skipped "is exactly how 14 spec categories once
+ * went unvalidated".
+ */
+const notMeasured = []
+
+function skip(label, reason) {
+  notMeasured.push(`${label} (${reason})`)
+  console.log(`${label}: NOT MEASURED - ${reason}\n`)
+}
+
 const POS_KEYS = ['startLine', 'endLine', 'startColumn', 'endColumn', 'startOffset', 'endOffset']
 
 function* walk(node, path = '$') {
@@ -333,9 +350,9 @@ if (rsBinary) {
   }
   report(`carve-rs (over ${rsBinary.replace(rsDir + '/', '')}, ${satelliteSamples.length} documents)`, rsFindings)
 } else if (existsSync(rsDir)) {
-  console.log('carve-rs: checkout found but not built (cargo build --release), not checked\n')
+  skip('carve-rs', 'checkout found but not built - run cargo build --release there')
 } else {
-  console.log('carve-rs: checkout not found, not checked\n')
+  skip('carve-rs', 'checkout not found')
 }
 
 // ---- carve-rb: serializes carve-rs's tree ----------------------------------
@@ -364,7 +381,7 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
   }
   report(`carve-rb (over carve-rs, ${satelliteSamples.length} documents)`, rbFindings)
 } else {
-  console.log('carve-rb: checkout not found, not checked\n')
+  skip('carve-rb', 'checkout not found')
 }
 
 // ---- carve-php: serializes through bin/carve --json -------------------------
@@ -395,9 +412,9 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
   }
   report(`carve-php (over bin/carve --json, ${satelliteSamples.length} documents)`, phpFindings)
 } else if (existsSync(phpDir)) {
-  console.log('carve-php: checkout found but bin/carve is missing, not checked\n')
+  skip('carve-php', 'checkout found but bin/carve is missing')
 } else {
-  console.log('carve-php: checkout not found, not checked\n')
+  skip('carve-php', 'checkout not found')
 }
 
 function report(label, findings) {
@@ -423,4 +440,22 @@ function report(label, findings) {
     console.log(`  ... and ${hidden} more distinct finding${hidden === 1 ? '' : 's'} not shown`)
   }
   console.log('')
+}
+
+// A closing statement of what was NOT measured, so the coverage of a run is
+// visible at the end rather than inferable from the middle. Without this the
+// only signal was one line per engine, several screens up.
+if (notMeasured.length > 0) {
+  console.log(`NOT MEASURED: ${notMeasured.length} of 3 satellites - ${notMeasured.join(', ')}`)
+  console.log('These engines were not checked at all. This is not a pass.\n')
+  // Opt-in, because the sibling checkouts are not present by default and a
+  // developer running this on carve-js alone should not be failed for it. Once
+  // CI has the checkouts it should set this, so an engine silently dropping out
+  // of the matrix is a red build rather than a line of prose (carve#475).
+  if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
+    console.error('CARVE_REQUIRE_ALL_ENGINES=1 and at least one engine was not measured.')
+    process.exit(1)
+  }
+} else {
+  console.log('All satellites measured.\n')
 }
