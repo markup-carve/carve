@@ -126,7 +126,7 @@ The table above is carve-js. The other engines do not currently match it, and
 | implementation | `carve lint` | covers |
 |---|---|---|
 | carve-js | yes | the rules above, plus the Djot/Markdown migration checks |
-| carve-php | yes | Markdown-habit checks only (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`, `heading-lazy-continuation`); none of the semantic rules above |
+| carve-php | yes | Markdown-habit checks only (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`); none of the semantic rules above |
 | carve-rs | no | the binary has no `lint` command |
 
 ### A rule id is a contract

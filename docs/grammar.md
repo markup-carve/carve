@@ -31,7 +31,7 @@ Light markup languages are provably not context-free: fence-length matching is a
 | PART 3 inline grammar | [`resources/carve-core.ohm`](https://github.com/markup-carve/carve/blob/main/resources/carve-core.ohm) (Ohm/PEG) |
 | PART 9R resolution + PART 10 serialization | `scripts/spec/html.mjs` |
 
-The executable spec covers the full conformant core: block structure (headings incl. multi-line folding and section wrapping, lists with every ordered dialect, quotes, tables with the span walk, fenced code and colon fences, definition lists, comments, frontmatter, block-attribute lines), the complete inline layer (emphasis with word-boundary guards, links, images, spans, attributes with the security hardening rules, autolinks, math, extensions, mentions/tags, editorial markup, smart typography, footnotes incl. inline notes, crossrefs, raw passthrough), and the resolution passes (references, footnote numbering and endnotes placement, numbered captions, abbreviations).
+The executable spec covers the full conformant core: block structure (headings incl. section wrapping, lists with every ordered dialect, quotes, tables with the span walk, fenced code and colon fences, definition lists, comments, frontmatter, block-attribute lines), the complete inline layer (emphasis with word-boundary guards, links, images, spans, attributes with the security hardening rules, autolinks, math, extensions, mentions/tags, editorial markup, smart typography, footnotes incl. inline notes, crossrefs, raw passthrough), and the resolution passes (references, footnote numbering and endnotes placement, numbered captions, abbreviations).
 
 ```bash
 npm run core:check

@@ -514,9 +514,14 @@ definition_entry = definition_term+, [blank_line], definition_body,
    parity). A blank NOT followed by a `:  ` definition ends the entry. *)
 definition_term = "::", space, inline_content, newline, {term_continuation_line} ;
 term_continuation_line = inline_content, newline ;
-(* A term folds a following plain line like a heading (soft break); a blank
-   line, a new `::`/`:  ` marker, or a block opener ends it. A term holds inline
-   content only -- no block body. *)
+(* A term folds a following plain line as a soft break; a blank line, a new
+   `::`/`:  ` marker, or a block opener ends it. A term holds inline content
+   only -- no block body.
+   This used to read "like a heading". Headings became SINGLE-LINE (PART 2), so
+   the term is now the only construct that folds a bare following line, and
+   whether it should follow the heading rule is an open question (carve#434).
+   Until that is decided the behavior is unchanged, and the comparison is gone
+   because it no longer describes anything. *)
 definition_body = (':', space, space, first_block_content)
                 | (':', space, space, inline_content, newline,
                    { definition_continuation

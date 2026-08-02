@@ -1062,9 +1062,12 @@ under the marker.
 
 :::
 
-A heading folds its trailing flush-left plain text as continuation, at any
-nesting depth — even when the heading opens on a deeper sub-list item's marker
-line and the following line is flush left.
+A flush-left line after a heading stays inside the item the heading belongs to,
+at any nesting depth — even when the heading opens on a deeper sub-list item's
+marker line. What it does *not* do is fold into the heading: a heading ends at
+the newline (§18), so the line is the item's own content, which a tight list
+renders unwrapped. Ownership is the rule here; the heading's id is built from
+the heading line alone.
 
 ::: compare
 
