@@ -109,11 +109,24 @@ function renderList(node, ctx) {
         // adjacent sibling lists on re-parse (carve issue 286).
         const delim = node.delim ?? '.';
         const bullet = node.bulletChar ?? '-';
+        // CANONICAL ORDERED MARKER (proposal for issue 315). A decimal-dot list
+        // starting at 1 is written with the BARE dot; everything else keeps an
+        // explicit value, because that value is the only thing carrying it:
+        // `3.` is how a start survives the round trip, and `a.` / `i.` / `1)`
+        // are each a different dialect or delimiter (§11). The AST cannot tell
+        // `. a` from `1. a` - the proposal gives them the same dialect on
+        // purpose - so one of the two has to be canonical, and picking the bare
+        // form is what makes `. a` round-trip at all: before this, `carve fmt`
+        // rewrote every bare dot into `1.`.
+        const bareDot = node.ordered
+            && delim === '.'
+            && (node.olType === undefined || node.olType === '1')
+            && (node.start ?? 1) === 1;
         node.items.forEach((item, idx) => {
             const indent = '  '.repeat(ctx.listDepth - 1);
             let prefix;
             if (node.ordered) {
-                prefix = `${orderedMarker(counter, node.olType)}${delim} `;
+                prefix = bareDot ? `${delim} ` : `${orderedMarker(counter, node.olType)}${delim} `;
                 counter++;
             }
             else if (item.checked !== undefined) {

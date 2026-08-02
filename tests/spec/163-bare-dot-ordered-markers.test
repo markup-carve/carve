@@ -35,3 +35,16 @@ Bare-dot ordered markers
 <p>.x is prose</p>
 <p>.. text</p>
 ```
+
+```
+.{#first .lead} one
+. two
+
+.{k=v}text
+.
+<ol>
+  <li id="first" class="lead">one</li>
+  <li>two</li>
+</ol>
+<p>.{k=v}text</p>
+```

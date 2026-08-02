@@ -5548,3 +5548,27 @@ first dot) all stay paragraph text. Carve nests by indentation, not by `..`.
 ```
 
 :::
+
+Li-attributes work exactly as they do for every other marker: the block abuts
+the marker, and the required space follows it. `.{#x} text` carries the
+attributes; `.{k=v}text`, with nothing after the block, is not a marker at all -
+the same rule that makes `1.{k=v}text` and `-{k=v}text` paragraph text.
+
+::: compare
+
+```carve
+.{#first .lead} one
+. two
+
+.{k=v}text
+```
+
+```html
+<ol>
+  <li id="first" class="lead">one</li>
+  <li>two</li>
+</ol>
+<p>.{k=v}text</p>
+```
+
+:::

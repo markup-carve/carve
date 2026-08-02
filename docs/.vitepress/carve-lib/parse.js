@@ -67,7 +67,12 @@ const RE_TASK = /^([^\S\u00a0]*)[-*] +\[([ xX\-_>?])\] +([\S\u00a0].*)$/;
 // required space and content. The brace attaches its attributes to the <li>
 // (Carve addition, grammar `item_attributes`). The brace body uses the same
 // quote-aware subpattern as the inline span tail (RE_SPAN_TAIL).
-const RE_ITEM_ATTR = /^([^\S\u00a0]*)((?:[-*])|(?:[0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z])[.)])\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\}( +[\S\u00a0].*)$/;
+const RE_ITEM_ATTR = /^([^\S\u00a0]*)((?:[-*])|(?:[0-9]+|[ivxlcdm]+|[IVXLCDM]+|[a-z]|[A-Z]|(?=\.))[.)])\{((?:[^}"'\n]|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')*)\}( +[\S\u00a0].*)$/;
+// The marker alternation carries the same bare-dot branch as RE_ORDERED
+// (`|(?=\.)`, proposal for issue 315), so `.{#x} text` is an item carrying the
+// attributes - the shape is marker + [attrs] + space + content, and the bare
+// dot fills the marker slot like any other. The block sits BEFORE the required
+// space, so it never competes with it.
 // Strip a valid abutting `{...}` from a marker line so the bare marker regexes
 // match, returning the stripped line plus the parsed attributes. Returns null
 // when there is no abutting brace or the brace is not a valid attribute payload

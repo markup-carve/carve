@@ -459,10 +459,19 @@ roman_numeral = ('i' | 'v' | 'x' | 'l' | 'c' | 'd' | 'm')+
    - BREAKING CHANGE. After a blank line, a paragraph that begins with `. `
      (an ellipsis fragment, a wrapped sentence, a deliberate leading dot) was
      previously a paragraph and now opens an `<ol>`. This is the primary cost
-     of the feature.
-   - LI-ATTRIBUTES. The abutting `.{...}` li-attribute form is NOT supported
-     for the bare dot (the attribute block would swallow the required space);
-     use an explicit `1.{...}` marker when a bare `<li>` attribute is needed.
+     of the feature. The li-attribute form widens it slightly: a paragraph
+     opening with `.{` followed by a valid attribute block and a space -
+     `.{color} is a CSS class` - becomes an item too. Strictly rarer than the
+     `. ` case the feature already accepts, and refusing it would not avoid
+     the class of collision, only one instance of it.
+   - LI-ATTRIBUTES WORK, exactly as for every other marker. The shape is
+     `marker, [item_attributes], space, content` and the bare dot fills the
+     marker slot like any other: `.{#x} text` is an item carrying `id="x"`.
+     The block does not compete with the required space -- it sits BEFORE it,
+     which is where `1.{#x} text` and `-{#x} text` already put it, and an
+     attribute block with no space after it is not a marker in any form
+     (`.{#x}text`, `1.{#x}text` and `-{#x}text` are all paragraph text).
+     What the space disambiguates is unchanged: `.x` is still prose.
    Pinned by corpus bare-dot-ordered-markers. *)
 
 (* LIST-ITEM ATTRIBUTES (Carve addition; NORMATIVE -- extends PART 9 §15). An

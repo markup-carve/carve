@@ -1115,11 +1115,6 @@ function matchMarker(line) {
     }
   }
   m = ORDERED.exec(line)
-  // A bare-dot marker (empty value, proposal for issue 315) does NOT take an
-  // abutting `{...}` li-attribute block: `.{...} x` stays paragraph text (the
-  // block would swallow the required space). Only an explicit value carries
-  // li-attributes, matching the reference engine and the normative note.
-  if (m && m[2] === '' && m[4]) m = null
   if (m && m[4] && m[4].replace(/[{} ]/g, '') !== '' && parseAttrList(m[4]) === null) m = null
   if (m) {
     const { col } = indentCols(m[1])
