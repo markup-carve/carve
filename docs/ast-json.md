@@ -144,6 +144,51 @@ the text they claim.
 that loses a field is not a lossy convenience; it is a consumer breaking silently
 one document later. Both halves are checked over the whole corpus.
 
+## How deep an ingested AST may nest
+
+Reading a serialized AST is a recursive descent over structure someone else
+wrote, so it needs a bound for the same reason [parsing does](/security). §9
+states the property rather than a number:
+
+1. an implementation **must accept any AST its own parser can produce** at the
+   nesting cap - `carve --json | carve --from-json` may not fail on a document
+   the same build just parsed;
+2. it **must reject deeper input with an error of its own** - not truncation,
+   not a crash, not whatever the JSON library raised;
+3. the bound **may be counted in any unit**, because 1 and 2 are the whole
+   contract.
+
+The trap is that an ingest bound is not in the same unit as the parser's cap,
+and the conversion factor is not a constant. One AST level costs two JSON
+structural levels for a blockquote or div (the object plus its `children`
+array) and four for a list. Measured against carve-js at the cap of 200,
+counting the root as level 1:
+
+| shape | structural depth |
+|---|---|
+| blockquote chain | 406 |
+| list ladder | 806 |
+| table under blockquotes | 406 |
+
+The exact figures shift by one with the counting convention; the ratio is the
+point. A list ladder at the cap is four times the parser's own number.
+
+So a bound must be **derived** from the parser's cap by the worst per-level
+cost of the encoding, never restated as the same number. All three engines got
+this wrong in a different way - carve-rs bounded structural depth by the AST
+number and rejected its own encoder's output
+([carve-rs#389](https://github.com/markup-carve/carve-rs/issues/389)), carve-php
+inherited `json_decode`'s 512 and surfaced a raw `JsonException`
+([carve-php#556](https://github.com/markup-carve/carve-php/issues/556)), and
+carve-js had no bound at all until a `RangeError` somewhere past 1500
+([carve-js#498](https://github.com/markup-carve/carve-js/issues/498)). Two of
+the three rejected documents their own parser produces, which is why rule 1 is
+first.
+
+The root type is not a leniency point either: §7 fixes it at `document` and the
+schema pins it as a `const`. Accepting `doc` means half-reading a ProseMirror
+payload instead of rejecting it.
+
 ## What is not in it
 
 Formatter-internal nodes (PART 11, and the `raw_text` case the profiles

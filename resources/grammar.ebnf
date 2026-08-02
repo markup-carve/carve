@@ -3723,4 +3723,49 @@ EOF = (* end of file *) ;
       An engine whose parser groups differently therefore has one more thing to
       fix than the serializer: carve-rs opened a new entry per `::` line, so
       §6's round trip only holds once the parser groups the way the list shows.
+
+   9. HOW DEEP AN INGESTED AST MAY NEST -- NORMATIVE. Reading a serialized AST
+      is a recursive descent over attacker-controlled structure, so it needs a
+      bound for the same reason the parser does (PART 9 §25, RESOURCE BOUNDS).
+      This states the PROPERTY rather than a number, because the number cannot
+      be shared -- see the trap below.
+
+      (a) An implementation MUST ACCEPT any AST ITS OWN PARSER CAN PRODUCE at
+          MAX_NESTING_DEPTH. Serialize-then-deserialize is an identity on
+          those documents, which is §6 restricted to the deepest input the
+          parser admits. `parse` piped into ingest MUST NOT fail on a document
+          the same build just parsed.
+
+      (b) It MUST REJECT deeper input with AN ERROR OF ITS OWN: a typed,
+          documented failure naming the depth bound. Not truncation, not a
+          crash, and not whatever its JSON library happened to raise. An
+          ingest that accepts a tree and then silently renders only part of it
+          is the worst of the three, because the caller is told nothing.
+
+      (c) The bound MAY be counted in WHATEVER UNIT suits the implementation
+          -- JSON structural levels, AST node levels, recursion frames --
+          because (a) and (b) are the whole of what a caller can rely on. An
+          implementation MUST NOT publish its unit as a shared contract.
+
+      THE TRAP, stated once, because all three reference engines fell into a
+      different corner of it: an ingest bound is NOT measured in the same unit
+      as MAX_NESTING_DEPTH, and the conversion factor is NOT A CONSTANT. One
+      AST level costs two JSON structural levels for a blockquote or div (the
+      object plus its `children` array) and four for a list (list, items,
+      item, children); in node terms a list level costs two nodes and a div
+      level one. At MAX_NESTING_DEPTH = 200 a blockquote chain therefore
+      encodes past 400 structural levels and a list ladder past 800 -- four
+      times the parser's own number, from the same document depth.
+
+      So neither MAX_NESTING_DEPTH nor "MAX_NESTING_DEPTH plus a small margin"
+      is a safe bound in either unit. An implementation MUST DERIVE its bound
+      from MAX_NESTING_DEPTH by the worst per-level cost of its own encoding,
+      and MUST NOT restate the parser's number as its ingest number -- a
+      second copy of a value is exactly how (a) gets violated. A bound written
+      down twice diverges; one derived from the other cannot.
+
+      The root type is not a leniency point: §7 fixes it at `document`, and
+      the schema pins it as a `const`. An ingest accepting some other root
+      (`doc`, say, which is ProseMirror's) will half-read a foreign format
+      rather than reject it.
 *)
