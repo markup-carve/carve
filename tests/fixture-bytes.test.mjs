@@ -40,18 +40,18 @@ const WATCHED = new Map([
 // character differently (`&nbsp;`) or drops it, so loss shows up as a normal
 // corpus mismatch.
 const INVENTORY = [
-  { base: '102-paragraph-trailing-whitespace', crv: ['trailing-WS'], html: [] },
+  { base: '104-paragraph-trailing-whitespace', crv: ['trailing-WS'], html: [] },
   {
-    base: '117-trojan-source-heading-ids-are-nfc-normalized-and-strip-invisible-controls-3',
+    base: '119-trojan-source-heading-ids-are-nfc-normalized-and-strip-invisible-controls-3',
     crv: ['RLO', 'ZWSP'],
     html: ['ZWSP'], // silent-decay shape: raw in both sides
   },
-  { base: '118-trojan-source-rendered-text-and-code-strip-bidi-override-controls', crv: ['RLO'], html: [] },
-  { base: '118-trojan-source-rendered-text-and-code-strip-bidi-override-controls-2', crv: ['RLO'], html: [] },
-  { base: '139-trailing-whitespace-boundaries-4', crv: ['NBSP'], html: [] },
+  { base: '120-trojan-source-rendered-text-and-code-strip-bidi-override-controls', crv: ['RLO'], html: [] },
+  { base: '120-trojan-source-rendered-text-and-code-strip-bidi-override-controls-2', crv: ['RLO'], html: [] },
+  { base: '141-trailing-whitespace-boundaries-4', crv: ['NBSP'], html: [] },
   { base: '16-reference-link-9', crv: ['trailing-WS'], html: [] },
   { base: '29-non-breaking-space-3', crv: ['NBSP'], html: [] },
-  { base: '82-single-line-headings-5', crv: ['trailing-WS'], html: [] },
+  { base: '84-single-line-headings-5', crv: ['trailing-WS'], html: [] },
 ]
 
 function scan(text) {

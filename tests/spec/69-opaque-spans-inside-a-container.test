@@ -1,0 +1,67 @@
+Opaque spans inside a container
+
+````
+::: note
+```
+:::
+```
+body
+:::
+after
+.
+<aside class="admonition note">
+  <pre><code>:::
+</code></pre>
+  <p>body</p>
+</aside>
+<p>after</p>
+````
+
+```
+::: note
+~~~
+:::
+~~~
+body
+:::
+after
+.
+<aside class="admonition note">
+  <pre><code>:::
+</code></pre>
+  <p>body</p>
+</aside>
+<p>after</p>
+```
+
+````
+::: note
+```text
+::: tip
+```
+body
+:::
+after
+.
+<aside class="admonition note">
+  <pre><code class="language-text">::: tip
+</code></pre>
+  <p>body</p>
+</aside>
+<p>after</p>
+````
+
+```
+::: note
+%%%
+:::
+%%%
+body
+:::
+after
+.
+<aside class="admonition note">
+  <p>body</p>
+</aside>
+<p>after</p>
+```

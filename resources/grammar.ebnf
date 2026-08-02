@@ -693,7 +693,21 @@ admonition = admonition_open, newline,
    diagnosed by lint and by the language server; it is not an error for the
    parser. Note this is NOT the `%%%` comment-block rule (§28), where an
    opener with no exact closer ahead opens nothing: a comment block is
-   invisible either way, so failing closed costs nothing there. *)
+   invisible either way, so failing closed costs nothing there.
+
+   OPAQUE SPANS (PART 9 §12). `{block - admonition_close}` is a BLOCK
+   sequence, so a fenced code block, a raw block and a comment block inside
+   the body are single blocks and their lines are never examined for a
+   closer. A colon fence written inside one is content: it neither closes the
+   container nor opens a child. An implementation that collects the body by
+   scanning raw lines has to model this explicitly, and must consume the
+   span's opener BEFORE testing for its closer -- an opener with no info
+   string (a bare code fence, a `%%%`) is closer-shaped itself, so testing it
+   first ends the span on its own line and hands the span's contents back to
+   the block parser (carve#450). Under exact-length closers a miscount there
+   shifts the whole subtree, and a code fence is the only structural way to
+   quote a container fence, so this is the path every document that describes
+   Carve in Carve takes. *)
 
 (* STRICT (djot): the opener line carries NO inline `{...}` attributes -- it
    is colon_fence, type, an optional quoted "header", an optional [label],

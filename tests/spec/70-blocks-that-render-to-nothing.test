@@ -1,0 +1,38 @@
+Blocks that render to nothing
+
+```
+> q
+> %%%
+> x
+> %%%
+> body
+.
+<blockquote>
+  <p>q</p>
+  <p>body</p>
+</blockquote>
+```
+
+```
+:: t
+:  %%%
+   x
+   %%%
+.
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+```
+
+```
+:::
+*[HTML]: HyperText Markup Language
+
+body
+:::
+.
+<div>
+  <p>body</p>
+</div>
+```

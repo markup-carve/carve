@@ -206,6 +206,16 @@ function parseColonOpener(tail) {
 function findColonCloser(lines, openIdx, len) {
   const stack = [len]
   for (let j = openIdx + 1; j < lines.length; j++) {
+    // A code fence, a raw block and a comment block are OPAQUE: their contents
+    // are content, not markup, so a colon fence written inside one closes
+    // nothing and opens nothing (carve#450). The span is skipped from the line
+    // AFTER its opener, because an opener with no info string is closer-shaped
+    // itself and would otherwise end the span where it began.
+    const span = opaqueSpanEnd(lines, j)
+    if (span !== -1) {
+      j = span
+      continue
+    }
     const c = COLON_CLOSER.exec(lines[j])
     if (c) {
       const closeLen = c[1].length
@@ -219,6 +229,28 @@ function findColonCloser(lines, openIdx, len) {
     }
     const o = COLON_FENCE.exec(lines[j])
     if (o && parseColonOpener(o[2]) !== null) stack.push(o[1].length)
+  }
+  return -1
+}
+
+/** The last line of the opaque span opening at `idx`, or -1 if none opens
+ *  there. A code fence needs a valid info string and a closer ahead to open at
+ *  all (PART 9 SS10 I4); a comment block needs an EXACT-length closer ahead
+ *  (SS28), and without one it opens nothing and is a line comment instead. An
+ *  unterminated span is not a span, so the caller keeps scanning its lines. */
+function opaqueSpanEnd(lines, idx) {
+  const line = lines[idx] ?? ''
+  const fence = FENCE.exec(line)
+  if (fence && parseFenceInfo(fence[2]) !== null) {
+    const close = findCloser(lines, idx, fence[1])
+    if (close !== -1) return close
+  }
+  const comment = COMMENT_FENCE.exec(line)
+  if (comment) {
+    for (let j = idx + 1; j < lines.length; j++) {
+      const c = COMMENT_FENCE.exec(lines[j])
+      if (c && c[1].length === comment[1].length) return j
+    }
   }
   return -1
 }
