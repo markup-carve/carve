@@ -25,7 +25,7 @@ The table below covers the constructs you use most often. Items marked **same** 
 
 | Construct | Markdown | Carve | Notes |
 |---|---|---|---|
-| Headings | `# H1` through `###### H6` | same | A trailing `{#id}` is **not** an attribute (see below) |
+| Headings | `# H1` through `###### H6` | same | Single-line, as in Markdown. A trailing `{#id}` is **not** an attribute (see below) |
 | Links | `[text](url)` | same | |
 | Reference links | `[text][ref]` / `[ref]: url` | same | |
 | Images | `![alt](src)` | same | |

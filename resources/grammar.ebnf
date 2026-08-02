@@ -190,7 +190,7 @@ blank_line = {whitespace}, newline ;
    meaning"). *)
 heading = atx_heading ;
 
-atx_heading = heading_first_line, {heading_continuation_line} ;
+atx_heading = heading_first_line ;
 heading_first_line = heading_marker, space, inline_content, newline ;
 heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
 (* COLUMN ZERO -- NORMATIVE. A heading_marker sits at COLUMN 0 of its line (no
@@ -203,26 +203,40 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    quoted heading.) Matches Djot (which dropped CommonMark's indent fuzz);
    pinned by corpus 101-heading-marker-column-zero. *)
 
-(* MULTI-LINE HEADINGS -- NORMATIVE (like Djot). A heading's text spills onto
-   following lines until a blank line. There are THREE heading-specific rules:
-     1. CONTINUATION: a following line carries the SAME number of `#` markers
-        (stripped) or NONE, and its text is appended to the heading -- exactly
-        djot ("preceded by the same number of `#` characters ... can also be
-        left off"). A line with a DIFFERENT `#` count (MORE or FEWER) is NOT a
-        continuation: it starts a NEW heading.
-     2. A blank line ends the heading.
-     3. A caption (`^ ` ...) attaches to it (§4) and so ends the text.
-   Everything else that "ends" a heading is NOT a heading rule -- it is the
-   general block structure (a heading is a bounded title, not an open
-   paragraph): any line that begins a block (quote, table, fenced code, `:::`
-   div, thematic break, a `%%%` comment) ends the heading and starts that
-   block, and a LIST MARKER -- with no open paragraph in a title to fold into
-   (§10) -- starts a sibling list. This is the SAME outcome the top level gives:
-   "# H \n - item" is a heading PLUS a `<ul>`, exactly as "<no open paragraph>
-   \n - item" starts a list. So the heading adds no per-construct enders of its
-   own beyond the three above.
-   Only PLAIN text (and a same-`#` marker line) folds into the heading. The
-   heading id is derived from the full folded text.
+(* SINGLE-LINE HEADINGS -- NORMATIVE (diverges from Djot). A heading ENDS AT
+   THE NEWLINE. It has no continuation line, and nothing following it folds in:
+   the next line begins whatever block it begins, exactly as it would after any
+   other closed block.
+
+     # Title          -> <h1>Title</h1> then <p>Some text.</p>
+     Some text.
+
+     ## A             -> two separate <h2> elements
+     ## B
+
+   WHY THIS DIVERGES. Djot folds a following plain line, or a same-count `#`
+   line, into the heading. That is hard-wrap-safe, and it is also a SILENT
+   CORRUPTION for anyone arriving from Markdown: `# Title` with prose on the
+   next line became ONE heading whose id was derived from both lines, with no
+   error and nothing to lint. divergence-from-djot §7 already broke from Djot on
+   this exact class of bug for the mirror case -- prose followed by a heading --
+   so the two orderings now answer the same way instead of opposite ways.
+
+   It also makes this grammar's own model true. A heading is described here as
+   "a bounded title, not an open paragraph"; with continuation lines it had
+   paragraph-style spill anyway. LAZY CONTINUATION now means exactly one thing
+   across the whole language: it continues an OPEN PARAGRAPH (in a blockquote,
+   list item or definition body). A heading is not a paragraph, so nothing
+   continues it.
+
+   WHAT IS LOST: source-wrapping a long heading. Headings are short by
+   construction, Markdown never offered it, and the rendered result was a raw
+   newline inside the `h1`. A Djot document that wraps a heading therefore
+   renders differently in Carve; `carve lint --from-djot` reports it.
+
+   A caption (`^ ` ...) still attaches to a heading (§4) -- attachment is not
+   continuation, and the caption is its own construct on its own line.
+
    NO TRAILING ATTRIBUTES (djot-strict). A heading line carries NO trailing
    `{...}` attribute block: a `{...}` at the end of a heading line is ordinary
    inline content (literal text unless it forms an inline construct), and the
@@ -230,10 +244,8 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    block-attribute line (PART 9 §15), the uniform block rule; an explicit
    `#id` from that line lives on the `<section>` wrapper (PART 9 §13).
    Pinned by corpus 02-headings (the preceding-line and literal-trailing
-   pairs). *)
-heading_continuation_line = [heading_marker, space], inline_content, newline ;
-   (* the optional marker must be the SAME count as the open heading's (djot);
-      a different count starts a new heading -- see the NORMATIVE note above *)
+   pairs) and 82-multi-line-headings (the five folding cases, kept as the
+   regression guard for the behavior that replaced them). *)
 
 (* HEADING IDENTIFIERS -- NORMATIVE. A heading without an explicit {#id} gets an
    automatic identifier from its folded plain text (symbols `:name:` and footnote

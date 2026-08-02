@@ -580,6 +580,46 @@ One form is garbage in both languages: widening the *inner* fence. `::::`
 under an open `:::` is a bare closer of greater length, so it ends the outer
 container rather than starting a child, in Carve and in Djot alike.
 
+## 14. Headings are single-line
+
+**Djot:** a heading's text spills onto following lines until a blank line. A
+following plain line folds in, and so does a line carrying the same number of
+`#`.
+
+**Carve:** a heading ends at the newline. Nothing folds into it.
+
+```carve
+# Title
+Some text.
+```
+
+| | Djot | Carve |
+|---|---|---|
+| result | one `<h1>` holding both lines | `<h1>Title</h1>` then `<p>Some text.</p>` |
+| id | `Title-Some-text` | `Title` |
+
+**Why.** This is the same argument as section 7, applied to the other ordering.
+Section 7 already broke from Djot's blank-line rule because a heading written
+directly under prose silently stayed prose - it surprises authors arriving from
+Markdown more often than it helps. The mirror case, prose written directly under
+a heading, was left folding: same two lines, order swapped, opposite doctrines.
+`docs/edge-cases.md` called it "the biggest authoring trap in the heading
+syntax", and a documented trap is still a trap. Now both orderings answer the
+same way.
+
+It also makes one model true across the language. The grammar describes a
+heading as "a bounded title, not an open paragraph" while giving it
+paragraph-style spill. Lazy continuation now means exactly one thing: it
+continues an **open paragraph**. A heading is not a paragraph.
+
+**Cost.** Source-wrapping a long heading is gone. Headings are short by
+construction, Markdown never offered it, and the rendered result was a raw
+newline inside the `h1`. A Djot document that wraps a heading renders
+differently in Carve, which is what `carve lint --from-djot` reports.
+
+Pinned in the corpus as `82-single-line-headings*` - the five cases that used to
+pin the folding rules, kept as the regression guard for what replaced them.
+
 ## What Carve adds on top (not breaks)
 
 These aren't divergences - Djot has no equivalent - but they're why Carve exists

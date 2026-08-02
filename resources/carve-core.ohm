@@ -65,13 +65,11 @@ CarveCore {
   // --- Headings: 1-6 '#' at column 0, one space, inline text to EOL --------
   heading    = headingL<"######"> | headingL<"#####"> | headingL<"####">
              | headingL<"###"> | headingL<"##"> | headingL<"#">
-  headingL<h> = h " " inline+ lineEnd &hBound<h>
-  // A heading must be FOLLOWED by a blank line, a DIFFERENT-level heading,
-  // another structural opener, or EOF. A plain line directly after a
-  // heading, or a SAME-level `#` marker line, is djot-style multi-line
-  // heading FOLDING -- Full Carve, not Core: the document fails to match
-  // rather than mis-rendering as separate blocks.
-  hBound<h>  = blankLine | (~(h " ") structural) | end
+  headingL<h> = h " " inline+ lineEnd
+  // A heading ENDS AT THE NEWLINE and needs no boundary check: nothing folds
+  // into it, so whatever follows simply begins its own block. The lookahead
+  // this rule used to carry existed only to refuse djot-style folding, which
+  // the language no longer has.
   hashes     = "######" | "#####" | "####" | "###" | "##" | "#"
 
   // --- Thematic break: a lone line of 3+ dashes/stars/underscores ----------

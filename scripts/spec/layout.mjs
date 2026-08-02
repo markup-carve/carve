@@ -550,30 +550,11 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     if ((m = HEADING.exec(line))) {
       const level = m[1].length
       const strip = (s) => s.replace(/(^|[ \t])%%(?!%).*$/, '').replace(/[ \t]+$/, '')
-      const parts = [strip(m[2])]
       i++
-      // MULTI-LINE HEADINGS (PART 2): a same-# marker line or a plain text
-      // line folds into the heading; a blank line or any block opener ends it
-      while (i < n && !isBlank(lines[i])) {
-        const cm = HEADING.exec(lines[i])
-        if (cm && cm[1].length === level) {
-          parts.push(strip(cm[2]))
-          i++
-          continue
-        }
-        if (cm) break // different # count: a new heading
-        // A continuation line that folded in from an OUTER lazy context arrives
-        // LAZY-framed; strip that internal marker before it is tested as a block
-        // opener (so a folded `^ cap` still ends the heading) and before it lands
-        // in the heading text/id -- otherwise the sentinel leaks into output.
-        const l = lines[i].startsWith(LAZY) ? lines[i].slice(LAZY.length) : lines[i]
-        if (HR.test(l) || FENCE.test(l) || QUOTE.test(l) || BULLET.test(l) || ORDERED.test(l) ||
-            COLON_FENCE.test(l) || CAPTION.test(l) || l[0] === '|' || l[0] === '{' ||
-            COMMENT_LINE.test(l) || COMMENT_FENCE.test(l)) break
-        parts.push(strip(l))
-        i++
-      }
-      push({ t: 'heading', level, text: parts.join('\n') })
+      // SINGLE-LINE HEADINGS (PART 2): a heading ends at the newline. Nothing
+      // folds into it, so whatever follows simply begins its own block - which
+      // is why this is a plain read rather than a loop with a boundary test.
+      push({ t: 'heading', level, text: strip(m[2]) })
       continue
     }
 

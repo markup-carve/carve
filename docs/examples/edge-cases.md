@@ -1076,8 +1076,8 @@ lazy
   <li>a
     <ul>
       <li>b
-        <h1 id="N-lazy">N
-lazy</h1>
+        <h1 id="N">N</h1>
+        lazy
       </li>
     </ul>
   </li>
@@ -1702,9 +1702,9 @@ int main() {}
 
 :::
 
-## Multi-line headings
+## Single-line headings
 
-A heading spills onto following lines until a blank line. Three heading-specific rules: a continuation line carries the **same** number of `#` (stripped) or **none** (djot); a line with a **different** `#` count — more *or* fewer — starts a new heading; and a blank line or a caption (`^ …`, which attaches via §4) ends it. Everything else that ends a heading is *general block structure*, not a heading rule: a heading is a bounded title, so any block-opener (quote, table, fenced code, `:::` div, thematic break, `%%%` comment) ends it and starts that block, and a list marker — with no open paragraph in a title to fold into (§10) — starts a sibling list, exactly as at the top level. The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
+A heading **ends at the newline**. Nothing folds into it: the next line begins whatever block it begins, exactly as after any other closed block. This diverges from djot deliberately — djot folds a following plain line into the heading, which is a silent corruption for anyone arriving from Markdown, and `divergence-from-djot` §7 already broke from djot on the mirror case. A caption (`^ …`) still attaches via §4, because attachment is not continuation. The heading id is built from the single line. (Setext underline headings remain intentionally excluded.)
 
 ::: compare
 
@@ -1714,15 +1714,15 @@ outside
 ```
 
 ```html
-<section id="Title-outside">
-  <h1>Title
-outside</h1>
+<section id="Title">
+  <h1>Title</h1>
+  <p>outside</p>
 </section>
 ```
 
 :::
 
-A continuation line must carry the **same** number of `#` as the opener (or none). A line with a different count starts a new heading: `## still A` folds in, but `# B` (fewer `#`) is a new heading.
+Repeated headings are simply separate headings — the `#` count no longer decides whether one folds into another.
 
 ::: compare
 
@@ -1733,9 +1733,11 @@ A continuation line must carry the **same** number of `#` as the opener (or none
 ```
 
 ```html
-<section id="A-still-A">
-  <h2>A
-still A</h2>
+<section id="A">
+  <h2>A</h2>
+</section>
+<section id="still-A">
+  <h2>still A</h2>
 </section>
 <section id="B">
   <h1>B</h1>
