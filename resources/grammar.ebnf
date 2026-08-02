@@ -516,12 +516,13 @@ definition_term = "::", space, inline_content, newline, {term_continuation_line}
 term_continuation_line = inline_content, newline ;
 (* A term folds a following plain line as a soft break; a blank line, a new
    `::`/`:  ` marker, or a block opener ends it. A term holds inline content
-   only -- no block body. (This used to read "like a heading". A heading no
-   longer folds anything -- see SINGLE-LINE HEADINGS -- so the analogy is gone,
-   and the term KEEPS its fold deliberately: what made the heading's fold a
-   defect was having TWO ways to spill, one of them silent, and a term has only
-   this one. Wrapping a long term stays possible; §434's follow-up question is
-   answered here rather than left open.) *)
+   only -- no block body. (This used to read "like a heading", which was never
+   the right comparison: a term is the KEY half of a key-value entry, not a
+   title, and it is bound to the definition beneath it rather than to a section
+   of the document. It KEEPS its fold. What made the heading's fold a defect was
+   having TWO ways to spill onto the next line, one of them silent -- a term has
+   exactly one, so a long key stays wrappable at no cost. §434's follow-up
+   question is answered here rather than left open.) *)
 definition_body = (':', space, space, first_block_content)
                 | (':', space, space, inline_content, newline,
                    { definition_continuation
