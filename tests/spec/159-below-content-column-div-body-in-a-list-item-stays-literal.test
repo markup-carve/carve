@@ -6,8 +6,11 @@ Below-content-column div body in a list item stays literal
  :::
 .
 <ul>
-  <li>::: note
-- para text
-:::</li>
+  <li>
+    <aside class="admonition note">
+      <p>- para text
+:::</p>
+    </aside>
+  </li>
 </ul>
 ```

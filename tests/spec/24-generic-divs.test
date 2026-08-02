@@ -24,8 +24,9 @@ not a div
 :::
 .
 <p>::: {.sidebar}
-not a div
-:::</p>
+not a div</p>
+<div>
+</div>
 ```
 
 ```
@@ -44,8 +45,9 @@ not a div
 :::
 .
 <p>::: 123
-not a div
-:::</p>
+not a div</p>
+<div>
+</div>
 ```
 
 ```

@@ -534,10 +534,10 @@ Inner.
 
 ```html
 <aside class="admonition note">
-  <p>::: tip
-Inner.</p>
+  <aside class="admonition tip">
+    <p>Inner.</p>
+  </aside>
 </aside>
-<p>:::</p>
 ```
 
 ::::
@@ -561,10 +561,10 @@ Inner
 ```html
 <div>
   <p>Outer</p>
+  <div>
+    <p>Inner</p>
+  </div>
 </div>
-<p>Inner
-::::
-:::</p>
 ```
 
 :::::
@@ -581,8 +581,9 @@ X
 ```
 
 ```html
-<p>::: note
-X</p>
+<aside class="admonition note">
+  <p>X</p>
+</aside>
 ```
 
 ::::
@@ -603,10 +604,12 @@ X
 ```
 
 ```html
-<p>::::: a
-:::: b</p>
-<div class="c">
-  <p>X</p>
+<div class="a">
+  <div class="b">
+    <div class="c">
+      <p>X</p>
+    </div>
+  </div>
 </div>
 ```
 
@@ -1474,9 +1477,10 @@ body
 ```
 
 ```html
-<p>text
-:::note
-body</p>
+<p>text</p>
+<aside class="admonition note">
+  <p>body</p>
+</aside>
 ```
 
 ::::
@@ -1622,9 +1626,10 @@ stuff
 ```
 
 ```html
-<p>Text
-:::
-stuff</p>
+<p>Text</p>
+<div>
+  <p>stuff</p>
+</div>
 ```
 
 ::::
@@ -3503,10 +3508,12 @@ ordinary nested list:
 
 ```html
 <ul>
-  <li>::: note
-    <ul>
-      <li>para text</li>
-    </ul>
+  <li>
+    <aside class="admonition note">
+      <ul>
+        <li>para text</li>
+      </ul>
+    </aside>
   </li>
 </ul>
 ```
@@ -3527,13 +3534,16 @@ paragraph:
 
 ```html
 <ul>
-  <li>::: note
-    <ul>
-      <li>para text</li>
-    </ul>
+  <li>
+    <aside class="admonition note">
+      <ul>
+        <li>para text</li>
+      </ul>
+    </aside>
   </li>
 </ul>
-<p>:::</p>
+<div>
+</div>
 ```
 
 ::::
@@ -5458,9 +5468,12 @@ opener line - folds into the item as literal text rather than an admonition.
 
 ```html
 <ul>
-  <li>::: note
-- para text
-:::</li>
+  <li>
+    <aside class="admonition note">
+      <p>- para text
+:::</p>
+    </aside>
+  </li>
 </ul>
 ```
 

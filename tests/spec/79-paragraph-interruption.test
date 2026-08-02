@@ -106,9 +106,10 @@ text
 :::note
 body
 .
-<p>text
-:::note
-body</p>
+<p>text</p>
+<aside class="admonition note">
+  <p>body</p>
+</aside>
 ```
 
 ```
@@ -180,7 +181,8 @@ Text
 :::
 stuff
 .
-<p>Text
-:::
-stuff</p>
+<p>Text</p>
+<div>
+  <p>stuff</p>
+</div>
 ```

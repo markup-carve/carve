@@ -634,15 +634,17 @@ caption_slot = [blank_line], caption ;
    in the resolution pass. A caption with no bare `#` is unchanged. *)
 
 (* --- Admonitions --- *)
-(* A fence is a run of 3+ colons. A longer opener nests shorter blocks. *)
+(* A fence is a run of 3+ colons. A closer PAIRS WITH ITS OPENER'S WIDTH. *)
 colon_fence = ":::", {":"} ;
 colon_fence_close = colon_fence:close
-                    where len(close) >= len(open) ;
+                    where len(close) = len(open) ;
 (* FORMAL (PART 9 §12, now a guard): `open` is the colon_fence captured by
    the enclosing block's opener (admonition_open / div_open /
    line_block_open / local_hard_break_block_open). A block is closed only
-   by a bare fence of equal-or-greater length, so a `:::` inside a `::::`
-   block is content. Equal-length fences do not nest. *)
+   by a bare fence of the SAME length, matched against the INNERMOST open
+   fence -- so nesting needs only DIFFERENT lengths, in either direction
+   (carve#439). A bare fence is a CLOSER whenever a container of its width
+   is open; only a non-bare fence line of that width opens a nested one. *)
 
 admonition = admonition_open, newline,
              {block - admonition_close},
@@ -1749,7 +1751,7 @@ EOF = (* end of file *) ;
    2. MATCHING FENCES -- FORMALIZED. Stated as `where` guards on the
       productions (GUARD NOTATION, header):
       - code_fence_close: same fence character, len(close) >= len(open);
-      - colon_fence_close (§12): len(close) >= len(open);
+      - colon_fence_close (§12): len(close) = len(open);
       - comment_block_close: len(close) = len(open). Only the LEADING RUN of
         `%` is compared -- trailing text on either fence line is insignificant,
         and an opener with no matching closer ahead opens nothing (§28).
@@ -2160,10 +2162,40 @@ EOF = (* end of file *) ;
       body and the block wraps the nested `<ul>`/`<ol>`. A blank line
       between the opener and the nested list still opens the block, and an
       empty body (opener immediately followed by its closer) opens too. With
-      NO matching closer, the opener degrades to literal text and the marker
-      lines form an ordinary nested list. The corpus pins these
+      NO matching closer, the block still opens and is CLOSED AT THE END OF
+      ITS ENCLOSING SCOPE -- here the end of the list item, since a column-zero
+      `:::` is outside the item and cannot reach in. The corpus pins these
       (docs/examples.md "Fence opener with a nested-list body inside a list
       item").
+
+      CLOSER WIDTH AND UNCLOSED BLOCKS -- NORMATIVE (carve#439).
+
+      A closer PAIRS WITH ITS OPENER'S WIDTH: a bare fence closes a container
+      only when its colon run is EXACTLY as long, matched against the
+      INNERMOST open fence. Nesting therefore needs only DIFFERENT lengths,
+      in EITHER direction -- `::::` outside `:::` and `:::` outside `::::`
+      both nest, and equal-length fences nest too, since the inner opener is
+      not bare. A bare fence is a CLOSER whenever a container of its width is
+      open; only a NON-BARE fence line of that width opens a nested block.
+
+      The CANONICAL direction, which `carve fmt` emits and the docs teach, is
+      `:::` outermost and one colon wider per level. That is a WRITER rule,
+      not a parser rule: nothing rejects the other direction, so no document
+      has to be migrated. It is canonical because adding a nesting level is
+      then a local edit instead of a rewrite of the whole chain, and because
+      an admonition always opens `::: note` however deep it later sits.
+
+      An UNCLOSED container is CLOSED AT END OF FILE (or at the end of its
+      enclosing scope), matching djot. It does NOT degrade to literal text.
+      Degradation turned the whole tail of a document into a paragraph over
+      one mistyped closer, and exact-width closers make that typo likelier,
+      so the two rules change together. Failing visibly is the point: an
+      implementation SHOULD report an unclosed container as a diagnostic.
+
+      This differs from the `%%%` comment block (§28), whose opener with no
+      closer ahead opens NOTHING. A comment's content is invisible, so
+      auto-closing one would hide the rest of the file; a container's content
+      still renders.
 
       The two tiers for a typed block:
 

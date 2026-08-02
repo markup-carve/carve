@@ -72,10 +72,12 @@ Fence opener with a nested-list body inside a list item
   - para text
 .
 <ul>
-  <li>::: note
-    <ul>
-      <li>para text</li>
-    </ul>
+  <li>
+    <aside class="admonition note">
+      <ul>
+        <li>para text</li>
+      </ul>
+    </aside>
   </li>
 </ul>
 ```
@@ -86,13 +88,16 @@ Fence opener with a nested-list body inside a list item
 :::
 .
 <ul>
-  <li>::: note
-    <ul>
-      <li>para text</li>
-    </ul>
+  <li>
+    <aside class="admonition note">
+      <ul>
+        <li>para text</li>
+      </ul>
+    </aside>
   </li>
 </ul>
-<p>:::</p>
+<div>
+</div>
 ```
 
 ```

@@ -511,17 +511,23 @@ ASCII before slugging (section 1 above), so `# Don't repeat yourself` gives
 `Don-t-repeat-yourself` whether the heading
 renders with a curly apostrophe or a straight one.
 
-## 13. Container nesting is strict, and an unclosed opener is text
+## 13. A container closer pairs with its opener's width
 
-Both languages spell a container `:::` and close it with a bare colon fence,
-and both require the closer to be at least as long as its opener. Three rules
-around that agreement differ, in both directions.
+Both languages spell a container `:::` and close it with a bare colon fence.
+Djot requires the closer to be at least as long as its opener; Carve requires
+it to be **exactly** as long, matched against the innermost open fence.
 
-**Equal-length fences.** Djot nests them: an inner `:::` inside an outer `:::`
-is a child container. Carve does not - a container has to be strictly wider
-than every container below it. At equal length the inner opener is neither a
-closer (a closer must be bare, and `::: tip` carries a type word) nor an
-opener, so it stays content:
+That one guard makes nesting direction-neutral. Only *different* lengths are
+needed, so both of these nest:
+
+```
+:::: note        :::  note
+::: tip          :::: tip
+:::              ::::
+::::             :::
+```
+
+and so do equal-length fences, because the inner opener is not bare:
 
 ```
 ::: note
@@ -533,52 +539,39 @@ Inner.
 
 ```html
 <aside class="admonition note">
-  <p>::: tip
-Inner.</p>
+  <aside class="admonition tip">
+    <p>Inner.</p>
+  </aside>
 </aside>
-<p>:::</p>
 ```
 
-**A bare closer closes one container.** Djot's closes every container open
-above it of equal-or-lesser length, so a single `:::` under three openers
-closes all three. In Carve it closes the one block it matches, and the
-openers left over fall under the unclosed rule below.
+**A bare closer closes one container**, as in Djot's equal-length case: it
+pairs with the innermost open fence of its width. Djot additionally lets a
+longer closer close several shorter containers at once; Carve does not, since
+a longer run is simply not that container's closer.
 
-**An unclosed opener.** Djot closes the container at end of file, so the block
-still renders. Carve opens nothing: the opener line and its body stay a
-paragraph, `:::` and all.
+**An unclosed opener** closes at end of file in both languages. Carve used to
+open nothing here - the opener line and its body stayed a paragraph - and that
+changed with the width rule ([carve#439](https://github.com/markup-carve/carve/issues/439)):
+a mistyped closer turning the tail of a document into text is too loud a
+failure to pair with a stricter closer, so the container is completed and an
+implementation reports a diagnostic instead.
 
-```
-::: note
-X
-```
+This is deliberately NOT the `%%%` comment-block rule (PART 9 §28), where an
+opener with no closer ahead opens nothing. A comment's content is invisible, so
+auto-closing one would hide the rest of the file; a container's content still
+renders.
 
-```html
-<p>::: note
-X</p>
-```
+**The canonical direction is `:::` outermost**, one colon wider per level -
+what `carve fmt` emits and what the docs teach. That is a writer rule, not a
+parser rule: nothing rejects the other direction, so no document needs
+migrating. It is canonical because adding a nesting level is then a local edit
+rather than a rewrite of the whole chain, and because an admonition always
+opens `::: note` however deep it later sits.
 
-**Why.** Carve's fence width is a *depth* count, not the quoting device it is
-on a code fence: a container's fence must outrank its whole subtree, which is
-what makes `::::` reliably contain `:::` and lets a canonical writer size a
-fence from the tree alone. Equal-length nesting breaks that, because the same
-width would mean two different depths. The unclosed rule is the general Carve
-principle that a construct which never completes is not silently completed for
-you - the same call as `%%%` comment blocks (PART 9 §28), where an opener with
-no closer ahead degrades to line comments rather than swallowing the rest of
-the document.
-
-The cost is that a mistyped closer turns the tail of a document into text
-instead of producing a slightly wrong container. That trade, and whether the
-depth count should run the other way (`:::` outermost, one colon added per
-level), is the open question in
-[carve#439](https://github.com/markup-carve/carve/issues/439). All four forms
-are pinned in the corpus as `68-nested-containers*`, so any move shows up as a
-fixture diff rather than as a silent behavior change.
-
-One form is garbage in both languages: widening the *inner* fence. `::::`
-under an open `:::` is a bare closer of greater length, so it ends the outer
-container rather than starting a child, in Carve and in Djot alike.
+All four previously-degenerate forms are pinned in the corpus as
+`68-nested-containers*`, so each one flipped as a visible fixture diff rather
+than as a silent behavior change.
 
 ## What Carve adds on top (not breaks)
 

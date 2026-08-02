@@ -25,10 +25,10 @@ Inner.
 :::
 .
 <aside class="admonition note">
-  <p>::: tip
-Inner.</p>
+  <aside class="admonition tip">
+    <p>Inner.</p>
+  </aside>
 </aside>
-<p>:::</p>
 ```
 
 ```
@@ -42,18 +42,19 @@ Inner
 .
 <div>
   <p>Outer</p>
+  <div>
+    <p>Inner</p>
+  </div>
 </div>
-<p>Inner
-::::
-:::</p>
 ```
 
 ```
 ::: note
 X
 .
-<p>::: note
-X</p>
+<aside class="admonition note">
+  <p>X</p>
+</aside>
 ```
 
 ```
@@ -63,9 +64,11 @@ X</p>
 X
 :::
 .
-<p>::::: a
-:::: b</p>
-<div class="c">
-  <p>X</p>
+<div class="a">
+  <div class="b">
+    <div class="c">
+      <p>X</p>
+    </div>
+  </div>
 </div>
 ```

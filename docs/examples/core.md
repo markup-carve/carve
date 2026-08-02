@@ -2652,8 +2652,9 @@ not a div
 
 ```html
 <p>::: {.sidebar}
-not a div
-:::</p>
+not a div</p>
+<div>
+</div>
 ```
 
 ::::
@@ -2691,8 +2692,9 @@ not a div
 
 ```html
 <p>::: 123
-not a div
-:::</p>
+not a div</p>
+<div>
+</div>
 ```
 
 ::::
@@ -3671,8 +3673,9 @@ two
 ```html
 <p>::: {.line-block}
 one
-two
-:::</p>
+two</p>
+<div>
+</div>
 ```
 
 ::::

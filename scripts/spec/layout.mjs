@@ -202,12 +202,27 @@ function parseColonOpener(tail) {
   return out
 }
 
+// The matching closer's index, or `lines.length` when there is none: an
+// unclosed container is CLOSED AT END OF FILE (SS12, carve#439), not degraded
+// to literal text.
+//
+// A closer must be EXACTLY as wide as its opener, so nesting needs only
+// different lengths and both directions work. Equal-width nesting then makes
+// depth counting necessary: a bare fence of the opener's width closes, while a
+// NON-BARE fence line of that width opens a nested container, and stopping at
+// the first bare fence would end the outer block on the inner one's closer.
 function findColonCloser(lines, openIdx, len) {
+  let depth = 1
   for (let j = openIdx + 1; j < lines.length; j++) {
     const c = COLON_CLOSER.exec(lines[j])
-    if (c && c[1].length >= len) return j
+    if (c && c[1].length === len) {
+      if (--depth === 0) return j
+      continue
+    }
+    const f = COLON_FENCE.exec(lines[j])
+    if (f && f[1].length === len && parseColonOpener(f[2])) depth++
   }
-  return -1
+  return lines.length
 }
 
 const COMMENT_LINE = /^[ \t]*%%/
@@ -341,10 +356,10 @@ function opensSubBlock(line, rest) {
   if (f) return parseFenceInfo(f[2]) !== null
   const cf = COLON_FENCE.exec(line)
   if (!cf) return false
-  // a colon fence is a BLOCK only when the opener is well-formed AND a closer
-  // follows (PART 9 SS12); otherwise the line is ordinary prose and loosens
-  // the item like any second paragraph
-  return parseColonOpener(cf[2]) !== null && findColonCloser(rest, -1, cf[1].length) !== -1
+  // a colon fence is a BLOCK whenever the opener is well-formed: since
+  // carve#439 an unclosed container closes at end of file rather than falling
+  // back to prose, so no closer lookahead decides this
+  return parseColonOpener(cf[2]) !== null
 }
 
 // the lines after `j` that still belong to the item opened at `baseIndent`,
@@ -418,7 +433,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     if (isTableRow(line)) return true
     {
       const cf = COLON_FENCE.exec(line)
-      if (cf && parseColonOpener(cf[2]) && findColonCloser(lines, idx, cf[1].length) !== -1) return true
+      if (cf && parseColonOpener(cf[2])) return true
     }
     const fence = FENCE.exec(line)
     if (fence && hasCloser(lines, idx)) return true // I4
@@ -766,7 +781,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
       if (cf) {
         const opener = parseColonOpener(cf[2])
         const close = opener ? findColonCloser(lines, i, cf[1].length) : -1
-        if (opener && close !== -1) {
+        if (opener) {
           const body = lines.slice(i + 1, close)
           i = close + 1
           if (opener.mode === 'line-block') {
@@ -790,8 +805,9 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           }
           continue
         }
-        // invalid opener or no closer: ordinary paragraph text (falls
-        // through to the paragraph collector)
+        // invalid opener: ordinary paragraph text (falls through to the
+        // paragraph collector). A VALID opener always opens - an unclosed one
+        // is closed at end of file (SS12, carve#439).
       }
     }
 
@@ -974,7 +990,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         if (isTableRow(lines[i])) break // I1: valid table row
         {
           const cf = COLON_FENCE.exec(lines[i])
-          if (cf && parseColonOpener(cf[2]) && findColonCloser(lines, i, cf[1].length) !== -1) break // I1/I4
+          if (cf && parseColonOpener(cf[2])) break // I1/I4
         }
         const f = FENCE.exec(lines[i])
         if (f && parseFenceInfo(f[2]) && hasCloser(lines, i)) break // I4: interrupts
