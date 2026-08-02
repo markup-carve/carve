@@ -499,8 +499,9 @@ and removes the old false positive where a wrapped prose line became a list.
 heading (a bounded title) and starts a top-level **sibling list**. A blockquote
 is *not* ended: a quoted line ends in an open paragraph, so a list marker folds
 into it as lazy continuation — `> q` / `- a` is **one** quote whose paragraph is
-`q\n- a`, not a quote plus a sibling list. Plain text folds into a heading too;
-a list marker does not. This matches Djot.
+`q\n- a`, not a quote plus a sibling list. Nothing folds into a heading at all,
+plain text included - a heading ends at the newline (§18). The blockquote half
+of this matches Djot; the heading half deliberately does not.
 
 **Other carve-outs:**
 
