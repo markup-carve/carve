@@ -2697,25 +2697,28 @@ not a div
 
 ::::
 
-A container's fence must be wider than every fence in its SUBTREE, not just the
-next level down. Three deep is where a one-level lookahead stops working: the
-outer two come out at equal width, and equal-width fences do not nest, so the
-middle container stops being nested (carve#442).
+A bare colon fence closes a container only when it is EXACTLY as long as that
+container's opener, so the run length is a local depth count: the outermost
+container is `:::` and every level inward adds a colon. That is the direction
+`carve fmt` emits, and it is writable from the top down - a fence is sized by
+the levels above it, which are already on the page. The other direction parses
+too; equal-length fences nest as well, since a fence carrying a type word is
+never a closer.
 
 :::::: compare
 
 ```carve
-::::: outer
+::: outer
 
 :::: middle
 
-::: note
+::::: note
 X
-:::
+:::::
 
 ::::
 
-:::::
+:::
 ```
 
 ```html

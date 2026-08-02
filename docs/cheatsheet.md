@@ -91,11 +91,11 @@ body                          info success example quote;
 body                          identifier, e.g. the tab name; same
 :::                           "Header" [Label] tokens as a code fence)
 
-:::: outer                   (longer fences nest shorter ones)
-::: note
-inner
-:::
+::: outer                    (a closer matches its opener's length
+:::: note                     exactly; canonical nesting adds one
+inner                         colon per level inward)
 ::::
+:::
 
 ::: |                        (preserves per-line layout)
 Roses are red,

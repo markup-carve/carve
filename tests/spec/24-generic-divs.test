@@ -49,17 +49,17 @@ not a div
 ```
 
 ```
-::::: outer
+::: outer
 
 :::: middle
 
-::: note
+::::: note
 X
-:::
+:::::
 
 ::::
 
-:::::
+:::
 .
 <div class="outer">
   <div class="middle">

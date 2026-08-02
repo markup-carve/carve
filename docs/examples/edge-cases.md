@@ -1595,9 +1595,9 @@ text
 
 :::
 
-An **unterminated** fence opener does not interrupt a paragraph (§10 closer
-lookahead): with no matching closer ahead, the ` ``` ` line stays paragraph
-text. It is then an unclosed inline verbatim run, which renders as a `<code>`
+An **unterminated** code fence opener does not interrupt a paragraph (§10
+closer lookahead): with no matching closer ahead, the ` ``` ` line stays
+paragraph text. It is then an unclosed inline verbatim run, which renders as a `<code>`
 span to the end of the block (matching the `code_span` maximal-run rule).
 
 ::: compare
@@ -1616,9 +1616,11 @@ code</code></p>
 
 :::
 
-Likewise an unterminated `:::` opener does not interrupt: with no matching
-closer ahead it is literal text, so a stray `:::` in prose never swallows the
-rest of the block.
+A `:::` opener goes the other way: its closer is optional (PART 9 §12), so
+there is nothing to look ahead for. The opener interrupts, and the container it
+opens closes at the end of the input. That is the counterweight to the exact
+closer - a mistyped closer costs the container's extent, not the rest of the
+document.
 
 :::: compare
 
@@ -5699,7 +5701,7 @@ after
 
 ## Unterminated comment fence
 
-A `%%%` opener with no matching closer ahead does not open a block. The line degrades to a `%%` line comment, so every following block still renders - the same rule as an unclosed `:::`, and for the same reason: an unterminated opener must not swallow the rest of the document. A tail on the opener (`%%% TODO`) changes nothing here.
+A `%%%` opener with no matching closer ahead does not open a block. The line degrades to a `%%` line comment, so every following block still renders. This is deliberately **not** the unclosed-`:::` rule (PART 9 §12), where the opener opens and the container closes at the end of the input: a comment block is invisible either way, so failing closed costs nothing here, whereas the same choice on a container turned one mistyped closer into a tail of literal text. A tail on the opener (`%%% TODO`) changes nothing.
 
 ::: compare
 
