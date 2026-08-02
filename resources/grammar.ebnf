@@ -1513,6 +1513,36 @@ name_word = (letter | digit | '_' | '-')+ ;
    (`ping @markus.` -> mention `markus` + literal `.`). Pinned by corpus
    89-mention-and-tag-name-boundaries / 31-mention-ignores-email-addresses. *)
 
+(* ATTRIBUTES ON A MENTION OR TAG (normative, PART 10 §1). The node carries an
+   `attrs` slot (PART 12) and those attributes RENDER, with the author's
+   classes merged onto the structural `mention` / `tag` class and the
+   author's own attribute order preserved after it:
+
+     class="mention user" data-role="lead" id="x"
+
+   On the link form the structural href is second and is never taken from an
+   author attribute:
+
+     <a class="mention user" href="…" data-role="lead" id="x">
+
+   This is the same merge a typed div uses (`class="admonition note x"`) and
+   that math uses (`class="math inline"` alongside `{.foo}`); a mention is not
+   a special case.
+
+   NOT REACHABLE FROM SOURCE, and therefore not corpus-pinnable: an attribute
+   block after a mention stays literal (corpus
+   151-attribute-block-after-a-mention-stays-literal), so `@alice{.x}` never
+   produces an attributed mention. The slot is filled by a decoded wire
+   payload, the ProseMirror bridge (a stock Tiptap mention carries an id), or
+   an application building the node. Each implementation pins this in its own
+   suite; the corpus cannot, because the corpus renders source.
+
+   The rule exists because the alternative loses on round-trip: a writer that
+   spells an attributed mention as `[*\@alice*]{.mention #keepme}` only
+   satisfies toHtml(fmt(x)) == toHtml(x) if those attributes render, and a
+   writer that drops them instead satisfies it by deleting the data from both
+   sides. Resolved in carve-php#575. *)
+
 (* Boundary rules (PSEUDO-PRODUCTIONS -- prose conditions on `mention` /
    `tag` / `symbol`, normative in PART 9 §7, not reachable grammar symbols):
    the marker must be at start of content or preceded by a character that is
