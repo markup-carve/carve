@@ -29,7 +29,28 @@ const normalize = (html) => html.replace(/\s+/g, ' ').trim()
  * section: where the claim lives, so a failure names the paragraph to fix.
  * differs: what the page says - true means Carve and Djot disagree here.
  */
+/*
+ * Sections deliberately absent, and why - so their absence reads as a decision
+ * rather than an oversight:
+ *
+ *   8  (symbols)            both engines leave `:tada:` literal with no symbol
+ *                           map configured, so the stricter-boundary claim
+ *                           needs option plumbing to observe at all.
+ *   10 (raw passthrough)    both emit a matching format and drop a
+ *                           non-matching one; the divergence is in WHICH
+ *                           spellings are accepted, not in the output of the
+ *                           shared one.
+ *   12 (smart punctuation)  explicitly an AST-shape claim - one leaf node
+ *                           against three container types - and both render
+ *                           identical HTML. Nothing to see at this layer.
+ */
 const CLAIMS = [
+  { section: '1', input: '# Getting Started\n', differs: false, note: 'the emitted id is deliberately Djot-shaped - the divergence is in RESOLUTION, not the slug' },
+  { section: '1b', input: '# a; b: c\n', differs: true, note: 'Carve keeps alphanumerics only, so a-b-c against Djot a;-b:-c' },
+  { section: '1c', input: '{a=b .c #x}\n# abc\n', differs: true, note: 'with an explicit id, Carve keeps non-id attributes on the heading; Djot moves them to the section' },
+  { section: '6', input: '%% a comment\n', differs: true, note: 'Carve has plain-text comments; Djot renders the line' },
+  { section: '7', input: 'text\n# Heading\n', differs: true, note: 'a block opener interrupts a paragraph in Carve' },
+  { section: '11', input: '1. one\n\n  > quoted\n', differs: true, note: 'below the content column the block detaches in Carve, attaches in Djot' },
   { section: '2', input: '-\n', differs: true, note: 'a bare marker is a paragraph in Carve, an empty item in Djot' },
   { section: '3', input: '+ text\n', differs: true, note: '+ is the continuation marker in Carve, a bullet in Djot' },
   { section: '4', input: '/italic/\n', differs: true, note: 'slashes are emphasis in Carve only' },
