@@ -2813,7 +2813,10 @@ EOF = (* end of file *) ;
         every space the author writes is significant). A LONE inner space is NOT
         preserved: it stays an ordinary, collapsible space so a long line can
         still wrap between words. Tab arithmetic is the leading run's, counted
-        from the column the run starts at.
+        from the column the run starts at -- so the SAME tab is a gap or a lone
+        space depending on the column it lands in, which is what makes it worth
+        pinning: corpus 41-line-blocks-9 holds a tab that crosses one column
+        (collapses) beside two that cross two stops (kept), and a leading one.
       - REFERENCE COLUMN. Leading whitespace is measured RELATIVE TO THE FENCE
         indent, not absolute column 0: a `line-block` nested in a list has the
         container's structural indent stripped first (the list dedents to its

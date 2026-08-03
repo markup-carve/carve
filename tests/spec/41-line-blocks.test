@@ -107,3 +107,17 @@ b</p>
   </aside>
 </div>
 ```
+
+```
+::: |
+tab	gap
+wide		gap
+	lead
+:::
+.
+<div class="line-block">
+  <p>tab gap<br>
+wide&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gap<br>
+&nbsp;&nbsp;&nbsp;&nbsp;lead</p>
+</div>
+```

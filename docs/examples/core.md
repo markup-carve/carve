@@ -3749,3 +3749,28 @@ b</p>
 
 :::::
 
+A gap written with TABS measures in columns, not characters: each tab advances
+to the next four-column stop, counted from where the run starts. So a tab is a
+medial gap or a lone space depending on where it lands - below, `tab` sits at
+column 3 so its tab crosses one column and collapses, while the two after `wide`
+cross two full stops and are kept. A LEADING tab follows the same arithmetic.
+
+:::: compare
+
+```carve
+::: |
+tab	gap
+wide		gap
+	lead
+:::
+```
+
+```html
+<div class="line-block">
+  <p>tab gap<br>
+wide&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gap<br>
+&nbsp;&nbsp;&nbsp;&nbsp;lead</p>
+</div>
+```
+
+::::
