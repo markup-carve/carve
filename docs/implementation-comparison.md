@@ -13,19 +13,19 @@ implementation exposes.
 > nothing across rows; the counts are the point, and
 > `tests/implementation-comparison-counts.test.mjs` fails when they stop
 > matching the corpus - which is how this page came to quote 302 pairs against a
-> corpus of 529, and again at 531, 532, 533, 535, 536 and 539.
+> corpus of 529, and again at 531, 532, 533, 535, 536, 539 and 542.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>539 / 539</strong>
+    <strong>542 / 542</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>539 / 539</strong>
+    <strong>542 / 542</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>539 / 539</strong>
+    <strong>542 / 542</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -36,9 +36,9 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `6b47c73` | `539 / 539` | `0` | `0` | `2.28` |
-| JS | `ed9e454` | `539 / 539` | `0` | `0` | `55.04` |
-| PHP | `65ae3d4` | `539 / 539` | `0` | `0` | `52.75` |
+| Rust | `44b3d80` | `542 / 542` | `0` | `0` | `2.32` |
+| JS | `ed1e78a` | `542 / 542` | `0` | `0` | `54.42` |
+| PHP | `df0f10f` | `542 / 542` | `0` | `0` | `52.03` |
 
 Spec commit: `bf06ef4`
 
@@ -289,10 +289,10 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=539 targets=html
-rust: pass=539/539 mismatch=0 error=0 skipped=0 runs=539 avg_ms=2.28
-js: pass=539/539 mismatch=0 error=0 skipped=0 runs=539 avg_ms=55.04
-php: pass=539/539 mismatch=0 error=0 skipped=0 runs=539 avg_ms=52.75
+profile=default/no-opt-in corpus=core corpus_pairs=542 targets=html
+rust: pass=542/542 mismatch=0 error=0 skipped=0 runs=542 avg_ms=2.32
+js: pass=542/542 mismatch=0 error=0 skipped=0 runs=542 avg_ms=54.42
+php: pass=542/542 mismatch=0 error=0 skipped=0 runs=542 avg_ms=52.03
 cross_impl_diffs=0
 
 Extension capability matrix

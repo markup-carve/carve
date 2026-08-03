@@ -1,0 +1,19 @@
+A marker separator is a space, never a tab
+
+```
+::	term
+:  d
+.
+<p>::	term
+:  d</p>
+```
+
+```
+:: term
+:  d
+.
+<dl>
+  <dt>term</dt>
+  <dd>d</dd>
+</dl>
+```
