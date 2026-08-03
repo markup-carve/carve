@@ -21,6 +21,7 @@ import { fileURLToPath } from 'node:url'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const page = readFileSync(resolve(root, 'docs/implementation-comparison.md'), 'utf8')
+const landing = readFileSync(resolve(root, 'docs/index.md'), 'utf8')
 
 const countPairs = (dir) =>
   readdirSync(resolve(root, dir)).filter((f) => f.endsWith('.crv')).length
@@ -54,3 +55,38 @@ for (const corpus of ['core', 'optional']) {
     )
   })
 }
+
+test('the comparison cards and table quote the real core corpus size', () => {
+  // The same run appears three times on that page: a card grid, a table, and
+  // the raw text block. Only the text block was pinned at first, so the grid
+  // and table went on saying 302 next to a corrected 529.
+  const live = countPairs('tests/corpus')
+  //
+  // Matched narrowly on purpose: the optional-profile block on the same page
+  // legitimately quotes `3 / 3`, and a loose "N / N" pattern flagged it. Only
+  // the card grid (<strong>N / N</strong>) and the core table (`N / N` in
+  // backticks) speak for the core corpus.
+  // The optional-profile section has a table of the same shape, quoting the
+  // optional corpus, so the scan stops at its heading.
+  const core = page.split('## Optional Tier-2 Profile')[0]
+  const cards = [...core.matchAll(/<strong>(\d+)\s*\/\s*(\d+)<\/strong>/g)]
+  const tableCells = [...core.matchAll(/\|\s*`(\d+)\s*\/\s*(\d+)`\s*\|/g)]
+  const quotedPairs = [...cards, ...tableCells]
+    .filter(([, a, b]) => a === b)
+    .map(([, a]) => Number(a))
+  assert.ok(quotedPairs.length >= 6, `expected the card grid and table to quote N / N; found ${quotedPairs.length}`)
+  for (const n of quotedPairs) {
+    assert.equal(n, live, `docs/implementation-comparison.md quotes ${n} / ${n} where the corpus holds ${live}`)
+  }
+})
+
+test('the landing page quotes the real corpus size', () => {
+  const live = countPairs('tests/corpus')
+  const m = landing.match(/pinned by (\d+) corpus examples/)
+  assert.ok(m, 'docs/index.md no longer states a corpus example count in the expected phrasing')
+  assert.equal(
+    Number(m[1]),
+    live,
+    `docs/index.md says "pinned by ${m[1]} corpus examples"; the corpus holds ${live}`,
+  )
+})

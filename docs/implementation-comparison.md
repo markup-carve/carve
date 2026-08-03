@@ -6,24 +6,26 @@ same `.crv` / `.html` pairs and reports default conformance, optional Tier-2
 adapter coverage, rough CLI timing, and the extension hook surface each
 implementation exposes.
 
-## Snapshot (2026-06-19)
+## Snapshot (2026-08-03)
 
-> Run on 2026-06-19 with all three implementations built from their current
-> `main`. Regenerate any time with `npm run compare:impls`. The figures below
-> are that run; the core corpus has since grown (402 pairs at time of writing),
-> so treat the counts as a historical snapshot, not a live total.
+> Run with all three implementations built from their own `main`. Regenerate any
+> time with `npm run compare:impls`. Timings are from one machine and mean
+> nothing across rows; the counts are the point, and
+> `tests/implementation-comparison-counts.test.mjs` fails when they stop
+> matching the corpus - which is how this page came to quote 302 pairs against a
+> corpus of 529.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>302 / 302</strong>
+    <strong>529 / 529</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>302 / 302</strong>
+    <strong>529 / 529</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>302 / 302</strong>
+    <strong>529 / 529</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -34,11 +36,16 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `dd0f150` | `302 / 302` | `0` | `0` | `23.47` |
-| JS | `f54a860` | `302 / 302` | `0` | `0` | `51.22` |
-| PHP | `b8b3e58` | `302 / 302` | `0` | `0` | `53.20` |
+| Rust | `8c636c5` | `529 / 529` | `0` | `0` | `2.34` |
+| JS | `b6c126f` | `529 / 529` | `0` | `0` | `53.34` |
+| PHP | `bf0b340` | `529 / 529` | `0` | `0` | `51.97` |
 
-Spec commit: `7c41ccc`
+Spec commit: `bf06ef4`
+
+The `0` cross-implementation diffs above is the **html** target. Over every
+target the same run reports two, both on the canonical-writer (`carve`) target
+and both filed: carve#481 (the engines serialize different pipeline stages) and
+carve-php#631 (an abbreviation definition hoisted out of its container).
 
 ## Optional Tier-2 Profile
 
@@ -60,11 +67,16 @@ guard, attribute wrapper, and a `symbols` render map; carve#258), so a fresh
 
 | Implementation | Optional pass | Skipped | Mismatches | Errors | Avg CLI ms/file |
 |----------------|---------------|---------|------------|--------|-----------------|
-| Rust | `2 / 2` | `2` | `0` | `0` | `24.42` |
-| JS | `2 / 2` | `2` | `0` | `0` | `48.94` |
-| PHP | `3 / 3` | `1` | `0` | `0` | `52.87` |
+| Rust | `3 / 3` | `30` | `0` | `0` | `2.38` |
+| JS | `3 / 3` | `30` | `0` | `0` | `62.34` |
+| PHP | `3 / 3` | `30` | `0` | `0` | `50.95` |
 
 Optional cross-implementation diffs: `0`
+
+Note the `Skipped` column against a corpus of 33: each engine runs three cases
+and skips thirty, so the `0` diffs is agreement about three documents. The
+features are implemented in all three; there is no way to switch them on from a
+command line, which is the only interface this tool has (carve#496).
 
 ## CLI Timing
 
