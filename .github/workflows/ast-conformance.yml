@@ -171,3 +171,21 @@ jobs:
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run claims:check
+      # tests/profile-fixtures.json is the shared profile battery: carve-js and
+      # carve-rs assert their profile output against it, and it is GENERATED
+      # from carve-php by a command documented in a comment at the top of
+      # gen-profile-fixtures.php. Nothing ran that command again.
+      #
+      # So if carve-php's profile output changed, the file would keep the old
+      # answer and the other two engines would go on agreeing with it - three
+      # engines in consensus about a reference none of them produces. The
+      # battery is the only cross-engine check of what a profile PERMITS, which
+      # is a security surface: `comment` and `minimal` exist to strip things.
+      - name: Profile battery is still what carve-php produces
+        if: always()
+        env:
+          CARVE_PHP_AUTOLOAD: ${{ github.workspace }}/carve-php/vendor/autoload.php
+        run: |
+          php tests/gen-profile-fixtures.php > /tmp/profile-fixtures.regenerated.json
+          diff -u tests/profile-fixtures.json /tmp/profile-fixtures.regenerated.json \
+            || { echo "::error::tests/profile-fixtures.json no longer matches carve-php. Regenerate it (see the header of tests/gen-profile-fixtures.php) and re-check carve-js and carve-rs against the new file."; exit 1; }
