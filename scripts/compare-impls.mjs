@@ -15,6 +15,10 @@ const bench = args.has('--bench')
 // indentation, inserted blank lines, escape runs - so its output is exactly
 // where the engines are least likely to have been compared (carve#353).
 const roundtrip = args.has('--roundtrip')
+// Opt-in, so a local run stays informational and CI can be strict. Without it
+// this script reports divergences and exits 0, which is why two engines
+// disagreeing about a document's canonical form went unnoticed (carve#478).
+const failOnDiff = args.has('--fail-on-diff')
 const limitArg = process.argv.find((a) => a.startsWith('--limit='))
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) : Infinity
 const corpusArg = process.argv.find((a) => a.startsWith('--corpus='))
@@ -567,4 +571,19 @@ console.log(
 
 if (bench) {
   console.log('\nBenchmark note: timings include process startup and are useful for CLI-level smoke comparison only.')
+}
+
+// The gate. In roundtrip mode a diff means an engine's formatter changed what a
+// document says, which is wrong under any reading of PART 11 - there is no
+// design question behind it. In the default mode a diff means the engines
+// disagree about a target's output; whether every one of those is a defect is
+// still open (carve#474), so gate that mode only once they are resolved.
+if (failOnDiff) {
+  const failing = roundtrip ? roundtripDiffs : crossImplDiffs
+  const label = roundtrip ? 'round-trip' : 'cross-implementation'
+  if (failing > 0) {
+    console.error(`\n${failing} ${label} difference(s) - see the DIFF lines above.`)
+    process.exit(1)
+  }
+  console.log(`\nNo ${label} differences.`)
 }

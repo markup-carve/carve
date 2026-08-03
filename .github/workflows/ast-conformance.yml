@@ -116,3 +116,33 @@ jobs:
           # gets muted, which is the failure this whole issue is about.
           CARVE_REQUIRE_ALL_ENGINES: '1'
         run: npm run ast:check -- --satellite-limit=520
+
+      # PART 11: the formatter must not change what a document says. The
+      # `--roundtrip` mode formats each corpus document and re-reads the result,
+      # which is the only automated check of that invariant across engines - and
+      # it had never run. It caught carve-rs#432, where `carve fmt` on a
+      # blockquote containing a comment emitted source in which the hidden text
+      # rendered as a visible paragraph: content the author hid, published by
+      # running the formatter. Green by not running, while that shipped.
+      #
+      # GATES, because a formatter that changes the document is wrong under every
+      # reading of PART 11 - there is no design question to settle first.
+      - name: PART 11 formatter round trip
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run compare:impls -- --roundtrip --fail-on-diff
+
+      # The default mode compares every render target engine-against-engine.
+      # REPORTS rather than gates: its remaining differences need language
+      # decisions (carve#478, carve#481), and gating on an unresolved question
+      # teaches people to ignore the job - which is how both of these checkers
+      # came to be unwired in the first place.
+      - name: Cross-engine render comparison (report only)
+        if: always()
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run compare:impls
