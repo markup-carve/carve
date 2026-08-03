@@ -27,3 +27,35 @@ continued</p></blockquote>
   <li>item</li>
 </ul>
 ```
+
+```
+> # h
+b
+.
+<blockquote>
+  <h1 id="h">h</h1>
+</blockquote>
+<p>b</p>
+```
+
+```
+> :: t
+~
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+  </dl>
+</blockquote>
+<p>~</p>
+```
+
+```
+> [f]: ~
+/
+.
+<blockquote>
+
+</blockquote>
+<p>/</p>
+```

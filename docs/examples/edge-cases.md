@@ -2000,6 +2000,70 @@ The fold needs an open paragraph to fold into. When the last quoted line is a he
 
 :::
 
+The open-paragraph condition is not about list markers. **Plain** lazy text
+needs one too, and the same closed blocks leave none - so the quote ends and the
+line becomes a top-level paragraph.
+
+This is the case the list-marker example above does not reach, and every engine
+had a defect in it: carve-php kept the quote open after a heading, and carve-js
+and carve-php both kept it open after the two below.
+
+::: compare
+
+```carve
+> # h
+b
+```
+
+```html
+<blockquote>
+  <h1 id="h">h</h1>
+</blockquote>
+<p>b</p>
+```
+
+:::
+
+A definition **term** is bounded the same way. It holds inline content, not a
+paragraph, so there is nothing for the next line to continue.
+
+::: compare
+
+```carve
+> :: t
+~
+```
+
+```html
+<blockquote>
+  <dl>
+    <dt>t</dt>
+  </dl>
+</blockquote>
+<p>~</p>
+```
+
+:::
+
+An invisible definition leaves nothing on the page at all, which is the clearest
+case of the rule: there is no paragraph because there is no output.
+
+::: compare
+
+```carve
+> [f]: ~
+/
+```
+
+```html
+<blockquote>
+
+</blockquote>
+<p>/</p>
+```
+
+:::
+
 ## Fenced code language with punctuation
 
 A language tag may contain punctuation (`c++`, `c#`, `f#`, `asp.net`). The info string is still a single token, so a multiword or quoted info (e.g. `js title="x"`) is not a fence.
