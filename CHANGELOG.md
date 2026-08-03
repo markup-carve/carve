@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 12 §4: a discontiguous node's span is its first fragment** (carve#541).
+  §4 permitted omitting `pos` on a node whose content sits on non-adjacent lines
+  but did not say what a span means where one IS carried. It is the first
+  fragment - the construct's start, with `endOffset` ending that fragment rather
+  than the node. First-offset-to-last-offset is forbidden: in corpus 64 that
+  range contains the sibling cell `Apple` entirely, so two cells would claim
+  overlapping offsets. `scripts/spec/ast-positions.mjs` now reports overlapping
+  sibling spans, exempting hoisted definitions (§7 puts them at document level
+  with a `pos` inside the container they were written in) and breaks (anchored
+  at a shared line terminator).
+
+### Changed
+
 - **A lazy continuation needs an open paragraph, including after a container**
   (carve#561, carve#572). The block algorithm's S4 already said a line folds
   only where some container holds an OPEN PARAGRAPH, and closes the unmatched

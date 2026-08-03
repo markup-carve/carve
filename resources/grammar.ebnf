@@ -4399,6 +4399,35 @@ EOF = (* end of file *) ;
       kind of content -- is the evidence that this is a property of the rules
       and not of anyone's parser.
 
+      A DISCONTIGUOUS NODE'S SPAN IS ITS FIRST FRAGMENT -- NORMATIVE. Where
+      such a node DOES carry `pos` -- the clause above permits omitting it,
+      it does not require it -- the span is the node's first fragment: it
+      starts where the construct starts, and `endOffset` is the end of that
+      FRAGMENT, not the end of the node.
+
+          |= Category       |= Item   |
+          | Fresh Fruits    | Apple   |
+          + from local      |         |
+          + farms           |         |
+
+      The first body cell's value is `Fresh Fruits from local farms`; its span
+      covers ` Fresh Fruits    ` and stops there. A consumer gets somewhere to
+      navigate to, which is the one thing omitting loses, and does not get a
+      claim about extent that would be false.
+
+      FIRST-TO-LAST IS FORBIDDEN, and it is the tempting third answer. In the
+      table above that range runs from line 2 to line 4 and CONTAINS the
+      sibling cell `Apple` entirely, so two cells would claim overlapping
+      offsets and a consumer resolving a click to a node could not tell which
+      it hit. Sibling spans that overlap are checked for, and are a finding.
+
+      The cost is stated: `pos` then means "where this begins" on a
+      discontiguous node and "what this covers" everywhere else. That is the
+      lesser evil against a span that overlaps a sibling or against no span at
+      all, and it is what two of the three engines already publish -- carve-php
+      and carve-rs give the first fragment, carve-js omits (still permitted).
+      (carve#541)
+
       THE EXEMPTION IS NARROW. The test is whether a true span EXISTS, not
       whether one was computed. A node the producer has simply not placed yet
       is still a gap, and a text run lifted whole out of the source has a span
