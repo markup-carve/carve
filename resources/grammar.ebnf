@@ -2206,7 +2206,7 @@ EOF = (* end of file *) ;
          - a valid table row (valid_row(L), §5 T2; a stray `|` in prose,
            and a line-initial `|` with no closing `|`, are NOT ones);
          - a fenced code opener WITH a matching closer ahead (I4);
-         - a `:::` opener WITH a matching closer ahead (I4).
+         - a `:::` opener, closer or not (I4).
          So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more"
          is <p>intro</p> + <hr> + <p>more</p> (corpus
          76-paragraph-interruption).
@@ -2226,13 +2226,24 @@ EOF = (* end of file *) ;
       I3 IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)")
          does not interrupt: an image is not a block of its own in Carve;
          it stays an inline image inside the paragraph.
-      I4 CLOSER LOOKAHEAD -- the same &(...) guards the fence / div /
-         frontmatter productions carry. An UNTERMINATED ``` or `:::` opener
-         does not interrupt; the line stays paragraph text (a stray ``` in
-         prose then opens an unclosed inline verbatim run rendering as
-         <code> to the end of the block -- the code_span maximal-run rule).
-         Pinned by corpus 76-paragraph-interruption (unterminated-fence and
-         unterminated-`:::` pairs).
+      I4 CLOSER LOOKAHEAD -- the same &(...) the VERBATIM fence productions
+         carry. An UNTERMINATED ``` or ~~~ opener does not interrupt; the line
+         stays paragraph text, and a stray ``` in prose then opens an unclosed
+         inline verbatim run rendering as <code> to the end of the block (the
+         code_span maximal-run rule). Pinned by corpus
+         81-paragraph-interruption-18.
+
+         A `:::` OPENER IS NOT GUARDED. It interrupts whether or not a closer
+         follows, and an unterminated one closes at EOF (PART 9 §25). Pinned by
+         corpus 81-paragraph-interruption-19: `Text` / `:::` / `stuff` is a
+         paragraph followed by a div holding `stuff`.
+
+         This clause used to guard both, and cited a corpus that pins the
+         opposite for `:::`. All three engines follow the corpus. The `:::`
+         half was superseded when unclosed containers changed from degrading
+         to closing at EOF (carve#439) and was not updated with it; the stale
+         citation to "corpus 76" is the same paragraph renumbering that
+         accompanied that change.
       I5 INVISIBLE CONSTRUCTS interrupt AND are consumed: a reference
          definition (link `[r]: url`, footnote `[^r]: …`, abbreviation
          `*[A]: …`), a comment (`%%` line, `%%%` block), and a
