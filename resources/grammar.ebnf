@@ -1226,7 +1226,6 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination, 
    more `url_char`s after the `':' space`). A bare `[r]:` -- with nothing
    after the colon, or only trailing whitespace -- does NOT form a
    definition; the line stays literal paragraph text. *)
-
 (* --- Inline Spans --- *)
 (* A bracketed inline run immediately followed by an attribute block
    attaches those attributes to a <span>. Distinguished from links by the
@@ -3236,7 +3235,8 @@ EOF = (* end of file *) ;
    STATE (symbol tables, PASS 1):
      linkDefs     : label -> (url, title?, attrs?)   -- LAST definition wins
      footnoteDefs : label -> body                    -- FIRST definition wins
-     abbrDefs     : term -> expansion                -- non-empty term (§25)
+     abbrDefs     : term -> expansion                -- LAST definition wins;
+                                                       non-empty term (§25)
      headingIds   : slug -> heading node             -- case-preserving; the
                     PART 2 HEADING IDENTIFIERS rules: explicit {#id} ids are
                     reserved first in document order, then auto-slugs, with

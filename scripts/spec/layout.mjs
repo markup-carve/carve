@@ -609,7 +609,12 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     if ((m = ABBR_DEF.exec(line))) {
       const term = m[1]
       if (term === '') throw new Refuse('empty abbreviation term')
-      if (!state.abbrDefs.has(term)) state.abbrDefs.set(term, m[2])
+      // LAST definition wins (PART 9R state), like linkDefs below. This was
+      // first-wins here while all three engines were last-wins, and PART 9R's
+      // state table said nothing either way for abbrDefs - so the one place
+      // that could have settled it was the one place that was silent
+      // (carve#553).
+      state.abbrDefs.set(term, m[2])
       i++
       continue
     }
