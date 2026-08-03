@@ -1273,7 +1273,8 @@
           "const": "image"
         },
         "src": {
-          "type": "string"
+          "type": "string",
+          "description": "Source. Carries the RESOLVED destination when the document defines the reference; empty ONLY where nothing resolved it (PART 12 section 3a). `ref`/`rawRef` sit alongside it and record what the author wrote."
         },
         "alt": {
           "type": "string"
@@ -1283,10 +1284,11 @@
         },
         "ref": {
           "type": "string",
-          "description": "Unresolved reference label of `![alt][ref]`."
+          "description": "Reference label of `![alt][ref]`, as the reference resolves by - the DERIVED label for the collapsed form `![alt][]`, where the author wrote nothing between the second brackets. Present whenever the author wrote a reference image - resolved or not - because the serialized tree is PRE-RESOLVE (PART 12 section 3a). It is not a transient between parse and resolve."
         },
         "rawRef": {
-          "type": "string"
+          "type": "string",
+          "description": "Verbatim source of the reference as written, so the construct can be restored. Reachable because the tree is PRE-RESOLVE (PART 12 section 3a); under a post-resolve tree this field would describe something already discarded."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
@@ -2002,7 +2004,8 @@
           "const": "link"
         },
         "href": {
-          "type": "string"
+          "type": "string",
+          "description": "Destination. Carries the RESOLVED destination when the document defines the reference; empty ONLY where nothing resolved it (PART 12 section 3a). `ref`/`rawRef` sit alongside it and record what the author wrote."
         },
         "title": {
           "type": "string"
@@ -2015,7 +2018,7 @@
         },
         "ref": {
           "type": "string",
-          "description": "Reference label of `[text][ref]`, as the author wrote it. Present whenever the author wrote a reference link - resolved or not - because the serialized tree is PRE-RESOLVE (PART 12 section 3a). It is not a transient between parse and resolve."
+          "description": "Reference label of `[text][ref]`, as the reference resolves by - the DERIVED label for the collapsed form `[label][]`, where the author wrote nothing between the second brackets. Present whenever the author wrote a reference link - resolved or not - because the serialized tree is PRE-RESOLVE (PART 12 section 3a). It is not a transient between parse and resolve."
         },
         "rawRef": {
           "type": "string",
