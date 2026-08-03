@@ -277,10 +277,10 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=302
-rust: pass=302/302 mismatch=0 error=0 skipped=0 avg_ms=23.47
-js: pass=302/302 mismatch=0 error=0 skipped=0 avg_ms=51.22
-php: pass=302/302 mismatch=0 error=0 skipped=0 avg_ms=53.20
+profile=default/no-opt-in corpus=core corpus_pairs=529 targets=html
+rust: pass=529/529 mismatch=0 error=0 skipped=0 runs=529 avg_ms=2.34
+js: pass=529/529 mismatch=0 error=0 skipped=0 runs=529 avg_ms=53.34
+php: pass=529/529 mismatch=0 error=0 skipped=0 runs=529 avg_ms=51.97
 cross_impl_diffs=0
 
 Extension capability matrix
@@ -292,29 +292,41 @@ extension_profile_note=this run compares default/no-opt-in output. Use --corpus=
 
 Optional raw output:
 
-> **Note:** the snapshot below is from 2026-06-19 (4 optional corpus pairs).
-> The optional corpus has since grown to 31 pairs (citations-numbered enrichment
-> cases 13-24 for typed locators, integral marker, and suppress-author; code
-> callouts cases 10-12; trailing-comma case 24; the Markdown-target cases 30-31).
-> The `Optional feature coverage` block also names each case's pinned target now
-> (`feature (target): engines`), and the summary line carries a `targets=` field.
-> Regenerate with `npm run compare:impls -- --corpus=optional` to get current
-> counts.
+Timings are from one machine and mean nothing across rows; the counts are the
+point. `tests/implementation-comparison-counts.test.mjs` fails if the
+`corpus_pairs` quoted here stops matching the corpus, which is how this block
+came to say 4 when the corpus held 33.
 
 ```text
 Implementation summary
-profile=optional/opt-in corpus=optional corpus_pairs=4
-rust: pass=2/2 mismatch=0 error=0 skipped=2 avg_ms=24.42
-js: pass=2/2 mismatch=0 error=0 skipped=2 avg_ms=48.94
-php: pass=3/3 mismatch=0 error=0 skipped=1 avg_ms=52.87
+profile=optional/opt-in corpus=optional corpus_pairs=33 targets=html,markdown
+rust: pass=3/3 mismatch=0 error=0 skipped=30 runs=3 avg_ms=2.38
+js: pass=3/3 mismatch=0 error=0 skipped=30 runs=3 avg_ms=62.34
+php: pass=3/3 mismatch=0 error=0 skipped=30 runs=3 avg_ms=50.95
 cross_impl_diffs=0
 
+Target agreement (implementations compared against each other)
+html: compared=2 diffs=0 errors=0 fixtures=yes
+markdown: compared=1 diffs=0 errors=0 fixtures=yes
+
 Optional feature coverage
-social-link-templates: rust, js, php
-symbol-map: rust, js
-smart-quotes-locale-de: php
-bare-url-autolink: php
+social-link-templates (html): rust, js, php
+symbol-map (html): rust, js
+smart-quotes-locale-de (html): php
+bare-url-autolink (html): php
+citations-numbered (html): none
+code-callouts (html): none
+...
+
+NOT COMPARED: 30 of 33 optional cases reached fewer than two engines, so they
+contribute no agreement evidence. This is not a pass.
 ```
+
+**Read the last block, not the `cross_impl_diffs=0` above it.** 30 of the 33
+optional cases reach fewer than two engines, so this run compares 2 documents
+and agrees about them. The features are implemented everywhere; there is no way
+to switch them on from a command line, which is the only interface this tool
+has (carve#496).
 
 ## Scope
 
