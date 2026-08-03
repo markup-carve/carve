@@ -41,6 +41,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
+import { POS_KEYS, shapeOf, shapePaths } from './spec/ast-shape.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -195,7 +196,6 @@ function skip(label, reason) {
   console.log(`${label}: NOT MEASURED - ${reason}\n`)
 }
 
-const POS_KEYS = ['startLine', 'endLine', 'startColumn', 'endColumn', 'startOffset', 'endOffset']
 
 function* walk(node, path = '$') {
   if (Array.isArray(node)) {
@@ -250,51 +250,6 @@ function checkFrontmatterSurvives(doc, source, findings) {
   }
 }
 
-
-/**
- * A document's structural signature: the tree of node TYPES, with values,
- * attributes and positions removed.
- *
- * The schema says whether a tree is well formed; it cannot say whether two
- * engines produced the SAME tree. Both can be valid and structurally
- * different - which is what PART 12 §1 actually forbids, because "a consumer
- * written against one implementation MUST be able to read another's output"
- * is a statement about shape, not about validity.
- *
- * That gap let carve-php ship a table cell split into three text nodes where
- * the reference emits one (carve-php#612), and carve-rs the same cell as five
- * (carve-rs#413). Every span in both was correct and every document validated,
- * so nothing here reported anything.
- */
-function shapeOf(node) {
-  if (Array.isArray(node)) return node.map(shapeOf)
-  if (!node || typeof node !== 'object') return null
-  const children = []
-  // Sorted by key: engines serialize their fields in different orders, and a
-  // signature that inherited that order would report every one of them as a
-  // shape difference.
-  for (const [key, value] of Object.entries(node).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))) {
-    if (POS_KEYS.includes(key) || key === 'pos' || key === 'srcByteLength') continue
-    if (Array.isArray(value)) {
-      const sub = value.map(shapeOf).filter((s) => s !== null)
-      if (sub.length) children.push([key, sub])
-    } else if (value && typeof value === 'object') {
-      const sub = shapeOf(value)
-      if (sub !== null) children.push([key, [sub]])
-    }
-  }
-  return typeof node.type === 'string' || children.length ? { type: node.type ?? '?', children } : null
-}
-
-/** Render a shape as a compact path list, so a mismatch names where it is. */
-function shapePaths(shape, path = '$') {
-  if (!shape) return []
-  const out = [`${path}:${shape.type}`]
-  for (const [key, subs] of shape.children) {
-    subs.forEach((s, i) => out.push(...shapePaths(s, `${path}.${key}[${i}]`)))
-  }
-  return out
-}
 
 /**
  * Compare an engine's tree against the reference's and report the FIRST place
