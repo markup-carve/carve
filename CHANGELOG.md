@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Restored nine regions of `resources/grammar.ebnf` that a stale-copy merge
+  removed.** carve#525 rewrote the grammar from an out-of-date working copy. Its
+  merge-base was current, so git recorded ordinary deletions and merged with no
+  conflict, and four normative clauses left the file while the docs, the AST
+  schema and this changelog went on citing them: PART 12 §3a (the tree is
+  pre-resolve), PART 12 §7's extension to every definition kind, PART 12 §1a's
+  "the merge is part of `parse(x)`", and MARKER REQUIRES CONTENT's extension to
+  the definition-term marker `::`. Five further regions reverted to superseded
+  text - S4's lazy continuation, PART 9 §10 I4's closer lookahead, the line
+  block's leading whitespace, the math-attributes paragraph, and PART 12 §4's
+  implementation status. The blockquote-marker rule carve#525 was written to
+  land is untouched.
+
+  Guarded, so the class fails a test rather than surviving a merge:
+  `resources/normative-clauses.txt` names every clause carrying the
+  `-- NORMATIVE` marker and `tests/normativity.test.mjs` checks the grammar
+  still contains each one, and every `PART 12 §N` citation in the docs, the
+  schema and this file must resolve to a real section. Removing a clause stays
+  allowed; removing it silently does not.
+
 ### Added
 
 - **PART 12 §3a: the serialized AST is PRE-RESOLVE** (carve#481, carve#486,
