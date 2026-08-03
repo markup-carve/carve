@@ -4122,6 +4122,33 @@ EOF = (* end of file *) ;
       than navigated. Making it optional would mean every consumer has to
       handle its absence, which in practice means not using it.
 
+      A SPAN CONTAINS ITS CHILDREN'S SPANS -- NORMATIVE. A node's span
+      covers every placed node inside it: a child's `startOffset` is not
+      before its parent's, and its `endOffset` is not past it. A node that
+      omits `pos` (the reassembled-node clause below) is skipped rather than
+      breaking the chain -- the comparison is against the nearest ANCESTOR
+      that has one.
+
+      This is the one structural rule a checker can apply without knowing
+      what a node covers, which is why it matters: a span is compared against
+      the text it selects only for a `text` node, so every other node's span
+      was checked for being present, integral and in range, and never for
+      pointing at the right place. Adding this rule found 70 wrong spans the
+      day it was written -- 66 in carve-rs, 4 in carve-php, 5 more in
+      carve-js's serialized form -- in list items, a figure's quote target, a
+      table's caption, a footnote's body, and a crossref's cloned display
+      text. Every one was a span taken before the rest of the node had been
+      parsed, or copied from a node somewhere else.
+
+      A CONSEQUENCE, worth stating because it settled a question of its own:
+      a node whose content is not a contiguous slice of its own source MUST
+      omit `pos` rather than publish a PARTIAL span. A `+` continuation cell
+      joined from three source lines has no offset pair that equals its value,
+      and a span covering only the first fragment leaves the cell's own text
+      children outside it -- which this rule reports. Omitting is already
+      permitted below; this says the partial span is not an alternative to it.
+      (carve#541, carve#565.)
+
       A SPAN COVERS THE MARKUP THE AUTHOR WROTE -- NORMATIVE. Where a node
       has markup of its own, its span covers that markup and not merely the
       content inside it. The case that needed saying is the break, which has

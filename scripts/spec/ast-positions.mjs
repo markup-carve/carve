@@ -35,12 +35,61 @@ export function* walkNodes(node, path = '$') {
 const BREAK_TYPES = new Set(['soft_break', 'hard_break'])
 
 /**
+ * A node's span CONTAINS its children's spans.
+ *
+ * The one structural rule a checker can apply without knowing what a node
+ * covers, which is what makes it reach the nodes the slice comparison cannot:
+ * a `text` node is the only one whose exact source text the tree carries, so
+ * every block's span was checked for being present, integral and in range, and
+ * never for pointing at the right place.
+ *
+ * It found 70 wrong spans the day it was written - 66 in carve-rs, 4 in
+ * carve-php, none in carve-js - across list items, a figure's quote target, a
+ * table's caption and a footnote's body (carve#565). Each was a span taken
+ * before the rest of the node had been parsed.
+ *
+ * The nearest PLACED ancestor is the comparison, not the immediate parent: a
+ * node may legitimately omit `pos` (PART 12 §4's reassembled clause), and
+ * skipping past it keeps the rule from going quiet exactly where a span is
+ * most likely to be wrong.
+ */
+function checkContainment(doc, findings) {
+  const walk = (node, path, parent, parentPath) => {
+    if (Array.isArray(node)) {
+      node.forEach((child, i) => walk(child, `${path}[${i}]`, parent, parentPath))
+      return
+    }
+    if (!node || typeof node !== 'object') return
+    const placed = typeof node.type === 'string' && node.pos
+    if (placed && parent) {
+      const outside =
+        node.pos.startOffset < parent.pos.startOffset || node.pos.endOffset > parent.pos.endOffset
+      if (outside) {
+        findings.push(
+          `span outside its parent: "${node.type}" at ${path} ` +
+            `[${node.pos.startOffset}, ${node.pos.endOffset}] is not inside ` +
+            `"${parent.type}" at ${parentPath} [${parent.pos.startOffset}, ${parent.pos.endOffset}]`,
+        )
+      }
+    }
+    const nextParent = placed ? node : parent
+    const nextPath = placed ? path : parentPath
+    for (const [key, value] of Object.entries(node)) {
+      if (key === 'pos') continue
+      walk(value, `${path}.${key}`, nextParent, nextPath)
+    }
+  }
+  walk(doc, '$', null, '$')
+}
+
+/**
  * PART 12 §4, over one document.
  *
  * Reports into `findings`; returns nothing. Offsets are CODEPOINT indices, so
  * the source is indexed the same way to check them.
  */
 export function checkPositions(doc, source, findings) {
+  checkContainment(doc, findings)
   const codepoints = [...source]
   for (const [node, path] of walkNodes(doc)) {
     // An unknown type is the schema's job now (it enumerates them, and the

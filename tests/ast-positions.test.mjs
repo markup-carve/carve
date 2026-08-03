@@ -118,6 +118,66 @@ test('a text node whose span selects the wrong source is reported', () => {
   assert.match(findings[0], /does not cover the text it belongs to/)
 })
 
+test('a child whose span leaves its parent is reported', () => {
+  const source = '- one\n\n  second\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'list',
+        pos: pos(0, 15),
+        items: [
+          {
+            type: 'list_item',
+            pos: pos(0, 5),
+            children: [{ type: 'paragraph', pos: pos(9, 15), children: [] }],
+          },
+        ],
+      },
+    ],
+  }
+  const findings = findingsFor(doc, source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /span outside its parent: "paragraph"/)
+})
+
+test('a parent that covers its children is accepted', () => {
+  const source = '- one\n\n  second\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'list_item',
+        pos: pos(0, 15),
+        children: [{ type: 'paragraph', pos: pos(9, 15), children: [] }],
+      },
+    ],
+  }
+  assert.deepEqual(findingsFor(doc, source), [])
+})
+
+test('an unplaced node is skipped, and its parent still bounds the grandchild', () => {
+  // PART 12 §4 lets a reassembled node omit `pos`. Comparing against the
+  // nearest PLACED ancestor keeps the rule alive across that gap instead of
+  // going quiet exactly where a span is most likely wrong.
+  const source = 'ab\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'table',
+        pos: pos(0, 2),
+        rows: [{ type: 'table_row', children: [{ type: 'text', value: 'x', pos: pos(0, 3) }] }],
+      },
+    ],
+  }
+  const findings = findingsFor(doc, source)
+  assert.ok(
+    findings.some((f) => /span outside its parent: "text"/.test(f)),
+    findings.join('\n'),
+  )
+})
+
 test('a missing pos is reported on every node but the root', () => {
   const doc = { type: 'document', children: [{ type: 'paragraph', children: [] }] }
   const findings = findingsFor(doc, 'x\n')
