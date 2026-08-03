@@ -344,10 +344,29 @@ feature to extension name reached both without either engine changing - taking
 the compared count from 2 to 27, and covering citations, which is 16 of the 33
 on its own.
 
-The five that remain need a renderer or parser option rather than an extension
-(`smart-quotes-locale-de`, `smart-typography-off`, `markdown-typography-source`,
-`section-wrapper-off`, `source-line-after-generated-id`), and carve-rs is driven
-through its binary, so its cases still need a CLI path (carve#496).
+The rest need a renderer or parser OPTION rather than an extension, and an
+option is per-engine API, so there is no shared table for them. Four of the five
+are now driven through one: `markdown-typography-source` reaches carve-js and
+carve-php, and the other three reach carve-js.
+
+Reaching an engine is not the same as being compared. These four remain
+single-engine, and the run now says why rather than reporting a uniform "no CLI
+path":
+
+| case | why |
+| --- | --- |
+| `smart-typography-off` | no engine implements the documented switch (carve#560) |
+| `smart-quotes-locale-de` | carve-js has no quote-locale option |
+| `section-wrapper-off` | carve-php has no `sections` switch |
+| `source-line-after-generated-id` | its fixture needs sections off, which carve-php cannot do |
+
+That distinction is the point. A missing adapter is this repo's backlog; a
+missing option is the engine's, and the difference decides who fixes it. Three
+of these four are capability gaps, which is why no amount of harness work would
+have moved them.
+
+carve-rs is driven through its binary and exposes no flag for any of these, so
+its cases still need a CLI path (carve#496).
 
 ## Scope
 
