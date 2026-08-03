@@ -34,10 +34,10 @@ const CASES = [
   // portable-quote-marker-space
   { rule: 'quote-space', input: '> quote\n', differs: false, note: 'marker with a space' },
   { rule: 'quote-space', input: '> > q\n', differs: false, note: 'each nested marker spaced' },
-  { rule: 'quote-space', input: '>\tq\n', differs: false, note: 'a tab after the marker is fine in both' },
+  { rule: 'quote-space', input: '>\tq\n', differs: true, note: 'a tab after the marker opens the quote in Djot and not in Carve' },
   { rule: 'quote-space', input: '>  q\n', differs: false, note: 'two spaces after the marker are fine in both (not CommonMark-identical, but that is not this rule\'s claim)' },
   { rule: 'quote-space', input: '> a\n>\n> b\n', differs: false, note: 'a bare ">" separator line is fine in both' },
-  { rule: 'quote-space', input: '> ok\n>bad\n', differs: true, note: 'an unspaced marker on a continuation line' },
+  { rule: 'quote-space', input: '> ok\n>bad\n', differs: false, note: 'an unspaced marker on a continuation line is lazy text in both' },
   { rule: 'quote-space', input: '> ok\n> good\n', differs: false, note: 'every continuation marker spaced' },
   { rule: 'quote-space', input: '> ok\nbad\n', differs: false, note: 'a lazy continuation line carries no marker in either' },
 ]

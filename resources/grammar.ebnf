@@ -1226,7 +1226,6 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination, 
    more `url_char`s after the `':' space`). A bare `[r]:` -- with nothing
    after the colon, or only trailing whitespace -- does NOT form a
    definition; the line stays literal paragraph text. *)
-
 (* --- Inline Spans --- *)
 (* A bracketed inline run immediately followed by an attribute block
    attaches those attributes to a <span>. Distinguished from links by the
@@ -3059,7 +3058,49 @@ EOF = (* end of file *) ;
         conformant implementation SHOULD use the same value (it MAY choose a
         larger fixed cap, but never an unbounded one). Past the cap every
         container kind FLATTENS the same way -- the opener becomes literal
-        paragraph text -- rather than crashing. Recursive RENDER / RESOLVE /
+        paragraph text -- rather than crashing.
+
+        A FLATTENED OPENER IS ORDINARY PARAGRAPH TEXT -- NORMATIVE, and
+        therefore groups by the ordinary paragraph rule: consecutive
+        over-cap openers, and any text following them, form ONE paragraph,
+        ending at the first blank line like any other. There is no trailing
+        newline before `</p>`. With MAX_NESTING_DEPTH = 200, 203 `::: note`
+        lines followed by `x` end:
+
+          <p>::: note
+          ::: note
+          ::: note
+          x</p>
+
+        "Degrades to literal text" is the whole rule; nothing about being
+        past the cap makes a line group differently from the same characters
+        typed by an author, and a degrade path that invented its own block
+        structure would be a second paragraph rule to specify and to test.
+
+        This was unstated and the three engines each chose differently --
+        one paragraph per opener, one paragraph for all of them with a
+        trailing newline, and one without it, per the survey in carve#494 --
+        three byte-different outputs, all satisfying the sentence above as
+        it was written.
+
+        The reference's own answer does not survive reading. Measured here on
+        203 openers, carve-js emits `<p>::: note</p>`, `<p>::: note</p>`,
+        then `<p>::: note\nx</p>`: the last over-cap opener groups with the
+        following text and the other two do not. That is not "one paragraph
+        per opener", it is an artifact of where the degrade path hands back
+        to the block parser, and it is why the reference does not settle this
+        one by being the reference.
+
+        NOT YET CORPUS-PINNED, deliberately. No corpus document reaches the
+        cap, which is why this went unnoticed: every gate compares HTML over
+        the corpus, so a path with no corpus case is a path with no
+        comparison. A case cannot be added until the reference engine emits
+        the shape above, since the corpus is checked against it -- the usual
+        order, spec first and then the engines, with the pin moving last.
+        Whoever moves carve-js adds the fixture in the same change, or this
+        reopens the moment someone touches a degrade path.
+
+        Recursive RENDER / RESOLVE /
         FILTER passes over a programmatically constructed tree MUST be
         bounded too, not only the parse path -- but their ceiling MUST NOT
         be reachable by a tree the SAME implementation's parser produces. A
@@ -3102,28 +3143,30 @@ EOF = (* end of file *) ;
         truncation as the answer at the ceiling reinstates it for every tree
         that arrives over the wire or through a builder.
 
-        Every engine has something to move, and the reference has more than
-        the survey in carve#526 recorded. Measured on carve-js main, on a
-        document its OWN PARSER accepts -- `'> ' * 200` -- three of its
-        renderers already violate the paragraph above, which requires a
-        ceiling ABOVE MAX_NESTING_DEPTH rather than at it:
+        Every engine has something to move. Measured on carve-js at the pin
+        this repo carries, with MAX_NESTING_DEPTH = 200 and the ceiling
+        therefore at 232:
 
-          markers  renderMarkdown  renderCarve  renderPlainText  renderHtml
-          199      content kept    kept         kept             kept
-          200      DROPPED         DROPPED      DROPPED          kept
+          depth  renderMarkdown  renderCarve  renderPlainText  renderAnsi  renderHtml
+          231    content kept    kept         kept             kept        kept
+          232    DROPPED         DROPPED      DROPPED          empty       kept
+          1000   DROPPED         DROPPED      DROPPED          empty       kept
 
-        At 200 they emit the 200 nested markers and silently delete the body,
-        so the output LOOKS complete and is not -- and one of the three is
-        renderCarve, the canonical writer, which means `fmt` deletes the
-        content of a document the same build just parsed. That is the exact
-        failure carve#517 and carve#522 were written to close, still open in
-        the reference. carve-js's HTML renderer meanwhile has no ceiling at
-        all and recurses until the host stack gives out, which is the
-        "crashing" this section already forbids.
+        The ceiling itself is in the right place -- above MAX_NESTING_DEPTH,
+        as the paragraph above requires. What happens AT it is the problem.
+        Three of the five emit the nested markers and delete only the BODY, so
+        the output looks complete and is not; one returns an empty string; and
+        renderHtml has no ceiling at all, recursing until the host stack gives
+        out (`RangeError: Maximum call stack size exceeded` at depth 2000).
+        That last one is the "crashing" this section already forbids, and it
+        makes the reference engine's primary renderer the one that behaves
+        unlike every other renderer in the ecosystem, including its own
+        siblings.
 
-        So the two failure modes this clause rules out are not hypothetical
-        and are not confined to trees built through an API: one of them is
-        reachable today by parsing a document and formatting it. (carve#526)
+        Silent truncation is the worse half even though it looks tidier. One
+        of the three is renderCarve, the canonical writer: a tree built
+        through the API and formatted comes back as a document whose body is
+        gone, with nothing in the return value to say so. (carve#526)
 
         The cost is real and is not hidden: this makes a renderer FALLIBLE in
         implementations whose signature says it cannot fail, which is a
@@ -3251,7 +3294,8 @@ EOF = (* end of file *) ;
    STATE (symbol tables, PASS 1):
      linkDefs     : label -> (url, title?, attrs?)   -- LAST definition wins
      footnoteDefs : label -> body                    -- FIRST definition wins
-     abbrDefs     : term -> expansion                -- non-empty term (§25)
+     abbrDefs     : term -> expansion                -- LAST definition wins;
+                                                       non-empty term (§25)
      headingIds   : slug -> heading node             -- case-preserving; the
                     PART 2 HEADING IDENTIFIERS rules: explicit {#id} ids are
                     reserved first in document order, then auto-slugs, with
@@ -4072,6 +4116,23 @@ EOF = (* end of file *) ;
       to say WHERE, and a tree without positions can only be re-parsed rather
       than navigated. Making it optional would mean every consumer has to
       handle its absence, which in practice means not using it.
+
+      A SPAN DOES NOT BEGIN AT A LINE TERMINATOR -- NORMATIVE. Except on a
+      `soft_break` or a `hard_break`, whose content IS the terminator, a node's
+      `startOffset` MUST NOT select a newline. No construct begins with the
+      line ending the line before it.
+
+      This is written down because it is the one thing a checker can verify
+      about a span without knowing what the node covers. A span is compared
+      against the text it selects only on a `text` node -- the single node whose
+      exact source text the tree carries -- so a paragraph, list item, table
+      cell or block quote could point at the wrong source and every conformance
+      run came back clean. carve-php gave a tab-containing line block a
+      paragraph span starting at the newline that ENDED the first stanza line,
+      dropping that line from its own paragraph, and the checker passed it for
+      as long as both existed (markup-carve/carve-php#669, carve#541).
+
+      All three engines satisfy it today; the rule is a ratchet, not a request.
 
       POSITION TRACKING MAY BE OPT-IN, SERIALIZATION MAY NOT. An implementation
       MAY gate position tracking behind a parse option, and MUST enable it when

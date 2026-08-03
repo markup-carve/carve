@@ -30,6 +30,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ("Unresolved reference label"); the two now agree, and `href`/`src` gain a
   description saying when they may be empty.
 
+- **PART 12 / PART 9 §25: a flattened over-cap opener is ordinary paragraph
+  text** (carve#494). §25 said an opener past `MAX_NESTING_DEPTH` "becomes
+  literal paragraph text" and did not say how consecutive ones GROUP, so the
+  three engines produced three byte-different outputs and all three satisfied
+  the sentence. They now group by the ordinary paragraph rule - one paragraph,
+  ending at the first blank line, no trailing newline before `</p>` - because
+  "degrades to literal text" is the whole rule and a degrade path with its own
+  block structure would be a second paragraph rule to specify and to test.
+
 - **PART 9 §25: at the render ceiling, a renderer refuses** (carve#526).
   §25 gave every renderer a ceiling above the parse cap and did not say what
   happens AT it, so eight of nine renderers across the three engines truncate
@@ -41,12 +50,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   trees, so what is left is a tree built through the API, where the caller is
   the one who can act on the error.
 
-  Measuring it turned up a live defect in the reference. On `'> ' * 200` - a
-  document carve-js's own parser accepts - `renderMarkdown`, `renderCarve` and
-  `renderPlainText` on carve-js main emit the 200 markers and silently delete
-  the body. One of the three is the canonical writer, so `fmt` deletes the
-  content of a document the same build just parsed. That is the failure
-  carve#517 and carve#522 were written to close.
+  Measured on the pinned carve-js build: the ceiling sits at 232 where §25
+  requires, but at it `renderMarkdown`, `renderCarve` and `renderPlainText`
+  emit the nested markers and delete only the BODY, so the output looks
+  complete; `renderAnsi` returns an empty string; and `renderHtml` has no
+  ceiling at all and raises `RangeError: Maximum call stack size exceeded` at
+  depth 2000. One of the silent three is the canonical writer, so a tree built
+  through the API and formatted comes back with its body gone and nothing in
+  the return value to say so.
 
 ### Fixed
 

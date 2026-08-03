@@ -90,8 +90,19 @@ Both read that as one quoted paragraph `ok` followed by a lazy continuation
 line `>bad`.
 
 Two spaces after the marker, a lazy continuation line with no marker at all, and
-a bare `>` separator line inside a quote are all valid. A tab immediately after
-`>` is content, not the marker separator.
+a bare `>` separator line inside a quote are all valid.
+
+A TAB after the marker is not. Carve's separator is the space character, so a
+tab is content and the line is an ordinary paragraph; Djot accepts the tab and
+opens the quote. The two engines disagree about the whole block, not about its
+spacing:
+
+```
+>	q
+```
+
+The fence above holds a real tab. Carve renders that line as ordinary
+paragraph text, marker and all; Djot renders a quoted `q`. Write a space.
 
 ## What this page does not cover
 

@@ -41,7 +41,8 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
-import { POS_KEYS, shapeOf, shapePaths } from './spec/ast-shape.mjs'
+import { shapeOf, shapePaths } from './spec/ast-shape.mjs'
+import { checkPositions } from './spec/ast-positions.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -197,19 +198,6 @@ function skip(label, reason) {
 }
 
 
-function* walk(node, path = '$') {
-  if (Array.isArray(node)) {
-    for (const [i, child] of node.entries()) yield* walk(child, `${path}[${i}]`)
-    return
-  }
-  if (!node || typeof node !== 'object') return
-  if (typeof node.type === 'string') yield [node, path]
-  for (const [key, value] of Object.entries(node)) {
-    if (key === 'pos') continue
-    yield* walk(value, `${path}.${key}`)
-  }
-}
-
 /**
  * Shape, against the published schema.
  *
@@ -315,68 +303,7 @@ function checkDocument(doc, source, findings) {
   checkShape(doc, findings)
   checkAdjacentTextRuns(doc, findings)
   checkFrontmatterSurvives(doc, source, findings)
-  // Offsets are codepoint indices (PART 12 §4), so the source has to be indexed
-  // the same way to check them.
-  const codepoints = [...source]
-  for (const [node, path] of walk(doc)) {
-    // An unknown type is the schema's job now (it enumerates them, and the
-    // enumeration is checked against docs/profiles.md in
-    // tests/ast-schema.test.mjs). Checking it here too reported one defect
-    // twice, in two wordings.
-    const pos = node.pos
-    if (pos === undefined) {
-      // The document root is exempt: it spans the whole source by definition
-      // (PART 12 section 4).
-      if (node.type !== 'document') findings.push(`missing pos on "${node.type}" at ${path}`)
-      continue
-    }
-    for (const key of POS_KEYS) {
-      if (!Number.isInteger(pos[key])) {
-        findings.push(`pos.${key} is not an integer on "${node.type}" at ${path}`)
-      }
-    }
-    if (Number.isInteger(pos.startOffset) && Number.isInteger(pos.endOffset)) {
-      if (pos.endOffset < pos.startOffset) {
-        findings.push(`pos.endOffset < startOffset on "${node.type}" at ${path}`)
-      }
-      if (pos.endOffset > codepoints.length) {
-        findings.push(`pos.endOffset past end of source on "${node.type}" at ${path}`)
-      }
-      // THE UNIT, checked rather than assumed. PART 12 §4 counts codepoints, and
-      // codepoints, UTF-16 units and bytes all agree on ASCII - so nothing here
-      // distinguished them until this compared a span against the text it
-      // claims to cover. A text node is the only node whose exact source text is
-      // known from the AST alone.
-      // A text node whose source contains a BACKSLASH is skipped: an escape is
-      // resolved into the value, so `say\ hello` is four source characters
-      // longer than the text it produces and can never equal its own slice. That
-      // is the format working, not a wrong span, and asserting on it would
-      // produce a false positive nobody would act on.
-      // A value carrying the U+E000 INDENT SENTINEL is skipped for the same
-      // reason. A line block rewrites each leading space to that private-use
-      // character, so the node's value differs from its slice in exactly those
-      // positions while spanning the same codepoints. The span is not wrong -
-      // it covers precisely the source the node came from - and the engine's
-      // internal spelling of an indent is not something this check can compare.
-      if (
-        node.type === 'text' &&
-        typeof node.value === 'string' &&
-        !node.value.includes('\ue000') &&
-        !codepoints.slice(pos.startOffset, pos.endOffset).includes('\\')
-      ) {
-        const slice = codepoints.slice(pos.startOffset, pos.endOffset).join('')
-        if (slice !== node.value) {
-          findings.push(
-            `pos does not cover the text it belongs to on "${node.type}" at ${path}: ` +
-              `offsets give ${JSON.stringify(slice)}, node says ${JSON.stringify(node.value)}`,
-          )
-        }
-      }
-    }
-    if (pos.startLine < 1 || pos.startColumn < 1) {
-      findings.push(`pos lines/columns are 1-based; got ${pos.startLine}:${pos.startColumn}`)
-    }
-  }
+  checkPositions(doc, source, findings)
 }
 
 const corpusDir = resolve(root, 'tests/corpus')

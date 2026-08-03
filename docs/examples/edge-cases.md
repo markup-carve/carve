@@ -6409,3 +6409,133 @@ the shape is marker, then attributes, then the required space.
 ```
 
 :::
+
+## A repeated definition: which one wins
+
+The three definition kinds do not answer this the same way, so each is pinned
+separately.
+
+A repeated **link reference** definition is overridden by the later one.
+
+::: compare
+
+```carve
+see [t][r].
+
+[r]: /a
+
+[r]: /b
+```
+
+```html
+<p>see <a href="/b">t</a>.</p>
+```
+
+:::
+
+A repeated **abbreviation** definition behaves the same way - the later
+expansion wins.
+
+::: compare
+
+```carve
+*[A]: a
+*[A]: b
+
+A here.
+```
+
+```html
+<p><abbr title="b">A</abbr> here.</p>
+```
+
+:::
+
+A repeated **footnote** definition does not: the FIRST one wins and the later
+one is dropped. `carve lint` reports it as `duplicate-footnote-definition`.
+
+::: compare
+
+```carve
+see [^f].
+
+[^f]: one
+
+[^f]: two
+```
+
+```html
+<p>see <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>one<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## A marker separator is a space, never a tab
+
+Every marker that takes a separator takes the space character: a tab after the
+marker leaves ordinary paragraph text. The definition term is shown because it
+was the last construct to agree - carve-js and carve-php read a tab as a term
+until carve#532.
+
+::: compare
+
+```carve
+::	term
+:  d
+```
+
+```html
+<p>::	term
+:  d</p>
+```
+
+:::
+
+A space opens the same document as written.
+
+::: compare
+
+```carve
+:: term
+:  d
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>d</dd>
+</dl>
+```
+
+:::
+
+## Two abbreviation definitions
+
+Nothing about the second definition is special - it is here because a document
+with TWO of them is what tells the engines apart. The HTML says nothing about
+how the definitions were spelled, so a formatter that joined them differently
+stayed invisible until the canonical-Carve target was compared across engines
+(carve-php#682).
+
+::: compare
+
+```carve
+*[HTML]: HyperText Markup Language
+*[CSS]: Cascading Style Sheets
+
+HTML and CSS.
+```
+
+```html
+<p><abbr title="HyperText Markup Language">HTML</abbr> and <abbr title="Cascading Style Sheets">CSS</abbr>.</p>
+```
+
+:::
