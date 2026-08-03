@@ -10,22 +10,24 @@ implementation exposes.
 
 > Run with all three implementations built from their own `main`. Regenerate any
 > time with `npm run compare:impls`. Timings are from one machine and mean
-> nothing across rows; the counts are the point, and
+> nothing across rows (this run shares a busy machine, so its per-file
+> figures are several times the usual - the counts are unaffected); the
+> counts are the point, and
 > `tests/implementation-comparison-counts.test.mjs` fails when they stop
 > matching the corpus - which is how this page came to quote 302 pairs against a
-> corpus of 529, and again at 531, 532, 533 and 535.
+> corpus of 529, and again at 531, 532, 533, 535 and 536.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>535 / 535</strong>
+    <strong>536 / 536</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>535 / 535</strong>
+    <strong>536 / 536</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>535 / 535</strong>
+    <strong>536 / 536</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -36,9 +38,9 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `b9a1af4` | `535 / 535` | `0` | `0` | `2.50` |
-| JS | `4bfd9db` | `535 / 535` | `0` | `0` | `64.22` |
-| PHP | `67c9212` | `535 / 535` | `0` | `0` | `61.19` |
+| Rust | `1d76dfa` | `536 / 536` | `0` | `0` | `8.81` |
+| JS | `12aa0a2` | `536 / 536` | `0` | `0` | `243.25` |
+| PHP | `dbe40c0` | `536 / 536` | `0` | `0` | `209.70` |
 
 Spec commit: `bf06ef4`
 
@@ -289,10 +291,10 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=535 targets=html
-rust: pass=535/535 mismatch=0 error=0 skipped=0 runs=535 avg_ms=2.50
-js: pass=535/535 mismatch=0 error=0 skipped=0 runs=535 avg_ms=64.22
-php: pass=535/535 mismatch=0 error=0 skipped=0 runs=535 avg_ms=61.19
+profile=default/no-opt-in corpus=core corpus_pairs=536 targets=html
+rust: pass=536/536 mismatch=0 error=0 skipped=0 runs=536 avg_ms=8.81
+js: pass=536/536 mismatch=0 error=0 skipped=0 runs=536 avg_ms=243.25
+php: pass=536/536 mismatch=0 error=0 skipped=0 runs=536 avg_ms=209.70
 cross_impl_diffs=0
 
 Extension capability matrix
