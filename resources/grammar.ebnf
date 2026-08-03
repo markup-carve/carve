@@ -2270,11 +2270,11 @@ EOF = (* end of file *) ;
          stays paragraph text, and a stray ``` in prose then opens an unclosed
          inline verbatim run rendering as <code> to the end of the block (the
          code_span maximal-run rule). Pinned by corpus
-         81-paragraph-interruption-18.
+         81-paragraph-interruption-19.
 
          A `:::` OPENER IS NOT GUARDED. It interrupts whether or not a closer
          follows, and an unterminated one closes at EOF (PART 9 §25). Pinned by
-         corpus 81-paragraph-interruption-19: `Text` / `:::` / `stuff` is a
+         corpus 81-paragraph-interruption-20: `Text` / `:::` / `stuff` is a
          paragraph followed by a div holding `stuff`.
 
          This clause used to guard both, and cited a corpus that pins the
@@ -3968,6 +3968,50 @@ EOF = (* end of file *) ;
       The contract a consumer relies on is unchanged: JSON it is handed carries
       positions. How the producer arranged that is the producer's business.
 
+      A REASSEMBLED NODE MAY OMIT `pos` -- NORMATIVE. A node whose value is not
+      a contiguous slice of the source, because the producer joined it from
+      pieces the source separates or synthesized it outright, MAY omit `pos`
+      rather than invent one, and is CONFORMANT doing so. This is a permitted
+      category, not a shortfall to be tracked.
+
+      It covers the hard break a line block synthesizes from a soft one,
+      line-block content rebuilt around an indentation sentinel, a table row or
+      cell put back together from continuation lines, and -- because §1a merges
+      them -- a `text` run whose pieces are not adjacent in the source:
+
+          | x | A long description |
+          +     | that continues     |
+
+      The cell's text is `A long description that continues`, joined across a
+      newline, a `+` and an indent the value does not contain. §1a requires ONE
+      text node; no offset pair covers that value. Without this clause the two
+      rules left a producer no conformant answer at all: coalesce and carry a
+      span over characters the value drops, or coalesce and omit the span the
+      paragraph below appears to demand. §1a's own POSITIONS note already chose
+      the second; this is where §4 agrees to it. (carve#490)
+
+      Stated in the spec rather than left to each engine because §1a is
+      normative: any implementation following it faithfully arrives at the same
+      fork, so an answer chosen per engine would be three answers. That the
+      three engines' residues already converged -- same three documents, same
+      kind of content -- is the evidence that this is a property of the rules
+      and not of anyone's parser.
+
+      THE EXEMPTION IS NARROW. The test is whether a true span EXISTS, not
+      whether one was computed. A node the producer has simply not placed yet
+      is still a gap, and a text run lifted whole out of the source has a span
+      whether or not anyone wrote it down. Nor does it license reassembling
+      more than the language requires, to manufacture the exemption: a producer
+      that joins where the source did not is publishing its bookkeeping, which
+      is what §1a exists to stop.
+
+      The conformance checker still REPORTS an absent `pos`, because it cannot
+      tell a reassembled node from an unplaced one from the tree alone. That is
+      why the position half of that check is a report and the §1a half is a
+      gate. A report is the right instrument here: the distinction needs a human
+      reading the document, and the numbers below are what such a reading
+      produced.
+
       IMPLEMENTATION STATUS. All three engines record positions behind a parse
       option and enable them whenever they serialize, which is the arrangement
       the paragraph above permits. Measured over the corpus:
@@ -3991,10 +4035,13 @@ EOF = (* end of file *) ;
       `<` and `>` between the pieces are not in the value.
 
       This state is convergent rather than accidental, and it is the evidence
-      behind carve#490, which asks whether a reassembled node should be a NAMED
-      permitted category under this section rather than a conformance shortfall
-      each engine reports separately. Until that is decided the rule below
-      stands as written.
+      that settled carve#490: THAT residue -- the reassembled content named
+      above -- is the permitted category, not a shortfall each engine reports
+      separately. The exemption is scoped to it and does not launder anything
+      else. docs/ast-json.md's table additionally records carve-rs leaving a
+      definition list's OWN parts unplaced; a `definition_term` is a slice of
+      the source like any other node, so if that is still true it is a gap, and
+      the numbers above were taken without separating it out.
 
       The earlier text here named per-engine gaps that no longer exist -- it
       described carve-rs as placing block nodes only, "869 block nodes and 54
@@ -4012,7 +4059,9 @@ EOF = (* end of file *) ;
 
       An implementation that cannot yet produce positions MUST NOT emit `pos`
       with invented values, and MUST NOT omit it silently: it does not yet
-      serialize conformantly, and should say so.
+      serialize conformantly, and should say so. A reassembled node under the
+      clause above is not that case -- there the absence IS the conformant
+      answer, and nothing needs saying.
 
    5. WHAT IS NOT IN THE SERIALIZED FORM. Formatter-internal nodes (PART 11,
       and the `raw_text` case profiles.md excludes) are not part of the

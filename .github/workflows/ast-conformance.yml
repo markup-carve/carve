@@ -140,45 +140,38 @@ jobs:
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run compare:impls -- --roundtrip --fail-on-diff
 
-      # The three non-HTML targets the engines already AGREE on, gated.
+      # EVERY render target, gated.
       #
-      # The report-only step below is right about the targets that still carry
-      # open language questions - all of which live on `carve`, the canonical
-      # writer (carve#478, carve#481). It is not right about the rest: markdown,
-      # plain and ansi compare clean across all three engines on every corpus
-      # document, and leaving them in a job that cannot fail means agreement,
-      # once reached, is observed rather than defended.
+      # This was report-only because its remaining differences needed language
+      # decisions, all of which lived on `carve`, the canonical writer
+      # (carve#478, carve#481). Both are now closed and that target compares
+      # clean: 536 documents, 0 diffs, in all three engines. markdown, plain and
+      # ansi reached the same state earlier and were gated first.
       #
-      # That is not hypothetical. carve#516 was a Markdown divergence on a line
-      # block whose input the corpus already contained: the fixture existed, the
-      # target was compared, and nothing was allowed to go red. A corpus fixture
-      # carries an HTML expectation only, so for every other target this
-      # engine-against-engine comparison is the whole check.
+      # Leaving a target in a job that cannot fail means agreement, once
+      # reached, is observed rather than defended. That is not hypothetical:
+      # carve#516 was a Markdown divergence on a line block whose input the
+      # corpus already contained - the fixture existed, the target was compared,
+      # and nothing was allowed to go red. It stayed open until someone read the
+      # report by hand.
       #
-      # If one of these three starts diverging for a reason that turns out to
-      # need a language decision, move that target back to the reporting step
-      # rather than deleting the gate.
-      - name: Cross-engine render comparison (markdown, plain, ansi)
+      # A corpus fixture carries an HTML expectation only, so for every other
+      # target this engine-against-engine comparison IS the check.
+      #
+      # If a target starts diverging for a reason that turns out to need a
+      # language decision, move THAT target back to a reporting step
+      # (`--targets=` takes a list) rather than deleting the gate. Gating on an
+      # unresolved question teaches people to ignore the job, which is how both
+      # of these checkers came to be unwired in the first place; gating on a
+      # settled one is what keeps them settled.
+      - name: Cross-engine render comparison (all targets)
         if: always()
         env:
           CARVE_JS_DIR: ${{ github.workspace }}/carve-js
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
-        run: npm run compare:impls -- --targets=markdown,plain,ansi --fail-on-diff
+        run: npm run compare:impls -- --fail-on-diff
 
-      # The default mode compares every render target engine-against-engine,
-      # including `carve`.
-      # REPORTS rather than gates: its remaining differences need language
-      # decisions (carve#478, carve#481), and gating on an unresolved question
-      # teaches people to ignore the job - which is how both of these checkers
-      # came to be unwired in the first place.
-      - name: Cross-engine render comparison (report only)
-        if: always()
-        env:
-          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
-          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
-          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
-        run: npm run compare:impls
 
       # The grammar names engines and says what they do - "all impls support
       # it", "carve-rs is the reference here", "carve-php additionally accepts

@@ -20,7 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   text - S4's lazy continuation, PART 9 §10 I4's closer lookahead, the line
   block's leading whitespace, the math-attributes paragraph, and PART 12 §4's
   implementation status. The blockquote-marker rule carve#525 was written to
-  land is untouched.
+  land is untouched. The restoration itself landed in carve#537; this entry
+  records the loss and what closed it.
 
   Guarded, so the class fails a test rather than surviving a merge:
   `resources/normative-clauses.txt` names every clause carrying the
