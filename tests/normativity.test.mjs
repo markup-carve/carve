@@ -34,6 +34,20 @@ const part9Sections = new Set(
   [...part9.matchAll(/^ {3}(\d+)\. {1,3}[A-Z]/gm)].map((m) => Number(m[1])),
 )
 
+// The same collection for PART 12, whose clause numbers carry an optional
+// LETTER suffix (`1a.`, `3a.`). The docs cite them both as "PART 12 §3a" and,
+// once the part is established on the page, as a bare "(§3a)" - so the bare
+// form has to be checked too, which is only safe on the pages that are ABOUT
+// PART 12 (listed below).
+const part12Start = grammar.indexOf('PART 12:')
+const part12 = grammar.slice(part12Start)
+const part12Sections = new Set(
+  [...part12.matchAll(/^ {3}(\d+[a-z]?)\. {1,3}[A-Z]/gm)].map((m) => m[1]),
+)
+
+// Pages whose bare "§N" citations mean PART 12.
+const part12Pages = ['docs/ast-json.md']
+
 const docFiles = [
   ...readdirSync(resolve(repo, 'docs'))
     .filter((f) => f.endsWith('.md'))
@@ -71,6 +85,56 @@ test('every "PART 9 §N" reference resolves to a real section', () => {
     dangling,
     [],
     `dangling normative references (valid: §${[...part9Sections].sort((a, b) => a - b).join(', §')}):\n${dangling.join('\n')}`,
+  )
+})
+
+// This is the check that was missing when PR #525 landed from a branch cut
+// before PR #518 and silently removed PART 12 §3a - along with §1a's merge
+// clauses, §4's implementation status and §7's every-definition-kind rule -
+// from the normative text. The whole suite stayed green, because nothing
+// asserted that a section the docs describe still exists. docs/ast-json.md
+// went on citing "(§3a)" against a grammar that no longer had one.
+test('every PART 12 section reference resolves to a real clause', () => {
+  assert.ok(
+    part12Sections.size >= 6,
+    `PART 12 clause scan found only: ${[...part12Sections]}`,
+  )
+  const dangling = []
+  const check = (file, id) => {
+    if (!part12Sections.has(id)) dangling.push(`${file}: §${id}`)
+  }
+  // A citation GROUP, so shorthand reaches every clause it names and not only
+  // the first: "§1-2", "§3a and §4", "PART 12 §1, §1a, §6". Without this a
+  // renumbering that orphaned the far end of a range would leave this green,
+  // which is the same shape of dead check the regression below slipped past.
+  const CLAUSE = String.raw`\d+[a-z]?`
+  const group = (lead) =>
+    new RegExp(
+      `${lead}(${CLAUSE})((?:\\s*(?:,|&|and|or|to|–|-)\\s*§?${CLAUSE})*)`,
+      'g',
+    )
+  const scan = (file, text, lead) => {
+    for (const m of text.matchAll(group(lead))) {
+      check(file, m[1])
+      for (const tail of m[2].matchAll(new RegExp(`§?(${CLAUSE})`, 'g'))) {
+        check(file, tail[1])
+      }
+    }
+  }
+  for (const file of docFiles) {
+    const text = readFileSync(file, 'utf8')
+    // Qualified: "PART 12 §3a", "PART 12 section 3a".
+    scan(file, text, String.raw`PART 12 (?:§|section )`)
+    // Bare "(§3a)" on the pages that are about PART 12.
+    if (part12Pages.some((p) => file.endsWith(p))) scan(file, text, '§')
+  }
+  // The schema descriptions cite PART 12 too, and they are published.
+  const schema = readFileSync(resolve(repo, 'resources/ast-schema.json'), 'utf8')
+  scan('resources/ast-schema.json', schema, String.raw`PART 12 (?:§|section )`)
+  assert.deepEqual(
+    dangling,
+    [],
+    `references to PART 12 clauses that do not exist (valid: ${[...part12Sections].join(', ')}):\n${dangling.join('\n')}`,
   )
 })
 
