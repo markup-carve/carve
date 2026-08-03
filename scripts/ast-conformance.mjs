@@ -37,7 +37,7 @@
  */
 
 import { execFileSync } from 'node:child_process'
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
@@ -108,6 +108,63 @@ const phpDir = process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php')
  * into view.
  */
 const DISPLAY_LIMIT = Number(process.env.CARVE_DISPLAY_LIMIT ?? 8)
+
+/**
+ * Describe a built artifact, and say plainly when it is OLDER THAN ITS SOURCE.
+ *
+ * This is the failure that made carve#475's own table wrong. The checker reads
+ * whatever build is on disk and reports it as the engine's conformance, with
+ * nothing in the output to say how old it is. An Aug 1 build of carve-rs
+ * reported 144 schema violations - the pre-node definition-list shape the engine
+ * had already stopped emitting - while the same checkout, rebuilt, reported 4
+ * findings. Both runs looked identical.
+ *
+ * A stale build reading as a current one is strictly worse than the skip this
+ * script already reports, because it produces a NUMBER, and a number gets
+ * believed and filed.
+ */
+function buildStatus(artifact, sourceDir, extensions) {
+  let built
+  try {
+    built = statSync(artifact).mtimeMs
+  } catch {
+    return { text: 'build date unknown', stale: false }
+  }
+  const stamp = new Date(built).toISOString().slice(0, 16).replace('T', ' ')
+
+  let newestSource = 0
+  const walk = (dir, depth) => {
+    if (depth > 6) return
+    let entries
+    try {
+      entries = readdirSync(dir, { withFileTypes: true })
+    } catch {
+      return
+    }
+    for (const entry of entries) {
+      if (entry.name === 'node_modules' || entry.name === 'target' || entry.name[0] === '.') continue
+      const full = resolve(dir, entry.name)
+      if (entry.isDirectory()) walk(full, depth + 1)
+      else if (extensions.some((ext) => entry.name.endsWith(ext))) {
+        try {
+          newestSource = Math.max(newestSource, statSync(full).mtimeMs)
+        } catch {
+          /* unreadable file tells us nothing */
+        }
+      }
+    }
+  }
+  walk(sourceDir, 0)
+
+  const stale = newestSource > built
+  return {
+    text: stale ? `built ${stamp}, STALE - source is newer, rebuild before believing this` : `built ${stamp}`,
+    stale,
+  }
+}
+
+const staleBuilds = []
+
 
 /**
  * Engines that were not measured at all.
@@ -417,7 +474,12 @@ if (rsBinary) {
     checkDocument(doc, source, rsFindings)
     checkShapeParity(name, doc, rsFindings)
   }
-  report(`carve-rs (over ${rsBinary.replace(rsDir + '/', '')}, ${satelliteSamples.length} documents)`, rsFindings)
+  const rsBuild = buildStatus(rsBinary, resolve(rsDir, 'src'), ['.rs'])
+  if (rsBuild.stale) staleBuilds.push('carve-rs')
+  report(
+    `carve-rs (over ${rsBinary.replace(rsDir + '/', '')} [${rsBuild.text}], ${satelliteSamples.length} documents)`,
+    rsFindings,
+  )
 } else if (existsSync(rsDir)) {
   skip('carve-rs', 'checkout found but not built - run cargo build --release there')
 } else {
@@ -449,7 +511,20 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
     checkDocument(doc, source, rbFindings)
     checkShapeParity(name, doc, rbFindings)
   }
-  report(`carve-rb (over carve-rs, ${satelliteSamples.length} documents)`, rbFindings)
+  // The compiled extension, not the Ruby source: carve-rb wraps carve-rs
+  // through a native build, so a stale `.so` reports the PARSER's old behavior
+  // under the binding's name.
+  const rbSo = ['lib/carve/carve.so', 'lib/carve/carve.bundle']
+    .map((path) => resolve(rbDir, path))
+    .find((path) => existsSync(path))
+  const rbBuild = rbSo
+    ? buildStatus(rbSo, resolve(rbDir, 'ext'), ['.rs', '.rb', '.toml'])
+    : { text: 'no compiled extension found', stale: false }
+  if (rbBuild.stale) staleBuilds.push('carve-rb')
+  report(
+    `carve-rb (over carve-rs [${rbBuild.text}], ${satelliteSamples.length} documents)`,
+    rbFindings,
+  )
 } else {
   skip('carve-rb', 'checkout not found')
 }
@@ -529,4 +604,16 @@ if (notMeasured.length > 0) {
   }
 } else {
   console.log('All satellites measured.\n')
+}
+
+// A stale build is not a skip and not a pass: it is a NUMBER produced by code
+// nobody is running any more. Say so at the end, where the not-measured roll-up
+// already is, rather than leaving it to be noticed in a label several screens up.
+if (staleBuilds.length > 0) {
+  console.log(`STALE BUILDS: ${staleBuilds.join(', ')} - findings above are from an OLD build.`)
+  console.log('Rebuild those engines and re-run before recording any number from this run.\n')
+  if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
+    console.error('CARVE_REQUIRE_ALL_ENGINES=1 and at least one engine was measured from a stale build.')
+    process.exit(1)
+  }
 }

@@ -1,0 +1,118 @@
+name: AST conformance
+
+# `ast:check` is the only thing that measures PART 12 conformance, and until now
+# it ran nowhere (carve#475). It needs the satellite checkouts, which is why it
+# was never wired into ci.yml - so it lives here instead, on a schedule.
+#
+# SCHEDULED rather than per-PR on purpose. What this catches is cross-repo
+# DRIFT: an engine's main moving away from the published AST while this repo's
+# main stands still. That is a daily-cadence problem, and cloning and BUILDING
+# three engines on every PR would add minutes to a gate that would almost always
+# say the same thing. workflow_dispatch is here for when you want it now.
+#
+# CARVE_REQUIRE_ALL_ENGINES=1 turns a missing or unbuildable engine into a red
+# run. That is the whole point of running it here: the checkouts are provisioned
+# deliberately, so one dropping out is a broken job, not a line of prose.
+
+on:
+  schedule:
+    # 04:00 UTC daily, after the downstream bump workflow has had a night to run.
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out carve
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Each engine is checked out and BUILT from its own main. A build is not
+      # optional here: the checker reads whatever artifact is on disk, and a
+      # stale one reports the old behavior under the current name - which is
+      # exactly how carve#475's own figures came to be wrong.
+      - name: Check out carve-js
+        uses: actions/checkout@v4
+        with:
+          repository: markup-carve/carve-js
+          path: carve-js
+          submodules: recursive
+
+      - name: Build carve-js
+        working-directory: carve-js
+        run: npm ci && npm run build
+
+      - name: Check out carve-rs
+        uses: actions/checkout@v4
+        with:
+          repository: markup-carve/carve-rs
+          path: carve-rs
+          submodules: recursive
+
+      - name: Build carve-rs
+        working-directory: carve-rs
+        run: cargo build --release
+
+      - name: Check out carve-php
+        uses: actions/checkout@v4
+        with:
+          repository: markup-carve/carve-php
+          path: carve-php
+          submodules: recursive
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Install carve-php
+        working-directory: carve-php
+        run: composer install --no-interaction --no-progress
+
+      - name: Check out carve-rb
+        uses: actions/checkout@v4
+        with:
+          repository: markup-carve/carve-rb
+          path: carve-rb
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      # rb-sys drives bindgen, which needs libclang. Same step carve-rb's own CI
+      # runs; without it `rake compile` fails on a fresh runner.
+      - name: Install libclang (rb-sys bindgen)
+        run: sudo apt-get update && sudo apt-get install -y libclang-dev
+
+      - name: Build carve-rb
+        working-directory: carve-rb
+        run: |
+          bundle install
+          bundle exec rake compile
+
+      - name: PART 12 conformance
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_RB_DIR: ${{ github.workspace }}/carve-rb
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+          # Every engine is checked out and built above, so a missing one is a
+          # broken job rather than a local convenience - which is what this flag
+          # is for. Setting it while knowingly not provisioning an engine would
+          # make the run permanently red, and a permanently red scheduled job
+          # gets muted, which is the failure this whole issue is about.
+          CARVE_REQUIRE_ALL_ENGINES: '1'
+        run: npm run ast:check -- --satellite-limit=520
