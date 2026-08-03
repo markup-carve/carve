@@ -945,7 +945,7 @@
     "document": {
       "type": "object",
       "title": "document (root)",
-      "description": "The root carries EXACTLY three fields (PART 12 section 7). Frontmatter and footnote definitions are block nodes in `children`, not root fields, because a root field cannot carry the `pos` section 4 requires of everything else - and both are source an editor navigates to.\n\nThe root is the one node with no `pos`: it spans the whole source by definition.",
+      "description": "The root carries EXACTLY three fields (PART 12 section 7). Frontmatter and definitions - footnote AND abbreviation alike (PART 12 section 7) - are block nodes in `children`, not root fields, because a root field cannot carry the `pos` section 4 requires of everything else - and both are source an editor navigates to.\n\nThe root is the one node with no `pos`: it spans the whole source by definition.",
       "required": [
         "type",
         "children",
@@ -2015,11 +2015,11 @@
         },
         "ref": {
           "type": "string",
-          "description": "Unresolved reference label of `[text][ref]`. Present only between parse and resolve."
+          "description": "Reference label of `[text][ref]`, as the author wrote it. Present whenever the author wrote a reference link - resolved or not - because the serialized tree is PRE-RESOLVE (PART 12 section 3a). It is not a transient between parse and resolve."
         },
         "rawRef": {
           "type": "string",
-          "description": "Verbatim source of an unresolved reference, so it can be restored as literal text."
+          "description": "Verbatim source of the reference as written, so the construct can be restored. Reachable because the tree is PRE-RESOLVE (PART 12 section 3a); under a post-resolve tree this field would describe something already discarded."
         },
         "fromCrossref": {
           "type": "boolean",

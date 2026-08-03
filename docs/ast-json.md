@@ -42,16 +42,25 @@ The encoding turns an N×M integration problem into N+M.
 }
 ```
 
-Four rules carry most of the weight:
+Five rules carry most of the weight:
 
 **The root carries exactly three fields** - `type`, `children`, `srcByteLength`
-(PART 12 §7). Frontmatter and footnote definitions are **block nodes in the
-tree**, not root fields, because a root field cannot carry a position and both
-are source an editor navigates to.
+(PART 12 §7). Frontmatter and definitions are **block nodes in the tree**, not
+root fields, because a root field cannot carry a position and both are source an
+editor navigates to. A definition is a child of the **document** even when it was
+authored inside a container - footnote and abbreviation alike - because its scope
+is the document wherever it was written. Its `pos` still says where that was.
 
 **Field names are spec surface** (§3). `href`, `src`, `value`, `level`,
 `children`. An implementation whose internals differ maps on the way out; it does
 not export its internals, and it does not invent a synonym.
+
+**The tree is pre-resolve** (§3a). It records what the author wrote, not what the
+document resolves to. `[getting started][]` publishes a `link` with `ref`, an
+empty `href` and the `rawRef` source - resolved or not, and even when nothing
+defines the label. Both stages validate against the schema, which is how three
+engines came to disagree; the tie goes to the stage that keeps `[x][]` alive
+through a format cycle and keeps `[a][]` distinguishable from `[a](#a)`.
 
 **Type identifiers come from the [profiles vocabulary](/profiles)** (§1-2), and
 are `snake_case` always. The AST carries a few types a profile cannot deny -
@@ -231,11 +240,16 @@ payload instead of rejecting it.
 ## What is not in it
 
 Formatter-internal nodes (PART 11, and the `raw_text` case the profiles
-vocabulary excludes) are not part of the document and are not serialized.
+vocabulary excludes) are not part of the document and are not serialized. Under
+§3a nothing on the document side needs `raw_text` either: an unresolved
+reference stays a `link` rather than reverting to literal source, so no node has
+to carry text that must not be escaped again.
 
 Resolution results a consumer could recompute - footnote numbering, caption
 numbers - **are** serialized, because recomputing them means reimplementing the
-resolution rules.
+resolution rules. Those are **added alongside** the authored construct, not
+substituted for it: a resolved footnote reference keeps its label and gains its
+number.
 
 ## Conformance status
 
@@ -245,13 +259,19 @@ spans that do not cover the text they claim.
 
 | engine | shape | positions |
 |---|---|---|
-| carve-js | conformant | blocks and inlines, except reassembled regions (table cells, line-block content) |
-| carve-rs | conformant | blocks and most inlines; reconstructed regions and a definition list's own parts are unplaced ([carve-rs#333](https://github.com/markup-carve/carve-rs/issues/333)) |
-| carve-php | two field-name divergences left: the root carries `abbreviations`, and `inline_extension` publishes `extensionType`/`children` ([carve-php#510](https://github.com/markup-carve/carve-php/issues/510)) | recorded behind a parse option, enabled whenever it serializes |
+| carve-js | leaves an `abbreviation_def` inside its container instead of hoisting it to the document, against §7 ([carve-php#631](https://github.com/markup-carve/carve-php/issues/631)) | blocks and inlines, except reassembled regions (table cells, line-block content) |
+| carve-rs | serializes links POST-resolve, against §3a, and leaves an `abbreviation_def` in its container, against §7 ([carve#481](https://github.com/markup-carve/carve/issues/481)) | blocks and most inlines; reconstructed regions and a definition list's own parts are unplaced ([carve-rs#333](https://github.com/markup-carve/carve-rs/issues/333)) |
+| carve-php | flattens an unresolved reference to text instead of publishing a `link`, against §3a ([carve#486](https://github.com/markup-carve/carve/issues/486)); two field-name divergences left: the root carries `abbreviations`, and `inline_extension` publishes `extensionType`/`children` ([carve-php#510](https://github.com/markup-carve/carve-php/issues/510)) | recorded behind a parse option, enabled whenever it serializes |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
 is only a claim worth making if the disagreements are visible.
+
+The §3a and §7 rows are new: those clauses were written to settle disagreements
+the engines had already shipped, so every engine has something to move. That is
+the intended order - the spec says what the shape is, then the engines conform,
+then the pin moves. Until they do, this table is the honest record of who is
+where.
 
 ## Definition lists
 

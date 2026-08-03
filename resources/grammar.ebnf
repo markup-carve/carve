@@ -3807,6 +3807,67 @@ EOF = (* end of file *) ;
       internal field the reference does not have. A consumer reading `href`
       must not have to know which engine produced the document.
 
+   3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE. It records what the
+      AUTHOR WROTE, not what the document resolves to. Reference resolution,
+      like rendering, happens after; a producer MUST NOT fold its results into
+      the tree in place of the authored construct.
+
+      Concretely, for `[getting started][]` against a heading that defines it:
+
+        {"type":"link","href":"","ref":"getting started",
+         "rawRef":"[getting started][]"}
+
+      `ref` is present because the author wrote a reference link (§3), `href`
+      is empty because nothing has resolved it yet, and `rawRef` carries the
+      source so the construct can be restored. A tree publishing
+      `{"type":"link","href":"#Getting-Started"}` for that source has serialized
+      a LATER STAGE: the reference is gone, and no consumer can tell it from a
+      document whose author typed the destination out.
+
+      AN UNRESOLVED REFERENCE IS STILL A LINK NODE. Where nothing defines
+      `[a]`, `see [a][] here` publishes `text`, `link`, `text` -- the link
+      carrying `ref` and no `href` -- NOT one text node holding `see [a][]
+      here`. Flattening it to text discards the fact that the author wrote a
+      reference at all, and it makes the same document have two node counts
+      depending on which engine produced it, which is exactly what §1 and §1a
+      exist to prevent. (carve#486)
+
+      SO THERE IS NO `raw_text`. An engine that reverts an unresolved reference
+      to literal source needs a node type to carry text that must not be
+      escaped again, and no such type is in the vocabulary. Under this clause
+      the reversion does not happen, so the need does not arise: what the
+      author wrote is a link, and it stays one. §5 already excludes the
+      formatter-internal `raw_text` from the wire; this says why nothing on the
+      document side has to reach for it. (carve-php#624)
+
+      WHY PRE-RESOLVE. Both stages are defensible and both validate against the
+      schema, which is how three engines came to disagree without any of them
+      being wrong (carve#481). The tie is broken by what each one COSTS.
+
+      Post-resolve makes `rawRef`'s stated purpose -- "so it can be restored as
+      literal text" -- unreachable, because the field it would be restored from
+      is gone by the time anyone could use it. It also means `[x][]` cannot
+      survive a format cycle in ANY implementation: the writer cannot reproduce
+      a construct the tree no longer carries, so PART 11's canonical writer
+      silently rewrites one construct into another. That is not a writer bug
+      and cannot be fixed in the writer.
+
+      Pre-resolve keeps both. It also keeps the distinction a linter, a
+      refactoring tool, or an editor round-tripping a file needs: `[a][]` and
+      `[a](#a)` are different things the author chose between, and a format
+      that preserves authored form one layer down (PART 11 §6: bullet
+      characters, delimiters, the bare marker) has no reason to discard this
+      one.
+
+      WHAT IS STILL SERIALIZED. §5's rule is unchanged and is not in tension
+      with this one: resolution RESULTS a consumer would otherwise have to
+      recompute -- footnote numbering, caption numbers -- are serialized,
+      because recomputing them means reimplementing PART 9R. The difference is
+      that those are ADDED alongside the authored construct; they do not
+      REPLACE it. A resolved footnote reference keeps its label and gains its
+      number. A resolved link keeps its `ref` and gains nothing: `href` is the
+      author's field, empty when the author did not write a destination.
+
    4. POSITIONS ARE REQUIRED. Every node EXCEPT the document root carries
       `pos`:
 
@@ -3967,6 +4028,41 @@ EOF = (* end of file *) ;
       that container empty; the serialized tree follows the same rule rather
       than inventing a second one. Its `pos` still records where it was
       WRITTEN, so nothing about navigation is lost by the move.
+
+      THIS COVERS EVERY DEFINITION KIND, NOT ONLY FOOTNOTES -- NORMATIVE. An
+      `abbreviation_def` authored inside a div, a list item or a block quote is
+      a child of the DOCUMENT, exactly as a `footnote` is. The clause above was
+      written against PART 9 §16 and read as footnote-specific, so the engines
+      split: carve-php hoisted both kinds, carve-js and carve-rs hoisted the
+      footnote and left the abbreviation in its container, and all three
+      rendered identical HTML -- because an abbreviation is document-global
+      wherever it is written, which is the same property that makes a footnote
+      definition document-level metadata. A rule that applies to one and not
+      the other needed a reason, and there is none. (carve-php#631)
+
+      THE FORMATTER CONSEQUENCE IS ACCEPTED, NOT OVERLOOKED. Hoisting means
+      PART 11's writer emits the definition after the container the author
+      wrote it in, which reads like a violation of PART 11 §6 ("fmt does not
+      reorder ... those are the author's choices and the AST records them").
+      It is not, because §6 governs what the writer may do with what the tree
+      HOLDS, and this clause is what the tree holds. The consequence is already
+      shipping and corpus-pinned for footnotes:
+
+        See [^a].
+
+        > [^a]: note body
+
+      formats to the definition after an emptied `>`, and corpus
+      `115-footnote-definition-inside-a-container-is-collected` pins the
+      collection it follows from. Extending the rule to abbreviations extends
+      that consequence; it does not introduce it.
+
+      THE ALTERNATIVE WAS TO NARROW THE RULE instead -- keep definitions where
+      they were written, for both kinds. It was rejected because it reverses a
+      pinned rule that ships today, and because the argument for hoisting is
+      not about convenience: a definition is metadata whose SCOPE is the
+      document, and a tree that nests document-scoped metadata inside a
+      container invites a consumer to treat it as container-scoped.
 
       Definitions appear in DOCUMENT ORDER by source position. Numbering is a
       resolution result and stays on the reference (§5).

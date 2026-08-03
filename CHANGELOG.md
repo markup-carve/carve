@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **PART 12 §3a: the serialized AST is PRE-RESOLVE** (carve#481, carve#486,
+  carve-php#624). The tree records what the author wrote, not what the document
+  resolves to. `[getting started][]` publishes a `link` carrying `ref`, an empty
+  `href` and the `rawRef` source - resolved or not, and even when nothing
+  defines the label, where flattening it to text discarded the fact that a
+  reference was written at all. Both stages validated against the schema, which
+  is how three engines came to disagree without any of them being wrong; the tie
+  goes to the stage that keeps `rawRef`'s stated purpose reachable and keeps
+  `[x][]` alive through a format cycle. It also removes the need for a
+  `raw_text` document node: nothing reverts to literal source, so nothing has to
+  carry text that must not be escaped again.
+
+### Changed
+
+- **PART 12 §7 now covers every definition kind, not only footnotes**
+  (carve-php#631). An `abbreviation_def` authored inside a div, list item or
+  block quote is a child of the DOCUMENT, exactly as a `footnote` is. The clause
+  was written against PART 9 §16 and read as footnote-specific, so the engines
+  split - carve-php hoisted both, carve-js and carve-rs hoisted only the
+  footnote - while all three rendered identical HTML, because an abbreviation is
+  document-global wherever it is written. The formatter consequence is accepted
+  rather than overlooked: it already ships for footnotes, where `> [^a]: body`
+  formats to the definition after an emptied `>`.
+
 - **An optional `sections` switch on the HTML renderer** (carve#427). Setting it
   to `false` renders headings flat, with the id back on the `<h*>` and the blocks
   that would have been section children left as siblings. The default is
