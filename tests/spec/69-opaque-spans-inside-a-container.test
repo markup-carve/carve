@@ -65,3 +65,26 @@ after
 </aside>
 <p>after</p>
 ```
+
+````
+::: note
+```
+x
+:::
+after
+.
+<aside class="admonition note">
+  <pre><code>x
+</code></pre>
+</aside>
+<p>after</p>
+````
+
+````
+> ```
+.
+<blockquote>
+  <pre><code>
+</code></pre>
+</blockquote>
+````

@@ -775,7 +775,34 @@ admonition = admonition_open, newline,
    the block parser (carve#450). Under exact-length closers a miscount there
    shifts the whole subtree, and a code fence is the only structural way to
    quote a container fence, so this is the path every document that describes
-   Carve in Carve takes. *)
+   Carve in Carve takes.
+
+   A CLOSER IS REQUIRED. Only a fence that closes is opaque. A ``` or ~~~
+   opener with no closer ahead opens NO span: the container's own closer
+   stays structural, and the lines after it are parsed normally. This is the
+   same test PART 9 §10 I4 applies one level up -- an opener with no closer
+   is not a fence -- and the same test the `%%%` rule above already states
+   ("an opener with no exact closer ahead opens nothing"). It was written
+   for the comment block and not for the code fence, and all three engines
+   implemented exactly what was written: `%%%` guarded, ``` not (carve#515).
+
+   Without it, one unclosed fence consumes the rest of the document. In
+
+       ::: note
+       ```
+       x
+       :::
+       after
+
+   the fence would take `x`, the `:::` AND `after`, closing the admonition
+   at end of input -- so a line written outside the container renders
+   inside it. With the guard the fence is not a span, the `:::` closes the
+   admonition, and `after` is a top-level paragraph.
+
+   This does NOT change a fence with nothing to interrupt: `` ``` `` alone,
+   or as the whole content of a blockquote, still opens a code block that
+   runs to the end. I4 and this clause both gate a fence that would take
+   structure away from something else, not a fence that is the content. *)
 
 (* STRICT (djot): the opener line carries NO inline `{...}` attributes -- it
    is colon_fence, type, an optional quoted "header", an optional [label],

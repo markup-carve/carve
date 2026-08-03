@@ -726,6 +726,54 @@ after
 
 ::::
 
+Only a fence that CLOSES is opaque. An opener with no closer ahead opens no
+span at all, so the container's own closer stays structural and the lines after
+it are parsed normally. Without this one unclosed fence would swallow the rest
+of the document - the `:::` and `after` below would both render inside the code
+block, and the admonition would close at end of input.
+
+The `%%%` rule already worked this way; the code fence did not, in any of the
+three engines, because the spec had only ever written it down for `%%%`.
+
+:::: compare
+
+````carve
+::: note
+```
+x
+:::
+after
+````
+
+```html
+<aside class="admonition note">
+  <pre><code>x
+</code></pre>
+</aside>
+<p>after</p>
+```
+
+::::
+
+A fence with nothing to take structure away from is unaffected: alone, or as
+the whole content of a blockquote, an unterminated fence still opens a code
+block that runs to the end.
+
+:::: compare
+
+````carve
+> ```
+````
+
+```html
+<blockquote>
+  <pre><code>
+</code></pre>
+</blockquote>
+```
+
+::::
+
 ## Blocks that render to nothing
 
 A comment, a comment block, an abbreviation definition and a non-HTML raw
