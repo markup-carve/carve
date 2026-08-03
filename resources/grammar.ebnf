@@ -2220,24 +2220,6 @@ EOF = (* end of file *) ;
       admonition/div body). L interrupts -> L is parsed as its block and P
       ends on the preceding line (the Markdown-like rule for every block
       EXCEPT lists, which follow Djot).
-      PORTABILITY -- NON-NORMATIVE FOR CONFORMANCE. A conformant
-      implementation MAY ignore this block entirely; it constrains no
-      processor.
-
-      This relation is where Carve is deliberately Markdown-like and Djot is
-      not: a visible opener interrupts an open paragraph here, while in Djot
-      it folds into the paragraph as text. That holds for EVERY opener --
-      heading, block quote, code and raw fences, thematic break, admonition,
-      div, line block, table, definition list -- and one level in, for a list
-      marker beneath a list item's own paragraph.
-
-      A portable document -- one whose source is meant to stay valid Djot --
-      SHOULD leave a blank line before a block opener. A top-level list marker
-      needs none: it does not interrupt a paragraph in Carve either.
-
-      Reported by `carve lint --portable` as
-      `portable-blank-line-before-block`; see docs/portable-whitespace.md.
-
       I1 VISIBLE OPENERS interrupt. interrupts(L, P) holds when L begins:
          - a heading (`#`..`######` + space);
          - a thematic break (a lone `---` / `***` / `___` line);
