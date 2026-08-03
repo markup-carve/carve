@@ -573,12 +573,39 @@ console.log(
 
 if (isOptional) {
   console.log('\nOptional feature coverage')
+  const unreachable = new Map()
   for (const pair of pairs) {
     const supported = active
       .filter((impl) => commandFor(impl, pair, pair.target))
       .map((impl) => impl.name)
-      .join(', ')
-    console.log(`${pair.feature} (${pair.target}): ${supported || 'none'}`)
+    console.log(`${pair.feature} (${pair.target}): ${supported.join(', ') || 'none'}`)
+    // Fewer than two engines means there is nothing to compare AGAINST, so the
+    // case contributes no agreement evidence even when it renders.
+    if (supported.length < 2) {
+      unreachable.set(pair.feature, (unreachable.get(pair.feature) ?? 0) + 1)
+    }
+  }
+
+  // A "0 differences" line under a run that compared 2 of 33 documents reads
+  // exactly like one that compared all of them. It is the same shape as the
+  // NOT MEASURED roll-up in ast-conformance.mjs, and for the same reason: the
+  // number that matters is how much was checked, not how much disagreed.
+  //
+  // The Tier-2 features are IMPLEMENTED in all three engines - citations, code
+  // callouts and the rest all shipped engine by engine. What is missing is a
+  // way to turn them on from the command line, which is the only interface
+  // this checker has (markup-carve/carve#496).
+  const skippedCases = [...unreachable.values()].reduce((n, x) => n + x, 0)
+  if (skippedCases > 0) {
+    const worst = [...unreachable.entries()].sort((a, b) => b[1] - a[1])
+    console.log(
+      `\nNOT COMPARED: ${skippedCases} of ${pairs.length} optional cases reached fewer than two engines, so they contribute no agreement evidence. This is not a pass.`,
+    )
+    console.log(
+      `  no CLI path in two or more engines: ${worst.map(([f, n]) => `${f} (${n})`).join(', ')}`,
+    )
+  } else {
+    console.log('\nAll optional cases reached at least two engines.')
   }
 }
 
