@@ -150,6 +150,46 @@ const PLAIN_EXTENSION_FEATURES = {
   'bare-url-autolink': { js: 'autolink', php: 'AutolinkExtension' },
 }
 
+/*
+ * Optional cases driven by a RENDER OR PARSE OPTION rather than an extension.
+ *
+ * These are the five #535 named: the extension table above reached everything
+ * else. An option is per-engine API, so unlike the extension table this one
+ * cannot be shared - it is spelled for carve-js, which is the engine that has
+ * the most of them.
+ *
+ * `33-source-line-after-generated-id` needs BOTH options: its fixture shows the
+ * id on the `<h2>`, which is what `sections: false` produces, and the whole
+ * point of the case is where the stamp goes relative to that id.
+ */
+/*
+ * Why a case reaches fewer than two engines, where the answer is a missing
+ * CAPABILITY rather than a missing adapter.
+ *
+ * Left out of the reporting entirely, "not compared" reads as a harness
+ * backlog. Three of these are not: the option does not exist in the engines
+ * that would have to run them, so writing an adapter is impossible rather than
+ * pending, and the fix is in the engine (or in the page that documents an
+ * option nobody implemented - carve#560).
+ */
+const UNREACHABLE_REASONS = {
+  'smart-typography-off':
+    'no engine implements the documented smartTypography switch (carve#560)',
+  'smart-quotes-locale-de':
+    'carve-js has no quote-locale option; carve-php has the extension (carve#560)',
+  'section-wrapper-off':
+    'carve-php has no sections switch; carve-js has the option (carve#560)',
+  'source-line-after-generated-id':
+    'the fixture needs sections off, which carve-php cannot do (carve#560)',
+  'markdown-typography-source': 'carve-rs exposes no CLI flag for it',
+}
+
+const JS_OPTION_FEATURES = {
+  'markdown-typography-source': "{ smartTypography: 'source' }",
+  'section-wrapper-off': '{ sections: false }',
+  'source-line-after-generated-id': '{ sourceLine: true, sections: false }',
+}
+
 const impls = [
   {
     name: 'rust',
@@ -236,6 +276,20 @@ const impls = [
           `,
         ]
       }
+      const options = JS_OPTION_FEATURES[feature]
+      if (options) {
+        return [
+          'node',
+          '--input-type=module',
+          '-e',
+          `
+            import { readFileSync } from 'node:fs';
+            import { ${entry} } from './dist/index.js';
+            const source = readFileSync(process.argv[1], 'utf8');
+            process.stdout.write(${entry}(source, ${options}));
+          `,
+        ]
+      }
       const plain = PLAIN_EXTENSION_FEATURES[feature]
       if (plain) {
         return [
@@ -272,6 +326,21 @@ const impls = [
       // per case, so an unwired target reports "no adapter" - the same visible
       // skip an unsupported feature gets - rather than comparing this engine's
       // HTML against another engine's Markdown.
+      // The Markdown renderer takes its own settings, so a markdown-target
+      // case gets its own factory rather than the html one.
+      if (target === 'markdown' && feature === 'markdown-typography-source') {
+        return [
+          'php',
+          '-r',
+          `
+            require 'vendor/autoload.php';
+            $renderer = new MarkupCarve\\Carve\\Renderer\\MarkdownRenderer();
+            $renderer->setSmartTypography(MarkupCarve\\Carve\\Renderer\\SmartTypographyMode::Source);
+            $converter = MarkupCarve\\Carve\\CarveConverter::create(renderer: $renderer);
+            echo $converter->convert(file_get_contents($argv[1]));
+          `,
+        ]
+      }
       if (target !== 'html') return null
       if (feature === 'social-link-templates') {
         return [
@@ -648,8 +717,16 @@ if (isOptional) {
       `\nNOT COMPARED: ${skippedCases} of ${pairs.length} optional cases reached fewer than two engines, so they contribute no agreement evidence. This is not a pass.`,
     )
     console.log(
-      `  no CLI path in two or more engines: ${worst.map(([f, n]) => `${f} (${n})`).join(', ')}`,
+      `  fewer than two engines: ${worst.map(([f, n]) => `${f} (${n})`).join(', ')}`,
     )
+    // WHY a case is unreachable decides who fixes it, and the roll-up used to
+    // say "no CLI path" for all of them - which was true of none of these five.
+    // Three are capability gaps: an engine does not have the option at all, so
+    // no adapter can be written until it does (carve#560).
+    for (const [feature] of worst) {
+      const reason = UNREACHABLE_REASONS[feature]
+      if (reason) console.log(`    ${feature}: ${reason}`)
+    }
   } else {
     console.log('\nAll optional cases reached at least two engines.')
   }
