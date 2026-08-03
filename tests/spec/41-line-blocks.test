@@ -26,6 +26,18 @@ Roses are red,
 
 ```
 ::: |
+Two roads    diverged in a yellow wood,
+And looked   down one as far as I could
+:::
+.
+<div class="line-block">
+  <p>Two roads&nbsp;&nbsp;&nbsp;&nbsp;diverged in a yellow wood,<br>
+And looked&nbsp;&nbsp;&nbsp;down one as far as I could</p>
+</div>
+```
+
+```
+::: |
 Stanza one,
 still one.
 

@@ -77,6 +77,51 @@ export function renderDoc(doc) {
   return html
 }
 
+/**
+ * One line of a line block (PART 9 SS23).
+ *
+ * Leading whitespace is preserved down to a single column; an inner or trailing
+ * run of TWO OR MORE columns is a medial gap and is preserved too. A lone inner
+ * space stays an ordinary collapsible space so a long line can still wrap
+ * between words. Preserved columns serialize as `&nbsp;`; a tab advances to the
+ * next multiple of four, counted from the column its run starts at (SS24 C1).
+ */
+function renderLineBlockLine(line) {
+  let out = ''
+  let text = ''
+  let i = 0
+  let column = 0
+  let seenContent = false
+  const flush = () => {
+    if (text !== '') out += renderInline(text)
+    text = ''
+  }
+  while (i < line.length) {
+    const ch = line[i]
+    if (ch !== ' ' && ch !== '\t') {
+      text += ch
+      seenContent = true
+      column++
+      i++
+      continue
+    }
+    let width = 0
+    while (i < line.length && (line[i] === ' ' || line[i] === '\t')) {
+      width += line[i] === '\t' ? 4 - ((column + width) % 4) : 1
+      i++
+    }
+    column += width
+    if (!seenContent || width >= 2) {
+      flush()
+      out += '&nbsp;'.repeat(width)
+    } else {
+      text += ' '
+    }
+  }
+  flush()
+  return out
+}
+
 function renderBlock(b, depth, ctx) {
   const pad = '  '.repeat(depth)
   const ba = b.battrs ? renderBlockAttrs(b.battrs) : ''
@@ -201,10 +246,7 @@ function renderBlock(b, depth, ctx) {
       }
       if (cur.length) stanzas.push(cur)
       const ps = stanzas.map((st) => {
-        const rendered = st.map((l) => {
-          const m = /^( *)(.*)$/.exec(l)
-          return '&nbsp;'.repeat(m[1].length) + renderInline(m[2].replace(/[ \t]+$/, ''))
-        })
+        const rendered = st.map((l) => renderLineBlockLine(l))
         return `${pad2}  <p>${rendered.join('<br>\n')}</p>`
       })
       return `${pad2}<div class="line-block">\n${ps.join('\n')}\n${pad2}</div>`

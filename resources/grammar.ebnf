@@ -2800,11 +2800,20 @@ EOF = (* end of file *) ;
       - STANZAS. A blank line ends a stanza; each stanza is its own `<p>` inside
         the single `<div class="line-block">`.
       - LEADING WHITESPACE. Each body line's leading whitespace is PRESERVED
-        (unlike ordinary paragraph content, which is trimmed). In HTML each
-        leading space serializes as a NBSP (`&nbsp;`, U+00A0), so indentation is
-        visible with no external CSS (matching Pandoc). Plain-text / ANSI
-        renderers emit the literal spaces. A tab in the leading run follows the
-        tab-stop rule (PART 9 §24).
+        (unlike ordinary paragraph content, which is trimmed), down to a single
+        column. In HTML each leading space serializes as a NBSP (`&nbsp;`,
+        U+00A0), so indentation is visible with no external CSS (matching
+        Pandoc). Plain-text / ANSI renderers emit the literal spaces. A tab in
+        the leading run follows the tab-stop rule (PART 9 §24).
+      - MEDIAL GAPS. An INNER or TRAILING run of TWO OR MORE columns is
+        preserved the same way and serializes as the same NBSPs. This is the
+        inline alignment verse and address blocks are made of -- the caesura of
+        Old English verse, a column of aligned text -- and collapsing it loses
+        the per-line layout the block exists to keep (matching Pandoc, where
+        every space the author writes is significant). A LONE inner space is NOT
+        preserved: it stays an ordinary, collapsible space so a long line can
+        still wrap between words. Tab arithmetic is the leading run's, counted
+        from the column the run starts at.
       - REFERENCE COLUMN. Leading whitespace is measured RELATIVE TO THE FENCE
         indent, not absolute column 0: a `line-block` nested in a list has the
         container's structural indent stripped first (the list dedents to its

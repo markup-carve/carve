@@ -3617,6 +3617,26 @@ Roses are red,
 
 ::::
 
+An inner run of two or more spaces is a medial gap - the alignment a caesura or a column of aligned text is made of - and is preserved the same way. A lone inner space stays an ordinary collapsible space, so a long line can still wrap between words.
+
+:::: compare
+
+```carve
+::: |
+Two roads    diverged in a yellow wood,
+And looked   down one as far as I could
+:::
+```
+
+```html
+<div class="line-block">
+  <p>Two roads&nbsp;&nbsp;&nbsp;&nbsp;diverged in a yellow wood,<br>
+And looked&nbsp;&nbsp;&nbsp;down one as far as I could</p>
+</div>
+```
+
+::::
+
 A blank line separates stanzas; each stanza is its own paragraph inside the block.
 
 :::: compare
