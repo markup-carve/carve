@@ -74,7 +74,7 @@
     {
       "slug": "15-citations-locator-labels",
       "feature": "citations-numbered",
-      "description": "Multiple locator labels (chap., \u00a7) parse to their canonical citeproc names."
+      "description": "Multiple locator labels (chap., §) parse to their canonical citeproc names."
     },
     {
       "slug": "16-citations-locator-default-page",
@@ -140,6 +140,33 @@
       "slug": "28-tabs-panel-title",
       "feature": "tabs",
       "description": "A tab's quoted title is content: it stays inside the panel as the admonition-title line while the [label] becomes the tab button."
+    },
+    {
+      "slug": "29-smart-typography-off",
+      "feature": "smart-typography-off",
+      "description": "With the optional document-global smartTypography switch set to false, the whole converted set stays as authored ASCII; escapes, code spans and heading ids are unchanged (carve#338)."
+    },
+    {
+      "slug": "30-symbol-map-markdown",
+      "feature": "symbol-map",
+      "target": "markdown",
+      "description": "On the Markdown target a symbol keeps its :name: source spelling: the map resolves for HTML only, so the output re-parses to the same symbol node. Smart punctuation in the same case still resolves to its glyph (PART 9 section 8), which is the contrast."
+    },
+    {
+      "slug": "31-markdown-typography-source",
+      "feature": "markdown-typography-source",
+      "target": "markdown",
+      "description": "With the optional Markdown-renderer setting that emits the author source run instead of the glyph, quotes, dashes and the ellipsis stay as the ASCII that was typed (PART 9 section 8; carve#360)."
+    },
+    {
+      "slug": "32-section-wrapper-off",
+      "feature": "section-wrapper-off",
+      "description": "With the optional HTML-renderer sections switch set to false, no <section> is emitted: each heading carries the id it would have hoisted, alongside its other attributes, and the blocks that would have been section children stay siblings. Ids, dedup, crossrefs and implicit heading references are unchanged, and a heading inside a container renders exactly as it does with the wrapper on (PART 9 section 13; carve#427)."
+    },
+    {
+      "slug": "33-source-line-after-generated-id",
+      "feature": "source-line-after-generated-id",
+      "description": "The data-source-line render annotation is emitted AFTER the generated heading id, not merely after the author's attributes (PART 10 section 1). An engine that stamps the line at parse time carries it inside the authored run, where the generated-last rule alone would put the id behind it; carve-rs did exactly that until a test caught it (carve#427)."
     }
   ]
 }

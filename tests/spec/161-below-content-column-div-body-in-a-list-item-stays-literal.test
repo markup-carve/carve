@@ -1,0 +1,13 @@
+Below-content-column div body in a list item stays literal
+
+```
+- ::: note
+ - para text
+ :::
+.
+<ul>
+  <li>::: note
+- para text
+:::</li>
+</ul>
+```

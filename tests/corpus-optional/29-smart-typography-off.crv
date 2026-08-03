@@ -1,0 +1,9 @@
+He said "hello" and it's fine... a--b, c---d.
+
+Arrows -> <- <-> => and comparisons != <= >= and (c) (r) (tm) +- stay as typed.
+
+Escapes still consume the backslash: \" and \-\-.
+
+Code spans never convert either way: `a--b "q" (c)`.
+
+# Don't repeat yourself

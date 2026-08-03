@@ -16,3 +16,59 @@ Nested.
   </aside>
 </aside>
 ```
+
+```
+::: note
+::: tip
+Inner.
+:::
+:::
+.
+<aside class="admonition note">
+  <aside class="admonition tip">
+    <p>Inner.</p>
+  </aside>
+</aside>
+```
+
+```
+:::
+Outer
+
+::::
+Inner
+::::
+:::
+.
+<div>
+  <p>Outer</p>
+  <div>
+    <p>Inner</p>
+  </div>
+</div>
+```
+
+```
+::: note
+X
+.
+<aside class="admonition note">
+  <p>X</p>
+</aside>
+```
+
+```
+::::: a
+:::: b
+::: c
+X
+:::
+.
+<div class="a">
+  <div class="b">
+    <div class="c">
+      <p>X</p>
+    </div>
+  </div>
+</div>
+```

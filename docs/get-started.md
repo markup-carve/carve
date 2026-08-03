@@ -86,7 +86,8 @@ The full ecosystem — editor integrations, framework plugins, and more — is l
 
 - **[Cheat Sheet](/cheatsheet)** — every construct, one scannable page.
 - **[Examples](/examples)** — Carve source next to the exact HTML it produces.
-- **[Case Study](/case-study/)** — the full design rationale and normative spec.
+- **[Formal Grammar](/grammar)** — the normative block and inline grammar.
+- **[Case Study](/case-study/)** — the design research the language grew out of (historical, not normative).
 
 ## 4. Core vs extensions
 

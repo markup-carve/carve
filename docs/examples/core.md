@@ -602,6 +602,24 @@ not a list</p>
 
 :::
 
+The same holds for **every** marker that takes a separator space, not
+just bullets. A definition term needs content too, and here the
+trailing-whitespace half of the rule is what matters: `::` and `::` with
+two spaces after it must mean the same thing, or stripping whitespace on
+save would turn a paragraph into a definition list.
+
+::: compare
+
+```carve
+:: 
+```
+
+```html
+<p>::</p>
+```
+
+:::
+
 Ordered lists use `N.` prefixes — numbering starts from the first marker.
 
 ::: compare
@@ -711,57 +729,27 @@ An ordered child *below* the content column does not nest: an ordered marker doe
 
 :::
 
-After a blank line the lazy-fold channel is closed, so the content-column rule relaxes: any continuation indented at least two columns — even below an ordered marker's content column — belongs to the open item. The item turns loose and the indented block nests inside it; the list does not split into siblings.
+After a blank line the **same content-column rule** applies: a continuation belongs to the item only if it reaches the item's content column (three columns under `1. `), exactly as without a blank. The blank line only decides whether the item is tight or loose; it never relaxes the column a block must reach. A block opener at the content column attaches and stays tight — unlike a second paragraph, a nested block does not loosen the list.
 
 ::: compare
 
 ```carve
 1. one
 
-  - sub a
-  - sub b
-
-1. two
+   > q
 ```
 
 ```html
 <ol>
-  <li><p>one</p>
-    <ul>
-      <li>sub a</li>
-      <li>sub b</li>
-    </ul>
+  <li>one
+    <blockquote><p>q</p></blockquote>
   </li>
-  <li><p>two</p></li>
 </ol>
 ```
 
 :::
 
-The relaxed rule is not specific to sub-lists: a plain paragraph indented two columns attaches the same way, and turns the item loose because a second paragraph inside an item always does (§17 L1).
-
-::: compare
-
-```carve
-1. one
-
-  text
-
-1. two
-```
-
-```html
-<ol>
-  <li><p>one</p>
-    <p>text</p>
-  </li>
-  <li><p>two</p></li>
-</ol>
-```
-
-:::
-
-A block opener attaches on the same two-column rule, and stays tight: unlike a second paragraph, a nested block does not loosen the list.
+*Below* the content column the line is outside the item body: the list ends and the block parses at document level. A two-column indent is not enough under an ordered marker whose content column is three — the same threshold the no-blank case uses.
 
 ::: compare
 
@@ -773,8 +761,27 @@ A block opener attaches on the same two-column rule, and stays tight: unlike a s
 
 ```html
 <ol>
-  <li>one
-    <blockquote><p>q</p></blockquote>
+  <li>one</li>
+</ol>
+<p>&gt; q</p>
+```
+
+:::
+
+*Above* the content column the residual indentation means the line is no longer a block opener — just as ` # h` is a paragraph, not a heading, at the top level — so it folds in as a second paragraph and turns the item loose (§17 L1).
+
+::: compare
+
+```carve
+1. one
+
+    > q
+```
+
+```html
+<ol>
+  <li><p>one</p>
+    <p>&gt; q</p>
   </li>
 </ol>
 ```
@@ -2344,6 +2351,47 @@ a---- b----- c------
 
 :::
 
+Longer runs follow the same allocation with no leftover hyphen: seven is one em plus two en, eight is four en, ten is five en, eleven is three em plus one en, and thirteen is three em plus two en.
+
+::: compare
+
+```carve
+a------- b-------- c---------- d----------- e-------------
+```
+
+```html
+<p>a—–– b–––– c––––– d———– e———––</p>
+```
+
+:::
+
+The open/close decision reads the character before the quote. A bare emphasis
+delimiter is not that character - the quote sees the start of the emphasis
+CONTENT - and nothing at all before a quote opens it. A quote directly after
+another one follows whichever half that one resolved to, so a nested pair opens
+while an empty pair stays closed.
+
+::: compare
+
+```carve
+*'q'*
+
+"hello"
+
+"'nested'"
+
+a*'q'*
+```
+
+```html
+<p><strong>‘q’</strong></p>
+<p>“hello”</p>
+<p>“‘nested’”</p>
+<p>a*’q’*</p>
+```
+
+:::
+
 ## Smart typography arrows and symbols
 
 Arrows, comparisons, plus/minus and symbols are converted. Fractions are
@@ -2666,6 +2714,42 @@ not a div
 ```
 
 ::::
+
+A bare colon fence closes a container only when it is EXACTLY as long as that
+container's opener, so the run length is a local depth count: the outermost
+container is `:::` and every level inward adds a colon. That is the direction
+`carve fmt` emits, and it is writable from the top down - a fence is sized by
+the levels above it, which are already on the page. The other direction parses
+too; equal-length fences nest as well, since a fence carrying a type word is
+never a closer.
+
+:::::: compare
+
+```carve
+::: outer
+
+:::: middle
+
+::::: note
+X
+:::::
+
+::::
+
+:::
+```
+
+```html
+<div class="outer">
+  <div class="middle">
+    <aside class="admonition note">
+      <p>X</p>
+    </aside>
+  </div>
+</div>
+```
+
+::::::
 
 ## Definition lists
 
@@ -3551,6 +3635,26 @@ Roses are red,
 
 ::::
 
+An inner run of two or more spaces is a medial gap - the alignment a caesura or a column of aligned text is made of - and is preserved the same way. A lone inner space stays an ordinary collapsible space, so a long line can still wrap between words.
+
+:::: compare
+
+```carve
+::: |
+Two roads    diverged in a yellow wood,
+And looked   down one as far as I could
+:::
+```
+
+```html
+<div class="line-block">
+  <p>Two roads&nbsp;&nbsp;&nbsp;&nbsp;diverged in a yellow wood,<br>
+And looked&nbsp;&nbsp;&nbsp;down one as far as I could</p>
+</div>
+```
+
+::::
+
 A blank line separates stanzas; each stanza is its own paragraph inside the block.
 
 :::: compare
@@ -3663,3 +3767,28 @@ b</p>
 
 :::::
 
+A gap written with TABS measures in columns, not characters: each tab advances
+to the next four-column stop, counted from where the run starts. So a tab is a
+medial gap or a lone space depending on where it lands - below, `tab` sits at
+column 3 so its tab crosses one column and collapses, while the two after `wide`
+cross two full stops and are kept. A LEADING tab follows the same arithmetic.
+
+:::: compare
+
+```carve
+::: |
+tab	gap
+wide		gap
+	lead
+:::
+```
+
+```html
+<div class="line-block">
+  <p>tab gap<br>
+wide&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gap<br>
+&nbsp;&nbsp;&nbsp;&nbsp;lead</p>
+</div>
+```
+
+::::

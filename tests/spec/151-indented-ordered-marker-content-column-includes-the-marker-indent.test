@@ -1,0 +1,11 @@
+Indented ordered marker content column includes the marker indent
+
+```
+    1. y
+  | x |
+.
+<ol>
+  <li>y
+| x |</li>
+</ol>
+```

@@ -41,6 +41,16 @@ const DENY = new Set(['javascript', 'vbscript', 'data', 'file',
   'ms-search', 'search-ms', 'ms-cxh', 'ms-cxh-full', 'shell', 'vscode',
   'vscode-insiders', 'jar'])
 
+/**
+ * Resolve the three escapes a link destination has (grammar
+ * `destination_escape`). Balanced parentheses are already part of the run and
+ * need no unescaping; a backslash before anything else is an ordinary
+ * character and is left alone.
+ */
+export function destValue(dest) {
+  return dest.sourceString.replace(/\\([()\\])/g, '$1')
+}
+
 export function checkUrl(url) {
   const probe = url.replace(/[\x00-\x20\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+/g, '')
   const m = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(probe)
@@ -219,7 +229,7 @@ const sem = g.createSemantics().addOperation('h', {
   image(_b, _o, alt, _c, _p, dest, title, _cp, attrs) {
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
     const a = renderAttrs(attrsOf(attrs))
-    return `<img src="${escapeAttr(checkUrl(dest.sourceString))}" alt="${escapeAttr(alt.sourceString)}"${t}${a}>`
+    return `<img src="${escapeAttr(checkUrl(destValue(dest)))}" alt="${escapeAttr(alt.sourceString)}"${t}${a}>`
   },
   autolink(_o, body, _c, attrs) {
     const raw = body.sourceString
@@ -327,12 +337,20 @@ const sem = g.createSemantics().addOperation('h', {
     return '\u2026'
   },
   dashRun(_a, _b) {
-    // PART 9 SS8: a run of n hyphens -> em/en dash mix (djot algorithm):
-    // n%3==0 all em; n%2==0 all en; else one em + (n-3)/2 en
+    // PART 9 SS8: a run of n hyphens -> em/en dash mix (djot allocateDashes):
+    // n%3==0 all em; n%2==0 all en; else maximize em-dashes with the remainder
+    // as en, where a remainder of 1 trades one em-dash for two en-dashes. Must
+    // match carve-js / carve-php exactly (e.g. n=11 -> 3 em + 1 en, not 1 em).
     const n = this.sourceString.length
     if (n % 3 === 0) return '\u2014'.repeat(n / 3)
     if (n % 2 === 0) return '\u2013'.repeat(n / 2)
-    return '\u2014' + '\u2013'.repeat((n - 3) / 2)
+    let em = Math.floor(n / 3)
+    let rem = n - em * 3
+    if (rem === 1) {
+      em -= 1
+      rem = 4
+    }
+    return '\u2014'.repeat(em) + '\u2013'.repeat(rem / 2)
   },
   dquote(_q) {
     return smartQuote(this, '\u201c', '\u201d', false)
@@ -367,7 +385,7 @@ sem.addOperation('applyTail(text)', {
     if (text.includes('\uE000fn:')) throw new Refuse('footnote inside link text')
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
     const a = renderAttrs(attrsOf(attrs))
-    return `<a href="${escapeAttr(checkUrl(dest.sourceString))}"${t}${a}>${text}</a>`
+    return `<a href="${escapeAttr(checkUrl(destValue(dest)))}"${t}${a}>${text}</a>`
   },
   refTail(_o, label, _c, attrs) {
     const { text } = this.args
@@ -470,9 +488,22 @@ const isWs = (c) => c === undefined || /\s/.test(c)
 // cross-delimiter guard the reference engines apply (path protection:
 // /a/_b_, snake_/case/, a_/_a_). The other delimiters `* ~ =` DO open after
 // `/` (e.g. `a/~y~` -> `a/<s>y</s>`), so the guard is `/ _`-specific.
-function bareOpener(d, prev, next) {
-  if (prev !== undefined && (isWordCh(prev) || prev === '_' || prev === d)) return false
-  if ((d === '/' || d === '_') && prev === '/') return false
+function bareOpener(d, prev, prev2, next) {
+  if (prev !== undefined && (isWordCh(prev) || prev === d)) return false
+  // Path protection for `/` and `_`: they do NOT open immediately after a `/`
+  // or `_` UNLESS that preceding delimiter sits at a clean left boundary (its
+  // own preceding char is whitespace/undefined) -- i.e. the preceding delimiter
+  // is itself a true opener (`/_x_/`, `_/x/_` nest), not a closer or mid-path
+  // delimiter (`/a/_b_`, `snake_/case/`, `a_/_a_` stay literal). The other
+  // delimiters `* ~ =` open after `/` or `_` unconditionally (`_*x*_`, `*x*_y_`).
+  if (
+    (d === '/' || d === '_') &&
+    (prev === '/' || prev === '_') &&
+    prev2 !== undefined &&
+    !isWs(prev2)
+  ) {
+    return false
+  }
   return !isWs(next) && next !== d
 }
 function bareCloser(d, prev, next) {
@@ -519,8 +550,9 @@ function resolveEmphasis(toks, src) {
   for (const t of toks) {
     if (t.k !== 'd') continue
     const prev = t.at > 0 ? src[t.at - 1] : undefined
+    const prev2 = t.at > 1 ? src[t.at - 2] : undefined
     const next = src[t.at + 1]
-    t.canOpen = bareOpener(t.ch, prev, next)
+    t.canOpen = bareOpener(t.ch, prev, prev2, next)
     t.canClose = bareCloser(t.ch, prev, next)
   }
   // One pass with a delimiter stack. `openers` holds indices (into toks) of
@@ -713,20 +745,55 @@ export function renderBlockAttrs(lists) {
 // corpus 37-3 pins a line-initial pair as two closers). A single quote
 // directly before a digit is always an apostrophe ('70s, '24).
 const QUOTE_OPEN_PREV = new Set([' ', '\t', '=', ':', '-', '/', '(', '[', '{'])
+const QUOTE_CHARS = new Set(['"', "'"])
+// The glyph the previous quote token resolved to, so a quote directly after
+// another one can tell which half it follows: after an OPENING quote it opens
+// (`"'q'"` nests), after a closing one it closes (`""` is a pair). The
+// character alone cannot say - both spellings are the same byte.
+let lastQuoteGlyph = ''
+// Bare emphasis delimiters (PART 9 §9). A quote directly inside one sees what
+// precedes the delimiter, not the delimiter itself: the engines decide on the
+// start of the emphasis CONTENT, so `*'q'*` opens while `a*'q'*` - where the
+// `*` is intraword and opens nothing - closes (carve#348).
+// Only the delimiters that are NOT already an opening context in their own
+// right. `/` and `=` are in the set above - `a="b"` and a line-leading `/"q"`
+// open on them directly - so skipping those would land the lookbehind on the
+// word before and close the quote.
+const EMPHASIS_DELIMS = new Set(['*', '_', '~'])
 function smartQuote(node, open, close, single) {
   const src = node.source.sourceString
   const at = node.source.startIdx
-  const prev = at > 0 ? src[at - 1] : quotePrevCtx
+  let back = at - 1
+  while (back >= 0 && EMPHASIS_DELIMS.has(src[back])) back--
+  const prev = back >= 0 ? src[back] : quotePrevCtx
   const next = src[at + 1] ?? ''
-  if (single && /[0-9]/.test(next) && !/[\p{L}\p{N}]/u.test(prev)) return close // apostrophe
-  if (QUOTE_OPEN_PREV.has(prev) && prev !== '') return open
-  return close
+  if (single && /[0-9]/.test(next) && !/[\p{L}\p{N}]/u.test(prev)) {
+    lastQuoteGlyph = close
+    return close // apostrophe
+  }
+  // Nothing before the quote is the MOST opening context there is - start of
+  // the input, or of a recursive inline parse with no carried context. This
+  // used to fall through to `close`, so every line beginning with a quote got
+  // a closing glyph (`"hello"` rendered as `”hello”`).
+  const decided =
+    prev === ''
+      ? open
+      : QUOTE_CHARS.has(prev)
+        ? lastQuoteGlyph === '\u201c' || lastQuoteGlyph === '\u2018'
+          ? open
+          : close
+        : QUOTE_OPEN_PREV.has(prev)
+          ? open
+          : close
+  lastQuoteGlyph = decided
+  return decided
 }
 
 let quotePrevCtx = '' // preceding character for recursive inline parses
 
 export function renderInline(text, prevCtx = '') {
   const saved = quotePrevCtx
+  lastQuoteGlyph = ''
   quotePrevCtx = prevCtx
   try {
     return renderInlineInner(text)

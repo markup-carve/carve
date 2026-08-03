@@ -1,0 +1,19 @@
+All-space verbatim content
+
+```
+A single space ` ` and two spaces `  ` are preserved.
+.
+<p>A single space <code> </code> and two spaces <code>  </code> are preserved.</p>
+```
+
+```
+But ` a ` strips one space from each side.
+.
+<p>But <code>a</code> strips one space from each side.</p>
+```
+
+```
+Literal !`  ` and math $`  ` keep their spaces.
+.
+<p>Literal    and math <span class="math inline">\(  \)</span> keep their spaces.</p>
+```

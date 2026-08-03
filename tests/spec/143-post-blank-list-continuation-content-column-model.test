@@ -1,0 +1,59 @@
+Post-blank list continuation (content-column model)
+
+```
+- one
+
+ > q
+.
+<ul>
+  <li>one</li>
+</ul>
+<p>&gt; q</p>
+```
+
+```
+- one
+
+  > q
+.
+<ul>
+  <li>one
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- one
+
+   # h
+.
+<ul>
+  <li><p>one</p>
+    <p># h</p>
+  </li>
+</ul>
+```
+
+```
+- one
+ > q
+.
+<ul>
+  <li>one
+&gt; q</li>
+</ul>
+```
+
+````
+- one
+```
+c
+```
+.
+<ul>
+  <li>one</li>
+</ul>
+<pre><code>c
+</code></pre>
+````

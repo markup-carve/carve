@@ -25,7 +25,7 @@ The table below covers the constructs you use most often. Items marked **same** 
 
 | Construct | Markdown | Carve | Notes |
 |---|---|---|---|
-| Headings | `# H1` through `###### H6` | same | A trailing `{#id}` is **not** an attribute (see below) |
+| Headings | `# H1` through `###### H6` | same | Single-line, as in Markdown. A trailing `{#id}` is **not** an attribute (see below) |
 | Links | `[text](url)` | same | |
 | Reference links | `[text][ref]` / `[ref]: url` | same | |
 | Images | `![alt](src)` | same | |
@@ -178,11 +178,40 @@ This note has an id and a class, set by the line above it.
 :::
 ```
 
-A `{...}` written at the **end of a heading line is literal text**, not an attribute (a deliberate Djot-strict choice). To give a heading a custom id, put the attribute on the preceding line:
+A `{...}` written at the **end of a heading line is not an attribute** (a deliberate Djot-strict choice). To give a heading a custom id, put the attribute on the preceding line:
 
 ```carve
 {#intro}
 ## Introduction
+```
+
+**This is the migration trap most likely to bite you, because it fails
+quietly.** `{#id}` at the end of a heading is the kramdown and Pandoc spelling,
+so it is all over existing Markdown - and left in place it does not stay inert.
+`## Introduction {#intro}` renders as:
+
+```html
+<section id="Introduction-intro">
+  <h2>Introduction {<span class="tag"><strong>#intro</strong></span>}</h2>
+</section>
+```
+
+Two things happened, neither of them an error:
+
+- `#intro` is a **tag** in Carve, so it renders as a tag chip inside the
+  heading rather than as the characters you wrote.
+- The auto-generated id is derived from the heading text, and that text now
+  includes the tag - so the anchor is `Introduction-intro`, not `Introduction`
+  and not `intro`. **Every inbound link to either breaks**, and the page still
+  renders.
+
+`carve lint` reports it, which is the cheapest way to find them all before you
+publish:
+
+```
+1:17  heading-trailing-attribute  Trailing "{#intro}" on a heading is literal
+      text in Carve, not an attribute block. Move it to a "{#intro}" line
+      directly above the heading.
 ```
 
 Without an explicit id, headings still get an auto-generated id from their text (case is preserved; a leading digit gets an `s-` prefix). Lowercasing and ASCII-folding are available as opt-in transforms.
@@ -255,6 +284,51 @@ The equivalent switch exists per engine (carve-rs `Options::with_raw_html(false)
 Bare tags are safe (literal) regardless. The setting above only governs the explicit ```` ```=html ```` / `{=html}` passthrough - leave it disabled for user-generated content.
 :::
 
+## Headings are wrapped in `<section>`
+
+This is the one output change that can break a site whose *source* migrated cleanly, so check it before you convert a whole content directory.
+
+A Markdown renderer emits headings flat. Carve wraps each heading, and the content following it up to the next same-or-shallower heading, in a `<section>` - and the heading's id goes on that wrapper:
+
+```html
+<!-- Markdown -->
+<h2 id="page-heading">Page Heading</h2>
+<p>A paragraph.</p>
+
+<!-- Carve -->
+<section id="Page-Heading">
+  <h2>Page Heading</h2>
+  <p>A paragraph.</p>
+</section>
+```
+
+Fragment links are unaffected: `#Page-Heading` resolves to the `<section>` exactly as it resolved to the `<h2>`. What breaks is CSS and JS that assume rendered blocks are **direct children** of their container. The common casualty is the owl/stack spacing idiom, because the paragraphs are now grandchildren:
+
+```css
+/* Stops matching: the section is the only direct child. */
+.stack > * + * { margin-block-start: 1.5em; }
+
+/* Fix: match inside generated sections at any depth. */
+:where(.stack, .stack section) > * + * { margin-block-start: 1.5em; }
+```
+
+Other things worth grepping your stylesheets and scripts for: `>` child combinators under your content wrapper, `:first-child` / `:last-child` (the first paragraph after a heading is now the section's second child), `:nth-child()` counting, and `element.children` walks over the rendered container.
+
+If a project cannot absorb the shape change, an HTML renderer MAY offer a `sections` option that turns the wrapper off, putting the id back on the `<h*>`:
+
+```ts
+const html = carveToHtml(source, { sections: false })
+```
+
+```html
+<h2 id="Page-Heading">Page Heading</h2>
+<p>A paragraph.</p>
+```
+
+Nothing else changes when it is off - ids, dedup, `</#id>` cross-references, `[Heading][]` references, and `::: toc` all resolve against the slug, not the element carrying it. Check your engine's release notes for whether it ships the option yet; the wrapper is the default and is what the conformance corpus pins.
+
+Two related shapes are worth knowing while you audit selectors. A heading **inside** a blockquote, div, admonition, or list item is never wrapped - it emits `<h* id="…">` in place, which is also exactly what every heading looks like with `sections: false`. And on a wrapped heading only the id hoists: `{#install .featured}` gives `<section id="install"><h2 class="featured">`, so a class you attached to a heading still selects the heading.
+
 ## Migration checklist
 
 When moving a document from Markdown to Carve:
@@ -264,5 +338,7 @@ When moving a document from Markdown to Carve:
 - [ ] Check `_underline_` occurrences - these render as `<u>` in Carve, not `<em>`
 - [ ] Convert GFM table delimiter rows to `|=` header cells
 - [ ] Replace `~~strike~~` with `~strike~` (single tilde)
-- [ ] Move any heading `{#id}` onto the line above the heading (trailing is literal)
+- [ ] Move any heading `{#id}` onto the line above the heading - `carve lint` finds them, and left in place the `#id` becomes a tag AND changes the heading's anchor
+- [ ] Check the indentation of top-level block markers: a leading-indented `#`, `>`, `-`, `` ``` ``, or `:::` is literal paragraph text in Carve, not a block. Markdown tolerates 0-3 spaces of indent; Carve requires a block marker at column 0 (or, inside a list, at the item's content column)
 - [ ] Decide on raw HTML: bare `<tags>` become literal text, so replace them with Carve constructs (or use the explicit `{=html}` passthrough for trusted content; disable it with `allowRawHtml: false` for untrusted input)
+- [ ] Audit CSS and JS for direct-child assumptions - headings now nest their content in `<section>` (see [Headings are wrapped in `<section>`](#headings-are-wrapped-in-section))

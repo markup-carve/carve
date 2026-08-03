@@ -53,7 +53,7 @@ Carve succeeds if:
 - Parsing is deterministic and fast
 - Migration from Markdown is trivial
 
-### 12.3 Next Steps
+### 12.3 Next Steps (as written at the time)
 
 1. Formalize EBNF grammar
 2. Build reference parser in TypeScript
@@ -62,11 +62,17 @@ Carve succeeds if:
 5. Editor integration (VS Code, Obsidian, etc.)
 6. Documentation and tutorials
 
+All six have since shipped: the [formal grammar](../grammar) is normative, three
+engines pass a shared [conformance corpus](https://github.com/markup-carve/carve/tree/main/tests/corpus),
+and Carve has editor support across seven editors plus a language server. See
+the [Ecosystem](../ecosystem) for the current state.
+
 ---
 
-*This case study captures Carve's original design exploration. Carve now has a
-normative grammar, a conformance corpus, and multiple implementations; real-world
-testing with diverse users continues to inform syntax decisions.*
+*This case study is a historical record of Carve's original design research.
+The normative definition of the language is the [formal grammar](../grammar) and
+the conformance corpus; real-world testing with diverse users continues to
+inform syntax decisions.*
 
 *Feedback and contributions welcome at <https://github.com/markup-carve>.*
 

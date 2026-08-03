@@ -22,6 +22,9 @@ $cases = [
     'minimal-link-denied' => ['A [site](https://example.com) link.', fn () => Profile::minimal(), 'minimal'],
     'minimal-heading' => ["# H\n\nText.", fn () => Profile::minimal(), 'minimal'],
     'minimal-list' => ["- one\n- two\n", fn () => Profile::minimal(), 'minimal'],
+    'full-unmapped-type' => ["Body with a {~old~>new~} substitution and a :smile: symbol.\n", fn () => Profile::full(), 'full'],
+    'full-smart-typography' => ["A \"quoted\" phrase -- an en dash --- and an em dash.\n", fn () => Profile::full(), 'full'],
+    'comment-substitution-degraded' => ["Body with a {~old~>new~} substitution.\n", fn () => Profile::comment(), 'comment'],
 ];
 
 $out = [];

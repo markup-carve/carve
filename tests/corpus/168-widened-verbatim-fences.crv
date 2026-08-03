@@ -1,0 +1,7 @@
+A ```span with `` inside``` stays one code span.
+
+A !```literal with `` inside``` stays prose.
+
+Then $```a `` b``` ends the run.
+
+$$```x `` y```

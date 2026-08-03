@@ -1,0 +1,26 @@
+Indented attribute line stays literal
+
+```
+ {.note}
+ This paragraph.
+.
+<p>{.note}
+This paragraph.</p>
+```
+
+```
+ {.todo}
+ - one
+ - two
+.
+<p>{.todo}
+- one
+- two</p>
+```
+
+```
+{.note}
+Para
+.
+<p class="note">Para</p>
+```

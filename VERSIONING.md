@@ -8,6 +8,30 @@ All Carve repositories use [Semantic Versioning](https://semver.org/) (`MAJOR.MI
 introduce breaking changes to grammar, output, or the extension API. Patch
 releases fix bugs without changing behavior.
 
+## Stored documents
+
+This file is about **repository and release** versioning. The companion question -
+what a spec change means for `.crv` files that already exist - is answered by the
+[versioning and changelog page](docs/versioning.md), which is the source of truth
+for "did the language change in a way that affects my documents?".
+
+The short version: every changelog entry is tagged `[behavior]`,
+`[clarification]` or `[addition]`, and only `[behavior]` entries can require
+document migration. A document records the spec version it was last processed
+under via `carve fmt --stamp`, so upgrading means reviewing the `[behavior]`
+entries between that stamp and the target version.
+
+Tooling can read the marker back. `carve --stamp-check` exits non-zero for a
+document that predates the engine's spec version, so it works as a CI gate over a
+directory of stored documents. All three engines implement it - `Stamp::read()` /
+`Stamp::needsReview()` in carve-php, `readStamp()` / `needsReview()` in carve-js,
+`read_stamp()` / `needs_review()` in carve-rs - behind the same two flags with the
+same output, so any of them can check what another wrote.
+
+Every implementation reads it, including the Go, Ruby and Python bindings over
+carve-rs. The [versioning page](docs/versioning.md) carries the
+per-implementation table of what each one calls it.
+
 ## Stability scope (0.1)
 
 What the 0.1 release guarantees, by tier (the line is drawn at the
@@ -63,9 +87,11 @@ the core but version on their own cadence. They are not required to match core
 version numbers at any level. Each satellite should document which core version
 it targets in its own README.
 
-Current satellites: carve-emacs, carve.vim, carve-sublime, carve-wysiwyg,
-carve-components, python-carve, intellij-carve, vscode-carve, lsp-carve,
-vite-plugin-carve, carve-skill.
+The authoritative list of satellites is [the ecosystem page](docs/ecosystem.md),
+which is grouped by role (parsers, bindings, editor support, framework
+integrations, AI tooling). It is deliberately not duplicated here: the copy that
+used to live in this file drifted and ended up naming repositories that do not
+exist.
 
 ## Version map
 

@@ -14,6 +14,8 @@ This is the canonical formal specification of Carve. It is **layered**, and each
 | PART 9 | Semantic constraints a context-free production cannot carry (emphasis resolution, paragraph interruption, table span walk, attribute floating, tabs) | Operational semantics: labeled rules over declared state |
 | PART 9R | Whole-document resolution (references, footnotes, crossrefs, numbering) | Two-pass rules over declared symbol tables |
 | PART 10 | HTML serialization | Tree-transform conventions |
+| PART 11 | Canonical source writer (`carve fmt`): round-trip invariants and the escaping rule | Invariants over `parse`/`fmt` + a decision procedure |
+| PART 12 | AST serialization: the JSON shape a parsed document exchanges as | Reference-implementation field names + a round-trip invariant |
 
 ::: info Why layers instead of one grammar?
 Light markup languages are provably not context-free: fence-length matching is a counting constraint, indentation is 2D, and reference resolution needs a whole-document symbol table. No single EBNF can express Carve (or Djot, or CommonMark). What CAN be done - and what this file does - is state every rule in *some* exact formalism, so nothing normative rests on English prose.
@@ -29,7 +31,7 @@ Light markup languages are provably not context-free: fence-length matching is a
 | PART 3 inline grammar | [`resources/carve-core.ohm`](https://github.com/markup-carve/carve/blob/main/resources/carve-core.ohm) (Ohm/PEG) |
 | PART 9R resolution + PART 10 serialization | `scripts/spec/html.mjs` |
 
-The executable spec covers the full conformant core: block structure (headings incl. multi-line folding and section wrapping, lists with every ordered dialect, quotes, tables with the span walk, fenced code and colon fences, definition lists, comments, frontmatter, block-attribute lines), the complete inline layer (emphasis with word-boundary guards, links, images, spans, attributes with the security hardening rules, autolinks, math, extensions, mentions/tags, editorial markup, smart typography, footnotes incl. inline notes, crossrefs, raw passthrough), and the resolution passes (references, footnote numbering and endnotes placement, numbered captions, abbreviations).
+The executable spec covers the full conformant core: block structure (headings incl. section wrapping, lists with every ordered dialect, quotes, tables with the span walk, fenced code and colon fences, definition lists, comments, frontmatter, block-attribute lines), the complete inline layer (emphasis with word-boundary guards, links, images, spans, attributes with the security hardening rules, autolinks, math, extensions, mentions/tags, editorial markup, smart typography, footnotes incl. inline notes, crossrefs, raw passthrough), and the resolution passes (references, footnote numbering and endnotes placement, numbered captions, abbreviations).
 
 ```bash
 npm run core:check

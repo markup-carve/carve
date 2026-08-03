@@ -40,6 +40,8 @@ import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parse, Refuse } from './spec/layout.mjs'
 import { renderDoc } from './spec/html.mjs'
+// Shared with tests/corpus.test.mjs so both gates agree on deliberate refusals.
+import { REFUSED_ALLOW } from './spec/refused-allow.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repo = resolve(here, '..')
@@ -48,16 +50,18 @@ const inputs = readdirSync(corpusDir)
   .filter((f) => f.endsWith('.crv'))
   .sort()
 
-// Committed allowlist of inputs permitted to be REFUSED (basenames, no
-// extension). Empty: every corpus input is inside the executable subset.
-const REFUSED_ALLOW = new Set([])
-
 const listMode = process.argv.includes('--list')
 const diffMode = process.argv.includes('--diff')
 let core = 0
 const diffs = []
 const refused = []
 const refusedNames = new Set()
+// The oracle must never let an internal pipeline frame reach output: the LAZY
+// line marker (U+0000 'L' U+0000) or the resolution sentinels U+E000 / U+E001 /
+// U+0002. A leak corrupts the ground truth (and would be a sentinel-injection
+// hazard in a shipping engine). Checked over the whole corpus below.
+const SENTINELS = /[\u0000\u0002\uE000\uE001]/
+const leaks = []
 
 for (const f of inputs) {
   const src = readFileSync(resolve(corpusDir, f), 'utf8')
@@ -73,6 +77,7 @@ for (const f of inputs) {
     }
     throw e
   }
+  if (SENTINELS.test(got)) leaks.push(f)
   if (got === expected) {
     core++
     if (listMode) console.log(`CORE  ${f}`)
@@ -85,6 +90,8 @@ console.log(`\ncorpus inputs:               ${inputs.length}`)
 console.log(`executable-spec conformant:  ${core}`)
 console.log(`refused (out of subset):     ${refused.length}`)
 console.log(`DEFECTS (parse but diff):    ${diffs.length}`)
+console.log(`SENTINEL LEAKS (framing in out): ${leaks.length}`)
+for (const f of leaks) console.log(`  ! ${f}`)
 for (const d of diffs) {
   console.log(`\n--- ${d.f}`)
   if (diffMode) {
@@ -112,4 +119,4 @@ if (staleAllowed.length) {
   for (const n of staleAllowed) console.log(`  - ${n}`)
 }
 
-process.exit(diffs.length || ratchetFail ? 1 : 0)
+process.exit(diffs.length || leaks.length || ratchetFail ? 1 : 0)

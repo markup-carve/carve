@@ -1,0 +1,31 @@
+Wrapped definition term continuation below the content column strips leading whitespace
+
+```
+- one
+  :: term
+ wrapped
+.
+<ul>
+  <li>one
+    <dl>
+      <dt>term
+wrapped</dt>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+- one
+  :: term
+wrapped
+.
+<ul>
+  <li>one
+    <dl>
+      <dt>term
+wrapped</dt>
+    </dl>
+  </li>
+</ul>
+```

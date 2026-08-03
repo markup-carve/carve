@@ -1,0 +1,58 @@
+Definition list as a first-class block opener
+
+```
+- one
+  :: term
+  :  def
+.
+<ul>
+  <li>one
+    <dl>
+      <dt>term</dt>
+      <dd>def</dd>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+- one
+:: term
+:  def
+.
+<ul>
+  <li>one</li>
+</ul>
+<dl>
+  <dt>term</dt>
+  <dd>def</dd>
+</dl>
+```
+
+```
+- one
+ :: term
+ :  def
+.
+<ul>
+  <li>one
+:: term
+:  def</li>
+</ul>
+```
+
+```
+- one
+
+  :: t
+  :  d
+.
+<ul>
+  <li>one
+    <dl>
+      <dt>t</dt>
+      <dd>d</dd>
+    </dl>
+  </li>
+</ul>
+```

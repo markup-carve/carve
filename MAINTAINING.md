@@ -22,13 +22,35 @@ battery and keep all three in agreement.
 
 ## The lockstep
 
-`carve` vendors a **compiled copy of carve-js** at `docs/.vitepress/carve-lib/`.
-`scripts/sync-carve-lib.mjs` is the **single source for re-vendoring**: it builds
-`../carve-js` (a hardcoded sibling checkout) and copies its `dist/`. The corpus is
-generated separately by `scripts/generate-corpus.mjs`, which extracts the
-` ```carve ` / ` ```html ` pairs from `docs/examples.md` **verbatim**; CI then
-verifies those pairs against the vendored carve-lib (`npm run corpus:build` +
-`git diff --exit-code` + `npm test`).
+`carve` consumes carve-js as a **git dependency pinned to an exact commit**:
+`@markup-carve/carve` in `devDependencies` (`github:markup-carve/carve-js#<sha>`).
+`npm run bump-carve-pin [sha|ref]` moves the pin; that one line is the whole
+statement of which reference build the corpus and the Playground run against.
+The corpus is generated separately by `scripts/generate-corpus.mjs`, which
+extracts the ` ```carve ` / ` ```html ` pairs from `docs/examples.md`
+**verbatim** (`npm run corpus:build` + `git diff --exit-code`).
+
+**The corpus oracle is the executable spec, not an engine.** `tests/corpus.test.mjs`
+renders every pair through `scripts/spec` (the layout automaton plus the
+PART 9R / PART 10 renderer driven by `resources/carve-core.ohm`), and
+`npm run core:check` adds the refusal ratchet over the same oracle. So this repo
+can prove its own fixtures are self-consistent without waiting for an
+implementation to ship the rule, and each engine verifies ITSELF against the
+corpus through its own spec submodule — which is where an engine-versus-corpus
+disagreement belongs.
+
+The pinned build is still exercised, just not as the corpus oracle: the Tier-2
+`tests/optional-corpus.test.mjs`, the PART 11 `tests/roundtrip.test.mjs`, the
+prose `tests/examples.test.mjs` and the option cases in
+`tests/reference-build.test.mjs` all run through it, because none of those can be
+expressed by Core-only fixtures. `npm run engine:report` prints how the pinned
+build compares to the whole corpus; it is a report for pin bumps, deliberately
+NOT a blocking gate.
+
+The compiled `dist/` used to be vendored at `docs/.vitepress/carve-lib/`. It is
+not any more: a few hundred rebuilt artifacts per refresh were unreviewable, the
+carve-js commit they came from was recorded only in changelog prose, and a
+re-vendor from a stale checkout silently reverted merged impl behavior.
 
 Each implementation carries a git submodule pointing back at `carve`
 (`spec` in carve-js, `tests/spec` in carve-php). Keeping those current is
@@ -40,10 +62,19 @@ in each impl repo — weekly + manual dispatch, idempotent on a single
 
 1. **carve-js first.** Land the behavior in the reference impl with unit tests.
    Merge to `main`.
-2. **carve next.** Add the `docs/examples.md` pair(s), then
-   `npm run sync-carve-lib` (re-vendor from the *merged* carve-js main),
-   `npm run corpus:build`, and `npm test`. Commit the examples, the regenerated
-   corpus, and the re-vendored carve-lib together.
+2. **carve next.** Add the `docs/examples.md` pair(s), cover the rule in
+   `scripts/spec` so the executable spec renders it, then `npm run corpus:build`
+   and `npm test`. Commit the examples, the regenerated corpus and the
+   executable-spec change together. Bump the pin
+   (`npm run bump-carve-pin`, *merged* carve-js main only) when the reference
+   build should follow — required if the change touches the Tier-2 corpus, the
+   PART 11 round-trip fixtures or the prose examples, since those still run
+   through the pinned build.
+
+   A **Core-only** rule no longer needs step 1 to have landed first: the
+   executable spec gates it. Keeping carve-js first is still the smoother path
+   for a cross-cutting change, because the engine work usually exposes the edge
+   cases the examples should pin.
 3. **carve-php (and any other impl).** Bump `tests/spec` to the new carve main
    (the automation does this), make the impl match the new pairs, and promote any
    newly passing categories in `tests/CarveCorpusTest.php`.
@@ -55,10 +86,10 @@ in each impl repo — weekly + manual dispatch, idempotent on a single
   reuse or close the existing one rather than stacking another.
 - **One dedicated branch per task.** The bump automation deliberately reuses a
   single `automation/bump-spec` branch so re-runs update one PR.
-- **Never re-vendor carve-lib from a carve-js that lags `main`.** Re-vendoring
-  reverts impl changes that were merged after the vendored snapshot. Always
-  re-vendor from merged carve-js `main`, and confirm the vendored diff contains
-  *only* the intended change before committing.
+- **Never pin a carve-js commit that is not merged to `main`.** Pinning a
+  branch build reverts impl changes that landed after it. `npm run bump-carve-pin`
+  defaults to carve-js `main` for exactly this reason; pass an explicit sha only
+  when it is an ancestor of `main`.
 
 ## Known cross-impl divergences
 
@@ -77,7 +108,7 @@ the behavior is pinned in `docs/examples.md`:
 | `[x]{ }` / `[x]{???}` / `[x]{=y=}` — bracket + whitespace/invalid attr block | A whitespace-only block is a valid empty block → `<span>x</span>` (all impls); an invalid block is not an attribute block → the `]` and `{...}` stay literal, inner content still inline-parsed (`[*x*]{???}` → `[<strong>x</strong>]{???}`). carve-php stopped leaking the block (markup-carve/carve-php#43). Normative in grammar §14 and pinned across all three impls *(66-inline-span)*. The boundary of "yields an attribute" still diverges at the margins (carve-php-only: booleans, colon keys, comment-only blocks), so those are deliberately not pinned. |
 | `> quoted`<br>`continued` — lazy blockquote continuation | A non-`>` line that is not blank and not an invisible interrupter (reference/footnote/abbreviation definition or comment) or a caption continues the quote (CommonMark-style). carve-php already did this; carve-js gained it (markup-carve/carve-js#63). Grammar blockquote section made explicit. Matches Djot upstream. *(77-blockquote-lazy-continuation)* |
 | `` ```c++ `` — fenced language tag with punctuation | `language_info` widened to allow `+ # .` so `c++`/`c#`/`f#`/`asp.net` are code blocks; the token stays single, so a multiword/quoted info (`` ```js title="x" ``) is still a non-fence. carve-js widened `RE_FENCE` (markup-carve/carve-js#64); carve-php already accepted these. *(78-fenced-code-language-with-punctuation)* |
-| `# Title`<br>`outside` — multi-line headings | A heading spills onto following lines until a blank line (like Djot, and like blockquotes; §10). A same-or-lower `#` (stripped) or plain line folds in; a higher/other marker, caption, or `%%%` ends it. The id uses the full folded text. carve-php already folded; carve-js gained it (markup-carve/carve-js#65), and carve-php renders the continuation flush (markup-carve/carve-php#52). *(79-multi-line-headings)* |
+| `# Title`<br>`outside` — single-line headings | A heading ENDS AT THE NEWLINE: nothing folds in, so this is a heading plus a paragraph and the id is `Title`. Diverges from Djot, which folds a plain line or a same-count `#` line into the heading — silently, taking the id with it. All three impls folded until markup-carve/carve#451; `carve lint --from-djot` reports the shift (carve-js `djot-heading-continuation`). *(82-single-line-headings)* |
 | `text`<br>`` ``` ``<br>`code` — backtick run with no equal-length closer | The opener is a maximal backtick run; it closes only on a run of the same length, else it opens an inline verbatim span that runs to end of block (block trailing whitespace stripped). Such an unclosed run is opaque, so an emphasis/link after it is verbatim content. carve-php and Djot upstream already did this; carve-js stopped leaving the run as literal text and stopped shrinking the opener (markup-carve/carve-js#73). Grammar `code_span` made explicit. *(12-inline-code, 80-blockquote-lazy-continuation-stops-at-a-fenced-block)* |
 | `- a`<br>`  - b`<br>` c` — under-indented continuation after a sublist (dedent-landing-after-sublist) | Canonical = CommonMark lazy continuation: an under-indented non-blank line that does not start a new block folds into the **deepest** open paragraph, leading whitespace stripped, regardless of indent (0/1/2/3 spaces); a blank line before it makes it a fresh top-level paragraph (also stripped). carve-php adopted the lazy-fold (markup-carve/carve-php#82); carve-js stripped a paragraph first line's leading whitespace (markup-carve/carve-js#96). Resolves markup-carve/carve#65. *(81-list-lazy-continuation)* |
 | `-{.c} text` / `1.{#x} text` — list-item attributes | An attribute block **abutting** the marker attributes the `<li>`; a space before `{` makes it ordinary content. Shipped in all three impls (carve-php native; carve-js #135-era work; carve-rs #30). *(87-list-item-attributes)* |

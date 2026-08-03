@@ -26,6 +26,18 @@ Roses are red,
 
 ```
 ::: |
+Two roads    diverged in a yellow wood,
+And looked   down one as far as I could
+:::
+.
+<div class="line-block">
+  <p>Two roads&nbsp;&nbsp;&nbsp;&nbsp;diverged in a yellow wood,<br>
+And looked&nbsp;&nbsp;&nbsp;down one as far as I could</p>
+</div>
+```
+
+```
+::: |
 Stanza one,
 still one.
 
@@ -93,5 +105,19 @@ next</p>
     <p>a
 b</p>
   </aside>
+</div>
+```
+
+```
+::: |
+tab	gap
+wide		gap
+	lead
+:::
+.
+<div class="line-block">
+  <p>tab gap<br>
+wide&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gap<br>
+&nbsp;&nbsp;&nbsp;&nbsp;lead</p>
 </div>
 ```

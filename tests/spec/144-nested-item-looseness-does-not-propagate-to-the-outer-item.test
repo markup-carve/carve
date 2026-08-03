@@ -1,0 +1,63 @@
+Nested item looseness does not propagate to the outer item
+
+```
+- a
+  - b
+
+    > q
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <blockquote><p>q</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - b
+
+  - c
+.
+<ul>
+  <li>a
+    <ul>
+      <li><p>b</p></li>
+      <li><p>c</p></li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- [ ] a
+  - b
+
+    > q
+.
+<ul>
+  <li><input type="checkbox" disabled> a
+    <ul>
+      <li>b
+        <blockquote><p>q</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+
+  b
+.
+<ul>
+  <li><p>a</p>
+    <p>b</p>
+  </li>
+</ul>
+```

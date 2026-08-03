@@ -94,6 +94,10 @@
       "support": "none",
       "fallback": "drop"
     },
+    "frontmatter": {
+      "support": "none",
+      "fallback": "drop"
+    },
     "figure": {
       "support": "none",
       "fallback": "unwrap"
@@ -153,6 +157,10 @@
       "support": "native"
     },
     "raw_inline": {
+      "support": "none",
+      "fallback": "drop"
+    },
+    "critic_comment": {
       "support": "none",
       "fallback": "drop"
     },

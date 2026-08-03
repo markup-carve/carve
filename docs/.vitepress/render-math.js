@@ -1,4 +1,4 @@
-// Render Carve math with KaTeX. The carve-lib renderer emits
+// Render Carve math with KaTeX. The Carve renderer emits
 // `<span class="math inline">\(…\)</span>` and
 // `<span class="math display">\[…\]</span>` (TeX wrapped in MathJax/KaTeX
 // delimiters); this renders the TeX in place. KaTeX is loaded lazily, only

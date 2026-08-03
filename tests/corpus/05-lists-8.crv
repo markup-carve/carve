@@ -1,6 +1,2 @@
-1. one
-
-  - sub a
-  - sub b
-
-1. two
+1. outer
+  1. inner

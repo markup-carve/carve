@@ -51,6 +51,7 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | Mention/tag → URL templates, symbol map (e.g. emoji glyphs), locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
 | Mermaid / FencedRender, MathBlock, ListTable, Bibliography, Glossary, Index, HeadingNumbers, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, SemanticSpan, ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
+| [ImgFence](/svg-images) (sanitized SVG `img` fence — sandboxed by default) | <Badge type="warning" text="extension" /> | off | — |
 
 A `:name[…]` / `::: name` whose word has no registered handler renders via the
 generic fallback (`<span>` / `<div class="name">`), so a document using an
@@ -60,7 +61,7 @@ differs by processor. The narrative below details each tier.
 - Tier 1: corpus categories 01–88 (admonitions, footnotes, cross-references,
   list-item attributes, `::: |` verse, `<…>` autolinks, the
   `:name[…]` / `::: name` extension syntax). Recognized `:::` type words
-  (the eight admonitions + `line-block`) are catalogued in [`examples/extensions.md`](/examples/extensions). Smart
+  (the eight admonitions + `line-block`) are cataloged in [`examples/extensions.md`](/examples/extensions). Smart
   typography and `@mention` / `#tag` / `:symbol:` parsing are also default-on and
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, symbol map (e.g. emoji glyphs),
@@ -326,6 +327,12 @@ Implementations MUST agree here or cross-implementation anchors drift.
 - Conformance: Tier-1 = existing corpus (mandatory); Tier-2 =
   `tests/corpus-optional` + `manifest.json`, run per enabled feature; Tier-3 =
   never in any corpus.
+- A Tier-2 case pins the HTML target unless its manifest entry names another
+  `target` (`markdown`, `plain`, `ansi`), in which case the expected file
+  carries that target's extension. See
+  [`tests/corpus-optional/README.md`](https://github.com/markup-carve/carve/blob/main/tests/corpus-optional/README.md).
+  Carve-source expectations are not a target here; they live in
+  `tests/corpus-roundtrip`.
 
 ## 4. Citations (Tier-2)
 

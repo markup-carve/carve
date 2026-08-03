@@ -1,0 +1,5 @@
+\{"quoted"\} and \<"q"\> and \*'q'\*
+
+A \{ before a quote still opens it: \{"open"
+
+Unescaped for contrast: {"open"}

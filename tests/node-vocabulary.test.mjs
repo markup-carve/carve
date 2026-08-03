@@ -53,6 +53,23 @@ test('no type is listed twice, or on both axes', () => {
   assert.deepEqual(duplicates, [], `duplicated type identifiers: ${duplicates.join(', ')}`)
 })
 
+test('tag stays folded into mention, and says so', () => {
+  // The parsers emit a distinct `tag` node, so its ABSENCE here has to be a
+  // stated decision rather than a missing word - that ambiguity is what
+  // carve#373 was. All three engines classify `#tag` as `mention`, and a host
+  // naming `tag` in a profile gets silence, so the fold is documented next to
+  // the vocabulary and pinned here.
+  assert.ok(
+    ![...block, ...inline].includes('tag'),
+    '`tag` is classified as `mention`; listing it would promise a denial that no engine honors',
+  )
+  assert.match(
+    profiles,
+    /A \*\*`tag`\*\* node[\s\S]{0,400}?classified as \*\*`mention`\*\*/,
+    'profiles.md must state that `tag` is classified as `mention`, or its absence reads as an oversight',
+  )
+})
+
 test('formatter-internal nodes stay out of the vocabulary', () => {
   // A profile naming these could break `fmt` while saying nothing about the
   // document's content, so the spec excludes them by name.

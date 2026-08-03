@@ -1,0 +1,27 @@
+Link destination parentheses balance
+
+```
+[x](http://a/b(c))
+.
+<p><a href="http://a/b(c)">x</a></p>
+```
+
+```
+[x](a(b(c))d) and [y](e)f)
+.
+<p><a href="a(b(c))d">x</a> and <a href="e">y</a>f)</p>
+```
+
+```
+[x](http://a/b\)c) and [y](a\\b) and [z](a\qb)
+.
+<p><a href="http://a/b)c">x</a> and <a href="a\b">y</a> and <a href="a\qb">z</a></p>
+```
+
+```
+[t](url
+more)
+.
+<p>[t](url
+more)</p>
+```

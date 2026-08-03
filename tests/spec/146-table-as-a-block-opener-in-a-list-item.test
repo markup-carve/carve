@@ -1,0 +1,30 @@
+Table as a block opener in a list item
+
+```
+- one
+  |= H |
+  | x |
+.
+<ul>
+  <li>one
+    <table>
+      <thead><tr><th>H</th></tr></thead>
+      <tbody>
+        <tr><td>x</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+```
+
+```
+- one
+ |= H |
+ | x |
+.
+<ul>
+  <li>one
+|= H |
+| x |</li>
+</ul>
+```

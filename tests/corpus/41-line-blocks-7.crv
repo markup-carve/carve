@@ -1,9 +1,4 @@
-:::: \
-  indented
-next
-
-::: note
-a
-b
+::: \
+one
+two
 :::
-::::

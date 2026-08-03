@@ -309,6 +309,13 @@ mode). For untrusted input, turn raw HTML off - the URL, attribute, and DoS
 defenses above are always on, but raw passthrough is the one switch you own.
 :::
 
+::: tip Prefer the `img` fence over raw `=html` for SVG
+To put SVG on the page without the raw-HTML passthrough, use the
+[`img` fence](/svg-images). It sanitizes the SVG and, by default, emits a
+browser-sandboxed `data:image/svg+xml` `<img>` - safe for untrusted input.
+Themeable inline `<svg>` is an opt-in the host enables only for trusted content.
+:::
+
 ::: tip Defense in depth still applies
 Carve's URL/CSS hardening is a **denylist** of known-dangerous constructs, not a
 full allowlist sanitizer. For genuinely hostile input that may carry arbitrary

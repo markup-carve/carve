@@ -1,0 +1,36 @@
+Bare-dot ordered markers
+
+```
+. first
+. second
+. third
+.
+<ol>
+  <li>first</li>
+  <li>second</li>
+  <li>third</li>
+</ol>
+```
+
+```
+1. explicit
+. continues the same list
+
+) not a marker, and never opens one
+.
+<ol>
+  <li>explicit</li>
+  <li>continues the same list</li>
+</ol>
+<p>) not a marker, and never opens one</p>
+```
+
+```
+.{#x} attributed
+. plain
+.
+<ol>
+  <li id="x">attributed</li>
+  <li>plain</li>
+</ol>
+```

@@ -2,17 +2,30 @@
 
 A lightweight markup language with visual mnemonics and human-centered design.
 
-> "The best markup is the one you don't have to think about."
+This repository is the normative definition of the language: the [formal
+grammar](resources/grammar.ebnf), the conformance corpus every implementation is
+tested against, and the design rationale behind each decision.
 
-## Philosophy
+## Status
 
-Carve builds on Markdown's basics and Djot's technical rigor while adding:
+**Carve 0.1 is specified and shipping.**
 
-- **Visual mnemonics** - Syntax resembles its output
-- **Human factors research** - Based on how non-technical users naturally mark up text
-- **Progressive disclosure** - Basic usage is trivial, power features exist when needed
-- **Extendable by design** - Core syntax stays small while standard and app-level extensions fit a defined contract
-- **Social conventions** - `@mentions` and `#tags` are recognized as first-class inline tokens
+| | |
+|---|---|
+| **Specification** | 0.1. Tier-1 core and Tier-2 standard extensions are normative and stable; Tier-3 app-level extensions ship but evolve. See [VERSIONING.md](VERSIONING.md). |
+| **Conformance** | 492 corpus examples pinning exact HTML output, plus 28 optional-corpus examples for host-dependent extensions. |
+| **Engines** | [carve-js](https://github.com/markup-carve/carve-js) (TypeScript, reference), [carve-php](https://github.com/markup-carve/carve-php), [carve-rs](https://github.com/markup-carve/carve-rs) - all three run the same corpus, with no open or intentional divergences ([tracker](MAINTAINING.md#known-cross-impl-divergences)). |
+| **Bindings** | Python, Ruby, Go, and WebAssembly, all over carve-rs. |
+| **Tooling** | Language server, tree-sitter grammar, formatter and linter (`carve fmt` / `carve lint`), converters from Markdown, HTML, Djot, and BBCode. |
+| **Editors** | VS Code, JetBrains, Sublime Text, Vim/Neovim, Emacs, Zed, Helix. |
+| **Integrations** | Laravel, Symfony, WordPress, Shopware, Hugo, Astro, Eleventy, Jekyll, and a Pandoc bridge to LaTeX, Typst, DOCX, and PDF. |
+
+Pre-1.0, a minor release may still change the grammar; the stability tiers and
+the release lockstep between the spec and the engines are defined in
+[VERSIONING.md](VERSIONING.md) and [MAINTAINING.md](MAINTAINING.md). The full
+project list is at <https://github.com/markup-carve#projects>.
+
+**File extension:** `.crv`
 
 ## Why Carve?
 
@@ -58,6 +71,26 @@ Extensions hook into this pipeline per target, so an extension can render rich
 HTML for the web while degrading cleanly to plain text elsewhere - one source,
 many endpoints. See the [Extensions Contract](https://markup-carve.github.io/carve/extensions)
 and the [Carve vs Markdown, Djot & MDX comparison](https://markup-carve.github.io/carve/comparison).
+
+## Get started
+
+Try it with nothing installed in the [Playground](https://markup-carve.github.io/carve/playground),
+or render Carve in your own project:
+
+```bash
+npm install @markup-carve/carve      # JavaScript / TypeScript
+composer require markup-carve/carve-php   # PHP
+cargo install carve-lang             # Rust, incl. the `carve` CLI
+```
+
+```ts
+import { carveToHtml } from '@markup-carve/carve'
+
+const html = carveToHtml('/italic/, *bold*, and _underline_')
+```
+
+Full instructions, including the Python, Ruby, Go, and WebAssembly bindings, are
+in [Get Started](https://markup-carve.github.io/carve/get-started).
 
 ## Demo
 
@@ -136,7 +169,11 @@ COMMENTS
 
 ## Design Principles
 
-Carve takes its rationale from Djot and Markdown, and extends both:
+Carve takes its parsing rationale from Djot and its authoring ergonomics from
+Markdown, and extends both. The additions are grounded in human-factors work on
+how non-technical writers actually mark up text - the reasoning is recorded in
+the [Case Study](https://markup-carve.github.io/carve/case-study/) and the
+[technical rationale](https://markup-carve.github.io/carve/technical-rationale).
 
 ### From Djot
 
@@ -239,7 +276,7 @@ Carve takes its rationale from Djot and Markdown, and extends both:
 | Wiki-style links | n/a (no auto wiki links) | `[Page Name][]` (reference link; needs a `[Page Name]: url` definition) | `[Page Name][]` (auto-resolves, no definition) |
 | Cross-references | n/a (manual `[](#id)`) | n/a (manual `[](#id)`) | `</#id>` (auto-fills link text from the target heading) |
 | Heading IDs | n/a (auto only on some renderers, e.g. GitHub) | Auto-generated (Unicode, case-preserving) | Auto-generated (Unicode, case-preserving, CSS-selector-safe; case-insensitive references; opt-in lowercase + ASCII fold) |
-| Heading structure | n/a (flat `<h1>`–`<h6>`, no wrappers) | `<section id="…"><h*>…</h*></section>` with level-aware nesting | `<section id="…"><h*>…</h*></section>` with level-aware nesting (matches djot — id on `<section>`, not on `<h*>`) |
+| Heading structure | n/a (flat `<h1>`–`<h6>`, no wrappers) | `<section id="…"><h*>…</h*></section>` with level-aware nesting | `<section id="…"><h*>…</h*></section>` with level-aware nesting; only the id hoists, other attributes stay on the `<h*>`; optional `sections: false` renders flat with the id back on the `<h*>` |
 
 ### Lists & tables
 
@@ -265,7 +302,7 @@ Carve takes its rationale from Djot and Markdown, and extends both:
 | Inline spans | n/a | `[text]{.c}` (→ `<span>`) | `[text]{.c}` (→ `<span>`) |
 | Editorial markup | n/a | `{+ +}` `{- -}` `{= =}` | `{+ +}` `{- -}` `{~ ~> ~}` `{= =}` `{# #}` |
 | Comments | `<!-- … -->` (HTML) | `{% … %}` | `%%` line / `text %% trailing` / `%%%` block |
-| Raw / passthrough | inline / block HTML | inline `` `…`{=html} `` + ` ```=html ` block | inline `` `…`{=html} `` + ` ```raw html ` block |
+| Raw / passthrough | inline / block HTML | inline `` `…`{=html} `` + ` ```=html ` block | inline `` `…`{=html} `` + ` ```=html ` block |
 | Includes | n/a | n/a | `{{ path/to/file }}` |
 | Abbreviations | n/a (PHP-Markdown ext: `*[ABBR]: ...`) | n/a | `*[ABBR]: ...` |
 | Attributes | n/a | `{.class}` | `{.class}` |
@@ -342,15 +379,18 @@ Guidelines:
 - Unambiguous parsing rules
 - Built-in extension system
 
-## Status
+## Documentation
 
-Carve is a design exploration. The site renders at <https://markup-carve.github.io/carve/>.
+The full site renders at <https://markup-carve.github.io/carve/>: the
+[cheat sheet](https://markup-carve.github.io/carve/cheatsheet), the
+[extensions contract](https://markup-carve.github.io/carve/extensions), the
+[security model](https://markup-carve.github.io/carve/security), the
+[technical rationale](https://markup-carve.github.io/carve/technical-rationale),
+and [Build Your Own Implementation](https://markup-carve.github.io/carve/implementing-carve).
 
-**File extension:** `.crv`
-
-Maintaining the spec ↔ carve-* lockstep, and the list of known cross-implementation divergences, are documented in [`MAINTAINING.md`](MAINTAINING.md).
-
-For full overview see https://github.com/markup-carve#projects
+The [Case Study](https://markup-carve.github.io/carve/case-study/) records the
+original design research the language grew out of; it is history, not the
+normative spec.
 
 ## Influences
 

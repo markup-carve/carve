@@ -1,0 +1,9 @@
+Abbreviation title escapes its markup characters
+
+```
+*[HTML]: Hyper & Text < Markup > "quoted"
+
+The HTML spec.
+.
+<p>The <abbr title="Hyper &amp; Text &lt; Markup &gt; &quot;quoted&quot;">HTML</abbr> spec.</p>
+```

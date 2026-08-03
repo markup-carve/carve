@@ -1,0 +1,5 @@
+{a=b .c}
+# Auto slug
+
+{a=b .c #explicit}
+# Written id

@@ -25,16 +25,16 @@ spelling.
 
 **Block:** `paragraph`, `heading`, `code_block`, `block_quote`, `list`,
 `list_item`, `table`, `table_row`, `table_cell`, `thematic_break`, `div`,
-`admonition`, `raw_block`, `footnote`, `definition_list`, `definition_term`,
-`definition_description`, `section`, `line_block`, `comment`, `figure`,
-`caption`.
+`admonition`, `raw_block`, `footnote`, `frontmatter`, `definition_list`,
+`definition_term`, `definition_description`, `section`, `line_block`,
+`comment`, `figure`, `caption`.
 
 **Inline:** `text`, `emphasis`, `strong`, `underline`, `strike`,
 `inline_extension`, `mention`, `code`, `link`, `autolink`, `image`,
 `soft_break`, `hard_break`, `raw_inline`, `escaped_text`, `footnote_ref`,
 `inline_footnote`, `heading_ref`, `citation_group`, `caption_number`,
 `span`, `superscript`, `subscript`, `highlight`, `insert`, `delete`,
-`substitution`, `symbol`, `math`, `abbreviation`.
+`substitution`, `critic_comment`, `symbol`, `math`, `abbreviation`.
 
 An **`autolink`** is its own type, not a `link`. The two differ in what the
 author wrote and in what a formatter must be able to reproduce: an autolink
@@ -42,9 +42,77 @@ carries no label, shows its own target, and drops an added `mailto:` scheme
 when displayed. Folding it into `link` loses the authored form, so a
 round-trip could not restore it.
 
+A **`critic_comment`** is its own type rather than a `comment`, for the same
+reason `autolink` is not a `link`: the two are written differently and a
+formatter has to be able to reproduce which one the author used. It is also
+what makes editorial comments deniable on their own - a profile that accepts
+the other editorial marks but not side commentary has no way to say so if the
+type is shared with structural comments.
+
 An **`admonition`** is likewise its own type rather than a `div` carrying a
 class. A profile that wants to deny callouts while allowing generic
 containers has no way to express that if the kind lives in a class string.
+
+Which fences are callouts is the **Tier-1 canonical list** - `note`, `tip`,
+`warning`, `danger`, `info`, `success`, `example`, `quote`. A fence opened with
+any other word (`::: sidebar`, `::: figure-group`, a name your own extension
+claims) is a **generic container**: it renders as `<div class="name">` rather
+than an `<aside class="admonition name">`, and it is classified as **`div`** for
+profiles. So `denyBlock(['admonition'])` removes callouts and leaves those
+containers standing, which is the capability the paragraph above promises:
+
+```js
+const p = Profile.full()
+p.denyBlock(['admonition'])
+applyProfile(parse('::: note\nbody\n:::\n'), p).violations     // [{ nodeType: 'admonition', ... }]
+applyProfile(parse('::: sidebar\nbody\n:::\n'), p).violations  // []
+```
+
+This is a TRUST CLASS, not an AST type. A serialized AST publishes `::: sidebar`
+as an `admonition` node carrying `kind: "sidebar"`, because that is what the
+parser built; the profile classifies it as `div` because that is the capability
+it carries. The two vocabularies are different sizes and the next section says
+why - `tag` is the same shape, its own AST type classified as `mention`.
+
+Denying `div` still removes callouts, through the subtype rule: an `admonition`
+answers to its own name and to `div`. A host that wants today's "deny every
+named fence" behavior denies both.
+
+### The AST has more node types than a profile can deny
+
+This page answers "what can a profile deny", which is a smaller set than "what
+appears in the tree". A serialized AST (PART 12) therefore carries type names
+this vocabulary does not list - `tag`, `abbreviation_def`, `smart_punctuation`,
+`literal_inline`, `raw_text` and the `document` root - because denying them would
+mean nothing: they are either folded into another trust class, render nothing at
+all, or serve a formatter rather than the document. A consumer reading an AST should expect them; a profile author should not
+look for them here.
+
+A **`tag`** node - the AST form of `#tag` - is deliberately **NOT** its own
+vocabulary entry: it is classified as **`mention`**, and all three
+implementations agree on that. `@user` and `#tag` are parsed by the same
+boundary rules (PART 9 §7) and render through the same inert-span mechanism, so
+they are one trust class rather than two. Denying `mention` denies both:
+
+```js
+const p = Profile.minimal()
+p.denyInline(['mention'])
+applyProfile(parse('hi @user'), p).violations  // [{ nodeType: 'mention', ... }]
+applyProfile(parse('hi #tag'), p).violations   // [{ nodeType: 'mention', ... }]
+```
+
+The consequence is worth stating plainly, because it is a real limit: a host
+CANNOT allow mentions while denying tags. `tag` is not addressable, so naming it
+in `allowedInline` or `deniedInline` does nothing at all - silently, since an
+unrecognized identifier is not an error. A host that needs one without the other
+has to deny `mention` and reintroduce the wanted construct through an extension.
+
+A **`smart_punctuation`** node - the AST form of a typographic substitution,
+carrying the resolved kind and the author's source run (PART 9 §8) - is
+classified as **`text`**. It is ordinary visible prose with no capability of its
+own: an em dash is not a different trust level from the words around it. Denying
+it would express nothing a `text` denial does not already express, so it is not
+separately nameable here.
 
 Types serving a formatter rather than a document are **not** in this
 vocabulary and cannot be named in a profile. An implementation may carry a
@@ -85,8 +153,20 @@ For a node of type `T`, in its axis (inline or block):
    `T` is in it.
 3. Else → **allowed**.
 
-A type that is neither a known block nor inline type is **denied**. `document`
-is always allowed. Deny always beats allow; an allowlist is a closed set.
+These three steps are exhaustive. A node whose type is **not** in the
+vocabulary above resolves through them unchanged: it cannot appear in a deny
+list, so step 1 never matches; step 2 excludes it whenever an allow list is
+set; and step 3 allows it otherwise. An implementation MUST NOT add a fourth
+step denying unrecognized types.
+
+The consequence is the point: a profile that denies nothing and sets no allow
+list is **lossless**, for every document, including documents using node types
+the implementation's vocabulary predates. A vocabulary gap makes a type
+un-nameable, never invisible. An allow list still excludes unknown types, so a
+restrictive profile loses no safety.
+
+`document` is always allowed and cannot be denied. Deny always beats allow;
+an allowlist is a closed set.
 
 ### Actions on a disallowed node
 
@@ -102,6 +182,48 @@ is always allowed. Deny always beats allow; an allowlist is a closed set.
 `maxNesting` / `maxLength` are enforced during the same pass; exceeding either
 follows `disallowedAction` (`error` reports a violation; `to_text`/`strip`
 truncate/flatten).
+
+### Some types are deniable in the tree but invisible in rendered output
+
+`comment` and `frontmatter` render nothing. Denying either removes the node
+from the tree and reports a violation, but the rendered HTML is **byte-identical
+either way**:
+
+```
+carveToHtml("%% hidden\n\nBody.\n")                   -> "<p>Body.</p>"
+carveToHtml("%% hidden\n\nBody.\n", denyBlock:comment) -> "<p>Body.</p>"
+```
+
+This is not a no-op, and the distinction matters because the two look the same
+from the render path. Denying them changes:
+
+- **the serialized AST** - the node is gone from `children`, which is what a
+  consumer of `parse()` sees. A pipeline that hands untrusted documents to a
+  PDF renderer, an LSP, or a converter gets the tree, not the HTML.
+- **the violation report** - under `error`, a host learns the document carried
+  metadata or side commentary it did not ask for, and can refuse it.
+
+Frontmatter is the case where this is load-bearing rather than tidy. Carve's own
+renderers never emit it, but hosts routinely do - a title into a template, an
+author into a byline - which is why [Security](/security) PART 9 §25 requires a
+safe loader for it and escaping for any value later rendered. A profile that
+denies `frontmatter` keeps untrusted metadata out of that path entirely.
+
+**`escaped_text` reaches the same place by a different route.** It is not that
+it renders nothing - it renders the character. It is that `to_text` degrades it
+to that same character, so a denial and an allowance produce identical output:
+
+```
+carveToHtml("a \\* b")                          -> "<p>a * b</p>"
+carveToHtml("a \\* b", denyInline:escaped_text) -> "<p>a * b</p>"   + a violation
+```
+
+What a host learns by denying it is that the document used escapes at all -
+authoring intent the rendered character does not carry. The escape is syntax;
+the character is content.
+
+A caller who denies any of these and diffs the HTML will see no change. Check
+the tree or the violations instead.
 
 ### A profile is not a substitute for disabling raw-HTML passthrough
 

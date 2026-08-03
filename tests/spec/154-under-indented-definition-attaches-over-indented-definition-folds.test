@@ -1,0 +1,46 @@
+Under-indented definition attaches, over-indented definition folds
+
+```
+- one
+  :: term
+ :  def
+.
+<ul>
+  <li>one
+    <dl>
+      <dt>term</dt>
+      <dd>def</dd>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+- one
+  :: term
+:  def
+.
+<ul>
+  <li>one
+    <dl>
+      <dt>term</dt>
+      <dd>def</dd>
+    </dl>
+  </li>
+</ul>
+```
+
+```
+- one
+  :: term
+   :  def
+.
+<ul>
+  <li>one
+    <dl>
+      <dt>term
+ :  def</dt>
+    </dl>
+  </li>
+</ul>
+```

@@ -1,0 +1,29 @@
+Unresolved footnote reference with a trailing attribute stays literal
+
+```
+Text[^a]{.ref}.
+.
+<p>Text[^a].</p>
+```
+
+```
+Text[^a].
+
+[^a]: note.
+.
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+A [span]{.c} here.
+.
+<p>A <span class="c">span</span> here.</p>
+```
