@@ -73,6 +73,34 @@ document into invalid text.
 An implementation that cannot place a node **omits `pos` rather than inventing
 one**, and says so. Absent is a fact a consumer can act on; a wrong span is not.
 
+## Adjacent text runs are coalesced
+
+A serialized node's children hold **no two adjacent `text` nodes**. Where a
+producer's internal tree has a run of them, they join into one before
+serialization, concatenating `value` in order:
+
+```
+foo_bar_baz and snake_case stay literal
+```
+
+is one text node, not four. An implementation that splits wherever a delimiter
+failed to open emphasis is publishing its parser's bookkeeping rather than the
+document.
+
+This is normative (§1a) because without it the interop requirement means very
+little: two engines can publish 1 node and 4 for the same characters, both valid
+against the schema, and "read another's output" degrades to "parses".
+Coalescing is what makes the tree **canonical** for a given document - the same
+argument PART 11 makes one layer down for canonical source form - and it is what
+lets a divergence be measured node-for-node instead of argued about.
+
+`escaped_text` is not `text` and does not merge with it: the two stay distinct
+on the wire because an escape is authored form.
+
+The schema cannot express this - JSON Schema has no way to forbid two adjacent
+array entries of the same shape - so it is checked by the shape comparison in
+`scripts/ast-conformance.mjs`.
+
 ## Producing it
 
 ::: code-group

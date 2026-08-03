@@ -3643,6 +3643,44 @@ EOF = (* end of file *) ;
       would have resolved the disagreement by deleting a distinction the
       vocabulary makes on purpose (carve#405).
 
+   1a. ADJACENT TEXT RUNS ARE COALESCED -- NORMATIVE. A serialized node's
+      children contain NO two adjacent `text` nodes. Where a producer's internal
+      tree holds a run of them, they are joined into one before serialization,
+      concatenating their `value` in order.
+
+        foo_bar_baz and snake_case stay literal
+
+      is ONE text node, not four. An implementation that splits a run wherever a
+      delimiter failed to open emphasis publishes its parser's bookkeeping, not
+      the document.
+
+      WHY THIS IS NORMATIVE rather than left to each producer. §1 requires that
+      a consumer written against one implementation can read another's output.
+      Without this rule that requirement is satisfied by any tree at all: two
+      engines can publish 1 node and 4 nodes for the same characters, both are
+      valid against the schema, and "read another's output" degrades to
+      "parses". Coalescing is what makes the serialized tree CANONICAL for a
+      given document, which is the same argument PART 11 already makes one layer
+      down for canonical source form.
+
+      It also makes node-for-node comparison meaningful, which is the only way
+      an engine's divergence from the reference can be MEASURED rather than
+      argued about (the shape check in scripts/ast-conformance.mjs).
+
+      SCOPE. The rule is about `text` nodes only, and only about ADJACENCY
+      within one parent's child list. It does not merge across an intervening
+      node, it does not merge other types, and it says nothing about how a
+      producer represents runs internally -- only what it publishes.
+
+      `escaped_text` is NOT `text` and does not merge with it: PART 12 §5 keeps
+      the two distinct on the wire because an escape is authored form, and
+      collapsing them would lose the distinction the type exists to carry.
+
+      The schema cannot express this: a JSON Schema has no way to forbid two
+      adjacent array entries of the same shape. It is checked by the shape
+      comparison in the conformance checker instead, which is why that check is
+      a gate rather than a report.
+
    2. EVERY NODE IS AN OBJECT with a `type` holding the node-type identifier
       from profiles.md - the same snake_case strings PART 9 §8 already calls
       spec surface for kind names. A document is
