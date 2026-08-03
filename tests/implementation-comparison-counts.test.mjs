@@ -71,12 +71,24 @@ test('the comparison cards and table quote the real core corpus size', () => {
   const core = page.split('## Optional Tier-2 Profile')[0]
   const cards = [...core.matchAll(/<strong>(\d+)\s*\/\s*(\d+)<\/strong>/g)]
   const tableCells = [...core.matchAll(/\|\s*`(\d+)\s*\/\s*(\d+)`\s*\|/g)]
-  const quotedPairs = [...cards, ...tableCells]
-    .filter(([, a, b]) => a === b)
-    .map(([, a]) => Number(a))
-  assert.ok(quotedPairs.length >= 6, `expected the card grid and table to quote N / N; found ${quotedPairs.length}`)
-  for (const n of quotedPairs) {
-    assert.equal(n, live, `docs/implementation-comparison.md quotes ${n} / ${n} where the corpus holds ${live}`)
+  const quoted = [...cards, ...tableCells]
+  assert.ok(quoted.length >= 6, `expected the card grid and table to quote N / N; found ${quoted.length}`)
+  // The DENOMINATOR is the claim about this repository - how many documents the
+  // run covered. The numerator is how many an engine passed, and it is NOT
+  // always the same number: when an engine is behind a rule the corpus already
+  // pins, the honest page says `534 / 535`.
+  //
+  // This used to require numerator === denominator before comparing, which
+  // silently dropped any row showing a real mismatch and then failed the
+  // "expected at least 6" count. So the page could not report a divergence
+  // without breaking its own gate, and the gate passed while the page claimed
+  // an all-green cross-engine state that was no longer true.
+  for (const [, passed, total] of quoted) {
+    assert.equal(
+      Number(total),
+      live,
+      `docs/implementation-comparison.md quotes ${passed} / ${total} where the corpus holds ${live}`,
+    )
   }
 })
 

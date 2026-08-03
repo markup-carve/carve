@@ -945,8 +945,17 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         const isOpener = !!(f && prevBlank && parseFenceInfo(f[2]))
         if (isOpener) openFence = f[1]
         prevBlank = isBlank(l)
+        // PART 1 S4 makes the fold conditional on an OPEN PARAGRAPH, so every
+        // block that leaves none clears this. A definition TERM is bounded like
+        // a heading (it holds inline content, not a paragraph), and a
+        // reference/footnote/abbreviation definition is invisible - it leaves
+        // nothing on the page for a lazy line to continue. Both were missing
+        // here, exactly as they were missing in carve-js and carve-php
+        // (carve-js#554, carve-php#652).
         if (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
-            isColonParagraphInterrupt(l) || l[0] === '|' || l[0] === '{') qOpenPara = false
+            isColonParagraphInterrupt(l) || l[0] === '|' || l[0] === '{' ||
+            DEFLIST_TERM.test(l) || LINK_DEF.test(l) || FOOTNOTE_DEF.test(l) ||
+            ABBR_DEF.test(l)) qOpenPara = false
         else qOpenPara = true
       }
       while (i < n) {
