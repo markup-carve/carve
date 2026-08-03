@@ -476,7 +476,15 @@ for (const { name, source } of samples) {
     // implementation whose internals differ. Checking the runtime tree measured
     // a shape no consumer ever receives, and so could not see the wire form
     // every other engine here is measured against.
-    doc = lib.toAstJson(lib.parse(source))
+    // RESOLVED, not parse-only. `resolve()` is where a reference link becomes a
+    // link or degrades to text, and every other engine here resolves inside its
+    // own parse - so serializing carve-js's parse-only tree compared a stage no
+    // other engine exposes and reported the difference as the satellite's.
+    //
+    // `ref` is the tell: the schema calls it "present only between parse and
+    // resolve", so a reference surviving into the reference AST means the
+    // reference AST was taken before resolve (carve#486).
+    doc = lib.toAstJson(typeof lib.resolve === 'function' ? lib.resolve(lib.parse(source)) : lib.parse(source))
   } catch (error) {
     jsFindings.push(`${name}: parse threw - ${error.message}`)
     continue
