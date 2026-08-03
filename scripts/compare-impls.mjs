@@ -92,21 +92,45 @@ const JS_ENTRY = {
   ansi: 'carveToAnsi',
 }
 
+/**
+ * How to invoke carve-rs: a BUILT binary when one is there, `cargo run` if not.
+ *
+ * `cargo run` compiles into whatever CARGO_TARGET_DIR points at, and a machine
+ * with a shared target directory has more than one checkout of the same package
+ * pointing at it. Two of them take turns rebuilding, so a run can measure a
+ * binary compiled from a DIFFERENT source tree than the one it names - which is
+ * how a clean carve-rs was reported as breaking a PART 11 invariant here, and
+ * the finding evaporated when the same document was checked by hand.
+ *
+ * scripts/ast-conformance.mjs already prefers the built binary and even reports
+ * a stale one. This brings the two checkers into line, and makes a CI run use
+ * the release build the workflow just produced instead of recompiling in debug.
+ */
+const rustCarveBinary = (() => {
+  const dir = rustDir()
+  if (!dir) return null
+  for (const candidate of ['target/release/carve', 'target/debug/carve']) {
+    if (existsSync(join(dir, candidate))) return `./${candidate}`
+  }
+  return null
+})()
+
+const rustBaseCommand = rustCarveBinary
+  ? [rustCarveBinary]
+  : ['cargo', 'run', '--quiet', '--']
+
 const impls = [
   {
     name: 'rust',
     cwd: rustDir(),
     prepare: null,
-    defaultCommand: (target = 'html') => ['cargo', 'run', '--quiet', '--', ...CLI_FLAGS[target]],
+    defaultCommand: (target = 'html') => [...rustBaseCommand, ...CLI_FLAGS[target]],
     optionalCommand(feature, target = DEFAULT_TARGET) {
       const flags = CLI_FLAGS[target]
       if (!flags) return null
       if (feature === 'social-link-templates') {
         return [
-          'cargo',
-          'run',
-          '--quiet',
-          '--',
+          ...rustBaseCommand,
           '--mention-url',
           '/users/{name}',
           '--tag-url',
@@ -116,7 +140,7 @@ const impls = [
       }
       if (feature === 'symbol-map') {
         return [
-          'cargo', 'run', '--quiet', '--',
+          ...rustBaseCommand,
           '--symbol', 'rocket=🚀', '--symbol', 'tada=🎉', '--symbol', '+1=👍', '--symbol', 'UPPER=⬆️',
           ...flags,
         ]
@@ -581,9 +605,24 @@ if (bench) {
 if (failOnDiff) {
   const failing = roundtrip ? roundtripDiffs : crossImplDiffs
   const label = roundtrip ? 'round-trip' : 'cross-implementation'
-  if (failing > 0) {
-    console.error(`\n${failing} ${label} difference(s) - see the DIFF lines above.`)
+  // PART 11 §1's own invariants gate too, and separately from cross-engine
+  // agreement. `to_html(fmt(x)) != to_html(x)` means ONE engine's formatter
+  // changed what the document says - a corruption whether or not the others
+  // agree with it, and the engines agreeing on a wrong answer is the case this
+  // catches that a diff count cannot. They were counted and printed here from
+  // the start and never gated on, so the check could report a formatter
+  // rewriting documents and still exit 0.
+  const invariantFailures = roundtrip ? semanticFailures + idempotenceFailures : 0
+  if (failing > 0 || invariantFailures > 0) {
+    if (failing > 0) {
+      console.error(`\n${failing} ${label} difference(s) - see the DIFF lines above.`)
+    }
+    if (invariantFailures > 0) {
+      console.error(
+        `${invariantFailures} PART 11 §1 invariant failure(s) - see the INVARIANT lines above.`,
+      )
+    }
     process.exit(1)
   }
-  console.log(`\nNo ${label} differences.`)
+  console.log(`\nNo ${label} differences, and no PART 11 §1 invariant failures.`)
 }
