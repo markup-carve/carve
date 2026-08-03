@@ -200,6 +200,27 @@ punctuation (`typo ,oops, happens` must not become a subscript).
 technical writing especially, biasing toward the literal reading avoids
 surprise lists.
 
+## 5b. The blockquote marker does not require a space
+
+**Djot:** `>` must be followed by a space (or end the line). `>quoted` is a
+paragraph, and `>> quoted` is a paragraph too - nesting is spelled `> > quoted`.
+
+**Carve:** the space is optional, so `>quoted`, `>> quoted` and `>>quoted` are
+all blockquotes, the last two nested. `> > quoted` also works and means the same
+thing.
+
+```carve
+>quoted
+>>nested
+```
+
+**Why.** This follows CommonMark, where the space after `>` is optional and
+`>>text` nests. It is the spelling in every Markdown document being ported, and
+a marker that silently produced a paragraph instead of a quote would be a
+migration trap of exactly the kind
+[the migration guide](./migrate-from-markdown) exists to remove. The grammar
+states it directly: `blockquote_line = '>', [' '], inline_content, newline`.
+
 ## 6. Plain-text comments
 
 **Djot:** `{% comment %}`.
