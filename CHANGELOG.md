@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The executable spec follows NO OPEN PARAGRAPH, NO LAZY LINE** (carve#582).
+  The clause landed in carve#576 and `scripts/spec` did not implement it: two
+  sites set the item's open-paragraph flag unconditionally, so `. >` - an EMPTY
+  quote on the marker line - counted as open and swallowed the next column-0
+  line. A quote now opens a paragraph only where it carries one. Pinned by three
+  corpus documents, including the contrast case where the quote has content and
+  the line still folds.
+
 ### Changed
 
 - **PART 12 §4: a discontiguous node's span is its first fragment** (carve#541).
