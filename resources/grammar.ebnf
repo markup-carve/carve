@@ -3043,10 +3043,22 @@ EOF = (* end of file *) ;
         conformant implementation SHOULD use the same value (it MAY choose a
         larger fixed cap, but never an unbounded one). Past the cap every
         container kind FLATTENS the same way -- the opener becomes literal
-        paragraph text -- rather than crashing. The same ceiling MUST apply
-        to recursive RENDER / RESOLVE / FILTER passes over a
-        programmatically constructed tree, not only the parse path. It MUST
-        bound abbreviation, reference,
+        paragraph text -- rather than crashing. Recursive RENDER / RESOLVE /
+        FILTER passes over a programmatically constructed tree MUST be
+        bounded too, not only the parse path -- but their ceiling MUST NOT
+        be reachable by a tree the SAME implementation's parser produces. A
+        parsed tree is deeper than the containers that produced it (the
+        paragraph inside the innermost container is one level further down),
+        so a render ceiling EQUAL to MAX_NESTING_DEPTH truncates a document
+        the parser has just accepted, and truncation on the render path
+        deletes content silently instead of degrading it to literal text.
+        The render ceiling MUST therefore EXCEED MAX_NESTING_DEPTH by enough
+        to cover the blocks a container subtree adds; the reference uses
+        MAX_NESTING_DEPTH + 32. This sentence previously required the SAME
+        ceiling on both paths, and all three engines complied: at exactly
+        MAX_NESTING_DEPTH the canonical writer dropped the innermost
+        paragraph and the Markdown / plain-text / ANSI renderers dropped the
+        whole document. It MUST bound abbreviation, reference,
         footnote, and crossref expansion so total work stays O(n): in
         particular an empty abbreviation term is rejected, a reference is not
         resolved by rescanning the whole output per occurrence, and a crossref
