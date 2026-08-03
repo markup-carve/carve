@@ -31,8 +31,17 @@
  * failure mode this repo has spent a lot of effort removing. Run it, shrink
  * what it finds, file that. See carve#510 for the standing count.
  *
+ * TARGETS. `--target=` picks what is compared; HTML by default. Every finding
+ * above came from HTML because that was the only thing this rendered - and the
+ * corpus gates all five targets engine-against-engine, so the untested ones
+ * were the untested HALF of an otherwise symmetric check. Pointing it at
+ * `carve` found four canonical-writer disagreements in 29 documents on its
+ * first run (carve#544): all HTML-stable, all different SPELLINGS of the same
+ * document, which is exactly what a canonical writer is supposed to remove.
+ *
  *   node scripts/fuzz-impls.mjs --seed=1 --count=200
  *   node scripts/fuzz-impls.mjs --seed=7 --count=60 --max-findings=3
+ *   node scripts/fuzz-impls.mjs --target=carve --seed=4242
  *
  * Exit codes: 0 clean, 1 divergences found, 2 could not run (engines missing) -
  * because a fuzzer that reports success having rendered nothing is worse than
@@ -53,6 +62,23 @@ const numeric = (flag, fallback) => {
   const arg = process.argv.find((a) => a.startsWith(`--${flag}=`))
   return arg ? Number(arg.slice(flag.length + 3)) : fallback
 }
+/** The render target to compare. The generator and shrinker do not care. */
+const targetArg = process.argv.find((a) => a.startsWith('--target='))
+const target = targetArg ? targetArg.slice('--target='.length) : 'html'
+const JS_ENTRY = {
+  html: 'carveToHtml',
+  markdown: 'carveToMarkdown',
+  plain: 'carveToPlainText',
+  ansi: 'carveToAnsi',
+  carve: 'carveToCarve',
+}
+if (!Object.hasOwn(JS_ENTRY, target)) {
+  console.error(
+    `fuzz-impls: unknown --target=${target}; expected one of ${Object.keys(JS_ENTRY).join(', ')}.`,
+  )
+  process.exit(2)
+}
+
 const seed = numeric('seed', 1)
 const count = numeric('count', 200)
 const maxFindings = numeric('max-findings', 8)
@@ -104,12 +130,28 @@ if (missing.length) {
 }
 
 const lib = await import(jsEntry)
+// A wrong entry-point NAME must fail loudly. While `plain` was mapped to a
+// function carve-js does not export, every render threw inside the try/catch
+// below and came back as the string "ERROR: ...", which differs from what the
+// two CLIs print - so the tool reported a confident divergence on every
+// document instead of saying it was misconfigured. A fuzzer whose failure mode
+// is FABRICATING findings is worse than one that reports nothing.
+if (typeof lib[JS_ENTRY[target]] !== 'function') {
+  console.error(
+    `fuzz-impls: carve-js exports no ${JS_ENTRY[target]}() for --target=${target}.`,
+  )
+  process.exit(2)
+}
 const tmp = mkdtempSync(join(tmpdir(), 'carve-fuzz-'))
 const file = join(tmp, 'case.crv')
 
 const cli = (bin) => {
   try {
-    return execFileSync(bin, ['--html', file], { encoding: 'utf8', maxBuffer: 1 << 26, timeout: 10000 }).trim()
+    return execFileSync(bin, [`--${target}`, file], {
+      encoding: 'utf8',
+      maxBuffer: 1 << 26,
+      timeout: 10000,
+    }).trim()
   } catch (error) {
     return `ERROR: ${String(error.message).split('\n')[0].slice(0, 90)}`
   }
@@ -119,7 +161,7 @@ function render(source) {
   writeFileSync(file, source)
   let js
   try {
-    js = lib.carveToHtml(source).trim()
+    js = lib[JS_ENTRY[target]](source).trim()
   } catch (error) {
     js = `ERROR: ${String(error.message).slice(0, 90)}`
   }
@@ -191,11 +233,11 @@ for (const f of findings) {
 }
 
 console.log(
-  `seed=${seed} generated=${generated} diverged=${diverged} distinct_minimal=${findings.length}`,
+  `target=${target} seed=${seed} generated=${generated} diverged=${diverged} distinct_minimal=${findings.length}`,
 )
 if (findings.length > 0) {
   console.error(
-    `\n${findings.length} distinct divergence(s). Reproduce with --seed=${seed} --count=${count}.`,
+    `\n${findings.length} distinct divergence(s). Reproduce with --target=${target} --seed=${seed} --count=${count}.`,
   )
   process.exit(1)
 }

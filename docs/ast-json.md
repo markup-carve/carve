@@ -56,11 +56,33 @@ is the document wherever it was written. Its `pos` still says where that was.
 not export its internals, and it does not invent a synonym.
 
 **The tree is pre-resolve** (§3a). It records what the author wrote, not what the
-document resolves to. `[getting started][]` publishes a `link` with `ref`, an
-empty `href` and the `rawRef` source - resolved or not, and even when nothing
-defines the label. Both stages validate against the schema, which is how three
-engines came to disagree; the tie goes to the stage that keeps `[x][]` alive
-through a format cycle and keeps `[a][]` distinguishable from `[a](#a)`.
+document resolves to. `[getting started][]` publishes a `link` carrying `ref` and
+the `rawRef` source whether or not anything defines the label. Both stages
+validate against the schema, which is how three engines came to disagree; the tie
+goes to the stage that keeps `[x][]` alive through a format cycle and keeps
+`[a][]` distinguishable from `[a](#a)`.
+
+`href` is **not** the casualty of that. A resolved reference keeps its
+destination:
+
+```json
+{ "type": "link", "href": "/start", "ref": "getting started", "rawRef": "[getting started][]" }
+```
+
+and `href` is empty only where nothing resolved the reference. That is §5's
+added-alongside rule - the same one that lets a resolved footnote reference keep
+its label and gain its number - not a retreat from pre-resolve: the authored
+construct is `ref` and `rawRef`, and it survives intact.
+
+It has to work this way, because the destination has nowhere else to live. There
+is **no node type for a `[label]: url` link reference definition** - a document
+holding only `[lbl]: /u` publishes zero children. An empty `href` on a resolved
+reference would discard `/start` outright, and a consumer decoding that tree
+would render a link to nothing with no second stage available to it.
+
+For the collapsed form `[getting started][]`, `ref` is the **derived** label
+(`getting started`) - the label the reference resolves by. `rawRef` holds the
+authored spelling, so the empty brackets are not lost.
 
 **Type identifiers come from the [profiles vocabulary](/profiles)** (§1-2), and
 are `snake_case` always. The AST carries a few types a profile cannot deny -
@@ -258,7 +280,8 @@ Resolution results a consumer could recompute - footnote numbering, caption
 numbers - **are** serialized, because recomputing them means reimplementing the
 resolution rules. Those are **added alongside** the authored construct, not
 substituted for it: a resolved footnote reference keeps its label and gains its
-number.
+number, and a resolved reference link keeps its `ref` and `rawRef` and gains its
+`href`.
 
 ## Conformance status
 
@@ -268,9 +291,9 @@ spans that do not cover the text they claim.
 
 | engine | shape | positions |
 |---|---|---|
-| carve-js | leaves an `abbreviation_def` inside its container instead of hoisting it to the document, against §7 ([carve-php#631](https://github.com/markup-carve/carve-php/issues/631)) | blocks and inlines, except reassembled regions (table cells, line-block content) |
-| carve-rs | serializes links POST-resolve, against §3a, and leaves an `abbreviation_def` in its container, against §7 ([carve#481](https://github.com/markup-carve/carve/issues/481)) | blocks and most inlines; reconstructed regions and a definition list's own parts are unplaced ([carve-rs#333](https://github.com/markup-carve/carve-rs/issues/333)) |
-| carve-php | flattens an unresolved reference to text instead of publishing a `link`, against §3a ([carve#486](https://github.com/markup-carve/carve/issues/486)); two field-name divergences left: the root carries `abbreviations`, and `inline_extension` publishes `extensionType`/`children` ([carve-php#510](https://github.com/markup-carve/carve-php/issues/510)) | recorded behind a parse option, enabled whenever it serializes |
+| carve-js | drops `ref` and `rawRef` once a reference resolves, publishing `href` alone, against §3a ([carve#524](https://github.com/markup-carve/carve/issues/524)); leaves an `abbreviation_def` inside its container instead of hoisting it to the document, against §7 ([carve-php#631](https://github.com/markup-carve/carve-php/issues/631)) | blocks and inlines, except reassembled regions (table cells, line-block content) |
+| carve-rs | serializes links POST-resolve ([carve#481](https://github.com/markup-carve/carve/issues/481)) - the `href` half of that is now what §3a asks for, and what remains to check is whether `ref`/`rawRef` survive resolution; leaves an `abbreviation_def` in its container, against §7 | blocks and most inlines; reconstructed regions and a definition list's own parts are unplaced ([carve-rs#333](https://github.com/markup-carve/carve-rs/issues/333)) |
+| carve-php | flattens an unresolved reference to text instead of publishing a `link`, against §3a ([carve#486](https://github.com/markup-carve/carve/issues/486)), and publishes `ref: ""` for the collapsed form where §3a now pins the derived label ([carve#524](https://github.com/markup-carve/carve/issues/524)); two field-name divergences left: the root carries `abbreviations`, and `inline_extension` publishes `extensionType`/`children` ([carve-php#510](https://github.com/markup-carve/carve-php/issues/510)) | recorded behind a parse option, enabled whenever it serializes |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
@@ -281,6 +304,13 @@ that category permitted, so a table cell or line-block region without a position
 is conformant rather than owed. What is still a gap is anything else in that
 column: a `definition_term` is a slice of the source like any other node, so
 carve-rs leaving a definition list's own parts unplaced is a real one.
+
+The §3a entries were measured, on `See [getting started][] here.` with the label
+defined. All three engines publish the destination in `href` - which is the half
+§3a now blesses - and none publishes `rawRef` beside it: carve-js
+`{"href":"/start"}`, carve-rs `{"href":"/start"}` (from a build the conformance
+script flags as older than its source), carve-php
+`{"ref":"","href":"/start"}`.
 
 The §3a and §7 rows are new: those clauses were written to settle disagreements
 the engines had already shipped, so every engine has something to move. That is
