@@ -128,6 +128,12 @@ jobs:
       # GATES, because a formatter that changes the document is wrong under every
       # reading of PART 11 - there is no design question to settle first.
       - name: PART 11 formatter round trip
+        # ALWAYS, because this gate is independent of the one above it. The
+        # first run of this workflow had PART 12 fail, which SKIPPED this step -
+        # so a formatter that changed what a document says would have gone
+        # unmeasured because of an unrelated AST finding, and the job would have
+        # reported one failure while silently not performing the other check.
+        if: always()
         env:
           CARVE_JS_DIR: ${{ github.workspace }}/carve-js
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
