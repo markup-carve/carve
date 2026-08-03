@@ -602,6 +602,24 @@ not a list</p>
 
 :::
 
+The same holds for **every** marker that takes a separator space, not
+just bullets. A definition term needs content too, and here the
+trailing-whitespace half of the rule is what matters: `::` and `::` with
+two spaces after it must mean the same thing, or stripping whitespace on
+save would turn a paragraph into a definition list.
+
+::: compare
+
+```carve
+:: 
+```
+
+```html
+<p>::</p>
+```
+
+:::
+
 Ordered lists use `N.` prefixes — numbering starts from the first marker.
 
 ::: compare

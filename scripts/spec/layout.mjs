@@ -416,7 +416,12 @@ function isBlank(line) {
 // the content column, exactly as a heading/quote/fence does. The two-line
 // marker means only the TERM line opens the block; the `:  def` line is its
 // body, handled by the def-list parser once opened.
-const DEFLIST_TERM = /^:: /
+// PART 9's MARKER REQUIRES CONTENT applies to `::` as it does to a bullet: a
+// marker line carrying only whitespace after the separator is paragraph text,
+// and the rule "ignores trailing whitespace" so `::` and `:: ` behave alike.
+// Without the `\S`, `:: ` was a paragraph and `::··` a definition list -
+// stripping one trailing space changed the structure (carve#512).
+const DEFLIST_TERM = /^:: (?=[ \t]*\S)/
 function startsVisibleBlock(line) {
   return HEADING.test(line) || HR.test(line) || QUOTE.test(line) || DEFLIST_TERM.test(line)
 }
@@ -682,7 +687,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     }
 
     // --- definition lists (:: term / :  def) ---
-    if (/^::?[ ]/.test(line) && !/^:::/.test(line)) {
+    if (/^::?[ ](?=[ \t]*\S)/.test(line) && !/^:::/.test(line)) {
       const node = { t: 'deflist', items: [] }
       // A plain line that folds (as a lazy continuation) into an open term or
       // the open paragraph of a definition (SS17): not blank, not a visible
@@ -697,7 +702,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         !isOrderedMarkerLine(cur) &&
         !FENCE.test(cur) &&
         !CAPTION.test(cur)
-      const isEntry = (s) => /^::?[ ]/.test(s) && !/^:::/.test(s)
+      const isEntry = (s) => /^::?[ ](?=[ \t]*\S)/.test(s) && !/^:::/.test(s)
       // A definition/term line folded into an open item BELOW its content column
       // arrives LAZY-framed (the item-fold pass at C3). A `:  def` marker is a
       // LENIENT def-list entry: it attaches as a fresh <dd> to its open term even
@@ -708,7 +713,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
       while (i < n) {
         const cur0 = unlazy(lines[i] ?? '')
         let dm
-        if ((dm = /^:: (.*)$/.exec(cur0))) {
+        if ((dm = /^:: (?=[ \t]*\S)(.*)$/.exec(cur0))) {
           // term (dt): folds plain wrapped continuation lines so a wrapped term
           // line does not strand its definition. (This used to say "like a
           // heading". A heading ends at its newline and folds nothing; the term

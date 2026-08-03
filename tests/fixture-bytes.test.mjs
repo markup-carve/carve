@@ -40,6 +40,7 @@ const WATCHED = new Map([
 // character differently (`&nbsp;`) or drops it, so loss shows up as a normal
 // corpus mismatch.
 const INVENTORY = [
+  { base: '05-lists-3', crv: ['trailing-WS'], html: [] }, // `:: ` - the separator space IS the case
   { base: '104-paragraph-trailing-whitespace', crv: ['trailing-WS'], html: [] },
   {
     base: '119-trojan-source-heading-ids-are-nfc-normalized-and-strip-invisible-controls-3',

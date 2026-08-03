@@ -409,15 +409,28 @@ unordered_item = bullet_marker, [item_attributes], space, [task_marker], list_it
 bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
                                 continuation marker (PART 9 §17); a `+ ` line is
                                 ordinary paragraph text. Deviates from djot. *)
-(* MARKER REQUIRES CONTENT -- NORMATIVE. A bullet or ordered marker is a list
-   item only when followed by a space AND non-empty content. A content-less
-   marker line -- bare (`-`) or with trailing whitespace only (`- `, `-   `) --
-   is NOT a list: it is paragraph text. The rule ignores trailing whitespace, so
-   `-` and `- ` behave identically (an editor stripping the trailing space cannot
-   change the meaning). Carve is stricter than CommonMark, which treats a bare
-   `-` as an empty item; requiring content keeps a lone dash (a prose dash /
-   placeholder) from silently becoming a list. Pinned by corpus
-   content-less-marker-is-not-a-list. *)
+(* MARKER REQUIRES CONTENT -- NORMATIVE. A marker that takes a separator space
+   opens its block only when followed by that space AND non-empty content. A
+   content-less marker line -- bare (`-`) or with trailing whitespace only
+   (`- `, `-   `) -- is NOT a list: it is paragraph text. The rule ignores
+   trailing whitespace, so `-` and `- ` behave identically (an editor stripping
+   the trailing space cannot change the meaning). Carve is stricter than
+   CommonMark, which treats a bare `-` as an empty item; requiring content keeps
+   a lone dash (a prose dash / placeholder) from silently becoming a list.
+   Pinned by corpus content-less-marker-is-not-a-list.
+
+   EVERY SUCH MARKER, not only the two named here. The rule is stated in terms
+   of bullets and ordered markers because those are where it was first needed,
+   but the rationale is a property of the separator space and applies wherever
+   one appears -- including the definition-term marker `::`.
+
+   That omission was not theoretical: with the rule read narrowly, `:: ` was a
+   paragraph and `::` followed by TWO spaces was a definition list, so stripping
+   one trailing space changed the document's structure -- the exact thing the
+   sentence above exists to prevent. Three engines carried three answers
+   (paragraph, `<dt></dt>`, and `<dt> </dt>`) with every gate green, because the
+   corpus case pinned bullets only. Pinned now by corpus
+   content-less-marker-is-not-a-list-2 (carve#512). *)
 
 ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, [item_attributes], space, list_item_content ;
