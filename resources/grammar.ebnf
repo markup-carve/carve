@@ -1270,8 +1270,14 @@ math_display = "$$", code_span ;
    Canonical = carve-js / djot.js (pinned, corpus Math section). The
    `{=format}` raw form is code-span-ONLY and is NOT inherited by math:
    `$\`x\`{=html}` leaves the `{=html}` literal (both impls already agree).
-   carve-php currently DROPS valid math attributes -- to be fixed.
-   The math content is the verbatim text of the reused code_span. *)
+   The math content is the verbatim text of the reused code_span.
+
+   (This paragraph used to end "carve-php currently DROPS valid math
+   attributes -- to be fixed". It does not: an attribute block on a math
+   span renders the class in ALL THREE engines, verified over each of
+   their mains. A sentence describing one engine's defect is only true on
+   the day it is written, and nothing here re-checks it -- PART 12 section 4's
+   implementation status had rotted the same way.) *)
 
 (* --- Emphasis (left/right word-boundary rule; PART 9 §9 is normative).
    The word-boundary restriction applies to EVERY bare emphasis delimiter

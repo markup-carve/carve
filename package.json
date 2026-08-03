@@ -10,6 +10,7 @@
     "docs:preview": "vitepress preview docs",
     "corpus:build": "node scripts/generate-corpus.mjs",
     "compare:impls": "node scripts/compare-impls.mjs",
+    "claims:check": "node scripts/engine-claims.mjs",
     "combinatorial:check": "node scripts/combinatorial-check.mjs",
     "property:check": "node scripts/property-check.mjs",
     "ast:check": "node scripts/ast-conformance.mjs",

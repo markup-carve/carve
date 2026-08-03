@@ -152,3 +152,22 @@ jobs:
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run compare:impls
+
+      # The grammar names engines and says what they do - "all impls support
+      # it", "carve-rs is the reference here", "carve-php additionally accepts
+      # colon-bearing keys". Those sentences are how a second implementer learns
+      # where the margins are, and nothing checked any of them. Two had already
+      # rotted: PART 12 §4's implementation status described an engine that no
+      # longer existed, and the math paragraph named a carve-php defect that was
+      # fixed. Both were found by reading.
+      #
+      # GATES, in both directions: a claim of agreement fails if an engine
+      # drifts, and a documented divergence fails if it is silently resolved -
+      # which is the direction that leaves a false sentence in the spec.
+      - name: Grammar cross-engine claims
+        if: always()
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run claims:check
