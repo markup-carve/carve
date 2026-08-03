@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **PART 9 §25: at the render ceiling, a renderer refuses** (carve#526).
+  §25 gave every renderer a ceiling above the parse cap and did not say what
+  happens AT it, so eight of nine renderers across the three engines truncate
+  silently and carve-js's HTML renderer has no ceiling at all. Reaching the
+  ceiling now MUST produce a typed, documented failure naming the bound - the
+  same rule PART 12 §9(b) already applies to ingest, at the other end of the
+  same pipe. It costs nothing on any path a document travels: the ceiling
+  exceeds MAX_NESTING_DEPTH by construction and ingest already refuses deeper
+  trees, so what is left is a tree built through the API, where the caller is
+  the one who can act on the error.
+
+  Measuring it turned up a live defect in the reference. On `'> ' * 200` - a
+  document carve-js's own parser accepts - `renderMarkdown`, `renderCarve` and
+  `renderPlainText` on carve-js main emit the 200 markers and silently delete
+  the body. One of the three is the canonical writer, so `fmt` deletes the
+  content of a document the same build just parsed. That is the failure
+  carve#517 and carve#522 were written to close.
+
 ### Fixed
 
 - **Restored nine regions of `resources/grammar.ebnf` that a stale-copy merge
