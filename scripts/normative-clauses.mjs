@@ -53,7 +53,12 @@ export function readInventory(text) {
     })
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Compare DECODED paths. `import.meta.url` percent-encodes a space (and every
+// other URL-reserved character), `process.argv[1]` does not, so the template
+// form below compared unequal under any checkout path containing one - and the
+// script then exited having regenerated nothing, silently, which is the worst
+// way for a guard's own generator to fail.
+if (fileURLToPath(import.meta.url) === resolve(process.argv[1] ?? '')) {
   const grammar = readFileSync(grammarPath, 'utf8')
   const clauses = extractNormativeClauses(grammar)
   const existing = readFileSync(inventoryPath, 'utf8')
