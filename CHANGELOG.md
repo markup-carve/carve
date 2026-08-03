@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **PART 12 / PART 9 §25: a flattened over-cap opener is ordinary paragraph
+  text** (carve#494). §25 said an opener past `MAX_NESTING_DEPTH` "becomes
+  literal paragraph text" and did not say how consecutive ones GROUP, so the
+  three engines produced three byte-different outputs and all three satisfied
+  the sentence. They now group by the ordinary paragraph rule - one paragraph,
+  ending at the first blank line, no trailing newline before `</p>` - because
+  "degrades to literal text" is the whole rule and a degrade path with its own
+  block structure would be a second paragraph rule to specify and to test.
+
 ### Fixed
 
 - **Restored nine regions of `resources/grammar.ebnf` that a stale-copy merge
