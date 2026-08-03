@@ -119,6 +119,37 @@ const rustBaseCommand = rustCarveBinary
   ? [rustCarveBinary]
   : ['cargo', 'run', '--quiet', '--']
 
+/*
+ * Tier-2 features whose only requirement is that an extension be registered.
+ *
+ * The optional corpus is 33 documents and the run reached 3 of them, because
+ * every case needed a hand-written adapter and only the option-carrying ones
+ * had been written (carve#496). Citations alone is 16 of the 33 - the single
+ * largest Tier-2 surface, and the one with no cross-engine measurement at all.
+ *
+ * These need no options, so one table serves both engines that are driven
+ * through an inline script. carve-rs is driven through its BINARY and still
+ * needs a CLI path; those cases stay unreached there and are reported as such.
+ */
+const PLAIN_EXTENSION_FEATURES = {
+  'citations-numbered': { js: 'citations', php: 'CitationsExtension' },
+  'citations-author-date': {
+    js: 'citations',
+    // Not a plain registration: the fixture pins the author-date style,
+    // and registering the extension with its default mode renders the
+    // NUMBERED style against it. Caught by the run this table enables.
+    jsOptions: "{ mode: 'author-date' }",
+    php: 'CitationsExtension',
+    phpArgs: "mode: 'author-date'",
+  },
+  'code-callouts': { js: 'codeCallouts', php: 'CodeCalloutsExtension' },
+  details: { js: 'details', php: 'DetailsExtension' },
+  spoiler: { js: 'spoiler', php: 'SpoilerExtension' },
+  tabs: { js: 'tabs', php: 'TabsExtension' },
+  'list-table': { js: 'listTable', php: 'ListTableExtension' },
+  'bare-url-autolink': { js: 'autolink', php: 'AutolinkExtension' },
+}
+
 const impls = [
   {
     name: 'rust',
@@ -205,6 +236,20 @@ const impls = [
           `,
         ]
       }
+      const plain = PLAIN_EXTENSION_FEATURES[feature]
+      if (plain) {
+        return [
+          'node',
+          '--input-type=module',
+          '-e',
+          `
+            import { readFileSync } from 'node:fs';
+            import { ${entry}, ${plain.js} } from './dist/index.js';
+            const source = readFileSync(process.argv[1], 'utf8');
+            process.stdout.write(${entry}(source, { extensions: [${plain.js}(${plain.jsOptions ?? ''})] }));
+          `,
+        ]
+      }
       return null
     },
     hooks: [
@@ -255,14 +300,15 @@ const impls = [
           `,
         ]
       }
-      if (feature === 'bare-url-autolink') {
+      const plain = PLAIN_EXTENSION_FEATURES[feature]
+      if (plain) {
         return [
           'php',
           '-r',
           `
             require 'vendor/autoload.php';
             $converter = new MarkupCarve\\Carve\\CarveConverter();
-            $converter->addExtension(new MarkupCarve\\Carve\\Extension\\AutolinkExtension());
+            $converter->addExtension(new MarkupCarve\\Carve\\Extension\\${plain.php}(${plain.phpArgs ?? ''}));
             echo $converter->convert(file_get_contents($argv[1]));
           `,
         ]
