@@ -9,30 +9,6 @@ continued</p></blockquote>
 ```
 
 ```
-> a
->> b
-c
-.
-<blockquote>
-  <p>a</p>
-  <blockquote><p>b
-c</p></blockquote>
-</blockquote>
-```
-
-```
-> a
-> > b
-c
-.
-<blockquote>
-  <p>a</p>
-  <blockquote><p>b
-c</p></blockquote>
-</blockquote>
-```
-
-```
 > quoted
 - item
 .

@@ -2,85 +2,113 @@
 
 Carve is not required to follow Djot's whitespace rules, and a document that
 ignores this page is not wrong - it renders exactly as written. But Carve and
-Djot disagree about how a blockquote marker is spaced, and a document that
-keeps to the Djot-shaped form is also valid Djot source. If you ever expect
-your `.crv` files to be read by a Djot processor, it is worth writing them
-that way from the start.
+Djot disagree about whitespace in two places, and a document that keeps to the
+Djot-shaped form in both is also valid Djot source. If you ever expect your
+`.crv` files to be read by a Djot processor, it is worth writing them that way
+from the start.
 
-This costs nothing. The recommended form - exactly one space after `>` - is
-also the CommonMark-safe form, so following this page does not trade Markdown
-compatibility for Djot compatibility - it gives up neither.
+This costs nothing. Both portable forms below are also the CommonMark-safe
+forms, so following this page does not trade Markdown compatibility for Djot
+compatibility - it gives up neither.
 
 ::: tip
-This is advisory. It is reported only when you ask for it:
+These are advisory. They are reported only when you ask for them:
 
 ```sh
 carve lint --portable doc.crv
 ```
 :::
 
+## Leave a blank line before a block opener
+
+In Carve a visible block opener interrupts an open paragraph. In Djot it does
+not - the opener folds into the paragraph as text.
+
+```
+Some text
+# A heading
+```
+
+Carve renders a paragraph and a heading. Djot renders one paragraph reading
+`Some text # A heading`. The same applies to `>`, a code fence, `---`, a
+`:::` fence, a table, and a definition list.
+
+The portable form is a blank line:
+
+```
+Some text
+
+# A heading
+```
+
+The same holds one level in, where the "paragraph" is a list item's content:
+
+```
+- a
+  - b
+```
+
+Carve nests the second bullet; Djot reads it as a continuation line of the
+first. A blank line between them nests in both.
+
+A top-level list is the exception that needs nothing: a list marker does not
+interrupt a paragraph in Carve either, so `Some text` followed by `- a` is a
+single paragraph in both languages already.
+
+Reported as `portable-blank-line-before-block`.
+
 ## Put a space after every `>`
 
-Carve accepts a blockquote marker with nothing after it. Djot does not. See
-[Divergence from Djot, section 5b](/divergence-from-djot#_5b-the-blockquote-marker-does-not-require-a-space)
-for why Carve allows it; this page is about what to write instead if you want
-the portable form.
+Carve and Djot both require the space after `>` unless the marker is the whole
+line. This is ordinary Carve, not just a portability convention.
 
 ```
 >quote
 ```
 
-Carve renders a blockquote; Djot renders the literal text `>quote`. Write the
-space:
+Both render the literal text `>quote`. Write the space:
 
 ```
 > quote
 ```
 
-Nesting needs the same treatment on every marker, because Djot has no `>>`
-marker at all - `>> q` is literal text there even though its inner marker is
-spaced:
+Nesting needs the same treatment on every marker. There is no `>>` shorthand;
+write both markers explicitly:
 
 ```
 > > q
 ```
 
-Every line of the quote needs it, not just the opening one. Carve strips an
-unspaced marker on a continuation line; Djot keeps it as literal text:
+Every marked line of the quote needs it, not just the opening one:
 
 ```
 > ok
 >bad
 ```
 
-Carve reads that as one paragraph `ok bad`; Djot reads it as `ok >bad`.
+Both read that as one quoted paragraph `ok` followed by a lazy continuation
+line `>bad`.
 
-A tab after the marker, two spaces after it, a lazy continuation line with no
-marker at all, and a bare `>` separator line inside a quote all parse
-identically in Carve and Djot, so none of them needs changing for portability.
-That is a Carve-versus-Djot claim only, not a CommonMark one: two spaces after
-`>` is not CommonMark-identical, since CommonMark's marker consumes just one
-of them and leaves the second as a leading space in the content. The
-CommonMark-safe form is the single space recommended above.
-
-Reported as `portable-quote-marker-space`.
+Two spaces after the marker, a lazy continuation line with no marker at all, and
+a bare `>` separator line inside a quote are all valid. A tab immediately after
+`>` is content, not the marker separator.
 
 ## What this page does not cover
 
 **Constructs Carve deliberately spells differently.** Emphasis delimiters are
 swapped (`/italic/`, `*bold*`), `_x_` is underline rather than emphasis, and
-sup/sub are braced-only. Those are covered elsewhere on
+sup/sub are braced-only. Those are on
 [Divergence from Djot](/divergence-from-djot) and no whitespace rule recovers
 them - a document using them is Carve, not Djot, by design.
 
-**A `>` marker followed by a fence opener on the same line.** A line like
-`` >``` `` is not reported even though there is no space after the marker: the
-linter treats that line as opening verbatim content, and does not scan inside
-it for the marker-space check. It is a miss in the linter, not bad advice -
-the recommended space is still correct and still worth writing.
+**Link reference definitions.** A `[b]: /url` line directly under a paragraph
+diverges the same way, but it leaves no node in the tree for the linter to
+anchor on, so `--portable` does not report it. Give it a blank line too.
 
-**Places where Carve is the stricter engine.** Djot accepts a block opener at
-any indentation - it has no indented-code-block rule to stop it. Carve requires
-column zero and reads an indented line as paragraph text. A quote marker
-indented that way is already rendering wrongly in Carve, so it is a plain
-correctness problem rather than a portability one.
+(Abbreviation definitions and comment fences were once listed here as well.
+They are not exceptions: both produce real nodes and both **are** reported.)
+
+**Places where Carve is the stricter engine.** Djot accepts a block opener
+indented one to three spaces; Carve requires column zero and reads the indented
+line as paragraph text. A document that hits this is already rendering wrongly
+in Carve, so it is a plain correctness problem rather than a portability one.

@@ -1622,7 +1622,7 @@ more
 
 :::
 
-A block quote marker interrupts.
+A block quote marker followed by a space interrupts.
 
 ::: compare
 
@@ -1634,6 +1634,27 @@ text
 ```html
 <p>text</p>
 <blockquote><p>q</p></blockquote>
+```
+
+:::
+
+Without the space, `>` is ordinary paragraph text. This keeps operators and
+technical prose from opening accidental quotes.
+
+::: compare
+
+```carve
+text
+>>= operator
+>=3 items
+>_< face
+```
+
+```html
+<p>text
+&gt;≥ operator
+≥3 items
+&gt;_&lt; face</p>
 ```
 
 :::
@@ -1939,46 +1960,6 @@ continued
 ```html
 <blockquote><p>quoted
 continued</p></blockquote>
-```
-
-:::
-
-The fold is into the innermost OPEN PARAGRAPH, however many quote markers the line omits. At depth two the continuation joins the nested quote's paragraph, not the outer one, and nothing closes.
-
-::: compare
-
-```carve
-> a
->> b
-c
-```
-
-```html
-<blockquote>
-  <p>a</p>
-  <blockquote><p>b
-c</p></blockquote>
-</blockquote>
-```
-
-:::
-
-The spaced spelling nests identically, so it continues identically — the rule is about depth, not about how the marker is written.
-
-::: compare
-
-```carve
-> a
-> > b
-c
-```
-
-```html
-<blockquote>
-  <p>a</p>
-  <blockquote><p>b
-c</p></blockquote>
-</blockquote>
 ```
 
 :::

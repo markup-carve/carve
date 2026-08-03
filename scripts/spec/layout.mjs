@@ -33,7 +33,7 @@ const HEADING = /^(#{1,6}) ((?=.*[^ \t\n\r\f]).*)$/
 const HR = /^(-{3,}|\*{3,}|_{3,})[ \t]*$/
 const FENCE = /^(`{3,}|~{3,})(.*)$/
 const PURE_FENCE = /^(`{3,}|~{3,})[ \t]*$/
-const QUOTE = /^> ?(.*)$|^>$/
+const QUOTE = /^>(?: (.*)|)$/
 const LINK_DEF = /^\[([^\]^@][^\]]*)\]: \s*(\S+)(?:\s+"((?:\\"|[^"])*)")?(?:\s.*)?$/
 // The marker line must carry inline content (PART 9 SS16 production:
 // `"]:", space, inline_content`); a bare `[^label]:` is an ordinary

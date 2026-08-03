@@ -43,19 +43,6 @@ semantic shifts flagged too:
 carve lint --from-djot doc.crv
 ```
 
-Pass `--portable` when the document's source has to stay valid Djot. This rule
-is advisory: the document renders correctly in Carve either way, and the
-portable form is also CommonMark-safe, so following it costs no Markdown
-compatibility.
-
-```sh
-carve lint --portable doc.crv
-```
-
-The two flags are independent and compose - `--from-djot` is about a document
-that came *from* Djot, `--portable` about one that has to go back. See
-[Portable Whitespace](./portable-whitespace) for what to write instead.
-
 ## Programmatic API
 
 JavaScript and TypeScript callers can use `lintCarve` directly:
@@ -103,10 +90,10 @@ the command-line and editor behavior stay aligned.
 | `unused-footnote-definition` | a footnote definition that is never referenced and is omitted from rendered output |
 | `heading-trailing-attribute` | a trailing `{#id}` or `{.class}` on a heading line; attributes must go on the line above the heading |
 | `raw-block-syntax` | a legacy `` ```raw FORMAT `` fence; Carve raw blocks use `` ```=FORMAT `` |
+| `blockquote-marker-without-space` | a line starting with `>` that is neither a bare quote marker nor `> `; it renders as prose, not a block quote |
 | `block-marker-as-text` | a line that opens like a block (`:::`, `{#`, `{.`) but parsed as plain text |
 | `fence-delimiter-indentation` | an indented fenced-code delimiter (`` ``` `` / `~~~`); a Carve fence is column-exact and must sit at its container's content column (column 0 at the top level), so an indented run does not open a code block |
 | `carve-version-unsupported` | a document declaring a Carve spec version the processor does not implement, so constructs added after that version render as something else without any error |
-| `portable-quote-marker-space` | advisory (`--portable`): a `>` blockquote marker with no space after it; Djot reads the line as text, and has no `>>` marker at all |
 
 ### Declaring a target version
 
@@ -139,13 +126,9 @@ The table above is carve-js. The other engines do not currently match it, and
 
 | implementation | `carve lint` | covers |
 |---|---|---|
-| carve-js | yes | the rules above, plus the Djot/Markdown migration checks and the advisory `portable-quote-marker-space` rule under `--portable` |
+| carve-js | yes | the rules above, plus the Djot/Markdown migration checks |
 | carve-php | yes | Markdown-habit checks only (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`); none of the semantic rules above |
 | carve-rs | no | the binary has no `lint` command |
-
-`portable-quote-marker-space` is carve-js only today. Per the rule-id contract
-below, the id is reserved: an engine that implements the same condition later
-must use it rather than coining its own.
 
 ### A rule id is a contract
 
@@ -170,4 +153,3 @@ The CLI also reports Djot/Markdown delimiter collisions from the migration
 checker — mis-rendering constructs by default, plus the Djot semantic shifts
 under `--from-djot` — so `carve lint` is the broadest single validation
 command.
-

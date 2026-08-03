@@ -80,7 +80,7 @@
    STATE.  open := stack of open containers, bottom-up (document ->
            innermost), plus the current leaf (none | paragraph | heading |
            ...). Container kinds and the per-line prefix each demands:
-             block quote    marker `>` [+ one space]
+             block quote    marker `>` [end of line | one space]
              list item      indentation to content_column (PART 9 §24 C3)
              footnote def   indentation >= 2 spaces (PART 9 §16)
              fenced body    (code / raw / comment / admonition / div /
@@ -91,7 +91,7 @@
          depends on a future line, the only lookahead being the DECLARED
          &(...) closer guards on fence / frontmatter openers):
      S1 MATCH PREFIXES. Walk `open` bottom-up, consuming each container's
-        prefix from L (strip `> ` for quotes; DEDENT by columns for
+        prefix from L (strip `>` or `> ` for quotes; DEDENT by columns for
         indentation containers, PART 9 §24 C5). Stop at the first container
         whose prefix L does not supply.
      S2 FENCED BODY. If the innermost matched container is a fenced body, L
@@ -104,23 +104,12 @@
         content_column -> sublist (PART 9 §24 C3); otherwise paragraph /
         lazy item text.
      S4 PARTIAL MATCH. The unmatched containers are candidates to close.
-        LAZY CONTINUATION: if ANY container in the open stack holds an OPEN
+        LAZY CONTINUATION: if the innermost MATCHED context holds an OPEN
         PARAGRAPH and the residue is NOT an interrupting line (PART 9 §10 --
         list markers and plain text fold; visible openers interrupt), L
-        folds into the INNERMOST such paragraph and NOTHING closes --
-        regardless of how many containers the line failed to match.
-        Otherwise close the unmatched containers and re-classify the residue
-        in the surviving context (S3).
-
-        This said "the innermost MATCHED context holds an OPEN PARAGRAPH",
-        which describes something no implementation does. A lazy line carries
-        no markers, so it matches ZERO containers and the innermost matched
-        context is the document root, which holds no open paragraph -- under
-        that wording `> a` / `b` would close the quote at depth 1. Every engine
-        folds there, and corpus 82-blockquote-lazy-continuation pins it. What
-        the wording did produce was a split at depth 2: carve-rs closed both
-        quotes where carve-js and carve-php folded into the nested one
-        (carve#506, carve-rs#452). Depth is not a parameter of this rule.
+        folds into that paragraph and NOTHING closes. Otherwise close the
+        unmatched containers and re-classify the residue in the surviving
+        context (S3).
      S5 OPENERS. When S3/S4 classify the residue as a container opener (a
         quote marker; a list marker at an admissible column; a `+`
         continuation marker at the marker column, PART 9 §17 L3/L4; a fence
@@ -378,28 +367,14 @@ code_content = (* any text until matching fence, preserved literally *) ;
 
 (* --- Blockquotes --- *)
 blockquote = blockquote_line, {blockquote_line | lazy_continuation_line | continuation_marker_block}, [caption_slot] ;
-(* PORTABILITY -- NON-NORMATIVE FOR CONFORMANCE. A conformant implementation
-   MAY ignore this block entirely; it constrains no processor.
-
-   Carve accepts a `>` marker with nothing after it. Djot does not: `>quote`
-   is the literal text `>quote` there, and Djot has no `>>` marker at all, so
-   a nested quote must be written `> > q`. A portable document -- one whose
-   source is meant to stay valid Djot -- SHOULD put a space after every `>`.
-
-   Whitespace after the marker beyond one space is free: a tab, two spaces,
-   and a bare `>` separator line all parse identically in both languages.
-
-   Reported by `carve lint --portable` as `portable-quote-marker-space`;
-   see docs/portable-whitespace.md. *)
 (* marked and lazy lines may interleave: `> a` / lazy / `> b` is ONE quote.
    A `+` continuation_marker_block attaches a flush-left block to the quote -- see
    the CONTINUATION MARKER note below and PART 9 §17. *)
-blockquote_line = '>', [' '], inline_content, newline ;
+blockquote_line = '>', (newline | (space, inline_content, newline)) ;
 
 (* LAZY CONTINUATION -- NORMATIVE (CommonMark-compatible). After one or more
    blockquote_lines, a line that does NOT carry the '>' marker still continues
-   the blockquote -- folding into the INNERMOST open paragraph, at whatever
-   depth that paragraph sits -- provided it is:
+   the blockquote -- exactly as if it carried '>' -- provided it is:
      - not blank (a blank line ends the blockquote), and
      - not a block-opener: a heading, table, fenced code, `:::` div, thematic
        break, OR an "invisible" reference / footnote / abbreviation definition
@@ -442,17 +417,7 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    change the meaning). Carve is stricter than CommonMark, which treats a bare
    `-` as an empty item; requiring content keeps a lone dash (a prose dash /
    placeholder) from silently becoming a list. Pinned by corpus
-   content-less-marker-is-not-a-list.
-
-   THE SAME HOLDS FOR THE DEFINITION-TERM MARKER `::`. The rule was written
-   naming bullets and ordered markers, and its rationale -- an editor stripping
-   a trailing space must not change the meaning -- is a property of every
-   marker that takes a separator space, not of those two. Left unstated, the
-   engines split three ways on `::` followed by the separator and one more
-   space: carve-js made it a `<dt>` holding a space, carve-php a `<dt>` holding
-   nothing, carve-rs a paragraph. Two of them therefore turned `:: ` (a
-   paragraph) into a definition list when a trailing space survived a save
-   (carve#512). A content-less `::` line is paragraph text. *)
+   content-less-marker-is-not-a-list. *)
 
 ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, [item_attributes], space, list_item_content ;
@@ -1332,14 +1297,8 @@ math_display = "$$", code_span ;
    Canonical = carve-js / djot.js (pinned, corpus Math section). The
    `{=format}` raw form is code-span-ONLY and is NOT inherited by math:
    `$\`x\`{=html}` leaves the `{=html}` literal (both impls already agree).
-   The math content is the verbatim text of the reused code_span.
-
-   (This paragraph used to end "carve-php currently DROPS valid math
-   attributes -- to be fixed". It does not: an attribute block on a math
-   span renders the class in ALL THREE engines, verified over each of
-   their mains. A sentence describing one engine's defect is only true on
-   the day it is written, and nothing here re-checks it -- PART 12 section 4's
-   implementation status had rotted the same way.) *)
+   carve-php currently DROPS valid math attributes -- to be fixed.
+   The math content is the verbatim text of the reused code_span. *)
 
 (* --- Emphasis (left/right word-boundary rule; PART 9 §9 is normative).
    The word-boundary restriction applies to EVERY bare emphasis delimiter
@@ -2250,13 +2209,12 @@ EOF = (* end of file *) ;
       I1 VISIBLE OPENERS interrupt. interrupts(L, P) holds when L begins:
          - a heading (`#`..`######` + space);
          - a thematic break (a lone `---` / `***` / `___` line);
-         - a block quote (`>`; a line-initial `>` is ALWAYS a quote marker,
-           so a prose line starting `>= 5` becomes a quote -- escape it,
-           `\>= 5`, to keep it prose);
+         - a block quote (`>` alone or `> `; `>text`, `>= 5`, and `>>=`
+           are prose, not quote markers);
          - a valid table row (valid_row(L), §5 T2; a stray `|` in prose,
            and a line-initial `|` with no closing `|`, are NOT ones);
          - a fenced code opener WITH a matching closer ahead (I4);
-         - a `:::` opener, closer or not (I4).
+         - a `:::` opener WITH a matching closer ahead (I4).
          So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more"
          is <p>intro</p> + <hr> + <p>more</p> (corpus
          76-paragraph-interruption).
@@ -2276,24 +2234,13 @@ EOF = (* end of file *) ;
       I3 IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)")
          does not interrupt: an image is not a block of its own in Carve;
          it stays an inline image inside the paragraph.
-      I4 CLOSER LOOKAHEAD -- the same &(...) the VERBATIM fence productions
-         carry. An UNTERMINATED ``` or ~~~ opener does not interrupt; the line
-         stays paragraph text, and a stray ``` in prose then opens an unclosed
-         inline verbatim run rendering as <code> to the end of the block (the
-         code_span maximal-run rule). Pinned by corpus
-         81-paragraph-interruption-18.
-
-         A `:::` OPENER IS NOT GUARDED. It interrupts whether or not a closer
-         follows, and an unterminated one closes at EOF (PART 9 §25). Pinned by
-         corpus 81-paragraph-interruption-19: `Text` / `:::` / `stuff` is a
-         paragraph followed by a div holding `stuff`.
-
-         This clause used to guard both, and cited a corpus that pins the
-         opposite for `:::`. All three engines follow the corpus. The `:::`
-         half was superseded when unclosed containers changed from degrading
-         to closing at EOF (carve#439) and was not updated with it; the stale
-         citation to "corpus 76" is the same paragraph renumbering that
-         accompanied that change.
+      I4 CLOSER LOOKAHEAD -- the same &(...) guards the fence / div /
+         frontmatter productions carry. An UNTERMINATED ``` or `:::` opener
+         does not interrupt; the line stays paragraph text (a stray ``` in
+         prose then opens an unclosed inline verbatim run rendering as
+         <code> to the end of the block -- the code_span maximal-run rule).
+         Pinned by corpus 76-paragraph-interruption (unterminated-fence and
+         unterminated-`:::` pairs).
       I5 INVISIBLE CONSTRUCTS interrupt AND are consumed: a reference
          definition (link `[r]: url`, footnote `[^r]: …`, abbreviation
          `*[A]: …`), a comment (`%%` line, `%%%` block), and a
@@ -2879,23 +2826,11 @@ EOF = (* end of file *) ;
       - STANZAS. A blank line ends a stanza; each stanza is its own `<p>` inside
         the single `<div class="line-block">`.
       - LEADING WHITESPACE. Each body line's leading whitespace is PRESERVED
-        (unlike ordinary paragraph content, which is trimmed), down to a single
-        column. In HTML each leading space serializes as a NBSP (`&nbsp;`,
-        U+00A0), so indentation is visible with no external CSS (matching
-        Pandoc). Plain-text / ANSI renderers emit the literal spaces. A tab in
-        the leading run follows the tab-stop rule (PART 9 §24).
-      - MEDIAL GAPS. An INNER or TRAILING run of TWO OR MORE columns is
-        preserved the same way and serializes as the same NBSPs. This is the
-        inline alignment verse and address blocks are made of -- the caesura of
-        Old English verse, a column of aligned text -- and collapsing it loses
-        the per-line layout the block exists to keep (matching Pandoc, where
-        every space the author writes is significant). A LONE inner space is NOT
-        preserved: it stays an ordinary, collapsible space so a long line can
-        still wrap between words. Tab arithmetic is the leading run's, counted
-        from the column the run starts at -- so the SAME tab is a gap or a lone
-        space depending on the column it lands in, which is what makes it worth
-        pinning: corpus 41-line-blocks-9 holds a tab that crosses one column
-        (collapses) beside two that cross two stops (kept), and a leading one.
+        (unlike ordinary paragraph content, which is trimmed). In HTML each
+        leading space serializes as a NBSP (`&nbsp;`, U+00A0), so indentation is
+        visible with no external CSS (matching Pandoc). Plain-text / ANSI
+        renderers emit the literal spaces. A tab in the leading run follows the
+        tab-stop rule (PART 9 §24).
       - REFERENCE COLUMN. Leading whitespace is measured RELATIVE TO THE FENCE
         indent, not absolute column 0: a `line-block` nested in a list has the
         container's structural indent stripped first (the list dedents to its
@@ -2940,8 +2875,8 @@ EOF = (* end of file *) ;
          `1. ` -> 3, `10. ` -> 4). A child -- a LIST MARKER (bullet `-`/`*`,
          task, or ordered, SYMMETRIC) opening a sublist, OR any OTHER block
          opener -- must reach the parent item's content_column to belong to the
-         item. The block-opener set is UNIFORM and closed: block quote (`>`),
-         heading (`#`), thematic break, fenced code, colon fence / admonition
+         item. The block-opener set is UNIFORM and closed: block quote (`>` or
+         `> `), heading (`#`), thematic break, fenced code, colon fence / admonition
          (`:::`), TABLE (a `|`-delimited row), and DEFINITION LIST (a `:: term`
          opener; the two-line `:: `/`:  ` marker is recognized by the same
          look-ahead the top level uses, and only the `:: ` TERM line opens the
@@ -3786,33 +3721,8 @@ EOF = (* end of file *) ;
 
       SCOPE. The rule is about `text` nodes only, and only about ADJACENCY
       within one parent's child list. It does not merge across an intervening
-      node, and it does not merge other types. It says nothing about how a
-      producer builds a run while parsing -- an inline scanner that accumulates
-      pieces and joins them at the end of the parse is exactly as conformant as
-      one that never split.
-
-      BUT THE MERGE IS PART OF `parse(x)`, NOT OF SERIALIZATION -- NORMATIVE.
-      §6 requires `parse(x)` serialized and deserialized to equal `parse(x)`.
-      An implementation that leaves the run split in the parsed tree and joins
-      it in the encoder satisfies §1a and BREAKS §6 on the same document: what
-      comes back holds one node where the tree held three, so the round trip is
-      not an identity. carve-rs was written that way first and its corpus
-      round-trip test failed on `03-links-12` (carve-rs#441). The tree
-      `parse(x)` returns is therefore already coalesced.
-
-      POSITIONS. A merged run keeps a span only where its pieces are CONTIGUOUS
-      in the source. Where they are not -- the `<` and `>` of an autolink
-      unwrapped inside a link label, the delimiter and newline between two
-      halves of a wrapped table cell -- the merged value is not a slice of the
-      source at any offset, and §4 rates a span that selects the wrong text
-      worse than no span at all. So such a run publishes NONE.
-
-      That is a real cost and is stated rather than glossed: per-piece spans
-      that existed before the merge are gone in exactly those cases. It only
-      happens where the value was never a source slice to begin with (a
-      manufactured joiner, a dropped delimiter), so nothing that WAS placeable
-      becomes unplaceable -- but a consumer wanting to locate the pieces of such
-      a run works from the source, not from the tree.
+      node, it does not merge other types, and it says nothing about how a
+      producer represents runs internally -- only what it publishes.
 
       `escaped_text` is NOT `text` and does not merge with it: PART 12 §5 keeps
       the two distinct on the wire because an escape is authored form, and
@@ -3858,67 +3768,6 @@ EOF = (* end of file *) ;
       An implementation MUST NOT invent a synonym, and MUST NOT expose an
       internal field the reference does not have. A consumer reading `href`
       must not have to know which engine produced the document.
-
-   3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE. It records what the
-      AUTHOR WROTE, not what the document resolves to. Reference resolution,
-      like rendering, happens after; a producer MUST NOT fold its results into
-      the tree in place of the authored construct.
-
-      Concretely, for `[getting started][]` against a heading that defines it:
-
-        {"type":"link","href":"","ref":"getting started",
-         "rawRef":"[getting started][]"}
-
-      `ref` is present because the author wrote a reference link (§3), `href`
-      is empty because nothing has resolved it yet, and `rawRef` carries the
-      source so the construct can be restored. A tree publishing
-      `{"type":"link","href":"#Getting-Started"}` for that source has serialized
-      a LATER STAGE: the reference is gone, and no consumer can tell it from a
-      document whose author typed the destination out.
-
-      AN UNRESOLVED REFERENCE IS STILL A LINK NODE. Where nothing defines
-      `[a]`, `see [a][] here` publishes `text`, `link`, `text` -- the link
-      carrying `ref` and no `href` -- NOT one text node holding `see [a][]
-      here`. Flattening it to text discards the fact that the author wrote a
-      reference at all, and it makes the same document have two node counts
-      depending on which engine produced it, which is exactly what §1 and §1a
-      exist to prevent. (carve#486)
-
-      SO THERE IS NO `raw_text`. An engine that reverts an unresolved reference
-      to literal source needs a node type to carry text that must not be
-      escaped again, and no such type is in the vocabulary. Under this clause
-      the reversion does not happen, so the need does not arise: what the
-      author wrote is a link, and it stays one. §5 already excludes the
-      formatter-internal `raw_text` from the wire; this says why nothing on the
-      document side has to reach for it. (carve-php#624)
-
-      WHY PRE-RESOLVE. Both stages are defensible and both validate against the
-      schema, which is how three engines came to disagree without any of them
-      being wrong (carve#481). The tie is broken by what each one COSTS.
-
-      Post-resolve makes `rawRef`'s stated purpose -- "so it can be restored as
-      literal text" -- unreachable, because the field it would be restored from
-      is gone by the time anyone could use it. It also means `[x][]` cannot
-      survive a format cycle in ANY implementation: the writer cannot reproduce
-      a construct the tree no longer carries, so PART 11's canonical writer
-      silently rewrites one construct into another. That is not a writer bug
-      and cannot be fixed in the writer.
-
-      Pre-resolve keeps both. It also keeps the distinction a linter, a
-      refactoring tool, or an editor round-tripping a file needs: `[a][]` and
-      `[a](#a)` are different things the author chose between, and a format
-      that preserves authored form one layer down (PART 11 §6: bullet
-      characters, delimiters, the bare marker) has no reason to discard this
-      one.
-
-      WHAT IS STILL SERIALIZED. §5's rule is unchanged and is not in tension
-      with this one: resolution RESULTS a consumer would otherwise have to
-      recompute -- footnote numbering, caption numbers -- are serialized,
-      because recomputing them means reimplementing PART 9R. The difference is
-      that those are ADDED alongside the authored construct; they do not
-      REPLACE it. A resolved footnote reference keeps its label and gains its
-      number. A resolved link keeps its `ref` and gains nothing: `href` is the
-      author's field, empty when the author did not write a destination.
 
    4. POSITIONS ARE REQUIRED. Every node EXCEPT the document root carries
       `pos`:
@@ -3979,47 +3828,30 @@ EOF = (* end of file *) ;
       The contract a consumer relies on is unchanged: JSON it is handed carries
       positions. How the producer arranged that is the producer's business.
 
-      IMPLEMENTATION STATUS. All three engines record positions behind a parse
-      option and enable them whenever they serialize, which is the arrangement
-      the paragraph above permits. Measured over the corpus:
+      IMPLEMENTATION STATUS. carve-php serializes conformantly: it records
+      positions behind a parse option and enables them whenever it serializes,
+      which is the arrangement the paragraph above permits.
 
-        carve-js    3414 placed,  10 unplaced   (0.29%)
-        carve-rs    3389 placed,   9 unplaced   (0.26%)
-        carve-php   3405 placed,   5 unplaced   (0.15%)
+      carve-js records positions but not on every node. The types that come out
+      without one are all REASSEMBLED rather than sliced from the source -- the
+      hard break a line block synthesizes from a soft one, and table rows and
+      cells put back together from several lines. They are absent rather than
+      wrong, which is the half of the rule below that matters, and they are
+      tracked in carve-js#441.
 
-      What is left is not a backlog. Every engine independently arrived at
-      nearly the same residue, on the same THREE documents -- a line block
-      (41-line-blocks-9) and two table cells continued across lines
-      (63-table-multi-line-cell-continuation,
-      64-table-rowspan-with-multi-line-content). All of it is REASSEMBLED
-      content: a hard break a line block synthesizes from a soft one, line-block
-      content rebuilt around an indentation sentinel, a cell joined from several
-      source lines by a space the source does not contain. None of it is a slice
-      of the source at any offset, so no span selects it.
-
-      carve-rs additionally leaves the merged text of an unwrapped autolink
-      unplaced (03-links-12), for the same reason once §1a joins the run: the
-      `<` and `>` between the pieces are not in the value.
-
-      This state is convergent rather than accidental, and it is the evidence
-      behind carve#490, which asks whether a reassembled node should be a NAMED
-      permitted category under this section rather than a conformance shortfall
-      each engine reports separately. Until that is decided the rule below
-      stands as written.
-
-      The earlier text here named per-engine gaps that no longer exist -- it
-      described carve-rs as placing block nodes only, "869 block nodes and 54
-      left", and pointed at carve-js#441 and carve-rs#333 for tracking. Both
-      issues are closed and both engines have moved. A status section that
-      states numbers has to be re-measured when it is read; these were taken
-      from the corpus on the day this paragraph was written.
+      carve-rs records positions on BLOCK nodes and none on inline ones. Over
+      the corpus that places 869 block nodes and leaves 54, and the ones left
+      are refusals rather than gaps: line-block content is reassembled around
+      an indentation sentinel, so it is not a slice of the source and cannot
+      honestly be placed. Its inline variants are tuple-shaped, so there is
+      nowhere to put a position without changing the variant itself, which is
+      why the inline half has not started. Tracked in carve-rs#333, which also
+      records the six trap classes carve-js hit, in the order they bit.
 
       carve-rb serializes carve-rs's tree, so it publishes exactly what that
-      engine records. It is the route by which the conformance checker reaches
-      carve-rs at all, since carve-rs has no JSON serializer of its own -- and
-      therefore also the route by which a stale carve-rs PIN in carve-rb shows
-      up as a conformance failure that carve-rs itself does not have
-      (carve-rb#41).
+      engine records - the block positions and not the inline ones. It is the
+      route by which the conformance checker reaches carve-rs at all, since
+      carve-rs has no JSON serializer of its own.
 
       An implementation that cannot yet produce positions MUST NOT emit `pos`
       with invented values, and MUST NOT omit it silently: it does not yet
@@ -4080,41 +3912,6 @@ EOF = (* end of file *) ;
       that container empty; the serialized tree follows the same rule rather
       than inventing a second one. Its `pos` still records where it was
       WRITTEN, so nothing about navigation is lost by the move.
-
-      THIS COVERS EVERY DEFINITION KIND, NOT ONLY FOOTNOTES -- NORMATIVE. An
-      `abbreviation_def` authored inside a div, a list item or a block quote is
-      a child of the DOCUMENT, exactly as a `footnote` is. The clause above was
-      written against PART 9 §16 and read as footnote-specific, so the engines
-      split: carve-php hoisted both kinds, carve-js and carve-rs hoisted the
-      footnote and left the abbreviation in its container, and all three
-      rendered identical HTML -- because an abbreviation is document-global
-      wherever it is written, which is the same property that makes a footnote
-      definition document-level metadata. A rule that applies to one and not
-      the other needed a reason, and there is none. (carve-php#631)
-
-      THE FORMATTER CONSEQUENCE IS ACCEPTED, NOT OVERLOOKED. Hoisting means
-      PART 11's writer emits the definition after the container the author
-      wrote it in, which reads like a violation of PART 11 §6 ("fmt does not
-      reorder ... those are the author's choices and the AST records them").
-      It is not, because §6 governs what the writer may do with what the tree
-      HOLDS, and this clause is what the tree holds. The consequence is already
-      shipping and corpus-pinned for footnotes:
-
-        See [^a].
-
-        > [^a]: note body
-
-      formats to the definition after an emptied `>`, and corpus
-      `115-footnote-definition-inside-a-container-is-collected` pins the
-      collection it follows from. Extending the rule to abbreviations extends
-      that consequence; it does not introduce it.
-
-      THE ALTERNATIVE WAS TO NARROW THE RULE instead -- keep definitions where
-      they were written, for both kinds. It was rejected because it reverses a
-      pinned rule that ships today, and because the argument for hoisting is
-      not about convenience: a definition is metadata whose SCOPE is the
-      document, and a tree that nests document-scoped metadata inside a
-      container invites a consumer to treat it as container-scoped.
 
       Definitions appear in DOCUMENT ORDER by source position. Numbering is a
       resolution result and stays on the reference (§5).

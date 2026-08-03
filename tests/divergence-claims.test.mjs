@@ -47,14 +47,12 @@ const normalize = (html) => html.replace(/\s+/g, ' ').trim()
  * Section 5b's "> > quoted" case is absent for a duller reason: both engines
  * nest it, which is the claim, but they pretty-print the nesting differently
  * (`<blockquote><p>` against `<blockquote> <p>`), and this file compares
- * whitespace-squashed HTML. The two `differs: true` cases carry the section.
+ * whitespace-squashed HTML.
  */
 const CLAIMS = [
   { section: '1', input: '# Getting Started\n', differs: false, note: 'the emitted id is deliberately Djot-shaped - the divergence is in RESOLUTION, not the slug' },
   { section: '1b', input: '# a; b: c\n', differs: true, note: 'Carve keeps alphanumerics only, so a-b-c against Djot a;-b:-c' },
   { section: '1c', input: '{a=b .c #x}\n# abc\n', differs: true, note: 'with an explicit id, Carve keeps non-id attributes on the heading; Djot moves them to the section' },
-  { section: '5b', input: '>quoted\n', differs: true, note: 'Djot needs a space after >; Carve does not, following CommonMark' },
-  { section: '5b', input: '>> quoted\n', differs: true, note: 'Djot reads >> as text; Carve nests' },
   { section: '6', input: '%% a comment\n', differs: true, note: 'Carve has plain-text comments; Djot renders the line' },
   { section: '7', input: 'text\n# Heading\n', differs: true, note: 'a block opener interrupts a paragraph in Carve' },
   { section: '11', input: '1. one\n\n  > quoted\n', differs: true, note: 'below the content column the block detaches in Carve, attaches in Djot' },

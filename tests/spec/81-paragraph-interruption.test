@@ -41,6 +41,18 @@ text
 
 ```
 text
+>>= operator
+>=3 items
+>_< face
+.
+<p>text
+&gt;≥ operator
+≥3 items
+&gt;_&lt; face</p>
+```
+
+```
+text
 - a
 - b
 .

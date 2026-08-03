@@ -6,7 +6,7 @@
  * rendered through carve-js, carve-rs and carve-php, and compared.
  *
  * It has found, in one afternoon, five content-loss defects that every existing
- * gate passed - 531 corpus documents against five targets in three engines,
+ * gate passed - 530 corpus documents against five targets in three engines,
  * plus the AST conformance checker and the formatter round trip, all green:
  *
  *   carve-rs#451   `[]: u` consumed as a definition; the line vanished
