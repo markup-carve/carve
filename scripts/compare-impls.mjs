@@ -19,6 +19,10 @@ const roundtrip = args.has('--roundtrip')
 // this script reports divergences and exits 0, which is why two engines
 // disagreeing about a document's canonical form went unnoticed (carve#478).
 const failOnDiff = args.has('--fail-on-diff')
+
+// Optional cases that reached fewer than two engines AND carry no recorded
+// reason. Gated on below, so a new one cannot join the roll-up unexplained.
+let undocumentedUnreachable = []
 const limitArg = process.argv.find((a) => a.startsWith('--limit='))
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) : Infinity
 const corpusArg = process.argv.find((a) => a.startsWith('--corpus='))
@@ -727,6 +731,25 @@ if (isOptional) {
       const reason = UNREACHABLE_REASONS[feature]
       if (reason) console.log(`    ${feature}: ${reason}`)
     }
+    // A case with no reason printed NOTHING, which made it indistinguishable
+    // from a documented one in the roll-up above - the whole point of carve#535
+    // was that "fewer than two engines" needs a why attached, and a silent
+    // entry is exactly the state that issue found. Undocumented is louder than
+    // documented on purpose, and it is recorded for the gate below.
+    undocumentedUnreachable = worst
+      .filter(([feature]) => !UNREACHABLE_REASONS[feature])
+      .map(([feature, n]) => ({ feature, engines: n }))
+    for (const { feature, engines } of undocumentedUnreachable) {
+      console.log(
+        `    UNDOCUMENTED  ${feature}: reached ${engines} engine(s) and nothing says why.`,
+      )
+      console.log(
+        `                  Add it to UNREACHABLE_REASONS with the reason - a missing`,
+      )
+      console.log(
+        `                  ADAPTER is this repo's backlog, a missing ENGINE OPTION is not.`,
+      )
+    }
   } else {
     console.log('\nAll optional cases reached at least two engines.')
   }
@@ -763,6 +786,16 @@ if (failOnDiff) {
   // the start and never gated on, so the check could report a formatter
   // rewriting documents and still exit 0.
   const invariantFailures = roundtrip ? semanticFailures + idempotenceFailures : 0
+  if (undocumentedUnreachable.length > 0) {
+    console.error(
+      `\n${undocumentedUnreachable.length} optional case(s) reached fewer than two engines with no ` +
+        `recorded reason: ${undocumentedUnreachable.map((u) => u.feature).join(', ')}.`,
+    )
+    console.error(
+      'Record why in UNREACHABLE_REASONS. Not compared is allowed; not compared and unexplained is not.',
+    )
+    process.exit(1)
+  }
   if (failing > 0 || invariantFailures > 0) {
     if (failing > 0) {
       console.error(`\n${failing} ${label} difference(s) - see the DIFF lines above.`)
