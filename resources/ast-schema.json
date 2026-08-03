@@ -2080,6 +2080,10 @@
           ],
           "description": "Ordered-marker delimiter AS AUTHORED (PART 11 section 6). Absent means the default `.`."
         },
+        "bareMarker": {
+          "const": true,
+          "description": "Ordered list written with the BARE dot marker (`. item`), which carries no number, AS AUTHORED (PART 11 section 6). Absent means the author numbered it. Without this the bare form decodes as `1. item`: `delim` and `bulletChar` carry marker flavor for every other form, and this was the one authored distinction with no field to hold it (carve#480)."
+        },
         "bulletChar": {
           "enum": [
             "-",

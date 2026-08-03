@@ -3666,8 +3666,13 @@ EOF = (* end of file *) ;
         text       `value`
         heading    `level`, `children`
         list       `ordered`, `tight`, `start`, `items`, and the AUTHOR-CHOICE
-                   fields `bulletChar` and `delim` (PART 11 §6) when the author's
-                   spelling is not the default
+                   fields `bulletChar`, `delim` and `bareMarker` (PART 11 §6)
+                   when the author's spelling is not the default. `bareMarker`
+                   is `true` for an ordered list written with the BARE dot form
+                   (`. item`), which carries no number; absent means the author
+                   numbered it. Without it the bare form has nowhere to live on
+                   the wire and decodes as `1. item`, losing authored form that
+                   every other marker flavor keeps (carve#480)
         strong     `children`, and `boldItalic` when the author wrote the
                    combined `/*…*/` form rather than nesting `*` around `/`
       An implementation MUST NOT invent a synonym, and MUST NOT expose an
