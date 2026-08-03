@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 11 §2a: the canonical writer does not substitute one construct for
+  another** (carve#544). `to_html(fmt(x)) == to_html(x)` holding is necessary,
+  not sufficient - carve-rs wrote `* %%` as `* +`, turning a line comment into
+  the continuation marker, and carve-js wrote `| %%%` as `| %% %`, splitting a
+  comment-block fence. Both render identically and re-parse to a different AST,
+  which is how the invariant passed while the output was wrong. The escaping
+  half was already decided by §2's own test: `}^p` and `[^` both re-parse
+  identically bare, so all three engines over-escape the first and two of three
+  over-escape the second.
+
+### Changed
+
 - **A lazy continuation needs an open paragraph, including after a container**
   (carve#561, carve#572). The block algorithm's S4 already said a line folds
   only where some container holds an OPEN PARAGRAPH, and closes the unmatched

@@ -3700,6 +3700,48 @@ EOF = (* end of file *) ;
       escapes on this occurrence let the construct form? Yes -> escape the run.
       No -> emit it bare.
 
+   2a. THE WRITER DOES NOT SUBSTITUTE ONE CONSTRUCT FOR ANOTHER -- NORMATIVE.
+      §2 governs ESCAPING. It does not license rewriting a construct into a
+      different one that happens to render the same, and neither does §1's
+      invariant: `to_html(fmt(x)) == to_html(x)` holding is necessary, not
+      sufficient. Two spellings that render alike are still two spellings, and
+      removing that is what a CANONICAL writer is for.
+
+      Measured, on documents the differential fuzzer generated (carve#544).
+      Each row renders identically in every engine and re-parses to a
+      DIFFERENT AST, which is how the invariant passed while the output was
+      wrong:
+
+        source     written as    by        what changed
+        `* %%`     `* +`         carve-rs  a line comment became the
+                                           CONTINUATION MARKER (§17 L3) -- a
+                                           different construct with a body
+        `| %%%`    `| %% %`      carve-js  a comment-block fence (§28) split
+                                           into a line comment plus text
+
+      The second is also what §2's own THE UNIT IS THE OPENER paragraph
+      forbids one layer down: `%%%` is an opener run, and half of it plus a
+      stray character is exactly the "shape that happens to work rather than
+      one that says what it means".
+
+      AND THE ESCAPING HALF IS ALREADY DECIDED by §2, applied by its own test
+      -- would omitting the escape change the re-parsed AST?
+
+        `}^p`   bare re-parses IDENTICALLY, so nothing here needs escaping.
+                carve-js writes `\}\^p` and carve-rs and carve-php write
+                `}\^p`; ALL THREE over-escape, the last two by one character
+                rather than two.
+        `[^`    bare re-parses identically -- an unterminated `[^` cannot form
+                a footnote reference, and §2 asks whether the CONSTRUCT can
+                form, not whether the characters look like an opener.
+                carve-php is right; carve-js and carve-rs escape it.
+
+      Both are §2 defects rather than new rules, and both are the direction §2
+      already calls a defect rather than a safe default. They are recorded here
+      because a formatter escaping too much is invisible to every gate the
+      project runs: the HTML matches, the round trip holds, and only the AST
+      shows the `escaped_text` node nobody wrote.
+
    3. WHY A STATIC CHARACTER TABLE CANNOT IMPLEMENT §2. Whether a character
       is significant depends on the line, not on the character:
 
