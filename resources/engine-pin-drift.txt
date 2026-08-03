@@ -25,3 +25,5 @@
 #
 # Format: <slug><space><space><reason>
 176-a-marker-separator-is-a-space-never-a-tab  carve#559 landed the rule; carve-js has not shipped it
+178-a-flush-left-line-needs-an-open-paragraph-to-fold-into  carve#576 landed the rule; carve-js has not shipped it
+178-a-flush-left-line-needs-an-open-paragraph-to-fold-into-2  carve#576 landed the rule; carve-js has not shipped it
