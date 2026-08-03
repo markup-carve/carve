@@ -112,6 +112,35 @@
         Otherwise close the unmatched containers and re-classify the residue
         in the surviving context (S3).
 
+        NO OPEN PARAGRAPH, NO LAZY LINE -- NORMATIVE. The "otherwise" is not
+        a leftover case, and it binds even where the unmatched container is a
+        LIST ITEM whose last block is a container. In
+
+            . >
+            X
+
+        `. ` opens an item whose content is an EMPTY block quote. `X` sits at
+        column 0, so it does not supply the item's indentation prefix, and
+        there is no open paragraph anywhere in the stack for it to fold into.
+        Both halves of the rule therefore point the same way: the item closes
+        and `X` is a new top-level block. The same disposes of
+
+            - >
+            lazy
+
+        while `- > q` / `lazy` FOLDS, because there the quote holds an open
+        paragraph -- one rule, opposite answers, on whether a paragraph is
+        open.
+
+        Three engines gave three answers here and the reference is not among
+        the right ones: carve-js and carve-php keep `X` inside the item,
+        carve-rs closes it, and carve-php additionally treats `|` unlike every
+        other character (carve-php#683). The executable spec in scripts/spec
+        also keeps it inside, so THIS repository's implementation moves too --
+        recorded rather than glossed, because a rule whose own reference
+        implementation does not follow it is worth flagging when it lands, not
+        when someone next reads it. (carve#561, carve#572)
+
         This said "the innermost MATCHED context holds an OPEN PARAGRAPH",
         which describes something no implementation does. A lazy line carries
         no markers, so it matches ZERO containers and the innermost matched

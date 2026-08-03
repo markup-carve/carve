@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **A lazy continuation needs an open paragraph, including after a container**
+  (carve#561, carve#572). The block algorithm's S4 already said a line folds
+  only where some container holds an OPEN PARAGRAPH, and closes the unmatched
+  containers otherwise. That "otherwise" now says explicitly that it binds when
+  the unmatched container is a list item whose last block is a container: `. >`
+  followed by a column-0 `X` closes the item, because the quote is empty and
+  nothing is open. `- > q` / `lazy` still folds, because there a paragraph IS
+  open. Three engines gave three answers; carve-rs is the one that matches, and
+  the executable spec in `scripts/spec` moves with carve-js and carve-php.
+
 - **PART 9 §17 L1a: a list item's first block does not decide loose or tight**
   (carve#538). L1 asks whether the item holds a blank-line-separated second
   paragraph, not what its first block was. `- - a` followed by a blank line and
