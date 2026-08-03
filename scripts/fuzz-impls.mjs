@@ -48,7 +48,7 @@
  * no fuzzer.
  */
 import { execFileSync } from 'node:child_process'
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, rmSync, writeFileSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -128,6 +128,37 @@ if (missing.length) {
   console.error('A fuzzer that reports success having rendered nothing is worse than no fuzzer.')
   process.exit(2)
 }
+
+/*
+ * Say WHICH build each engine is, before rendering anything.
+ *
+ * Missing was already fatal. STALE was silent, and stale is the worse failure:
+ * the run completes, the divergences look real, and they are two days old. A
+ * seed-101 run reported four `>`-marker divergences that had been fixed the day
+ * before - the carve-rs binary was from a sibling checkout the fallback path
+ * found, built before that fix landed. Four of eight findings were fiction, and
+ * nothing in the output said so.
+ *
+ * The paths are printed because the fallback is a bare `../carve-rs` relative to
+ * this repo: whoever sets CARVE_RS_DIR and typos it gets a different engine
+ * without being told. The mtime is printed because a checkout at the right
+ * revision can still hold a binary built before the last commit.
+ */
+const provenance = (label, file) => {
+  let built = 'unknown'
+  try {
+    built = statSync(file).mtime.toISOString().replace('T', ' ').slice(0, 16)
+  } catch {
+    /* reported as unknown; the existence checks above already passed */
+  }
+  return `  ${label.padEnd(10)} ${built}  ${file}`
+}
+
+console.log('fuzz-impls: comparing these builds')
+console.log(provenance('carve-js', jsEntry))
+console.log(provenance('carve-rs', rustBinary))
+console.log(provenance('carve-php', phpBinary))
+console.log('')
 
 const lib = await import(jsEntry)
 // A wrong entry-point NAME must fail loudly. While `plain` was mapped to a
