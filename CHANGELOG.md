@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **PART 9 §15: a floating attribute skips what renders nothing** (carve#529).
+  `{…}` on its own line attaches to the next block; the clause did not say
+  whether a reference, footnote or abbreviation definition, or a comment,
+  counts as one. It does not - pending floats past them to the next VISIBLE
+  block, because attaching an attribute to a construct that emits nothing
+  discards it silently, and A4 already reserves discarding for end of document.
+  Three engines answered three ways and none was self-consistent across the
+  five invisible kinds; the executable spec already applies it over all five.
+
 ### Fixed
 
 - **The pinned reference build is now checked against the corpus in CI**

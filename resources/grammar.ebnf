@@ -2586,6 +2586,44 @@ EOF = (* end of file *) ;
       A2 FLOAT FORWARD. pending survives blank lines and further attribute
          lines and attaches to the NEXT block element: `{#id}\n\nText` ->
          <p id="id">Text</p>.
+      A2a AN INVISIBLE CONSTRUCT IS NOT THE NEXT BLOCK -- NORMATIVE. pending
+         floats PAST anything that renders nothing and attaches to the next
+         VISIBLE block. The constructs this covers are the reference,
+         footnote and abbreviation DEFINITIONS (§16) and the two comment
+         forms (§21, §28):
+
+             {#i}
+             [^f]: note
+
+             e
+
+         is `<p id="i">e</p>`. The attribute is the author's instruction about
+         a rendered element; attaching it to a construct that emits nothing
+         silently discards it, and A4 already reserves discarding for the one
+         case where there is genuinely nothing left -- end of document.
+
+         Stated because §15 said "the NEXT block element" and left open
+         whether an invisible construct is one. Three engines answered three
+         ways and NONE was self-consistent across the five kinds: carve-rs
+         applied it over four and dropped it over an abbreviation definition,
+         carve-php dropped it over the two reference definitions and applied
+         it over the other three, and carve-js dropped it over all five --
+         self-consistent, and the only answer that throws the attribute away.
+         All three agree when nothing intervenes, so this is specifically
+         about what an invisible construct does to a floating attribute.
+         (carve#529)
+
+         The executable spec in scripts/spec already applies it over all five,
+         so the rule above is what this repository's own implementation does
+         rather than a new behavior invented for the clause.
+
+         The divergence is PINNED, one claim per kind, in
+         scripts/engine-claims.mjs. That is the direction that matters here: a
+         documented divergence which is silently RESOLVED leaves a false
+         sentence behind, so when the engines move to this rule those five
+         claims start failing, and the failure is the signal to rewrite this
+         paragraph as agreement rather than to relax the check.
+
       A3 MERGE (over all pending blocks, source order):
          * id -> last one wins;
          * key=value -> last value for a given key wins;

@@ -61,6 +61,50 @@ const CLAIMS = [
     source: '[y]{.sm:hover}\n',
     expect: ['php'],
   },
+
+  /*
+   * PART 9 §15 A2a names a three-way divergence across five invisible
+   * constructs, so it needs five claims: the split is PER KIND, and one case
+   * would pin the shape of the disagreement wrong.
+   *
+   * These are the direction this checker cares most about - a documented
+   * divergence that gets silently RESOLVED leaves a false sentence in the
+   * grammar. A2a says what every engine should do; when they all move to it
+   * these five start failing, and the failure is the signal to rewrite the
+   * paragraph as agreement rather than to relax the check.
+   *
+   * The odd-engine-out values come from the matrix measured in carve#529.
+   */
+  {
+    section: 'PART 9 §15 A2a, floating attribute over a footnote definition',
+    quote: 'carve-rs applies the attribute over a footnote definition where carve-js and carve-php drop it',
+    source: '{#i}\n[^f]: note\n\ne\n',
+    expect: ['rs'],
+  },
+  {
+    section: 'PART 9 §15 A2a, floating attribute over a link reference definition',
+    quote: 'carve-rs applies the attribute over a link reference definition where carve-js and carve-php drop it',
+    source: '{#i}\n[f]: u\n\ne\n',
+    expect: ['rs'],
+  },
+  {
+    section: 'PART 9 §15 A2a, floating attribute over an abbreviation definition',
+    quote: 'carve-php applies the attribute over an abbreviation definition where carve-js and carve-rs drop it',
+    source: '{#i}\n*[A]: b\n\ne\n',
+    expect: ['php'],
+  },
+  {
+    section: 'PART 9 §15 A2a, floating attribute over a line comment',
+    quote: 'carve-js drops the attribute over a line comment where carve-rs and carve-php apply it',
+    source: '{#i}\n%% c\n\ne\n',
+    expect: ['js'],
+  },
+  {
+    section: 'PART 9 §15 A2a, floating attribute over a comment block',
+    quote: 'carve-js drops the attribute over a comment block where carve-rs and carve-php apply it',
+    source: '{#i}\n%%%\nc\n%%%\n\ne\n',
+    expect: ['js'],
+  },
 ]
 
 const engines = []
