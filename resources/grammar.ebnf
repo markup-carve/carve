@@ -2741,6 +2741,30 @@ EOF = (* end of file *) ;
          second PARAGRAPH; otherwise TIGHT. A tight item's paragraph
          renders WITHOUT `<p>` (<li>text</li>); a loose item's paragraphs
          ARE wrapped (<li><p>text</p></li>).
+      L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER -- NORMATIVE. L1 asks
+         whether the item holds a blank-line-separated second PARAGRAPH. It
+         does not ask what the FIRST block was, and nothing here depends on
+         that. So
+
+             - - a
+
+               Body.
+
+         is LOOSE: the sub-list is the item's first block, `Body.` is a
+         second paragraph after a blank line, and L1 is satisfied. The same
+         holds for every other lead -- plain text, a heading, an attribute
+         block, a block quote -- all of which every engine already renders
+         loose.
+
+         Stated because the SUB-LIST lead was the one shape where that was
+         not true in practice: carve-js rendered it loose and carve-rs and
+         carve-php rendered it tight, while all three agreed on the other
+         four leads. A rule that changed with the first block's kind would
+         need a reason and there is none -- L2 is about a blank line before
+         a sub-BLOCK, and `Body.` is a paragraph, so L2 never applies here.
+         The executable spec and the reference both render it loose already.
+         (carve#538)
+
       L2 COMPACT LIST BLOCKS -- Carve deviation from djot/CommonMark. A
          blank line before an item's sub-BLOCK (sub-list, block quote,
          fenced code, fenced div, heading, table) does NOT loosen: the item

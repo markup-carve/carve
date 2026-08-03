@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 9 §17 L1a: a list item's first block does not decide loose or tight**
+  (carve#538). L1 asks whether the item holds a blank-line-separated second
+  paragraph, not what its first block was. `- - a` followed by a blank line and
+  `Body.` is therefore LOOSE, like every other lead - plain text, heading,
+  attribute block, block quote - which all three engines already render loose.
+  The sub-list lead was the one shape where they split.
+
+### Changed
+
 - **PART 10 §4 states the empty-container body shape** (carve#531). A container
   whose body renders nothing keeps a blank line where the body would be, except
   a bare `:::` div, which closes on the next line. The exception has no
