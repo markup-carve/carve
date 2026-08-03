@@ -4058,6 +4058,23 @@ EOF = (* end of file *) ;
       than navigated. Making it optional would mean every consumer has to
       handle its absence, which in practice means not using it.
 
+      A SPAN DOES NOT BEGIN AT A LINE TERMINATOR -- NORMATIVE. Except on a
+      `soft_break` or a `hard_break`, whose content IS the terminator, a node's
+      `startOffset` MUST NOT select a newline. No construct begins with the
+      line ending the line before it.
+
+      This is written down because it is the one thing a checker can verify
+      about a span without knowing what the node covers. A span is compared
+      against the text it selects only on a `text` node -- the single node whose
+      exact source text the tree carries -- so a paragraph, list item, table
+      cell or block quote could point at the wrong source and every conformance
+      run came back clean. carve-php gave a tab-containing line block a
+      paragraph span starting at the newline that ENDED the first stanza line,
+      dropping that line from its own paragraph, and the checker passed it for
+      as long as both existed (markup-carve/carve-php#669, carve#541).
+
+      All three engines satisfy it today; the rule is a ratchet, not a request.
+
       POSITION TRACKING MAY BE OPT-IN, SERIALIZATION MAY NOT. An implementation
       MAY gate position tracking behind a parse option, and MUST enable it when
       asked to serialize. What is forbidden is a serialized document without
