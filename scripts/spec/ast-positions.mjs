@@ -86,6 +86,27 @@ export function checkPositions(doc, source, findings) {
             `offset ${pos.startOffset} is the newline ending the line before it`,
         )
       }
+      // A HARD BREAK COVERS THE MARKUP THE AUTHOR WROTE. Where a backslash
+      // sits immediately before the newline, the break is that pair - so a
+      // span that starts at the newline has left the backslash in no node at
+      // all. carve-rs did exactly that until carve-rs#492, and nothing saw it:
+      // a break renders as <br> whatever its span says (carve#549).
+      //
+      // A break the parser SYNTHESIZED - a line block's implied break, a
+      // hard-break fence turning every newline into one - has no backslash
+      // before it and is left alone, which is why the rule tests the source
+      // rather than the node type.
+      if (
+        node.type === 'hard_break' &&
+        codepoints[pos.startOffset] === '\n' &&
+        pos.startOffset > 0 &&
+        codepoints[pos.startOffset - 1] === '\\'
+      ) {
+        findings.push(
+          `hard break span starts after its backslash on "${node.type}" at ${path}: ` +
+            `offset ${pos.startOffset} is the newline, and the construct is the pair`,
+        )
+      }
       // THE UNIT, checked rather than assumed. PART 12 §4 counts codepoints, and
       // codepoints, UTF-16 units and bytes all agree on ASCII - so nothing here
       // distinguished them until this compared a span against the text it

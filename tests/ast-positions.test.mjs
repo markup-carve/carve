@@ -76,6 +76,37 @@ test('an empty span at the very end of the source is not read as a newline', () 
   assert.deepEqual(findingsFor(doc, source), [])
 })
 
+test('a hard break that starts after its backslash is reported', () => {
+  const source = 'a\\\nb\n'
+  const doc = {
+    type: 'document',
+    children: [{ type: 'hard_break', pos: pos(2, 3) }],
+  }
+  const findings = findingsFor(doc, source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /hard break span starts after its backslash/)
+})
+
+test('a hard break covering the backslash and the newline is accepted', () => {
+  const source = 'a\\\nb\n'
+  const doc = {
+    type: 'document',
+    children: [{ type: 'hard_break', pos: pos(1, 3) }],
+  }
+  assert.deepEqual(findingsFor(doc, source), [])
+})
+
+test('a synthesized break over a bare newline is accepted', () => {
+  // A line block's implied break, or a hard-break fence turning every newline
+  // into one: no backslash was written, so the newline IS the construct.
+  const source = 'a\nb\n'
+  const doc = {
+    type: 'document',
+    children: [{ type: 'hard_break', pos: pos(1, 2) }],
+  }
+  assert.deepEqual(findingsFor(doc, source), [])
+})
+
 test('a text node whose span selects the wrong source is reported', () => {
   const source = 'hello world\n'
   const doc = {

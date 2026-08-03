@@ -4058,6 +4058,30 @@ EOF = (* end of file *) ;
       than navigated. Making it optional would mean every consumer has to
       handle its absence, which in practice means not using it.
 
+      A SPAN COVERS THE MARKUP THE AUTHOR WROTE -- NORMATIVE. Where a node
+      has markup of its own, its span covers that markup and not merely the
+      content inside it. The case that needed saying is the break, which has
+      no content to fall back on: `hard_break` is a backslash followed by a
+      newline, so its span is BOTH characters.
+
+      source: a backslash at the end of a line, then the next line
+      span: the backslash and the newline, not the newline alone
+
+      Three engines, two answers, and nothing to tell them apart: carve-js and
+      carve-php covered the pair, carve-rs covered the newline and left the
+      backslash in no node at all. A break renders as a line break whatever
+      its span says, so no output could show the difference, and the
+      conformance checker compares a span against the text it selects only for
+      a `text` node -- the one node whose exact source text the tree carries.
+      (carve#549, fixed in carve-rs#492.)
+
+      A break the parser SYNTHESIZED is a different case and keeps the bare
+      newline: a line block's implied break and a hard-break fence's converted
+      newlines have no backslash, because the author wrote none. The
+      discriminator is what is in the SOURCE, not what type the node has --
+      which is also how the checker tests it, so a synthesized break needs no
+      exemption list.
+
       A SPAN DOES NOT BEGIN AT A LINE TERMINATOR -- NORMATIVE. Except on a
       `soft_break` or a `hard_break`, whose content IS the terminator, a node's
       `startOffset` MUST NOT select a newline. No construct begins with the
