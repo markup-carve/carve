@@ -146,6 +146,9 @@ for (const ex of examples) {
 // numbers above the current maximum, which is what appending a section does
 // naturally. A deliberate renumber is still possible, with CORPUS_RENUMBER=1
 // and the knowledge that every engine's allowlist has to move with it.
+// `outDir` may not exist yet (a fresh generate, or after `rm -rf tests/corpus`),
+// and scanning it must not be the thing that fails.
+mkdirSync(outDir, { recursive: true })
 const existingNumbers = new Map()
 for (const f of readdirSync(outDir)) {
   if (!f.endsWith('.crv')) continue
@@ -169,8 +172,16 @@ if (existingNumbers.size > 0 && process.env['CORPUS_RENUMBER'] !== '1') {
     if (existingNumbers.has(ex.slug)) continue
     if (Number(ex.idx) < highestKept) addedTooLow.set(ex.slug, `${ex.idx}-${ex.slug}`)
   }
+  // A category that DISAPPEARS breaks the same allowlists a renumber does - a
+  // removed section, or a renamed one, which is a removal plus an addition. The
+  // engines do notice (carve-rs reports an IMPLEMENTED entry with no pair), but
+  // they notice a repo away and a bump later.
+  const present = new Set(examples.map((ex) => ex.slug))
+  const removed = [...existingNumbers]
+    .filter(([slug]) => !present.has(slug))
+    .map(([slug, idx]) => `${idx}-${slug}`)
 
-  if (moved.size || addedTooLow.size) {
+  if (moved.size || addedTooLow.size || removed.length) {
     console.error('generate-corpus: the corpus numbering is APPEND-ONLY.\n')
     if (moved.size) {
       console.error(`  ${moved.size} existing categor${moved.size === 1 ? 'y' : 'ies'} would be renumbered:`)
@@ -181,6 +192,12 @@ if (existingNumbers.size > 0 && process.env['CORPUS_RENUMBER'] !== '1') {
     if (addedTooLow.size) {
       console.error(`  ${addedTooLow.size} new categor${addedTooLow.size === 1 ? 'y' : 'ies'} would land below the highest existing number:`)
       for (const line of [...addedTooLow.values()].slice(0, 10)) console.error(`    ${line}`)
+      console.error('')
+    }
+    if (removed.length) {
+      console.error(`  ${removed.length} existing categor${removed.length === 1 ? 'y is' : 'ies are'} gone from the examples:`)
+      for (const line of removed.slice(0, 10)) console.error(`    ${line}`)
+      if (removed.length > 10) console.error(`    … and ${removed.length - 10} more`)
       console.error('')
     }
     console.error('  Every engine allowlists categories by `NN-slug`, so this invalidates')
