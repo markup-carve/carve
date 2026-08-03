@@ -75,9 +75,8 @@ one**, and says so. Absent is a fact a consumer can act on; a wrong span is not.
 
 ## Adjacent text runs are coalesced
 
-A serialized node's children hold **no two adjacent `text` nodes**. Where a
-producer's internal tree has a run of them, they join into one before
-serialization, concatenating `value` in order:
+A node's children hold **no two adjacent `text` nodes**. Where parsing produced
+a run of them, they join into one, concatenating `value` in order:
 
 ```
 foo_bar_baz and snake_case stay literal
@@ -96,6 +95,18 @@ lets a divergence be measured node-for-node instead of argued about.
 
 `escaped_text` is not `text` and does not merge with it: the two stay distinct
 on the wire because an escape is authored form.
+
+The merge is part of `parse(x)`, not of serialization. [§6](#round-trip)
+requires `parse(x)` serialized and deserialized to equal `parse(x)`, so joining
+runs in the encoder while leaving the tree split satisfies this rule and breaks
+that one on the same document - what comes back holds one node where the tree
+held three.
+
+A merged run keeps a `pos` only where its pieces are **contiguous** in the
+source. Where they are not - the `<` and `>` of an autolink unwrapped inside a
+link label, the delimiter between two halves of a wrapped table cell - the
+merged value is not a slice of the source at any offset, so the node carries no
+position rather than one that selects the wrong text.
 
 The schema cannot express this - JSON Schema has no way to forbid two adjacent
 array entries of the same shape - so it is checked by the shape comparison in
