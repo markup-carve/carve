@@ -602,6 +602,24 @@ not a list</p>
 
 :::
 
+The same holds for **every** marker that takes a separator space, not
+just bullets. A definition term needs content too, and here the
+trailing-whitespace half of the rule is what matters: `::` and `::` with
+two spaces after it must mean the same thing, or stripping whitespace on
+save would turn a paragraph into a definition list.
+
+::: compare
+
+```carve
+:: 
+```
+
+```html
+<p>::</p>
+```
+
+:::
+
 Ordered lists use `N.` prefixes — numbering starts from the first marker.
 
 ::: compare
@@ -2697,6 +2715,42 @@ not a div
 
 ::::
 
+A bare colon fence closes a container only when it is EXACTLY as long as that
+container's opener, so the run length is a local depth count: the outermost
+container is `:::` and every level inward adds a colon. That is the direction
+`carve fmt` emits, and it is writable from the top down - a fence is sized by
+the levels above it, which are already on the page. The other direction parses
+too; equal-length fences nest as well, since a fence carrying a type word is
+never a closer.
+
+:::::: compare
+
+```carve
+::: outer
+
+:::: middle
+
+::::: note
+X
+:::::
+
+::::
+
+:::
+```
+
+```html
+<div class="outer">
+  <div class="middle">
+    <aside class="admonition note">
+      <p>X</p>
+    </aside>
+  </div>
+</div>
+```
+
+::::::
+
 ## Definition lists
 
 `:: term` (one or more) then `:  definition` (one or more) form an entry,
@@ -3581,6 +3635,26 @@ Roses are red,
 
 ::::
 
+An inner run of two or more spaces is a medial gap - the alignment a caesura or a column of aligned text is made of - and is preserved the same way. A lone inner space stays an ordinary collapsible space, so a long line can still wrap between words.
+
+:::: compare
+
+```carve
+::: |
+Two roads    diverged in a yellow wood,
+And looked   down one as far as I could
+:::
+```
+
+```html
+<div class="line-block">
+  <p>Two roads&nbsp;&nbsp;&nbsp;&nbsp;diverged in a yellow wood,<br>
+And looked&nbsp;&nbsp;&nbsp;down one as far as I could</p>
+</div>
+```
+
+::::
+
 A blank line separates stanzas; each stanza is its own paragraph inside the block.
 
 :::: compare
@@ -3693,3 +3767,28 @@ b</p>
 
 :::::
 
+A gap written with TABS measures in columns, not characters: each tab advances
+to the next four-column stop, counted from where the run starts. So a tab is a
+medial gap or a lone space depending on where it lands - below, `tab` sits at
+column 3 so its tab crosses one column and collapses, while the two after `wide`
+cross two full stops and are kept. A LEADING tab follows the same arithmetic.
+
+:::: compare
+
+```carve
+::: |
+tab	gap
+wide		gap
+	lead
+:::
+```
+
+```html
+<div class="line-block">
+  <p>tab gap<br>
+wide&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gap<br>
+&nbsp;&nbsp;&nbsp;&nbsp;lead</p>
+</div>
+```
+
+::::

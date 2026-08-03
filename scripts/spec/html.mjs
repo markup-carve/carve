@@ -16,6 +16,13 @@ export function renderDoc(doc) {
     abbrDefs: doc.abbrDefs,
     footnoteDefs: doc.footnoteDefs,
     headingIds: new Map(), // lower-cased slug -> { id, html }
+    // PART 11 R1 implicit heading fallback: normalized rendered TEXT -> id.
+    // Separate from headingIds, which is keyed by slug and serves `</#id>`.
+    headingRefs: new Map(),
+    // True while rendering inside a blockquote. R1 declines a heading with a
+    // blockquote ancestor from the reference index (in either nesting order),
+    // while still slugging it and keeping it a crossref target.
+    inBlockquote: false,
     captionSeq: new Map(), // caption label word -> counter (R5)
     captionIds: new Map(), // lower-cased id -> "Label N" (R4)
   }
@@ -48,6 +55,7 @@ export function renderDoc(doc) {
       }
       if (id === null) id = ctx.slug(b.text.replace(/<\/#[^>]*>/g, '').replace(/[ \t]+$/, ''))
       ctx.headingIds.set(id.toLowerCase(), { id, html })
+      noteHeadingRef(ctx, html, id)
       out.push(`${indent()}<section id="${escapeAttr(id)}">`)
       sections.push(b.level)
       out.push(`${indent()}<h${b.level}${hAttrs}>${html}</h${b.level}>`)
@@ -67,6 +75,51 @@ export function renderDoc(doc) {
   html = resolveCrossrefs(html, ctx)
   html = applyAbbreviations(html, ctx)
   return html
+}
+
+/**
+ * One line of a line block (PART 9 SS23).
+ *
+ * Leading whitespace is preserved down to a single column; an inner or trailing
+ * run of TWO OR MORE columns is a medial gap and is preserved too. A lone inner
+ * space stays an ordinary collapsible space so a long line can still wrap
+ * between words. Preserved columns serialize as `&nbsp;`; a tab advances to the
+ * next multiple of four, counted from the column its run starts at (SS24 C1).
+ */
+function renderLineBlockLine(line) {
+  let out = ''
+  let text = ''
+  let i = 0
+  let column = 0
+  let seenContent = false
+  const flush = () => {
+    if (text !== '') out += renderInline(text)
+    text = ''
+  }
+  while (i < line.length) {
+    const ch = line[i]
+    if (ch !== ' ' && ch !== '\t') {
+      text += ch
+      seenContent = true
+      column++
+      i++
+      continue
+    }
+    let width = 0
+    while (i < line.length && (line[i] === ' ' || line[i] === '\t')) {
+      width += line[i] === '\t' ? 4 - ((column + width) % 4) : 1
+      i++
+    }
+    column += width
+    if (!seenContent || width >= 2) {
+      flush()
+      out += '&nbsp;'.repeat(width)
+    } else {
+      text += ' '
+    }
+  }
+  flush()
+  return out
 }
 
 function renderBlock(b, depth, ctx) {
@@ -114,7 +167,16 @@ function renderBlock(b, depth, ctx) {
       return `${pad}<pre${title}${ba}><code${cls}>${esc}</code></pre>`
     }
     case 'quote': {
-      const inner = b.children.map((c) => renderBlock(c, depth + 1, ctx)).filter((x) => x !== null).join('\n')
+      // Depth-first and synchronous, so a saved/restored flag is a stack.
+      const wasInBlockquote = ctx.inBlockquote
+      ctx.inBlockquote = true
+      const inner = (() => {
+        try {
+          return b.children.map((c) => renderBlock(c, depth + 1, ctx)).filter((x) => x !== null).join('\n')
+        } finally {
+          ctx.inBlockquote = wasInBlockquote
+        }
+      })()
       if (b.caption !== undefined) {
         // single-paragraph attribution form pins the compact figure layout
         if (b.children.length === 1 && b.children[0].t === 'para') {
@@ -184,10 +246,7 @@ function renderBlock(b, depth, ctx) {
       }
       if (cur.length) stanzas.push(cur)
       const ps = stanzas.map((st) => {
-        const rendered = st.map((l) => {
-          const m = /^( *)(.*)$/.exec(l)
-          return '&nbsp;'.repeat(m[1].length) + renderInline(m[2].replace(/[ \t]+$/, ''))
-        })
+        const rendered = st.map((l) => renderLineBlockLine(l))
         return `${pad2}  <p>${rendered.join('<br>\n')}</p>`
       })
       return `${pad2}<div class="line-block">\n${ps.join('\n')}\n${pad2}</div>`
@@ -240,6 +299,7 @@ function renderBlock(b, depth, ctx) {
       const id =
         authored ?? ctx.slug(b.text.replace(/<\/#[^>]*>/g, '').replace(/[ \t]+$/, ''))
       ctx.headingIds.set(id.toLowerCase(), { id, html })
+      noteHeadingRef(ctx, html, id)
       const idAttr = authored === null ? ` id="${escapeAttr(id)}"` : ''
       return `${pad}<h${b.level}${attrStr}${idAttr}>${html}</h${b.level}>`
     }
@@ -437,10 +497,38 @@ function resolveRefs(html, ctx) {
     if (typeof text !== 'string') return _
     const key = label ?? stripTags(text)
     const def = ctx.linkDefs.get(key)
-    if (!def) return `[${text}][${label ?? ''}]` // unresolved -> literal (R1)
+    if (!def) {
+      // R1 IMPLICIT HEADING FALLBACK. Link definitions win the tie above, so
+      // this only runs when the label matches none. Every production engine
+      // does this; the oracle did not, and no corpus case could tell because
+      // each one pairing `[X][]` with a definition never reaches the branch
+      // (carve#453).
+      const heading = ctx.headingRefs.get(refKey(label ?? text))
+      if (heading !== undefined) {
+        return `<a href="#${escapeAttr(heading)}"${attrs}>${text}</a>`
+      }
+      return `[${text}][${label ?? ''}]` // unresolved -> literal (R1)
+    }
     const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
     return `<a href="${escapeAttr(checkUrl(def.url))}"${t}${attrs}>${text}</a>`
   })
+}
+
+/*
+ * R1 matches the heading index LOOSER than it matches link definitions: trim,
+ * collapse internal whitespace, fold case. A definition label is an identifier
+ * the author wrote twice; a heading reference is prose quoted from elsewhere in
+ * the document.
+ */
+function refKey(text) {
+  return stripTags(text).trim().replace(/\s+/g, ' ').toLowerCase()
+}
+
+/* Register a heading in the implicit-reference index. FIRST wins. */
+function noteHeadingRef(ctx, text, id) {
+  if (ctx.inBlockquote) return
+  const key = refKey(text)
+  if (key && !ctx.headingRefs.has(key)) ctx.headingRefs.set(key, id)
 }
 
 function stripTags(s) {

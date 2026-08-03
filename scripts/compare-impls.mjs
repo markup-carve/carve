@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { basename, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { DEFAULT_TARGET, expectedFileFor, targetOf } from './lib/corpus-targets.mjs'
+import { phpDir, rustDir } from './lib/engine-locations.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const args = new Set(process.argv.slice(2))
@@ -14,6 +15,10 @@ const bench = args.has('--bench')
 // indentation, inserted blank lines, escape runs - so its output is exactly
 // where the engines are least likely to have been compared (carve#353).
 const roundtrip = args.has('--roundtrip')
+// Opt-in, so a local run stays informational and CI can be strict. Without it
+// this script reports divergences and exits 0, which is why two engines
+// disagreeing about a document's canonical form went unnoticed (carve#478).
+const failOnDiff = args.has('--fail-on-diff')
 const limitArg = process.argv.find((a) => a.startsWith('--limit='))
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) : Infinity
 const corpusArg = process.argv.find((a) => a.startsWith('--corpus='))
@@ -87,21 +92,76 @@ const JS_ENTRY = {
   ansi: 'carveToAnsi',
 }
 
+/**
+ * How to invoke carve-rs: a BUILT binary when one is there, `cargo run` if not.
+ *
+ * `cargo run` compiles into whatever CARGO_TARGET_DIR points at, and a machine
+ * with a shared target directory has more than one checkout of the same package
+ * pointing at it. Two of them take turns rebuilding, so a run can measure a
+ * binary compiled from a DIFFERENT source tree than the one it names - which is
+ * how a clean carve-rs was reported as breaking a PART 11 invariant here, and
+ * the finding evaporated when the same document was checked by hand.
+ *
+ * scripts/ast-conformance.mjs already prefers the built binary and even reports
+ * a stale one. This brings the two checkers into line, and makes a CI run use
+ * the release build the workflow just produced instead of recompiling in debug.
+ */
+const rustCarveBinary = (() => {
+  const dir = rustDir()
+  if (!dir) return null
+  for (const candidate of ['target/release/carve', 'target/debug/carve']) {
+    if (existsSync(join(dir, candidate))) return `./${candidate}`
+  }
+  return null
+})()
+
+const rustBaseCommand = rustCarveBinary
+  ? [rustCarveBinary]
+  : ['cargo', 'run', '--quiet', '--']
+
+/*
+ * Tier-2 features whose only requirement is that an extension be registered.
+ *
+ * The optional corpus is 33 documents and the run reached 3 of them, because
+ * every case needed a hand-written adapter and only the option-carrying ones
+ * had been written (carve#496). Citations alone is 16 of the 33 - the single
+ * largest Tier-2 surface, and the one with no cross-engine measurement at all.
+ *
+ * These need no options, so one table serves both engines that are driven
+ * through an inline script. carve-rs is driven through its BINARY and still
+ * needs a CLI path; those cases stay unreached there and are reported as such.
+ */
+const PLAIN_EXTENSION_FEATURES = {
+  'citations-numbered': { js: 'citations', php: 'CitationsExtension' },
+  'citations-author-date': {
+    js: 'citations',
+    // Not a plain registration: the fixture pins the author-date style,
+    // and registering the extension with its default mode renders the
+    // NUMBERED style against it. Caught by the run this table enables.
+    jsOptions: "{ mode: 'author-date' }",
+    php: 'CitationsExtension',
+    phpArgs: "mode: 'author-date'",
+  },
+  'code-callouts': { js: 'codeCallouts', php: 'CodeCalloutsExtension' },
+  details: { js: 'details', php: 'DetailsExtension' },
+  spoiler: { js: 'spoiler', php: 'SpoilerExtension' },
+  tabs: { js: 'tabs', php: 'TabsExtension' },
+  'list-table': { js: 'listTable', php: 'ListTableExtension' },
+  'bare-url-autolink': { js: 'autolink', php: 'AutolinkExtension' },
+}
+
 const impls = [
   {
     name: 'rust',
-    cwd: process.env.CARVE_RS_DIR ?? resolve(root, '../carve-rs'),
+    cwd: rustDir(),
     prepare: null,
-    defaultCommand: (target = 'html') => ['cargo', 'run', '--quiet', '--', ...CLI_FLAGS[target]],
+    defaultCommand: (target = 'html') => [...rustBaseCommand, ...CLI_FLAGS[target]],
     optionalCommand(feature, target = DEFAULT_TARGET) {
       const flags = CLI_FLAGS[target]
       if (!flags) return null
       if (feature === 'social-link-templates') {
         return [
-          'cargo',
-          'run',
-          '--quiet',
-          '--',
+          ...rustBaseCommand,
           '--mention-url',
           '/users/{name}',
           '--tag-url',
@@ -111,7 +171,7 @@ const impls = [
       }
       if (feature === 'symbol-map') {
         return [
-          'cargo', 'run', '--quiet', '--',
+          ...rustBaseCommand,
           '--symbol', 'rocket=🚀', '--symbol', 'tada=🎉', '--symbol', '+1=👍', '--symbol', 'UPPER=⬆️',
           ...flags,
         ]
@@ -176,6 +236,20 @@ const impls = [
           `,
         ]
       }
+      const plain = PLAIN_EXTENSION_FEATURES[feature]
+      if (plain) {
+        return [
+          'node',
+          '--input-type=module',
+          '-e',
+          `
+            import { readFileSync } from 'node:fs';
+            import { ${entry}, ${plain.js} } from './dist/index.js';
+            const source = readFileSync(process.argv[1], 'utf8');
+            process.stdout.write(${entry}(source, { extensions: [${plain.js}(${plain.jsOptions ?? ''})] }));
+          `,
+        ]
+      }
       return null
     },
     hooks: [
@@ -189,7 +263,7 @@ const impls = [
   },
   {
     name: 'php',
-    cwd: process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php'),
+    cwd: phpDir(),
     prepare: null,
     defaultCommand: (target = 'html') => ['php', 'bin/carve', ...CLI_FLAGS[target]],
     optionalCommand(feature, target = DEFAULT_TARGET) {
@@ -226,14 +300,15 @@ const impls = [
           `,
         ]
       }
-      if (feature === 'bare-url-autolink') {
+      const plain = PLAIN_EXTENSION_FEATURES[feature]
+      if (plain) {
         return [
           'php',
           '-r',
           `
             require 'vendor/autoload.php';
             $converter = new MarkupCarve\\Carve\\CarveConverter();
-            $converter->addExtension(new MarkupCarve\\Carve\\Extension\\AutolinkExtension());
+            $converter->addExtension(new MarkupCarve\\Carve\\Extension\\${plain.php}(${plain.phpArgs ?? ''}));
             echo $converter->convert(file_get_contents($argv[1]));
           `,
         ]
@@ -544,12 +619,39 @@ console.log(
 
 if (isOptional) {
   console.log('\nOptional feature coverage')
+  const unreachable = new Map()
   for (const pair of pairs) {
     const supported = active
       .filter((impl) => commandFor(impl, pair, pair.target))
       .map((impl) => impl.name)
-      .join(', ')
-    console.log(`${pair.feature} (${pair.target}): ${supported || 'none'}`)
+    console.log(`${pair.feature} (${pair.target}): ${supported.join(', ') || 'none'}`)
+    // Fewer than two engines means there is nothing to compare AGAINST, so the
+    // case contributes no agreement evidence even when it renders.
+    if (supported.length < 2) {
+      unreachable.set(pair.feature, (unreachable.get(pair.feature) ?? 0) + 1)
+    }
+  }
+
+  // A "0 differences" line under a run that compared 2 of 33 documents reads
+  // exactly like one that compared all of them. It is the same shape as the
+  // NOT MEASURED roll-up in ast-conformance.mjs, and for the same reason: the
+  // number that matters is how much was checked, not how much disagreed.
+  //
+  // The Tier-2 features are IMPLEMENTED in all three engines - citations, code
+  // callouts and the rest all shipped engine by engine. What is missing is a
+  // way to turn them on from the command line, which is the only interface
+  // this checker has (markup-carve/carve#496).
+  const skippedCases = [...unreachable.values()].reduce((n, x) => n + x, 0)
+  if (skippedCases > 0) {
+    const worst = [...unreachable.entries()].sort((a, b) => b[1] - a[1])
+    console.log(
+      `\nNOT COMPARED: ${skippedCases} of ${pairs.length} optional cases reached fewer than two engines, so they contribute no agreement evidence. This is not a pass.`,
+    )
+    console.log(
+      `  no CLI path in two or more engines: ${worst.map(([f, n]) => `${f} (${n})`).join(', ')}`,
+    )
+  } else {
+    console.log('\nAll optional cases reached at least two engines.')
   }
 }
 
@@ -566,4 +668,34 @@ console.log(
 
 if (bench) {
   console.log('\nBenchmark note: timings include process startup and are useful for CLI-level smoke comparison only.')
+}
+
+// The gate. In roundtrip mode a diff means an engine's formatter changed what a
+// document says, which is wrong under any reading of PART 11 - there is no
+// design question behind it. In the default mode a diff means the engines
+// disagree about a target's output; whether every one of those is a defect is
+// still open (carve#474), so gate that mode only once they are resolved.
+if (failOnDiff) {
+  const failing = roundtrip ? roundtripDiffs : crossImplDiffs
+  const label = roundtrip ? 'round-trip' : 'cross-implementation'
+  // PART 11 §1's own invariants gate too, and separately from cross-engine
+  // agreement. `to_html(fmt(x)) != to_html(x)` means ONE engine's formatter
+  // changed what the document says - a corruption whether or not the others
+  // agree with it, and the engines agreeing on a wrong answer is the case this
+  // catches that a diff count cannot. They were counted and printed here from
+  // the start and never gated on, so the check could report a formatter
+  // rewriting documents and still exit 0.
+  const invariantFailures = roundtrip ? semanticFailures + idempotenceFailures : 0
+  if (failing > 0 || invariantFailures > 0) {
+    if (failing > 0) {
+      console.error(`\n${failing} ${label} difference(s) - see the DIFF lines above.`)
+    }
+    if (invariantFailures > 0) {
+      console.error(
+        `${invariantFailures} PART 11 §1 invariant failure(s) - see the INVARIANT lines above.`,
+      )
+    }
+    process.exit(1)
+  }
+  console.log(`\nNo ${label} differences, and no PART 11 §1 invariant failures.`)
 }

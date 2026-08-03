@@ -7,7 +7,86 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **PART 12 §3a: a RESOLVED reference keeps its destination** (carve#524). The
+  clause pinned `href: ""` for every reference, resolved or not. Under it the
+  destination had nowhere to live: the vocabulary has no node type for a
+  `[label]: url` link reference definition - a document holding only `[lbl]: /u`
+  publishes zero children - so a serialized resolved reference kept `ref` and
+  `rawRef` and dropped `/start` outright, and a consumer decoding it rendered a
+  link to nothing. `href` is now empty ONLY where nothing resolved the
+  reference, which is §5's added-alongside rule applied to links exactly as it
+  already applies to footnote numbering: the authored construct (`ref`,
+  `rawRef`) survives and the resolution result sits beside it. All three engines
+  already publish the destination; what they are missing is the authored
+  construct beside it.
+
+  `ref`'s value for the collapsed form `[label][]` is pinned to the DERIVED
+  label rather than the empty string the author typed, since that is the label
+  the reference resolves by and `rawRef` already holds the authored spelling.
+  Three engines carried three spellings. `resources/ast-schema.json` said one
+  thing for `link.ref` ("resolved or not") and another for `image.ref`
+  ("Unresolved reference label"); the two now agree, and `href`/`src` gain a
+  description saying when they may be empty.
+
+- **PART 12 / PART 9 §25: a flattened over-cap opener is ordinary paragraph
+  text** (carve#494). §25 said an opener past `MAX_NESTING_DEPTH` "becomes
+  literal paragraph text" and did not say how consecutive ones GROUP, so the
+  three engines produced three byte-different outputs and all three satisfied
+  the sentence. They now group by the ordinary paragraph rule - one paragraph,
+  ending at the first blank line, no trailing newline before `</p>` - because
+  "degrades to literal text" is the whole rule and a degrade path with its own
+  block structure would be a second paragraph rule to specify and to test.
+
+### Fixed
+
+- **Restored nine regions of `resources/grammar.ebnf` that a stale-copy merge
+  removed.** carve#525 rewrote the grammar from an out-of-date working copy. Its
+  merge-base was current, so git recorded ordinary deletions and merged with no
+  conflict, and four normative clauses left the file while the docs, the AST
+  schema and this changelog went on citing them: PART 12 §3a (the tree is
+  pre-resolve), PART 12 §7's extension to every definition kind, PART 12 §1a's
+  "the merge is part of `parse(x)`", and MARKER REQUIRES CONTENT's extension to
+  the definition-term marker `::`. Five further regions reverted to superseded
+  text - S4's lazy continuation, PART 9 §10 I4's closer lookahead, the line
+  block's leading whitespace, the math-attributes paragraph, and PART 12 §4's
+  implementation status. The blockquote-marker rule carve#525 was written to
+  land is untouched. The restoration itself landed in carve#537; this entry
+  records the loss and what closed it.
+
+  Guarded, so the class fails a test rather than surviving a merge:
+  `resources/normative-clauses.txt` names every clause carrying the
+  `-- NORMATIVE` marker and `tests/normativity.test.mjs` checks the grammar
+  still contains each one, and every `PART 12 §N` citation in the docs, the
+  schema and this file must resolve to a real section. Removing a clause stays
+  allowed; removing it silently does not.
+
 ### Added
+
+- **PART 12 §3a: the serialized AST is PRE-RESOLVE** (carve#481, carve#486,
+  carve-php#624). The tree records what the author wrote, not what the document
+  resolves to. `[getting started][]` publishes a `link` carrying `ref`, an empty
+  `href` and the `rawRef` source - resolved or not, and even when nothing
+  defines the label, where flattening it to text discarded the fact that a
+  reference was written at all. Both stages validated against the schema, which
+  is how three engines came to disagree without any of them being wrong; the tie
+  goes to the stage that keeps `rawRef`'s stated purpose reachable and keeps
+  `[x][]` alive through a format cycle. It also removes the need for a
+  `raw_text` document node: nothing reverts to literal source, so nothing has to
+  carry text that must not be escaped again.
+
+### Changed
+
+- **PART 12 §7 now covers every definition kind, not only footnotes**
+  (carve-php#631). An `abbreviation_def` authored inside a div, list item or
+  block quote is a child of the DOCUMENT, exactly as a `footnote` is. The clause
+  was written against PART 9 §16 and read as footnote-specific, so the engines
+  split - carve-php hoisted both, carve-js and carve-rs hoisted only the
+  footnote - while all three rendered identical HTML, because an abbreviation is
+  document-global wherever it is written. The formatter consequence is accepted
+  rather than overlooked: it already ships for footnotes, where `> [^a]: body`
+  formats to the definition after an emptied `>`.
 
 - **An optional `sections` switch on the HTML renderer** (carve#427). Setting it
   to `false` renders headings flat, with the id back on the `<h*>` and the blocks

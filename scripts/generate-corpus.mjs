@@ -112,11 +112,6 @@ if (comparesOpened !== examples.length) {
   process.exit(1)
 }
 
-mkdirSync(outDir, { recursive: true })
-for (const f of readdirSync(outDir)) {
-  if (f.endsWith('.crv') || f.endsWith('.html')) unlinkSync(resolve(outDir, f))
-}
-
 const slugify = (s) =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
 
@@ -136,6 +131,88 @@ for (const ex of examples) {
   ex.idx = String(state.idx).padStart(2, '0')
   ex.slug = slugify(ex.section)
   ex.exampleIdx = state.count
+}
+
+// --- APPEND-ONLY NUMBERING (guard) -----------------------------------------
+//
+// A category's number is its POSITION among the example sections, so inserting
+// a section in the middle of a file renumbers every section after it. The
+// filenames are the cross-impl contract: each engine allowlists categories by
+// `NN-slug`, so a renumber silently invalidates every one of those lists at
+// once and reads downstream as "105 categories missing" with no hint of the
+// cause. It has happened.
+//
+// So: a section that already has a number keeps it. New sections may only take
+// numbers above the current maximum, which is what appending a section does
+// naturally. A deliberate renumber is still possible, with CORPUS_RENUMBER=1
+// and the knowledge that every engine's allowlist has to move with it.
+// `outDir` may not exist yet (a fresh generate, or after `rm -rf tests/corpus`),
+// and scanning it must not be the thing that fails.
+mkdirSync(outDir, { recursive: true })
+const existingNumbers = new Map()
+for (const f of readdirSync(outDir)) {
+  if (!f.endsWith('.crv')) continue
+  const m = /^(\d+)-(.*?)(?:-\d+)?\.crv$/.exec(f)
+  if (m) existingNumbers.set(m[2], m[1])
+}
+
+if (existingNumbers.size > 0 && process.env['CORPUS_RENUMBER'] !== '1') {
+  // One entry per CATEGORY: a section with several examples would otherwise
+  // report its move once per example.
+  const moved = new Map()
+  let highestKept = 0
+  for (const ex of examples) {
+    const before = existingNumbers.get(ex.slug)
+    if (before === undefined) continue
+    if (before !== ex.idx) moved.set(ex.slug, `${before}-${ex.slug} -> ${ex.idx}-${ex.slug}`)
+    highestKept = Math.max(highestKept, Number(before))
+  }
+  const addedTooLow = new Map()
+  for (const ex of examples) {
+    if (existingNumbers.has(ex.slug)) continue
+    if (Number(ex.idx) < highestKept) addedTooLow.set(ex.slug, `${ex.idx}-${ex.slug}`)
+  }
+  // A category that DISAPPEARS breaks the same allowlists a renumber does - a
+  // removed section, or a renamed one, which is a removal plus an addition. The
+  // engines do notice (carve-rs reports an IMPLEMENTED entry with no pair), but
+  // they notice a repo away and a bump later.
+  const present = new Set(examples.map((ex) => ex.slug))
+  const removed = [...existingNumbers]
+    .filter(([slug]) => !present.has(slug))
+    .map(([slug, idx]) => `${idx}-${slug}`)
+
+  if (moved.size || addedTooLow.size || removed.length) {
+    console.error('generate-corpus: the corpus numbering is APPEND-ONLY.\n')
+    if (moved.size) {
+      console.error(`  ${moved.size} existing categor${moved.size === 1 ? 'y' : 'ies'} would be renumbered:`)
+      for (const line of [...moved.values()].slice(0, 10)) console.error(`    ${line}`)
+      if (moved.size > 10) console.error(`    … and ${moved.size - 10} more`)
+      console.error('')
+    }
+    if (addedTooLow.size) {
+      console.error(`  ${addedTooLow.size} new categor${addedTooLow.size === 1 ? 'y' : 'ies'} would land below the highest existing number:`)
+      for (const line of [...addedTooLow.values()].slice(0, 10)) console.error(`    ${line}`)
+      console.error('')
+    }
+    if (removed.length) {
+      console.error(`  ${removed.length} existing categor${removed.length === 1 ? 'y is' : 'ies are'} gone from the examples:`)
+      for (const line of removed.slice(0, 10)) console.error(`    ${line}`)
+      if (removed.length > 10) console.error(`    … and ${removed.length - 10} more`)
+      console.error('')
+    }
+    console.error('  Every engine allowlists categories by `NN-slug`, so this invalidates')
+    console.error('  all of those lists at once. Move the new section to the END of the last')
+    console.error('  examples file (docs/examples/edge-cases.md) instead.')
+    console.error('')
+    console.error('  If the renumber is deliberate, re-run with CORPUS_RENUMBER=1 and update')
+    console.error('  every engine allowlist in the same change.')
+    process.exit(1)
+  }
+}
+
+mkdirSync(outDir, { recursive: true })
+for (const f of readdirSync(outDir)) {
+  if (f.endsWith('.crv') || f.endsWith('.html')) unlinkSync(resolve(outDir, f))
 }
 
 for (const ex of examples) {

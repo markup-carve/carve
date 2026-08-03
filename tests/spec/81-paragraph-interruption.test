@@ -1,0 +1,199 @@
+Paragraph interruption
+
+```
+text
+# H
+.
+<p>text</p>
+<section id="H">
+  <h1>H</h1>
+</section>
+```
+
+````
+text
+```
+code
+```
+.
+<p>text</p>
+<pre><code>code
+</code></pre>
+````
+
+```
+text
+---
+more
+.
+<p>text</p>
+<hr>
+<p>more</p>
+```
+
+```
+text
+> q
+.
+<p>text</p>
+<blockquote><p>q</p></blockquote>
+```
+
+```
+text
+>>= operator
+>=3 items
+>_< face
+.
+<p>text
+&gt;≥ operator
+≥3 items
+&gt;_&lt; face</p>
+```
+
+```
+text
+- a
+- b
+.
+<p>text
+- a
+- b</p>
+```
+
+```
+text
+1. x
+2. y
+.
+<p>text
+1. x
+2. y</p>
+```
+
+```
+text
+| a | b |
+.
+<p>text</p>
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+text
+:::note
+body
+:::
+.
+<p>text
+:::note
+body
+:::</p>
+```
+
+```
+text
+2. y
+3. z
+.
+<p>text
+2. y
+3. z</p>
+```
+
+```
+text
+1985. was the year
+.
+<p>text
+1985. was the year</p>
+```
+
+```
+text
+:::note
+body
+.
+<p>text
+:::note
+body</p>
+```
+
+```
+text
+![a](u)
+.
+<p>text
+<img src="u" alt="a"></p>
+```
+
+```
+> p one
+> - item
+.
+<blockquote><p>p one
+- item</p></blockquote>
+```
+
+```
+- a
+   - b
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+para
+%% c
+.
+<p>para</p>
+```
+
+```
+a[r]
+[r]: http://x
+.
+<p>a[r]</p>
+```
+
+```
+text
+
+# H
+.
+<p>text</p>
+<section id="H">
+  <h1>H</h1>
+</section>
+```
+
+````
+Text
+```
+code
+.
+<p>Text
+<code>
+code</code></p>
+````
+
+```
+Text
+:::
+stuff
+.
+<p>Text</p>
+<div>
+  <p>stuff</p>
+</div>
+```

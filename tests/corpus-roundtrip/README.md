@@ -30,6 +30,24 @@ literal `\@user` / `\#tag` text and a real `@who` mention. If `@` were missing
 from the set, W4 would have nothing to escape with and the literal would
 silently become a mention.
 
+`09` and `10` pin **container fence width**, which is the other thing a writer
+can get wrong without touching a single character of text. A colon fence closes
+on an EXACT length match, so fence width is a depth count: the outermost
+container is `:::` and each level inward adds a colon. `09` nests three of them
+(div, admonition, line block) and pins that count.
+
+`10` pins where the count STOPS. Its innermost container sits under a list item,
+and a list item is a prefix/indent host: the fence lines inside it are indented,
+and the closer pattern is anchored at the start of the line, so an indented bare
+fence cannot close anything above it. The depth therefore restarts inside the
+host - that container comes back as `:::`, not as the sixth level it sits at.
+
+Both inputs are written the OTHER way round, widest-outer, which is how these
+documents were written before the closer rule became exact. That is deliberate:
+they parse identically under exact matching, so the pair proves the writer
+normalizes an old-direction document into the canonical inward-widening form
+rather than leaving whatever it was given.
+
 ## What the byte assertions are worth
 
 `../roundtrip.test.mjs` asserts the PART 11 §1 invariants and the expected bytes

@@ -511,6 +511,98 @@ ASCII before slugging (section 1 above), so `# Don't repeat yourself` gives
 `Don-t-repeat-yourself` whether the heading
 renders with a curly apostrophe or a straight one.
 
+## 13. A colon fence closes on an exact length match
+
+Both languages spell a container `:::`, close it with a bare colon fence, nest
+equal-length fences, and close a container that never got a closer at the end
+of the input. Carve used to differ on the last two of those and no longer does.
+What remains is the closer rule itself, and it pulls three smaller differences
+along with it.
+
+**Djot: a closer is at least as long as its opener. Carve: exactly as long.**
+Djot's rule is the code fence's rule, borrowed. Carve treats the length as a
+depth count instead, so a fence that does not match the innermost open
+container is not a closer at all - it is an opener.
+
+**A bare closer closes one container.** Djot's closes every container open
+above it in one go:
+
+```
+::: a
+::: b
+X
+:::
+after
+```
+
+Djot ends both `a` and `b` at the single `:::`, leaving `after` outside. Carve
+closes only `b`; `a` is still open, so `after` belongs to it, and `a` ends at
+the end of the input.
+
+**A fence shorter than the innermost container.** Under `:::: a`, a bare `:::`
+is content in djot and the div runs to the end of the input. In Carve it
+matches nothing, so it opens a child container.
+
+**Widening inward works in Carve and not in djot.** `:::` holding a `::::` is
+garbage in djot, where the wider line closes the outer container. In Carve it
+nests, and it is the direction `carve fmt` emits: the outermost container is
+`:::` and each level inward adds a colon. Djot documents cannot use that form,
+but they never contain it either, so djot source keeps parsing unchanged.
+
+**One unrelated strictness.** Djot accepts `:::note` with no space before the
+type word; Carve requires the space and treats the glued form as a paragraph.
+Carve's grammar always said so - the engines were laxer than the spec, and the
+old closer lookahead hid it.
+
+**Why.** Fence length in Carve means depth, and it means depth so that a
+canonical writer can size a fence from the tree in front of it. Under
+equal-or-greater, a container's fence had to outrank every container anywhere
+in its subtree, so a writer had to know its own maximum depth before it could
+emit its opening line - and every implementation got that wrong in the same
+way, sizing the fence from one level of lookahead and silently unnesting the
+middle container of a three-level document. Exact matching removes the class:
+width is local depth, computable on the way down.
+
+## 14. Headings are single-line
+
+**Djot:** a heading's text spills onto following lines until a blank line. A
+following plain line folds in, and so does a line carrying the same number of
+`#`.
+
+**Carve:** a heading ends at the newline. Nothing folds into it.
+
+```carve
+# Title
+Some text.
+```
+
+| | Djot | Carve |
+|---|---|---|
+| result | one `<h1>` holding both lines | `<h1>Title</h1>` then `<p>Some text.</p>` |
+| id | `Title-Some-text` | `Title` |
+
+**Why.** This is the same argument as section 7, applied to the other ordering.
+Section 7 already broke from Djot's blank-line rule because a heading written
+directly under prose silently stayed prose - it surprises authors arriving from
+Markdown more often than it helps. The mirror case, prose written directly under
+a heading, was left folding: same two lines, order swapped, opposite doctrines.
+`docs/edge-cases.md` called it "the biggest authoring trap in the heading
+syntax", and a documented trap is still a trap. Now both orderings answer the
+same way.
+
+It also makes one model true across the language. The grammar describes a
+heading as "a bounded title, not an open paragraph" while giving it
+paragraph-style spill. Lazy continuation now means exactly one thing: it
+continues an **open paragraph**. A heading is not a paragraph.
+
+**Cost.** Source-wrapping a long heading is gone. Headings are short by
+construction, Markdown never offered it, and the rendered result was a raw
+newline inside the `h1`. A Djot document that wraps a heading renders
+differently in Carve, which is what `carve lint --from-djot` reports.
+
+Pinned in the corpus as `82-single-line-headings*` - the five cases that used to
+pin the folding rules, kept as the regression guard for what replaced them.
+
 ## What Carve adds on top (not breaks)
 
 These aren't divergences - Djot has no equivalent - but they're why Carve exists
@@ -526,6 +618,11 @@ as more than restyled Djot:
 - **Inline footnotes** - `^[content]` carries a note in place (pandoc-style),
   numbered into the same endnotes as a reference `[^label]`. Canonical djot has
   only reference footnotes; `^[…]` is a carve addition (grammar §16).
+- **Bare-dot ordered markers** - `. item` is a decimal ordered item counting
+  from 1, the AsciiDoc-style shorthand for the list nobody numbers by hand. It
+  is a spelling of decimal-dot, not a dialect, so it mixes with `1.` in one
+  list; only `.` may drop its value, since a leading `) ` collides with prose
+  parentheticals far more often (grammar, ordered_marker).
 - **Boolean attributes** - a bare word in `{…}` (`[Tab]{kbd}`, `{.note open}`)
   is a value-less attribute rendered `name=""`. Canonical djot rejects bare
   words (the whole block stays literal); carve accepts them, following djot-php
@@ -554,6 +651,11 @@ Most Djot source needs only mechanical changes:
    `:  definition`. A multi-paragraph Djot `<dd>` carries over - a Carve
    definition continues like a list item (indent a block after a blank line, or
    use a lone `+`; see section 9).
+8. Nested containers mostly carry over: equal-length fences nest in both
+   languages, and an unclosed container ends at the end of the input in both.
+   Two things need attention. A single bare closer that you relied on to close
+   several containers at once now closes only the innermost - give each its
+   own. And `:::note` needs a space: `::: note`. See section 13.
 
 The bundled `markdownToCarve` helper and Djot migration warnings flag most of
 these automatically.

@@ -37,10 +37,12 @@
  */
 
 import { execFileSync } from 'node:child_process'
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
+import { shapeOf, shapePaths } from './spec/ast-shape.mjs'
+import { checkPositions } from './spec/ast-positions.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -109,20 +111,92 @@ const phpDir = process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php')
  */
 const DISPLAY_LIMIT = Number(process.env.CARVE_DISPLAY_LIMIT ?? 8)
 
-const POS_KEYS = ['startLine', 'endLine', 'startColumn', 'endColumn', 'startOffset', 'endOffset']
-
-function* walk(node, path = '$') {
-  if (Array.isArray(node)) {
-    for (const [i, child] of node.entries()) yield* walk(child, `${path}[${i}]`)
-    return
+/**
+ * Describe a built artifact, and say plainly when it is OLDER THAN ITS SOURCE.
+ *
+ * This is the failure that made carve#475's own table wrong. The checker reads
+ * whatever build is on disk and reports it as the engine's conformance, with
+ * nothing in the output to say how old it is. An Aug 1 build of carve-rs
+ * reported 144 schema violations - the pre-node definition-list shape the engine
+ * had already stopped emitting - while the same checkout, rebuilt, reported 4
+ * findings. Both runs looked identical.
+ *
+ * A stale build reading as a current one is strictly worse than the skip this
+ * script already reports, because it produces a NUMBER, and a number gets
+ * believed and filed.
+ */
+function buildStatus(artifact, sourceDir, extensions) {
+  let built
+  try {
+    built = statSync(artifact).mtimeMs
+  } catch {
+    return { text: 'build date unknown', stale: false }
   }
-  if (!node || typeof node !== 'object') return
-  if (typeof node.type === 'string') yield [node, path]
-  for (const [key, value] of Object.entries(node)) {
-    if (key === 'pos') continue
-    yield* walk(value, `${path}.${key}`)
+  const stamp = new Date(built).toISOString().slice(0, 16).replace('T', ' ')
+
+  let newestSource = 0
+  const walk = (dir, depth) => {
+    if (depth > 6) return
+    let entries
+    try {
+      entries = readdirSync(dir, { withFileTypes: true })
+    } catch {
+      return
+    }
+    for (const entry of entries) {
+      if (entry.name === 'node_modules' || entry.name === 'target' || entry.name[0] === '.') continue
+      const full = resolve(dir, entry.name)
+      if (entry.isDirectory()) walk(full, depth + 1)
+      else if (extensions.some((ext) => entry.name.endsWith(ext))) {
+        try {
+          newestSource = Math.max(newestSource, statSync(full).mtimeMs)
+        } catch {
+          /* unreadable file tells us nothing */
+        }
+      }
+    }
+  }
+  walk(sourceDir, 0)
+
+  const stale = newestSource > built
+  return {
+    text: stale ? `built ${stamp}, STALE - source is newer, rebuild before believing this` : `built ${stamp}`,
+    stale,
   }
 }
+
+const staleBuilds = []
+
+
+/**
+ * Engines that were not measured at all.
+ *
+ * A skip used to read as one line of prose in the middle of the output, so a
+ * run with no satellites present looked almost exactly like a run where every
+ * satellite passed - and since this script does not run in CI (carve#475),
+ * that was the normal case. `test/corpus.test.ts` already carries the same
+ * lesson in a comment: silently skipped "is exactly how 14 spec categories once
+ * went unvalidated".
+ */
+const notMeasured = []
+
+/**
+ * Per-engine §1a counts, filled by `report` so the gate at the end sees every
+ * engine without reaching into per-block locals.
+ *
+ * Declared HERE, next to the other accumulators, and not beside `report`:
+ * `report` is called before that point in the file, and a `const` in module
+ * scope is not hoisted. The first version threw
+ * "Cannot access 'adjacentTextRunCounts' before initialization" and exited 1,
+ * which looked exactly like the gate firing.
+ */
+const adjacentTextRunCounts = []
+
+function skip(label, reason) {
+  notMeasured.push(`${label} (${reason})`)
+  console.log(`${label}: NOT MEASURED - ${reason}\n`)
+}
+
 
 /**
  * Shape, against the published schema.
@@ -164,71 +238,72 @@ function checkFrontmatterSurvives(doc, source, findings) {
   }
 }
 
-function checkDocument(doc, source, findings) {
-  checkShape(doc, findings)
-  checkFrontmatterSurvives(doc, source, findings)
-  // Offsets are codepoint indices (PART 12 §4), so the source has to be indexed
-  // the same way to check them.
-  const codepoints = [...source]
-  for (const [node, path] of walk(doc)) {
-    // An unknown type is the schema's job now (it enumerates them, and the
-    // enumeration is checked against docs/profiles.md in
-    // tests/ast-schema.test.mjs). Checking it here too reported one defect
-    // twice, in two wordings.
-    const pos = node.pos
-    if (pos === undefined) {
-      // The document root is exempt: it spans the whole source by definition
-      // (PART 12 section 4).
-      if (node.type !== 'document') findings.push(`missing pos on "${node.type}" at ${path}`)
-      continue
-    }
-    for (const key of POS_KEYS) {
-      if (!Number.isInteger(pos[key])) {
-        findings.push(`pos.${key} is not an integer on "${node.type}" at ${path}`)
-      }
-    }
-    if (Number.isInteger(pos.startOffset) && Number.isInteger(pos.endOffset)) {
-      if (pos.endOffset < pos.startOffset) {
-        findings.push(`pos.endOffset < startOffset on "${node.type}" at ${path}`)
-      }
-      if (pos.endOffset > codepoints.length) {
-        findings.push(`pos.endOffset past end of source on "${node.type}" at ${path}`)
-      }
-      // THE UNIT, checked rather than assumed. PART 12 §4 counts codepoints, and
-      // codepoints, UTF-16 units and bytes all agree on ASCII - so nothing here
-      // distinguished them until this compared a span against the text it
-      // claims to cover. A text node is the only node whose exact source text is
-      // known from the AST alone.
-      // A text node whose source contains a BACKSLASH is skipped: an escape is
-      // resolved into the value, so `say\ hello` is four source characters
-      // longer than the text it produces and can never equal its own slice. That
-      // is the format working, not a wrong span, and asserting on it would
-      // produce a false positive nobody would act on.
-      // A value carrying the U+E000 INDENT SENTINEL is skipped for the same
-      // reason. A line block rewrites each leading space to that private-use
-      // character, so the node's value differs from its slice in exactly those
-      // positions while spanning the same codepoints. The span is not wrong -
-      // it covers precisely the source the node came from - and the engine's
-      // internal spelling of an indent is not something this check can compare.
-      if (
-        node.type === 'text' &&
-        typeof node.value === 'string' &&
-        !node.value.includes('\ue000') &&
-        !codepoints.slice(pos.startOffset, pos.endOffset).includes('\\')
-      ) {
-        const slice = codepoints.slice(pos.startOffset, pos.endOffset).join('')
-        if (slice !== node.value) {
+
+/**
+ * Compare an engine's tree against the reference's and report the FIRST place
+ * they diverge, which is the one worth reading.
+ */
+function checkShapeParity(name, doc, findings) {
+  const reference = referenceShapes.get(name)
+  if (!reference) return
+  const mine = shapePaths(shapeOf(doc))
+  const theirs = shapePaths(reference)
+  if (mine.length === theirs.length && mine.every((p, i) => p === theirs[i])) return
+  const at = mine.findIndex((p, i) => p !== theirs[i])
+  const where = at === -1 ? Math.min(mine.length, theirs.length) : at
+  findings.push(
+    `${name}: tree differs from the reference at ${theirs[where] ?? '(end)'} ` +
+      `- reference has ${theirs.length} nodes, this has ${mine.length} ` +
+      `(got ${mine[where] ?? '(end)'})`,
+  )
+}
+
+const referenceShapes = new Map()
+
+/**
+ * PART 12 §1a: a node's children hold no two adjacent `text` nodes.
+ *
+ * This is the one PART 12 rule the schema cannot express - JSON Schema has no
+ * way to forbid two adjacent array entries of the same shape - so if it is not
+ * checked here it is not checked anywhere. It went unmeasured long enough for
+ * carve-php to publish 107 runs across 56 corpus documents and carve-rs 18
+ * across 6, while both validated cleanly.
+ *
+ * Reported as a §1a finding rather than folded into shape parity, because
+ * shape parity is currently blocked on carve#481 (engines serialize different
+ * pipeline stages) and would drown this in noise it cannot fix.
+ */
+function checkAdjacentTextRuns(doc, findings) {
+  const seen = new Set()
+  const scan = (node, path) => {
+    if (Array.isArray(node)) {
+      for (let i = 1; i < node.length; i++) {
+        const left = node[i - 1]
+        const right = node[i]
+        if (left?.type === 'text' && right?.type === 'text' && !seen.has(path)) {
+          seen.add(path)
           findings.push(
-            `pos does not cover the text it belongs to on "${node.type}" at ${path}: ` +
-              `offsets give ${JSON.stringify(slice)}, node says ${JSON.stringify(node.value)}`,
+            `§1a adjacent text runs at ${path}: ${JSON.stringify(left.value)} + ${JSON.stringify(right.value)}`,
           )
         }
       }
+      node.forEach((child, i) => scan(child, `${path}[${i}]`))
+      return
     }
-    if (pos.startLine < 1 || pos.startColumn < 1) {
-      findings.push(`pos lines/columns are 1-based; got ${pos.startLine}:${pos.startColumn}`)
+    if (!node || typeof node !== 'object') return
+    for (const [key, value] of Object.entries(node)) {
+      if (key === 'pos') continue
+      scan(value, `${path}.${key}`)
     }
   }
+  scan(doc.children ?? [], '$.children')
+}
+
+function checkDocument(doc, source, findings) {
+  checkShape(doc, findings)
+  checkAdjacentTextRuns(doc, findings)
+  checkFrontmatterSurvives(doc, source, findings)
+  checkPositions(doc, source, findings)
 }
 
 const corpusDir = resolve(root, 'tests/corpus')
@@ -283,12 +358,21 @@ for (const { name, source } of samples) {
     // implementation whose internals differ. Checking the runtime tree measured
     // a shape no consumer ever receives, and so could not see the wire form
     // every other engine here is measured against.
-    doc = lib.toAstJson(lib.parse(source))
+    // RESOLVED, not parse-only. `resolve()` is where a reference link becomes a
+    // link or degrades to text, and every other engine here resolves inside its
+    // own parse - so serializing carve-js's parse-only tree compared a stage no
+    // other engine exposes and reported the difference as the satellite's.
+    //
+    // `ref` is the tell: the schema calls it "present only between parse and
+    // resolve", so a reference surviving into the reference AST means the
+    // reference AST was taken before resolve (carve#486).
+    doc = lib.toAstJson(typeof lib.resolve === 'function' ? lib.resolve(lib.parse(source)) : lib.parse(source))
   } catch (error) {
     jsFindings.push(`${name}: parse threw - ${error.message}`)
     continue
   }
   checkDocument(doc, source, jsFindings)
+  referenceShapes.set(name, shapeOf(doc))
 
   // PART 12 §6: serialize then deserialize must equal the parse.
   const round = JSON.parse(JSON.stringify(doc))
@@ -330,12 +414,18 @@ if (rsBinary) {
       continue
     }
     checkDocument(doc, source, rsFindings)
+    checkShapeParity(name, doc, rsFindings)
   }
-  report(`carve-rs (over ${rsBinary.replace(rsDir + '/', '')}, ${satelliteSamples.length} documents)`, rsFindings)
+  const rsBuild = buildStatus(rsBinary, resolve(rsDir, 'src'), ['.rs'])
+  if (rsBuild.stale) staleBuilds.push('carve-rs')
+  report(
+    `carve-rs (over ${rsBinary.replace(rsDir + '/', '')} [${rsBuild.text}], ${satelliteSamples.length} documents)`,
+    rsFindings,
+  )
 } else if (existsSync(rsDir)) {
-  console.log('carve-rs: checkout found but not built (cargo build --release), not checked\n')
+  skip('carve-rs', 'checkout found but not built - run cargo build --release there')
 } else {
-  console.log('carve-rs: checkout not found, not checked\n')
+  skip('carve-rs', 'checkout not found')
 }
 
 // ---- carve-rb: serializes carve-rs's tree ----------------------------------
@@ -361,10 +451,24 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
       continue
     }
     checkDocument(doc, source, rbFindings)
+    checkShapeParity(name, doc, rbFindings)
   }
-  report(`carve-rb (over carve-rs, ${satelliteSamples.length} documents)`, rbFindings)
+  // The compiled extension, not the Ruby source: carve-rb wraps carve-rs
+  // through a native build, so a stale `.so` reports the PARSER's old behavior
+  // under the binding's name.
+  const rbSo = ['lib/carve/carve.so', 'lib/carve/carve.bundle']
+    .map((path) => resolve(rbDir, path))
+    .find((path) => existsSync(path))
+  const rbBuild = rbSo
+    ? buildStatus(rbSo, resolve(rbDir, 'ext'), ['.rs', '.rb', '.toml'])
+    : { text: 'no compiled extension found', stale: false }
+  if (rbBuild.stale) staleBuilds.push('carve-rb')
+  report(
+    `carve-rb (over carve-rs [${rbBuild.text}], ${satelliteSamples.length} documents)`,
+    rbFindings,
+  )
 } else {
-  console.log('carve-rb: checkout not found, not checked\n')
+  skip('carve-rb', 'checkout not found')
 }
 
 // ---- carve-php: serializes through bin/carve --json -------------------------
@@ -392,15 +496,18 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
       continue
     }
     checkDocument(doc, source, phpFindings)
+    checkShapeParity(name, doc, phpFindings)
   }
   report(`carve-php (over bin/carve --json, ${satelliteSamples.length} documents)`, phpFindings)
 } else if (existsSync(phpDir)) {
-  console.log('carve-php: checkout found but bin/carve is missing, not checked\n')
+  skip('carve-php', 'checkout found but bin/carve is missing')
 } else {
-  console.log('carve-php: checkout not found, not checked\n')
+  skip('carve-php', 'checkout not found')
 }
 
 function report(label, findings) {
+  const adjacent = findings.filter((f) => f.includes('§1a')).length
+  if (adjacent > 0) adjacentTextRunCounts.push({ label, count: adjacent })
   if (findings.length === 0) {
     console.log(`${label}: conformant\n`)
     return
@@ -423,4 +530,56 @@ function report(label, findings) {
     console.log(`  ... and ${hidden} more distinct finding${hidden === 1 ? '' : 's'} not shown`)
   }
   console.log('')
+}
+
+// A closing statement of what was NOT measured, so the coverage of a run is
+// visible at the end rather than inferable from the middle. Without this the
+// only signal was one line per engine, several screens up.
+if (notMeasured.length > 0) {
+  console.log(`NOT MEASURED: ${notMeasured.length} of 3 satellites - ${notMeasured.join(', ')}`)
+  console.log('These engines were not checked at all. This is not a pass.\n')
+  // Opt-in, because the sibling checkouts are not present by default and a
+  // developer running this on carve-js alone should not be failed for it. Once
+  // CI has the checkouts it should set this, so an engine silently dropping out
+  // of the matrix is a red build rather than a line of prose (carve#475).
+  if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
+    console.error('CARVE_REQUIRE_ALL_ENGINES=1 and at least one engine was not measured.')
+    process.exit(1)
+  }
+} else {
+  console.log('All satellites measured.\n')
+}
+
+// §1a GATES. Every other finding class here is reported and counted; this one
+// fails the run, because it is the only PART 12 rule the schema cannot express
+// (JSON Schema cannot forbid two adjacent array entries of the same shape) and
+// therefore the only one with no other line of defence. It went unmeasured long
+// enough for carve-php to publish 107 runs across 56 corpus documents and
+// carve-rs 18 across 6, while both validated cleanly against the schema and
+// passed every gate the project ran.
+//
+// A flat zero rather than a ratchet against recorded counts: a ratchet makes a
+// rule that is currently violated look like a rule that is currently enforced,
+// which is the same failure one level up.
+if (adjacentTextRunCounts.length > 0) {
+  const total = adjacentTextRunCounts.reduce((n, e) => n + e.count, 0)
+  console.error(
+    `PART 12 §1a: ${total} adjacent text run(s) published (${adjacentTextRunCounts
+      .map((e) => `${e.label} ${e.count}`)
+      .join(', ')}).`,
+  )
+  console.error("A node's children must hold no two adjacent text nodes.")
+  process.exit(1)
+}
+
+// A stale build is not a skip and not a pass: it is a NUMBER produced by code
+// nobody is running any more. Say so at the end, where the not-measured roll-up
+// already is, rather than leaving it to be noticed in a label several screens up.
+if (staleBuilds.length > 0) {
+  console.log(`STALE BUILDS: ${staleBuilds.join(', ')} - findings above are from an OLD build.`)
+  console.log('Rebuild those engines and re-run before recording any number from this run.\n')
+  if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
+    console.error('CARVE_REQUIRE_ALL_ENGINES=1 and at least one engine was measured from a stale build.')
+    process.exit(1)
+  }
 }

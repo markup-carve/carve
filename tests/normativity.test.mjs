@@ -16,6 +16,7 @@ import assert from 'node:assert/strict'
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { extractNormativeClauses, readInventory } from '../scripts/normative-clauses.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repo = resolve(here, '..')
@@ -33,6 +34,20 @@ const part9 = grammar.slice(part9Start, part10Start === -1 ? undefined : part10S
 const part9Sections = new Set(
   [...part9.matchAll(/^ {3}(\d+)\. {1,3}[A-Z]/gm)].map((m) => Number(m[1])),
 )
+
+// PART 12's sections are cited the same way and can dangle the same way, with
+// one wrinkle: it has lettered sections (§1a, §3a), so the numbers alone are
+// not the valid set. The docs cite them both as "PART 12 §3a" and, once the
+// part is established on the page, as a bare "(§3a)" - so the bare form has to
+// be checked too, which is only safe on the pages that are ABOUT PART 12.
+const part12Start = grammar.indexOf('PART 12: AST SERIALIZATION')
+const part12 = grammar.slice(part12Start)
+const part12Sections = new Set(
+  [...part12.matchAll(/^ {3}(\d+[a-z]?)\. {1,3}[A-Z]/gm)].map((m) => m[1]),
+)
+
+// Pages whose bare "§N" citations mean PART 12.
+const part12Pages = ['docs/ast-json.md']
 
 const docFiles = [
   ...readdirSync(resolve(repo, 'docs'))
@@ -71,6 +86,107 @@ test('every "PART 9 §N" reference resolves to a real section', () => {
     dangling,
     [],
     `dangling normative references (valid: §${[...part9Sections].sort((a, b) => a - b).join(', §')}):\n${dangling.join('\n')}`,
+  )
+})
+
+// A clause can be deleted from the grammar without a single test noticing:
+// the corpus compares HTML, and a normative sentence about the wire format or
+// about how a marker degrades has no corpus document behind it. That is how
+// PART 12 §3a and §7, §1a's merge rule and MARKER REQUIRES CONTENT's `::`
+// extension left the file in one merge while the docs kept citing them.
+//
+// The inventory does not decide what the grammar SHOULD say. It only makes a
+// removal explicit: delete the clause and the test is red until the line goes
+// too, in the same commit, where a reviewer sees both halves.
+// The count matters, not just the heading: `ATTRIBUTES -- NORMATIVE` heads two
+// separate clauses, and a guard that deduped them would stay green when one of
+// the pair was deleted.
+test('the grammar carries exactly the clauses the normative inventory names', () => {
+  const inventory = readInventory(
+    readFileSync(resolve(repo, 'resources/normative-clauses.txt'), 'utf8'),
+  )
+  assert.ok(inventory.length >= 60, `inventory looks truncated: ${inventory.length} entries`)
+
+  const present = new Map(extractNormativeClauses(grammar))
+  const drifted = []
+  for (const [clause, expected] of inventory) {
+    const actual = present.get(clause) ?? 0
+    if (actual < expected) drifted.push(`${clause}: inventory says ${expected}, grammar has ${actual}`)
+  }
+  assert.deepEqual(
+    drifted,
+    [],
+    `normative clauses named in resources/normative-clauses.txt but missing from grammar.ebnf.\n` +
+      `If the removal is deliberate, adjust the line there in the same commit:\n` +
+      drifted.map((m) => `  ${m}`).join('\n'),
+  )
+})
+
+test('the normative inventory names every clause in the grammar', () => {
+  const inventory = new Map(
+    readInventory(readFileSync(resolve(repo, 'resources/normative-clauses.txt'), 'utf8')),
+  )
+  const unlisted = []
+  for (const [clause, actual] of extractNormativeClauses(grammar)) {
+    const expected = inventory.get(clause) ?? 0
+    if (actual > expected) unlisted.push(`${clause}: grammar has ${actual}, inventory says ${expected}`)
+  }
+  assert.deepEqual(
+    unlisted,
+    [],
+    `new normative clauses not in the inventory - run: node scripts/normative-clauses.mjs\n` +
+      unlisted.map((m) => `  ${m}`).join('\n'),
+  )
+})
+
+// The §3a case: eight references across the docs, the AST schema and the
+// changelog went on pointing at a clause that was no longer in the file. The
+// inventory above would now catch the deletion; this catches the other
+// direction - a clause renamed or renumbered while its citations stay put.
+test('every PART 12 section reference resolves to a real clause', () => {
+  assert.ok(
+    part12Sections.size >= 6,
+    `PART 12 clause scan found only: ${[...part12Sections]}`,
+  )
+  const dangling = []
+  const check = (file, id) => {
+    if (!part12Sections.has(id)) dangling.push(`${file}: §${id}`)
+  }
+  // A citation GROUP, so shorthand reaches every clause it names and not only
+  // the first: "§1-2", "§3a and §4", "PART 12 §1, §1a, §6". Without this a
+  // renumbering that orphaned the far end of a range would leave this green,
+  // which is the same shape of dead check the deletion slipped past.
+  const CLAUSE = String.raw`\d+[a-z]?`
+  const group = (lead) =>
+    new RegExp(
+      `${lead}(${CLAUSE})((?:\\s*(?:,|&|and|or|to|–|-)\\s*§?${CLAUSE})*)`,
+      'g',
+    )
+  const scan = (file, text, lead) => {
+    for (const m of text.matchAll(group(lead))) {
+      check(file, m[1])
+      for (const t of m[2].matchAll(new RegExp(`§?(${CLAUSE})`, 'g'))) check(file, t[1])
+    }
+  }
+  // Both spellings are in use: "PART 12 §3a" and "PART 12 section 3a".
+  const QUALIFIED = String.raw`PART 12 (?:§|section )`
+  const sources = [
+    ...docFiles,
+    resolve(repo, 'resources/ast-schema.json'),
+    resolve(repo, 'CHANGELOG.md'),
+  ]
+  for (const file of sources) {
+    if (!existsSync(file)) continue
+    const text = readFileSync(file, 'utf8')
+    scan(file, text, QUALIFIED)
+    // Bare "(§3a)" only where the page is ABOUT PART 12; elsewhere a bare §N
+    // means PART 9 and is checked by the test above.
+    if (part12Pages.some((page) => file.endsWith(page))) scan(file, text, '§')
+  }
+  assert.deepEqual(
+    dangling,
+    [],
+    `references to PART 12 clauses that do not exist (valid: ${[...part12Sections].join(', ')}):\n${dangling.join('\n')}`,
   )
 })
 

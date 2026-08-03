@@ -33,7 +33,7 @@ const HEADING = /^(#{1,6}) ((?=.*[^ \t\n\r\f]).*)$/
 const HR = /^(-{3,}|\*{3,}|_{3,})[ \t]*$/
 const FENCE = /^(`{3,}|~{3,})(.*)$/
 const PURE_FENCE = /^(`{3,}|~{3,})[ \t]*$/
-const QUOTE = /^> ?(.*)$|^>$/
+const QUOTE = /^>(?: (.*)|)$/
 const LINK_DEF = /^\[([^\]^@][^\]]*)\]: \s*(\S+)(?:\s+"((?:\\"|[^"])*)")?(?:\s.*)?$/
 // The marker line must carry inline content (PART 9 SS16 production:
 // `"]:", space, inline_content`); a bare `[^label]:` is an ordinary
@@ -41,8 +41,14 @@ const LINK_DEF = /^\[([^\]^@][^\]]*)\]: \s*(\S+)(?:\s+"((?:\\"|[^"])*)")?(?:\s.*
 const FOOTNOTE_DEF = /^\[\^([^\]]+)\]: [ \t]*(\S.*)$/
 const ABBR_DEF = /^\*\[([^\]]+)\]: \s*(.+)$/
 const CAPTION = /^\^ (.*)$/
-const BULLET = /^([ \t]*)([-*])(\{[^}]*\})? (?:\[([ xX_>?-])\] )?(.+)$/
-const ORDERED = /^([ \t]*)([0-9]+|[a-z]+|[A-Z]+)([.)])(\{[^}]*\})? (.+)$/
+// The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
+// engine, so a tab here must not open a list (PART 9 SS11). Its width is the
+// item's content column for a non-task bullet.
+const BULLET = /^([ \t]*)([-*])(\{[^}]*\})?( +)(?:\[([ xX_>?-])\] )?(.+)$/
+// The value is optional before a `.`: a bare `. ` is a decimal marker
+// counting from 1 (PART 9 ordered_marker, BARE DOT). A bare `)` is not a
+// marker, so the empty alternative is guarded by a lookahead at the dot.
+const ORDERED = /^([ \t]*)([0-9]+|[a-z]+|[A-Z]+|(?=\.))([.)])(\{[^}]*\})? (.+)$/
 const CONT_MARKER = /^\+[ \t]*$/
 // marks a lazily-folded line (PART 9 SS10 I2): always paragraph text, never
 // re-classified as structure when an item's content is re-parsed
@@ -84,9 +90,26 @@ function alphaToInt(s) {
   return s.toLowerCase().charCodeAt(0) - 96
 }
 
+// Does this line OPEN an ordered item? `ORDERED` alone answers on shape, and
+// its optional attribute block is not validated there - so `.{+a+} text`, whose
+// payload yields no attributes, matched as a marker at the boundary checks below
+// while `matchMarker` rejected it and parsed the line as prose. The two now
+// agree: an abutting block that yields nothing is not part of a marker (§15 A8),
+// whatever the marker's value.
+function isOrderedMarkerLine(line) {
+  const m = ORDERED.exec(line)
+  if (!m) return false
+  return !(m[4] && m[4].replace(/[{} ]/g, '') !== '' && parseAttrList(m[4]) === null)
+}
+
 // Classify an ordered marker token into candidate dialects.
 function classifyOrdered(token) {
   const out = []
+  // The bare dot has no value to classify: decimal by definition, starting at 1.
+  if (token === '') {
+    out.push({ dialect: 'decimal', value: 1 })
+    return out
+  }
   if (/^[0-9]+$/.test(token)) {
     out.push({ dialect: 'decimal', value: parseInt(token, 10) })
     return out
@@ -179,6 +202,7 @@ function parseColonOpener(tail) {
   let s = tail
   const out = { type: null, title: null, label: null, mode: 'div' }
   if (/^[ \t]*$/.test(s)) return out // bare generic div
+  if (/^[A-Za-z_-]/.test(s)) return null // type words must be separated
   s = s.replace(/^[ \t]+/, '')
   if (/^\|[ \t]*$/.test(s)) return { ...out, mode: 'line-block' }
   if (/^\\[ \t]*$/.test(s)) return { ...out, mode: 'hardbreaks' }
@@ -203,11 +227,84 @@ function parseColonOpener(tail) {
 }
 
 function findColonCloser(lines, openIdx, len) {
+  const stack = [len]
   for (let j = openIdx + 1; j < lines.length; j++) {
+    // A code fence, a raw block and a comment block are OPAQUE: their contents
+    // are content, not markup, so a colon fence written inside one closes
+    // nothing and opens nothing (carve#450). The span is skipped from the line
+    // AFTER its opener, because an opener with no info string is closer-shaped
+    // itself and would otherwise end the span where it began.
+    const span = opaqueSpanEnd(lines, j)
+    if (span !== -1) {
+      j = span
+      continue
+    }
     const c = COLON_CLOSER.exec(lines[j])
-    if (c && c[1].length >= len) return j
+    if (c) {
+      const closeLen = c[1].length
+      if (closeLen === stack[stack.length - 1]) {
+        stack.pop()
+        if (stack.length === 0) return j
+      } else {
+        stack.push(closeLen)
+      }
+      continue
+    }
+    const o = COLON_FENCE.exec(lines[j])
+    if (o && parseColonOpener(o[2]) !== null) stack.push(o[1].length)
   }
   return -1
+}
+
+/** The last line of the opaque span opening at `idx`, or -1 if none opens
+ *  there. A code fence needs a valid info string and a closer ahead to open at
+ *  all (PART 9 SS10 I4); a comment block needs an EXACT-length closer ahead
+ *  (SS28), and without one it opens nothing and is a line comment instead. An
+ *  unterminated span is not a span, so the caller keeps scanning its lines. */
+function opaqueSpanEnd(lines, idx) {
+  const line = lines[idx] ?? ''
+  const fence = FENCE.exec(line)
+  if (fence && parseFenceInfo(fence[2]) !== null) {
+    const close = findCloser(lines, idx, fence[1])
+    if (close !== -1) return close
+  }
+  const comment = COMMENT_FENCE.exec(line)
+  if (comment) {
+    for (let j = idx + 1; j < lines.length; j++) {
+      const c = COMMENT_FENCE.exec(lines[j])
+      if (c && c[1].length === comment[1].length) return j
+    }
+  }
+  return -1
+}
+
+function isColonBlockOpener(line) {
+  const cf = COLON_FENCE.exec(line)
+  return !!(cf && parseColonOpener(cf[2]) !== null)
+}
+
+function isColonParagraphInterrupt(line) {
+  return isColonBlockOpener(line) && !COLON_CLOSER.test(line)
+}
+
+function bareColonHasFollowingBody(lines, idx) {
+  if (!COLON_CLOSER.test(lines[idx] ?? '')) return false
+  for (let j = idx + 1; j < lines.length; j++) {
+    if (!isBlank(lines[j])) return true
+  }
+  return false
+}
+
+function paraHasInvalidColonOpener(para) {
+  return para.some((l) => {
+    const cf = COLON_FENCE.exec(l)
+    return cf && parseColonOpener(cf[2]) === null
+  })
+}
+
+function colonInterruptsParagraph(lines, idx, para) {
+  if (isColonParagraphInterrupt(lines[idx])) return true
+  return bareColonHasFollowingBody(lines, idx) && !paraHasInvalidColonOpener(para)
 }
 
 const COMMENT_LINE = /^[ \t]*%%/
@@ -319,7 +416,12 @@ function isBlank(line) {
 // the content column, exactly as a heading/quote/fence does. The two-line
 // marker means only the TERM line opens the block; the `:  def` line is its
 // body, handled by the def-list parser once opened.
-const DEFLIST_TERM = /^:: /
+// PART 9's MARKER REQUIRES CONTENT applies to `::` as it does to a bullet: a
+// marker line carrying only whitespace after the separator is paragraph text,
+// and the rule "ignores trailing whitespace" so `::` and `:: ` behave alike.
+// Without the `\S`, `:: ` was a paragraph and `::··` a definition list -
+// stripping one trailing space changed the structure (carve#512).
+const DEFLIST_TERM = /^:: (?=[ \t]*\S)/
 function startsVisibleBlock(line) {
   return HEADING.test(line) || HR.test(line) || QUOTE.test(line) || DEFLIST_TERM.test(line)
 }
@@ -327,39 +429,14 @@ function startsVisibleBlock(line) {
 // A sub-BLOCK attached to an open list item after a blank line: it nests and
 // leaves the list TIGHT (SS17 L2), unlike a second paragraph, which loosens it
 // (SS17 L1). Colon fences and table rows count -- they are blocks, not prose.
-// `rest` is the remainder of THIS item (see itemRest), already dedented to the
-// item's content column, and is only consulted to confirm a colon fence
-// actually closes. It must not run past the item: a closer belonging to a
-// sibling item or to the document would otherwise make an unclosed opener
-// look like a block.
-function opensSubBlock(line, rest) {
+function opensSubBlock(line) {
   if (QUOTE.test(line) || HEADING.test(line) || HR.test(line) ||
       isTableRow(line) || DEFLIST_TERM.test(line)) return true
   const f = FENCE.exec(line)
   // an INVALID info string is not a fence at all (PART 2 INVALID-FENCE
   // FALLBACK) -- the line is prose and loosens the item
   if (f) return parseFenceInfo(f[2]) !== null
-  const cf = COLON_FENCE.exec(line)
-  if (!cf) return false
-  // a colon fence is a BLOCK only when the opener is well-formed AND a closer
-  // follows (PART 9 SS12); otherwise the line is ordinary prose and loosens
-  // the item like any second paragraph
-  return parseColonOpener(cf[2]) !== null && findColonCloser(rest, -1, cf[1].length) !== -1
-}
-
-// the lines after `j` that still belong to the item opened at `baseIndent`,
-// dedented to `contentCol`: everything up to the first non-blank line that
-// dedents back to the marker column or further out
-function itemRest(lines, j, baseIndent, contentCol) {
-  const out = []
-  for (let k = j + 1; k < lines.length; k++) {
-    const l = lines[k]
-    // a `+` at the marker column pulls the following flush-left block INTO
-    // the item (SS17 L3/L4), so the item does not end there
-    if (!isBlank(l) && indentCols(l).col <= baseIndent && !CONT_MARKER.test(l.trim())) break
-    out.push(dedent(l, contentCol))
-  }
-  return out
+  return isColonBlockOpener(line)
 }
 
 export function parse(src) {
@@ -416,10 +493,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     if (line === undefined) return false
     if (startsVisibleBlock(line)) return true
     if (isTableRow(line)) return true
-    {
-      const cf = COLON_FENCE.exec(line)
-      if (cf && parseColonOpener(cf[2]) && findColonCloser(lines, idx, cf[1].length) !== -1) return true
-    }
+    if (isColonParagraphInterrupt(line) || bareColonHasFollowingBody(lines, idx)) return true
     const fence = FENCE.exec(line)
     if (fence && hasCloser(lines, idx)) return true // I4
     if (LINK_DEF.test(line) || FOOTNOTE_DEF.test(line) || ABBR_DEF.test(line)) return true // I5
@@ -518,7 +592,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           bodyLines[bodyLines.length - 1] !== '' &&
           !startsVisibleBlock(lines[i]) &&
           !LINK_DEF.test(lines[i]) && !FOOTNOTE_DEF.test(lines[i]) && !ABBR_DEF.test(lines[i]) &&
-          !BULLET.test(lines[i]) && !ORDERED.test(lines[i]) && !FENCE.test(lines[i]) &&
+          !BULLET.test(lines[i]) && !isOrderedMarkerLine(lines[i]) && !FENCE.test(lines[i]) &&
           !CAPTION.test(lines[i])
         ) {
           // lazy continuation of the definition's open paragraph (SS16)
@@ -535,7 +609,12 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     if ((m = ABBR_DEF.exec(line))) {
       const term = m[1]
       if (term === '') throw new Refuse('empty abbreviation term')
-      if (!state.abbrDefs.has(term)) state.abbrDefs.set(term, m[2])
+      // LAST definition wins (PART 9R state), like linkDefs below. This was
+      // first-wins here while all three engines were last-wins, and PART 9R's
+      // state table said nothing either way for abbrDefs - so the one place
+      // that could have settled it was the one place that was silent
+      // (carve#553).
+      state.abbrDefs.set(term, m[2])
       i++
       continue
     }
@@ -550,30 +629,11 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     if ((m = HEADING.exec(line))) {
       const level = m[1].length
       const strip = (s) => s.replace(/(^|[ \t])%%(?!%).*$/, '').replace(/[ \t]+$/, '')
-      const parts = [strip(m[2])]
       i++
-      // MULTI-LINE HEADINGS (PART 2): a same-# marker line or a plain text
-      // line folds into the heading; a blank line or any block opener ends it
-      while (i < n && !isBlank(lines[i])) {
-        const cm = HEADING.exec(lines[i])
-        if (cm && cm[1].length === level) {
-          parts.push(strip(cm[2]))
-          i++
-          continue
-        }
-        if (cm) break // different # count: a new heading
-        // A continuation line that folded in from an OUTER lazy context arrives
-        // LAZY-framed; strip that internal marker before it is tested as a block
-        // opener (so a folded `^ cap` still ends the heading) and before it lands
-        // in the heading text/id -- otherwise the sentinel leaks into output.
-        const l = lines[i].startsWith(LAZY) ? lines[i].slice(LAZY.length) : lines[i]
-        if (HR.test(l) || FENCE.test(l) || QUOTE.test(l) || BULLET.test(l) || ORDERED.test(l) ||
-            COLON_FENCE.test(l) || CAPTION.test(l) || l[0] === '|' || l[0] === '{' ||
-            COMMENT_LINE.test(l) || COMMENT_FENCE.test(l)) break
-        parts.push(strip(l))
-        i++
-      }
-      push({ t: 'heading', level, text: parts.join('\n') })
+      // SINGLE-LINE HEADINGS (PART 2): a heading ends at the newline. Nothing
+      // folds into it, so whatever follows simply begins its own block - which
+      // is why this is a plain read rather than a loop with a boundary test.
+      push({ t: 'heading', level, text: strip(m[2]) })
       continue
     }
 
@@ -632,7 +692,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     }
 
     // --- definition lists (:: term / :  def) ---
-    if (/^::?[ ]/.test(line) && !/^:::/.test(line)) {
+    if (/^::?[ ](?=[ \t]*\S)/.test(line) && !/^:::/.test(line)) {
       const node = { t: 'deflist', items: [] }
       // A plain line that folds (as a lazy continuation) into an open term or
       // the open paragraph of a definition (SS17): not blank, not a visible
@@ -644,10 +704,10 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         !FOOTNOTE_DEF.test(cur) &&
         !ABBR_DEF.test(cur) &&
         !BULLET.test(cur) &&
-        !ORDERED.test(cur) &&
+        !isOrderedMarkerLine(cur) &&
         !FENCE.test(cur) &&
         !CAPTION.test(cur)
-      const isEntry = (s) => /^::?[ ]/.test(s) && !/^:::/.test(s)
+      const isEntry = (s) => /^::?[ ](?=[ \t]*\S)/.test(s) && !/^:::/.test(s)
       // A definition/term line folded into an open item BELOW its content column
       // arrives LAZY-framed (the item-fold pass at C3). A `:  def` marker is a
       // LENIENT def-list entry: it attaches as a fresh <dd> to its open term even
@@ -658,9 +718,11 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
       while (i < n) {
         const cur0 = unlazy(lines[i] ?? '')
         let dm
-        if ((dm = /^:: (.*)$/.exec(cur0))) {
-          // term (dt): folds plain wrapped continuation lines like a heading so
-          // a wrapped term line does not strand its definition.
+        if ((dm = /^:: (?=[ \t]*\S)(.*)$/.exec(cur0))) {
+          // term (dt): folds plain wrapped continuation lines so a wrapped term
+          // line does not strand its definition. (This used to say "like a
+          // heading". A heading ends at its newline and folds nothing; the term
+          // is the key half of a key-value entry, and keeps its fold.)
           let dt = dm[1].trim()
           i++
           while (i < n) {
@@ -765,33 +827,39 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
       const cf = COLON_FENCE.exec(line)
       if (cf) {
         const opener = parseColonOpener(cf[2])
-        const close = opener ? findColonCloser(lines, i, cf[1].length) : -1
-        if (opener && close !== -1) {
-          const body = lines.slice(i + 1, close)
-          i = close + 1
-          if (opener.mode === 'line-block') {
-            push({ t: 'line-block', lines: body })
-          } else if (opener.mode === 'hardbreaks') {
-            push({ t: 'hardbreaks', children: parseBlocks(body, state, false) })
-          } else if (opener.type === 'footnotes') {
-            // placement directive: relocates the endnotes section
-            if (body.some((l) => !isBlank(l))) throw new Refuse('non-empty ::: footnotes body')
-            push({ t: 'footnotes-placement' })
-          } else if (opener.type === 'toc') {
-            throw new Refuse('::: toc directive')
+        if (opener) {
+          const close = findColonCloser(lines, i, cf[1].length)
+          const end = close === -1 ? n : close
+          const body = lines.slice(i + 1, end)
+          if (close === -1 && body.length > 0 && body.every((l) => isBlank(l) || l.startsWith(LAZY))) {
+            // A marker-line opener whose only "body" came from below-content
+            // lazy folding did not actually acquire container body lines.
           } else {
-            push({
-              t: 'colon-div',
-              type: opener.type,
-              title: opener.title,
-              label: opener.label,
-              children: parseBlocks(body, state, false),
-            })
+            i = close === -1 ? n : close + 1
+            if (opener.mode === 'line-block') {
+              push({ t: 'line-block', lines: body })
+            } else if (opener.mode === 'hardbreaks') {
+              push({ t: 'hardbreaks', children: parseBlocks(body, state, false) })
+            } else if (opener.type === 'footnotes') {
+              // placement directive: relocates the endnotes section
+              if (body.some((l) => !isBlank(l))) throw new Refuse('non-empty ::: footnotes body')
+              push({ t: 'footnotes-placement' })
+            } else if (opener.type === 'toc') {
+              throw new Refuse('::: toc directive')
+            } else {
+              push({
+                t: 'colon-div',
+                type: opener.type,
+                title: opener.title,
+                label: opener.label,
+                children: parseBlocks(body, state, false),
+              })
+            }
+            continue
           }
-          continue
         }
-        // invalid opener or no closer: ordinary paragraph text (falls
-        // through to the paragraph collector)
+        // invalid opener: ordinary paragraph text (falls through to the
+        // paragraph collector)
       }
     }
 
@@ -887,8 +955,17 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         const isOpener = !!(f && prevBlank && parseFenceInfo(f[2]))
         if (isOpener) openFence = f[1]
         prevBlank = isBlank(l)
+        // PART 1 S4 makes the fold conditional on an OPEN PARAGRAPH, so every
+        // block that leaves none clears this. A definition TERM is bounded like
+        // a heading (it holds inline content, not a paragraph), and a
+        // reference/footnote/abbreviation definition is invisible - it leaves
+        // nothing on the page for a lazy line to continue. Both were missing
+        // here, exactly as they were missing in carve-js and carve-php
+        // (carve-js#554, carve-php#652).
         if (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
-            COLON_FENCE.test(l) || l[0] === '|' || l[0] === '{') qOpenPara = false
+            isColonParagraphInterrupt(l) || l[0] === '|' || l[0] === '{' ||
+            DEFLIST_TERM.test(l) || LINK_DEF.test(l) || FOOTNOTE_DEF.test(l) ||
+            ABBR_DEF.test(l)) qOpenPara = false
         else qOpenPara = true
       }
       while (i < n) {
@@ -973,8 +1050,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         if (startsVisibleBlock(lines[i])) break // I1
         if (isTableRow(lines[i])) break // I1: valid table row
         {
-          const cf = COLON_FENCE.exec(lines[i])
-          if (cf && parseColonOpener(cf[2]) && findColonCloser(lines, i, cf[1].length) !== -1) break // I1/I4
+          if (colonInterruptsParagraph(lines, i, para)) break // I1/I4
         }
         const f = FENCE.exec(lines[i])
         if (f && parseFenceInfo(f[2]) && hasCloser(lines, i)) break // I4: interrupts
@@ -1081,7 +1157,7 @@ function parseListRun(lines, i, blocks, state, peekInterrupts) {
       tight: true,
       items: [],
     }
-    if (head.ordered) {
+    if (head.isOrdered) {
       list.ord = { delim: head.delim, dialects: head.dialects }
     }
     i = collectItems(lines, i, list, state)
@@ -1100,14 +1176,16 @@ function matchMarker(line) {
   if (m && m[3] && m[3].replace(/[{} ]/g, '') !== '' && parseAttrList(m[3]) === null) m = null
   if (m) {
     const { col } = indentCols(m[1])
+    const whitespaceWidth = m[4].length
     return {
       indent: col,
       bullet: m[2],
       attrs: m[3] ?? null, // marker-glued item attribute block (SS15 ext)
-      task: m[4],
-      text: m[5],
-      // the task box is item CONTENT, not marker (PART 9 SS24 C3)
-      markerWidth: m[2].length + 1,
+      task: m[5],
+      text: m[6],
+      // The task box is item CONTENT, not marker (PART 9 SS24 C3), so extra
+      // spaces before it do not move the item content column.
+      markerWidth: m[5] !== undefined ? m[2].length + 1 : m[2].length + whitespaceWidth,
     }
   }
   m = ORDERED.exec(line)
@@ -1118,6 +1196,10 @@ function matchMarker(line) {
     if (dialects.length === 0) return null
     return {
       indent: col,
+      // `ordered` carries the marker TOKEN, which is the empty string for a
+      // bare dot - so orderedness is a flag of its own rather than the token's
+      // truthiness, or `. a` would classify as a bullet list.
+      isOrdered: true,
       ordered: m[2],
       delim: m[3],
       attrs: m[4] ?? null,
@@ -1132,11 +1214,11 @@ function matchMarker(line) {
 function sameAxes(list, head) {
   // PART 9 SS11 N1: bullet char, ordered dialect+delim, plain-vs-task
   if (list.ord) {
-    if (!head.ordered || head.delim !== list.ord.delim) return false
+    if (!head.isOrdered || head.delim !== list.ord.delim) return false
     const heads = new Set(head.dialects.map((d) => d.dialect))
     return list.ord.dialects.some((d) => heads.has(d.dialect))
   }
-  if (head.ordered) return false
+  if (head.isOrdered) return false
   if (head.bullet !== list.bullet) return false
   return (head.task !== undefined) === list.task
 }
@@ -1246,7 +1328,7 @@ function collectItems(lines, i, list, state) {
             continue
           }
           const dedented = dedent(lines[j], contentCol)
-          if (opensSubBlock(dedented, itemRest(lines, j, baseIndent, contentCol))) {
+          if (opensSubBlock(dedented)) {
             // sub-BLOCK after a blank: attaches, stays tight (SS17 L2)
             itemLines.push('')
             openPara = false

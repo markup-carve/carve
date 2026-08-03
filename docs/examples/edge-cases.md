@@ -490,8 +490,11 @@ A delimiter pair with no content is literal text, not emphasis.
 
 ## Nested containers
 
-A longer colon fence nests: `::::` contains `:::` blocks, and only a bare
-closer of equal-or-greater length closes a block.
+A bare colon fence closes a container only when it is EXACTLY as long as that
+container's opener. Nesting therefore needs the two fences to differ, and the
+canonical direction is one colon wider per level inward. A longer-outer
+document like the one below parses too - exact matching does not care which
+way the lengths run.
 
 ::::: compare
 
@@ -515,6 +518,328 @@ Nested.
 ```
 
 :::::
+
+Equal-length fences nest. `::: tip` is not a closer - a closer is bare - so it
+opens a container inside the note, and the two bare fences close them
+innermost-first.
+
+:::: compare
+
+```carve
+::: note
+::: tip
+Inner.
+:::
+:::
+```
+
+```html
+<aside class="admonition note">
+  <aside class="admonition tip">
+    <p>Inner.</p>
+  </aside>
+</aside>
+```
+
+::::
+
+Widening the fence for the deeper level is the canonical direction. A bare
+`::::` does not match the open `:::`, so it is not a closer; it opens a child.
+This is the form `carve fmt` emits.
+
+::::: compare
+
+```carve
+:::
+Outer
+
+::::
+Inner
+::::
+:::
+```
+
+```html
+<div>
+  <p>Outer</p>
+  <div>
+    <p>Inner</p>
+  </div>
+</div>
+```
+
+:::::
+
+An opener always opens. A container still open at the end of the input closes
+there, so a forgotten closer costs you the container's extent, not the rest of
+the document. Lint and the language server flag it.
+
+:::: compare
+
+```carve
+::: note
+X
+```
+
+```html
+<aside class="admonition note">
+  <p>X</p>
+</aside>
+```
+
+::::
+
+One closer closes one container, not every container open above it. Here the
+`:::` closes `c`; `a` and `b` have no closer of their own and close at the end
+of the input by the rule above. Djot's bare closer instead closes every open
+container of equal-or-lesser length in one go.
+
+:::::: compare
+
+```carve
+::::: a
+:::: b
+::: c
+X
+:::
+```
+
+```html
+<div class="a">
+  <div class="b">
+    <div class="c">
+      <p>X</p>
+    </div>
+  </div>
+</div>
+```
+
+::::::
+
+## Opaque spans inside a container
+
+A container collects its body by scanning for its closer. A code fence, a raw
+block and a comment block are opaque: their contents are content, not markup,
+so a colon fence written inside one closes nothing. This is what lets a
+document about Carve show a container fence at all - under exact-length
+closers the code fence is the only structural way to quote one.
+
+:::::: compare
+
+````carve
+::: note
+```
+:::
+```
+body
+:::
+after
+````
+
+```html
+<aside class="admonition note">
+  <pre><code>:::
+</code></pre>
+  <p>body</p>
+</aside>
+<p>after</p>
+```
+
+::::::
+
+The opener carrying no info string is the case that hides the bug: the opener
+line is closer-shaped itself, so an implementation that tests it before
+consuming it ends the span where it began (carve#450). A tilde fence behaves
+the same.
+
+:::::: compare
+
+````carve
+::: note
+~~~
+:::
+~~~
+body
+:::
+after
+````
+
+```html
+<aside class="admonition note">
+  <pre><code>:::
+</code></pre>
+  <p>body</p>
+</aside>
+<p>after</p>
+```
+
+::::::
+
+A container opener inside the span is content too. Under exact-length closers
+this one is load-bearing: read as markup it would push a nesting level and put
+every following closer one level off.
+
+:::::: compare
+
+````carve
+::: note
+```text
+::: tip
+```
+body
+:::
+after
+````
+
+```html
+<aside class="admonition note">
+  <pre><code class="language-text">::: tip
+</code></pre>
+  <p>body</p>
+</aside>
+<p>after</p>
+```
+
+::::::
+
+A comment block is opaque in the same way. It renders nothing at all, so what
+this pins is where the container ends.
+
+:::: compare
+
+```carve
+::: note
+%%%
+:::
+%%%
+body
+:::
+after
+```
+
+```html
+<aside class="admonition note">
+  <p>body</p>
+</aside>
+<p>after</p>
+```
+
+::::
+
+Only a fence that CLOSES is opaque. An opener with no closer ahead opens no
+span at all, so the container's own closer stays structural and the lines after
+it are parsed normally. Without this one unclosed fence would swallow the rest
+of the document - the `:::` and `after` below would both render inside the code
+block, and the admonition would close at end of input.
+
+The `%%%` rule already worked this way; the code fence did not, in any of the
+three engines, because the spec had only ever written it down for `%%%`.
+
+:::: compare
+
+````carve
+::: note
+```
+x
+:::
+after
+````
+
+```html
+<aside class="admonition note">
+  <pre><code>x
+</code></pre>
+</aside>
+<p>after</p>
+```
+
+::::
+
+A fence with nothing to take structure away from is unaffected: alone, or as
+the whole content of a blockquote, an unterminated fence still opens a code
+block that runs to the end.
+
+:::: compare
+
+````carve
+> ```
+````
+
+```html
+<blockquote>
+  <pre><code>
+</code></pre>
+</blockquote>
+```
+
+::::
+
+## Blocks that render to nothing
+
+A comment, a comment block, an abbreviation definition and a non-HTML raw
+block produce no output. Inside a container they contribute no line either -
+the container's body is what remains.
+
+:::: compare
+
+```carve
+> q
+> %%%
+> x
+> %%%
+> body
+```
+
+```html
+<blockquote>
+  <p>q</p>
+  <p>body</p>
+</blockquote>
+```
+
+::::
+
+A definition body that renders to nothing closes on its own line, like the
+single-paragraph form.
+
+::: compare
+
+```carve
+:: t
+:  %%%
+   x
+   %%%
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd></dd>
+</dl>
+```
+
+:::
+
+An abbreviation definition inside a div is the same case: the definition is
+collected for the document's abbreviation table and leaves nothing behind.
+
+:::: compare
+
+```carve
+:::
+*[HTML]: HyperText Markup Language
+
+body
+:::
+```
+
+```html
+<div>
+  <p>body</p>
+</div>
+```
+
+::::
 
 ## Attribute edge cases
 
@@ -962,9 +1287,12 @@ under the marker.
 
 :::
 
-A heading folds its trailing flush-left plain text as continuation, at any
-nesting depth — even when the heading opens on a deeper sub-list item's marker
-line and the following line is flush left.
+A flush-left line after a heading stays inside the item the heading belongs to,
+at any nesting depth — even when the heading opens on a deeper sub-list item's
+marker line. What it does *not* do is fold into the heading: a heading ends at
+the newline (§18), so the line is the item's own content, which a tight list
+renders unwrapped. Ownership is the rule here; the heading's id is built from
+the heading line alone.
 
 ::: compare
 
@@ -980,8 +1308,8 @@ lazy
   <li>a
     <ul>
       <li>b
-        <h1 id="N-lazy">N
-lazy</h1>
+        <h1 id="N">N</h1>
+        lazy
       </li>
     </ul>
   </li>
@@ -1041,6 +1369,67 @@ is not wrapped in a paragraph.
   </li>
 </ul>
 ````
+
+:::
+
+A bullet's content column is where the marker actually ends, not a fixed 2. A
+bullet followed by extra spaces puts its content further right, and a block
+belongs to the item only if it reaches that column.
+
+::: compare
+
+```carve
+-   item
+    # Wide
+```
+
+```html
+<ul>
+  <li>item
+    <h1 id="Wide">Wide</h1>
+  </li>
+</ul>
+```
+
+:::
+
+Below that column the line is lazy paragraph text instead, so its marker
+survives literally — the same content-column rule as everywhere else, measured
+from the marker rather than assumed.
+
+::: compare
+
+```carve
+-   item
+  # H
+```
+
+```html
+<ul>
+  <li>item
+# H</li>
+</ul>
+```
+
+:::
+
+A task item is the exception: its content column stays at 2. The checkbox is
+content rather than marker, and extra spaces before it do not move the column
+either, so neither 6 nor 8 is where the body starts.
+
+::: compare
+
+```carve
+-   [ ] item
+    # H
+```
+
+```html
+<ul>
+  <li><input type="checkbox" disabled> item
+# H</li>
+</ul>
+```
 
 :::
 
@@ -1233,7 +1622,7 @@ more
 
 :::
 
-A block quote marker interrupts.
+A block quote marker followed by a space interrupts.
 
 ::: compare
 
@@ -1245,6 +1634,27 @@ text
 ```html
 <p>text</p>
 <blockquote><p>q</p></blockquote>
+```
+
+:::
+
+Without the space, `>` is ordinary paragraph text. This keeps operators and
+technical prose from opening accidental quotes.
+
+::: compare
+
+```carve
+text
+>>= operator
+>=3 items
+>_< face
+```
+
+```html
+<p>text
+&gt;≥ operator
+≥3 items
+&gt;_&lt; face</p>
 ```
 
 :::
@@ -1319,10 +1729,10 @@ body
 ```
 
 ```html
-<p>text</p>
-<aside class="admonition note">
-  <p>body</p>
-</aside>
+<p>text
+:::note
+body
+:::</p>
 ```
 
 ::::
@@ -1492,9 +1902,9 @@ text
 
 :::
 
-An **unterminated** fence opener does not interrupt a paragraph (§10 closer
-lookahead): with no matching closer ahead, the ` ``` ` line stays paragraph
-text. It is then an unclosed inline verbatim run, which renders as a `<code>`
+An **unterminated** code fence opener does not interrupt a paragraph (§10
+closer lookahead): with no matching closer ahead, the ` ``` ` line stays
+paragraph text. It is then an unclosed inline verbatim run, which renders as a `<code>`
 span to the end of the block (matching the `code_span` maximal-run rule).
 
 ::: compare
@@ -1513,9 +1923,11 @@ code</code></p>
 
 :::
 
-Likewise an unterminated `:::` opener does not interrupt: with no matching
-closer ahead it is literal text, so a stray `:::` in prose never swallows the
-rest of the block.
+A `:::` opener goes the other way: its closer is optional (PART 9 §12), so
+there is nothing to look ahead for. The opener interrupts, and the container it
+opens closes at the end of the input. That is the counterweight to the exact
+closer - a mistyped closer costs the container's extent, not the rest of the
+document.
 
 :::: compare
 
@@ -1526,9 +1938,10 @@ stuff
 ```
 
 ```html
-<p>Text
-:::
-stuff</p>
+<p>Text</p>
+<div>
+  <p>stuff</p>
+</div>
 ```
 
 ::::
@@ -1587,6 +2000,70 @@ The fold needs an open paragraph to fold into. When the last quoted line is a he
 
 :::
 
+The open-paragraph condition is not about list markers. **Plain** lazy text
+needs one too, and the same closed blocks leave none - so the quote ends and the
+line becomes a top-level paragraph.
+
+This is the case the list-marker example above does not reach, and every engine
+had a defect in it: carve-php kept the quote open after a heading, and carve-js
+and carve-php both kept it open after the two below.
+
+::: compare
+
+```carve
+> # h
+b
+```
+
+```html
+<blockquote>
+  <h1 id="h">h</h1>
+</blockquote>
+<p>b</p>
+```
+
+:::
+
+A definition **term** is bounded the same way. It holds inline content, not a
+paragraph, so there is nothing for the next line to continue.
+
+::: compare
+
+```carve
+> :: t
+~
+```
+
+```html
+<blockquote>
+  <dl>
+    <dt>t</dt>
+  </dl>
+</blockquote>
+<p>~</p>
+```
+
+:::
+
+An invisible definition leaves nothing on the page at all, which is the clearest
+case of the rule: there is no paragraph because there is no output.
+
+::: compare
+
+```carve
+> [f]: ~
+/
+```
+
+```html
+<blockquote>
+
+</blockquote>
+<p>/</p>
+```
+
+:::
+
 ## Fenced code language with punctuation
 
 A language tag may contain punctuation (`c++`, `c#`, `f#`, `asp.net`). The info string is still a single token, so a multiword or quoted info (e.g. `js title="x"`) is not a fence.
@@ -1606,9 +2083,9 @@ int main() {}
 
 :::
 
-## Multi-line headings
+## Single-line headings
 
-A heading spills onto following lines until a blank line. Three heading-specific rules: a continuation line carries the **same** number of `#` (stripped) or **none** (djot); a line with a **different** `#` count — more *or* fewer — starts a new heading; and a blank line or a caption (`^ …`, which attaches via §4) ends it. Everything else that ends a heading is *general block structure*, not a heading rule: a heading is a bounded title, so any block-opener (quote, table, fenced code, `:::` div, thematic break, `%%%` comment) ends it and starts that block, and a list marker — with no open paragraph in a title to fold into (§10) — starts a sibling list, exactly as at the top level. The heading id is built from the full folded text. (Setext underline headings remain intentionally excluded.)
+A heading **ends at the newline**. Nothing folds into it: the next line begins whatever block it begins, exactly as after any other closed block. This diverges from djot deliberately — djot folds a following plain line into the heading, which is a silent corruption for anyone arriving from Markdown, and `divergence-from-djot` §7 already broke from djot on the mirror case. A caption (`^ …`) still attaches via §4, because attachment is not continuation. The heading id is built from the single line. (Setext underline headings remain intentionally excluded.)
 
 ::: compare
 
@@ -1618,15 +2095,15 @@ outside
 ```
 
 ```html
-<section id="Title-outside">
-  <h1>Title
-outside</h1>
+<section id="Title">
+  <h1>Title</h1>
+  <p>outside</p>
 </section>
 ```
 
 :::
 
-A continuation line must carry the **same** number of `#` as the opener (or none). A line with a different count starts a new heading: `## still A` folds in, but `# B` (fewer `#`) is a new heading.
+Repeated headings are simply separate headings — the `#` count no longer decides whether one folds into another.
 
 ::: compare
 
@@ -1637,9 +2114,11 @@ A continuation line must carry the **same** number of `#` as the opener (or none
 ```
 
 ```html
-<section id="A-still-A">
-  <h2>A
-still A</h2>
+<section id="A">
+  <h2>A</h2>
+</section>
+<section id="still-A">
+  <h2>still A</h2>
 </section>
 <section id="B">
   <h1>B</h1>
@@ -1962,10 +2441,9 @@ tail
 ```html
 <ul>
   <li>item
-    <aside class="admonition note">
-      <p>body</p>
-    </aside>
-  </li>
+:::note
+body
+:::</li>
 </ul>
 <p>tail</p>
 ```
@@ -3418,10 +3896,12 @@ ordinary nested list:
 
 ```html
 <ul>
-  <li>::: note
-    <ul>
-      <li>para text</li>
-    </ul>
+  <li>
+    <aside class="admonition note">
+      <ul>
+        <li>para text</li>
+      </ul>
+    </aside>
   </li>
 </ul>
 ```
@@ -3442,13 +3922,16 @@ paragraph:
 
 ```html
 <ul>
-  <li>::: note
-    <ul>
-      <li>para text</li>
-    </ul>
+  <li>
+    <aside class="admonition note">
+      <ul>
+        <li>para text</li>
+      </ul>
+    </aside>
   </li>
 </ul>
-<p>:::</p>
+<div>
+</div>
 ```
 
 ::::
@@ -5503,7 +5986,7 @@ wraps its paragraphs.
 
 The same holds after a div body, and for an ordered item.
 
-::: compare
+:::: compare
 
 ```carve
 - item
@@ -5516,15 +5999,14 @@ The same holds after a div body, and for an ordered item.
 ```html
 <ul>
   <li>item
-    <aside class="admonition note">
-      <p>body</p>
-    </aside>
-    tail
-  </li>
+:::note
+body
+:::
+tail</li>
 </ul>
 ```
 
-:::
+::::
 
 A blank line makes the item loose, so its leading text and the trailing text
 are each wrapped.
@@ -5607,7 +6089,7 @@ after
 
 ## Unterminated comment fence
 
-A `%%%` opener with no matching closer ahead does not open a block. The line degrades to a `%%` line comment, so every following block still renders - the same rule as an unclosed `:::`, and for the same reason: an unterminated opener must not swallow the rest of the document. A tail on the opener (`%%% TODO`) changes nothing here.
+A `%%%` opener with no matching closer ahead does not open a block. The line degrades to a `%%` line comment, so every following block still renders. This is deliberately **not** the unclosed-`:::` rule (PART 9 §12), where the opener opens and the container closes at the end of the input: a comment block is invisible either way, so failing closed costs nothing here, whereas the same choice on a container turned one mistyped closer into a tail of literal text. A tail on the opener (`%%% TODO`) changes nothing.
 
 ::: compare
 
@@ -5775,3 +6257,302 @@ picked different answers here and every one of them stayed green (PART 10 §1).
 ```
 
 :::::
+
+## Attribute braces on a list-item marker line
+
+Three shapes that look alike and mean different things (PART 9 §15 A8). What
+decides is whether content follows the brace run on that line, not the column
+the braces sit in.
+
+`-{…} text` with no space after the marker attributes the **item**. With a
+space and text after the braces, the braces are part of that text. With a space
+and *nothing* after them, it is an ordinary attribute line that floats to the
+next block - a container does not get its own attribute rules.
+
+Worth pinning because the two halves were each pinned already and their boundary
+was not: carve-rs read the third shape as literal text while the other engines
+read it as an attribute line, and neither could be shown wrong (carve#454).
+
+::: compare
+
+```carve
+-{.item} An attributed item.
+- {.c} literal text
+
+- {a=b .c}
+  # Attributed heading
+```
+
+```html
+<ul>
+  <li class="item"><p>An attributed item.</p></li>
+  <li><p>{.c} literal text</p></li>
+  <li>
+    <h1 a="b" class="c" id="Attributed-heading">Attributed heading</h1>
+  </li>
+</ul>
+```
+
+:::
+
+
+## Implicit heading references with no definition
+
+A `[text][]` that matches no link definition falls back to the document's
+headings by their rendered text (PART 11 R1). The match is looser than the
+exact, case-sensitive link-definition match in the same rule: it trims,
+collapses whitespace and folds case, because a definition label is an
+identifier the author wrote twice while a heading reference is prose quoted
+from elsewhere in the document.
+
+A heading under a blockquote is declined - quoted text names the quoted
+document's headings, not this one's - while a list item resolves, because that
+is the author's own grouping. An unmatched label stays literal, and a real link
+definition wins the tie.
+
+Worth pinning because every case that existed paired `[X][]` with an `[X]: url`
+definition, so the fallback branch had no coverage at all and the executable
+spec had never implemented it (carve#453).
+
+::: compare
+
+```carve
+# Getting Started
+
+See [getting started][] and [Missing][].
+
+> # Quoted
+
+See [Quoted][].
+
+- # In an item
+
+See [In an item][].
+
+# Defined
+
+[Defined]: /wins
+
+See [Defined][].
+```
+
+```html
+<section id="Getting-Started">
+  <h1>Getting Started</h1>
+  <p>See <a href="#Getting-Started">getting started</a> and [Missing][].</p>
+  <blockquote>
+    <h1 id="Quoted">Quoted</h1>
+  </blockquote>
+  <p>See [Quoted][].</p>
+  <ul>
+    <li>
+      <h1 id="In-an-item">In an item</h1>
+    </li>
+  </ul>
+  <p>See <a href="#In-an-item">In an item</a>.</p>
+</section>
+<section id="Defined">
+  <h1>Defined</h1>
+  <p>See <a href="/wins">Defined</a>.</p>
+</section>
+```
+
+:::
+
+
+## Bare-dot ordered markers
+
+An ordered marker may drop its value when the delimiter is `.`: a bare `. `
+counts from 1, the AsciiDoc-style shorthand for the list nobody numbers by hand.
+
+::: compare
+
+```carve
+. first
+. second
+. third
+```
+
+```html
+<ol>
+  <li>first</li>
+  <li>second</li>
+  <li>third</li>
+</ol>
+```
+
+:::
+
+The bare dot is a **spelling, not a dialect**: it *is* decimal-dot, so it opens
+and continues one list with the explicit form. Only `.` may drop its value -
+a leading `) ` collides with prose parentheticals far more often than a leading
+`. ` does, the same asymmetry that keeps `(1)` from being a marker.
+
+::: compare
+
+```carve
+1. explicit
+. continues the same list
+
+) not a marker, and never opens one
+```
+
+```html
+<ol>
+  <li>explicit</li>
+  <li>continues the same list</li>
+</ol>
+<p>) not a marker, and never opens one</p>
+```
+
+:::
+
+Carrying no value, it cannot set a start - `3.` is how that is written - and
+li-attributes attach to it exactly as they do to every other marker, because
+the shape is marker, then attributes, then the required space.
+
+::: compare
+
+```carve
+.{#x} attributed
+. plain
+```
+
+```html
+<ol>
+  <li id="x">attributed</li>
+  <li>plain</li>
+</ol>
+```
+
+:::
+
+## A repeated definition: which one wins
+
+The three definition kinds do not answer this the same way, so each is pinned
+separately.
+
+A repeated **link reference** definition is overridden by the later one.
+
+::: compare
+
+```carve
+see [t][r].
+
+[r]: /a
+
+[r]: /b
+```
+
+```html
+<p>see <a href="/b">t</a>.</p>
+```
+
+:::
+
+A repeated **abbreviation** definition behaves the same way - the later
+expansion wins.
+
+::: compare
+
+```carve
+*[A]: a
+*[A]: b
+
+A here.
+```
+
+```html
+<p><abbr title="b">A</abbr> here.</p>
+```
+
+:::
+
+A repeated **footnote** definition does not: the FIRST one wins and the later
+one is dropped. `carve lint` reports it as `duplicate-footnote-definition`.
+
+::: compare
+
+```carve
+see [^f].
+
+[^f]: one
+
+[^f]: two
+```
+
+```html
+<p>see <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>one<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## A marker separator is a space, never a tab
+
+Every marker that takes a separator takes the space character: a tab after the
+marker leaves ordinary paragraph text. The definition term is shown because it
+was the last construct to agree - carve-js and carve-php read a tab as a term
+until carve#532.
+
+::: compare
+
+```carve
+::	term
+:  d
+```
+
+```html
+<p>::	term
+:  d</p>
+```
+
+:::
+
+A space opens the same document as written.
+
+::: compare
+
+```carve
+:: term
+:  d
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>d</dd>
+</dl>
+```
+
+:::
+
+## Two abbreviation definitions
+
+Nothing about the second definition is special - it is here because a document
+with TWO of them is what tells the engines apart. The HTML says nothing about
+how the definitions were spelled, so a formatter that joined them differently
+stayed invisible until the canonical-Carve target was compared across engines
+(carve-php#682).
+
+::: compare
+
+```carve
+*[HTML]: HyperText Markup Language
+*[CSS]: Cascading Style Sheets
+
+HTML and CSS.
+```
+
+```html
+<p><abbr title="HyperText Markup Language">HTML</abbr> and <abbr title="Cascading Style Sheets">CSS</abbr>.</p>
+```
+
+:::

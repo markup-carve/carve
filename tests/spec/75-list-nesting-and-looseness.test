@@ -1,0 +1,126 @@
+List nesting and looseness
+
+```
+- a
+  - b
+  - c
+- d
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+      <li>c</li>
+    </ul>
+  </li>
+  <li>d</li>
+</ul>
+```
+
+```
+- a
+
+- b
+.
+<ul>
+  <li><p>a</p></li>
+  <li><p>b</p></li>
+</ul>
+```
+
+```
+- a
+
+  more
+- b
+.
+<ul>
+  <li><p>a</p>
+    <p>more</p>
+  </li>
+  <li><p>b</p></li>
+</ul>
+```
+
+```
+- a
+  - b
+    # N
+lazy
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        <h1 id="N">N</h1>
+        lazy
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+````
+- ```
+  a
+
+  b
+  ```
+- c
+.
+<ul>
+  <li>
+    <pre><code>a
+
+b
+</code></pre>
+  </li>
+  <li>c</li>
+</ul>
+````
+
+````
+- ```
+  x
+  ```
+  after
+.
+<ul>
+  <li>
+    <pre><code>x
+</code></pre>
+    after
+  </li>
+</ul>
+````
+
+```
+-   item
+    # Wide
+.
+<ul>
+  <li>item
+    <h1 id="Wide">Wide</h1>
+  </li>
+</ul>
+```
+
+```
+-   item
+  # H
+.
+<ul>
+  <li>item
+# H</li>
+</ul>
+```
+
+```
+-   [ ] item
+    # H
+.
+<ul>
+  <li><input type="checkbox" disabled> item
+# H</li>
+</ul>
+```

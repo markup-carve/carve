@@ -42,16 +42,47 @@ The encoding turns an N×M integration problem into N+M.
 }
 ```
 
-Four rules carry most of the weight:
+Five rules carry most of the weight:
 
 **The root carries exactly three fields** - `type`, `children`, `srcByteLength`
-(PART 12 §7). Frontmatter and footnote definitions are **block nodes in the
-tree**, not root fields, because a root field cannot carry a position and both
-are source an editor navigates to.
+(PART 12 §7). Frontmatter and definitions are **block nodes in the tree**, not
+root fields, because a root field cannot carry a position and both are source an
+editor navigates to. A definition is a child of the **document** even when it was
+authored inside a container - footnote and abbreviation alike - because its scope
+is the document wherever it was written. Its `pos` still says where that was.
 
 **Field names are spec surface** (§3). `href`, `src`, `value`, `level`,
 `children`. An implementation whose internals differ maps on the way out; it does
 not export its internals, and it does not invent a synonym.
+
+**The tree is pre-resolve** (§3a). It records what the author wrote, not what the
+document resolves to. `[getting started][]` publishes a `link` carrying `ref` and
+the `rawRef` source whether or not anything defines the label. Both stages
+validate against the schema, which is how three engines came to disagree; the tie
+goes to the stage that keeps `[x][]` alive through a format cycle and keeps
+`[a][]` distinguishable from `[a](#a)`.
+
+`href` is **not** the casualty of that. A resolved reference keeps its
+destination:
+
+```json
+{ "type": "link", "href": "/start", "ref": "getting started", "rawRef": "[getting started][]" }
+```
+
+and `href` is empty only where nothing resolved the reference. That is §5's
+added-alongside rule - the same one that lets a resolved footnote reference keep
+its label and gain its number - not a retreat from pre-resolve: the authored
+construct is `ref` and `rawRef`, and it survives intact.
+
+It has to work this way, because the destination has nowhere else to live. There
+is **no node type for a `[label]: url` link reference definition** - a document
+holding only `[lbl]: /u` publishes zero children. An empty `href` on a resolved
+reference would discard `/start` outright, and a consumer decoding that tree
+would render a link to nothing with no second stage available to it.
+
+For the collapsed form `[getting started][]`, `ref` is the **derived** label
+(`getting started`) - the label the reference resolves by. `rawRef` holds the
+authored spelling, so the empty brackets are not lost.
 
 **Type identifiers come from the [profiles vocabulary](/profiles)** (§1-2), and
 are `snake_case` always. The AST carries a few types a profile cannot deny -
@@ -72,6 +103,54 @@ document into invalid text.
 
 An implementation that cannot place a node **omits `pos` rather than inventing
 one**, and says so. Absent is a fact a consumer can act on; a wrong span is not.
+
+A **reassembled** node - one the producer joined from pieces the source
+separates, or synthesized outright - **may omit `pos` and is conformant doing
+so**. A table cell continued on a `+` line, the hard break a line block makes
+from a soft one, line-block content rebuilt around an indentation sentinel, and
+a `text` run coalesced across such a gap all have values that are not a slice of
+the source at any offset, so no honest span exists. The exemption is narrow: it
+covers nodes that *cannot* be placed, not nodes that have not been placed yet.
+
+## Adjacent text runs are coalesced
+
+A node's children hold **no two adjacent `text` nodes**. Where parsing produced
+a run of them, they join into one, concatenating `value` in order:
+
+```
+foo_bar_baz and snake_case stay literal
+```
+
+is one text node, not four. An implementation that splits wherever a delimiter
+failed to open emphasis is publishing its parser's bookkeeping rather than the
+document.
+
+This is normative (§1a) because without it the interop requirement means very
+little: two engines can publish 1 node and 4 for the same characters, both valid
+against the schema, and "read another's output" degrades to "parses".
+Coalescing is what makes the tree **canonical** for a given document - the same
+argument PART 11 makes one layer down for canonical source form - and it is what
+lets a divergence be measured node-for-node instead of argued about.
+
+`escaped_text` is not `text` and does not merge with it: the two stay distinct
+on the wire because an escape is authored form.
+
+The merge is part of `parse(x)`, not of serialization. [§6](#round-trip)
+requires `parse(x)` serialized and deserialized to equal `parse(x)`, so joining
+runs in the encoder while leaving the tree split satisfies this rule and breaks
+that one on the same document - what comes back holds one node where the tree
+held three.
+
+A merged run keeps a `pos` only where its pieces are **contiguous** in the
+source. Where they are not - the `<` and `>` of an autolink unwrapped inside a
+link label, the delimiter between two halves of a wrapped table cell - the
+merged value is not a slice of the source at any offset, so the node carries no
+position rather than one that selects the wrong text. §4 names that a permitted
+category rather than a gap, so a merged run without a position is conformant.
+
+The schema cannot express this - JSON Schema has no way to forbid two adjacent
+array entries of the same shape - so it is checked by the shape comparison in
+`scripts/ast-conformance.mjs`.
 
 ## Producing it
 
@@ -144,14 +223,65 @@ the text they claim.
 that loses a field is not a lossy convenience; it is a consumer breaking silently
 one document later. Both halves are checked over the whole corpus.
 
+## How deep an ingested AST may nest
+
+Reading a serialized AST is a recursive descent over structure someone else
+wrote, so it needs a bound for the same reason [parsing does](/security). §9
+states the property rather than a number:
+
+1. an implementation **must accept any AST its own parser can produce** at the
+   nesting cap - `carve --json | carve --from-json` may not fail on a document
+   the same build just parsed;
+2. it **must reject deeper input with an error of its own** - not truncation,
+   not a crash, not whatever the JSON library raised;
+3. the bound **may be counted in any unit**, because 1 and 2 are the whole
+   contract.
+
+The trap is that an ingest bound is not in the same unit as the parser's cap,
+and the conversion factor is not a constant. One AST level costs two JSON
+structural levels for a blockquote or div (the object plus its `children`
+array) and four for a list. Measured against carve-js at the cap of 200,
+counting the root as level 1:
+
+| shape | structural depth |
+|---|---|
+| blockquote chain | 406 |
+| list ladder | 806 |
+| table under blockquotes | 406 |
+
+The exact figures shift by one with the counting convention; the ratio is the
+point. A list ladder at the cap is four times the parser's own number.
+
+So a bound must be **derived** from the parser's cap by the worst per-level
+cost of the encoding, never restated as the same number. All three engines got
+this wrong in a different way - carve-rs bounded structural depth by the AST
+number and rejected its own encoder's output
+([carve-rs#389](https://github.com/markup-carve/carve-rs/issues/389)), carve-php
+inherited `json_decode`'s 512 and surfaced a raw `JsonException`
+([carve-php#556](https://github.com/markup-carve/carve-php/issues/556)), and
+carve-js had no bound at all until a `RangeError` somewhere past 1500
+([carve-js#498](https://github.com/markup-carve/carve-js/issues/498)). Two of
+the three rejected documents their own parser produces, which is why rule 1 is
+first.
+
+The root type is not a leniency point either: §7 fixes it at `document` and the
+schema pins it as a `const`. Accepting `doc` means half-reading a ProseMirror
+payload instead of rejecting it.
+
 ## What is not in it
 
 Formatter-internal nodes (PART 11, and the `raw_text` case the profiles
-vocabulary excludes) are not part of the document and are not serialized.
+vocabulary excludes) are not part of the document and are not serialized. Under
+§3a nothing on the document side needs `raw_text` either: an unresolved
+reference stays a `link` rather than reverting to literal source, so no node has
+to carry text that must not be escaped again.
 
 Resolution results a consumer could recompute - footnote numbering, caption
 numbers - **are** serialized, because recomputing them means reimplementing the
-resolution rules.
+resolution rules. Those are **added alongside** the authored construct, not
+substituted for it: a resolved footnote reference keeps its label and gains its
+number, and a resolved reference link keeps its `ref` and `rawRef` and gains its
+`href`.
 
 ## Conformance status
 
@@ -161,13 +291,32 @@ spans that do not cover the text they claim.
 
 | engine | shape | positions |
 |---|---|---|
-| carve-js | conformant | blocks and inlines, except reassembled regions (table cells, line-block content) |
-| carve-rs | conformant | blocks and most inlines; reconstructed regions and a definition list's own parts are unplaced ([carve-rs#333](https://github.com/markup-carve/carve-rs/issues/333)) |
-| carve-php | two field-name divergences left: the root carries `abbreviations`, and `inline_extension` publishes `extensionType`/`children` ([carve-php#510](https://github.com/markup-carve/carve-php/issues/510)) | recorded behind a parse option, enabled whenever it serializes |
+| carve-js | drops `ref` and `rawRef` once a reference resolves, publishing `href` alone, against §3a ([carve#524](https://github.com/markup-carve/carve/issues/524)); leaves an `abbreviation_def` inside its container instead of hoisting it to the document, against §7 ([carve-php#631](https://github.com/markup-carve/carve-php/issues/631)) | blocks and inlines, except reassembled regions (table cells, line-block content) |
+| carve-rs | serializes links POST-resolve ([carve#481](https://github.com/markup-carve/carve/issues/481)) - the `href` half of that is now what §3a asks for, and what remains to check is whether `ref`/`rawRef` survive resolution; leaves an `abbreviation_def` in its container, against §7 | blocks and most inlines; reconstructed regions and a definition list's own parts are unplaced ([carve-rs#333](https://github.com/markup-carve/carve-rs/issues/333)) |
+| carve-php | flattens an unresolved reference to text instead of publishing a `link`, against §3a ([carve#486](https://github.com/markup-carve/carve/issues/486)), and publishes `ref: ""` for the collapsed form where §3a now pins the derived label ([carve#524](https://github.com/markup-carve/carve/issues/524)); two field-name divergences left: the root carries `abbreviations`, and `inline_extension` publishes `extensionType`/`children` ([carve-php#510](https://github.com/markup-carve/carve-php/issues/510)) | recorded behind a parse option, enabled whenever it serializes |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
 is only a claim worth making if the disagreements are visible.
+
+The **reassembled** regions in the positions column are not among them - §4 names
+that category permitted, so a table cell or line-block region without a position
+is conformant rather than owed. What is still a gap is anything else in that
+column: a `definition_term` is a slice of the source like any other node, so
+carve-rs leaving a definition list's own parts unplaced is a real one.
+
+The §3a entries were measured, on `See [getting started][] here.` with the label
+defined. All three engines publish the destination in `href` - which is the half
+§3a now blesses - and none publishes `rawRef` beside it: carve-js
+`{"href":"/start"}`, carve-rs `{"href":"/start"}` (from a build the conformance
+script flags as older than its source), carve-php
+`{"ref":"","href":"/start"}`.
+
+The §3a and §7 rows are new: those clauses were written to settle disagreements
+the engines had already shipped, so every engine has something to move. That is
+the intended order - the spec says what the shape is, then the engines conform,
+then the pin moves. Until they do, this table is the honest record of who is
+where.
 
 ## Definition lists
 

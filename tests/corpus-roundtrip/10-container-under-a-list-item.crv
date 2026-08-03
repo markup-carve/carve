@@ -1,0 +1,20 @@
+:::::: wrapper
+
+::::: outer
+
+:::: note
+Outer note.
+
+- item one
+
+  ::: tip
+  Hidden under a list item.
+  :::
+
+- item two
+
+::::
+
+:::::
+
+::::::
