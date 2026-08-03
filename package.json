@@ -20,7 +20,7 @@
     "bump-carve-pin": "node scripts/bump-carve-pin.mjs",
     "sync-carve-wasm": "node scripts/sync-carve-wasm.mjs",
     "lint:mermaid": "mermaid-lint --ext crv --quiet",
-    "test": "node --test tests/corpus.test.mjs tests/reference-build.test.mjs tests/optional-corpus.test.mjs tests/corpus-targets.test.mjs tests/normativity.test.mjs tests/examples.test.mjs tests/playground-extensions.test.mjs tests/node-vocabulary.test.mjs tests/ast-schema.test.mjs tests/fixture-bytes.test.mjs tests/roundtrip.test.mjs tests/share-link.test.mjs tests/divergence-claims.test.mjs tests/corpus-fmt-roundtrip.test.mjs tests/implementation-comparison-counts.test.mjs tests/degradation-claims.test.mjs tests/migration-claims.test.mjs",
+    "test": "node --test tests/corpus.test.mjs tests/reference-build.test.mjs tests/optional-corpus.test.mjs tests/corpus-targets.test.mjs tests/normativity.test.mjs tests/examples.test.mjs tests/playground-extensions.test.mjs tests/node-vocabulary.test.mjs tests/ast-schema.test.mjs tests/fixture-bytes.test.mjs tests/roundtrip.test.mjs tests/share-link.test.mjs tests/divergence-claims.test.mjs tests/portable-whitespace.test.mjs tests/corpus-fmt-roundtrip.test.mjs tests/implementation-comparison-counts.test.mjs tests/degradation-claims.test.mjs tests/migration-claims.test.mjs",
     "test:conformance": "npm run corpus:build && npm test",
     "examples:snapshot": "UPDATE_EXAMPLES=1 node --test tests/examples.test.mjs"
   },
