@@ -1067,7 +1067,21 @@ link_text = inline_content ;
    outermost link's destination applies. So `[[x](y)](z)` links `x` to `z`,
    and `[a https://b c](/u)` (with an autolink extension) links the literal
    text `a https://b c` to `/u` rather than emitting a nested anchor. Mirrors
-   CommonMark "links may not contain other links". *)
+   CommonMark "links may not contain other links".
+
+   This is a property of the DOCUMENT, and therefore binds EVERY target that
+   can express a link -- HTML, Markdown and ANSI alike, exactly as the
+   smart-typography switch above applies to every target. Nested output is
+   not merely redundant: `[see [H](#H)](/outer)` is not valid Markdown, so a
+   consumer reparsing it gets something other than what the document says,
+   and a nested ANSI link sequence ends with its own reset, which closes the
+   outer link's styling early.
+
+   An implementation that resolves a construct into a link AFTER the pass
+   that enforces this -- a cross-reference is the usual case, since `</#id>`
+   need not be resolved during parsing -- must apply the rule at that later
+   point too, in every such target and not only in the one whose output makes
+   the nesting visible as markup (carve-rs#436). *)
 link_destination = {destination_escape | balanced_parens
                    | (url_char - '(' - ')') | '\' | unicode_url_char}+ ;
 balanced_parens = '(', {destination_escape | balanced_parens
