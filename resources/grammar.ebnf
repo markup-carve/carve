@@ -3853,17 +3853,70 @@ EOF = (* end of file *) ;
       like rendering, happens after; a producer MUST NOT fold its results into
       the tree in place of the authored construct.
 
-      Concretely, for `[getting started][]` against a heading that defines it:
+      Concretely, for `[getting started][]` where NOTHING defines the label:
 
         {"type":"link","href":"","ref":"getting started",
          "rawRef":"[getting started][]"}
 
       `ref` is present because the author wrote a reference link (§3), `href`
-      is empty because nothing has resolved it yet, and `rawRef` carries the
-      source so the construct can be restored. A tree publishing
+      is empty because there is no destination, and `rawRef` carries the source
+      so the construct can be restored. A tree publishing
       `{"type":"link","href":"#Getting-Started"}` for that source has serialized
       a LATER STAGE: the reference is gone, and no consumer can tell it from a
       document whose author typed the destination out.
+
+      A RESOLVED REFERENCE KEEPS ITS DESTINATION -- NORMATIVE. Where the
+      document DOES define the label, the same source publishes:
+
+        {"type":"link","href":"/start","ref":"getting started",
+         "rawRef":"[getting started][]"}
+
+      `href` is empty only where nothing resolved the reference. This is not a
+      retreat from pre-resolve: it is the ADDED-ALONGSIDE rule below, applied to
+      links exactly as §5 already applies it to footnote numbering. The authored
+      construct -- `ref` and `rawRef` -- survives, and the resolution result is
+      published rather than left to be recomputed. The distinction this clause
+      exists to protect, `[a][]` versus `[a](#a)`, is carried entirely by `ref`
+      and `rawRef`, so nothing is lost by keeping `href` too.
+
+      It is also what every engine already does. Measured on
+      `See [getting started][] here.` with the label defined, all three publish
+      the destination -- carve-js `{"href":"/start"}`, carve-rs
+      `{"href":"/start"}`, carve-php `{"ref":"","href":"/start"}`. The clause as
+      first written would have made all three wrong on the half they agree
+      about, in order to protect a distinction `ref` and `rawRef` already carry.
+      What they are each missing is the authored construct BESIDE it, which is
+      the half this clause actually asks for.
+
+      WITHOUT IT THE DESTINATION HAS NOWHERE TO LIVE. `href: ""` for a resolved
+      reference is only recoverable if the definition survives the trip, and it
+      does not: the vocabulary has NO node type for a `[label]: url` link
+      reference definition. §7 hoists `footnote` and `abbreviation_def` to the
+      document; a link reference definition is serialized as nothing at all --
+      a document holding only `[lbl]: /u` publishes zero children.
+
+      So under the unsoftened rule this document
+
+        See [getting started][] here.
+
+        [getting started]: /start
+
+      serialized to a `link` with an empty `href`, a `ref`, a `rawRef`, and no
+      record anywhere of `/start`. A consumer that decoded and rendered got a
+      link to nothing, with no second stage available to it -- the input to that
+      stage had been dropped. §6's round trip still held, because both sides
+      carried the same empty `href`; what broke was rendering the tree at all,
+      which is worse and which §6 does not measure. (carve#524)
+
+      THE COLLAPSED FORM'S `ref` IS THE DERIVED LABEL. For `[getting started][]`
+      the author wrote nothing between the second brackets, and `ref` carries
+      `"getting started"` -- the label the reference RESOLVES BY, which is the
+      only value a consumer can do anything with. An empty `ref` would say
+      "there is a reference here and I will not tell you to what". `rawRef`
+      holds the authored spelling, so the empty brackets are not lost by this.
+      The alternative was measured rather than argued: carve-php published
+      `ref: ""` for the collapsed form and carve-js published no `ref` at all
+      once resolved, so all three spellings were in the field at once.
 
       AN UNRESOLVED REFERENCE IS STILL A LINK NODE. Where nothing defines
       `[a]`, `see [a][] here` publishes `text`, `link`, `text` -- the link
@@ -3906,8 +3959,19 @@ EOF = (* end of file *) ;
       because recomputing them means reimplementing PART 9R. The difference is
       that those are ADDED alongside the authored construct; they do not
       REPLACE it. A resolved footnote reference keeps its label and gains its
-      number. A resolved link keeps its `ref` and gains nothing: `href` is the
-      author's field, empty when the author did not write a destination.
+      number. A resolved link keeps its `ref` and `rawRef` and gains its `href`,
+      which is the same shape: the authored construct is still there to be read,
+      and the resolution result sits beside it.
+
+      WHAT WOULD MAKE `href: ""` DEFENSIBLE, and is not proposed here: a
+      `link_reference_definition` node in the vocabulary, hoisted to the
+      document like the other two definition kinds. Then the destination
+      survives serialization and a consumer can resolve for itself. It is a
+      bigger change than this clause is worth -- a new node type, a new hoisting
+      rule, three engines to move, and every consumer obliged to run a
+      resolution pass before it can render anything -- and the reason to prefer
+      it would be purity rather than a capability anyone is missing. Recorded so
+      the choice is visible as a choice.
 
    4. POSITIONS ARE REQUIRED. Every node EXCEPT the document root carries
       `pos`:

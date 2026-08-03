@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **PART 12 §3a: a RESOLVED reference keeps its destination** (carve#524). The
+  clause pinned `href: ""` for every reference, resolved or not. Under it the
+  destination had nowhere to live: the vocabulary has no node type for a
+  `[label]: url` link reference definition - a document holding only `[lbl]: /u`
+  publishes zero children - so a serialized resolved reference kept `ref` and
+  `rawRef` and dropped `/start` outright, and a consumer decoding it rendered a
+  link to nothing. `href` is now empty ONLY where nothing resolved the
+  reference, which is §5's added-alongside rule applied to links exactly as it
+  already applies to footnote numbering: the authored construct (`ref`,
+  `rawRef`) survives and the resolution result sits beside it. All three engines
+  already publish the destination; what they are missing is the authored
+  construct beside it.
+
+  `ref`'s value for the collapsed form `[label][]` is pinned to the DERIVED
+  label rather than the empty string the author typed, since that is the label
+  the reference resolves by and `rawRef` already holds the authored spelling.
+  Three engines carried three spellings. `resources/ast-schema.json` said one
+  thing for `link.ref` ("resolved or not") and another for `image.ref`
+  ("Unresolved reference label"); the two now agree, and `href`/`src` gain a
+  description saying when they may be empty.
+
 ### Fixed
 
 - **Restored nine regions of `resources/grammar.ebnf` that a stale-copy merge
