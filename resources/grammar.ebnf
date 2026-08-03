@@ -2933,6 +2933,39 @@ EOF = (* end of file *) ;
         `line-block` without the container consuming indentation.
       - INLINE CONTENT parses normally (emphasis, links, code, ...); only the
         whitespace and soft-break handling differ from an ordinary div.
+      - NO BLOCK CONSTRUCT IS RECOGNIZED INSIDE ONE -- NORMATIVE. A body line
+        is verse: a link, footnote or abbreviation definition, a
+        block-attribute line and a fence opener are all ORDINARY TEXT there,
+        and none of them is REGISTERED. The stanza is the only structure a
+        line block has.
+
+        A COMMENT IS NOT AN EXCEPTION TO THIS, because a comment is not a
+        block construct: `%%` runs to end of line wherever it appears (§28),
+        including inside verse, and a comment-only body line leaves an EMPTY
+        verse line rather than disappearing - the line was written, so the
+        stanza keeps its shape.
+
+        This is the block-layer half of the line above, and leaving it unsaid
+        cost three engines three different answers on the same two lines
+        (carve#510, carve#573):
+
+          `*[A]: x`  literal in carve-rs; in carve-js and carve-php REGISTERED
+                     as a definition and expanded in place, so the verse
+                     showed an `<abbr>` the author never wrote -- and the
+                     definition then applied to the whole document, expanding
+                     text OUTSIDE the block
+          `%% c`     dropped to an empty verse line in carve-rs and carve-php;
+                     kept as literal text in carve-js on any line but the
+                     first, where it drops it like the others
+
+          `[^f]: t`  literal in carve-js and carve-rs; in carve-php hoisted to
+                     an endnote AND left behind as a reference, publishing the
+                     same line twice (fixed in carve-php#691)
+
+        Each is the engine rewriting the author's verse. A line block exists
+        to preserve a layout, so what has to hold inside it is that nothing is
+        claimed and nothing is dropped that was not a comment.
+
       (corpus 88-line-blocks*.)
 
       LOCAL HARD-BREAK BLOCK -- NORMATIVE (governs `local_hard_break_block` in
