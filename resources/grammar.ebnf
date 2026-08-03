@@ -429,7 +429,17 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    change the meaning). Carve is stricter than CommonMark, which treats a bare
    `-` as an empty item; requiring content keeps a lone dash (a prose dash /
    placeholder) from silently becoming a list. Pinned by corpus
-   content-less-marker-is-not-a-list. *)
+   content-less-marker-is-not-a-list.
+
+   THE SAME HOLDS FOR THE DEFINITION-TERM MARKER `::`. The rule was written
+   naming bullets and ordered markers, and its rationale -- an editor stripping
+   a trailing space must not change the meaning -- is a property of every
+   marker that takes a separator space, not of those two. Left unstated, the
+   engines split three ways on `::` followed by the separator and one more
+   space: carve-js made it a `<dt>` holding a space, carve-php a `<dt>` holding
+   nothing, carve-rs a paragraph. Two of them therefore turned `:: ` (a
+   paragraph) into a definition list when a trailing space survived a save
+   (carve#512). A content-less `::` line is paragraph text. *)
 
 ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, [item_attributes], space, list_item_content ;
