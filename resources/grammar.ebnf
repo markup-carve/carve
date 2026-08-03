@@ -3827,30 +3827,47 @@ EOF = (* end of file *) ;
       The contract a consumer relies on is unchanged: JSON it is handed carries
       positions. How the producer arranged that is the producer's business.
 
-      IMPLEMENTATION STATUS. carve-php serializes conformantly: it records
-      positions behind a parse option and enables them whenever it serializes,
-      which is the arrangement the paragraph above permits.
+      IMPLEMENTATION STATUS. All three engines record positions behind a parse
+      option and enable them whenever they serialize, which is the arrangement
+      the paragraph above permits. Measured over the corpus:
 
-      carve-js records positions but not on every node. The types that come out
-      without one are all REASSEMBLED rather than sliced from the source -- the
-      hard break a line block synthesizes from a soft one, and table rows and
-      cells put back together from several lines. They are absent rather than
-      wrong, which is the half of the rule below that matters, and they are
-      tracked in carve-js#441.
+        carve-js    3414 placed,  10 unplaced   (0.29%)
+        carve-rs    3389 placed,   9 unplaced   (0.26%)
+        carve-php   3405 placed,   5 unplaced   (0.15%)
 
-      carve-rs records positions on BLOCK nodes and none on inline ones. Over
-      the corpus that places 869 block nodes and leaves 54, and the ones left
-      are refusals rather than gaps: line-block content is reassembled around
-      an indentation sentinel, so it is not a slice of the source and cannot
-      honestly be placed. Its inline variants are tuple-shaped, so there is
-      nowhere to put a position without changing the variant itself, which is
-      why the inline half has not started. Tracked in carve-rs#333, which also
-      records the six trap classes carve-js hit, in the order they bit.
+      What is left is not a backlog. Every engine independently arrived at
+      nearly the same residue, on the same THREE documents -- a line block
+      (41-line-blocks-9) and two table cells continued across lines
+      (63-table-multi-line-cell-continuation,
+      64-table-rowspan-with-multi-line-content). All of it is REASSEMBLED
+      content: a hard break a line block synthesizes from a soft one, line-block
+      content rebuilt around an indentation sentinel, a cell joined from several
+      source lines by a space the source does not contain. None of it is a slice
+      of the source at any offset, so no span selects it.
+
+      carve-rs additionally leaves the merged text of an unwrapped autolink
+      unplaced (03-links-12), for the same reason once §1a joins the run: the
+      `<` and `>` between the pieces are not in the value.
+
+      This state is convergent rather than accidental, and it is the evidence
+      behind carve#490, which asks whether a reassembled node should be a NAMED
+      permitted category under this section rather than a conformance shortfall
+      each engine reports separately. Until that is decided the rule below
+      stands as written.
+
+      The earlier text here named per-engine gaps that no longer exist -- it
+      described carve-rs as placing block nodes only, "869 block nodes and 54
+      left", and pointed at carve-js#441 and carve-rs#333 for tracking. Both
+      issues are closed and both engines have moved. A status section that
+      states numbers has to be re-measured when it is read; these were taken
+      from the corpus on the day this paragraph was written.
 
       carve-rb serializes carve-rs's tree, so it publishes exactly what that
-      engine records - the block positions and not the inline ones. It is the
-      route by which the conformance checker reaches carve-rs at all, since
-      carve-rs has no JSON serializer of its own.
+      engine records. It is the route by which the conformance checker reaches
+      carve-rs at all, since carve-rs has no JSON serializer of its own -- and
+      therefore also the route by which a stale carve-rs PIN in carve-rb shows
+      up as a conformance failure that carve-rs itself does not have
+      (carve-rb#41).
 
       An implementation that cannot yet produce positions MUST NOT emit `pos`
       with invented values, and MUST NOT omit it silently: it does not yet
