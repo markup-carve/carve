@@ -3898,8 +3898,8 @@ ordinary nested list:
 ::::
 
 NEGATIVE: a closer at column zero is outside the item, so it does not close the
-opener; the opener stays literal and the stray `:::` becomes a top-level
-paragraph:
+opener. The opener still opens its admonition, which closes at end of input, and
+the stray `:::` opens a second, top-level div with an empty body:
 
 :::: compare
 

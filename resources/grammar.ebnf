@@ -2337,8 +2337,11 @@ EOF = (* end of file *) ;
       and `div` in PART 2; cross-references syntax.md §4.20 "Block
       Extensions"). A TYPED `::: word` block renders by a TWO-TIER rule
       on the type identifier (below). A BARE `:::` opener with NO type
-      word is a GENERIC DIV: a plain `<div>` (no class added; an empty div
-      is `<div></div>`), i.e. djot's generic container.
+      word is a GENERIC DIV: a plain `<div>` (no class added), i.e. djot's
+      generic container. An EMPTY one closes on the next line --
+      `<div>` newline `</div>`, the exception PART 10 §4 states -- not
+      `<div></div>`, which no engine emits and which this line claimed
+      until carve#531 measured it.
 
       INLINE OPENER ATTRIBUTES -- STRICT (djot). The opener line carries NO
       inline attributes: it is the colon fence, an optional type word, and
@@ -3438,6 +3441,43 @@ EOF = (* end of file *) ;
       line. Nested block structures (list, blockquote, table, admonition,
       div, figure, section, endnotes) indent their children by TWO spaces
       per nesting level. Inline content stays flat on its block's line.
+
+      AN EMPTY CONTAINER BODY -- NORMATIVE. A container whose body renders
+      nothing keeps a BLANK LINE where the body would be:
+
+        <blockquote>
+
+        </blockquote>
+
+      with one exception, and it is an exception rather than a rule: a BARE
+      `:::` div -- no type word, no class -- closes on the next line instead.
+
+        <div>
+        </div>
+
+      So the four shapes are, exhaustively: bare div compact; div with a word
+      class, admonition, and blockquote all with the blank line. A body that
+      renders to nothing is an empty body -- a container holding only a comment
+      takes the same shape as one holding nothing.
+
+      WHY THE EXCEPTION SURVIVES. It has no principle behind it. The split is
+      on whether the div carries a type word, which is a property of the
+      RENDERING PATH and not of the document, and a uniform rule would be
+      easier to state and to implement. It stands because the compact bare div
+      is what all three engines already produce and what the corpus already
+      pins (116-fence-opener-with-a-nested-list-body-inside-a-list-item-6,
+      which reaches it incidentally through a stray column-zero closer).
+      Making the rule uniform would overturn a three-way agreement to fix a
+      cosmetic inconsistency, which is a worse trade than writing the
+      inconsistency down. (carve#531)
+
+      WHAT WAS ACTUALLY UNSPECIFIED is narrower than the exception. Two of the
+      four shapes were pinned only incidentally and one -- the div with a WORD
+      CLASS -- was pinned by nothing at all, which is exactly where the engines
+      diverge: carve-php emits the compact form there, carve-js and carve-rs
+      the blank line. carve-php is the one that moves. Each shape needs its own
+      corpus case, since the whole defect is that the shape varies by kind and
+      by attribute; a single case would miss it.
 
    5. PARAGRAPH WRAPPING follows the tight/loose rule (§17): a tight list
       item's text has no <p>; a loose item's paragraphs are wrapped.
