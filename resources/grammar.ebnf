@@ -4002,6 +4002,36 @@ EOF = (* end of file *) ;
       GIVEN the line the writer emits; §10 fixes the line. A writer may not
       manufacture a layout whose only merit is dodging an escape.
 
+  10a. AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS -- NORMATIVE. A
+      link, footnote or abbreviation definition that NOTHING references is
+      still emitted by the Markdown, plain-text and terminal renderers. HTML
+      drops it, because HTML has nowhere to put a definition nobody used; the
+      other three do not get to drop content the author wrote.
+
+          [^]: %          ->  markdown  [^]: %
+                              plain     [^]: %
+                              html      (nothing)
+
+      This is PART 11 §6's objection applied one target out: a renderer that
+      silently discards an authored construct makes the round trip lossy, and
+      an unused definition is exactly the construct a person is most likely to
+      be in the middle of writing. Dropping it also makes the output depend on
+      whether a reference exists elsewhere in the document, so adding one
+      reference changes an unrelated line.
+
+      THE MARKER IS EMITTED AS WRITTEN. `[^]: %` is a footnote definition, so
+      it renders with its caret. `[]: %` is not that construct -- it is the
+      shape PART 9 §16 refuses on the link side, and emitting it turns a
+      definition into something that will not parse back. carve-rs dropped the
+      caret on the plain target, which is a defect independent of this rule:
+      whichever way the rule had gone, that output was neither the source nor
+      a definition.
+
+      Measured when this was written: carve-js and carve-php emit nothing on
+      either target and carve-rs emits the definition, so the two that agree
+      are the two that move. HTML agrees in all three and is unchanged.
+      (carve#550)
+
   11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE. A resolved
       cross-reference is emitted as a Markdown link to the target heading's id,
       and the target heading gains an explicit `{#id}` suffix. Both halves are
@@ -4440,6 +4470,35 @@ EOF = (* end of file *) ;
       three engines' residues already converged -- same three documents, same
       kind of content -- is the evidence that this is a property of the rules
       and not of anyone's parser.
+
+      A DISCONTIGUOUS NODE'S SPAN IS ITS FIRST FRAGMENT -- NORMATIVE. Where
+      such a node DOES carry `pos` -- the clause above permits omitting it,
+      it does not require it -- the span is the node's first fragment: it
+      starts where the construct starts, and `endOffset` is the end of that
+      FRAGMENT, not the end of the node.
+
+          |= Category       |= Item   |
+          | Fresh Fruits    | Apple   |
+          + from local      |         |
+          + farms           |         |
+
+      The first body cell's value is `Fresh Fruits from local farms`; its span
+      covers ` Fresh Fruits    ` and stops there. A consumer gets somewhere to
+      navigate to, which is the one thing omitting loses, and does not get a
+      claim about extent that would be false.
+
+      FIRST-TO-LAST IS FORBIDDEN, and it is the tempting third answer. In the
+      table above that range runs from line 2 to line 4 and CONTAINS the
+      sibling cell `Apple` entirely, so two cells would claim overlapping
+      offsets and a consumer resolving a click to a node could not tell which
+      it hit. Sibling spans that overlap are checked for, and are a finding.
+
+      The cost is stated: `pos` then means "where this begins" on a
+      discontiguous node and "what this covers" everywhere else. That is the
+      lesser evil against a span that overlaps a sibling or against no span at
+      all, and it is what two of the three engines already publish -- carve-php
+      and carve-rs give the first fragment, carve-js omits (still permitted).
+      (carve#541)
 
       THE EXEMPTION IS NARROW. The test is whether a true span EXISTS, not
       whether one was computed. A node the producer has simply not placed yet

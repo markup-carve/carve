@@ -33,3 +33,33 @@ Marker-line nested lists
   </li>
 </ul>
 ```
+
+```
+- - A
+
+  second
+.
+<ul>
+  <li>
+    <ul>
+      <li>A</li>
+    </ul>
+    <p>second</p>
+  </li>
+</ul>
+```
+
+```
+- - A
+
+second
+.
+<ul>
+  <li>
+    <ul>
+      <li>A</li>
+    </ul>
+  </li>
+</ul>
+<p>second</p>
+```

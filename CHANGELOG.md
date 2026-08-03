@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 12 §4: a discontiguous node's span is its first fragment** (carve#541).
+  §4 permitted omitting `pos` on a node whose content sits on non-adjacent lines
+  but did not say what a span means where one IS carried. It is the first
+  fragment - the construct's start, with `endOffset` ending that fragment rather
+  than the node. First-offset-to-last-offset is forbidden: in corpus 64 that
+  range contains the sibling cell `Apple` entirely, so two cells would claim
+  overlapping offsets. `scripts/spec/ast-positions.mjs` now reports overlapping
+  sibling spans, exempting hoisted definitions (§7 puts them at document level
+  with a `pos` inside the container they were written in) and breaks (anchored
+  at a shared line terminator).
+
 - **PART 11 §2a: the canonical writer does not substitute one construct for
   another** (carve#544). `to_html(fmt(x)) == to_html(x)` holding is necessary,
   not sufficient - carve-rs wrote `* %%` as `* +`, turning a line comment into
@@ -37,6 +48,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Body.` is therefore LOOSE, like every other lead - plain text, heading,
   attribute block, block quote - which all three engines already render loose.
   The sub-list lead was the one shape where they split.
+
+- **PART 11 §10a: an unused definition survives the non-HTML targets**
+  (carve#550). A link, footnote or abbreviation definition nothing references is
+  still emitted by the Markdown, plain-text and terminal renderers; HTML still
+  drops it. Those three are source-shaped enough that discarding an authored
+  construct makes the round trip lossy, and dropping it would make one line's
+  output depend on whether a reference exists elsewhere in the document. The
+  marker is emitted as written - `[^]: %` keeps its caret, and the `[]: %`
+  carve-rs produced on the plain target is neither the source nor a definition.
 
 ### Changed
 

@@ -223,3 +223,55 @@ test('walkNodes yields every typed node and descends arrays of arrays', () => {
     'definition_description',
   ])
 })
+
+function span(startOffset, endOffset) {
+  return { startLine: 1, endLine: 1, startColumn: 1, endColumn: 1, startOffset, endOffset }
+}
+
+// The rule PART 12 §4's discontiguous-node clause needs enforcing: a node whose
+// content sits on non-adjacent lines carries the span of its FIRST FRAGMENT,
+// and first-offset-to-last-offset is forbidden because it swallows whatever
+// sits between the fragments. Built as a synthetic tree, because no engine
+// currently publishes the forbidden shape - which is exactly why a check for it
+// has to be written before one does.
+test('a first-to-last span over a sibling is a finding', () => {
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'table_row',
+        children: [
+          // The continued cell, spanning from its first fragment to its last.
+          { type: 'table_cell', pos: span(0, 60), children: [] },
+          // The sibling it swallows.
+          { type: 'table_cell', pos: span(20, 30), children: [] },
+        ],
+      },
+    ],
+  }
+  const findings = []
+  checkPositions(doc, 'x'.repeat(60), findings)
+  assert.equal(
+    findings.filter((f) => f.includes('sibling spans overlap')).length,
+    1,
+    `expected one overlap finding, got: ${JSON.stringify(findings)}`,
+  )
+})
+
+test('a hoisted definition inside a container is not an overlap', () => {
+  // PART 12 §7: the definition is a document-level sibling of the div it was
+  // written in, and its pos still points inside that div.
+  const doc = {
+    type: 'document',
+    children: [
+      { type: 'div', pos: span(0, 48), children: [] },
+      { type: 'abbreviation_def', pos: span(4, 20), children: [] },
+    ],
+  }
+  const findings = []
+  checkPositions(doc, 'x'.repeat(60), findings)
+  assert.deepEqual(
+    findings.filter((f) => f.includes('sibling spans overlap')),
+    [],
+  )
+})
