@@ -39,6 +39,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   "degrades to literal text" is the whole rule and a degrade path with its own
   block structure would be a second paragraph rule to specify and to test.
 
+- **PART 9 §25: at the render ceiling, a renderer refuses** (carve#526).
+  §25 gave every renderer a ceiling above the parse cap and did not say what
+  happens AT it, so eight of nine renderers across the three engines truncate
+  silently and carve-js's HTML renderer has no ceiling at all. Reaching the
+  ceiling now MUST produce a typed, documented failure naming the bound - the
+  same rule PART 12 §9(b) already applies to ingest, at the other end of the
+  same pipe. It costs nothing on any path a document travels: the ceiling
+  exceeds MAX_NESTING_DEPTH by construction and ingest already refuses deeper
+  trees, so what is left is a tree built through the API, where the caller is
+  the one who can act on the error.
+
+  Measured on the pinned carve-js build: the ceiling sits at 232 where §25
+  requires, but at it `renderMarkdown`, `renderCarve` and `renderPlainText`
+  emit the nested markers and delete only the BODY, so the output looks
+  complete; `renderAnsi` returns an empty string; and `renderHtml` has no
+  ceiling at all and raises `RangeError: Maximum call stack size exceeded` at
+  depth 2000. One of the silent three is the canonical writer, so a tree built
+  through the API and formatted comes back with its body gone and nothing in
+  the return value to say so.
+
 ### Fixed
 
 - **Restored nine regions of `resources/grammar.ebnf` that a stale-copy merge

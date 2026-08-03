@@ -115,7 +115,14 @@ jobs:
           # make the run permanently red, and a permanently red scheduled job
           # gets muted, which is the failure this whole issue is about.
           CARVE_REQUIRE_ALL_ENGINES: '1'
-        run: npm run ast:check -- --satellite-limit=520
+        # NO --satellite-limit here. The cap exists for a quick local pass;
+        # this job provisions every engine precisely so it can measure all of
+        # them over everything. It was pinned at 520 when the corpus was that
+        # size, and the corpus has grown to 542 (545 samples with the synthetic
+        # astral cases), so the last 25 were being skipped - a number that goes
+        # further out of date with every fixture added, and the newest fixtures
+        # are the ones most likely to catch drift.
+        run: npm run ast:check
 
       # PART 11: the formatter must not change what a document says. The
       # `--roundtrip` mode formats each corpus document and re-reads the result,

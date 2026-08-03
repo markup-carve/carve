@@ -3115,7 +3115,66 @@ EOF = (* end of file *) ;
         ceiling on both paths, and all three engines complied: at exactly
         MAX_NESTING_DEPTH the canonical writer dropped the innermost
         paragraph and the Markdown / plain-text / ANSI renderers dropped the
-        whole document. It MUST bound abbreviation, reference,
+        whole document.
+
+        AT THE RENDER CEILING, A RENDERER REFUSES -- NORMATIVE. Reaching it
+        MUST produce a typed, documented failure naming the depth bound. NOT
+        silent truncation, not a partial document, and not whatever the host
+        language raises when the stack runs out. This is PART 12 §9(b), the
+        rule ingest already follows, applied to the other end of the same
+        pipe: "an ingest that accepts a tree and then silently renders only
+        part of it is the worst of the three, because the caller is told
+        nothing" is a statement about the CALLER, and a renderer that returns
+        a truncated string tells the caller exactly as little.
+
+        Refusing rather than clamping costs nothing on any path a document
+        travels. The ceiling exceeds MAX_NESTING_DEPTH by construction, so no
+        tree from `parse` can reach it, and §9(b) already refuses an ingested
+        tree deeper than the parser's own limit. What is left is a tree built
+        through the API, where the caller is the one who built it and is the
+        one who can act on the error.
+
+        Truncation is not the safe default it looks like. The parse path
+        degrades VISIBLY -- an over-cap opener becomes literal text the reader
+        can see -- while a renderer that stops emitting produces a document
+        that looks complete and is not. The failure mode a formatter must
+        never have is deleting content without saying so, which is what
+        carve#517 moved the ceiling out of reach to prevent; leaving
+        truncation as the answer at the ceiling reinstates it for every tree
+        that arrives over the wire or through a builder.
+
+        Every engine has something to move. Measured on carve-js at the pin
+        this repo carries, with MAX_NESTING_DEPTH = 200 and the ceiling
+        therefore at 232:
+
+          depth  renderMarkdown  renderCarve  renderPlainText  renderAnsi  renderHtml
+          231    content kept    kept         kept             kept        kept
+          232    DROPPED         DROPPED      DROPPED          empty       kept
+          1000   DROPPED         DROPPED      DROPPED          empty       kept
+
+        The ceiling itself is in the right place -- above MAX_NESTING_DEPTH,
+        as the paragraph above requires. What happens AT it is the problem.
+        Three of the five emit the nested markers and delete only the BODY, so
+        the output looks complete and is not; one returns an empty string; and
+        renderHtml has no ceiling at all, recursing until the host stack gives
+        out (`RangeError: Maximum call stack size exceeded` at depth 2000).
+        That last one is the "crashing" this section already forbids, and it
+        makes the reference engine's primary renderer the one that behaves
+        unlike every other renderer in the ecosystem, including its own
+        siblings.
+
+        Silent truncation is the worse half even though it looks tidier. One
+        of the three is renderCarve, the canonical writer: a tree built
+        through the API and formatted comes back as a document whose body is
+        gone, with nothing in the return value to say so. (carve#526)
+
+        The cost is real and is not hidden: this makes a renderer FALLIBLE in
+        implementations whose signature says it cannot fail, which is a
+        breaking change to those signatures rather than an internal one. It
+        was preferred anyway, because the alternative -- a diagnostic channel
+        alongside a still-infallible return -- needs a channel every renderer
+        signature can carry, which none of them have either, and leaves a
+        caller that ignores it exactly where it is today. It MUST bound abbreviation, reference,
         footnote, and crossref expansion so total work stays O(n): in
         particular an empty abbreviation term is rejected, a reference is not
         resolved by rescanning the whole output per occurrence, and a crossref
