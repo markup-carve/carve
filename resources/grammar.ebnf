@@ -104,12 +104,23 @@
         content_column -> sublist (PART 9 §24 C3); otherwise paragraph /
         lazy item text.
      S4 PARTIAL MATCH. The unmatched containers are candidates to close.
-        LAZY CONTINUATION: if the innermost MATCHED context holds an OPEN
+        LAZY CONTINUATION: if ANY container in the open stack holds an OPEN
         PARAGRAPH and the residue is NOT an interrupting line (PART 9 §10 --
         list markers and plain text fold; visible openers interrupt), L
-        folds into that paragraph and NOTHING closes. Otherwise close the
-        unmatched containers and re-classify the residue in the surviving
-        context (S3).
+        folds into the INNERMOST such paragraph and NOTHING closes --
+        regardless of how many containers the line failed to match.
+        Otherwise close the unmatched containers and re-classify the residue
+        in the surviving context (S3).
+
+        This said "the innermost MATCHED context holds an OPEN PARAGRAPH",
+        which describes something no implementation does. A lazy line carries
+        no markers, so it matches ZERO containers and the innermost matched
+        context is the document root, which holds no open paragraph -- under
+        that wording `> a` / `b` would close the quote at depth 1. Every engine
+        folds there, and corpus 82-blockquote-lazy-continuation pins it. What
+        the wording did produce was a split at depth 2: carve-rs closed both
+        quotes where carve-js and carve-php folded into the nested one
+        (carve#506, carve-rs#452). Depth is not a parameter of this rule.
      S5 OPENERS. When S3/S4 classify the residue as a container opener (a
         quote marker; a list marker at an admissible column; a `+`
         continuation marker at the marker column, PART 9 §17 L3/L4; a fence
@@ -374,7 +385,8 @@ blockquote_line = '>', [' '], inline_content, newline ;
 
 (* LAZY CONTINUATION -- NORMATIVE (CommonMark-compatible). After one or more
    blockquote_lines, a line that does NOT carry the '>' marker still continues
-   the blockquote -- exactly as if it carried '>' -- provided it is:
+   the blockquote -- folding into the INNERMOST open paragraph, at whatever
+   depth that paragraph sits -- provided it is:
      - not blank (a blank line ends the blockquote), and
      - not a block-opener: a heading, table, fenced code, `:::` div, thematic
        break, OR an "invisible" reference / footnote / abbreviation definition

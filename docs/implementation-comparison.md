@@ -13,19 +13,19 @@ implementation exposes.
 > nothing across rows; the counts are the point, and
 > `tests/implementation-comparison-counts.test.mjs` fails when they stop
 > matching the corpus - which is how this page came to quote 302 pairs against a
-> corpus of 529.
+> corpus of 529 - and again at 531, which is how the count above got here.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>529 / 529</strong>
+    <strong>531 / 531</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>529 / 529</strong>
+    <strong>531 / 531</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>529 / 529</strong>
+    <strong>531 / 531</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -36,9 +36,9 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `8c636c5` | `529 / 529` | `0` | `0` | `2.34` |
-| JS | `b6c126f` | `529 / 529` | `0` | `0` | `53.34` |
-| PHP | `bf0b340` | `529 / 529` | `0` | `0` | `51.97` |
+| Rust | `8c636c5` | `531 / 531` | `0` | `0` | `2.34` |
+| JS | `b6c126f` | `531 / 531` | `0` | `0` | `53.34` |
+| PHP | `bf0b340` | `531 / 531` | `0` | `0` | `51.97` |
 
 Spec commit: `bf06ef4`
 
@@ -289,10 +289,10 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=529 targets=html
-rust: pass=529/529 mismatch=0 error=0 skipped=0 runs=529 avg_ms=2.34
-js: pass=529/529 mismatch=0 error=0 skipped=0 runs=529 avg_ms=53.34
-php: pass=529/529 mismatch=0 error=0 skipped=0 runs=529 avg_ms=51.97
+profile=default/no-opt-in corpus=core corpus_pairs=531 targets=html
+rust: pass=531/531 mismatch=0 error=0 skipped=0 runs=531 avg_ms=2.60
+js: pass=531/531 mismatch=0 error=0 skipped=0 runs=531 avg_ms=61.11
+php: pass=531/531 mismatch=0 error=0 skipped=0 runs=531 avg_ms=61.04
 cross_impl_diffs=0
 
 Extension capability matrix

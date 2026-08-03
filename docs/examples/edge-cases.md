@@ -1895,6 +1895,46 @@ continued</p></blockquote>
 
 :::
 
+The fold is into the innermost OPEN PARAGRAPH, however many quote markers the line omits. At depth two the continuation joins the nested quote's paragraph, not the outer one, and nothing closes.
+
+::: compare
+
+```carve
+> a
+>> b
+c
+```
+
+```html
+<blockquote>
+  <p>a</p>
+  <blockquote><p>b
+c</p></blockquote>
+</blockquote>
+```
+
+:::
+
+The spaced spelling nests identically, so it continues identically — the rule is about depth, not about how the marker is written.
+
+::: compare
+
+```carve
+> a
+> > b
+c
+```
+
+```html
+<blockquote>
+  <p>a</p>
+  <blockquote><p>b
+c</p></blockquote>
+</blockquote>
+```
+
+:::
+
 A block-opener is not a lazy continuation: it ends the quote and starts that block outside it. A **list marker — bullet or ordered — folds in**, though: a quoted line ends in an open paragraph, and a list marker folds into an open paragraph (§10), exactly as at the top level. So `> quoted` then `- item` is one quote whose paragraph is `quoted` + `- item`, not a quote plus a sibling list. (A heading, a bounded title, is still ended by a list marker; to put a real list in a quote, `>`-prefix it or use the `+` continuation marker.)
 
 ::: compare
