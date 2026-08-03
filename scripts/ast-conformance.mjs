@@ -178,6 +178,18 @@ const staleBuilds = []
  */
 const notMeasured = []
 
+/**
+ * Per-engine §1a counts, filled by `report` so the gate at the end sees every
+ * engine without reaching into per-block locals.
+ *
+ * Declared HERE, next to the other accumulators, and not beside `report`:
+ * `report` is called before that point in the file, and a `const` in module
+ * scope is not hoisted. The first version threw
+ * "Cannot access 'adjacentTextRunCounts' before initialization" and exited 1,
+ * which looked exactly like the gate firing.
+ */
+const adjacentTextRunCounts = []
+
 function skip(label, reason) {
   notMeasured.push(`${label} (${reason})`)
   console.log(`${label}: NOT MEASURED - ${reason}\n`)
@@ -305,8 +317,48 @@ function checkShapeParity(name, doc, findings) {
 
 const referenceShapes = new Map()
 
+/**
+ * PART 12 §1a: a node's children hold no two adjacent `text` nodes.
+ *
+ * This is the one PART 12 rule the schema cannot express - JSON Schema has no
+ * way to forbid two adjacent array entries of the same shape - so if it is not
+ * checked here it is not checked anywhere. It went unmeasured long enough for
+ * carve-php to publish 107 runs across 56 corpus documents and carve-rs 18
+ * across 6, while both validated cleanly.
+ *
+ * Reported as a §1a finding rather than folded into shape parity, because
+ * shape parity is currently blocked on carve#481 (engines serialize different
+ * pipeline stages) and would drown this in noise it cannot fix.
+ */
+function checkAdjacentTextRuns(doc, findings) {
+  const seen = new Set()
+  const scan = (node, path) => {
+    if (Array.isArray(node)) {
+      for (let i = 1; i < node.length; i++) {
+        const left = node[i - 1]
+        const right = node[i]
+        if (left?.type === 'text' && right?.type === 'text' && !seen.has(path)) {
+          seen.add(path)
+          findings.push(
+            `§1a adjacent text runs at ${path}: ${JSON.stringify(left.value)} + ${JSON.stringify(right.value)}`,
+          )
+        }
+      }
+      node.forEach((child, i) => scan(child, `${path}[${i}]`))
+      return
+    }
+    if (!node || typeof node !== 'object') return
+    for (const [key, value] of Object.entries(node)) {
+      if (key === 'pos') continue
+      scan(value, `${path}.${key}`)
+    }
+  }
+  scan(doc.children ?? [], '$.children')
+}
+
 function checkDocument(doc, source, findings) {
   checkShape(doc, findings)
+  checkAdjacentTextRuns(doc, findings)
   checkFrontmatterSurvives(doc, source, findings)
   // Offsets are codepoint indices (PART 12 §4), so the source has to be indexed
   // the same way to check them.
@@ -564,6 +616,8 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
 }
 
 function report(label, findings) {
+  const adjacent = findings.filter((f) => f.includes('§1a')).length
+  if (adjacent > 0) adjacentTextRunCounts.push({ label, count: adjacent })
   if (findings.length === 0) {
     console.log(`${label}: conformant\n`)
     return
@@ -604,6 +658,28 @@ if (notMeasured.length > 0) {
   }
 } else {
   console.log('All satellites measured.\n')
+}
+
+// §1a GATES. Every other finding class here is reported and counted; this one
+// fails the run, because it is the only PART 12 rule the schema cannot express
+// (JSON Schema cannot forbid two adjacent array entries of the same shape) and
+// therefore the only one with no other line of defence. It went unmeasured long
+// enough for carve-php to publish 107 runs across 56 corpus documents and
+// carve-rs 18 across 6, while both validated cleanly against the schema and
+// passed every gate the project ran.
+//
+// A flat zero rather than a ratchet against recorded counts: a ratchet makes a
+// rule that is currently violated look like a rule that is currently enforced,
+// which is the same failure one level up.
+if (adjacentTextRunCounts.length > 0) {
+  const total = adjacentTextRunCounts.reduce((n, e) => n + e.count, 0)
+  console.error(
+    `PART 12 §1a: ${total} adjacent text run(s) published (${adjacentTextRunCounts
+      .map((e) => `${e.label} ${e.count}`)
+      .join(', ')}).`,
+  )
+  console.error("A node's children must hold no two adjacent text nodes.")
+  process.exit(1)
 }
 
 // A stale build is not a skip and not a pass: it is a NUMBER produced by code
