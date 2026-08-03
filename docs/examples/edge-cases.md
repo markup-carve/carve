@@ -3316,6 +3316,52 @@ A blank line followed by a block indented to the sub-list's content column is ab
 
 :::
 
+One column further out the same blank belongs to the OUTER item: `second` sits at the outer item's content column, so that item holds two blocks - the sub-list and a paragraph - and goes loose. The lead being a marker line is not part of the looseness test.
+
+::: compare
+
+```carve
+- - A
+
+  second
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>A</li>
+    </ul>
+    <p>second</p>
+  </li>
+</ul>
+```
+
+:::
+
+Flush left, the blank has closed the sub-item's paragraph and the line is below every open item's content column, so the list ends and the text is a document-level paragraph. Without the blank the same line would fold into the sub-item as lazy continuation.
+
+::: compare
+
+```carve
+- - A
+
+second
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>A</li>
+    </ul>
+  </li>
+</ul>
+<p>second</p>
+```
+
+:::
+
 ## Blocked span marker renders as empty cell
 
 A span marker merges into the nearest still-available origin: a `^` walks up its

@@ -88,10 +88,63 @@ function checkContainment(doc, findings) {
  * Reports into `findings`; returns nothing. Offsets are CODEPOINT indices, so
  * the source is indexed the same way to check them.
  */
+/*
+ * Two kinds of sibling legitimately share source, for reasons that are rules
+ * rather than accidents, so neither is compared:
+ *
+ *   HOISTED DEFINITIONS. PART 12 §7 makes a `footnote` or `abbreviation_def` a
+ *   child of the DOCUMENT wherever it was written, and its `pos` still records
+ *   where that was - which is inside whatever container it was authored in. So
+ *   a definition written inside a div is a document-level sibling of that div
+ *   whose span sits inside it. That is the hoisting rule working.
+ *
+ *   BREAKS. A break is anchored at a line terminator, so two breaks meeting at
+ *   one newline share that boundary without either being wrong.
+ */
+const EXEMPT_FROM_OVERLAP = new Set(['footnote', 'abbreviation_def', 'hard_break', 'soft_break'])
+
+/**
+ * SIBLING SPANS MUST NOT OVERLAP.
+ *
+ * This is what makes PART 12 §4's discontiguous-node rule enforceable. A node
+ * whose content sits on non-adjacent lines carries the span of its FIRST
+ * FRAGMENT; the tempting alternative, first-offset to last-offset, is forbidden
+ * precisely because it swallows whatever sits between the fragments. In
+ * corpus 64 that range contains the sibling cell `Apple` entirely, so two cells
+ * would claim overlapping offsets and a consumer resolving a click to a node
+ * could not tell which it hit.
+ *
+ * Checked between SIBLINGS rather than globally: a parent legitimately contains
+ * its children (§4's containment rule), and only peers claiming the same source
+ * is a contradiction. (carve#541)
+ */
+function checkSiblingOverlap(node, path, findings) {
+  for (const [key, value] of Object.entries(node)) {
+    if (key === 'pos' || !Array.isArray(value)) continue
+    const placed = value
+      .map((child, i) => [child, i])
+      .filter(([c]) => c && typeof c === 'object' && c.pos &&
+        Number.isInteger(c.pos.startOffset) && Number.isInteger(c.pos.endOffset) &&
+        !EXEMPT_FROM_OVERLAP.has(c.type))
+    for (let i = 1; i < placed.length; i++) {
+      const [prev] = placed[i - 1]
+      const [cur, idx] = placed[i]
+      // Zero-width spans touching at a boundary are fine; a real overlap is not.
+      if (cur.pos.startOffset < prev.pos.endOffset) {
+        findings.push(
+          `sibling spans overlap at ${path}.${key}[${idx}]: "${cur.type}" starts at ` +
+            `${cur.pos.startOffset}, inside "${prev.type}" which ends at ${prev.pos.endOffset}`,
+        )
+      }
+    }
+  }
+}
+
 export function checkPositions(doc, source, findings) {
   checkContainment(doc, findings)
   const codepoints = [...source]
   for (const [node, path] of walkNodes(doc)) {
+    checkSiblingOverlap(node, path, findings)
     // An unknown type is the schema's job now (it enumerates them, and the
     // enumeration is checked against docs/profiles.md in
     // tests/ast-schema.test.mjs). Checking it here too reported one defect
