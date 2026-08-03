@@ -58,6 +58,21 @@ jobs:
       - name: Executable-spec gate (formal Core grammar vs corpus)
         run: npm run core:check
 
+      # The pinned reference build vs the corpus. NOT a gate on drift -- the
+      # corpus is deliberately allowed to run ahead of the engine, and gating
+      # on the mismatch itself would reinstate exactly the deadlock
+      # scripts/engine-report.mjs exists to document.
+      #
+      # This gates on the drift being DECLARED. resources/engine-pin-drift.txt
+      # names the slugs the pin is knowingly behind on and why; a spec PR that
+      # puts the corpus ahead adds a line there and stays green. Undeclared
+      # drift, and lines the pin has caught up on, both go red.
+      #
+      # It ran in no job at all until now, which is how carve#533 found the
+      # pinned build three documents behind with nothing reporting it.
+      - name: Pinned reference build matches its declared drift
+        run: npm run engine:report -- --check
+
   docs-build:
     name: docs build
     runs-on: ubuntu-latest

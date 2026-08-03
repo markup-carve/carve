@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The pinned reference build is now checked against the corpus in CI**
+  (carve#533). `engine:report` existed as an npm script that no workflow ran,
+  so the pin drifted three documents behind the corpus with nothing reporting
+  it. It is not gated on drift itself - the corpus is deliberately allowed to
+  run ahead of the engine, and gating on the mismatch would reinstate the
+  deadlock the script's own header warns about. It gates on the drift being
+  DECLARED: `resources/engine-pin-drift.txt` names the slugs the pin is
+  knowingly behind on and why, and `npm run engine:report -- --check` fails
+  when the real set differs in either direction - undeclared drift, or a line
+  the pin has since caught up on.
+
 ### Changed
 
 - **PART 12 §3a: a RESOLVED reference keeps its destination** (carve#524). The

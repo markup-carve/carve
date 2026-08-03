@@ -1,0 +1,27 @@
+# Corpus documents the PINNED reference build does not reproduce.
+#
+# `npm run engine:report` renders every corpus document through the
+# `@markup-carve/carve` build package.json pins, and compares against the
+# committed HTML. A mismatch is not automatically wrong: when a spec rule
+# lands here, the engine has not shipped it yet, and the corpus is ahead of
+# the pin until someone moves it. That window is normal and the report exists
+# to describe it.
+#
+# What is NOT normal is not knowing which window you are in. carve#533 found
+# the pinned build three documents behind with nothing reporting it, because
+# `engine:report` was an npm script that no CI job ran.
+#
+# So the window is DECLARED rather than tolerated. This file lists the slugs
+# the pin is knowingly behind on, one per line, each with the reason.
+# `npm run engine:report -- --check` fails when the real set differs in
+# EITHER direction:
+#
+#   - a slug mismatches and is not listed  -> new drift, or a corpus fixture
+#     that does not match any engine. Red immediately, which is the point.
+#   - a slug is listed and now reproduces  -> the pin moved past it. Delete
+#     the line in the same commit that moves the pin.
+#
+# Emptying this file is the normal end state after `npm run bump-carve-pin`.
+#
+# Format: <slug><space><space><reason>
+176-a-marker-separator-is-a-space-never-a-tab  carve#559 landed the rule; carve-js has not shipped it
