@@ -82,6 +82,14 @@ document into invalid text.
 An implementation that cannot place a node **omits `pos` rather than inventing
 one**, and says so. Absent is a fact a consumer can act on; a wrong span is not.
 
+A **reassembled** node - one the producer joined from pieces the source
+separates, or synthesized outright - **may omit `pos` and is conformant doing
+so**. A table cell continued on a `+` line, the hard break a line block makes
+from a soft one, line-block content rebuilt around an indentation sentinel, and
+a `text` run coalesced across such a gap all have values that are not a slice of
+the source at any offset, so no honest span exists. The exemption is narrow: it
+covers nodes that *cannot* be placed, not nodes that have not been placed yet.
+
 ## Adjacent text runs are coalesced
 
 A node's children hold **no two adjacent `text` nodes**. Where parsing produced
@@ -115,7 +123,8 @@ A merged run keeps a `pos` only where its pieces are **contiguous** in the
 source. Where they are not - the `<` and `>` of an autolink unwrapped inside a
 link label, the delimiter between two halves of a wrapped table cell - the
 merged value is not a slice of the source at any offset, so the node carries no
-position rather than one that selects the wrong text.
+position rather than one that selects the wrong text. §4 names that a permitted
+category rather than a gap, so a merged run without a position is conformant.
 
 The schema cannot express this - JSON Schema has no way to forbid two adjacent
 array entries of the same shape - so it is checked by the shape comparison in
@@ -266,6 +275,12 @@ spans that do not cover the text they claim.
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
 is only a claim worth making if the disagreements are visible.
+
+The **reassembled** regions in the positions column are not among them - §4 names
+that category permitted, so a table cell or line-block region without a position
+is conformant rather than owed. What is still a gap is anything else in that
+column: a `definition_term` is a slice of the source like any other node, so
+carve-rs leaving a definition list's own parts unplaced is a real one.
 
 The §3a and §7 rows are new: those clauses were written to settle disagreements
 the engines had already shipped, so every engine has something to move. That is
