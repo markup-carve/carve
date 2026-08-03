@@ -493,6 +493,15 @@ let options = Options::default().with_smart_typography(false);
 
 :::
 
+**Implementation status.** None of the three calls above works today: carve-php
+raises `Unknown named parameter $smartTypography`, carve-rs has no
+`with_smart_typography`, and carve-js accepts the option and **ignores** it, so a
+host wiring it up gets a page that looks configured and is not. That last one is
+the only non-conformant state - the spec lets a host omit the switch, but not
+accept it silently. The parse side is already done everywhere: smart typography
+is an AST node carrying both the resolved glyph and the author's source run, so
+what remains is renderer plumbing rather than a parser change.
+
 The switch is document-global on purpose. Defaulting it per target - on for
 HTML, off for Markdown and plain text - was considered and rejected: one source
 must carry the same text on every target, and a target-dependent default would

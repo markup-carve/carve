@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 9 §8: accepting `smartTypography` and ignoring it is not conformant**
+  (carve#560). The switch was already normative where offered, and a host that
+  omits it stays conformant - but carve-js accepts `smartTypography: false`
+  without error and emits the glyphs anyway, which tells the caller the document
+  is configured when it is not. Omitting and implementing are both fine; the
+  silent middle is now forbidden. `docs/divergence-from-djot.md` gained an
+  implementation-status note, since it showed three call samples and none of the
+  three works today.
+
+### Changed
+
 - **PART 10 §4 states the empty-container body shape** (carve#531). A container
   whose body renders nothing keeps a blank line where the body would be, except
   a bare `:::` div, which closes on the next line. The exception has no

@@ -2098,8 +2098,19 @@ EOF = (* end of file *) ;
         one document-global switch, `smartTypography`, defaulting to TRUE
         (idiomatic spellings: `smartTypography: false` in carve-js and
         carve-php, `Options::with_smart_typography(false)` in carve-rs).
-        A host that omits the switch stays conformant. Where it IS offered
-        and set to FALSE:
+        A host that omits the switch stays conformant. ACCEPTING IT AND
+        IGNORING IT IS NOT -- a host that takes `smartTypography: false`
+        without error and emits the glyphs anyway has told the caller the
+        document is configured when it is not, which is worse than the
+        rejection an unimplemented option should produce. Omitting and
+        implementing are both fine; the silent middle is the one state this
+        clause forbids. Measured on each engine's main: carve-php raises
+        `Unknown named parameter $smartTypography`, carve-rs has no such
+        method, and carve-js accepts the option and ignores it -- so the
+        reference is the only one currently non-conformant here, and it is
+        non-conformant in the direction a host cannot detect (carve#560).
+
+        Where it IS offered and set to FALSE:
         * PARSING IS UNCHANGED. The nodes below are still produced, so the
           AST does not depend on the switch. What changes is rendering: a
           presentation renderer emits the node's SOURCE RUN instead of its
