@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 10 §4 states the empty-container body shape** (carve#531). A container
+  whose body renders nothing keeps a blank line where the body would be, except
+  a bare `:::` div, which closes on the next line. The exception has no
+  principle behind it and the clause says so: it stands because the compact bare
+  div is what all three engines already produce and what the corpus already
+  pins, and overturning a three-way agreement to fix a cosmetic inconsistency is
+  the worse trade. What was genuinely unspecified is narrower - a div with a
+  WORD CLASS was pinned by nothing, and it is exactly where carve-php diverges
+  from carve-js and carve-rs.
+
 - **PART 9 §15: a floating attribute skips what renders nothing** (carve#529).
   `{…}` on its own line attaches to the next block; the clause did not say
   whether a reference, footnote or abbreviation definition, or a comment,

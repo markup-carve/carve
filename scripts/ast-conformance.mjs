@@ -306,6 +306,66 @@ function checkDocument(doc, source, findings) {
   checkPositions(doc, source, findings)
 }
 
+/**
+ * Provenance for the REFERENCE checkout, which had none.
+ *
+ * carve-rs and carve-rb are described by buildStatus above, so a stale binary
+ * announces itself. carve-js was reported as a bare "carve-js (reference)" -
+ * no commit, no dirty flag, no comparison against the build package.json pins.
+ *
+ * That is the worst place in this script to have no provenance. Every satellite
+ * is diffed against the reference's tree (referenceShapes), so a reference that
+ * is behind or locally modified does not just misreport ITSELF - it turns every
+ * satellite's "tree differs from the reference" line into a statement about the
+ * operator's working copy. Measured while working carve#534: this checkout
+ * reported 70 reference findings, 35 distinct, most of them §1a adjacent text
+ * runs, where the build package.json pins has ZERO §1a violations over the same
+ * corpus. Numbers nobody can attribute are numbers nobody can act on, which is
+ * what that issue is about.
+ */
+function referenceProvenance(dir) {
+  const git = (args) => {
+    try {
+      return execFileSync('git', ['-C', dir, ...args], { encoding: 'utf8' }).trim()
+    } catch {
+      return null
+    }
+  }
+  const head = git(['rev-parse', 'HEAD'])
+  const dirty = git(['status', '--porcelain'])
+  const pin = (() => {
+    try {
+      const spec = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'))
+        .devDependencies['@markup-carve/carve']
+      const at = spec.lastIndexOf('#')
+      return at === -1 ? null : spec.slice(at + 1)
+    } catch {
+      return null
+    }
+  })()
+
+  const notes = []
+  if (head) notes.push(head.slice(0, 7))
+  else notes.push('not a git checkout')
+  if (dirty) notes.push(`${dirty.split('\n').length} file(s) MODIFIED`)
+  const offPin = Boolean(pin && head && !head.startsWith(pin.slice(0, 7)))
+  if (offPin) notes.push(`NOT the pinned build (package.json pins ${pin.slice(0, 7)})`)
+  const build = buildStatus(resolve(dir, 'dist/index.js'), resolve(dir, 'src'), ['.ts', '.js'])
+  notes.push(build.text)
+
+  // DIRTY and STALE are operator error wherever they happen, so they join the
+  // stale-build roll-up that CARVE_REQUIRE_ALL_ENGINES=1 fails on.
+  //
+  // OFF-PIN deliberately does not. The scheduled workflow checks carve-js out
+  // at its DEFAULT BRANCH, which is ahead of the pin for as long as it takes a
+  // spec rule to ship - the normal state, not a fault. Failing on it would put
+  // a scheduled job permanently red, and this file's neighbours already say
+  // what happens then: a permanently red scheduled job gets muted, which is
+  // the failure the job exists to prevent. It is reported instead, once, at the
+  // end, so a recorded number always names the reference that produced it.
+  return { text: notes.join(', '), suspect: Boolean(dirty) || build.stale, offPin }
+}
+
 const corpusDir = resolve(root, 'tests/corpus')
 
 /**
@@ -380,7 +440,9 @@ for (const { name, source } of samples) {
     jsFindings.push(`${name}: JSON round trip is not identity`)
   }
 }
-report('carve-js (reference)', jsFindings)
+const jsProv = referenceProvenance(jsDir)
+if (jsProv.suspect) staleBuilds.push('carve-js (reference)')
+report(`carve-js (reference) [${jsProv.text}]`, jsFindings)
 
 // ---- carve-rs: serializes through its own `carve --json` --------------------
 //
@@ -561,6 +623,32 @@ if (notMeasured.length > 0) {
 // A flat zero rather than a ratchet against recorded counts: a ratchet makes a
 // rule that is currently violated look like a rule that is currently enforced,
 // which is the same failure one level up.
+// PROVENANCE BEFORE THE GATE. These two roll-ups used to sit after the §1a
+// exit below, which meant they never printed on any run that had §1a findings
+// -- the exact runs whose numbers most need attributing, and the reason the
+// carve#534 audit could not tell a reference defect from a dirty checkout.
+//
+// A stale build is not a skip and not a pass: it is a NUMBER produced by code
+// nobody is running any more. Say so at the end, where the not-measured roll-up
+// already is, rather than leaving it to be noticed in a label several screens up.
+if (jsProv.offPin) {
+  console.log(
+    'REFERENCE OFF PIN: ../carve-js is not the build package.json pins, so every',
+  )
+  console.log(
+    '  "tree differs from the reference" line above describes that checkout, not the pin.\n',
+  )
+}
+
+if (staleBuilds.length > 0) {
+  console.log(`STALE BUILDS: ${staleBuilds.join(', ')} - findings above are from an OLD build.`)
+  console.log('Rebuild those engines and re-run before recording any number from this run.\n')
+  if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
+    console.error('CARVE_REQUIRE_ALL_ENGINES=1 and at least one engine was measured from a stale build.')
+    process.exit(1)
+  }
+}
+
 if (adjacentTextRunCounts.length > 0) {
   const total = adjacentTextRunCounts.reduce((n, e) => n + e.count, 0)
   console.error(
@@ -572,14 +660,3 @@ if (adjacentTextRunCounts.length > 0) {
   process.exit(1)
 }
 
-// A stale build is not a skip and not a pass: it is a NUMBER produced by code
-// nobody is running any more. Say so at the end, where the not-measured roll-up
-// already is, rather than leaving it to be noticed in a label several screens up.
-if (staleBuilds.length > 0) {
-  console.log(`STALE BUILDS: ${staleBuilds.join(', ')} - findings above are from an OLD build.`)
-  console.log('Rebuild those engines and re-run before recording any number from this run.\n')
-  if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
-    console.error('CARVE_REQUIRE_ALL_ENGINES=1 and at least one engine was measured from a stale build.')
-    process.exit(1)
-  }
-}
