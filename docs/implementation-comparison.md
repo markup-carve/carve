@@ -13,19 +13,19 @@ implementation exposes.
 > nothing across rows; the counts are the point, and
 > `tests/implementation-comparison-counts.test.mjs` fails when they stop
 > matching the corpus - which is how this page came to quote 302 pairs against a
-> corpus of 529 - and again at 531, which is how the count above got here.
+> corpus of 529, again at 531, and again at 533.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>531 / 531</strong>
+    <strong>533 / 533</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>531 / 531</strong>
+    <strong>533 / 533</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>531 / 531</strong>
+    <strong>533 / 533</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -36,9 +36,9 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `8c636c5` | `531 / 531` | `0` | `0` | `2.34` |
-| JS | `b6c126f` | `531 / 531` | `0` | `0` | `53.34` |
-| PHP | `bf0b340` | `531 / 531` | `0` | `0` | `51.97` |
+| Rust | `0d60838` | `533 / 533` | `0` | `0` | `2.42` |
+| JS | `1a39924` | `533 / 533` | `0` | `0` | `61.17` |
+| PHP | `d21b689` | `533 / 533` | `0` | `0` | `58.74` |
 
 Spec commit: `bf06ef4`
 
@@ -289,10 +289,10 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=531 targets=html
-rust: pass=531/531 mismatch=0 error=0 skipped=0 runs=531 avg_ms=2.60
-js: pass=531/531 mismatch=0 error=0 skipped=0 runs=531 avg_ms=61.11
-php: pass=531/531 mismatch=0 error=0 skipped=0 runs=531 avg_ms=61.04
+profile=default/no-opt-in corpus=core corpus_pairs=533 targets=html
+rust: pass=533/533 mismatch=0 error=0 skipped=0 runs=533 avg_ms=2.42
+js: pass=533/533 mismatch=0 error=0 skipped=0 runs=533 avg_ms=61.17
+php: pass=533/533 mismatch=0 error=0 skipped=0 runs=533 avg_ms=58.74
 cross_impl_diffs=0
 
 Extension capability matrix
@@ -312,33 +312,42 @@ came to say 4 when the corpus held 33.
 ```text
 Implementation summary
 profile=optional/opt-in corpus=optional corpus_pairs=33 targets=html,markdown
-rust: pass=3/3 mismatch=0 error=0 skipped=30 runs=3 avg_ms=2.38
-js: pass=3/3 mismatch=0 error=0 skipped=30 runs=3 avg_ms=62.34
-php: pass=3/3 mismatch=0 error=0 skipped=30 runs=3 avg_ms=50.95
+rust: pass=3/3 mismatch=0 error=0 skipped=30 runs=3 avg_ms=2.45
+js: pass=28/28 mismatch=0 error=0 skipped=5 runs=28 avg_ms=58.71
+php: pass=27/27 mismatch=0 error=0 skipped=6 runs=27 avg_ms=51.01
 cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=2 diffs=0 errors=0 fixtures=yes
+html: compared=27 diffs=0 errors=0 fixtures=yes
 markdown: compared=1 diffs=0 errors=0 fixtures=yes
 
 Optional feature coverage
 social-link-templates (html): rust, js, php
 symbol-map (html): rust, js
 smart-quotes-locale-de (html): php
-bare-url-autolink (html): php
-citations-numbered (html): none
-code-callouts (html): none
+bare-url-autolink (html): js, php
+citations-numbered (html): js, php
+code-callouts (html): js, php
 ...
 
-NOT COMPARED: 30 of 33 optional cases reached fewer than two engines, so they
+NOT COMPARED: 5 of 33 optional cases reached fewer than two engines, so they
 contribute no agreement evidence. This is not a pass.
 ```
 
-**Read the last block, not the `cross_impl_diffs=0` above it.** 30 of the 33
-optional cases reach fewer than two engines, so this run compares 2 documents
-and agrees about them. The features are implemented everywhere; there is no way
-to switch them on from a command line, which is the only interface this tool
-has (carve#496).
+**Read the last block, not the `cross_impl_diffs=0` above it.** Five of the 33
+optional cases still reach fewer than two engines and contribute no evidence.
+
+That was 30 until carve#521. The features were implemented everywhere all
+along; what was missing was a way for this tool to switch them on. carve-js and
+carve-php are driven through an inline script here, so a shared table of
+feature to extension name reached both without either engine changing - taking
+the compared count from 2 to 27, and covering citations, which is 16 of the 33
+on its own.
+
+The five that remain need a renderer or parser option rather than an extension
+(`smart-quotes-locale-de`, `smart-typography-off`, `markdown-typography-source`,
+`section-wrapper-off`, `source-line-after-generated-id`), and carve-rs is driven
+through its binary, so its cases still need a CLI path (carve#496).
 
 ## Scope
 
