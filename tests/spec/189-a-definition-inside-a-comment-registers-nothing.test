@@ -1,0 +1,10 @@
+A definition inside a comment registers nothing
+
+```
+%%%
+[r]: /u
+%%%
+[r][]
+.
+<p>[r][]</p>
+```
