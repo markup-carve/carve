@@ -1,0 +1,17 @@
+A comment under a nested item does not close it
+
+```
+- - a
+ %% c
+ b
+.
+<ul>
+  <li>
+    <ul>
+      <li>a
+        b
+      </li>
+    </ul>
+  </li>
+</ul>
+```
