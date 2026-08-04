@@ -1239,7 +1239,10 @@ function collectItems(lines, i, list, state) {
     const item = { }
     if (head.attrs && head.attrs.replace(/[{} ]/g, '') !== '') item.attrs = head.attrs
     if (list.task) item.checked = /^[xX]$/.test(head.task)
-    let openPara = true // the marker line's text opens the item paragraph
+    // The marker line's text opens the item paragraph - unless it is a quote
+    // marker with nothing after it, which opens a quote holding no paragraph
+    // (PART 1 S4).
+    let openPara = !isEmptyQuoteLine(head.text)
     // Content column of the FIRST sub-list opened in this item (-1 = none). A
     // blank followed by content at or past this column belongs to the sub-list,
     // not this item, so a descendant's looseness must not propagate up to this
@@ -1383,7 +1386,8 @@ function collectItems(lines, i, list, state) {
         // open quoted paragraph; fences/breaks close everything (SS10 I2/I6)
         if (FENCE.test(dedented) || HR.test(dedented) || COLON_FENCE.test(dedented)) openPara = false
         else if (dedented[0] === '|' || CONT_ROW.test(dedented)) openPara = false
-        else if (matchMarker(dedented) || QUOTE.test(dedented)) openPara = true
+        else if (matchMarker(dedented)) openPara = true
+        else if (QUOTE.test(dedented)) openPara = !isEmptyQuoteLine(dedented)
         else if (!isBlank(dedented)) openPara = true
         i++
         continue
@@ -1411,6 +1415,26 @@ function collectItems(lines, i, list, state) {
     list.items.push(item)
   }
   return i
+}
+
+/**
+ * A quote marker with NOTHING after it opens a quote holding no paragraph.
+ *
+ * PART 1 S4: NO OPEN PARAGRAPH, NO LAZY LINE. `- >` + a column-0 line closes
+ * the item, while `- > q` + the same line folds, because there the quote holds
+ * an open paragraph. Treating every quote line as paragraph-opening kept the
+ * line inside the item - the answer S4 names as wrong, and the one this
+ * implementation gave until now (carve#561, carve#572).
+ */
+function isEmptyQuoteLine(text) {
+  let rest = text
+  let sawQuote = false
+  // `> > q` holds a paragraph; `> >` does not.
+  for (let q = QUOTE.exec(rest); q; q = QUOTE.exec(rest)) {
+    sawQuote = true
+    rest = q[1] ?? ''
+  }
+  return sawQuote && rest.trim() === ''
 }
 
 function dedent(line, cols) {

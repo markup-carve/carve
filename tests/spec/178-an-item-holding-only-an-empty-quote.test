@@ -1,0 +1,27 @@
+An item holding only an empty quote
+
+```
+- >
+lazy
+.
+<ul>
+  <li>
+    <blockquote>
+
+    </blockquote>
+  </li>
+</ul>
+<p>lazy</p>
+```
+
+```
+- > q
+lazy
+.
+<ul>
+  <li>
+    <blockquote><p>q
+lazy</p></blockquote>
+  </li>
+</ul>
+```

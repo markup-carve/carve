@@ -6585,3 +6585,49 @@ HTML and CSS.
 ```
 
 :::
+
+## An item holding only an empty quote
+
+A lazy line folds into the innermost OPEN paragraph. An empty quote holds
+none - and neither does the item, whose one block is that quote - so the line
+ends the item instead (PART 1 S4).
+
+::: compare
+
+```carve
+- >
+lazy
+```
+
+```html
+<ul>
+  <li>
+    <blockquote>
+
+    </blockquote>
+  </li>
+</ul>
+<p>lazy</p>
+```
+
+:::
+
+One character of content changes the answer, because it is the same rule.
+
+::: compare
+
+```carve
+- > q
+lazy
+```
+
+```html
+<ul>
+  <li>
+    <blockquote><p>q
+lazy</p></blockquote>
+  </li>
+</ul>
+```
+
+:::

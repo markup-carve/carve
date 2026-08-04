@@ -13,19 +13,19 @@ implementation exposes.
 > nothing across rows; the counts are the point, and
 > `tests/implementation-comparison-counts.test.mjs` fails when they stop
 > matching the corpus - which is how this page came to quote 302 pairs against a
-> corpus of 529, and again at 531, 532, 533, 535, 536, 539, 542 and 544.
+> corpus of 529, and again at 531, 532, 533, 535, 536, 539, 542, 544 and 546.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>544 / 544</strong>
+    <strong>546 / 546</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>544 / 544</strong>
+    <strong>546 / 546</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>544 / 544</strong>
+    <strong>546 / 546</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -36,9 +36,9 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `71ca810` | `544 / 544` | `0` | `0` | `3.17` |
-| JS | `0ec13d6` | `544 / 544` | `0` | `0` | `74.13` |
-| PHP | `3d956df` | `544 / 544` | `0` | `0` | `66.71` |
+| Rust | `06559c2` | `546 / 546` | `0` | `0` | `2.74` |
+| JS | `191b6c3` | `546 / 546` | `0` | `0` | `67.76` |
+| PHP | `e050864` | `546 / 546` | `0` | `0` | `64.85` |
 
 Spec commit: `646fcbb`
 
@@ -289,18 +289,18 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=544 targets=html,markdown,plain,carve,ansi
-rust: pass=544/544 mismatch=0 error=0 skipped=0 runs=2720 avg_ms=3.17
-js: pass=544/544 mismatch=0 error=0 skipped=0 runs=2720 avg_ms=74.13
-php: pass=544/544 mismatch=0 error=0 skipped=0 runs=2720 avg_ms=66.71
+profile=default/no-opt-in corpus=core corpus_pairs=546 targets=html,markdown,plain,carve,ansi
+rust: pass=546/546 mismatch=0 error=0 skipped=0 runs=2730 avg_ms=2.74
+js: pass=546/546 mismatch=0 error=0 skipped=0 runs=2730 avg_ms=67.76
+php: pass=546/546 mismatch=0 error=0 skipped=0 runs=2730 avg_ms=64.85
 cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=544 diffs=0 errors=0 fixtures=yes
-markdown: compared=544 diffs=0 errors=0 fixtures=none
-plain: compared=544 diffs=0 errors=0 fixtures=none
-carve: compared=544 diffs=0 errors=0 fixtures=none
-ansi: compared=544 diffs=0 errors=0 fixtures=none
+html: compared=546 diffs=0 errors=0 fixtures=yes
+markdown: compared=546 diffs=0 errors=0 fixtures=none
+plain: compared=546 diffs=0 errors=0 fixtures=none
+carve: compared=546 diffs=0 errors=0 fixtures=none
+ansi: compared=546 diffs=0 errors=0 fixtures=none
 target_agreement_note=only html has expected-output fixtures; the other targets assert that the implementations agree with each other.
 
 Extension capability matrix
