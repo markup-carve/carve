@@ -4,7 +4,12 @@ import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSy
 import { tmpdir } from 'node:os'
 import { basename, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { DEFAULT_TARGET, expectedFileFor, targetOf } from './lib/corpus-targets.mjs'
+import {
+  DEFAULT_TARGET,
+  TARGET_EXTENSIONS,
+  expectedFileFor,
+  targetOf,
+} from './lib/corpus-targets.mjs'
 import { phpDir, rustDir } from './lib/engine-locations.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
@@ -509,6 +514,13 @@ const activeTargets = ALL_TARGETS.filter((target) =>
  * it would quietly downgrade a scored case to an engines-agree check.
  */
 function expectedFor(pair, target) {
+  // `carve` has no expected-output extension on purpose: Carve-source
+  // expectations live in tests/corpus-roundtrip/, and a second home would put
+  // two files named `NN-slug.crv` in one directory. Asking for a filename here
+  // threw `unknown target 'carve'` on the FIRST case of every default run - the
+  // early return this replaced never reached the lookup, so extending the
+  // fixture rule to the core corpus had to skip it explicitly.
+  if (!TARGET_EXTENSIONS[target]) return null
   const optionalPath = join(corpusDir, expectedFileFor(pair.slug, target))
   if (!isOptional && target !== DEFAULT_TARGET) {
     return existsSync(optionalPath) ? readFileSync(optionalPath, 'utf8').trim() : null

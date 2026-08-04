@@ -66,6 +66,16 @@ test('a target maps to the extension the corpus README documents', () => {
   })
 })
 
+test('a target with no expected-output extension is not asked for a filename', () => {
+  // `carve` is deliberately absent from TARGET_EXTENSIONS, and expectedFileFor
+  // throws on it by design. Every caller therefore has to check FIRST: the
+  // fixture rule for core cases did not, and `compare:impls` died on the first
+  // document of every default run with `unknown target 'carve'` - a crash on
+  // the happy path, shipped because the run I checked passed --targets=.
+  assert.throws(() => expectedFileFor('01-emphasis', 'carve'), /unknown target 'carve'/)
+  assert.equal(TARGET_EXTENSIONS.carve, undefined)
+})
+
 test('carve is not an expected-output target', () => {
   // Carve-source expectations live in tests/corpus-roundtrip/. A second home
   // would put two files named `NN-slug.crv` in one directory, one the input.
