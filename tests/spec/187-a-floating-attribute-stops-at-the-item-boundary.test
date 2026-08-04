@@ -1,0 +1,13 @@
+A floating attribute stops at the item boundary
+
+```
+- a
+
+  {.c}
+- b
+.
+<ul>
+  <li><p>a</p></li>
+  <li><p>b</p></li>
+</ul>
+```
