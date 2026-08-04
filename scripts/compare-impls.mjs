@@ -474,6 +474,13 @@ function loadPairs() {
 
 const pairs = loadPairs()
 
+/**
+ * Per-target count of cases scored against a FILE, filled as the run walks the
+ * corpus. Reported instead of `fixtures=yes/none`, which could not express "some
+ * of them".
+ */
+const fixtureCounts = {}
+
 // In the optional corpus a case runs on the one target its manifest entry pins,
 // and `--targets` filters which cases that leaves. In the core corpus every case
 // runs on every requested target.
@@ -488,15 +495,25 @@ const activeTargets = ALL_TARGETS.filter((target) =>
 
 /**
  * The expected output for a pair on a target, or null when the pair has no
- * fixture on it (every core-corpus target but html - those are compared
- * engine-against-engine only).
+ * fixture on it - those are compared engine-against-engine only.
+ *
+ * A CORE case may pin a non-HTML target by adding the file the pairing rule
+ * names (`NN-slug.md`, `.txt`, `.ansi`); absent, that target stays an
+ * engines-agree check. This is what gives a Tier-1 rule about the Markdown,
+ * plain or terminal output somewhere to live: engine-against-engine agreement
+ * is a necessary invariant, not a sufficient one, and it cannot tell "all three
+ * are right" from "all three are wrong" - which is the state PART 10 §10a is in
+ * (carve#589).
  *
  * A fixture that should exist and does not is a hard error: continuing without
  * it would quietly downgrade a scored case to an engines-agree check.
  */
 function expectedFor(pair, target) {
-  if (!isOptional && target !== DEFAULT_TARGET) return null
-  const path = join(corpusDir, expectedFileFor(pair.slug, target))
+  const optionalPath = join(corpusDir, expectedFileFor(pair.slug, target))
+  if (!isOptional && target !== DEFAULT_TARGET) {
+    return existsSync(optionalPath) ? readFileSync(optionalPath, 'utf8').trim() : null
+  }
+  const path = optionalPath
   if (!existsSync(path)) {
     console.error(
       `Missing expected output ${basename(path)} for ${pair.slug} (target ${target}).`,
@@ -530,6 +547,9 @@ for (const pair of pairs) {
   const pairTargets = targetsFor(pair)
   for (const target of pairTargets) {
     const expected = expectedFor(pair, target)
+    if (expected !== null && !isOptional && target !== DEFAULT_TARGET) {
+      fixtureCounts[target] = (fixtureCounts[target] ?? 0) + 1
+    }
     const outputs = []
     const ran = []
 
@@ -681,13 +701,23 @@ if (roundtrip) {
 console.log('\nTarget agreement (implementations compared against each other)')
 for (const target of activeTargets) {
   const t = targetStats[target]
-  const fixtures = isOptional || target === DEFAULT_TARGET ? ' fixtures=yes' : ' fixtures=none'
+  // How many of this target's cases were scored against a FILE rather than
+  // against the other engines. `yes` and `none` were the only two answers while
+  // html was the only core target with fixtures; a core case may now add one
+  // per target, so the honest report is the count.
+  const scored = fixtureCounts[target] ?? 0
+  const fixtures =
+    isOptional || target === DEFAULT_TARGET
+      ? ' fixtures=yes'
+      : scored > 0
+        ? ` fixtures=${scored}`
+        : ' fixtures=none'
   console.log(`${target}: compared=${t.compared} diffs=${t.diffs} errors=${t.errors}${fixtures}`)
 }
 console.log(
   isOptional
     ? 'target_agreement_note=every optional case has an expected-output fixture on the target it pins; the counts here also assert that the implementations agree with each other.'
-    : 'target_agreement_note=only html has expected-output fixtures; the other targets assert that the implementations agree with each other.',
+    : 'target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.',
 )
 
 if (isOptional) {

@@ -11,7 +11,7 @@
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
@@ -25,6 +25,37 @@ import {
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus-optional')
 const manifest = JSON.parse(readFileSync(resolve(corpusDir, 'manifest.json'), 'utf8'))
+
+test('a core case may pin a non-HTML target by adding the file', () => {
+  // Engine-against-engine agreement is a NECESSARY invariant, not a sufficient
+  // one: it cannot tell "all three are right" from "all three are wrong", which
+  // is the state PART 10 §10a is in (carve#589). A Tier-1 rule about the
+  // Markdown, plain or terminal output needs somewhere to be written down, and
+  // that somewhere is a file beside the case, named by the same pairing rule
+  // the optional corpus uses.
+  //
+  // This checks the rule holds for whatever core cases have taken it up: every
+  // non-HTML expected file names a case that exists, and no stray extension
+  // sneaks in beside the inputs.
+  const core = resolve(here, 'corpus')
+  const known = new Set(Object.values(TARGET_EXTENSIONS))
+  const stray = []
+  const orphaned = []
+  for (const name of readdirSync(core)) {
+    // The directory's own README is prose, not an expectation.
+    if (name === 'README.md') continue
+    const ext = name.slice(name.lastIndexOf('.') + 1)
+    if (ext === 'crv') continue
+    if (!known.has(ext)) {
+      stray.push(name)
+      continue
+    }
+    const slug = name.slice(0, name.lastIndexOf('.'))
+    if (!existsSync(resolve(core, `${slug}.crv`))) orphaned.push(name)
+  }
+  assert.deepEqual(stray, [], `unknown expected-output extension in tests/corpus: ${stray.join(', ')}`)
+  assert.deepEqual(orphaned, [], `expected output with no input beside it: ${orphaned.join(', ')}`)
+})
 
 test('a target maps to the extension the corpus README documents', () => {
   assert.deepEqual(TARGET_EXTENSIONS, {

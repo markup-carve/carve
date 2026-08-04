@@ -4,6 +4,33 @@ This directory contains paired `(input.crv, expected.html)` files that form the 
 
 Any implementation — the TypeScript reference at [`markup-carve/carve-js`](https://github.com/markup-carve/carve-js) or future ports — is expected to read each `.crv`, render it, and produce byte-identical output to the matching `.html` (after trimming).
 
+## Pinning a non-HTML target
+
+A case may carry an expectation for another render target by adding the file the
+pairing rule names, beside its `.crv`:
+
+| target | file |
+| --- | --- |
+| markdown | `NN-slug.md` |
+| plain | `NN-slug.txt` |
+| ansi | `NN-slug.ansi` |
+
+`npm run compare:impls` scores that target against the file for that case, and
+keeps comparing the engines against each other everywhere else. The summary line
+says which: `markdown: compared=548 diffs=0 fixtures=3`.
+
+This exists because engine-against-engine agreement is a **necessary** invariant
+and not a sufficient one - it cannot tell "all three are right" from "all three
+are wrong". PART 10 §10a is normative, is about the Markdown, plain and terminal
+targets, and every engine currently violates it identically, so nothing failed
+(carve#589). A Tier-1 rule about those targets needs a file to be written down
+in, and this is it.
+
+Add one only where the rule is settled and the expected output is the spec's
+answer rather than a transcript of what the engines happen to print. The `.crv`
+inputs and `.html` outputs are regenerated from `docs/examples/`; a target file
+added here is kept as written.
+
 ## Regenerating
 
 The corpus is generated from the example pages in [`../../docs/examples/`](../../docs/examples/) (`core.md`, `extensions.md`, `edge-cases.md`):
