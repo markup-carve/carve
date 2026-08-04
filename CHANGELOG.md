@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 12 §4: a trailing attribute block is part of the node's span**
+  (carve#521). `*x*{#i}` gives the `strong` a span of 0..7, not 0..3. This
+  follows from the existing "a span covers the markup the author wrote" rule
+  rather than adding to it - an attribute block is markup of the node's own by
+  the same reading that makes a break's backslash part of the break. carve-rs
+  already covers it; carve-js stops at the content and moves.
+
+### Changed
+
 - **PART 11 §10a is narrowed to the definition kinds that have a node**
   (carve#592). It required a link, footnote or abbreviation definition nothing
   references to survive the Markdown, plain-text and terminal renderers. The

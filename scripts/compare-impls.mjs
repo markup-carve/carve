@@ -515,19 +515,12 @@ const activeTargets = ALL_TARGETS.filter((target) =>
  * it would quietly downgrade a scored case to an engines-agree check.
  */
 function expectedFor(pair, target) {
-  // The `carve` target has no expected file in EITHER corpus by design:
-  // Carve-source expectations live in tests/corpus-roundtrip/, because a
-  // second home would put two files named `NN-slug.crv` in one directory, one
-  // of them the input (scripts/lib/corpus-targets.mjs says so at the top of
-  // TARGET_EXTENSIONS). So it is an engines-agree check and there is nothing
-  // to look up.
-  //
-  // Asking the pairing rule for its filename THROWS, which is the right answer
-  // for a manifest typo and the wrong one for the target deliberately left
-  // out. #590 moved that call to the first line of this function, ahead of the
-  // `target !== DEFAULT_TARGET` check that used to shield it, so every run
-  // died on the first document with `unknown target 'carve'` - including the
-  // scheduled AST conformance job, which is where it surfaced.
+  // `carve` has no expected-output extension on purpose: Carve-source
+  // expectations live in tests/corpus-roundtrip/, and a second home would put
+  // two files named `NN-slug.crv` in one directory. Asking for a filename here
+  // threw `unknown target 'carve'` on the FIRST case of every default run - the
+  // early return this replaced never reached the lookup, so extending the
+  // fixture rule to the core corpus had to skip it explicitly.
   if (!TARGET_EXTENSIONS[target]) return null
   const optionalPath = join(corpusDir, expectedFileFor(pair.slug, target))
   if (!isOptional && target !== DEFAULT_TARGET) {

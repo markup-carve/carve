@@ -4452,6 +4452,36 @@ EOF = (* end of file *) ;
       a `text` node -- the one node whose exact source text the tree carries.
       (carve#549, fixed in carve-rs#492.)
 
+      A TRAILING ATTRIBUTE BLOCK IS THE NODE'S OWN MARKUP, so the span covers
+      it. For
+
+          *x*{#i}
+
+      the `strong` span is the whole run, offsets 0..7, not 0..3. The braces
+      are where the node's `attrs` came from; a span that stops at `*x*` says
+      the node begins and ends before the markup that gave it half its
+      content.
+
+      This follows from the sentence above rather than adding to it -- an
+      attribute block is markup of the node's own by the same reading that
+      makes a break's backslash part of the break. carve-rs covers the block
+      and carve-js stops at the content, so carve-js moves (carve#521).
+
+      IT ALSO REMOVES A WORKAROUND. The `strong` > `emphasis` pair that §4's
+      combined-form rule materialises derives the inner span from the outer one
+      by trimming the two-character delimiters. With the attribute block
+      OUTSIDE the outer span that arithmetic is right; with it inside and
+      unaccounted for, the inner node would claim `x*/{#`. carve-rs omits the
+      inner span whenever the node carries attributes rather than publish a
+      wrong one -- correct, and no longer necessary once the outer span is
+      known to include the block, because the trim can then take the block off
+      the end first.
+
+      No corpus document has an attributed inline today, which is why two
+      answers coexisted. One case pins it; `*x*{#i}` is enough, and the
+      combined form `/*x*/{#i}` is worth a second because it is where the
+      derived inner span makes the difference observable.
+
       A break the parser SYNTHESIZED is a different case and keeps the bare
       newline: a line block's implied break and a hard-break fence's converted
       newlines have no backslash, because the author wrote none. The
