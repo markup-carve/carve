@@ -346,7 +346,18 @@ function renderItem(item, list, depth, ctx) {
       // multi-line `` ``` ``-run folded in as lazy text -- is one span, not one
       // per line. Matches the top-level para path in renderBlock.
       const html = renderInline(b.lines.join('\n'))
-      parts.push({ inlineable: true, html: list.tight ? html : `<p>${html}</p>` })
+      // A paragraph inside an item carries its block attributes like any other
+      // (PART 9 §15). This path built the `<p>` by hand and never consulted
+      // `battrs`, so `- a` + blank + `  {.c}` + `  text` parsed the attribute
+      // correctly and then dropped it on the way out - the one paragraph site
+      // in this renderer that did (carve#626).
+      //
+      // A TIGHT item renders its paragraph without a `<p>`, and there is
+      // nowhere to hang the attributes; that shape cannot occur, because an
+      // attribute line arrives after a blank and a blank plus a visible
+      // paragraph is what makes the item loose.
+      const pattrs = b.battrs ? renderBlockAttrs(b.battrs) : ''
+      parts.push({ inlineable: true, html: list.tight ? html : `<p${pattrs}>${html}</p>` })
     } else {
       parts.push({ inlineable: false, html: renderBlock(b, depth + 1, ctx) })
     }

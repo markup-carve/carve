@@ -75,3 +75,19 @@ Compact list blocks
   <li><p>b</p></li>
 </ul>
 ```
+
+```
+- a
+
+  first
+
+  {.c}
+  second
+.
+<ul>
+  <li><p>a</p>
+    <p>first</p>
+    <p class="c">second</p>
+  </li>
+</ul>
+```

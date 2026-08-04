@@ -2577,6 +2577,30 @@ A **sibling item after it** is a different question, and there the list is loose
 
 :::
 
+A paragraph inside an item carries block attributes like any other, and the attribute line sits above it exactly as it does at document level.
+
+::: compare
+
+```carve
+- a
+
+  first
+
+  {.c}
+  second
+```
+
+```html
+<ul>
+  <li><p>a</p>
+    <p>first</p>
+    <p class="c">second</p>
+  </li>
+</ul>
+```
+
+:::
+
 ## List continuation marker
 
 A lone `+` at the list marker column attaches the following flush-left block to the current item, with no blank line, keeping the list tight — useful for code blocks or tables you would rather not indent.
