@@ -2021,10 +2021,6 @@
           "type": "string",
           "description": "Verbatim source of the reference as written, so the construct can be restored. Reachable because the tree is PRE-RESOLVE (PART 12 section 3a); under a post-resolve tree this field would describe something already discarded."
         },
-        "fromCrossref": {
-          "type": "boolean",
-          "description": "Set when the link was produced from a `</#id>` cross-reference."
-        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
