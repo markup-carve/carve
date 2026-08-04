@@ -4369,6 +4369,53 @@ EOF = (* end of file *) ;
       depending on which engine produced it, which is exactly what §1 and §1a
       exist to prevent. (carve#486)
 
+      A CROSSREF IS A `heading_ref`, RESOLVED OR NOT -- NORMATIVE. `</#id>` is
+      a reference like any other, so the same two halves apply: the authored
+      construct survives as a `heading_ref` carrying the raw id the author typed
+      between `</#` and `>`, and where it resolves the destination is published
+      BESIDE it as `href`.
+
+        See </#intro>.
+
+      with `# Intro` above it publishes
+
+        {"type":"heading_ref","target":"intro","href":"#Intro"}
+
+      and with no such heading
+
+        {"type":"heading_ref","target":"Nope"}
+
+      `target` is the authored spelling, NOT the id it resolved to: ids resolve
+      case-insensitively (PART 9 §19), so `</#intro>` and `</#Intro>` reach the
+      same heading and only `target` says which one the author wrote. A tree
+      publishing `{"type":"link","href":"#Intro","fromCrossref":true}` has
+      serialized a later stage by the rule at the top of this section, and it
+      cannot be written back: the writer reconstructs `</#` + the id + `>`, so
+      the document comes out of a wire round trip spelled `</#Intro>`.
+
+      Measured while settling this (carve#610): carve-php and carve-rs publish
+      `heading_ref` with `target` and no `href` -- the authored half, missing
+      the resolution. carve-js publishes a resolved `link` with `fromCrossref`
+      and no record of the authored id, and for an UNRESOLVED crossref it
+      publishes no node at all: `See </#Nope>.` comes out as one `text` node
+      holding the source, which is the flattening the clause above forbids for
+      `[a][]`. So each engine has one half and no two agree, which is what a
+      vocabulary describing both shapes without choosing produces.
+
+      `fromCrossref` on `link` is therefore not the crossref's serialization. A
+      LINK the author wrote as a link may still carry it as a rendering hint;
+      what it may not do is stand in place of the `heading_ref`.
+
+      THE DISPLAY TEXT IS NOT SERIALIZED. A resolved crossref renders the target
+      heading's text, and that text is NOT copied into the node: the heading is
+      in the same document, so a consumer reads it from there. This is the one
+      place this clause departs from §5's added-alongside rule, and it does so
+      because the alternative duplicates an arbitrary amount of inline content
+      per reference -- carve-js's resolved link clones the heading's children
+      into every crossref, which is why it also has to flatten nested crossrefs
+      and cache the clone to stay acyclic. `href` is a fixed-size result; the
+      display text is not.
+
       SO THERE IS NO `raw_text`. An engine that reverts an unresolved reference
       to literal source needs a node type to carry text that must not be
       escaped again, and no such type is in the vocabulary. Under this clause

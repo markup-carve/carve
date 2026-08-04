@@ -1215,7 +1215,11 @@
         },
         "target": {
           "type": "string",
-          "description": "Raw id between `</#` and `>`."
+          "description": "Raw id between `</#` and `>`, as the author spelled it. Ids resolve case-insensitively, so this is not necessarily the id it resolved to."
+        },
+        "href": {
+          "type": "string",
+          "description": "The resolved destination (`#` + the heading's id), present only where the crossref resolved. PART 12 §3a: the resolution is published beside the authored construct, not in place of it."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
