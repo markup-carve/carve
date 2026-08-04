@@ -4193,9 +4193,28 @@ EOF = (* end of file *) ;
       THE EXAMPLE USED TO BE `[^]: %`, on the reading that an empty footnote
       label was still a footnote. `footnote_label = {character - ']'}+` is
       one-or-more, so it never was: `[^]: %` is a LINK reference definition
-      whose label is `^`, which carve-rs#488 settled and all three engines
-      follow. It is therefore an example of the kind this clause does NOT
-      cover, which is why it was replaced (carve#589).
+      whose label is `^`, which carve-rs#488 settled. It is therefore an
+      example of the kind this clause does NOT cover, which is why it was
+      replaced (carve#589).
+
+      ONE ENGINE FOLLOWS IT, NOT THREE. This paragraph claimed "all three
+      engines follow", and that was never measured. On
+
+          [^]: /x
+
+          see [^][]
+
+      carve-rs and the executable spec resolve the link; carve-js builds a
+      footnote node with an EMPTY label and carve-php swallows the line, and
+      both leave `see [^][]` literal. The rule is not in doubt - the
+      production is one-or-more and an ordinary label works in all three - so
+      the two are behind, not disagreeing. Tracked as carve-js#631 and
+      carve-php#768.
+
+      The claim mattered because it was doing work: it is what justified
+      REPLACING the example, so a reader had no reason to check it. An
+      engine-agreement claim in the spec is a measurement, and it goes stale
+      the same way any other measurement does. (carve#637)
 
       This paragraph used to end "the rule is unchanged - an unused link
       definition survives the non-HTML targets too". That was true when
