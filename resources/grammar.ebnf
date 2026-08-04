@@ -4713,6 +4713,39 @@ EOF = (* end of file *) ;
       definition document-level metadata. A rule that applies to one and not
       the other needed a reason, and there is none. (carve-php#631)
 
+      HOISTING THE NODE IS NOT THE SAME AS DEFINING THE ABBREVIATION --
+      NORMATIVE. The definition is a document CHILD wherever it was written;
+      it EXPANDS occurrences only when it was written at document level. A
+      definition inside a block quote, a list item or a div is in the tree, is
+      navigable, and survives the formatter -- and expands nothing.
+
+          > *[HTML]: Hyper Text
+
+          The HTML spec.
+
+      renders `The HTML spec.` with no `<abbr>`, and the `abbreviation_def`
+      node is still a child of the document.
+
+      This narrows the sentence above rather than sitting beside it. "An
+      abbreviation is document-global wherever it is written" was written as
+      the RATIONALE for hoisting the node, and read literally it also settles
+      expansion, which it was not deciding. Expansion is a PART 9R question and
+      §7 is about tree shape; conflating them is how one clause came to answer
+      two.
+
+      The engines were split three ways, which is why it needed saying at all.
+      Measured on a definition inside a BLOCK QUOTE: carve-js and carve-rs both
+      expanded, carve-php did not. Inside a LIST ITEM: carve-js expanded,
+      carve-rs and carve-php did not. So no engine was self-consistent across
+      the two container kinds except carve-php, which expands neither.
+
+      WHY NOT THE OTHER WAY. Expanding would make an abbreviation's REACH
+      depend on where it was written while its NODE does not, and a reader
+      scanning for why `HTML` did or did not expand would have to find a
+      definition that renders nothing, possibly inside a collapsed container.
+      A definition that acts on the whole document should be written where the
+      whole document can see it. (carve#708, carve-php#708)
+
       THE FORMATTER CONSEQUENCE IS ACCEPTED, NOT OVERLOOKED. Hoisting means
       PART 11's writer emits the definition after the container the author
       wrote it in, which reads like a violation of PART 11 §6 ("fmt does not

@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 12 §7: hoisting the node is not the same as defining the abbreviation**
+  (carve#708). An `abbreviation_def` written inside a container is a document
+  child wherever it was written, and it expands occurrences only when it was
+  written at document level. §7's rationale sentence - "an abbreviation is
+  document-global wherever it is written" - was about tree shape and read
+  literally also settled expansion, which it was not deciding. Three engines
+  gave three answers across the two container kinds; carve-js and carve-rs both
+  move.
+
+### Changed
+
 - **PART 12 §4: a trailing attribute block is part of the node's span**
   (carve#521). `*x*{#i}` gives the `strong` a span of 0..7, not 0..3. This
   follows from the existing "a span covers the markup the author wrote" rule
