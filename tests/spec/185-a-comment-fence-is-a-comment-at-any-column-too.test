@@ -1,0 +1,15 @@
+A comment fence is a comment at any column too
+
+```
+- a
+ %%% n
+ x
+ %%%
+ tail
+.
+<ul>
+  <li>a
+    tail
+  </li>
+</ul>
+```

@@ -1573,7 +1573,13 @@ function collectItems(lines, i, list, state) {
       // LAZY frame so the item's own parse sees a comment line, which is what
       // keeps it invisible and leaves the item open for a following line
       // (carve#618).
-      if (!nm && !COMMENT_FENCE.test(line) && COMMENT_LINE.test(line) && itemLines.length > 0) {
+      // A comment FENCE is a comment too. #624 exempted the `%%` line form
+      // and left `%%%` folding as text, so `- a` / ` %%% n` rendered the
+      // opener VISIBLY where carve-js and carve-rs drop it - the same
+      // inconsistency one delimiter over (carve#629). COMMENT_LINE's `%%`
+      // prefix already covers both; the fence's own body lines are indented
+      // with it and follow it in.
+      if (!nm && COMMENT_LINE.test(line) && itemLines.length > 0) {
         itemLines.push(line.replace(/^[ \t]+/, ''))
         i++
         continue

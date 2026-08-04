@@ -7670,6 +7670,9 @@ see [^].
 ## An invisible line does not cancel a blank-line separation
 
 §17 L1 asks whether an item holds a blank-line-separated second paragraph. A line that renders nothing - a comment, a definition, an attribute line - is not a paragraph, which is why it cannot be the second one; the same fact means it cannot stand between the blank line and the paragraph that follows either. Delete the comment below and every implementation renders the item loose, so a construct that outputs nothing may not change that.
+## A comment fence is a comment at any column too
+
+§24 C3 recognizes a comment at any column, and that covers the fence form as well as the `%%` line: an indented `%%%` opener below an item's content column stays invisible, along with the body it encloses. Rendering the opener as text would put the comment on the page, which is what the rule exists to prevent.
 
 ::: compare
 
@@ -7678,12 +7681,18 @@ see [^].
 
   %% n
   text
+ %%% n
+ x
+ %%%
+ tail
 ```
 
 ```html
 <ul>
   <li><p>a</p>
     <p>text</p>
+  <li>a
+    tail
   </li>
 </ul>
 ```
@@ -7707,3 +7716,4 @@ An invisible line on its own is still not a second paragraph, so the item stays 
 ```
 
 :::
+
