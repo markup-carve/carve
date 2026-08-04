@@ -1,0 +1,26 @@
+An abbreviation at a list item's content column is still not a definition
+
+```
+- a
+  *[HTML]: Hyper Text
+
+The HTML spec.
+.
+<ul>
+  <li>a
+*[HTML]: Hyper Text</li>
+</ul>
+<p>The HTML spec.</p>
+```
+
+```
+- a
+  [r]: /u
+
+see [t][r]
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>see <a href="/u">t</a></p>
+```
