@@ -4019,8 +4019,8 @@ EOF = (* end of file *) ;
       drops it, because HTML has nowhere to put a definition nobody used; the
       other three do not get to drop content the author wrote.
 
-          [^]: %          ->  markdown  [^]: %
-                              plain     [^]: %
+          [^n]: %         ->  markdown  [^n]: %
+                              plain     [^n]: %
                               html      (nothing)
 
       This is PART 11 §6's objection applied one target out: a renderer that
@@ -4030,13 +4030,22 @@ EOF = (* end of file *) ;
       whether a reference exists elsewhere in the document, so adding one
       reference changes an unrelated line.
 
-      THE MARKER IS EMITTED AS WRITTEN. `[^]: %` is a footnote definition, so
-      it renders with its caret. `[]: %` is not that construct -- it is the
-      shape PART 9 §16 refuses on the link side, and emitting it turns a
-      definition into something that will not parse back. carve-rs dropped the
-      caret on the plain target, which is a defect independent of this rule:
-      whichever way the rule had gone, that output was neither the source nor
-      a definition.
+      THE MARKER IS EMITTED AS WRITTEN. `[^n]: %` is a footnote definition, so
+      it renders with its caret. `[n]: %` is not that construct -- it is a LINK
+      reference definition, and emitting one where the author wrote the other
+      turns a definition into something that parses back as a different
+      construct. Every engine drops the caret on the plain and terminal
+      targets, which is a defect independent of this rule: whichever way the
+      rule had gone, that output was neither the source nor the same
+      definition.
+
+      THE EXAMPLE USED TO BE `[^]: %`, on the reading that an empty footnote
+      label was still a footnote. `footnote_label = {character - ']'}+` is
+      one-or-more, so it never was: `[^]: %` is a LINK reference definition
+      whose label is `^`, which carve-rs#488 settled and all three engines
+      follow. The rule is unchanged - an unused link definition survives the
+      non-HTML targets too - but stating it through an example the grammar's
+      own production contradicts made it unverifiable (carve#589).
 
       Measured when this was written: carve-js and carve-php emit nothing on
       either target and carve-rs emits the definition, so the two that agree
