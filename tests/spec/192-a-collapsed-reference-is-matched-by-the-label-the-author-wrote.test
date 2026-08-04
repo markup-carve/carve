@@ -1,0 +1,17 @@
+A collapsed reference is matched by the label the author wrote
+
+```
+[*bold*]: /x
+
+see [*bold*][]
+.
+<p>see <a href="/x"><strong>bold</strong></a></p>
+```
+
+```
+[bold]: /x
+
+see [*bold*][]
+.
+<p>see [*bold*][]</p>
+```

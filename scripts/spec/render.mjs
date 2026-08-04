@@ -227,7 +227,7 @@ const sem = g.createSemantics().addOperation('h', {
     // own text content; an inner crossref flattens to its resolved TEXT
     inner = inner.replace(/<a [^>]*>([\s\S]*?)<\/a>/g, '$1')
     inner = inner.replaceAll('\uE000xref:', '\uE000xreftext:')
-    return tail.child(0).applyTail(inner)
+    return tail.child(0).applyTail(inner, raw)
   },
   image(_b, _o, alt, _c, _p, dest, title, _cp, attrs) {
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
@@ -382,7 +382,7 @@ const sem = g.createSemantics().addOperation('h', {
 })
 
 // tails need the already-rendered link text
-sem.addOperation('applyTail(text)', {
+sem.addOperation('applyTail(text, source)', {
   linkTail(_o, dest, title, _c, attrs) {
     const { text } = this.args
     if (text.includes('\uE000fn:')) throw new Refuse('footnote inside link text')
@@ -391,13 +391,18 @@ sem.addOperation('applyTail(text)', {
     return `<a href="${escapeAttr(checkUrl(destValue(dest)))}"${t}${a}>${text}</a>`
   },
   refTail(_o, label, _c, attrs) {
-    const { text } = this.args
+    const { text, source } = this.args
     if (text.includes('\uE000fn:')) throw new Refuse('footnote inside link text')
     const lbl = label.numChildren ? label.child(0).sourceString : null
     // The RAW list travels, not the rendered string: a definition may carry
     // attributes too, and PART 9R R1 merges the two per SS15 A3 - which needs
     // both lists, not two finished strings (carve#604).
-    return `ref:${JSON.stringify({ label: lbl, text, attrList: attrsOf(attrs) })}`
+    // `source` is the bracket text AS WRITTEN. A collapsed reference is
+    // matched by that, not by the rendered text: a decorated label defines a
+    // decorated key, and keying on the rendered form both missed that
+    // definition and matched a plain one the author never referenced.
+    // carve-js and carve-rs key on the written label (carve#648).
+    return `ref:${JSON.stringify({ label: lbl, text, source, attrList: attrsOf(attrs) })}`
   },
   attrs(_o, _s1, _first, _s2, _rest, _s3, _c) {
     const { text } = this.args

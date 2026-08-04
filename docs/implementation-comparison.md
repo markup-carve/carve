@@ -17,15 +17,15 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>571 / 573</strong>
+    <strong>573 / 575</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>573 / 573</strong>
+    <strong>575 / 575</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>573 / 573</strong>
+    <strong>575 / 575</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -36,17 +36,18 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `3c0e9a1` | `571 / 573` | `2` | `0` | `2.66` |
-| JS | `ebf8dea` | `573 / 573` | `0` | `0` | `65.85` |
-| PHP | `f6fc0c7` | `573 / 573` | `0` | `0` | `60.42` |
+| Rust | `5e132dc` | `573 / 575` | `2` | `0` | `2.92` |
+| JS | `7a4944f` | `575 / 575` | `0` | `0` | `74.79` |
+| PHP | `59654d5` | `575 / 575` | `0` | `0` | `68.44` |
 
-Spec commit: `41beb56`
+Spec commit: `292c926`
 
-The twelve cross-implementation diffs above are spread across the targets rather
-than confined to one: `carve` carries five, `html` two, and `markdown`, `plain`
-and `ansi` one each. Every target compares all 567 documents. They come from
-just two cases - `184` and `185` - which the per-case notes below the raw
-output cover.
+The ten cross-implementation diffs above come from four cases. Two are the
+newest corpus pins - `190` and `191` - which carve-rs does not implement yet,
+and they account for every `html`, `markdown` and `ansi` diff: the other two
+engines match the fixture, so the disagreement is one engine against the pin
+rather than three answers. The remaining four are on the `carve` target alone,
+where the parse agrees and only the canonical spelling differs.
 
 > This run shared a loaded machine (load average ~35), so its per-file times are
 > several times the usual and mean nothing against the previous snapshot's. The
@@ -294,18 +295,18 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=573 targets=html,markdown,plain,carve,ansi
-rust: pass=578/580 mismatch=2 error=0 skipped=0 runs=2865 avg_ms=2.66
-js: pass=580/580 mismatch=0 error=0 skipped=0 runs=2865 avg_ms=65.85
-php: pass=580/580 mismatch=0 error=0 skipped=0 runs=2865 avg_ms=60.42
-cross_impl_diffs=12
+profile=default/no-opt-in corpus=core corpus_pairs=575 targets=html,markdown,plain,carve,ansi
+rust: pass=580/582 mismatch=2 error=0 skipped=0 runs=2875 avg_ms=2.92
+js: pass=582/582 mismatch=0 error=0 skipped=0 runs=2875 avg_ms=74.79
+php: pass=582/582 mismatch=0 error=0 skipped=0 runs=2875 avg_ms=68.44
+cross_impl_diffs=10
 
 Target agreement (implementations compared against each other)
-html: compared=573 diffs=2 errors=0 fixtures=yes
-markdown: compared=573 diffs=2 errors=0 fixtures=1
-plain: compared=573 diffs=0 errors=0 fixtures=1
-carve: compared=573 diffs=6 errors=0 fixtures=5
-ansi: compared=573 diffs=2 errors=0 fixtures=none
+html: compared=575 diffs=2 errors=0 fixtures=yes
+markdown: compared=575 diffs=2 errors=0 fixtures=1
+plain: compared=575 diffs=0 errors=0 fixtures=1
+carve: compared=575 diffs=4 errors=0 fixtures=5
+ansi: compared=575 diffs=2 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix

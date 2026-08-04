@@ -504,9 +504,14 @@ function resolveRefs(html, ctx) {
     } catch {
       return _
     }
-    const { label, text, attrList } = parsed
+    const { label, text, source, attrList } = parsed
     if (typeof text !== 'string') return _
-    const key = label ?? stripTags(text)
+    // A collapsed reference is keyed by the label AS WRITTEN (whitespace
+    // collapsed), the same spelling a definition line registers. The rendered
+    // text is a different string whenever the label carries markup, and keying
+    // on it inverted the rule in both directions (carve#648).
+    const key =
+      label ?? (typeof source === 'string' ? source.trim().replace(/\s+/g, ' ') : stripTags(text))
     const def = ctx.linkDefs.get(key)
     if (!def) {
       // R1 IMPLICIT HEADING FALLBACK. Link definitions win the tie above, so
@@ -518,7 +523,13 @@ function resolveRefs(html, ctx) {
       if (heading !== undefined) {
         return `<a href="#${escapeAttr(heading)}"${renderAttrs(attrList ?? [])}>${text}</a>`
       }
-      return `[${text}][${label ?? ''}]` // unresolved -> literal (R1)
+      // UNRESOLVED -> LITERAL (R1), and literal means the SOURCE. `text` is
+      // the bracket content already rendered, so emitting it turned
+      // `[*bold*][]` into `[<strong>bold</strong>][]` - a construct the reader
+      // never wrote, with the markers that identify it as a reference silently
+      // consumed. All three engines emit the source; nothing pinned it because
+      // no corpus case paired an unresolved reference with a decorated label.
+      return `[${source ?? text}][${label ?? ''}]`
     }
     const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
     // R1: the definition's attributes transfer to the link, and the link's own
