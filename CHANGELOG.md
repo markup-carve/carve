@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **PART 11 §10a is narrowed to the definition kinds that have a node**
+  (carve#592). It required a link, footnote or abbreviation definition nothing
+  references to survive the Markdown, plain-text and terminal renderers. The
+  link half is unimplementable in any engine: a link reference definition leaves
+  NO node in the tree, so a renderer walking blocks has nothing to walk - and
+  PART 12 §3a had already considered adding that node and declined it. One
+  section was requiring what another's recorded decision made unreachable. The
+  gap the narrowing leaves is stated rather than hidden: an unused link
+  definition survives nothing today, so `carve --markdown` loses the URL.
+
 ### Fixed
 
 - **The executable spec follows NO OPEN PARAGRAPH, NO LAZY LINE** (carve#582).

@@ -4014,10 +4014,40 @@ EOF = (* end of file *) ;
       manufacture a layout whose only merit is dodging an escape.
 
   10a. AN UNUSED DEFINITION SURVIVES THE NON-HTML TARGETS -- NORMATIVE. A
-      link, footnote or abbreviation definition that NOTHING references is
-      still emitted by the Markdown, plain-text and terminal renderers. HTML
-      drops it, because HTML has nowhere to put a definition nobody used; the
-      other three do not get to drop content the author wrote.
+      FOOTNOTE or ABBREVIATION definition that NOTHING references is still
+      emitted by the Markdown, plain-text and terminal renderers. HTML drops
+      it, because HTML has nowhere to put a definition nobody used; the other
+      three do not get to drop content the author wrote.
+
+      A LINK REFERENCE DEFINITION IS NOT COVERED, and not because it deserves
+      less. It is the one definition kind with NO NODE IN THE TREE: `[lbl]: /u`
+      alone parses to a document with empty `children` in all three engines,
+      and §7 fixes the root at `type`, `children` and `srcByteLength`, so the
+      collected map cannot ride there either. A renderer walking blocks has
+      nothing to walk, so requiring the output would require an output no
+      engine can produce (carve#592).
+
+      This clause first said "link, footnote or abbreviation" and was wrong to.
+      PART 12 §3a had already considered the missing node and declined it --
+      "a bigger change than this clause is worth ... a new node type, a new
+      hoisting rule, three engines to move" -- so one section was requiring
+      what another section's recorded decision made unreachable. Narrowed here
+      rather than left contradictory: a spec that demands the impossible is
+      worse than one that admits a gap.
+
+      THE GAP IS REAL AND IS NOT CLOSED BY NARROWING. An unused link reference
+      definition currently survives nothing: not the tree, not a round trip
+      through the AST, and now explicitly not the non-HTML targets. So
+      `carve --markdown` on a document that is only `[lbl]: /u` emits nothing,
+      and the URL the author wrote is gone. That is the same content loss §10a
+      exists to prevent, reached by a different route.
+
+      Whether to add `link_reference_definition` to the vocabulary is therefore
+      open on TWO independent grounds now, where §3a weighed only one: making
+      a resolved reference's destination recoverable (§3a), and making an
+      unused one survive at all (this clause). §3a's cost list is unchanged and
+      still the estimate; what has changed is that the same node would pay for
+      two things rather than one.
 
           [^n]: %         ->  markdown  [^n]: %
                               plain     [^n]: %
