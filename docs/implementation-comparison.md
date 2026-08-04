@@ -13,36 +13,37 @@ implementation exposes.
 > nothing across rows; the counts are the point, and
 > `tests/implementation-comparison-counts.test.mjs` fails when they stop
 > matching the corpus - which is how this page came to quote 302 pairs against a
-> corpus of 529, and again at 531, 532, 533, 535, 536, 539, 542, 544, 547, 548 and 550.
+> corpus of 529, and again at 531, 532, 533, 535, 536, 539, 542, 544, 547, 548, 550 and 552.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>550 / 550</strong>
+    <strong>552 / 552</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>550 / 550</strong>
+    <strong>552 / 552</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>550 / 550</strong>
+    <strong>552 / 552</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>0</strong>
+    <strong>5</strong>
     <span>cross-implementation diffs</span>
   </div>
 </div>
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `7d4a0e7` | `550 / 550` | `0` | `0` | `3.52` |
-| JS | `b76ad6a` | `550 / 550` | `0` | `0` | `87.81` |
-| PHP | `4f7526c` | `550 / 550` | `0` | `0` | `80.51` |
+| Rust | `c552057` | `552 / 552` | `0` | `0` | `3.61` |
+| JS | `fb5d270` | `552 / 552` | `0` | `0` | `88.98` |
+| PHP | `9c5460d` | `552 / 552` | `0` | `0` | `80.94` |
 
-Spec commit: `b5c8ab1`
+Spec commit: `8551cc3`
 
-The `0` cross-implementation diffs above holds on EVERY target, not only
+The five cross-implementation diffs above are all on the `carve` target; every
+other target agrees on every case. That claim holds on EVERY target, not only
 **html**: `markdown`, `plain`, `carve` and `ansi` each compare 548 documents
 with no difference. The two the previous run reported were on the
 canonical-writer (`carve`) target and are gone with the engine changes below.
@@ -293,18 +294,18 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=550 targets=html,markdown,plain,carve,ansi
-rust: pass=552/552 mismatch=0 error=0 skipped=0 runs=2750 avg_ms=3.52
-js: pass=552/552 mismatch=0 error=0 skipped=0 runs=2750 avg_ms=87.81
-php: pass=552/552 mismatch=0 error=0 skipped=0 runs=2750 avg_ms=80.51
-cross_impl_diffs=0
+profile=default/no-opt-in corpus=core corpus_pairs=552 targets=html,markdown,plain,carve,ansi
+rust: pass=554/554 mismatch=0 error=0 skipped=0 runs=2760 avg_ms=3.61
+js: pass=554/554 mismatch=0 error=0 skipped=0 runs=2760 avg_ms=88.98
+php: pass=554/554 mismatch=0 error=0 skipped=0 runs=2760 avg_ms=80.94
+cross_impl_diffs=5
 
 Target agreement (implementations compared against each other)
-html: compared=550 diffs=0 errors=0 fixtures=yes
-markdown: compared=550 diffs=0 errors=0 fixtures=1
-plain: compared=550 diffs=0 errors=0 fixtures=1
-carve: compared=550 diffs=0 errors=0 fixtures=none
-ansi: compared=550 diffs=0 errors=0 fixtures=none
+html: compared=552 diffs=0 errors=0 fixtures=yes
+markdown: compared=552 diffs=0 errors=0 fixtures=1
+plain: compared=552 diffs=0 errors=0 fixtures=1
+carve: compared=552 diffs=5 errors=0 fixtures=none
+ansi: compared=552 diffs=0 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix
@@ -314,24 +315,25 @@ php: inline matcher, block matcher, parsed-document hook, before-render hook, re
 extension_profile_note=this run compares default/no-opt-in output. Use --corpus=optional for Tier-2 opt-in adapters.
 ```
 
-**Why this run is not all-green, and why that is correct.** Five corpus
-documents pin rules that landed after the engines last shipped, so the corpus is
-deliberately ahead of them:
+**Why this run is not all-green, and why that is correct.** Every engine
+renders all 554 fixture cases. The five differences are on the `carve` target,
+which has no expected-output file and instead asserts that the engines agree
+with each other - and there carve-rs escapes a caret the other two leave bare:
 
-- `105-marker-line-nested-lists-3` - a sub-list lead does not make the list tight
-  ([carve#538](https://github.com/markup-carve/carve/issues/538)). carve-php is
-  still tight; carve-js and carve-rs already match.
-- `178-a-flush-left-line-needs-an-open-paragraph-to-fold-into` and `-2` - a lazy
-  continuation needs an open paragraph
-  ([carve#561](https://github.com/markup-carve/carve/issues/561),
-  [carve#572](https://github.com/markup-carve/carve/issues/572)). carve-js and
-  carve-php still keep the line inside the item; carve-rs already matches.
+```
+** and // and ^^
+```
+
+formats to `** and // and \^\^` in carve-rs and to the input unchanged in
+carve-js and carve-php. All five cases are that one rule. PART 11 §2's iff test
+says a caret that opens nothing does not need escaping, so the two that leave
+it bare are right; carve-php moved on it in carve-php#724. The remaining work
+is item 8 of
+[carve-rs#511](https://github.com/markup-carve/carve-rs/issues/511).
 
 That is the intended order - the spec decides, the corpus pins, the engines
 follow, and the pin moves last. A fixture that no engine fails yet would not be
-measuring anything. The work is tracked in
-[carve-js#588](https://github.com/markup-carve/carve-js/issues/588) and
-[carve-php#702](https://github.com/markup-carve/carve-php/issues/702).
+measuring anything.
 
 Optional raw output:
 
