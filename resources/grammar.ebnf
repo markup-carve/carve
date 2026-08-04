@@ -1239,14 +1239,27 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
                        [link_title], [space, attributes], newline ;
 (* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE. A `{...}` block at the end
    of the definition line attaches to the DEFINITION, and PART 9R R1 already
-   says what that means: the attributes transfer to every link that resolves the
-   label, and the link's own attributes override per key.
+   says what that means: the attributes transfer to every link OR IMAGE that
+   resolves the label, and the reference site's own attributes override per key.
 
        [Example][ex]
 
        [ex]: https://example.com {.external}
 
    gives `<a href="https://example.com" class="external">`.
+
+   AN IMAGE REFERENCE RESOLVES THE SAME ENTRY -- NORMATIVE. `![alt][ex]` looks
+   the label up in the same `linkDefs` table and takes the same three fields, so
+   `[ex]: /i.png {.wide}` gives `<img src="/i.png" alt="alt" class="wide">`.
+
+   Stated because leaving it implicit produced a rule nobody could say out loud.
+   The table is `label -> (url, title?, attrs?)`; an image reference already took
+   `url` and `title` from it in every engine, and `attrs` crossed in carve-php
+   and not in carve-js or carve-rs (carve#604's follow-up). Two of three fields
+   transferring is not a rule, it is where an implementation stopped. The
+   ergonomics point the same way: a class repeated at every use site is more
+   common for images -- sizing, floating, lazy-loading -- than for links, which
+   is the case the definition form exists to serve.
 
    THE MERGE IS §15 A3's, the one stacked attribute lists already use: the
    definition's list first, the link's second, so a repeated `id` or key takes
@@ -3582,7 +3595,8 @@ EOF = (* end of file *) ;
    R1 LINK REFERENCES. [text][label] and [text][] (label := text) resolve
       against linkDefs. Matching is EXACT: case-sensitive, no whitespace
       folding (corpus 73-reference-labels-are-case-sensitive). Definition
-      attributes transfer to the link; link attributes override per key.
+      attributes transfer to the link OR IMAGE that resolves the label; the
+      reference site's own attributes override per key.
       Unresolved -> the bracketed run renders as literal source text. Carve
       has NO shortcut reference: a bare [label] never resolves (PART 9 §14).
       IMPLICIT HEADING FALLBACK: a [text][] whose label matches no

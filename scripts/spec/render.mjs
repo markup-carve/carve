@@ -234,6 +234,13 @@ const sem = g.createSemantics().addOperation('h', {
     const a = renderAttrs(attrsOf(attrs))
     return `<img src="${escapeAttr(checkUrl(destValue(dest)))}" alt="${escapeAttr(alt.sourceString)}"${t}${a}>`
   },
+  imageRef(_b, _o, alt, _c, _ro, label, _rc, attrs) {
+    // Same sentinel as a reference LINK, flagged so resolution emits an
+    // <img>. The label resolves against the same linkDefs entry and takes
+    // url, title and attrs from it (PART 9R R1).
+    const lbl = label.numChildren ? label.child(0).sourceString : null
+    return `ref:${JSON.stringify({ label: lbl, alt: alt.sourceString, img: true, attrList: attrsOf(attrs) })}`
+  },
   autolink(_o, body, _c, attrs) {
     const raw = body.sourceString
     const href = /@/.test(raw) && !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw) ? `mailto:${raw}` : raw

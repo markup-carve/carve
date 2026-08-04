@@ -119,7 +119,7 @@ CarveCore {
              | arrow | span | inlineNote | litDelim
              | symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
              | editorial | forcedSpan
-             | mathD | mathI | litInline | codeA | nbspEsc | hardBreak | escape | image | bracketed
+             | mathD | mathI | litInline | codeA | nbspEsc | hardBreak | escape | imageRef | image | bracketed
              | autolink | bang | dollar
              | ellipsis | dashRun | dot | dash | plus | pct | lt | gt
              | dquote | squote | hash | looseAttrs | nl | other | anyChar
@@ -148,7 +148,7 @@ CarveCore {
   // which are listed per-delimiter to exclude self-nesting)
   rich       = arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
              | editorial | forcedSpan | mathD | mathI
-             | codeA | escape | image | bracketed | autolink | bang | dollar
+             | codeA | escape | imageRef | image | bracketed | autolink | bang | dollar
              | ellipsis | dashRun | dquote | squote
              | dot | dash | plus | pct
 
@@ -284,6 +284,13 @@ CarveCore {
   qEsc       = "\\" "\""
 
   image      = "!" "[" altText "]" "(" dest destTitle? ")" attrs?
+  // `![alt][ref]` resolves against the SAME linkDefs entry a reference link
+  // does, taking url, title and attrs from it (PART 9R R1). Without this rule
+  // the `!` fell through to `bang` and the rest matched `bracketed`, so an
+  // image reference rendered as a literal "!" followed by an <a> (carve#604
+  // follow-up). Tried BEFORE `image` in the inline alternation so the
+  // bracket form wins over the paren form for the same prefix.
+  imageRef   = "!" "[" altText "]" "[" refLabel? "]" attrs?
   altText    = (~"]" ~newline any)*
 
   // --- Autolinks (PART 3): URL or email in angle brackets ------------------
