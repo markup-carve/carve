@@ -91,3 +91,39 @@ Compact list blocks
   </li>
 </ul>
 ```
+
+```
+- a
+
+  {.c}
+
+  b
+.
+<ul>
+  <li><p>a</p>
+    <p class="c">b</p>
+  </li>
+</ul>
+```
+
+```
+- a
+
+  {.c}
+.
+<ul>
+  <li>a</li>
+</ul>
+```
+
+```
+- a
+
+   {.c}
+.
+<ul>
+  <li><p>a</p>
+    <p>{.c}</p>
+  </li>
+</ul>
+```

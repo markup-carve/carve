@@ -2601,6 +2601,66 @@ A paragraph inside an item carries block attributes like any other, and the attr
 
 :::
 
+The attribute still reaches its paragraph **across a blank line**, exactly as it does at document level: §15 A2a floats it to the next visible block, and a blank is not a block. The item is loose because that paragraph is a real second one, not because of the attribute line.
+
+::: compare
+
+```carve
+- a
+
+  {.c}
+
+  b
+```
+
+```html
+<ul>
+  <li><p>a</p>
+    <p class="c">b</p>
+  </li>
+</ul>
+```
+
+:::
+
+On its own, though, an attribute line leaves the item **tight** — it renders nothing, so it is not the second paragraph §17 L1 asks for, the same reason a comment or a definition is not.
+
+::: compare
+
+```carve
+- a
+
+  {.c}
+```
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+```
+
+:::
+
+One column further in it is not an attribute line at all: §15 makes it column-strict, so it is literal paragraph text. It renders, and it loosens like any other paragraph — the one place where an attribute line and a comment part company, since a comment renders nothing at any indent.
+
+::: compare
+
+```carve
+- a
+
+   {.c}
+```
+
+```html
+<ul>
+  <li><p>a</p>
+    <p>{.c}</p>
+  </li>
+</ul>
+```
+
+:::
+
 ## List continuation marker
 
 A lone `+` at the list marker column attaches the following flush-left block to the current item, with no blank line, keeping the list tight — useful for code blocks or tables you would rather not indent.

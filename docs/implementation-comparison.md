@@ -13,19 +13,19 @@ implementation exposes.
 > nothing across rows; the counts are the point, and
 > `tests/implementation-comparison-counts.test.mjs` fails when they stop
 > matching the corpus - which is how this page came to quote 302 pairs against a
-> corpus of 529, and again at 531, 532, 533, 535, 536, 539, 542, 544, 547, 548, 550, 552, 553, 554, 557, 562 and 564.
+> corpus of 529, and again at 531, 532, 533, 535, 536, 539, 542, 544, 547, 548, 550, 552, 553, 554, 557, 562, 564 and 567.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>563 / 564</strong>
+    <strong>566 / 567</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>563 / 564</strong>
+    <strong>566 / 567</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>563 / 564</strong>
+    <strong>566 / 567</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -36,17 +36,17 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `2d5d050` | `563 / 564` | `1` | `0` | `3.49` |
-| JS | `addf7aa` | `563 / 564` | `1` | `0` | `89.59` |
-| PHP | `22fa88b` | `563 / 564` | `1` | `0` | `80.52` |
+| Rust | `5fa2e68` | `566 / 567` | `1` | `0` | `35.27` |
+| JS | `0297e52` | `566 / 567` | `1` | `0` | `95.61` |
+| PHP | `361d64d` | `566 / 567` | `1` | `0` | `85.57` |
 
-Spec commit: `ae205f3`
+Spec commit: `3cdd681`
 
-The five cross-implementation diffs above are all on the `carve` target; every
-other target agrees on every case. That claim holds on EVERY target, not only
-**html**: `markdown`, `plain`, `carve` and `ansi` each compare 548 documents
-with no difference. The two the previous run reported were on the
-canonical-writer (`carve`) target and are gone with the engine changes below.
+The ten cross-implementation diffs above are spread across the targets rather
+than confined to one: `carve` carries five, `html` two, and `markdown`, `plain`
+and `ansi` one each. Every target compares all 567 documents. They come from
+just two cases - `184` and `185` - which the per-case notes below the raw
+output cover.
 
 > This run shared a loaded machine (load average ~35), so its per-file times are
 > several times the usual and mean nothing against the previous snapshot's. The
@@ -294,18 +294,18 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=564 targets=html,markdown,plain,carve,ansi
-rust: pass=570/571 mismatch=1 error=0 skipped=0 runs=2820 avg_ms=3.49
-js: pass=570/571 mismatch=1 error=0 skipped=0 runs=2820 avg_ms=89.59
-php: pass=570/571 mismatch=1 error=0 skipped=0 runs=2820 avg_ms=80.52
+profile=default/no-opt-in corpus=core corpus_pairs=567 targets=html,markdown,plain,carve,ansi
+rust: pass=573/574 mismatch=1 error=0 skipped=0 runs=2835 avg_ms=35.27
+js: pass=573/574 mismatch=1 error=0 skipped=0 runs=2835 avg_ms=95.61
+php: pass=573/574 mismatch=1 error=0 skipped=0 runs=2835 avg_ms=85.57
 cross_impl_diffs=10
 
 Target agreement (implementations compared against each other)
-html: compared=564 diffs=2 errors=0 fixtures=yes
-markdown: compared=564 diffs=1 errors=0 fixtures=1
-plain: compared=564 diffs=1 errors=0 fixtures=1
-carve: compared=564 diffs=5 errors=0 fixtures=5
-ansi: compared=564 diffs=1 errors=0 fixtures=none
+html: compared=567 diffs=2 errors=0 fixtures=yes
+markdown: compared=567 diffs=1 errors=0 fixtures=1
+plain: compared=567 diffs=1 errors=0 fixtures=1
+carve: compared=567 diffs=5 errors=0 fixtures=5
+ansi: compared=567 diffs=1 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix
@@ -318,26 +318,22 @@ extension_profile_note=this run compares default/no-opt-in output. Use --corpus=
 **Why this run is not all-green, and why that is correct.** Three separate
 things, each measured rather than assumed.
 
-**One case fails in carve-php only.** `182-a-comment-is-recognized-at-any-column`
-pins the rule that a comment is recognized at ANY column and stays invisible,
-including below an item's content column. carve-js and carve-rs already do it;
-carve-php folds the line as visible text. The fix is open as carve-php#746, and
-the gap is tracked as carve-php#742.
+**One case fails in carve-rs and carve-php.**
+`185-an-invisible-line-does-not-cancel-a-blank-line-separation` is §17 L1b: an
+invisible line is not a separator, so it cannot stand between the blank line and
+the paragraph after it. Both engines stop at the comment and stay tight;
+carve-js already renders it loose, which is why it is the only engine green
+here.
 
-**One case fails in carve-rs only.** `87-compact-list-blocks-6`:
+**One case fails in carve-js only.**
+`184-a-caret-is-a-reference-label-not-an-empty-footnote` is the declared pin
+drift in `resources/engine-pin-drift.txt`, unchanged by this run.
 
-```
-- a
+Two cases the previous run listed are gone, both fixed upstream since:
+`182-a-comment-is-recognized-at-any-column` (carve-php shipped it) and
+`87-compact-list-blocks-6` (carve-rs did).
 
-  %% just a note
-- b
-```
-
-The blank line loosens the list, so both items take a `<p>`. carve-rs stays
-tight because an invisible construct sits in the gap, which is
-[carve-rs#557](https://github.com/markup-carve/carve-rs/issues/557).
-
-**Ten differences on the `carve` target**, which has an expected-output file
+**Five differences on the `carve` target**, which has an expected-output file
 for five cases and asserts engine agreement on the rest. Most are one rule:
 carve-rs escapes a caret that opens nothing, where carve-js and carve-php leave
 it bare. PART 11 §2's iff test says the bare form is right, and the remaining
