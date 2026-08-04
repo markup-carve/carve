@@ -92,6 +92,50 @@ test('the comparison cards and table quote the real core corpus size', () => {
   }
 })
 
+test('the cards and the table agree about what each engine passed', () => {
+  // Both speak for the SAME run, and the denominator check above passes when
+  // they disagree about the NUMERATOR: the page shipped cards reading
+  // `547 / 547` for all three engines directly above a table reading
+  // `545 / 547` and `544 / 547`, because the snapshot was taken while two of
+  // them were mid-fix and only one half was updated afterwards.
+  const core = page.split('## Optional Tier-2 Profile')[0]
+  const cards = [...core.matchAll(/<strong>(\d+)\s*\/\s*(\d+)<\/strong>/g)].map((m) => m[1])
+  const rows = [...core.matchAll(/\|\s*`(\d+)\s*\/\s*(\d+)`\s*\|/g)].map((m) => m[1])
+  assert.equal(
+    cards.length,
+    rows.length,
+    `the card grid quotes ${cards.length} engine results and the table ${rows.length}; one of them changed shape`,
+  )
+  assert.deepEqual(
+    cards,
+    rows,
+    'the comparison cards and the table quote different pass counts for the same run',
+  )
+})
+
+test('a quoted run never compares more documents than it ran', () => {
+  // `compared=N` in a block's target-agreement section counts documents from
+  // THAT run, so it cannot exceed the run's own `corpus_pairs`. The optional
+  // block quoted `compared=547` under `corpus_pairs=33` - the core run's rows,
+  // pasted into the optional block, claiming coverage sixteen times the size of
+  // the corpus that run uses.
+  const blocks = [...page.matchAll(/```text\n([\s\S]*?)```/g)].map((m) => m[1])
+  const checked = []
+  for (const block of blocks) {
+    const pairs = block.match(/corpus_pairs=(\d+)/)
+    if (!pairs) continue
+    const limit = Number(pairs[1])
+    for (const [, target, compared] of block.matchAll(/^(\w+): compared=(\d+)/gm)) {
+      checked.push(`${target}=${compared}`)
+      assert.ok(
+        Number(compared) <= limit,
+        `a quoted run says ${target}: compared=${compared} where its own corpus_pairs=${limit}`,
+      )
+    }
+  }
+  assert.ok(checked.length >= 5, `expected target-agreement rows in the quoted output; found ${checked.length}`)
+})
+
 test('the landing page quotes the real corpus size', () => {
   const live = countPairs('tests/corpus')
   const m = landing.match(/pinned by (\d+) corpus examples/)
