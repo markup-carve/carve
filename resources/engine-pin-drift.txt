@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+87-compact-list-blocks-4  carve-js loosens an item whose blank line is followed by a comment; §17 L1 asks for a second PARAGRAPH and a comment is not one (carve-js#615)
