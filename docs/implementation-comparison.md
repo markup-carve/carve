@@ -36,16 +36,20 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `3b2d034` | `548 / 548` | `0` | `0` | `3.18` |
-| JS | `191b6c3` | `548 / 548` | `0` | `0` | `76.81` |
-| PHP | `8da0258` | `546 / 548` | `2` | `0` | `69.90` |
+| Rust | `3b2d034` | `548 / 548` | `0` | `0` | `5.32` |
+| JS | `191b6c3` | `548 / 548` | `0` | `0` | `144.80` |
+| PHP | `e091e99` | `548 / 548` | `0` | `0` | `132.06` |
 
 Spec commit: `78979fa`
 
-The `0` cross-implementation diffs above is the **html** target. Over every
-target the same run reports two, both on the canonical-writer (`carve`) target
-and both filed: carve#481 (the engines serialize different pipeline stages) and
-carve-php#631 (an abbreviation definition hoisted out of its container).
+The `0` cross-implementation diffs above holds on EVERY target, not only
+**html**: `markdown`, `plain`, `carve` and `ansi` each compare 548 documents
+with no difference. The two the previous run reported were on the
+canonical-writer (`carve`) target and are gone with the engine changes below.
+
+> This run shared a loaded machine (load average ~35), so its per-file times are
+> several times the usual and mean nothing against the previous snapshot's. The
+> counts are what this table is for.
 
 ## Optional Tier-2 Profile
 
@@ -290,17 +294,17 @@ Default raw output:
 ```text
 Implementation summary
 profile=default/no-opt-in corpus=core corpus_pairs=548 targets=html,markdown,plain,carve,ansi
-rust: pass=548/548 mismatch=0 error=0 skipped=0 runs=2740 avg_ms=3.18
-js: pass=548/548 mismatch=0 error=0 skipped=0 runs=2740 avg_ms=76.81
-php: pass=546/548 mismatch=2 error=0 skipped=0 runs=2740 avg_ms=69.90
-cross_impl_diffs=8
+rust: pass=548/548 mismatch=0 error=0 skipped=0 runs=2740 avg_ms=5.32
+js: pass=548/548 mismatch=0 error=0 skipped=0 runs=2740 avg_ms=144.80
+php: pass=548/548 mismatch=0 error=0 skipped=0 runs=2740 avg_ms=132.06
+cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=548 diffs=2 errors=0 fixtures=yes
-markdown: compared=548 diffs=2 errors=0 fixtures=none
+html: compared=548 diffs=0 errors=0 fixtures=yes
+markdown: compared=548 diffs=0 errors=0 fixtures=none
 plain: compared=548 diffs=0 errors=0 fixtures=none
-carve: compared=548 diffs=2 errors=0 fixtures=none
-ansi: compared=548 diffs=2 errors=0 fixtures=none
+carve: compared=548 diffs=0 errors=0 fixtures=none
+ansi: compared=548 diffs=0 errors=0 fixtures=none
 target_agreement_note=only html has expected-output fixtures; the other targets assert that the implementations agree with each other.
 
 Extension capability matrix
@@ -339,14 +343,14 @@ came to say 4 when the corpus held 33.
 ```text
 Implementation summary
 profile=optional/opt-in corpus=optional corpus_pairs=33 targets=html,markdown
-rust: pass=3/3 mismatch=0 error=0 skipped=30 runs=3 avg_ms=2.45
-js: pass=28/28 mismatch=0 error=0 skipped=5 runs=28 avg_ms=58.71
-php: pass=27/27 mismatch=0 error=0 skipped=6 runs=27 avg_ms=51.01
-cross_impl_diffs=10
+rust: pass=3/3 mismatch=0 error=0 skipped=30 runs=3 avg_ms=2.91
+js: pass=31/31 mismatch=0 error=0 skipped=2 runs=31 avg_ms=78.43
+php: pass=28/28 mismatch=0 error=0 skipped=5 runs=28 avg_ms=69.21
+cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=547 diffs=3 errors=0 fixtures=yes
-markdown: compared=547 diffs=2 errors=0 fixtures=yes
+html: compared=27 diffs=0 errors=0 fixtures=yes
+markdown: compared=2 diffs=0 errors=0 fixtures=yes
 
 Optional feature coverage
 social-link-templates (html): rust, js, php

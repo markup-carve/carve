@@ -136,6 +136,28 @@ test('a quoted run never compares more documents than it ran', () => {
   assert.ok(checked.length >= 5, `expected target-agreement rows in the quoted output; found ${checked.length}`)
 })
 
+test('a quoted run\'s diff total matches its own per-target rows', () => {
+  // `cross_impl_diffs` is the sum over every target in that run, so a block
+  // saying `cross_impl_diffs=10` above rows that all read `diffs=0` is quoting
+  // two different runs at once - which the optional block did, with a total
+  // from the core run and rows from its own.
+  const blocks = [...page.matchAll(/```text\n([\s\S]*?)```/g)].map((m) => m[1])
+  let checked = 0
+  for (const block of blocks) {
+    const total = block.match(/cross_impl_diffs=(\d+)/)
+    const rows = [...block.matchAll(/^\w+: compared=\d+ diffs=(\d+)/gm)]
+    if (!total || rows.length === 0) continue
+    const summed = rows.reduce((n, m) => n + Number(m[1]), 0)
+    assert.equal(
+      summed,
+      Number(total[1]),
+      `a quoted run says cross_impl_diffs=${total[1]} over per-target rows summing to ${summed}`,
+    )
+    checked++
+  }
+  assert.ok(checked >= 2, `expected both quoted runs to carry a diff total; checked ${checked}`)
+})
+
 test('the landing page quotes the real corpus size', () => {
   const live = countPairs('tests/corpus')
   const m = landing.match(/pinned by (\d+) corpus examples/)
