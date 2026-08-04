@@ -1,0 +1,41 @@
+A flush-left line needs an open paragraph to fold into
+
+```
+. >
+X
+.
+<ol>
+  <li>
+    <blockquote>
+
+    </blockquote>
+  </li>
+</ol>
+<p>X</p>
+```
+
+```
+- >
+lazy
+.
+<ul>
+  <li>
+    <blockquote>
+
+    </blockquote>
+  </li>
+</ul>
+<p>lazy</p>
+```
+
+```
+- > q
+lazy
+.
+<ul>
+  <li>
+    <blockquote><p>q
+lazy</p></blockquote>
+  </li>
+</ul>
+```

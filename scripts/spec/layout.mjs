@@ -1239,7 +1239,16 @@ function collectItems(lines, i, list, state) {
     const item = { }
     if (head.attrs && head.attrs.replace(/[{} ]/g, '') !== '') item.attrs = head.attrs
     if (list.task) item.checked = /^[xX]$/.test(head.task)
-    let openPara = true // the marker line's text opens the item paragraph
+    // The marker line's text opens the item paragraph -- unless that text is
+    // itself a construct that opens none. `. >` is an EMPTY quote, so nothing
+    // is open and a later flush-left line closes the item rather than folding
+    // into it (PART 1 S4, NO OPEN PARAGRAPH NO LAZY LINE; carve#576,
+    // carve#582).
+    let openPara = true
+    {
+      const headText = head.text.trim()
+      if (QUOTE.test(headText)) openPara = (QUOTE.exec(headText)[1] ?? '').trim() !== ''
+    }
     // Content column of the FIRST sub-list opened in this item (-1 = none). A
     // blank followed by content at or past this column belongs to the sub-list,
     // not this item, so a descendant's looseness must not propagate up to this
@@ -1383,7 +1392,14 @@ function collectItems(lines, i, list, state) {
         // open quoted paragraph; fences/breaks close everything (SS10 I2/I6)
         if (FENCE.test(dedented) || HR.test(dedented) || COLON_FENCE.test(dedented)) openPara = false
         else if (dedented[0] === '|' || CONT_ROW.test(dedented)) openPara = false
-        else if (matchMarker(dedented) || QUOTE.test(dedented)) openPara = true
+        else if (matchMarker(dedented)) openPara = true
+        // A quote opens a paragraph only if it CARRIES one. A bare `>` is an
+        // empty quote, so there is nothing for a later flush-left line to fold
+        // into, and the item closes instead -- PART 1 S4's NO OPEN PARAGRAPH,
+        // NO LAZY LINE (carve#576, carve#582). Testing QUOTE alone treated
+        // `. >` as if a paragraph were open and swallowed the next column-0
+        // line into the item.
+        else if (QUOTE.test(dedented)) openPara = (QUOTE.exec(dedented)[1] ?? '').trim() !== ''
         else if (!isBlank(dedented)) openPara = true
         i++
         continue

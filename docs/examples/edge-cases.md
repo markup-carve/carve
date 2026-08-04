@@ -6585,3 +6585,79 @@ HTML and CSS.
 ```
 
 :::
+
+## A flush-left line needs an open paragraph to fold into
+
+A lazy continuation folds into the innermost OPEN paragraph (PART 1 S4). Where
+nothing is open, the unmatched containers close and the line is re-classified at
+the top level - and an item whose last block is an EMPTY container has nothing
+open, whatever column the next line starts at.
+
+Pinned because no case had a container as an item's last block followed by a
+flush-left line, so three engines gave three answers with every suite green
+(carve#561, carve#572, carve#582).
+
+An empty quote on the marker line opens no paragraph, so the item closes:
+
+::: compare
+
+```carve
+. >
+X
+```
+
+```html
+<ol>
+  <li>
+    <blockquote>
+
+    </blockquote>
+  </li>
+</ol>
+<p>X</p>
+```
+
+:::
+
+The same with a bullet marker:
+
+::: compare
+
+```carve
+- >
+lazy
+```
+
+```html
+<ul>
+  <li>
+    <blockquote>
+
+    </blockquote>
+  </li>
+</ul>
+<p>lazy</p>
+```
+
+:::
+
+CONTRAST: give the quote content and a paragraph IS open, so the line folds into
+it and the item stays:
+
+::: compare
+
+```carve
+- > q
+lazy
+```
+
+```html
+<ul>
+  <li>
+    <blockquote><p>q
+lazy</p></blockquote>
+  </li>
+</ul>
+```
+
+:::
