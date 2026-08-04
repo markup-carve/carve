@@ -816,6 +816,14 @@ if (failOnDiff) {
   // the start and never gated on, so the check could report a formatter
   // rewriting documents and still exit 0.
   const invariantFailures = roundtrip ? semanticFailures + idempotenceFailures : 0
+  // A MISMATCH is an engine disagreeing with a FIXTURE, and it was counted,
+  // printed in the summary and never gated on: the run exited 0 while the
+  // summary said `js: pass=545/547 mismatch=2`. Cross-engine agreement was the
+  // only failing condition, so the one thing a fixture exists to catch - an
+  // engine wrong where the corpus says what right is - could not fail the job.
+  const mismatches = roundtrip
+    ? 0
+    : active.reduce((total, impl) => total + stats[impl.name].mismatch, 0)
   if (undocumentedUnreachable.length > 0) {
     console.error(
       `\n${undocumentedUnreachable.length} optional case(s) reached fewer than two engines with no ` +
@@ -826,9 +834,14 @@ if (failOnDiff) {
     )
     process.exit(1)
   }
-  if (failing > 0 || invariantFailures > 0) {
+  if (failing > 0 || invariantFailures > 0 || mismatches > 0) {
     if (failing > 0) {
       console.error(`\n${failing} ${label} difference(s) - see the DIFF lines above.`)
+    }
+    if (mismatches > 0) {
+      console.error(
+        `${mismatches} case(s) where an engine disagrees with the expected output - see the per-engine mismatch counts above.`,
+      )
     }
     if (invariantFailures > 0) {
       console.error(
@@ -837,5 +850,7 @@ if (failOnDiff) {
     }
     process.exit(1)
   }
-  console.log(`\nNo ${label} differences, and no PART 11 §1 invariant failures.`)
+  console.log(
+    `\nNo ${label} differences, no fixture mismatches, and no PART 11 §1 invariant failures.`,
+  )
 }
