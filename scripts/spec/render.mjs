@@ -120,7 +120,10 @@ function hardenAttr(name, value) {
   return { name, value }
 }
 
-function renderAttrs(list) {
+// Exported for PART 9R R1: a reference link with no definition attributes takes
+// this inline path, where a repeated class inside ONE block deduplicates. Only
+// the cross-list merge (renderBlockAttrs) accumulates (carve#604).
+export function renderAttrs(list) {
   // serialization: SOURCE order; all classes merge (deduplicated, corpus
   // 121) into one class attribute at the position of the FIRST class;
   // a repeated id/key keeps the LAST value at its first position
@@ -391,8 +394,10 @@ sem.addOperation('applyTail(text)', {
     const { text } = this.args
     if (text.includes('\uE000fn:')) throw new Refuse('footnote inside link text')
     const lbl = label.numChildren ? label.child(0).sourceString : null
-    const a = renderAttrs(attrsOf(attrs))
-    return `ref:${JSON.stringify({ label: lbl, text, attrs: a })}`
+    // The RAW list travels, not the rendered string: a definition may carry
+    // attributes too, and PART 9R R1 merges the two per SS15 A3 - which needs
+    // both lists, not two finished strings (carve#604).
+    return `ref:${JSON.stringify({ label: lbl, text, attrList: attrsOf(attrs) })}`
   },
   attrs(_o, _s1, _first, _s2, _rest, _s3, _c) {
     const { text } = this.args

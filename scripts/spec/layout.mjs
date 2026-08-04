@@ -35,6 +35,41 @@ const FENCE = /^(`{3,}|~{3,})(.*)$/
 const PURE_FENCE = /^(`{3,}|~{3,})[ \t]*$/
 const QUOTE = /^>(?: (.*)|)$/
 const LINK_DEF = /^\[([^\]^@][^\]]*)\]: \s*(\S+)(?:\s+"((?:\\"|[^"])*)")?(?:\s.*)?$/
+
+/*
+ * Split a TRAILING attribute block off a definition line (carve#604).
+ *
+ * Scanned rather than matched: an attribute value may hold a `}` inside quotes
+ * (`{data-x="}"}`), and `\{[^}]*\}` stops at that brace, fails to parse, and
+ * drops every attribute on the line silently. The scan tracks quote state, so
+ * only a `}` outside quotes closes the block.
+ *
+ * The block must be preceded by whitespace and end the line, so `[a]: /u{.x}`
+ * keeps the braces in the DESTINATION, as the production's `space, attributes`
+ * requires. Returns [lineWithoutBlock, blockText|null].
+ */
+function splitTrailingAttrBlock(line) {
+  const trimmedEnd = line.replace(/\s+$/, '')
+  if (!trimmedEnd.endsWith('}')) return [line, null]
+  let quote = null
+  let open = -1
+  for (let i = 0; i < trimmedEnd.length; i++) {
+    const c = trimmedEnd[i]
+    if (quote) {
+      if (c === '\\') i++
+      else if (c === quote) quote = null
+      continue
+    }
+    if (c === '"' || c === "'") { quote = c; continue }
+    if (c === '{') { if (open === -1) open = i; continue }
+    if (c === '}' && open !== -1 && i === trimmedEnd.length - 1) {
+      // Must be separated from what precedes it by whitespace.
+      if (open === 0 || !/\s/.test(trimmedEnd[open - 1])) return [line, null]
+      return [trimmedEnd.slice(0, open).replace(/\s+$/, ''), trimmedEnd.slice(open)]
+    }
+  }
+  return [line, null]
+}
 // The marker line must carry inline content (PART 9 SS16 production:
 // `"]:", space, inline_content`); a bare `[^label]:` is an ordinary
 // paragraph line (corpus 132).
@@ -618,9 +653,16 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
       i++
       continue
     }
-    if ((m = LINK_DEF.exec(line))) {
+    const [defLine, defAttrText] = splitTrailingAttrBlock(line)
+    if ((m = LINK_DEF.exec(defLine))) {
       // LAST definition wins (PART 9R state)
-      state.linkDefs.set(m[1], { url: m[2], title: m[3]?.replaceAll('\\"', '"') })
+      state.linkDefs.set(m[1], {
+        url: m[2],
+        title: m[3]?.replaceAll('\\"', '"'),
+        // Raw list, not a rendered string: R1 merges it with the link site's
+        // own attributes per SS15 A3, which needs both lists (carve#604).
+        attrs: defAttrText ? parseAttrList(defAttrText) ?? undefined : undefined,
+      })
       i++
       continue
     }

@@ -5,7 +5,7 @@
  */
 
 import { Refuse, TIER1 } from './layout.mjs'
-import { renderInline, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, renderBlockAttrs } from './render.mjs'
+import { renderInline, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, renderBlockAttrs, renderAttrs } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -493,7 +493,7 @@ function resolveRefs(html, ctx) {
     } catch {
       return _
     }
-    const { label, text, attrs } = parsed
+    const { label, text, attrList } = parsed
     if (typeof text !== 'string') return _
     const key = label ?? stripTags(text)
     const def = ctx.linkDefs.get(key)
@@ -505,12 +505,26 @@ function resolveRefs(html, ctx) {
       // (carve#453).
       const heading = ctx.headingRefs.get(refKey(label ?? text))
       if (heading !== undefined) {
-        return `<a href="#${escapeAttr(heading)}"${attrs}>${text}</a>`
+        return `<a href="#${escapeAttr(heading)}"${renderAttrs(attrList ?? [])}>${text}</a>`
       }
       return `[${text}][${label ?? ''}]` // unresolved -> literal (R1)
     }
     const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
-    return `<a href="${escapeAttr(checkUrl(def.url))}"${t}${attrs}>${text}</a>`
+    // R1: the definition's attributes transfer to the link, and the link's own
+    // override per key. "Per key" is SS15 A3's merge - the one stacked
+    // attribute lists already use - so a repeated id/key takes the LAST value
+    // (the link's) and classes ACCUMULATE ACROSS the two lists. Definition
+    // list first, link list second (carve#604).
+    //
+    // With NO definition attributes this stays on renderAttrs, the inline
+    // path it always used: A3 accumulates classes across lists but WITHIN one
+    // attribute block a repeated class is deduplicated, so routing the
+    // link's own list through the block merge turned `{.a .a}` into
+    // `class="a a"` on reference links alone.
+    const a = def.attrs?.length
+      ? renderBlockAttrs([def.attrs, attrList ?? []])
+      : renderAttrs(attrList ?? [])
+    return `<a href="${escapeAttr(checkUrl(def.url))}"${t}${a}>${text}</a>`
   })
 }
 

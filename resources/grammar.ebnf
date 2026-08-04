@@ -1231,7 +1231,58 @@ link_title = space, ('"', {('\', '"') | (character - '"')}, '"')
            | space, ("'", {('\', "'") | (character - "'")}, "'") ;
 
 reference_label = (character - ']' - '@'), {character - ']'} ;
-reference_definition = '[', reference_label, ']', ':', space, link_destination, [link_title], newline ;
+reference_definition = '[', reference_label, ']', ':', space, link_destination,
+                       [link_title], [space, attributes], newline ;
+(* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE. A `{...}` block at the end
+   of the definition line attaches to the DEFINITION, and PART 9R R1 already
+   says what that means: the attributes transfer to every link that resolves the
+   label, and the link's own attributes override per key.
+
+       [Example][ex]
+
+       [ex]: https://example.com {.external}
+
+   gives `<a href="https://example.com" class="external">`.
+
+   THE MERGE IS §15 A3's, the one stacked attribute lists already use: the
+   definition's list first, the link's second, so a repeated `id` or key takes
+   the LAST value (the link's) and CLASSES ACCUMULATE in source order. So
+   `[ex]: /u {.external #a}` with `[Example][ex]{.internal #b}` renders
+   `class="external internal" id="b"`.
+
+   Reusing A3 rather than writing a second merge is the point: "link attributes
+   override per key" in R1 is exact only once "per key" names a merge, and the
+   language has one. A rule where the link's `class` REPLACED the definition's
+   would make this the only place in Carve where stacking classes drops one.
+
+   WHY THE SLOT EXISTS AT ALL. R1 and the `linkDefs : label -> (url, title?,
+   attrs?)` symbol table were written with definition attributes in them, and
+   the production had no way to produce the `attrs` they describe -- so the
+   rule was reachable only by an engine that invented a spelling. carve-php
+   invented one: it read a floating `{...}` line ABOVE the definition as
+   attributing it. §15 A2a then settled that a floating attribute floats PAST
+   an invisible construct to the next visible block, which is right, and which
+   removed the only spelling any engine had. This is the replacement, and it
+   does not compete with A2a because it is on the definition's own line
+   (carve#604).
+
+   NOT THE SAME AS THE LINE ABOVE. The two forms are different constructs and
+   both are now well-defined:
+
+       {.a}
+       [ex]: /u {.b}
+
+       text
+
+   `.a` floats past the definition and lands on `<p class="a">text</p>` (A2a);
+   `.b` attributes the definition and reaches every link resolving `ex`.
+
+   NO AST NODE, DELIBERATELY. There is no `link_reference_definition` node in
+   PART 12's vocabulary, so definition attributes are MATERIALIZED onto each
+   resolved link rather than serialized once. That is the third clause wanting
+   the same missing node (§3a and §10a are the others) and it is recorded here
+   rather than introduced, because adding a node type changes the wire format
+   for every engine and every consumer -- a larger question than this slot. *)
 (* The marker-to-content separator is the `space` terminal (U+0020) ONLY, in
    all three definition markers: `reference_definition`, `footnote_definition`
    and `abbreviation_definition`. A tab does NOT satisfy `space`
