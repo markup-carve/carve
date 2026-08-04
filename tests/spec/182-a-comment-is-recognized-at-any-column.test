@@ -1,0 +1,13 @@
+A comment is recognized at any column
+
+```
+- a
+ %% c
+b
+.
+<ul>
+  <li>a
+    b
+  </li>
+</ul>
+```

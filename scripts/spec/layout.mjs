@@ -1531,6 +1531,19 @@ function collectItems(lines, i, list, state) {
         i++
         continue
       }
+      // A COMMENT IS RECOGNIZED AT ANY COLUMN. Every other construct below the
+      // content column folds as text (SS24 C3), but a comment is invisible by
+      // nature and authors indent one freely, so all three engines find it
+      // after trimming the line wherever it sits. Folding it made `%% c`
+      // VISIBLE - the one outcome a comment may never have. Pushed without the
+      // LAZY frame so the item's own parse sees a comment line, which is what
+      // keeps it invisible and leaves the item open for a following line
+      // (carve#618).
+      if (!nm && !COMMENT_FENCE.test(line) && COMMENT_LINE.test(line) && itemLines.length > 0) {
+        itemLines.push(line.replace(/^[ \t]+/, ''))
+        i++
+        continue
+      }
       if (!nm && openPara && itemLines.length > 0 && !startsVisibleBlock(line) && !isTableRow(line) && !COLON_FENCE.test(line) && !(FENCE.test(line) && hasCloser(lines, i))) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/
