@@ -1,0 +1,19 @@
+A comment fence under a nested item does not close it either
+
+```
+- - a
+ %%% c
+ x
+ %%%
+ b
+.
+<ul>
+  <li>
+    <ul>
+      <li>a
+        b
+      </li>
+    </ul>
+  </li>
+</ul>
+```

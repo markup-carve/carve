@@ -13,36 +13,36 @@ implementation exposes.
 > nothing across rows; the counts are the point, and
 > `tests/implementation-comparison-counts.test.mjs` fails when they stop
 > matching the corpus - which is how this page came to quote 302 pairs against a
-> corpus of 529, and again at 531, 532, 533, 535, 536, 539, 542, 544, 547, 548, 550, 552, 553, 554, 557, 562, 564 and 567.
+> corpus of 529, and again at 531, 532, 533, 535, 536, 539, 542, 544, 547, 548, 550, 552, 553, 554, 557, 562, 564, 567 and 571.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>571 / 571</strong>
+    <strong>571 / 573</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>571 / 571</strong>
+    <strong>573 / 573</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>571 / 571</strong>
+    <strong>573 / 573</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>4</strong>
+    <strong>12</strong>
     <span>cross-implementation diffs</span>
   </div>
 </div>
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `8693f74` | `571 / 571` | `0` | `0` | `3.36` |
-| JS | `ebf8dea` | `571 / 571` | `0` | `0` | `84.07` |
-| PHP | `f6fc0c7` | `571 / 571` | `0` | `0` | `75.58` |
+| Rust | `3c0e9a1` | `571 / 573` | `2` | `0` | `2.66` |
+| JS | `ebf8dea` | `573 / 573` | `0` | `0` | `65.85` |
+| PHP | `f6fc0c7` | `573 / 573` | `0` | `0` | `60.42` |
 
-Spec commit: `405b583`
+Spec commit: `41beb56`
 
-The ten cross-implementation diffs above are spread across the targets rather
+The twelve cross-implementation diffs above are spread across the targets rather
 than confined to one: `carve` carries five, `html` two, and `markdown`, `plain`
 and `ansi` one each. Every target compares all 567 documents. They come from
 just two cases - `184` and `185` - which the per-case notes below the raw
@@ -294,18 +294,18 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=571 targets=html,markdown,plain,carve,ansi
-rust: pass=578/578 mismatch=0 error=0 skipped=0 runs=2855 avg_ms=3.36
-js: pass=578/578 mismatch=0 error=0 skipped=0 runs=2855 avg_ms=84.07
-php: pass=578/578 mismatch=0 error=0 skipped=0 runs=2855 avg_ms=75.58
-cross_impl_diffs=4
+profile=default/no-opt-in corpus=core corpus_pairs=573 targets=html,markdown,plain,carve,ansi
+rust: pass=578/580 mismatch=2 error=0 skipped=0 runs=2865 avg_ms=2.66
+js: pass=580/580 mismatch=0 error=0 skipped=0 runs=2865 avg_ms=65.85
+php: pass=580/580 mismatch=0 error=0 skipped=0 runs=2865 avg_ms=60.42
+cross_impl_diffs=12
 
 Target agreement (implementations compared against each other)
-html: compared=571 diffs=0 errors=0 fixtures=yes
-markdown: compared=571 diffs=0 errors=0 fixtures=1
-plain: compared=571 diffs=0 errors=0 fixtures=1
-carve: compared=571 diffs=4 errors=0 fixtures=5
-ansi: compared=571 diffs=0 errors=0 fixtures=none
+html: compared=573 diffs=2 errors=0 fixtures=yes
+markdown: compared=573 diffs=2 errors=0 fixtures=1
+plain: compared=573 diffs=0 errors=0 fixtures=1
+carve: compared=573 diffs=6 errors=0 fixtures=5
+ansi: compared=573 diffs=2 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix
@@ -315,11 +315,16 @@ php: inline matcher, block matcher, parsed-document hook, before-render hook, re
 extension_profile_note=this run compares default/no-opt-in output. Use --corpus=optional for Tier-2 opt-in adapters.
 ```
 
-**Every engine renders every fixture case**, on every target that has one:
-571 of 571, zero mismatches and zero errors in all three.
+**Two engines render every fixture case**, on every target that has one: 573 of
+573 in carve-js and carve-php, zero mismatches and zero errors. carve-rs misses
+the two newest, both pinning what a comment does to the item around it - a
+blank after one still ends the item, and a comment fence under a nested item
+does not close it. carve-js, carve-php and the executable spec agree on both;
+carve-rs is the sole outlier (markup-carve/carve-rs#578). Those two cases
+account for eight of the twelve diffs below, across four targets each.
 
-**Four differences remain on the `carve` target**, which has an expected-output
-file for five cases and asserts engine agreement on the rest. All four are the
+**Four differences remain on the `carve` target** beyond them, which has an
+expected-output file for five cases and asserts engine agreement on the rest. All four are the
 formatter, and the rule behind the largest of them is one the writer has not
 caught up on: PART 11 §1's round trip does not hold for a resolved reference
 link in ANY engine - `[a][r]` plus its definition formats to the inline

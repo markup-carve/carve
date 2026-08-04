@@ -1,0 +1,17 @@
+A blank after a comment still ends the item
+
+```
+- - a
+ %% c
+
+ b
+.
+<ul>
+  <li>
+    <ul>
+      <li>a</li>
+    </ul>
+  </li>
+</ul>
+<p>b</p>
+```

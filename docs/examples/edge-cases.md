@@ -7798,3 +7798,57 @@ A comment's body is opaque, and that covers the lines that render nothing of the
 ```
 
 :::
+
+## A blank after a comment still ends the item
+
+A comment renders nothing, so it neither closes the item nor holds it open across a blank line. The blank does what a blank always does: it ends the item, and the indented line after it is a document-level paragraph rather than item content.
+
+::: compare
+
+```carve
+- - a
+ %% c
+
+ b
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>a</li>
+    </ul>
+  </li>
+</ul>
+<p>b</p>
+```
+
+:::
+
+## A comment fence under a nested item does not close it either
+
+The fence form behaves as the `%%` line does: it is invisible, it leaves the item open, and the line after it folds into the inner item exactly as it would with no comment between.
+
+::: compare
+
+```carve
+- - a
+ %%% c
+ x
+ %%%
+ b
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>a
+        b
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
