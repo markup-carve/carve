@@ -17,30 +17,30 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>556 / 557</strong>
+    <strong>554 / 559</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>556 / 557</strong>
+    <strong>558 / 559</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>555 / 557</strong>
+    <strong>557 / 559</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>10</strong>
+    <strong>15</strong>
     <span>cross-implementation diffs</span>
   </div>
 </div>
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `de96505` | `556 / 557` | `1` | `0` | `21.69` |
-| JS | `e1d2f2b` | `556 / 557` | `1` | `0` | `57.77` |
-| PHP | `71dd027` | `555 / 557` | `2` | `0` | `52.75` |
+| Rust | `eb0e181` | `554 / 559` | `5` | `0` | `9.91` |
+| JS | `953046f` | `558 / 559` | `1` | `0` | `245.89` |
+| PHP | `7738356` | `557 / 559` | `2` | `0` | `202.06` |
 
-Spec commit: `8f56c1c`
+Spec commit: `00a54d6`
 
 The five cross-implementation diffs above are all on the `carve` target; every
 other target agrees on every case. That claim holds on EVERY target, not only
@@ -294,18 +294,18 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=557 targets=html,markdown,plain,carve,ansi
-rust: pass=558/559 mismatch=1 error=0 skipped=0 runs=2785 avg_ms=21.69
-js: pass=558/559 mismatch=1 error=0 skipped=0 runs=2785 avg_ms=57.77
-php: pass=557/559 mismatch=2 error=0 skipped=0 runs=2785 avg_ms=52.75
-cross_impl_diffs=12
+profile=default/no-opt-in corpus=core corpus_pairs=559 targets=html,markdown,plain,carve,ansi
+rust: pass=561/566 mismatch=5 error=0 skipped=0 runs=2795 avg_ms=9.91
+js: pass=565/566 mismatch=1 error=0 skipped=0 runs=2795 avg_ms=245.89
+php: pass=564/566 mismatch=2 error=0 skipped=0 runs=2795 avg_ms=202.06
+cross_impl_diffs=15
 
 Target agreement (implementations compared against each other)
-html: compared=557 diffs=3 errors=0 fixtures=yes
-markdown: compared=557 diffs=0 errors=0 fixtures=1
-plain: compared=557 diffs=0 errors=0 fixtures=1
-carve: compared=557 diffs=9 errors=0 fixtures=none
-ansi: compared=557 diffs=0 errors=0 fixtures=none
+html: compared=559 diffs=2 errors=0 fixtures=yes
+markdown: compared=559 diffs=1 errors=0 fixtures=1
+plain: compared=559 diffs=1 errors=0 fixtures=1
+carve: compared=559 diffs=10 errors=0 fixtures=5
+ansi: compared=559 diffs=1 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix
@@ -315,42 +315,38 @@ php: inline matcher, block matcher, parsed-document hook, before-render hook, re
 extension_profile_note=this run compares default/no-opt-in output. Use --corpus=optional for Tier-2 opt-in adapters.
 ```
 
-**Why this run is not all-green, and why that is correct.** Two separate
-things, both expected.
+**Why this run is not all-green, and why that is correct.** Three separate
+things, each measured rather than assumed.
 
-**One fixture case, failed by two engines.** `178-a-flush-left-line-needs-an-open-paragraph-to-fold-into-7`
-pins the rule from #617: a line reaching NO open content column folds as text,
-however far below it sits.
+**One case fails in carve-php only.** `182-a-comment-is-recognized-at-any-column`
+pins the rule that a comment is recognized at ANY column and stays invisible,
+including below an item's content column. carve-js and carve-rs already do it;
+carve-php folds the line as visible text. The fix is open as carve-php#746, and
+the gap is tracked as carve-php#742.
 
-```
--   x
-    - a
-  - b
-```
-
-The outer item's content column is 4 and the sub-list's is 6, so the `  - b`
-marker at column 2 reaches neither and folds, marker and all. carve-rs
-implements this (carve-rs#539); carve-js and carve-php still open a third list
-level, tracked in
-[carve-js#611](https://github.com/markup-carve/carve-js/issues/611) and
-[carve-php#740](https://github.com/markup-carve/carve-php/issues/740). That is
-the intended order - the spec decides, the corpus pins, the engines follow, and
-the pin moves last. A fixture that no engine fails yet would not be measuring
-anything.
-
-**Five differences on the `carve` target**, which has no expected-output file
-and instead asserts that the engines agree with each other. There carve-rs
-escapes a caret the other two leave bare:
+**One case fails in carve-rs only.** `87-compact-list-blocks-6`:
 
 ```
-** and // and ^^
+- a
+
+  %% just a note
+- b
 ```
 
-formats to `** and // and \^\^` in carve-rs and to the input unchanged in
-carve-js and carve-php. All five are that one rule. PART 11 §2's iff test says
-a caret that opens nothing does not need escaping, so the two that leave it
-bare are right; carve-php moved on it in carve-php#724. The remaining work is
-item 8 of [carve-rs#511](https://github.com/markup-carve/carve-rs/issues/511).
+The blank line loosens the list, so both items take a `<p>`. carve-rs stays
+tight because an invisible construct sits in the gap, which is
+[carve-rs#557](https://github.com/markup-carve/carve-rs/issues/557).
+
+**Ten differences on the `carve` target**, which has an expected-output file
+for five cases and asserts engine agreement on the rest. Most are one rule:
+carve-rs escapes a caret that opens nothing, where carve-js and carve-php leave
+it bare. PART 11 §2's iff test says the bare form is right, and the remaining
+work is item 8 of
+[carve-rs#511](https://github.com/markup-carve/carve-rs/issues/511).
+
+That is the intended order - the spec decides, the corpus pins, the engines
+follow, and the pin moves last. A fixture that no engine fails yet would not be
+measuring anything.
 
 Optional raw output:
 
