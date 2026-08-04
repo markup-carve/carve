@@ -1602,6 +1602,34 @@ function collectItems(lines, i, list, state) {
         i++
         continue
       }
+      // A DEFINITION AT COLUMN 0 IS A DEFINITION, NOT LAZY TEXT. §24 C3's BELOW
+      // branch folds "every other line", but a line at column 0 is not below a
+      // column - it is AT the enclosing context's own block position, which is
+      // where a definition is recognized. Folding it here made this
+      // implementation the only one that reads
+      //
+      //     - x
+      //     [^f]: y
+      //
+      //     see[^f]
+      //
+      // as item text with `see[^f]` left literal, where carve-js, carve-rs and
+      // carve-php all collect the note. Ending the item hands the line to the
+      // enclosing parse, which sees it at column 0 and collects it there.
+      //
+      // The same branch is what made a definition at the OUTER item's content
+      // column fold: `- - a` / `  [^f]: x` dedents to column 0 for the inner
+      // list's collector, so it arrives here (carve#635).
+      //
+      // ABBREVIATIONS ARE EXCLUDED, and unanimously so: `- x` / `*[A]: b` is
+      // item text in all four implementations. PART 12 §7 recognizes an
+      // abbreviation definition only as a direct child of the DOCUMENT, and an
+      // item's body is not the document however its columns line up.
+      //
+      // A definition BELOW every open content column is untouched - it never
+      // reaches column 0 in any collector, so it still folds as text (corpus
+      // 183).
+      if (!nm && indentCols(line).col === 0 && (FOOTNOTE_DEF.test(line) || LINK_DEF.test(line))) break
       if (!nm && openPara && itemLines.length > 0 && !startsVisibleBlock(line) && !isTableRow(line) && !COLON_FENCE.test(line) && !(FENCE.test(line) && hasCloser(lines, i))) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/
