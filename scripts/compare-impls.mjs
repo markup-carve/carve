@@ -183,18 +183,16 @@ const PLAIN_EXTENSION_FEATURES = {
  * option nobody implemented - carve#560).
  */
 const UNREACHABLE_REASONS = {
-  'smart-typography-off':
-    'no engine implements the documented smartTypography switch (carve#560)',
   'smart-quotes-locale-de':
     'carve-js has no quote-locale option; carve-php has the extension (carve#560)',
   'section-wrapper-off':
     'carve-php has no sections switch; carve-js has the option (carve#560)',
   'source-line-after-generated-id':
     'the fixture needs sections off, which carve-php cannot do (carve#560)',
-  'markdown-typography-source': 'carve-rs exposes no CLI flag for it',
 }
 
 const JS_OPTION_FEATURES = {
+  'smart-typography-off': '{ smartTypography: false }',
   'markdown-typography-source': "{ smartTypography: 'source' }",
   'section-wrapper-off': '{ sections: false }',
   'source-line-after-generated-id': '{ sourceLine: true, sections: false }',
@@ -225,6 +223,9 @@ const impls = [
           '--symbol', 'rocket=🚀', '--symbol', 'tada=🎉', '--symbol', '+1=👍', '--symbol', 'UPPER=⬆️',
           ...flags,
         ]
+      }
+      if (feature === 'smart-typography-off' || feature === 'markdown-typography-source') {
+        return [...rustBaseCommand, '--smart-typography', 'source', ...flags]
       }
       return null
     },
@@ -352,6 +353,19 @@ const impls = [
         ]
       }
       if (target !== 'html') return null
+      if (feature === 'smart-typography-off') {
+        return [
+          'php',
+          '-r',
+          `
+            require 'vendor/autoload.php';
+            $renderer = new MarkupCarve\\Carve\\Renderer\\HtmlRenderer();
+            $renderer->setSmartTypography(MarkupCarve\\Carve\\Renderer\\SmartTypographyMode::Source);
+            $converter = MarkupCarve\\Carve\\CarveConverter::create(renderer: $renderer);
+            echo $converter->convert(file_get_contents($argv[1]));
+          `,
+        ]
+      }
       if (feature === 'social-link-templates') {
         return [
           'php',

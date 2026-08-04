@@ -484,23 +484,46 @@ carveToHtml(source, { smartTypography: false })
 ```
 
 ```php [carve-php]
-$converter = CarveConverter::create(smartTypography: false);
+$renderer = (new HtmlRenderer())->setSmartTypography(SmartTypographyMode::Source);
+$converter = CarveConverter::create(renderer: $renderer);
 ```
 
 ```rust [carve-rs]
-let options = Options::default().with_smart_typography(false);
+let options = Options { smart_typography: SmartTypographyMode::Source, ..Options::default() };
 ```
 
 :::
 
-**Implementation status.** None of the three calls above works today: carve-php
-raises `Unknown named parameter $smartTypography`, carve-rs has no
-`with_smart_typography`, and carve-js accepts the option and **ignores** it, so a
-host wiring it up gets a page that looks configured and is not. That last one is
-the only non-conformant state - the spec lets a host omit the switch, but not
-accept it silently. The parse side is already done everywhere: smart typography
-is an AST node carrying both the resolved glyph and the author's source run, so
-what remains is renderer plumbing rather than a parser change.
+**Implementation status.** All three engines honor the switch on HTML and on
+Markdown, each with its own spelling - it is host API, not syntax, so the
+spelling is the engine's to choose:
+
+| | carve-js | carve-php | carve-rs |
+|---|---|---|---|
+| HTML | `carveToHtml(src, { smartTypography: false })` | `(new HtmlRenderer())->setSmartTypography(SmartTypographyMode::Source)` | `Options { smart_typography: SmartTypographyMode::Source, .. }` |
+| Markdown | `carveToMarkdown(src, { smartTypography: 'source' })` | `(new MarkdownRenderer())->setSmartTypography(...)` | same `Options` field |
+
+Both also expose it on the command line, where machine-facing output is most
+often produced: `carve --html --smart-typography source` in carve-php and
+carve-rs. An unknown mode is rejected rather than ignored.
+
+Two spellings this page used to show do not exist: carve-php has no
+`CarveConverter::create(smartTypography: ...)` named parameter (the mode is set
+on the renderer), and carve-rs has no `with_smart_typography` builder (the field
+is set on `Options`). The code group above shows the real ones.
+
+Plain text and ANSI still emit the glyph in all three, which the sentence above
+- "the presentation renderers emit each node's source run" - reads as covering.
+That gap is open ([carve#560][st-issue]); the two targets a host reaches for
+machine-facing output are the two that are done.
+
+This section's claim is now measured rather than asserted: the optional corpus
+case `29-smart-typography-off` is rendered by all three engines through the
+comparison harness, so a regression fails there instead of leaving this
+paragraph quietly wrong - which is the state it was in for as long as it named
+three calls that no longer matched any engine.
+
+[st-issue]: https://github.com/markup-carve/carve/issues/560
 
 The switch is document-global on purpose. Defaulting it per target - on for
 HTML, off for Markdown and plain text - was considered and rejected: one source
