@@ -95,6 +95,20 @@ const CONT_MARKER = /^\+[ \t]*$/
 // re-classified as structure when an item's content is re-parsed
 export const LAZY = '\u0000L\u0000'
 
+/// A body line with the internal LAZY frame removed.
+///
+/// The frame marks a line that reached this container by lazy folding; the
+/// paragraph builder strips it, but anything that keeps its body VERBATIM -
+/// fenced code, a raw block, a line block - joined the raw lines and shipped
+/// the marker into the output. `- ``` ` plus a line below the item's content
+/// column was enough: the rendered code read `\u0000L\u0000x`.
+///
+/// The corpus-wide sentinel check in scripts/formal-core-check.mjs could not
+/// see it, because no corpus input opens a fence on a marker line and then
+/// drops below the content column. tests/oracle-framing-never-leaks.test.mjs
+/// generates those shapes instead of listing them.
+export const stripLazy = (line) => (line.startsWith(LAZY) ? line.slice(LAZY.length) : line)
+
 // Lines that put the whole document out of the executable subset.
 const REFUSERS = [
   [/^\[@/, 'citation definition'],
@@ -741,7 +755,11 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
       if (info && info.lang.startsWith('=')) {
         const close = findCloser(lines, i, run)
         if (close !== -1) {
-          push({ t: 'raw', format: info.lang.slice(1), text: lines.slice(i + 1, close).join('\n') })
+          push({
+            t: 'raw',
+            format: info.lang.slice(1),
+            text: lines.slice(i + 1, close).map(stripLazy).join('\n'),
+          })
           i = close + 1
           continue
         }
@@ -752,7 +770,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           t: 'code',
           lang: info.lang,
           title: info.title,
-          text: lines.slice(i + 1, close).join('\n') + (close > i + 1 ? '\n' : ''),
+          text: lines.slice(i + 1, close).map(stripLazy).join('\n') + (close > i + 1 ? '\n' : ''),
         }
         i = close + 1
         let j = i
@@ -772,7 +790,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           t: 'code',
           lang: info.lang,
           title: info.title,
-          text: lines.slice(i + 1).join('\n') + '\n',
+          text: lines.slice(i + 1).map(stripLazy).join('\n') + '\n',
         })
         i = n
         continue
@@ -926,7 +944,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           } else {
             i = close === -1 ? n : close + 1
             if (opener.mode === 'line-block') {
-              push({ t: 'line-block', lines: body })
+              push({ t: 'line-block', lines: body.map(stripLazy) })
             } else if (opener.mode === 'hardbreaks') {
               push({ t: 'hardbreaks', children: parseBlocks(body, state, false) })
             } else if (opener.type === 'footnotes') {
