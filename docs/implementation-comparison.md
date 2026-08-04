@@ -17,30 +17,30 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>570 / 570</strong>
+    <strong>571 / 571</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>570 / 570</strong>
+    <strong>571 / 571</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>570 / 570</strong>
+    <strong>571 / 571</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>5</strong>
+    <strong>4</strong>
     <span>cross-implementation diffs</span>
   </div>
 </div>
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `8693f74` | `570 / 570` | `0` | `0` | `3.14` |
-| JS | `8e6c8cd` | `570 / 570` | `0` | `1` | `79.36` |
-| PHP | `4a93cdf` | `570 / 570` | `0` | `0` | `71.77` |
+| Rust | `8693f74` | `571 / 571` | `0` | `0` | `3.36` |
+| JS | `ebf8dea` | `571 / 571` | `0` | `0` | `84.07` |
+| PHP | `f6fc0c7` | `571 / 571` | `0` | `0` | `75.58` |
 
-Spec commit: `0f96a87`
+Spec commit: `405b583`
 
 The ten cross-implementation diffs above are spread across the targets rather
 than confined to one: `carve` carries five, `html` two, and `markdown`, `plain`
@@ -294,18 +294,18 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=570 targets=html,markdown,plain,carve,ansi
-rust: pass=577/577 mismatch=0 error=0 skipped=0 runs=2850 avg_ms=3.14
-js: pass=577/577 mismatch=0 error=1 skipped=0 runs=2850 avg_ms=79.36
-php: pass=577/577 mismatch=0 error=0 skipped=0 runs=2850 avg_ms=71.77
-cross_impl_diffs=5
+profile=default/no-opt-in corpus=core corpus_pairs=571 targets=html,markdown,plain,carve,ansi
+rust: pass=578/578 mismatch=0 error=0 skipped=0 runs=2855 avg_ms=3.36
+js: pass=578/578 mismatch=0 error=0 skipped=0 runs=2855 avg_ms=84.07
+php: pass=578/578 mismatch=0 error=0 skipped=0 runs=2855 avg_ms=75.58
+cross_impl_diffs=4
 
 Target agreement (implementations compared against each other)
-html: compared=570 diffs=0 errors=0 fixtures=yes
-markdown: compared=570 diffs=1 errors=1 fixtures=1
-plain: compared=570 diffs=0 errors=0 fixtures=1
-carve: compared=570 diffs=4 errors=0 fixtures=5
-ansi: compared=570 diffs=0 errors=0 fixtures=none
+html: compared=571 diffs=0 errors=0 fixtures=yes
+markdown: compared=571 diffs=0 errors=0 fixtures=1
+plain: compared=571 diffs=0 errors=0 fixtures=1
+carve: compared=571 diffs=4 errors=0 fixtures=5
+ansi: compared=571 diffs=0 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix
@@ -315,25 +315,17 @@ php: inline matcher, block matcher, parsed-document hook, before-render hook, re
 extension_profile_note=this run compares default/no-opt-in output. Use --corpus=optional for Tier-2 opt-in adapters.
 ```
 
-**Every engine now renders every fixture case.** All three pass 570 of 570
-with zero mismatches - the first run today where the corpus is not ahead of any
-of them.
+**Every engine renders every fixture case**, on every target that has one:
+571 of 571, zero mismatches and zero errors in all three.
 
-**Five differences remain on the `carve` target**, which has an expected-output
-file for five cases and asserts engine agreement on the rest. They are the
-formatter divergences already tracked, not new rules: the caret over-escaping
-family (item 8 of
-[carve-rs#511](https://github.com/markup-carve/carve-rs/issues/511)) plus the
-fold and reference-link shapes on `117-...-2`, `16-reference-link-4` and
-`183-...`.
-
-**One `error` is recorded against carve-js on the markdown target**, and it is
-left in the raw block rather than described, because it does not reproduce
-outside the harness: all three engines produce identical markdown for
-`87-compact-list-blocks-4` when run directly, and there is no markdown fixture
-for that case. Whatever it is belongs to how the comparison invokes the engine,
-not to the engine - saying more than that would be asserting something not
-measured.
+**Four differences remain on the `carve` target**, which has an expected-output
+file for five cases and asserts engine agreement on the rest. All four are the
+formatter, and the rule behind the largest of them is one the writer has not
+caught up on: PART 11 §1's round trip does not hold for a resolved reference
+link in ANY engine - `[a][r]` plus its definition formats to the inline
+`[a](/u)`, so the `ref` and `rawRef` that §3a records are gone on reparse. That
+is [carve#642](https://github.com/markup-carve/carve/issues/642), a writer
+question rather than a parser one.
 
 Optional raw output:
 
