@@ -1,0 +1,40 @@
+A definition inside a container is collected at that container's content column
+
+```
+> - a
+>   [r]: /u
+
+see [t][r]
+.
+<blockquote>
+  <ul>
+    <li>a</li>
+  </ul>
+</blockquote>
+<p>see <a href="/u">t</a></p>
+```
+
+```
+- a
+  > [r]: /u
+
+see [t][r]
+.
+<ul>
+  <li>a
+    <blockquote>
+
+    </blockquote>
+  </li>
+</ul>
+<p>see <a href="/u">t</a></p>
+```
+
+```
+[x][r] here.
+
+    > [r]: /u
+.
+<p>[x][r] here.</p>
+<p>&gt; [r]: /u</p>
+```

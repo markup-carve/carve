@@ -24,3 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+194-a-definition-inside-a-container-is-collected-at-that-container-s-content-column  the pin predates carve-js#646: a definition at a QUOTED item's content column is collected
+194-a-definition-inside-a-container-is-collected-at-that-container-s-content-column-3  the pin predates carve-js#650: an indented `>` reaching no content column is not a container, so the line defines nothing
