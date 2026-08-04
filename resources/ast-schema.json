@@ -560,13 +560,6 @@
             "$ref": "#/$defs/blockNode"
           }
         },
-        "attribution": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          },
-          "description": "The `-- attribution` line, when the quote carries one."
-        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
