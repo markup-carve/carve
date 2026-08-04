@@ -921,8 +921,12 @@ comment_block = comment_block_open, newline,
                 comment_block_close, newline
                 where exists(comment_block_close) ;  (* PART 9 §28: else comment_line *)
 
-comment_block_open = ("%%%", {'%'}):open, {character - newline} ;  (* 3+ `%`, tail ignored *)
-comment_block_close = ("%%%", {'%'}):close, {character - newline}
+(* Both delimiters may be INDENTED, exactly as `comment_line` may: leading
+   whitespace is not part of the delimiter, only the `%` run is, so the length
+   match below compares runs and an indented closer closes an indented opener.
+   PART 9 §24 C3 states the rule for both spellings. *)
+comment_block_open = [whitespace], ("%%%", {'%'}):open, {character - newline} ;  (* 3+ `%`, tail ignored *)
+comment_block_close = [whitespace], ("%%%", {'%'}):close, {character - newline}
                       where len(close) = len(open) ;  (* FORMAL (PART 9 §2): exact length match *)
 
 (* trailing (inline) line comment: from a %% marker to end of line, content
@@ -3198,9 +3202,14 @@ EOF = (* end of file *) ;
              column 0, and was skipped there as already-extracted, so the
              author's line rendered as nothing at all (carve-php#721).
 
-             A COMMENT IS THE ONE EXCEPTION -- NORMATIVE. `%%` is recognized
-             at ANY column, above the content column, at it, or below it, and
-             stays invisible. Folding it would make the comment VISIBLE, which
+             A COMMENT IS THE ONE EXCEPTION -- NORMATIVE. A comment is
+             recognized at ANY column, above the content column, at it, or
+             below it, and stays invisible. BOTH SPELLINGS: the `%%` line form
+             and the `%%%` fence form, whose body and closer travel with its
+             opener. Leaving the fence out made the same rule answer twice one
+             delimiter apart -- the line form invisible, the fence form
+             VISIBLE text -- which is what carve#629 reported and carve#634
+             settled (corpus 186). Folding it would make the comment VISIBLE, which
              is the one outcome a comment may never have, and an indented
              comment at the top level is already invisible for the same
              reason. It does not close the item either: a following line
