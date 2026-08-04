@@ -25,3 +25,4 @@
 #
 # Format: <slug><space><space><reason>
 87-compact-list-blocks-4  carve-js loosens an item whose blank line is followed by a comment; §17 L1 asks for a second PARAGRAPH and a comment is not one (carve-js#615)
+184-a-caret-is-a-reference-label-not-an-empty-footnote  the pinned build reads `[^]: /u` as an empty-label footnote definition and drops it, so the reference stays literal; `reference_label` admits `^` and `footnote_label` is one-or-more, which makes it a link reference definition (carve-js#597 family, carve-rs#511 item 6)

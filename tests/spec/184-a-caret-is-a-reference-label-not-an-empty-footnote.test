@@ -1,0 +1,15 @@
+A caret is a reference label, not an empty footnote
+
+```
+[^]: /u
+
+see [text][^].
+.
+<p>see <a href="/u">text</a>.</p>
+```
+
+```
+see [^].
+.
+<p>see [^].</p>
+```

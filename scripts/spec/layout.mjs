@@ -34,7 +34,13 @@ const HR = /^(-{3,}|\*{3,}|_{3,})[ \t]*$/
 const FENCE = /^(`{3,}|~{3,})(.*)$/
 const PURE_FENCE = /^(`{3,}|~{3,})[ \t]*$/
 const QUOTE = /^>(?: (.*)|)$/
-const LINK_DEF = /^\[([^\]^@][^\]]*)\]: \s*(\S+)(?:\s+"((?:\\"|[^"])*)")?(?:\s.*)?$/
+// `reference_label = (character - ']' - '@'), {character - ']'}` - only those
+// two are excluded, and only `@` only at the first position. `^` was excluded
+// here too, so `[^]: %` matched nothing and fell through as a paragraph, where
+// the PART 9 §10 note (and carve-rs, carve-php) read it as a link reference
+// definition whose label is `^`: an EMPTY footnote label is not a footnote
+// label, `footnote_label` being one-or-more (carve-rs#511, carve#589).
+const LINK_DEF = /^\[([^\]@][^\]]*)\]: \s*(\S+)(?:\s+"((?:\\"|[^"])*)")?(?:\s.*)?$/
 
 /*
  * Split a TRAILING attribute block off a definition line (carve#604).

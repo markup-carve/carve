@@ -39,6 +39,19 @@ implementation to ship the rule, and each engine verifies ITSELF against the
 corpus through its own spec submodule — which is where an engine-versus-corpus
 disagreement belongs.
 
+**The prose is normative; the oracle implements it.** `resources/grammar.ebnf`
+and the normative clauses beside it are the specification. `scripts/spec` is an
+implementation of them and can be wrong like any engine, so when the two
+disagree the prose wins and the ORACLE is what gets fixed — followed by a corpus
+document, so the answer stops depending on either. Two cases settled that way in
+one week: a comment is recognized at any column (its production carries the
+leading whitespace, so the engines were right and the oracle folded it as text,
+carve#618), and `[^]: %` is a link reference definition whose label is `^` (an
+empty `footnote_label` is not one, `{character - ']'}+` being one-or-more, so
+the oracle's own label pattern excluded a character the production admits,
+carve-rs#511). Whichever way a case goes, say it in the prose first: an engine
+that follows the grammar and fails the corpus is reporting a bug in the corpus.
+
 The pinned build is still exercised, just not as the corpus oracle: the Tier-2
 `tests/optional-corpus.test.mjs`, the PART 11 `tests/roundtrip.test.mjs`, the
 prose `tests/examples.test.mjs` and the option cases in
