@@ -523,6 +523,29 @@ today, so a future proposal may take `@[label]` on its own merits but cannot tak
 
 ---
 
+## Definition lists: per-`<dt>`/`<dd>` attributes (glued-marker form)
+
+**Proposed:**
+```
+::{#tcp .proto} TCP
+:{.lead}  Reliable, ordered transport.
+```
+
+**Rationale for proposal:**
+- `<dt>` and `<dd>` are the only per-unit block sub-elements in Carve with no attribute hook
+- Every other repeated per-unit part already has a glued-marker form: `-{.c}` on a list item, `| … |{.c}` on a table row, and cells
+- A whole `<dl>` can be attributed with a preceding `{…}` line, but an individual term or definition cannot
+- The design is a straight copy of the list-item pattern, so it introduces no new shape of rule
+
+**Why deferred:**
+- No concrete demand has appeared. The gap is real but symmetric-looking rather than reported
+- It is not free: a syntax form has to land in all three engines plus the canonical writer, and the degrade behavior (`::{bad!}` falls back to a paragraph) needs pinning in each
+- The whole-`<dl>` attribute already covers the common case, and an `<dt>` that genuinely needs an id can be reached with a heading or a span
+
+**Decision:** Deferred, not rejected. This is an intentional non-goal for now rather than a hole nobody noticed - the analysis and the concrete design are kept in [carve#277](https://github.com/markup-carve/carve/issues/277) so it can be picked up if a real need shows up.
+
+---
+
 ## Summary
 
 Most rejected ideas fall into these categories:
