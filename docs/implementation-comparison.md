@@ -13,45 +13,54 @@ implementation exposes.
 > nothing across rows; the counts are the point, and
 > `tests/implementation-comparison-counts.test.mjs` fails when they stop
 > matching the corpus - which is how this page came to quote 302 pairs against a
-> corpus of 529, and again at 531, 532, 533, 535, 536, 539, 542, 544, 547, 548, 550, 552, 553, 554, 557, 562, 564, 567 and 571.
+> corpus of 529, and again at 531, 532, 533, 535, 536, 539, 542, 544, 547, 548, 550, 552, 553, 554, 557, 562, 564, 567, 571 and 580.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>580 / 580</strong>
+    <strong>583 / 583</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>580 / 580</strong>
+    <strong>583 / 583</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>580 / 580</strong>
+    <strong>583 / 583</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>5</strong>
+    <strong>32</strong>
     <span>cross-implementation diffs</span>
   </div>
 </div>
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `03ba204` | `580 / 580` | `0` | `0` | `6.10` |
-| JS | `32ab5fb` | `580 / 580` | `0` | `0` | `159.52` |
-| PHP | `aa4a900` | `580 / 580` | `0` | `0` | `136.71` |
+| Rust | `ad865aa` | `583 / 583` | `0` | `0` | `3.52` |
+| JS | `c3aa467` | `583 / 583` | `0` | `0` | `90.27` |
+| PHP | `aa4a900` | `583 / 583` | `0` | `0` | `81.66` |
 
-Spec commit: `7515e07`
+Spec commit: `18794fe`
 
-The ten cross-implementation diffs above come from four cases. Two are the
-newest corpus pins - `190` and `191` - which carve-rs does not implement yet,
-and they account for every `html`, `markdown` and `ansi` diff: the other two
-engines match the fixture, so the disagreement is one engine against the pin
-rather than three answers. The remaining four are on the `carve` target alone,
+Every engine renders every fixture case on every target that has one - 583 of
+583, zero mismatches and zero errors in all three - and `html`, `markdown`,
+`plain` and `ansi` agree everywhere. All 32 diffs are on the `carve` target,
 where the parse agrees and only the canonical spelling differs.
 
-> This run shared a loaded machine (load average ~35), so its per-file times are
-> several times the usual and mean nothing against the previous snapshot's. The
-> counts are what this table is for.
+The jump from 5 to 32 is one defect, not a regression in coverage. carve-js
+stopped inflating a nested list (markup-carve/carve-js#653): each level had been
+indented twice, once by an absolute depth term and again by the parent item's
+continuation prefix, so `fmt` returned O(depth^3) bytes for an O(depth^2)
+source. carve-rs and carve-php still do, identically - 130 bytes in, 460 out at
+depth 10 - so fixing the third engine left them as the outliers on every corpus
+case containing a nested list. Filed as markup-carve/carve-rs#594,
+markup-carve/carve-php#792 and markup-carve/carve#662. Idempotence and the round
+trip both still hold in all three, so this is a fidelity and size defect rather
+than a §1 violation.
+
+> This run shared a loaded machine, so its per-file times run high and mean
+> little against the previous snapshot's. The counts are what this table is
+> for.
 
 ## Optional Tier-2 Profile
 
@@ -295,18 +304,18 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=580 targets=html,markdown,plain,carve,ansi
-rust: pass=587/587 mismatch=0 error=0 skipped=0 runs=2900 avg_ms=6.10
-js: pass=587/587 mismatch=0 error=0 skipped=0 runs=2900 avg_ms=159.52
-php: pass=587/587 mismatch=0 error=0 skipped=0 runs=2900 avg_ms=136.71
-cross_impl_diffs=5
+profile=default/no-opt-in corpus=core corpus_pairs=583 targets=html,markdown,plain,carve,ansi
+rust: pass=590/590 mismatch=0 error=0 skipped=0 runs=2915 avg_ms=3.52
+js: pass=590/590 mismatch=0 error=0 skipped=0 runs=2915 avg_ms=90.27
+php: pass=590/590 mismatch=0 error=0 skipped=0 runs=2915 avg_ms=81.66
+cross_impl_diffs=32
 
 Target agreement (implementations compared against each other)
-html: compared=580 diffs=0 errors=0 fixtures=yes
-markdown: compared=580 diffs=0 errors=0 fixtures=1
-plain: compared=580 diffs=0 errors=0 fixtures=1
-carve: compared=580 diffs=5 errors=0 fixtures=5
-ansi: compared=580 diffs=0 errors=0 fixtures=none
+html: compared=583 diffs=0 errors=0 fixtures=yes
+markdown: compared=583 diffs=0 errors=0 fixtures=1
+plain: compared=583 diffs=0 errors=0 fixtures=1
+carve: compared=583 diffs=32 errors=0 fixtures=5
+ansi: compared=583 diffs=0 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix

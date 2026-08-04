@@ -1,0 +1,26 @@
+Trailing attributes on a link reference definition
+
+```
+[Example][ex] and [again][ex]
+
+[ex]: https://example.com {.external}
+.
+<p><a href="https://example.com" class="external">Example</a> and <a href="https://example.com" class="external">again</a></p>
+```
+
+```
+[Example][ex]{.internal #b}
+
+[ex]: /u {.external #a}
+.
+<p><a href="/u" class="external internal" id="b">Example</a></p>
+```
+
+```
+{.a}
+[ex]: /u {.b}
+
+[E][ex] and text
+.
+<p class="a"><a href="/u" class="b">E</a> and text</p>
+```
