@@ -1,0 +1,12 @@
+A list item does not define an abbreviation either
+
+```
+- *[HTML]: Hyper Text
+
+The HTML spec.
+.
+<ul>
+  <li>*[HTML]: Hyper Text</li>
+</ul>
+<p>The HTML spec.</p>
+```

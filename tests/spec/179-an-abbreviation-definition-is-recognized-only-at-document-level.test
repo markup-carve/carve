@@ -1,0 +1,10 @@
+An abbreviation definition is recognized only at document level
+
+```
+> *[HTML]: Hyper Text
+
+The HTML spec.
+.
+<blockquote><p>*[HTML]: Hyper Text</p></blockquote>
+<p>The HTML spec.</p>
+```

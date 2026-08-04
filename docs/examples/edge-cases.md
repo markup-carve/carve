@@ -820,15 +820,16 @@ single-paragraph form.
 
 :::
 
-An abbreviation definition inside a div is the same case: the definition is
-collected for the document's abbreviation table and leaves nothing behind.
+An abbreviation definition is collected for the document's abbreviation table
+and leaves nothing behind. It renders to nothing only where it is a definition,
+which is at document level: inside a container the same line is ordinary text.
 
 :::: compare
 
 ```carve
-:::
 *[HTML]: HyperText Markup Language
 
+:::
 body
 :::
 ```
@@ -6731,6 +6732,46 @@ fold is about reaching no column at all.
     </ul>
   </li>
 </ul>
+```
+
+:::
+
+## An abbreviation definition is recognized only at document level
+
+`*[TERM]: expansion` defines an abbreviation only as a direct child of the document. Inside a block quote, a list item or a div the line is ordinary paragraph text: it defines nothing and it is preserved as written. An abbreviation is the only definition kind with no marker at the use site, so a definition carried in quoted material would otherwise rewrite every occurrence of its term in the quoting document.
+
+::: compare
+
+```carve
+> *[HTML]: Hyper Text
+
+The HTML spec.
+```
+
+```html
+<blockquote><p>*[HTML]: Hyper Text</p></blockquote>
+<p>The HTML spec.</p>
+```
+
+:::
+
+## A list item does not define an abbreviation either
+
+The same rule holds for every container, not just the block quote: the definition line stays visible text and expands nothing.
+
+::: compare
+
+```carve
+- *[HTML]: Hyper Text
+
+The HTML spec.
+```
+
+```html
+<ul>
+  <li>*[HTML]: Hyper Text</li>
+</ul>
+<p>The HTML spec.</p>
 ```
 
 :::

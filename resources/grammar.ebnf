@@ -4753,49 +4753,56 @@ EOF = (* end of file *) ;
       than inventing a second one. Its `pos` still records where it was
       WRITTEN, so nothing about navigation is lost by the move.
 
-      THIS COVERS EVERY DEFINITION KIND, NOT ONLY FOOTNOTES -- NORMATIVE. An
-      `abbreviation_def` authored inside a div, a list item or a block quote is
-      a child of the DOCUMENT, exactly as a `footnote` is. The clause above was
-      written against PART 9 §16 and read as footnote-specific, so the engines
-      split: carve-php hoisted both kinds, carve-js and carve-rs hoisted the
-      footnote and left the abbreviation in its container, and all three
-      rendered identical HTML -- because an abbreviation is document-global
-      wherever it is written, which is the same property that makes a footnote
-      definition document-level metadata. A rule that applies to one and not
-      the other needed a reason, and there is none. (carve-php#631)
+      THE HOISTING CLAUSE ABOVE IS ABOUT FOOTNOTES. An `abbreviation_def` is
+      never hoisted, because there is never one to hoist: the construct is
+      recognized only at document level.
 
-      HOISTING THE NODE IS NOT THE SAME AS DEFINING THE ABBREVIATION --
-      NORMATIVE. The definition is a document CHILD wherever it was written;
-      it EXPANDS occurrences only when it was written at document level. A
-      definition inside a block quote, a list item or a div is in the tree, is
-      navigable, and survives the formatter -- and expands nothing.
+      AN ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL --
+      NORMATIVE. `*[TERM]: expansion` is an `abbreviation_definition` only as a
+      direct child of the document. Written inside a block quote, a list item
+      or a div, the line is not a definition at all: it is ordinary paragraph
+      text, it defines nothing, and it is preserved as the text the author
+      typed.
 
           > *[HTML]: Hyper Text
 
           The HTML spec.
 
-      renders `The HTML spec.` with no `<abbr>`, and the `abbreviation_def`
-      node is still a child of the document.
+      renders a block quote holding the literal text `*[HTML]: Hyper Text`,
+      and `The HTML spec.` with no `<abbr>`.
 
-      This narrows the sentence above rather than sitting beside it. "An
-      abbreviation is document-global wherever it is written" was written as
-      the RATIONALE for hoisting the node, and read literally it also settles
-      expansion, which it was not deciding. Expansion is a PART 9R question and
-      §7 is about tree shape; conflating them is how one clause came to answer
-      two.
+      This is the same fallback an unrecognized definition marker already
+      takes: `*[HTML]:<TAB>x` is a paragraph because the separator must be a
+      literal space (see the note at `abbreviation_definition`), and the marker
+      line "is preserved as text" there too. The rule is reused, not invented.
 
-      The engines were split three ways, which is why it needed saying at all.
-      Measured on a definition inside a BLOCK QUOTE: carve-js and carve-rs both
-      expanded, carve-php did not. Inside a LIST ITEM: carve-js expanded,
-      carve-rs and carve-php did not. So no engine was self-consistent across
-      the two container kinds except carve-php, which expands neither.
+      WHY ABBREVIATIONS AND NOT FOOTNOTES. An abbreviation is the only
+      definition kind with NO marker at the use site. A footnote needs `[^a]`
+      and a reference link needs `[text][ref]`, so their reach is bounded by
+      references the author wrote deliberately; an abbreviation rewrites EVERY
+      occurrence of the term in the whole document, with nothing at the use
+      site to point back at the definition. Hoisting is safe for a definition
+      that is inert until referenced and unsafe for one that acts on its own.
+      A container is exactly where quoted and foreign material lives, so
+      hoisting would let a quoted `*[X]: y` inject a document-wide rewrite into
+      the quoting document.
 
-      WHY NOT THE OTHER WAY. Expanding would make an abbreviation's REACH
-      depend on where it was written while its NODE does not, and a reader
-      scanning for why `HTML` did or did not expand would have to find a
-      definition that renders nothing, possibly inside a collapsed container.
-      A definition that acts on the whole document should be written where the
-      whole document can see it. (carve#708, carve-php#708)
+      WHY NOT HOIST AN INERT NODE. The rejected alternative kept the hoist and
+      made a container-authored definition expand nothing: in the tree at
+      document level, but without effect. It loses information. Once hoisted,
+      an inert definition and a real one are the SAME wire shape, so a consumer
+      that decodes the tree expands what the parser did not -- §6's round trip
+      fails on a document the engine itself produced. The distinction has to be
+      recorded somewhere, and tree position records it for free; the
+      alternatives were a new wire field on every definition or an accepted
+      lossy round trip.
+
+      It also drops the author's line. All three engines rendered
+      `> *[HTML]: Hyper Text` as an EMPTY block quote, because the definition
+      was collected out of it and then rendered nothing. Text the author wrote
+      disappeared. Under this clause the line was never a definition, so
+      nothing is collected and nothing vanishes. (carve#708, carve-php#708,
+      carve-php#631)
 
       THE FORMATTER CONSEQUENCE IS ACCEPTED, NOT OVERLOOKED. Hoisting means
       PART 11's writer emits the definition after the container the author
@@ -4811,15 +4818,15 @@ EOF = (* end of file *) ;
 
       formats to the definition after an emptied `>`, and corpus
       `115-footnote-definition-inside-a-container-is-collected` pins the
-      collection it follows from. Extending the rule to abbreviations extends
-      that consequence; it does not introduce it.
+      collection it follows from. It is accepted for footnotes because a
+      footnote definition renders as a footnote either way, so the move costs
+      the author placement and nothing else.
 
-      THE ALTERNATIVE WAS TO NARROW THE RULE instead -- keep definitions where
-      they were written, for both kinds. It was rejected because it reverses a
-      pinned rule that ships today, and because the argument for hoisting is
-      not about convenience: a definition is metadata whose SCOPE is the
-      document, and a tree that nests document-scoped metadata inside a
-      container invites a consumer to treat it as container-scoped.
+      WHY THE SAME TRADE IS NOT ACCEPTED FOR ABBREVIATIONS. There the move
+      costs the author the LINE: an abbreviation definition renders nothing of
+      its own, so hoisting it out of a container empties the container instead
+      of relocating visible output. That is the difference between reordering
+      what the author wrote and deleting it.
 
       Definitions appear in DOCUMENT ORDER by source position. Numbering is a
       resolution result and stays on the reference (§5).

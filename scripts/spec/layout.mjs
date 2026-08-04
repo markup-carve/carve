@@ -531,7 +531,9 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     if (isColonParagraphInterrupt(line) || bareColonHasFollowingBody(lines, idx)) return true
     const fence = FENCE.exec(line)
     if (fence && hasCloser(lines, idx)) return true // I4
-    if (LINK_DEF.test(line) || FOOTNOTE_DEF.test(line) || ABBR_DEF.test(line)) return true // I5
+    // ABBR_DEF only at document level: elsewhere the line is paragraph text,
+    // so it neither opens a block nor interrupts one (PART 12 SS7).
+    if (LINK_DEF.test(line) || FOOTNOTE_DEF.test(line) || (top && ABBR_DEF.test(line))) return true // I5
     return false
   }
 
@@ -626,7 +628,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           !isBlank(lines[i] ?? '') &&
           bodyLines[bodyLines.length - 1] !== '' &&
           !startsVisibleBlock(lines[i]) &&
-          !LINK_DEF.test(lines[i]) && !FOOTNOTE_DEF.test(lines[i]) && !ABBR_DEF.test(lines[i]) &&
+          !LINK_DEF.test(lines[i]) && !FOOTNOTE_DEF.test(lines[i]) &&
           !BULLET.test(lines[i]) && !isOrderedMarkerLine(lines[i]) && !FENCE.test(lines[i]) &&
           !CAPTION.test(lines[i])
         ) {
@@ -641,7 +643,11 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
       }
       continue
     }
-    if ((m = ABBR_DEF.exec(line))) {
+    // PART 12 §7: recognized ONLY at document level. Inside a block quote, a
+    // list item or a div the line is ordinary paragraph text - an abbreviation
+    // rewrites every occurrence of its term with nothing at the use site
+    // pointing back, so it may not be written where quoted material lives.
+    if (top && (m = ABBR_DEF.exec(line))) {
       const term = m[1]
       if (term === '') throw new Refuse('empty abbreviation term')
       // LAST definition wins (PART 9R state), like linkDefs below. This was
@@ -744,7 +750,6 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         !startsVisibleBlock(cur) &&
         !LINK_DEF.test(cur) &&
         !FOOTNOTE_DEF.test(cur) &&
-        !ABBR_DEF.test(cur) &&
         !BULLET.test(cur) &&
         !isOrderedMarkerLine(cur) &&
         !FENCE.test(cur) &&
@@ -1006,8 +1011,8 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         // (carve-js#554, carve-php#652).
         if (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
             isColonParagraphInterrupt(l) || l[0] === '|' || l[0] === '{' ||
-            DEFLIST_TERM.test(l) || LINK_DEF.test(l) || FOOTNOTE_DEF.test(l) ||
-            ABBR_DEF.test(l)) qOpenPara = false
+            DEFLIST_TERM.test(l) || LINK_DEF.test(l) ||
+            FOOTNOTE_DEF.test(l)) qOpenPara = false
         else qOpenPara = true
       }
       while (i < n) {
@@ -1088,7 +1093,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
       if (inItem && para.length > 0 && matchMarker(lines[i])) break // SS24 C3
       if (para.length > 0) {
         // definitions interrupt and are consumed (SS10 I5)
-        if (LINK_DEF.test(lines[i]) || FOOTNOTE_DEF.test(lines[i]) || ABBR_DEF.test(lines[i])) break
+        if (LINK_DEF.test(lines[i]) || FOOTNOTE_DEF.test(lines[i]) || (top && ABBR_DEF.test(lines[i]))) break
         if (startsVisibleBlock(lines[i])) break // I1
         if (isTableRow(lines[i])) break // I1: valid table row
         {

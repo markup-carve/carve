@@ -26,9 +26,9 @@ Blocks that render to nothing
 ```
 
 ```
-:::
 *[HTML]: HyperText Markup Language
 
+:::
 body
 :::
 .
