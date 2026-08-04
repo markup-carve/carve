@@ -2521,6 +2521,62 @@ A genuine second prose paragraph still makes the list loose (and so does a blank
 
 :::
 
+An **invisible construct** does not loosen either, and for a plainer reason than L2: §17 L1 asks whether the item holds a blank-line-separated second *paragraph*, and a comment or a definition is not a paragraph - it renders nothing at all. An item wrapped in `<p>` because of a line that produces no output would be the blank line showing through.
+
+::: compare
+
+```carve
+- a
+
+  %% just a note
+```
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+```
+
+:::
+
+The same for a definition, which is collected and renders nothing where it stood.
+
+::: compare
+
+```carve
+- a
+
+  [r]: /u
+```
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+```
+
+:::
+
+A **sibling item after it** is a different question, and there the list is loose: L1's other clause asks whether an item is followed by a blank line before the next sibling marker, and it is - an invisible line in the gap does not fill it.
+
+::: compare
+
+```carve
+- a
+
+  %% just a note
+- b
+```
+
+```html
+<ul>
+  <li><p>a</p></li>
+  <li><p>b</p></li>
+</ul>
+```
+
+:::
+
 ## List continuation marker
 
 A lone `+` at the list marker column attaches the following flush-left block to the current item, with no blank line, keeping the list tight — useful for code blocks or tables you would rather not indent.

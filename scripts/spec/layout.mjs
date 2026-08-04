@@ -1328,6 +1328,11 @@ function collectItems(lines, i, list, state) {
     // into it (PART 1 S4, NO OPEN PARAGRAPH NO LAZY LINE; carve#576,
     // carve#582).
     let openPara = true
+    // A blank line was seen, and what followed it attached INVISIBLY (a comment,
+    // a definition). §17 L1's second clause - an item followed by a blank line
+    // before the next sibling marker - still applies when that sibling arrives,
+    // so the blank is remembered rather than consumed by the attachment.
+    let blankBeforeInvisible = false
     {
       const headText = head.text.trim()
       if (QUOTE.test(headText)) openPara = (QUOTE.exec(headText)[1] ?? '').trim() !== ''
@@ -1427,6 +1432,28 @@ function collectItems(lines, i, list, state) {
             i = j
             continue
           }
+          if (
+            COMMENT_LINE.test(dedented) ||
+            COMMENT_FENCE.test(dedented) ||
+            FOOTNOTE_DEF.test(dedented) ||
+            LINK_DEF.test(dedented) ||
+            ABBR_DEF.test(dedented)
+          ) {
+            // An INVISIBLE construct is not a second paragraph, and SS17 L1
+            // asks for one: "some item holds a blank-line-separated second
+            // PARAGRAPH". A comment or a definition renders nothing, so there
+            // is no second paragraph to wrap, and the item stays tight.
+            //
+            // This fell through to the paragraph branch below, so `- a` + blank
+            // + `  %% c` rendered `<li><p>a</p></li>` - an item wrapped because
+            // of a line that produces no output at all. carve-rs renders every
+            // one of these tight; carve-js does for two of the three.
+            itemLines.push('')
+            openPara = false
+            blankBeforeInvisible = true
+            i = j
+            continue
+          }
           // a second PARAGRAPH inside the item -> loose (SS17 L1)
           itemLines.push('')
           list.tight = false
@@ -1487,7 +1514,16 @@ function collectItems(lines, i, list, state) {
         i++
         continue
       }
-      if (nm && nm.indent <= baseIndent) break // sibling or outer list
+      if (nm && nm.indent <= baseIndent) {
+        // §17 L1, first clause: the item WAS followed by a blank line before
+        // this sibling marker - an invisible attachment in between does not
+        // undo that, because the clause is about the blank, not about what
+        // filled the gap.
+        if (blankBeforeInvisible && nm.indent === baseIndent && sameAxes(list, nm)) {
+          list.tight = false
+        }
+        break // sibling or outer list
+      }
       if (nm && nm.indent < contentCol && nm.indent > baseIndent && openPara && itemLines.length > 0) {
         // a marker BELOW the content column folds as lazy item text
         // (PART 9 SS24 C3; list markers never interrupt, SS10 I2)

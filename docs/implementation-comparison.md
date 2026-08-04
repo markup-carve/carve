@@ -6,26 +6,26 @@ same `.crv` / `.html` pairs and reports default conformance, optional Tier-2
 adapter coverage, rough CLI timing, and the extension hook surface each
 implementation exposes.
 
-## Snapshot (2026-08-03)
+## Snapshot (2026-08-04)
 
 > Run with all three implementations built from their own `main`. Regenerate any
 > time with `npm run compare:impls`. Timings are from one machine and mean
 > nothing across rows; the counts are the point, and
 > `tests/implementation-comparison-counts.test.mjs` fails when they stop
 > matching the corpus - which is how this page came to quote 302 pairs against a
-> corpus of 529, and again at 531, 532, 533, 535, 536, 539, 542, 544, 547, 548, 550, 552 and 553 and 554.
+> corpus of 529, and again at 531, 532, 533, 535, 536, 539, 542, 544, 547, 548, 550, 552, 553, 554 and 557.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>554 / 554</strong>
+    <strong>556 / 557</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>553 / 554</strong>
+    <strong>556 / 557</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>553 / 554</strong>
+    <strong>555 / 557</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -36,9 +36,9 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `4bd14d2` | `554 / 554` | `0` | `0` | `10.94` |
-| JS | `fb5d270` | `553 / 554` | `1` | `0` | `301.00` |
-| PHP | `caf1822` | `553 / 554` | `1` | `0` | `247.71` |
+| Rust | `de96505` | `556 / 557` | `1` | `0` | `21.69` |
+| JS | `e1d2f2b` | `556 / 557` | `1` | `0` | `57.77` |
+| PHP | `71dd027` | `555 / 557` | `2` | `0` | `52.75` |
 
 Spec commit: `8f56c1c`
 
@@ -294,18 +294,18 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=554 targets=html,markdown,plain,carve,ansi
-rust: pass=556/556 mismatch=0 error=0 skipped=0 runs=2770 avg_ms=10.94
-js: pass=555/556 mismatch=1 error=0 skipped=0 runs=2770 avg_ms=301.00
-php: pass=555/556 mismatch=1 error=0 skipped=0 runs=2770 avg_ms=247.71
-cross_impl_diffs=10
+profile=default/no-opt-in corpus=core corpus_pairs=557 targets=html,markdown,plain,carve,ansi
+rust: pass=558/559 mismatch=1 error=0 skipped=0 runs=2785 avg_ms=21.69
+js: pass=558/559 mismatch=1 error=0 skipped=0 runs=2785 avg_ms=57.77
+php: pass=557/559 mismatch=2 error=0 skipped=0 runs=2785 avg_ms=52.75
+cross_impl_diffs=12
 
 Target agreement (implementations compared against each other)
-html: compared=554 diffs=1 errors=0 fixtures=yes
-markdown: compared=554 diffs=1 errors=0 fixtures=1
-plain: compared=554 diffs=1 errors=0 fixtures=1
-carve: compared=554 diffs=6 errors=0 fixtures=none
-ansi: compared=554 diffs=1 errors=0 fixtures=none
+html: compared=557 diffs=3 errors=0 fixtures=yes
+markdown: compared=557 diffs=0 errors=0 fixtures=1
+plain: compared=557 diffs=0 errors=0 fixtures=1
+carve: compared=557 diffs=9 errors=0 fixtures=none
+ansi: compared=557 diffs=0 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix

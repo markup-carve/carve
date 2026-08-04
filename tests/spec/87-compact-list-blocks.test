@@ -43,3 +43,35 @@ Compact list blocks
   <li><p>next</p></li>
 </ul>
 ```
+
+```
+- a
+
+  %% just a note
+.
+<ul>
+  <li>a</li>
+</ul>
+```
+
+```
+- a
+
+  [r]: /u
+.
+<ul>
+  <li>a</li>
+</ul>
+```
+
+```
+- a
+
+  %% just a note
+- b
+.
+<ul>
+  <li><p>a</p></li>
+  <li><p>b</p></li>
+</ul>
+```
