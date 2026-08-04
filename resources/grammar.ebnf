@@ -4169,14 +4169,18 @@ EOF = (* end of file *) ;
       label was still a footnote. `footnote_label = {character - ']'}+` is
       one-or-more, so it never was: `[^]: %` is a LINK reference definition
       whose label is `^`, which carve-rs#488 settled and all three engines
-      follow. The rule is unchanged - an unused link definition survives the
-      non-HTML targets too - but stating it through an example the grammar's
-      own production contradicts made it unverifiable (carve#589).
+      follow. It is therefore an example of the kind this clause does NOT
+      cover, which is why it was replaced (carve#589).
 
-      Measured when this was written: carve-js and carve-php emit nothing on
-      either target and carve-rs emits the definition, so the two that agree
-      are the two that move. HTML agrees in all three and is unchanged.
-      (carve#550)
+      This paragraph used to end "the rule is unchanged - an unused link
+      definition survives the non-HTML targets too". That was true when
+      written and became false sixty lines up, where the clause was narrowed
+      to the definition kinds that have a node. Left in place it said the
+      opposite of its own clause, and an implementer entering at the `[^]: %`
+      example - the natural entry point, since it is what everyone measures
+      against - read the superseded half. It cost a round of work:
+      carve-php#702 item 8 was filed against the old reading and resolved to
+      no change once the contradiction was untangled. (carve#605)
 
   11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE. A resolved
       cross-reference is emitted as a Markdown link to the target heading's id,
