@@ -65,24 +65,32 @@ test('a target maps to the extension the corpus README documents', () => {
     markdown: 'md',
     plain: 'txt',
     ansi: 'ansi',
+    carve: 'fmt',
   })
 })
 
 test('a target with no expected-output extension is not asked for a filename', () => {
-  // `carve` is deliberately absent from TARGET_EXTENSIONS, and expectedFileFor
-  // throws on it by design. Every caller therefore has to check FIRST: the
-  // fixture rule for core cases did not, and `compare:impls` died on the first
-  // document of every default run with `unknown target 'carve'` - a crash on
-  // the happy path, shipped because the run I checked passed --targets=.
-  assert.throws(() => expectedFileFor('01-emphasis', 'carve'), /unknown target 'carve'/)
-  assert.equal(TARGET_EXTENSIONS.carve, undefined)
+  // The throw is what stops a manifest typo from silently pairing a case with
+  // the wrong file. It was `carve` that exercised this: the fixture rule for
+  // core cases asked for its filename before it had one, and `compare:impls`
+  // died on the first document of every default run with `unknown target
+  // 'carve'` - a crash on the happy path, shipped because the run I checked
+  // passed --targets=.
+  assert.throws(() => expectedFileFor('01-emphasis', 'nonsense'), /unknown target 'nonsense'/)
+  assert.equal(TARGET_EXTENSIONS.nonsense, undefined)
 })
 
-test('carve is not an expected-output target', () => {
-  // Carve-source expectations live in tests/corpus-roundtrip/. A second home
-  // would put two files named `NN-slug.crv` in one directory, one the input.
-  assert.equal(TARGET_EXTENSIONS.carve, undefined)
-  assert.throws(() => expectedFileFor('01-example', 'carve'), /unknown target 'carve'/)
+test('carve pairs with .fmt, which is not a .crv', () => {
+  // The canonical writer HAS a fixture home now. It had none while the
+  // objection stood that a second home would put two `NN-slug.crv` files in one
+  // directory - true of that extension, not of the target. `.fmt` collides with
+  // nothing, and every `.crv` walker in the repo still sees only inputs.
+  //
+  // What the absence cost: `carve: compared=557 diffs=9 fixtures=none`. Nine
+  // disagreements with no way to say which engine was wrong.
+  assert.equal(TARGET_EXTENSIONS.carve, 'fmt')
+  assert.equal(expectedFileFor('01-example', 'carve'), '01-example.fmt')
+  assert.ok(!expectedFileFor('01-example', 'carve').endsWith('.crv'))
 })
 
 test('an entry without a target pins html', () => {
@@ -146,16 +154,18 @@ test('every compared target either has a fixture rule or is named as having none
       `${target} has an expected-file rule but is never compared`,
     )
   }
-  // Exactly one target is compared without a fixture, and it is `carve`:
-  // Carve-source expectations live in tests/corpus-roundtrip/, because a
-  // second home would put two `NN-slug.crv` files in one directory.
-  assert.deepEqual(fixturelessTargets(), ['carve'])
+  // Every compared target can now carry an expected file. This is reported
+  // rather than required: a target added to COMPARISON_TARGETS without an
+  // extension is compared engine-against-engine only, which is a weaker check
+  // and should be a deliberate choice, not a default nobody noticed.
+  assert.deepEqual(fixturelessTargets(), [])
 })
 
 test('asking for a fixtureless target\'s filename is still an error', () => {
-  // The throw is load-bearing for manifest typos - it must not be softened
-  // into an html fallback, which would silently pair a case with the wrong
-  // file. Callers that compare a fixtureless target skip the lookup instead.
+  // Vacuous while every target has an extension, and kept for the day one does
+  // not: the throw must not be softened into an html fallback, which would
+  // silently pair a case with the wrong file. Callers that compare a
+  // fixtureless target skip the lookup instead.
   for (const target of fixturelessTargets()) {
     assert.throws(() => expectedFileFor('01-example', target), /unknown target/)
   }

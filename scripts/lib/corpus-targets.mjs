@@ -14,15 +14,27 @@
  */
 
 /*
- * `carve` is deliberately absent. Carve-source expectations live in
- * tests/corpus-roundtrip/, and giving them a second home here would mean two
- * files named `NN-slug.crv` in one directory, one of them the input.
+ * `carve` - the canonical writer - pairs with `.fmt`, NOT with `.crv`.
+ *
+ * It was absent entirely until now, on the grounds that a second home for
+ * Carve-source expectations would put two files named `NN-slug.crv` in one
+ * directory. That reasoning was about the EXTENSION, not about the target: a
+ * distinct suffix has no collision, and `.fmt` keeps every `.crv` walker in the
+ * repo (corpus tests, the generator, the roundtrip runner) seeing exactly the
+ * inputs it saw before.
+ *
+ * What being absent cost: `compare:impls` reported the writer as
+ * `carve: compared=557 diffs=9 fixtures=none`. Nine disagreements between the
+ * three engines, and no way to say which one was right - the only check on the
+ * writer was the engines agreeing with each other, which says nothing when they
+ * do agree and cannot adjudicate when they do not.
  */
 export const TARGET_EXTENSIONS = {
   html: 'html',
   markdown: 'md',
   plain: 'txt',
   ansi: 'ansi',
+  carve: 'fmt',
 }
 
 export const DEFAULT_TARGET = 'html'
@@ -30,19 +42,19 @@ export const DEFAULT_TARGET = 'html'
 /*
  * Every target the engines are compared on.
  *
- * A SUPERSET of `TARGET_EXTENSIONS`: `carve` is compared engine-against-engine
- * but has no expected file here, so the two lists are not interchangeable and
- * a runner that treats them as one asks the pairing rule for a filename that
- * does not exist. carve#590 did exactly that and every `compare:impls` run
- * died on the first document.
+ * Now the same set as `TARGET_EXTENSIONS`, but they stay separate lists on
+ * purpose: they answer different questions ("is this compared?" and "where does
+ * its expected output live?"), and collapsing them is what carve#590 did - it
+ * asked the pairing rule for a filename the map did not have, and every
+ * `compare:impls` run died on the first document.
  *
- * It lives beside the extensions map so the difference between "compared" and
- * "has a fixture" is visible in one place, and tests/corpus-targets.test.mjs
- * pins what the difference is allowed to be.
+ * `fixturelessTargets()` returning empty is the current state, not a guarantee.
+ * A target added here without an extension is compared engine-against-engine
+ * only, which tests/corpus-targets.test.mjs reports rather than forbids.
  */
 export const COMPARISON_TARGETS = ['html', 'markdown', 'plain', 'carve', 'ansi']
 
-/** Targets compared without an expected file - `carve` lives in corpus-roundtrip/. */
+/** Targets compared with no expected file anywhere - engine agreement only. */
 export function fixturelessTargets() {
   return COMPARISON_TARGETS.filter((t) => !Object.hasOwn(TARGET_EXTENSIONS, t))
 }

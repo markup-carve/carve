@@ -45,10 +45,18 @@ change. The expected file's extension follows the target:
 | `markdown` | `NN-slug.md` | the Markdown target |
 | `plain` | `NN-slug.txt` | the plain-text target |
 | `ansi` | `NN-slug.ansi` | the ANSI target |
+| `carve` | `NN-slug.fmt` | the canonical writer |
 
-There is deliberately no `carve` target here: Carve-source expectations live in
-[`../corpus-roundtrip/`](../corpus-roundtrip/), and a second home would put two
-files named `NN-slug.crv` in this directory, one of them the input.
+`carve` pairs with `.fmt` rather than `.crv`. The objection that blocked it -
+that a second home would put two files named `NN-slug.crv` in this directory,
+one of them the input - was about the extension, not the target: `.fmt`
+collides with nothing, and every `.crv` walker in the repo still sees only
+inputs. `../corpus-roundtrip/` keeps its own documents; this is for pinning the
+writer's output on a case the corpus already has.
+
+Until it had one, `compare:impls` reported `carve: diffs=9 fixtures=none`:
+nine disagreements between the three writers with nothing able to say which was
+right. A `.fmt` file turns each into a named engine's mismatch.
 
 Why this exists: until #360 **no corpus pinned any target but HTML**, so two
 engines could render the same document to different Markdown and nothing
