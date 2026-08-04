@@ -500,6 +500,31 @@ export function parse(src) {
   return { blocks, ...state }
 }
 
+/*
+ * The lines past MAX_NESTING_DEPTH, grouped as ordinary paragraphs: runs of
+ * non-blank lines split on blank lines, each stripped of trailing whitespace.
+ * Blank-only input yields no blocks.
+ */
+function flattenPastCap(lines) {
+  const blocks = []
+  let run = []
+  const flush = () => {
+    if (run.length === 0) return
+    // Same node shape a normal paragraph gets: { t: 'para', lines }. The
+    // trailing whitespace of the LAST line goes, like any paragraph's.
+    const trimmed = [...run]
+    trimmed[trimmed.length - 1] = trimmed[trimmed.length - 1].replace(/[ \t]+$/, '')
+    if (trimmed.join('').trim() !== '') blocks.push({ t: 'para', lines: trimmed })
+    run = []
+  }
+  for (const line of lines) {
+    if (line.trim() === '') { flush(); continue }
+    run.push(line)
+  }
+  flush()
+  return blocks
+}
+
 // Depth-guarded entry: every block-container recursion re-enters here, so a
 // single counter on `state` bounds the nesting uniformly (PART 26). The
 // counter is incremented on entry and decremented on exit (try/finally) so
@@ -508,7 +533,18 @@ function parseBlocks(lines, state, top, inItem = false) {
   state.blockDepth = (state.blockDepth ?? 0) + 1
   if (state.blockDepth > MAX_NESTING_DEPTH) {
     state.blockDepth--
-    throw new Refuse('block nesting exceeds MAX_NESTING_DEPTH')
+    // PART 9 SS25: past the cap an opener DEGRADES to literal paragraph text
+    // rather than recursing - and being ordinary paragraph text, it groups by
+    // the ordinary paragraph rule. Consecutive lines form one paragraph, ending
+    // at the first blank line, with no trailing whitespace carried in
+    // (carve#494, carve#547).
+    //
+    // This used to Refuse, which is a legitimate answer for a construct outside
+    // the executable subset and the WRONG one here: the degrade path is not an
+    // exotic construct, it is what SS25 says every container does past the cap,
+    // and refusing it meant the one implementation this repository owns had no
+    // answer for the clause it had just written.
+    return flattenPastCap(lines)
   }
   try {
     return parseBlocksImpl(lines, state, top, inItem)
