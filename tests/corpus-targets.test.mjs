@@ -15,9 +15,11 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
+  COMPARISON_TARGETS,
   DEFAULT_TARGET,
   TARGET_EXTENSIONS,
   expectedFileFor,
+  fixturelessTargets,
   targetNames,
   targetOf,
 } from '../scripts/lib/corpus-targets.mjs'
@@ -115,5 +117,36 @@ test('a non-html case does not also carry an html fixture', () => {
       !existsSync(resolve(corpusDir, `${slug}.html`)),
       `${slug} pins target '${target}' but also has an html fixture`,
     )
+  }
+})
+
+test('every compared target either has a fixture rule or is named as having none', () => {
+  // The two lists are NOT interchangeable. `COMPARISON_TARGETS` is what the
+  // engines are compared on; `TARGET_EXTENSIONS` is what has an expected file
+  // here. Treating one as the other means asking `expectedFileFor` for a name
+  // it is designed to refuse, and it refuses by throwing - correctly, because
+  // for a manifest entry an unknown target is a typo.
+  //
+  // carve#590 moved that call ahead of the check that used to shield it, and
+  // `unknown target 'carve' for '01-emphasis-10'` killed every compare:impls
+  // run, main included, until the nightly conformance job reported it.
+  for (const target of targetNames()) {
+    assert.ok(
+      COMPARISON_TARGETS.includes(target),
+      `${target} has an expected-file rule but is never compared`,
+    )
+  }
+  // Exactly one target is compared without a fixture, and it is `carve`:
+  // Carve-source expectations live in tests/corpus-roundtrip/, because a
+  // second home would put two `NN-slug.crv` files in one directory.
+  assert.deepEqual(fixturelessTargets(), ['carve'])
+})
+
+test('asking for a fixtureless target\'s filename is still an error', () => {
+  // The throw is load-bearing for manifest typos - it must not be softened
+  // into an html fallback, which would silently pair a case with the wrong
+  // file. Callers that compare a fixtureless target skip the lookup instead.
+  for (const target of fixturelessTargets()) {
+    assert.throws(() => expectedFileFor('01-example', target), /unknown target/)
   }
 })

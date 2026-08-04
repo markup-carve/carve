@@ -4,7 +4,13 @@ import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSy
 import { tmpdir } from 'node:os'
 import { basename, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { DEFAULT_TARGET, expectedFileFor, targetOf } from './lib/corpus-targets.mjs'
+import {
+  COMPARISON_TARGETS,
+  DEFAULT_TARGET,
+  TARGET_EXTENSIONS,
+  expectedFileFor,
+  targetOf,
+} from './lib/corpus-targets.mjs'
 import { phpDir, rustDir } from './lib/engine-locations.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
@@ -47,7 +53,7 @@ const isOptional = corpusName === 'optional'
 // committing four more expected files per corpus case would not add to it. In
 // the optional corpus each case pins its own target and carries the matching
 // expected file (tests/corpus-optional/README.md).
-const ALL_TARGETS = ['html', 'markdown', 'plain', 'carve', 'ansi']
+const ALL_TARGETS = COMPARISON_TARGETS
 const targetsArg = process.argv.find((a) => a.startsWith('--targets='))
 const targetsRequest = targetsArg ? targetsArg.slice('--targets='.length) : 'all'
 let targets =
@@ -509,6 +515,20 @@ const activeTargets = ALL_TARGETS.filter((target) =>
  * it would quietly downgrade a scored case to an engines-agree check.
  */
 function expectedFor(pair, target) {
+  // The `carve` target has no expected file in EITHER corpus by design:
+  // Carve-source expectations live in tests/corpus-roundtrip/, because a
+  // second home would put two files named `NN-slug.crv` in one directory, one
+  // of them the input (scripts/lib/corpus-targets.mjs says so at the top of
+  // TARGET_EXTENSIONS). So it is an engines-agree check and there is nothing
+  // to look up.
+  //
+  // Asking the pairing rule for its filename THROWS, which is the right answer
+  // for a manifest typo and the wrong one for the target deliberately left
+  // out. #590 moved that call to the first line of this function, ahead of the
+  // `target !== DEFAULT_TARGET` check that used to shield it, so every run
+  // died on the first document with `unknown target 'carve'` - including the
+  // scheduled AST conformance job, which is where it surfaced.
+  if (!TARGET_EXTENSIONS[target]) return null
   const optionalPath = join(corpusDir, expectedFileFor(pair.slug, target))
   if (!isOptional && target !== DEFAULT_TARGET) {
     return existsSync(optionalPath) ? readFileSync(optionalPath, 'utf8').trim() : null

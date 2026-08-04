@@ -27,6 +27,26 @@ export const TARGET_EXTENSIONS = {
 
 export const DEFAULT_TARGET = 'html'
 
+/*
+ * Every target the engines are compared on.
+ *
+ * A SUPERSET of `TARGET_EXTENSIONS`: `carve` is compared engine-against-engine
+ * but has no expected file here, so the two lists are not interchangeable and
+ * a runner that treats them as one asks the pairing rule for a filename that
+ * does not exist. carve#590 did exactly that and every `compare:impls` run
+ * died on the first document.
+ *
+ * It lives beside the extensions map so the difference between "compared" and
+ * "has a fixture" is visible in one place, and tests/corpus-targets.test.mjs
+ * pins what the difference is allowed to be.
+ */
+export const COMPARISON_TARGETS = ['html', 'markdown', 'plain', 'carve', 'ansi']
+
+/** Targets compared without an expected file - `carve` lives in corpus-roundtrip/. */
+export function fixturelessTargets() {
+  return COMPARISON_TARGETS.filter((t) => !Object.hasOwn(TARGET_EXTENSIONS, t))
+}
+
 export function targetNames() {
   return Object.keys(TARGET_EXTENSIONS)
 }
