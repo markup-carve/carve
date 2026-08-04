@@ -24,4 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-176-a-marker-separator-is-a-space-never-a-tab  carve#559 landed the rule; carve-js has not shipped it
