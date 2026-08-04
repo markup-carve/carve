@@ -1,0 +1,15 @@
+A definition below every content column folds as text
+
+```
+- - a
+ [^f]: x
+.
+<ul>
+  <li>
+    <ul>
+      <li>a
+[^f]: x</li>
+    </ul>
+  </li>
+</ul>
+```

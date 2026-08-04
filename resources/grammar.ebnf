@@ -3154,6 +3154,32 @@ EOF = (* end of file *) ;
              every other line, likewise, never nests -- with no blank it
              lazily continues the open item paragraph (§10 I2), and after a
              blank it ends the item and parses at DOCUMENT level.
+
+             AN INVISIBLE LINE FOLDS LIKE ANY OTHER -- NORMATIVE. "Every other
+             line" includes the ones that are not block-SHAPED: a link
+             reference, footnote or abbreviation definition below the column
+             folds as TEXT, and registers nothing. It is text, so a `[^f]`
+             elsewhere in the document stays literal; half-folding it -- text
+             on the page, definition in the tables -- is not an option the
+             rule offers.
+
+               - - a
+                [^f]: x
+
+             renders `a` and the literal `[^f]: x` inside the inner item. The
+             failure this guards against is not a wrong shape but a
+             DISAPPEARANCE: a definition that fell past the fold branch was
+             pushed trimmed into the item stream, landed at the item's own
+             column 0, and was skipped there as already-extracted, so the
+             author's line rendered as nothing at all (carve-php#721).
+
+             A COMMENT IS THE ONE EXCEPTION -- NORMATIVE. `%%` is recognized
+             at ANY column, above the content column, at it, or below it, and
+             stays invisible. Folding it would make the comment VISIBLE, which
+             is the one outcome a comment may never have, and an indented
+             comment at the top level is already invisible for the same
+             reason. It does not close the item either: a following line
+             continues the item paragraph across it. (carve#618)
            - AT content_column: dedented to the body's column 0, a block
              opener nests and a list marker opens a sublist.
            - ABOVE content_column: the residual indent means the line is no
