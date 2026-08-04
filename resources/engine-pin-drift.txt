@@ -25,3 +25,4 @@
 #
 # Format: <slug><space><space><reason>
 184-a-caret-is-a-reference-label-not-an-empty-footnote  the pinned build reads `[^]: /u` as an empty-label footnote definition and drops it, so the reference stays literal; `reference_label` admits `^` and `footnote_label` is one-or-more, which makes it a link reference definition (carve-js#597 family, carve-rs#511 item 6)
+186-a-comment-fence-is-a-comment-at-any-column-too  carve-js drops both comment-fence delimiters but renders the enclosed BODY, so a comment shows its own contents (carve-js#630)
