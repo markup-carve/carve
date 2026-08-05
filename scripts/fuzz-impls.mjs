@@ -24,12 +24,21 @@
  * DETERMINISTIC. A seed reproduces a run exactly, so a finding can be handed to
  * someone else as `--seed=N`.
  *
- * NOT A GATE, deliberately. Measured against all three engines at main on
- * 2026-08-03, adversarial input still diverges on roughly a fifth of generated
- * documents (43 of 200 on seed 101). Wiring that into CI would produce a job
- * that is permanently red, and a permanently red job gets muted - which is the
- * failure mode this repo has spent a lot of effort removing. Run it, shrink
- * what it finds, file that. See carve#510 for the standing count.
+ * NOT A GATE, deliberately. Adversarial input still diverges often enough that
+ * wiring this into CI would produce a permanently red job, and a permanently red
+ * job gets muted - the failure mode this repo has spent a lot of effort
+ * removing. Run it, shrink what it finds, file that. See carve#510 for the
+ * standing count.
+ *
+ * The rate is falling and the number here is re-measured rather than remembered:
+ *
+ *   2026-08-03  seed=101  200 documents  43 divergences  (~21%)
+ *   2026-08-05  seed=101  200 documents  16 divergences  (~8%)
+ *
+ * Same seed, same count, so the two are comparable; the second is against
+ * carve-js 2d51125, carve-rs 1a594f0 and carve-php c708f0d. Anyone quoting a
+ * rate should re-run it, because a stale one here would be exactly the kind of
+ * unmeasured claim the rest of this repo gates against.
  *
  * TARGETS. `--target=` picks what is compared; HTML by default. Every finding
  * above came from HTML because that was the only thing this rendered - and the
@@ -199,8 +208,34 @@ function render(source) {
   return { js, rs: cli(rustBinary), php: cli(phpBinary) }
 }
 
+/*
+ * A THROW IS NOT AN OUTPUT.
+ *
+ * `render` turns a crash into the string `ERROR: ...` and everything downstream
+ * compares it like any other render, so three engines crashing IDENTICALLY read
+ * as agreement and the run reports them as clean. A crash on a generated
+ * document is a defect whatever the other engines do - there is no invalid
+ * Carve, so nothing here is a bad input - and it is the one finding class that
+ * needs no judgement about which engine is right.
+ *
+ * Counted separately for that reason. Zero today across 1034 renders (seed 7),
+ * which is why this is accounting rather than a gate: it exists so the NEXT one
+ * is visible instead of being filed under agreement.
+ */
+const threw = (out) => typeof out === 'string' && out.startsWith('ERROR:')
+const crashes = { js: 0, rs: 0, php: 0, unanimous: 0, renders: 0, cases: [] }
+
 const diverges = (source) => {
   const { js, rs, php } = render(source)
+  crashes.renders += 1
+  if (threw(js)) crashes.js += 1
+  if (threw(rs)) crashes.rs += 1
+  if (threw(php)) crashes.php += 1
+  if (threw(js) && threw(rs) && threw(php)) {
+    crashes.unanimous += 1
+    if (crashes.cases.length < 5) crashes.cases.push(source)
+  }
+
   return js !== rs || js !== php
 }
 
@@ -266,6 +301,15 @@ for (const f of findings) {
 console.log(
   `target=${target} seed=${seed} generated=${generated} diverged=${diverged} distinct_minimal=${findings.length}`,
 )
+console.log(
+  `crashes over ${crashes.renders} render(s): js=${crashes.js} rs=${crashes.rs} ` +
+    `php=${crashes.php} unanimous=${crashes.unanimous}`,
+)
+if (crashes.unanimous > 0) {
+  // The case the divergence count cannot show: all three threw, so they agreed.
+  console.log('\nEvery engine threw on these - agreement, and still a defect:')
+  for (const source of crashes.cases) console.log(`  ${JSON.stringify(source)}`)
+}
 if (findings.length > 0) {
   console.error(
     `\n${findings.length} distinct divergence(s). Reproduce with --target=${target} --seed=${seed} --count=${count}.`,
