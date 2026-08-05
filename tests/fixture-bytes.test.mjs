@@ -57,6 +57,15 @@ const INVENTORY = [
   // heading id unchanged instead of being slugged to a separator, and the
   // id carries the character rather than an entity.
   { base: '217-a-heading-id-keeps-a-non-ascii-space', crv: ['NBSP'], html: ['NBSP'] },
+  // The ZERO WIDTH SPACE is the case, on BOTH sides: §25's scheme probe stops
+  // at whitespace-plus-BOM, so this destination keeps the character the author
+  // wrote and renders it into the href. Strip it and the fixture asserts
+  // nothing - it becomes an ordinary denied-scheme case (carve#782).
+  {
+    base: '238-a-format-character-before-a-scheme-is-not-stripped-and-is-inert',
+    crv: ['ZWSP'],
+    html: ['ZWSP'],
+  },
 ]
 
 function scan(text) {
