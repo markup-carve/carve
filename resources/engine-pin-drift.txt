@@ -25,3 +25,4 @@
 #
 # Format: <slug><space><space><reason>
 221-a-heading-reference-folds-unicode-normalization-but-not-compatibility  the pinned build does not NFC-normalize the heading-reference key, so the precomposed reference misses the decomposed heading; fixed by carve-js#686, drops out at the next release
+222-a-tab-as-the-first-character-of-a-definition-term  the pinned build reads the tab after the marker's separator space as a paragraph opener instead of stripping it as ordinary leading whitespace, so no term forms yet; carve#698, drops out once carve-js ships the fix

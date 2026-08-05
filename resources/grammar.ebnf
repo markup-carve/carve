@@ -477,7 +477,22 @@ bullet_marker = '-' | '*' ;  (* `+` is NOT a bullet in Carve -- it is the list
    sentence above exists to prevent. Three engines carried three answers
    (paragraph, `<dt></dt>`, and `<dt> </dt>`) with every gate green, because the
    corpus case pinned bullets only. Pinned now by corpus
-   content-less-marker-is-not-a-list-2 (carve#512). *)
+   content-less-marker-is-not-a-list-2 (carve#512).
+
+   A TAB AS THE FIRST CHARACTER OF CONTENT is a different question from the one
+   above -- NORMATIVE. There the separator space itself is present, so the
+   marker is satisfied and a term forms; the tab is not part of the separator
+   at all, it is the first character of the term's inline content. That tab is
+   ordinary leading whitespace, and is stripped like any other leading
+   whitespace in that position -- it does not appear in the rendered `<dt>`,
+   the same way a bullet's own extra separator whitespace never reaches the
+   item's content: content_column is where the item's content actually
+   STARTS (PART 9 §24 C3), so anything before it, space or tab alike, is
+   structural, not text. This is NOT the TABS IN CODE rule (PART 2, above):
+   that verbatim-preservation guarantee covers fenced code content and inline
+   code spans only, never a term's or a paragraph's inline content, so
+   nothing protects this tab. `::` + space + TAB + `x` therefore renders
+   `<dl><dt>x</dt></dl>` (carve#698). *)
 
 ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, [item_attributes], space, list_item_content ;
