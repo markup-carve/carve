@@ -525,10 +525,15 @@ function renderTable(node, depth, ctx) {
 function resolveImageRef(parsed, ctx, literal) {
   const { label, alt, attrList } = parsed
   if (typeof alt !== 'string') return literal
-  // Keyed exactly as a link reference is (carve#648): the label AS WRITTEN,
-  // whitespace collapsed. `alt` is the source string here, not the rendered
-  // text, so the two paths agree - which is the point of this change.
-  const key = label ?? alt.trim().replace(/\s+/g, ' ')
+  // Keyed exactly as a link reference is (carve#648): the label AS WRITTEN.
+  // `alt` is the source string here, not the rendered text, so the two paths
+  // agree - which is the point of that change.
+  //
+  // EXACT, not trimmed or collapsed (§6, PART 9R R1: "case-sensitive, no
+  // whitespace folding"). Folding here matched `![ a  b][]` against `[a b]` and
+  // failed to match the identical `[ a  b]` - backwards in both directions from
+  // all three engines (carve#708).
+  const key = label ?? alt
   const def = ctx.linkDefs.get(key)
   if (!def) return `![${alt}][${label ?? ''}]`
   const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
@@ -553,12 +558,17 @@ function resolveRefs(html, ctx) {
     const { label, text, source, attrList, img } = parsed
     if (img) return resolveImageRef(parsed, ctx, _)
     if (typeof text !== 'string') return _
-    // A collapsed reference is keyed by the label AS WRITTEN (whitespace
-    // collapsed), the same spelling a definition line registers. The rendered
-    // text is a different string whenever the label carries markup, and keying
-    // on it inverted the rule in both directions (carve#648).
-    const key =
-      label ?? (typeof source === 'string' ? source.trim().replace(/\s+/g, ' ') : stripTags(text))
+    // A collapsed reference is keyed by the label AS WRITTEN, the same spelling
+    // a definition line registers. The rendered text is a different string
+    // whenever the label carries markup, and keying on it inverted the rule in
+    // both directions (carve#648).
+    //
+    // AS WRITTEN means EXACT - not trimmed, not collapsed (§6, PART 9R R1:
+    // "case-sensitive, no whitespace folding"). This is the COLLAPSED form only;
+    // the explicit `[text][ref]` form was always exact here, which is how half
+    // the clause drifted unnoticed (carve#708). The heading fallback below stays
+    // deliberately looser - see `refKey`.
+    const key = label ?? (typeof source === 'string' ? source : stripTags(text))
     const def = ctx.linkDefs.get(key)
     if (!def) {
       // R1 IMPLICIT HEADING FALLBACK. Link definitions win the tie above, so

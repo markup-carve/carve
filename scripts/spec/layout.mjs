@@ -1256,7 +1256,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           // from a resolving image in the other.
           pnode.pendingRef =
             refImage[1] === ''
-              ? para[0].slice(2, para[0].indexOf(']')).trim().replace(/\s+/g, ' ')
+              ? para[0].slice(2, para[0].indexOf(']'))
               : refImage[1]
           pnode.captionSrc = lines[j].replace(/^[ \t]+/, '').replace(/[ \t]+$/, '')
         }
