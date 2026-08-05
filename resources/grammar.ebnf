@@ -3461,7 +3461,27 @@ EOF = (* end of file *) ;
         before matching the scheme, so an obfuscated `<U+202F>javascript:`
         destination cannot slip past the denylist. The corpus pins the
         U+202F case (docs/examples.md "Scheme probe strips Unicode
-        whitespace"). A `data:` exception for images, if offered, MUST be
+        whitespace").
+
+        THE CLASS STOPS THERE ON PURPOSE, and the reason is a property of URL
+        parsing rather than a judgement about which characters look
+        suspicious. The WHATWG URL parser strips leading C0 controls and
+        SPACE before reading a scheme, and nothing else. A destination
+        beginning with any other format character -- ZERO WIDTH SPACE
+        (U+200B), LEFT-TO-RIGHT MARK (U+200E), WORD JOINER (U+2060), SOFT
+        HYPHEN (U+00AD) -- therefore FAILS to parse as a URL at all, and a
+        consumer resolving it against a base gets a relative path, never a
+        `javascript:` navigation. Measured against the WHATWG parser: each of
+        those prefixes yields a parse failure, while a TAB or SPACE prefix
+        yields `javascript:` -- which is exactly the set already stripped.
+
+        So the probe strips what an eventual URL parser would strip (plus the
+        Unicode spaces and the BOM, which some parsers historically tolerated),
+        and it deliberately does NOT strip the wider `Cf` category: a
+        `<U+200B>javascript:` destination stays in the document as written and
+        is inert where it lands. Widening the class to all of `Cf` would blank
+        destinations that were never dangerous, and would make the rendered
+        `href` differ from the author's bytes for no gain (carve#782). A `data:` exception for images, if offered, MUST be
         opt-in. An attribute-block `href`/`src` override (PART 4) MUST NOT
         reintroduce a rejected scheme.
 

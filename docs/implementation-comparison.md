@@ -17,43 +17,39 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>626 / 637</strong>
+    <strong>634 / 638</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>632 / 637</strong>
+    <strong>635 / 638</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>633 / 637</strong>
+    <strong>636 / 638</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>21</strong>
+    <strong>6</strong>
     <span>cross-implementation diffs</span>
   </div>
 </div>
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `8869fb0` | `626 / 637` | `11` | `0` | `2.89` |
-| JS | `774d108` | `632 / 637` | `5` | `0` | `70.32` |
-| PHP | `db024e8` | `633 / 637` | `4` | `0` | `64.65` |
+| Rust | `2f4bb02` | `634 / 638` | `4` | `0` | `2.57` |
+| JS | `a89017d` | `635 / 638` | `3` | `0` | `61.46` |
+| PHP | `f3eec4f` | `636 / 638` | `2` | `0` | `56.84` |
 
 Spec commit: `b539d14`, plus the corpus case this change adds
 
-The engines are behind on three clauses that landed this week, which is what a
-spec-first corpus looks like between a rule and three ports catching up.
+The engines have caught up on the clauses that were ahead of them in the last
+snapshot: the synthesized-backlink cases (carve#799) and the collected-definition
+cases (carve#801) all pass in all three now.
 
-`225-a-footnote-body-s-last-block-...` is the synthesized-backlink clause
-(carve#799): carve-rs has none of it, carve-js has one shape left, carve-php has
-it. `226`/`227`/`228` are the collected-definition clauses (carve#801), where
-carve-rs is behind on three and the other two on one each.
-
-`16-reference-link-4` and
-`195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column`
-diverge on the `carve` target only - the parse agrees in all three and what
-differs is the canonical spelling the formatter writes back (carve#787).
+What is left is the `carve` target: `16-reference-link-4` and
+`195-a-definition-inside-a-container-...` in all three, plus two more in
+carve-rs. The parse agrees everywhere and what differs is the canonical spelling
+the formatter writes back (carve#787).
 
 The counts here are documents, not runs: an engine that misses one case on two
 targets is one document behind, not two.
@@ -391,41 +387,30 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=637 targets=html,markdown,plain,carve,ansi
-rust: pass=638/649 mismatch=11 error=0 skipped=0 runs=3185 avg_ms=2.89
+profile=default/no-opt-in corpus=core corpus_pairs=638 targets=html,markdown,plain,carve,ansi
+rust: pass=646/650 mismatch=4 error=0 skipped=0 runs=3190 avg_ms=2.57
   mismatch: carve 16-reference-link-4
   mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
-  mismatch: html 225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-2
-  mismatch: html 225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-3
-  mismatch: html 225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-4
-  mismatch: html 225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-5
-  mismatch: html 225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink
   mismatch: html 226-a-definition-attached-by-a-continuation-marker-is-collected-and-the-item-keeps-no-trace
-  mismatch: html 227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace-2
-  mismatch: html 227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace
   mismatch: html 228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block
-  mismatching documents: 11
-js: pass=644/649 mismatch=5 error=0 skipped=0 runs=3185 avg_ms=70.32
-  mismatch: carve 16-reference-link-4
-  mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
-  mismatch: html 225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-5
-  mismatch: html 227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace
-  mismatch: html 228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block
-  mismatching documents: 5
-php: pass=645/649 mismatch=4 error=0 skipped=0 runs=3185 avg_ms=64.65
-  mismatch: carve 16-reference-link-4
-  mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
-  mismatch: html 227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace-2
-  mismatch: html 227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace
   mismatching documents: 4
-cross_impl_diffs=21
+js: pass=647/650 mismatch=3 error=0 skipped=0 runs=3190 avg_ms=61.46
+  mismatch: carve 16-reference-link-4
+  mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
+  mismatch: html 228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block
+  mismatching documents: 3
+php: pass=648/650 mismatch=2 error=0 skipped=0 runs=3190 avg_ms=56.84
+  mismatch: carve 16-reference-link-4
+  mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
+  mismatching documents: 2
+cross_impl_diffs=6
 
 Target agreement (implementations compared against each other)
-html: compared=637 diffs=9 errors=0 fixtures=yes
-markdown: compared=637 diffs=2 errors=0 fixtures=1
-plain: compared=637 diffs=2 errors=0 fixtures=1
-carve: compared=637 diffs=6 errors=0 fixtures=10
-ansi: compared=637 diffs=2 errors=0 fixtures=none
+html: compared=638 diffs=2 errors=0 fixtures=yes
+markdown: compared=638 diffs=0 errors=0 fixtures=1
+plain: compared=638 diffs=0 errors=0 fixtures=1
+carve: compared=638 diffs=4 errors=0 fixtures=10
+ansi: compared=638 diffs=0 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix

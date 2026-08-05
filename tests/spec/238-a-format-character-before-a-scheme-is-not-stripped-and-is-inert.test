@@ -1,0 +1,7 @@
+A format character before a scheme is not stripped, and is inert
+
+```
+[x](​javascript:alert(1))
+.
+<p><a href="​javascript:alert(1)">x</a></p>
+```
