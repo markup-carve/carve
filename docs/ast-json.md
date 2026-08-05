@@ -223,6 +223,37 @@ the text they claim.
 that loses a field is not a lossy convenience; it is a consumer breaking silently
 one document later. Both halves are checked over the whole corpus.
 
+## Destinations are the author's text, not a sanitized URL
+
+`href`, `src` and every other destination field carry what the AUTHOR wrote,
+verbatim. §3a requires the tree to record the document rather than a rendering
+of it, so a blanked destination would make it lossy - and the round trip above
+would no longer hold.
+
+That means the tree can contain a scheme no target is allowed to emit:
+
+```
+[click](javascript:alert(1))
+```
+
+serializes as
+
+```json
+{"type":"link","href":"javascript:alert(1)","children":[...]}
+```
+
+while every renderer in every engine emits `href=""` for the same document, in
+HTML and in Markdown alike.
+
+**A consumer that renders a destination owns the denylist.** The rule is the URL-scheme denylist in
+[the security model](/security), and it is written to bind every target that
+emits a resolvable URL - the argument there is that a scheme "blanked here and passed
+through there is not blocked, it is deferred by one step", which applies to a
+tool reading this format exactly as it applies to a Markdown target.
+
+If you feed the tree back through a conforming engine, that engine applies the
+denylist for you. If you walk the tree and build your own output, it does not.
+
 ## How deep an ingested AST may nest
 
 Reading a serialized AST is a recursive descent over structure someone else
