@@ -29,33 +29,29 @@ implementation exposes.
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>3</strong>
+    <strong>0</strong>
     <span>cross-implementation diffs</span>
   </div>
 </div>
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `af23f05` | `585 / 585` | `1` | `0` | `2.73` |
-| JS | `cb64471` | `585 / 585` | `0` | `0` | `67.35` |
-| PHP | `2fbba5d` | `585 / 585` | `0` | `0` | `61.47` |
+| Rust | `0c3e043` | `585 / 585` | `0` | `0` | `2.37` |
+| JS | `cb64471` | `585 / 585` | `0` | `0` | `58.47` |
+| PHP | `4900d5c` | `585 / 585` | `0` | `0` | `54.03` |
 
 Spec commit: `9fe1cdd`
 
-`html`, `markdown`, `plain` and `ansi` agree across all 585 documents, and all
-three diffs are on the `carve` target, where the parse agrees and only the
-canonical spelling differs.
+This run has no differences at all: every engine matches every fixture on every
+target that has one - 597 of 597, counting the non-HTML fixtures a case pins by
+adding the file - and `html`, `markdown`, `plain`, `carve` and `ansi` agree
+across all 585 documents.
 
-The Corpus column counts the 585 documents and their HTML fixtures, which every
-engine passes. The Mismatches column counts every fixture the run scored,
-including the non-HTML ones a case pins by adding the file - which is where
-Rust's one mismatch is. It is a `carve`-target fixture, named by the run
-itself:
-`196-a-definition-inside-a-container-is-collected-at-that-container-s-content-column`.
-Its canonical output carries a stray `%%` where a definition was collected out
-of an item inside a quote (carve-rs#602). The count used to be printed with no
-case beside it, so finding the one document meant re-running every fixture by
-hand.
+That is a first, and it is worth saying what it is not: agreement is not
+correctness. Three engines agreeing means the corpus does not distinguish them,
+and every open question on the spec side - carve#664 through carve#669, carve#682 -
+is a shape the corpus does not yet pin. A zero here is the floor, not the
+ceiling.
 
 That count was 32 for a while, and the fall back to 3 is the same one defect
 being finished rather than coverage shrinking. carve-js stopped inflating a
@@ -315,17 +311,16 @@ Default raw output:
 ```text
 Implementation summary
 profile=default/no-opt-in corpus=core corpus_pairs=585 targets=html,markdown,plain,carve,ansi
-rust: pass=594/595 mismatch=1 error=0 skipped=0 runs=2925 avg_ms=2.73
-  mismatch: carve 196-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
-js: pass=595/595 mismatch=0 error=0 skipped=0 runs=2925 avg_ms=67.35
-php: pass=595/595 mismatch=0 error=0 skipped=0 runs=2925 avg_ms=61.47
-cross_impl_diffs=3
+rust: pass=597/597 mismatch=0 error=0 skipped=0 runs=2925 avg_ms=2.37
+js: pass=597/597 mismatch=0 error=0 skipped=0 runs=2925 avg_ms=58.47
+php: pass=597/597 mismatch=0 error=0 skipped=0 runs=2925 avg_ms=54.03
+cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
 html: compared=585 diffs=0 errors=0 fixtures=yes
 markdown: compared=585 diffs=0 errors=0 fixtures=1
 plain: compared=585 diffs=0 errors=0 fixtures=1
-carve: compared=585 diffs=3 errors=0 fixtures=8
+carve: compared=585 diffs=0 errors=0 fixtures=10
 ansi: compared=585 diffs=0 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
