@@ -85,15 +85,25 @@ const CAPTION = /^\^ (.*)$/
 // The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
 // engine, so a tab here must not open a list (PART 9 SS11). Its width is the
 // item's content column for a non-task bullet.
-// The marker's attribute block may hold a QUOTED value containing `}`
-// (`1.{title='a}b'} item`). Matching it as `[^}]*` stopped at that brace,
-// so the list marker did not parse and the whole line rendered as text -
-// where all three engines build the item and set the attribute.
-const BULLET = /^([ \t]*)([-*])(\{(?:[^}'"\\]|\\.|'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")*\})?( +)(?:\[([ xX_>?-])\] )?(.+)$/
+// AN ATTRIBUTE BLOCK IS NOT `\{[^}]*\}`. A value may hold a `}` inside quotes
+// (`1.{title='a}b'} item`, `| a |{data-x="}"}`), and a `[^}]*` run stops at
+// that brace. Where the block belongs to a MARKER, losing it also unmakes the
+// marker, so the whole line rendered as text - where all three engines build
+// the item and set the attribute. Where it belongs to a table CELL, the short
+// run still matched, and set a truncated attribute from the fragment before the
+// quoted brace while leaving the rest as content.
+//
+// Declared once so the four readers cannot drift apart again: it was fixed for
+// definition lines first (carve#604, splitTrailingAttrBlock), then for the two
+// markers, and the two table readers were still on the short run (carve#716).
+// Matches `{`, a payload of quoted runs and bare characters, then `}`.
+const ATTR_PAYLOAD = /(?:[^}'"\\]|\\.|'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")*/.source
+const ATTR_BLOCK = `\\{${ATTR_PAYLOAD}\\}`
+const BULLET = new RegExp(`^([ \\t]*)([-*])(${ATTR_BLOCK})?( +)(?:\\[([ xX_>?-])\\] )?(.+)$`)
 // The value is optional before a `.`: a bare `. ` is a decimal marker
 // counting from 1 (PART 9 ordered_marker, BARE DOT). A bare `)` is not a
 // marker, so the empty alternative is guarded by a lookahead at the dot.
-const ORDERED = /^([ \t]*)([0-9]+|[a-z]+|[A-Z]+|(?=\.))([.)])(\{(?:[^}'"\\]|\\.|'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")*\})? (.+)$/
+const ORDERED = new RegExp(`^([ \\t]*)([0-9]+|[a-z]+|[A-Z]+|(?=\\.))([.)])(${ATTR_BLOCK})? (.+)$`)
 const CONT_MARKER = /^\+[ \t]*$/
 // marks a lazily-folded line (PART 9 SS10 I2): always paragraph text, never
 // re-classified as structure when an item's content is re-parsed
@@ -193,9 +203,15 @@ function classifyOrdered(token) {
 function splitRow(line) {
   let s = line
   let rowAttrs = null
-  const ra = /\|\{([^}]*)\}[ \t]*$/.exec(s)
-  if (ra) {
-    // T8: a `{...}` GLUED to the closing pipe is the row attribute block
+  const ra = new RegExp(`\\|\\{(${ATTR_PAYLOAD})\\}[ \\t]*$`).exec(s)
+  // T8: a `{...}` GLUED to the closing pipe is the row attribute block - but
+  // only if the payload is VALID: "the whole payload must be valid attribute
+  // syntax (§15); otherwise the `{` is ordinary content and the line is not a
+  // row attribute" (grammar.ebnf row_attributes). Deciding that here rather
+  // than at render time is what keeps `| a |{bad!!}` a paragraph; testing it
+  // downstream REFUSED the whole document, the one outcome the clause rules
+  // out. Same move carve#713 made for the cell block, on the row's twin.
+  if (ra && parseAttrBlock(`{${ra[1]}}`) !== null) {
     rowAttrs = `{${ra[1]}}`
     s = s.slice(0, ra.index + 1)
   }
@@ -398,7 +414,7 @@ function parseCell(seg) {
   // Validity decides here, not at render time: "the whole brace payload must be
   // valid attribute syntax; otherwise the `{` is literal content". Testing it
   // downstream made an invalid payload REFUSE the document instead.
-  const at = /^\{([^}]*)\}/.exec(s)
+  const at = new RegExp(`^\\{(${ATTR_PAYLOAD})\\}`).exec(s)
   if (at && parseAttrBlock(`{${at[1]}}`) !== null) {
     cell.attrs = `{${at[1]}}`
     s = s.slice(at[0].length)
