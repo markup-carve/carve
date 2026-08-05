@@ -49,6 +49,7 @@ import {
   countProbes,
   injectUnknownProperty,
 } from './spec/unknown-property-probe.mjs'
+import { miscount, shortfall } from './spec/participants.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -526,18 +527,71 @@ const ASTRAL_SAMPLES = [
   { name: '<astral: across two lines>', source: '\u{1F600} one\n\u{1F600}\u{1F600} two\n' },
 ]
 
+const corpusFiles = readdirSync(corpusDir)
+  .filter((f) => f.endsWith('.crv'))
+  .sort()
 const samples = [
   ...ASTRAL_SAMPLES,
-  ...readdirSync(corpusDir)
-    .filter((f) => f.endsWith('.crv'))
-    .sort()
+  ...corpusFiles
     .slice(0, limit)
     .map((f) => ({ name: f, source: readFileSync(resolve(corpusDir, f), 'utf8') })),
 ]
 
+/*
+ * HOW MANY DOCUMENTS THIS RUN ACTUALLY SAW, checked rather than printed.
+ *
+ * `--limit=0` produces a run over the three synthetic astral samples and NO
+ * corpus at all, and every engine then reports its findings for those three as
+ * though the corpus had been measured. A typo in a CI invocation, or a corpus
+ * that failed to build, reads exactly like a clean run - carve#755's second
+ * variant, "asserts over an empty set".
+ *
+ * Without a limit the run must see the WHOLE corpus, so the check is exact: a
+ * filter that quietly starts dropping files fails here rather than shrinking the
+ * question. With a limit it is a floor plus the sample notice already printed
+ * below, because sampling is a deliberate act with a number attached.
+ */
+const corpusSeen = samples.length - ASTRAL_SAMPLES.length
+const populationProblem = Number.isFinite(limit)
+  ? shortfall({
+      label: 'CORPUS',
+      actual: corpusSeen,
+      // max(1, ...): `--limit=0` compares no corpus document at all, which is a
+      // typo rather than a sample size. It used to run and report per-engine
+      // findings for the synthetic samples alone.
+      atLeast: Math.max(1, Math.min(limit, corpusFiles.length)),
+      of: 'corpus document(s)',
+      hint: 'Pass a higher --limit, or drop it to run the whole corpus.',
+    })
+  : miscount({
+      label: 'CORPUS',
+      actual: corpusSeen,
+      expected: corpusFiles.length,
+      of: 'corpus document(s)',
+    })
+if (populationProblem !== null) {
+  console.error(populationProblem)
+  console.error('Nothing below describes the corpus this repository ships.')
+  process.exit(2)
+}
+if (corpusFiles.length < 100) {
+  console.error(
+    `CORPUS: tests/corpus holds ${corpusFiles.length} document(s), which is too few to be ` +
+      'the shared corpus - run `npm run corpus:build`, or check the checkout.',
+  )
+  process.exit(2)
+}
+
 const satelliteSamples = samples.slice(0, satelliteLimit)
 
-console.log(`PART 12 conformance over ${samples.length} corpus documents\n`)
+// Both numbers, because they are different populations: the astral samples are
+// synthetic inputs this script carries, not documents the corpus ships, and
+// folding them into one count made a run over three synthetic cases read as a
+// run over three corpus documents.
+console.log(
+  `PART 12 conformance over ${corpusSeen} corpus document(s) ` +
+    `plus ${ASTRAL_SAMPLES.length} synthetic sample(s)\n`,
+)
 
 // ---- reference: carve-js ---------------------------------------------------
 if (!existsSync(resolve(jsDir, 'dist/index.js'))) {
