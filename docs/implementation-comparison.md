@@ -17,15 +17,15 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>611 / 616</strong>
+    <strong>611 / 621</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>610 / 616</strong>
+    <strong>610 / 621</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>610 / 616</strong>
+    <strong>610 / 621</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -36,9 +36,9 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `49bf6ae` | `611 / 616` | `2` | `0` | `2.39` |
-| JS | `2ebf5ed` | `610 / 616` | `3` | `0` | `57.01` |
-| PHP | `9960d53` | `610 / 616` | `3` | `0` | `52.44` |
+| Rust | `49bf6ae` | `611 / 621` | `2` | `0` | `2.39` |
+| JS | `2ebf5ed` | `610 / 621` | `3` | `0` | `57.01` |
+| PHP | `9960d53` | `610 / 621` | `3` | `0` | `52.44` |
 
 Spec commit: `b539d14`, plus the corpus case this change adds
 
@@ -391,7 +391,7 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=616 targets=html,markdown,plain,carve,ansi
+profile=default/no-opt-in corpus=core corpus_pairs=621 targets=html,markdown,plain,carve,ansi
 rust: pass=623/625 mismatch=2 error=0 skipped=0 runs=3065 avg_ms=2.39
   mismatch: carve 16-reference-link-4
   mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column

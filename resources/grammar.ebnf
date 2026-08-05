@@ -2940,6 +2940,24 @@ EOF = (* end of file *) ;
         repeat uses `fnref{n}-{k}` and adds another backlink. The
         backlink glyph is the plain return arrow `↩` (Carve's choice;
         djot appends a variation selector).
+      - BACKLINK PLACEMENT WHEN THE BODY DOES NOT END IN A PARAGRAPH. "The
+        note's last paragraph" above presumes there is one. When the note
+        body's LAST BLOCK is not a paragraph (a code block, a block quote, a
+        table, a div, a raw block, or any other non-paragraph block), the
+        backlink is never appended into a paragraph found INSIDE or BEFORE
+        that block - the engine SYNTHESIZES a new wrapping <p> immediately
+        AFTER the last block and places the backlink there, as a sibling of
+        that block, never a descendant of it. This holds even when the last
+        block itself ends in a paragraph of its own (a block quote whose
+        content ends in a paragraph): that paragraph belongs to the quoted
+        (or otherwise contained) content, not to the note's own backlink, so
+        appending there would misattribute the backlink to the quotation. A
+        note body consisting ONLY of a non-paragraph block still gets the
+        synthesized trailing <p>. Decided in carve#688: appending to
+        whatever paragraph happens to be last is undefined when the last
+        block has no paragraph, and where a literal reading of the old rule
+        DOES find one (inside a block quote, or nowhere, leaving the anchor
+        a bare inline child of <li>) it is wrong for the reason just given.
       - INLINE FOOTNOTE `^[content]` (pandoc form; a deliberate carve
         extension -- canonical djot has no inline footnotes). A `^`
         IMMEDIATELY before `[` opens an anonymous note whose content is the

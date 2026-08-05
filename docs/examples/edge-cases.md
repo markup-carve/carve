@@ -8207,7 +8207,7 @@ see[^a] and [t][r]
 
 ## A footnote body holds blocks, and they render where they were written
 
-A note body is a container: it holds blocks, not just inline content, and each renders at the body's own indentation. The body here ends in a PARAGRAPH deliberately - where a note ends in a table, a code block or a list instead, the engines disagree about where the backlink goes (carve#688), and pinning that shape would pin one answer by accident.
+A note body is a container: it holds blocks, not just inline content, and each renders at the body's own indentation. The body here ends in a PARAGRAPH, so the backlink lands in it directly; "A footnote body's last block, when it is not a paragraph, gets a synthesized paragraph for the backlink" (below) pins what happens when the last block is a code block, a block quote, a table, a div or a raw block instead.
 
 ::: compare
 
@@ -8854,6 +8854,172 @@ see[^a]
     <li id="fn1">
       <p>note
 more<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## A footnote body's last block, when it is not a paragraph, gets a synthesized paragraph for the backlink
+
+A footnote body whose last block is a paragraph gets its backlink appended
+directly into that paragraph (see above). When the last block is something
+else, the backlink is never folded into a paragraph found inside or before
+that block - a synthesized `<p>` after the last block holds it instead,
+as a sibling of that block (carve#688). Five shapes, previously unpinned:
+
+A code block:
+
+::: compare
+
+````carve
+[^a]: note
+  ```
+  code
+  ```
+
+see[^a]
+````
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <pre><code>code
+</code></pre>
+      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+A block quote. The quote's own paragraph ("quoted") is not where the backlink
+goes - that would misattribute it to the quoted source. The synthesized
+paragraph is a sibling of the `<blockquote>`, not a child of it:
+
+::: compare
+
+```carve
+[^a]: note
+  > quoted
+
+see[^a]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <blockquote><p>quoted</p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+A table:
+
+::: compare
+
+```carve
+[^a]: note
+
+  | a |
+  | - |
+  | b |
+
+see[^a]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <table>
+        <thead><tr><th>a</th></tr></thead>
+        <tbody>
+          <tr><td>b</td></tr>
+        </tbody>
+      </table>
+      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+A div:
+
+:::::: compare
+
+```carve
+[^a]: note
+
+  ::: note
+  d
+  :::
+
+see[^a]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <aside class="admonition note">
+        <p>d</p>
+      </aside>
+      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+::::::
+
+A raw block. Its content is passed through verbatim by definition; appending
+the backlink inside it would put navigation markup into a region the author
+asked to be left untouched, so the synthesized paragraph follows it instead:
+
+::: compare
+
+````carve
+[^a]: note
+
+  ```=html
+  <b>x</b>
+  ```
+
+see[^a]
+````
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <b>x</b>
+      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
     </li>
   </ol>
 </section>
