@@ -61,8 +61,15 @@ export function valueSignature(node, out = [], path = '$') {
     out.push({ path, type: node.type, fields })
   }
 
-  for (const [key, value] of Object.entries(node)) {
+  // SORTED BY KEY, like shapeOf does, and for the same reason: the engines
+  // serialize a node's fields in different orders. carve-php writes a table's
+  // `caption` before its `rows`, carve-js and carve-rs after - the same fields
+  // either way, and JSON object order carries no meaning. Walking in object
+  // order made the caption's text pair with a body cell's text and reported a
+  // `text.value` disagreement that is not one (carve#791).
+  for (const key of Object.keys(node).sort()) {
     if (POSITION_KEYS.has(key) || key === 'attrs') continue
+    const value = node[key]
     if (value && typeof value === 'object') valueSignature(value, out, `${path}.${key}`)
   }
 
