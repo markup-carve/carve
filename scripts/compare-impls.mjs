@@ -183,18 +183,20 @@ const PLAIN_EXTENSION_FEATURES = {
  * CAPABILITY rather than a missing adapter.
  *
  * Left out of the reporting entirely, "not compared" reads as a harness
- * backlog. Three of these are not: the option does not exist in the engines
- * that would have to run them, so writing an adapter is impossible rather than
+ * backlog. This one is not: the option does not exist in either engine that
+ * would have to run it, so writing an adapter is impossible rather than
  * pending, and the fix is in the engine (or in the page that documents an
  * option nobody implemented - carve#560).
+ *
+ * `section-wrapper-off` and `source-line-after-generated-id` used to live here
+ * too, on the strength of "carve-php has no sections switch". carve-php#537
+ * added `HtmlRenderer::setSectionWrapping()` and carve-php#679 fixed the id/
+ * stamp ordering the second case turns on, so both are wired below instead
+ * (carve#535).
  */
 const UNREACHABLE_REASONS = {
   'smart-quotes-locale-de':
     'carve-js has no quote-locale option; carve-php has the extension (carve#560)',
-  'section-wrapper-off':
-    'carve-php has no sections switch; carve-js has the option (carve#560)',
-  'source-line-after-generated-id':
-    'the fixture needs sections off, which carve-php cannot do (carve#560)',
 }
 
 const JS_OPTION_FEATURES = {
@@ -368,6 +370,40 @@ const impls = [
             $renderer = new MarkupCarve\\Carve\\Renderer\\HtmlRenderer();
             $renderer->setSmartTypography(MarkupCarve\\Carve\\Renderer\\SmartTypographyMode::Source);
             $converter = MarkupCarve\\Carve\\CarveConverter::create(renderer: $renderer);
+            echo $converter->convert(file_get_contents($argv[1]));
+          `,
+        ]
+      }
+      // carve-php#537 added the opt-out; before it this case had no php
+      // adapter to write at all (carve#535).
+      if (feature === 'section-wrapper-off') {
+        return [
+          'php',
+          '-r',
+          `
+            require 'vendor/autoload.php';
+            $renderer = new MarkupCarve\\Carve\\Renderer\\HtmlRenderer();
+            $renderer->setSectionWrapping(false);
+            $converter = MarkupCarve\\Carve\\CarveConverter::create(renderer: $renderer);
+            echo $converter->convert(file_get_contents($argv[1]));
+          `,
+        ]
+      }
+      // Needs BOTH: the sections opt-out above, and sourceLines - which is a
+      // BlockParser constructor argument, not a renderer setting, so this is
+      // the one adapter here that builds a custom parser instead of taking
+      // CarveConverter::create()'s default. Only correct since carve-php#679
+      // fixed the id/stamp ordering the fixture pins (carve#535).
+      if (feature === 'source-line-after-generated-id') {
+        return [
+          'php',
+          '-r',
+          `
+            require 'vendor/autoload.php';
+            $parser = new MarkupCarve\\Carve\\Parser\\BlockParser(trackSourceLines: true);
+            $renderer = new MarkupCarve\\Carve\\Renderer\\HtmlRenderer();
+            $renderer->setSectionWrapping(false);
+            $converter = MarkupCarve\\Carve\\CarveConverter::create(parser: $parser, renderer: $renderer);
             echo $converter->convert(file_get_contents($argv[1]));
           `,
         ]

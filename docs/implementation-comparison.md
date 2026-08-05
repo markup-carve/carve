@@ -373,13 +373,13 @@ came to say 4 when the corpus held 33.
 ```text
 Implementation summary
 profile=optional/opt-in corpus=optional corpus_pairs=33 targets=html,markdown
-rust: pass=3/3 mismatch=0 error=0 skipped=30 runs=3 avg_ms=2.91
-js: pass=31/31 mismatch=0 error=0 skipped=2 runs=31 avg_ms=78.43
-php: pass=28/28 mismatch=0 error=0 skipped=5 runs=28 avg_ms=69.21
+rust: pass=5/5 mismatch=0 error=0 skipped=28 runs=5 avg_ms=22.17
+js: pass=32/32 mismatch=0 error=0 skipped=1 runs=32 avg_ms=64.69
+php: pass=31/31 mismatch=0 error=0 skipped=2 runs=31 avg_ms=54.55
 cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=27 diffs=0 errors=0 fixtures=yes
+html: compared=30 diffs=0 errors=0 fixtures=yes
 markdown: compared=2 diffs=0 errors=0 fixtures=yes
 
 Optional feature coverage
@@ -391,12 +391,13 @@ citations-numbered (html): js, php
 code-callouts (html): js, php
 ...
 
-NOT COMPARED: 5 of 33 optional cases reached fewer than two engines, so they
+NOT COMPARED: 1 of 33 optional cases reached fewer than two engines, so they
 contribute no agreement evidence. This is not a pass.
 ```
 
-**Read the last block, not the `cross_impl_diffs=10` above it.** Five of the 33
-optional cases still reach fewer than two engines and contribute no evidence.
+**Read the last block, not the `cross_impl_diffs=10` above it.** One of the 33
+optional cases still reaches fewer than two engines and contributes no
+evidence.
 
 That was 30 until carve#521. The features were implemented everywhere all
 along; what was missing was a way for this tool to switch them on. carve-js and
@@ -406,28 +407,29 @@ the compared count from 2 to 27, and covering citations, which is 16 of the 33
 on its own.
 
 The rest need a renderer or parser OPTION rather than an extension, and an
-option is per-engine API, so there is no shared table for them. Four of the five
-are now driven through one: `markdown-typography-source` reaches carve-js and
-carve-php, and the other three reach carve-js.
+option is per-engine API, so there is no shared table for them.
+`smart-typography-off` and `markdown-typography-source` reach all three
+engines - carve-rs's `--smart-typography source` flag serves both.
+`section-wrapper-off` and `source-line-after-generated-id` reach carve-js and
+carve-php: carve-php#537 added the `HtmlRenderer::setSectionWrapping()`
+opt-out those two adapters drive, and carve-php#679 fixed the id/stamp
+ordering the second case pins (carve#535).
 
-Reaching an engine is not the same as being compared. These four remain
-single-engine, and the run now says why rather than reporting a uniform "no CLI
+Reaching an engine is not the same as being compared. One case remains
+single-engine, and the run says why rather than reporting a uniform "no CLI
 path":
 
 | case | why |
 | --- | --- |
-| `smart-typography-off` | no engine implements the documented switch (carve#560) |
-| `smart-quotes-locale-de` | carve-js has no quote-locale option |
-| `section-wrapper-off` | carve-php has no `sections` switch |
-| `source-line-after-generated-id` | its fixture needs sections off, which carve-php cannot do |
+| `smart-quotes-locale-de` | carve-js has no quote-locale option (carve#560) |
 
 That distinction is the point. A missing adapter is this repo's backlog; a
-missing option is the engine's, and the difference decides who fixes it. Three
-of these four are capability gaps, which is why no amount of harness work would
-have moved them.
+missing option is the engine's, and the difference decides who fixes it. This
+one is a capability gap, which is why no amount of harness work would move it.
 
-carve-rs is driven through its binary and exposes no flag for any of these, so
-its cases still need a CLI path (carve#496).
+carve-rs is driven through its binary and exposes no flag for the sections
+switch or the source-line stamp, so `section-wrapper-off` and
+`source-line-after-generated-id` still need a CLI path there (carve#496).
 
 ## Scope
 
