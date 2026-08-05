@@ -1,0 +1,24 @@
+An abbreviation term is one ASCII alphanumeric word
+
+```
+*[dl]: definition list
+*[3D]: three dimensional
+*[9]: nine
+
+A dl, a 3D one, and 9.
+.
+<p>A <abbr title="definition list">dl</abbr>, a <abbr title="three dimensional">3D</abbr> one, and <abbr title="nine">9</abbr>.</p>
+```
+
+```
+*[ß]: sharp s
+*[e.g.]: for example
+*[HTTP API]: an interface
+
+Text about ss and eg below.
+.
+<p>*[ß]: sharp s
+*[e.g.]: for example
+*[HTTP API]: an interface</p>
+<p>Text about ss and eg below.</p>
+```

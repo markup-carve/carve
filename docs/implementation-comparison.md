@@ -17,41 +17,46 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>611 / 611</strong>
+    <strong>611 / 613</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>611 / 611</strong>
+    <strong>610 / 613</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>611 / 611</strong>
+    <strong>610 / 613</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>1</strong>
+    <strong>8</strong>
     <span>cross-implementation diffs</span>
   </div>
 </div>
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `c3f5a12` | `611 / 611` | `0` | `0` | `2.31` |
-| JS | `bf8a695` | `611 / 611` | `0` | `0` | `56.16` |
-| PHP | `c3b630f` | `611 / 611` | `0` | `0` | `51.60` |
+| Rust | `49bf6ae` | `611 / 613` | `2` | `0` | `2.39` |
+| JS | `2ebf5ed` | `610 / 613` | `3` | `0` | `57.01` |
+| PHP | `9960d53` | `610 / 613` | `3` | `0` | `52.44` |
 
 Spec commit: `b539d14`, plus the corpus case this change adds
 
-Every engine renders every fixture case on every target that has one - 618 of
-618, zero mismatches and zero errors in all three - and every target agrees
-everywhere except one case on `markdown`.
+Three cases are ahead of the engines, which is what a spec-first corpus looks
+like between a clause landing and three ports catching up. None of them is a
+disagreement about a rule all three implement.
 
-That one is `217-a-heading-id-keeps-a-non-ascii-space`: carve-rs drops a
-heading's LEADING no-break space where carve-js and carve-php keep it
-(markup-carve/carve-rs#614). The case was added to pin an ID rule and pins the
-HTML target only - the divergence it exposed is on a target it does not pin, in
-a shape the corpus had never covered, since no heading in it began with a
-non-ASCII space. It is left visible here rather than papered over.
+`222-a-tab-as-the-first-character-of-a-definition-term` is the newest clause
+(carve#794): a tab after `:` is stripped, not preserved. carve-rs already did
+this and is the reference; carve-js and carve-php still keep the tab.
+
+`16-reference-link-4` and
+`195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column`
+diverge on the `carve` target only - the parse agrees in all three and what
+differs is the canonical spelling the formatter writes back.
+
+The counts here are documents, not runs: an engine that misses one case on two
+targets is one document behind, not two.
 
 That last part is new. The `carve` target carried 32 diffs in the previous
 snapshot and 5 the run before that, and it is the only target that ever has:
@@ -386,19 +391,26 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=611 targets=html,markdown,plain,carve,ansi
-rust: pass=618/618 mismatch=0 error=0 skipped=0 runs=3030 avg_ms=2.31
-js: pass=618/618 mismatch=0 error=0 skipped=0 runs=3030 avg_ms=56.16
-php: pass=618/618 mismatch=0 error=0 skipped=0 runs=3030 avg_ms=51.60
-cross_impl_diffs=1
-  DIFF [markdown] 217-a-heading-id-keeps-a-non-ascii-space
+profile=default/no-opt-in corpus=core corpus_pairs=613 targets=html,markdown,plain,carve,ansi
+rust: pass=623/625 mismatch=2 error=0 skipped=0 runs=3065 avg_ms=2.39
+  mismatch: carve 16-reference-link-4
+  mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
+js: pass=622/625 mismatch=3 error=0 skipped=0 runs=3065 avg_ms=57.01
+  mismatch: carve 16-reference-link-4
+  mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
+  mismatch: html 222-a-tab-as-the-first-character-of-a-definition-term
+php: pass=622/625 mismatch=3 error=0 skipped=0 runs=3065 avg_ms=52.44
+  mismatch: carve 16-reference-link-4
+  mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
+  mismatch: html 222-a-tab-as-the-first-character-of-a-definition-term
+cross_impl_diffs=8
 
 Target agreement (implementations compared against each other)
-html: compared=611 diffs=0 errors=0 fixtures=yes
-markdown: compared=611 diffs=1 errors=0 fixtures=1
-plain: compared=611 diffs=0 errors=0 fixtures=1
-carve: compared=611 diffs=0 errors=0 fixtures=10
-ansi: compared=611 diffs=0 errors=0 fixtures=none
+html: compared=613 diffs=1 errors=0 fixtures=yes
+markdown: compared=613 diffs=1 errors=0 fixtures=1
+plain: compared=613 diffs=1 errors=0 fixtures=1
+carve: compared=613 diffs=4 errors=0 fixtures=10
+ansi: compared=613 diffs=1 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix

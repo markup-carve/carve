@@ -80,7 +80,11 @@ function splitTrailingAttrBlock(line) {
 // `"]:", space, inline_content`); a bare `[^label]:` is an ordinary
 // paragraph line (corpus 132).
 const FOOTNOTE_DEF = /^\[\^([^\]]+)\]: [ \t]*(\S.*)$/
-const ABBR_DEF = /^\*\[([^\]]+)\]: \s*(.+)$/
+// `abbreviation_term = (letter | digit)+`, and `letter` is enumerated ASCII.
+// This was `[^\]]+` - anything but a bracket - so the executable spec called
+// `*[e.g.]:` and `*[ß]:` definitions, which made their LINE disappear, while
+// all three engines kept it as paragraph text (carve#791).
+const ABBR_DEF = /^\*\[([A-Za-z0-9]+)\]: \s*(.+)$/
 const CAPTION = /^\^ (.*)$/
 // The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
 // engine, so a tab here must not open a list (PART 9 SS11). Its width is the
@@ -758,8 +762,10 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     // rewrites every occurrence of its term with nothing at the use site
     // pointing back, so it may not be written where quoted material lives.
     if (top && (m = ABBR_DEF.exec(line))) {
+      // No empty-term guard: `+` in ABBR_DEF cannot match zero characters, so
+      // one here could never fire. `*[]: x` fails the pattern and is a
+      // paragraph, which is what the production says it is.
       const term = m[1]
-      if (term === '') throw new Refuse('empty abbreviation term')
       // LAST definition wins (PART 9R state), like linkDefs below. This was
       // first-wins here while all three engines were last-wins, and PART 9R's
       // state table said nothing either way for abbrDefs - so the one place
