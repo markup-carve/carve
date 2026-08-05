@@ -1,0 +1,9 @@
+One definition serves a link and an image
+
+```
+See [text][m] and ![moon][m].
+
+[m]: /moon.png
+.
+<p>See <a href="/moon.png">text</a> and <img src="/moon.png" alt="moon">.</p>
+```

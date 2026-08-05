@@ -8106,3 +8106,73 @@ Staying open is not the same as staying in the same *paragraph*. A comment rende
 ```
 
 :::
+
+## An image takes a reference the way a link does
+
+An image resolves against the same definition table a link does (PART 3, `reference_image`; carve#641). Every reference FORM was pinned for links and none for images, so the three engines agreed here with nothing holding them to it - and the AST rule that a resolved reference keeps `ref` and `rawRef` beside its destination (PART 12 §3a) had no image case either.
+
+::: compare
+
+```carve
+![moon][m]
+
+[m]: /moon.png
+```
+
+```html
+<img src="/moon.png" alt="moon">
+```
+
+:::
+
+## A collapsed image reference uses its alt text as the label
+
+`![alt][]` takes the alt text as the label, and a definition title becomes the image's `title`.
+
+::: compare
+
+```carve
+![moon][]
+
+[moon]: /moon.png "Title"
+```
+
+```html
+<img src="/moon.png" alt="moon" title="Title">
+```
+
+:::
+
+## One definition serves a link and an image
+
+The definition table is shared, so the same label resolves for both - once as a destination, once as a source.
+
+::: compare
+
+```carve
+See [text][m] and ![moon][m].
+
+[m]: /moon.png
+```
+
+```html
+<p>See <a href="/moon.png">text</a> and <img src="/moon.png" alt="moon">.</p>
+```
+
+:::
+
+## An unresolved image reference stays literal
+
+With no matching definition the image renders as the text the author typed, exactly as an unresolved link reference does.
+
+::: compare
+
+```carve
+![moon][gone]
+```
+
+```html
+<p>![moon][gone]</p>
+```
+
+:::

@@ -1,0 +1,7 @@
+An unresolved image reference stays literal
+
+```
+![moon][gone]
+.
+<p>![moon][gone]</p>
+```

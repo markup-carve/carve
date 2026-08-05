@@ -1,0 +1,9 @@
+A collapsed image reference uses its alt text as the label
+
+```
+![moon][]
+
+[moon]: /moon.png "Title"
+.
+<img src="/moon.png" alt="moon" title="Title">
+```

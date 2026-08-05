@@ -1,0 +1,9 @@
+An image takes a reference the way a link does
+
+```
+![moon][m]
+
+[m]: /moon.png
+.
+<img src="/moon.png" alt="moon">
+```

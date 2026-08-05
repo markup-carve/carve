@@ -17,15 +17,15 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>585 / 585</strong>
+    <strong>589 / 589</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>585 / 585</strong>
+    <strong>589 / 589</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>585 / 585</strong>
+    <strong>589 / 589</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -36,9 +36,9 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `0c3e043` | `585 / 585` | `0` | `0` | `4.14` |
-| JS | `cb64471` | `585 / 585` | `0` | `0` | `108.64` |
-| PHP | `ed77e6a` | `585 / 585` | `0` | `0` | `96.07` |
+| Rust | `0c3e043` | `589 / 589` | `0` | `0` | `3.04` |
+| JS | `cb64471` | `589 / 589` | `0` | `0` | `79.65` |
+| PHP | `4900d5c` | `589 / 589` | `0` | `0` | `72.56` |
 
 Spec commit: `b539d14`, plus the corpus case this change adds
 
@@ -317,18 +317,18 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=585 targets=html,markdown,plain,carve,ansi
-rust: pass=597/597 mismatch=0 error=0 skipped=0 runs=2925 avg_ms=4.14
-js: pass=597/597 mismatch=0 error=0 skipped=0 runs=2925 avg_ms=108.64
-php: pass=597/597 mismatch=0 error=0 skipped=0 runs=2925 avg_ms=96.07
+profile=default/no-opt-in corpus=core corpus_pairs=589 targets=html,markdown,plain,carve,ansi
+rust: pass=601/601 mismatch=0 error=0 skipped=0 runs=2945 avg_ms=3.04
+js: pass=601/601 mismatch=0 error=0 skipped=0 runs=2945 avg_ms=79.65
+php: pass=601/601 mismatch=0 error=0 skipped=0 runs=2945 avg_ms=72.56
 cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=585 diffs=0 errors=0 fixtures=yes
-markdown: compared=585 diffs=0 errors=0 fixtures=1
-plain: compared=585 diffs=0 errors=0 fixtures=1
-carve: compared=585 diffs=0 errors=0 fixtures=10
-ansi: compared=585 diffs=0 errors=0 fixtures=none
+html: compared=589 diffs=0 errors=0 fixtures=yes
+markdown: compared=589 diffs=0 errors=0 fixtures=1
+plain: compared=589 diffs=0 errors=0 fixtures=1
+carve: compared=589 diffs=0 errors=0 fixtures=10
+ansi: compared=589 diffs=0 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix
