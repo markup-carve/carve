@@ -1,0 +1,7 @@
+A single percent is not a comment
+
+```
+% not a comment
+.
+<p>% not a comment</p>
+```

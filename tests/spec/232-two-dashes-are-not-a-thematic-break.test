@@ -1,0 +1,13 @@
+Two dashes are not a thematic break
+
+```
+a
+
+--
+
+b
+.
+<p>a</p>
+<p>–</p>
+<p>b</p>
+```

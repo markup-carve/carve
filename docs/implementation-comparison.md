@@ -17,43 +17,43 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>611 / 625</strong>
+    <strong>626 / 637</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>610 / 625</strong>
+    <strong>632 / 637</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>610 / 625</strong>
+    <strong>633 / 637</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>8</strong>
+    <strong>21</strong>
     <span>cross-implementation diffs</span>
   </div>
 </div>
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `49bf6ae` | `611 / 625` | `2` | `0` | `2.39` |
-| JS | `2ebf5ed` | `610 / 625` | `3` | `0` | `57.01` |
-| PHP | `9960d53` | `610 / 625` | `3` | `0` | `52.44` |
+| Rust | `8869fb0` | `626 / 637` | `11` | `0` | `2.89` |
+| JS | `774d108` | `632 / 637` | `5` | `0` | `70.32` |
+| PHP | `db024e8` | `633 / 637` | `4` | `0` | `64.65` |
 
 Spec commit: `b539d14`, plus the corpus case this change adds
 
-Three cases are ahead of the engines, which is what a spec-first corpus looks
-like between a clause landing and three ports catching up. None of them is a
-disagreement about a rule all three implement.
+The engines are behind on three clauses that landed this week, which is what a
+spec-first corpus looks like between a rule and three ports catching up.
 
-`222-a-tab-as-the-first-character-of-a-definition-term` is the newest clause
-(carve#794): a tab after `:` is stripped, not preserved. carve-rs already did
-this and is the reference; carve-js and carve-php still keep the tab.
+`225-a-footnote-body-s-last-block-...` is the synthesized-backlink clause
+(carve#799): carve-rs has none of it, carve-js has one shape left, carve-php has
+it. `226`/`227`/`228` are the collected-definition clauses (carve#801), where
+carve-rs is behind on three and the other two on one each.
 
 `16-reference-link-4` and
 `195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column`
 diverge on the `carve` target only - the parse agrees in all three and what
-differs is the canonical spelling the formatter writes back.
+differs is the canonical spelling the formatter writes back (carve#787).
 
 The counts here are documents, not runs: an engine that misses one case on two
 targets is one document behind, not two.
@@ -391,26 +391,41 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=625 targets=html,markdown,plain,carve,ansi
-rust: pass=623/625 mismatch=2 error=0 skipped=0 runs=3065 avg_ms=2.39
+profile=default/no-opt-in corpus=core corpus_pairs=637 targets=html,markdown,plain,carve,ansi
+rust: pass=638/649 mismatch=11 error=0 skipped=0 runs=3185 avg_ms=2.89
   mismatch: carve 16-reference-link-4
   mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
-js: pass=622/625 mismatch=3 error=0 skipped=0 runs=3065 avg_ms=57.01
+  mismatch: html 225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-2
+  mismatch: html 225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-3
+  mismatch: html 225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-4
+  mismatch: html 225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-5
+  mismatch: html 225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink
+  mismatch: html 226-a-definition-attached-by-a-continuation-marker-is-collected-and-the-item-keeps-no-trace
+  mismatch: html 227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace-2
+  mismatch: html 227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace
+  mismatch: html 228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block
+  mismatching documents: 11
+js: pass=644/649 mismatch=5 error=0 skipped=0 runs=3185 avg_ms=70.32
   mismatch: carve 16-reference-link-4
   mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
-  mismatch: html 222-a-tab-as-the-first-character-of-a-definition-term
-php: pass=622/625 mismatch=3 error=0 skipped=0 runs=3065 avg_ms=52.44
+  mismatch: html 225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-5
+  mismatch: html 227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace
+  mismatch: html 228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block
+  mismatching documents: 5
+php: pass=645/649 mismatch=4 error=0 skipped=0 runs=3185 avg_ms=64.65
   mismatch: carve 16-reference-link-4
   mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
-  mismatch: html 222-a-tab-as-the-first-character-of-a-definition-term
-cross_impl_diffs=8
+  mismatch: html 227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace-2
+  mismatch: html 227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace
+  mismatching documents: 4
+cross_impl_diffs=21
 
 Target agreement (implementations compared against each other)
-html: compared=613 diffs=1 errors=0 fixtures=yes
-markdown: compared=613 diffs=1 errors=0 fixtures=1
-plain: compared=613 diffs=1 errors=0 fixtures=1
-carve: compared=613 diffs=4 errors=0 fixtures=10
-ansi: compared=613 diffs=1 errors=0 fixtures=none
+html: compared=637 diffs=9 errors=0 fixtures=yes
+markdown: compared=637 diffs=2 errors=0 fixtures=1
+plain: compared=637 diffs=2 errors=0 fixtures=1
+carve: compared=637 diffs=6 errors=0 fixtures=10
+ansi: compared=637 diffs=2 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix

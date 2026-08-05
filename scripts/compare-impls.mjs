@@ -879,10 +879,13 @@ for (const impl of active) {
   // with nothing to act on: the run took twenty minutes and finding the one
   // case meant re-running every fixture by hand. Same defect ast:check had
   // before carve#670.
-  for (const name of s.mismatched.slice(0, 10)) console.log(`  mismatch: ${name}`)
-  if (s.mismatched.length > 10) {
-    console.log(`  ... and ${s.mismatched.length - 10} more`)
-  }
+  // ALL of them, not the first ten. This block is pasted verbatim into
+  // docs/implementation-comparison.md, so a truncated list publishes a snapshot
+  // whose hidden rows are exactly the ones a reader would act on - and the
+  // page's own per-engine `N / M` is derived by COUNTING these lines, which a
+  // cap makes impossible to do correctly (carve#804).
+  for (const name of s.mismatched) console.log(`  mismatch: ${name}`)
+  console.log(`  mismatching documents: ${new Set(s.mismatched.map((m) => m.split(' ').pop())).size}`)
 }
 console.log(`cross_impl_diffs=${crossImplDiffs}`)
 if (roundtrip) {

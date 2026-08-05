@@ -1,0 +1,24 @@
+A continuation row carries no trailing text
+
+```
+| a | b |
++ c | d |
+.
+<table>
+  <tbody>
+    <tr><td>a c</td><td>b d</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
++ c | d | junk
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+<p>+ c | d | junk</p>
+```

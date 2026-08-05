@@ -1,0 +1,11 @@
+An uppercase roman numeral is a list marker
+
+```
+I. one
+II. two
+.
+<ol type="I">
+  <li>one</li>
+  <li>two</li>
+</ol>
+```
