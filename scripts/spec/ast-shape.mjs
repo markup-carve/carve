@@ -75,3 +75,34 @@ export function shapePaths(shape, path = '$') {
   }
   return out
 }
+
+/**
+ * Which engine, if any, stands ALONE on one document.
+ *
+ * Kept here as a pure function rather than inline in the runner so it can be
+ * tested directly. The runner's version of this could not fail on purpose: the
+ * only way to see it classify a three-way split was to find a document that
+ * produced one, which is the same reason the gap it closes went unnoticed
+ * (carve#747).
+ *
+ * `signatures` is an array of [engine, signature] in a stable order, one entry
+ * per independent engine. A signature of `undefined` means that engine produced
+ * no tree for the document, which is a finding of its own and not a
+ * disagreement about shape - so the document is skipped rather than counted as a
+ * split.
+ */
+export function classifyShapeDisagreement(signatures) {
+  if (signatures.length < 3) return { kind: 'skipped', reason: 'fewer than three engines' }
+  if (signatures.some(([, signature]) => signature === undefined)) {
+    return { kind: 'skipped', reason: 'an engine produced no tree' }
+  }
+  const [[, a], [, b], [, c]] = signatures
+  if (a === b && b === c) return { kind: 'unanimous' }
+  // Two agree and one does not: name the one that does not, WHICHEVER it is.
+  // Naming it only when it is not the reference is the defect this replaces.
+  if (a === b) return { kind: 'alone', engine: signatures[2][0] }
+  if (b === c) return { kind: 'alone', engine: signatures[0][0] }
+  if (a === c) return { kind: 'alone', engine: signatures[1][0] }
+
+  return { kind: 'three-way' }
+}

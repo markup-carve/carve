@@ -41,7 +41,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
-import { shapeOf, shapePaths } from './spec/ast-shape.mjs'
+import { classifyShapeDisagreement, shapeOf, shapePaths } from './spec/ast-shape.mjs'
 import { checkPositions } from './spec/ast-positions.mjs'
 import { checkReferenceFields } from './spec/ast-references.mjs'
 
@@ -110,6 +110,19 @@ const phpDir = process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php')
  * position fixes dropped the finding count below 40 and the document came back
  * into view.
  */
+/*
+ * How much output a per-document subprocess may produce.
+ *
+ * execFileSync defaults to 1 MB and REJECTS past it, so the runner used to
+ * report `spawnSync php ENOBUFS` as a carve-php finding on
+ * 182-openers-past-the-nesting-cap-are-one-paragraph - a document whose
+ * serialized tree is larger than that. The engine was fine; the buffer was the
+ * runner's. Worse, the document then dropped out of the three-way comparison
+ * with two votes left, so the run counted a harness limit as an engine defect
+ * AND quietly stopped comparing the one document most likely to expose one.
+ */
+const MAX_SUBPROCESS_OUTPUT = 256 * 1024 * 1024
+
 const DISPLAY_LIMIT = Number(process.env.CARVE_DISPLAY_LIMIT ?? 8)
 
 /**
@@ -260,6 +273,113 @@ function checkShapeParity(name, doc, findings) {
 }
 
 const referenceShapes = new Map()
+
+/**
+ * Every independent engine's tree signature, kept so the run can compare the
+ * engines to EACH OTHER and not only to the one that was chosen as reference.
+ *
+ * `checkShapeParity` above measures agreement with carve-js, which means a
+ * carve-js defect is unfalsifiable here: when the reference is the odd one out,
+ * the run reports it as two engines failing (carve#747). Two were found by hand
+ * that this could not surface - a reference image with a caption serialized as a
+ * paragraph while the same engine's HTML said figure (carve-js#680), and the
+ * generated heading id carried in the tree against §3a, which differed on 41 of
+ * 610 documents (carve-js#697).
+ *
+ * carve-rb is deliberately NOT in the panel: it serializes carve-rs's tree, so
+ * counting it would give that engine two votes and make a real carve-rs
+ * divergence look like a majority.
+ */
+const INDEPENDENT_ENGINES = ['carve-js', 'carve-rs', 'carve-php']
+let panelRan = false
+const enginePaths = new Map()
+
+function recordShape(engine, name, doc) {
+  let perDoc = enginePaths.get(engine)
+  if (!perDoc) {
+    perDoc = new Map()
+    enginePaths.set(engine, perDoc)
+  }
+  perDoc.set(name, shapePaths(shapeOf(doc)).join('\n'))
+}
+
+/**
+ * Name the engine that stands alone on a document, whichever engine it is.
+ *
+ * WHAT THIS CAN SEE: `shapeOf` keeps node types and nested structure, so an
+ * extra object field (`attrs` where the source has no `{`), a different node
+ * type, or a different number of children all show up. WHAT IT CANNOT: a scalar
+ * field, because shapeOf drops scalars - a missing `number` or a different `id`
+ * is invisible here and belongs to the schema and the field-level checks. Said
+ * out loud because a panel that looks broader than it is would be worse than no
+ * panel: the run would read as "the engines agree" when it only means "the
+ * engines agree about shape".
+ *
+ * Returns the number of documents on which the REFERENCE stood alone, which is
+ * the class this whole panel exists for.
+ */
+function reportEngineDisagreement() {
+  const present = INDEPENDENT_ENGINES.filter((engine) => enginePaths.has(engine))
+  if (present.length < INDEPENDENT_ENGINES.length) {
+    const missing = INDEPENDENT_ENGINES.filter((engine) => !enginePaths.has(engine))
+    console.log(`THREE-WAY COMPARISON NOT RUN: ${missing.join(', ')} contributed no trees.`)
+    console.log('  A majority needs three independent engines. This is not a pass.\n')
+
+    return 0
+  }
+
+  panelRan = true
+  const alone = new Map(present.map((engine) => [engine, []]))
+  const threeWay = []
+  let unanimous = 0
+  let compared = 0
+  let skipped = 0
+  for (const name of enginePaths.get(INDEPENDENT_ENGINES[0]).keys()) {
+    const verdict = classifyShapeDisagreement(
+      present.map((engine) => [engine, enginePaths.get(engine).get(name)]),
+    )
+    if (verdict.kind === 'skipped') {
+      skipped += 1
+      continue
+    }
+    compared += 1
+    if (verdict.kind === 'unanimous') unanimous += 1
+    else if (verdict.kind === 'alone') alone.get(verdict.engine).push(name)
+    else threeWay.push(name)
+  }
+
+  console.log(`THREE-WAY SHAPE COMPARISON (${compared} documents, ${unanimous} unanimous)`)
+  for (const engine of present) {
+    const docs = alone.get(engine)
+    if (docs.length === 0) continue
+    console.log(`  ${engine} stood alone on ${docs.length}: ${examples(docs)}`)
+  }
+  if (threeWay.length > 0) {
+    console.log(`  all three differed on ${threeWay.length}: ${examples(threeWay)}`)
+  }
+  if (compared === unanimous) console.log('  no engine stood alone.')
+  // A document one engine could not serialize leaves the panel with two votes,
+  // so it is not compared. Say how many, or a run where half the corpus dropped
+  // out reads the same as one where none did.
+  if (skipped > 0) {
+    console.log(`  ${skipped} document(s) not compared - an engine produced no tree for them.`)
+  }
+  console.log('')
+
+  return alone.get('carve-js').length
+}
+
+/**
+ * Up to three names, and a count for the rest. A single example is enough to
+ * reproduce one finding and not enough to see a pattern, which matters most
+ * here: three documents that share a cause are one defect, and three that do
+ * not are three.
+ */
+function examples(names) {
+  const shown = names.slice(0, 3).join(', ')
+
+  return names.length > 3 ? `${shown} (+${names.length - 3} more)` : shown
+}
 
 /**
  * PART 12 §1a: a node's children hold no two adjacent `text` nodes.
@@ -451,6 +571,7 @@ for (const { name, source } of samples) {
   }
   checkDocument(name, doc, source, jsFindings)
   referenceShapes.set(name, shapeOf(doc))
+  recordShape('carve-js', name, doc)
 
   // PART 12 §6: serialize then DESERIALIZE must equal the parse. Through the
   // engine's own reader - `fromAstJson` - which is the half the clause is about.
@@ -499,6 +620,7 @@ if (rsBinary) {
           // refuses every document would otherwise print 500 identical lines
           // over the report instead of one counted finding.
           stdio: ['pipe', 'pipe', 'pipe'],
+          maxBuffer: MAX_SUBPROCESS_OUTPUT,
         }),
       )
     } catch (error) {
@@ -515,9 +637,11 @@ if (rsBinary) {
         input: payload,
         encoding: 'utf8',
         stdio: ['pipe', 'pipe', 'pipe'],
+        maxBuffer: MAX_SUBPROCESS_OUTPUT,
       }),
     )
     checkShapeParity(name, doc, rsFindings)
+    recordShape('carve-rs', name, doc)
   }
   const rsBuild = buildStatus(rsBinary, resolve(rsDir, 'src'), ['.rs'])
   if (rsBuild.stale) staleBuilds.push('carve-rs')
@@ -546,6 +670,7 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
           encoding: 'utf8',
           env: { ...process.env },
           stdio: ['pipe', 'pipe', 'pipe'],
+          maxBuffer: MAX_SUBPROCESS_OUTPUT,
         },
       )
       doc = JSON.parse(out)
@@ -592,6 +717,7 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
         encoding: 'utf8',
         env: { ...process.env },
         stdio: ['pipe', 'pipe', 'pipe'],
+        maxBuffer: MAX_SUBPROCESS_OUTPUT,
       })
       doc = JSON.parse(out)
     } catch (error) {
@@ -600,6 +726,7 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
     }
     checkDocument(name, doc, source, phpFindings)
     checkShapeParity(name, doc, phpFindings)
+    recordShape('carve-php', name, doc)
     checkIngestIdentity(name, doc, phpFindings, (payload) =>
       // No '-' argument: this CLI reads stdin when no file is given and
       // rejects a dash as an unknown option.
@@ -609,6 +736,7 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
         encoding: 'utf8',
         env: { ...process.env },
         stdio: ['pipe', 'pipe', 'pipe'],
+        maxBuffer: MAX_SUBPROCESS_OUTPUT,
       }),
     )
   }
@@ -700,6 +828,38 @@ if (notMeasured.length > 0) {
   }
 } else {
   console.log('All satellites measured.\n')
+}
+
+// The panel carve#747 asks for, run after every engine has contributed. Placed
+// BEFORE the gates below so it prints even on a run that exits on §1a: a
+// disagreement the run cannot attribute is exactly what someone reading a failed
+// run needs to see.
+const referenceStoodAlone = reportEngineDisagreement()
+
+// NOT A GATE, deliberately. In this fleet a fix lands in one engine first and is
+// ported over the following days, so the engine that is RIGHT is routinely the
+// odd one out for a while. Failing on that would put this repo red after every
+// correct carve-js change, and the fix for a red build would be to wait.
+//
+// A ratchet against recorded counts was the other option and is worse: it makes
+// a rule that is currently violated read as a rule that is currently enforced,
+// which is the failure this whole panel exists to undo, one level up.
+//
+// So: attribute it loudly and let the issue tracker carry it. What IS gated is
+// the panel having RUN - see below - because "no engine stood alone" printed
+// over two engines is the vacuous pass that started all of this.
+if (referenceStoodAlone > 0) {
+  console.log(`REFERENCE STOOD ALONE on ${referenceStoodAlone} document(s).`)
+  console.log('  Every "tree differs from the reference" line above for those documents')
+  console.log('  is attributed to the wrong engine: the other two agreed with each other.\n')
+}
+
+// The panel is the only check here that can be vacuous while printing a clean
+// line, because it needs three engines to have a majority at all. Under the flag
+// CI sets, a panel that did not run is a failure rather than a sentence.
+if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1' && !panelRan) {
+  console.error('CARVE_REQUIRE_ALL_ENGINES=1 and the three-way comparison did not run.')
+  process.exit(1)
 }
 
 // §1a GATES. Every other finding class here is reported and counted; this one
