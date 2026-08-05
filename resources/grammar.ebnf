@@ -3225,8 +3225,14 @@ EOF = (* end of file *) ;
              settled (corpus 186). Folding it would make the comment VISIBLE, which
              is the one outcome a comment may never have, and an indented
              comment at the top level is already invisible for the same
-             reason. It does not close the item either: a following line
-             continues the item paragraph across it. (carve#618)
+             reason. It does not close the ITEM either: a following line still
+             belongs to the item rather than parsing at document level
+             (carve#618). It does end the open PARAGRAPH, though, so that line
+             begins the item's SECOND paragraph rather than continuing the
+             first. One sentence used to make both claims and only the first
+             was true; nothing pinned the difference, because it shows only in
+             a LOOSE list -- in a tight one both readings render the same
+             (carve#677).
            - AT content_column: dedented to the body's column 0, a block
              opener nests and a list marker opens a sublist.
            - ABOVE content_column: the residual indent means the line is no

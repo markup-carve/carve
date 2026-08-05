@@ -7581,7 +7581,7 @@ x</p>
 
 ## A comment is recognized at any column
 
-Every other construct below an item's content column folds as text (§24 C3), but a comment is invisible by nature and authors indent one freely, so it is found wherever it sits. Folding it would make `%% c` visible, which is the one outcome a comment may never have. The item stays open, so a following line continues it.
+Every other construct below an item's content column folds as text (§24 C3), but a comment is invisible by nature and authors indent one freely, so it is found wherever it sits. Folding it would make `%% c` visible, which is the one outcome a comment may never have. The item stays open, so a following line still belongs to it.
 
 ::: compare
 
@@ -7600,6 +7600,7 @@ b
 ```
 
 :::
+
 
 ## A definition below every content column folds as text
 
@@ -8053,6 +8054,31 @@ once, and they do different things.
 
 ```html
 <p class="a"><a href="/u" class="b">E</a> and text</p>
+```
+
+:::
+
+## A comment ends the paragraph it sits under
+
+Staying open is not the same as staying in the same *paragraph*. A comment renders nothing, but it is still a block boundary: the line after it begins the item's **second** paragraph. A tight list renders both readings identically, which is why the distinction needs a loose one to show at all - and why the rule went unstated while the sentence above it appeared to promise the opposite.
+
+::: compare
+
+```carve
+- a
+  %% x
+ b
+
+- c
+```
+
+```html
+<ul>
+  <li><p>a</p>
+    <p>b</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
 ```
 
 :::

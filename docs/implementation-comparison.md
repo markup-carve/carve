@@ -17,46 +17,59 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>583 / 583</strong>
+    <strong>584 / 584</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>583 / 583</strong>
+    <strong>584 / 584</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>583 / 583</strong>
+    <strong>584 / 584</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>32</strong>
+    <strong>0</strong>
     <span>cross-implementation diffs</span>
   </div>
 </div>
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `ad865aa` | `583 / 583` | `0` | `0` | `3.52` |
-| JS | `c3aa467` | `583 / 583` | `0` | `0` | `90.27` |
-| PHP | `aa4a900` | `583 / 583` | `0` | `0` | `81.66` |
+| Rust | `0c3e043` | `584 / 584` | `0` | `0` | `2.57` |
+| JS | `45a20e9` | `584 / 584` | `0` | `0` | `60.74` |
+| PHP | `ed77e6a` | `584 / 584` | `0` | `0` | `55.91` |
 
-Spec commit: `18794fe`
+Spec commit: `b539d14`, plus the corpus case this change adds
 
-Every engine renders every fixture case on every target that has one - 583 of
-583, zero mismatches and zero errors in all three - and `html`, `markdown`,
-`plain` and `ansi` agree everywhere. All 32 diffs are on the `carve` target,
-where the parse agrees and only the canonical spelling differs.
+Every engine renders every fixture case on every target that has one - 584 of
+584, zero mismatches and zero errors in all three - and every target agrees
+everywhere, `carve` included.
 
-The jump from 5 to 32 is one defect, not a regression in coverage. carve-js
-stopped inflating a nested list (markup-carve/carve-js#653): each level had been
-indented twice, once by an absolute depth term and again by the parent item's
-continuation prefix, so `fmt` returned O(depth^3) bytes for an O(depth^2)
-source. carve-rs and carve-php still do, identically - 130 bytes in, 460 out at
-depth 10 - so fixing the third engine left them as the outliers on every corpus
-case containing a nested list. Filed as markup-carve/carve-rs#594,
-markup-carve/carve-php#792 and markup-carve/carve#662. Idempotence and the round
-trip both still hold in all three, so this is a fidelity and size defect rather
-than a §1 violation.
+That last part is new. The `carve` target carried 32 diffs in the previous
+snapshot and 5 the run before that, and it is the only target that ever has:
+the parse agrees, and what differed was the canonical spelling a formatter
+writes back. Three defects accounted for all of them.
+
+- **Nested lists inflated.** Each level was indented twice, once by an absolute
+  depth term and again by the parent item's continuation prefix, so `fmt`
+  returned O(depth^3) bytes for an O(depth^2) source. Fixed in all three
+  (markup-carve/carve-js#653, markup-carve/carve-rs#597,
+  markup-carve/carve-php#801); the round-trip fixture that pinned the inflating
+  form moved with them.
+- **A comment body took its fence's column twice**, so a body line came back one
+  column deeper than the other two engines wrote it
+  (markup-carve/carve-rs#603).
+- **A collected definition left a placeholder comment in the tree**, which the
+  writer then serialized as a `%%` nobody typed - and which made an emptied item
+  look non-empty, so it was spelled `- %%` where the others write `- +`
+  (markup-carve/carve-rs#606).
+
+None of the three could fail anything while they existed: a comment renders
+nothing, so `to_html(fmt(x)) == to_html(x)` held either way, and each engine was
+idempotent about the spelling it had chosen. The `carve` target had no
+expected-output fixtures, so agreement between engines was its only check
+(markup-carve/carve#671). It has ten now.
 
 > This run shared a loaded machine, so its per-file times run high and mean
 > little against the previous snapshot's. The counts are what this table is
@@ -304,18 +317,18 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=583 targets=html,markdown,plain,carve,ansi
-rust: pass=590/590 mismatch=0 error=0 skipped=0 runs=2915 avg_ms=3.52
-js: pass=590/590 mismatch=0 error=0 skipped=0 runs=2915 avg_ms=90.27
-php: pass=590/590 mismatch=0 error=0 skipped=0 runs=2915 avg_ms=81.66
-cross_impl_diffs=32
+profile=default/no-opt-in corpus=core corpus_pairs=584 targets=html,markdown,plain,carve,ansi
+rust: pass=596/596 mismatch=0 error=0 skipped=0 runs=2920 avg_ms=2.57
+js: pass=596/596 mismatch=0 error=0 skipped=0 runs=2920 avg_ms=60.74
+php: pass=596/596 mismatch=0 error=0 skipped=0 runs=2920 avg_ms=55.91
+cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=583 diffs=0 errors=0 fixtures=yes
-markdown: compared=583 diffs=0 errors=0 fixtures=1
-plain: compared=583 diffs=0 errors=0 fixtures=1
-carve: compared=583 diffs=32 errors=0 fixtures=5
-ansi: compared=583 diffs=0 errors=0 fixtures=none
+html: compared=584 diffs=0 errors=0 fixtures=yes
+markdown: compared=584 diffs=0 errors=0 fixtures=1
+plain: compared=584 diffs=0 errors=0 fixtures=1
+carve: compared=584 diffs=0 errors=0 fixtures=10
+ansi: compared=584 diffs=0 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix
