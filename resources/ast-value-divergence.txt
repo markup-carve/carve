@@ -29,5 +29,5 @@
 heading.attrs.id        45  carve-js publishes a GENERATED heading id, carve-rs and carve-php publish none (carve#750)
 table_cell.align         5  carve-php puts the column alignment on BODY cells, the other two on the header row only (carve#784)
 code_block.attrs.order   4  a fence title's synthesized key gets an order entry in carve-rs and carve-php, not in carve-js (carve#785)
-text.escapedLeadingCaret 1  carve-js publishes a flag beside the escaped_text node it duplicates; nothing else has it (carve#793)
 paragraph.attrs.order    1  carve-php lists a repeated attribute key twice where keyValues holds it once (carve-php#878)
+list.tight                1  carve-rs has not implemented the clause behind corpus 228 yet, so it builds a loose list where the other two build a tight one - the HTML comparison reports the same document (carve#801)
