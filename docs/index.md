@@ -35,7 +35,7 @@ features:
   - title: Built-in Extensions
     details: ":type[content]{attrs} for keyboard hints, semantic spans, video embeds. @mentions and #tags as you'd expect from social platforms."
   - title: Safe With Untrusted Input
-    details: "Always-on URL-scheme and attribute hardening, Trojan-Source stripping, and linear-time DoS limits neutralize the common Markdown attack classes with no separate sanitizer. Raw HTML is gated behind one switch (with a built-in safe mode), and Carve never executes embedded code (unlike MDX)."
+    details: "Always-on URL-scheme and attribute hardening, Trojan-Source stripping, and linear-time DoS limits neutralize the common Markdown attack classes with no separate sanitizer. Raw HTML passthrough is the one switch you own: on by default, off with a single flag or a safe mode. Carve never executes embedded code (unlike MDX)."
 ---
 
 ## Quick Reference
