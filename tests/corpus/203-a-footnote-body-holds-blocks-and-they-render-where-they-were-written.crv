@@ -1,0 +1,9 @@
+[^a]: intro
+
+  | a |
+  | - |
+  | b |
+
+  closing line.
+
+see[^a]

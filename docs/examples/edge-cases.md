@@ -8204,3 +8204,42 @@ see[^a] and [t][r]
 
 :::
 
+
+## A footnote body holds blocks, and they render where they were written
+
+A note body is a container: it holds blocks, not just inline content, and each renders at the body's own indentation. The body here ends in a PARAGRAPH deliberately - where a note ends in a table, a code block or a list instead, the engines disagree about where the backlink goes (carve#688), and pinning that shape would pin one answer by accident.
+
+::: compare
+
+```carve
+[^a]: intro
+
+  | a |
+  | - |
+  | b |
+
+  closing line.
+
+see[^a]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>intro</p>
+      <table>
+        <thead><tr><th>a</th></tr></thead>
+        <tbody>
+          <tr><td>b</td></tr>
+        </tbody>
+      </table>
+      <p>closing line.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
