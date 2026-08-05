@@ -76,7 +76,14 @@ export function renderDoc(doc) {
   // inline form is caught at paragraph-render time (IMG_ONLY above), but an
   // image REFERENCE is still a sentinel then and only becomes an <img> here,
   // so the same unwrap has to run once resolution has happened.
-  html = html.replace(/<p>(<img [^>]*>)<\/p>/g, '$1')
+  // The paragraph's own block attributes come with it, spliced into the tag the
+  // same way the inline path does at renderBlock. Matching only a bare `<p>`
+  // left `{.block}` above an image REFERENCE rendering as
+  // `<p class="block"><img ...></p>`, where the direct form one line up gives a
+  // bare `<img class="block" ...>`.
+  html = html.replace(/<p( [^>]*)?>(<img [^>]*>)<\/p>/g, (_m, pattrs, img) =>
+    pattrs ? img.replace('<img ', `<img${pattrs} `) : img,
+  )
   html = resolveCrossrefs(html, ctx)
   html = applyAbbreviations(html, ctx)
   return html
