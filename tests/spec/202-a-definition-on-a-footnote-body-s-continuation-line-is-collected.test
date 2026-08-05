@@ -1,0 +1,18 @@
+A definition on a footnote body's continuation line is collected
+
+```
+[^a]: note
+  [r]: /u
+
+see[^a] and [t][r]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and <a href="/u">t</a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```

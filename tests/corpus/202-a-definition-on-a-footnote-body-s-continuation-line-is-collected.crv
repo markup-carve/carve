@@ -1,0 +1,4 @@
+[^a]: note
+  [r]: /u
+
+see[^a] and [t][r]
