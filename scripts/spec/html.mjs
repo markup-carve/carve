@@ -375,12 +375,24 @@ function renderItem(item, list, depth, ctx) {
       // correctly and then dropped it on the way out - the one paragraph site
       // in this renderer that did (carve#626).
       //
-      // A TIGHT item renders its paragraph without a `<p>`, and there is
-      // nowhere to hang the attributes; that shape cannot occur, because an
-      // attribute line arrives after a blank and a blank plus a visible
-      // paragraph is what makes the item loose.
+      // A TIGHT item renders its paragraph WITHOUT a `<p>` - unless that
+      // paragraph carries attributes, which need an element to live on. So the
+      // wrapper is decided by the attributes, not by tightness alone.
+      //
+      // The comment here used to claim the shape could not occur, on the theory
+      // that an attribute line only ever arrives after a blank and a blank plus
+      // a visible paragraph makes the item loose. That was never checked and is
+      // false: `- a` / `  {.c}` / `  text` has no blank at all, stays tight, and
+      // dropped the attribute - and with the attribute line FIRST (`- {.c}` /
+      // `  text`) the `<p>` went with it. All three engines wrap in both shapes
+      // (carve#696).
+      //
+      // `inlineable` stays true either way: the item layout below puts a wrapped
+      // paragraph on its own indented line when it is not the first part, which
+      // is exactly what the engines emit.
       const pattrs = b.battrs ? renderBlockAttrs(b.battrs) : ''
-      parts.push({ inlineable: true, html: list.tight ? html : `<p${pattrs}>${html}</p>` })
+      const bare = list.tight && pattrs === ''
+      parts.push({ inlineable: true, html: bare ? html : `<p${pattrs}>${html}</p>` })
     } else {
       parts.push({ inlineable: false, html: renderBlock(b, depth + 1, ctx) })
     }
