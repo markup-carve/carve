@@ -3430,12 +3430,32 @@ EOF = (* end of file *) ;
         the parser has just accepted, and truncation on the render path
         deletes content silently instead of degrading it to literal text.
         The render ceiling MUST therefore EXCEED MAX_NESTING_DEPTH by enough
-        to cover the blocks a container subtree adds; the reference uses
-        MAX_NESTING_DEPTH + 32. This sentence previously required the SAME
-        ceiling on both paths, and all three engines complied: at exactly
-        MAX_NESTING_DEPTH the canonical writer dropped the innermost
-        paragraph and the Markdown / plain-text / ANSI renderers dropped the
-        whole document.
+        to cover the blocks a container subtree adds. This sentence
+        previously required the SAME ceiling on both paths, and all three
+        engines complied: at exactly MAX_NESTING_DEPTH the canonical writer
+        dropped the innermost paragraph and the Markdown / plain-text / ANSI
+        renderers dropped the whole document.
+
+        THE MARGIN IS A MULTIPLE OF MAX_NESTING_DEPTH, NOT A FIXED OFFSET
+        BORROWED FROM ANOTHER IMPLEMENTATION'S UNIT -- the same shape as
+        PART 12 §9(c)'s ingest-bound trap, at the other end of the same pipe.
+        A render pass MAY count depth in whatever unit its own recursion
+        uses, container depth (one step per nesting level) or AST node
+        levels among them, and the conversion factor between units is NOT 1:
+        a list level costs ONE container-depth step but TWO AST node levels
+        (`list`, then `list_item`) before its body reads as a further level
+        down. A margin sized for one unit does not carry over to the other.
+        This repo's reference counts container depth and uses
+        MAX_NESTING_DEPTH + 32 = 232, a fixed offset that happens to be a
+        1.16x multiple in ITS unit; stating that SAME NUMBER as a fixed
+        offset in an AST-node-counting implementation understates the
+        multiple it actually needs by roughly half, and an ordinary
+        120-level list ladder -- well inside the parse cap of 200 -- reached
+        such a ceiling and silently dropped the innermost content
+        (carve#650). An implementation MUST THEREFORE STATE its margin as A
+        MULTIPLE OF MAX_NESTING_DEPTH derived from the worst per-level cost
+        of ITS OWN unit (as PART 12 §9(c) already requires for the ingest
+        bound), not adopt another implementation's absolute number.
 
         AT THE RENDER CEILING, A RENDERER REFUSES -- NORMATIVE. Reaching it
         MUST produce a typed, documented failure naming the depth bound. NOT
@@ -3448,11 +3468,16 @@ EOF = (* end of file *) ;
         a truncated string tells the caller exactly as little.
 
         Refusing rather than clamping costs nothing on any path a document
-        travels. The ceiling exceeds MAX_NESTING_DEPTH by construction, so no
-        tree from `parse` can reach it, and §9(b) already refuses an ingested
-        tree deeper than the parser's own limit. What is left is a tree built
-        through the API, where the caller is the one who built it and is the
-        one who can act on the error.
+        travels. A ceiling derived per the margin rule above exceeds
+        MAX_NESTING_DEPTH BY CONSTRUCTION IN ITS OWN UNIT, so no tree from
+        `parse` can reach it, and §9(b) already refuses an ingested tree
+        deeper than the parser's own limit. "By construction" is a property
+        of the DERIVATION, not of any single borrowed number -- a ceiling
+        that copies another implementation's margin instead of deriving its
+        own is not exceeding anything by construction, it is a coincidence
+        that holds for one unit and fails for another. What is left is a
+        tree built through the API, where the caller is the one who built it
+        and is the one who can act on the error.
 
         Truncation is not the safe default it looks like. The parse path
         degrades VISIBLY -- an over-cap opener becomes literal text the reader
