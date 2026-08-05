@@ -5196,8 +5196,36 @@ EOF = (* end of file *) ;
    5. WHAT IS NOT IN THE SERIALIZED FORM. Formatter-internal nodes (PART 11,
       and the `raw_text` case profiles.md excludes) are not part of the
       document and are not serialized. Resolution results that a consumer can
-      recompute - footnote numbering, caption numbers - ARE serialized, because
-      recomputing them requires reimplementing PART 9R.
+      recompute - footnote numbering, caption numbers, a generated heading id -
+      ARE serialized, because recomputing them requires reimplementing PART 9R.
+
+      A GENERATED HEADING ID IS A RESOLUTION RESULT -- NORMATIVE. A `heading`
+      whose id was slugged from its text rather than written carries that id in
+      `attrs.id`, the slot an authored `{#id}` occupies, and carries it in the
+      resolved tree exactly as the two values above do.
+
+      The criterion is §5's own: recomputability. A heading id is NOT a function
+      of the heading. Dedup assigns the next free suffix in document order, so
+      two `# Notes` headings yield `Notes` and then `Notes-2` (PART 9 §13; the
+      slug and dedup rules are syntax.md §4.1, and PART 9 §13's namespace is
+      shared with every other generated id). Deriving the second one therefore
+      requires having seen every heading before it and replicating the dedup
+      spelling, in the same order. A consumer holding only the tree cannot do
+      that, and a table of contents, a go-to-definition jump and a
+      cross-document index each need the exact id, not a plausible one. This is
+      a stronger case than footnote numbering, where the missing state is a
+      counter the consumer could keep itself.
+
+      §3a IS NOT IN TENSION WITH THIS. §3a forbids folding a resolution result
+      in place of the construct the author wrote; here nothing authored is
+      replaced. The id is published beside the heading's other attributes, the
+      same way a resolved crossref keeps `target` and gains `href`.
+
+      carve-js publishes the field. carve-rs and carve-php publish no `attrs`
+      for a heading at all, which is the null state rather than a decision
+      (carve#750); the gap is declared in resources/ast-value-divergence.txt
+      until each lands a producer, so `scripts/ast-conformance.mjs` reports it
+      by count rather than treating it as new.
 
    6. ROUND TRIP. `parse(x)` serialized and deserialized MUST equal `parse(x)`.
       A serializer that loses a field is not a lossy convenience; it is a
