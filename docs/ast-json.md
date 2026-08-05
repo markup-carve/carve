@@ -308,11 +308,22 @@ reference stays a `link` rather than reverting to literal source, so no node has
 to carry text that must not be escaped again.
 
 Resolution results a consumer could recompute - footnote numbering, caption
-numbers - **are** serialized, because recomputing them means reimplementing the
-resolution rules. Those are **added alongside** the authored construct, not
-substituted for it: a resolved footnote reference keeps its label and gains its
-number, and a resolved reference link keeps its `ref` and `rawRef` and gains its
-`href`.
+numbers, a generated heading id - **are** serialized, because recomputing them
+means reimplementing the resolution rules. Those are **added alongside** the
+authored construct, not substituted for it: a resolved footnote reference keeps
+its label and gains its number, and a resolved reference link keeps its `ref` and
+`rawRef` and gains its `href`.
+
+A generated heading id is the strongest case of the three, and §5 names it for
+that reason. It is not a function of the heading: dedup takes the next free
+suffix in document order, so `# Notes` twice gives `Notes` and then `Notes-2`,
+and deriving the second one means having replayed every heading before it. A
+consumer holding only the tree - a table of contents, an LSP go-to-definition, a
+cross-document index - cannot do that, so the id rides in `heading.attrs.id`
+beside an authored `{#id}` rather than being left to be guessed. carve-js
+publishes it today; carve-rs and carve-php do not, a divergence declared in
+`resources/ast-value-divergence.txt` until each lands a producer
+([carve#750](https://github.com/markup-carve/carve/issues/750)).
 
 ## Conformance status
 

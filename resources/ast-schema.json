@@ -1241,7 +1241,8 @@
           }
         },
         "attrs": {
-          "$ref": "#/$defs/attrs"
+          "$ref": "#/$defs/attrs",
+          "description": "`id` holds the heading's id whether the author wrote `{#id}` or it was slugged from the heading text. A GENERATED id is assigned during resolution and is a resolution result under PART 12 §5, serialized because recomputing it means replaying every earlier heading and the dedup suffix rule (`Notes`, then `Notes-2`) - a consumer holding only the tree cannot derive it."
         },
         "pos": {
           "$ref": "#/$defs/pos"
