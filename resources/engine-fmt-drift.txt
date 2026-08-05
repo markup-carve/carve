@@ -1,0 +1,26 @@
+# Corpus documents the PINNED writer (`carveToCarve`) does not round-trip.
+#
+# resources/engine-pin-drift.txt declares slugs the pin renders DIFFERENTLY
+# from the corpus. This file is the writer's OWN counterpart: a slug the pin
+# READS correctly but cannot faithfully WRITE back out, so re-parsing its own
+# `fmt` output disagrees with the original - caught by
+# tests/corpus-fmt-roundtrip.test.mjs (self-consistency,
+# toHtml(fmt(x)) == toHtml(x)) and tests/corpus-fmt-cross-read.test.mjs (the
+# oracle reading the writer's output).
+#
+# Kept SEPARATE from resources/engine-pin-drift.txt on purpose:
+# `engine:report -- --check` (CI) requires that file's declared set to match
+# its own DIRECT render mismatches EXACTLY, and a slug whose direct render is
+# already correct would report there as STALE even though its round trip
+# still fails for an independent reason. A slug commonly needs an entry in
+# BOTH files (a pin that cannot even read a document right usually cannot
+# write it back right either) or in only this one (a pin that reads a
+# document fine but whose writer mangles it on the way back out).
+#
+# Both consuming tests read this file UNIONED with engine-pin-drift.txt, so a
+# slug declared over there for its direct-render mismatch does not also need
+# repeating here unless its round trip fails for a DIFFERENT, additional
+# reason worth naming.
+#
+# Format: <slug><space><space><reason>
+227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace-2  the pinned build's initial render is already correct (<dd></dd>, the footnote resolves) - only the writer is broken: fmt collapses ":  [^f]: x" down to a bare ":", which the pin then reads back as "<dt>term\n:</dt>" instead of a separate <dd>; carve#666, drops out once carve-js ships the fix

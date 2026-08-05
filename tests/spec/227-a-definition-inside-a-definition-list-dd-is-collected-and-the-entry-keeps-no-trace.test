@@ -1,0 +1,35 @@
+A definition inside a definition-list dd is collected, and the entry keeps no trace
+
+```
+:: term
+:  [r]: /u
+
+see [t][r]
+.
+<dl>
+  <dt>term</dt>
+  <dd></dd>
+</dl>
+<p>see <a href="/u">t</a></p>
+```
+
+```
+:: term
+:  [^f]: x
+
+see[^f]
+.
+<dl>
+  <dt>term</dt>
+  <dd></dd>
+</dl>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```

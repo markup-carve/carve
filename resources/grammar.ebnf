@@ -2920,11 +2920,13 @@ EOF = (* end of file *) ;
         spaces; single blank lines allowed between chunks), parsed as
         blocks. A definition is
         document-level metadata: it is COLLECTED and RESOLVED even when it
-        sits INSIDE A CONTAINER (a blockquote or a list item). The reference
-        resolves to the one endnotes section and the container that held the
-        definition renders EMPTY (the definition is not left behind as
-        content). The corpus pins this (docs/examples.md "Footnote
-        definition inside a container is collected").
+        sits INSIDE A CONTAINER. The reference resolves to the one endnotes
+        section and the container that held the definition renders as
+        though the line were never written -- §17 L6 states the general
+        rule once, for every block-level container that can hold a
+        definition, rather than enumerating them per definition kind. The
+        corpus pins this (docs/examples.md "Footnote definition inside a
+        container is collected").
       - A reference with NO matching definition renders as literal source
         text `[^label]` (a trailing `{attrs}` on an unresolved ref is not
         round-tripped -- a marginal mistyped-label edge). An UNREFERENCED
@@ -2986,9 +2988,13 @@ EOF = (* end of file *) ;
       `list` rendering and the continuation_marker productions in PART 2).
       L1 LOOSE(list) := some item is followed by a blank line before the
          next sibling marker, OR some item holds a blank-line-separated
-         second PARAGRAPH; otherwise TIGHT. A tight item's paragraph
-         renders WITHOUT `<p>` (<li>text</li>); a loose item's paragraphs
-         ARE wrapped (<li><p>text</p></li>).
+         second PARAGRAPH; otherwise TIGHT. Tightness is a property of the
+         WHOLE ITEM, not of an individual block: a tight item's paragraphs
+         ALL render WITHOUT `<p>` (<li>text</li>), every one of them, not
+         only the first; a loose item's paragraphs are ALL wrapped
+         (<li><p>text</p></li>). An item can hold more than one paragraph
+         block and still be tight -- L2 and L6 below cover the ways that
+         happens without a blank line ever appearing.
       L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER -- NORMATIVE. L1 asks
          whether the item holds a blank-line-separated second PARAGRAPH. It
          does not ask what the FIRST block was, and nothing here depends on
@@ -3081,6 +3087,54 @@ EOF = (* end of file *) ;
            paragraph) hold no child blocks; a heading is a bounded title.
          - FOOTNOTE DEFINITION bodies compose by indentation today; a `+`
            attach form is possible future work, deliberately OUT OF SCOPE.
+      L6 A COLLECTED DEFINITION LEAVES NO TRACE -- NORMATIVE (the general
+         rule for PART 9R R1/R2 COLLECTION, stated ONCE here for every
+         container that can hold a definition). A link reference or
+         footnote definition is document-level metadata: wherever it is
+         written, PASS 1 collects it into the shared symbol table and PASS
+         2 resolves uses against it from anywhere in the document (PART
+         9R). The BLOCK-LEVEL CONTEXT that held the definition line renders
+         as though that line were never written at all -- not an empty
+         paragraph standing in its place, not a blank line, not residual
+         whitespace. This holds for EVERY block-level context that can hold
+         block content: a LIST ITEM, a BLOCK QUOTE, a FOOTNOTE BODY (§16),
+         a DEFINITION-LIST `dd`, and a block attached by a `+` CONTINUATION
+         MARKER (L3/L4) alike -- one rule, not five separate ones stated
+         per container. A future container that can hold block content is
+         covered by the same rule without a new clause here: enumerating
+         "which containers collect" was considered and rejected, because an
+         enumeration re-opens the question for every container invented
+         afterward and leaves a silent gap exactly where nobody has
+         measured yet -- which is how the `+`-attached position went
+         unmeasured until three engines gave three different answers, one
+         of them leaving a blank line inside the item where the attached
+         definition used to be (carve#665), and how the `dd` position went
+         unmeasured until two engines produced the combination this rule
+         forbids on ANY reading -- the line renders nowhere AND defines
+         nothing, so the author's text is simply gone (carve#666).
+
+         "No trace" is about OUTPUT, not about block structure -- it does
+         not exempt a definition line from §10 I5, which already governs
+         paragraph interruption everywhere, containers included (I6): a
+         definition line INTERRUPTS an open paragraph exactly as any other
+         invisible construct does, ending it with no blank line needed, so
+         a plain line immediately after a definition starts a NEW block
+         rather than folding back into the paragraph the definition
+         interrupted. What decides how that new block RENDERS is L1/L2, not
+         L6: no blank line appeared anywhere, so the item stays TIGHT
+         (L2 loosens on a blank line, never on block count alone), and by
+         L1 a tight item's paragraphs are ALL bare, this new one included --
+         not because the definition is transparent to structure, but
+         because nothing here ever loosened the item in the first place.
+         A footnote definition sitting on a list item's OWN line, followed
+         by a plain continuation line, is this exact shape: the item holds
+         TWO paragraph blocks with no blank between them and renders both
+         bare, `<li>first\n  second\n</li>` (carve#668). Treating the
+         definition as if it both interrupted AND merged -- attaching the
+         following line back onto the block it just ended -- would need a
+         rule found nowhere else in this grammar; treating it as loosening
+         the item on its own would contradict L2 directly. Three engines
+         each did one of those two things; neither is this rule.
 
    18. MATH -- NORMATIVE (governs `math` in PART 3; djot form). Inline
       `$` + verbatim backtick span; display `$$` + verbatim backtick
@@ -3751,9 +3805,11 @@ EOF = (* end of file *) ;
    while blocks are parsed; PASS 2 resolves inline uses. A definition may
    appear before or after its use. Complexity is O(n) -- no rescanning per
    occurrence (PART 9 §25 RESOURCE BOUNDS). Definitions are collected even
-   inside containers (blockquote / list item); the container then renders
-   without them (PART 9 §16; corpus "Footnote definition inside a container
-   is collected"). These rules are attribute-grammar / two-pass semantics --
+   inside a block-level container, which then renders as though the
+   definition line were never written (PART 9 §17 L6 states the general
+   rule once, for every container that can hold one; §16; corpus "Footnote
+   definition inside a container is collected"). These rules are
+   attribute-grammar / two-pass semantics --
    deliberately NOT grammar productions: symbol-table resolution is provably
    outside context-free syntax, and stating it as rules over declared state
    keeps it machine-checkable without pretending it is EBNF.

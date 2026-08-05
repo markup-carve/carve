@@ -41,6 +41,7 @@ import { fileURLToPath } from 'node:url'
 import { carveToCarve } from '@markup-carve/carve'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
+import { loadDeclaredFmtDrift } from './fmt-drift.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus')
@@ -57,16 +58,11 @@ const documents = readdirSync(corpusDir)
 // disagrees on what to write back for it too - a cross-read divergence on one
 // of these slugs is the same known gap surfacing through `carveToCarve`
 // instead of through direct rendering, not a second, independent formatter
-// defect. Declared here means excused here, same as everywhere else that
-// consults this file.
-const driftPath = resolve(here, '..', 'resources/engine-pin-drift.txt')
-const declaredDrift = new Set(
-  readFileSync(driftPath, 'utf8')
-    .split('\n')
-    .map((l) => l.trim())
-    .filter((l) => l && !l.startsWith('#'))
-    .map((l) => l.slice(0, l.search(/\s{2,}/))),
-)
+// defect. resources/engine-fmt-drift.txt adds the other direction: a document
+// the pin reads correctly but whose writer output it cannot read back the
+// same way (see that file's header). Declared in either file means excused
+// here, same as everywhere else that consults them.
+const declaredDrift = loadDeclaredFmtDrift(here)
 
 /** The oracle's rendering, or the refusal it raised - both are answers to compare. */
 const oracleHtml = (src) => {

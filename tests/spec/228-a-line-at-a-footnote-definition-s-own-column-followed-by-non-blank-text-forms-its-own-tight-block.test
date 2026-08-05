@@ -1,0 +1,24 @@
+A line at a footnote definition's own column, followed by non-blank text, forms its own tight block
+
+```
+- a
+  [^f]: x
+  more
+
+see[^f]
+.
+<ul>
+  <li>a
+    more
+  </li>
+</ul>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```

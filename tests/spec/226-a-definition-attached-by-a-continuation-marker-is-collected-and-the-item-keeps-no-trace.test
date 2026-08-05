@@ -1,0 +1,14 @@
+A definition attached by a + continuation marker is collected, and the item keeps no trace
+
+```
+- a
++
+[r]: /u
+
+see [t][r]
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>see <a href="/u">t</a></p>
+```

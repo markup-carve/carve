@@ -9026,3 +9026,109 @@ see[^a]
 ```
 
 :::
+
+## A definition attached by a + continuation marker is collected, and the item keeps no trace
+
+The `+` continuation marker (§17 L3/L4) attaches a flush-left block to the container above it like any other block - a definition is not special-cased out of that. It is collected exactly as one written at the item's own content column (above), and the item that held it renders with no trace of the line at all: no empty block, no blank line left behind (carve#665; §17 L6).
+
+::: compare
+
+```carve
+- a
++
+[r]: /u
+
+see [t][r]
+```
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+<p>see <a href="/u">t</a></p>
+```
+
+:::
+
+## A definition inside a definition-list dd is collected, and the entry keeps no trace
+
+A `<dd>` continues like a list item (§17, definition_body) and is one of the block-level contexts §17 L6 names: a definition written as its content is collected into the document-wide table and the entry renders empty, exactly as a list item or block quote does. This holds the same way for both definition kinds a `<dd>` can hold - a link reference definition and a footnote definition - so a fix for one is not a fix for only one (carve#666).
+
+::: compare
+
+```carve
+:: term
+:  [r]: /u
+
+see [t][r]
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd></dd>
+</dl>
+<p>see <a href="/u">t</a></p>
+```
+
+:::
+
+::: compare
+
+```carve
+:: term
+:  [^f]: x
+
+see[^f]
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd></dd>
+</dl>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## A line at a footnote definition's own column, followed by non-blank text, forms its own tight block
+
+A footnote definition on a list item's own content column renders no trace (above), and none of the three reference engines loosens the item on account of it - agreed already. What was not settled is what a plain line right after the definition, with no blank line anywhere, does to the item. §10 I5 already answers half of it: an invisible construct interrupts an open paragraph exactly like a visible one, so the line after the definition starts a NEW block rather than folding back into the paragraph the definition ended. §17 L1/L2 answer the rest: nothing here is a blank line, so the item never loosens, and a tight item's paragraphs are ALL bare - the new block included, not only the first one. The item ends up holding two paragraph blocks with no blank between them, both unwrapped (carve#668; §17 L6).
+
+::: compare
+
+```carve
+- a
+  [^f]: x
+  more
+
+see[^f]
+```
+
+```html
+<ul>
+  <li>a
+    more
+  </li>
+</ul>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::

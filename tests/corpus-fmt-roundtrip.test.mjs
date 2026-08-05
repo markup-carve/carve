@@ -35,6 +35,18 @@
  * This checks the REFERENCE engine only, because that is what this repo pins.
  * The same properties across the other engines are `compare:impls --roundtrip`,
  * which needs their checkouts and runs in the conformance workflow.
+ *
+ * DECLARED DRIFT. `resources/engine-pin-drift.txt` names corpus documents the
+ * pinned build does not READ the way the corpus says (carve#533's mechanism,
+ * consulted by `npm run engine:report -- --check` and by
+ * corpus-fmt-cross-read.test.mjs); `resources/engine-fmt-drift.txt` is its
+ * writer-side counterpart, for a document the pin reads fine but cannot WRITE
+ * back out faithfully (see that file's own header for why the two stay
+ * separate). This test previously had no escape valve of its own, so a spec
+ * PR that put the corpus ahead of the pin (as carve#665/#666/#668 did for the
+ * definition-list `dd` and `+`-attached shapes) failed here even for a slug
+ * already declared for the cross-read check. Declared in either file means
+ * excused here too, now.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -42,6 +54,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToCarve, carveToHtml } from '@markup-carve/carve'
+import { loadDeclaredFmtDrift } from './fmt-drift.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus')
@@ -50,6 +63,8 @@ const documents = readdirSync(corpusDir)
   .filter((f) => f.endsWith('.crv'))
   .sort()
   .map((f) => ({ slug: f.replace(/\.crv$/, ''), source: readFileSync(resolve(corpusDir, f), 'utf8') }))
+
+const declaredDrift = loadDeclaredFmtDrift(here)
 
 test('the corpus is non-empty, so a broken glob cannot pass as a clean run', () => {
   assert.ok(documents.length > 100, `found ${documents.length} corpus documents`)
@@ -61,11 +76,12 @@ test('formatting never changes what a corpus document says', () => {
     const formatted = carveToCarve(source)
     if (carveToHtml(formatted).trim() !== carveToHtml(source).trim()) changed.push(slug)
   }
+  const undeclared = changed.filter((slug) => !declaredDrift.has(slug))
   assert.deepEqual(
-    changed,
+    undeclared,
     [],
-    `these documents render differently after formatting - the writer changed the document, ` +
-      `not just its spelling:\n  ${changed.join('\n  ')}`,
+    `these documents render differently after formatting, and resources/engine-pin-drift.txt ` +
+      `does not excuse it - the writer changed the document, not just its spelling:\n  ${undeclared.join('\n  ')}`,
   )
 })
 
