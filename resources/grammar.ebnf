@@ -4545,6 +4545,32 @@ EOF = (* end of file *) ;
       What they are each missing is the authored construct BESIDE it, which is
       the half this clause actually asks for.
 
+      A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED -- NORMATIVE. `href`,
+      `src`, and every other destination field carry what the author wrote,
+      including a URL whose scheme no target is allowed to emit. A producer MUST
+      NOT blank or rewrite a destination on the way into the tree: that is the
+      same folding of a later stage this clause forbids everywhere else, it makes
+      the tree lossy, and it breaks the §6 round trip. So this document
+
+        [click](javascript:alert(1))
+
+      publishes `{"type":"link","href":"javascript:alert(1)"}` while every render
+      target blanks it, and all three engines already behave this way.
+
+      A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST -- NORMATIVE. The
+      obligation is PART 9 section 25's URL-scheme denylist, and section 25 already says it
+      binds every target that emits a resolvable URL rather than the HTML
+      renderer alone -- a scheme blanked in one target and passed through in
+      another is not blocked, it is deferred by one step. Handing the tree to
+      another tool is the whole purpose of this PART, so the argument applies
+      here with more force than it did to the Markdown target that prompted it:
+      a consumer that wires a serialized `href` into an anchor has published a
+      live `javascript:` URL.
+
+      Feeding the tree back through a conforming engine applies the denylist for
+      you, because the engine is a target. Walking the tree and building output
+      yourself does not.
+
       WITHOUT IT THE DESTINATION HAS NOWHERE TO LIVE. `href: ""` for a resolved
       reference is only recoverable if the definition survives the trip, and it
       does not: the vocabulary has NO node type for a `[label]: url` link
