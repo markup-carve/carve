@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+221-a-heading-reference-folds-unicode-normalization-but-not-compatibility  the pinned build does not NFC-normalize the heading-reference key, so the precomposed reference misses the decomposed heading; fixed by carve-js#686, drops out at the next release

@@ -624,12 +624,17 @@ function resolveRefs(html, ctx) {
 
 /*
  * R1 matches the heading index LOOSER than it matches link definitions: trim,
- * collapse internal whitespace, fold case. A definition label is an identifier
- * the author wrote twice; a heading reference is prose quoted from elsewhere in
- * the document.
+ * collapse internal whitespace, NFC-normalize, fold case. A definition label is
+ * an identifier the author wrote twice; a heading reference is prose quoted from
+ * elsewhere in the document.
+ *
+ * NFC and not NFKC. Without it the id side is normalized (§25) and this side is
+ * not, so a document publishes `id="Café"` and then declines `[Café][]` against
+ * the very heading that produced it - carve#725, where carve-rs folded and the
+ * other three did not.
  */
 function refKey(text) {
-  return stripTags(text).trim().replace(/\s+/g, ' ').toLowerCase()
+  return stripTags(text).trim().replace(/\s+/g, ' ').normalize('NFC').toLowerCase()
 }
 
 /* Register a heading in the implicit-reference index. FIRST wins. */

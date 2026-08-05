@@ -1,0 +1,17 @@
+A heading reference folds Unicode normalization, but not compatibility
+
+```
+# Café
+
+see [Café][] and [file][]
+
+# ﬁle
+.
+<section id="Café">
+  <h1>Café</h1>
+  <p>see <a href="#Café">Café</a> and [file][]</p>
+</section>
+<section id="ﬁle">
+  <h1>ﬁle</h1>
+</section>
+```

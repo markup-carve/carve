@@ -3641,11 +3641,26 @@ EOF = (* end of file *) ;
       same-named heading. Matching against the heading index is LOOSER
       than the linkDefs matching above: the label and the heading text
       are both trimmed, their internal whitespace runs collapsed to one
-      space, and then compared case-INSENSITIVELY, so `[getting
-      started][]` finds `# Getting Started`. That asymmetry is
+      space, NFC-NORMALIZED, and then compared case-INSENSITIVELY, so
+      `[getting started][]` finds `# Getting Started` and `[Café][]`
+      finds `# Cafe` + U+0301. That asymmetry is
       deliberate -- a linkDefs label is an identifier the author wrote
       twice and can keep identical, while a heading ref is prose the
-      author is quoting from elsewhere in the document. The index holds
+      author is quoting from elsewhere in the document.
+      NFC and NOT NFKC: canonical equivalence only, so `ﬁle` does not
+      match `file` and `① one` does not match `1 one` -- compatibility
+      folding would change which text an author is quoting, not just how it
+      is spelled. NFC belongs in the list for two reasons. The id side is
+      ALREADY NFC (§25), so without it a document publishes `id="Café"`
+      and then declines `[Café][]` against the heading that produced it --
+      the same alphabet on one side of the resolution and not the other.
+      And NFC is a WEAKER fold than the case fold this list already
+      admits: case folding relates codepoints Unicode calls distinct,
+      while NFC relates sequences Unicode DEFINES as the same, so
+      admitting the stronger one and refusing the weaker one is backwards.
+      The two spellings are also indistinguishable on screen, so a
+      reference that misses has no visible cause (carve#725, where
+      carve-rs folded and the other three did not). The index holds
       headings at top level and
       inside divs, admonitions, list items, and definitions, but
       DECLINES any heading with a blockquote ancestor, in either
