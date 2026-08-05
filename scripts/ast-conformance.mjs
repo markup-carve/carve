@@ -43,6 +43,7 @@ import { fileURLToPath } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
 import { shapeOf, shapePaths } from './spec/ast-shape.mjs'
 import { checkPositions } from './spec/ast-positions.mjs'
+import { checkReferenceFields } from './spec/ast-references.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -310,6 +311,7 @@ function checkDocument(name, doc, source, findings) {
   checkAdjacentTextRuns(doc, own)
   checkFrontmatterSurvives(doc, source, own)
   checkPositions(doc, source, own)
+  checkReferenceFields(doc, source, own)
   for (const f of own) findings.push(name.endsWith('.crv') ? name + ': ' + f : f)
 }
 
