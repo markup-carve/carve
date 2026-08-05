@@ -44,6 +44,11 @@ import { Ajv2020 } from 'ajv/dist/2020.js'
 import { classifyShapeDisagreement, shapeOf, shapePaths } from './spec/ast-shape.mjs'
 import { checkPositions } from './spec/ast-positions.mjs'
 import { checkReferenceFields } from './spec/ast-references.mjs'
+import {
+  UNKNOWN_PROPERTY_PROBE,
+  countProbes,
+  injectUnknownProperty,
+} from './spec/unknown-property-probe.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -121,6 +126,15 @@ const phpDir = process.env.CARVE_PHP_DIR ?? resolve(root, '../carve-php')
  * with two votes left, so the run counted a harness limit as an engine defect
  * AND quietly stopped comparing the one document most likely to expose one.
  */
+/*
+ * How many documents get the unknown-property probe. It costs one extra
+ * subprocess per document per engine, and the property under test is a codec
+ * property rather than a per-document one - the same answer on every tree. The
+ * count is printed with the finding-free line below so a sample can never read
+ * as the whole corpus.
+ */
+const UNKNOWN_PROPERTY_SAMPLE = Number(process.env.CARVE_UNKNOWN_PROBE_SAMPLE ?? 6)
+
 const MAX_SUBPROCESS_OUTPUT = 256 * 1024 * 1024
 
 const DISPLAY_LIMIT = Number(process.env.CARVE_DISPLAY_LIMIT ?? 8)
@@ -547,6 +561,7 @@ if (typeof lib.fromAstJson !== 'function') {
 }
 
 const jsFindings = []
+let jsProbed = 0
 for (const { name, source } of samples) {
   let doc
   try {
@@ -587,6 +602,12 @@ for (const { name, source } of samples) {
     jsFindings.push(`${name}: ingest threw on this engine's own output - ${error.message}`)
     continue
   }
+  if (jsProbed < UNKNOWN_PROPERTY_SAMPLE) {
+    jsProbed += 1
+    checkUnknownPropertyIngest(name, doc, jsFindings, (payload) =>
+      JSON.stringify(lib.toAstJson(lib.fromAstJson(JSON.parse(payload)))),
+    )
+  }
   if (JSON.stringify(round) !== JSON.stringify(doc)) {
     jsFindings.push(`${name}: §6 round trip through fromAstJson is not identity`)
   }
@@ -609,6 +630,7 @@ const rsBinary = ['target/release/carve', 'target/debug/carve']
   .find((p) => existsSync(p))
 if (rsBinary) {
   const rsFindings = []
+let rsProbed = 0
   for (const { name, source } of satelliteSamples) {
     let doc
     try {
@@ -640,6 +662,17 @@ if (rsBinary) {
         maxBuffer: MAX_SUBPROCESS_OUTPUT,
       }),
     )
+    if (rsProbed < UNKNOWN_PROPERTY_SAMPLE) {
+      rsProbed += 1
+      checkUnknownPropertyIngest(name, doc, rsFindings, (payload) =>
+        execFileSync(rsBinary, ['--from-json', '--json', '-'], {
+          input: payload,
+          encoding: 'utf8',
+          stdio: ['pipe', 'pipe', 'pipe'],
+          maxBuffer: MAX_SUBPROCESS_OUTPUT,
+        }),
+      )
+    }
     checkShapeParity(name, doc, rsFindings)
     recordShape('carve-rs', name, doc)
   }
@@ -708,6 +741,7 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
 // already in use.
 if (existsSync(resolve(phpDir, 'bin/carve'))) {
   const phpFindings = []
+let phpProbed = 0
   for (const { name, source } of satelliteSamples) {
     let doc
     try {
@@ -739,6 +773,18 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
         maxBuffer: MAX_SUBPROCESS_OUTPUT,
       }),
     )
+    if (phpProbed < UNKNOWN_PROPERTY_SAMPLE) {
+      phpProbed += 1
+      checkUnknownPropertyIngest(name, doc, phpFindings, (payload) =>
+        execFileSync('php', ['bin/carve', '--from-json', '--json'], {
+          cwd: phpDir,
+          input: payload,
+          encoding: 'utf8',
+          stdio: ['pipe', 'pipe', 'pipe'],
+          maxBuffer: MAX_SUBPROCESS_OUTPUT,
+        }),
+      )
+    }
   }
   report(`carve-php (over bin/carve --json, ${satelliteSamples.length} documents)`, phpFindings)
 } else if (existsSync(phpDir)) {
@@ -755,6 +801,53 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
  * only for the reference, and there as a JSON.stringify round trip that could
  * not fail.
  */
+/*
+ * A tree an engine PUBLISHES must validate, whatever it chose to accept.
+ *
+ * PART 12 pins the wire shape with `additionalProperties: false`. The three
+ * engines disagree about what to do with a property the schema does not name -
+ * carve-php refuses the payload, carve-rs drops it, carve-js echoes it back
+ * (carve-js#709) - and which of refuse-or-drop is right is an open question for
+ * §9 (carve#743).
+ *
+ * This check does not touch that question. Refusing is a pass here and so is
+ * dropping; what fails is ACCEPTING and then re-publishing, because the result
+ * is a tree the format rejects, and the consumer that reads it and passes it on
+ * has no way to know. Stated that way the bar follows from the schema contract
+ * that already exists, so it can be enforced before the decision lands.
+ *
+ * The probe property is deliberately not a name the schema has ever had:
+ * `refId` was found by hand precisely because it looked like a real field, and a
+ * probe that could be mistaken for one would measure the wrong thing.
+ */
+
+function checkUnknownPropertyIngest(name, doc, findings, reserialize) {
+  const payload = JSON.parse(JSON.stringify(doc))
+  const injected = injectUnknownProperty(payload).n
+  if (injected === 0) return
+  let out
+  try {
+    out = reserialize(JSON.stringify(payload))
+  } catch {
+    // Refusing the payload is conformant: nothing invalid is published.
+    return
+  }
+  let round
+  try {
+    round = JSON.parse(out)
+  } catch {
+    findings.push(`${name}: ingest of a tree with an unknown property re-serialized to non-JSON`)
+
+    return
+  }
+  const echoed = countProbes(round)
+  if (echoed === 0) return
+  findings.push(
+    `${name}: ingest echoed an unknown property on ${echoed} of ${injected} node(s), ` +
+      'so the re-published tree is invalid per additionalProperties: false',
+  )
+}
+
 function checkIngestIdentity(name, doc, findings, reserialize) {
   const payload = JSON.stringify(doc)
   let out
@@ -815,6 +908,12 @@ function report(label, findings) {
 // A closing statement of what was NOT measured, so the coverage of a run is
 // visible at the end rather than inferable from the middle. Without this the
 // only signal was one line per engine, several screens up.
+console.log(
+  `UNKNOWN-PROPERTY PROBE: ${UNKNOWN_PROPERTY_SAMPLE} document(s) per engine. It measures the ` +
+    'codec, which answers the same way on every tree - but it is a SAMPLE, and\n' +
+    '  a silent one would read as the whole corpus. Raise it with CARVE_UNKNOWN_PROBE_SAMPLE.\n',
+)
+
 if (notMeasured.length > 0) {
   console.log(`NOT MEASURED: ${notMeasured.length} of 3 satellites - ${notMeasured.join(', ')}`)
   console.log('These engines were not checked at all. This is not a pass.\n')
