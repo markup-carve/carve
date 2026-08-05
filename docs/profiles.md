@@ -242,6 +242,33 @@ disable raw-HTML passthrough on the renderer (`allowRawHtml: false`), ideally
 both. The two controls are independent: the profile gates AST node types; the
 renderer flag gates whether raw content is serialized verbatim or escaped.
 
+### The `carve` target does not apply a profile (normative)
+
+A profile is a statement about what may be **rendered**. The `carve` target does
+not render: it writes the document back as Carve source, and PART 11 §1 makes
+that writer's contract `to_html(fmt(x)) == to_html(x)` - it must reproduce the
+document, not a permitted subset of it.
+
+So a profile MUST NOT filter, alter or annotate the output of the `carve`
+target. An implementation whose writer accepts a profile parameter MUST either
+ignore it and say so, or refuse it; what it may not do is emit different Carve
+source because a profile was supplied.
+
+Measured before this was written: two engines ignore a profile on this target
+and one applies it, so the same document written back through a profile-bearing
+converter came out with `{rel="nofollow ugc"}` added to its links - source the
+author never wrote, in a target whose whole purpose is to give the author's
+document back. Where the profile denies a type outright, the corresponding text
+is dropped instead, which loses content rather than restricting a rendering.
+
+The asymmetry is what settles it. A host that wanted filtering and does not get
+it can still render through a filtered target; a host that did not want it and
+gets it has lost the user's text with nothing saying so. The unfiltered answer
+fails safe (carve#759).
+
+Nothing here changes the other targets: `html`, `markdown`, `plain` and `ansi`
+all apply the profile, because all four RENDER.
+
 ## Presets (normative)
 
 Four presets MUST exist with exactly these definitions.
