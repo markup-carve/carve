@@ -94,6 +94,8 @@ the command-line and editor behavior stay aligned.
 | `block-marker-as-text` | a line that opens like a block (`:::`, `{#`, `{.`) but parsed as plain text |
 | `fence-delimiter-indentation` | an indented fenced-code delimiter (`` ``` `` / `~~~`); a Carve fence is column-exact and must sit at its container's content column (column 0 at the top level), so an indented run does not open a code block |
 | `carve-version-unsupported` | a document declaring a Carve spec version the processor does not implement, so constructs added after that version render as something else without any error |
+| `unclosed-container-fence` | a `:::` opener with no matching closer; the container runs to end of input, which is legal (PART 9 §12) and rarely what was meant |
+| `fence-title-syntax` | text after a fence type word that is neither a quoted `"title"` nor a `[label]`, which makes the whole opener line plain text |
 
 ### Declaring a target version
 
