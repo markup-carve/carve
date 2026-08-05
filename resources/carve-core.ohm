@@ -322,7 +322,12 @@ CarveCore {
   attrVal    = quoted | squoted | bareVal
   bareVal    = (~(" " | "}" | newline) any)+
   ident      = identStart identRest*
-  identStart = letter | "_" | "-"
+  // No leading `-`: PART 7 (normative) is
+  //   identifier = (letter | '_'), {letter | digit | '_' | '-'} ;
+  // and all three engines follow it - `{--flag}` and `{#-id}` are literal
+  // text everywhere but here (carve#722). A dash is still fine after the
+  // first character, which is what `identRest` is for.
+  identStart = letter | "_"
   identRest  = letter | digit | "_" | "-"
 
   // A word absorbs any bare delimiter glued between two word characters -
