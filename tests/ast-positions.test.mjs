@@ -16,7 +16,11 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parse } from '@markup-carve/carve'
-import { checkPositions, walkNodes } from '../scripts/spec/ast-positions.mjs'
+import {
+  HOISTED_DEFINITION_TYPES,
+  checkPositions,
+  walkNodes,
+} from '../scripts/spec/ast-positions.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repo = resolve(here, '..')
@@ -258,20 +262,45 @@ test('a first-to-last span over a sibling is a finding', () => {
   )
 })
 
-test('a hoisted definition inside a container is not an overlap', () => {
-  // PART 12 §7: the definition is a document-level sibling of the div it was
-  // written in, and its pos still points inside that div.
-  const doc = {
-    type: 'document',
-    children: [
-      { type: 'div', pos: span(0, 48), children: [] },
-      { type: 'abbreviation_def', pos: span(4, 20), children: [] },
-    ],
-  }
-  const findings = []
-  checkPositions(doc, 'x'.repeat(60), findings)
+// EVERY hoisted kind, not just one. The exemption held `footnote` and
+// `abbreviation_def` for a while after PART 12 §10 added
+// `link_reference_definition`, which hoists the same way - and this checker then
+// reported a §4 sibling overlap for carve-php, the only engine that implements
+// the node, on every definition authored inside a container. A test naming one
+// kind could not fail on that.
+for (const type of HOISTED_DEFINITION_TYPES) {
+  test(`a hoisted ${type} inside a container is not an overlap`, () => {
+    // PART 12 §7: the definition is a document-level sibling of the div it was
+    // written in, and its pos still points inside that div.
+    const doc = {
+      type: 'document',
+      children: [
+        { type: 'div', pos: span(0, 48), children: [] },
+        { type, pos: span(4, 20), children: [] },
+      ],
+    }
+    const findings = []
+    checkPositions(doc, 'x'.repeat(60), findings)
+    assert.deepEqual(
+      findings.filter((f) => f.includes('sibling spans overlap')),
+      [],
+    )
+  })
+}
+
+test('every definition kind the schema hoists is exempt from the overlap rule', () => {
+  // The rule lives in the schema's own words ("Hoisted to the document") and in
+  // PART 12 §7 and §10. Deriving the check from the schema means the next
+  // definition kind cannot ship with the exemption list left behind - which is
+  // exactly what happened to `link_reference_definition`.
+  const schema = JSON.parse(readFileSync(resolve(repo, 'resources/ast-schema.json'), 'utf8'))
+  const hoisted = Object.entries(schema.$defs)
+    .filter(([, def]) => /hoisted to the document/i.test(def.description ?? ''))
+    .map(([name]) => name)
+  const missing = hoisted.filter((type) => !HOISTED_DEFINITION_TYPES.has(type))
   assert.deepEqual(
-    findings.filter((f) => f.includes('sibling spans overlap')),
+    missing,
     [],
+    `the schema says these hoist, and the overlap rule does not exempt them: ${missing.join(', ')}`,
   )
 })

@@ -92,16 +92,29 @@ function checkContainment(doc, findings) {
  * Two kinds of sibling legitimately share source, for reasons that are rules
  * rather than accidents, so neither is compared:
  *
- *   HOISTED DEFINITIONS. PART 12 §7 makes a `footnote` or `abbreviation_def` a
- *   child of the DOCUMENT wherever it was written, and its `pos` still records
- *   where that was - which is inside whatever container it was authored in. So
- *   a definition written inside a div is a document-level sibling of that div
- *   whose span sits inside it. That is the hoisting rule working.
+ *   HOISTED DEFINITIONS. PART 12 §7 makes a definition a child of the DOCUMENT
+ *   wherever it was written, and its `pos` still records where that was - which
+ *   is inside whatever container it was authored in. So a definition written
+ *   inside a div is a document-level sibling of that div whose span sits inside
+ *   it. That is the hoisting rule working.
+ *
+ *   ALL THREE KINDS, and the list is checked against the schema by
+ *   tests/ast-positions.test.mjs rather than remembered. It held only the first
+ *   two for a while after §10 added `link_reference_definition` - which hoists
+ *   "exactly as §7 requires of the other two definition kinds" - so this checker
+ *   reported a §4 sibling overlap for carve-php, the one engine that implements
+ *   the node, every time a definition was authored inside a container.
  *
  *   BREAKS. A break is anchored at a line terminator, so two breaks meeting at
  *   one newline share that boundary without either being wrong.
  */
-const EXEMPT_FROM_OVERLAP = new Set(['footnote', 'abbreviation_def', 'hard_break', 'soft_break'])
+export const HOISTED_DEFINITION_TYPES = new Set([
+  'footnote',
+  'abbreviation_def',
+  'link_reference_definition',
+])
+
+const EXEMPT_FROM_OVERLAP = new Set([...HOISTED_DEFINITION_TYPES, 'hard_break', 'soft_break'])
 
 /**
  * SIBLING SPANS MUST NOT OVERLAP.
