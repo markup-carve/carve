@@ -29,6 +29,12 @@ const failOnDiff = args.has('--fail-on-diff')
 // Optional cases that reached fewer than two engines AND carry no recorded
 // reason. Gated on below, so a new one cannot join the roll-up unexplained.
 let undocumentedUnreachable = []
+// Entries in UNREACHABLE_REASONS that describe nothing any more, recorded so the
+// gate can fail on them rather than printing into the void.
+let staleUnreachable = []
+// Every feature the optional manifest names, unsliced - see the note where it is
+// filled.
+const manifestFeatures = new Set()
 const limitArg = process.argv.find((a) => a.startsWith('--limit='))
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) : Infinity
 const corpusArg = process.argv.find((a) => a.startsWith('--corpus='))
@@ -477,6 +483,12 @@ function loadPairs() {
   }
 
   const manifest = JSON.parse(readFileSync(join(corpusDir, 'manifest.json'), 'utf8'))
+  // Every feature the manifest names, before --limit slices it. The stale-reason
+  // gate asks "does this entry name a case that exists", which is a question
+  // about the corpus and not about the subset this run happens to cover.
+  for (const entry of manifest.cases) {
+    if (entry.feature) manifestFeatures.add(entry.feature)
+  }
   return manifest.cases.slice(0, limit).map((entry) => {
     const slug = basename(entry.slug)
     const target = targetOf(entry)
@@ -859,8 +871,41 @@ if (isOptional) {
         `                  ADAPTER is this repo's backlog, a missing ENGINE OPTION is not.`,
       )
     }
+    // An entry that no longer describes anything is the same defect one level
+    // up: the reason list exists so "fewer than two engines" carries a why, and
+    // a line that exempts nothing reads as knowledge while stating none. Two
+    // ways it can go dead, both recorded for the gate below.
+    // A LIMITED run covers a slice, so "this feature reached two engines" is not
+    // knowable from it and a documented entry outside the slice is not stale.
+    // Skipped rather than guessed, and printed so the skip is visible.
+    staleUnreachable = limit === Infinity
+      ? Object.keys(UNREACHABLE_REASONS).filter((feature) => !unreachable.has(feature))
+      : []
+    if (limit !== Infinity) {
+      console.log(
+        `    (--limit=${limit}: the stale-reason check needs the whole corpus, so it did not run)`,
+      )
+    }
+    for (const feature of staleUnreachable) {
+      const known = manifestFeatures.has(feature)
+      console.log(
+        `    STALE  ${feature}: ${
+          known
+            ? 'now reaches at least two engines - delete the entry so the case is compared like the rest.'
+            : 'names no case in this corpus - renamed or removed, so the entry exempts nothing.'
+        }`,
+      )
+    }
   } else {
     console.log('\nAll optional cases reached at least two engines.')
+    if (limit === Infinity) {
+      staleUnreachable = Object.keys(UNREACHABLE_REASONS)
+      for (const feature of staleUnreachable) {
+        console.log(
+          `    STALE  ${feature}: every case reached two engines, so this entry exempts nothing.`,
+        )
+      }
+    }
   }
 }
 
@@ -908,6 +953,16 @@ if (failOnDiff) {
   const mismatches = roundtrip
     ? 0
     : active.reduce((total, impl) => total + stats[impl.name].mismatch, 0)
+  if (staleUnreachable.length > 0) {
+    console.error(
+      `\n${staleUnreachable.length} UNREACHABLE_REASONS entr(ies) describe nothing any more: ` +
+        `${staleUnreachable.join(', ')}.`,
+    )
+    console.error(
+      'Delete them. An exemption that exempts nothing is indistinguishable from one that works.',
+    )
+    process.exit(1)
+  }
   if (undocumentedUnreachable.length > 0) {
     console.error(
       `\n${undocumentedUnreachable.length} optional case(s) reached fewer than two engines with no ` +
