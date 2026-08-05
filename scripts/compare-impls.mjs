@@ -641,9 +641,25 @@ for (const pair of pairs) {
   }
 }
 
+// The ORACLE, this repo's own reader. Used below so a writer's output is read by
+// something other than the writer - see the cross-read note in the roundtrip
+// block. In-process, so it costs nothing next to spawning an engine per case.
+const { parse: oracleParse, Refuse } = await import('./spec/layout.mjs')
+const { renderDoc: oracleRender } = await import('./spec/html.mjs')
+
+function oracleHtml(source) {
+  try {
+    return oracleRender(oracleParse(source)).trim()
+  } catch (error) {
+    if (error instanceof Refuse) return `REFUSED ${error.message}`
+    return `ORACLE-ERROR ${error.message}`
+  }
+}
+
 let roundtripDiffs = 0
 let semanticFailures = 0
 let idempotenceFailures = 0
+let crossReadFailures = 0
 let roundtripCompared = 0
 
 if (roundtrip) {
@@ -684,6 +700,24 @@ if (roundtrip) {
         if (formattedTwice.ok && formattedTwice.rawStdout !== formatted.rawStdout) {
           idempotenceFailures++
           console.log(`INVARIANT fmt(fmt(x)) != fmt(x) [${impl.name}] ${pair.slug}`)
+        }
+        // CROSS-READ. Everything above has the writing engine read its own
+        // output, and so does the cross-engine comparison below it: engine A
+        // reading A's output against engine B reading B's. Two writers can each
+        // emit a form only their own parser accepts and still agree on the
+        // rendered HTML, so that combination cannot see it.
+        //
+        // The oracle reads what this engine wrote. carve-js has the same check
+        // in tests/corpus-fmt-cross-read.test.mjs, where its build is already a
+        // dependency; this is the half that needs the engine checkouts, which is
+        // where carve#710 said it belongs.
+        const oracleOfSource = oracleHtml(readFileSync(pair.file, 'utf8'))
+        if (!oracleOfSource.startsWith('REFUSED') && !oracleOfSource.startsWith('ORACLE-ERROR')) {
+          const oracleOfFormatted = oracleHtml(raw)
+          if (oracleOfFormatted !== oracleOfSource) {
+            crossReadFailures++
+            console.log(`CROSS-READ oracle(fmt(x)) != oracle(x) [${impl.name}] ${pair.slug}`)
+          }
         }
         if (htmlOfFormatted.ok) rendered.push([impl.name, htmlOfFormatted.stdout])
       }
@@ -739,7 +773,7 @@ if (roundtrip) {
   // cross-engine disagreement, the other two are each engine failing its own
   // stated invariant.
   console.log(
-    `roundtrip_compared=${roundtripCompared} roundtrip_diffs=${roundtripDiffs} semantic_failures=${semanticFailures} idempotence_failures=${idempotenceFailures}`,
+    `roundtrip_compared=${roundtripCompared} roundtrip_diffs=${roundtripDiffs} semantic_failures=${semanticFailures} idempotence_failures=${idempotenceFailures} cross_read_failures=${crossReadFailures}`,
   )
 }
 
@@ -861,6 +895,11 @@ if (failOnDiff) {
   // the start and never gated on, so the check could report a formatter
   // rewriting documents and still exit 0.
   const invariantFailures = roundtrip ? semanticFailures + idempotenceFailures : 0
+  // A CROSS-READ failure is the same class as an invariant failure - one engine's
+  // formatter wrote a form a different reader does not agree with - and it is
+  // gated for the reason the comment above gives: a count that is printed and
+  // never gated on is a check that cannot fail.
+  const crossRead = roundtrip ? crossReadFailures : 0
   // A MISMATCH is an engine disagreeing with a FIXTURE, and it was counted,
   // printed in the summary and never gated on: the run exited 0 while the
   // summary said `js: pass=545/547 mismatch=2`. Cross-engine agreement was the
@@ -879,7 +918,7 @@ if (failOnDiff) {
     )
     process.exit(1)
   }
-  if (failing > 0 || invariantFailures > 0 || mismatches > 0) {
+  if (failing > 0 || invariantFailures > 0 || mismatches > 0 || crossRead > 0) {
     if (failing > 0) {
       console.error(`\n${failing} ${label} difference(s) - see the DIFF lines above.`)
     }
@@ -893,9 +932,16 @@ if (failOnDiff) {
         `${invariantFailures} PART 11 §1 invariant failure(s) - see the INVARIANT lines above.`,
       )
     }
+    if (crossRead > 0) {
+      console.error(
+        `${crossRead} case(s) where the executable spec reads an engine's formatted output ` +
+          `differently from its source - see the CROSS-READ lines above.`,
+      )
+    }
     process.exit(1)
   }
   console.log(
-    `\nNo ${label} differences, no fixture mismatches, and no PART 11 §1 invariant failures.`,
+    `\nNo ${label} differences, no fixture mismatches, no PART 11 §1 invariant failures` +
+      `${roundtrip ? ', and no cross-read failures' : ''}.`,
   )
 }
