@@ -12,6 +12,7 @@ import {
   targetOf,
 } from './lib/corpus-targets.mjs'
 import { phpDir, rustDir } from './lib/engine-locations.mjs'
+import { miscount, shortfall } from './spec/participants.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const args = new Set(process.argv.slice(2))
@@ -504,6 +505,20 @@ function available(impl) {
   return result.ok ? { ok: true } : { ok: false, reason: result.stderr || result.error || `exit ${result.status}` }
 }
 
+/**
+ * How many cases this corpus OFFERS, independent of what the run loaded. The
+ * exact check above compares the two, so a filter that starts dropping cases
+ * fails rather than answering a smaller question.
+ */
+function availableCaseCount() {
+  if (!isOptional) {
+    return readdirSync(corpusDir).filter((f) => f.endsWith('.crv')).length
+  }
+  const manifest = JSON.parse(readFileSync(join(corpusDir, 'manifest.json'), 'utf8'))
+
+  return manifest.cases.length
+}
+
 function loadPairs() {
   if (!isOptional) {
     return readdirSync(corpusDir)
@@ -541,6 +556,31 @@ function loadPairs() {
 }
 
 const pairs = loadPairs()
+
+/*
+ * And how many CASES it saw. Without `--limit` the run must cover the corpus it
+ * loaded, so the check is exact; with one it is a floor, and `--limit=0` is a
+ * typo rather than a sample size - it used to run the engines over nothing and
+ * report `pass=0/0 mismatch=0`.
+ */
+const casePopulation = Number.isFinite(limit)
+  ? shortfall({
+      label: 'CASES',
+      actual: pairs.length,
+      atLeast: 1,
+      of: 'case(s)',
+      hint: 'Raise --limit, or drop it to compare the whole corpus.',
+    })
+  : miscount({
+      label: 'CASES',
+      actual: pairs.length,
+      expected: availableCaseCount(),
+      of: 'case(s)',
+    })
+if (casePopulation !== null) {
+  console.error(casePopulation)
+  process.exit(2)
+}
 
 /**
  * Per-target count of cases scored against a FILE, filled as the run walks the
@@ -608,6 +648,35 @@ for (const impl of impls) {
 if (active.length === 0) {
   console.error('No implementations are runnable.')
   process.exit(1)
+}
+
+/*
+ * ONE ENGINE IS NOT A COMPARISON.
+ *
+ * `active.length === 0` was the only floor, so a run with a single engine did
+ * the whole corpus, reported `pass=610/610 mismatch=0`, found zero cross-impl
+ * diffs BY CONSTRUCTION, and exited 0. Two missing checkouts is the ordinary
+ * state of a fresh environment, which is exactly when someone reads the summary
+ * and believes it.
+ *
+ * The fixture scoring below is still meaningful with one engine - it compares
+ * output to a FILE - so this does not abort. It says which half of the run is
+ * vacuous, and fails under the same flag CI uses for strictness, the convention
+ * the divergence gate already follows (carve#755, variant 2).
+ */
+const enginePopulation = shortfall({
+  label: 'CROSS-ENGINE',
+  actual: active.length,
+  atLeast: 2,
+  of: 'engine(s)',
+  hint: 'Fixture scoring below is still valid; every cross-engine claim in this run is not.',
+})
+if (enginePopulation !== null) {
+  console.log(enginePopulation)
+  if (failOnDiff) {
+    console.error('--fail-on-diff and fewer than two engines: nothing cross-engine was compared.')
+    process.exit(1)
+  }
 }
 
 const stats = Object.fromEntries(
