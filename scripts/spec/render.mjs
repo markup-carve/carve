@@ -255,7 +255,7 @@ const sem = g.createSemantics().addOperation('h', {
     // <img>. The label resolves against the same linkDefs entry and takes
     // url, title and attrs from it (PART 9R R1).
     const lbl = label.numChildren ? label.child(0).sourceString : null
-    return `ref:${JSON.stringify({ label: lbl, alt: alt.sourceString, img: true, attrList: attrsOf(attrs) })}`
+    return `ref:${JSON.stringify({ label: lbl, alt: alt.sourceString, img: true, attrList: attrsOf(attrs), attrSrc: attrs.sourceString })}`
   },
   autolink(_o, body, _c, attrs) {
     const raw = body.sourceString
@@ -431,7 +431,7 @@ sem.addOperation('applyTail(text, source)', {
     // decorated key, and keying on the rendered form both missed that
     // definition and matched a plain one the author never referenced.
     // carve-js and carve-rs key on the written label (carve#648).
-    return `ref:${JSON.stringify({ label: lbl, text, source, attrList: attrsOf(attrs) })}`
+    return `ref:${JSON.stringify({ label: lbl, text, source, attrList: attrsOf(attrs), attrSrc: attrs.sourceString })}`
   },
   attrs(_o, _s1, _first, _s2, _rest, _s3, _c) {
     const { text } = this.args

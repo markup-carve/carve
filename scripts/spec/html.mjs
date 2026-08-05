@@ -535,7 +535,7 @@ function renderTable(node, depth, ctx) {
  * side (PART 12 §3a keeps the construct rather than discarding it).
  */
 function resolveImageRef(parsed, ctx, literal) {
-  const { label, alt, attrList } = parsed
+  const { label, alt, attrList, attrSrc } = parsed
   if (typeof alt !== 'string') return literal
   // Keyed exactly as a link reference is (carve#648): the label AS WRITTEN.
   // `alt` is the source string here, not the rendered text, so the two paths
@@ -547,7 +547,10 @@ function resolveImageRef(parsed, ctx, literal) {
   // all three engines (carve#708).
   const key = label ?? alt
   const def = ctx.linkDefs.get(key)
-  if (!def) return `![${alt}][${label ?? ''}]`
+  // UNRESOLVED -> LITERAL, attribute block INCLUDED. The block is part of
+  // what the author wrote, and dropping it deleted content silently. All
+  // three engines emit it verbatim (carve#679).
+  if (!def) return `![${alt}][${label ?? ''}]${attrSrc ?? ''}`
   const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
   const a = def.attrs?.length
     ? renderBlockAttrs([def.attrs, attrList ?? []])
@@ -567,7 +570,7 @@ function resolveRefs(html, ctx) {
     } catch {
       return _
     }
-    const { label, text, source, attrList, img } = parsed
+    const { label, text, source, attrList, img, attrSrc } = parsed
     if (img) return resolveImageRef(parsed, ctx, _)
     if (typeof text !== 'string') return _
     // A collapsed reference is keyed by the label AS WRITTEN, the same spelling
@@ -598,7 +601,7 @@ function resolveRefs(html, ctx) {
       // never wrote, with the markers that identify it as a reference silently
       // consumed. All three engines emit the source; nothing pinned it because
       // no corpus case paired an unresolved reference with a decorated label.
-      return `[${source ?? text}][${label ?? ''}]`
+      return `[${source ?? text}][${label ?? ''}]${attrSrc ?? ''}`
     }
     const t = def.title ? ` title="${escapeAttr(def.title)}"` : ''
     // R1: the definition's attributes transfer to the link, and the link's own
