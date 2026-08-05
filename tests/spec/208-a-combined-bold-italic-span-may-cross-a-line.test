@@ -1,0 +1,9 @@
+A combined bold-italic span may cross a line
+
+```
+/*multi
+line*/
+.
+<p><strong><em>multi
+line</em></strong></p>
+```

@@ -1,0 +1,30 @@
+A nested list in a footnote body stays nested
+
+```
+[^a]: note
+
+  - one
+    - deep
+
+  end.
+
+see[^a]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <ul>
+        <li>one
+          <ul>
+            <li>deep</li>
+          </ul>
+        </li>
+      </ul>
+      <p>end.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```

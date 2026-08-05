@@ -1,0 +1,13 @@
+A reference image takes a caption
+
+```
+![a][ok]
+^ cap
+
+[ok]: /p.png
+.
+<figure>
+  <img src="/p.png" alt="a">
+  <figcaption>cap</figcaption>
+</figure>
+```

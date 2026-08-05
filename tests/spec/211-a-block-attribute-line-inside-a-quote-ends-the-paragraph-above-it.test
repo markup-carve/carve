@@ -1,0 +1,12 @@
+A block-attribute line inside a quote ends the paragraph above it
+
+```
+> a
+> {.c}
+> text
+.
+<blockquote>
+  <p>a</p>
+  <p class="c">text</p>
+</blockquote>
+```

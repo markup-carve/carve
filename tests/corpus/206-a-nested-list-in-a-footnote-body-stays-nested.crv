@@ -1,0 +1,8 @@
+[^a]: note
+
+  - one
+    - deep
+
+  end.
+
+see[^a]

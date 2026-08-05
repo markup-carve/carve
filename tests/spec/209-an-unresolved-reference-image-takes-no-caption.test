@@ -1,0 +1,9 @@
+An unresolved reference image takes no caption
+
+```
+![a][nope]
+^ cap
+.
+<p>![a][nope]
+^ cap</p>
+```

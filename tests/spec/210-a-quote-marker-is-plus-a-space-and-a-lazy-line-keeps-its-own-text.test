@@ -1,0 +1,9 @@
+A quote marker is `>` plus a space, and a lazy line keeps its own text
+
+```
+> ok
+>bad
+.
+<blockquote><p>ok
+&gt;bad</p></blockquote>
+```

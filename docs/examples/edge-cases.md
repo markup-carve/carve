@@ -8243,3 +8243,231 @@ see[^a]
 ```
 
 :::
+
+## A heading in a footnote body takes an id but no section wrapper
+
+A heading inside a note is a heading: it gets the generated id every other heading gets, so a fragment link and an implicit reference can reach it. What it does NOT get is the `<section>` wrapper, which only applies at document level - a note is already inside an `<li>`.
+
+::: compare
+
+```carve
+[^a]: note
+
+  # H
+
+  after
+
+see[^a]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <h1 id="H">H</h1>
+      <p>after<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## An attribute line inside a footnote body attaches inside it
+
+A block-attribute line attaches to the block that follows it, wherever it was written. Inside a note body that is the note's own next block, and a dangling one at the end of the body attaches to nothing at all - it does not reach the document below (§15 A4).
+
+::: compare
+
+```carve
+[^a]: note
+
+  {.cls}
+  styled
+
+see[^a]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <p class="cls">styled<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## A nested list in a footnote body stays nested
+
+Relative indentation inside a note body means what it means everywhere else: it says which item a marker belongs to. A body collected flush-left loses that, and the sublist becomes a sibling.
+
+::: compare
+
+```carve
+[^a]: note
+
+  - one
+    - deep
+
+  end.
+
+see[^a]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <ul>
+        <li>one
+          <ul>
+            <li>deep</li>
+          </ul>
+        </li>
+      </ul>
+      <p>end.<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## A reference image takes a caption
+
+A caption attaches to the captionable block above it, and an image written as a reference is an image. Every captioned-image case pinned the inline form, so the oracle accepted only that spelling and left the caption as literal text under a reference image while all three engines built the figure.
+
+::: compare
+
+```carve
+![a][ok]
+^ cap
+
+[ok]: /p.png
+```
+
+```html
+<figure>
+  <img src="/p.png" alt="a">
+  <figcaption>cap</figcaption>
+</figure>
+```
+
+:::
+
+## A combined bold-italic span may cross a line
+
+`/*…*/` is one construct (`bold_italic`), and like any inline span it folds across the lines of its paragraph. The nesting is the same either way: strong outside emphasis. Nothing pinned the multi-line form, and the oracle inverted it there - pairing the two delimiters separately gives emphasis outside strong.
+
+::: compare
+
+```carve
+/*multi
+line*/
+```
+
+```html
+<p><strong><em>multi
+line</em></strong></p>
+```
+
+:::
+
+## An unresolved reference image takes no caption
+
+The caption attaches to a captionable block, and a reference image that resolves to nothing is not one: the whole thing stays the text the author typed, both lines in one paragraph. The resolved form beside it becomes a figure, and the definition may sit anywhere - which is why this cannot be decided by looking at the image line alone.
+
+::: compare
+
+```carve
+![a][nope]
+^ cap
+```
+
+```html
+<p>![a][nope]
+^ cap</p>
+```
+
+:::
+
+## A quote marker is `>` plus a space, and a lazy line keeps its own text
+
+`>text` with no space is prose, not a quote marker (§10 I1). Inside an open quoted paragraph such a line folds in as lazy continuation and keeps its `>`, rather than being read as a marker and stripped.
+
+::: compare
+
+```carve
+> ok
+>bad
+```
+
+```html
+<blockquote><p>ok
+&gt;bad</p></blockquote>
+```
+
+:::
+
+## A block-attribute line inside a quote ends the paragraph above it
+
+§10 I5 lists the block-attribute line among the invisible constructs that interrupt an open paragraph, and that holds inside a container as much as at the top level: the paragraph ends, and the attributes attach to the block that follows.
+
+::: compare
+
+```carve
+> a
+> {.c}
+> text
+```
+
+```html
+<blockquote>
+  <p>a</p>
+  <p class="c">text</p>
+</blockquote>
+```
+
+:::
+
+## A flush-left line after a footnote definition belongs to the document
+
+A note body is the definition line plus lines indented by at least two spaces (§16). A flush-left line is not one of them: it ends the body and is the document's own next block. The `+` continuation marker (§17 L4) is the way to attach a flush-left block to a note, and it is deliberate rather than accidental.
+
+::: compare
+
+```carve
+a
+[^f]: note
+b
+
+see[^f]
+```
+
+```html
+<p>a</p>
+<p>b</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::

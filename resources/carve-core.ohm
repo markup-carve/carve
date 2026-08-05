@@ -142,7 +142,12 @@ CarveCore {
   // Combined form /*x*/ -> <strong><em> (grammar.ebnf bold_italic); matched
   // before emph so the two-char token wins over nested /-then-* parsing.
   boldItalic = "/*" ~spaceOrEnd biInner+ "*/" attrs?
-  biInner    = ~("*/") (rich | word | " " ~("*/") | litDelim | other)
+  // `nl` belongs here: a paragraph folds across lines, so a combined
+  // /*...*/ span may too. Without it the production failed on any
+  // multi-line span and the delimiter stack paired the two characters
+  // separately, giving em-outside-strong where the single-line form and
+  // all three engines give strong-outside-em (grammar.ebnf bold_italic).
+  biInner    = ~("*/") (rich | word | " " ~("*/") | nl | litDelim | other)
 
   // constructs allowed inside any span (everything except spans themselves,
   // which are listed per-delimiter to exclude self-nesting)

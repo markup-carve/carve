@@ -1569,7 +1569,17 @@ footnote_continuation = (space, space, {whitespace}, inline_content, newline) | 
 (* the body extends to following lines indented by >= 2 spaces -- PART 9 §16.
    A lone `+` also attaches a flush-left block (`continuation_marker_block`,
    PART 9 §17), the same continuation marker lists, block quotes and definition
-   bodies use. *)
+   bodies use.
+
+   `inline_content` above describes THE SHAPE OF A LINE that belongs to the
+   body, not how the collected body is parsed. The body is parsed AS BLOCKS
+   (PART 9 §16: "parsed as blocks"), so a note may hold a table, a list, a code
+   block or a quote, and the indentation beyond the body's own is theirs to
+   read. Taking the production literally reads as an inline-only body, which is
+   the opposite of what every implementation does and of what the corpus pins
+   ("A footnote body holds blocks", carve#691) -- and an engine written from
+   this line alone would flatten exactly the structure the indent carries
+   (carve-rs#611). *)
 
 (* DISMISSED (not reserved, no production): a sidenote form
      sidenote = "[>", inline_content, ']' ;

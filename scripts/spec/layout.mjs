@@ -517,6 +517,29 @@ export function parse(src) {
   // not leak into the parse-result contract { blocks, linkDefs, footnoteDefs,
   // abbrDefs }. It is back to 0 here, so drop it before spreading state.
   delete state.blockDepth
+  // Unwrap a figure whose reference image never resolved (see the
+  // `pendingRef` note above). Iterative, because a figure can sit inside
+  // any container and the tree is as deep as the document.
+  const stack = [blocks]
+  while (stack.length > 0) {
+    const level = stack.pop()
+    for (const b of level) {
+      if (b === null || typeof b !== 'object') continue
+      if (b.t === 'para' && b.pendingRef !== undefined) {
+        if (!state.linkDefs.has(b.pendingRef)) {
+          b.lines = [...b.lines, b.captionSrc]
+          delete b.caption
+        }
+        delete b.pendingRef
+        delete b.captionSrc
+      }
+      for (const value of Object.values(b)) {
+        if (Array.isArray(value) && value.some((x) => x !== null && typeof x === 'object')) {
+          stack.push(value.filter((x) => x !== null && typeof x === 'object'))
+        }
+      }
+    }
+  }
   return { blocks, ...state }
 }
 
@@ -590,6 +613,14 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     // ABBR_DEF only at document level: elsewhere the line is paragraph text,
     // so it neither opens a block nor interrupts one (PART 12 SS7).
     if (LINK_DEF.test(line) || FOOTNOTE_DEF.test(line) || (top && ABBR_DEF.test(line))) return true // I5
+    // A BLOCK-ATTRIBUTE LINE is in I5's list too - "a reference definition, a
+    // comment, and a block-attribute line" - and it was the one member missing
+    // here. Inside a list item that meant `- a` / `{.c}` / `text` folded all
+    // three lines into one paragraph and dropped the attribute, where every
+    // engine ends the paragraph and puts the class on `text`. It only showed
+    // in a container: at the top level the paragraph collector stops for its
+    // own reasons before this predicate decides anything.
+    if (line[0] === '{' && tryAttrLine(lines, idx)) return true // I5
     return false
   }
 
@@ -680,18 +711,14 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
           pullPending = false
           i = end
-        } else if (
-          !isBlank(lines[i] ?? '') &&
-          bodyLines[bodyLines.length - 1] !== '' &&
-          !startsVisibleBlock(lines[i]) &&
-          !LINK_DEF.test(lines[i]) && !FOOTNOTE_DEF.test(lines[i]) &&
-          !BULLET.test(lines[i]) && !isOrderedMarkerLine(lines[i]) && !FENCE.test(lines[i]) &&
-          !CAPTION.test(lines[i])
-        ) {
-          // lazy continuation of the definition's open paragraph (SS16)
-          bodyLines.push(lines[i].replace(/^[ \t]+/, ''))
-          i++
         } else break
+        // NO LAZY CONTINUATION. A branch here used to fold any flush-left
+        // non-blank line into the note body, citing SS16 - but SS16 grants no
+        // such thing: the body is "the def line plus any following lines
+        // indented by >= 2 spaces", and SS17 L4's `+` marker is the explicit
+        // way to attach a flush-left block. None of the three engines folds it
+        // either. The branch silently moved a document paragraph into the note
+        // (and, when the note was unreferenced, deleted it outright).
       }
       if (!state.footnoteDefs.has(label)) {
         // FIRST definition wins (PART 9R state)
@@ -1076,10 +1103,17 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         else qOpenPara = true
       }
       while (i < n) {
-        const qm = /^> ?(.*)$/.exec(lines[i])
+        // The MARKER is `>` plus a space, or `>` alone - the same rule the
+        // QUOTE test above uses to decide the quote opens at all. This regex
+        // was looser (`> ?`), so it also claimed `>bad`, stripped the marker
+        // and folded the rest in: the quote came out holding `bad` where every
+        // engine holds a literal `>bad`. PART 9 SS10 I1 says `>text` is prose,
+        // not a quote marker, and an entry test that is stricter than the
+        // consumption loop is how the two answers coexisted.
+        const qm = QUOTE.exec(lines[i])
         if (qm) {
-          inner.push(qm[1])
-          trackFence(qm[1])
+          inner.push(qm[1] ?? '')
+          trackFence(qm[1] ?? '')
           i++
           continue
         }
@@ -1171,8 +1205,44 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     if (j < n && isBlank(lines[j] ?? '') && CAPTION.test(lines[j + 1] ?? '')) j++
     const cap = j < n && lines[j] !== undefined ? CAPTION.exec(lines[j]) : null
     if (cap) {
-      if (para.length === 1 && (/^!\[[^\]]*\]\([^)]*\)(\{[^}]*\})?$/.test(para[0]) || /^\$\$`.*`$/.test(para[0]))) {
+      // A REFERENCE image is an image: the bracket form takes a caption
+      // exactly as the parenthesis form does. Only the inline form was
+      // tested here, so the oracle left the caption as literal paragraph
+      // text under a reference image while all three engines built the
+      // figure - and nothing caught it, because every captioned-image case
+      // in the corpus uses the inline form.
+      if (
+        para.length === 1 &&
+        (/^!\[[^\]]*\](\([^)]*\)|\[[^\]]*\])(\{[^}]*\})?$/.test(para[0]) || /^\$\$`.*`$/.test(para[0]))
+      ) {
         pnode.caption = cap[1]
+        // A reference image is captionable ONLY IF IT RESOLVES, and the
+        // definition may sit below it - so the decision cannot be made
+        // here, in a single forward pass. Record what an unwrap would need
+        // and let the post-pass below settle it once every definition is
+        // known. Without that, an unresolved reference produced a figure
+        // wrapped around literal text, where all three engines produce one
+        // paragraph holding both lines.
+        const refImage = /^!\[[^\]]*\]\[([^\]]*)\]/.exec(para[0])
+        if (refImage) {
+          // KEYED THE WAY RESOLUTION KEYS IT (html.mjs, carve#648): the
+          // label as written with whitespace collapsed, and the alt text
+          // standing in for an empty label. Storing the raw alt instead
+          // made `![ a  b][]` with `[a b]: /p.png` look unresolved here
+          // while resolving there, so the figure was unwrapped and the
+          // caption came back as literal text.
+          // Keyed EXACTLY as resolution keys it (html.mjs): an explicit label
+          // matches as written - PART 9R R1 is "case-sensitive, no whitespace
+          // folding" - while the collapsed form derives its label from the alt
+          // text, trimmed and collapsed. Using one rule for both directions
+          // put a figure around literal text in one case and dropped a caption
+          // from a resolving image in the other.
+          pnode.pendingRef =
+            refImage[1] === ''
+              ? para[0].slice(2, para[0].indexOf(']')).trim().replace(/\s+/g, ' ')
+              : refImage[1]
+          pnode.captionSrc = lines[j].replace(/^[ \t]+/, '').replace(/[ \t]+$/, '')
+        }
         i = j + 1
       }
       // a caption after a non-captionable block stays literal paragraph

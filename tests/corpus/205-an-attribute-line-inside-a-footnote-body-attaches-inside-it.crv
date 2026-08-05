@@ -1,0 +1,6 @@
+[^a]: note
+
+  {.cls}
+  styled
+
+see[^a]
