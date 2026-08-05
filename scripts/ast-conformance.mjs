@@ -314,17 +314,23 @@ const engineValues = new Map()
  * divergence look like a majority.
  */
 /**
- * Report where the engines publish DIFFERENT VALUES in the same node.
+ * Where the engines publish DIFFERENT VALUES in the same node.
  *
  * Separate from the shape panel because it answers a separate question, and
  * separate from the schema check because every field involved is optional there
  * - a tree that omits `align` validates exactly as well as one that carries it.
  *
- * REPORTS, does not gate. There are known divergences today (carve#750, #784,
- * #785, carve-php#877), and a gate would fail on day one for reasons already
- * being tracked. Grouped by `type.field` rather than by document because each
- * of those is one field behaving one way everywhere it appears: a per-document
- * list is 107 entries describing five facts.
+ * GATES against resources/ast-value-divergence.txt, which declares the known
+ * ones with a DOCUMENT COUNT each. This used to report and gate nothing, on the
+ * grounds that a gate would fail on day one for reasons already tracked - true,
+ * and the same shape as a check that cannot fail: the numbers moved and nothing
+ * said so. Declaring the debt keeps both halves, and the count makes the
+ * declaration fail in three directions rather than one (carve#786).
+ *
+ * Grouped by `type.field` rather than by document because each of these is one
+ * field behaving one way everywhere it appears: a per-document list is 107
+ * entries describing five facts, and a node path churns on every corpus
+ * insertion.
  */
 function reportValueDisagreements(present) {
   const byKey = new Map()
@@ -358,12 +364,54 @@ function reportValueDisagreements(present) {
   console.log(`THREE-WAY VALUE COMPARISON: ${byKey.size} field(s) disagree, across ${total} document(s)`)
   for (const [key, { engines, docs }] of [...byKey].sort((a, b) => b[1].docs.length - a[1].docs.length)) {
     const who = Object.entries(engines).map(([e, v]) => `${e}=${v}`).join('  ')
-    console.log(`  ${String(docs.length).padStart(4)}x  ${key}`)
+    console.log(`  ${String(new Set(docs).size).padStart(4)} doc(s)  ${key}`)
     console.log(`        ${who}`)
     console.log(`        e.g. ${docs.slice(0, 2).join(', ')}`)
   }
-  console.log('  Reported, not gated: see carve#786 for why, and which of these are already tracked.')
+
+  // The declaration, and the three ways it can be wrong.
+  const declared = new Map()
+  for (const line of readFileSync(VALUE_DIVERGENCE_FILE, 'utf8').split('\n')) {
+    const text = line.trim()
+    if (text === '' || text.startsWith('#')) continue
+    const [key, count] = text.split(/\s+/)
+    declared.set(key, Number(count))
+  }
+
+  const problems = []
+  for (const [key, { docs }] of byKey) {
+    // DOCUMENTS, not occurrences: `heading.attrs.id` diverges 72 times across
+    // 56 documents, and a declaration whose unit disagrees with its own header
+    // is a number nobody can check.
+    const documents = new Set(docs).size
+    if (!declared.has(key)) {
+      problems.push(`NEW        ${key} diverges in ${documents} document(s) and is not declared`)
+    } else if (declared.get(key) !== documents) {
+      problems.push(
+        `COUNT      ${key} declares ${declared.get(key)} document(s), measured ${documents}`,
+      )
+    }
+  }
+  for (const key of declared.keys()) {
+    if (!byKey.has(key)) {
+      problems.push(`FIXED      ${key} no longer diverges - delete its line`)
+    }
+  }
+
+  if (problems.length > 0) {
+    console.error('')
+    console.error('THREE-WAY VALUE COMPARISON does not match resources/ast-value-divergence.txt:')
+    for (const p of problems) console.error(`  ${p}`)
+    console.error('')
+    console.error('Each line there is a field the engines disagree about, with the number of')
+    console.error('documents it shows up in. Update it in the commit that moves the number.')
+    process.exit(1)
+  }
+
+  console.log('  All declared in resources/ast-value-divergence.txt (carve#786).')
 }
+
+const VALUE_DIVERGENCE_FILE = resolve(here, '..', 'resources', 'ast-value-divergence.txt')
 
 const INDEPENDENT_ENGINES = ['carve-js', 'carve-rs', 'carve-php']
 let panelRan = false

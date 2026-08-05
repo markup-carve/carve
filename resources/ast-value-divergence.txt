@@ -1,0 +1,33 @@
+# Fields the three engines publish DIFFERENT VALUES for.
+#
+# `npm run ast:check` compares every corpus document's AST across carve-js,
+# carve-rs and carve-php three ways: the SHAPE (node types and nesting), the
+# schema, and - here - the scalar VALUES. The first two cannot see a field whose
+# value differs while its presence and type do not, which is where every
+# divergence found by hand in August 2026 lived (carve#750, #758, #784, #785,
+# carve-php#877).
+#
+# The comparison reported those and gated nothing, because a gate would have
+# failed on day one for reasons already tracked. So the debt is DECLARED
+# instead, and the declaration is exact in three directions:
+#
+#   - a field diverges and is not listed        -> new divergence, fails
+#   - a listed field no longer diverges         -> fixed, delete the line, fails
+#     until you do
+#   - a listed field's DOCUMENT COUNT moves     -> the divergence spread or
+#     shrank, fails
+#
+# The count is what keeps the second and third honest. A list of document names
+# would churn on every corpus insertion and describe five facts in a hundred
+# lines; a count describes the same fact and still fails when the fact changes.
+#
+# Grouped by `type.field` for the same reason the report is: each of these is
+# one field behaving one way everywhere it appears.
+#
+# Format: <type.field>  <document-count>  <who diverges and where it is tracked>
+
+heading.attrs.id        45  carve-js publishes a GENERATED heading id, carve-rs and carve-php publish none (carve#750)
+table_cell.align         5  carve-php puts the column alignment on BODY cells, the other two on the header row only (carve#784)
+code_block.attrs.order   4  a fence title's synthesized key gets an order entry in carve-rs and carve-php, not in carve-js (carve#785)
+text.escapedLeadingCaret 1  carve-js publishes a flag beside the escaped_text node it duplicates; nothing else has it (carve#793)
+paragraph.attrs.order    1  carve-php lists a repeated attribute key twice where keyValues holds it once (carve-php#878)
