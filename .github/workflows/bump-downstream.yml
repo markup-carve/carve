@@ -328,7 +328,24 @@ jobs:
             else
               gh pr ready "$existing" --repo "$REPO" 2>/dev/null || true
             fi
-            gh pr edit "$existing" --repo "$REPO" --body "$body" 2>/dev/null || true
+            # Via the REST API, NOT `gh pr edit --body`. That command goes
+            # through GraphQL and fails in this org with
+            #
+            #   GraphQL: Projects (classic) is being deprecated ...
+            #     (repository.pullRequest.projectCards)
+            #
+            # exit 1 - and `2>/dev/null || true` swallowed it, so every re-run
+            # left the body written by the FIRST run. Both open bump PRs said
+            # "Conforms to the bumped corpus - ready to merge" while their own
+            # CI failed on unclassified categories, and the list of those
+            # categories - the actionable half this job builds - never appeared
+            # on the PR that needed it.
+            #
+            # Failure is reported now rather than hidden: a body that did not
+            # update is exactly the state that was invisible before.
+            if ! gh api "repos/$REPO/pulls/$existing" -X PATCH -f body="$body" >/dev/null; then
+              echo "::warning::could not update the body of $REPO#$existing - it may describe an earlier run"
+            fi
             echo "Updated existing PR #$existing on $REPO (draft=${draft:+yes})."
           fi
 
