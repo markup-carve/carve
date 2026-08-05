@@ -76,8 +76,36 @@ function* walk(node) {
   }
 }
 
+/*
+ * TWO STAGES, both spec surface, and this file used to see only the first.
+ *
+ * PART 12 §3a describes the PRE-RESOLVE tree - an unresolved reference is a link
+ * node carrying `ref` and `rawRef`, fields the schema says are "present only
+ * between parse and resolve". The RESOLVED tree is what a consumer actually
+ * receives, and it is the one scripts/ast-conformance.mjs measures, deliberately
+ * (carve#486: a `ref` surviving into the reference AST means the AST was taken
+ * before resolve).
+ *
+ * Checking only `parse()` meant every resolution result was unvalidated here:
+ * `caption_number.n`, `footnote_ref.number`, `inline_footnote.number` and
+ * `heading_ref.href` do not exist at that stage, so the schema's description of
+ * them was never measured against anything. Checking only `resolve()` would drop
+ * §3a's fields the other way. So: validate both, and count a type or field as
+ * produced if EITHER stage produces it.
+ */
 function serialize(source) {
   return lib.toAstJson(lib.parse(source))
+}
+
+function serializeResolved(source) {
+  return lib.toAstJson(
+    typeof lib.resolve === 'function' ? lib.resolve(lib.parse(source)) : lib.parse(source),
+  )
+}
+
+/** Both stages of one document, for the checks that are about coverage. */
+function bothStages(source) {
+  return [serialize(source), serializeResolved(source)]
 }
 
 function firstErrors(n = 4) {
@@ -102,7 +130,8 @@ test('the corpus is non-trivial', () => {
 test('every corpus document serializes to a schema-valid AST', () => {
   const failures = []
   for (const { name, source } of corpus) {
-    if (!validate(serialize(source))) failures.push(`${name}: ${firstErrors()}`)
+    if (!validate(serialize(source))) failures.push(`${name} (parse): ${firstErrors()}`)
+    if (!validate(serializeResolved(source))) failures.push(`${name} (resolved): ${firstErrors()}`)
   }
   assert.deepEqual(failures.slice(0, 8), [], `${failures.length} documents fail the schema`)
 })
@@ -111,7 +140,7 @@ test('every node type the reference emits is declared in the schema', () => {
   const declared = declaredTypes()
   const seen = new Set()
   for (const { source } of corpus) {
-    for (const node of walk(serialize(source))) seen.add(node.type)
+    for (const tree of bothStages(source)) for (const node of walk(tree)) seen.add(node.type)
   }
   const undeclared = [...seen].filter((t) => !declared.has(t)).sort()
   assert.deepEqual(undeclared, [], `node types emitted but not in the schema: ${undeclared.join(', ')}`)
@@ -141,7 +170,7 @@ const NOT_PRODUCIBLE = {
 test('every node type the schema declares is produced by a corpus document, or named as unproducible', () => {
   const seen = new Set()
   for (const { source } of corpus) {
-    for (const node of walk(serialize(source))) seen.add(node.type)
+    for (const tree of bothStages(source)) for (const node of walk(tree)) seen.add(node.type)
   }
   const missing = [...declaredTypes()]
     .filter((type) => !seen.has(type) && !(type in NOT_PRODUCIBLE))
@@ -158,7 +187,7 @@ test('every node type the schema declares is produced by a corpus document, or n
 test('every unproducible exemption is still needed', () => {
   const seen = new Set()
   for (const { source } of corpus) {
-    for (const node of walk(serialize(source))) seen.add(node.type)
+    for (const tree of bothStages(source)) for (const node of walk(tree)) seen.add(node.type)
   }
   const stale = Object.keys(NOT_PRODUCIBLE).filter((type) => seen.has(type)).sort()
   assert.deepEqual(

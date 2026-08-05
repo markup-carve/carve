@@ -1162,10 +1162,6 @@
           "type": "integer",
           "description": "Assigned during resolution, by document reference order."
         },
-        "refId": {
-          "type": "string",
-          "description": "Assigned during resolution: the backlink target id."
-        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
@@ -1973,9 +1969,6 @@
         },
         "number": {
           "type": "integer"
-        },
-        "refId": {
-          "type": "string"
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
