@@ -19,6 +19,7 @@ import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expectedFileFor, targetOf } from '../scripts/lib/corpus-targets.mjs'
 import {
+  autolink,
   carveToAnsi,
   carveToHtml,
   carveToMarkdown,
@@ -86,6 +87,20 @@ const featureRunners = {
   'section-wrapper-off': (source, render) => render(source, { sections: false }),
   'source-line-after-generated-id': (source, render) =>
     render(source, { sections: false, sourceLine: true }),
+  /*
+   * Three features that had NO RUNNER and so read as unsupported. The reference
+   * engine does all three, and each case matches its committed fixture on the
+   * first try - so the skip was describing the harness, not the engine, and
+   * three expected files were being verified by nothing (carve#645 is the same
+   * shape: a guard whose inputs are a fixed list only guards that list).
+   *
+   * `smart-quotes-locale-de` stays skipped and is the reason a skip is worth
+   * having: the engine has no locale-quote option at all, so that pair really
+   * is describing something unimplemented.
+   */
+  'bare-url-autolink': (source, render) => render(source, { extensions: [autolink()] }),
+  'smart-typography-off': (source, render) => render(source, { smartTypography: false }),
+  'markdown-typography-source': (source, render) => render(source, { smartTypography: 'source' }),
   'code-callouts': (source, render) => render(source, { extensions: [codeCallouts()] }),
   details: (source, render) => render(source, { extensions: [details()] }),
   'list-table': (source, render) => render(source, { extensions: [listTable()] }),
