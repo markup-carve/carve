@@ -49,7 +49,8 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | Smart typography, `@mention`, `#tag`, `:symbol:` parsing | <Badge type="tip" text="core" /> | on | **yes** (§19) |
 | Citations `[@key]`, bare-URL autolinking, code callouts `<n>` | <Badge type="info" text="standard" /> | off | — |
 | Mention/tag → URL templates, symbol map (e.g. emoji glyphs), locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
-| Mermaid / FencedRender, MathBlock, ListTable, Glossary, Index, HeadingNumbers, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
+| ListTable (§5), Details, Spoiler, Tabs — shipped in all three engines and pinned in `tests/corpus-optional` | <Badge type="info" text="standard" /> | off | — |
+| Mermaid / FencedRender, MathBlock, Glossary, Index, HeadingNumbers, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | Bibliography (§6) — an **option on Citations**, not a separate registration: the host passes a CSL-JSON pool to the Citations extension | <Badge type="warning" text="extension" /> | off | — |
 | TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
 | SemanticSpan — **carve-php only** today; carve-js and carve-rs ship no such extension | <Badge type="warning" text="extension" /> | off | — |
@@ -68,34 +69,15 @@ differs by processor. The narrative below details each tier.
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, symbol map (e.g. emoji glyphs),
   locale smart-quote sets, bare-URL autolinking, citations (§4), and code
-  callouts (`<n>` markers inside fenced code + a bound explanation list; §10).
-- Tier 3 (non-exhaustive): FencedRender (a generic fenced-code-block factory
-  with Mermaid, D2, Graphviz, WaveDrom, ABC, PlantUML, Vega-Lite and Chart.js presets),
-  MathBlock (a ` ```math ` fenced block →
-  `<div class="math display">`, the GFM-style block form of Carve's `$…$`
-  math), ListTable (a `::: list-table` div whose nested list renders as a real
-  HTML `<table>`, so cells can hold block content the pipe-table syntax cannot;
-  `{header-rows}` / `{header-cols}` take a count or the boolean first-row/column
-  form, and `^` / `<` give pipe-table-parity rowspan / colspan; in carve-php,
-  carve-js and carve-rs), Bibliography (a reference list rendered from citation
-  keys (§4) resolved against an external CSL-JSON source named in front-matter,
-  reusing the `::: references` placeholder with mandated numeric output and
-  back-links; §6), Glossary (a `::: glossary` definition list whose terms become
-  `<dt id="gloss-{slug}">` entries that `:term[word]` links to; §7), Index
-  (invisible `:index[term]` markers collected into a sorted `::: index` list
-  with back-links to every occurrence; §8), Spoiler (the standard hidden-content role - inline
-  `:spoiler[text]` → `<span class="spoiler">` and block `::: spoiler` →
-  `<details class="spoiler">` disclosure; in carve-php, carve-js and carve-rs),
-  Tabs, CodeGroup, Details, TableOfContents,
-  HeadingPermalinks,
-  HeadingNumbers (auto-number sections - `<span class="section-number">1.2</span>`
-  on each heading - and rewrite auto-filled `</#id>` cross-references to
-  "Section 1.2 - Title"; opt-in, no new syntax; §9),
-  HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks,
-  SemanticSpan (carve-php only),
-  ColorSwatch (inline `:color[value]` -> a validated color chip; carve-php,
-  carve-js and carve-rs — see the [extension tutorial](./extension-tutorial)),
-  and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
+  callouts (`<n>` markers inside fenced code + a bound explanation list; §10) —
+  plus four block features that ship in carve-js, carve-php and carve-rs and
+  carry pinned cases in `tests/corpus-optional`: ListTable (a `::: list-table`
+  div whose nested list renders as a real HTML `<table>`, so cells can hold
+  block content the pipe-table syntax cannot; `{header-rows}` /
+  `{header-cols}` take a count or the boolean first-row/column form, and `^` /
+  `<` give pipe-table-parity rowspan / colspan; §5), Details, Spoiler and Tabs.
+  Being off by default is what Tier-2 means; it is the cross-engine pin that
+  separates them from Tier 3.
 
   `Details` is a pure renderer extension over the existing `:::details`
   admonition (no new syntax): it emits the HTML5 `<details>/<summary>`
@@ -106,6 +88,39 @@ differs by processor. The narrative below details each tier.
   Disabled, the block renders as the ordinary admonition
   div, so documents stay readable. See the per-impl `docs/extensions.md` in
   carve-js / carve-php / carve-rs.
+
+  `Spoiler` is the standard hidden-content role from the Extension Registry, with
+  no new syntax. Inline `:spoiler[text]` → `<span class="spoiler">text</span>`;
+  block `::: spoiler "Title"` → an HTML5 `<details class="spoiler">` disclosure
+  (native, keyboard- and screen-reader-accessible), defaulting to
+  `<summary>Spoiler</summary>` when title-less. Without the extension the inline
+  form stays the generic `<span class="ext-spoiler">` and the block stays a
+  plain `<div class="spoiler">`, so documents remain readable. Carve emits only
+  the marker; the blur + reveal is the host's CSS. Author attributes merge onto
+  the output element (the `spoiler` base class ahead of author classes) with the
+  always-on attribute hardening. In carve-php / carve-js / carve-rs.
+
+- Tier 3 (non-exhaustive): FencedRender (a generic fenced-code-block factory
+  with Mermaid, D2, Graphviz, WaveDrom, ABC, PlantUML, Vega-Lite and Chart.js presets),
+  MathBlock (a ` ```math ` fenced block →
+  `<div class="math display">`, the GFM-style block form of Carve's `$…$`
+  math), Bibliography (a reference list rendered from citation
+  keys (§4) resolved against an external CSL-JSON source named in front-matter,
+  reusing the `::: references` placeholder with mandated numeric output and
+  back-links; §6), Glossary (a `::: glossary` definition list whose terms become
+  `<dt id="gloss-{slug}">` entries that `:term[word]` links to; §7), Index
+  (invisible `:index[term]` markers collected into a sorted `::: index` list
+  with back-links to every occurrence; §8),
+  CodeGroup, TableOfContents,
+  HeadingPermalinks,
+  HeadingNumbers (auto-number sections - `<span class="section-number">1.2</span>`
+  on each heading - and rewrite auto-filled `</#id>` cross-references to
+  "Section 1.2 - Title"; opt-in, no new syntax; §9),
+  HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks,
+  SemanticSpan (carve-php only),
+  ColorSwatch (inline `:color[value]` -> a validated color chip; carve-php,
+  carve-js and carve-rs — see the [extension tutorial](./extension-tutorial)),
+  and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
 
   `FencedRender` is the generic form of the Mermaid pattern: one configurable
   renderer claims fenced code blocks by language word and emits a single
@@ -147,17 +162,6 @@ differs by processor. The narrative below details each tier.
   the class first, carve-js emits attributes in author source order. (This is a
   pre-existing core-math divergence, not specific to MathBlock; the no-attribute
   output is identical everywhere.)
-
-  `Spoiler` is the standard hidden-content role from the Extension Registry, with
-  no new syntax. Inline `:spoiler[text]` → `<span class="spoiler">text</span>`;
-  block `::: spoiler "Title"` → an HTML5 `<details class="spoiler">` disclosure
-  (native, keyboard- and screen-reader-accessible), defaulting to
-  `<summary>Spoiler</summary>` when title-less. Without the extension the inline
-  form stays the generic `<span class="ext-spoiler">` and the block stays a
-  plain `<div class="spoiler">`, so documents remain readable. Carve emits only
-  the marker; the blur + reveal is the host's CSS. Author attributes merge onto
-  the output element (the `spoiler` base class ahead of author classes) with the
-  always-on attribute hardening. In carve-php / carve-js / carve-rs.
 
 Footnotes are **not** Tier 3. Reference footnotes `[^id]` and inline footnotes
 `^[content]` are both implemented Tier-1 core (`resources/grammar.ebnf` PART 9
@@ -454,7 +458,7 @@ An integral cluster wraps all its items in:
 - External bibliographies are handled by the Bibliography extension (§6, CSL-JSON
   via front-matter); `.bib` ingestion and narrative form remain out of scope.
 
-## 5. ListTable (Tier-3)
+## 5. ListTable (Tier-2)
 
 Tables whose cells hold block content (multiple paragraphs, lists, code), which
 pipe tables cannot express (issue #162). A `::: list-table` div whose body is a
@@ -496,11 +500,13 @@ cells), it renders as its ordinary `<div class="list-table">` containing the
 literal nested list - no content is ever dropped, and the deferred output is
 byte-identical to the plain div.
 
-### 5.4 Conformance (NOT corpus-pinned)
+### 5.4 Conformance (`tests/corpus-optional`)
 
-Tier-3, so not in the mandatory corpus. The contract is cross-impl parity: for a
+Tier-2, so not in the mandatory corpus: case `26-list-table-caption-inline` pins
+the caption's inline markup in `tests/corpus-optional`, run per §3 whenever the
+feature is enabled. The rest of the contract is cross-impl parity: for a
 given input the three implementations produce the same `<table>`, and spans match
-the equivalent pipe table. Each implementation pins this in its own test suite
+the equivalent pipe table. Each implementation pins that in its own test suite
 (block cells, caption, header rows/cols, spans, escape, ragged padding, the
 no-cell-row defer, and the thead/tbody rowspan clamp).
 

@@ -44,9 +44,10 @@ Tier-2 / Tier-3 seam):
   byte-parity across all three engines. Changes require a coordinated minor.
 - **Tier-2 standard extensions** (citations incl. typed-locator + integral
   enrichment, bibliography, code callouts, glossary, index, heading numbers,
-  mentions/tags) are **stable and corpus-pinned** in 0.1. Their syntax and HTML
-  contract will not change without a minor bump.
-- **Tier-3 app-level extensions** (Mermaid, Tabs, table-of-contents, heading
+  mentions/tags, and the four block features pinned in `tests/corpus-optional` -
+  list tables, details, spoilers, tabs) are **stable and corpus-pinned** in 0.1.
+  Their syntax and HTML contract will not change without a minor bump.
+- **Tier-3 app-level extensions** (Mermaid, table-of-contents, heading
   permalinks, ColorSwatch, QR, static maps, and other host-dependent showcases)
   ship and are documented, but are **not covered by the 0.1 stability
   guarantee** - they may evolve in any release. Several depend on a host library

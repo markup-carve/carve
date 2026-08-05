@@ -35,7 +35,7 @@ A `::: name` opener's behavior keys off the **type word** (not a class). Only th
 |-----------|-----------|------------------|
 | `note` `tip` `warning` `danger` `info` `success` `example` `quote` | `<aside class="admonition {type}">` | Admonition (PART 9 §12); optional quoted title → `<p class="admonition-title">` |
 | `\|` (pipe) | `<div class="line-block">` | Line block - preserves the author's per-line layout / soft breaks (PART 9 §23). The token is the pipe, not a word; an inline `::: {.line-block}` is not a fence at all (strict djot) but an ordinary paragraph. |
-| *(any other word)* | `<div class="{word}">` | None in core, a generic fenced div; meaning supplied by a Tier-3 extension (e.g. `tabs`, `code-group`, `mermaid`). |
+| *(any other word)* | `<div class="{word}">` | None in core, a generic fenced div; meaning supplied by a Tier-2 or Tier-3 extension (e.g. `tabs`, `code-group`, `mermaid`). |
 
 Because the behavior keys to the bare type word, give a purely presentational container a class on an **attribute line before the opener** (`{.mybox}` then `:::`) so you never collide with a recognized type word. The `:::` fence takes no inline attributes (strict djot), so an inline `::: {.mybox}` is a paragraph, not a div.
 

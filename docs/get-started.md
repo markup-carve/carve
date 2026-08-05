@@ -99,10 +99,10 @@ implementation — no configuration, no plugins.
 A few things are **opt-in**:
 
 - **Tier-2** — spec-defined but off by default, e.g. citations `[@key]`,
-  bare-URL autolinking, mention/tag → URL templates. Enable them in your
-  processor.
+  bare-URL autolinking, mention/tag → URL templates, a collapsible `details`
+  widget, `list-table`. Enable them in your processor.
 - **Tier-3** — per-implementation extensions, e.g. Mermaid diagrams, a
-  collapsible `details` widget, `list-table`. Register the ones you want.
+  table of contents, heading permalinks. Register the ones you want.
 
 The `:name[…]` (inline) and `::: name` (block) **syntax** is core, but whether a
 given `name` does something special depends on whether a handler is registered;
