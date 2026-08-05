@@ -1586,11 +1586,27 @@ inline_footnote = "^[", inline_content, ']' ;
 
 footnote_definition = "[^", footnote_label, "]:", space, inline_content, newline,
                       {footnote_continuation | continuation_marker_block} ;
-footnote_continuation = (space, space, {whitespace}, inline_content, newline) | blank_line ;
+footnote_continuation = (footnote_indent, inline_content, newline) | blank_line ;
+footnote_indent = whitespace, {whitespace} ;
 (* the body extends to following lines indented by >= 2 spaces -- PART 9 §16.
    A lone `+` also attaches a flush-left block (`continuation_marker_block`,
    PART 9 §17), the same continuation marker lists, block quotes and definition
    bodies use.
+
+   INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE (carve#692). The prior
+   spelling of `footnote_indent` as `space, space` made this production a
+   literal two-SPACE requirement, contradicting its own adjacent comment
+   ("indented by >= 2 spaces", a column claim) and PART 9 §24 C1, which
+   already gives a tab a column value (to the next multiple of 4). This
+   production widens to any whitespace run reaching column 2: a bare tab
+   (column 0 -> 4) or a space then a tab (column 1 -> 4) both qualify, exactly
+   as two literal spaces do; a single space (column 1) does not. This is
+   INDENTATION, not a marker SEPARATOR -- it does not touch the literal
+   `space` the def line's own `]:` separator requires (unchanged, PART 9 §24
+   C2's sibling rule for markers). `footnote_indent` above is therefore
+   deliberately loose (any run of `whitespace`, PART 2's own idiom for
+   `list_continuation`'s `indent`) -- the actual column-2 floor is column
+   arithmetic, stated here rather than encoded character-by-character.
 
    `inline_content` above describes THE SHAPE OF A LINE that belongs to the
    body, not how the collected body is parsed. The body is parsed AS BLOCKS
@@ -1602,17 +1618,18 @@ footnote_continuation = (space, space, {whitespace}, inline_content, newline) | 
    this line alone would flatten exactly the structure the indent carries
    (carve-rs#611).
 
-   THE BODY'S OWN COLUMN IS TWO, fixed by `space, space` above -- NOT the first
-   continuation line's actual indent. A reader consumes exactly two columns of
-   every continuation line and hands the rest to the body's blocks, so a body
-   written at three leaves ONE residual column, and at that column a block
-   opener is lazy paragraph text rather than a block, exactly as it is inside a
-   list item above the content column (PART 9 §24 C3). Deriving the column from
-   the first continuation line instead makes a whole body written one column in
-   land at relative zero, so an indented table opens a table that no other
-   reader sees (carve-js#677, which was alone against the other two engines and
-   this spec). Two is a FLOOR for the body, not a ceiling for its blocks: a
-   nested list's inner item still sits at four and still nests. *)
+   THE BODY'S OWN COLUMN IS TWO -- NOT the first continuation line's actual
+   indent. A reader consumes exactly two columns of every continuation line
+   (PART 9 §24 C5: a tab straddling that boundary is consumed WHOLE) and hands
+   the rest to the body's blocks, so a body written at three leaves ONE
+   residual column, and at that column a block opener is lazy paragraph text
+   rather than a block, exactly as it is inside a list item above the content
+   column (PART 9 §24 C3). Deriving the column from the first continuation
+   line instead makes a whole body written one column in land at relative
+   zero, so an indented table opens a table that no other reader sees
+   (carve-js#677, which was alone against the other two engines and this
+   spec). Two is a FLOOR for the body, not a ceiling for its blocks: a nested
+   list's inner item still sits at four and still nests. *)
 
 (* DISMISSED (not reserved, no production): a sidenote form
      sidenote = "[>", inline_content, ']' ;
@@ -2898,8 +2915,10 @@ EOF = (* end of file *) ;
         referenced again reuses its number.
       - Definitions may appear anywhere (order-independent); the FIRST
         definition for a label wins. A body is the def line plus any
-        following lines indented by >= 2 spaces (single blank lines
-        allowed between chunks), parsed as blocks. A definition is
+        following lines indented to column 2 or more (PART 9 §24 C1 column
+        arithmetic -- a tab reaching column 2 qualifies the same as two
+        spaces; single blank lines allowed between chunks), parsed as
+        blocks. A definition is
         document-level metadata: it is COLLECTED and RESOLVED even when it
         sits INSIDE A CONTAINER (a blockquote or a list item). The reference
         resolves to the one endnotes section and the container that held the

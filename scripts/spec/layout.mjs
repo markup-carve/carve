@@ -145,6 +145,20 @@ function indentCols(line) {
   return { col, rest: line.slice(i) }
 }
 
+// A footnote body's own column is fixed at 2 (grammar.ebnf, "Footnotes"),
+// regardless of how the first continuation line is actually indented.
+const FOOTNOTE_BODY_COLUMN = 2
+
+// PART 9 SS24 C1/carve#692: a footnote continuation line qualifies by
+// REACHING column 2, not by starting with two literal space characters. A
+// bare tab (column 0 -> 4) and a space-then-tab (column 1 -> 4) both
+// qualify; a single space (column 1) does not.
+function isFootnoteContinuationLine(line) {
+  if (line === undefined) return false
+  const { col, rest } = indentCols(line)
+  return col >= FOOTNOTE_BODY_COLUMN && rest !== ''
+}
+
 // Roman numeral helpers for the SS11 N2/N3 ordered dialects.
 const ROMAN_CHARS = /^[ivxlcdm]+$/
 const ROMAN_VALUES = { i: 1, v: 5, x: 10, l: 50, c: 100, d: 500, m: 1000 }
@@ -718,13 +732,17 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
       // pulled-in block (SS17 L4). It is a distinct signal from an empty body
       // line, so an empty note (`[^a]:`) never swallows the following block.
       let pullPending = false
-      // indented continuation (>= 2 spaces), single blank lines allowed
+      // Indented continuation: the line's leading run must reach COLUMN 2
+      // (PART 9 SS24 C1 column arithmetic), not two literal space characters.
+      // A tab from column 0 already reaches column 4, so a bare tab or a
+      // space-then-tab both satisfy the floor; a single space (column 1) does
+      // not. Single blank lines are allowed between continuation lines.
       while (i < n) {
-        if (/^ {2,}\S/.test(lines[i])) {
-          bodyLines.push(lines[i].replace(/^ {2}/, ''))
+        if (isFootnoteContinuationLine(lines[i])) {
+          bodyLines.push(dedent(lines[i], FOOTNOTE_BODY_COLUMN))
           pullPending = false
           i++
-        } else if (isBlank(lines[i]) && /^ {2,}\S/.test(lines[i + 1] ?? '')) {
+        } else if (isBlank(lines[i]) && isFootnoteContinuationLine(lines[i + 1])) {
           bodyLines.push('')
           i++
         } else if (CONT_MARKER.test(lines[i] ?? '')) {

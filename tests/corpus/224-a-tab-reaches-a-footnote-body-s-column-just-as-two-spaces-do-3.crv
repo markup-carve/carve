@@ -1,0 +1,4 @@
+[^a]: note
+	more
+
+see[^a]
