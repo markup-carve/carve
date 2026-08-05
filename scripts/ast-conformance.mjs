@@ -299,11 +299,18 @@ function checkAdjacentTextRuns(doc, findings) {
   scan(doc.children ?? [], '$.children')
 }
 
-function checkDocument(doc, source, findings) {
-  checkShape(doc, findings)
-  checkAdjacentTextRuns(doc, findings)
-  checkFrontmatterSurvives(doc, source, findings)
-  checkPositions(doc, source, findings)
+function checkDocument(name, doc, source, findings) {
+  // Prefix every finding with the document, the way the parse/serialize
+  // failures above already do. Without it the shape and position checks - the
+  // large majority - reached the report anonymous, so the grouping had no
+  // filename to keep and no finding could be opened (carve#534 lists clusters
+  // nobody could reproduce for exactly this reason).
+  const own = []
+  checkShape(doc, own)
+  checkAdjacentTextRuns(doc, own)
+  checkFrontmatterSurvives(doc, source, own)
+  checkPositions(doc, source, own)
+  for (const f of own) findings.push(name.endsWith('.crv') ? name + ': ' + f : f)
 }
 
 /**
@@ -431,7 +438,7 @@ for (const { name, source } of samples) {
     jsFindings.push(`${name}: parse threw - ${error.message}`)
     continue
   }
-  checkDocument(doc, source, jsFindings)
+  checkDocument(name, doc, source, jsFindings)
   referenceShapes.set(name, shapeOf(doc))
 
   // PART 12 §6: serialize then deserialize must equal the parse.
@@ -475,7 +482,7 @@ if (rsBinary) {
       rsFindings.push(`${name}: could not serialize - ${String(error.message).split('\n')[0]}`)
       continue
     }
-    checkDocument(doc, source, rsFindings)
+    checkDocument(name, doc, source, rsFindings)
     checkShapeParity(name, doc, rsFindings)
   }
   const rsBuild = buildStatus(rsBinary, resolve(rsDir, 'src'), ['.rs'])
@@ -512,7 +519,7 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
       rbFindings.push(`${name}: could not serialize - ${String(error.message).split('\n')[0]}`)
       continue
     }
-    checkDocument(doc, source, rbFindings)
+    checkDocument(name, doc, source, rbFindings)
     checkShapeParity(name, doc, rbFindings)
   }
   // The compiled extension, not the Ruby source: carve-rb wraps carve-rs
@@ -557,7 +564,7 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
       phpFindings.push(`${name}: could not serialize - ${String(error.message).split('\n')[0]}`)
       continue
     }
-    checkDocument(doc, source, phpFindings)
+    checkDocument(name, doc, source, phpFindings)
     checkShapeParity(name, doc, phpFindings)
   }
   report(`carve-php (over bin/carve --json, ${satelliteSamples.length} documents)`, phpFindings)
