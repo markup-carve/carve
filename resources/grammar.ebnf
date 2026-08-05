@@ -4998,12 +4998,12 @@ EOF = (* end of file *) ;
       option and enable them whenever they serialize, which is the arrangement
       the paragraph above permits. Measured over the corpus:
 
-        carve-js    3414 placed,  10 unplaced   (0.29%)
-        carve-rs    3389 placed,   9 unplaced   (0.26%)
-        carve-php   3405 placed,   5 unplaced   (0.15%)
+        carve-js    4159 placed,   9 unplaced   (0.22%)
+        carve-rs    4183 placed,  15 unplaced   (0.36%)
+        carve-php   4188 placed,  13 unplaced   (0.31%)
 
-      What is left is not a backlog. Every engine independently arrived at
-      nearly the same residue, on the same THREE documents -- a line block
+      Most of what is left is not a backlog. All three engines independently
+      arrive at residue on the same THREE documents -- a line block
       (41-line-blocks-9) and two table cells continued across lines
       (63-table-multi-line-cell-continuation,
       64-table-rowspan-with-multi-line-content). All of it is REASSEMBLED
@@ -5012,18 +5012,38 @@ EOF = (* end of file *) ;
       source lines by a space the source does not contain. None of it is a slice
       of the source at any offset, so no span selects it.
 
-      carve-rs additionally leaves the merged text of an unwrapped autolink
-      unplaced (03-links-12), for the same reason once §1a joins the run: the
-      `<` and `>` between the pieces are not in the value.
-
       This state is convergent rather than accidental, and it is the evidence
       that settled carve#490: THAT residue -- the reassembled content named
       above -- is the permitted category, not a shortfall each engine reports
       separately. The exemption is scoped to it and does not launder anything
-      else. docs/ast-json.md's table additionally records carve-rs leaving a
-      definition list's OWN parts unplaced; a `definition_term` is a slice of
-      the source like any other node, so if that is still true it is a gap, and
-      the numbers above were taken without separating it out.
+      else.
+
+      A FOURTH document is not part of that category. carve-rs and carve-php
+      also leave the paragraph, text and soft_break nodes a CAPPED container
+      degrades to unplaced (182-openers-past-the-nesting-cap-are-one-paragraph,
+      renumbered from 181 as the corpus grew) -- 8 of each engine's total above.
+      carve-js places the same nodes against real offsets there: a contiguous
+      slice of the document, not a reassembly. That is the evidence this
+      residue is a gap the clause above does not reach, not a fourth member of
+      the permitted category (carve#672).
+
+      carve-js AND carve-rs -- not carve-rs alone -- leave the merged text of
+      an unwrapped autolink unplaced (03-links-12), for the same reason once
+      §1a joins the run: the `<` and `>` between the pieces are not in the
+      value. carve-php does not.
+
+      A fifth residue is not yet triaged: carve-js and carve-rs both leave a
+      reference image's caption unplaced (207-a-reference-image-takes-a-caption,
+      one `figure` node each). It fits none of the categories above and is
+      counted in the totals above rather than dropped from them for being
+      unexplained.
+
+      docs/ast-json.md's table used to additionally record carve-rs leaving a
+      definition list's OWN parts unplaced. That is fixed: carve-rs places
+      `definition_term` and `definition_description` today, checked over every
+      corpus document that contains one, and the docs page reflects it. The
+      capped-container residue named above is what the same measurement turns
+      up instead.
 
       The earlier text here named per-engine gaps that no longer exist -- it
       described carve-rs as placing block nodes only, "869 block nodes and 54

@@ -340,7 +340,7 @@ The definition-list entry this paragraph used to name is fixed: carve-rs places
 `definition_term` and `definition_description` today, checked over every
 corpus document that contains one. What the same measurement does turn up is a
 different gap - carve-rs and carve-php leave the paragraphs a CAPPED container
-degrades to unplaced (`181-openers-past-the-nesting-cap-are-one-paragraph`),
+degrades to unplaced (`182-openers-past-the-nesting-cap-are-one-paragraph`),
 where carve-js places them against real offsets, so the reassembly exemption does
 not reach them ([carve#672](https://github.com/markup-carve/carve/issues/672)).
 
