@@ -292,7 +292,7 @@ spans that do not cover the text they claim.
 | engine | shape | positions |
 |---|---|---|
 | carve-js | drops `ref` and `rawRef` once a reference resolves, publishing `href` alone, against §3a ([carve#524](https://github.com/markup-carve/carve/issues/524)); leaves an `abbreviation_def` inside its container instead of hoisting it to the document, against §7 ([carve-php#631](https://github.com/markup-carve/carve-php/issues/631)) | blocks and inlines, except reassembled regions (table cells, line-block content) |
-| carve-rs | serializes links POST-resolve ([carve#481](https://github.com/markup-carve/carve/issues/481)) - the `href` half of that is now what §3a asks for, and what remains to check is whether `ref`/`rawRef` survive resolution; leaves an `abbreviation_def` in its container, against §7 | blocks and most inlines; reconstructed regions and a definition list's own parts are unplaced ([carve-rs#333](https://github.com/markup-carve/carve-rs/issues/333)) |
+| carve-rs | serializes links POST-resolve ([carve#481](https://github.com/markup-carve/carve/issues/481)) - the `href` half of that is now what §3a asks for, and what remains to check is whether `ref`/`rawRef` survive resolution; leaves an `abbreviation_def` in its container, against §7 | blocks and most inlines; reconstructed regions are unplaced, as are the paragraphs a capped container degrades to ([carve#672](https://github.com/markup-carve/carve/issues/672)) |
 | carve-php | flattens an unresolved reference to text instead of publishing a `link`, against §3a ([carve#486](https://github.com/markup-carve/carve/issues/486)), and publishes `ref: ""` for the collapsed form where §3a now pins the derived label ([carve#524](https://github.com/markup-carve/carve/issues/524)); two field-name divergences left: the root carries `abbreviations`, and `inline_extension` publishes `extensionType`/`children` ([carve-php#510](https://github.com/markup-carve/carve-php/issues/510)) | recorded behind a parse option, enabled whenever it serializes |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
@@ -302,8 +302,16 @@ is only a claim worth making if the disagreements are visible.
 The **reassembled** regions in the positions column are not among them - §4 names
 that category permitted, so a table cell or line-block region without a position
 is conformant rather than owed. What is still a gap is anything else in that
-column: a `definition_term` is a slice of the source like any other node, so
-carve-rs leaving a definition list's own parts unplaced is a real one.
+column, and the test is whether a true span EXISTS rather than whether one was
+written down.
+
+The definition-list entry this paragraph used to name is fixed: carve-rs places
+`definition_term` and `definition_description` today, checked over every
+corpus document that contains one. What the same measurement does turn up is a
+different gap - carve-rs and carve-php leave the paragraphs a CAPPED container
+degrades to unplaced (`181-openers-past-the-nesting-cap-are-one-paragraph`),
+where carve-js places them against real offsets, so the reassembly exemption does
+not reach them ([carve#672](https://github.com/markup-carve/carve/issues/672)).
 
 The §3a entries were measured, on `See [getting started][] here.` with the label
 defined. All three engines publish the destination in `href` - which is the half
