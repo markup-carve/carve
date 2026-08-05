@@ -82,7 +82,8 @@
            ...). Container kinds and the per-line prefix each demands:
              block quote    marker `>` [end of line | one space]
              list item      indentation to content_column (PART 9 §24 C3)
-             footnote def   indentation >= 2 spaces (PART 9 §16)
+             footnote def   indentation >= 2 spaces; the prefix CONSUMED is
+                            exactly 2, content_column := 2 (PART 9 §16)
              fenced body    (code / raw / comment / admonition / div /
                             line block / hard-break block) -- no per-line
                             prefix; bounded by its where-guarded fence pair
@@ -1579,7 +1580,19 @@ footnote_continuation = (space, space, {whitespace}, inline_content, newline) | 
    the opposite of what every implementation does and of what the corpus pins
    ("A footnote body holds blocks", carve#691) -- and an engine written from
    this line alone would flatten exactly the structure the indent carries
-   (carve-rs#611). *)
+   (carve-rs#611).
+
+   THE BODY'S OWN COLUMN IS TWO, fixed by `space, space` above -- NOT the first
+   continuation line's actual indent. A reader consumes exactly two columns of
+   every continuation line and hands the rest to the body's blocks, so a body
+   written at three leaves ONE residual column, and at that column a block
+   opener is lazy paragraph text rather than a block, exactly as it is inside a
+   list item above the content column (PART 9 §24 C3). Deriving the column from
+   the first continuation line instead makes a whole body written one column in
+   land at relative zero, so an indented table opens a table that no other
+   reader sees (carve-js#677, which was alone against the other two engines and
+   this spec). Two is a FLOOR for the body, not a ceiling for its blocks: a
+   nested list's inner item still sits at four and still nests. *)
 
 (* DISMISSED (not reserved, no production): a sidenote form
      sidenote = "[>", inline_content, ']' ;

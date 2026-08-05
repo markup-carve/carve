@@ -8587,3 +8587,36 @@ The id is the heading's text with each run of non-alphanumeric ASCII replaced by
 ```
 
 :::
+
+## A footnote body's own column is two, and a third column is its text
+
+The body's column is fixed by §16's `space, space`, not read off the first continuation line. A reader consumes exactly two columns and hands the rest to the body's blocks, so a body written one column in has ONE residual column - and there a block opener is paragraph text, the same way it is above a list item's content column (§24 C3). The same rows at two spaces are a table ("A footnote body holds blocks" pins that); a third column makes them a paragraph. carve-js derived the column from the first continuation line and read a table, alone against the other two engines and this spec (carve-js#677).
+
+::: compare
+
+```carve
+[^a]: intro
+
+   | a |
+   | - |
+   | b |
+
+see[^a]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>intro</p>
+      <p>| a |
+| - |
+| b |<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
