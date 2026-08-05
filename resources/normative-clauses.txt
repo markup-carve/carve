@@ -17,6 +17,7 @@
 # stated in the same commit where a reviewer can see it.
 #
 # To regenerate after adding a clause: node scripts/normative-clauses.mjs
+1  A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH EXPECTING A CLOSER
 1  A COMMENT IS THE ONE EXCEPTION
 1  A CONSUMER THAT RENDERS A DESTINATION OWNS THE DENYLIST
 1  A DEFINITION LIST'S ENTRIES ARE NODES

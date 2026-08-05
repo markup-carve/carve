@@ -2491,11 +2491,52 @@ EOF = (* end of file *) ;
       text on the fence line.
 
       FENCE LENGTH & NESTING: a fence is a run of 3+ colons; the same rule
-      governs both admonitions and generic divs. A block is closed only by
-      a bare fence of EQUAL-OR-GREATER colon length, so a longer opener
-      nests shorter blocks (a `:::` inside a `::::` block is content, not a
-      closer). Equal-length fences do not nest. A bare opener with no
+      governs both admonitions and generic divs. A block is closed only by a
+      BARE fence of EXACTLY its opener's length -- the guard the formal
+      `colon_fence_close` states as `len(close) = len(open)` -- so a bare
+      `:::` inside a `::::` block is content rather than a closer, and a bare
+      `::::` inside a `:::` block is likewise not one. A bare opener with no
       matching closer ahead is literal text.
+
+      EQUAL-LENGTH FENCES DO NEST, because a closer must be BARE: `::: note`
+      may hold `::: tip`, the inner line being an opener rather than a closer
+      on account of its label. Only a bare equal-length line closes.
+
+      This paragraph said EQUAL-OR-GREATER and said equal-length fences do
+      not nest. Both were wrong and both contradicted the formal guard above
+      as well as all three engines, which agree that `::: note` / `body` /
+      `::::` leaves the block open and that `::: note` holds `::: tip`. Recorded
+      rather than quietly corrected because the two sentences had been read as
+      the rule (carve#770).
+
+      A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH
+      EXPECTING A CLOSER -- NORMATIVE. A `:::` line that is not a valid opener
+      (an attribute block where the opener takes a type word, say) is ordinary
+      paragraph text, and from that point the paragraph absorbs the next
+      fence-shaped line as text too, INSTEAD of being interrupted by it:
+
+          text                    ::: {.x}
+          not a div               not a div
+          :::                     :::
+
+      The left column is a paragraph followed by an empty div, because a bare
+      `:::` interrupts an open paragraph (§10). The right column is ONE
+      paragraph holding all three lines. The malformed line need not be the
+      paragraph's first.
+
+      THE ABSORPTION IS NOT WIDTH-TAGGED, unlike the closer rule it resembles:
+      after a malformed `::: {.x}`, a following `::::` is absorbed too, and
+      after a malformed `:::: {.x}` so is a following `:::`. A malformed opener
+      has no length to match against, so there is nothing for a width test to
+      compare; the paragraph simply continues.
+
+      Both halves are what all three engines do and the corpus pins the shape
+      (`24-generic-divs-2`), but neither was stated -- §10 says which openers
+      interrupt a paragraph and nothing said that a malformed sibling earlier
+      in the same paragraph turns that interruption off. A grammar cannot
+      implement a rule nobody wrote down, and tree-sitter-carve gets this case
+      wrong today while its own notes blame the opener line rather than the
+      trailing fence (carve#770).
 
       FENCE OPENER WITH A NESTED-LIST BODY: a `:::` opener inside a LIST
       ITEM opens its block even when the opener's body is a nested list
