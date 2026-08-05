@@ -3333,6 +3333,24 @@ EOF = (* end of file *) ;
         sink was first identified; the scoping was not a decision that other
         targets are safe. A target that emits no URL, such as plain text, has
         nothing to blank and is unaffected.
+
+        "EMITS A RESOLVABLE URL" IS ABOUT THE URL REACHING A READER THAT
+        RESOLVES IT, not about the target emitting a hyperlink construct. The
+        TERMINAL target is bound: it prints a link's destination beside the text,
+        and every current terminal emulator autolinks a URL in its output and
+        hands the scheme to the OS handler when the reader clicks it -- the same
+        one step as Markdown, reached without any anchor or OSC 8 sequence being
+        written. This needed saying because the two text targets differ only by
+        accident of their formats: plain text drops the destination and so never
+        faces the question, while the terminal printed it, and all three engines
+        printed `javascript:` and the OS-handler class there while blanking both
+        in Markdown (carve#765).
+
+        WHAT IS BLANKED IS THE DESTINATION, NOT THE TEXT. A denied autolink's
+        visible text IS its URL, and every target shows it: HTML inside
+        `<a href="">`, Markdown as the label of `[...]()`, plain text and the
+        terminal as the characters themselves. Blanking there would edit what the
+        author wrote rather than withhold a destination, and it is not required.
       - ATTRIBUTE NAME/VALUE HARDENING. On EVERY rendered element -- including
         elements emitted by extensions -- an HTML renderer MUST drop
         attributes whose name begins with `on` (case-insensitive) and the
