@@ -1,0 +1,9 @@
+A marker attribute may hold a quoted brace
+
+```
+1.{title='a}b'} item
+.
+<ol>
+  <li title="a}b">item</li>
+</ol>
+```

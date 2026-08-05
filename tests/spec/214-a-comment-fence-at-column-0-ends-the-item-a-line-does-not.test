@@ -1,0 +1,26 @@
+A comment fence at column 0 ends the item; a `%%` line does not
+
+```
+- a
+%%%
+c
+%%%
+b
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>b</p>
+```
+
+```
+- a
+%% c
+b
+.
+<ul>
+  <li>a
+    b
+  </li>
+</ul>
+```

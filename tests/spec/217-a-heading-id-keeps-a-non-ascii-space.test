@@ -1,0 +1,9 @@
+A heading id keeps a non-ASCII space
+
+```
+#  Title
+.
+<section id=" Title">
+  <h1>&nbsp;Title</h1>
+</section>
+```

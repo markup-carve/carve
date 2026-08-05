@@ -53,6 +53,10 @@ const INVENTORY = [
   { base: '16-reference-link-9', crv: ['trailing-WS'], html: [] },
   { base: '29-non-breaking-space-3', crv: ['NBSP'], html: [] },
   { base: '84-single-line-headings-5', crv: ['trailing-WS'], html: [] },
+  // The no-break space is the case: it is non-ASCII, so it passes into the
+  // heading id unchanged instead of being slugged to a separator, and the
+  // id carries the character rather than an entity.
+  { base: '217-a-heading-id-keeps-a-non-ascii-space', crv: ['NBSP'], html: ['NBSP'] },
 ]
 
 function scan(text) {

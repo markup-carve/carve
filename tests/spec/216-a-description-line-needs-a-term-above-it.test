@@ -1,0 +1,10 @@
+A `:` description line needs a term above it
+
+```
+:  [r]: /u
+
+see [t][r]
+.
+<p>:  [r]: /u</p>
+<p>see [t][r]</p>
+```

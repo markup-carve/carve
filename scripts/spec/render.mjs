@@ -22,15 +22,22 @@ const g = ohm.grammar(readFileSync(presolve(here, '../../resources/carve-core.oh
 // be reinterpreted as pipeline framing (spoofed refs/footnotes, JSON.parse).
 const STRIP = /[‪-‮⁦-⁩]/g
 
-const escapeHtml = (s) =>
+const escapeMarkup = (s) =>
   s
     .replace(STRIP, '')
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
-    .replaceAll(' ', '&nbsp;')
 
-export const escapeAttr = (s) => escapeHtml(s).replaceAll('"', '&quot;').replaceAll("'", '&apos;')
+// TEXT serializes a no-break space as the entity (PART 9 section 23).
+const escapeHtml = (s) => escapeMarkup(s).replaceAll(' ', '&nbsp;')
+
+// An ATTRIBUTE does not. All three engines write the character itself in
+// an attribute value, and both spellings parse to the same id - but the
+// corpus compares bytes, so a heading whose text starts with a no-break
+// space came out as id="&nbsp;Title" here and id=" Title" everywhere
+// else.
+export const escapeAttr = (s) => escapeMarkup(s).replaceAll('"', '&quot;').replaceAll("'", '&apos;')
 
 // PART 9 SS25: URL sink scheme denylist -- a denylisted scheme renders an
 // EMPTY value. Scheme detection first strips ASCII controls and ALL Unicode
@@ -98,6 +105,15 @@ const attrSem = g.createSemantics().addOperation('parseAttrs', {
     return v.parseAttrs()
   },
   quoted(_o, chars, _c) {
+    return chars.children.map((c) => c.sourceString.replace(/^\\/, '')).join('')
+  },
+  // The grammar has allowed `attrVal = quoted | squoted | bareVal` all along,
+  // but no marker attribute ever reached here with a single-quoted value: the
+  // list-marker regex stopped at the first `}`, so `{title='a}b'}` never
+  // parsed. With that fixed the missing action turns into a thrown
+  // missingSemanticAction rather than a wrong answer, which is the good
+  // failure mode - but it still has to exist.
+  squoted(_o, chars, _c) {
     return chars.children.map((c) => c.sourceString.replace(/^\\/, '')).join('')
   },
   bareVal(chars) {
@@ -372,7 +388,13 @@ const sem = g.createSemantics().addOperation('h', {
     return '#'
   },
   looseAttrs(a) {
-    return escapeHtml(a.sourceString) // standalone block is literal text
+    // The BRACES are literal, their CONTENTS are inline content. A brace run
+    // that attaches to nothing is text (SS15 A7, PART 2 headings), and the
+    // text inside it goes on being text - so a `#word` in there is a tag
+    // (SS19), which is what all three engines emit. Escaping the whole run
+    // rendered `{#id .cls}` verbatim and lost the tag.
+    const src = a.sourceString
+    return '{' + renderInline(src.slice(1, -1)) + '}'
   },
   word(first, rest) {
     return escapeHtml(this.sourceString)
@@ -840,7 +862,13 @@ export function makeSlugger() {
     let slug = text
       .replace(/[‪-‮⁦-⁩​‌‍⁠﻿­]/g, '')
       .normalize('NFC')
-      .replace(/[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e\s]+/g, '-')
+      // ASCII punctuation and ASCII whitespace only. The rule is "each
+      // maximal run of NON-ALPHANUMERIC ASCII characters", with non-ASCII
+      // passing through unchanged - and `\\s` reaches past ASCII, so a
+      // no-break space (U+00A0, what `#  Title` renders its second space
+      // as) became a `-` and was then trimmed. All three engines keep it.
+      // The ASCII ranges below already cover space, tab and newline.
+      .replace(/[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e]+/g, '-')
       .replace(/^-+|-+$/g, '')
     if (slug === '') slug = 's'
     else if (/^\p{N}/u.test(slug)) slug = `s-${slug}`

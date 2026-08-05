@@ -85,11 +85,15 @@ const CAPTION = /^\^ (.*)$/
 // The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
 // engine, so a tab here must not open a list (PART 9 SS11). Its width is the
 // item's content column for a non-task bullet.
-const BULLET = /^([ \t]*)([-*])(\{[^}]*\})?( +)(?:\[([ xX_>?-])\] )?(.+)$/
+// The marker's attribute block may hold a QUOTED value containing `}`
+// (`1.{title='a}b'} item`). Matching it as `[^}]*` stopped at that brace,
+// so the list marker did not parse and the whole line rendered as text -
+// where all three engines build the item and set the attribute.
+const BULLET = /^([ \t]*)([-*])(\{(?:[^}'"\\]|\\.|'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")*\})?( +)(?:\[([ xX_>?-])\] )?(.+)$/
 // The value is optional before a `.`: a bare `. ` is a decimal marker
 // counting from 1 (PART 9 ordered_marker, BARE DOT). A bare `)` is not a
 // marker, so the empty alternative is guarded by a lookahead at the dot.
-const ORDERED = /^([ \t]*)([0-9]+|[a-z]+|[A-Z]+|(?=\.))([.)])(\{[^}]*\})? (.+)$/
+const ORDERED = /^([ \t]*)([0-9]+|[a-z]+|[A-Z]+|(?=\.))([.)])(\{(?:[^}'"\\]|\\.|'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")*\})? (.+)$/
 const CONT_MARKER = /^\+[ \t]*$/
 // marks a lazily-folded line (PART 9 SS10 I2): always paragraph text, never
 // re-classified as structure when an item's content is re-parsed
@@ -827,7 +831,13 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     }
 
     // --- definition lists (:: term / :  def) ---
-    if (/^::?[ ](?=[ \t]*\S)/.test(line) && !/^:::/.test(line)) {
+    // A definition list OPENS on a TERM. A `: ` description line with no term
+    // above it is not an entry - `definition_item` is a term plus its
+    // descriptions - and all three engines read such a line as a paragraph.
+    // Opening on either marker turned `:  [r]: /u` into an empty <dd> AND
+    // consumed the rest of the line as a link definition, so a reference below
+    // it resolved from a line the engines leave as text.
+    if (DEFLIST_TERM.test(line) && !/^:::/.test(line)) {
       const node = { t: 'deflist', items: [] }
       // A plain line that folds (as a lazy continuation) into an open term or
       // the open paragraph of a definition (SS17): not blank, not a visible
@@ -1667,8 +1677,24 @@ function collectItems(lines, i, list, state) {
       // inconsistency one delimiter over (carve#629). COMMENT_LINE's `%%`
       // prefix already covers both; the fence's own body lines are indented
       // with it and follow it in.
+      // A comment FENCE AT THE FRAME'S COLUMN 0 ends the item: all three
+      // engines give the following line to the enclosing block, while an
+      // INDENTED fence stays with the item (corpus 187, 192). The `%%` line
+      // form is exempt at any column - that is carve#618, and every engine
+      // agrees. Breaking rather than declining to claim the line matters:
+      // falling through would fold the fence as text and make a comment
+      // VISIBLE, the one outcome it may never have.
+      if (!nm && COMMENT_FENCE.test(line) && !/^[ \t]/.test(line) && itemLines.length > 0) {
+        break
+      }
       if (!nm && COMMENT_LINE.test(line) && itemLines.length > 0) {
-        itemLines.push(line.replace(/^[ \t]+/, ''))
+        // KEEP ONE COLUMN of the original indentation. Stripping it entirely
+        // told the item's own parse that a line indented in the source had
+        // been written flush left, and the rule above cannot then tell an
+        // authored column-0 fence from one an enclosing dedent had clamped -
+        // corpus 192 is parsed twice, once with ` %%% c` and once with the
+        // stripped copy.
+        itemLines.push(/^[ \t]/.test(line) ? ' ' + line.replace(/^[ \t]+/, '') : line)
         i++
         continue
       }

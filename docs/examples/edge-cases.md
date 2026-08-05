@@ -8471,3 +8471,119 @@ see[^f]
 ```
 
 :::
+
+## A tag inside a literal brace run is still a tag
+
+A trailing `{…}` on a heading is not an attribute list - Carve is djot-strict, so the braces are inline content (§15 A7). Their CONTENTS are inline content too, which is where `#word` is a tag (§19). Both rules apply at once: the braces stay as typed and the tag inside them renders.
+
+::: compare
+
+```carve
+# H {#id .cls}
+```
+
+```html
+<section id="H-id-cls">
+  <h1>H {<span class="tag"><strong>#id</strong></span> .cls}</h1>
+</section>
+```
+
+:::
+
+## A comment fence at column 0 ends the item; a `%%` line does not
+
+Both spellings stay invisible wherever they sit (§24 C3). They differ in what they do to the item above them: a flush-left `%%%` fence ends it, so the next line belongs to the document, while a flush-left `%%` line leaves the item open and that line folds in. An INDENTED fence stays with the item either way.
+
+::::: compare
+
+```carve
+- a
+%%%
+c
+%%%
+b
+```
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+<p>b</p>
+```
+
+:::::
+
+The line form, same columns, different answer:
+
+::: compare
+
+```carve
+- a
+%% c
+b
+```
+
+```html
+<ul>
+  <li>a
+    b
+  </li>
+</ul>
+```
+
+:::
+
+## A marker attribute may hold a quoted brace
+
+A list marker's attribute block is glued to the marker (`1.{…}`), and a quoted value inside it may contain `}` - the quote ends the value, not the first brace that comes along.
+
+::: compare
+
+```carve
+1.{title='a}b'} item
+```
+
+```html
+<ol>
+  <li title="a}b">item</li>
+</ol>
+```
+
+:::
+
+## A `:` description line needs a term above it
+
+A definition list is a term plus its descriptions, so a `:` line with no term above it opens nothing - the line is ordinary paragraph text, and anything on it stays text too.
+
+::: compare
+
+```carve
+:  [r]: /u
+
+see [t][r]
+```
+
+```html
+<p>:  [r]: /u</p>
+<p>see [t][r]</p>
+```
+
+:::
+
+## A heading id keeps a non-ASCII space
+
+The id is the heading's text with each run of non-alphanumeric ASCII replaced by `-`; non-ASCII characters pass through unchanged. A no-break space in the text is non-ASCII, so it survives into the id rather than becoming a separator - and the id carries the character itself, not an entity. (The marker's own separator must be an ASCII space: `# Title` is a paragraph, not a heading.)
+
+::: compare
+
+```carve
+#  Title
+```
+
+```html
+<section id=" Title">
+  <h1>&nbsp;Title</h1>
+</section>
+```
+
+:::
