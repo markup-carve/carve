@@ -322,7 +322,15 @@ CarveCore {
   attrVal    = quoted | squoted | bareVal
   bareVal    = (~(" " | "}" | newline) any)+
   ident      = identStart identRest*
-  identStart = letter | "_" | "-"
+  // PART 7: identifier = (letter | '_'), {letter | digit | '_' | '-'}
+  // A leading "-" is NOT admitted. This file was the only artifact that
+  // allowed one: the normative EBNF does not, and carve-js, carve-rs and
+  // carve-php all render `{--flag}` and `{#-id}` as literal text. The oracle
+  // instead built `<span --flag="">`, which is not a serializable HTML
+  // attribute name (carve#722). `extName` shares this rule, and
+  // `extension_name = identifier` in the EBNF, so `:-foo[x]` stays literal
+  // too - which all three engines already do.
+  identStart = letter | "_"
   identRest  = letter | digit | "_" | "-"
 
   // A word absorbs any bare delimiter glued between two word characters -
