@@ -3436,8 +3436,8 @@ EOF = (* end of file *) ;
         dropped the innermost paragraph and the Markdown / plain-text / ANSI
         renderers dropped the whole document.
 
-        THE MARGIN IS A MULTIPLE OF MAX_NESTING_DEPTH, NOT A FIXED OFFSET
-        BORROWED FROM ANOTHER IMPLEMENTATION'S UNIT -- the same shape as
+        THE MARGIN IS DERIVED IN THE IMPLEMENTATION'S OWN UNIT, NOT
+        BORROWED FROM ANOTHER IMPLEMENTATION'S -- the same shape as
         PART 12 §9(c)'s ingest-bound trap, at the other end of the same pipe.
         A render pass MAY count depth in whatever unit its own recursion
         uses, container depth (one step per nesting level) or AST node
@@ -3445,17 +3445,28 @@ EOF = (* end of file *) ;
         a list level costs ONE container-depth step but TWO AST node levels
         (`list`, then `list_item`) before its body reads as a further level
         down. A margin sized for one unit does not carry over to the other.
-        This repo's reference counts container depth and uses
-        MAX_NESTING_DEPTH + 32 = 232, a fixed offset that happens to be a
-        1.16x multiple in ITS unit; stating that SAME NUMBER as a fixed
-        offset in an AST-node-counting implementation understates the
-        multiple it actually needs by roughly half, and an ordinary
-        120-level list ladder -- well inside the parse cap of 200 -- reached
-        such a ceiling and silently dropped the innermost content
-        (carve#650). An implementation MUST THEREFORE STATE its margin as A
-        MULTIPLE OF MAX_NESTING_DEPTH derived from the worst per-level cost
-        of ITS OWN unit (as PART 12 §9(c) already requires for the ingest
-        bound), not adopt another implementation's absolute number.
+        This repo's reference counts container depth, where MAX_NESTING_DEPTH
+        + 32 = 232 covers the blocks a container subtree adds; restating that
+        SAME NUMBER in an AST-node-counting implementation understates what
+        that unit actually needs by roughly half, and an ordinary 120-level
+        list ladder -- well inside the parse cap of 200 -- reached such a
+        ceiling and silently dropped the innermost content (carve#650). An
+        implementation MUST THEREFORE DERIVE its margin from the worst
+        per-level cost of ITS OWN unit (as PART 12 §9(c) already requires for
+        the ingest bound), and MUST NOT adopt another implementation's number
+        without redoing that derivation.
+
+        HOW THE MARGIN IS SPELLED IS NOT THE REQUIREMENT. A multiple of
+        MAX_NESTING_DEPTH and an offset added to it are the same statement
+        once the offset has been shown to cover the worst per-level cost of
+        the unit in question: `+ 32` DERIVED for container depth satisfies
+        this clause, and the identical `+ 32` COPIED into an
+        AST-node-counting implementation does not. This paragraph previously
+        required the multiple FORM, which the reference itself did not use --
+        so the clause stated a rule its own reference broke, and an
+        implementation could satisfy the letter of it by writing
+        MAX_NESTING_DEPTH * 1.16 without anyone having thought about the
+        unit. The unit is what went wrong in carve#650 (carve#754).
 
         AT THE RENDER CEILING, A RENDERER REFUSES -- NORMATIVE. Reaching it
         MUST produce a typed, documented failure naming the depth bound. NOT
