@@ -352,7 +352,18 @@ function renderItem(item, list, depth, ctx) {
   const parts = []
   for (let i = 0; i < blocks.length; i++) {
     const b = blocks[i]
-    if (b.t === 'para') {
+    // A CAPTIONED paragraph goes through renderBlock, which owns the figure
+    // shape. This hand-built path never consulted `caption`, so a captioned
+    // image paragraph inside an item lost its caption entirely - the line was
+    // parsed correctly (the node carries `caption`) and then dropped on the way
+    // out (carve#693). The oracle promoted the same caption at the top level and
+    // inside a div, so a list item was the only container that discarded it.
+    //
+    // This is the SECOND field this site has dropped for the same reason: it
+    // duplicates the top-level paragraph logic instead of delegating, and
+    // carve#626 was `battrs` going the same way. Delegating is the fix in both
+    // cases; the inline path stays only for the plain shape it exists for.
+    if (b.t === 'para' && b.caption === undefined) {
       // render the whole paragraph in one inline pass (lines joined by soft
       // breaks) so an inline construct spanning a soft break -- e.g. a
       // multi-line `` ``` ``-run folded in as lazy text -- is one span, not one

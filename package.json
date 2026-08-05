@@ -20,13 +20,13 @@
     "bump-carve-pin": "node scripts/bump-carve-pin.mjs",
     "sync-carve-wasm": "node scripts/sync-carve-wasm.mjs",
     "lint:mermaid": "mermaid-lint --ext crv --quiet",
-    "test": "node --test tests/definition-at-column-zero.test.mjs tests/corpus.test.mjs tests/reference-build.test.mjs tests/optional-corpus.test.mjs tests/corpus-targets.test.mjs tests/normativity.test.mjs tests/nesting-cap-degrade.test.mjs tests/examples.test.mjs tests/playground-extensions.test.mjs tests/node-vocabulary.test.mjs tests/ast-schema.test.mjs tests/crossref-shape.test.mjs tests/schema-fields-are-produced.test.mjs tests/ast-shape.test.mjs tests/ast-positions.test.mjs tests/ast-references.test.mjs tests/ast-json-claims.test.mjs tests/test-manifest.test.mjs tests/fixture-bytes.test.mjs tests/roundtrip.test.mjs tests/share-link.test.mjs tests/divergence-claims.test.mjs tests/portable-whitespace.test.mjs tests/corpus-fmt-roundtrip.test.mjs tests/implementation-comparison-counts.test.mjs tests/degradation-claims.test.mjs tests/migration-claims.test.mjs tests/oracle-framing-never-leaks.test.mjs tests/engine-pin-matches-the-lock.test.mjs",
+    "test": "node --test tests/caption-inside-a-container.test.mjs tests/definition-at-column-zero.test.mjs tests/corpus.test.mjs tests/reference-build.test.mjs tests/optional-corpus.test.mjs tests/corpus-targets.test.mjs tests/normativity.test.mjs tests/nesting-cap-degrade.test.mjs tests/examples.test.mjs tests/playground-extensions.test.mjs tests/node-vocabulary.test.mjs tests/ast-schema.test.mjs tests/crossref-shape.test.mjs tests/schema-fields-are-produced.test.mjs tests/ast-shape.test.mjs tests/ast-positions.test.mjs tests/ast-references.test.mjs tests/ast-json-claims.test.mjs tests/test-manifest.test.mjs tests/fixture-bytes.test.mjs tests/roundtrip.test.mjs tests/share-link.test.mjs tests/divergence-claims.test.mjs tests/portable-whitespace.test.mjs tests/corpus-fmt-roundtrip.test.mjs tests/implementation-comparison-counts.test.mjs tests/degradation-claims.test.mjs tests/migration-claims.test.mjs tests/oracle-framing-never-leaks.test.mjs tests/engine-pin-matches-the-lock.test.mjs",
     "test:conformance": "npm run corpus:build && npm test",
     "examples:snapshot": "UPDATE_EXAMPLES=1 node --test tests/examples.test.mjs"
   },
   "devDependencies": {
     "@djot/djot": "^0.3.2",
-    "@markup-carve/carve": "github:markup-carve/carve-js#cb644719152934d97eca037e1d9d3a5a38df315f",
+    "@markup-carve/carve": "github:markup-carve/carve-js#bf8a6958b315f7b000f253bd73c0a9946b669eb2",
     "@markup-carve/carve-grammars": "github:markup-carve/carve-grammars",
     "@markup-carve/vite-plugin-carve": "git+https://github.com/markup-carve/vite-plugin-carve.git",
     "@mermaid-lint/cli": "^0.35.0",
