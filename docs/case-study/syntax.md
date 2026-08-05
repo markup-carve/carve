@@ -94,8 +94,8 @@ heading text by the following algorithm, applied in order:
 1. Take the heading's rendered plain text (inline markup removed; symbols
    `:name:` and footnote references excluded): `# *Setup* guide` yields
    `Setup guide`.
-2. **No normalization.** Carve applies no Unicode (NFC) normalization, so a
-   slug needs no Unicode tables and is byte-identical across implementations.
+2. **NFC normalization.** The text is normalized to NFC first, so a precomposed
+   `é` and a decomposed `e` + combining acute yield the SAME slug.
 3. Replace each maximal run of **non-alphanumeric ASCII** characters
    (spaces, punctuation, `_`, and runs of `-`) with a single `-`.
 4. Trim leading and trailing `-`.

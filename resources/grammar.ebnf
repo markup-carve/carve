@@ -297,9 +297,14 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
        `-` (covers spaces, punctuation, `_`, and runs of `-`) -- the jgm/djot#393 rule;
      - trim leading/trailing `-`;
      - PRESERVE CASE (Unicode-aware): NON-ASCII characters AND letter case pass
-       through unchanged (`Café` -> `Café`, `日本語` unchanged). NO Unicode
-       normalization (NFC) is applied, so the slug needs no Unicode tables and is
-       byte-identical across implementations;
+       through unchanged (`Café` -> `Café`, `日本語` unchanged). The text IS
+       NFC-normalized before slugging (PART 9 §25), so a precomposed `é` and a
+       decomposed `e` + U+0301 give the SAME id. The clause used to deny this and
+       argue that the slug "needs no Unicode tables" - but §25 already required
+       the normalization for Trojan-Source reasons, the corpus fixture beside it
+       pins the composed id, and all three engines plus the oracle compose. The
+       tables are carried either way, so the rationale was inverted as well as the
+       rule (carve#705);
      - a leading-digit result is prefixed `s-` (a bare leading digit is a valid HTML
        id but an invalid CSS selector); an empty result becomes a generated `s-N`;
      - duplicates within a document get a numeric `-2`, `-3`, ... suffix.
