@@ -49,8 +49,10 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | Smart typography, `@mention`, `#tag`, `:symbol:` parsing | <Badge type="tip" text="core" /> | on | **yes** (§19) |
 | Citations `[@key]`, bare-URL autolinking, code callouts `<n>` | <Badge type="info" text="standard" /> | off | — |
 | Mention/tag → URL templates, symbol map (e.g. emoji glyphs), locale smart-quote sets | <Badge type="info" text="standard" /> | off | — |
-| Mermaid / FencedRender, MathBlock, ListTable, Bibliography, Glossary, Index, HeadingNumbers, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
-| TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, SemanticSpan, ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
+| Mermaid / FencedRender, MathBlock, ListTable, Glossary, Index, HeadingNumbers, Details, Spoiler, Tabs, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
+| Bibliography (§6) — an **option on Citations**, not a separate registration: the host passes a CSL-JSON pool to the Citations extension | <Badge type="warning" text="extension" /> | off | — |
+| TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
+| SemanticSpan — **carve-php only** today; carve-js and carve-rs ship no such extension | <Badge type="warning" text="extension" /> | off | — |
 | [ImgFence](/svg-images) (sanitized SVG `img` fence — sandboxed by default) | <Badge type="warning" text="extension" /> | off | — |
 
 A `:name[…]` / `::: name` whose word has no registered handler renders via the
@@ -89,7 +91,8 @@ differs by processor. The narrative below details each tier.
   HeadingNumbers (auto-number sections - `<span class="section-number">1.2</span>`
   on each heading - and rewrite auto-filled `</#id>` cross-references to
   "Section 1.2 - Title"; opt-in, no new syntax; §9),
-  HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks, SemanticSpan,
+  HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks,
+  SemanticSpan (carve-php only),
   ColorSwatch (inline `:color[value]` -> a validated color chip; carve-php,
   carve-js and carve-rs — see the [extension tutorial](./extension-tutorial)),
   and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
