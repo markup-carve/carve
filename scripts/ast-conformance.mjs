@@ -417,6 +417,15 @@ if (typeof lib.toAstJson !== 'function') {
   process.exit(2)
 }
 
+// The READER, for the same reason and in the same place. §6 is a round trip, so a
+// build with only half of it cannot be measured against the clause - and a
+// missing reader must not turn into a skipped check inside the loop, which would
+// report the reference as conformant on the half it never ran.
+if (typeof lib.fromAstJson !== 'function') {
+  console.error(`the build at ${jsDir} has no fromAstJson - PART 12 §6 cannot be checked.`)
+  process.exit(2)
+}
+
 const jsFindings = []
 for (const { name, source } of samples) {
   let doc
@@ -443,10 +452,22 @@ for (const { name, source } of samples) {
   checkDocument(name, doc, source, jsFindings)
   referenceShapes.set(name, shapeOf(doc))
 
-  // PART 12 §6: serialize then deserialize must equal the parse.
-  const round = JSON.parse(JSON.stringify(doc))
+  // PART 12 §6: serialize then DESERIALIZE must equal the parse. Through the
+  // engine's own reader - `fromAstJson` - which is the half the clause is about.
+  //
+  // This used to compare `JSON.parse(JSON.stringify(doc))` against `doc`, which
+  // is a statement about JSON.stringify and not about this engine: it can only
+  // fail on a value JSON cannot represent, so the ingest half of §6 was
+  // unmeasured for every document while the report said it was checked.
+  let round
+  try {
+    round = lib.toAstJson(lib.fromAstJson(JSON.parse(JSON.stringify(doc))))
+  } catch (error) {
+    jsFindings.push(`${name}: ingest threw on this engine's own output - ${error.message}`)
+    continue
+  }
   if (JSON.stringify(round) !== JSON.stringify(doc)) {
-    jsFindings.push(`${name}: JSON round trip is not identity`)
+    jsFindings.push(`${name}: §6 round trip through fromAstJson is not identity`)
   }
 }
 const jsProv = referenceProvenance(jsDir)
@@ -485,6 +506,17 @@ if (rsBinary) {
       continue
     }
     checkDocument(name, doc, source, rsFindings)
+    // §6 through this engine's own reader, which nothing checked for any engine
+    // but the reference - and there vacuously (see the note in the js section).
+    // `--from-json --json` is serialize(ingest(serialize(parse(x)))), so an
+    // identity here is the clause's property stated in the engine's own terms.
+    checkIngestIdentity(name, doc, rsFindings, (payload) =>
+      execFileSync(rsBinary, ['--from-json', '--json', '-'], {
+        input: payload,
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'pipe'],
+      }),
+    )
     checkShapeParity(name, doc, rsFindings)
   }
   const rsBuild = buildStatus(rsBinary, resolve(rsDir, 'src'), ['.rs'])
@@ -568,12 +600,54 @@ if (existsSync(resolve(phpDir, 'bin/carve'))) {
     }
     checkDocument(name, doc, source, phpFindings)
     checkShapeParity(name, doc, phpFindings)
+    checkIngestIdentity(name, doc, phpFindings, (payload) =>
+      // No '-' argument: this CLI reads stdin when no file is given and
+      // rejects a dash as an unknown option.
+      execFileSync('php', ['bin/carve', '--from-json', '--json'], {
+        cwd: phpDir,
+        input: payload,
+        encoding: 'utf8',
+        env: { ...process.env },
+        stdio: ['pipe', 'pipe', 'pipe'],
+      }),
+    )
   }
   report(`carve-php (over bin/carve --json, ${satelliteSamples.length} documents)`, phpFindings)
 } else if (existsSync(phpDir)) {
   skip('carve-php', 'checkout found but bin/carve is missing')
 } else {
   skip('carve-php', 'checkout not found')
+}
+
+/**
+ * PART 12 §6 for an engine reached through its CLI.
+ *
+ * `serialize(x)` is fed back through the engine's own reader and serialized
+ * again; §6 makes that an identity. Checked for every engine now: it was written
+ * only for the reference, and there as a JSON.stringify round trip that could
+ * not fail.
+ */
+function checkIngestIdentity(name, doc, findings, reserialize) {
+  const payload = JSON.stringify(doc)
+  let out
+  try {
+    out = reserialize(payload)
+  } catch (error) {
+    findings.push(
+      `${name}: ingest refused this engine's own output - ${String(error.message).split('\n')[0]}`,
+    )
+    return
+  }
+  let round
+  try {
+    round = JSON.parse(out)
+  } catch {
+    findings.push(`${name}: ingest re-serialized to something that is not JSON`)
+    return
+  }
+  if (JSON.stringify(round) !== payload) {
+    findings.push(`${name}: §6 round trip through the engine's own ingest is not identity`)
+  }
 }
 
 function report(label, findings) {
