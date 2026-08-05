@@ -82,6 +82,68 @@ expected-output fixtures, so agreement between engines was its only check
 > little against the previous snapshot's. The counts are what this table is
 > for.
 
+## The render ceiling is per-engine, deliberately
+
+Nothing above measures the depth at which a renderer refuses, and the three
+engines refuse at three different depths. That is by design rather than by
+neglect, and it is worth stating because the numbers look like a disagreement.
+
+PART 9 §25 requires each implementation to DERIVE its render-ceiling margin from
+the worst per-level cost of **its own unit**, and forbids adopting another
+implementation's number without redoing that derivation. The units differ: two
+engines count container depth (one step per nesting level), one counts AST node
+levels, where a single list level costs two. A margin sized for one unit does not
+carry to the other - copying one across is what silently truncated a 120-level
+list in [carve#650](https://github.com/markup-carve/carve/issues/650). So three
+derivations produce three ceilings, and all three are conformant.
+
+The constants are not quoted here on purpose. Each lives in its own engine, next
+to the derivation it came from, and a table of them in this repository would be a
+number nobody checks - the same way this page once claimed 302 corpus pairs when
+there were 529.
+
+**What it means in practice.** No tree the parser produces can reach any of them:
+the parse path caps containers at `MAX_NESTING_DEPTH`, and every ceiling exceeds
+that cap by construction in its own unit. Only a programmatically built tree - an
+AST-JSON ingest, an editor bridge, a formatter driving a rewritten tree - reaches
+the band where the engines differ, and there the same document can be rendered by
+one engine and refused by another. Every refusal is typed and names its bound, so
+a caller is told which one it hit; none of them truncates.
+
+A host that needs one answer across engines should bound its own trees rather
+than rely on the ceilings agreeing, because §25 says they will not.
+
+## The render ceiling is per-engine, deliberately
+
+Nothing above measures the depth at which a renderer refuses, and the three
+engines refuse at three different depths. That is by design rather than by
+neglect, and it is worth stating because the numbers look like a disagreement.
+
+PART 9 §25 requires each implementation to DERIVE its render-ceiling margin from
+the worst per-level cost of **its own unit**, and forbids adopting another
+implementation's number without redoing that derivation. The units differ: two
+engines count container depth (one step per nesting level), one counts AST node
+levels, where a single list level costs two. A margin sized for one unit does not
+carry to the other - copying one across is what silently truncated a 120-level
+list in [carve#650](https://github.com/markup-carve/carve/issues/650). So three
+derivations produce three ceilings, and all three are conformant.
+
+The constants are not quoted here on purpose. Each lives in its own engine, next
+to the derivation it came from, and a table of them in this repository would be a
+number nobody checks - the same way this page once claimed 302 corpus pairs when
+there were 529.
+
+**What it means in practice.** No tree the parser produces can reach any of them:
+the parse path caps containers at `MAX_NESTING_DEPTH`, and every ceiling exceeds
+that cap by construction in its own unit. Only a programmatically built tree - an
+AST-JSON ingest, an editor bridge, a formatter driving a rewritten tree - reaches
+the band where the engines differ, and there the same document can be rendered by
+one engine and refused by another. Every refusal is typed and names its bound, so
+a caller is told which one it hit; none of them truncates.
+
+A host that needs one answer across engines should bound its own trees rather
+than rely on the ceilings agreeing, because §25 says they will not.
+
 ## Optional Tier-2 Profile
 
 The optional profile enables a shared adapter per feature where each
