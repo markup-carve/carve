@@ -4424,7 +4424,21 @@ EOF = (* end of file *) ;
                    reference link
         image      `src`, `alt`, `title`
         code       `value`
-        text       `value`
+        text       `value`. It may contain U+E000, which STANDS FOR a
+                   no-break space the parser resolved from an escaped space
+                   (`\ `) or from preserved line-block indentation (§23).
+                   That is not the same node content as a literal U+00A0 the
+                   author typed, which is published as itself, and the
+                   renderers already treat the two differently. A consumer
+                   MUST map U+E000 to its target's no-break space, or to an
+                   ordinary space where the target has none, and MUST NOT
+                   emit it. Stated because all three engines publish it and
+                   nothing said so: two consumers in this org passed it
+                   straight through, one into Pandoc JSON and one back into
+                   Carve source in place of the `\ ` it came from
+                   (carve#721). Private-use codepoints ABOVE U+E000 are
+                   writer-internal staging and never reach a published value
+                   (carve-rs#404)
         heading    `level`, `children`
         list       `ordered`, `tight`, `start`, `items`, and the AUTHOR-CHOICE
                    fields `bulletChar`, `delim` and `bareMarker` (PART 11 §6)

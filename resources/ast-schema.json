@@ -2748,7 +2748,8 @@
           "const": "text"
         },
         "value": {
-          "type": "string"
+          "type": "string",
+          "description": "May contain U+E000, which stands for a NO-BREAK SPACE the parser resolved from an escaped space (`\\ `) or from preserved line-block indentation (PART 9 section 23). It is distinct from a literal U+00A0 in the source, which is published as itself. A consumer MUST map U+E000 to its target's no-break space, or to an ordinary space where the target has none, and MUST NOT emit it."
         },
         "escapedLeadingCaret": {
           "type": "boolean",
