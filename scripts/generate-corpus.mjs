@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, unlinkSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, renameSync, unlinkSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -211,8 +211,47 @@ if (existingNumbers.size > 0 && process.env['CORPUS_RENUMBER'] !== '1') {
 }
 
 mkdirSync(outDir, { recursive: true })
+
+/*
+ * SIDECAR FIXTURES MOVE WITH THEIR CASE.
+ *
+ * A case may pin a non-HTML target by adding the file beside it - `NN-slug.fmt`,
+ * `NN-slug.md` - and those files are HAND-WRITTEN, so this script has always
+ * left them alone. That is right until a renumber: inserting a case shifts every
+ * number after it, the regenerated pair lands under the new number, and the
+ * sidecar keeps the old one. It is then an expected output with no input beside
+ * it, pinning nothing.
+ *
+ * tests/corpus-targets.test.mjs reports that, which is how it was noticed - but
+ * a check that fires after every insertion, on files the author of the insertion
+ * did not write, is a chore rather than a finding. The rename is mechanical and
+ * belongs here, where the old and new numbers for a slug are both known.
+ */
+const sidecarsBySlug = new Map()
+for (const f of readdirSync(outDir)) {
+  const ext = f.slice(f.lastIndexOf('.'))
+  if (ext === '.crv' || ext === '.html') continue
+  const m = /^\d+-(.*)$/.exec(f.slice(0, -ext.length))
+  if (!m) continue
+  sidecarsBySlug.set(m[1] + ext, { from: f, ext, slug: m[1] })
+}
+
 for (const f of readdirSync(outDir)) {
   if (f.endsWith('.crv') || f.endsWith('.html')) unlinkSync(resolve(outDir, f))
+}
+
+const renamedSidecars = []
+for (const ex of examples) {
+  const suffix = ex.exampleIdx === 1 ? '' : `-${ex.exampleIdx}`
+  const slug = `${ex.slug}${suffix}`
+  for (const [key, sidecar] of sidecarsBySlug) {
+    if (sidecar.slug !== slug) continue
+    const to = `${ex.idx}-${slug}${sidecar.ext}`
+    if (to === sidecar.from) continue
+    renameSync(resolve(outDir, sidecar.from), resolve(outDir, to))
+    renamedSidecars.push(`${sidecar.from} -> ${to}`)
+    sidecarsBySlug.delete(key)
+  }
 }
 
 for (const ex of examples) {
@@ -223,6 +262,7 @@ for (const ex of examples) {
   console.log(`  ${base}.{crv,html}`)
 }
 console.log(`\nWrote ${examples.length} pairs to ${outDir}`)
+for (const moved of renamedSidecars) console.log(`  moved with its case: ${moved}`)
 
 // --- djot-style mirror: NN-slug.test files for implementations whose runners
 // already speak djot's fenced-pair format (e.g. carve-php's OfficialTestSuiteTest).

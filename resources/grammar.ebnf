@@ -3225,8 +3225,24 @@ EOF = (* end of file *) ;
              settled (corpus 186). Folding it would make the comment VISIBLE, which
              is the one outcome a comment may never have, and an indented
              comment at the top level is already invisible for the same
-             reason. It does not close the item either: a following line
-             continues the item paragraph across it. (carve#618)
+             reason. It does not close the ITEM either: a following line
+             still belongs to the item rather than starting a
+             document-level block (carve#618).
+
+             IT DOES END AN OPEN PARAGRAPH -- NORMATIVE, and this is
+             §10 I5 rather than a new rule: an invisible construct
+             INTERRUPTS an open paragraph, and I6 applies the relation
+             inside a list item like anywhere else. So the following
+             line starts a NEW paragraph inside the item; it is not
+             folded into the paragraph the comment interrupted. All four
+             implementations do this.
+             It is spelled out here because this clause used to say "a
+             following line continues the item paragraph across it",
+             which contradicted §10 I5 two sections away and read as a
+             licence for the one-paragraph answer no implementation
+             produces (carve#677). The two halves are separate claims:
+             what the comment does NOT close is the item, and what it
+             DOES close is the paragraph.
            - AT content_column: dedented to the body's column 0, a block
              opener nests and a list marker opens a sublist.
            - ABOVE content_column: the residual indent means the line is no
@@ -4450,9 +4466,11 @@ EOF = (* end of file *) ;
       WITHOUT IT THE DESTINATION HAS NOWHERE TO LIVE. `href: ""` for a resolved
       reference is only recoverable if the definition survives the trip, and it
       does not: the vocabulary has NO node type for a `[label]: url` link
-      reference definition. §7 hoists `footnote` and `abbreviation_def` to the
-      document; a link reference definition is serialized as nothing at all --
-      a document holding only `[lbl]: /u` publishes zero children.
+      reference definition. §7 hoists a `footnote` to the document, and an
+      `abbreviation_def` is already there by construction (§7: the line is a
+      definition only at document level); a link reference definition is
+      serialized as nothing at all -- a document holding only `[lbl]: /u`
+      publishes zero children.
 
       So under the unsoftened rule this document
 
@@ -4915,6 +4933,15 @@ EOF = (* end of file *) ;
       that container empty; the serialized tree follows the same rule rather
       than inventing a second one. Its `pos` still records where it was
       WRITTEN, so nothing about navigation is lost by the move.
+
+      AN ABBREVIATION DEFINITION IS A BLOCK NODE, `type: "abbreviation_def"`,
+      carrying:
+        abbr       the term as written, without the `*[` and `]:`
+        expansion  the expansion text, without the separating space
+      It renders nothing itself; it is what the inline `abbreviation` resolves
+      against. The node was named here in two clauses before it was described
+      in any, so its field names lived only in resources/ast-schema.json --
+      the shape a reader of this grammar could not see.
 
       THE HOISTING CLAUSE ABOVE IS ABOUT FOOTNOTES. An `abbreviation_def` is
       never hoisted, because there is never one to hoist: the construct is

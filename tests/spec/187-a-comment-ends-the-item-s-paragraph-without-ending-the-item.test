@@ -1,0 +1,16 @@
+A comment ends the item's paragraph without ending the item
+
+```
+- a
+  %% x
+ b
+
+- c
+.
+<ul>
+  <li><p>a</p>
+    <p>b</p>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```

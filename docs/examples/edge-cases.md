@@ -6942,6 +6942,30 @@ The HTML spec.
 ```
 
 :::
+
+## A div does not define an abbreviation either
+
+The rule names three containers - a block quote, a list item and a div - and the first two were pinned while the third was not. A div is the one of the three that renders its children unchanged, so a definition inside it is the case where the line looks most like a document-level one, and the use below it still gets no `<abbr>`.
+
+::::: compare
+
+```carve
+:::
+*[HTML]: Hyper Text
+
+The HTML spec.
+:::
+```
+
+```html
+<div>
+  <p>*[HTML]: Hyper Text</p>
+  <p>The HTML spec.</p>
+</div>
+```
+
+:::::
+
 ## Openers past the nesting cap are one paragraph
 
 Past `MAX_NESTING_DEPTH` (200) an opener stops recursing and becomes literal
@@ -7703,6 +7727,31 @@ An invisible line on its own is still not a second paragraph, so the item stays 
 ```html
 <ul>
   <li>a</li>
+</ul>
+```
+
+:::
+
+## A comment ends the item's paragraph without ending the item
+
+§24 C3 says a comment does not close the item, and the line below it still belongs to the item. It does not say the line joins the paragraph the comment interrupted, and it does not: the comment ends that paragraph, so the following line starts a new one. The blank line before the second item makes the list loose, which is what makes the two paragraphs visible - in a tight list the same structure renders without `<p>` and the distinction cannot be seen.
+
+::: compare
+
+```carve
+- a
+  %% x
+ b
+
+- c
+```
+
+```html
+<ul>
+  <li><p>a</p>
+    <p>b</p>
+  </li>
+  <li><p>c</p></li>
 </ul>
 ```
 
