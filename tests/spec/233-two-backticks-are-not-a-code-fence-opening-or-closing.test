@@ -1,0 +1,24 @@
+Two backticks are not a code fence, opening or closing
+
+```
+``
+code
+``
+.
+<p><code>
+code
+</code></p>
+```
+
+````
+```
+code
+``
+still code
+```
+.
+<pre><code>code
+``
+still code
+</code></pre>
+````

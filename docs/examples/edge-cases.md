@@ -9132,3 +9132,239 @@ see[^f]
 ```
 
 :::
+
+## An empty abbreviation term is not a definition
+
+`abbreviation_term = (letter | digit)+` needs at least one character, so `*[]:` opens nothing and the line stays paragraph text.
+
+::: compare
+
+```carve
+*[]: expansion
+
+Text.
+```
+
+```html
+<p>*[]: expansion</p>
+<p>Text.</p>
+```
+
+:::
+
+## An at sign is a reference label character everywhere but the first position
+
+`reference_label = (character - ']' - '@'), {character - ']'}`. The exclusion is positional: it keeps `[@key]` free for citations and costs nothing after the first character.
+
+A label that STARTS with `@` is a citation definition in the extension layer, so the core corpus cannot state its rendering here - the executable spec refuses that input (carve#798). The engines agree on it: `[@x]: /u` defines nothing and the label renders as a mention.
+
+::: compare
+
+```carve
+[a@b]: /v
+
+see [u][a@b].
+```
+
+```html
+<p>see <a href="/v">u</a>.</p>
+```
+
+:::
+
+## A tab after a heading, quote or caption marker leaves the line as prose
+
+The definition markers already pin this rule; the block markers are the same one and nothing covered them. A tab after `#`, `>` or `^` is not the marker's separator, so no block opens.
+
+::: compare
+
+```carve
+#	Heading
+
+>	quoted
+```
+
+```html
+<p>#	Heading</p>
+<p>&gt;	quoted</p>
+```
+
+:::
+
+The caption marker needs a block to attach to before the rule is observable at all - on its own line it is prose either way. Directly under an image, a space makes a `<figure>` and a tab does not.
+
+::: compare
+
+```carve
+![Moon](m.jpg)
+^	Figure 1
+```
+
+```html
+<p><img src="m.jpg" alt="Moon">
+^	Figure 1</p>
+```
+
+:::
+
+## Two dashes are not a thematic break
+
+A thematic break needs three or more markers. Two dashes are ordinary text - and smart typography renders them as an en dash, which is what the reader sees.
+
+::: compare
+
+```carve
+a
+
+--
+
+b
+```
+
+```html
+<p>a</p>
+<p>–</p>
+<p>b</p>
+```
+
+:::
+
+## Two backticks are not a code fence, opening or closing
+
+A fence opens on three or more. Two backticks are an inline code span, so the lines between them become its content instead of a code block.
+
+::: compare
+
+```carve
+``
+code
+``
+```
+
+```html
+<p><code>
+code
+</code></p>
+```
+
+:::
+
+The closer is the same length rule seen from the other side: a two-backtick line inside an open fence is CONTENT, not the end of the block.
+
+::: compare
+
+````carve
+```
+code
+``
+still code
+```
+````
+
+````html
+<pre><code>code
+``
+still code
+</code></pre>
+````
+
+:::
+
+## A single percent is not a comment
+
+A comment line opens on `%%`. One percent is ordinary text, which matters because the character is common in prose.
+
+::: compare
+
+```carve
+% not a comment
+```
+
+```html
+<p>% not a comment</p>
+```
+
+:::
+
+## An uppercase roman numeral is a list marker
+
+Roman markers are case-blind: `I.` opens a list with `type="I"` as `i.` does with `type="i"`.
+
+::: compare
+
+```carve
+I. one
+II. two
+```
+
+```html
+<ol type="I">
+  <li>one</li>
+  <li>two</li>
+</ol>
+```
+
+:::
+
+## A table delimiter cell needs at least one dash
+
+A lone `:` does not make a delimiter row, so the row is an ordinary body row and the table gets no header.
+
+::: compare
+
+```carve
+| a | b |
+|:|:|
+| 1 | 2 |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>:</td><td>:</td></tr>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+## A continuation row carries no trailing text
+
+The `+` continuation marker replaces the leading pipe, and the row must close with one. A proper continuation merges into the row above; text after the closing pipe leaves the line outside the table entirely.
+
+::: compare
+
+```carve
+| a | b |
++ c | d |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a c</td><td>b d</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+::: compare
+
+```carve
+| a | b |
++ c | d | junk
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+<p>+ c | d | junk</p>
+```
+
+:::

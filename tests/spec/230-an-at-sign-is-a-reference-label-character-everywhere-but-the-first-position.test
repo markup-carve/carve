@@ -1,0 +1,9 @@
+An at sign is a reference label character everywhere but the first position
+
+```
+[a@b]: /v
+
+see [u][a@b].
+.
+<p>see <a href="/v">u</a>.</p>
+```

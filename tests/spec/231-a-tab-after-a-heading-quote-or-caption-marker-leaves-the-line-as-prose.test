@@ -1,0 +1,18 @@
+A tab after a heading, quote or caption marker leaves the line as prose
+
+```
+#	Heading
+
+>	quoted
+.
+<p>#	Heading</p>
+<p>&gt;	quoted</p>
+```
+
+```
+![Moon](m.jpg)
+^	Figure 1
+.
+<p><img src="m.jpg" alt="Moon">
+^	Figure 1</p>
+```

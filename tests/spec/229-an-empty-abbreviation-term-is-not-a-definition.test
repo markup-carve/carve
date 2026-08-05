@@ -1,0 +1,10 @@
+An empty abbreviation term is not a definition
+
+```
+*[]: expansion
+
+Text.
+.
+<p>*[]: expansion</p>
+<p>Text.</p>
+```
