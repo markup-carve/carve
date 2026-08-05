@@ -82,10 +82,14 @@ named fence" behavior denies both.
 
 This page answers "what can a profile deny", which is a smaller set than "what
 appears in the tree". A serialized AST (PART 12) therefore carries type names
-this vocabulary does not list - `tag`, `abbreviation_def`, `smart_punctuation`,
-`literal_inline`, `raw_text` and the `document` root - because denying them would
-mean nothing: they are either folded into another trust class, render nothing at
-all, or serve a formatter rather than the document. A consumer reading an AST should expect them; a profile author should not
+this vocabulary does not list - `tag`, `abbreviation_def`,
+`link_reference_definition`, `smart_punctuation`, `literal_inline`, `raw_text`
+and the `document` root - because denying them would mean nothing: they are
+either folded into another trust class, render nothing at all, or serve a
+formatter rather than the document. `link_reference_definition` is the
+`abbreviation_def` case exactly: the definition line renders nothing in HTML, so
+denying it would not stop anything reaching the page - the `link` or `image` it
+feeds is the node a profile denies. A consumer reading an AST should expect them; a profile author should not
 look for them here.
 
 A **`tag`** node - the AST form of `#tag` - is deliberately **NOT** its own

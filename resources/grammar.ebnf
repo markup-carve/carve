@@ -1294,12 +1294,12 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    `.a` floats past the definition and lands on `<p class="a">text</p>` (A2a);
    `.b` attributes the definition and reaches every link resolving `ex`.
 
-   NO AST NODE, DELIBERATELY. There is no `link_reference_definition` node in
-   PART 12's vocabulary, so definition attributes are MATERIALIZED onto each
-   resolved link rather than serialized once. That is the third clause wanting
-   the same missing node (§3a and §10a are the others) and it is recorded here
-   rather than introduced, because adding a node type changes the wire format
-   for every engine and every consumer -- a larger question than this slot. *)
+   THE DEFINITION IS A NODE, so these attributes are serialized ONCE on it
+   rather than materialized onto every resolved link. PART 12 §10 adds
+   `link_reference_definition` to the vocabulary; three clauses wanted it (§3a,
+   §10a and this one) and the fourth reason was decisive: without the node, a
+   writer cannot reproduce the definition, so `parse(fmt(x)) == parse(x)` fails
+   for every resolved reference (carve#642). *)
 (* The marker-to-content separator is the `space` terminal (U+0020) ONLY, in
    all three definition markers: `reference_definition`, `footnote_definition`
    and `abbreviation_definition`. A tab does NOT satisfy `space`
@@ -4179,13 +4179,12 @@ EOF = (* end of file *) ;
       it, because HTML has nowhere to put a definition nobody used; the other
       three do not get to drop content the author wrote.
 
-      A LINK REFERENCE DEFINITION IS NOT COVERED, and not because it deserves
-      less. It is the one definition kind with NO NODE IN THE TREE: `[lbl]: /u`
-      alone parses to a document with empty `children` in all three engines,
-      and §7 fixes the root at `type`, `children` and `srcByteLength`, so the
-      collected map cannot ride there either. A renderer walking blocks has
-      nothing to walk, so requiring the output would require an output no
-      engine can produce (carve#592).
+      A LINK REFERENCE DEFINITION IS NOW COVERED TOO. It was excluded while it
+      was the one definition kind with NO NODE IN THE TREE -- `[lbl]: /u` alone
+      parsed to a document with empty `children`, so a renderer walking blocks
+      had nothing to walk and requiring the output would have required an output
+      no engine could produce (carve#592). PART 12 §10 gives it a node, so the
+      exclusion has no cause left: all three kinds walk, and all three emit.
 
       This clause first said "link, footnote or abbreviation" and was wrong to.
       PART 12 §3a had already considered the missing node and declined it --
@@ -4202,12 +4201,12 @@ EOF = (* end of file *) ;
       and the URL the author wrote is gone. That is the same content loss §10a
       exists to prevent, reached by a different route.
 
-      Whether to add `link_reference_definition` to the vocabulary is therefore
-      open on TWO independent grounds now, where §3a weighed only one: making
-      a resolved reference's destination recoverable (§3a), and making an
-      unused one survive at all (this clause). §3a's cost list is unchanged and
-      still the estimate; what has changed is that the same node would pay for
-      two things rather than one.
+      SETTLED IN PART 12 §10. The node was open on two grounds here -- making a
+      resolved reference's destination recoverable (§3a), and making an unused
+      one survive at all (this clause) -- and a third decided it: without the
+      node a writer cannot reproduce the definition, so PART 11 §1's
+      `parse(fmt(x)) == parse(x)` failed for every resolved reference in all
+      three engines (carve#642).
 
           [^n]: %         ->  markdown  [^n]: %
                               plain     [^n]: %
@@ -5115,3 +5114,54 @@ EOF = (* end of file *) ;
       (`doc`, say, which is ProseMirror's) will half-read a foreign format
       rather than reject it.
 *)
+
+   10. A LINK REFERENCE DEFINITION IS A NODE -- NORMATIVE.
+      `type: "link_reference_definition"`, carrying:
+        label   the reference label as the author wrote it, before case folding
+        href    the destination; present and non-empty, since a definition with
+                an empty destination is not a definition but paragraph text
+        title   the quoted title, unescaped, when the definition carries one
+        attrs   a trailing attribute block on the definition line (§15 A2b)
+
+      IT HOISTS TO THE DOCUMENT, exactly as §7 requires of the other two
+      definition kinds: a definition authored inside a block quote or a list
+      item is a child of the DOCUMENT, and its `pos` still says where it was
+      written. The container is left as the author's remaining content, which is
+      what corpus 117-footnote-definition-inside-a-container-is-collected
+      already pins for the footnote case.
+
+      WHY A NODE AND NOT A ROOT MAP. §7 fixes the root at three fields, and its
+      reason is the one that decides this: §4 requires every node except the
+      root to carry `pos`, and a root FIELD cannot carry one. A definition is a
+      source construct occupying real bytes -- an editor jumps to it, a
+      formatter reproduces it, a language server renames its label. On the root
+      it would be the only content in the document that cannot be navigated to.
+      A node also answers "which definition wins" by document order rather than
+      by merge order, and holds its own attributes without a second rule.
+
+      That the root already looked like the precedent is a measurement error
+      worth recording: carve-js's INTERNAL tree carries `footnoteDefs` and
+      `footnoteDefPos`, which is the drift §7 was written against, and its
+      SERIALIZED root carries exactly three fields with the definition as a
+      `footnote` node in `children` -- the same shape carve-rs and carve-php
+      publish. §1 permits exactly that: internals may differ, and map on the way
+      out (carve#642).
+
+      WHAT THE NODE CLOSES. Three clauses wanted it and each named a different
+      loss:
+        §3a   a resolved reference published `href: ""` with the destination
+              recoverable from nothing
+        §10a  an unused definition survived neither the tree nor a round trip,
+              so `carve --markdown` on a document that is only `[lbl]: /u`
+              emitted nothing
+        §15 A2b  definition attributes had to be materialized onto every
+              resolved link, because there was nowhere to put them once
+      and the fourth is why it landed: a writer cannot reproduce a construct the
+      tree does not carry, so PART 11 §1's `parse(fmt(x)) == parse(x)` failed
+      for EVERY resolved reference in all three engines (carve#642).
+
+      A DEFINITION IS STILL INVISIBLE IN HTML. The node renders nothing on that
+      target; it feeds the links and images that resolve its label (PART 9R R1).
+      The non-HTML targets emit it, which is what §10a says and could not
+      previously require of this kind.
+

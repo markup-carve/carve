@@ -32,6 +32,41 @@
       },
       "additionalProperties": false
     },
+    "link_reference_definition": {
+      "type": "object",
+      "title": "link_reference_definition (block)",
+      "description": "The `[label]: /url \"title\" {attrs}` definition line. Renders nothing in HTML itself; it feeds every link or image that resolves the label (PART 9R R1). Hoisted to the document like the other two definition kinds (PART 12 section 7), so a definition authored inside a container is a child of the document and its `pos` still says where it was written.",
+      "required": [
+        "type",
+        "label",
+        "href"
+      ],
+      "properties": {
+        "type": {
+          "const": "link_reference_definition"
+        },
+        "label": {
+          "type": "string",
+          "description": "The reference label as the author wrote it, before case folding. Matching is case-sensitive (PART 9R R1)."
+        },
+        "href": {
+          "type": "string",
+          "description": "The destination. Present and non-empty: a definition with an empty destination is not a definition, it is paragraph text."
+        },
+        "title": {
+          "type": "string",
+          "description": "The quoted title, unescaped, when the definition carries one."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs",
+          "description": "A trailing attribute block on the definition line (carve#604). Transfers to every link or image resolving the label, with the reference site's own attributes overriding per key under section 15 A3."
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
     "abbreviation_def": {
       "type": "object",
       "title": "abbreviation_def (block)",
@@ -186,6 +221,7 @@
             "line_block",
             "list",
             "list_item",
+            "link_reference_definition",
             "paragraph",
             "raw_block",
             "table",
@@ -209,6 +245,21 @@
           },
           "then": {
             "$ref": "#/$defs/abbreviation_def"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "link_reference_definition"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/link_reference_definition"
           }
         },
         {
@@ -821,7 +872,7 @@
     "definition_list": {
       "type": "object",
       "title": "definition_list (block)",
-      "description": "Its items are the `<dt>` / `<dd>` sequence, in document order: a run of `definition_term` nodes followed by the `definition_description` nodes they share. The grouping is not published because it is not a shared fact - two engines that published it grouped the same document differently while rendering the same list - and because a plain object can carry no `pos`, which left a term the only content in a serialized document an editor could not navigate to (PART 12 \u00a74).",
+      "description": "Its items are the `<dt>` / `<dd>` sequence, in document order: a run of `definition_term` nodes followed by the `definition_description` nodes they share. The grouping is not published because it is not a shared fact - two engines that published it grouped the same document differently while rendering the same list - and because a plain object can carry no `pos`, which left a term the only content in a serialized document an editor could not navigate to (PART 12 §4).",
       "required": [
         "type",
         "items"

@@ -131,7 +131,17 @@ test('every type the schema declares is either in the vocabulary or listed as no
   }
   // Stated in profiles.md under "The AST has more node types than a profile can
   // deny", and repeated in scripts/ast-conformance.mjs.
-  const notDeniable = ['document', 'smart_punctuation', 'literal_inline', 'tag', 'abbreviation_def']
+  const notDeniable = [
+    'document',
+    'smart_punctuation',
+    'literal_inline',
+    'tag',
+    'abbreviation_def',
+    // A definition line renders nothing in HTML, so denying it would not keep
+    // anything off the page - the link or image it feeds is the deniable node.
+    // Same argument as abbreviation_def, one definition kind over (carve#642).
+    'link_reference_definition',
+  ]
   for (const type of notDeniable) {
     assert.match(
       profiles,
