@@ -10,7 +10,7 @@
  * full-fidelity claim.
  */
 
-import { parseAttrList } from './render.mjs'
+import { parseAttrList, parseAttrBlock } from './render.mjs'
 
 export { TIER1 }
 
@@ -391,8 +391,15 @@ function parseCell(seg) {
     cell.align = am[1] === '<' ? 'left' : am[1] === '>' ? 'right' : 'center'
     s = s.slice(1)
   }
-  const at = /^\{([^}]*)\}(?= |$)/.exec(s)
-  if (at) {
+  // A glued attribute block; "the rest of the cell, AFTER OPTIONAL WHITESPACE, is
+  // the content" (§5), so no space is required after the closing brace - this
+  // used to demand one and read `|{.x}Total |` as literal text.
+  //
+  // Validity decides here, not at render time: "the whole brace payload must be
+  // valid attribute syntax; otherwise the `{` is literal content". Testing it
+  // downstream made an invalid payload REFUSE the document instead.
+  const at = /^\{([^}]*)\}/.exec(s)
+  if (at && parseAttrBlock(`{${at[1]}}`) !== null) {
     cell.attrs = `{${at[1]}}`
     s = s.slice(at[0].length)
   }
