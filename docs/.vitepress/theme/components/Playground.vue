@@ -314,7 +314,7 @@ async function renderCharts(): Promise<void> {
   }
 }
 
-// --- Spoiler (Tier-3): inline `:spoiler[…]` blurs, reveals on click/keyboard.
+// --- Spoiler (Tier-2): inline `:spoiler[…]` blurs, reveals on click/keyboard.
 // Block `::: spoiler` is a native <details>, so it needs no JS. ---
 function wireSpoilers(): void {
   const root = outputEl.value

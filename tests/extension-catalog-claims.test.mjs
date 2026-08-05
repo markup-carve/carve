@@ -47,9 +47,16 @@ const NOT_A_NAME = new Set([
   'Lowercase', 'AsciiHeadingIds', 'ImgFence',
 ])
 
-/** Extension names as the tier rows present them. */
+/**
+ * Extension names as the tier rows present them.
+ *
+ * BOTH opt-in tiers, not the extension row alone. ListTable, Details, Spoiler
+ * and Tabs moved to the standard row when they were relabeled Tier-2
+ * (carve#689), and a check that only reads the extension row would have let
+ * four names it used to cover leave measurement without saying so.
+ */
 function namedExtensions() {
-  const rows = page.split('\n').filter((line) => /Badge type="warning"/.test(line))
+  const rows = page.split('\n').filter((line) => /Badge type="(warning|info)"/.test(line))
   const names = new Set()
   for (const row of rows) {
     for (const match of row.matchAll(/\b([A-Z][A-Za-z]{3,})\b/g)) {
