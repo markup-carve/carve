@@ -8620,3 +8620,59 @@ see[^a]
 ```
 
 :::
+
+## A definition below a footnote body's column is the document's own text
+
+One space is not a continuation - §16 wants two - so the line leaves the note and is the document's next block. It is not a definition either: the production starts at the opening bracket and allows no leading indent, so the reference below stays literal. The line is VISIBLE and INERT, and those two halves have to be pinned together: carve-js and carve-php rendered it AND defined from it, so a reader saw the definition as prose while a reference silently resolved through the same line (carve#701, carve-js#681, carve-php#825).
+
+::: compare
+
+```carve
+[^a]: note
+ [r]: /u
+
+see[^a] and [t][r]
+```
+
+```html
+<p>[r]: /u</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and [t][r]</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## A definition past a footnote body's column is the body's own text
+
+Three spaces IS a continuation, so the line belongs to the note - but the body's column is two and the third column is residual indent its blocks read, so the definition never reaches an opener position and stays paragraph text inside the note. Visible and inert again, and for the opposite reason to the case above: there the line was outside the body, here it is inside it. Beside "A footnote body's own column is two", this is what makes the column load-bearing in both directions.
+
+::: compare
+
+```carve
+[^a]: note
+   [r]: /u
+
+see[^a] and [t][r]
+```
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and [t][r]</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note
+[r]: /u<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::

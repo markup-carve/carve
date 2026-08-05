@@ -25,3 +25,5 @@
 #
 # Format: <slug><space><space><reason>
 218-a-footnote-body-s-own-column-is-two-and-a-third-column-is-its-text  the pinned build takes the body column from the first continuation line, so the rows at three land at relative zero and open a table; fixed by carve-js#679, drops out at the next release
+219-a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text  the pinned build collects a definition anywhere in a note body, so this line renders AND defines; fixed by carve-js#681, drops out at the next release
+220-a-definition-past-a-footnote-body-s-column-is-the-body-s-own-text  same pinned leniency one column further in - the line renders inside the note AND defines; fixed by carve-js#681, drops out at the next release
