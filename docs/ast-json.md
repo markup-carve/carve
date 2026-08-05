@@ -291,9 +291,9 @@ spans that do not cover the text they claim.
 
 | engine | shape | positions |
 |---|---|---|
-| carve-js | drops `ref` and `rawRef` once a reference resolves, publishing `href` alone, against §3a ([carve#524](https://github.com/markup-carve/carve/issues/524)); leaves an `abbreviation_def` inside its container instead of hoisting it to the document, against §7 ([carve-php#631](https://github.com/markup-carve/carve-php/issues/631)) | blocks and inlines, except reassembled regions (table cells, line-block content) |
-| carve-rs | serializes links POST-resolve ([carve#481](https://github.com/markup-carve/carve/issues/481)) - the `href` half of that is now what §3a asks for, and what remains to check is whether `ref`/`rawRef` survive resolution; leaves an `abbreviation_def` in its container, against §7 | blocks and most inlines; reconstructed regions are unplaced, as are the paragraphs a capped container degrades to ([carve#672](https://github.com/markup-carve/carve/issues/672)) |
-| carve-php | flattens an unresolved reference to text instead of publishing a `link`, against §3a ([carve#486](https://github.com/markup-carve/carve/issues/486)), and publishes `ref: ""` for the collapsed form where §3a now pins the derived label ([carve#524](https://github.com/markup-carve/carve/issues/524)); two field-name divergences left: the root carries `abbreviations`, and `inline_extension` publishes `extensionType`/`children` ([carve-php#510](https://github.com/markup-carve/carve-php/issues/510)) | recorded behind a parse option, enabled whenever it serializes |
+| carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together; leaves an `abbreviation_def` inside its container instead of hoisting it to the document, against §7 ([carve-php#631](https://github.com/markup-carve/carve-php/issues/631)) | blocks and inlines, except reassembled regions (table cells, line-block content) |
+| carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` (the open half of [carve#481](https://github.com/markup-carve/carve/issues/481), now measured); leaves an `abbreviation_def` in its container, against §7 | blocks and most inlines; reconstructed regions are unplaced, as are the paragraphs a capped container degrades to ([carve#672](https://github.com/markup-carve/carve/issues/672)) |
+| carve-php | §3a conformant on both forms measured here: an unresolved reference is a `link` node (closing the shape [carve#486](https://github.com/markup-carve/carve/issues/486) reported), and the collapsed form carries the derived label in `ref` beside `rawRef`; two field-name divergences left: the root carries `abbreviations`, and `inline_extension` publishes `extensionType`/`children` ([carve-php#510](https://github.com/markup-carve/carve-php/issues/510)) | recorded behind a parse option, enabled whenever it serializes |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
@@ -314,11 +314,21 @@ where carve-js places them against real offsets, so the reassembly exemption doe
 not reach them ([carve#672](https://github.com/markup-carve/carve/issues/672)).
 
 The §3a entries were measured, on `See [getting started][] here.` with the label
-defined. All three engines publish the destination in `href` - which is the half
-§3a now blesses - and none publishes `rawRef` beside it: carve-js
-`{"href":"/start"}`, carve-rs `{"href":"/start"}` (from a build the conformance
-script flags as older than its source), carve-php
-`{"ref":"","href":"/start"}`.
+defined. All three engines now publish the whole triple - `href`, `ref` and
+`rawRef` - which is what §3a asks for:
+
+    carve-js   {"href":"/start","ref":"getting started","rawRef":"[getting started][]"}
+    carve-rs   {"href":"/start","ref":"getting started","rawRef":"[getting started][]"}
+    carve-php  {"href":"/start","ref":"getting started","rawRef":"[getting started][]"}
+
+The unresolved form agrees too: `See [missing][] here.` is a `link` node in all
+three, not flattened text.
+
+An earlier version of this paragraph recorded the opposite - none publishing
+`rawRef`, carve-php publishing `ref: ""` - and the rows above described the
+same. The engines moved and the page did not, which is the failure mode this
+table exists to prevent, so it is worth saying that a measured claim needs
+re-measuring rather than citing.
 
 The §3a and §7 rows are new: those clauses were written to settle disagreements
 the engines had already shipped, so every engine has something to move. That is
