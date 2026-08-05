@@ -117,6 +117,68 @@ test('every node type the reference emits is declared in the schema', () => {
   assert.deepEqual(undeclared, [], `node types emitted but not in the schema: ${undeclared.join(', ')}`)
 })
 
+/*
+ * Node types the schema declares that NO default-profile corpus document can
+ * produce, and why. The mirror of `tests/schema-fields-are-produced.test.mjs`,
+ * which asks the same question one level down and is the reason this gap was
+ * visible at all: a declared FIELD without a producer fails there, while a
+ * declared NODE TYPE without one passed everything.
+ *
+ * That is not a hypothetical either. `link_reference_definition` was added to
+ * the vocabulary by carve#715 precisely so a writer could reproduce a
+ * definition; carve-php emits it, the reference engine does not emit it at all,
+ * and every gate stayed green - the type is declared, nothing invalid is
+ * produced, and the direction that would have caught it was only checked for
+ * fields.
+ */
+const NOT_PRODUCIBLE = {
+  citation_group: 'citations (Tier-2) - off in a default-profile run, exercised by tests/corpus-optional',
+  link_reference_definition:
+    'the reference engine does not emit it yet (carve-js#690); carve-php does, ' +
+    'which is why the two writers disagree on 30 corpus documents',
+}
+
+test('every node type the schema declares is produced by a corpus document, or named as unproducible', () => {
+  const seen = new Set()
+  for (const { source } of corpus) {
+    for (const node of walk(serialize(source))) seen.add(node.type)
+  }
+  const missing = [...declaredTypes()]
+    .filter((type) => !seen.has(type) && !(type in NOT_PRODUCIBLE))
+    .sort()
+  assert.deepEqual(
+    missing,
+    [],
+    `the schema declares node type(s) no corpus document produces: ${missing.join(', ')}. ` +
+      'A declared type with no producer is either dead or unimplemented, and the schema ' +
+      'cannot tell those apart. Add a corpus document, or name it in NOT_PRODUCIBLE with the reason.',
+  )
+})
+
+test('every unproducible exemption is still needed', () => {
+  const seen = new Set()
+  for (const { source } of corpus) {
+    for (const node of walk(serialize(source))) seen.add(node.type)
+  }
+  const stale = Object.keys(NOT_PRODUCIBLE).filter((type) => seen.has(type)).sort()
+  assert.deepEqual(
+    stale,
+    [],
+    `NOT_PRODUCIBLE names node type(s) the corpus now produces: ${stale.join(', ')}. ` +
+      'Delete the entry so the type is gated like every other one.',
+  )
+})
+
+test('every unproducible exemption names a type the schema still declares', () => {
+  const declared = declaredTypes()
+  const unknown = Object.keys(NOT_PRODUCIBLE).filter((type) => !declared.has(type)).sort()
+  assert.deepEqual(
+    unknown,
+    [],
+    `NOT_PRODUCIBLE names node type(s) the schema no longer declares: ${unknown.join(', ')}.`,
+  )
+})
+
 test('every type the schema declares is either in the vocabulary or listed as not deniable', () => {
   // profiles.md answers "what can a profile deny", which is a SMALLER set than
   // "what appears in the tree" - and it says so in its own words. The schema may
