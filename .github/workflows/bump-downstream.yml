@@ -78,6 +78,11 @@ jobs:
             lang: node
             test: npm ci && npm run build && npm run test:grammar
             allowlist: the `covered` / `skip` lists in `tests/categories.json`
+          - repo: markup-carve/pandoc-carve
+            submodule: spec
+            lang: node
+            test: npm ci && npm test
+            allowlist: none - its conversion tests read the corpus directly
           - repo: markup-carve/carve-skill
             submodule: spec
             lang: node
@@ -415,14 +420,14 @@ jobs:
           while IFS= read -r repo; do
             [ -z "$repo" ] && continue
             if ! grep -qx "$repo" <<< "$matrix" && [ -z "${EXCEPT[$repo]:-}" ]; then
-              missing="$missing- `\$repo` carries the spec submodule and nothing bumps it"$'\n'
+              missing="$missing- \`$repo\` carries the spec submodule and nothing bumps it"$'\n'
             fi
           done <<< "$carrying"
 
           stale_except=""
           for repo in "${!EXCEPT[@]}"; do
             if ! grep -qx "$repo" <<< "$carrying"; then
-              stale_except="$stale_except- `\$repo` is listed as an exception but no longer carries the submodule"$'\n'
+              stale_except="$stale_except- \`$repo\` is listed as an exception but no longer carries the submodule"$'\n'
             fi
           done
 
