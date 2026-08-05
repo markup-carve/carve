@@ -42,6 +42,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
 import { classifyShapeDisagreement, shapeOf, shapePaths } from './spec/ast-shape.mjs'
+import { compareValues, valueSignature } from './spec/ast-values.mjs'
 import { checkPositions } from './spec/ast-positions.mjs'
 import { checkReferenceFields } from './spec/ast-references.mjs'
 import {
@@ -290,6 +291,13 @@ function checkShapeParity(name, doc, findings) {
 const referenceShapes = new Map()
 
 /**
+ * Every engine's SCALAR-field signatures, per document. The shape map beside
+ * this one answers whether the engines build the same tree; this one answers
+ * whether they put the same values in it (carve#786).
+ */
+const engineValues = new Map()
+
+/**
  * Every independent engine's tree signature, kept so the run can compare the
  * engines to EACH OTHER and not only to the one that was chosen as reference.
  *
@@ -305,6 +313,58 @@ const referenceShapes = new Map()
  * counting it would give that engine two votes and make a real carve-rs
  * divergence look like a majority.
  */
+/**
+ * Report where the engines publish DIFFERENT VALUES in the same node.
+ *
+ * Separate from the shape panel because it answers a separate question, and
+ * separate from the schema check because every field involved is optional there
+ * - a tree that omits `align` validates exactly as well as one that carries it.
+ *
+ * REPORTS, does not gate. There are known divergences today (carve#750, #784,
+ * #785, carve-php#877), and a gate would fail on day one for reasons already
+ * being tracked. Grouped by `type.field` rather than by document because each
+ * of those is one field behaving one way everywhere it appears: a per-document
+ * list is 107 entries describing five facts.
+ */
+function reportValueDisagreements(present) {
+  const byKey = new Map()
+  const names = engineValues.get(present[0])
+  if (!names) return
+
+  for (const name of names.keys()) {
+    const signatures = new Map()
+    let complete = true
+    for (const engine of present) {
+      const sig = engineValues.get(engine)?.get(name)
+      if (!sig) { complete = false; break }
+      signatures.set(engine, sig)
+    }
+    if (!complete) continue
+
+    for (const found of compareValues(signatures, name)) {
+      if (!byKey.has(found.key)) byKey.set(found.key, { engines: found.engines, docs: [] })
+      byKey.get(found.key).docs.push(found.sample)
+    }
+  }
+
+  console.log('')
+  if (byKey.size === 0) {
+    console.log('THREE-WAY VALUE COMPARISON: the engines publish the same values everywhere.')
+
+    return
+  }
+
+  const total = new Set([...byKey.values()].flatMap((v) => v.docs)).size
+  console.log(`THREE-WAY VALUE COMPARISON: ${byKey.size} field(s) disagree, across ${total} document(s)`)
+  for (const [key, { engines, docs }] of [...byKey].sort((a, b) => b[1].docs.length - a[1].docs.length)) {
+    const who = Object.entries(engines).map(([e, v]) => `${e}=${v}`).join('  ')
+    console.log(`  ${String(docs.length).padStart(4)}x  ${key}`)
+    console.log(`        ${who}`)
+    console.log(`        e.g. ${docs.slice(0, 2).join(', ')}`)
+  }
+  console.log('  Reported, not gated: see carve#786 for why, and which of these are already tracked.')
+}
+
 const INDEPENDENT_ENGINES = ['carve-js', 'carve-rs', 'carve-php']
 let panelRan = false
 const enginePaths = new Map()
@@ -316,6 +376,16 @@ function recordShape(engine, name, doc) {
     enginePaths.set(engine, perDoc)
   }
   perDoc.set(name, shapePaths(shapeOf(doc)).join('\n'))
+
+  // The same tree, signed a second way. `shapeOf` drops every scalar, so this
+  // is what carries `align`, `href`, `order` and the rest to the panel below
+  // (carve#786).
+  let perDocValues = engineValues.get(engine)
+  if (!perDocValues) {
+    perDocValues = new Map()
+    engineValues.set(engine, perDocValues)
+  }
+  perDocValues.set(name, valueSignature(doc))
 }
 
 /**
@@ -373,6 +443,9 @@ function reportEngineDisagreement() {
     console.log(`  all three differed on ${threeWay.length}: ${examples(threeWay)}`)
   }
   if (compared === unanimous) console.log('  no engine stood alone.')
+
+  reportValueDisagreements(present)
+
   // A document one engine could not serialize leaves the panel with two votes,
   // so it is not compared. Say how many, or a run where half the corpus dropped
   // out reads the same as one where none did.
