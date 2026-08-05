@@ -563,7 +563,10 @@ if (active.length === 0) {
 }
 
 const stats = Object.fromEntries(
-  active.map((i) => [i.name, { ok: 0, mismatch: 0, error: 0, skipped: 0, ms: 0, runnable: 0 }]),
+  active.map((i) => [
+    i.name,
+    { ok: 0, mismatch: 0, error: 0, skipped: 0, ms: 0, runnable: 0, mismatched: [] },
+  ]),
 )
 let crossImplDiffs = 0
 const targetStats = Object.fromEntries(
@@ -602,7 +605,14 @@ for (const pair of pairs) {
       // optional case, and the html target of the core corpus.
       if (expected !== null) {
         if (result.stdout === expected) stats[impl.name].ok++
-        else stats[impl.name].mismatch++
+        else {
+          stats[impl.name].mismatch++
+          // NAME the case. The summary counted mismatches and printed nothing
+          // that said WHICH, so `rust: pass=594/595 mismatch=1` was a number
+          // with no way to act on it - every case had to be re-run by hand to
+          // find the one. Same defect ast:check had before carve#670.
+          stats[impl.name].mismatched.push(`${target} ${pair.slug}`)
+        }
       }
       outputs.push([impl.name, result.stdout])
       ran.push(impl.name)
@@ -714,6 +724,14 @@ for (const impl of active) {
   console.log(
     `${impl.name}: pass=${s.ok}/${s.ok + s.mismatch} mismatch=${s.mismatch} error=${s.error} skipped=${s.skipped} runs=${s.runnable} avg_ms=${avg}`,
   )
+  // NAME the mismatching cases. `rust: pass=594/595 mismatch=1` was a number
+  // with nothing to act on: the run took twenty minutes and finding the one
+  // case meant re-running every fixture by hand. Same defect ast:check had
+  // before carve#670.
+  for (const name of s.mismatched.slice(0, 10)) console.log(`  mismatch: ${name}`)
+  if (s.mismatched.length > 10) {
+    console.log(`  ... and ${s.mismatched.length - 10} more`)
+  }
 }
 console.log(`cross_impl_diffs=${crossImplDiffs}`)
 if (roundtrip) {

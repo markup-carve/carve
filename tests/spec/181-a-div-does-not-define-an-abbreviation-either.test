@@ -1,0 +1,14 @@
+A div does not define an abbreviation either
+
+```
+:::
+*[HTML]: Hyper Text
+
+The HTML spec.
+:::
+.
+<div>
+  <p>*[HTML]: Hyper Text</p>
+  <p>The HTML spec.</p>
+</div>
+```

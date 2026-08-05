@@ -4456,9 +4456,11 @@ EOF = (* end of file *) ;
       WITHOUT IT THE DESTINATION HAS NOWHERE TO LIVE. `href: ""` for a resolved
       reference is only recoverable if the definition survives the trip, and it
       does not: the vocabulary has NO node type for a `[label]: url` link
-      reference definition. §7 hoists `footnote` and `abbreviation_def` to the
-      document; a link reference definition is serialized as nothing at all --
-      a document holding only `[lbl]: /u` publishes zero children.
+      reference definition. §7 hoists a `footnote` to the document, and an
+      `abbreviation_def` is already there by construction (§7: the line is a
+      definition only at document level); a link reference definition is
+      serialized as nothing at all -- a document holding only `[lbl]: /u`
+      publishes zero children.
 
       So under the unsoftened rule this document
 
@@ -4921,6 +4923,15 @@ EOF = (* end of file *) ;
       that container empty; the serialized tree follows the same rule rather
       than inventing a second one. Its `pos` still records where it was
       WRITTEN, so nothing about navigation is lost by the move.
+
+      AN ABBREVIATION DEFINITION IS A BLOCK NODE, `type: "abbreviation_def"`,
+      carrying:
+        abbr       the term as written, without the `*[` and `]:`
+        expansion  the expansion text, without the separating space
+      It renders nothing itself; it is what the inline `abbreviation` resolves
+      against. The node was named here in two clauses before it was described
+      in any, so its field names lived only in resources/ast-schema.json --
+      the shape a reader of this grammar could not see.
 
       THE HOISTING CLAUSE ABOVE IS ABOUT FOOTNOTES. An `abbreviation_def` is
       never hoisted, because there is never one to hoist: the construct is
