@@ -291,8 +291,8 @@ spans that do not cover the text they claim.
 
 | engine | shape | positions |
 |---|---|---|
-| carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together; leaves an `abbreviation_def` inside its container instead of hoisting it to the document, against §7 ([carve-php#631](https://github.com/markup-carve/carve-php/issues/631)) | blocks and inlines, except reassembled regions (table cells, line-block content) |
-| carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` (the open half of [carve#481](https://github.com/markup-carve/carve/issues/481), now measured); leaves an `abbreviation_def` in its container, against §7 | blocks and most inlines; reconstructed regions are unplaced, as are the paragraphs a capped container degrades to ([carve#672](https://github.com/markup-carve/carve/issues/672)) |
+| carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together | blocks and inlines, except reassembled regions (table cells, line-block content) |
+| carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` (the open half of [carve#481](https://github.com/markup-carve/carve/issues/481), now measured) | blocks and most inlines; reconstructed regions are unplaced, as are the paragraphs a capped container degrades to ([carve#672](https://github.com/markup-carve/carve/issues/672)) |
 | carve-php | §3a conformant on both forms measured here: an unresolved reference is a `link` node (closing the shape [carve#486](https://github.com/markup-carve/carve/issues/486) reported), and the collapsed form carries the derived label in `ref` beside `rawRef`; two field-name divergences left: the root carries `abbreviations`, and `inline_extension` publishes `extensionType`/`children` ([carve-php#510](https://github.com/markup-carve/carve-php/issues/510)) | recorded behind a parse option, enabled whenever it serializes |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
@@ -330,11 +330,28 @@ same. The engines moved and the page did not, which is the failure mode this
 table exists to prevent, so it is worth saying that a measured claim needs
 re-measuring rather than citing.
 
-The §3a and §7 rows are new: those clauses were written to settle disagreements
-the engines had already shipped, so every engine has something to move. That is
-the intended order - the spec says what the shape is, then the engines conform,
-then the pin moves. Until they do, this table is the honest record of who is
-where.
+The §7 clause the rows used to carry - carve-js and carve-rs leaving an
+`abbreviation_def` inside its container instead of hoisting it - is gone, and
+not because either engine moved. The spec answered carve-php#631 with a third
+option neither engine had implemented: inside a block quote, a list item or a
+div, `*[TERM]: expansion` is NOT A DEFINITION AT ALL. It is ordinary paragraph
+text, it defines nothing, and there is no `abbreviation_def` to hoist or leave.
+
+Measured on the issue's own document, a definition inside a div, and on the
+block-quote and list-item forms beside it: no engine emits an
+`abbreviation_def` in any of the three, and all three render the line as the
+literal text the author typed with no `<abbr>` below it. So a row describing
+where the node sits describes a node that is not produced.
+
+This is the third way a measured table goes wrong, after "the engine fixed it"
+and "the engine regressed": the QUESTION was withdrawn. Both readings the issue
+weighed - definitions stay put, definitions hoist - stopped being the choice
+once the construct stopped existing in that position.
+
+That is also why the §3a row is worth keeping while the others go. The spec
+says what the shape is, then the engines conform, then the pin moves; a row is
+the honest record of where an engine is in that order, and it has to be deleted
+when the order finishes rather than left behind as a fact.
 
 ## Definition lists
 
