@@ -574,16 +574,23 @@ function report(label, findings) {
     console.log(`${label}: conformant\n`)
     return
   }
-  // Group, because one missing field repeats across every document.
+  // Group, because one missing field repeats across every document. Keep ONE
+  // document per group: grouping strips the filename, and a finding nobody can
+  // reproduce is a finding nobody fixes. The example is the FIRST document that
+  // produced the group, so it is stable across runs.
   const counts = new Map()
   for (const f of findings) {
+    const file = /^([^:]+\.crv): /.exec(f)?.[1] ?? null
     const key = f.replace(/^[^:]+\.crv: /, '').replace(/at \$[^\s]*/, 'at <path>')
-    counts.set(key, (counts.get(key) ?? 0) + 1)
+    const seen = counts.get(key)
+    if (seen) seen.n += 1
+    else counts.set(key, { n: 1, example: file })
   }
   console.log(`${label}: ${findings.length} findings, ${counts.size} distinct`)
-  const ranked = [...counts].sort((a, b) => b[1] - a[1])
-  for (const [key, n] of ranked.slice(0, DISPLAY_LIMIT)) {
-    console.log(`  ${String(n).padStart(4)}x ${key}`)
+  const ranked = [...counts].sort((a, b) => b[1].n - a[1].n)
+  for (const [key, entry] of ranked.slice(0, DISPLAY_LIMIT)) {
+    const where = entry.example ? '  [' + entry.example + ']' : ''
+    console.log(`  ${String(entry.n).padStart(4)}x ${key}${where}`)
   }
   // Say so when the display is truncated. This used to end here, so a run with
   // nine distinct findings looked exactly like a run with eight.
