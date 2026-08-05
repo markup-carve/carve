@@ -38,7 +38,7 @@
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readdirSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToCarve, carveToHtml } from '@markup-carve/carve'
@@ -81,4 +81,37 @@ test('formatting a corpus document settles on the first pass', () => {
     `formatting these twice differs from formatting once, so every run produces a diff:\n  ` +
       unsettled.join('\n  '),
   )
+})
+
+/*
+ * The two sweeps above assert PROPERTIES, and every canonical-writer divergence
+ * found so far satisfies both of them: a comment renders nothing, so a body at
+ * the wrong column keeps `to_html(fmt(x)) == to_html(x)`, and a writer is
+ * happily idempotent about a spelling it picked itself. The bytes are the only
+ * thing that separates one canonical form from two.
+ *
+ * `.fmt` files existed for that and were read by nothing (carve#671). This
+ * reads them for the pinned carve-js build; the engines need the same check
+ * against their own writers, which is the other half of that issue.
+ */
+const pinned = documents
+  .map(({ slug, source }) => {
+    const path = resolve(corpusDir, `${slug}.fmt`)
+    return existsSync(path) ? { slug, source, expected: readFileSync(path, 'utf8') } : null
+  })
+  .filter(Boolean)
+
+test('a .fmt fixture is read, so it can fail', () => {
+  // Guards the sweep below against a glob that quietly matches nothing - the
+  // failure mode the fixtures were already in.
+  assert.ok(pinned.length >= 5, `found ${pinned.length} .fmt fixtures`)
+})
+
+test('fmt(x) matches every .fmt fixture (PART 11 §2)', () => {
+  const wrong = []
+  for (const { slug, source, expected } of pinned) {
+    const actual = carveToCarve(source)
+    if (actual !== expected) wrong.push(`${slug}\n    expected: ${JSON.stringify(expected)}\n      actual: ${JSON.stringify(actual)}`)
+  }
+  assert.deepEqual(wrong, [], `the writer disagrees with its pinned canonical form:\n  ${wrong.join('\n  ')}`)
 })
