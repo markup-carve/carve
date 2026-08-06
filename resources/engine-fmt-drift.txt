@@ -24,3 +24,4 @@
 #
 # Format: <slug><space><space><reason>
 227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace-2  the pinned build's initial render is already correct (<dd></dd>, the footnote resolves) - only the writer is broken: fmt collapses ":  [^f]: x" down to a bare ":", which the pin then reads back as "<dt>term\n:</dt>" instead of a separate <dd>; carve#666, drops out once carve-js ships the fix
+268-trailing-whitespace-on-a-content-line-is-dropped-7  A document whose every line ends in a DIFFERENT invisible character that is NOT `whitespace` - NBSP, ZWSP, BOM, en quad, form feed - so every one of them is content and survives (carve#926). The pinned build's initial render is already declared alongside the other 268 lines; what this file adds is the writer, which does not write those characters back unchanged, so re-reading its own output disagrees. Clears with the engine work on markup-carve/carve-js#829 rather than on a pin bump.

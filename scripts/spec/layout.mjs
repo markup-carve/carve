@@ -227,7 +227,11 @@ const FOOTNOTE_DEF = /^\[\^([^\]]+)\]: +(?![ \t]*$)([^ ].*)$/
 // `*[e.g.]:` and `*[ß]:` definitions, which made their LINE disappear, while
 // all three engines kept it as paragraph text (carve#791).
 const ABBR_DEF = /^\*\[([A-Za-z0-9]+)\]: +(?![ \t]*$)([^ ].*)$/
-const CAPTION = /^\^ (.*)$/
+// The caption text drops its trailing whitespace run, like every other content
+// line (PART 2, NO TRAILING WHITESPACE; carve#926). Done in the PATTERN rather
+// than at each use: five places read this capture, and the rule was missing
+// from all five - one rule, one spelling.
+const CAPTION = /^\^ (.*?)[ \t]*$/
 // The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
 // engine, so a tab here must not open a list (PART 9 SS11). Its width is the
 // item's content column for a non-task bullet.

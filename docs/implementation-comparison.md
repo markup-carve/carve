@@ -55,7 +55,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `264-a-frontmatter-opener-takes-exactly-one-space`,
 `265-a-reference-definition-s-metadata-slots-take-exactly-one-space`,
 `266-a-reference-definition-is-anchored-at-end-of-line`,
-`267-a-definition-marker-s-separator-is-a-space-and-it-is-a-run`.
+`267-a-definition-marker-s-separator-is-a-space-and-it-is-a-run`,
+`268-trailing-whitespace-on-a-content-line-is-dropped`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
@@ -132,6 +133,13 @@ carve-js `b3f49d7`, carve-rs `0a613b2` and carve-php `c15991f`, no engine gave
 the same answer for all three markers and no two agreed on all three. It closes
 with markup-carve/carve-js#822, markup-carve/carve-php#974 and
 markup-carve/carve-rs#747.
+
+Category 268 is the fourth, and the one where the ORACLE was already right.
+carve#926 made PART 2's trailing-whitespace rule general - it holds on every
+content line, not only a paragraph's last - and all three engines keep the run
+before a soft break, measured on carve-js `6647523`, carve-php `3de1184` and
+carve-rs `fcb879d`. It closes with markup-carve/carve-js#829,
+markup-carve/carve-php#980 and markup-carve/carve-rs#751.
 
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS

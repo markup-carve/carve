@@ -9,6 +9,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Trailing whitespace on a content line is dropped** (carve#926). PART 2's
+  rule was written down only for a paragraph's FINAL line, and PART 12 §7
+  asserted the opposite for a line before a SOFT BREAK - claiming
+  `a` + SPACE + newline + `b` renders `<p>a \nb</p>` and arguing from that
+  claim that a formatter must not strip it. It does not render that way. The
+  clause is now general and the contradiction is corrected.
+
+  The maintainer's reasoning is recorded in the clause, because it decides more
+  than the shape that raised it: "trailing (invisible and bad) whitespace is
+  the one important rule we have: no such thing."
+
+  So the run is dropped on every content line - a paragraph line, a heading, a
+  list item, a block quote line, a definition term or description, a footnote
+  body line, a table caption and a line-block line. The oracle was already
+  right for most of these and was missing the caption and the line-block cases;
+  both are corrected here. The three engines keep the run before a soft break
+  and are ticketed.
+
+  THE RUN IS `whitespace`, `' '` or a tab, the same two-character terminal
+  `blank_line = {whitespace}` takes (carve#890). Every other character is
+  content and survives, however invisible: a no-break space, a zero-width
+  space, a byte order mark, an en quad, an ideographic space, a form feed and a
+  vertical tab. U+FEFF was therefore a red herring in the shape that raised
+  this - in `<SP>U+FEFF<SP>` the BOM is content and what is dropped is the
+  trailing space.
+
+  Verbatim payloads keep their bytes, and whitespace INSIDE a construct is not
+  trailing: a code span, a literal inline, a table cell and the run before a
+  hard-break backslash all end at a delimiter rather than at the line's end. A
+  line block's MEDIAL GAPS rule converts a run of two or more columns into NBSP
+  content before this rule is reached, so only its one-column case is dropped.
+
+  Corpus 268 carries it, with the four non-reaching cases as controls.
+
 - **A definition marker's separator is a space, and it is a run** (carve#892).
   `footnote_definition` and `abbreviation_definition` spelled their
   marker-to-content separator as a single `space` while all three engines and
