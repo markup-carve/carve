@@ -265,7 +265,29 @@ npm run compare:impls
 npm run compare:impls -- --corpus=optional
 npm run compare:impls -- --limit=20 --bench
 npm run compare:impls -- --targets=html          # fast path, HTML only
+npm run compare:counts                           # counts only, no five-target sweep
+npm run compare:counts -- --corpus=optional
 ```
+
+`compare:counts` is `compare:impls --counts-only`. It prints the corpus size and
+each engine's pass count - the two things
+`tests/implementation-comparison-counts.test.mjs` reads, and the only things it
+reads: that test asserts on no timing at all.
+
+It renders exactly what is SCORED: every document on the default target, plus
+any target that document carries an expected-output file for. That second part
+is not optional - a case may add a `.md`, `.txt` or `.fmt` beside its `.html`,
+and those files count toward `pass=N/M`, which is why the snapshot above reads
+`pass=690/690` under `corpus_pairs=675`. What it drops is the rest of the
+five-target sweep, where every document is rendered on every target to check
+the engines against each other. That is four extra renders per document against
+fifteen extra in total, and no count in the gate depends on it.
+
+Use it when a corpus change has made the quoted size stale. It is NOT the
+snapshot above: that block is a five-target transcript, and its per-target
+agreement rows are the substance of this page. A counts-only run measures one
+target and says so in its own output, so pasting it here would narrow what the
+page claims to have checked.
 
 ### Combinations, not just cases
 
