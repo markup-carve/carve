@@ -6,7 +6,7 @@ same `.crv` / `.html` pairs and reports default conformance, optional Tier-2
 adapter coverage, rough CLI timing, and the extension hook surface each
 implementation exposes.
 
-## Snapshot (2026-08-04)
+## Snapshot (2026-08-06)
 
 > Run with all three implementations built from their own `main`. Regenerate any
 > time with `npm run compare:impls`. Timings are from one machine and mean
@@ -17,39 +17,36 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>639 / 640</strong>
+    <strong>641 / 642</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>640 / 640</strong>
+    <strong>642 / 642</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>640 / 640</strong>
+    <strong>642 / 642</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>4</strong>
+    <strong>2</strong>
     <span>cross-implementation diffs</span>
   </div>
 </div>
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `93b0178` | `639 / 640` | `1` | `0` | `3.12` |
-| JS | `c9d8ef1` | `640 / 640` | `0` | `0` | `83.08` |
-| PHP | `a0d39be` | `640 / 640` | `0` | `0` | `73.82` |
+| Rust | `e912088` | `641 / 642` | `1` | `0` | `3.14` |
+| JS | `1aaaf94` | `642 / 642` | `0` | `0` | `78.95` |
+| PHP | `ef28bbf` | `642 / 642` | `0` | `0` | `69.88` |
 
-Spec commit: `d8dd824`, plus the corpus case this change adds
+Spec commit: `f0b324c`, plus the two corpus cases this change adds
 
-The engines have caught up on the clauses that were ahead of them in the last
-snapshot: the synthesized-backlink cases (carve#799) and the collected-definition
-cases (carve#801) all pass in all three now.
-
-What is left is the `carve` target: `16-reference-link-4` and
-`195-a-definition-inside-a-container-...` in all three, plus two more in
-carve-rs. The parse agrees everywhere and what differs is the canonical spelling
-the formatter writes back (carve#787).
+The engines have caught up further since the last snapshot: the `carve`-target
+differences it listed - `16-reference-link-4`,
+`195-a-definition-inside-a-container-...` and two more in carve-rs - are gone,
+and the `carve` target now has expected-output files for twelve cases rather
+than ten, so more of it is pinned rather than merely agreed.
 
 The counts here are documents, not runs: an engine that misses one case on two
 targets is one document behind, not two.
@@ -399,22 +396,22 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=640 targets=html,markdown,plain,carve,ansi
-rust: pass=651/652 mismatch=1 error=0 skipped=0 runs=3200 avg_ms=3.12
+profile=default/no-opt-in corpus=core corpus_pairs=642 targets=html,markdown,plain,carve,ansi
+rust: pass=655/656 mismatch=1 error=0 skipped=0 runs=3210 avg_ms=3.14
   mismatch: html 228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block
   mismatching documents: 1
-js: pass=652/652 mismatch=0 error=0 skipped=0 runs=3200 avg_ms=83.08
+js: pass=656/656 mismatch=0 error=0 skipped=0 runs=3210 avg_ms=78.95
   mismatching documents: 0
-php: pass=652/652 mismatch=0 error=0 skipped=0 runs=3200 avg_ms=73.82
+php: pass=656/656 mismatch=0 error=0 skipped=0 runs=3210 avg_ms=69.88
   mismatching documents: 0
-cross_impl_diffs=4
+cross_impl_diffs=2
 
 Target agreement (implementations compared against each other)
-html: compared=640 diffs=1 errors=0 fixtures=yes
-markdown: compared=640 diffs=0 errors=0 fixtures=1
-plain: compared=640 diffs=0 errors=0 fixtures=1
-carve: compared=640 diffs=3 errors=0 fixtures=10
-ansi: compared=640 diffs=0 errors=0 fixtures=none
+html: compared=642 diffs=1 errors=0 fixtures=yes
+markdown: compared=642 diffs=0 errors=0 fixtures=1
+plain: compared=642 diffs=0 errors=0 fixtures=1
+carve: compared=642 diffs=1 errors=0 fixtures=12
+ansi: compared=642 diffs=0 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix
@@ -424,22 +421,21 @@ php: inline matcher, block matcher, parsed-document hook, before-render hook, re
 extension_profile_note=this run compares default/no-opt-in output. Use --corpus=optional for Tier-2 opt-in adapters.
 ```
 
-**Two engines render every fixture case**, on every target that has one: 573 of
-573 in carve-js and carve-php, zero mismatches and zero errors. carve-rs misses
-the two newest, both pinning what a comment does to the item around it - a
-blank after one still ends the item, and a comment fence under a nested item
-does not close it. carve-js, carve-php and the executable spec agree on both;
-carve-rs is the sole outlier (markup-carve/carve-rs#578). Those two cases
-account for eight of the twelve diffs below, across four targets each.
+**Two engines render every case**, on every target: carve-js and carve-php are
+642 of 642 with zero mismatches and zero errors. carve-rs is one document
+behind - `228-a-line-at-a-footnote-definition-s-own-column-...` - and that one
+document accounts for BOTH diffs below, one on `html` and one on `carve`. No
+other document differs anywhere.
 
-**Four differences remain on the `carve` target** beyond them, which has an
-expected-output file for five cases and asserts engine agreement on the rest. All four are the
-formatter, and the rule behind the largest of them is one the writer has not
-caught up on: PART 11 §1's round trip does not hold for a resolved reference
-link in ANY engine - `[a][r]` plus its definition formats to the inline
-`[a](/u)`, so the `ref` and `rawRef` that §3a records are gone on reparse. That
-is [carve#642](https://github.com/markup-carve/carve/issues/642), a writer
-question rather than a parser one.
+**The `carve` target is down to that same one**, and it has an expected-output
+file for twelve cases now, asserting engine agreement on the rest. The rule
+behind the class of `carve`-target differences that keeps recurring is one the
+writer has not caught up on: PART 11 §1's round trip does not hold for a
+resolved reference link in ANY engine - `[a][r]` plus its definition formats to
+the inline `[a](/u)`, so the `ref` and `rawRef` that §3a records are gone on
+reparse. That is
+[carve#642](https://github.com/markup-carve/carve/issues/642), a writer question
+rather than a parser one.
 
 Optional raw output:
 
