@@ -135,9 +135,15 @@ const SITES = [
     required: /admonition_open = [^;]*\[space\+, quoted_title\], \[space\+, label\] ;/,
     forbidden: /admonition_open = [^;]*\[whitespace\+?, (?:quoted_title|label)\]/,
     why: 'the type word has already decided the block; the title and label sit inline',
-    // `::: note` is fixed before either slot is reached.
-    tab: '::: note\t"T"\t[L]\nx\n:::\n',
-    space: '::: note "T" [L]\nx\n:::\n',
+    // ONE PAIR PER SLOT. `::: note` is fixed before either slot is reached, and
+    // the two slots revert independently, so a fixture carrying a tab at BOTH
+    // cannot tell them apart: with either one narrowed the line is unrecognized
+    // and the render differs from the space form regardless. Measured - a
+    // single two-tab fixture survived reverting each slot on its own.
+    fixtures: [
+      { slot: 'the "title" slot', tab: '::: note\t"T" [L]\nx\n:::\n', space: '::: note "T" [L]\nx\n:::\n' },
+      { slot: 'the [label] slot', tab: '::: note "T"\t[L]\nx\n:::\n', space: '::: note "T" [L]\nx\n:::\n' },
+    ],
     engineDeferred: ENGINE_DEFERRED,
   },
   {
@@ -146,8 +152,9 @@ const SITES = [
     required: /frontmatter_open = "---", \[space\], \[frontmatter_format\]/,
     forbidden: /frontmatter_open = "---", \[whitespace\]/,
     why: 'the `---` pair has already decided the block; the token sits inline after it',
-    tab: '---\tyaml\na: 1\n---\nx\n',
-    space: '--- yaml\na: 1\n---\nx\n',
+    fixtures: [
+      { slot: 'the format-token slot', tab: '---\tyaml\na: 1\n---\nx\n', space: '--- yaml\na: 1\n---\nx\n' },
+    ],
     engineDeferred: ENGINE_DEFERRED,
   },
   {
@@ -157,8 +164,16 @@ const SITES = [
     required: /link_title = space, \('"'.*\| space, \("'"/,
     forbidden: /link_title = whitespace,|\| whitespace, \("'"/,
     why: 'a link is a link once its destination is read; the title sits inline after it',
-    tab: '[t](/u\t"T")\n',
-    space: '[t](/u "T")\n',
+    // ONE PAIR PER SITE THE PRODUCTION IS USED AT. `link_title` is one
+    // production read by two different pieces of the oracle - the inline form
+    // by `destTitle` in resources/carve-core.ohm, the definition form by
+    // `LINK_DEF` in scripts/spec/layout.mjs - and carve#888 was precisely that
+    // the two disagreed. With only the inline fixture, widening `LINK_DEF`
+    // back to `[ \t]+` broke nothing here: measured.
+    fixtures: [
+      { slot: 'the inline form', tab: '[t](/u\t"T")\n', space: '[t](/u "T")\n' },
+      { slot: 'the definition form', tab: '[a]: /u\t"T"\n\n[a][]\n', space: '[a]: /u "T"\n\n[a][]\n' },
+    ],
     engineDeferred: ENGINE_DEFERRED,
   },
   {
@@ -167,8 +182,9 @@ const SITES = [
     required: /\[link_title\], \[space, attributes\], newline/,
     forbidden: /\[link_title\], \[whitespace, attributes\]/,
     why: 'the definition is complete at `[a]: /url`; the attribute block sits inline after it',
-    tab: '[a]: /u\t{.c}\n\n[a][]\n',
-    space: '[a]: /u {.c}\n\n[a][]\n',
+    fixtures: [
+      { slot: 'the trailing-attributes slot', tab: '[a]: /u\t{.c}\n\n[a][]\n', space: '[a]: /u {.c}\n\n[a][]\n' },
+    ],
     engineDeferred: ENGINE_DEFERRED,
   },
   {
@@ -177,8 +193,9 @@ const SITES = [
     required: /fenced_code_block = code_fence_open, \[space\], \[code_fence_info\]/,
     forbidden: /fenced_code_block = code_fence_open, \[whitespace\]/,
     why: 'the fence run has already decided the block; the info string sits inline after it',
-    tab: '```\tjs\nx\n```\n',
-    space: '``` js\nx\n```\n',
+    fixtures: [
+      { slot: 'the info-string slot', tab: '```\tjs\nx\n```\n', space: '``` js\nx\n```\n' },
+    ],
     engineDeferred: ENGINE_DEFERRED,
   },
   {
@@ -192,8 +209,14 @@ const SITES = [
       /code_fence_info = \( language_info, \[space\+, quoted_title\], \[space\+, label\] \) \| \( quoted_title, \[space\+, label\] \) \| label ;/,
     forbidden: /code_fence_info = [^;]*\[whitespace\+?/,
     why: 'the same two metadata slots the admonition opener carries, both inline',
-    tab: '``` js\t"T"\t[L]\nx\n```\n',
-    space: '``` js "T" [L]\nx\n```\n',
+    // One pair per slot, for the reason spelled out at the admonition opener:
+    // these two revert independently and a two-tab fixture cannot separate
+    // them. The tab goes after `js` in the first and after the title in the
+    // second, so neither needs a tab in the OPENER slot above.
+    fixtures: [
+      { slot: 'the "header" slot', tab: '```js\t"T" [L]\nx\n```\n', space: '```js "T" [L]\nx\n```\n' },
+      { slot: 'the [label] slot', tab: '```js "T"\t[L]\nx\n```\n', space: '```js "T" [L]\nx\n```\n' },
+    ],
     engineDeferred: ENGINE_DEFERRED,
   },
 ]
@@ -230,12 +253,57 @@ for (const { role, site, required, forbidden, why } of SITES) {
 // it - the check-that-cannot-fail class tracked in carve#755. `engineDeferred`
 // does not substitute for fixtures; it only says why the ENGINE half of the
 // pair is skipped, which is a statement about carve-js, not about the oracle.
-test('every padding site carries a tab/space fixture pair', () => {
+test('every padding site carries a tab/space fixture pair per slot', () => {
   for (const s of SITES.filter((x) => x.role === 'padding')) {
     assert.ok(
-      typeof s.tab === 'string' && typeof s.space === 'string',
-      `padding site "${s.site}" must carry a tab/space fixture pair; the oracle ` +
-        `check runs at every padding site and cannot skip one.`,
+      Array.isArray(s.fixtures) && s.fixtures.length > 0,
+      `padding site "${s.site}" must carry at least one tab/space fixture pair; ` +
+        `the oracle check runs at every padding site and cannot skip one.`,
+    )
+    for (const f of s.fixtures) {
+      assert.ok(
+        typeof f.slot === 'string' &&
+          typeof f.tab === 'string' &&
+          typeof f.space === 'string',
+        `padding site "${s.site}" has a fixture entry missing slot/tab/space.`,
+      )
+      assert.notEqual(
+        f.tab,
+        f.space,
+        `padding site "${s.site}" fixture "${f.slot}" has identical tab and space ` +
+          `forms, so it can never discriminate.`,
+      )
+      assert.ok(
+        f.tab.includes('\t'),
+        `padding site "${s.site}" fixture "${f.slot}" is named a tab fixture but ` +
+          `carries no tab.`,
+      )
+    }
+  }
+})
+
+// A site whose production has TWO independently-revertible slots needs TWO
+// fixtures, or a half-revert passes. This is the carve#896 shape, found again
+// here by mutation: the admonition opener and code_fence_info each carry a
+// "title" and a [label] slot, and a single fixture with a tab at BOTH survived
+// reverting either one on its own - with either slot narrowed the line is
+// unrecognized and the render differs from the space form regardless.
+// link_title is the same shape for a different reason: one production, two
+// pieces of the oracle reading it, which is exactly what carve#888 was about.
+const MULTI_SLOT = {
+  'admonition_open, the "title" and [label] metadata slots': 2,
+  'code_fence_info, the "header" and [label] metadata slots': 2,
+  'link_title, the slot before the quoted run': 2,
+}
+test('a site with independently-revertible slots carries a fixture for each', () => {
+  for (const [site, n] of Object.entries(MULTI_SLOT)) {
+    const entry = SITES.find((s) => s.site === site)
+    assert.ok(entry, `MULTI_SLOT names a site that is not in SITES: ${site}`)
+    assert.equal(
+      entry.fixtures.length,
+      n,
+      `padding site "${site}" reverts in ${n} independent places and needs ${n} ` +
+        `fixture pairs; one pair covering both lets a half-revert through.`,
     )
   }
 })
@@ -268,19 +336,22 @@ test('every padding site states why its engine half is deferred', () => {
 // the deferral and assert the corrected behavior instead. A test that pinned
 // the bug would go red on the FIX and have to be deleted to allow it; this one
 // goes red on the fix and tells you what to write in its place.
-for (const { site, tab, space } of SITES.filter((s) => s.role === 'padding')) {
-  test(`the engine deferral still holds - carve-js admits a tab: ${site}`, () => {
-    assert.equal(
-      carveToHtml(tab),
-      carveToHtml(space),
-      `carve-js no longer parses a tab in this padding slot as the space form.\n` +
-        `  tab form:   ${JSON.stringify(tab)}\n  space form: ${JSON.stringify(space)}\n` +
-        `  This is GOOD NEWS: the engine has caught up with the production ` +
-        `(PART 7, carve#901).\n` +
-        `  Drop \`engineDeferred\` at this site and assert the corrected behavior ` +
-        `instead of deferring it.`,
-    )
-  })
+for (const { site, fixtures } of SITES.filter((s) => s.role === 'padding')) {
+  for (const { slot, tab, space } of fixtures) {
+    test(`the engine deferral still holds - carve-js admits a tab: ${site} - ${slot}`, () => {
+      assert.equal(
+        carveToHtml(tab),
+        carveToHtml(space),
+        `carve-js no longer parses a tab in this padding slot as the space form.\n` +
+          `  slot:       ${slot}\n` +
+          `  tab form:   ${JSON.stringify(tab)}\n  space form: ${JSON.stringify(space)}\n` +
+          `  This is GOOD NEWS: the engine has caught up with the production ` +
+          `(PART 7, carve#901).\n` +
+          `  Drop \`engineDeferred\` at this site and assert the corrected behavior ` +
+          `instead of deferring it.`,
+      )
+    })
+  }
 }
 
 // The ORACLE half, at EVERY padding site. resources/carve-core.ohm and
@@ -294,18 +365,21 @@ for (const { site, tab, space } of SITES.filter((s) => s.role === 'padding')) {
 // form does. carve#888 ran this same pair the other way round, when the
 // production was `whitespace`; the pair is what makes either reading
 // observable.
-for (const { site, tab, space } of SITES.filter((s) => s.role === 'padding')) {
-  test(`padding slot rejects a tab in the oracle: ${site}`, () => {
-    assert.notEqual(
-      renderDoc(parse(tab)),
-      renderDoc(parse(space)),
-      `a tab in this padding slot parsed as the space form does in the ` +
-        `executable spec (scripts/spec/layout.mjs, resources/carve-core.ohm).\n` +
-        `  tab form:   ${JSON.stringify(tab)}\n  space form: ${JSON.stringify(space)}\n` +
-        `  The production says \`space\` here: a tab is syntax only in a leading\n` +
-        `  indentation run (PART 7, carve#901).`,
-    )
-  })
+for (const { site, fixtures } of SITES.filter((s) => s.role === 'padding')) {
+  for (const { slot, tab, space } of fixtures) {
+    test(`padding slot rejects a tab in the oracle: ${site} - ${slot}`, () => {
+      assert.notEqual(
+        renderDoc(parse(tab)),
+        renderDoc(parse(space)),
+        `a tab in this padding slot parsed as the space form does in the ` +
+          `executable spec (scripts/spec/layout.mjs, resources/carve-core.ohm).\n` +
+          `  slot:       ${slot}\n` +
+          `  tab form:   ${JSON.stringify(tab)}\n  space form: ${JSON.stringify(space)}\n` +
+          `  The production says \`space\` here: a tab is syntax only in a leading\n` +
+          `  indentation run (PART 7, carve#901).`,
+      )
+    })
+  }
 }
 
 // A SECOND character outside the slot's class, at both spellings of the one
