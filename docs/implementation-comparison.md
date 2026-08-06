@@ -43,14 +43,20 @@ implementation exposes.
 Spec commit: `2cde4a1`, plus the three corpus cases this change adds
 
 Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
-`255-colon-fence-metadata-slots-must-be-a-space-too`.
+`255-colon-fence-metadata-slots-must-be-a-space-too`,
+`256-table-cell-padding-must-be-a-space`.
 
-Those two categories landed on a host with no engine checkouts, so the run above
-could not be retaken and its numbers describe the corpus WITHOUT them. The
-alternative was to edit the denominators by hand, which would have published a
-three-engine measurement nobody took - and one that is knowably wrong, because
-carve-rs still opens an admonition on a tabbed metadata slot
-(markup-carve/carve-rs#722). Declaring the gap is the same answer
+Those categories landed on hosts that could not retake the run above, so its
+numbers describe the corpus WITHOUT them. The alternative was to edit the
+denominators by hand, which would have published a three-engine measurement
+nobody took - and one that is knowably wrong in both cases: carve-rs still opens
+an admonition on a tabbed metadata slot (markup-carve/carve-rs#722), and all
+three engines still accept a tab in every table-cell padding slot (measured on
+carve-js, carve-php and carve-rs main under carve#904 - every tab form renders
+byte-identical to its space form). Category 256 was added under the per-repo
+lock while three engine repositories were being edited concurrently, so
+`compare:impls` could not be run at all: it drives those checkouts live, and a
+sweep across a tree mid-edit fabricates diffs. Declaring the gap is the same answer
 `resources/engine-pin-drift.txt` gives for the pinned JS build, and
 `tests/implementation-comparison-counts.test.mjs` reads this line: it counts the
 fixtures those categories actually contribute, so the number cannot be asserted,

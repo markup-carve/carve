@@ -1,0 +1,214 @@
+Table cell padding must be a space
+
+```
+|	a |	b |
+.
+<table>
+  <tbody>
+    <tr><td>	a</td><td>	b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| 	a | 	b |
+.
+<table>
+  <tbody>
+    <tr><td>	a</td><td>	b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|	 a |	 b |
+.
+<table>
+  <tbody>
+    <tr><td>	 a</td><td>	 b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a	| b	|
+.
+<table>
+  <tbody>
+    <tr><td>a	</td><td>b	</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a 	| b 	|
+.
+<table>
+  <tbody>
+    <tr><td>a 	</td><td>b 	</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|=	h |=	i |
+| 1 | 2 |
+.
+<table>
+  <thead><tr><th>	h</th><th>	i</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|=	 h |=	 i |
+| 1 | 2 |
+.
+<table>
+  <thead><tr><th>	 h</th><th>	 i</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|= h	|= i	|
+| 1 | 2 |
+.
+<table>
+  <thead><tr><th>h	</th><th>i	</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|= h 	|= i 	|
+| 1 | 2 |
+.
+<table>
+  <thead><tr><th>h 	</th><th>i 	</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
+|	--- |	--- |
+| 1 | 2 |
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>	—</td><td>	—</td></tr>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
+| 	--- | 	--- |
+| 1 | 2 |
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>	—</td><td>	—</td></tr>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
+| ---	| ---	|
+| 1 | 2 |
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>—	</td><td>—	</td></tr>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
+|	^ | c |
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>	^</td><td>c</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
+| c |	< |
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>	&lt;</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|=h|=  i |
+|a|  b  |
+.
+<table>
+  <thead><tr><th>h</th><th>i</th></tr></thead>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
+| --- | ---: |
+| 1 | 2 |
+.
+<table>
+  <thead><tr><th>a</th><th style="text-align: right;">b</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td style="text-align: right;">2</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
+| ^ | c |
+.
+<table>
+  <tbody>
+    <tr><td rowspan="2">a</td><td>b</td></tr>
+    <tr><td>c</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
+| c | < |
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td colspan="2">c</td></tr>
+  </tbody>
+</table>
+```

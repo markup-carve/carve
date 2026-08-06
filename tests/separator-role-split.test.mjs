@@ -52,9 +52,9 @@
  * The loop that used to live here ran ONE engine, the pinned
  * `@markup-carve/carve` (carve-js), and asserted that a tab in a padding slot
  * parses as the space form does. Under carve#901 that assertion is exactly
- * backwards: carve-js DOES still accept a tab at all six padding slots
- * (measured while writing this - all six tab forms render byte-identical to
- * their space forms), which is now a divergence from the production rather
+ * backwards: carve-js DOES still accept a tab at every padding slot
+ * (measured while writing this - every tab form renders byte-identical to
+ * its space form), which is now a divergence from the production rather
  * than conformance with it. Asserting today's behavior would pin the bug and
  * the fix would have to delete the assertion; asserting the corrected behavior
  * would fail on an engine that has not been changed yet.
@@ -64,8 +64,11 @@
  * (claims:check, compare:impls), which is where it should gain a row once the
  * engines narrow.
  *
- * The two reasons are NOT the same fact, which is why they are two constants.
- * At the padding sites carve-js itself is behind the production. At the four
+ * The three reasons are NOT the same fact, which is why they are three
+ * constants. At the six original padding sites carve-js itself is behind the
+ * production. At the five TABLE-CELL padding sites (carve#904) all three
+ * reference engines are, measured from their own main, so there is no
+ * majority to read there and no engine to single out. At the four
  * separator sites carve-js main has already narrowed the slot
  * (markup-carve/carve-js#794) and what is behind is the COMMIT this repo pins -
  * pin lag, which a pin bump clears and no engine work does.
@@ -106,6 +109,29 @@ const ENGINE_DEFERRED =
 // at 12:04. So this deferral is pin lag rather than an engine gap, and it clears
 // on the next `npm run bump-carve-pin` rather than on any engine work. The same
 // window is declared per document in resources/engine-pin-drift.txt.
+// The table-cell sites are deferred for a THIRD reason, and it is the widest of
+// the three, so it is its own constant rather than a reuse of ENGINE_DEFERRED.
+// At the six older padding sites the statement is about carve-js. Here it is
+// about all three reference engines: carve-js, carve-php and carve-rs were each
+// built from their own main under carve#904 and measured across every shape -
+// a tab before and after cell content in a delimiter, header and data row, plus
+// both mixed runs - and all three accept the tab everywhere, agreeing with each
+// other on all 35 shapes. There is no majority to read and no engine to blame;
+// the production is simply ahead of every implementation of it.
+//
+// The assertion loop below still runs against the PINNED build, because that is
+// the engine this repository actually executes. Its measured behavior is the
+// same.
+const TABLE_DEFERRED =
+  'a tab in this table-cell padding slot is accepted by every reference engine - carve-js, ' +
+  'carve-php and carve-rs were each built from their own main and measured under carve#904, ' +
+  'and all three render every tab form byte-identical to its space form, agreeing with one ' +
+  'another on every shape. So the production is ahead of all three rather than one of them ' +
+  'being defective. Asserting the current behavior would pin the divergence; asserting the ' +
+  'corrected behavior would fail on engines that have not been changed yet. The corpus ' +
+  'declares the window per document in resources/engine-pin-drift.txt. The ORACLE half runs ' +
+  'regardless - it is not an engine.'
+
 const PIN_DEFERRED =
   'the PINNED carve-js build (52da7be) still opens the block on a tabbed separator - ' +
   'measured here, the tab form renders byte-identical to the space form. carve-js main ' +
@@ -184,7 +210,8 @@ const SITES = [
   // line, where a tab is not syntax (PART 7, carve#901).
   //
   // Every one of these carries `engineDeferred`: carve-js accepts a tab at all
-  // six and so diverges from the production. See the file header.
+  // six and so diverges from the production. See the file header. The five
+  // TABLE-CELL padding sites follow them, under their own constant.
   {
     role: 'padding',
     site: 'admonition_open, the "title" and [label] metadata slots',
@@ -291,12 +318,104 @@ const SITES = [
     ],
     engineDeferred: ENGINE_DEFERRED,
   },
+
+  // --- TABLE-CELL PADDING SLOTS (carve#904) ---------------------------------
+  //
+  // Five productions, ten slots, one rule. Every one of them sits after the
+  // row's opening `|`, so every one of them is inline and takes `space`.
+  //
+  // These were filed rather than swept in with the other nine positions
+  // carve#901 reverted, because correcting them is not a revert: no corpus
+  // document carried a tab in a table row and all three engines accepted one,
+  // so narrowing the EBNF alone would have moved nothing in this repository -
+  // the carve#755 shape. Corpus 256 and the oracle loop below are what close
+  // that; the grammar-text check is the third artifact, not the only one.
+  //
+  // A tab here is not a rejection. It stops being padding and becomes ordinary
+  // cell content, so the fixtures below differ from their space forms by what
+  // the cell CONTAINS - except at `delimiter_cell`, where the failure is
+  // structural and the row stops promoting a header at all.
+  {
+    role: 'padding',
+    site: 'delimiter_cell, the slots around the dash run',
+    required: /delimiter_cell = \{space\}, \[':'\], '-', \{'-'\}, \[':'\], \{space\} ;/,
+    forbidden: /delimiter_cell = \{whitespace\}|\[':'\], \{whitespace\} ;/,
+    why: 'the row is already a row; the padding sits after its opening pipe',
+    // ONE PAIR PER END. The two ends are two edits - in the oracle they are the
+    // two `*` runs of one regex - and a fixture carrying a tab at both cannot
+    // tell a half-revert from a whole one: with either end widened the cell
+    // matches again and the header is promoted either way. Measured.
+    //
+    // The mixed run is here for the reason the frontmatter slot states: "the
+    // slot takes a space" implemented as "the first character is a space"
+    // passes the tab-first fixture and lets `<SP><TAB>` through. That defect
+    // was found three times in one day, in three languages.
+    fixtures: [
+      { slot: 'the leading slot', tab: '| a | b |\n|\t--- |\t--- |\n| 1 | 2 |\n', space: '| a | b |\n| --- | --- |\n| 1 | 2 |\n' },
+      { slot: 'the leading slot, mixed run', tab: '| a | b |\n| \t--- | \t--- |\n| 1 | 2 |\n', space: '| a | b |\n| --- | --- |\n| 1 | 2 |\n' },
+      { slot: 'the trailing slot', tab: '| a | b |\n| ---\t| ---\t|\n| 1 | 2 |\n', space: '| a | b |\n| --- | --- |\n| 1 | 2 |\n' },
+      { slot: 'the trailing slot, mixed run', tab: '| a | b |\n| --- \t| --- \t|\n| 1 | 2 |\n', space: '| a | b |\n| --- | --- |\n| 1 | 2 |\n' },
+    ],
+    engineDeferred: TABLE_DEFERRED,
+  },
+  {
+    role: 'padding',
+    site: 'header_cell, the slots around the cell content',
+    required: /header_cell = '=', \[alignment_marker\], \{space\}, cell_content, \{space\} ;/,
+    forbidden: /header_cell = [^;]*\{whitespace\}/,
+    why: 'the `=` has already decided the cell; the padding sits inline after it',
+    fixtures: [
+      { slot: 'the leading slot', tab: '|=\th |=\ti |\n| 1 | 2 |\n', space: '|= h |= i |\n| 1 | 2 |\n' },
+      { slot: 'the leading slot, mixed run', tab: '|=\t h |=\t i |\n| 1 | 2 |\n', space: '|= h |= i |\n| 1 | 2 |\n' },
+      { slot: 'the trailing slot', tab: '|= h\t|= i\t|\n| 1 | 2 |\n', space: '|= h |= i |\n| 1 | 2 |\n' },
+      { slot: 'the trailing slot, mixed run', tab: '|= h \t|= i \t|\n| 1 | 2 |\n', space: '|= h |= i |\n| 1 | 2 |\n' },
+    ],
+    engineDeferred: TABLE_DEFERRED,
+  },
+  {
+    role: 'padding',
+    site: 'data_cell, the slots around the cell content',
+    required: /data_cell = \[cell_attributes\], \[alignment_marker\], \{space\}, cell_content, \{space\} ;/,
+    forbidden: /data_cell = [^;]*\{whitespace\}/,
+    why: 'the opening pipe has already decided the cell; the padding sits inline after it',
+    fixtures: [
+      { slot: 'the leading slot', tab: '|\ta |\tb |\n', space: '| a | b |\n' },
+      { slot: 'the leading slot, mixed run', tab: '| \ta | \tb |\n', space: '| a | b |\n' },
+      { slot: 'the trailing slot', tab: '| a\t| b\t|\n', space: '| a | b |\n' },
+      { slot: 'the trailing slot, mixed run', tab: '| a \t| b \t|\n', space: '| a | b |\n' },
+    ],
+    engineDeferred: TABLE_DEFERRED,
+  },
+  {
+    role: 'padding',
+    site: 'rowspan_marker, the slots around the `^`',
+    required: /rowspan_marker = \{space\}, '\^', \{space\} ;/,
+    forbidden: /rowspan_marker = \{whitespace\}|'\^', \{whitespace\} ;/,
+    why: 'the marker is one token inside a cell that already exists; both sides sit inline',
+    fixtures: [
+      { slot: 'the leading slot', tab: '| a | b |\n|\t^ | c |\n', space: '| a | b |\n| ^ | c |\n' },
+      { slot: 'the trailing slot', tab: '| a | b |\n| ^\t| c |\n', space: '| a | b |\n| ^ | c |\n' },
+    ],
+    engineDeferred: TABLE_DEFERRED,
+  },
+  {
+    role: 'padding',
+    site: 'colspan_marker, the slots around the `<`',
+    required: /colspan_marker = \{space\}, '<', \{space\} ;/,
+    forbidden: /colspan_marker = \{whitespace\}|'<', \{whitespace\} ;/,
+    why: 'the twin of the rowspan marker, and it reverts separately',
+    fixtures: [
+      { slot: 'the leading slot', tab: '| a | b |\n| c |\t< |\n', space: '| a | b |\n| c | < |\n' },
+      { slot: 'the trailing slot', tab: '| a | b |\n| c | <\t|\n', space: '| a | b |\n| c | < |\n' },
+    ],
+    engineDeferred: TABLE_DEFERRED,
+  },
 ]
 
-test('all twelve classified slots are present', () => {
-  assert.equal(SITES.length, 10, 'the twelve slots live in ten entries')
+test('all twenty-two classified slots are present', () => {
+  assert.equal(SITES.length, 15, 'the twenty-two slots live in fifteen entries')
   assert.equal(SITES.filter((s) => s.role === 'separator').length, 4)
-  assert.equal(SITES.filter((s) => s.role === 'padding').length, 6)
+  assert.equal(SITES.filter((s) => s.role === 'padding').length, 11)
 })
 
 for (const { role, site, required, forbidden, why } of SITES) {
@@ -369,10 +488,23 @@ test('every site carries a tab/space fixture pair per slot', () => {
 // unrecognized and the render differs from the space form regardless.
 // link_title is the same shape for a different reason: one production, two
 // pieces of the oracle reading it, which is exactly what carve#888 was about.
+//
+// The five table-cell sites are the same shape again, doubled: each production
+// has a LEADING and a TRAILING padding slot that revert independently (in the
+// oracle, two separate replacements and the two `*` runs of one regex), and the
+// three cell productions additionally carry a mixed-run fixture per end,
+// because a rule about a RUN is easy to implement as a rule about its first
+// character. Measured while writing this: a fixture with a tab at both ends
+// survived reverting either end on its own at every one of the five.
 const MULTI_SLOT = {
   'admonition_open, the "title" and [label] metadata slots': 2,
   'code_fence_info, the "header" and [label] metadata slots': 2,
   'link_title, the slot before the quoted run': 2,
+  'delimiter_cell, the slots around the dash run': 4,
+  'header_cell, the slots around the cell content': 4,
+  'data_cell, the slots around the cell content': 4,
+  'rowspan_marker, the slots around the `^`': 2,
+  'colspan_marker, the slots around the `<`': 2,
 }
 test('a site with independently-revertible slots carries a fixture for each', () => {
   for (const [site, n] of Object.entries(MULTI_SLOT)) {
@@ -392,7 +524,7 @@ test('a site with independently-revertible slots carries a fixture for each', ()
 // either: with the engine loop gone, a padding site that declared nothing
 // would look identical to one that had been checked, which is precisely the
 // carve#755 shape. So the field is required at every padding site, and adding
-// a seventh without a reason fails here.
+// one more without a reason fails here.
 test('every site states why its engine half is deferred', () => {
   for (const s of SITES) {
     assert.ok(
