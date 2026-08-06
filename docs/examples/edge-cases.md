@@ -10143,3 +10143,63 @@ x
 ```
 
 :::
+
+## A tab separates two attributes, and pads a block, as a space does
+
+`opt_ws` and the separator inside `attribute_list` are spelled `whitespace`,
+which is a space OR a tab - deliberately, and unlike a marker separator, which
+is a literal space. Nothing pinned it, and the two normative files in
+`resources/` disagreed: the EBNF admits a tab and `carve-core.ohm` spelled the
+separator `" " | "\n"`. All three engines follow the EBNF.
+
+::: compare
+
+```carve
+*x*{.a	.b}
+
+*y*{	.c}
+
+*z*{.d	}
+```
+
+```html
+<p><strong class="a b">x</strong></p>
+<p><strong class="c">y</strong></p>
+<p><strong class="d">z</strong></p>
+```
+
+:::
+
+A tab after an UNQUOTED value is the separator too, because `unquoted_value`
+holds letters, digits, `-`, `_`, `.` and `:` and no whitespace at all. Inside a
+QUOTED value it is content, as any other character is.
+
+::: compare
+
+```carve
+*x*{k=a	.b}
+
+*y*{k="a	b"}
+```
+
+```html
+<p><strong k="a" class="b">x</strong></p>
+<p><strong k="a	b">y</strong></p>
+```
+
+:::
+
+An empty block is the same: valid only glued to a preceding `]`, and a tab
+inside it is padding rather than content.
+
+::: compare
+
+```carve
+[x]{	}
+```
+
+```html
+<p><span>x</span></p>
+```
+
+:::

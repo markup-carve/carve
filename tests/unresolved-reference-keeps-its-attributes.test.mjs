@@ -45,14 +45,23 @@ test('the block is emitted verbatim, not re-serialized', () => {
   assert.equal(html('[text][missing]{ .wide  #i }\n'), '<p>[text][missing]{ .wide  #i }</p>')
 })
 
-test('a tab disqualifies the block, so it is ordinary text', () => {
-  // NOT coverage of this fix, and labelled so nobody reads it as such: a tab
-  // inside the braces means it is not an attribute block at all, so it stays
-  // inline text and never reaches the reference reconstruction. It passed before
-  // the fix too. Kept because it is the boundary of "what is a block", and
-  // because a resolved reference shows the same thing from the other side.
+test('a tab separates two attributes, as a space does', () => {
+  // This used to assert the opposite - that a tab disqualifies the block - and
+  // it was wrong twice over. `attributes` pads with `opt_ws = {whitespace}` and
+  // separates with `whitespace+` (grammar.ebnf), and `whitespace` is a space OR
+  // a tab, deliberately unlike a marker separator, which is a literal space.
+  // All three engines follow the EBNF. Only this oracle rejected it, because
+  // resources/carve-core.ohm spelled the separator `" " | "\n"` - so the two
+  // normative files answered one production two ways and a test pinned the
+  // losing side (carve#878).
+  //
+  // The unresolved half still shows a literal block, but for the other reason:
+  // the reference does not resolve, so the whole run is literal source.
   assert.equal(html('[text][missing]{.a\t.b}\n'), '<p>[text][missing]{.a\t.b}</p>')
-  assert.equal(html('[t][ok]{.a\t.b}\n\n[ok]: /u\n'), '<p><a href="/u">t</a>{.a\t.b}</p>')
+  assert.equal(
+    html('[t][ok]{.a\t.b}\n\n[ok]: /u\n'),
+    '<p><a href="/u" class="a b">t</a></p>',
+  )
 })
 
 test('a quoted value with interior spaces survives', () => {
