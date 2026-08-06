@@ -30,6 +30,12 @@ on:
       - 'tests/corpus/**'
       - 'tests/spec/**'
       - 'docs/examples.md'
+      # carve-skill's spec-review record is generated FROM this document
+      # (scripts/record-spec-review.mjs reads spec/docs/divergence-from-djot.md),
+      # so a change here has to reach it the same way a corpus change does.
+      # carve#455 rewrote its container sections and no bump fired, leaving the
+      # satellite on a stale copy with every check green (carve#823).
+      - 'docs/divergence-from-djot.md'
       - 'resources/grammar.ebnf'
   workflow_dispatch:
 
