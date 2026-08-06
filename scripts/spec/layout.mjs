@@ -534,6 +534,12 @@ function parseCell(seg) {
     // T4: there is no attributed span marker - the cell is ordinary content
     // whose literal text includes the braces
     cell.attrs = null
+    // `padTrim` is provably EQUIVALENT to `trim()` at this call site, and is
+    // written anyway so a sweep of the padding slots finds the same spelling
+    // everywhere. This branch is only reached when the space-trimmed content is
+    // exactly `^` or `<`, which rules out a tab beside the marker, and `seg`
+    // begins with the attribute block glued to the opening pipe, which rules
+    // out one before it. Mutating it therefore proves nothing either way.
     cell.content = padTrim(seg)
   }
   return cell
@@ -1214,6 +1220,9 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           node.rows[0].cells.forEach((c) => (c.header = true))
           node.rows[0].isHead = true
           sr.cells.forEach((seg, ci) => {
+            // Equivalent to `trim()` here, and spelled `padTrim` for the same
+            // reason as the span fallback above: every cell that reached this
+            // loop matched DELIM_CELL, which admits only spaces, `:` and `-`.
             const s = padTrim(seg)
             const left = s.startsWith(':')
             const right = s.endsWith(':')

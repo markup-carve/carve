@@ -10857,6 +10857,62 @@ makes the cell ordinary content and the span does not happen:
 
 ::::
 
+A continuation row's cells are `data_cell`s too (grammar.ebnf
+`continuation_row`), so they carry the same two slots. This is the spelling an
+implementation is most likely to pad in a second place, and a fix applied only
+to the standard row leaves it joining the tab away.
+
+:::: compare
+
+```carve
+| a | b |
++	x | y |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a 	x</td><td>b y</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+| a | b |
++ x	| y	|
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a x	</td><td>b y	</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
+:::: compare
+
+```carve
+| a | b |
++ x | y |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a x</td><td>b y</td></tr>
+  </tbody>
+</table>
+```
+
+::::
+
 The spaced spellings are unchanged, and so is a cell with no padding at all or
 with more than one space -- cardinality is a separate question from the
 terminal.

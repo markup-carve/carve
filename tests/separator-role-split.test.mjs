@@ -383,6 +383,14 @@ const SITES = [
       { slot: 'the leading slot, mixed run', tab: '| \ta | \tb |\n', space: '| a | b |\n' },
       { slot: 'the trailing slot', tab: '| a\t| b\t|\n', space: '| a | b |\n' },
       { slot: 'the trailing slot, mixed run', tab: '| a \t| b \t|\n', space: '| a | b |\n' },
+      // ONE PAIR PER PIECE OF THE ORACLE THAT READS THE PRODUCTION, the
+      // `link_title` shape. A continuation row's cells ARE `data_cell`s
+      // (grammar.ebnf `continuation_row`), and scripts/spec/layout.mjs pads
+      // them in a SECOND place - the join loop, not `parseCell`. With only the
+      // standard-row fixtures above, widening that join back to `trim()` broke
+      // nothing here: measured.
+      { slot: 'the continuation-row form, leading slot', tab: '| a | b |\n+\tx | y |\n', space: '| a | b |\n+ x | y |\n' },
+      { slot: 'the continuation-row form, trailing slot', tab: '| a | b |\n+ x\t| y\t|\n', space: '| a | b |\n+ x | y |\n' },
     ],
     engineDeferred: TABLE_DEFERRED,
   },
@@ -502,7 +510,9 @@ const MULTI_SLOT = {
   'link_title, the slot before the quoted run': 2,
   'delimiter_cell, the slots around the dash run': 4,
   'header_cell, the slots around the cell content': 4,
-  'data_cell, the slots around the cell content': 4,
+  // Six, not four: the two extra are the CONTINUATION-row spelling, which the
+  // oracle pads in a different place than a standard row's cells.
+  'data_cell, the slots around the cell content': 6,
   'rowspan_marker, the slots around the `^`': 2,
   'colspan_marker, the slots around the `<`': 2,
 }
