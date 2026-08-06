@@ -1,0 +1,80 @@
+Trailing whitespace after a block marker
+
+```
+a
+
+--- 
+
+b
+.
+<p>a</p>
+<hr>
+<p>b</p>
+```
+
+````
+``` 
+x
+``` 
+
+y
+.
+<pre><code>x
+</code></pre>
+<p>y</p>
+````
+
+```
+::: note
+x
+::: 
+
+y
+.
+<aside class="admonition note">
+  <p>x</p>
+</aside>
+<p>y</p>
+```
+
+```
+| a | b |
++ c | d | 
+.
+<table>
+  <tbody>
+    <tr><td>a c</td><td>b d</td></tr>
+  </tbody>
+</table>
+```
+
+```
+[^f]:   note
+
+see[^f]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- a
++ 
+b
+
+x
+.
+<ul>
+  <li>a
+    b
+  </li>
+</ul>
+<p>x</p>
+```
