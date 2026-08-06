@@ -27,7 +27,8 @@ spelling.
 `list_item`, `table`, `table_row`, `table_cell`, `thematic_break`, `div`,
 `admonition`, `raw_block`, `footnote`, `frontmatter`, `definition_list`,
 `definition_term`, `definition_description`, `section`, `line_block`,
-`comment`, `figure`, `caption`.
+`comment`, `figure`, `caption`, `abbreviation_def`,
+`link_reference_definition`.
 
 **Inline:** `text`, `emphasis`, `strong`, `underline`, `strike`,
 `inline_extension`, `mention`, `code`, `link`, `autolink`, `image`,
@@ -82,15 +83,65 @@ named fence" behavior denies both.
 
 This page answers "what can a profile deny", which is a smaller set than "what
 appears in the tree". A serialized AST (PART 12) therefore carries type names
-this vocabulary does not list - `tag`, `abbreviation_def`,
-`link_reference_definition`, `smart_punctuation`, `literal_inline`, `raw_text`
-and the `document` root - because denying them would mean nothing: they are
-either folded into another trust class, render nothing at all, or serve a
-formatter rather than the document. `link_reference_definition` is the
-`abbreviation_def` case exactly: the definition line renders nothing in HTML, so
-denying it would not stop anything reaching the page - the `link` or `image` it
-feeds is the node a profile denies. A consumer reading an AST should expect them; a profile author should not
-look for them here.
+this vocabulary does not list - `tag`, `smart_punctuation`, `literal_inline`,
+`raw_text` and the `document` root - because denying them would mean nothing:
+they are either folded into another trust class or serve a formatter rather than
+the document. A consumer reading an AST should expect them; a profile author
+should not look for them here.
+
+### A definition line is content, so both definition types are deniable
+
+`abbreviation_def` and `link_reference_definition` are in the Block vocabulary
+above, and both were kept out of it until carve#771 on the reasoning that a
+definition line renders nothing. That reasoning was measured against the HTML
+target only, and it does not survive the other three.
+
+**`abbreviation_def` is output today.** All three engines emit the definition
+line on `markdown`, `plain` and `ansi`, and drop it only on `html`:
+
+```
+HTML is fine.
+
+*[HTML]: HyperText
+```
+
+```
+html      <p><abbr title="HyperText">HTML</abbr> is fine.</p>
+markdown  <abbr title="HyperText">HTML</abbr> is fine.
+
+          *[HTML]: HyperText
+plain     HTML is fine.
+
+          *[HTML]: HyperText
+```
+
+A host restricting untrusted input on any of those three targets is looking at
+authored text it may have a reason to withhold, so it must be able to name the
+type. "Renders nothing" described one target out of four.
+
+**`link_reference_definition` moves with it**, which is what this page has always
+said - the two are one case. The reason is now PART 10 §10a rather than a
+measurement: that clause is normative, and since PART 12 §10 gave the link
+definition a node it covers all three definition kinds, requiring an unused
+definition of any kind to survive the Markdown, plain-text and terminal
+renderers. So the same authored line is required output there. Stated plainly
+because the page has been wrong here once already: **no engine emits the unused
+link definition line yet**, so denying the type withholds nothing on any target
+at the time of writing. Its vocabulary membership follows the clause, not the
+current output.
+
+What a deny takes is the definition LINE, never the EXPANSION it fed. The
+inline `abbreviation`, and the `link` or `image` a reference resolves to, are
+separate entries in this vocabulary and keep rendering. Denying the definition
+denies exactly the definition.
+
+The membership settles a second thing, which is why both types had to move
+together. A type outside the vocabulary resolves through the three steps below
+on its node's own axis, and the string-only form of the allow/deny query has no
+axis to resolve on - so a host that denied `abbreviation_def` and then asked
+`isTypeAllowed('abbreviation_def')` was told `true`, while the same profile
+answered `false` for the same node in the tree. Two APIs, one profile, opposite
+answers. In the vocabulary, both answer `false`.
 
 A **`tag`** node - the AST form of `#tag` - is deliberately **NOT** its own
 vocabulary entry: it is classified as **`mention`**, and all three
