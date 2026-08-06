@@ -303,6 +303,40 @@ The root type is not a leniency point either: §7 fixes it at `document` and the
 schema pins it as a `const`. Accepting `doc` means half-reading a ProseMirror
 payload instead of rejecting it.
 
+## An ingest is strict
+
+Depth is one bound on a payload someone else wrote; the shape is the other. §12
+rules the root, and §11 rules the fields inside it. An ingest **must refuse**:
+
+| payload | why |
+|---|---|
+| a root missing `type`, `children` or `srcByteLength` | §7 fixes the three and the schema marks them `required`; supplying a default turns a truncated document into a valid-looking one |
+| a root carrying a fourth field | `document` is closed with `additionalProperties: false` like every other node (§11) |
+| a node whose `type` the schema does not name | **at decode**, not in a renderer - a formatter, a linter or a language server holds the tree and never reaches one |
+| any node carrying a property the schema does not name | §11, with `footnote.id` as the one documented legacy alias |
+
+A reader that invents a missing field or ignores an unexpected one has silently
+repaired attacker-controlled input, which is the opposite of what an ingest
+boundary is for.
+
+The value of `srcByteLength` is not checked. It is derivable and nothing depends
+on it, so all three engines ignore it - §12 is about the field being **there**.
+
+One trap sits under the unknown-type rule, and it is worth knowing before you
+implement it. `attrs.keyValues` is the schema's only free-form map, its keys are
+ordinary attribute identifiers, and `type` is a legal one:
+
+```
+[x](/u){type=widget}
+```
+
+serializes an object literally shaped `{"type":"widget"}` inside the tree. An
+implementation that refuses *any* object whose `type` it does not recognize
+refuses a document its own parser just produced, which is what rule 1 above
+forbids. The unknown-type check belongs at node positions - the root,
+`children`, `items`, `rows`, `cells`, `inline`, `caption`, `target` - and never
+inside `keyValues`, whose values are strings and hold no nodes.
+
 ## What is not in it
 
 Formatter-internal nodes (PART 11, and the `raw_text` case the profiles
