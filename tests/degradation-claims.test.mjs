@@ -13,6 +13,23 @@
  *
  * Same argument as tests/divergence-claims.test.mjs, one page over: a stale
  * entry is worse than a missing one, because every reader believes it.
+ *
+ * SCOPE, and where the other half lives. This file runs the single
+ * `@markup-carve/carve` build package.json pins, so it answers "does carve-js
+ * degrade this construct" - while the page is normative and quantifies over
+ * every conforming renderer. That gap was real: carve-php's static-mode spoiler
+ * was byte-identical to its own interactive output, a `<details>` with no
+ * `open`, and this file was green throughout (carve#843).
+ *
+ * scripts/degradation-claims.mjs is the cross-engine half. It runs the same
+ * rows against carve-js, carve-rs and carve-php in static mode, hard-fails
+ * below three engines, and gates in the conformance workflow, which is where
+ * the sibling checkouts are provisioned.
+ *
+ * Both are wanted. This one runs in `npm test` on every PR and pins the
+ * reference engine's exact bytes; that one cannot run per-PR and asserts the
+ * page's rows as properties rather than bytes. Add a row here when the shape
+ * matters, and there when the promise binds every engine - and prefer both.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'

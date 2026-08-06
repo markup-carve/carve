@@ -198,6 +198,30 @@ jobs:
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run claims:check
+
+      # docs/graceful-degradation.md tells an author what survives when a
+      # document leaves interactive HTML. It is normative and it quantifies over
+      # RENDERERS - "the renderer MUST preserve the construct's content and
+      # structure" - while tests/degradation-claims.test.mjs enforces it through
+      # the single carve-js build package.json pins. So a degradation defect
+      # that spares carve-js was invisible (carve#843): carve-php's static-mode
+      # spoiler was byte-identical to its interactive output, a `<details>` with
+      # no `open`, which a print engine renders shut. Two of three engines were
+      # right and the gate checked one of the two.
+      #
+      # The corpus cannot reach this either - a fixture renders in the default
+      # mode with no extensions - so compare:impls is not covering it.
+      #
+      # Asserts the page's rows as observable PROPERTIES, not bytes: carve-rs
+      # has no tabs extension, so it satisfies the tabs row through the core
+      # caption floor rather than a tabs-label heading, and both are correct.
+      - name: Graceful-degradation claims, in every engine
+        if: always()
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run degradation:check
       # tests/profile-fixtures.json is the shared profile battery: carve-js and
       # carve-rs assert their profile output against it, and it is GENERATED
       # from carve-php by a command documented in a comment at the top of
