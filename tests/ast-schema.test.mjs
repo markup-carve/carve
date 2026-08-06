@@ -162,6 +162,9 @@ test('every node type the reference emits is declared in the schema', () => {
  */
 const NOT_PRODUCIBLE = {
   citation_group: 'citations (Tier-2) - off in a default-profile run, exercised by tests/corpus-optional',
+  link_reference_definition:
+    'the reference engine does not emit it yet (carve-js#690); carve-php does, ' +
+    'which is why the two writers disagree on 30 corpus documents',
 }
 
 test('every node type the schema declares is produced by a corpus document, or named as unproducible', () => {
