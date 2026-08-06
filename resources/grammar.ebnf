@@ -1551,13 +1551,48 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    §10a and this one) and the fourth reason was decisive: without the node, a
    writer cannot reproduce the definition, so `parse(fmt(x)) == parse(x)` fails
    for every resolved reference (carve#642). *)
-(* The marker-to-content separator is the `space` terminal (U+0020) ONLY, in
-   all three definition markers: `reference_definition`, `footnote_definition`
-   and `abbreviation_definition`. A tab does NOT satisfy `space`
-   (`space = ' '`), so `[^a]:<TAB>x`, `[a]:<TAB>/url` and `*[HTML]:<TAB>x` are
-   ordinary paragraphs, not definitions -- the marker line is preserved as
-   text. This mirrors the heading, list and task markers, which likewise
-   require a literal space after the marker. carve-rs is the reference here. *)
+(* THE DEFINITION MARKER SEPARATOR -- NORMATIVE. The marker-to-content
+   separator is the `space` terminal (U+0020) ONLY, in all three definition
+   markers: `reference_definition`, `footnote_definition` and
+   `abbreviation_definition`. A tab does NOT satisfy `space` (`space = ' '`),
+   so `[^a]:<TAB>x`, `[a]:<TAB>/url` and `*[HTML]:<TAB>x` are ordinary
+   paragraphs, not definitions -- the marker line is preserved as text. This
+   mirrors the heading, list and task markers, which likewise require a
+   literal space after the marker. carve-rs is the reference here.
+
+   AND THE SEPARATOR IS A RUN (carve#892). `footnote_definition` and
+   `abbreviation_definition` spell it `space+`: one or more ASCII spaces, all
+   of them separator. This is a correction, not a widening -- both productions
+   said `space` while all four readers consumed a run, so the grammar forbade
+   a shape nothing rejected.
+
+   CARDINALITY HERE IS THE OPPOSITE ANSWER FROM carve#912's, and the two are
+   not in conflict because they govern different POSITIONS. A PADDING SLOT
+   sits between two tokens on a line whose construct is already fixed, and its
+   width means nothing, so the four slots spelled `space` mean exactly one. A
+   MARKER SEPARATOR is what stands between the marker and the content it
+   introduces, and a writer aligning definitions in a column is writing
+   separator, not content. Stated here so the two rulings are not read as
+   contradicting each other.
+
+   WHAT THE RUN DOES NOT INCLUDE. It is ASCII spaces, so the first character
+   that is not one ends the separator and BEGINS the content. A no-break space
+   is content: `*[HTML]:<SP><NBSP>Hyper` expands to `<NBSP>Hyper`, and
+   `[^f]:<SP><NBSP>note` is a footnote whose body starts with the character.
+   This is where all three engines disagreed, each in a different place, and
+   where the executable spec gave a fourth answer no engine gave -- it refused
+   `[^f]:` plus any non-ASCII whitespace as a definition at all (carve#892).
+
+   A TAB AFTER THE RUN is content too, by the same rule, and the two markers
+   then answer differently for a reason that is downstream of this clause
+   rather than in it: an `abbreviation_expansion` is a raw string, so the tab
+   survives into the `title`, while a footnote's `inline_content` is parsed as
+   blocks and a leading tab is that body's own indentation run (PART 9 §24 C1).
+   Measured, not asserted.
+
+   MARKER REQUIRES CONTENT still applies after the run: `[^f]:` followed by
+   spaces and nothing else is a paragraph, because a line of `whitespace` is
+   blank (PART 1). *)
 (* A leading `@` is reserved: `[@key]: ...` is never a reference definition, it
    is a citation definition (PART 9 §22, Tier-2). This parallels the `[^...]:`
    footnote-definition precedence and holds in core whether or not the citation
@@ -1814,7 +1849,7 @@ inline_footnote = "^[", inline_content, ']' ;
 (* the closing `]` is the balanced, escape- and code-span-aware close
    (PART 9 §16); footnote recognition is DISABLED inside the content *)
 
-footnote_definition = "[^", footnote_label, "]:", space, inline_content, newline,
+footnote_definition = "[^", footnote_label, "]:", space+, inline_content, newline,
                       {footnote_continuation | continuation_marker_block} ;
 footnote_continuation = (footnote_indent, inline_content, newline) | blank_line ;
 footnote_indent = whitespace, {whitespace} ;
@@ -2214,7 +2249,7 @@ continuation = newline, opt_ws ;         (* a single line break + indent; NOT a 
    PART 5: ABBREVIATIONS
    ============================================================================ *)
 
-abbreviation_definition = "*[", abbreviation_term, "]:", space, abbreviation_expansion, newline ;
+abbreviation_definition = "*[", abbreviation_term, "]:", space+, abbreviation_expansion, newline ;
 abbreviation_term = (letter | digit)+ ;
 (* a term is a SINGLE alphanumeric word -- a bracketed term containing
    punctuation or spaces (`*[e.g.]:`, `*[HTTP API]:`) is NOT a definition;

@@ -221,12 +221,12 @@ function splitTrailingAttrBlock(line) {
 // The marker line must carry inline content (PART 9 SS16 production:
 // `"]:", space, inline_content`); a bare `[^label]:` is an ordinary
 // paragraph line (corpus 132).
-const FOOTNOTE_DEF = /^\[\^([^\]]+)\]: [ \t]*(\S.*)$/
+const FOOTNOTE_DEF = /^\[\^([^\]]+)\]: +(?![ \t]*$)([^ ].*)$/
 // `abbreviation_term = (letter | digit)+`, and `letter` is enumerated ASCII.
 // This was `[^\]]+` - anything but a bracket - so the executable spec called
 // `*[e.g.]:` and `*[ß]:` definitions, which made their LINE disappear, while
 // all three engines kept it as paragraph text (carve#791).
-const ABBR_DEF = /^\*\[([A-Za-z0-9]+)\]: \s*(.+)$/
+const ABBR_DEF = /^\*\[([A-Za-z0-9]+)\]: +(?![ \t]*$)([^ ].*)$/
 const CAPTION = /^\^ (.*)$/
 // The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
 // engine, so a tab here must not open a list (PART 9 SS11). Its width is the

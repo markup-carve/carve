@@ -54,7 +54,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `263-a-code-fence-opener-takes-exactly-one-space`,
 `264-a-frontmatter-opener-takes-exactly-one-space`,
 `265-a-reference-definition-s-metadata-slots-take-exactly-one-space`,
-`266-a-reference-definition-is-anchored-at-end-of-line`.
+`266-a-reference-definition-is-anchored-at-end-of-line`,
+`267-a-definition-marker-s-separator-is-a-space-and-it-is-a-run`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
@@ -122,6 +123,15 @@ pinned `[r]: a b c` resolving the label to `a`. It is declared in
 `resources/engine-pin-drift.txt` alongside the new categories rather than
 here, because it is not new corpus and the declared-lag line names categories
 that the quoted run could not have covered.
+
+Category 267 is the third of the same kind. carve#892 corrected
+`footnote_definition` and `abbreviation_definition` to spell their separator
+`space+`, and ruled that the run is ASCII spaces so the first other character
+is CONTENT. Every engine changes somewhere: measured under that ticket on
+carve-js `b3f49d7`, carve-rs `0a613b2` and carve-php `c15991f`, no engine gave
+the same answer for all three markers and no two agreed on all three. It closes
+with markup-carve/carve-js#822, markup-carve/carve-php#974 and
+markup-carve/carve-rs#747.
 
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS

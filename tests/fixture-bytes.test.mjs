@@ -139,6 +139,24 @@ const INVENTORY = [
     crv: ['VT', 'FF', 'NEL', 'LS', 'PS'],
     html: ['VT', 'FF', 'NEL', 'LS', 'PS'],
   },
+  // The no-break space after a definition marker's separator run IS the case
+  // (carve#892): it is the first character the run does not admit, so it is
+  // where the separator ends and the content begins. Strip it and both
+  // documents collapse into the one-space form, which is already pinned twice
+  // over and would pass for free.
+  {
+    base: '267-a-definition-marker-s-separator-is-a-space-and-it-is-a-run-3',
+    crv: ['NBSP'],
+    // The expansion is a `title` attribute, where the NBSP is raw on both
+    // sides. That is why the html column is not empty here and is at the
+    // footnote below, whose body spells it `&nbsp;`.
+    html: ['NBSP'],
+  },
+  {
+    base: '267-a-definition-marker-s-separator-is-a-space-and-it-is-a-run-4',
+    crv: ['NBSP'],
+    html: [],
+  },
 ]
 
 function scan(text) {
