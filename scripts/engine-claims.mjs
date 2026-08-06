@@ -49,17 +49,37 @@ const CLAIMS = [
     source: '$`x`{.c}\n',
     expect: 'agree',
   },
+  /*
+   * These two pinned a DIVERGENCE - carve-php built a span where carve-js and
+   * carve-rs left the run literal - and they are the direction this checker
+   * exists for: they failed on the day carve-php came into line, and the
+   * failure said to rewrite the paragraph rather than relax the check
+   * (carve#797). A colon is not an `identifier` character in
+   * any engine now, so they pin the agreement instead.
+   */
   {
     section: 'PART 9 §14, attribute identifiers',
-    quote: 'carve-php additionally accepts colon-bearing keys as spans, where carve-js treats those as literal',
+    quote: 'a colon-bearing key is unrecognized in every engine, so the run stays literal',
     source: '[x]{xml:lang="en"}\n',
-    expect: ['php'],
+    expect: 'agree',
   },
   {
     section: 'PART 9 §14, attribute identifiers',
-    quote: 'carve-php additionally accepts colon-bearing classes as spans, where carve-js treats those as literal',
+    quote: 'a colon-bearing class is unrecognized in every engine, so the run stays literal',
     source: '[y]{.sm:hover}\n',
-    expect: ['php'],
+    expect: 'agree',
+  },
+  {
+    section: 'PART 9 §14, attribute identifiers',
+    quote: 'a colon-bearing id is unrecognized in every engine, so no anchor target is created',
+    source: '[z]{#a:b}\n',
+    expect: 'agree',
+  },
+  {
+    section: 'PART 4, unquoted_value',
+    quote: 'a colon inside an unquoted VALUE is legal, which is the control for the three above',
+    source: '[w]{k=a:b}\n',
+    expect: 'agree',
   },
 
   /*
