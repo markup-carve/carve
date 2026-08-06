@@ -42,6 +42,21 @@ implementation exposes.
 
 Spec commit: `2cde4a1`, plus the three corpus cases this change adds
 
+Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
+`255-colon-fence-metadata-slots-must-be-a-space-too`.
+
+Those two categories landed on a host with no engine checkouts, so the run above
+could not be retaken and its numbers describe the corpus WITHOUT them. The
+alternative was to edit the denominators by hand, which would have published a
+three-engine measurement nobody took - and one that is knowably wrong, because
+carve-rs still opens an admonition on a tabbed metadata slot
+(markup-carve/carve-rs#722). Declaring the gap is the same answer
+`resources/engine-pin-drift.txt` gives for the pinned JS build, and
+`tests/implementation-comparison-counts.test.mjs` reads this line: it counts the
+fixtures those categories actually contribute, so the number cannot be asserted,
+only derived, and the line has to be DELETED by whoever next runs
+`npm run compare:impls` or the same test goes red from the other side.
+
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS
 build (`52da7be`) reproducing 671 of the 672 documents, missing exactly that
