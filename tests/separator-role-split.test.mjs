@@ -1334,6 +1334,65 @@ for (const [name, src, expected] of STILL_A_DEFINITION) {
 }
 
 // ---------------------------------------------------------------------------
+// A DEFINITION MARKER'S SEPARATOR IS A RUN (carve#892), and the run stops at
+// the first character that is not an ASCII space.
+//
+// This is the OPPOSITE cardinality answer from the padding slots above, and
+// deliberately: a padding slot sits between two tokens on a line whose
+// construct is already fixed and its width means nothing, while a marker
+// separator stands between the marker and the content it introduces. Corpus
+// 267 carries the ruling. What lives here is the one shape the corpus cannot
+// hold - a marker followed by SPACES and nothing else - because trailing
+// whitespace in docs/examples/*.md is one editor save from vanishing and
+// invisible in review either way.
+//
+// It is not decoration. MARKER REQUIRES CONTENT is what separates the rule
+// from "eat spaces then take the rest", and that spelling passed every corpus
+// document in this category: measured as a surviving mutant while writing it.
+for (const [name, src] of [
+  ['a footnote marker, one trailing space', '[^f]: \n\nx[^f]\n'],
+  ['a footnote marker, a run of trailing spaces', '[^f]:    \n\nx[^f]\n'],
+  ['a footnote marker, spaces then a tab', '[^f]:  \t\n\nx[^f]\n'],
+  ['an abbreviation marker, one trailing space', '*[HTML]: \n\nHTML\n'],
+  ['an abbreviation marker, a run of trailing spaces', '*[HTML]:    \n\nHTML\n'],
+  ['an abbreviation marker, spaces then a tab', '*[HTML]:  \t\n\nHTML\n'],
+]) {
+  test(`MARKER REQUIRES CONTENT still holds after the run: ${name}`, () => {
+    const html = renderDoc(parse(src))
+    assert.ok(
+      !html.includes('doc-endnotes') && !html.includes('<abbr'),
+      `a marker followed by whitespace and nothing else opened a definition.\n` +
+        `  source: ${JSON.stringify(src)}\n` +
+        `  got:    ${JSON.stringify(html.trim())}\n` +
+        `  The separator is \`space+\`, but a line of \`whitespace\` is BLANK (PART 1),\n` +
+          `  so there is no \`inline_content\` for the run to introduce. Written as\n` +
+        `  "eat spaces then take the rest" this defines an empty note or an empty\n` +
+        `  expansion, and every corpus document in category 267 still passes -\n` +
+        `  measured (carve#892).`,
+    )
+  })
+}
+
+// And the CONTROL for that control: a marker followed by a run and then real
+// content still defines, so the assertion above cannot be satisfied by an
+// engine that stopped recognizing the marker altogether.
+for (const [name, src, needle] of [
+  ['a footnote after a run', '[^f]:    note\n\nx[^f]\n', 'doc-endnotes'],
+  ['an abbreviation after a run', '*[HTML]:    Hyper\n\nHTML\n', '<abbr title="Hyper">'],
+]) {
+  test(`the run still introduces content: ${name}`, () => {
+    assert.ok(
+      renderDoc(parse(src)).includes(needle),
+      `a run of separator spaces stopped introducing content.\n` +
+        `  source: ${JSON.stringify(src)}\n` +
+        `  \`space+\` is one or more, and carve#892 corrected the production to say\n` +
+        `  so - it does not make the separator optional or the content harder to\n` +
+        `  reach.`,
+    )
+  })
+}
+
+// ---------------------------------------------------------------------------
 // THE THIRD ROLE: INDENTATION, where the direction reverses (carve#893).
 //
 // Everything above this line pins the SAME direction: a tab must not parse as

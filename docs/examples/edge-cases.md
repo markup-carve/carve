@@ -12344,7 +12344,10 @@ x[^f]
 
 And MARKER REQUIRES CONTENT still applies after the run. A marker followed by
 spaces and nothing else is a paragraph, because a line of `whitespace` is blank
-(PART 1):
+(PART 1). The spaces-only forms are pinned in
+`tests/separator-role-split.test.mjs` rather than here -- a trailing whitespace
+run in a reviewable Markdown source file is one editor save from vanishing --
+and this is the version the corpus can hold, a bare marker:
 
 ::: compare
 
