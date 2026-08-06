@@ -1,0 +1,19 @@
+A continuation marker after a blank line in the item
+
+```
+- a
+
+  b
++
+c
+
+x
+.
+<ul>
+  <li><p>a</p>
+    <p>b</p>
+    <p>c</p>
+  </li>
+</ul>
+<p>x</p>
+```
