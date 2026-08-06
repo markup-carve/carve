@@ -1209,6 +1209,12 @@ const INTERRUPTS = [
   ['inside a definition description', ':: term\n:  def\n[a]: /u {.c}\n\n[a][]\n'],
   ['inside an admonition', '::: note\ntext\n[a]: /u {.c}\n:::\n\n[a][]\n'],
   ['as a lazy line under an item', '- text\n[a]: /u {.c}\n\n[a][]\n'],
+  // The block quote's LAZY-CONTINUATION test is a second site asking the same
+  // question, and reverting only it left the 72-shape sweep unmoved: the
+  // quote's inner lines are re-parsed, where the paragraph collector's own I5
+  // fires anyway. It takes a line BELOW the definition to separate them - with
+  // the raw predicate `more` lazily continues INSIDE the quote.
+  ['before a lazy line under a block quote', '> text\n[a]: /u {.c}\nmore\n\n[a][]\n'],
 ]
 
 for (const [name, src] of INTERRUPTS) {

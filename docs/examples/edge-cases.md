@@ -12077,6 +12077,30 @@ text
 
 :::
 
+The fourth is the one the other three cannot reach. A block quote's open
+paragraph asks the same question in a SECOND place -- the lazy-continuation
+test, not the paragraph collector -- and reverting only that one site left even
+the differential sweep above unmoved. Here the definition has to interrupt, or
+the line below it lazily continues INSIDE the quote:
+
+::: compare
+
+```carve
+> text
+[a]: /u {.c}
+more
+
+[a][]
+```
+
+```html
+<blockquote><p>text</p></blockquote>
+<p>more</p>
+<p><a href="/u" class="c">a</a></p>
+```
+
+:::
+
 The CONTROLS. Every legal shape of the line still is one:
 
 ::: compare

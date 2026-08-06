@@ -117,6 +117,18 @@ text
 ```
 
 ```
+> text
+[a]: /u {.c}
+more
+
+[a][]
+.
+<blockquote><p>text</p></blockquote>
+<p>more</p>
+<p><a href="/u" class="c">a</a></p>
+```
+
+```
 [a]: /u "T" {.c}
 
 [a][]
