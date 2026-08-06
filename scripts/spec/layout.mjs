@@ -1222,16 +1222,19 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
       continue
     }
 
-    if (CONT_MARKER.test(line)) {
-      if (inItem) {
-        // PART 9 SS17 L4: inside a list item the marker attaches the
-        // following flush-left block; consuming the marker line suffices -
-        // the next lines parse as their own block
-        i++
-        continue
-      }
+    if (CONT_MARKER.test(line) && !inItem) {
       throw new Refuse('stray continuation marker')
     }
+    // A `+` reaching HERE is inside a list item's body and is NOT a marker.
+    // Every position where SS17 L3 makes it one is consumed before this: the
+    // OUTER list's marker column by the parseListRun that collected this body,
+    // and a SUB-LIST's marker column by that sub-list's own parseListRun,
+    // which runs from the matchMarker branch above. What is left is a `+` the
+    // author wrote at the item's CONTENT column, which the dedent moved to
+    // column 0 - so consuming it here read the content column as a marker
+    // column and swallowed a marker that never existed. It is ordinary text:
+    // it falls through to the paragraph below and folds with the line after
+    // it, which is what all three engines do (carve#812, carve#863).
 
     // --- paragraph ---
     const para = []
@@ -1247,7 +1250,6 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
       if (para.length > 0 && CAPTION.test(lines[i])) break // a caption ends the block (SS4); an orphan `^ ` line is literal text
       if (lines[i][0] === '{' && tryAttrLine(lines, i)) break // SS15 A1 / SS10 I5
       if (COMMENT_LINE.test(lines[i]) || COMMENT_FENCE.test(lines[i])) break // SS10 I5
-      if (inItem && CONT_MARKER.test(lines[i])) break // SS17 L4
       if (inItem && para.length > 0 && matchMarker(lines[i])) break // SS24 C3
       if (para.length > 0) {
         // definitions interrupt and are consumed (SS10 I5)
@@ -1671,15 +1673,16 @@ function collectItems(lines, i, list, state) {
           list.tight = false
           pendingSeparation = false
         }
-        // A bare `+` that reached here was INDENTED in the source, so it sat at
-        // the item's CONTENT column - and SS17 L3 puts the continuation marker
-        // at the container's MARKER column ("`+` at the item's marker column
-        // attaches the block to the item", L4). Dedenting makes the two
-        // indistinguishable, so without this the inner parse read it as a
-        // marker and consumed it, where all three engines keep it as text
-        // (carve#812). LAZY is the existing "never re-classified as structure"
-        // tag, which is exactly the claim being made.
-        itemLines.push(CONT_MARKER.test(dedented) ? LAZY + dedented : dedented)
+        // A bare `+` is left ALONE here, tagged neither as text nor as a
+        // marker. Which one it is cannot be decided at push time: after the
+        // dedent, column 0 of this body is BOTH the outer item's content
+        // column (where SS17 L3 says a `+` is not a marker) and a sub-list's
+        // marker column (where it is). Whether a sub-list is open there is not
+        // known until the body is parsed, so the decision belongs to the inner
+        // parse - `parseListRun` consumes it for a sub-list whose marker
+        // column it sits at, and the block reader below leaves every other one
+        // as text (carve#863).
+        itemLines.push(dedented)
         // Track an open fenced code block (its matching closer clears it) so the
         // blank-line branch above knows an interior blank is fence content.
         if (fence) {
