@@ -1,0 +1,33 @@
+A reference definition's metadata slots take exactly one space
+
+```
+[a]: /u  "T"
+
+[a][]
+.
+<p><a href="/u">a</a></p>
+```
+
+```
+[a]: /u  {.c}
+
+[a][]
+.
+<p><a href="/u">a</a></p>
+```
+
+```
+[a]: /u "T"
+
+[a][]
+.
+<p><a href="/u" title="T">a</a></p>
+```
+
+```
+[a]: /u {.c}
+
+[a][]
+.
+<p><a href="/u" class="c">a</a></p>
+```

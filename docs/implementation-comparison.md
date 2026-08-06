@@ -49,7 +49,11 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `258-code-fence-metadata-slots-must-be-a-space-too`,
 `259-a-tab-continues-a-list-item-just-as-two-spaces-do`,
 `260-an-absorbed-colon-fence-leaves-a-block-quote-s-paragraph-open`,
-`261-a-blank-line-holds-spaces-and-tabs-and-nothing-else`.
+`261-a-blank-line-holds-spaces-and-tabs-and-nothing-else`,
+`262-a-link-title-takes-exactly-one-space`,
+`263-a-code-fence-opener-takes-exactly-one-space`,
+`264-a-frontmatter-opener-takes-exactly-one-space`,
+`265-a-reference-definition-s-metadata-slots-take-exactly-one-space`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
@@ -93,6 +97,18 @@ merged - built from that PR, carve-rs reproduces all four exactly. So the gap is
 one engine and one open PR, and it closes when that PR lands rather than on any
 pin bump. The pinned JS build reproduces all four, so nothing is declared for it
 in `resources/engine-pin-drift.txt`.
+
+Categories 262 through 265 are a different window again, and the difference is
+worth naming: they are NOT pin lag. carve#912 ruled that the four productions
+spelling a padding slot as exactly one `space` are right and that the artifacts
+accepting a run are lax - and the artifacts accepting a run were all three
+engines AND the executable spec, measured on carve-js `68ea9ba`, carve-php
+`1664ee1` and carve-rs `2ec3c1c`. So there is nothing here that a pin bump
+clears. The six two-space documents close when the engines ship the rule
+(markup-carve/carve-js#819, markup-carve/carve-php#972,
+markup-carve/carve-rs#744); each category's one-space CONTROL is reproduced by
+the pinned build today and is not declared anywhere, which is what separates
+"the rule is not implemented yet" from "the fixture matches no engine at all".
 
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS

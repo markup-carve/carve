@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 7: a padding slot spelled `space` admits exactly one space**
+  (carve#912). Four productions spell their slot as a single `space` -
+  `link_title` (and so `image_title`), the code fence's opener slot,
+  `frontmatter_open`'s slot before the format token, and the reference
+  definition's slot before its trailing attributes - and carve-js, carve-php,
+  carve-rs and the executable spec all accepted a run at every one of them.
+  That was not an engine divergence to arbitrate: four artifacts agreed with
+  each other and disagreed with the written cardinality, and both normative
+  files carried a comment deferring the question to the other. The productions
+  are held right and the four artifacts narrow.
+
+  So `[t](/u  "T")` is no longer a titled link, ` ```  php ` is no longer a
+  fence opener, `---  yaml` is no longer a typed frontmatter opener, and
+  `[a]: /u  {.c}` no longer carries the definition's attributes. Every
+  document with two spaces at one of those slots reparses. The failure mode is
+  the one PART 7 already names: the token is left unconsumed and the line falls
+  back to prose or to the INVALID-FENCE FALLBACK.
+
+  This is deliberately the opposite call from carve#905, which settled WHICH
+  character a slot admits and left HOW MANY alone. It is also the opposite of
+  the answer carve#892 gives for a MARKER SEPARATOR, which is a different
+  position and keeps its run. `code_fence_info`'s and the admonition opener's
+  metadata slots are spelled `space+` and are unaffected.
+
+  Corpus 262 through 265 carry it, each with its one-space CONTROL. Nothing
+  else can see the rule: zero of the 737 documents that existed before the
+  ruling carried a two-space run at any of the five sites.
+
 - **PART 7: the code fence's metadata slots are padding** (carve#894).
   `fenced_code_block` had the same shape as `frontmatter_open` - a fence, a
   whitespace slot, then a token that names a dialect - and carve#878 moved only

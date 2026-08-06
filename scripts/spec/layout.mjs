@@ -110,7 +110,14 @@ const QUOTE = /^>(?: (.*)|)$/
 // slip past the denylist, which corpus case 121 pins with a U+202F before
 // `javascript:`. Narrowing that run is a separate question about
 // `link_destination`, not about `link_title`, and is left alone here.
-const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?: +"((?:\\"|[^"])*)")?(?:\p{White_Space}.*)?$/u
+//
+// CARDINALITY AT THE TITLE SLOT IS EXACTLY ONE (carve#912). `link_title =
+// space, ...` spells one character, and this read a `+` run - so
+// `[a]: /u<SP><SP>"T"` took the title here, as it did in all three engines and
+// at the inline spelling in resources/carve-core.ohm. The ruling is that the
+// production is right and the four lax artifacts narrow. With two spaces the
+// quoted run is no longer a title; it falls into the trailing tail.
+const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?: "((?:\\"|[^"])*)")?(?:\p{White_Space}.*)?$/u
 
 /*
  * Split a TRAILING attribute block off a definition line (carve#604).
@@ -147,9 +154,16 @@ function splitTrailingAttrBlock(line) {
       // `[a]: /u<TAB><SP>{.c}` puts a space next to the brace while the run
       // still holds a tab, and the trailing-strip below would then swallow the
       // tab and attach the block anyway.
+      //
+      // AND THE RUN IS EXACTLY ONE SPACE (carve#912). The production is
+      // `[space, attributes]`, one character, and this accepted any run of
+      // them - so `[a]: /u<SP><SP>{.c}` attached the block here, as it did in
+      // all three engines. The ruling is that the production is right and the
+      // four lax artifacts narrow; a two-space run leaves the braces in the
+      // destination, exactly as a zero-space run already does.
       if (open === 0) return [line, null]
       const sep = /[ \t]*$/.exec(trimmedEnd.slice(0, open))[0]
-      if (sep === '' || sep.includes('\t')) return [line, null]
+      if (sep !== ' ') return [line, null]
       return [trimmedEnd.slice(0, open).replace(/\s+$/, ''), trimmedEnd.slice(open)]
     }
   }
@@ -787,7 +801,17 @@ export function parse(src) {
   // read them as an opener. `[^\S ]` is "whitespace that is not a space", and
   // ` *` in front of it is what keeps the test about the whole run rather
   // than its first character.
-  if (lines[0] !== undefined && /^---(?! *[^\S ])( |[A-Za-z0-9]+\s*$|$)/.test(lines[0])) {
+  //
+  // CARDINALITY IS EXACTLY ONE (carve#912). `frontmatter_open = "---",
+  // [space], [frontmatter_format]` spells the slot as one character, and this
+  // branch used to be a bare ` ` that matched the first space of any run and
+  // never looked at the rest - so `---<SP><SP>yaml` opened frontmatter here,
+  // as it did in all three engines. The ruling is that the production is right
+  // and the four lax artifacts narrow: `(?! )` after the space is what makes
+  // the slot one character rather than the first character of a run. The
+  // second space then reaches `frontmatter_format = (letter | digit)+`, which
+  // cannot match it, so the line is not a typed opener.
+  if (lines[0] !== undefined && /^---(?! *[^\S ])( (?! )|[A-Za-z0-9]+\s*$|$)/.test(lines[0])) {
     for (let j = 1; j < lines.length; j++) {
       if (/^---[ \t]*$/.test(lines[j])) {
         lines.splice(0, j + 1)
@@ -1616,7 +1640,15 @@ function parseFenceInfo(raw) {
   // as spaces only - ```<TAB>js leaves the tab in place, matches no shape, and
   // the line is not a fence at all. Only TRAILING whitespace keeps the wider
   // class, which is the line-ending rule rather than a slot.
-  let s = raw.replace(/^ +/, '').replace(/[ \t]+$/, '')
+  //
+  // CARDINALITY IS EXACTLY ONE (carve#912). The opener slot is `[space]`, so
+  // this strips at most one; it was `^ +` and stripped the whole run. The
+  // second space then reaches `language_info`, whose class holds no space, and
+  // the trailing-junk check below turns the line into an ordinary paragraph.
+  // The `"header"` and `[label]` slots keep their `^ *` runs on purpose: those
+  // are spelled `space+` in the production, and carve#912 ruled only the four
+  // slots spelled with a bare `space`.
+  let s = raw.replace(/^ ?/, '').replace(/[ \t]+$/, '')
   const out = { lang: '', title: null, label: null }
   const lm = /^([A-Za-z0-9\-_+#.=/]+)/.exec(s)
   if (lm) {
