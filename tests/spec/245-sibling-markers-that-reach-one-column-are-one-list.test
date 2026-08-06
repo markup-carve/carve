@@ -1,0 +1,16 @@
+Sibling markers that reach one column are one list
+
+```
+- a
+    - b
+ 	- c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+      <li>c</li>
+    </ul>
+  </li>
+</ul>
+```
