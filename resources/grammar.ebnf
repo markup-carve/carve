@@ -4758,16 +4758,11 @@ EOF = (* end of file *) ;
       you, because the engine is a target. Walking the tree and building output
       yourself does not.
 
-      WITHOUT IT THE DESTINATION HAS NOWHERE TO LIVE. `href: ""` for a resolved
-      reference is only recoverable if the definition survives the trip, and it
-      does not: the vocabulary has NO node type for a `[label]: url` link
-      reference definition. §7 hoists a `footnote` to the document, and an
-      `abbreviation_def` is already there by construction (§7: the line is a
-      definition only at document level); a link reference definition is
-      serialized as nothing at all -- a document holding only `[lbl]: /u`
-      publishes zero children.
-
-      So under the unsoftened rule this document
+      WHY THE DESTINATION IS PUBLISHED, and what it cost when it was not. When
+      this clause was written the vocabulary had no node type for a `[label]:
+      url` link reference definition, so `href: ""` on a resolved reference was
+      unrecoverable: a document holding only `[lbl]: /u` published zero children,
+      and
 
         See [getting started][] here.
 
@@ -4779,6 +4774,17 @@ EOF = (* end of file *) ;
       stage had been dropped. §6's round trip still held, because both sides
       carried the same empty `href`; what broke was rendering the tree at all,
       which is worse and which §6 does not measure. (carve#524)
+
+      §10 HAS SINCE ANSWERED IT: a link reference definition IS a node, hoisted
+      to the document like the other two definition kinds, and it carries the
+      destination. Both documents above now publish one - measured across all
+      three engines, the definition-only document has a single
+      `link_reference_definition` child holding `/u`, and the resolved one a
+      `paragraph` and a `link_reference_definition` holding `/start`.
+
+      The paragraph above is kept as the REASON rather than deleted, because it
+      is the argument that produced §10 and the thing to re-read before anyone
+      proposes dropping the node again. It describes what was true, not what is.
 
       THE COLLAPSED FORM'S `ref` IS THE DERIVED LABEL. For `[getting started][]`
       the author wrote nothing between the second brackets, and `ref` carries
