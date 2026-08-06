@@ -40,7 +40,7 @@ implementation exposes.
 | JS | `8a4b575` | `652 / 652` | `0` | `0` | `73.72` |
 | PHP | `47134b5` | `652 / 652` | `0` | `0` | `65.98` |
 
-Spec commit: `842b9e6`, plus the corpus case this change adds
+Spec commit: `791fbdf`, plus the three corpus cases this change adds
 
 The engines have caught up further since the last snapshot: the `carve`-target
 differences it listed - `16-reference-link-4`,
