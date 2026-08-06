@@ -83,11 +83,17 @@ named fence" behavior denies both.
 
 This page answers "what can a profile deny", which is a smaller set than "what
 appears in the tree". A serialized AST (PART 12) therefore carries type names
-this vocabulary does not list - `tag`, `smart_punctuation`, `literal_inline`,
-`raw_text` and the `document` root - because denying them would mean nothing:
-they are either folded into another trust class or serve a formatter rather than
-the document. A consumer reading an AST should expect them; a profile author
-should not look for them here.
+this vocabulary does not list - `tag`, `smart_punctuation`, `literal_inline`
+and the `document` root - because denying them would mean nothing: they are
+folded into another trust class. A consumer reading an AST should expect them;
+a profile author should not look for them here.
+
+`raw_text` is a separate case and is NOT carried. It is formatter-internal, and
+PART 12 §5 keeps it off the wire; PART 12 §3a goes further and says there is no
+such node at all, because the reversion that would have needed one does not
+happen. So it is neither deniable nor serialized, and a consumer should not
+expect it. Measured: no engine emits it for any of the 655 corpus documents,
+and `resources/ast-schema.json` does not name it.
 
 ### A definition line is content, so both definition types are deniable
 
