@@ -681,8 +681,43 @@ definition_body = (':', space, space, first_block_content)
    FOLLOWING flush-left block, with no indentation -- the definition-list twin
    of the list-item `- +` opener (`first_block_content`). `:  \+` is a literal
    `+`. *)
-definition_continuation = (space, space, space, inline_content, newline)
-                        | (backslash, newline, space, space, space, inline_content, newline) ;
+definition_continuation = (definition_indent, inline_content, newline)
+                        | (backslash, newline, definition_indent, inline_content, newline) ;
+definition_indent = whitespace, {whitespace} ;
+(* INDENTATION IS COLUMNS, NOT CHARACTERS -- NORMATIVE (carve#692, carve#888).
+   This production used to read `space, space, space`, which made a definition
+   body's continuation a literal three-SPACE requirement. That contradicted
+   PART 9 §24 C1, which already gives a tab a column value (to the next
+   multiple of 4), and it made the definition body the ONE continuation in the
+   language that counted characters where its siblings count columns: a
+   footnote body honors C1 (`footnote_indent`, carve#692) and so does a list
+   item (`list_continuation`'s `indent`).
+
+   `definition_indent` widens to any whitespace run REACHING COLUMN 3 -- the
+   body's own column, the one `:  ` establishes. A bare tab (column 0 -> 4), a
+   space then a tab (1 -> 4) and three spaces (0 -> 3) all qualify; one or two
+   spaces do not. The floor is column arithmetic, stated here rather than
+   encoded character-by-character, exactly as `footnote_indent` states its
+   own. This is INDENTATION, not a marker SEPARATOR: it does not touch the two
+   literal `space`s the `:` marker itself requires (unchanged -- PART 7's
+   MARKER SEPARATORS AND PADDING SLOTS clause, where a tab is never syntax
+   because those slots sit after the line's first non-whitespace character).
+
+   THIS PRODUCTION LEADS EVERY IMPLEMENTATION rather than recording them, and
+   that direction is deliberate (carve#888 signoff, carve#893). Measured on
+   the discriminating shape -- a blank line, which forces this branch instead
+   of `lazy_continuation_line` -- only carve-rs reads the column; carve-js,
+   carve-php and the oracle read characters, and carve-js and carve-php differ
+   from each other again on a mixed `<SP><SP><TAB>` run. So a check written
+   against an engine today would pin the pre-ruling behavior. The oracle moves
+   with this production; the engines follow on their own tickets.
+
+   The BACKSLASH branch spells the same indentation and is respelled with it,
+   for consistency of the file rather than for behavior: that branch resolves
+   through the hard break, where all four readers already fold the next line in
+   regardless of its indentation, so nothing observable turns on it and no
+   fixture below pins it. Recorded so the untouched-looking half is not read as
+   an oversight. *)
 (* The term marker is TWO colons. A single-colon `: term` line is NOT a
    definition list -- it is ordinary paragraph text. (Deliberate: djot uses a
    single colon, but `::` keeps the term marker distinct from the `:::` div
