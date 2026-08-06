@@ -1,0 +1,61 @@
+A blank line holds spaces and tabs and nothing else
+
+```
+a
+﻿
+b
+  
+c
+	
+d
+.
+<p>a
+﻿
+b</p>
+<p>c</p>
+<p>d</p>
+```
+
+```
+a
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+　
+​
+b
+.
+<p>a
+&nbsp;
+ 
+ 
+ 
+ 
+ 
+ 
+　
+​
+b</p>
+```
+
+```
+a
+
+
+
+ 
+ 
+b
+.
+<p>a
+
+
+
+ 
+ 
+b</p>
+```

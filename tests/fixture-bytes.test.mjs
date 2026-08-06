@@ -27,6 +27,24 @@ const WATCHED = new Map([
   [0x2068, 'FSI'],
   [0x2069, 'PDI'],
   [0xfeff, 'BOM'],
+  // The whitespace-adjacent characters `blank_line = {whitespace}` deliberately
+  // does NOT admit (carve#890). A fixture asserting one of these is CONTENT
+  // holds nothing else on the line, so a formatter that "cleans up" the line
+  // turns the assertion into a blank line - which is the very reading the
+  // fixture exists to deny. They are exactly as invisible as the bidi controls
+  // above and want the same protection.
+  [0x000b, 'VT'],
+  [0x000c, 'FF'],
+  [0x0085, 'NEL'],
+  [0x1680, 'OGHAM-SP'],
+  [0x2000, 'EN-QUAD'],
+  [0x2009, 'THIN-SP'],
+  [0x200a, 'HAIR-SP'],
+  [0x2028, 'LS'],
+  [0x2029, 'PS'],
+  [0x202f, 'NNBSP'],
+  [0x205f, 'MMSP'],
+  [0x3000, 'IDEO-SP'],
 ])
 
 // The inventory. Each entry names the invisible characters (and trailing ASCII
@@ -94,6 +112,33 @@ const INVENTORY = [
   { base: '250-line-endings-and-a-byte-order-mark', crv: ['CRLF'], html: [] },
   { base: '250-line-endings-and-a-byte-order-mark-2', crv: ['CR'], html: [] },
   { base: '250-line-endings-and-a-byte-order-mark-3', crv: ['BOM'], html: [] },
+  // The narrow no-break space is what PART 12's scheme probe has to walk past
+  // before it sees `javascript:`. Strip it and the destination is a plain
+  // denied scheme, so the fixture stops testing the Unicode half of the probe
+  // and keeps passing. It predates the WATCHED entry for U+202F (carve#890).
+  { base: '121-scheme-probe-strips-unicode-whitespace', crv: ['NNBSP'], html: [] },
+  // The invisible character on a line of its own IS the case: it is what makes
+  // the line non-blank, so losing it does not weaken the pair, it inverts it.
+  // Each of the three carries a different group of them - the two documents
+  // below the first are the whole reason the third column of carve#890's table
+  // is not just U+FEFF.
+  {
+    base: '261-a-blank-line-holds-spaces-and-tabs-and-nothing-else',
+    crv: ['BOM', 'trailing-WS'],
+    html: ['BOM'], // raw on both sides
+  },
+  {
+    base: '261-a-blank-line-holds-spaces-and-tabs-and-nothing-else-2',
+    crv: ['NBSP', 'ZWSP', 'OGHAM-SP', 'EN-QUAD', 'THIN-SP', 'HAIR-SP', 'NNBSP', 'MMSP', 'IDEO-SP'],
+    // The NBSP is spelled `&nbsp;` in the expected HTML, so it is not listed
+    // here; every other one is raw on both sides and would decay silently.
+    html: ['ZWSP', 'OGHAM-SP', 'EN-QUAD', 'THIN-SP', 'HAIR-SP', 'NNBSP', 'MMSP', 'IDEO-SP'],
+  },
+  {
+    base: '261-a-blank-line-holds-spaces-and-tabs-and-nothing-else-3',
+    crv: ['VT', 'FF', 'NEL', 'LS', 'PS'],
+    html: ['VT', 'FF', 'NEL', 'LS', 'PS'],
+  },
 ]
 
 function scan(text) {

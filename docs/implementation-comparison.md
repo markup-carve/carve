@@ -48,7 +48,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `257-link-and-image-title-slots-must-be-a-space`,
 `258-code-fence-metadata-slots-must-be-a-space-too`,
 `259-a-tab-continues-a-list-item-just-as-two-spaces-do`,
-`260-an-absorbed-colon-fence-leaves-a-block-quote-s-paragraph-open`.
+`260-an-absorbed-colon-fence-leaves-a-block-quote-s-paragraph-open`,
+`261-a-blank-line-holds-spaces-and-tabs-and-nothing-else`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
