@@ -6180,10 +6180,48 @@ EOF = (* end of file *) ;
       of `attrs.keyValues`: its values are strings and hold no nodes at all,
       which is what the trap above turns on.
 
+      (d) THE WHOLE PAYLOAD, VALIDATED AGAINST `resources/ast-schema.json`
+          (carve#881). Types and required fields together, at DECODE, refused
+          with the same typed error (a), (b) and (c) already require. Not a
+          fourth list of leniency points -- the schema is the list, it already
+          describes every one of them, and the rows below were only ever
+          divergent because nothing consulted it.
+
+          One clause rather than a row per field, because ruling them one at a
+          time is what produced the state it replaces. Measured after (a)-(c)
+          landed, with all three engines agreeing on THOSE: a root `children`
+          of `null` was read as an empty document by carve-js and carve-php --
+          §12's own objection ("a reader that supplies a default has turned a
+          truncated document into an empty one") arriving through a door the
+          clause did not cover. `attrs: {"class":"x"}` was ACCEPTED by
+          carve-php and rendered as `class="x"`, while the other two refused
+          the payload: `class` is what the rendered HTML calls the thing, so it
+          is the natural producer mistake, and a producer testing against
+          carve-php ships something the other two reject outright.
+          `text.value: 7` made carve-php render `<p>7</p>` -- silent nonsense
+          where a refusal is required. And two engines failed UNTYPED, which
+          §9(b) already forbids: carve-php raised a bare `TypeError` from
+          `AstCodec::decodeNode()` for a null or string child, carve-js a
+          `TypeError: nodes is not iterable` from the RENDERER for a node
+          missing a required field.
+
+          THE COST, recorded: this is a bigger change in all three engines than
+          (a)-(c) were, it rejects trees two of them accept today, and every
+          future schema addition becomes a potential rejection for a producer
+          that has not caught up. That last one is the point rather than a side
+          effect -- it is what makes the schema the contract instead of a
+          description of it.
+
+          The rows already fixed are NOT reopened: an unnamed property under
+          §11 and a missing or non-string `type` under (c) landed separately
+          and keep their own clauses.
+
       A `srcByteLength` THAT IS PRESENT BUT WRONG IS NOT THIS CLAUSE'S
       BUSINESS. It is derivable from the payload and nothing in the tree
       depends on it, so all three engines ignore its value; that stays true and
-      is deliberate rather than unnoticed. (a) is about the field's PRESENCE.
+      is deliberate rather than unnoticed. (a) is about the field's PRESENCE,
+      and (d) does not reach it either -- the schema constrains the field's
+      TYPE and sign, not whether the number is the right one.
 
       MEASURED BEFORE RULING, engines at their own mains: root missing
       `srcByteLength` -- carve-rs rejected, carve-js and carve-php accepted.

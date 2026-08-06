@@ -350,3 +350,155 @@ test('the schema accepts a minimal document', () => {
     `an empty document must validate: ${firstErrors()}`,
   )
 })
+
+/*
+ * PART 12 section 12(d): THE SCHEMA IS THE INGEST RULE (carve#881).
+ *
+ * The clause says an ingest validates the WHOLE payload against this file -
+ * types and required fields together, refused at decode. That is only a rule
+ * if the schema actually rejects the shapes it is supposed to, so each row
+ * below is asserted rather than assumed. It reads as a restatement of the
+ * schema, and that is the point: nothing else notices when a constraint is
+ * relaxed, and a relaxed constraint turns the clause into a no-op in three
+ * engines at once without any of them changing.
+ *
+ * Every row is one line of the divergence table on carve#881, where each of
+ * them was answered at least two ways by engines that had already agreed on
+ * (a), (b) and (c). The schema was measured to reject all sixteen before the
+ * clause was written; it needed no tightening, which is why the clause could
+ * be one sentence.
+ */
+
+const INGEST_POS = {
+  startLine: 1,
+  endLine: 1,
+  startColumn: 1,
+  endColumn: 2,
+  startOffset: 0,
+  endOffset: 1,
+}
+const ingestDoc = () => ({
+  type: 'document',
+  srcByteLength: 2,
+  children: [
+    {
+      type: 'paragraph',
+      pos: { ...INGEST_POS },
+      children: [{ type: 'text', value: 'x', pos: { ...INGEST_POS } }],
+    },
+  ],
+})
+
+/** The sixteen payloads section 12(d) refuses, each built from a valid one. */
+const INGEST_REFUSED = {
+  'a root srcByteLength of the wrong type': () => {
+    const d = ingestDoc()
+    d.srcByteLength = '2'
+    return d
+  },
+  'a negative root srcByteLength': () => {
+    const d = ingestDoc()
+    d.srcByteLength = -1
+    return d
+  },
+  'root children of the wrong type': () => {
+    const d = ingestDoc()
+    d.children = 'x'
+    return d
+  },
+  'root children of null': () => {
+    const d = ingestDoc()
+    d.children = null
+    return d
+  },
+  'a node missing type': () => {
+    const d = ingestDoc()
+    delete d.children[0].type
+    return d
+  },
+  'a node type that is not a string': () => {
+    const d = ingestDoc()
+    d.children[0].type = 7
+    return d
+  },
+  'a paragraph missing children': () => {
+    const d = ingestDoc()
+    delete d.children[0].children
+    return d
+  },
+  'a text node missing value': () => {
+    const d = ingestDoc()
+    delete d.children[0].children[0].value
+    return d
+  },
+  // The defect the clause was written to close: carve-php rendered <p>7</p>.
+  'a text value that is a number': () => {
+    const d = ingestDoc()
+    d.children[0].children[0].value = 7
+    return d
+  },
+  'a child that is null': () => {
+    const d = ingestDoc()
+    d.children[0].children = [null]
+    return d
+  },
+  'a child that is a string': () => {
+    const d = ingestDoc()
+    d.children[0].children = ['x']
+    return d
+  },
+  // The one a producer will actually write: `class` is what the HTML calls it.
+  'attrs spelled class': () => {
+    const d = ingestDoc()
+    d.children[0].attrs = { class: 'x' }
+    return d
+  },
+  'attrs carrying an unnamed key beside keyValues': () => {
+    const d = ingestDoc()
+    d.children[0].attrs = { keyValues: { a: 'b' }, bogus: 1 }
+    return d
+  },
+  'attrs of the wrong type': () => {
+    const d = ingestDoc()
+    d.children[0].attrs = 'x'
+    return d
+  },
+  'a pos carrying an extra key': () => {
+    const d = ingestDoc()
+    d.children[0].pos.extra = 1
+    return d
+  },
+  'a pos missing endOffset': () => {
+    const d = ingestDoc()
+    delete d.children[0].pos.endOffset
+    return d
+  },
+}
+
+for (const [what, build] of Object.entries(INGEST_REFUSED)) {
+  test(`section 12(d): the schema refuses ${what}`, () => {
+    assert.equal(
+      validate(build()),
+      false,
+      `the schema accepts ${what}, so section 12(d) refuses nothing for it`,
+    )
+  })
+}
+
+test('section 12(d): the payload the sixteen are built from is itself accepted', () => {
+  // Without this every row above would still pass if the BASE document were
+  // invalid - sixteen rejections of a document that was never valid, and a
+  // clause that appeared enforced while testing nothing. Same shape as the
+  // opt-in trap one module over (carve#755).
+  assert.ok(validate(ingestDoc()), `the base document must validate: ${firstErrors()}`)
+})
+
+test('section 12(d) does NOT reach a srcByteLength that is merely wrong', () => {
+  // (a) is about the field's PRESENCE and (d) about its TYPE. The value is
+  // derivable and nothing in the tree depends on it, so all three engines
+  // ignore it - a row the clause deliberately leaves alone, pinned so that
+  // tightening the schema cannot quietly annex it.
+  const d = ingestDoc()
+  d.srcByteLength = 99999
+  assert.ok(validate(d), `a wrong-but-present srcByteLength must still validate: ${firstErrors()}`)
+})
