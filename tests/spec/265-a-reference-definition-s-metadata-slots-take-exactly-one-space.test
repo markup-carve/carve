@@ -5,7 +5,8 @@ A reference definition's metadata slots take exactly one space
 
 [a][]
 .
-<p><a href="/u">a</a></p>
+<p>[a]: /u  “T”</p>
+<p>[a][]</p>
 ```
 
 ```
@@ -13,7 +14,8 @@ A reference definition's metadata slots take exactly one space
 
 [a][]
 .
-<p><a href="/u">a</a></p>
+<p>[a]: /u  {.c}</p>
+<p>[a][]</p>
 ```
 
 ```

@@ -43,7 +43,8 @@ See [it][ref].
 
 [r]: a b c
 .
-<p><a href="a">r</a></p>
+<p>[r][r]</p>
+<p>[r]: a b c</p>
 ```
 
 ```

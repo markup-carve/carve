@@ -1386,14 +1386,17 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    built from this same `link_destination`. Whitespace ENDS the destination
    there too:
 
-     [r]: https://e.com<U+202F>/path   ->  destination `https://e.com`
+     [r]: https://e.com<U+202F>/path
 
-   with `/path` following the destination and, not being a quoted title,
-   ignored -- exactly as `[r]: https://e.com /path` behaves. Whitespace
-   between the mandatory separator space and the destination is leading
-   whitespace and is skipped. A definition whose destination is EMPTY once
-   that is done is NOT a definition: the line stays literal, as `[r]:`
-   already does.
+   ends the destination at `https://e.com`, and `/path` is then left over. It
+   is NOT ignored: the definition is anchored at end of line (carve#911), so a
+   leftover makes the production fail and the whole line is an ordinary
+   paragraph -- exactly as `[r]: https://e.com /path` behaves. That sentence
+   used to read "ignored", which is what all four artifacts did and what the
+   production never said. Whitespace between the mandatory separator space and
+   the destination is leading whitespace and is skipped. A definition whose
+   destination is EMPTY once that is done is NOT a definition: the line stays
+   literal, as `[r]:` already does.
 
    There is deliberately no "trim the ends, keep the interior" variant. It
    reads as the friendlier rule and it contradicts `link_destination`, which
@@ -1437,12 +1440,54 @@ reference_label = (character - ']' - '@'), {character - ']'} ;
    the braces to the destination (`[a]: /u{.c}` gives href `/u{.c}`, because
    `link_destination` reads them), while a TWO-space run cannot -- whitespace
    ends the destination -- so `{.c}` is DROPPED. That is the outcome this
-   clause names as the one to avoid, and it happens only because
-   `reference_definition` is not anchored at end of line; carve#911 anchors it
-   and the line falls back to prose instead. Corpus 265 carries it with its
-   one-space control. *)
+   clause names as the one to avoid, and it happened only because
+   `reference_definition` was not anchored at end of line. carve#911 anchored
+   it and the line now falls back to prose instead. Corpus 265 carries it with
+   its one-space control. *)
 reference_definition = '[', reference_label, ']', ':', space, link_destination,
                        [link_title], [space, attributes], newline ;
+(* ANCHORED AT END OF LINE -- NORMATIVE. The production ends in `newline`, and
+   always did. What follows the destination and the optional title is not
+   ignored: it makes the production FAIL, and the line is then an ordinary
+   paragraph.
+
+       [a]: /u zzz
+
+   is NOT a definition, and a `[a][]` below it does not resolve. All three
+   engines and the executable spec read it as a definition with trailing junk
+   until carve#911, and nothing in this grammar authorized that reading.
+
+   WHY IT IS STATED RATHER THAN LEFT TO THE PRODUCTION. The tail is what made
+   PART 7's promised failure mode UNREACHABLE at this line. That clause says a
+   slot which does not match "falls back to prose rather than silently dropping
+   metadata" -- and here there was no prose to fall back to, so a title or
+   attribute slot that rejected its separator had its metadata quietly eaten by
+   the tail. Every narrowing at this line therefore produced the one outcome
+   the clause names as the one to avoid, which is why carve#907 left two shapes
+   at these slots deliberately unpinned. With the line anchored the promise
+   holds, and the tab and cardinality rules at both slots follow from the
+   general rule with no special case.
+
+   THE LINE ENDING is `whitespace` -- `' ' | '\t'` -- the same terminal
+   `blank_line = {whitespace}` takes (PART 1; carve#890). So `[a]: /u<SP>` and
+   `[a]: /u<TAB>` are still definitions, while `[a]: /u<NBSP>`,
+   `[a]: /u<U+2000>`, `[a]: /u<U+FEFF>` and `[a]: /u<FF>` are not: every one of
+   those is CONTENT under that ruling, and content after the production is
+   exactly what the anchor rejects. An implementation spelling the ending as a
+   Unicode whitespace PROPERTY reads all six as a line ending, and a tab
+   fixture cannot see the difference, because a tab is inside the property too
+   (carve#888).
+
+   WHAT THE ANCHOR DOES NOT REJECT. `[a]: /u{.c}` is still a definition, with
+   destination `/u{.c}`: nothing is left over, because `link_destination`
+   simply reads the braces. It is a different shape from `[a]: /u  {.c}`, not
+   another spelling of it. Corpus 266 carries every legal form as a control,
+   since the failure mode of an over-eager anchor is rejecting them.
+
+   THE COST, recorded: a shape all four artifacts accepted stops being a
+   definition. One corpus document depended on it -- `16-reference-link-5`,
+   which pinned `[r]: a b c` resolving the label to `a` -- and its golden moved
+   with this ruling. *)
 (* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE. A `{...}` block at the end
    of the definition line attaches to the DEFINITION, and PART 9R R1 already
    says what that means: the attributes transfer to every link OR IMAGE that

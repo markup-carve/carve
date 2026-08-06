@@ -2091,8 +2091,17 @@ See [it][ref].
 :::
 
 A reference definition shares the `link_destination` rule, so its URL ends at
-the **first whitespace**: everything after the first space is ignored (it is not
-a title unless it is a quoted run). So `[r]: a b c` resolves the label to `a`.
+the **first whitespace**. The definition is also ANCHORED AT END OF LINE, so
+what follows the destination is not ignored: it makes the production fail, and
+the line is an ordinary paragraph. `[r]: a b c` is therefore not a definition
+at all, and the reference below it does not resolve.
+
+This is carve#911's ruling. The line used to be read as a definition with
+trailing junk, in all three engines and in the executable spec, and nothing in
+the grammar authorized that reading -- `reference_definition` has always ended
+in `newline`. It also made PART 7's promised fallback unreachable here: a title
+or attribute slot that failed had no prose to fall back to, so its metadata was
+silently dropped instead.
 
 ::: compare
 
@@ -2103,7 +2112,8 @@ a title unless it is a quoted run). So `[r]: a b c` resolves the label to `a`.
 ```
 
 ```html
-<p><a href="a">r</a></p>
+<p>[r][r]</p>
+<p>[r]: a b c</p>
 ```
 
 :::

@@ -1,0 +1,159 @@
+A reference definition is anchored at end of line
+
+```
+[a]: /u zzz
+
+[a][]
+.
+<p>[a]: /u zzz</p>
+<p>[a][]</p>
+```
+
+```
+[a]: /u "T" zzz
+
+[a][]
+.
+<p>[a]: /u “T” zzz</p>
+<p>[a][]</p>
+```
+
+```
+[a]: /u	"T"
+
+[a][]
+.
+<p>[a]: /u	“T”</p>
+<p>[a][]</p>
+```
+
+```
+[a]: /u 	"T"
+
+[a][]
+.
+<p>[a]: /u 	“T”</p>
+<p>[a][]</p>
+```
+
+```
+[a]: /u	 "T"
+
+[a][]
+.
+<p>[a]: /u	 “T”</p>
+<p>[a][]</p>
+```
+
+```
+[a]: /u	{.c}
+
+[a][]
+.
+<p>[a]: /u	{.c}</p>
+<p>[a][]</p>
+```
+
+```
+[a]: /u 	{.c}
+
+[a][]
+.
+<p>[a]: /u 	{.c}</p>
+<p>[a][]</p>
+```
+
+```
+[a]: /u	 {.c}
+
+[a][]
+.
+<p>[a]: /u	 {.c}</p>
+<p>[a][]</p>
+```
+
+```
+[a]: /u{.c}
+
+[a][]
+.
+<p><a href="/u{.c}">a</a></p>
+```
+
+```
+text
+[a]: /u {.c}
+
+[a][]
+.
+<p>text</p>
+<p><a href="/u" class="c">a</a></p>
+```
+
+```
+- text
+  [a]: /u {.c}
+
+[a][]
+.
+<ul>
+  <li>text</li>
+</ul>
+<p><a href="/u" class="c">a</a></p>
+```
+
+```
+:: term
+:  def
+[a]: /u {.c}
+
+[a][]
+.
+<dl>
+  <dt>term</dt>
+  <dd>def</dd>
+</dl>
+<p><a href="/u" class="c">a</a></p>
+```
+
+```
+> text
+[a]: /u {.c}
+more
+
+[a][]
+.
+<blockquote><p>text</p></blockquote>
+<p>more</p>
+<p><a href="/u" class="c">a</a></p>
+```
+
+```
+> text
+> [a]: /u {.c}
+lazy
+.
+<blockquote><p>text</p></blockquote>
+<p>lazy</p>
+```
+
+```
+- text
+
+  [a]: /u {.c}
+
+[a][]
+.
+<ul>
+  <li>text</li>
+</ul>
+<p><a href="/u" class="c">a</a></p>
+```
+
+```
+[a]: /u "T" {.c}
+
+[a][]
+.
+<p><a href="/u" title="T" class="c">a</a></p>
+```
