@@ -1,0 +1,14 @@
+Line endings and a byte order mark
+
+```
+# Title
+
+a
+b
+.
+<section id="Title">
+  <h1>Title</h1>
+  <p>a
+b</p>
+</section>
+```

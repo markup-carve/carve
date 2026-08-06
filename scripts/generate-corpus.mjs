@@ -24,7 +24,36 @@ let pendingBlocks = { carve: null, html: null }
 let currentLang = null
 let fenceMarker = null
 let compareMarker = null
+let compareModifiers = new Set()
 let blockLines = []
+
+/*
+ * BYTES THE EXAMPLE SOURCE CANNOT HOLD.
+ *
+ * A corpus pair is generated from docs/examples/*.md, which is ordinary
+ * reviewable Markdown: `.gitattributes` protects `tests/corpus/**` from
+ * line-ending normalization but says nothing about the examples, and this
+ * script splits the source on '\n'. So a document whose SUBJECT is its line
+ * endings cannot be written literally there - a CRLF example file would put a
+ * stray CR at the end of every line in the file, and a lone CR would be
+ * invisible in review and one editor save from vanishing.
+ *
+ * These modifiers apply the byte transform when the fixture is written. The
+ * example stays readable, and the .crv - which IS protected - carries the real
+ * bytes (carve#872).
+ */
+const KNOWN_MODIFIERS = new Set(['no-render', 'crlf', 'cr', 'bom'])
+
+// Byte transforms, applied to the .crv in this order. The expected HTML is
+// unaffected: the point of each pair is that the document means the same thing
+// however its lines end.
+const applyModifiers = (carve, modifiers) => {
+  let out = carve
+  if (modifiers.has('crlf')) out = out.replace(/\n/g, '\r\n')
+  if (modifiers.has('cr')) out = out.replace(/\n/g, '\r')
+  if (modifiers.has('bom')) out = '\ufeff' + out
+  return out
+}
 const seenTitles = new Set()
 let comparesOpened = 0
 let compareOpenLine = 0
@@ -32,7 +61,12 @@ const dropped = []
 
 const finalizePair = () => {
   if (currentSection && pendingBlocks.carve && pendingBlocks.html) {
-    examples.push({ section: currentSection, carve: pendingBlocks.carve, html: pendingBlocks.html })
+    examples.push({
+      section: currentSection,
+      carve: pendingBlocks.carve,
+      html: pendingBlocks.html,
+      modifiers: compareModifiers,
+    })
   } else if (currentSection) {
     // A compare block that closed without BOTH a carve and an html fence would
     // otherwise vanish from the corpus with no signal (the observability
@@ -65,6 +99,16 @@ for (let li = 0; li < lines.length; li++) {
   const compareOpen = mode === 'scanning' && /^:{3,}\s+compare(\s+\S.*)?$/.test(line.trim())
   if (compareOpen) {
     compareMarker = line.trim().match(/^(:{3,})/)[1]
+    compareModifiers = new Set(line.trim().split(/\s+/).slice(2))
+    for (const mod of compareModifiers) {
+      if (!KNOWN_MODIFIERS.has(mod)) {
+        console.error(`generate-corpus: line ${li + 1}: unknown ::: compare modifier "${mod}".`)
+        console.error(`  Known: ${[...KNOWN_MODIFIERS].join(', ')}`)
+        console.error('  A typo here would otherwise be read as "no modifier" and the pair')
+        console.error('  would be written with ordinary bytes, testing nothing it claims to.')
+        process.exit(1)
+      }
+    }
     comparesOpened++
     compareOpenLine = li + 1
     mode = 'in_compare'
@@ -257,7 +301,7 @@ for (const ex of examples) {
 for (const ex of examples) {
   const suffix = ex.exampleIdx === 1 ? '' : `-${ex.exampleIdx}`
   const base = `${ex.idx}-${ex.slug}${suffix}`
-  writeFileSync(resolve(outDir, `${base}.crv`), ex.carve + '\n')
+  writeFileSync(resolve(outDir, `${base}.crv`), applyModifiers(ex.carve + '\n', ex.modifiers))
   writeFileSync(resolve(outDir, `${base}.html`), ex.html + '\n')
   console.log(`  ${base}.{crv,html}`)
 }
@@ -278,8 +322,16 @@ const maxRun = (s, ch) => {
 }
 
 // One .test file per section, concatenating every example in the section.
+//
+// A case whose bytes were transformed is LEFT OUT. This format delimits its
+// pairs by lines, so a document whose line endings are the subject would be
+// re-split by the reader and arrive as something else - the mirror cannot carry
+// it. Skipping is stated rather than silent: a case that quietly vanished from
+// a downstream runner is the shape this repo has been bitten by before.
+const mirrored = examples.filter((ex) => ex.modifiers.size === 0 || (ex.modifiers.size === 1 && ex.modifiers.has('no-render')))
+const notMirrored = examples.filter((ex) => !mirrored.includes(ex))
 const bySection = new Map()
-for (const ex of examples) {
+for (const ex of mirrored) {
   if (!bySection.has(ex.section)) bySection.set(ex.section, [])
   bySection.get(ex.section).push(ex)
 }
@@ -296,3 +348,6 @@ for (const [section, exs] of bySection) {
   writeFileSync(resolve(specDir, `${base}.test`), parts.join('\n'))
 }
 console.log(`Wrote ${bySection.size} .test files to ${specDir}`)
+for (const ex of notMirrored) {
+  console.log(`  not mirrored (line-ending bytes are the case): ${ex.idx}-${ex.slug}`)
+}
