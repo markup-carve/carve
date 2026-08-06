@@ -54,6 +54,9 @@ const repo = resolve(here, '..')
 const OPT_IN_ONLY = {
   'citation.*': 'citations (Tier-2): the citation item shape, including its resolution results',
   'citation_group.*': 'citations (Tier-2): the group wrapper and the integral `+` form',
+  'link_reference_definition.*':
+    'the reference engine does not emit the node yet (carve-js#690), so none of its ' +
+    'fields can appear; carve-php does emit it',
 }
 
 /**
