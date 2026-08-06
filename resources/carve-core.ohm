@@ -280,7 +280,27 @@ CarveCore {
   destChar   = destEsc | destParens | (~("(" | ")" | " " | "\t" | newline) any)
   destEsc    = "\\" ("(" | ")" | "\\")
   destParens = "(" destChar* ")"
-  destTitle  = " "+ (quoted | squoted)
+  // A TAB, TOO. `link_title` is spelled `whitespace` in grammar.ebnf - a
+  // space or a tab - because the slot is PADDING rather than a marker
+  // separator: a link is already a link once its destination has been read,
+  // so the title is trailing metadata (PART 7, carve#878). This file said
+  // `" "` only, so the two normative files in `resources/` answered one
+  // production two ways and `[t](/u<TAB>"T")` rendered literally here while
+  // all three engines produced a titled link (carve#888). `destChar` already
+  // excludes both space and tab, so the destination still ends at either.
+  //
+  // CARDINALITY IS UNCHANGED, and deliberately so: this was `" "+` and stays a
+  // run, only a wider one. grammar.ebnf spells `link_title` as exactly ONE
+  // `whitespace`, so the run has always been the looser of the two, for spaces
+  // long before it admitted a tab. Tightening it here would not settle that
+  // disagreement, it would move it: measured, carve-js reads a title after two
+  // spaces AND after two tabs at both the inline and the definition site, so
+  // `exactly one` is a claim no implementation and neither executable file
+  // makes. Which side gives is a question for the production, not for this
+  // file, and narrowing to one would newly break `[t](/u<SP><SP>"T")` here
+  // while every engine kept reading it as a titled link.
+  destTitle  = titleSp+ (quoted | squoted)
+  titleSp    = " " | "\t"
   squoted    = "'" sqChar* "'"
   sqChar     = sqEsc | (~"'" ~newline any)
   sqEsc      = "\\" "'"

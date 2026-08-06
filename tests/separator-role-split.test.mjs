@@ -15,6 +15,20 @@
  * production must carry, and the terminal it must NOT carry, so a silent
  * re-spelling in either direction fails here.
  *
+ * THREE CHECKS RUN PER PADDING SITE, against three different artifacts:
+ *
+ *   1. the grammar text, above - what resources/grammar.ebnf spells.
+ *   2. the ORACLE (scripts/spec/layout.mjs + resources/carve-core.ohm), which
+ *      is executable, so every padding site is checked and none is skipped.
+ *   3. the pinned ENGINE, which is skipped where `engineDeferred` says why.
+ *
+ * Check 2 is why every padding site now carries a tab/space fixture pair even
+ * when its engine half is deferred: the two artifacts are deferred for engine
+ * reasons that say nothing about the oracle, and the oracle is a spec artifact
+ * rather than an implementation. carve#888 found the gap this leaves - the
+ * oracle read `[t](/u<TAB>"T")` as literal text while grammar.ebnf had spelled
+ * that slot `whitespace` since carve#878, and nothing could see it.
+ *
  * The engine half is deliberately partial, and the two gaps are NOT the same
  * gap. The loop below runs one engine: the pinned `@markup-carve/carve`
  * (carve-js). So "checked against the engine" never means "checked against the
@@ -46,6 +60,8 @@ import { readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToHtml } from '@markup-carve/carve'
+import { parse } from '../scripts/spec/layout.mjs'
+import { renderDoc } from '../scripts/spec/html.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repo = resolve(here, '..')
@@ -135,11 +151,13 @@ const SITES = [
     required: /fenced_code_block = code_fence_open, \[whitespace\], \[code_fence_info\]/,
     forbidden: /fenced_code_block = code_fence_open, \[space\]/,
     why: 'the fence run has already decided the block; the info string names a language',
+    tab: '```\tjs\nx\n```\n',
+    space: '``` js\nx\n```\n',
     engineDeferred:
       'carve-js already renders ```<tab>js identically to ``` js, so an assertion here ' +
       'would pass; it is omitted because carve#894 reports carve-rs as still rejecting ' +
       'the tab, and one green engine would misreport the ruling as implemented. See the ' +
-      'file header.',
+      'file header. The ORACLE half runs regardless - it is not an engine.',
   },
   {
     role: 'padding',
@@ -151,10 +169,13 @@ const SITES = [
       /code_fence_info = \( language_info, \[whitespace\+, quoted_title\], \[whitespace\+, label\] \) \| \( quoted_title, \[whitespace\+, label\] \) \| label ;/,
     forbidden: /code_fence_info = [^;]*\[space\+/,
     why: 'the same two metadata slots the admonition opener carries, after the block is decided',
+    tab: '``` js\t"T"\t[L]\nx\n```\n',
+    space: '``` js "T" [L]\nx\n```\n',
     engineDeferred:
       'same as the slot above, and separably testable (a tab after `js` needs no tab in ' +
       'the opener slot): carve-js already agrees, carve-rs is reported not to, so the ' +
-      'cross-engine gates carry this rather than one engine here.',
+      'cross-engine gates carry this rather than one engine here. The ORACLE half runs ' +
+      'regardless - it is not an engine.',
   },
 ]
 
@@ -184,18 +205,28 @@ for (const { role, site, required, forbidden, why } of SITES) {
   })
 }
 
-// A padding site is engine-checked unless it says in writing why it cannot be.
-// Without this, a site added with no `tab`/`space` fixtures would simply not
-// appear in the loop below and nobody would notice the engine half quietly
-// shrinking - the check-that-cannot-fail class tracked in carve#755.
-test('every padding site is either engine-checked or deferred with a reason', () => {
+// Every padding site carries fixtures, with no exception: the oracle loop
+// below runs them all, and a site with no fixtures would silently drop out of
+// it - the check-that-cannot-fail class tracked in carve#755. `engineDeferred`
+// no longer substitutes for fixtures; it only says why the ENGINE half of the
+// pair is skipped, which is a statement about carve-rs, not about the oracle.
+test('every padding site carries a tab/space fixture pair', () => {
   for (const s of SITES.filter((x) => x.role === 'padding')) {
-    const hasFixtures = typeof s.tab === 'string' && typeof s.space === 'string'
-    const deferred = typeof s.engineDeferred === 'string' && s.engineDeferred.length > 0
     assert.ok(
-      hasFixtures !== deferred,
-      `padding site "${s.site}" must carry either a tab/space fixture pair or a ` +
-        `written engineDeferred reason, and not both.`,
+      typeof s.tab === 'string' && typeof s.space === 'string',
+      `padding site "${s.site}" must carry a tab/space fixture pair; the oracle ` +
+        `check runs at every padding site and cannot skip one.`,
+    )
+  }
+})
+
+// A deferral is a claim about the engines, so it has to be written down and
+// readable. An empty string is not a reason.
+test('an engine deferral states its reason', () => {
+  for (const s of SITES.filter((x) => x.role === 'padding' && 'engineDeferred' in x)) {
+    assert.ok(
+      typeof s.engineDeferred === 'string' && s.engineDeferred.length > 0,
+      `padding site "${s.site}" declares engineDeferred but gives no reason.`,
     )
   }
 })
@@ -218,6 +249,66 @@ for (const { site, tab, space } of SITES.filter(
       `a tab in this padding slot no longer parses as the space form does.\n` +
         `  tab form:   ${JSON.stringify(tab)}\n  space form: ${JSON.stringify(space)}\n` +
         `  The production says \`whitespace\` here (PART 7, carve#878).`,
+    )
+  })
+}
+
+// The ORACLE half, at EVERY padding site including the engine-deferred ones.
+// resources/carve-core.ohm and scripts/spec/layout.mjs are the executable
+// spelling of these productions, so a slot they narrow to a literal space is
+// the same defect as grammar.ebnf spelling it `space` - and it is invisible
+// everywhere else, because the corpus only carries a tab in a padding slot
+// where someone thought to write one. carve#888: `destTitle` in the ohm file
+// read `" "+` while grammar.ebnf said `whitespace`, so `[t](/u<TAB>"T")`
+// rendered as literal text here and as a titled link in all three engines.
+for (const { site, tab, space } of SITES.filter((s) => s.role === 'padding')) {
+  test(`padding slot admits a tab in the oracle: ${site}`, () => {
+    assert.equal(
+      renderDoc(parse(tab)),
+      renderDoc(parse(space)),
+      `a tab in this padding slot does not parse as the space form does in the ` +
+        `executable spec (scripts/spec/layout.mjs, resources/carve-core.ohm).\n` +
+        `  tab form:   ${JSON.stringify(tab)}\n  space form: ${JSON.stringify(space)}\n` +
+        `  The production says \`whitespace\` here (PART 7, carve#878).`,
+    )
+  })
+}
+
+// The OTHER direction, for the one slot carve#888 narrowed.
+//
+// `whitespace` is `' ' | '\t'` and nothing else, so widening a padding slot
+// past that pair is as wrong as narrowing it - and scripts/spec/layout.mjs had
+// done exactly that, matching `\p{White_Space}` before the definition form's
+// title. Both spellings of `link_title` are checked, because the production is
+// one production used at two sites and the bug was that they disagreed.
+//
+// Checked against the ORACLE ONLY, deliberately. carve-js accepts the whole
+// White_Space property in this slot (measured: U+00A0, U+2003, U+202F and
+// U+0085 all yield `title="T"`), so it is wider than the production here and
+// an engine assertion would pin that. That divergence is reported upstream
+// rather than encoded, and no corpus case carries one of these characters, so
+// no cross-engine golden takes a position on it.
+//
+// Scope note, so a later reader does not mistake this for a general rule: the
+// oracle still admits the wider class at three other padding slots - the
+// frontmatter format token, the definition's trailing attributes, and the code
+// fence opener. That inconsistency is real and unfixed; it is simply not what
+// carve#888 changed, and pinning it here would assert a claim no artifact yet
+// makes good on.
+const OUTSIDE_CLASS = '\u00a0' // NBSP: White_Space, but neither ' ' nor '\t'
+
+for (const [form, outside, spaceForm] of [
+  ['inline', `[t](/u${OUTSIDE_CLASS}"T")\n`, '[t](/u "T")\n'],
+  ['reference definition', `[a]: /u${OUTSIDE_CLASS}"T"\n\n[a][]\n`, '[a]: /u "T"\n\n[a][]\n'],
+]) {
+  test(`link_title admits no whitespace outside ' ' | '\\t' in the oracle: ${form}`, () => {
+    assert.notEqual(
+      renderDoc(parse(outside)),
+      renderDoc(parse(spaceForm)),
+      `the oracle read a title after a whitespace character the production does not ` +
+        `admit.\n  outside-class form: ${JSON.stringify(outside)}\n` +
+        `  space form:         ${JSON.stringify(spaceForm)}\n` +
+        `  \`whitespace\` is \`' ' | '\\t'\` (PART 7, carve#878; carve#888).`,
     )
   })
 }
