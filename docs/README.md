@@ -15,6 +15,9 @@ reference, the migration guide, and the interactive playground.
 
 ## Building locally
 
+Requires **Node.js 24 or newer** - the current LTS, and the version CI builds
+and deploys the site with. `nvm use` or `fnm use` picks it up from `.nvmrc`.
+
 ```bash
 npm install
 npm run docs:dev     # local preview at http://localhost:5173/carve/

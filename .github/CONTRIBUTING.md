@@ -29,6 +29,8 @@ one repo.
 
 For this repo in particular:
 
+- Node.js 24 is the minimum (`package.json` `engines`, and `.nvmrc` selects it).
+  CI runs the conformance corpus on Node 24 and 26.
 - Spec or examples changes should normally keep `npm test` green.
 - If you change `docs/examples.md`, regenerate the corpus and verify the
   resulting fixture diff is intentional.

@@ -24,15 +24,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The floor tracks @markup-carve/carve's `engines` field (">=20"),
-        # not Node's EOL calendar: 20 is past end-of-life, but it is still
-        # the oldest runtime the package promises to work on, so the
-        # reference implementation has to be shown conformant there. Raise
-        # this leg only when carve-js raises `engines`.
+        # The floor tracks THIS repo's `engines` field (">=24"), which is
+        # deliberately decoupled from @markup-carve/carve's ">=20".
         #
-        # The ceiling is this repo's own contribution. carve-js declares
-        # ">=20" but its matrix stops at 22, so 24 (Active LTS) and 26
-        # (Current) are unverified anywhere else.
+        # It used to track carve-js, on the reasoning that the oldest
+        # runtime the published package promises has to be shown conformant
+        # somewhere. That coupling is dropped here: carve-docs is private,
+        # is never installed as a dependency, and ships data (the corpus
+        # fixtures) rather than code, so its runtime is a contributor and CI
+        # concern only. Meanwhile its own toolchain has moved on -- 20 is
+        # long past end-of-life, 22 enters Maintenance in October 2026, and
+        # @mermaid-lint/cli already requires ">=22".
+        #
+        # The cost is real and worth naming: conformance on Node 20 and 22
+        # is no longer proven anywhere in this repo. If the ">=20" promise
+        # on the published package needs backing, that belongs in carve-js's
+        # own matrix, against the code that actually makes the promise.
+        #
+        # The ceiling is this repo's own contribution. carve-js's matrix
+        # stops at 22, so 24 (Active LTS) and 26 (Current) are unverified
+        # anywhere else.
         #
         # 26 gates like every other leg rather than running
         # continue-on-error: these steps are the corpus, the formal Core
@@ -40,7 +51,7 @@ jobs:
         # conformance signal — and a spec repo wants to hear that loudly. If
         # a future Node genuinely breaks a toolchain rather than the spec,
         # demote that leg then, with the breakage on record.
-        node-version: [20, 22, 24, 26]
+        node-version: [24, 26]
 
     steps:
       - uses: actions/checkout@v6
