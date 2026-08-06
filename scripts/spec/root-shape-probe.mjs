@@ -21,6 +21,9 @@
 /** A node type the schema has never named, and cannot be mistaken for one. */
 export const UNKNOWN_NODE_TYPE = 'zzBlockNotInTheSchema'
 
+/** A root field the schema has never named, for the same reason. */
+export const EXTRA_ROOT_FIELD = 'zzRootFieldNotInTheSchema'
+
 /**
  * The shapes §12 requires an ingest to refuse, built from one valid payload.
  *
@@ -34,6 +37,7 @@ export function refusableRootShapes(doc) {
       id: 'root-missing-type',
       clause: '§12(a)',
       why: 'a root with no `type`',
+      names: 'type',
       payload: (() => {
         const d = clone()
         delete d.type
@@ -44,6 +48,7 @@ export function refusableRootShapes(doc) {
       id: 'root-missing-children',
       clause: '§12(a)',
       why: 'a root with no `children`',
+      names: 'children',
       payload: (() => {
         const d = clone()
         delete d.children
@@ -54,6 +59,7 @@ export function refusableRootShapes(doc) {
       id: 'root-missing-srcByteLength',
       clause: '§12(a)',
       why: 'a root with no `srcByteLength`',
+      names: 'srcByteLength',
       payload: (() => {
         const d = clone()
         delete d.srcByteLength
@@ -64,9 +70,10 @@ export function refusableRootShapes(doc) {
       id: 'root-extra-field',
       clause: '§12(b)',
       why: 'a root carrying a fourth field',
+      names: EXTRA_ROOT_FIELD,
       payload: (() => {
         const d = clone()
-        d.zzRootFieldNotInTheSchema = 1
+        d[EXTRA_ROOT_FIELD] = 1
         return d
       })(),
     },
@@ -74,6 +81,7 @@ export function refusableRootShapes(doc) {
       id: 'unknown-node-type-block',
       clause: '§12(c)',
       why: 'a block child whose `type` the schema does not name',
+      names: UNKNOWN_NODE_TYPE,
       payload: (() => {
         const d = clone()
         d.children.push({ type: UNKNOWN_NODE_TYPE, children: [] })
@@ -93,6 +101,7 @@ export function refusableRootShapes(doc) {
       id: 'unknown-node-type-inline',
       clause: '§12(c)',
       why: 'an inline whose `type` the schema does not name',
+      names: UNKNOWN_NODE_TYPE,
       payload: (() => {
         const d = clone()
         d.children[index].children.push({ type: UNKNOWN_NODE_TYPE })
@@ -118,8 +127,29 @@ export function refusableRootShapes(doc) {
  * which reads to a caller as a rendering problem and never arrives at all for a
  * consumer that holds the tree without rendering it.
  */
-export function rootShapeVerdict({ shape, refused, renderRefused }) {
-  if (refused) return null
+export function rootShapeVerdict({ shape, refused, renderRefused, message = '' }) {
+  if (refused) {
+    // A THROW IS NOT YET A REFUSAL. §12 asks for "an error of its own" in the
+    // sense §9(b) already means - typed, documented, naming what was wrong -
+    // and explicitly rules out "whatever its JSON library happened to raise".
+    // A bare catch cannot tell those apart, so a null dereference deep in a
+    // conversion would have read as conformance on the exact payload class the
+    // clause is about. The message has to NAME the offending thing.
+    //
+    // The token is the distinctive one per shape: `srcByteLength`, `children`,
+    // and the two probe names nothing else can produce. `root-missing-type` is
+    // the weak one - almost any message mentions the word "type" - and it is
+    // kept because a shape with no assertion at all would be worse, not because
+    // it discriminates as sharply as the other four.
+    if (!String(message).includes(shape.names)) {
+      return (
+        `ingest refused ${shape.why} (${shape.clause}) without naming ` +
+        `${JSON.stringify(shape.names)}; §12 asks for an error of its own, not whatever was raised`
+      )
+    }
+
+    return null
+  }
   if (renderRefused) {
     return (
       `ingest accepted ${shape.why} (${shape.clause}) and failed only in the renderer; ` +

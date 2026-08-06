@@ -1095,10 +1095,16 @@ function checkRootShapeIngest(name, doc, findings, decode, render) {
   for (const shape of refusableRootShapes(doc)) {
     const payload = JSON.stringify(shape.payload)
     let refused = false
+    let message = ''
     try {
       decode(payload)
-    } catch {
+    } catch (error) {
       refused = true
+      // `stderr` as well as `message`: the two satellite engines report through
+      // a CLI, so what they NAMED is on stderr while `message` only carries the
+      // failed command line. Reading `message` alone would have made every CLI
+      // refusal look unnamed.
+      message = `${String(error?.stderr ?? '')}${String(error?.message ?? '')}`
     }
     let renderRefused = false
     if (!refused && render !== undefined) {
@@ -1108,7 +1114,7 @@ function checkRootShapeIngest(name, doc, findings, decode, render) {
         renderRefused = true
       }
     }
-    const verdict = rootShapeVerdict({ shape, refused, renderRefused })
+    const verdict = rootShapeVerdict({ shape, refused, renderRefused, message })
     if (verdict !== null) findings.push(`${name}: ${verdict}`)
   }
 }
