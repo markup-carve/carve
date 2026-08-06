@@ -2787,6 +2787,58 @@ Since `+` is not a Carve bullet (use `-` or `*`), the lines below are a single p
 
 :::
 
+### A sub-list's marker column takes the marker too
+
+"The current container" in §17 L3 is whichever container the marker's column belongs to, and inside an item that can be a sub-list. A `+` at the sub-list's marker column attaches the block to the sub-list's item, not to the outer one:
+
+::: compare
+
+```carve
+- a
+  - b
+  +
+  c
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        c
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+Indent it one step further and it is past every marker column in scope, so it is ordinary text again — the same rule as above, read against the sub-list instead of the outer item:
+
+::: compare
+
+```carve
+- a
+  - b
+    +
+    c
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
++
+c</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
 ## Block attribute lines
 
 A `{...}` attribute block on its own line attaches to the **next** block

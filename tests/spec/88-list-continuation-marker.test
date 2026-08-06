@@ -57,3 +57,37 @@ docker build -t app .
 <p>+ one
 + two</p>
 ```
+
+```
+- a
+  - b
+  +
+  c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+        c
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - b
+    +
+    c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
++
+c</li>
+    </ul>
+  </li>
+</ul>
+```
