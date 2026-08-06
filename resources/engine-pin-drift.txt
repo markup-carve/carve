@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+243-a-tab-that-overshoots-a-content-column-is-text-as-four-spaces-are  the pinned carve-js build dedents a straddling tab whole, so the block opener arrives at column 0 and nests; the fix is carve-js#769 and this line drops out when the pin moves past it. The FOUR-SPACE half of the same pair (244) already reproduces on the pin, which is what makes this a tab-dedent defect rather than a disputed rule.

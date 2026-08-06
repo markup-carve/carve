@@ -9554,3 +9554,55 @@ following paragraph
 ```
 
 :::
+
+## A tab that overshoots a content column is text, as four spaces are
+
+Indentation is a COLUMN claim (§24 C1): a space advances one column, a tab
+advances to the next multiple of 4. `1. ` claims columns 0-2, so the item's
+content column is 3, and §24 C3 admits a block opener into the item only AT
+that column - "the content column is the item body's COLUMN 0". A tab from
+column 0 lands at column 4, one past it, so it makes the same claim four spaces
+make and gets the same answer: indented text.
+
+The corpus pinned neither spelling for a tab. All three engines already agreed
+that three spaces nests and four is text, and it was that agreement which
+settled the tab case - two engines dedented the straddling tab whole, which
+discards the very columns that distinguish "at the column" from "past it"
+(carve-js#767, carve-php#890).
+
+::: compare
+
+```carve
+1. a
+	> quote
+```
+
+```html
+<ol>
+  <li>a
+&gt; quote</li>
+</ol>
+```
+
+:::
+
+## The same column written with four spaces
+
+The control that decides the case above. Nothing about it is new - it is what
+every engine already did - but the two documents state the rule only as a pair.
+
+::: compare
+
+```carve
+1. a
+    > quote
+```
+
+```html
+<ol>
+  <li>a
+&gt; quote</li>
+</ol>
+```
+
+:::

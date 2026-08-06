@@ -1807,6 +1807,14 @@ function dedent(line, cols) {
     else break
     i++
   }
+  // A tab straddling the boundary reached PAST `cols`; give the extra columns
+  // back as spaces. Swallowing them with the tab delivers the line at column 0,
+  // and column 0 of the item body is exactly where SS24 C3 admits a block
+  // opener - so `1. a` then a tab then `> quote` nested, while the same column
+  // written with four spaces stayed text. The residual is the only thing that
+  // distinguishes AT the content column from PAST it (carve-js#767,
+  // carve-php#890).
+  if (col > cols) return ' '.repeat(col - cols) + line.slice(i)
   return line.slice(i)
 }
 
