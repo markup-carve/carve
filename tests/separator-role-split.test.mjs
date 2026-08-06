@@ -90,11 +90,20 @@ const grammar = readFileSync(resolve(repo, 'resources/grammar.ebnf'), 'utf8')
 // same productions, and carve#907 found the two disagreeing at the code fence:
 // grammar.ebnf said `[space]`, the ohm said `spaceChar*`, and `spaceChar` is a
 // space OR A TAB. Nothing could see it, because scripts/spec/render.mjs
-// matches only `inlines`, `attrs` and `blockAttrs` - the ohm's whole block
-// layer is unexecuted, so replacing `langInfo`'s body with a literal that
-// matches nothing leaves the entire suite green (measured; filed separately).
-// A production nothing evaluates cannot be pinned behaviorally, so it is
-// pinned as TEXT here, exactly as grammar.ebnf's productions are.
+// matches only `inlines`, `attrs` and `blockAttrs`, so the ohm's whole block
+// layer was unexecuted and a production nothing evaluates cannot be pinned
+// behaviorally. It was pinned as TEXT here instead, exactly as grammar.ebnf's
+// productions are.
+//
+// carve#916 made that layer executable: tests/ohm-block-layer.test.mjs drives
+// every block production as an ohm start rule, and `langInfo` there rejects a
+// tab in the padding slot. So the `forbiddenOhm` clause below is now covered
+// behaviorally as well - `langInfo = spaceChar* langToken` fails in both files.
+//
+// The text pin STAYS, for the half no behavioral check reaches: it asserts the
+// two normative files carry the same SPELLING, in one place, side by side. A
+// rule rewritten to an equivalent that is textually different would pass over
+// there and is caught here, and that pairing is this file's whole subject.
 const ohm = readFileSync(resolve(repo, 'resources/carve-core.ohm'), 'utf8')
 
 // Productions wrap, so match against the flattened text rather than line by

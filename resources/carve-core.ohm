@@ -92,19 +92,20 @@ CarveCore {
   // this one production while every prose clause said a tab is syntax only in
   // a line's leading indentation run (PART 7).
   //
-  // A caveat, written here rather than inferred: THIS RULE IS NOT EXECUTED.
-  // scripts/spec/render.mjs matches only `inlines`, `attrs` and `blockAttrs`,
-  // so nothing in this repository ever reaches `doc`, `block`, `codeBlock` or
-  // `langInfo`. Replacing this rule's body with a literal that matches nothing
-  // leaves `npm test` and `npm run core:check` entirely green (measured under
-  // carve#907, and filed as its own ticket). The line is therefore pinned as
-  // TEXT by tests/separator-role-split.test.mjs, the way grammar.ebnf's
-  // productions are, rather than behaviorally - a narrowing nothing evaluates
-  // is not a check.
+  // The caveat this comment used to carry - THIS RULE IS NOT EXECUTED - was
+  // true and is not any more. scripts/spec/render.mjs still matches only
+  // `inlines`, `attrs` and `blockAttrs`, so nothing in the RENDER pipeline
+  // reaches `doc`, `block`, `codeBlock` or `langInfo`; but carve#916 added
+  // tests/ohm-block-layer.test.mjs, which drives every block production as an
+  // ohm start rule from a fixture table. Replacing this rule's body with a
+  // literal that matches nothing now fails there, and so does widening it back
+  // to `spaceChar*`. The TEXT pin in tests/separator-role-split.test.mjs stays
+  // alongside it: it is what asserts this line and grammar.ebnf's carry the
+  // same spelling.
   //
-  // `titleSp` below is the opposite case: it is reached through `inlines` and
-  // is genuinely live. The ohm is half-executed, and this rule sits in the
-  // dead half.
+  // What is still NOT executed: `doc` is never run over a corpus document, so
+  // nothing checks that this grammar and scripts/spec/layout.mjs model the
+  // same language. That is carve#916's option 1 and it is still open.
   langInfo   = " "? langToken
   langToken  = langChar+
   langChar   = letter | digit | "-" | "_" | "+" | "#" | "." | "/"
