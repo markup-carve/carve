@@ -162,11 +162,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **PART 12 §3a: a RESOLVED reference keeps its destination** (carve#524). The
   clause pinned `href: ""` for every reference, resolved or not. Under it the
-  destination had nowhere to live: the vocabulary has no node type for a
+  destination had nowhere to live: the vocabulary then had no node type for a
   `[label]: url` link reference definition - a document holding only `[lbl]: /u`
-  publishes zero children - so a serialized resolved reference kept `ref` and
+  published zero children - so a serialized resolved reference kept `ref` and
   `rawRef` and dropped `/start` outright, and a consumer decoding it rendered a
-  link to nothing. `href` is now empty ONLY where nothing resolved the
+  link to nothing. PART 12 §10 has since given the definition its own
+  `link_reference_definition` node, so that premise no longer holds; the rule
+  below stands on §5's added-alongside rule, which is what it was argued from.
+  `href` is now empty ONLY where nothing resolved the
   reference, which is §5's added-alongside rule applied to links exactly as it
   already applies to footnote numbering: the authored construct (`ref`,
   `rawRef`) survives and the resolution result sits beside it. All three engines

@@ -48,8 +48,9 @@ Five rules carry most of the weight:
 (PART 12 §7). Frontmatter and definitions are **block nodes in the tree**, not
 root fields, because a root field cannot carry a position and both are source an
 editor navigates to. A definition is a child of the **document** even when it was
-authored inside a container - footnote and abbreviation alike - because its scope
-is the document wherever it was written. Its `pos` still says where that was.
+authored inside a container - footnote, link reference and abbreviation alike -
+because its scope is the document wherever it was written. Its `pos` still says
+where that was.
 
 **Field names are spec surface** (§3). `href`, `src`, `value`, `level`,
 `children`. An implementation whose internals differ maps on the way out; it does
@@ -74,11 +75,14 @@ added-alongside rule - the same one that lets a resolved footnote reference keep
 its label and gain its number - not a retreat from pre-resolve: the authored
 construct is `ref` and `rawRef`, and it survives intact.
 
-It has to work this way, because the destination has nowhere else to live. There
-is **no node type for a `[label]: url` link reference definition** - a document
-holding only `[lbl]: /u` publishes zero children. An empty `href` on a resolved
-reference would discard `/start` outright, and a consumer decoding that tree
-would render a link to nothing with no second stage available to it.
+It works this way because a consumer should not have to resolve references
+itself. The definition does survive the trip: **§10 gives `[label]: url` its own
+`link_reference_definition` node**, hoisted to the document, so `/start` is not
+stored only on the link. What an empty `href` would cost is the second stage -
+every consumer that wanted to render that link would first have to collect the
+definitions and match their labels, and one that skipped the step would render a
+link to nothing. §5's added-alongside rule publishes the result next to the
+authored construct instead of leaving it to be recomputed.
 
 For the collapsed form `[getting started][]`, `ref` is the **derived** label
 (`getting started`) - the label the reference resolves by. `rawRef` holds the
