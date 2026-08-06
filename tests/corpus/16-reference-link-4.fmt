@@ -1,3 +1,5 @@
 - +
 
-See [it](/url).
+See [it][ref].
+
+[ref]: /url
