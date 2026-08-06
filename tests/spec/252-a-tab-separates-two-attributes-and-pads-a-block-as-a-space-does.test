@@ -1,0 +1,19 @@
+A tab separates two attributes, and pads a block, as a space does
+
+```
+*x*{.a	.b}
+
+*y*{	.c}
+
+*z*{.d	}
+.
+<p><strong class="a b">x</strong></p>
+<p><strong class="c">y</strong></p>
+<p><strong class="d">z</strong></p>
+```
+
+```
+[x]{	}
+.
+<p><span>x</span></p>
+```

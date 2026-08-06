@@ -312,8 +312,13 @@ CarveCore {
 
   // --- Attribute block (PART 4, strict identifiers) ------------------------
   attrs      = "{" attrSp* attrItem (attrSp+ attrItem)* attrSp* "}"
-  emptyAttrs = "{" " "* "}"
-  attrSp     = " " | "\n"
+  emptyAttrs = "{" (" " | "\t")* "}"
+  // A TAB, TOO. `opt_ws` and the separator inside `attribute_list` are
+  // spelled `whitespace` in grammar.ebnf, which is a space or a tab -
+  // deliberately, and unlike a marker separator, which is a literal space.
+  // This file said `" " | "\n"`, so the two normative files answered one
+  // production two ways; all three engines follow the EBNF (carve#878).
+  attrSp     = " " | "\t" | "\n"
   attrItem   = idAttr | classAttr | kvAttr | boolAttr
   idAttr     = "#" ident
   classAttr  = "." ident

@@ -17,15 +17,15 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>669 / 669</strong>
+    <strong>671 / 671</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>669 / 669</strong>
+    <strong>671 / 671</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>669 / 669</strong>
+    <strong>671 / 671</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -36,11 +36,11 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `0a613b2` | `669 / 669` | `0` | `0` | `2.68` |
-| JS | `52da7be` | `669 / 669` | `0` | `0` | `70.26` |
-| PHP | `ce082d6` | `669 / 669` | `0` | `0` | `63.08` |
+| Rust | `b154ee4` | `671 / 671` | `0` | `0` | `2.85` |
+| JS | `b3f49d7` | `671 / 671` | `0` | `0` | `74.53` |
+| PHP | `90c0a48` | `671 / 671` | `0` | `0` | `66.87` |
 
-Spec commit: `9066f5a`, plus the six corpus cases this change adds
+Spec commit: `2cde4a1`, plus the two corpus cases this change adds
 
 The engines have caught up further since the last snapshot: the `carve`-target
 differences it listed - `16-reference-link-4`,
@@ -396,21 +396,21 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=669 targets=html,markdown,plain,carve,ansi
-rust: pass=684/684 mismatch=0 error=0 skipped=0 runs=3345 avg_ms=2.68
+profile=default/no-opt-in corpus=core corpus_pairs=671 targets=html,markdown,plain,carve,ansi
+rust: pass=686/686 mismatch=0 error=0 skipped=0 runs=3355 avg_ms=2.85
   mismatching documents: 0
-js: pass=684/684 mismatch=0 error=0 skipped=0 runs=3345 avg_ms=70.26
+js: pass=686/686 mismatch=0 error=0 skipped=0 runs=3355 avg_ms=74.53
   mismatching documents: 0
-php: pass=684/684 mismatch=0 error=0 skipped=0 runs=3345 avg_ms=63.08
+php: pass=686/686 mismatch=0 error=0 skipped=0 runs=3355 avg_ms=66.87
   mismatching documents: 0
 cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=669 diffs=0 errors=0 fixtures=yes
-markdown: compared=669 diffs=0 errors=0 fixtures=1
-plain: compared=669 diffs=0 errors=0 fixtures=1
-carve: compared=669 diffs=0 errors=0 fixtures=13
-ansi: compared=669 diffs=0 errors=0 fixtures=none
+html: compared=671 diffs=0 errors=0 fixtures=yes
+markdown: compared=671 diffs=0 errors=0 fixtures=1
+plain: compared=671 diffs=0 errors=0 fixtures=1
+carve: compared=671 diffs=0 errors=0 fixtures=13
+ansi: compared=671 diffs=0 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix
