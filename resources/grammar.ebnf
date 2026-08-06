@@ -726,15 +726,15 @@ row_attributes = attributes ;
    its `-` runs are inline content (smart typography may render `---` as an em
    dash). See PART 9 §5 (GFM DELIMITER ROW) for header promotion + alignment. *)
 delimiter_row = '|', delimiter_cell, {'|', delimiter_cell}, '|', newline ;
-delimiter_cell = {whitespace}, [':'], '-', {'-'}, [':'], {whitespace} ;
+delimiter_cell = {space}, [':'], '-', {'-'}, [':'], {space} ;
 (* at least one '-'; only optional leading/trailing ':' and surrounding
-   whitespace. An EMPTY cell is NOT a delimiter_cell, so a row containing one
+   padding. An EMPTY cell is NOT a delimiter_cell, so a row containing one
    (`|---||`) is not a delimiter row (it is an ordinary row). *)
 
 table_cell = header_cell | data_cell | span_cell ;
 
-header_cell = '=', [alignment_marker], {whitespace}, cell_content, {whitespace} ;
-data_cell = [cell_attributes], [alignment_marker], {whitespace}, cell_content, {whitespace} ;
+header_cell = '=', [alignment_marker], {space}, cell_content, {space} ;
+data_cell = [cell_attributes], [alignment_marker], {space}, cell_content, {space} ;
 (* alignment_marker is glued to the opening '|' (no preceding whitespace),
    mirroring header_cell; a whitespace-delimited lone '^'/'<' is span_cell *)
 (* CELL ATTRIBUTES (NORMATIVE): an attribute block GLUED to the opening '|'
@@ -749,8 +749,19 @@ data_cell = [cell_attributes], [alignment_marker], {whitespace}, cell_content, {
 cell_attributes = attributes ;
 span_cell = rowspan_marker | colspan_marker ;
 
-rowspan_marker = {whitespace}, '^', {whitespace} ;
-colspan_marker = {whitespace}, '<', {whitespace} ;
+rowspan_marker = {space}, '^', {space} ;
+colspan_marker = {space}, '<', {space} ;
+(* TABLE-CELL PADDING (NORMATIVE, PART 7). Every padding slot in the five
+   productions above is spelled `space`. All of them sit after the row's
+   opening `|`, so all of them are INLINE, and a tab is syntax only in a
+   line's leading indentation run. A tab written in one of these slots is not
+   padding: it stays where it is and becomes ordinary cell content, so
+   `|<TAB>a<TAB>|` is a cell whose text begins and ends with a tab, and
+   `|<TAB>---<TAB>|` is not a delimiter_cell at all - the row is an ordinary
+   row and promotes no header. Same for the two span markers: a tab beside
+   the `^` or `<` makes the cell ordinary content rather than a span
+   (carve#904, applying carve#901). What counts as an EMPTY cell is a
+   separate question and is unchanged here. *)
 
 alignment_marker = '<' | '>' | '~' ;  (* left, right, center *)
 
@@ -2189,13 +2200,23 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    `space` admits exactly one character, and a `space+` run admits one or
    more.
 
-   NOT YET RECONCILED. Three table-cell productions (`delimiter_cell`,
-   `header_cell`, `data_cell`) and the interior of an attribute block
-   (`opt_ws`, `attribute_list`) still spell inline padding `whitespace`. Both
-   predate this clause, and both are inline by the rule above, so both are
-   divergences from it rather than exceptions to it. The attribute-block one
-   is pinned by corpus 252, which all three engines produce, so correcting it
-   is a behavior change and is tracked separately (carve#901).
+   NOT YET RECONCILED. The interior of an attribute block (`opt_ws`,
+   `attribute_list`) still spells inline padding `whitespace`. It predates
+   this clause and is inline by the rule above, so it is a divergence from it
+   rather than an exception to it. It is pinned by corpus 252, which all three
+   engines produce, so correcting it is a behavior change and is tracked
+   separately (carve#901).
+
+   RECONCILED SINCE. The five table-cell productions (`delimiter_cell`,
+   `header_cell`, `data_cell`, `rowspan_marker`, `colspan_marker`) spelled
+   inline padding `whitespace` for the same reason and were corrected under
+   carve#904; see TABLE-CELL PADDING beside them in PART 4. That correction
+   was not a revert: no corpus document carried a tab in a table row and all
+   three engines accepted one, so narrowing the production alone would have
+   been unobservable. Corpus 256 and `tests/separator-role-split.test.mjs`
+   carry it instead. All three engines are behind it: measured on carve-js,
+   carve-php and carve-rs main, every tab form of every slot renders
+   byte-identical to its space form.
 
    HISTORY. carve#878 split the two roles apart and widened every padding slot
    to `whitespace`, on the reading that a slot carrying no recognition could

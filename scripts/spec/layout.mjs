@@ -481,7 +481,24 @@ const COMMENT_LINE = /^[ \t]*%%/
 const COMMENT_FENCE = /^[ \t]*(%{3,})(.*)$/
 
 const CONT_ROW = /^\+.*\|[ \t]*$/ // `+` replaces the leading pipe; must close with one
-const DELIM_CELL = /^[ \t]*:?-+:?[ \t]*$/
+const DELIM_CELL = /^ *:?-+:? *$/
+
+// A table cell's padding slots are `space` runs, not whitespace runs
+// (grammar.ebnf `delimiter_cell`, `header_cell`, `data_cell`, `rowspan_marker`,
+// `colspan_marker`). They sit after the row's opening `|`, so they are INLINE,
+// and a tab is syntax only in a line's leading indentation run (PART 7, MARKER
+// SEPARATORS AND PADDING SLOTS; carve#901, carve#904).
+//
+// `trim()` was the whole reason the slots read as `whitespace`: it strips a tab
+// as readily as a space, so the oracle padded `|<TAB>a<TAB>|` down to `a` and
+// rendered it exactly as `| a |`. Stripping only spaces leaves the tab where it
+// is, which makes it ordinary CONTENT rather than padding - the outcome the
+// production describes.
+//
+// The two ends are separate replacements on purpose. A padding rule stated as
+// "the slot takes a space" is easy to implement at one end only, and a fixture
+// that carries a tab at both ends cannot tell a half-fix from a whole one.
+const padTrim = (s) => s.replace(/^ +/, '').replace(/ +$/, '')
 
 // classify one raw cell segment
 function parseCell(seg) {
@@ -512,12 +529,18 @@ function parseCell(seg) {
     cell.attrs = `{${at[1]}}`
     s = s.slice(at[0].length)
   }
-  cell.content = s.trim()
+  cell.content = padTrim(s)
   if (cell.attrs && (cell.content === '^' || cell.content === '<')) {
     // T4: there is no attributed span marker - the cell is ordinary content
     // whose literal text includes the braces
     cell.attrs = null
-    cell.content = seg.trim()
+    // `padTrim` is provably EQUIVALENT to `trim()` at this call site, and is
+    // written anyway so a sweep of the padding slots finds the same spelling
+    // everywhere. This branch is only reached when the space-trimmed content is
+    // exactly `^` or `<`, which rules out a tab beside the marker, and `seg`
+    // begins with the attribute block glued to the opening pipe, which rules
+    // out one before it. Mutating it therefore proves nothing either way.
+    cell.content = padTrim(seg)
   }
   return cell
 }
@@ -1169,7 +1192,10 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           const prev = node.rows[node.rows.length - 1]
           if (prev.cells.every((c) => c.header)) break // needs a BODY row (corpus 113)
           sr.cells.forEach((seg, ci) => {
-            const add = seg.trim()
+            // A continuation row's cells ARE `table_cell`s (grammar.ebnf
+            // `continuation_row`), so they carry the same space-only padding
+            // slots the cells of a standard row do.
+            const add = padTrim(seg)
             const cell = prev.cells[ci]
             if (add === '' || cell === undefined) return
             if (cell.content === '^' || cell.content === '<') {
@@ -1194,7 +1220,10 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           node.rows[0].cells.forEach((c) => (c.header = true))
           node.rows[0].isHead = true
           sr.cells.forEach((seg, ci) => {
-            const s = seg.trim()
+            // Equivalent to `trim()` here, and spelled `padTrim` for the same
+            // reason as the span fallback above: every cell that reached this
+            // loop matched DELIM_CELL, which admits only spaces, `:` and `-`.
+            const s = padTrim(seg)
             const left = s.startsWith(':')
             const right = s.endsWith(':')
             const col = node.rows[0].cells[ci]
