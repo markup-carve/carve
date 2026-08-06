@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+86-list-lazy-continuation-9  PART 1 S4 folds the flush-left line into the item's open paragraph, because the `:::note` line failed §12's opener test and was absorbed as paragraph text rather than interrupting it (carve#891). The corpus and the executable spec answer that way now; no engine does yet, and the engine side is carve#891 steps 3 and 4.

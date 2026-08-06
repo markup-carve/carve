@@ -387,12 +387,15 @@ function isColonParagraphInterrupt(line) {
   return isColonBlockOpener(line) && !COLON_CLOSER.test(line)
 }
 
-function bareColonHasFollowingBody(lines, idx) {
-  if (!COLON_CLOSER.test(lines[idx] ?? '')) return false
+function hasFollowingBody(lines, idx) {
   for (let j = idx + 1; j < lines.length; j++) {
     if (!isBlank(lines[j])) return true
   }
   return false
+}
+
+function bareColonHasFollowingBody(lines, idx) {
+  return COLON_CLOSER.test(lines[idx] ?? '') && hasFollowingBody(lines, idx)
 }
 
 function paraHasInvalidColonOpener(para) {
@@ -402,9 +405,20 @@ function paraHasInvalidColonOpener(para) {
   })
 }
 
+/** SS12's interruption rule for one colon-fence LINE, decoupled from where the
+ *  line was read. `followingBody` is whether any non-blank line follows it,
+ *  `para` the lines of the paragraph currently open. Kept as a function of its
+ *  three inputs so the block reader and the list-item collector below can share
+ *  ONE spelling of the rule: the collector used to carry its own, a bare
+ *  `COLON_FENCE.test(line)`, which closed the paragraph for a fence that had
+ *  been ABSORBED into it and never interrupted anything (carve#891). */
+function colonFenceInterrupts(line, followingBody, para) {
+  if (isColonParagraphInterrupt(line)) return true
+  return COLON_CLOSER.test(line) && followingBody && !paraHasInvalidColonOpener(para)
+}
+
 function colonInterruptsParagraph(lines, idx, para) {
-  if (isColonParagraphInterrupt(lines[idx])) return true
-  return bareColonHasFollowingBody(lines, idx) && !paraHasInvalidColonOpener(para)
+  return colonFenceInterrupts(lines[idx], bareColonHasFollowingBody(lines, idx), para)
 }
 
 const COMMENT_LINE = /^[ \t]*%%/
@@ -1503,6 +1517,16 @@ function collectItems(lines, i, list, state) {
     // into it (PART 1 S4, NO OPEN PARAGRAPH NO LAZY LINE; carve#576,
     // carve#582).
     let openPara = true
+    // The lines of that open paragraph, for SS12's absorption test: a paragraph
+    // that has already taken a MALFORMED colon fence as text absorbs the next
+    // fence-shaped line as text too, so knowing the paragraph is open is not
+    // enough - the collector has to know what is in it (carve#891).
+    // Seeded from the MARKER LINE's own text, which is the paragraph's first
+    // line and may itself be the malformed fence (`- :::note`).
+    let para = [head.text]
+    const closePara = () => { openPara = false; para = [] }
+    const startPara = () => { openPara = true; para = [] }
+    const openParaWith = (line) => { if (!openPara) para = []; openPara = true; para.push(line) }
     // A blank line was seen, and what followed it attached INVISIBLY (a comment,
     // a definition). §17 L1's second clause - an item followed by a blank line
     // before the next sibling marker - still applies when that sibling arrives,
@@ -1513,7 +1537,7 @@ function collectItems(lines, i, list, state) {
     let pendingSeparation = false
     {
       const headText = head.text.trim()
-      if (QUOTE.test(headText)) openPara = (QUOTE.exec(headText)[1] ?? '').trim() !== ''
+      if (QUOTE.test(headText)) { if ((QUOTE.exec(headText)[1] ?? '').trim() !== '') startPara(); else closePara() }
     }
     // Content column of the FIRST sub-list opened in this item (-1 = none). A
     // blank followed by content at or past this column belongs to the sub-list,
@@ -1538,7 +1562,7 @@ function collectItems(lines, i, list, state) {
     if (!list.task && head.text.trim() === '+') {
       itemLines.length = 0
       attachNext = true
-      openPara = false
+      closePara()
     }
     const attachFlushLeft = () => {
       itemLines.push('')
@@ -1550,7 +1574,7 @@ function collectItems(lines, i, list, state) {
         i++
       }
       itemLines.push('')
-      openPara = false
+      closePara()
     }
     if (attachNext) attachFlushLeft()
     while (i < n) {
@@ -1616,7 +1640,7 @@ function collectItems(lines, i, list, state) {
             // not loosen this (ancestor) item (carve#322). Attach, stay tight;
             // the recursive parse of itemLines decides the sub-list's looseness.
             itemLines.push('')
-            openPara = false
+            closePara()
             i = j
             continue
           }
@@ -1624,7 +1648,7 @@ function collectItems(lines, i, list, state) {
           if (opensSubBlock(dedented)) {
             // sub-BLOCK after a blank: attaches, stays tight (SS17 L2)
             itemLines.push('')
-            openPara = false
+            closePara()
             i = j
             continue
           }
@@ -1646,7 +1670,7 @@ function collectItems(lines, i, list, state) {
             // of a line that produces no output at all. carve-rs renders every
             // one of these tight; carve-js does for two of the three.
             itemLines.push('')
-            openPara = false
+            closePara()
             blankBeforeInvisible = true
             // §17 L1b: the invisible line is not a separator either, so the
             // blank line's separation survives it. If a PARAGRAPH follows, the
@@ -1662,7 +1686,7 @@ function collectItems(lines, i, list, state) {
           // a second PARAGRAPH inside the item -> loose (SS17 L1)
           itemLines.push('')
           list.tight = false
-          openPara = true
+          startPara()
           i = j
           continue
         }
@@ -1679,7 +1703,7 @@ function collectItems(lines, i, list, state) {
           // sub-list after a blank: attaches, stays tight (SS17 L2)
           if (subCol < 0) subCol = nm.indent + nm.markerWidth
           itemLines.push('')
-          openPara = false
+          closePara()
           i = j
           continue
         }
@@ -1730,17 +1754,34 @@ function collectItems(lines, i, list, state) {
         // does the deepest structure now hold an OPEN paragraph that lazy
         // text may fold into? markers open a sub-item paragraph; quotes an
         // open quoted paragraph; fences/breaks close everything (SS10 I2/I6)
-        if (FENCE.test(dedented) || HR.test(dedented) || COLON_FENCE.test(dedented)) openPara = false
-        else if (dedented[0] === '|' || CONT_ROW.test(dedented)) openPara = false
-        else if (matchMarker(dedented)) openPara = true
+        if (FENCE.test(dedented) || HR.test(dedented)) closePara()
+        // A COLON FENCE CLOSES THE PARAGRAPH ONLY IF IT INTERRUPTED IT. SS12's
+        // opener test rejects `:::note` (a type word wants a separator), which
+        // makes the line ordinary paragraph text and makes the paragraph absorb
+        // the next fence-shaped line as text too. An absorbed fence opened no
+        // block and interrupted nothing, so the paragraph is still OPEN and PART
+        // 1 S4 folds a later under-indented line into it. This branch tested the
+        // line's SHAPE instead, so the item ended on a fence that was prose, and
+        // corpus 86-list-lazy-continuation-9 pinned that answer against S4
+        // (carve#891). Same rule, same spelling, as the block reader's
+        // colonInterruptsParagraph.
+        else if (COLON_FENCE.test(dedented)) {
+          if (colonFenceInterrupts(dedented, hasFollowingBody(lines, i), para)) closePara()
+          else openParaWith(dedented)
+        }
+        else if (dedented[0] === '|' || CONT_ROW.test(dedented)) closePara()
+        else if (matchMarker(dedented)) startPara()
         // A quote opens a paragraph only if it CARRIES one. A bare `>` is an
         // empty quote, so there is nothing for a later flush-left line to fold
         // into, and the item closes instead -- PART 1 S4's NO OPEN PARAGRAPH,
         // NO LAZY LINE (carve#576, carve#582). Testing QUOTE alone treated
         // `. >` as if a paragraph were open and swallowed the next column-0
         // line into the item.
-        else if (QUOTE.test(dedented)) openPara = (QUOTE.exec(dedented)[1] ?? '').trim() !== ''
-        else if (!isBlank(dedented)) openPara = true
+        else if (QUOTE.test(dedented)) {
+          if ((QUOTE.exec(dedented)[1] ?? '').trim() !== '') startPara()
+          else closePara()
+        }
+        else if (!isBlank(dedented)) openParaWith(dedented)
         i++
         continue
       }
