@@ -351,6 +351,45 @@ All three engines refuse today
 [carve-php#913](https://github.com/markup-carve/carve-php/pull/913)), and the
 spec repo's `compare:impls` probe checks it across all three.
 
+## The root shape is strict too
+
+§11 above closes the fields inside a node; §12 closes the ROOT, and puts the
+unknown-type refusal at decode. An ingest **must refuse**:
+
+| payload | why |
+|---|---|
+| a root missing `type`, `children` or `srcByteLength` | §7 fixes the three and the schema marks them `required`; supplying a default turns a truncated document into a valid-looking one |
+| a root carrying a fourth field | `document` is closed with `additionalProperties: false` like every other node, so §11 already covers it |
+| a node whose `type` the schema does not name | **at decode**, not in a renderer - a formatter, a linter or a language server holds the tree and never reaches one |
+
+Same argument as §11, one level out: a reader that invents a missing field or
+ignores an unexpected one has silently repaired attacker-controlled input, which
+is the opposite of what an ingest boundary is for. The refusal has to be an error
+of its own, naming what was wrong - not whatever the JSON library raised.
+
+The VALUE of `srcByteLength` is not checked. It is derivable and nothing depends
+on it, so all three engines ignore it - §12 is about the field being **there**.
+
+One trap sits under the unknown-type rule, and it is worth knowing before you
+implement it. `attrs.keyValues` is the schema's only free-form map, its keys are
+ordinary attribute identifiers, and `type` is a legal one:
+
+```
+[x](/u){type=widget}
+```
+
+serializes an object literally shaped `{"type":"widget"}` inside the tree. An
+implementation that refuses *any* object whose `type` it does not recognize
+refuses a document its own parser just produced, which is what rule 1 above
+forbids.
+
+The unknown-type check belongs at **node positions**: the root, and every field
+the schema fills with a node. That is not a fixed list of field names - which
+fields hold nodes depends on the type carrying them, so `content` is a node list
+on `inline_extension` and a verbatim string on `code_block` - so read it off the
+schema. The one position it must never reach is inside `attrs.keyValues`, whose
+values are strings and hold no nodes.
+
 ## What is not in it
 
 Formatter-internal nodes (PART 11, and the `raw_text` case the profiles

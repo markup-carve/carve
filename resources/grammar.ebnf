@@ -5610,3 +5610,78 @@ EOF = (* end of file *) ;
       extension that relies on the pass-through relies on one engine's leak
       (PART 10 §1: an extension may not change the core vocabulary).
 
+
+   12. A ROOT THAT DEVIATES FROM §7 IS REJECTED ON INGEST -- NORMATIVE. §7
+      fixes the root at `type`, `children` and `srcByteLength`, and
+      `resources/ast-schema.json` marks all three `required`. §9 states the
+      ingest contract for DEPTH and closes with the one non-depth rule it had:
+      the root TYPE is not a leniency point. This is the rest of that root
+      contract, and it says the same thing for the same reason -- a reader that
+      invents a missing field or ignores an unexpected one has silently
+      repaired attacker-controlled input, which is the opposite of what an
+      ingest boundary is for.
+
+      An ingest MUST REFUSE, with AN ERROR OF ITS OWN in the sense §9(b)
+      already means -- typed, documented, naming what was wrong:
+
+      (a) A ROOT MISSING ANY OF THE THREE FIELDS. Not defaulted, not inferred.
+          A reader that supplies `children: []` for a payload that carried no
+          `children` has turned a truncated document into an empty one and
+          reported success; a reader that leaves `srcByteLength` unset has
+          published a document whose source length nothing in the payload
+          stated. Both hand the caller a valid-looking Carve document and no
+          way to learn the input was not one -- the same objection §9 makes to
+          accepting `doc` as a root type.
+
+      (b) A ROOT CARRYING ANYTHING ELSE. §11 already rules this for a property
+          the schema does not name, and the root is not an exception to it:
+          `document` is closed with `additionalProperties: false` like every
+          other node. Stated here because §7's "Nothing else" is written about
+          what an implementation may EMIT, and a reader looking for what it
+          must ACCEPT found nothing.
+
+      (c) A NODE WHOSE `type` THE SCHEMA DOES NOT NAME, AT DECODE. Not in a
+          renderer, one step later. The renderer's error names a RENDERING
+          problem for what is really a payload problem, and it only ever
+          arrives for a caller who renders: a formatter, a linter, a language
+          server or an indexer may hold the tree and never reach a renderer at
+          all, so for those the unknown type is silently carried. §9(b)'s
+          objection to truncation applies unchanged -- an ingest that accepts a
+          tree and then handles only part of it tells the caller nothing.
+
+      THE `keyValues` TRAP, stated because a strict reading of (c) breaks
+      §9(a) on a document the engine's own parser produces. `attrs.keyValues`
+      is the schema's only free-form map: its keys are ordinary attribute
+      identifiers, and `type` is one of them. So
+
+          [x](/u){type=widget}
+
+      serializes an object literally shaped `{"type":"widget"}` inside the
+      tree, and an implementation that refuses "any object whose `type` I do
+      not know" refuses that document.
+
+      (c) IS ABOUT NODE POSITIONS: the root, and every field the schema fills
+      with a node. It is deliberately NOT a list of field names. Which fields
+      hold nodes depends on the TYPE that carries them -- `content` is a node
+      list on `inline_extension` and a verbatim string on `code_block`, and
+      `title` is a node list on `admonition` and a string on `link` -- so a
+      list of names is either wrong for some type or has to repeat the schema.
+      Read it off `resources/ast-schema.json`, which is where the answer
+      already is. The one position the check must NEVER reach is the interior
+      of `attrs.keyValues`: its values are strings and hold no nodes at all,
+      which is what the trap above turns on.
+
+      A `srcByteLength` THAT IS PRESENT BUT WRONG IS NOT THIS CLAUSE'S
+      BUSINESS. It is derivable from the payload and nothing in the tree
+      depends on it, so all three engines ignore its value; that stays true and
+      is deliberate rather than unnoticed. (a) is about the field's PRESENCE.
+
+      MEASURED BEFORE RULING, engines at their own mains: root missing
+      `srcByteLength` -- carve-rs rejected, carve-js and carve-php accepted.
+      Root missing `children` -- the same three ways. Unexpected root field --
+      all three rejected, two of them only after §11 landed
+      (carve-js#763, carve-rs#693). Unknown node type -- carve-rs and carve-php
+      rejected at decode, carve-js accepted and threw in the renderer. The
+      majority vote was deliberately NOT followed: it would have decided two
+      security-relevant rows by accident, and on the missing-field rows the
+      majority was the lenient answer.

@@ -51,6 +51,7 @@ import {
   countProbes,
   injectUnknownProperty,
 } from './spec/unknown-property-probe.mjs'
+import { refusableRootShapes, rootShapeVerdict } from './spec/root-shape-probe.mjs'
 import { miscount, shortfall } from './spec/participants.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -738,6 +739,7 @@ if (typeof lib.fromAstJson !== 'function') {
 
 const jsFindings = []
 let jsProbed = 0
+let jsRootShaped = false
 for (const { name, source } of samples) {
   let doc
   try {
@@ -784,6 +786,18 @@ for (const { name, source } of samples) {
       JSON.stringify(lib.toAstJson(lib.fromAstJson(JSON.parse(payload)))),
     )
   }
+  if (!jsRootShaped) {
+    jsRootShaped = true
+    checkRootShapeIngest(
+      name,
+      doc,
+      jsFindings,
+      (payload) => lib.fromAstJson(JSON.parse(payload)),
+      typeof lib.renderHtml === 'function'
+        ? (payload) => lib.renderHtml(lib.fromAstJson(JSON.parse(payload)))
+        : undefined,
+    )
+  }
   if (JSON.stringify(round) !== JSON.stringify(doc)) {
     jsFindings.push(`${name}: §6 round trip through fromAstJson is not identity`)
   }
@@ -807,6 +821,7 @@ const rsBinary = ['target/release/carve', 'target/debug/carve']
 if (rsBinary) {
   const rsFindings = []
 let rsProbed = 0
+let rsRootShaped = false
   for (const { name, source } of satelliteSamples) {
     let doc
     try {
@@ -847,6 +862,23 @@ let rsProbed = 0
           stdio: ['pipe', 'pipe', 'pipe'],
           maxBuffer: MAX_SUBPROCESS_OUTPUT,
         }),
+      )
+    }
+    if (!rsRootShaped) {
+      rsRootShaped = true
+      const run = (args) => (payload) =>
+        execFileSync(rsBinary, args, {
+          input: payload,
+          encoding: 'utf8',
+          stdio: ['pipe', 'pipe', 'pipe'],
+          maxBuffer: MAX_SUBPROCESS_OUTPUT,
+        })
+      checkRootShapeIngest(
+        name,
+        doc,
+        rsFindings,
+        run(['--from-json', '--json', '-']),
+        run(['--from-json', '-']),
       )
     }
     checkShapeParity(name, doc, rsFindings)
@@ -918,6 +950,7 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
 if (existsSync(resolve(phpDir, 'bin/carve'))) {
   const phpFindings = []
 let phpProbed = 0
+let phpRootShaped = false
   for (const { name, source } of satelliteSamples) {
     let doc
     try {
@@ -959,6 +992,24 @@ let phpProbed = 0
           stdio: ['pipe', 'pipe', 'pipe'],
           maxBuffer: MAX_SUBPROCESS_OUTPUT,
         }),
+      )
+    }
+    if (!phpRootShaped) {
+      phpRootShaped = true
+      const run = (args) => (payload) =>
+        execFileSync('php', ['bin/carve', ...args], {
+          cwd: phpDir,
+          input: payload,
+          encoding: 'utf8',
+          stdio: ['pipe', 'pipe', 'pipe'],
+          maxBuffer: MAX_SUBPROCESS_OUTPUT,
+        })
+      checkRootShapeIngest(
+        name,
+        doc,
+        phpFindings,
+        run(['--from-json', '--json']),
+        run(['--from-json']),
       )
     }
   }
@@ -1024,6 +1075,48 @@ function checkUnknownPropertyIngest(name, doc, findings, reserialize) {
   // without needing an engine that misbehaves.
   const verdict = unknownPropertyVerdict({ refused, injected, echoed })
   if (verdict !== null) findings.push(`${name}: ${verdict}`)
+}
+
+/*
+ * PART 12 §12: the root shape an ingest may never repair.
+ *
+ * Two closures rather than one, because §12(c) is specifically about WHERE the
+ * refusal happens. `decode` is the ingest on its own; `render` is ingest plus a
+ * render. A payload the first accepts and the second rejects is the exact
+ * defect the clause was written against - the caller is told about a rendering
+ * problem, and a consumer that holds the tree without rendering it is told
+ * nothing at all.
+ *
+ * Run ONCE per engine, not per document: every shape here is a mutation of the
+ * ROOT or a foreign node grafted onto it, so a second document measures the
+ * same rule again at the cost of another subprocess per shape.
+ */
+function checkRootShapeIngest(name, doc, findings, decode, render) {
+  for (const shape of refusableRootShapes(doc)) {
+    const payload = JSON.stringify(shape.payload)
+    let refused = false
+    let message = ''
+    try {
+      decode(payload)
+    } catch (error) {
+      refused = true
+      // `stderr` as well as `message`: the two satellite engines report through
+      // a CLI, so what they NAMED is on stderr while `message` only carries the
+      // failed command line. Reading `message` alone would have made every CLI
+      // refusal look unnamed.
+      message = `${String(error?.stderr ?? '')}${String(error?.message ?? '')}`
+    }
+    let renderRefused = false
+    if (!refused && render !== undefined) {
+      try {
+        render(payload)
+      } catch {
+        renderRefused = true
+      }
+    }
+    const verdict = rootShapeVerdict({ shape, refused, renderRefused, message })
+    if (verdict !== null) findings.push(`${name}: ${verdict}`)
+  }
 }
 
 function checkIngestIdentity(name, doc, findings, reserialize) {
