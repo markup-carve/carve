@@ -1082,3 +1082,64 @@ test('the oracle dedents a definition body continuation by columns, not characte
       `and moves the space line, which drops the second paragraph out of the item.`,
   )
 })
+
+// HOW FAR THE DEDENT STRIPS, which the two-form fixtures above cannot see
+// either - for a different reason than the one they miss.
+//
+// Every fixture so far compares a tab form against a space form of the SAME
+// column, so it pins the dedent's UNIT (columns, not characters). It cannot pin
+// its AMOUNT: shifting both forms by 2 columns, or by 4, keeps them equal to
+// each other. Measured - moving the strip to column 2 or to column 4 left this
+// file green at 114 tests and moved zero of the 711 corpus documents, and both
+// are real behavior changes:
+//
+//   at 2, a column-3 body line arrives at column 1 instead of 0, so a link
+//   definition, a footnote definition, a thematic break, a heading and a code
+//   fence inside a definition body all become paragraph text.
+//
+//   at 4, a tab-indented line is stripped past the margin it actually reached,
+//   so `<TAB>[a]: /u` arrives flush and registers a link definition that the
+//   correct strip leaves as text - and a nested list inside the body loses a
+//   level.
+//
+// So the amount gets a fixture at each end. Both readings are carve-rs 83ab9c1's
+// byte for byte, the one engine that already reads this continuation as a
+// column.
+test('the definition body dedent reaches column 0 (a column-3 line arrives flush)', () => {
+  // A heading is only a heading at the body's own left edge. At column 3 the
+  // strip is exact, so it arrives at column 0.
+  const doc = ':: t\n:  d\n\n   # h\n'
+  assert.match(
+    renderDoc(parse(doc)),
+    /<h1 id="h">h<\/h1>/,
+    `a column-3 definition body line did not arrive flush.\n` +
+      `  doc: ${JSON.stringify(doc)}\n` +
+      `  The strip removes the body's own column (3), so the line lands at column 0 ` +
+      `and its heading marker is a heading. Stripping fewer columns leaves it one in, ` +
+      `where it is paragraph text - along with every other opener that needs the left ` +
+      `edge (carve#893).`,
+  )
+})
+
+test('the definition body dedent strips no further than column 3', () => {
+  // A tab reaches column 4. Stripping column 3 leaves the one column it bought
+  // past the margin, so this line arrives at column 1 - NOT flush - and a link
+  // definition one column in is paragraph text. `[a][]` below is the witness:
+  // it stays unresolved because no definition ever registered.
+  const doc = ':: t\n:  d\n\n\t[a]: /u\n\n[a][]\n'
+  const out = renderDoc(parse(doc))
+  assert.match(
+    out,
+    /<p>\[a\]: \/u<\/p>/,
+    `a tab-indented definition body line was stripped past the column it reached.\n` +
+      `  doc: ${JSON.stringify(doc)}\n` +
+      `  A tab that straddles the margin keeps the columns it bought past it ` +
+      `(PART 9 §24 C5), so this arrives at column 1 and stays paragraph text.`,
+  )
+  assert.doesNotMatch(
+    out,
+    /<a href="\/u">/,
+    `an over-stripped body line registered a link definition that the correct ` +
+      `strip leaves as text.\n  doc: ${JSON.stringify(doc)}`,
+  )
+})
