@@ -52,6 +52,11 @@ const INVENTORY = [
   { base: '141-trailing-whitespace-boundaries-4', crv: ['NBSP'], html: [] },
   { base: '16-reference-link-9', crv: ['trailing-WS'], html: [] },
   { base: '29-non-breaking-space-3', crv: ['NBSP'], html: [] },
+  { base: '249-trailing-whitespace-after-a-block-marker', crv: ['trailing-WS'], html: [] }, // a thematic break
+  { base: '249-trailing-whitespace-after-a-block-marker-2', crv: ['trailing-WS'], html: [] }, // a code fence's closer
+  { base: '249-trailing-whitespace-after-a-block-marker-3', crv: ['trailing-WS'], html: [] }, // a colon fence's closer
+  { base: '249-trailing-whitespace-after-a-block-marker-4', crv: ['trailing-WS'], html: [] }, // a table's continuation row
+  { base: '249-trailing-whitespace-after-a-block-marker-6', crv: ['trailing-WS'], html: [] }, // the `+` continuation marker - §17 L3 says "only content is `+`"
   { base: '84-single-line-headings-5', crv: ['trailing-WS'], html: [] },
   // The no-break space is the case: it is non-ASCII, so it passes into the
   // heading id unchanged instead of being slugged to a separator, and the
