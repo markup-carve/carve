@@ -10989,3 +10989,300 @@ terminal.
 ```
 
 ::::
+
+## Link and image title slots must be a space
+
+The whitespace before a link or image title is a PADDING SLOT: the link is
+already a link once its destination is read, and the title sits inline after
+it. `link_title` spells that slot `space`, and `image_title = link_title`
+inherits it. A tab is syntax only in a line's leading indentation run (PART 7,
+MARKER SEPARATORS AND PADDING SLOTS), and this slot sits well past the first
+non-whitespace character of its line.
+
+A tab written there is therefore not padding, and the inline is not a link at
+all: the bracket run stays literal text, with the tab where it was written.
+
+A link title, tab-first:
+
+::: compare
+
+```carve
+[t](/u	"T")
+```
+
+```html
+<p>[t](/u	“T”)</p>
+```
+
+:::
+
+The slot is a RUN, and the rule is about the whole run rather than either of
+its ends. Both mixed spellings keep the text literal too -- the one that
+survives a fix written as "the first character must be a space" is the one with
+the space first, and the one that survives "the last character must be a space"
+is the other.
+
+::: compare
+
+```carve
+[t](/u 	"T")
+```
+
+```html
+<p>[t](/u 	“T”)</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[t](/u	 "T")
+```
+
+```html
+<p>[t](/u	 “T”)</p>
+```
+
+:::
+
+An image title answers the same way. `image_title = link_title` is one
+production defined by reference, and every engine serves the link tail and the
+image tail from one function -- so the two agree by construction today, and
+nothing would notice the day one of them splits:
+
+::: compare
+
+```carve
+![a](/p.png	"T")
+```
+
+```html
+<p>![a](/p.png	“T”)</p>
+```
+
+:::
+
+::: compare
+
+```carve
+![a](/p.png 	"T")
+```
+
+```html
+<p>![a](/p.png 	“T”)</p>
+```
+
+:::
+
+::: compare
+
+```carve
+![a](/p.png	 "T")
+```
+
+```html
+<p>![a](/p.png	 “T”)</p>
+```
+
+:::
+
+A single space is the titled form, unchanged:
+
+::: compare
+
+```carve
+[t](/u "T")
+```
+
+```html
+<p><a href="/u" title="T">t</a></p>
+```
+
+:::
+
+## Code fence metadata slots must be a space too
+
+A fenced code block carries three of the same slots: the one before the info
+string (`fenced_code_block`, spelled `[space]`), and the `"header"` and
+`[label]` slots inside `code_fence_info` (spelled `space+`). All three sit
+after the fence run, which has already decided the block, so all three are
+padding and all three take a space.
+
+The fallback here is the INVALID-FENCE FALLBACK the grammar already names: the
+opener is not a fence opener, so the run is read as an inline verbatim span in
+a paragraph and every character of it survives.
+
+Each slot is pinned separately, because implementations decide them in three
+places and a document carrying a tab in all three cannot tell a partial fix
+from a whole one.
+
+The slot before the info string, tab-first:
+
+::: compare
+
+````carve
+```	js
+x
+```
+````
+
+````html
+<p><code>	js
+x
+</code></p>
+````
+
+:::
+
+Both mixed runs answer the same way, for the reason the title slots give:
+
+::: compare
+
+````carve
+``` 	js
+x
+```
+````
+
+````html
+<p><code> 	js
+x
+</code></p>
+````
+
+:::
+
+::: compare
+
+````carve
+```	 js
+x
+```
+````
+
+````html
+<p><code>	 js
+x
+</code></p>
+````
+
+:::
+
+The `"header"` slot, which sits after the language token and reverts
+independently of the slot before it:
+
+::: compare
+
+````carve
+```js	"T"
+x
+```
+````
+
+````html
+<p><code>js	"T"
+x
+</code></p>
+````
+
+:::
+
+::: compare
+
+````carve
+```js 	"T"
+x
+```
+````
+
+````html
+<p><code>js 	"T"
+x
+</code></p>
+````
+
+:::
+
+::: compare
+
+````carve
+```js	 "T"
+x
+```
+````
+
+````html
+<p><code>js	 "T"
+x
+</code></p>
+````
+
+:::
+
+And the `[label]` slot, which reverts independently of both:
+
+::: compare
+
+````carve
+```js "T"	[L]
+x
+```
+````
+
+````html
+<p><code>js "T"	[L]
+x
+</code></p>
+````
+
+:::
+
+::: compare
+
+````carve
+```js "T" 	[L]
+x
+```
+````
+
+````html
+<p><code>js "T" 	[L]
+x
+</code></p>
+````
+
+:::
+
+::: compare
+
+````carve
+```js "T"	 [L]
+x
+```
+````
+
+````html
+<p><code>js "T"	 [L]
+x
+</code></p>
+````
+
+:::
+
+A single space in each slot is the fenced form, unchanged:
+
+::: compare
+
+````carve
+```js "T" [L]
+x
+```
+````
+
+````html
+<pre title="T"><code class="language-js">x
+</code></pre>
+````
+
+:::

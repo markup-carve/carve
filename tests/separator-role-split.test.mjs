@@ -86,6 +86,16 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const here = dirname(fileURLToPath(import.meta.url))
 const repo = resolve(here, '..')
 const grammar = readFileSync(resolve(repo, 'resources/grammar.ebnf'), 'utf8')
+// The SECOND normative file. resources/carve-core.ohm spells a subset of the
+// same productions, and carve#907 found the two disagreeing at the code fence:
+// grammar.ebnf said `[space]`, the ohm said `spaceChar*`, and `spaceChar` is a
+// space OR A TAB. Nothing could see it, because scripts/spec/render.mjs
+// matches only `inlines`, `attrs` and `blockAttrs` - the ohm's whole block
+// layer is unexecuted, so replacing `langInfo`'s body with a literal that
+// matches nothing leaves the entire suite green (measured; filed separately).
+// A production nothing evaluates cannot be pinned behaviorally, so it is
+// pinned as TEXT here, exactly as grammar.ebnf's productions are.
+const ohm = readFileSync(resolve(repo, 'resources/carve-core.ohm'), 'utf8')
 
 // Productions wrap, so match against the flattened text rather than line by
 // line - the same normalization scripts/normative-clauses.mjs uses.
@@ -131,6 +141,42 @@ const TABLE_DEFERRED =
   'corrected behavior would fail on engines that have not been changed yet. The corpus ' +
   'declares the window per document in resources/engine-pin-drift.txt. The ORACLE half runs ' +
   'regardless - it is not an engine.'
+
+// The TITLE slots are deferred for a FOURTH reason, and it is narrower than
+// any of the three above, so it is its own constant. Measured under carve#907
+// on each engine's own main, built read-only on one host: carve-rs `378f0d5`
+// REJECTS a tab at every form of this slot - the inline link title, the image
+// title and the reference-definition title alike (markup-carve/carve-rs#729) -
+// and its rendering is byte-identical to the oracle's. carve-js `3d95e94` and
+// carve-php `876e312` still read a title after one at all three. So this is a
+// two-engine gap with a reference implementation to port against, not a rule
+// no implementation has reached; that is the difference from TABLE_DEFERRED,
+// which is what makes it a separate constant rather than a reuse.
+const TITLE_DEFERRED =
+  'carve-js and carve-php still read a title after a tab in this slot, at every form that ' +
+  'shares the `link_title` production - inline, image and reference definition. carve-rs main ' +
+  'has narrowed all three (markup-carve/carve-rs#729) and now answers exactly as the oracle ' +
+  'does, so there is a reference to port against rather than a rule nothing implements. ' +
+  'Asserting the current behavior would pin the divergence; asserting the corrected behavior ' +
+  'would fail on the two engines that have not been changed yet, and on the PINNED build, ' +
+  'which is what this loop executes. The ORACLE half runs regardless - it is not an engine.'
+
+// The three CODE-FENCE slots are deferred for the PIN_DEFERRED reason rather
+// than an engine one, and that changed while carve#907 was being worked, so
+// the date is worth writing down. markup-carve/carve-js#800 and
+// markup-carve/carve-php#955 both merged on 2026-08-06; carve-rs was already
+// correct there (markup-carve/carve-rs#724 and earlier). Measured after those
+// merges on carve-js `3d95e94`, carve-php `876e312` and carve-rs `378f0d5`:
+// all three reject a tab at the opener slot, the `"header"` slot and the
+// `[label]` slot, and all three render byte-identically to the oracle. What
+// still accepts one is the build this repository PINS.
+const FENCE_PIN_DEFERRED =
+  'all three reference engines have narrowed this slot - measured on carve-js `3d95e94`, ' +
+  'carve-php `876e312` and carve-rs `378f0d5`, every tab form renders byte-identically to ' +
+  'the oracle rather than to its space form. What still accepts a tab is the PINNED build ' +
+  '(52da7be), which predates markup-carve/carve-js#800 and markup-carve/carve-php#955. So ' +
+  'this is pin lag, not an engine gap, and it clears on the next `npm run bump-carve-pin` ' +
+  'rather than on any engine work. The ORACLE half runs regardless - it is not an engine.'
 
 const PIN_DEFERRED =
   'the PINNED carve-js build (52da7be) still opens the block on a tabbed separator - ' +
@@ -263,11 +309,46 @@ const SITES = [
     // `LINK_DEF` in scripts/spec/layout.mjs - and carve#888 was precisely that
     // the two disagreed. With only the inline fixture, widening `LINK_DEF`
     // back to `[ \t]+` broke nothing here: measured.
+    //
+    // The inline form additionally carries BOTH mixed runs. "The slot takes a
+    // space" written as "the FIRST character is a space, then eat whitespace"
+    // passes a tab-first fixture and lets `<SP><TAB>` through; written as "the
+    // LAST character is a space" it lets `<TAB><SP>` through instead. Measured
+    // under carve#907: with only the tab-first fixture, widening the inline
+    // slot to ` [ \t]*` broke nothing in the whole suite.
+    //
+    // The DEFINITION form keeps its single tab-first fixture deliberately.
+    // What that slot does on a failed match is the open question in
+    // markup-carve/carve#911 - the definition is not anchored at end of line,
+    // so the title is dropped rather than the line falling back to prose - and
+    // adding fixtures there belongs with that ruling, not here.
     fixtures: [
       { slot: 'the inline form', tab: '[t](/u\t"T")\n', space: '[t](/u "T")\n' },
+      { slot: 'the inline form, mixed run, space first', tab: '[t](/u \t"T")\n', space: '[t](/u "T")\n' },
+      { slot: 'the inline form, mixed run, tab first', tab: '[t](/u\t "T")\n', space: '[t](/u "T")\n' },
       { slot: 'the definition form', tab: '[a]: /u\t"T"\n\n[a][]\n', space: '[a]: /u "T"\n\n[a][]\n' },
     ],
-    engineDeferred: ENGINE_DEFERRED,
+    engineDeferred: TITLE_DEFERRED,
+  },
+  {
+    role: 'padding',
+    site: 'image_title, the slot before the quoted run',
+    // `image_title = link_title ;` - one production, defined by reference. The
+    // site is listed separately anyway, and the reason is measured rather than
+    // stylistic: every engine serves the link tail and the image tail from ONE
+    // function today (carve-rs `read_link_target`, carve-js `RE_LINK_REST`,
+    // carve-php's `InlineParser` block), so the two agree by construction and
+    // nothing here would notice the day one of them splits. Until carve#907
+    // the image slot had no fixture at all, in this file or in the corpus.
+    required: /image_title = link_title ;/,
+    forbidden: /image_title = whitespace|image_title = \[?whitespace/,
+    why: 'an image is an image once its source is read; the title sits inline after it',
+    fixtures: [
+      { slot: 'the image form', tab: '![a](/p.png\t"T")\n', space: '![a](/p.png "T")\n' },
+      { slot: 'the image form, mixed run, space first', tab: '![a](/p.png \t"T")\n', space: '![a](/p.png "T")\n' },
+      { slot: 'the image form, mixed run, tab first', tab: '![a](/p.png\t "T")\n', space: '![a](/p.png "T")\n' },
+    ],
+    engineDeferred: TITLE_DEFERRED,
   },
   {
     role: 'padding',
@@ -280,6 +361,20 @@ const SITES = [
     // brace, so a check that reads only the adjacent character passes while a
     // tab still sits in the run - the same mixed-run hole as the frontmatter
     // slot above, reached from the other side.
+    //
+    // THE OTHER DIRECTION IS DELIBERATELY MISSING, and it is a known live hole
+    // rather than an oversight. `[a]: /u<SP><TAB>{.c}` is not pinned anywhere:
+    // measured under carve#907, replacing this site's guard with
+    // `sep[0] !== ' '` - the first-character shape, on the one end this site
+    // does not cover - passes the entire suite, 1355 of 1355, and leaves
+    // core:check at 728/728. The same is true of the definition form of
+    // `link_title` above under ` [ \t]*"`. Both live on the reference-definition
+    // line, whose failure mode is the open question in markup-carve/carve#911 -
+    // the line is not anchored at end of line, so a slot that does not match
+    // drops the metadata silently instead of falling back to prose, which is the
+    // outcome PART 7 names as the one to avoid. Pinning either shape belongs
+    // with that ruling; carve#907 scoped itself to the five slots where nothing
+    // is open.
     fixtures: [
       { slot: 'the trailing-attributes slot', tab: '[a]: /u\t{.c}\n\n[a][]\n', space: '[a]: /u {.c}\n\n[a][]\n' },
       { slot: 'the trailing-attributes slot, mixed run', tab: '[a]: /u\t {.c}\n\n[a][]\n', space: '[a]: /u {.c}\n\n[a][]\n' },
@@ -291,11 +386,25 @@ const SITES = [
     site: 'fenced_code_block, the slot before the info string',
     required: /fenced_code_block = code_fence_open, \[space\], \[code_fence_info\]/,
     forbidden: /fenced_code_block = code_fence_open, \[whitespace\]/,
+    // THE SECOND NORMATIVE FILE, at the one production where the two
+    // disagreed. resources/carve-core.ohm spelled this slot `spaceChar*`,
+    // and `spaceChar = " " | "\t"`, so the ohm admitted a tab here while
+    // grammar.ebnf said `[space]` (carve#907). This is a TEXT check because
+    // the rule is not executed - see the note at the top of this file - and a
+    // text check is what the file already does for grammar.ebnf.
+    requiredOhm: /langInfo\s+= " "\? langToken/,
+    forbiddenOhm: /langInfo\s+= spaceChar/,
     why: 'the fence run has already decided the block; the info string sits inline after it',
+    // Both mixed runs, for the reason the frontmatter slot states. Measured
+    // under carve#907: with only the tab-first fixture, widening the oracle's
+    // leading match to `^ [ \t]*` broke nothing in the whole suite, and the
+    // `^[ \t]* ` spelling broke nothing either.
     fixtures: [
       { slot: 'the info-string slot', tab: '```\tjs\nx\n```\n', space: '``` js\nx\n```\n' },
+      { slot: 'the info-string slot, mixed run, space first', tab: '``` \tjs\nx\n```\n', space: '``` js\nx\n```\n' },
+      { slot: 'the info-string slot, mixed run, tab first', tab: '```\t js\nx\n```\n', space: '``` js\nx\n```\n' },
     ],
-    engineDeferred: ENGINE_DEFERRED,
+    engineDeferred: FENCE_PIN_DEFERRED,
   },
   {
     role: 'padding',
@@ -312,11 +421,20 @@ const SITES = [
     // these two revert independently and a two-tab fixture cannot separate
     // them. The tab goes after `js` in the first and after the title in the
     // second, so neither needs a tab in the OPENER slot above.
+    // Each of the two slots additionally carries BOTH mixed runs, which is what
+    // separates "the slot takes a space" from "the slot starts with a space" and
+    // from "the slot ends with a space". Measured under carve#907: with only the
+    // tab-first fixtures, `^ *"` widened to `^(?: [ \t]*)?"` and `^ *\[` widened
+    // to `^(?: [ \t]*)?\[` each broke nothing in the whole suite.
     fixtures: [
       { slot: 'the "header" slot', tab: '```js\t"T" [L]\nx\n```\n', space: '```js "T" [L]\nx\n```\n' },
+      { slot: 'the "header" slot, mixed run, space first', tab: '```js \t"T" [L]\nx\n```\n', space: '```js "T" [L]\nx\n```\n' },
+      { slot: 'the "header" slot, mixed run, tab first', tab: '```js\t "T" [L]\nx\n```\n', space: '```js "T" [L]\nx\n```\n' },
       { slot: 'the [label] slot', tab: '```js "T"\t[L]\nx\n```\n', space: '```js "T" [L]\nx\n```\n' },
+      { slot: 'the [label] slot, mixed run, space first', tab: '```js "T" \t[L]\nx\n```\n', space: '```js "T" [L]\nx\n```\n' },
+      { slot: 'the [label] slot, mixed run, tab first', tab: '```js "T"\t [L]\nx\n```\n', space: '```js "T" [L]\nx\n```\n' },
     ],
-    engineDeferred: ENGINE_DEFERRED,
+    engineDeferred: FENCE_PIN_DEFERRED,
   },
 
   // --- TABLE-CELL PADDING SLOTS (carve#904) ---------------------------------
@@ -420,13 +538,13 @@ const SITES = [
   },
 ]
 
-test('all twenty-two classified slots are present', () => {
-  assert.equal(SITES.length, 15, 'the twenty-two slots live in fifteen entries')
+test('all twenty-three classified slots are present', () => {
+  assert.equal(SITES.length, 16, 'the twenty-three slots live in sixteen entries')
   assert.equal(SITES.filter((s) => s.role === 'separator').length, 4)
-  assert.equal(SITES.filter((s) => s.role === 'padding').length, 11)
+  assert.equal(SITES.filter((s) => s.role === 'padding').length, 12)
 })
 
-for (const { role, site, required, forbidden, why } of SITES) {
+for (const { role, site, required, forbidden, why, requiredOhm, forbiddenOhm } of SITES) {
   test(`${role}: ${site}`, () => {
     assert.match(
       flat,
@@ -444,6 +562,31 @@ for (const { role, site, required, forbidden, why } of SITES) {
         `  Padding is not a reason to admit a tab - the slot's POSITION is what decides,\n` +
         `  and this one sits inline. See PART 7 (carve#901, correcting carve#878).`,
     )
+    // The SECOND normative file, where it spells this slot at all. Optional:
+    // resources/carve-core.ohm models Core only, so most sites here have no
+    // counterpart in it and simply carry neither field.
+    if (requiredOhm !== undefined) {
+      assert.match(
+        ohm,
+        requiredOhm,
+        `resources/carve-core.ohm no longer spells this ${role} slot as a space.\n` +
+          `  ${site}\n  role: ${why}\n` +
+          `  The two normative files have to agree: grammar.ebnf says \`space\` here.\n` +
+          `  See carve#907, which found them disagreeing at exactly this production.`,
+      )
+    }
+    if (forbiddenOhm !== undefined) {
+      assert.doesNotMatch(
+        ohm,
+        forbiddenOhm,
+        `resources/carve-core.ohm spells this ${role} slot with a rule that admits a tab.\n` +
+          `  ${site}\n  role: ${why}\n` +
+          `  \`spaceChar\` is \` \` OR \`\\t\`; this slot takes a space (PART 7).\n` +
+          `  This rule is NOT executed (see the note at the top of this file), so the\n` +
+          `  text check is its only observer - do not delete it on the assumption that\n` +
+          `  a behavioral gate would have caught the same thing. It would not.`,
+      )
+    }
   })
 }
 
@@ -506,8 +649,13 @@ test('every site carries a tab/space fixture pair per slot', () => {
 // survived reverting either end on its own at every one of the five.
 const MULTI_SLOT = {
   'admonition_open, the "title" and [label] metadata slots': 2,
-  'code_fence_info, the "header" and [label] metadata slots': 2,
-  'link_title, the slot before the quoted run': 2,
+  // Six, not two: each of the two slots carries its tab-first fixture and BOTH
+  // mixed runs (carve#907).
+  'code_fence_info, the "header" and [label] metadata slots': 6,
+  // Four: the inline form carries its tab-first fixture and both mixed runs,
+  // and the definition form carries its own. The definition form deliberately
+  // has no mixed run - that slot's failure mode is markup-carve/carve#911.
+  'link_title, the slot before the quoted run': 4,
   'delimiter_cell, the slots around the dash run': 4,
   'header_cell, the slots around the cell content': 4,
   // Six, not four: the two extra are the CONTINUATION-row spelling, which the
@@ -525,6 +673,48 @@ test('a site with independently-revertible slots carries a fixture for each', ()
       n,
       `padding site "${site}" reverts in ${n} independent places and needs ${n} ` +
         `fixture pairs; one pair covering both lets a half-revert through.`,
+    )
+  }
+})
+
+// A MIXED RUN, IN BOTH ORDERS, at every slot carve#907 pinned.
+//
+// This is the part the fixture COUNT above cannot state. A rule about a run is
+// easy to implement as a rule about one END of it, and the two ends fail
+// differently: "the first character is a space" lets `<SP><TAB>` through, and
+// "the last character is a space" lets `<TAB><SP>` through. Both spellings have
+// been written for real in this org, in three languages, on the same day.
+//
+// Five mutants proved the hole rather than argued it. Against the tree carve#907
+// branched from, each of `^ +` -> `^ [ \t]*` at the fence opener, `^ *"` ->
+// `^(?: [ \t]*)?"` at the header slot, `^ *\[` -> `^(?: [ \t]*)?\[` at the label
+// slot, and both title-slot equivalents passed the ENTIRE suite - 1245 of 1245
+// - while implementing exactly that defect. A fixture count of "three" would
+// not have caught any of them; three fixtures all tab-first is still one shape.
+//
+// So the registry names the SHAPES, and the assertion reads the fixture strings
+// rather than trusting their labels.
+const BOTH_DIRECTIONS = [
+  'link_title, the slot before the quoted run',
+  'image_title, the slot before the quoted run',
+  'fenced_code_block, the slot before the info string',
+  'code_fence_info, the "header" and [label] metadata slots',
+]
+test('every slot carve#907 pinned carries a mixed run in both orders', () => {
+  for (const site of BOTH_DIRECTIONS) {
+    const entry = SITES.find((s) => s.site === site)
+    assert.ok(entry, `BOTH_DIRECTIONS names a site that is not in SITES: ${site}`)
+    assert.ok(
+      entry.fixtures.some((f) => f.tab.includes(' \t')),
+      `site "${site}" carries no <SP><TAB> fixture. A slot rule implemented as ` +
+        `"the FIRST character must be a space" passes every tab-first fixture and ` +
+        `still admits this one - measured as a surviving mutant under carve#907.`,
+    )
+    assert.ok(
+      entry.fixtures.some((f) => f.tab.includes('\t ')),
+      `site "${site}" carries no <TAB><SP> fixture. A slot rule implemented as ` +
+        `"the LAST character must be a space" passes every tab-first fixture and ` +
+        `still admits this one - the same defect from the other end.`,
     )
   }
 })
@@ -640,4 +830,52 @@ for (const [form, outside, spaceForm] of [
         `  \`link_title\` takes \`space\` (PART 7, carve#901; carve#888).`,
     )
   })
+}
+
+// The SAME second character, at the frontmatter opener, and it is not a
+// duplicate of the loop above: this is the one slot in the file where the
+// oracle was measurably the WIDEST artifact in the org rather than the
+// narrowest.
+//
+// The tab fixtures in SITES pass because the oracle's guard was a NOT-A-TAB
+// test - `(?![ \t]*\t)` - rather than a space-only one, and its alternation
+// then admitted `\s`. JavaScript's `\s` covers U+000C, U+000B, U+00A0 and
+// U+2000, so all four opened frontmatter in the executable spec while
+// `frontmatter_open = "---", [space], [frontmatter_format]` admits none of
+// them, and while all three reference engines reject every one (measured under
+// carve#907 on carve-js `3d95e94`, carve-php `876e312`, carve-rs `378f0d5`).
+// A tab fixture cannot see that: a tab is inside `\s` too, so it went on
+// reporting the slot narrow while four other characters walked through - the
+// same shape carve#888 found at `link_title`, which is why the fixture is the
+// same idea rather than a new one.
+//
+// The mixed form is here for the reason the whole file is: the run, not the
+// first character. `--- <FF>yaml` starts with a space and is still not padding.
+const OUTSIDE_CLASS_FRONTMATTER = [
+  ['a form feed', '\f'],
+  ['a vertical tab', '\v'],
+  ['a no-break space', ' '],
+  ['an en quad', ' '],
+]
+for (const [name, ch] of OUTSIDE_CLASS_FRONTMATTER) {
+  for (const [shape, run] of [
+    ['alone', ch],
+    ['after a space', ' ' + ch],
+  ]) {
+    test(`frontmatter_open admits no whitespace outside ' ' in the oracle: ${name}, ${shape}`, () => {
+      const outside = `---${run}yaml\na: 1\n---\nx\n`
+      const spaceForm = '--- yaml\na: 1\n---\nx\n'
+      assert.notEqual(
+        renderDoc(parse(outside)),
+        renderDoc(parse(spaceForm)),
+        `the oracle opened frontmatter after a whitespace character the production does ` +
+          `not admit.\n  outside-class form: ${JSON.stringify(outside)}\n` +
+          `  space form:         ${JSON.stringify(spaceForm)}\n` +
+          `  \`frontmatter_open\` takes \`space\` (PART 7, carve#901; carve#907).\n` +
+          `  A not-a-tab guard is not a space-only guard: JavaScript's \`\\s\` covers\n` +
+          `  U+000C, U+000B, U+00A0 and U+2000, and every one of them reached the\n` +
+          `  format token while the tab fixture reported the slot narrow.`,
+      )
+    })
+  }
 }

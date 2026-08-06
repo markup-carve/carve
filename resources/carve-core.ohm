@@ -85,7 +85,27 @@ CarveCore {
   btClose    = "```" "`"* spaceChar* lineEnd
   tdOpen     = "~~~" "~"*
   tdClose    = "~~~" "~"* spaceChar* lineEnd
-  langInfo   = spaceChar* langToken
+  // The slot before the info string is PADDING and takes `space`, matching
+  // `fenced_code_block = code_fence_open, [space], [code_fence_info]` in
+  // resources/grammar.ebnf. It said `spaceChar*` until carve#907, and
+  // `spaceChar` is a space OR A TAB - so the two normative files disagreed at
+  // this one production while every prose clause said a tab is syntax only in
+  // a line's leading indentation run (PART 7).
+  //
+  // A caveat, written here rather than inferred: THIS RULE IS NOT EXECUTED.
+  // scripts/spec/render.mjs matches only `inlines`, `attrs` and `blockAttrs`,
+  // so nothing in this repository ever reaches `doc`, `block`, `codeBlock` or
+  // `langInfo`. Replacing this rule's body with a literal that matches nothing
+  // leaves `npm test` and `npm run core:check` entirely green (measured under
+  // carve#907, and filed as its own ticket). The line is therefore pinned as
+  // TEXT by tests/separator-role-split.test.mjs, the way grammar.ebnf's
+  // productions are, rather than behaviorally - a narrowing nothing evaluates
+  // is not a check.
+  //
+  // `titleSp` below is the opposite case: it is reached through `inlines` and
+  // is genuinely live. The ohm is half-executed, and this rule sits in the
+  // dead half.
+  langInfo   = " "? langToken
   langToken  = langChar+
   langChar   = letter | digit | "-" | "_" | "+" | "#" | "." | "/"
   // only a closer of the OPEN fence's character ends the body: a `~~~`

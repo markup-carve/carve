@@ -1,0 +1,100 @@
+Code fence metadata slots must be a space too
+
+````
+```	js
+x
+```
+.
+<p><code>	js
+x
+</code></p>
+````
+
+````
+``` 	js
+x
+```
+.
+<p><code> 	js
+x
+</code></p>
+````
+
+````
+```	 js
+x
+```
+.
+<p><code>	 js
+x
+</code></p>
+````
+
+````
+```js	"T"
+x
+```
+.
+<p><code>js	"T"
+x
+</code></p>
+````
+
+````
+```js 	"T"
+x
+```
+.
+<p><code>js 	"T"
+x
+</code></p>
+````
+
+````
+```js	 "T"
+x
+```
+.
+<p><code>js	 "T"
+x
+</code></p>
+````
+
+````
+```js "T"	[L]
+x
+```
+.
+<p><code>js "T"	[L]
+x
+</code></p>
+````
+
+````
+```js "T" 	[L]
+x
+```
+.
+<p><code>js "T" 	[L]
+x
+</code></p>
+````
+
+````
+```js "T"	 [L]
+x
+```
+.
+<p><code>js "T"	 [L]
+x
+</code></p>
+````
+
+````
+```js "T" [L]
+x
+```
+.
+<pre title="T"><code class="language-js">x
+</code></pre>
+````

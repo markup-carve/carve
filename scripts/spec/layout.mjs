@@ -673,7 +673,20 @@ export function parse(src) {
   // than its first character. Trailing whitespace after the token is a
   // different question - the line-ending rule, not this slot - so a tab is
   // still tolerated there.
-  if (lines[0] !== undefined && /^---(?![ \t]*\t)(\s|[A-Za-z0-9]+\s*$|$)/.test(lines[0])) {
+  //
+  // The lookahead used to be `(?![ \t]*\t)`, which is a NOT-A-TAB test rather
+  // than a space-only one, and the alternation's first branch was `\s`. A tab
+  // is not the only character outside the slot's class: JavaScript's `\s`
+  // covers U+000C, U+000B, U+00A0 and U+2000, so `---<FF>yaml`,
+  // `---<VT>yaml`, `---<NBSP>yaml` and `---<U+2000>yaml` all opened
+  // frontmatter here while `frontmatter_open = "---", [space], ...` admits
+  // none of them - and all three reference engines reject every one of them
+  // (measured under carve#907 on carve-js `3d95e94`, carve-php `876e312` and
+  // carve-rs `378f0d5`). So the oracle was the only artifact in the org that
+  // read them as an opener. `[^\S ]` is "whitespace that is not a space", and
+  // ` *` in front of it is what keeps the test about the whole run rather
+  // than its first character.
+  if (lines[0] !== undefined && /^---(?! *[^\S ])( |[A-Za-z0-9]+\s*$|$)/.test(lines[0])) {
     for (let j = 1; j < lines.length; j++) {
       if (/^---[ \t]*$/.test(lines[j])) {
         lines.splice(0, j + 1)
