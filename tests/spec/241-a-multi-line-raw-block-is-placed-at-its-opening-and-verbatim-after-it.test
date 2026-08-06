@@ -1,0 +1,41 @@
+A multi-line raw block is placed at its opening and verbatim after it
+
+````
+[^a]: note
+
+  ```=html
+  <b>x</b>
+  <i>y</i>
+  ```
+
+see[^a]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <b>x</b>
+<i>y</i>
+      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+````
+
+````
+> ```=html
+> <pre>
+> a
+>   b
+> </pre>
+> ```
+.
+<blockquote>
+  <pre>
+a
+  b
+</pre>
+</blockquote>
+````
