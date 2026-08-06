@@ -97,8 +97,14 @@ function splitTrailingAttrBlock(line) {
     if (c === '"' || c === "'") { quote = c; continue }
     if (c === '{') { if (open === -1) open = i; continue }
     if (c === '}' && open !== -1 && i === trimmedEnd.length - 1) {
-      // Must be separated from what precedes it by a space (PART 7).
-      if (open === 0 || trimmedEnd[open - 1] !== ' ') return [line, null]
+      // Must be separated from what precedes it by a run of SPACES (PART 7).
+      // The whole run is checked, not just the character adjacent to the `{`:
+      // `[a]: /u<TAB><SP>{.c}` puts a space next to the brace while the run
+      // still holds a tab, and the trailing-strip below would then swallow the
+      // tab and attach the block anyway.
+      if (open === 0) return [line, null]
+      const sep = /[ \t]*$/.exec(trimmedEnd.slice(0, open))[0]
+      if (sep === '' || sep.includes('\t')) return [line, null]
       return [trimmedEnd.slice(0, open).replace(/\s+$/, ''), trimmedEnd.slice(open)]
     }
   }
@@ -614,7 +620,15 @@ export function parse(src) {
   // The slot before the format token is PADDING and takes `space` (PART 7;
   // carve#901): it sits after the `---`, and a tab is syntax only in a leading
   // indentation run. `---<TAB>yaml` is therefore not a typed opener.
-  if (lines[0] !== undefined && /^---( |[A-Za-z0-9]+[ \t]*$|$)/.test(lines[0])) {
+  //
+  // The lookahead, rather than narrowing the alternation, is what makes
+  // `---<SP><TAB>yaml` fail too. Narrowing the first alternative to a literal
+  // space only rejects a run that STARTS with a tab; a mixed run reaches the
+  // token just as well, and the rule is about the whole padding run rather
+  // than its first character. Trailing whitespace after the token is a
+  // different question - the line-ending rule, not this slot - so a tab is
+  // still tolerated there.
+  if (lines[0] !== undefined && /^---(?![ \t]*\t)(\s|[A-Za-z0-9]+\s*$|$)/.test(lines[0])) {
     for (let j = 1; j < lines.length; j++) {
       if (/^---[ \t]*$/.test(lines[j])) {
         lines.splice(0, j + 1)

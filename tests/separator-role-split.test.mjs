@@ -152,8 +152,14 @@ const SITES = [
     required: /frontmatter_open = "---", \[space\], \[frontmatter_format\]/,
     forbidden: /frontmatter_open = "---", \[whitespace\]/,
     why: 'the `---` pair has already decided the block; the token sits inline after it',
+    // The second pair is a MIXED run. A padding rule stated as "the slot takes
+    // a space" is easy to implement as "the first character must be a space",
+    // which passes the tab-first fixture and still lets `---<SP><TAB>yaml`
+    // through - the rule is about the whole run. Found by review, not by the
+    // tab-first fixture, which is exactly why it is pinned separately.
     fixtures: [
       { slot: 'the format-token slot', tab: '---\tyaml\na: 1\n---\nx\n', space: '--- yaml\na: 1\n---\nx\n' },
+      { slot: 'the format-token slot, mixed run', tab: '--- \tyaml\na: 1\n---\nx\n', space: '--- yaml\na: 1\n---\nx\n' },
     ],
     engineDeferred: ENGINE_DEFERRED,
   },
@@ -182,8 +188,14 @@ const SITES = [
     required: /\[link_title\], \[space, attributes\], newline/,
     forbidden: /\[link_title\], \[whitespace, attributes\]/,
     why: 'the definition is complete at `[a]: /url`; the attribute block sits inline after it',
+    // The second pair puts the tab at the FAR end of the separator run, with a
+    // space adjacent to the `{`. The oracle scans this run backwards from the
+    // brace, so a check that reads only the adjacent character passes while a
+    // tab still sits in the run - the same mixed-run hole as the frontmatter
+    // slot above, reached from the other side.
     fixtures: [
       { slot: 'the trailing-attributes slot', tab: '[a]: /u\t{.c}\n\n[a][]\n', space: '[a]: /u {.c}\n\n[a][]\n' },
+      { slot: 'the trailing-attributes slot, mixed run', tab: '[a]: /u\t {.c}\n\n[a][]\n', space: '[a]: /u {.c}\n\n[a][]\n' },
     ],
     engineDeferred: ENGINE_DEFERRED,
   },
