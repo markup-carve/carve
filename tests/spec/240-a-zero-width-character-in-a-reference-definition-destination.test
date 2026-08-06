@@ -1,0 +1,17 @@
+A zero-width character in a reference definition destination
+
+```
+[r]: ﻿https://e.com/
+
+see [x][r]
+.
+<p>see <a href="﻿https://e.com/">x</a></p>
+```
+
+```
+[r]: https://e﻿.com/
+
+see [x][r]
+.
+<p>see <a href="https://e﻿.com/">x</a></p>
+```

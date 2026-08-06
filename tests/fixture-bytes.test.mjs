@@ -66,6 +66,21 @@ const INVENTORY = [
     crv: ['ZWSP'],
     html: ['ZWSP'],
   },
+  // The BOM is the case, on BOTH sides, and in the DEFINITION half of the rule:
+  // a zero-width character is an ordinary destination character there too,
+  // because the definition is built from the same `link_destination`. Strip it
+  // and the pair still matches, testing nothing - which is the shape that let
+  // carve#806 be closed while this half was still wrong.
+  {
+    base: '240-a-zero-width-character-in-a-reference-definition-destination',
+    crv: ['BOM'],
+    html: ['BOM'],
+  },
+  {
+    base: '240-a-zero-width-character-in-a-reference-definition-destination-2',
+    crv: ['BOM'],
+    html: ['BOM'],
+  },
 ]
 
 function scan(text) {

@@ -24,3 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+240-a-zero-width-character-in-a-reference-definition-destination  the pinned build reads a BOM in a definition destination as separator whitespace and drops it; fixed in carve-js after this pin (carve#806)
+240-a-zero-width-character-in-a-reference-definition-destination-2  the pinned build truncates a definition destination at a BOM; fixed in carve-js after this pin (carve#806)
