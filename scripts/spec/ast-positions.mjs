@@ -52,8 +52,18 @@ const BREAK_TYPES = new Set(['soft_break', 'hard_break'])
  * node may legitimately omit `pos` (PART 12 §4's reassembled clause), and
  * skipping past it keeps the rule from going quiet exactly where a span is
  * most likely to be wrong.
+ *
+ * ITS OWN PASS, deliberately (carve#913). The opening-markup convention ruled
+ * there points the same way - a span covering the construct's markup contains
+ * the children inside it - and a checker that derived containment from that
+ * convention would go quiet, with nothing failing, the day the convention was
+ * revisited. So this is separate, exported, and RETURNS THE NUMBER OF PAIRS IT
+ * COMPARED: a containment pass that examined nothing reports zero findings and
+ * is indistinguishable from a clean one, which is the shape carve#755
+ * catalogues.
  */
-function checkContainment(doc, findings) {
+export function checkContainment(doc, findings) {
+  let compared = 0
   const walk = (node, path, parent, parentPath) => {
     if (Array.isArray(node)) {
       node.forEach((child, i) => walk(child, `${path}[${i}]`, parent, parentPath))
@@ -62,6 +72,7 @@ function checkContainment(doc, findings) {
     if (!node || typeof node !== 'object') return
     const placed = typeof node.type === 'string' && node.pos
     if (placed && parent) {
+      compared += 1
       const outside =
         node.pos.startOffset < parent.pos.startOffset || node.pos.endOffset > parent.pos.endOffset
       if (outside) {
@@ -80,6 +91,122 @@ function checkContainment(doc, findings) {
     }
   }
   walk(doc, '$', null, '$')
+
+  return compared
+}
+
+/**
+ * PART 12 §4: A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP (carve#913).
+ *
+ * One entry per node type opened by markup this checker can name from the
+ * SOURCE alone. The pattern is matched at the span's start, after any leading
+ * indentation on that line - the clause puts the indent inside the span,
+ * because it is what places a nested item's marker.
+ *
+ * WHY A TABLE RATHER THAN A RULE PER NODE. Only the source can say whether a
+ * span begins at the markup, and only the type says what that markup is. Every
+ * other content-level rule in this file needs the node's own text to compare
+ * against, which is why `text` was the only node any of them reached.
+ *
+ * WHAT IS DELIBERATELY ABSENT, each for a reason PART 12 §4 states:
+ *
+ *   `text`, `paragraph`, `abbreviation`, `smart_punctuation`, `figure` and the
+ *   breaks open with no markup of their own, so there is nothing to point at.
+ *   `table_cell` and `table_row` run BETWEEN the pipes - a cell claiming the
+ *   `|` would overlap the cell before it.
+ *   `emphasis` and `strong` carry the combined form's derived span: a slash
+ *   and an asterisk around a word materialise the pair from ONE run of
+ *   delimiters, and the inner node's span is the outer trimmed by two
+ *   characters, so it legitimately starts at the content.
+ *   `link_reference_definition` hoists to the root from wherever it was
+ *   written, and the engines do not yet agree whether the container prefix on
+ *   its line is inside its span. That is a live row in the span panel, not a
+ *   settled marker.
+ *
+ * An absent type is a type this rule does not reach, never a type the rule
+ * permits anything of: the containment, overlap, terminator and slice rules
+ * all still apply to it.
+ */
+export const OPENING_MARKUP = new Map(
+  Object.entries({
+    abbreviation_def: /^\*\[/,
+    admonition: /^:/,
+    autolink: /^</,
+    block_quote: /^>/,
+    caption_number: /^#/,
+    code: /^`/,
+    code_block: /^[`~]/,
+    comment: /^%/,
+    critic_comment: /^\{/,
+    definition_list: /^:/,
+    delete: /^\{/,
+    div: /^:/,
+    footnote_ref: /^\[/,
+    heading: /^#/,
+    heading_ref: /^</,
+    highlight: /^[={]/,
+    image: /^!/,
+    inline_extension: /^:/,
+    inline_footnote: /^\^/,
+    insert: /^\{/,
+    line_block: /^:/,
+    link: /^\[/,
+    list: /^(?:[-+*]|[0-9]+[.)]|[A-Za-z]+[.)]|\.)/,
+    list_item: /^(?:[-+*]|[0-9]+[.)]|[A-Za-z]+[.)]|\.)/,
+    literal_inline: /^!/,
+    math: /^\$/,
+    mention: /^@/,
+    raw_block: /^`/,
+    raw_inline: /^`/,
+    span: /^\[/,
+    strike: /^[~{]/,
+    subscript: /^\{/,
+    substitution: /^\{/,
+    superscript: /^\{/,
+    symbol: /^:/,
+    table: /^\|/,
+    tag: /^#/,
+    thematic_break: /^[-*_]/,
+    underline: /^[_{]/,
+  }),
+)
+
+/**
+ * A span begins at the markup that opens the construct.
+ *
+ * Reports into `findings` and RETURNS THE NUMBER OF SPANS IT EXAMINED, for the
+ * reason `checkContainment` returns its own count: positions are an opt-in
+ * parse option in two of the three engines, so a probe that did not request
+ * them hands this rule a tree with no `pos` anywhere and it reports nothing at
+ * all. Zero findings and zero examined are the same output from a clean run
+ * and from a run that never happened.
+ */
+export function checkOpeningMarkup(doc, codepoints, findings) {
+  let examined = 0
+  for (const [node, path] of walkNodes(doc)) {
+    const pattern = OPENING_MARKUP.get(node.type)
+    if (!pattern) continue
+    const pos = node.pos
+    if (!pos || !Number.isInteger(pos.startOffset) || !Number.isInteger(pos.endOffset)) continue
+    if (pos.startOffset > codepoints.length) continue
+    let at = pos.startOffset
+    while (at < pos.endOffset && (codepoints[at] === ' ' || codepoints[at] === '\t')) at += 1
+    examined += 1
+    // WIDE ENOUGH FOR THE LONGEST MARKER. An ordered marker is digits then a
+    // delimiter, so a window that truncates before the delimiter turns a
+    // well-formed item into a reported violation - a false finding, not a
+    // missed one, which is the worse direction for a rule meant to be acted on.
+    const ahead = codepoints.slice(at, at + 24).join('')
+    if (!pattern.test(ahead)) {
+      findings.push(
+        `pos does not begin at the markup that opens "${node.type}" at ${path}: ` +
+          `offset ${pos.startOffset} reaches ${JSON.stringify(ahead)}, which does not match ` +
+          `${pattern}`,
+      )
+    }
+  }
+
+  return examined
 }
 
 /**
@@ -154,8 +281,9 @@ function checkSiblingOverlap(node, path, findings) {
 }
 
 export function checkPositions(doc, source, findings) {
-  checkContainment(doc, findings)
   const codepoints = [...source]
+  checkContainment(doc, findings)
+  checkOpeningMarkup(doc, codepoints, findings)
   for (const [node, path] of walkNodes(doc)) {
     checkSiblingOverlap(node, path, findings)
     // An unknown type is the schema's job now (it enumerates them, and the

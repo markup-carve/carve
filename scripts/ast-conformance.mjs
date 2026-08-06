@@ -435,9 +435,13 @@ function reportValueDisagreements(present) {
  * the fix for a red run "wait". A declared count still fails the moment an
  * engine changes its mind about a span, which nothing else here can see.
  *
- * IT DECIDES NOTHING ABOUT WHICH SIDE IS RIGHT. Whether a span covers the
- * markup that opens a node is markup-carve/carve#913, and most of these rows
- * are that question.
+ * IT NOW NAMES A SIDE. Whether a span covers the markup that opens a node was
+ * markup-carve/carve#913, and most of these rows are that question; §4 answers
+ * it markup-inclusive, so an extent row is an engine owing a fix rather than an
+ * open convention. What the panel still does not do is say WHICH engine owes
+ * it - that needs the source, and the source-side rule is `checkOpeningMarkup`
+ * in scripts/spec/ast-positions.mjs, which each engine's `report` runs against
+ * its own tree.
  */
 function reportSpanDisagreements(present) {
   const byKey = new Map()
@@ -500,8 +504,8 @@ function reportSpanDisagreements(present) {
       console.log(`  ${String(docs.size).padStart(4)} doc(s)  ${key}`)
       console.log(`        e.g. ${[...docs][0]}: ${who}`)
     }
-    console.log('  EXTENT rows are the open convention question markup-carve/carve#913 - whether a')
-    console.log('  span covers the markup that opens a node. This panel names no side.')
+    console.log('  EXTENT rows are PART 12 §4: a span begins at the markup that opens the node,')
+    console.log('  so an engine spanning the content alone is the one that moves (carve#913).')
   }
 
   const problems = reconcileSpans(

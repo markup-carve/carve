@@ -128,6 +128,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Corpus 262 through 265 carry it, each with its one-space CONTROL. Nothing
   else can see the rule: zero of the 737 documents that existed before the
   ruling carried a two-space run at any of the five sites.
+- **PART 12 §4: a span begins at the construct's opening markup, and containment
+  is checked on its own** (carve#913). A node's `pos` covers the construct as
+  WRITTEN - the `>`, the `#`, the list marker and the indentation placing it,
+  the `[` - so a span round-trips to the source text that produced the node.
+  Two nodes keep a content-only span, both already described in §4: the inner
+  half of a combined `/*x*/`, derived from the outer by trimming the delimiters,
+  and a table cell, which runs between the pipes.
+
+  This was never decided, and could not have been enforced if it had been. The
+  three-way span panel added in carve#917 found 279 of 690 documents carrying a
+  span the engines do not agree on, and the check that existed asserted only
+  that a span SLICES TO plausible text - a property every one of those
+  divergences preserves, since carve-php's `[0, 1]` and the other two's
+  `[4, 5]` over `* * *` both slice to an asterisk.
+
+  Containment ("a parent's span contains every child's") was already normative
+  and is now asserted in a pass of its own, counting the pairs it compared. The
+  two rules agree today, which is the reason to separate them: a checker that
+  derived containment from the convention would go quiet, with nothing failing,
+  the day the convention was revisited.
+
+  carve-js and carve-php both move, and consumers indexing on content offsets
+  move with them.
 
 - **PART 7: the code fence's metadata slots are padding** (carve#894).
   `fenced_code_block` had the same shape as `frontmatter_open` - a fence, a

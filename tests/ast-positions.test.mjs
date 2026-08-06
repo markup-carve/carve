@@ -18,6 +18,9 @@ import { fileURLToPath } from 'node:url'
 import { parse } from '@markup-carve/carve'
 import {
   HOISTED_DEFINITION_TYPES,
+  OPENING_MARKUP,
+  checkContainment,
+  checkOpeningMarkup,
   checkPositions,
   walkNodes,
 } from '../scripts/spec/ast-positions.mjs'
@@ -143,6 +146,29 @@ test('a child whose span leaves its parent is reported', () => {
   const findings = findingsFor(doc, source)
   assert.equal(findings.length, 1, findings.join('\n'))
   assert.match(findings[0], /span outside its parent: "paragraph"/)
+})
+
+test('a child that STARTS before its parent is reported', () => {
+  // The other direction, pinned on its own. Containment is two comparisons, and
+  // every case above violates BOTH - so disabling the start-side one changed
+  // nothing any test could see. Found by mutating the predicate (carve#913):
+  // the mutant survived, which is the definition of an unpinned rule.
+  const source = '- one\n\n  second\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'list_item',
+        pos: pos(6, 15),
+        children: [{ type: 'paragraph', pos: pos(2, 15), children: [] }],
+      },
+    ],
+  }
+  const findings = findingsFor(doc, source)
+  assert.ok(
+    findings.some((f) => /span outside its parent: "paragraph"/.test(f)),
+    findings.join('\n'),
+  )
 })
 
 test('a parent that covers its children is accepted', () => {
@@ -303,4 +329,134 @@ test('every definition kind the schema hoists is exempt from the overlap rule', 
     [],
     `the schema says these hoist, and the overlap rule does not exempt them: ${missing.join(', ')}`,
   )
+})
+
+/*
+ * A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP (PART 12 section 4,
+ * carve#913).
+ *
+ * The ruling this enforces: `pos` covers the construct as WRITTEN, so it
+ * round-trips to the source that produced the node. The trap it must not
+ * repeat is one module over - the checker's only content-level rule asserted
+ * that a span SLICES TO plausible text, and both sides of a real divergence
+ * pass that: carve-php's `[0, 1]` and the other two's `[4, 5]` over `* * *`
+ * both slice to an asterisk. So these compare the OFFSET against the source at
+ * it, never against what the node says it holds.
+ */
+
+test('a span that starts at the content rather than the marker is reported', () => {
+  const source = '> q\n'
+  const doc = {
+    type: 'document',
+    children: [{ type: 'block_quote', pos: pos(2, 3), children: [] }],
+  }
+  const findings = findingsFor(doc, source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /does not begin at the markup that opens "block_quote"/)
+})
+
+test('the same quote spanning its marker is accepted', () => {
+  // The pair matters: the rule above has to be the reason the finding appears,
+  // not the document.
+  const source = '> q\n'
+  const doc = {
+    type: 'document',
+    children: [{ type: 'block_quote', pos: pos(0, 3), children: [] }],
+  }
+  assert.deepEqual(findingsFor(doc, source), [])
+})
+
+test('the indentation before a nested marker is inside the item, not outside it', () => {
+  const source = '  - a\n'
+  const placed = {
+    type: 'document',
+    children: [{ type: 'list_item', pos: pos(0, 5), children: [] }],
+  }
+  assert.deepEqual(findingsFor(placed, source), [])
+
+  // And an item that began at its own content is still reported, so the
+  // allowance is for indentation and not for everything before the marker.
+  const contentOnly = {
+    type: 'document',
+    children: [{ type: 'list_item', pos: pos(4, 5), children: [] }],
+  }
+  assert.match(
+    findingsFor(contentOnly, source).join('\n'),
+    /does not begin at the markup that opens "list_item"/,
+  )
+})
+
+test('a table cell is not asked to begin at a pipe', () => {
+  // PART 12 section 4's own worked example gives the first body cell the span
+  // of " Fresh Fruits    " - between the pipes. The `|` opens the ROW, and a
+  // cell claiming it would overlap the cell before it, which the sibling
+  // overlap rule forbids. So the exception is stated in the table rather than
+  // left for a reader to infer from silence.
+  assert.equal(OPENING_MARKUP.has('table_cell'), false)
+  assert.equal(OPENING_MARKUP.has('table_row'), false)
+  const source = '| a |\n'
+  const doc = {
+    type: 'document',
+    children: [{ type: 'table_cell', pos: pos(1, 4), children: [] }],
+  }
+  assert.deepEqual(findingsFor(doc, source), [])
+})
+
+test('the combined form keeps its derived inner span', () => {
+  // `/*x*/` materialises a strong > emphasis pair from ONE run of delimiters,
+  // and the inner span is the outer trimmed by two characters. There is no
+  // second opening delimiter for the inner node to begin at, so neither type
+  // is in the table.
+  assert.equal(OPENING_MARKUP.has('emphasis'), false)
+  assert.equal(OPENING_MARKUP.has('strong'), false)
+})
+
+test('THE OPT-IN TRAP: a tree with no positions examines nothing, and says so', () => {
+  // Positions are behind a parse option in carve-rs and carve-php. A probe that
+  // did not request them hands this rule a tree with no `pos` anywhere - and
+  // zero findings from zero spans reads exactly like a clean run. The count is
+  // the only thing that tells the two apart, which is why the rule returns it
+  // and the corpus test below asserts on it.
+  const unrequested = {
+    type: 'document',
+    children: [{ type: 'block_quote', children: [{ type: 'paragraph', children: [] }] }],
+  }
+  const findings = []
+  assert.equal(checkOpeningMarkup(unrequested, [...'> q\n'], findings), 0)
+  assert.deepEqual(findings, [])
+})
+
+test('no corpus document begins a span away from its opening markup', () => {
+  // The synthetic documents above prove the rule fires; this proves it does not
+  // fire on a real one, over every type the table names. The EXAMINED count is
+  // asserted because zero findings out of zero spans is the same output as a
+  // clean run - the shape carve#755 catalogues.
+  const dir = resolve(repo, 'tests/corpus')
+  const cases = readdirSync(dir).filter((name) => name.endsWith('.crv'))
+  let examined = 0
+  for (const name of cases) {
+    const source = readFileSync(resolve(dir, name), 'utf8')
+    const findings = []
+    examined += checkOpeningMarkup(parse(source), [...source], findings)
+    assert.deepEqual(findings, [], `${name}\n${findings.join('\n')}`)
+  }
+  assert.ok(examined > 1000, `only ${examined} span(s) reached the opening-markup rule`)
+})
+
+test('CONTAINMENT, in a pass of its own, over every corpus document', () => {
+  // Asserted separately from the opening-markup rule on purpose (carve#913).
+  // The two point the same way today, which is exactly why a checker deriving
+  // one from the other would go quiet with nothing failing the day the
+  // convention was revisited. Same non-vacuity guard: the pass counts the
+  // parent/child pairs it compared.
+  const dir = resolve(repo, 'tests/corpus')
+  const cases = readdirSync(dir).filter((name) => name.endsWith('.crv'))
+  let pairs = 0
+  for (const name of cases) {
+    const source = readFileSync(resolve(dir, name), 'utf8')
+    const findings = []
+    pairs += checkContainment(parse(source), findings)
+    assert.deepEqual(findings, [], `${name}\n${findings.join('\n')}`)
+  }
+  assert.ok(pairs > 2000, `only ${pairs} parent/child pair(s) were compared`)
 })

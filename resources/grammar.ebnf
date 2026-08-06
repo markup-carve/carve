@@ -5414,6 +5414,15 @@ EOF = (* end of file *) ;
       permitted below; this says the partial span is not an alternative to it.
       (carve#541, carve#565.)
 
+      CHECKED ON ITS OWN, not as a consequence of the opening-markup clause
+      below. The two point the same way today -- a span covering the
+      construct's markup contains the children inside it -- and that is
+      precisely why containment is asserted separately: were the convention
+      ever revisited, a checker that derived containment from it would go quiet
+      with nothing failing. So the conformance run examines parent and child
+      spans in a pass of its own, and COUNTS the pairs it examined, so the pass
+      cannot come back clean by having compared nothing. (carve#913.)
+
       A SPAN COVERS THE MARKUP THE AUTHOR WROTE -- NORMATIVE. Where a node
       has markup of its own, its span covers that markup and not merely the
       content inside it. The case that needed saying is the break, which has
@@ -5467,6 +5476,49 @@ EOF = (* end of file *) ;
       discriminator is what is in the SOURCE, not what type the node has --
       which is also how the checker tests it, so a synthesized break needs no
       exemption list.
+
+      A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP -- NORMATIVE. Where a
+      node is opened by markup, its `startOffset` selects that markup and not
+      the content after it: the `>` of a block quote, the `#` of a heading, the
+      marker of a list item, the `:` of a colon fence, the `[` of a link, the
+      backtick run of a code block. `pos` therefore round-trips to the source
+      text that PRODUCED the node, which is what a formatter, a linter and an
+      editor selection each need; a span that starts at the content identifies
+      the rendered result instead, and no longer identifies the construct.
+
+      Leading indentation on the opening line is INSIDE the span. A nested
+      item's marker is placed by the whitespace before it, so a span that
+      started at the marker would leave the characters deciding the item's
+      column outside the item.
+
+      THE ALTERNATIVE WAS CONTENT-ONLY, and it is rejected for a structural
+      reason rather than a stylistic one: with it, a nested construct's span is
+      no longer contained by its parent's, so the span tree stops being a tree
+      and the clause above stops being enforceable. Its one advantage was that
+      fewer engines move. Recorded so it is not revisited: carve-js and
+      carve-php both move under this reading, and every consumer indexing on
+      content offsets moves with them.
+
+      TWO EXCEPTIONS, both already stated elsewhere in this section and neither
+      an opt-out from the rule:
+
+      -- the combined form `/*x*/` materialises a `strong` > `emphasis` pair
+         from ONE run of delimiters. The outer node carries the run; the inner
+         span is derived by trimming the two-character delimiters, so the inner
+         node's span is the content. There is no second opening delimiter for
+         it to begin at.
+      -- a table cell's span runs BETWEEN the pipes, as the discontiguous-node
+         clause below shows for ` Fresh Fruits    `. The `|` opens the ROW, and
+         a cell claiming it would overlap the cell before it -- which the
+         sibling-overlap rule forbids.
+
+      WHY IT IS WRITTEN DOWN. Nothing compared two engines' spans until
+      carve#917 built the panel, and the first run of it reported 279 of 690
+      documents carrying a span the three engines do not agree on. The check
+      that existed asserted a span SLICES TO plausible text -- a property every
+      one of those divergences preserves, since carve-php's `[0, 1]` and the
+      other two's `[4, 5]` both slice to `*`. So the convention had never been
+      decided and could not have been enforced if it had been. (carve#913.)
 
       A SPAN DOES NOT BEGIN AT A LINE TERMINATOR -- NORMATIVE. Except on a
       `soft_break` or a `hard_break`, whose content IS the terminator, a node's
