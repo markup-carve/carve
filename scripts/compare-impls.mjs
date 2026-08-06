@@ -27,6 +27,19 @@ const roundtrip = args.has('--roundtrip')
 // disagreeing about a document's canonical form went unnoticed (carve#478).
 const failOnDiff = args.has('--fail-on-diff')
 
+// The cheap half of the run. `tests/implementation-comparison-counts.test.mjs`
+// reads exactly two things off this output - `corpus_pairs=N` and each engine's
+// `pass=N/M` - and NEITHER is a timing: `grep avg_ms` over that test returns
+// nothing. Everything else the default run produces is the five-target sweep,
+// which costs an order of magnitude more wall clock and, because it re-renders
+// every document five times, re-rolls per-engine `avg_ms` numbers no assertion
+// consumes. So a corpus commit paid twenty minutes to republish noise.
+//
+// This mode renders every document once per engine on the default target and
+// prints the count lines. It is the same claim, validated the same way, over a
+// fifth of the work (carve#804).
+const countsOnly = args.has('--counts-only')
+
 // Optional cases that reached fewer than two engines AND carry no recorded
 // reason. Gated on below, so a new one cannot join the roll-up unexplained.
 let undocumentedUnreachable = []
@@ -78,6 +91,20 @@ if (unknownTargets.length || targets.length === 0) {
   )
   process.exit(2)
 }
+
+// `--counts-only` OWNS the target set, so passing both is a request for two
+// different runs. Silently letting one win would produce counts under a target
+// set the caller did not get told about, and the counts are the whole output.
+if (countsOnly && targetsArg) {
+  console.error(
+    `--counts-only picks the target set itself, so it cannot be combined with ${targetsArg}. Drop one.`,
+  )
+  process.exit(2)
+}
+// NOTE: counts-only does NOT narrow `targets` here. Which targets a given case
+// runs on is decided per case in `targetsFor`, because "the default target" is
+// not the same set as "the targets this case is SCORED on" - see the comment
+// there.
 
 // In the optional corpus the manifest pins a target per case, so the target set
 // is not a free choice: each case runs on the target it pins and `--targets`
@@ -593,12 +620,33 @@ const fixtureCounts = {}
 // and `--targets` filters which cases that leaves. In the core corpus every case
 // runs on every requested target.
 function targetsFor(pair) {
-  if (!isOptional) return targets
-  return targets.includes(pair.target) ? [pair.target] : []
+  if (isOptional) return targets.includes(pair.target) ? [pair.target] : []
+  if (!countsOnly) return targets
+  // Counts-only renders exactly what is SCORED, which is not the same as "the
+  // default target". A core case may add an expected-output file on a non-html
+  // target (`NN-slug.md`, `.txt`, `.fmt`), and `expectedFor` scores it whenever
+  // that target is visited - so those files count toward the `pass=N/M` this
+  // mode exists to reproduce. The published snapshot shows the gap plainly:
+  // `corpus_pairs=675` against `pass=690/690`, the 15 extra being exactly those
+  // files. Forcing html would have reported `675/675` and quietly answered a
+  // smaller question than the one the page asks.
+  //
+  // What counts-only drops is the rest: every case rendered on every target for
+  // ENGINE-AGAINST-ENGINE agreement, which is the five-target sweep and which no
+  // count in the gate depends on. In the corpus as it stands that is 15 extra
+  // renders on top of one per document, against four extra per document.
+  return targets.filter(
+    (target) =>
+      target === DEFAULT_TARGET ||
+      (TARGET_EXTENSIONS[target] &&
+        existsSync(join(corpusDir, expectedFileFor(pair.slug, target)))),
+  )
 }
 
 const activeTargets = ALL_TARGETS.filter((target) =>
-  isOptional ? pairs.some((pair) => targetsFor(pair).includes(target)) : targets.includes(target),
+  isOptional || countsOnly
+    ? pairs.some((pair) => targetsFor(pair).includes(target))
+    : targets.includes(target),
 )
 
 /**
@@ -872,8 +920,13 @@ for (const impl of active) {
   const avg = s.runnable ? (s.ms / s.runnable).toFixed(2) : '0.00'
   // pass/mismatch score the fixtures only, so they are reported against the
   // pair count rather than the run count (which spans every target).
+  // `avg_ms` is dropped in counts-only mode rather than merely ignored. It is a
+  // wall-clock number from whatever machine ran it - the same three engines
+  // moved 70.80 -> 61.46 and 64.45 -> 56.84 between two runs with no engine
+  // changing - and printing one here would invite pasting it onto a page that
+  // already says the timings are not a benchmark (carve#836).
   console.log(
-    `${impl.name}: pass=${s.ok}/${s.ok + s.mismatch} mismatch=${s.mismatch} error=${s.error} skipped=${s.skipped} runs=${s.runnable} avg_ms=${avg}`,
+    `${impl.name}: pass=${s.ok}/${s.ok + s.mismatch} mismatch=${s.mismatch} error=${s.error} skipped=${s.skipped} runs=${s.runnable}${countsOnly ? '' : ` avg_ms=${avg}`}`,
   )
   // NAME the mismatching cases. `rust: pass=594/595 mismatch=1` was a number
   // with nothing to act on: the run took twenty minutes and finding the one
@@ -897,27 +950,44 @@ if (roundtrip) {
   )
 }
 
-console.log('\nTarget agreement (implementations compared against each other)')
-for (const target of activeTargets) {
-  const t = targetStats[target]
-  // How many of this target's cases were scored against a FILE rather than
-  // against the other engines. `yes` and `none` were the only two answers while
-  // html was the only core target with fixtures; a core case may now add one
-  // per target, so the honest report is the count.
-  const scored = fixtureCounts[target] ?? 0
-  const fixtures =
-    isOptional || target === DEFAULT_TARGET
-      ? ' fixtures=yes'
-      : scored > 0
-        ? ` fixtures=${scored}`
-        : ' fixtures=none'
-  console.log(`${target}: compared=${t.compared} diffs=${t.diffs} errors=${t.errors}${fixtures}`)
+// The per-target agreement block is the substance of the published snapshot, and
+// it is also the part a counts-only run has not measured: it ran one target. So
+// it is omitted rather than printed with one row, which would read as a
+// five-target result that happened to find nothing.
+if (!countsOnly) {
+  console.log('\nTarget agreement (implementations compared against each other)')
+  for (const target of activeTargets) {
+    const t = targetStats[target]
+    // How many of this target's cases were scored against a FILE rather than
+    // against the other engines. `yes` and `none` were the only two answers while
+    // html was the only core target with fixtures; a core case may now add one
+    // per target, so the honest report is the count.
+    const scored = fixtureCounts[target] ?? 0
+    const fixtures =
+      isOptional || target === DEFAULT_TARGET
+        ? ' fixtures=yes'
+        : scored > 0
+          ? ` fixtures=${scored}`
+          : ' fixtures=none'
+    console.log(`${target}: compared=${t.compared} diffs=${t.diffs} errors=${t.errors}${fixtures}`)
+  }
+  console.log(
+    isOptional
+      ? 'target_agreement_note=every optional case has an expected-output fixture on the target it pins; the counts here also assert that the implementations agree with each other.'
+      : 'target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.',
+  )
+} else {
+  // Say what was NOT measured, in the run's own output. A counts-only block that
+  // simply stopped after the pass lines is indistinguishable from a full run
+  // that printed nothing - the same observability defect the NOT COMPARED
+  // roll-up below exists to avoid.
+  console.log(
+    `\ncounts_only=1 targets_measured=${activeTargets.join(',')} of ${ALL_TARGETS.join(',')}`,
+  )
+  console.log(
+    'counts_only_note=this run validates the corpus counts only. Each document was rendered on the default target plus any target it carries an expected-output file for, so every SCORED case is scored - but nothing was compared engine-against-engine on an unscored target, so this makes no agreement claim and is not the published snapshot. Use `npm run compare:impls` for that.',
+  )
 }
-console.log(
-  isOptional
-    ? 'target_agreement_note=every optional case has an expected-output fixture on the target it pins; the counts here also assert that the implementations agree with each other.'
-    : 'target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.',
-)
 
 if (isOptional) {
   console.log('\nOptional feature coverage')

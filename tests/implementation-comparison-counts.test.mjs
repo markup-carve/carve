@@ -102,10 +102,16 @@ for (const corpus of ['core', 'optional']) {
     // has ever added to it from a host that could not re-run the tool.
     const live =
       corpus === 'core' ? effectiveCore() : countPairs('tests/corpus-optional')
-    const rerun =
-      corpus === 'optional'
-        ? 'npm run compare:impls -- --corpus=optional'
-        : 'npm run compare:impls'
+    // Name the CHEAP command first. This message used to say `npm run
+    // compare:impls`, which is the five-target sweep - roughly twenty minutes -
+    // and it was the only instruction offered for a failure that turns on two
+    // numbers this test reads and no timing at all. `--counts-only` renders
+    // every document once per engine and emits both of them, so it is the
+    // honest answer to "this count is stale" (carve#804). The full sweep is
+    // still what the published snapshot is, so it is named too.
+    const suffix = corpus === 'optional' ? ' -- --corpus=optional' : ''
+    const rerun = `npm run compare:counts${suffix}`
+    const full = `npm run compare:impls${suffix}`
     const lagNote =
       corpus === 'core' && laggedPairs > 0
         ? ` (${laggedPairs} pair(s) in ${laggedCategories.length} declared-lag categor(ies) are excluded)`
@@ -113,7 +119,7 @@ for (const corpus of ['core', 'optional']) {
     assert.equal(
       entry.pairs,
       live,
-      `docs/implementation-comparison.md quotes corpus_pairs=${entry.pairs} for the ${corpus} corpus, which now holds ${live}${lagNote}. Re-run "${rerun}" and paste the current output.`,
+      `docs/implementation-comparison.md quotes corpus_pairs=${entry.pairs} for the ${corpus} corpus, which now holds ${live}${lagNote}. Re-run "${rerun}" for the counts this test reads, or "${full}" to retake the whole published snapshot.`,
     )
   })
 }

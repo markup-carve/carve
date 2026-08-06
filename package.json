@@ -13,6 +13,7 @@
     "docs:preview": "vitepress preview docs",
     "corpus:build": "node scripts/generate-corpus.mjs",
     "compare:impls": "node scripts/compare-impls.mjs",
+    "compare:counts": "node scripts/compare-impls.mjs --counts-only",
     "claims:check": "node scripts/engine-claims.mjs",
     "degradation:check": "node scripts/degradation-claims.mjs",
     "fmt:check": "node scripts/fmt-fixture-claims.mjs",
