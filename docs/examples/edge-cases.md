@@ -12007,6 +12007,76 @@ simply reads the braces.
 
 :::
 
+### A definition still INTERRUPTS, attribute block and all
+
+The anchor changes what the pattern matches, and the pattern is read in nine
+places rather than one: eight of them ask "is this line a definition" to decide
+paragraph interruption, lazy continuation, the def-list fold, the container
+scan, the item fold and the marker scan. While the pattern ended in a
+swallow-everything tail those eight could test the RAW line and be right by
+accident, because `[a]: /u {.c}` matched it raw. Anchored, they cannot: the
+trailing attribute block has to be split off first, or a definition carrying
+one stops interrupting anything and folds into the paragraph above it.
+
+Nothing pinned that. Reverting all eight to the raw line left the entire suite
+green, and a differential sweep then found 42 of 72 generated shapes moving.
+These three are the sweep's representatives -- top level, inside a list item,
+and inside a definition-list description.
+
+::: compare
+
+```carve
+text
+[a]: /u {.c}
+
+[a][]
+```
+
+```html
+<p>text</p>
+<p><a href="/u" class="c">a</a></p>
+```
+
+:::
+
+::: compare
+
+```carve
+- text
+  [a]: /u {.c}
+
+[a][]
+```
+
+```html
+<ul>
+  <li>text</li>
+</ul>
+<p><a href="/u" class="c">a</a></p>
+```
+
+:::
+
+::: compare
+
+```carve
+:: term
+:  def
+[a]: /u {.c}
+
+[a][]
+```
+
+```html
+<dl>
+  <dt>term</dt>
+  <dd>def</dd>
+</dl>
+<p><a href="/u" class="c">a</a></p>
+```
+
+:::
+
 The CONTROLS. Every legal shape of the line still is one:
 
 ::: compare

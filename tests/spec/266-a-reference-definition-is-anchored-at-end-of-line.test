@@ -81,6 +81,42 @@ A reference definition is anchored at end of line
 ```
 
 ```
+text
+[a]: /u {.c}
+
+[a][]
+.
+<p>text</p>
+<p><a href="/u" class="c">a</a></p>
+```
+
+```
+- text
+  [a]: /u {.c}
+
+[a][]
+.
+<ul>
+  <li>text</li>
+</ul>
+<p><a href="/u" class="c">a</a></p>
+```
+
+```
+:: term
+:  def
+[a]: /u {.c}
+
+[a][]
+.
+<dl>
+  <dt>term</dt>
+  <dd>def</dd>
+</dl>
+<p><a href="/u" class="c">a</a></p>
+```
+
+```
 [a]: /u "T" {.c}
 
 [a][]
