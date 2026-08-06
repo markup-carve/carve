@@ -987,7 +987,24 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    matches the output format (html) and DROPPED otherwise -- the block parallel
    of raw inline (PART 9 §20). This adopts djot's raw-block syntax; the earlier
    ```raw FORMAT keyword form was removed (no English keyword; symbol-based and
-   symmetric with inline `{=format}`). *)
+   symmetric with inline `{=format}`).
+
+   THE INTERIOR IS VERBATIM, THE OPENING IS PLACED -- NORMATIVE. Inside a
+   container, a renderer that indents its output indents the raw block's
+   OPENING position, exactly as it would any other block, and MUST NOT touch
+   the raw content's own line structure. Every line after the first reaches the
+   target with the columns the author gave it.
+
+   Both halves matter and neither is a formatting preference. Re-indenting an
+   interior line changes bytes the author wrote, and inside a `<pre>` those
+   columns are CONTENT -- the rendered code block then says something the
+   source did not. Leaving the block flush at column 0 instead would make
+   `raw_block` the one block kind whose placement ignores its container, which
+   is a second rule applying to one kind with nothing behind it.
+
+   Three engines gave three answers here, and the corpus could not tell them
+   apart because it pinned only a SINGLE-LINE raw block -- a shape on which
+   "indent the block" and "indent every line" agree (carve#800). *)
 
 format_name = "html" | "latex" | identifier ;
 raw_content = (* any content until closing fence *) ;

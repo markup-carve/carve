@@ -293,8 +293,16 @@ function renderBlock(b, depth, ctx) {
       return `${pad}<dl>\n${rows.join('\n')}\n${pad}</dl>`
     }
     case 'raw':
-      // PART 9 SS20: verbatim for the html target, dropped otherwise
-      return b.format === 'html' ? b.text.split('\n').map((l) => pad + l).join('\n') : null
+      // PART 9 SS20: verbatim for the html target, dropped otherwise.
+      //
+      // ONLY THE OPENING IS PLACED. The raw block sits where the container puts
+      // any block, and its own line structure is passed through untouched -
+      // padding an interior line changes bytes the author wrote, and inside a
+      // `<pre>` those columns are CONTENT, so the rendered code block would say
+      // something the source did not. Padding EVERY line was indistinguishable
+      // from this on the single-line raw blocks the corpus used to hold, which
+      // is how three engines gave three answers (carve#800).
+      return b.format === 'html' ? pad + b.text : null
     case 'heading': {
       // a heading inside a container: no section wrapper (SS13 wraps
       // top-level headings only); the id lands on the <h*> itself
