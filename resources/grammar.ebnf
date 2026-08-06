@@ -2094,10 +2094,12 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
      - A MARKER SEPARATOR is the whitespace that stands between a marker and
        the token that SELECTS which construct the line opens. It is spelled
-       `space`, and a tab never satisfies it. This covers the heading, list,
-       task, blockquote and definition markers (already stated at
-       `abbreviation_definition` and at MARKER REQUIRES CONTENT, PART 2) and
-       the colon fence: `:::` + separator + (`note` | `|` | `\` | `[label]`)
+       `space`, and a tab never satisfies it. `heading_first_line`,
+       `blockquote_line`, `unordered_item`, `ordered_item`, `task_marker`,
+       `definition_term` and the three definition markers already carry that
+       spelling; the prose is at MARKER REQUIRES CONTENT (PART 2) and at
+       `abbreviation_definition`. The colon fence joins them: `:::` +
+       separator + (`note` | `|` | `\` | `[label]`)
        decides between an admonition, a line block, a local hard-break block
        and a div, so the separator is part of recognizing the block.
 
