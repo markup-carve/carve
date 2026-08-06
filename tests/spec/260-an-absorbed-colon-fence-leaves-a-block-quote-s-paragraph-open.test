@@ -1,0 +1,55 @@
+An absorbed colon fence leaves a block quote's paragraph open
+
+```
+> quote
+> :::note
+> body
+> :::
+tail
+.
+<blockquote><p>quote
+:::note
+body
+:::
+tail</p></blockquote>
+```
+
+```
+> quote
+> :::note
+> body
+> ::::
+tail
+.
+<blockquote><p>quote
+:::note
+body
+::::
+tail</p></blockquote>
+```
+
+```
+> :::note
+> :::
+tail
+.
+<blockquote><p>:::note
+:::
+tail</p></blockquote>
+```
+
+```
+> > quote
+> > :::note
+> > body
+> > :::
+tail
+.
+<blockquote>
+  <blockquote><p>quote
+:::note
+body
+:::
+tail</p></blockquote>
+</blockquote>
+```

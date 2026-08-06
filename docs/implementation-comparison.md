@@ -47,7 +47,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `256-table-cell-padding-must-be-a-space`,
 `257-link-and-image-title-slots-must-be-a-space`,
 `258-code-fence-metadata-slots-must-be-a-space-too`,
-`259-a-tab-continues-a-list-item-just-as-two-spaces-do`.
+`259-a-tab-continues-a-list-item-just-as-two-spaces-do`,
+`260-an-absorbed-colon-fence-leaves-a-block-quote-s-paragraph-open`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
@@ -80,6 +81,17 @@ sweep across a tree mid-edit fabricates diffs. Declaring the gap is the same ans
 fixtures those categories actually contribute, so the number cannot be asserted,
 only derived, and the line has to be DELETED by whoever next runs
 `npm run compare:impls` or the same test goes red from the other side.
+
+Category 260 is the same window for a different reason, and the reason is
+measured rather than assumed. Its four documents were rendered through the
+oracle, carve-js `3d95e94`, carve-php `876e312` and carve-rs `83ab9c1` while it
+was written: the oracle, carve-js and carve-php agree byte for byte on all four,
+and carve-rs main ends the quote at the absorbed fence on all four. That is
+markup-carve/carve-rs#727, whose fix markup-carve/carve-rs#738 is open and not
+merged - built from that PR, carve-rs reproduces all four exactly. So the gap is
+one engine and one open PR, and it closes when that PR lands rather than on any
+pin bump. The pinned JS build reproduces all four, so nothing is declared for it
+in `resources/engine-pin-drift.txt`.
 
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS
