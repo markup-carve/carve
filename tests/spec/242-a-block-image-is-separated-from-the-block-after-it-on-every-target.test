@@ -1,0 +1,10 @@
+A block image is separated from the block after it on every target
+
+```
+![alt text](img.png)
+
+following paragraph
+.
+<img src="img.png" alt="alt text">
+<p>following paragraph</p>
+```
