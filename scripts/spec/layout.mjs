@@ -1705,6 +1705,15 @@ function matchMarker(line) {
 function matchMarkerAt(meas) {
   if (meas === undefined) return null
   const { col, rest: line } = meas
+  // The saving is entirely in what this is handed. Given a line with its
+  // indentation still on it the patterns match exactly the same way, at
+  // exactly the same cost as before - identical output, identical counts, and
+  // three times the wall clock on a deep ladder, because the walk moves inside
+  // the regex engine where no counter can see it. So the contract is checked
+  // rather than trusted.
+  if (line !== '' && (line[0] === ' ' || line[0] === '\t')) {
+    throw new Error('matchMarkerAt: indentation must be measured, not re-matched')
+  }
   let m = BULLET.exec(line)
   if (m && m[3] && m[3].replace(/[{} ]/g, '') !== '' && parseAttrList(m[3]) === null) m = null
   if (m) {

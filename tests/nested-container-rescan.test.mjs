@@ -155,3 +155,21 @@ test('a quote strips its marker once per line per level', () => {
     `${(c.quoteStrips / c.lineVisits).toFixed(1)} strips per line visit, ceiling 1.2`,
   )
 })
+
+test('a tab run stripped off a tab stop is measured, not derived', () => {
+  // The precondition of the derivation, pinned. `- a` establishes a content
+  // column of 2, and stripping two columns off `\t\t- b` re-materializes the
+  // straddling tab's residual as spaces: the body line becomes `  \t- b`,
+  // whose content stands at column 4, not at 8 - 2 = 6. Deriving it anyway
+  // reads both items as nested rather than as siblings.
+  //
+  // Nothing in the corpus reaches this: a detector on the derivation counted
+  // ZERO such lines across all 792 corpus documents and 99 on a tab ladder, so
+  // dropping the guard leaves the whole suite and the corpus SHA-256 green.
+  // This is the case that kills it.
+  const src = '- a\n\t\t- b\n\t\t- c\n'
+  const list = parse(src).blocks[0]
+  const sub = list.items[0].blocks.find((b) => b.t === 'list')
+  assert.equal(sub.items.length, 2, 'the two tab-indented items are siblings, not nested')
+  assert.equal(sub.items[1].blocks.filter((b) => b.t === 'list').length, 0)
+})
