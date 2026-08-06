@@ -5515,3 +5515,45 @@ EOF = (* end of file *) ;
       The non-HTML targets emit it, which is what §10a says and could not
       previously require of this kind.
 
+   11. A PROPERTY THE SCHEMA DOES NOT NAME IS REJECTED ON INGEST -- NORMATIVE.
+      The wire shape is pinned by `resources/ast-schema.json` with
+      `additionalProperties: false` at every node, so a payload carrying a
+      property no node type names is NOT a Carve AST. An ingest MUST REFUSE it
+      with AN ERROR OF ITS OWN -- a typed, documented failure naming the
+      offending property and the PATH it appeared at, so a caller can find it
+      in a tree it did not write. Not a silent drop, and not a pass-through.
+
+      THE PASS-THROUGH IS THE ONE ANSWER THAT CANNOT BE RIGHT, and it is worth
+      saying why separately: an implementation that copies a wire record
+      wholesale re-emits the unknown property when it serializes again, so its
+      OWN OUTPUT no longer validates. A consumer that reads a tree here and
+      publishes it again then emits something the format rejects, having been
+      told nothing. Measured before this was written, one engine echoed 29 of
+      31 injected properties back (carve-js#709).
+
+      REFUSE RATHER THAN DROP, for the reason §9(b) already gives about depth:
+      "an ingest that accepts a tree and then silently renders only part of it
+      is the worst of the three, because the caller is told nothing". An
+      unknown property is the same shape of problem one field down. If a later
+      version of this format gives that property a meaning, an engine that
+      dropped it rendered a document that says something else and reported
+      success; an engine that refused sent the caller to a version mismatch.
+      The root-type note under §9 settles the same question for the root and
+      points the same way: half-reading a foreign format is worse than
+      declining it.
+
+      FORWARD COMPATIBILITY IS NOT AN ARGUMENT FOR LENIENCY HERE. `parse` and
+      the schema ship together in one build, so an unknown property means the
+      payload came from a DIFFERENT version, and no engine can render a field
+      it does not implement whatever it does with it. Refusing makes the
+      version mismatch visible at the boundary where it can still be handled;
+      dropping defers it to whatever the missing field was load-bearing for.
+
+      THIS DOES NOT CLOSE THE DOOR ON EXTENSION DATA. An extension that wants
+      to carry its own state across a round trip needs a DECLARED place to put
+      it, not the absence of a check -- a namespace the schema names and every
+      engine preserves. Until such a place exists, extension data on the wire
+      is invalid for the same reason any other unnamed property is, and an
+      extension that relies on the pass-through relies on one engine's leak
+      (PART 10 §1: an extension may not change the core vocabulary).
+
