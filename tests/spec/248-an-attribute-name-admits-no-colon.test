@@ -1,0 +1,44 @@
+An attribute name admits no colon
+
+```
+[a]{xlink:href=u}
+
+[b]{k:v="q"}
+
+[c]{.sm:hover}
+
+[d]{#a:b}
+
+[e]{.ok xml:lang=en}
+.
+<p>[a]{xlink:href=u}</p>
+<p>[b]{k:v=“q”}</p>
+<p>[c]{.sm:hover}</p>
+<p>[d]{<span class="tag"><strong>#a</strong></span>:b}</p>
+<p>[e]{.ok xml:lang=en}</p>
+```
+
+```
+[a]{k=x:y}
+
+[b]{#i .c k=v}
+
+| a | b |{.x}
+.
+<p><span k="x:y">a</span></p>
+<p><span id="i" class="c" k="v">b</span></p>
+<table>
+  <tbody>
+    <tr class="x"><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |{.a:b}
+
+-{.a:b} item
+.
+<p>| a | b |{.a:b}</p>
+<p>-{.a:b} item</p>
+```
