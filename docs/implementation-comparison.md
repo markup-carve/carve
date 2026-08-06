@@ -53,7 +53,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `262-a-link-title-takes-exactly-one-space`,
 `263-a-code-fence-opener-takes-exactly-one-space`,
 `264-a-frontmatter-opener-takes-exactly-one-space`,
-`265-a-reference-definition-s-metadata-slots-take-exactly-one-space`.
+`265-a-reference-definition-s-metadata-slots-take-exactly-one-space`,
+`266-a-reference-definition-is-anchored-at-end-of-line`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
@@ -109,6 +110,18 @@ clears. The six two-space documents close when the engines ship the rule
 markup-carve/carve-rs#744); each category's one-space CONTROL is reproduced by
 the pinned build today and is not declared anywhere, which is what separates
 "the rule is not implemented yet" from "the fixture matches no engine at all".
+
+Category 266 is the same window and the same reason: carve#911 ruled that
+`reference_definition` is anchored at end of line, and all three engines read
+trailing junk as part of a definition on main (carve-js `68ea9ba`, carve-php
+`1664ee1`, carve-rs `2ec3c1c`). It closes with markup-carve/carve-js#821,
+markup-carve/carve-php#973 and markup-carve/carve-rs#746.
+
+That ruling also moved one PRE-EXISTING golden, `16-reference-link-5`, which
+pinned `[r]: a b c` resolving the label to `a`. It is declared in
+`resources/engine-pin-drift.txt` alongside the new categories rather than
+here, because it is not new corpus and the declared-lag line names categories
+that the quoted run could not have covered.
 
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS

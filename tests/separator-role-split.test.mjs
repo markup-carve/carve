@@ -1047,6 +1047,140 @@ for (const { site, two, one } of RUN_SITES) {
 }
 
 // ---------------------------------------------------------------------------
+// THE REFERENCE DEFINITION IS ANCHORED AT END OF LINE (carve#911).
+//
+// This is what makes everything above REACHABLE on that one line. PART 7 says
+// a slot that fails to match "falls back to prose rather than silently
+// dropping metadata", and at a reference definition there was no prose to fall
+// back to: `LINK_DEF` ended in a swallow-everything tail, so `[a]: /u zzz` was
+// a definition with trailing junk in all three engines AND here, and a title
+// or attribute slot that rejected its separator had its metadata quietly eaten
+// by that tail instead of failing visibly.
+//
+// So carve#907 deliberately left two shapes unpinned - a mixed run at the
+// definition form of `link_title`, and the <SP><TAB> order at the
+// trailing-attributes slot - and recorded them as live holes: replacing the
+// attribute guard with the first-character test `sep[0] !== ' '` passed the
+// entire suite, 1355 of 1355. Both are pinned by corpus 266 now that the
+// failure is visible.
+//
+// What this block adds is the LINE ENDING, which corpus 266 deliberately does
+// not carry: a trailing whitespace run in docs/examples/*.md is one editor
+// save from vanishing, and it would be invisible in review. Here the bytes are
+// in a string literal.
+const LINE_ENDING = [
+  // The ending run is `whitespace`, space or tab - the same terminal
+  // `blank_line = {whitespace}` takes (PART 1; carve#890, corpus 261). So
+  // these are line endings, not content, and the definition stands.
+  ['a trailing space', '[a]: /u \n\n[a][]\n', true],
+  ['a trailing run of spaces', '[a]: /u   \n\n[a][]\n', true],
+  ['a trailing tab', '[a]: /u\t\n\n[a][]\n', true],
+  ['a trailing mixed run', '[a]: /u \t \n\n[a][]\n', true],
+  // And these are CONTENT under the same ruling, so they sit after the
+  // production and the anchor rejects them. A whitespace PROPERTY test instead
+  // of the two-character terminal reads every one of them as a line ending -
+  // that is the carve#888 shape, and a plain tab fixture cannot see it because
+  // a tab is inside the property too.
+  ['a trailing no-break space', '[a]: /u\u00a0\n\n[a][]\n', false],
+  ['a trailing en quad', '[a]: /u\u2000\n\n[a][]\n', false],
+  ['a trailing byte order mark', '[a]: /u\ufeff\n\n[a][]\n', false],
+  ['a trailing form feed', '[a]: /u\f\n\n[a][]\n', false],
+]
+
+const RESOLVED = '<p><a href="/u">a</a></p>'
+
+for (const [name, src, isDefinition] of LINE_ENDING) {
+  test(`the anchor's line ending is \`whitespace\`: ${name}`, () => {
+    const got = renderDoc(parse(src)).trim()
+    if (isDefinition) {
+      assert.equal(
+        got,
+        RESOLVED,
+        `a reference definition stopped being one because of its line ending.\n` +
+          `  source: ${JSON.stringify(src)}\n` +
+          `  \`reference_definition\` is anchored at end of line (carve#911), and the\n` +
+          `  ending run is \`whitespace\` - a space or a tab, the same terminal\n` +
+          `  \`blank_line = {whitespace}\` takes (PART 1; carve#890).`,
+      )
+    } else {
+      assert.notEqual(
+        got,
+        RESOLVED,
+        `a character that is CONTENT under PART 1's blank-line ruling was treated\n` +
+          `  as a line ending, so the anchor did not reject it.\n` +
+          `  source: ${JSON.stringify(src)}\n` +
+          `  The ending run is the two-character \`whitespace\` terminal, not a\n` +
+          `  Unicode whitespace PROPERTY. A tab fixture cannot see the difference -\n` +
+          `  a tab is inside the property too (the carve#888 shape).`,
+      )
+    }
+  })
+}
+
+// The anchor itself, and the two slot failures it makes visible. Corpus 266
+// carries all three; these run the same claim against the oracle directly, so
+// a fixture renamed or renumbered out of the corpus does not take the rule
+// with it.
+const ANCHORED = [
+  ['trailing junk', '[a]: /u zzz\n\n[a][]\n'],
+  ['trailing junk after a title', '[a]: /u "T" zzz\n\n[a][]\n'],
+  ['a tab at the title slot', '[a]: /u\t"T"\n\n[a][]\n'],
+  ['a mixed run at the title slot, space first', '[a]: /u \t"T"\n\n[a][]\n'],
+  ['a mixed run at the title slot, tab first', '[a]: /u\t "T"\n\n[a][]\n'],
+  ['a tab at the trailing-attributes slot', '[a]: /u\t{.c}\n\n[a][]\n'],
+  ['a mixed run at the attributes slot, space first', '[a]: /u \t{.c}\n\n[a][]\n'],
+  ['a mixed run at the attributes slot, tab first', '[a]: /u\t {.c}\n\n[a][]\n'],
+  // The composed shape: a slot that fails followed by one that would match.
+  // Without the anchor the attribute block still attached, because
+  // `splitTrailingAttrBlock` is a pre-pass rather than a sequential match.
+  ['a failed title slot followed by a valid attribute block', '[a]: /u  "T" {.c}\n\n[a][]\n'],
+]
+
+for (const [name, src] of ANCHORED) {
+  test(`the definition is anchored at end of line: ${name}`, () => {
+    assert.ok(
+      !renderDoc(parse(src)).includes('<a href'),
+      `this line was still read as a reference definition, so the label resolved.\n` +
+        `  source: ${JSON.stringify(src)}\n` +
+        `  \`reference_definition\` ends in \`newline\` and always did. What follows\n` +
+        `  the destination and the optional title makes the production FAIL; the\n` +
+        `  line is an ordinary paragraph (carve#911).`,
+    )
+  })
+}
+
+// The other direction, and it is the one an over-anchoring fix breaks: every
+// legal shape of the line still has to BE one. Without these, "reject anything
+// after the destination" satisfies the block above by rejecting the title and
+// the attribute block as well.
+const STILL_A_DEFINITION = [
+  ['bare', '[a]: /u\n\n[a][]\n', '<p><a href="/u">a</a></p>'],
+  ['with a title', '[a]: /u "T"\n\n[a][]\n', '<p><a href="/u" title="T">a</a></p>'],
+  ['with attributes', '[a]: /u {.c}\n\n[a][]\n', '<p><a href="/u" class="c">a</a></p>'],
+  [
+    'with a title AND attributes',
+    '[a]: /u "T" {.c}\n\n[a][]\n',
+    '<p><a href="/u" title="T" class="c">a</a></p>',
+  ],
+  // Nothing is left over here: `link_destination` reads the braces, so this
+  // was never the attributes slot and the anchor has nothing to reject.
+  ['with glued braces in the destination', '[a]: /u{.c}\n\n[a][]\n', '<p><a href="/u{.c}">a</a></p>'],
+]
+
+for (const [name, src, expected] of STILL_A_DEFINITION) {
+  test(`the anchor does not over-reject: ${name}`, () => {
+    assert.equal(
+      renderDoc(parse(src)).trim(),
+      expected,
+      `a legal reference-definition shape stopped being one.\n` +
+        `  source: ${JSON.stringify(src)}\n` +
+        `  carve#911 anchored the line at end of line; it did not remove the\n` +
+        `  optional title or the optional attribute block.`,
+    )
+  })
+}
+
+// ---------------------------------------------------------------------------
 // THE THIRD ROLE: INDENTATION, where the direction reverses (carve#893).
 //
 // Everything above this line pins the SAME direction: a tab must not parse as

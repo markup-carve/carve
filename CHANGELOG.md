@@ -9,6 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **A reference definition is anchored at end of line** (carve#911).
+  `reference_definition` ends in `newline`, and always did, but all three
+  engines and the executable spec read `[a]: /u zzz` as a definition with
+  trailing junk. Nothing in the grammar authorized that reading. The line is
+  now an ordinary paragraph, and a reference below it does not resolve.
+
+  The tail is what made PART 7's promised failure mode unreachable here. That
+  clause says a slot which does not match "falls back to prose rather than
+  silently dropping metadata", and at this line there was no prose to fall back
+  to, so a failed title or attribute slot had its metadata quietly eaten
+  instead. With the line anchored the promise holds, and the tab and
+  cardinality rules at both slots on it follow from the general rule with no
+  special case: `[a]: /u<TAB>"T"`, `[a]: /u<SP><TAB>{.c}` and the four other
+  spellings are paragraphs now, and the two shapes carve#907 left deliberately
+  unpinned are pinned.
+
+  The line ending is `whitespace`, a space or a tab, the same terminal
+  `blank_line = {whitespace}` takes (carve#890). So `[a]: /u<SP>` is still a
+  definition and `[a]: /u<NBSP>` is not. `[a]: /u{.c}` is untouched, with
+  destination `/u{.c}`: nothing is left over there, because
+  `link_destination` reads the braces.
+
+  Cost, recorded: a shape all four artifacts accepted stops being a definition,
+  and one corpus document depended on it. `16-reference-link-5` pinned
+  `[r]: a b c` resolving the label to `a`; its golden moved. Corpus 266 carries
+  the ruling, with every legal shape of the line as a control.
+
 - **PART 7: a padding slot spelled `space` admits exactly one space**
   (carve#912). Four productions spell their slot as a single `space` -
   `link_title` (and so `image_title`), the code fence's opener slot,

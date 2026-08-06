@@ -11741,7 +11741,9 @@ The definition line carries two of the four slots carve#912 narrowed:
 trailing attribute block. Both are padding -- the definition is already a
 definition at `[a]: /url` -- and both are spelled as exactly one space.
 
-With two spaces the title is not a title:
+With two spaces the title is not a title, and the leftover quoted run is what
+the line then fails on: the definition is anchored at end of line (carve#911),
+so the whole line is an ordinary paragraph and the reference does not resolve.
 
 ::: compare
 
@@ -11752,19 +11754,21 @@ With two spaces the title is not a title:
 ```
 
 ```html
-<p><a href="/u">a</a></p>
+<p>[a]: /u  “T”</p>
+<p>[a][]</p>
 ```
 
 :::
 
-And with two spaces the attribute block is not the definition's. Note where it
-goes, because the zero-space case is NOT the same: `[a]: /u{.c}` glues the
-braces to the destination and gives `href="/u{.c}"`, while two spaces end the
-destination, so the block matches nothing and is dropped. Dropping metadata
-silently is the outcome PART 7 names as the one to avoid, and it happens here
-only because `reference_definition` is not anchored at end of line -- carve#911
-anchors it, and this document's answer changes to the prose fallback the clause
-promises.
+The attribute block answers the same way, and note where it does NOT go: the
+zero-space case is a different shape, because `[a]: /u{.c}` glues the braces to
+the destination and gives `href="/u{.c}"`. Two spaces end the destination
+instead, so the block is left over and the production fails on it.
+
+When these two documents were written under carve#912 the leftover was silently
+dropped and the line stayed a definition, which is the outcome PART 7 names as
+the one to avoid. carve#911 anchored the line, and this is the fallback the
+clause promises.
 
 ::: compare
 
@@ -11775,7 +11779,8 @@ promises.
 ```
 
 ```html
-<p><a href="/u">a</a></p>
+<p>[a]: /u  {.c}</p>
+<p>[a][]</p>
 ```
 
 :::
@@ -11807,6 +11812,209 @@ attributes:
 
 ```html
 <p><a href="/u" class="c">a</a></p>
+```
+
+:::
+
+## A reference definition is anchored at end of line
+
+`reference_definition` ends in `newline`, and always has. All three engines and
+the executable spec nevertheless read `[a]: /u zzz` as a definition with
+trailing junk, and nothing in the grammar authorized that reading. carve#911
+settled it the way the production already said: what follows the destination
+and the optional title makes the production FAIL, so the line is an ordinary
+paragraph.
+
+The reason it matters is not tidiness. PART 7 promises that a slot which fails
+to match "falls back to prose rather than silently dropping metadata", and at
+this line there was no prose to fall back to -- the swallowing tail took
+whatever the slot rejected. So the clause's promised failure mode was
+unreachable here, and every narrowing at this line dropped metadata instead.
+With the line anchored the promise holds, and the tab and cardinality rules at
+both slots follow from the general rule with no special case.
+
+::: compare
+
+```carve
+[a]: /u zzz
+
+[a][]
+```
+
+```html
+<p>[a]: /u zzz</p>
+<p>[a][]</p>
+```
+
+:::
+
+A quoted run after a title is junk in the same way. The title is read, and then
+the line fails on what is left:
+
+::: compare
+
+```carve
+[a]: /u "T" zzz
+
+[a][]
+```
+
+```html
+<p>[a]: /u “T” zzz</p>
+<p>[a][]</p>
+```
+
+:::
+
+### The tab, at both slots
+
+The title slot and the trailing-attributes slot take `space` under PART 7, like
+every other padding slot. Both sit on this line, and both were left unpinned by
+carve#907 for the reason above: with the line unanchored, a tab there dropped
+the metadata rather than producing the visible failure the clause names. Now it
+produces the failure, so it can be pinned.
+
+Each slot carries the tab-first form and BOTH mixed runs. A rule about a run
+written as "the first character must be a space" passes the tab-first fixture
+and admits `<SP><TAB>`; written as "the last character must be a space" it
+admits `<TAB><SP>` instead. Both spellings have been written for real in this
+org, in three languages, on one day.
+
+The title slot:
+
+::: compare
+
+```carve
+[a]: /u	"T"
+
+[a][]
+```
+
+```html
+<p>[a]: /u	“T”</p>
+<p>[a][]</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a]: /u 	"T"
+
+[a][]
+```
+
+```html
+<p>[a]: /u 	“T”</p>
+<p>[a][]</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a]: /u	 "T"
+
+[a][]
+```
+
+```html
+<p>[a]: /u	 “T”</p>
+<p>[a][]</p>
+```
+
+:::
+
+The trailing-attributes slot:
+
+::: compare
+
+```carve
+[a]: /u	{.c}
+
+[a][]
+```
+
+```html
+<p>[a]: /u	{.c}</p>
+<p>[a][]</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a]: /u 	{.c}
+
+[a][]
+```
+
+```html
+<p>[a]: /u 	{.c}</p>
+<p>[a][]</p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a]: /u	 {.c}
+
+[a][]
+```
+
+```html
+<p>[a]: /u	 {.c}</p>
+<p>[a][]</p>
+```
+
+:::
+
+### What the anchor does NOT reject
+
+The line ending is `whitespace` -- a space or a tab -- which is the same
+terminal `blank_line = {whitespace}` takes (PART 1, carve#890). So trailing
+spaces and a trailing tab are still a line ending rather than content, and the
+definition stands; a trailing NO-BREAK SPACE is content under that same ruling,
+so a line ending in one is not a definition. Those three shapes are pinned in
+`tests/separator-role-split.test.mjs` rather than here, because a trailing
+whitespace run in a reviewable Markdown source file is one editor save from
+vanishing -- and because what a document does with trailing whitespace is its
+own question (carve#926).
+
+And the glued form is untouched, because nothing is left over: `link_destination`
+simply reads the braces.
+
+::: compare
+
+```carve
+[a]: /u{.c}
+
+[a][]
+```
+
+```html
+<p><a href="/u{.c}">a</a></p>
+```
+
+:::
+
+The CONTROLS. Every legal shape of the line still is one:
+
+::: compare
+
+```carve
+[a]: /u "T" {.c}
+
+[a][]
+```
+
+```html
+<p><a href="/u" title="T" class="c">a</a></p>
 ```
 
 :::

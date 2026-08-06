@@ -116,8 +116,47 @@ const QUOTE = /^>(?: (.*)|)$/
 // `[a]: /u<SP><SP>"T"` took the title here, as it did in all three engines and
 // at the inline spelling in resources/carve-core.ohm. The ruling is that the
 // production is right and the four lax artifacts narrow. With two spaces the
-// quoted run is no longer a title; it falls into the trailing tail.
-const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?: "((?:\\"|[^"])*)")?(?:\p{White_Space}.*)?$/u
+// quoted run is no longer a title.
+//
+// ANCHORED AT END OF LINE (carve#911). This ended in
+// `(?:\p{White_Space}.*)?$` - a tail that swallowed anything after the
+// destination and the optional title - so `[a]: /u zzz` was a definition with
+// trailing junk in all three engines and here. NOTHING IN THE GRAMMAR
+// AUTHORIZED THAT READING: `reference_definition` ends in `newline` and always
+// did. The tail is also what made PART 7's promised failure mode unreachable
+// at this line: the clause says a slot that does not match "falls back to
+// prose rather than silently dropping metadata", and with the tail there was
+// no prose to fall back to, so a failed title or attribute slot was dropped
+// instead. Anchoring makes the clause reachable, and the tab and cardinality
+// narrowings at both slots then follow from the general rule with no special
+// case.
+//
+// The line ending is `whitespace`, space or tab, which is the terminal
+// `blank_line = {whitespace}` uses (PART 1; carve#890). So `[a]: /u<SP>` is
+// still a definition and `[a]: /u<NBSP>` is not - a no-break space is content
+// under that same ruling, and content after the production is what the anchor
+// rejects.
+const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?: "((?:\\"|[^"])*)")?[ \t]*$/u
+
+/*
+ * The production's own test, and the only spelling of it.
+ *
+ * `LINK_DEF` reads the line AFTER its optional trailing attribute block has
+ * been split off, because `[space, attributes]` is part of the production and
+ * the block is peeled by a scan rather than matched by the regex (see
+ * `splitTrailingAttrBlock` below for why it cannot be a regex). While the
+ * regex ended in a swallow-everything tail that did not matter: `[a]: /u {.c}`
+ * matched it raw, so the eight places that ask "is this line a definition"
+ * could test the raw line and get the right answer by accident.
+ *
+ * With the line anchored it matters at every one of them, and there are eight
+ * - paragraph interruption, lazy continuation, the def-list fold, the
+ * container scan, the item fold and the marker scan. That is the carve#922
+ * shape: one rule spelled once and read in eight places, where narrowing the
+ * one spelling silently changes all eight. So the split is done HERE, once,
+ * and no caller tests `LINK_DEF` against a raw line.
+ */
+const isLinkDef = (line) => LINK_DEF.test(splitTrailingAttrBlock(line)[0])
 
 /*
  * Split a TRAILING attribute block off a definition line (carve#604).
@@ -164,13 +203,13 @@ function splitTrailingAttrBlock(line) {
       // WHERE THE REJECTED BLOCK GOES depends on the run, and the two cases
       // are NOT the same. A ZERO-space run glues the braces to the
       // destination, so `[a]: /u{.c}` gives href `/u{.c}` - `link_destination`
-      // simply reads them. A TWO-space run does not: whitespace ends the
-      // destination, the slot no longer matches, and `{.c}` lands in the tail
-      // `(?:\p{White_Space}.*)?$` that `LINK_DEF` ignores. So it is DROPPED,
-      // which is the outcome PART 7 names as the one to avoid - and it is
-      // dropped only because `reference_definition` is not anchored at end of
-      // line. carve#911 anchors it, at which point this line stops being a
-      // definition at all and falls back to prose the way the clause promises.
+      // simply reads them, and the line is still a definition. A TWO-space run
+      // does not: whitespace ends the destination, so `{.c}` is left over.
+      // Until carve#911 that leftover fell into a swallow-everything tail on
+      // `LINK_DEF` and was silently DROPPED - the outcome PART 7 names as the
+      // one to avoid. With the line anchored at end of line there is no tail,
+      // so the leftover makes the production fail and the line falls back to
+      // prose, which is what the clause promises.
       if (open === 0) return [line, null]
       const sep = /[ \t]*$/.exec(trimmedEnd.slice(0, open))[0]
       if (sep !== ' ') return [line, null]
@@ -946,7 +985,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
     if (fence && hasCloser(lines, idx)) return true // I4
     // ABBR_DEF only at document level: elsewhere the line is paragraph text,
     // so it neither opens a block nor interrupts one (PART 12 SS7).
-    if (LINK_DEF.test(line) || FOOTNOTE_DEF.test(line) || (top && ABBR_DEF.test(line))) return true // I5
+    if (isLinkDef(line) || FOOTNOTE_DEF.test(line) || (top && ABBR_DEF.test(line))) return true // I5
     // A BLOCK-ATTRIBUTE LINE is in I5's list too - "a reference definition, a
     // comment, and a block-attribute line" - and it was the one member missing
     // here. Inside a list item that meant `- a` / `{.c}` / `text` folded all
@@ -1181,7 +1220,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
       const foldablePlain = (cur) =>
         !isBlank(cur) &&
         !startsVisibleBlock(cur) &&
-        !LINK_DEF.test(cur) &&
+        !isLinkDef(cur) &&
         !FOOTNOTE_DEF.test(cur) &&
         !BULLET.test(cur) &&
         !isOrderedMarkerLine(cur) &&
@@ -1463,7 +1502,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
         // (carve-js#554, carve-php#652).
         if (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
             isColonParagraphInterrupt(l) || l[0] === '|' || l[0] === '{' ||
-            DEFLIST_TERM.test(l) || LINK_DEF.test(l) ||
+            DEFLIST_TERM.test(l) || isLinkDef(l) ||
             FOOTNOTE_DEF.test(l)) qOpenPara = false
         else qOpenPara = true
       }
@@ -1555,7 +1594,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
       if (inItem && para.length > 0 && matchMarkerAt(ind(i))) break // SS24 C3
       if (para.length > 0) {
         // definitions interrupt and are consumed (SS10 I5)
-        if (LINK_DEF.test(lines[i]) || FOOTNOTE_DEF.test(lines[i]) || (top && ABBR_DEF.test(lines[i]))) break
+        if (isLinkDef(lines[i]) || FOOTNOTE_DEF.test(lines[i]) || (top && ABBR_DEF.test(lines[i]))) break
         if (startsVisibleBlock(lines[i])) break // I1
         if (isTableRow(lines[i])) break // I1: valid table row
         {
@@ -1974,7 +2013,7 @@ function collectItems(lines, i, list, state, ind, meas) {
             COMMENT_LINE.test(dedented) ||
             COMMENT_FENCE.test(dedented) ||
             FOOTNOTE_DEF.test(dedented) ||
-            LINK_DEF.test(dedented) ||
+            isLinkDef(dedented) ||
             ABBR_DEF.test(dedented) ||
             parseAttrList(dedented) !== null
           ) {
@@ -2043,7 +2082,7 @@ function collectItems(lines, i, list, state, ind, meas) {
           !matchMarkerAt(dmeas) &&
           !dmeas.rest.startsWith('%%') &&
           !FOOTNOTE_DEF.test(dedented) &&
-          !LINK_DEF.test(dedented) &&
+          !isLinkDef(dedented) &&
           !ABBR_DEF.test(dedented) &&
           parseAttrList(dedented) === null
         ) {
@@ -2188,7 +2227,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // A definition BELOW every open content column is untouched - it never
       // reaches column 0 in any collector, so it still folds as text (corpus
       // 183).
-      if (!nm && lm.col === 0 && (FOOTNOTE_DEF.test(line) || LINK_DEF.test(line))) break
+      if (!nm && lm.col === 0 && (FOOTNOTE_DEF.test(line) || isLinkDef(line))) break
       if (!nm && openPara && itemLines.length > 0 && !startsVisibleBlock(line) && !isTableRow(line) && !COLON_FENCE.test(line) && !(FENCE.test(line) && hasCloser(lines, i))) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/
