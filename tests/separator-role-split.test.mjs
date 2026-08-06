@@ -879,3 +879,163 @@ for (const [name, ch] of OUTSIDE_CLASS_FRONTMATTER) {
     })
   }
 }
+
+// ---------------------------------------------------------------------------
+// THE THIRD ROLE: INDENTATION, where the direction reverses (carve#893).
+//
+// Everything above this line pins the SAME direction: a tab must not parse as
+// the space form does, because a marker separator and a padding slot both sit
+// after their line's first non-whitespace character, and a tab is not syntax
+// there. That claim is only half a rule. The other half is the WHERE: a tab IS
+// syntax in a line's LEADING INDENTATION RUN, and PART 9 §24 C1 gives it a
+// column value there (to the next multiple of 4).
+//
+// Nothing pinned that half, and the file header states it as the reason the
+// padding slots take `space` - so the whole role split rested on a clause no
+// test could see. This section is that half, in the same file and through the
+// same two artifacts (grammar text, then the oracle), because it is one rule
+// read at two kinds of site rather than two mechanisms.
+//
+// The assertions therefore INVERT: an indentation site asserts the tab form
+// renders exactly AS the space form does, not that it differs. A file that only
+// ever asserted `notEqual` would stay green if someone narrowed indentation to
+// literal spaces too, which is what `definition_continuation` said until
+// carve#893.
+//
+// THE FLOOR IS PINNED SEPARATELY FROM THE WIDTH. "Reaches column 3" and "is any
+// whitespace run at all" agree on every fixture that continues the body, so a
+// run BELOW the floor is what separates them: one space and two spaces must NOT
+// continue. Without those two rows, an oracle that dropped the column
+// comparison entirely would pass here.
+const INDENT_DEFERRED =
+  'no engine reads a definition body continuation as a column yet except carve-rs. ' +
+  'The production leads the implementations here by the carve#888 signoff, which said ' +
+  'so explicitly: measured on the discriminating shape (a blank line, which forces ' +
+  'this branch instead of lazy_continuation_line), carve-js 3d95e94 and carve-php ' +
+  '876e312 both end the body on a bare tab and disagree with each other on a mixed ' +
+  'two-space-then-tab run, while carve-rs 83ab9c1 continues on every run above the ' +
+  'floor. carve-js is fixed on markup-carve/carve-js#817 and carve-php on ' +
+  'markup-carve/carve-php#964, neither merged. Asserting the corrected behavior ' +
+  'against the pinned build would fail on an engine that has not changed; asserting ' +
+  'the current behavior would pin the pre-ruling reading. So the per-run PINNED ' +
+  'column below records what the pinned build actually does, and goes red the day it ' +
+  'catches up. The ORACLE half runs regardless - it is not an engine.'
+
+// `pinned` is a MEASUREMENT of `@markup-carve/carve` at the commit package.json
+// names, not a statement about carve-js main. Both were measured while writing
+// this and they agree on all eight runs.
+const DEFINITION_INDENT_SITE = {
+  role: 'indentation',
+  site: 'definition_continuation, the leading run before a definition body line',
+  required: /definition_continuation = \(definition_indent, inline_content, newline\)/,
+  forbidden: /definition_continuation = \(space, space, space,/,
+  alsoRequired: /definition_indent = whitespace, \{whitespace\} ;/,
+  why: "the body's own column is 3, and PART 9 §24 C1 gives a tab a column value there",
+  column: 3,
+  // The space spelling of the floor. Every `above` fixture is compared to this.
+  baseline: '   ',
+  above: [
+    { run: 'a bare tab', indent: '\t', column: 4, pinned: 'ends' },
+    { run: 'a space then a tab', indent: ' \t', column: 4, pinned: 'ends' },
+    // These two are not redundant with the one above. A "first character is a
+    // space" implementation of the character rule accepts them and rejects the
+    // bare tab, so the pinned build splits across these three rows - and
+    // carve-js and carve-php split from EACH OTHER at the two-space form
+    // (carve#893's table). One fixture would have reported a single engine gap
+    // where there are three different readings.
+    { run: 'two spaces then a tab', indent: '  \t', column: 4, pinned: 'continues' },
+    { run: 'three spaces then a tab', indent: '   \t', column: 4, pinned: 'continues' },
+    { run: 'a tab then a space', indent: '\t ', column: 5, pinned: 'ends' },
+    { run: 'two tabs', indent: '\t\t', column: 8, pinned: 'ends' },
+  ],
+  below: [
+    { run: 'a single space', indent: ' ', column: 1, pinned: 'ends' },
+    { run: 'two spaces', indent: '  ', column: 2, pinned: 'ends' },
+  ],
+  engineDeferred: INDENT_DEFERRED,
+}
+
+// The discriminating document. The BLANK LINE is load-bearing, and its absence
+// is why carve#878 §5 reported this rule as already settled when it was not:
+// without it the next line reaches `lazy_continuation_line`, which does not
+// look at indentation at all, so a flush-left line folds in identically and the
+// shape demonstrates nothing about the run it was filed under.
+const definitionDoc = (indent) => `:: t\n:  d\n\n${indent}more\n`
+
+test('definition_continuation spells its leading run as indentation, not as spaces', () => {
+  const s = DEFINITION_INDENT_SITE
+  assert.match(
+    flat,
+    s.required,
+    `${s.site} must spell its leading run \`definition_indent\`: ${s.why}.`,
+  )
+  assert.match(
+    flat,
+    s.alsoRequired,
+    `\`definition_indent\` must be spelled as a whitespace RUN, the way ` +
+      `\`footnote_indent\` is (carve#692). The column floor is arithmetic stated ` +
+      `in prose, not a character count in the production.`,
+  )
+  assert.doesNotMatch(
+    flat,
+    s.forbidden,
+    `${s.site} spells indentation as literal space characters again. ` +
+      `Indentation is COLUMNS (PART 9 §24 C1, carve#692, carve#888 signoff): a ` +
+      `tab reaches column 4 and clears a floor of 3.`,
+  )
+})
+
+for (const f of DEFINITION_INDENT_SITE.above) {
+  test(`the oracle reads a definition body continuation as a column: ${f.run} (column ${f.column})`, () => {
+    assert.equal(
+      renderDoc(parse(definitionDoc(f.indent))),
+      renderDoc(parse(definitionDoc(DEFINITION_INDENT_SITE.baseline))),
+      `a leading run reaching column ${f.column} did not continue the definition ` +
+        `body the way three spaces (column 3) do.\n` +
+        `  run:      ${JSON.stringify(f.indent)}\n` +
+        `  baseline: ${JSON.stringify(DEFINITION_INDENT_SITE.baseline)}\n` +
+        `  Indentation is columns, not characters (PART 9 §24 C1, carve#893).`,
+    )
+  })
+}
+
+for (const f of DEFINITION_INDENT_SITE.below) {
+  test(`the oracle keeps the column-3 floor: ${f.run} (column ${f.column}) does not continue`, () => {
+    assert.notEqual(
+      renderDoc(parse(definitionDoc(f.indent))),
+      renderDoc(parse(definitionDoc(DEFINITION_INDENT_SITE.baseline))),
+      `a leading run reaching only column ${f.column} continued the definition ` +
+        `body.\n  run: ${JSON.stringify(f.indent)}\n` +
+        `  \`definition_indent\` is a run REACHING COLUMN 3, not any run at all ` +
+        `(carve#893). Widening it to "some whitespace" passes every other check ` +
+        `in this section.`,
+    )
+  })
+}
+
+for (const f of [...DEFINITION_INDENT_SITE.above, ...DEFINITION_INDENT_SITE.below]) {
+  test(`the engine deferral still holds - the pinned carve-js ${f.pinned} on ${f.run}`, () => {
+    const same =
+      carveToHtml(definitionDoc(f.indent)) ===
+      carveToHtml(definitionDoc(DEFINITION_INDENT_SITE.baseline))
+    assert.equal(
+      same,
+      f.pinned === 'continues',
+      `the pinned carve-js no longer ${f.pinned} the definition body on this run.\n` +
+        `  run: ${JSON.stringify(f.indent)} (column ${f.column})\n` +
+        `  If it now CONTINUES every run at or above column 3 and ends every run ` +
+        `below it, that is GOOD NEWS: markup-carve/carve-js#817 has landed and the ` +
+        `pin has caught up with the production. Drop \`engineDeferred\` at this site ` +
+        `and assert the corrected behavior instead of recording the divergence.`,
+    )
+  })
+}
+
+test('the indentation site states why its engine half is deferred', () => {
+  assert.ok(
+    typeof DEFINITION_INDENT_SITE.engineDeferred === 'string' &&
+      DEFINITION_INDENT_SITE.engineDeferred.length > 0,
+    `the indentation site must state why the engine half is deferred, for the ` +
+      `same reason every padding site must.`,
+  )
+})

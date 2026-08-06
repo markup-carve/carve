@@ -193,6 +193,25 @@ function isFootnoteContinuationLine(line) {
   return col >= FOOTNOTE_BODY_COLUMN && rest !== ''
 }
 
+// A definition body's own column is fixed at 3 (grammar.ebnf,
+// `definition_indent`) -- the column `:  ` establishes -- regardless of how the
+// first continuation line is actually indented.
+const DEFINITION_BODY_COLUMN = 3
+
+// PART 9 SS24 C1/carve#893: a definition-body continuation line qualifies by
+// REACHING column 3, not by starting with three literal space characters. A
+// bare tab (column 0 -> 4) and a space-then-tab (column 1 -> 4) both qualify;
+// two spaces (column 2) do not. This is the same rule
+// `isFootnoteContinuationLine` applies one column lower, and it is spelled here
+// ONCE because the character form used to be spelled three times in the
+// definition-body loop below - two tests plus the dedent - and a fix reaching
+// only some of them is the recurring shape catalogued in carve#755.
+function isDefinitionContinuationLine(line) {
+  if (line === undefined) return false
+  const { col, rest } = indentCols(line)
+  return col >= DEFINITION_BODY_COLUMN && rest !== ''
+}
+
 // Roman numeral helpers for the SS11 N2/N3 ordered dialects.
 const ROMAN_CHARS = /^[ivxlcdm]+$/
 const ROMAN_VALUES = { i: 1, v: 5, x: 10, l: 50, c: 100, d: 500, m: 1000 }
@@ -1055,6 +1074,16 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           i++
           while (i < n) {
             const cur = lines[i] ?? ''
+            // The `/^ {3,}\S/` here is NOT a fourth spelling of
+            // `definition_continuation`, and carve#893 deliberately left it in
+            // characters. It bounds `term_continuation_line`, a different
+            // production, and it is already divergent from every engine in the
+            // OTHER direction: measured on carve-js 3d95e94, carve-php 876e312
+            // and carve-rs 83ab9c1, `:: t` followed by `   more` folds into the
+            // <dt> in all three while this oracle breaks the term. A tab-
+            // indented `more` folds in all four. So converting this to column
+            // arithmetic would break the one case the four readers agree on and
+            // widen the one they do not. It wants its own measurement.
             if (isEntry(unlazy(cur)) || isBlank(cur) || CONT_MARKER.test(cur) || /^ {3,}\S/.test(cur)) break
             if (!foldablePlain(cur)) break
             // A line folded into an item BELOW its content column arrives here
@@ -1097,7 +1126,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
             if (isBlank(cur)) {
               // a blank before an indented line is an internal paragraph break;
               // otherwise the blank ends this definition body.
-              if (/^ {3,}\S/.test(lines[i + 1] ?? '')) { bodyLines.push(''); i++; continue }
+              if (isDefinitionContinuationLine(lines[i + 1])) { bodyLines.push(''); i++; continue }
               break
             }
             if (CONT_MARKER.test(cur)) {
@@ -1108,9 +1137,12 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
               i++
               continue
             }
-            if (/^ {3,}\S/.test(cur)) {
-              // indented continuation block (dedented by the content margin)
-              bodyLines.push(cur.replace(/^ {1,3}/, ''))
+            if (isDefinitionContinuationLine(cur)) {
+              // indented continuation block, dedented by the content margin.
+              // `dedent` carries a tab that STRADDLES the margin back as the
+              // spaces it bought past column 3, so `<TAB>x` (column 4) arrives
+              // one column in, exactly as ` x` after three spaces would.
+              bodyLines.push(dedent(cur, DEFINITION_BODY_COLUMN))
               pullPending = false
               i++
               continue
