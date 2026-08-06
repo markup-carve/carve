@@ -1083,8 +1083,18 @@ const LINE_ENDING = [
   // a tab is inside the property too.
   ['a trailing no-break space', '[a]: /u\u00a0\n\n[a][]\n', false],
   ['a trailing en quad', '[a]: /u\u2000\n\n[a][]\n', false],
-  ['a trailing byte order mark', '[a]: /u\ufeff\n\n[a][]\n', false],
   ['a trailing form feed', '[a]: /u\f\n\n[a][]\n', false],
+  // A ZERO-WIDTH character is deliberately NOT in this table, and the reason is
+  // a mutant that came back green. U+FEFF and U+200B are not `White_Space`, so
+  // they never reach the ending run at all: `link_destination` reads them as
+  // ordinary destination characters, which the grammar states beside
+  // `unicode_url_char`. `[a]: /u<BOM>` is therefore still a definition, with
+  // the BOM in the href, and it answers that way both before and after the
+  // anchor. Listed here as `false` it PASSED for the wrong reason - the render
+  // differs from the resolved form because the href differs, not because the
+  // line was rejected - and it went on passing under a mutant that widened the
+  // ending run to every invisible character. It is pinned below instead, with
+  // the answer it actually gives.
 ]
 
 const RESOLVED = '<p><a href="/u">a</a></p>'
@@ -1114,6 +1124,32 @@ for (const [name, src, isDefinition] of LINE_ENDING) {
           `  a tab is inside the property too (the carve#888 shape).`,
       )
     }
+  })
+}
+
+// The zero-width characters, pinned as what they are: DESTINATION content.
+//
+// `unicode_url_char` is "any non-whitespace" and the grammar says so explicitly
+// for U+200B and U+FEFF - "NOT whitespace and ARE ordinary destination
+// characters". So these never reach the line-ending run, the definition stands,
+// and the character is in the href. Asserted with the exact output rather than
+// "not the resolved form", which is the shape that let this pass for the wrong
+// reason while it sat in the table above.
+for (const [name, ch] of [
+  ['a byte order mark', '\ufeff'],
+  ['a zero-width space', '\u200b'],
+]) {
+  test(`a zero-width character is destination content, not a line ending: ${name}`, () => {
+    assert.equal(
+      renderDoc(parse(`[a]: /u${ch}\n\n[a][]\n`)).trim(),
+      `<p><a href="/u${ch}">a</a></p>`,
+      `a zero-width character after the destination was treated as a line ending.\n` +
+        `  \`unicode_url_char\` is any NON-WHITESPACE character, and PART 4 names\n` +
+        `  U+200B and U+FEFF as ordinary destination characters. They never reach\n` +
+        `  the ending run, so the definition stands with the character in the href.\n` +
+        `  An ending run written as "any invisible character" swallows them and\n` +
+        `  silently changes the destination (carve#911).`,
+    )
   })
 }
 

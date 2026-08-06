@@ -11979,8 +11979,12 @@ The trailing-attributes slot:
 The line ending is `whitespace` -- a space or a tab -- which is the same
 terminal `blank_line = {whitespace}` takes (PART 1, carve#890). So trailing
 spaces and a trailing tab are still a line ending rather than content, and the
-definition stands; a trailing NO-BREAK SPACE is content under that same ruling,
-so a line ending in one is not a definition. Those three shapes are pinned in
+definition stands; a trailing NO-BREAK SPACE, EN QUAD or FORM FEED is content
+under that same ruling, so a line ending in one is not a definition. A trailing
+ZERO-WIDTH character is a third answer again: U+200B and U+FEFF are not
+whitespace at all, so they never reach the line ending -- `link_destination`
+reads them, the definition stands, and the character is in the href. Those
+shapes are pinned in
 `tests/separator-role-split.test.mjs` rather than here, because a trailing
 whitespace run in a reviewable Markdown source file is one editor save from
 vanishing -- and because what a document does with trailing whitespace is its
