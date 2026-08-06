@@ -1,0 +1,33 @@
+An inline attribute block does not span lines, but an attribute line does
+
+```
+*x*{.a
+.b}
+.
+<p><strong>x</strong>{.a
+.b}</p>
+```
+
+```
+{.a
+.b}
+
+paragraph
+.
+<p class="a b">paragraph</p>
+```
+
+```
+{
+.a}
+
+first
+
+{.b
+}
+
+second
+.
+<p class="a">first</p>
+<p class="b">second</p>
+```

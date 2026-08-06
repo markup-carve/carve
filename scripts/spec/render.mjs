@@ -86,6 +86,12 @@ const attrSem = g.createSemantics().addOperation('parseAttrs', {
   attrs(_o, _s1, first, _s2, rest, _s3, _c) {
     return [first.parseAttrs(), ...rest.children.map((c) => c.parseAttrs())]
   },
+  // Same shape, different separator: `blockAttrs` admits a newline because a
+  // standalone attribute LINE may span lines (`block_attributes` in
+  // grammar.ebnf), and `attrs` above may not.
+  blockAttrs(_o, _s1, first, _s2, rest, _s3, _c) {
+    return [first.parseAttrs(), ...rest.children.map((c) => c.parseAttrs())]
+  },
   attrItem(item) {
     return item.parseAttrs()
   },
@@ -736,6 +742,18 @@ export function parseAttrBlock(text) {
 // raw parsed attr list ([kind, name, value?] tuples) or null when invalid
 export function parseAttrList(text) {
   const m = g.match(text, 'attrs')
+  if (m.failed()) return null
+  return attrSem(m).parseAttrs()
+}
+
+// The same, for a standalone attribute LINE, which may span lines: PART 9's
+// `block_attributes` separates with `attr_separator = (whitespace |
+// continuation), opt_ws` where an inline block's `opt_ws` is "spaces/tabs only,
+// no line breaks". One rule served both for a while, so the oracle read
+// `*x*{.a<NEWLINE>.b}` as an attribute block where all three engines leave it
+// literal text (carve#878).
+export function parseBlockAttrList(text) {
+  const m = g.match(text, 'blockAttrs')
   if (m.failed()) return null
   return attrSem(m).parseAttrs()
 }

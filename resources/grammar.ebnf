@@ -2051,12 +2051,26 @@ quoted_value = '"', { escaped_char | (character - '"' - '\') }, '"'
    block interrupted by a blank line is not a block_attributes (both
    reference impls treat it as literal text). Merge + reach semantics
    (including float-across-blank-lines BETWEEN separate blocks): §15. *)
-block_attributes = '{', opt_ws, attribute, {attr_separator, attribute}, opt_ws, '}', newline ;
+block_attributes = '{', opt_pad, attribute, {attr_separator, attribute}, opt_pad, '}', newline ;
+(* THE PADDING ADMITS A LINE BREAK TOO, not only the separator. This used
+   `opt_ws` on both sides, which is spaces and tabs alone, so `{` + newline
+   + `.a}` and `{.a` + newline + `}` were outside the production while the
+   interior `{.a` + newline + `.b}` was inside it. All three engines accept
+   every one of the three, and the paragraph below takes `class="a"` or
+   `class="a b"` accordingly. The prose above the production already said a
+   block "may span multiple physical lines (the `}` need not be on the
+   opening line)" - the padding spelling was narrower than the sentence
+   describing it (carve#878). The INLINE `attributes` production keeps
+   `opt_ws`: an inline block does not span lines in any engine. *)
 (* block_attributes requires AT LEAST ONE attribute -- there is NO block-level
    blessed-empty form (unlike the inline `[text]{}` span, which is blessed).
    A bare `{}` line is therefore NOT a block-attribute block; it stays a
    literal paragraph (`<p>{}</p>`). *)
 opt_ws = {whitespace} ;                  (* spaces/tabs only, no line breaks *)
+opt_pad = opt_ws, [continuation] ;       (* block-attribute padding: spaces/tabs,
+                                            then AT MOST ONE line break plus its
+                                            indentation -- a blank line ends the
+                                            block and is never interior padding *)
 attr_separator = (whitespace | continuation), opt_ws ;  (* one ws OR one line break *)
 continuation = newline, opt_ws ;         (* a single line break + indent; NOT a blank line *)
 

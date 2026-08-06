@@ -10,7 +10,7 @@
  * full-fidelity claim.
  */
 
-import { parseAttrList, parseAttrBlock } from './render.mjs'
+import { parseAttrList, parseBlockAttrList, parseAttrBlock } from './render.mjs'
 
 export { TIER1 }
 
@@ -516,7 +516,7 @@ function tryAttrLine(lines, i) {
       line = lines[li]
       j = 0
     }
-    const list = parseAttrList(buf)
+    const list = parseBlockAttrList(buf)
     if (list === null) return null // A6: not an attribute list
     lists.push(list)
   }
