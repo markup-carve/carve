@@ -1,0 +1,108 @@
+A definition marker's separator is a space, and it is a run
+
+```
+*[HTML]:  Hyper Text
+
+HTML
+.
+<p><abbr title="Hyper Text">HTML</abbr></p>
+```
+
+```
+x[^f]
+
+[^f]:  note
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+*[HTML]:  Hyper Text
+
+HTML
+.
+<p><abbr title=" Hyper Text">HTML</abbr></p>
+```
+
+```
+x[^f]
+
+[^f]:  note
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>&nbsp;note<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+*[HTML]: 	Hyper Text
+
+HTML
+.
+<p><abbr title="	Hyper Text">HTML</abbr></p>
+```
+
+```
+x[^f]
+
+[^f]: 	note
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+*[HTML]:	Hyper Text
+
+HTML
+.
+<p>*[HTML]:	Hyper Text</p>
+<p>HTML</p>
+```
+
+```
+x[^f]
+
+[^f]:	note
+.
+<p>x[^f]</p>
+<p>[^f]:	note</p>
+```
+
+```
+x[^f]
+
+[^f]:
+.
+<p>x[^f]</p>
+<p>[^f]:</p>
+```
+
+```
+*[HTML]: Hyper Text
+
+HTML
+.
+<p><abbr title="Hyper Text">HTML</abbr></p>
+```

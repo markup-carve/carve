@@ -9,6 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **A definition marker's separator is a space, and it is a run** (carve#892).
+  `footnote_definition` and `abbreviation_definition` spelled their
+  marker-to-content separator as a single `space` while all three engines and
+  the executable spec consumed a run, so the productions forbade a shape
+  nothing rejected. Both now say `space+`.
+
+  The separator terminal is unchanged: a tab after the marker is still not a
+  separator, so `*[HTML]:<TAB>x` and `[^f]:<TAB>x` stay paragraphs. What is
+  settled is the cardinality, and it is the OPPOSITE answer from carve#912's
+  for the four padding slots. The two govern different positions: a padding
+  slot sits between two tokens on a line whose construct is already fixed and
+  its width means nothing, while a marker separator stands between the marker
+  and the content it introduces, where a writer aligning definitions in a
+  column is writing separator rather than content.
+
+  The run is ASCII spaces, so the first character that is not one ends the
+  separator and BEGINS the content. `*[HTML]: <NBSP>Hyper` expands to a title
+  that starts with the no-break space, and `[^f]: <NBSP>note` is a footnote
+  whose body starts with it. That is where the three engines disagreed, each in
+  a different place, and where the executable spec gave a fourth answer no
+  engine gave - it refused a footnote marker plus any non-ASCII whitespace as a
+  definition at all.
+
+  MARKER REQUIRES CONTENT still applies after the run: a marker followed by
+  spaces and nothing else is a paragraph. Corpus 267 carries the ruling, with
+  the tab separator, the spaces-only line and the one-space form as controls.
+
 - **A reference definition is anchored at end of line** (carve#911).
   `reference_definition` ends in `newline`, and always did, but all three
   engines and the executable spec read `[a]: /u zzz` as a definition with
