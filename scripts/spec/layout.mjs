@@ -40,7 +40,14 @@ const QUOTE = /^>(?: (.*)|)$/
 // the PART 9 §10 note (and carve-rs, carve-php) read it as a link reference
 // definition whose label is `^`: an EMPTY footnote label is not a footnote
 // label, `footnote_label` being one-or-more (carve-rs#511, carve#589).
-const LINK_DEF = /^\[([^\]@][^\]]*)\]: \s*(\S+)(?:\s+"((?:\\"|[^"])*)")?(?:\s.*)?$/
+// Whitespace here is the Unicode White_Space property, NOT `\s`: JavaScript's
+// class also holds U+FEFF, which `link_destination` names as an ORDINARY
+// destination character, and omits U+0085, which is whitespace. So a BOM was
+// skipped as the separator run or ended the destination early, and U+0085 was
+// carried into the href. The rule is stated for the definition explicitly - it
+// "is built from this same `link_destination`" - so the oracle has to read it
+// the same way the inline form does (carve#806).
+const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?:\p{White_Space}+"((?:\\"|[^"])*)")?(?:\p{White_Space}.*)?$/u
 
 /*
  * Split a TRAILING attribute block off a definition line (carve#604).
