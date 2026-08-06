@@ -361,6 +361,20 @@ const SITES = [
     // brace, so a check that reads only the adjacent character passes while a
     // tab still sits in the run - the same mixed-run hole as the frontmatter
     // slot above, reached from the other side.
+    //
+    // THE OTHER DIRECTION IS DELIBERATELY MISSING, and it is a known live hole
+    // rather than an oversight. `[a]: /u<SP><TAB>{.c}` is not pinned anywhere:
+    // measured under carve#907, replacing this site's guard with
+    // `sep[0] !== ' '` - the first-character shape, on the one end this site
+    // does not cover - passes the entire suite, 1355 of 1355, and leaves
+    // core:check at 728/728. The same is true of the definition form of
+    // `link_title` above under ` [ \t]*"`. Both live on the reference-definition
+    // line, whose failure mode is the open question in markup-carve/carve#911 -
+    // the line is not anchored at end of line, so a slot that does not match
+    // drops the metadata silently instead of falling back to prose, which is the
+    // outcome PART 7 names as the one to avoid. Pinning either shape belongs
+    // with that ruling; carve#907 scoped itself to the five slots where nothing
+    // is open.
     fixtures: [
       { slot: 'the trailing-attributes slot', tab: '[a]: /u\t{.c}\n\n[a][]\n', space: '[a]: /u {.c}\n\n[a][]\n' },
       { slot: 'the trailing-attributes slot, mixed run', tab: '[a]: /u\t {.c}\n\n[a][]\n', space: '[a]: /u {.c}\n\n[a][]\n' },
