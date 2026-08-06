@@ -2427,7 +2427,7 @@ tail
 
 :::
 
-A closed `:::` div or admonition is a complete block with no open paragraph either, so the dedented line ends the item too (only a blockquote, whose trailing paragraph stays open, folds the line in):
+A colon fence that is **not a valid opener** opens no block, so it leaves the paragraph open and the dedented line folds in. `:::note` has no space between the fence and the type word, so §12's opener test rejects it and the line is ordinary paragraph text; from there the paragraph absorbs the following fence-shaped line as text too (§12, "the absorption is not width-tagged"). Nothing ever interrupted the item's paragraph, so it is still **open** when `tail` arrives, and PART 1 S4 folds `tail` into it. What decides is whether a block was opened, never the shape of the line that tried - an absorbed fence is prose:
 
 ::::: compare
 
@@ -2444,9 +2444,106 @@ tail
   <li>item
 :::note
 body
-:::</li>
+:::
+tail</li>
+</ul>
+```
+
+:::::
+
+Give the same fence its space and the contrast is exact. `::: note` is a valid opener, so it interrupts the item's paragraph and its closer completes the block; a closed `:::` div or admonition leaves no open paragraph, and the dedented line ends the item:
+
+::::: compare
+
+```carve
+- item
+  ::: note
+  body
+  :::
+tail
+```
+
+```html
+<ul>
+  <li>item
+    <aside class="admonition note">
+      <p>body</p>
+    </aside>
+  </li>
 </ul>
 <p>tail</p>
+```
+
+:::::
+
+The same clause settles the neighboring shapes, which is how one knows it is the clause and not a special case. Indenting the lazy line changes nothing - it is still below the content column, and folding strips its indent:
+
+::::: compare
+
+```carve
+- item
+  :::note
+  body
+  :::
+ tail
+```
+
+```html
+<ul>
+  <li>item
+:::note
+body
+:::
+tail</li>
+</ul>
+```
+
+:::::
+
+The malformed fence may be the paragraph's first line, on the marker line itself. The item then opens with a paragraph that begins with fence-shaped text, and the trailing fence and `tail` both fold into it:
+
+::::: compare
+
+```carve
+- :::note
+  body
+  :::
+tail
+```
+
+```html
+<ul>
+  <li>:::note
+body
+:::
+tail</li>
+</ul>
+```
+
+:::::
+
+Inside a block quote the item is one container deeper, and `> tail` supplies the quote's prefix but not the item's indentation. That is a partial match, which is exactly S4's case: the item still holds the open paragraph, so the line folds into it rather than ending the list:
+
+::::: compare
+
+```carve
+> - item
+>   :::note
+>   body
+>   :::
+> tail
+```
+
+```html
+<blockquote>
+  <ul>
+    <li>item
+:::note
+body
+:::
+tail</li>
+  </ul>
+</blockquote>
 ```
 
 :::::

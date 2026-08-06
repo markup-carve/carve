@@ -130,7 +130,72 @@ tail
   <li>item
 :::note
 body
-:::</li>
+:::
+tail</li>
+</ul>
+```
+
+```
+- item
+  ::: note
+  body
+  :::
+tail
+.
+<ul>
+  <li>item
+    <aside class="admonition note">
+      <p>body</p>
+    </aside>
+  </li>
 </ul>
 <p>tail</p>
+```
+
+```
+- item
+  :::note
+  body
+  :::
+ tail
+.
+<ul>
+  <li>item
+:::note
+body
+:::
+tail</li>
+</ul>
+```
+
+```
+- :::note
+  body
+  :::
+tail
+.
+<ul>
+  <li>:::note
+body
+:::
+tail</li>
+</ul>
+```
+
+```
+> - item
+>   :::note
+>   body
+>   :::
+> tail
+.
+<blockquote>
+  <ul>
+    <li>item
+:::note
+body
+:::
+tail</li>
+  </ul>
+</blockquote>
 ```
