@@ -1584,6 +1584,24 @@ function collectItems(lines, i, list, state) {
         if (j >= n) { i = j; break }
         const { col } = indentCols(lines[j])
         const nm = matchMarker(lines[j])
+        // A CONTINUATION MARKER survives the blank. §17 L3/L4 place the marker
+        // at the item's marker column, and nothing there makes a preceding
+        // blank line matter - but this branch decided the blank by what the
+        // next content line MATCHED, and `+` is not a marker (§11 N1) and sits
+        // below the content column, so it matched nothing at all. The item
+        // ended here, the marker reached the document level, and a lone `+`
+        // there is a refusal: the document was rejected rather than answered
+        // (carve#867).
+        //
+        // The blank does not loosen. Measured, not reasoned: all three engines
+        // render `- a` / blank / `+` / `c` exactly as `- a` / `+` / `c`, so
+        // treating the blank as a separator here would invent a difference
+        // none of them makes.
+        if (CONT_MARKER.test(lines[j]) && indentCols(lines[j]).col === baseIndent) {
+          i = j + 1
+          attachFlushLeft()
+          continue
+        }
         if (nm && nm.indent === baseIndent) {
           // blank line between ITEMS of this list -> loose (SS17 L1); a
           // following DIFFERENT list is a sibling and loosens nothing
