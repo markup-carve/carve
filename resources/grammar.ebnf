@@ -1432,9 +1432,15 @@ reference_label = (character - ']' - '@'), {character - ']'} ;
    non-whitespace character of the line, where a tab is not syntax. What
    `attributes` admits INTERNALLY is a separate production (PART 4).
    Cardinality is exactly one space at BOTH, and at the padding slot that is
-   carve#912's ruling rather than an oversight: `[a]: /u<SP><SP>{.c}` leaves
-   the braces in the destination, exactly as `[a]: /u{.c}` already does.
-   Corpus 265 carries it with its one-space control. *)
+   carve#912's ruling rather than an oversight. Where the rejected block goes
+   differs by run, and the two cases are NOT the same: a ZERO-space run glues
+   the braces to the destination (`[a]: /u{.c}` gives href `/u{.c}`, because
+   `link_destination` reads them), while a TWO-space run cannot -- whitespace
+   ends the destination -- so `{.c}` is DROPPED. That is the outcome this
+   clause names as the one to avoid, and it happens only because
+   `reference_definition` is not anchored at end of line; carve#911 anchors it
+   and the line falls back to prose instead. Corpus 265 carries it with its
+   one-space control. *)
 reference_definition = '[', reference_label, ']', ':', space, link_destination,
                        [link_title], [space, attributes], newline ;
 (* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE. A `{...}` block at the end

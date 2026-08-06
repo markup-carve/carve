@@ -159,8 +159,18 @@ function splitTrailingAttrBlock(line) {
       // `[space, attributes]`, one character, and this accepted any run of
       // them - so `[a]: /u<SP><SP>{.c}` attached the block here, as it did in
       // all three engines. The ruling is that the production is right and the
-      // four lax artifacts narrow; a two-space run leaves the braces in the
-      // destination, exactly as a zero-space run already does.
+      // four lax artifacts narrow.
+      //
+      // WHERE THE REJECTED BLOCK GOES depends on the run, and the two cases
+      // are NOT the same. A ZERO-space run glues the braces to the
+      // destination, so `[a]: /u{.c}` gives href `/u{.c}` - `link_destination`
+      // simply reads them. A TWO-space run does not: whitespace ends the
+      // destination, the slot no longer matches, and `{.c}` lands in the tail
+      // `(?:\p{White_Space}.*)?$` that `LINK_DEF` ignores. So it is DROPPED,
+      // which is the outcome PART 7 names as the one to avoid - and it is
+      // dropped only because `reference_definition` is not anchored at end of
+      // line. carve#911 anchors it, at which point this line stops being a
+      // definition at all and falls back to prose the way the clause promises.
       if (open === 0) return [line, null]
       const sep = /[ \t]*$/.exec(trimmedEnd.slice(0, open))[0]
       if (sep !== ' ') return [line, null]

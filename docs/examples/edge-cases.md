@@ -11757,8 +11757,14 @@ With two spaces the title is not a title:
 
 :::
 
-And with two spaces the attribute block is not the definition's, exactly as a
-zero-space run already leaves the braces in the destination:
+And with two spaces the attribute block is not the definition's. Note where it
+goes, because the zero-space case is NOT the same: `[a]: /u{.c}` glues the
+braces to the destination and gives `href="/u{.c}"`, while two spaces end the
+destination, so the block matches nothing and is dropped. Dropping metadata
+silently is the outcome PART 7 names as the one to avoid, and it happens here
+only because `reference_definition` is not anchored at end of line -- carve#911
+anchors it, and this document's answer changes to the prose fallback the clause
+promises.
 
 ::: compare
 

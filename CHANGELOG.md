@@ -23,9 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   So `[t](/u  "T")` is no longer a titled link, ` ```  php ` is no longer a
   fence opener, `---  yaml` is no longer a typed frontmatter opener, and
   `[a]: /u  {.c}` no longer carries the definition's attributes. Every
-  document with two spaces at one of those slots reparses. The failure mode is
-  the one PART 7 already names: the token is left unconsumed and the line falls
-  back to prose or to the INVALID-FENCE FALLBACK.
+  document with two spaces at one of those slots reparses. At the three
+  slots on a line that can fall back, the failure mode is the one PART 7
+  already names: the token is left unconsumed and the line becomes prose, or
+  the INVALID-FENCE FALLBACK applies. On the reference-definition line it
+  cannot, because that line is not anchored at end of line, so the title and
+  the attribute block are dropped instead - carve#911 anchors it and restores
+  the promised fallback.
 
   This is deliberately the opposite call from carve#905, which settled WHICH
   character a slot admits and left HOW MANY alone. It is also the opposite of
