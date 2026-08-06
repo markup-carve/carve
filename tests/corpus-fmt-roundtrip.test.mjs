@@ -1,8 +1,9 @@
 /*
  * The formatter preserves the document, over the WHOLE corpus.
  *
- * tests/corpus-roundtrip/ pins the canonical writer against ten hand-written
- * documents, chosen for their escaping decisions. That is the right shape for
+ * tests/corpus-roundtrip/ pins the canonical writer against eleven hand-written
+ * documents, chosen for their escaping decisions and - since carve#787 - for
+ * the ORDER the writer emits collected definitions in. That is the right shape for
  * pinning bytes, and it is a thin sample: the corpus has 500+ documents that
  * exercise every construct in the language, and none of them were ever put
  * through the writer.
