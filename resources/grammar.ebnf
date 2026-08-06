@@ -5240,8 +5240,8 @@ EOF = (* end of file *) ;
       answer, and nothing needs saying.
 
    5. WHAT IS NOT IN THE SERIALIZED FORM. Formatter-internal nodes (PART 11,
-      and the `raw_text` case profiles.md excludes) are not part of the
-      document and are not serialized. Resolution results that a consumer can
+      and the `raw_text` case profiles.md names as neither deniable nor
+      carried) are not part of the document and are not serialized. Resolution results that a consumer can
       recompute - footnote numbering, caption numbers, a generated heading id -
       ARE serialized, because recomputing them requires reimplementing PART 9R.
 
