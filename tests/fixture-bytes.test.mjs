@@ -157,6 +157,48 @@ const INVENTORY = [
     crv: ['NBSP'],
     html: [],
   },
+  // carve#926's category. Here the trailing run IS the case in both
+  // directions: in the nine documents whose `.crv` ends in `whitespace` the
+  // point is that it does NOT survive, and in the two that end in something
+  // else the point is that it does. Either way, an editor that strips the
+  // source on save makes the pair test its own control and pass for free -
+  // which is precisely why every one of them is listed.
+  //
+  // The `.html` column is empty wherever the rule is that the run is DROPPED:
+  // the expected output has no trailing whitespace, by construction.
+  { base: '268-trailing-whitespace-on-a-content-line-is-dropped', crv: ['trailing-WS'], html: [] },
+  { base: '268-trailing-whitespace-on-a-content-line-is-dropped-2', crv: ['trailing-WS'], html: [] },
+  { base: '268-trailing-whitespace-on-a-content-line-is-dropped-3', crv: ['trailing-WS'], html: [] },
+  { base: '268-trailing-whitespace-on-a-content-line-is-dropped-4', crv: ['trailing-WS'], html: [] },
+  { base: '268-trailing-whitespace-on-a-content-line-is-dropped-5', crv: ['trailing-WS'], html: [] },
+  { base: '268-trailing-whitespace-on-a-content-line-is-dropped-6', crv: ['trailing-WS'], html: [] },
+  // The nine-character class document, and the one that carries the most. Each
+  // line ends in a DIFFERENT character that is not `whitespace`, so each one
+  // survives - and the NBSP is spelled `&nbsp;` in the expected HTML while the
+  // other four are raw on both sides.
+  {
+    base: '268-trailing-whitespace-on-a-content-line-is-dropped-7',
+    crv: ['NBSP', 'ZWSP', 'BOM', 'EN-QUAD', 'FF'],
+    html: ['ZWSP', 'BOM', 'EN-QUAD', 'FF'],
+  },
+  // The shape the ticket was raised on: <SP> U+FEFF <SP>. The BOM is content
+  // and survives; the trailing space is the thing that must not.
+  {
+    base: '268-trailing-whitespace-on-a-content-line-is-dropped-8',
+    crv: ['BOM', 'trailing-WS'],
+    html: ['BOM'],
+  },
+  // A code fence body, where the run is the block's PAYLOAD and is kept - so
+  // this one is the control that the rule does not reach verbatim content, and
+  // its trailing whitespace has to survive on BOTH sides.
+  {
+    base: '268-trailing-whitespace-on-a-content-line-is-dropped-9',
+    crv: ['trailing-WS'],
+    html: ['trailing-WS'],
+  },
+  // The line block. SS23 converts the two-column run into NBSPs, so the `.crv`
+  // carries the run and the `.html` carries the entities rather than a run.
+  { base: '268-trailing-whitespace-on-a-content-line-is-dropped-12', crv: ['trailing-WS'], html: [] },
 ]
 
 function scan(text) {

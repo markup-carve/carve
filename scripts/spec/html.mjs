@@ -126,9 +126,17 @@ function renderLineBlockLine(line) {
     if (!seenContent || width >= 2) {
       flush()
       out += '&nbsp;'.repeat(width)
-    } else {
+    } else if (i < line.length) {
       text += ' '
     }
+    // A LONE run at the END of the line is TRAILING WHITESPACE and is dropped
+    // (PART 2, NO TRAILING WHITESPACE; carve#926). The order is what makes
+    // this consistent rather than an exception: SS23's MEDIAL GAPS rule
+    // converts a run of two or more columns into NBSP CONTENT first, and
+    // content is not whitespace, so the general rule only ever reaches the
+    // one-column case - which SS23 leaves as an ordinary collapsible space,
+    // and which cannot serve the purpose SS23 gives it (letting a long line
+    // wrap between words) at the end of a line.
   }
   flush()
   return out

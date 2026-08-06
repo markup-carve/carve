@@ -1157,14 +1157,52 @@ raw_content = (* any content until closing fence *) ;
    line, an interrupting block (§10), or end of file -- the optional trailing
    blank_line here is the paragraph's own terminator, not a precondition for
    the NEXT block.
-   TRAILING WHITESPACE -- NORMATIVE. Whitespace at the END of the paragraph's
-   final line (with nothing after it) is STRIPPED before rendering (CommonMark /
-   Djot: "final spaces are stripped"), so "abc " renders <p>abc</p>, not
-   <p>abc </p>. Only this final trailing whitespace is stripped; whitespace
-   before an INTERIOR line break is governed by the line-break rules (PART 3)
-   and is not touched here. (Carve has no two-trailing-space hard break -- a
-   hard break is the backslash form, `\` + newline; see PART 3.) Pinned by
-   corpus 102-paragraph-trailing-whitespace. *)
+   NO TRAILING WHITESPACE -- NORMATIVE. A `whitespace` run at the END of a
+   CONTENT LINE is DROPPED. It does not reach the output, and it is not
+   content.
+
+   The rule is the project's, not this production's, and it is stated here
+   because this is where it was first written down too narrowly:
+
+     "trailing (invisible and bad) whitespace is the one important rule we
+      have: no such thing."
+
+   So it holds for EVERY content line, not only for a paragraph's final one.
+   `abc<SP>` renders <p>abc</p>; so does `abc<SP>` followed by `def`, where the
+   run sits before a SOFT BREAK; and so do a heading, a list item, a block
+   quote line, a definition term or description, a footnote body line, a table
+   caption and a line-block line. This clause used to say the opposite of the
+   soft-break half, and PART 12 §7 used to say it at greater length
+   (carve#926).
+
+   THE RUN IS `whitespace` -- `' ' | '\t'` -- the same two-character terminal
+   `blank_line = {whitespace}` and `indent` take (PART 1; carve#890). Every
+   other character is CONTENT and survives, however invisible: a no-break
+   space, a zero-width space, a BYTE ORDER MARK, an en quad, an ideographic
+   space, a form feed and a vertical tab all reach the output. That is what
+   makes the rule simple rather than a list, and it is why U+FEFF was a red
+   herring in the shape that raised this: in `<SP>U+FEFF<SP>` the BOM is
+   content and what is dropped is the trailing SPACE.
+
+   WHERE IT DOES NOT REACH. Verbatim content keeps its bytes: a fenced code
+   block's body and a raw block's body are not content LINES in this sense,
+   they are the block's payload. Whitespace INSIDE a construct is not trailing
+   either -- `x<SP>` inside a code span, a literal inline or a table cell ends
+   at the construct's delimiter, not at the line's end, and the line-break
+   backslash likewise leaves the run before it interior.
+
+   THE LINE BLOCK IS NOT AN EXCEPTION, in the order that matters. PART 9 §23's
+   MEDIAL GAPS rule converts an inner or trailing run of TWO OR MORE columns
+   into N\P CONTENT, and content is not whitespace, so this rule never reaches
+   it. What it does reach is §23's one-column case, which that clause leaves
+   as an ordinary collapsible space -- and a lone space cannot serve the
+   purpose §23 gives it, letting a long line wrap between words, at the end of
+   a line.
+
+   (Carve has no two-trailing-space hard break -- a hard break is the backslash
+   form, `\` + newline; see PART 3. This rule is why: a document cannot carry
+   meaning in whitespace nothing can see.) Pinned by corpus
+   104-paragraph-trailing-whitespace and 268. *)
 paragraph = inline_content+, [blank_line] ;
 
 
@@ -4734,23 +4772,35 @@ EOF = (* end of file *) ;
       tools it will be stored under is not idempotent in practice, whatever §1
       says about it in isolation.
 
-      WHAT THIS DOES NOT SAY, and said wrongly for one release of this text: it
-      does NOT extend to whitespace at the end of a line that HAS content. That
-      whitespace can be document content, and §1 outranks tidiness:
+      AND IT DOES EXTEND to whitespace at the end of a line that HAS content,
+      which is a correction: this text said the opposite twice, and both times
+      it was measurably false.
 
-        `a` + SPACE + newline + `b`   renders  `<p>a \nb</p>`
+        `a` + SPACE + newline + `b`   renders  `<p>a\nb</p>`
         `a` + newline + `b`           renders  `<p>a\nb</p>`
 
-      The space survives into the output, so stripping it breaks
-      `to_html(fmt(x)) == to_html(x)`. carve-rs already limited its stripping to
-      lines that END a block for this reason (carve#359); a writer that strips
-      before a soft break corrupts the document. Where the PARSER discards
-      trailing whitespace the writer may too, and nowhere else.
+      The two are the same document. PART 2's NO TRAILING WHITESPACE clause
+      drops the run on EVERY content line, including one before a soft break,
+      so a writer that strips it changes nothing about
+      `to_html(fmt(x)) == to_html(x)` -- and the rule this clause already ends
+      with, "where the PARSER discards trailing whitespace the writer may too",
+      now reaches every line rather than only the ones that end a block.
 
-      A trailing NO-BREAK space is likewise content, not layout -- the author
-      wrote it and it renders as `&nbsp;` -- so an implementation whose
-      whitespace test treats U+00A0 as whitespace must exclude it here. Corpus
-      case 139 pins that.
+      WHAT WAS WRONG, recorded so it is not re-derived. The old text asserted
+      `<p>a \nb</p>` as the rendering and argued from it that stripping breaks
+      the round trip. It does not render that way and never did in the
+      executable spec; carve-rs's limitation to block-final lines (carve#359)
+      was a correct response to an engine whose PARSER kept the run, which is
+      the half carve#926 moved.
+
+      A trailing NO-BREAK space is a different matter and IS content, not
+      layout -- the author wrote it and it renders as `&nbsp;` -- so an
+      implementation whose whitespace test treats U+00A0 as whitespace must
+      exclude it here. That is the same two-character `whitespace` terminal
+      PART 2's clause names, and it is why the rule is simple rather than a
+      list of exceptions. Corpus case 141-trailing-whitespace-boundaries-4 pins
+      it (this text said case 139, which has been an inline-literal category
+      for some time).
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
       the canonical writer and does not follow §2. It has a different

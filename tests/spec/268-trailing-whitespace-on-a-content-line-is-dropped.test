@@ -1,0 +1,116 @@
+Trailing whitespace on a content line is dropped
+
+```
+abc 
+.
+<p>abc</p>
+```
+
+```
+abc 
+def
+.
+<p>abc
+def</p>
+```
+
+```
+abc	
+def	
+.
+<p>abc
+def</p>
+```
+
+```
+# Title 
+
+- item 
+
+> quoted 
+.
+<section id="Title">
+  <h1>Title</h1>
+  <ul>
+    <li>item</li>
+  </ul>
+  <blockquote><p>quoted</p></blockquote>
+</section>
+```
+
+```
+:: term 
+:  def 
+.
+<dl>
+  <dt>term</dt>
+  <dd>def</dd>
+</dl>
+```
+
+```
+| a |
+^ Cap 
+.
+<table>
+  <caption>Cap</caption>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+```
+
+```
+a 
+b​
+c﻿
+d 
+e
+.
+<p>a&nbsp;
+b​
+c﻿
+d 
+e</p>
+```
+
+```
+ ﻿ 
+.
+<p>﻿</p>
+```
+
+````
+```
+abc 
+```
+.
+<pre><code>abc 
+</code></pre>
+````
+
+```
+`x ` and !`y `
+.
+<p><code>x </code> and y </p>
+```
+
+```
+a \
+b
+.
+<p>a <br>
+b</p>
+```
+
+```
+::: |
+abc  
+def 
+:::
+.
+<div class="line-block">
+  <p>abc&nbsp;&nbsp;<br>
+def</p>
+</div>
+```
