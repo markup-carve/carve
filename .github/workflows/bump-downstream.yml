@@ -354,8 +354,18 @@ jobs:
             #
             # Failure is reported now rather than hidden: a body that did not
             # update is exactly the state that was invisible before.
-            if ! gh api "repos/$REPO/pulls/$existing" -X PATCH -f body="$body" >/dev/null; then
-              echo "::warning::could not update the body of $REPO#$existing - it may describe an earlier run"
+            # The TITLE moves with the body. It used to be written once, by
+            # the run that created the PR, and every later re-bump left it
+            # naming the first rev - so an open PR read "bump to carve
+            # 6611571" while its branch carried 555b980, and the squash
+            # message that landed on main inherited the wrong rev. Worse than
+            # cosmetic: the title is what a reviewer checks a bump against,
+            # and four repos went red on a category from the rev the title
+            # did not name.
+            if ! gh api "repos/$REPO/pulls/$existing" -X PATCH \
+              -f title="chore: bump spec corpus to carve $short" \
+              -f body="$body" >/dev/null; then
+              echo "::warning::could not update the title or body of $REPO#$existing - they may describe an earlier run"
             fi
             echo "Updated existing PR #$existing on $REPO (draft=${draft:+yes})."
           fi
