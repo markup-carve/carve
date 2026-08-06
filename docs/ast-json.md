@@ -303,23 +303,71 @@ The root type is not a leniency point either: §7 fixes it at `document` and the
 schema pins it as a `const`. Accepting `doc` means half-reading a ProseMirror
 payload instead of rejecting it.
 
-## An ingest is strict
+## A property the schema does not name
 
-Depth is one bound on a payload someone else wrote; the shape is the other. §12
-rules the root, and §11 rules the fields inside it. An ingest **must refuse**:
+`resources/ast-schema.json` closes every node with `additionalProperties: false`,
+so a payload carrying a property no node type names is not a Carve AST. §11
+says what an ingest does with one: **refuse it**, with a typed error naming the
+offending property and the path it sat at. Not a silent drop, and not a
+pass-through.
+
+The pass-through is the answer that cannot be right, and it fails on the
+engine's own contract rather than on taste. An implementation that copies a
+wire record wholesale re-emits the unknown property when it serializes again,
+so its own output stops validating - a consumer that reads a tree and publishes
+it again emits something the format rejects, having been told nothing. Measured
+before the rule landed, carve-js echoed 29 of 31 injected properties back
+([carve-js#709](https://github.com/markup-carve/carve-js/issues/709)).
+
+Refusing rather than dropping follows §9(b) one field down: "an ingest that
+accepts a tree and then silently renders only part of it is the worst of the
+three, because the caller is told nothing". If a later version gives that
+property a meaning, an engine that dropped it rendered a document that says
+something else and reported success.
+
+Forward compatibility does not argue the other way. `parse` and the schema ship
+in one build, so an unknown property means the payload came from a different
+version, and no engine can render a field it does not implement whatever it
+does with it. Refusing makes the mismatch visible where it can still be
+handled.
+
+**One narrow exception.** An implementation may accept a property it once
+published itself, provided it decodes that property onto a field the schema
+does name and documents it. `footnote.id` - what carve-js and carve-php
+published before §7 settled on `label` - is the case this is written for. Such
+a property is not one the ingest cannot understand, which is what the clause is
+about; refusing it would not protect a caller from a half-read tree, it would
+take away the only reader that reads those stored trees whole. The exception
+does not extend to a property an implementation merely tolerates.
+
+**Extension data needs a declared home, not the absence of a check.** Until the
+schema names one, extension state on the wire is invalid for the same reason
+any other unnamed property is, and an extension relying on a pass-through is
+relying on one engine's leak.
+
+All three engines refuse today
+([carve-js#763](https://github.com/markup-carve/carve-js/pull/763),
+[carve-rs#693](https://github.com/markup-carve/carve-rs/pull/693),
+[carve-php#913](https://github.com/markup-carve/carve-php/pull/913)), and the
+spec repo's `compare:impls` probe checks it across all three.
+
+## The root shape is strict too
+
+§11 above closes the fields inside a node; §12 closes the ROOT, and puts the
+unknown-type refusal at decode. An ingest **must refuse**:
 
 | payload | why |
 |---|---|
 | a root missing `type`, `children` or `srcByteLength` | §7 fixes the three and the schema marks them `required`; supplying a default turns a truncated document into a valid-looking one |
-| a root carrying a fourth field | `document` is closed with `additionalProperties: false` like every other node (§11) |
+| a root carrying a fourth field | `document` is closed with `additionalProperties: false` like every other node, so §11 already covers it |
 | a node whose `type` the schema does not name | **at decode**, not in a renderer - a formatter, a linter or a language server holds the tree and never reaches one |
-| any node carrying a property the schema does not name | §11, with `footnote.id` as the one documented legacy alias |
 
-A reader that invents a missing field or ignores an unexpected one has silently
-repaired attacker-controlled input, which is the opposite of what an ingest
-boundary is for.
+Same argument as §11, one level out: a reader that invents a missing field or
+ignores an unexpected one has silently repaired attacker-controlled input, which
+is the opposite of what an ingest boundary is for. The refusal has to be an error
+of its own, naming what was wrong - not whatever the JSON library raised.
 
-The value of `srcByteLength` is not checked. It is derivable and nothing depends
+The VALUE of `srcByteLength` is not checked. It is derivable and nothing depends
 on it, so all three engines ignore it - §12 is about the field being **there**.
 
 One trap sits under the unknown-type rule, and it is worth knowing before you
