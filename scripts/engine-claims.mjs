@@ -67,43 +67,46 @@ const CLAIMS = [
    * constructs, so it needs five claims: the split is PER KIND, and one case
    * would pin the shape of the disagreement wrong.
    *
-   * These are the direction this checker cares most about - a documented
-   * divergence that gets silently RESOLVED leaves a false sentence in the
-   * grammar. A2a says what every engine should do; when they all move to it
-   * these five start failing, and the failure is the signal to rewrite the
-   * paragraph as agreement rather than to relax the check.
+   * THEY HAVE ALL MOVED TO A2a, and these five now pin the agreement instead.
+   * That is the outcome this checker was built for: a documented divergence
+   * that gets silently RESOLVED leaves a false sentence in the grammar, so the
+   * five claims failed on the day the last engine came into line and the
+   * failure said to rewrite the paragraph rather than relax the check
+   * (carve#529 measured the divergence; carve#857 measured its end).
    *
-   * The odd-engine-out values come from the matrix measured in carve#529.
+   * They stay one claim per KIND rather than collapsing into one: the engines
+   * disagreed per kind and none was self-consistent across all five, so a
+   * single case would let four kinds regress unnoticed.
    */
   {
     section: 'PART 9 §15 A2a, floating attribute over a footnote definition',
-    quote: 'carve-rs applies the attribute over a footnote definition where carve-js and carve-php drop it',
+    quote: 'every engine applies a floating attribute over a footnote definition',
     source: '{#i}\n[^f]: note\n\ne\n',
-    expect: ['rs'],
+    expect: 'agree',
   },
   {
     section: 'PART 9 §15 A2a, floating attribute over a link reference definition',
-    quote: 'carve-rs applies the attribute over a link reference definition where carve-js and carve-php drop it',
+    quote: 'every engine applies a floating attribute over a link reference definition',
     source: '{#i}\n[f]: u\n\ne\n',
-    expect: ['rs'],
+    expect: 'agree',
   },
   {
     section: 'PART 9 §15 A2a, floating attribute over an abbreviation definition',
-    quote: 'carve-php applies the attribute over an abbreviation definition where carve-js and carve-rs drop it',
+    quote: 'every engine applies a floating attribute over an abbreviation definition',
     source: '{#i}\n*[A]: b\n\ne\n',
-    expect: ['php'],
+    expect: 'agree',
   },
   {
     section: 'PART 9 §15 A2a, floating attribute over a line comment',
-    quote: 'carve-js drops the attribute over a line comment where carve-rs and carve-php apply it',
+    quote: 'every engine applies a floating attribute over a line comment',
     source: '{#i}\n%% c\n\ne\n',
-    expect: ['js'],
+    expect: 'agree',
   },
   {
     section: 'PART 9 §15 A2a, floating attribute over a comment block',
-    quote: 'carve-js drops the attribute over a comment block where carve-rs and carve-php apply it',
+    quote: 'every engine applies a floating attribute over a comment block',
     source: '{#i}\n%%%\nc\n%%%\n\ne\n',
-    expect: ['js'],
+    expect: 'agree',
   },
 ]
 
