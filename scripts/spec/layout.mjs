@@ -547,6 +547,15 @@ function opensSubBlock(line) {
 }
 
 export function parse(src) {
+  // A single leading U+FEFF is stripped before the first line is read, so
+  // `<BOM># T` is a heading rather than paragraph text. All three engines do
+  // this and none of them says so anywhere normative; the oracle did not, and
+  // rendered the BOM'd heading as a paragraph (carve#872).
+  //
+  // ONE, and only at the very start: a BOM anywhere else is an ordinary
+  // zero-width character, which PART 9 already says of U+FEFF on a destination
+  // ("ZERO-WIDTH characters are NOT whitespace and ARE ordinary characters").
+  if (src.charCodeAt(0) === 0xfeff) src = src.slice(1)
   const lines = src.split('\n')
   if (lines[lines.length - 1] === '') lines.pop()
   const state = {

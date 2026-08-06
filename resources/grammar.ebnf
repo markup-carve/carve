@@ -74,7 +74,27 @@
    automaton instead of prose. The three engine implementations realize
    this automaton literally.
 
-   INPUT.  Lines, split on newline ('\n' | '\r\n'). Column arithmetic is
+   INPUT.  Lines, split on `newline` -- '\n', '\r\n' OR a lone '\r', as that
+           production defines it below. This line used to spell the set out as
+           ('\n' | '\r\n'), omitting the lone carriage return the production
+           includes, so the automaton's own INPUT description and the token it
+           consumes disagreed. All three engines split on a lone '\r' (carve#872).
+           Naming the production rather than restating it is what keeps the two
+           from drifting again.
+
+           A LEADING BYTE ORDER MARK IS STRIPPED -- NORMATIVE. A single U+FEFF
+           at the very start of the document is removed before the first line
+           is read, so `<BOM># T` is a heading and not paragraph text. ONE, and
+           only there: a U+FEFF anywhere else is an ordinary zero-width
+           character, which this file already says of a destination ("ZERO-WIDTH
+           characters (U+200B, U+FEFF) are NOT whitespace and ARE ordinary
+           destination characters").
+
+           Stated because all three engines did it and none of them said so.
+           The executable spec did NOT, and rendered the heading as a paragraph
+           - a divergence no corpus document could see, because none carried a
+           BOM (carve#872).
+           Column arithmetic is
            PART 9 §24 C1: a space advances the column by 1, a tab to the next
            multiple of 4; tabs outside indentation are preserved verbatim.
    STATE.  open := stack of open containers, bottom-up (document ->
