@@ -1671,7 +1671,15 @@ function collectItems(lines, i, list, state) {
           list.tight = false
           pendingSeparation = false
         }
-        itemLines.push(dedented)
+        // A bare `+` that reached here was INDENTED in the source, so it sat at
+        // the item's CONTENT column - and SS17 L3 puts the continuation marker
+        // at the container's MARKER column ("`+` at the item's marker column
+        // attaches the block to the item", L4). Dedenting makes the two
+        // indistinguishable, so without this the inner parse read it as a
+        // marker and consumed it, where all three engines keep it as text
+        // (carve#812). LAZY is the existing "never re-classified as structure"
+        // tag, which is exactly the claim being made.
+        itemLines.push(CONT_MARKER.test(dedented) ? LAZY + dedented : dedented)
         // Track an open fenced code block (its matching closer clears it) so the
         // blank-line branch above knows an interior blank is fence content.
         if (fence) {

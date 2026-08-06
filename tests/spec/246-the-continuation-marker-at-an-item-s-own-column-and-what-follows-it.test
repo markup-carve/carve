@@ -1,0 +1,43 @@
+The continuation marker at an item's own column, and what follows it
+
+```
+- a
+  +
+  [r]: /u
+
+see [t][r]
+.
+<ul>
+  <li>a
++</li>
+</ul>
+<p>see <a href="/u">t</a></p>
+```
+
+```
+- a
+  +
+
+x
+.
+<ul>
+  <li>a
++</li>
+</ul>
+<p>x</p>
+```
+
+```
+- a
++
+b
+
+x
+.
+<ul>
+  <li>a
+    b
+  </li>
+</ul>
+<p>x</p>
+```
