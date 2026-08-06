@@ -26,5 +26,4 @@
 #
 # Format: <type.field>  <document-count>  <who diverges and where it is tracked>
 
-heading.attrs.id        45  carve-js publishes a GENERATED heading id, carve-rs and carve-php publish none (carve#750)
 list.tight                1  carve-rs has not implemented the clause behind corpus 228 yet, so it builds a loose list where the other two build a tight one - the HTML comparison reports the same document (carve#801)
