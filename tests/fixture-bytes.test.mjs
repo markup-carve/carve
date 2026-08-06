@@ -86,6 +86,14 @@ const INVENTORY = [
     crv: ['BOM'],
     html: ['BOM'],
   },
+  // The line endings ARE the case. These are the only fixtures produced by a
+  // byte transform (`::: compare crlf | cr | bom` in scripts/generate-corpus.mjs)
+  // rather than copied out of the example source, because the example files are
+  // reviewable Markdown and `.gitattributes` does not protect them the way it
+  // protects tests/corpus (carve#872).
+  { base: '250-line-endings-and-a-byte-order-mark', crv: ['CRLF'], html: [] },
+  { base: '250-line-endings-and-a-byte-order-mark-2', crv: ['CR'], html: [] },
+  { base: '250-line-endings-and-a-byte-order-mark-3', crv: ['BOM'], html: [] },
 ]
 
 function scan(text) {
@@ -95,6 +103,13 @@ function scan(text) {
     if (name) found.add(name)
   }
   if (/[ \t]+$/m.test(text)) found.add('trailing-WS')
+  // CARRIAGE RETURNS, which this file existed to protect and could not see.
+  // Every other watched character is exotic enough that no tool touches it by
+  // accident; a CR is the one byte git itself rewrites on checkout, under a
+  // setting the contributor may not know is on. It is not in WATCHED because
+  // that map is per-codepoint and would call a CRLF document a lone-CR one.
+  if (text.includes('\r\n')) found.add('CRLF')
+  if (/\r(?!\n)/.test(text)) found.add('CR')
   return found
 }
 

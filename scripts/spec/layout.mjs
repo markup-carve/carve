@@ -556,6 +556,12 @@ export function parse(src) {
   // zero-width character, which PART 9 already says of U+FEFF on a destination
   // ("ZERO-WIDTH characters are NOT whitespace and ARE ordinary characters").
   if (src.charCodeAt(0) === 0xfeff) src = src.slice(1)
+  // `newline = '\n' | '\r\n' | '\r'` - all three end a line, and splitting on
+  // '\n' alone left the carriage return as ordinary text at the end of every
+  // line, which the inline grammar then refused outright. So the oracle could
+  // not read a CRLF document at all, while the production says it is one
+  // (carve#872).
+  src = src.replace(/\r\n?/g, '\n')
   const lines = src.split('\n')
   if (lines[lines.length - 1] === '') lines.pop()
   const state = {
