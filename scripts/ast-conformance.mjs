@@ -897,6 +897,7 @@ let rsRootShaped = false
 }
 
 // ---- carve-rb: serializes carve-rs's tree ----------------------------------
+const rbShapes = new Map()
 if (existsSync(resolve(rbDir, 'lib/carve'))) {
   const rbFindings = []
   for (const { name, source } of satelliteSamples) {
@@ -904,7 +905,17 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
     try {
       const out = execFileSync(
         'ruby',
-        ['-Ilib', '-e', 'require "carve"; require "json"; puts JSON.generate(Carve.parse(STDIN.read))'],
+        // `max_nesting: false`. Ruby's JSON.generate refuses past 100 levels by
+        // default, and the corpus deliberately holds documents deeper than
+        // that - so this probe raised JSON::NestingError and the run reported
+        // "carve-rb: could not serialize" for a document the binding parses
+        // perfectly well. The finding named the wrong component: nothing in
+        // carve-rb or carve-rs was involved (carve#868).
+        [
+          '-Ilib',
+          '-e',
+          'require "carve"; require "json"; puts JSON.generate(Carve.parse(STDIN.read), max_nesting: false)',
+        ],
         {
           cwd: rbDir,
           input: source,
@@ -921,6 +932,7 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
     }
     checkDocument(name, doc, source, rbFindings)
     checkShapeParity(name, doc, rbFindings)
+    rbShapes.set(name, shapePaths(shapeOf(doc)).join('\n'))
   }
   // The compiled extension, not the Ruby source: carve-rb wraps carve-rs
   // through a native build, so a stale `.so` reports the PARSER's old behavior
@@ -938,6 +950,54 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
   )
 } else {
   skip('carve-rb', 'checkout not found')
+}
+
+/*
+ * BINDING PARITY, and this one IS a gate.
+ *
+ * Every per-engine finding above is reported and almost none of it is gated,
+ * for a reason stated at the top of this file: a fix lands in one engine first
+ * and is ported over the following days, so the engine that is RIGHT is
+ * routinely the odd one out for a while.
+ *
+ * That is true of the three PEER engines. It is not true of carve-rb, and this
+ * file already says why - it serializes carve-rs's tree, which is why counting
+ * it in the panel would give that engine two votes. A binding over carve-rs
+ * cannot be ahead of carve-rs. Every difference between the two trees is the
+ * binding's: a stale pin, or a gap in the binding. There is no window in which
+ * it is the one that is right.
+ *
+ * So this compares carve-rb against carve-rs SPECIFICALLY - not against the
+ * reference, and not by folding it into the panel. The peer-engine rationale is
+ * untouched; this only asserts in code what the file already asserts in prose.
+ *
+ * What the other two checks could not see (carve#868): the daily run reported a
+ * 44-commit-stale pin and exited 0, and carve-rb's own corpus test compares
+ * HTML byte-for-byte - which cannot see an AST-only change, because a link
+ * reference definition renders nothing.
+ */
+const rsShapes = enginePaths.get('carve-rs')
+if (rbShapes.size > 0 && rsShapes) {
+  const drifted = []
+  for (const [name, shape] of rbShapes) {
+    const rs = rsShapes.get(name)
+    if (rs !== undefined && rs !== shape) drifted.push(name)
+  }
+  const compared = [...rbShapes.keys()].filter((name) => rsShapes.has(name)).length
+  if (drifted.length === 0) {
+    console.log(`BINDING PARITY: carve-rb's tree matches carve-rs on all ${compared} shared document(s).\n`)
+  } else {
+    console.error(
+      `BINDING PARITY: carve-rb's tree differs from carve-rs on ${drifted.length} of ${compared} document(s):`,
+    )
+    for (const name of drifted.slice(0, 10)) console.error(`  ${name}`)
+    if (drifted.length > 10) console.error(`  … and ${drifted.length - 10} more`)
+    console.error("A binding has no vote of its own - every one of these is carve-rb's, not carve-rs's.")
+    console.error('Usually a stale `ext/carve/Cargo.toml` pin; rebuild the extension after bumping it.\n')
+    if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') process.exit(1)
+  }
+} else if (rbShapes.size > 0) {
+  console.log('BINDING PARITY: not checked - carve-rs was not measured in this run.\n')
 }
 
 // ---- carve-php: serializes through bin/carve --json -------------------------
