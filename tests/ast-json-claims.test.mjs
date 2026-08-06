@@ -187,35 +187,16 @@ test('the markup targets blank it, which is why the tree may keep it', () => {
 })
 
 /*
- * THE ANSI TARGET IS BOUND TOO, and this suite's pin predates that.
+ * THE ANSI TARGET IS BOUND TOO. When this file first measured the four targets,
+ * all three engines printed `click (javascript:alert(1))` while blanking the
+ * same destination in Markdown. That was filed as carve#765, answered by all
+ * three within the day, and section 25 now names the terminal target explicitly
+ * (carve#773).
  *
- * When this file first measured the four targets, all three engines printed
- * `click (javascript:alert(1))` while blanking the same destination in Markdown.
- * That was filed as carve#765 and answered by all three within the day -
- * carve-js#711, carve-rs#652, carve-php#868 - and section 25 now names the
- * terminal target explicitly (carve#773).
- *
- * The suite runs against the `@markup-carve/carve` PIN, which is older than the
- * fix and still prints the scheme. So the retired behaviour is RECORDED rather
- * than asserted as correct, and the record is GATED: when the pin moves past the
- * fix this fails and says to delete it. Without the gate a stale pin keeps a
- * retired behaviour looking like the rule, which is what this test was doing
- * between the engines landing the fix and now.
- *
- * A "current engine" check does NOT belong here: this file imports the pin
- * statically, so one would silently measure the pin again. That check lives in
- * scripts/ast-conformance.mjs, which takes CARVE_JS_DIR and drives the
- * satellites too.
+ * The gated record that the PIN was behind the fix has been deleted, because the
+ * pin has caught up - which is what that gate was for. The four-target
+ * assertion above covers ansi like the rest.
  */
-test('the pinned engine predates the ansi fix, and says so', () => {
-  const out = carveToAnsi('[click](' + DANGEROUS + ')\n')
-  assert.ok(
-    out.includes(DANGEROUS),
-    'the pinned engine now blanks the ansi destination, which is what section 25 ' +
-      'requires - delete this test: it exists only to record that the pin was ' +
-      'behind the rule (carve#765).',
-  )
-})
 test('feeding the tree back through the engine applies the denylist', () => {
   // The page tells a consumer this is the escape hatch: hand the tree back to a
   // conforming engine and it is a target, so it blanks. If that stopped being
