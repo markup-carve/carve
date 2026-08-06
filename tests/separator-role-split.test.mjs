@@ -24,22 +24,30 @@
  * production must carry, and the terminal it must NOT carry, so a silent
  * re-spelling in either direction fails here.
  *
- * TWO CHECKS RUN PER PADDING SITE, against two different artifacts:
+ * TWO CHECKS RUN PER SITE, against two different artifacts:
  *
  *   1. the grammar text - what resources/grammar.ebnf spells.
  *   2. the ORACLE (scripts/spec/layout.mjs + resources/carve-core.ohm), which
- *      is executable, so every padding site is checked and none is skipped.
+ *      is executable, so every site is checked and none is skipped.
  *
- * Check 2 is why every padding site carries a tab/space fixture pair: the
- * oracle is a spec artifact rather than an implementation, so it tracks the
- * production immediately. carve#888 found the gap this closes from the other
- * direction - the oracle read `[t](/u<TAB>"T")` as literal text while
- * grammar.ebnf had spelled that slot `whitespace`, and nothing could see it.
- * The same pair now catches the reverse: an oracle that still admits a tab
- * where the production says `space`.
+ * Check 2 is why every site carries a tab/space fixture pair: the oracle is a
+ * spec artifact rather than an implementation, so it tracks the production
+ * immediately. carve#888 found the gap this closes from the other direction -
+ * the oracle read `[t](/u<TAB>"T")` as literal text while grammar.ebnf had
+ * spelled that slot `whitespace`, and nothing could see it. The same pair now
+ * catches the reverse: an oracle that still admits a tab where the production
+ * says `space`.
  *
- * THE ENGINE HALF IS GONE, deliberately, and this is the third time its scope
- * has moved - so the reason is written down rather than inferred.
+ * Check 2 ran only at the PADDING sites until carve#887, and that asymmetry was
+ * the hole. The four separator sites were compared against the grammar TEXT and
+ * nothing else, so the oracle went on stripping `[ \t]+` after a colon fence -
+ * opening an admonition, a div, a line block and a local hard-break block on a
+ * tabbed opener - for as long as the four productions kept saying `space`. Both
+ * artifacts are checked at every site now, which is what the header above
+ * always claimed.
+ *
+ * THE ENGINE HALF IS DEFERRED, deliberately, and this is the third time its
+ * scope has moved - so the reason is written down rather than inferred.
  *
  * The loop that used to live here ran ONE engine, the pinned
  * `@markup-carve/carve` (carve-js), and asserted that a tab in a padding slot
@@ -51,10 +59,16 @@
  * the fix would have to delete the assertion; asserting the corrected behavior
  * would fail on an engine that has not been changed yet.
  *
- * So every padding site carries `engineDeferred` with its reason, and the test
- * below requires it. The engine question belongs in the cross-engine gates
+ * So every site carries `engineDeferred` with its reason, and the test below
+ * requires it. The engine question belongs in the cross-engine gates
  * (claims:check, compare:impls), which is where it should gain a row once the
  * engines narrow.
+ *
+ * The two reasons are NOT the same fact, which is why they are two constants.
+ * At the padding sites carve-js itself is behind the production. At the four
+ * separator sites carve-js main has already narrowed the slot
+ * (markup-carve/carve-js#794) and what is behind is the COMMIT this repo pins -
+ * pin lag, which a pin bump clears and no engine work does.
  */
 
 import { test } from 'node:test'
@@ -85,6 +99,32 @@ const ENGINE_DEFERRED =
   'has not been changed yet. The cross-engine gates (claims:check, compare:impls) ' +
   'carry the question. The ORACLE half runs regardless - it is not an engine.'
 
+// The separators are deferred for a DIFFERENT reason, and the difference is the
+// whole point of writing it out. carve-js main already narrowed this slot
+// (markup-carve/carve-js#794); what still opens the block on a tab is the
+// COMMIT this repo pins, 52da7be, which is from 08:09 on the day that PR merged
+// at 12:04. So this deferral is pin lag rather than an engine gap, and it clears
+// on the next `npm run bump-carve-pin` rather than on any engine work. The same
+// window is declared per document in resources/engine-pin-drift.txt.
+const PIN_DEFERRED =
+  'the PINNED carve-js build (52da7be) still opens the block on a tabbed separator - ' +
+  'measured here, the tab form renders byte-identical to the space form. carve-js main ' +
+  'has narrowed it (markup-carve/carve-js#794), so this is pin lag, not an engine gap, and it ' +
+  'clears on the next pin bump. The ORACLE half runs regardless - it is not an engine.'
+
+// One slot, four openers, and the fixtures are written per OPENER rather than
+// per slot for a measured reason: implementations decide it in four separate
+// places. carve-rs carried four copies of the rule and fixing the first left
+// three still opening (markup-carve/carve-rs#720); carve-js and carve-php each
+// had their own split. A single representative shape covers a quarter of that.
+//
+// Each opener carries the tab-first form AND a mixed `<SP><TAB>` run, the same
+// pair the frontmatter padding slot carries below and for the same reason: "the
+// slot takes a space" implemented as "the FIRST character is a space" passes the
+// tab-first fixture and still lets the mixed run through. That exact defect was
+// found three times in one day, most recently in carve-php where a `[0] === ' '`
+// test plus a `trim()` let `:::<SP><TAB>note` keep opening an admonition after
+// its supposed fix.
 const SITES = [
   // --- MARKER SEPARATORS: `space`, a tab never satisfies them ---------------
   {
@@ -93,6 +133,11 @@ const SITES = [
     required: /admonition_open = colon_fence:open, space, admonition_type/,
     forbidden: /admonition_open = colon_fence:open, whitespace/,
     why: 'the type word selects an admonition over a div, a line block or a hard-break block',
+    fixtures: [
+      { slot: 'a tabbed type word', tab: ':::\tnote\nx\n:::\n', space: '::: note\nx\n:::\n' },
+      { slot: 'a mixed run before the type word', tab: '::: \tnote\nx\n:::\n', space: '::: note\nx\n:::\n' },
+    ],
+    engineDeferred: PIN_DEFERRED,
   },
   {
     role: 'separator',
@@ -100,6 +145,11 @@ const SITES = [
     required: /div_open = colon_fence:open, \[\[space\], label\]/,
     forbidden: /div_open = colon_fence:open, \[\[whitespace\]/,
     why: 'the same physical slot as the other three openers; optional is not a different role',
+    fixtures: [
+      { slot: 'a tabbed bare label', tab: ':::\t[First]\nx\n:::\n', space: '::: [First]\nx\n:::\n' },
+      { slot: 'a mixed run before the bare label', tab: '::: \t[First]\nx\n:::\n', space: '::: [First]\nx\n:::\n' },
+    ],
+    engineDeferred: PIN_DEFERRED,
   },
   {
     role: 'separator',
@@ -107,6 +157,11 @@ const SITES = [
     required: /line_block_open = colon_fence:open, space, "\|"/,
     forbidden: /line_block_open = colon_fence:open, whitespace/,
     why: 'the `|` token selects a line block',
+    fixtures: [
+      { slot: 'a tabbed pipe', tab: ':::\t|\nx\n:::\n', space: '::: |\nx\n:::\n' },
+      { slot: 'a mixed run before the pipe', tab: '::: \t|\nx\n:::\n', space: '::: |\nx\n:::\n' },
+    ],
+    engineDeferred: PIN_DEFERRED,
   },
   {
     role: 'separator',
@@ -114,6 +169,11 @@ const SITES = [
     required: /local_hard_break_block_open = colon_fence:open, space, backslash/,
     forbidden: /local_hard_break_block_open = colon_fence:open, whitespace/,
     why: 'the backslash token selects a local hard-break block',
+    fixtures: [
+      { slot: 'a tabbed backslash', tab: ':::\t\\\nx\n:::\n', space: '::: \\\nx\n:::\n' },
+      { slot: 'a mixed run before the backslash', tab: '::: \t\\\nx\n:::\n', space: '::: \\\nx\n:::\n' },
+    ],
+    engineDeferred: PIN_DEFERRED,
   },
 
   // --- PADDING SLOTS: `space`, a tab satisfies them either -------------------
@@ -260,34 +320,41 @@ for (const { role, site, required, forbidden, why } of SITES) {
   })
 }
 
-// Every padding site carries fixtures, with no exception: the oracle loop
-// below runs them all, and a site with no fixtures would silently drop out of
-// it - the check-that-cannot-fail class tracked in carve#755. `engineDeferred`
-// does not substitute for fixtures; it only says why the ENGINE half of the
-// pair is skipped, which is a statement about carve-js, not about the oracle.
-test('every padding site carries a tab/space fixture pair per slot', () => {
-  for (const s of SITES.filter((x) => x.role === 'padding')) {
+// EVERY site carries fixtures, with no exception: the oracle loop below runs
+// them all, and a site with no fixtures would silently drop out of it - the
+// check-that-cannot-fail class tracked in carve#755. `engineDeferred` does not
+// substitute for fixtures; it only says why the ENGINE half of the pair is
+// skipped, which is a statement about carve-js, not about the oracle.
+//
+// The four SEPARATOR sites had no fixtures at all until carve#887. They were
+// checked against the grammar TEXT and nothing else, so the oracle went on
+// stripping `[ \t]+` after the fence run - opening an admonition, a div, a line
+// block and a hard-break block on a tabbed opener - while this file reported
+// the separator half green. That is the exact defect the file's own header
+// warns about, one artifact short.
+test('every site carries a tab/space fixture pair per slot', () => {
+  for (const s of SITES) {
     assert.ok(
       Array.isArray(s.fixtures) && s.fixtures.length > 0,
-      `padding site "${s.site}" must carry at least one tab/space fixture pair; ` +
-        `the oracle check runs at every padding site and cannot skip one.`,
+      `site "${s.site}" must carry at least one tab/space fixture pair; ` +
+        `the oracle check runs at every site and cannot skip one.`,
     )
     for (const f of s.fixtures) {
       assert.ok(
         typeof f.slot === 'string' &&
           typeof f.tab === 'string' &&
           typeof f.space === 'string',
-        `padding site "${s.site}" has a fixture entry missing slot/tab/space.`,
+        `site "${s.site}" has a fixture entry missing slot/tab/space.`,
       )
       assert.notEqual(
         f.tab,
         f.space,
-        `padding site "${s.site}" fixture "${f.slot}" has identical tab and space ` +
+        `site "${s.site}" fixture "${f.slot}" has identical tab and space ` +
           `forms, so it can never discriminate.`,
       )
       assert.ok(
         f.tab.includes('\t'),
-        `padding site "${s.site}" fixture "${f.slot}" is named a tab fixture but ` +
+        `site "${s.site}" fixture "${f.slot}" is named a tab fixture but ` +
           `carries no tab.`,
       )
     }
@@ -326,13 +393,14 @@ test('a site with independently-revertible slots carries a fixture for each', ()
 // would look identical to one that had been checked, which is precisely the
 // carve#755 shape. So the field is required at every padding site, and adding
 // a seventh without a reason fails here.
-test('every padding site states why its engine half is deferred', () => {
-  for (const s of SITES.filter((x) => x.role === 'padding')) {
+test('every site states why its engine half is deferred', () => {
+  for (const s of SITES) {
     assert.ok(
       typeof s.engineDeferred === 'string' && s.engineDeferred.length > 0,
-      `padding site "${s.site}" must state why the engine half is deferred. ` +
-        `carve-js accepts a tab at every padding slot and so diverges from the ` +
-        `production; if that has changed, assert it here instead of deferring.`,
+      `site "${s.site}" must state why the engine half is deferred. ` +
+        `carve-js accepts a tab at every padding slot, and the PINNED build also ` +
+        `accepts one in the separator slot; if either has changed, assert it here ` +
+        `instead of deferring.`,
     )
   }
 })
@@ -348,7 +416,7 @@ test('every padding site states why its engine half is deferred', () => {
 // the deferral and assert the corrected behavior instead. A test that pinned
 // the bug would go red on the FIX and have to be deleted to allow it; this one
 // goes red on the fix and tells you what to write in its place.
-for (const { site, fixtures } of SITES.filter((s) => s.role === 'padding')) {
+for (const { role, site, fixtures } of SITES) {
   for (const { slot, tab, space } of fixtures) {
     test(`the engine deferral still holds - carve-js admits a tab: ${site} - ${slot}`, () => {
       assert.equal(
@@ -377,13 +445,13 @@ for (const { site, fixtures } of SITES.filter((s) => s.role === 'padding')) {
 // form does. carve#888 ran this same pair the other way round, when the
 // production was `whitespace`; the pair is what makes either reading
 // observable.
-for (const { site, fixtures } of SITES.filter((s) => s.role === 'padding')) {
+for (const { role, site, fixtures } of SITES) {
   for (const { slot, tab, space } of fixtures) {
-    test(`padding slot rejects a tab in the oracle: ${site} - ${slot}`, () => {
+    test(`${role} slot rejects a tab in the oracle: ${site} - ${slot}`, () => {
       assert.notEqual(
         renderDoc(parse(tab)),
         renderDoc(parse(space)),
-        `a tab in this padding slot parsed as the space form does in the ` +
+        `a tab in this ${role} slot parsed as the space form does in the ` +
           `executable spec (scripts/spec/layout.mjs, resources/carve-core.ohm).\n` +
           `  slot:       ${slot}\n` +
           `  tab form:   ${JSON.stringify(tab)}\n  space form: ${JSON.stringify(space)}\n` +

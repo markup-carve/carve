@@ -12,6 +12,33 @@
  * lines are properties of the machine that ran it and are meant to be a
  * snapshot; the corpus size is not, and a page claiming the tool covers 302
  * documents when it covers 529 understates it by 43%.
+ *
+ * A DECLARED LAG, and why it is not a hole in the above.
+ *
+ * `compare:impls` needs three engine checkouts, and a corpus change can land on
+ * a host that has none. Under the rule as first written the only way to keep
+ * this file green was then to edit the denominators by hand - to publish a
+ * three-engine measurement nobody took. That is worse than a stale page: a
+ * stale number is visibly old, a fabricated one is not, and for carve#887 the
+ * fabricated number would also have been WRONG, since carve-rs still opens an
+ * admonition on a tabbed metadata slot (markup-carve/carve-rs#722).
+ *
+ * So the page may DECLARE the categories added after its quoted run, in one
+ * line naming them, and this file adds their fixtures back before comparing.
+ * The declaration cannot carry a count - it names categories, and the count is
+ * derived here by listing their files - so there is nothing in it to fabricate.
+ * It fails in both directions, which is what makes it a check rather than an
+ * escape hatch:
+ *
+ *   - a category is declared but contributes no fixture (renamed, renumbered,
+ *     removed) -> red, so the line cannot rot into a blanket excuse.
+ *   - the run IS retaken and the quoted number moves, but the line stays ->
+ *     quoted + lag now exceeds the corpus -> red, so whoever re-runs
+ *     `compare:impls` has to delete it in the same commit.
+ *
+ * It is the same shape as `resources/engine-pin-drift.txt`, for the same
+ * reason: the corpus is deliberately allowed to run ahead, and what must never
+ * happen is not knowing which window you are in (carve#533).
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -31,6 +58,34 @@ const quoted = [...page.matchAll(/corpus=(core|optional) corpus_pairs=(\d+)/g)].
   pairs: Number(m[2]),
 }))
 
+// The categories the page declares as added after its quoted run. Names only:
+// every number below is counted from the corpus directory, never read from the
+// page. Absent line = no lag, which is the normal state.
+const laggedCategories = (() => {
+  const m = page.match(/^Corpus added since this run: (.+?)\.$/ms)
+  if (!m) return []
+  return [...m[1].matchAll(/`([^`]+)`/g)].map((x) => x[1])
+})()
+
+const corpusFiles = readdirSync(resolve(root, 'tests/corpus')).filter((f) => f.endsWith('.crv'))
+
+/** The fixtures one declared category contributes: `NN-slug.crv` and `NN-slug-K.crv`. */
+const fixturesOf = (category) =>
+  corpusFiles.filter(
+    (f) =>
+      f === `${category}.crv` ||
+      // The example index suffix, and ONLY that: `-2.crv`, not `-too-2.crv`.
+      // Slicing without the prefix test matched any file long enough to end in
+      // `-<digits>.crv`, whatever category it belonged to.
+      (f.startsWith(category) && /^-\d+\.crv$/.test(f.slice(category.length))),
+  )
+
+const laggedPairs = laggedCategories.reduce((n, c) => n + fixturesOf(c).length, 0)
+
+// The quoted run's denominator plus whatever it could not have covered. With no
+// declaration this is exactly the live count, i.e. the original rule.
+const effectiveCore = () => countPairs('tests/corpus') - laggedPairs
+
 test('the page quotes a run for both corpora', () => {
   assert.deepEqual(
     quoted.map((q) => q.corpus).sort(),
@@ -43,24 +98,52 @@ for (const corpus of ['core', 'optional']) {
   test(`the quoted ${corpus} corpus size is the real one`, () => {
     const entry = quoted.find((q) => q.corpus === corpus)
     assert.ok(entry, `no quoted summary line for the ${corpus} corpus`)
-    const live = countPairs(corpus === 'core' ? 'tests/corpus' : 'tests/corpus-optional')
+    // The optional corpus has no declaration mechanism and needs none: nothing
+    // has ever added to it from a host that could not re-run the tool.
+    const live =
+      corpus === 'core' ? effectiveCore() : countPairs('tests/corpus-optional')
     const rerun =
       corpus === 'optional'
         ? 'npm run compare:impls -- --corpus=optional'
         : 'npm run compare:impls'
+    const lagNote =
+      corpus === 'core' && laggedPairs > 0
+        ? ` (${laggedPairs} pair(s) in ${laggedCategories.length} declared-lag categor(ies) are excluded)`
+        : ''
     assert.equal(
       entry.pairs,
       live,
-      `docs/implementation-comparison.md quotes corpus_pairs=${entry.pairs} for the ${corpus} corpus, which now holds ${live}. Re-run "${rerun}" and paste the current output.`,
+      `docs/implementation-comparison.md quotes corpus_pairs=${entry.pairs} for the ${corpus} corpus, which now holds ${live}${lagNote}. Re-run "${rerun}" and paste the current output.`,
     )
   })
 }
+
+// The declaration is names, and a name that matches nothing is a blanket excuse
+// with no expiry. Two ways it rots - the category is renumbered by a rebase, or
+// removed outright - and both leave a line that keeps subtracting zero while
+// reading as though it still describes something.
+test('every declared-lag category still contributes fixtures', () => {
+  for (const category of laggedCategories) {
+    const files = fixturesOf(category)
+    assert.ok(
+      files.length > 0,
+      `docs/implementation-comparison.md declares "${category}" as added since its quoted ` +
+        `run, but no tests/corpus fixture carries that name. Renumbered by a rebase, or ` +
+        `removed? Fix the name or delete the line - a declaration that matches nothing ` +
+        `excuses everything.`,
+    )
+  }
+})
 
 test('the comparison cards and table quote the real core corpus size', () => {
   // The same run appears three times on that page: a card grid, a table, and
   // the raw text block. Only the text block was pinned at first, so the grid
   // and table went on saying 302 next to a corrected 529.
-  const live = countPairs('tests/corpus')
+  //
+  // All three speak for the SAME run, so the declared lag applies identically:
+  // a category the run predates is missing from the card grid and the table for
+  // exactly the reason it is missing from the text block.
+  const live = effectiveCore()
   //
   // Matched narrowly on purpose: the optional-profile block on the same page
   // legitimately quotes `3 / 3`, and a loose "N / N" pattern flagged it. Only

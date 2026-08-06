@@ -1,0 +1,53 @@
+Colon fence metadata slots must be a space too
+
+```
+::: note	"Title"
+x
+:::
+.
+<p>::: note	“Title”
+x
+:::</p>
+```
+
+```
+::: note 	"Title"
+x
+:::
+.
+<p>::: note 	“Title”
+x
+:::</p>
+```
+
+```
+::: note "Title"	[First]
+x
+:::
+.
+<p>::: note “Title”	[First]
+x
+:::</p>
+```
+
+```
+::: note "Title" 	[First]
+x
+:::
+.
+<p>::: note “Title” 	[First]
+x
+:::</p>
+```
+
+```
+::: note "Title" [First]
+x
+:::
+.
+<aside class="admonition note">
+  <p class="admonition-title">Title</p>
+  <p class="div-label">First</p>
+  <p>x</p>
+</aside>
+```

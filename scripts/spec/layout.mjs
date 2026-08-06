@@ -330,7 +330,29 @@ function parseColonOpener(tail) {
   const out = { type: null, title: null, label: null, mode: 'div' }
   if (/^[ \t]*$/.test(s)) return out // bare generic div
   if (/^[A-Za-z_-]/.test(s)) return null // type words must be separated
-  s = s.replace(/^[ \t]+/, '')
+  // The colon fence's ONE separator slot, shared by all four openers. It is a
+  // MARKER SEPARATOR (PART 7, MARKER SEPARATORS AND PADDING SLOTS): the token
+  // after it selects an admonition, a div, a line block or a local hard-break
+  // block, so it is spelled `space` and a tab never satisfies it. It is also
+  // the only slot on this line that is not already `space` for the OTHER
+  // reason - the metadata slots below sit inline, where a tab is not syntax at
+  // all (carve#901).
+  //
+  // Only the SPACE run is consumed. A tab anywhere in the run therefore
+  // survives into the token tests below, every one of which then fails on it,
+  // and the trailing-junk check at the end of this function turns the line
+  // into an ordinary paragraph. That is what makes a MIXED run fail as well:
+  // `:::<SP><TAB>note` and `:::<TAB><SP>note` are both prose, because this is
+  // a check on the whole run rather than on its first character - the shape
+  // that has slipped through the same fix elsewhere twice.
+  //
+  // CARDINALITY IS UNCHANGED, deliberately, and for the reason `titleSp` in
+  // resources/carve-core.ohm gives: grammar.ebnf spells the slot as exactly
+  // one `space`, so the run has always been the looser of the two, and it was
+  // so for spaces long before the tab question arose. Narrowing to one here
+  // would newly break `:::<SP><SP>note`, which every engine reads as an
+  // admonition. Which side gives is a question for the production.
+  s = s.replace(/^ +/, '')
   if (/^\|[ \t]*$/.test(s)) return { ...out, mode: 'line-block' }
   if (/^\\[ \t]*$/.test(s)) return { ...out, mode: 'hardbreaks' }
   const ty = /^([A-Za-z_-][A-Za-z0-9_-]*)/.exec(s)

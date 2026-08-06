@@ -179,9 +179,12 @@ block comment
 
 **Carve 0.1 is specified and shipping.** Tier-1 core and Tier-2 standard
 extensions are normative and stable; Tier-3 app-level extensions ship but evolve
-(see [Versioning](./versioning)). Conformance is pinned by 675 corpus examples
+(see [Versioning](./versioning)). Conformance is pinned by 690 corpus examples
 with exact HTML output, and the three reference engines - carve-js (TypeScript),
-carve-php, and carve-rs - all run the same corpus with no HTML divergences.
+carve-php, and carve-rs - all run the same corpus. Where the corpus pins a rule
+ahead of an engine, the window is declared on the
+[implementation comparison](./implementation-comparison) page rather than left
+for a reader to discover.
 Pre-1.0, a minor release may still change the grammar.
 
 Reference material covers the normative [grammar](./grammar) and

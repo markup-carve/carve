@@ -811,8 +811,11 @@ colon_fence = ":::", {":"} ;
    makes the slot OPTIONAL because a bare `[label]` may sit flush against the
    fence (`:::[First]`); optional is a different property from a different
    role, and the slot answers the same way in all four openers whichever type
-   token follows it. All four implementations currently accept a tab here and
-   have to be corrected (carve#878). *)
+   token follows it. Corpus 254 pins the slot PER OPENER, with a mixed-run case
+   beside each tab-first one, because implementations decide the one rule in
+   four separate places (carve#887, carve#900). Every implementation accepted a
+   tab here when carve#878 ruled on it; all three have since corrected it
+   (carve-js#794, carve-php#947, carve-rs#720). *)
 colon_fence_close = colon_fence:close
                     where len(close) = len(open) ;
 (* FORMAL (PART 9 §12, now a guard): `open` is the colon_fence captured by
