@@ -24,4 +24,3 @@
 #
 # Format: <slug><space><space><reason>
 227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace-2  the pinned build's initial render is already correct (<dd></dd>, the footnote resolves) - only the writer is broken: fmt collapses ":  [^f]: x" down to a bare ":", which the pin then reads back as "<dt>term\n:</dt>" instead of a separate <dd>; carve#666, drops out once carve-js ships the fix
-246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it-3  every writer drops the `+` and emits the attached paragraph indented, which re-parses as a lazy continuation of the item's first paragraph - so `to_html(fmt(x))` says `<li>a b</li>` where the source says two blocks; carve#861, and unusually this is not pin lag: carve-js, carve-rs and carve-php all do it, which is why no cross-engine gate saw it either
