@@ -10170,6 +10170,25 @@ separator `" " | "\n"`. All three engines follow the EBNF.
 
 :::
 
+A tab after an UNQUOTED value is the separator too, because `unquoted_value`
+holds letters, digits, `-`, `_`, `.` and `:` and no whitespace at all. Inside a
+QUOTED value it is content, as any other character is.
+
+::: compare
+
+```carve
+*x*{k=a	.b}
+
+*y*{k="a	b"}
+```
+
+```html
+<p><strong k="a" class="b">x</strong></p>
+<p><strong k="a	b">y</strong></p>
+```
+
+:::
+
 An empty block is the same: valid only glued to a preceding `]`, and a tab
 inside it is padding rather than content.
 

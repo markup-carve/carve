@@ -325,7 +325,12 @@ CarveCore {
   kvAttr     = ident "=" attrVal
   boolAttr   = ident
   attrVal    = quoted | squoted | bareVal
-  bareVal    = (~(" " | "}" | newline) any)+
+  // NO TAB EITHER. `unquoted_value` in grammar.ebnf is letters, digits, `-`,
+  // `_`, `.` and `:` - a tab is not among them - so a tab after a bare value
+  // is the separator before the next attribute. Admitting it here swallowed
+  // the separator into the value: `{k=a<TAB>.b}` came out as one attribute
+  // `k="a\t.b"` where all three engines give `k="a" class="b"` (carve#878).
+  bareVal    = (~(" " | "\t" | "}" | newline) any)+
   ident      = identStart identRest*
   // No leading `-`: PART 7 (normative) is
   //   identifier = (letter | '_'), {letter | digit | '_' | '-'} ;

@@ -13,6 +13,15 @@ A tab separates two attributes, and pads a block, as a space does
 ```
 
 ```
+*x*{k=a	.b}
+
+*y*{k="a	b"}
+.
+<p><strong k="a" class="b">x</strong></p>
+<p><strong k="a	b">y</strong></p>
+```
+
+```
 [x]{	}
 .
 <p><span>x</span></p>
