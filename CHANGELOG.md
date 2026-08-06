@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 7: the code fence's metadata slots are padding** (carve#894).
+  `fenced_code_block` had the same shape as `frontmatter_open` - a fence, a
+  whitespace slot, then a token that names a dialect - and carve#878 moved only
+  the second of the two, leaving the code fence spelled `space` for no reason a
+  reader could state. It is padding under the same discriminator: the backtick
+  or tilde run has already decided the block, and `js` selects nothing. So the
+  slot before the info string becomes `[whitespace]`, and `code_fence_info`'s
+  `"header"` and `[label]` slots become `whitespace+`, matching the admonition
+  opener's identical pair.
+
+  This one runs the OPPOSITE way from the colon fence. The colon fence is a
+  separator, and all four implementations have to stop accepting a tab there;
+  the code fence is padding, and carve-js, carve-php and the oracle already
+  accept one. carve-rs is the only implementation that rejects it, so this
+  edit makes three conforming without moving them and leaves one to relax.
+  `raw_block` keeps its `space`: the `=` after that slot selects a raw block
+  over a code block, which is a separator's job.
+
 - **PART 1 S4: an absorbed colon fence leaves the item's paragraph open**
   (carve#891). Corpus `86-list-lazy-continuation-9` pinned that the flush-left
   line after
