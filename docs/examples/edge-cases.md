@@ -12101,6 +12101,49 @@ more
 
 :::
 
+Two more, found the same way: each of the eight sites was reverted on its own,
+and three of them survived every shape above. A definition INSIDE a quote is
+the third site -- it is what leaves the quote with no open paragraph, so a
+following lazy line starts its own block instead of folding in:
+
+::: compare
+
+```carve
+> text
+> [a]: /u {.c}
+lazy
+```
+
+```html
+<blockquote><p>text</p></blockquote>
+<p>lazy</p>
+```
+
+:::
+
+And a definition after a blank line inside a list item is the fourth and fifth.
+An invisible construct is not a second paragraph, so the list stays TIGHT
+(PART 9 §17 L1/L2); with the raw predicate it loosens:
+
+::: compare
+
+```carve
+- text
+
+  [a]: /u {.c}
+
+[a][]
+```
+
+```html
+<ul>
+  <li>text</li>
+</ul>
+<p><a href="/u" class="c">a</a></p>
+```
+
+:::
+
 The CONTROLS. Every legal shape of the line still is one:
 
 ::: compare

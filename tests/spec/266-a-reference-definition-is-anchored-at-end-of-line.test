@@ -129,6 +129,28 @@ more
 ```
 
 ```
+> text
+> [a]: /u {.c}
+lazy
+.
+<blockquote><p>text</p></blockquote>
+<p>lazy</p>
+```
+
+```
+- text
+
+  [a]: /u {.c}
+
+[a][]
+.
+<ul>
+  <li>text</li>
+</ul>
+<p><a href="/u" class="c">a</a></p>
+```
+
+```
 [a]: /u "T" {.c}
 
 [a][]

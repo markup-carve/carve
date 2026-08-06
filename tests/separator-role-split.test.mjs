@@ -1217,6 +1217,39 @@ const INTERRUPTS = [
   ['before a lazy line under a block quote', '> text\n[a]: /u {.c}\nmore\n\n[a][]\n'],
 ]
 
+// Three of the eight sites survived every shape above when reverted ALONE, and
+// each needed its own. A definition INSIDE a quote is what leaves the quote
+// with no open paragraph; a definition after a blank line inside an item is an
+// invisible construct rather than a second paragraph, so the list stays TIGHT
+// (PART 9 SS17 L1/L2). Asserted on the whole render, because what moves is the
+// SHAPE around the definition rather than the definition itself.
+const PREDICATE_SHAPES = [
+  [
+    'a definition inside a quote leaves no open paragraph',
+    '> text\n> [a]: /u {.c}\nlazy\n',
+    '<blockquote><p>text</p></blockquote>\n<p>lazy</p>',
+  ],
+  [
+    'a definition after a blank inside an item keeps the list tight',
+    '- text\n\n  [a]: /u {.c}\n',
+    '<ul>\n  <li>text</li>\n</ul>',
+  ],
+]
+
+for (const [name, src, expected] of PREDICATE_SHAPES) {
+  test(`the predicate sweep reaches every site: ${name}`, () => {
+    assert.equal(
+      renderDoc(parse(src)).trim(),
+      expected,
+      `a site that asks "is this line a definition" tested the RAW line, so a\n` +
+        `  definition carrying a trailing attribute block was not recognized there.\n` +
+        `  source: ${JSON.stringify(src)}\n` +
+        `  Eight sites ask it, they revert independently, and three of them are\n` +
+        `  reachable only by a shape like this one (carve#911).`,
+    )
+  })
+}
+
 for (const [name, src] of INTERRUPTS) {
   test(`a definition carrying an attribute block still interrupts: ${name}`, () => {
     const html = renderDoc(parse(src))
