@@ -47,7 +47,23 @@ const QUOTE = /^>(?: (.*)|)$/
 // carried into the href. The rule is stated for the definition explicitly - it
 // "is built from this same `link_destination`" - so the oracle has to read it
 // the same way the inline form does (carve#806).
-const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?:\p{White_Space}+"((?:\\"|[^"])*)")?(?:\p{White_Space}.*)?$/u
+//
+// The TITLE slot is the exception, and it is a different production. It is
+// `link_title`, whose separator grammar.ebnf spells `whitespace` = `' ' |
+// '\t'` because the slot is PADDING rather than a marker separator (PART 7,
+// carve#878). The whole White_Space property was two answers to one
+// production: `destTitle` in carve-core.ohm read the inline form's slot as a
+// literal space while this read the definition's as any Unicode space, so one
+// normative file admitted `[a]: /u<NBSP>"T"` and the other rejected
+// `[t](/u<TAB>"T")`. Both now spell it `' ' | '\t'` (carve#888).
+//
+// The two runs on either side of it deliberately keep the wider class. The
+// leading one is entangled with the destination class above: PART 9 §25's
+// scheme probe strips Unicode whitespace so an obfuscated destination cannot
+// slip past the denylist, which corpus case 121 pins with a U+202F before
+// `javascript:`. Narrowing that run is a separate question about
+// `link_destination`, not about `link_title`, and is left alone here.
+const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?:[ \t]+"((?:\\"|[^"])*)")?(?:\p{White_Space}.*)?$/u
 
 /*
  * Split a TRAILING attribute block off a definition line (carve#604).
