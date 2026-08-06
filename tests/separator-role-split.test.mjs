@@ -311,6 +311,15 @@ const SITES = [
     // Both alternatives, double- and single-quoted, carry the same terminal.
     required: /link_title = space, \('"'.*\| space, \("'"/,
     forbidden: /link_title = whitespace,|\| whitespace, \("'"/,
+    // THE SECOND NORMATIVE FILE, at the one production carve#912 narrowed in
+    // it. resources/carve-core.ohm spelled the inline slot `titleSp+`, a run,
+    // and carried a comment saying the cardinality question belonged to the
+    // production. The production answered (carve#912), so the two files have
+    // to agree here the way they now agree on the terminal. Kept as a TEXT
+    // check for the reason the file header gives, and because the `+` is one
+    // character: reinstating it is the smallest possible silent revert.
+    requiredOhm: /destTitle\s+= titleSp \(quoted \| squoted\)/,
+    forbiddenOhm: /destTitle\s+= titleSp\+/,
     why: 'a link is a link once its destination is read; the title sits inline after it',
     // ONE PAIR PER SITE THE PRODUCTION IS USED AT. `link_title` is one
     // production read by two different pieces of the oracle - the inline form
@@ -887,6 +896,154 @@ for (const [name, ch] of OUTSIDE_CLASS_FRONTMATTER) {
       )
     })
   }
+}
+
+// ---------------------------------------------------------------------------
+// CARDINALITY, the OTHER half of a slot's spelling (carve#912).
+//
+// Everything above this line is about WHICH character a slot admits. A
+// production says two things about a slot, and the second one had never been
+// checked anywhere: `space` admits exactly one character and `space+` admits a
+// run, and both spellings are in use in this grammar on purpose.
+//
+// Four slots are spelled `space` - `link_title` (hence `image_title`), the
+// code fence's opener slot, `frontmatter_open`'s, and the reference
+// definition's slot before its trailing attributes - and carve-js, carve-php,
+// carve-rs AND this oracle all accepted a run at every one of them. That was
+// not an engine divergence to arbitrate: four artifacts agreed with each other
+// and disagreed with the written cardinality, and both normative files carried
+// a comment deferring the question to the other, which is how it survived.
+// carve#912 held the productions right and narrowed the four.
+//
+// NOTHING ELSE OBSERVES THIS. Zero of the 737 corpus documents that existed
+// before the ruling carried a two-space run at any of the five sites, in
+// either direction, so narrowing the oracle moved no golden and broke no test
+// - the carve#755 shape exactly. Corpus 262 through 265 and this section are
+// what make the rule observable at all.
+//
+// Each entry carries the TWO-space form and its ONE-space CONTROL. The control
+// is not decoration: the whole risk of a cardinality narrowing is overshooting
+// into the form the language actually uses, and an assertion that only says
+// "two spaces differ from one" is satisfied by an engine that broke both.
+const ONE_SPACE_SITES = [
+  {
+    site: 'link_title, the inline form',
+    two: '[t](/u  "T")\n',
+    one: '[t](/u "T")\n',
+    // The control's own answer, so overshooting is caught rather than merely
+    // being "different from the two-space form".
+    control: '<p><a href="/u" title="T">t</a></p>',
+  },
+  {
+    site: 'image_title, the inline form',
+    two: '![a](/p.png  "T")\n',
+    one: '![a](/p.png "T")\n',
+    control: '<img src="/p.png" alt="a" title="T">',
+  },
+  {
+    // ONE PAIR PER PIECE OF THE ORACLE THAT READS THE PRODUCTION, the shape
+    // carve#888 established at this same production: the inline form is
+    // `destTitle` in resources/carve-core.ohm and the definition form is
+    // `LINK_DEF` in scripts/spec/layout.mjs, and the two disagreed for real.
+    // They are two edits, so they revert independently.
+    site: 'link_title, the reference-definition form',
+    two: '[a]: /u  "T"\n\n[a][]\n',
+    one: '[a]: /u "T"\n\n[a][]\n',
+    control: '<p><a href="/u" title="T">a</a></p>',
+  },
+  {
+    site: 'reference_definition, the slot before the trailing attributes',
+    two: '[a]: /u  {.c}\n\n[a][]\n',
+    one: '[a]: /u {.c}\n\n[a][]\n',
+    control: '<p><a href="/u" class="c">a</a></p>',
+  },
+  {
+    site: 'fenced_code_block, the slot before the info string',
+    two: '```  php\nx\n```\n',
+    one: '``` php\nx\n```\n',
+    control: '<pre><code class="language-php">x\n</code></pre>',
+  },
+  {
+    site: 'frontmatter_open, the slot before the format token',
+    two: '---  yaml\na: 1\n---\nx\n',
+    one: '--- yaml\na: 1\n---\nx\n',
+    control: '<p>x</p>',
+  },
+]
+
+test('every slot spelled `space` carries a two-space fixture and a control', () => {
+  assert.equal(ONE_SPACE_SITES.length, 6, 'four productions, six sites')
+  for (const s of ONE_SPACE_SITES) {
+    assert.ok(s.two.includes('  '), `site "${s.site}" is named a two-space fixture but carries no run`)
+    assert.notEqual(s.two, s.one, `site "${s.site}" cannot discriminate`)
+  }
+})
+
+for (const { site, two, one, control } of ONE_SPACE_SITES) {
+  test(`a slot spelled \`space\` admits exactly one in the oracle: ${site}`, () => {
+    assert.notEqual(
+      renderDoc(parse(two)),
+      renderDoc(parse(one)),
+      `a two-space run parsed as the one-space form does in the executable spec.\n` +
+        `  site:            ${site}\n` +
+        `  two-space form:  ${JSON.stringify(two)}\n  one-space form:  ${JSON.stringify(one)}\n` +
+        `  This slot is spelled \`space\`, which is exactly one character\n` +
+        `  (PART 7, MARKER SEPARATORS AND PADDING SLOTS; carve#912).`,
+    )
+  })
+  test(`and the one-space CONTROL still works: ${site}`, () => {
+    assert.equal(
+      renderDoc(parse(one)).trim(),
+      control,
+      `narrowing the cardinality broke the ONE-space form, which is the form the\n` +
+        `  language actually uses. carve#912 narrowed a run to one character; it did\n` +
+        `  not remove the slot.\n  site: ${site}\n  one-space form: ${JSON.stringify(one)}`,
+    )
+  })
+}
+
+// THE OTHER DIRECTION, and it is not symmetry for its own sake. `space+` is a
+// real spelling in this grammar and an over-broad fix is the likely failure:
+// "padding slots take one space" applied to every padding slot narrows the two
+// metadata slots inside `code_fence_info` and the two on the admonition opener
+// as well, and no fixture above would notice. carve#912 ruled only on the four
+// slots spelled with a bare `space`; the cardinality answer is per-production.
+const RUN_SITES = [
+  {
+    site: 'code_fence_info, the "header" slot',
+    two: '```js  "T"\nx\n```\n',
+    one: '```js "T"\nx\n```\n',
+  },
+  {
+    site: 'code_fence_info, the [label] slot',
+    two: '```js "T"  [L]\nx\n```\n',
+    one: '```js "T" [L]\nx\n```\n',
+  },
+  {
+    site: 'admonition_open, the "title" slot',
+    two: '::: note  "T"\nx\n:::\n',
+    one: '::: note "T"\nx\n:::\n',
+  },
+  {
+    site: 'admonition_open, the [label] slot',
+    two: '::: note "T"  [L]\nx\n:::\n',
+    one: '::: note "T" [L]\nx\n:::\n',
+  },
+]
+
+for (const { site, two, one } of RUN_SITES) {
+  test(`a slot spelled \`space+\` still admits a run in the oracle: ${site}`, () => {
+    assert.equal(
+      renderDoc(parse(two)),
+      renderDoc(parse(one)),
+      `a two-space run stopped parsing as the one-space form does.\n` +
+        `  site:            ${site}\n` +
+        `  two-space form:  ${JSON.stringify(two)}\n  one-space form:  ${JSON.stringify(one)}\n` +
+        `  This slot is spelled \`space+\`, which is a RUN. carve#912 narrowed the\n` +
+        `  four slots spelled with a bare \`space\` and deliberately left these\n` +
+        `  alone - the cardinality answer is per-production, not per-role.`,
+    )
+  })
 }
 
 // ---------------------------------------------------------------------------

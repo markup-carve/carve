@@ -317,14 +317,20 @@ CarveCore {
   // carries a tab in this slot, so narrowing it moves no golden (measured:
   // core:check stays 675/675).
   //
-  // CARDINALITY IS UNCHANGED, and deliberately so: this stays a run rather
-  // than becoming exactly one. grammar.ebnf spells `link_title` as exactly ONE
-  // character, so the run has always been the looser of the two, and was so
-  // for spaces long before the tab question arose. Which side gives is a
-  // question for the production, not for this file: narrowing to one here
-  // would newly break `[t](/u<SP><SP>"T")`, which every engine reads as a
-  // titled link.
-  destTitle  = titleSp+ (quoted | squoted)
+  // CARDINALITY IS EXACTLY ONE SINCE carve#912. This was `titleSp+`, a run,
+  // and it carried a note saying the run had always been the looser of the two
+  // spellings and that which side gives was a question for the production.
+  // The production answered: `link_title = space, ...` is right and the four
+  // artifacts that accepted a run - carve-js, carve-php, carve-rs and the
+  // oracle - are lax. So `[t](/u<SP><SP>"T")` is no longer a titled link, and
+  // the same holds at `image_title = link_title` and at the definition
+  // spelling in scripts/spec/layout.mjs, which narrowed in the same change.
+  //
+  // The cost was recorded rather than discovered: every document with two
+  // spaces before a title reparses. This is deliberately the opposite call
+  // from the one carve#905 made for the terminal, which changed WHICH
+  // character a slot admits and left HOW MANY alone.
+  destTitle  = titleSp (quoted | squoted)
   titleSp    = " "
   squoted    = "'" sqChar* "'"
   sqChar     = sqEsc | (~"'" ~newline any)

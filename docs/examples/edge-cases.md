@@ -11565,3 +11565,248 @@ b</p>
 ```
 
 :::
+
+## A link title takes exactly one space
+
+`link_title = space, ('"' ... )` spells its padding slot as exactly ONE
+character, and four artifacts read it as a run: carve-js, carve-php, carve-rs
+and the executable spec all took the title after two spaces. carve#912 settled
+which side gives. The production is right and the four are lax, so a second
+space is no longer padding.
+
+This is deliberately the opposite call from the one carve#905 made for the same
+slots. That change settled WHICH character a slot admits (a space, never a tab)
+and left HOW MANY alone; this one settles the cardinality, and settles it
+tight.
+
+With two spaces the quoted run is not a title, so the bracket run is not a link
+at all and every character of the line survives as text:
+
+::: compare
+
+```carve
+[t](/u  "T")
+```
+
+```html
+<p>[t](/u  “T”)</p>
+```
+
+:::
+
+`image_title = link_title` is one production defined by reference, so the image
+tail answers the same way:
+
+::: compare
+
+```carve
+![a](/p.png  "T")
+```
+
+```html
+<p>![a](/p.png  “T”)</p>
+```
+
+:::
+
+The CONTROL, and the point of the ruling: a single space is still the titled
+form. This pair passed before carve#912 and passes after it, and it is what
+distinguishes narrowing the slot from breaking it.
+
+::: compare
+
+```carve
+[t](/u "T")
+```
+
+```html
+<p><a href="/u" title="T">t</a></p>
+```
+
+:::
+
+::: compare
+
+```carve
+![a](/p.png "T")
+```
+
+```html
+<img src="/p.png" alt="a" title="T">
+```
+
+:::
+
+## A code fence opener takes exactly one space
+
+`fenced_code_block = code_fence_open, [space], [code_fence_info]` spells the
+opener slot as exactly one character. A second space reaches `language_info`,
+whose character class holds no space, so the opener matches no shape and the
+INVALID-FENCE FALLBACK applies: the run is an inline verbatim span in a
+paragraph.
+
+The two metadata slots INSIDE `code_fence_info` are spelled `space+` and are
+unaffected. The productions differ, so the cardinality differs, and carve#912
+ruled only on the four slots spelled with a bare `space`.
+
+::: compare
+
+````carve
+```  php
+x = 1
+```
+````
+
+````html
+<p><code>  php
+x = 1
+</code></p>
+````
+
+:::
+
+The CONTROL. One space is the lenient Djot spelling and stays a fenced block
+with its language:
+
+::: compare
+
+````carve
+``` php
+x = 1
+```
+````
+
+````html
+<pre><code class="language-php">x = 1
+</code></pre>
+````
+
+:::
+
+## A frontmatter opener takes exactly one space
+
+`frontmatter_open = "---", [space], [frontmatter_format]` spells its slot as
+exactly one character too. With two, the second space reaches
+`frontmatter_format = (letter | digit)+`, which cannot match it, so the line is
+not a typed opener.
+
+What is left is not a thematic break either -- a break is a dash run and
+nothing else -- so the line is ordinary paragraph text, the metadata lines fold
+into it as lazy continuation, and the closing `---` is the thematic break. The
+opening dashes are then subject to smart typography like any other text, which
+is why they render as an em dash.
+
+::: compare
+
+```carve
+---  yaml
+title: T
+---
+
+body
+```
+
+```html
+<p>—  yaml
+title: T</p>
+<hr>
+<p>body</p>
+```
+
+:::
+
+The CONTROL. One space is the lenient spelling and still opens frontmatter,
+which renders nothing:
+
+::: compare
+
+```carve
+--- yaml
+title: T
+---
+
+body
+```
+
+```html
+<p>body</p>
+```
+
+:::
+
+## A reference definition's metadata slots take exactly one space
+
+The definition line carries two of the four slots carve#912 narrowed:
+`link_title` before the quoted title, and `[space, attributes]` before the
+trailing attribute block. Both are padding -- the definition is already a
+definition at `[a]: /url` -- and both are spelled as exactly one space.
+
+With two spaces the title is not a title:
+
+::: compare
+
+```carve
+[a]: /u  "T"
+
+[a][]
+```
+
+```html
+<p><a href="/u">a</a></p>
+```
+
+:::
+
+And with two spaces the attribute block is not the definition's. Note where it
+goes, because the zero-space case is NOT the same: `[a]: /u{.c}` glues the
+braces to the destination and gives `href="/u{.c}"`, while two spaces end the
+destination, so the block matches nothing and is dropped. Dropping metadata
+silently is the outcome PART 7 names as the one to avoid, and it happens here
+only because `reference_definition` is not anchored at end of line -- carve#911
+anchors it, and this document's answer changes to the prose fallback the clause
+promises.
+
+::: compare
+
+```carve
+[a]: /u  {.c}
+
+[a][]
+```
+
+```html
+<p><a href="/u">a</a></p>
+```
+
+:::
+
+The CONTROLS. One space carries the title, and one space carries the
+attributes:
+
+::: compare
+
+```carve
+[a]: /u "T"
+
+[a][]
+```
+
+```html
+<p><a href="/u" title="T">a</a></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[a]: /u {.c}
+
+[a][]
+```
+
+```html
+<p><a href="/u" class="c">a</a></p>
+```
+
+:::

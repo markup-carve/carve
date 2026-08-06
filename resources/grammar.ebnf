@@ -204,6 +204,13 @@ frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatte
    `---<TAB>yaml` is not a typed opener; it is a thematic break followed by
    ordinary lines. Implementations that read it as frontmatter today diverge
    from this production (carve#901).
+   CARDINALITY IS EXACTLY ONE, by ruling (carve#912): `---<SP><SP>yaml` is not
+   a typed opener either, because the second space reaches
+   `frontmatter_format`, which is letters and digits only. What is left is not
+   a thematic break -- a break is a dash run and nothing else -- so the line is
+   ordinary paragraph text. All three engines and the executable spec accepted
+   a run here until the ruling; corpus 264 carries it with its one-space
+   control.
    The closing delimiter is always a bare `---`. The token distinguishes a typed
    opener from a thematic break. *)
 frontmatter_open = "---", [space], [frontmatter_format], newline ;
@@ -364,7 +371,14 @@ fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
    line's leading indentation run (PART 7, MARKER SEPARATORS AND PADDING SLOTS). The same
    holds for the two slots inside code_fence_info below. raw_block (PART 9 §20)
    spells its otherwise identical slot the same way, for the additional reason
-   that the `=` after it SELECTS a raw block over a code block. *)
+   that the `=` after it SELECTS a raw block over a code block.
+   CARDINALITY DIFFERS BETWEEN THIS SLOT AND THE TWO INSIDE code_fence_info,
+   deliberately: this one is `[space]`, exactly one, and those are `space+`.
+   So ``` ```<SP><SP>php ``` is not a fence opener at all -- the second space
+   reaches `language_info`, whose class holds no space, and the INVALID-FENCE
+   FALLBACK applies. All three engines and the executable spec accepted a run
+   here until carve#912 held the production right; corpus 263 carries it with
+   its one-space control. *)
 (* CODE-FENCE INFO STRING -- NORMATIVE. After the optional language_info
    token the opener admits, in this fixed order, an optional "header" (a
    quoted_title -- the SAME token as the admonition header, PART 9 §12) and an
@@ -1399,7 +1413,12 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    slot sits after the first non-whitespace character of the line and a tab is
    syntax only in a line's leading indentation run. The three engines accept a
    tab here today and diverge from this production (carve#901). Cardinality is
-   exactly one character, at both sites. *)
+   exactly one character, at both sites, and that is a RULING rather than an
+   oversight: all three engines and the executable spec accepted a run here
+   until carve#912 held the production right and narrowed them. So
+   `[t](/u<SP><SP>"T")` is not a titled link, the quoted run is left
+   unconsumed, and the bracket run stays literal text. Corpus 262 carries it,
+   with the one-space form as its control. *)
 link_title = space, ('"', {('\', '"') | (character - '"')}, '"')
            | space, ("'", {('\', "'") | (character - "'")}, "'") ;
 
@@ -1411,7 +1430,17 @@ reference_label = (character - ']' - '@'), {character - ']'} ;
    `[a]: /url` and the attribute block is optional trailing metadata. The role
    differs, the terminal does not: the padding slot sits after the first
    non-whitespace character of the line, where a tab is not syntax. What
-   `attributes` admits INTERNALLY is a separate production (PART 4). *)
+   `attributes` admits INTERNALLY is a separate production (PART 4).
+   Cardinality is exactly one space at BOTH, and at the padding slot that is
+   carve#912's ruling rather than an oversight. Where the rejected block goes
+   differs by run, and the two cases are NOT the same: a ZERO-space run glues
+   the braces to the destination (`[a]: /u{.c}` gives href `/u{.c}`, because
+   `link_destination` reads them), while a TWO-space run cannot -- whitespace
+   ends the destination -- so `{.c}` is DROPPED. That is the outcome this
+   clause names as the one to avoid, and it happens only because
+   `reference_definition` is not anchored at end of line; carve#911 anchors it
+   and the line falls back to prose instead. Corpus 265 carries it with its
+   one-space control. *)
 reference_definition = '[', reference_label, ']', ':', space, link_destination,
                        [link_title], [space, attributes], newline ;
 (* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE. A `{...}` block at the end
@@ -2233,7 +2262,30 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
    Cardinality is a separate question from the terminal: a slot spelled
    `space` admits exactly one character, and a `space+` run admits one or
-   more.
+   more. Both spellings are used deliberately and the difference is
+   observable, so read the production rather than the role. Four slots are
+   spelled `space` -- `link_title` (hence `image_title`), the code fence's
+   opener slot, `frontmatter_open`'s, and the reference definition's slot
+   before its trailing `attributes` -- and a second space at any of them is
+   not padding. `code_fence_info`'s and the admonition opener's metadata
+   slots are spelled `space+` and take a run.
+
+   THE FOUR ARE NARROW BY RULING, not by accident (carve#912). carve-js,
+   carve-php, carve-rs AND the executable spec all accepted a run at all
+   four, so this was not an engine divergence: four artifacts agreed with
+   each other and disagreed with the written cardinality, and both normative
+   files carried a comment deferring the question to the other. The
+   productions were held right and the four artifacts narrow. The cost is
+   recorded so it is not re-litigated: every document with two spaces at one
+   of those slots reparses.
+
+   This is deliberately the OPPOSITE call from the one carve#905 made, and
+   the two are about different things. carve#905 settled WHICH character a
+   slot admits (a space, never a tab) and left HOW MANY alone; this settles
+   HOW MANY, and settles it tight. A MARKER SEPARATOR's cardinality is
+   settled the other way again, at the three definition markers, and for a
+   reason stated there: a separator is a different position from a padding
+   slot (carve#892).
 
    NOT YET RECONCILED. The interior of an attribute block (`opt_ws`,
    `attribute_list`) still spells inline padding `whitespace`. It predates

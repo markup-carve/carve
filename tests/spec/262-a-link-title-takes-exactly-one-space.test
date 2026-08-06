@@ -1,0 +1,25 @@
+A link title takes exactly one space
+
+```
+[t](/u  "T")
+.
+<p>[t](/u  “T”)</p>
+```
+
+```
+![a](/p.png  "T")
+.
+<p>![a](/p.png  “T”)</p>
+```
+
+```
+[t](/u "T")
+.
+<p><a href="/u" title="T">t</a></p>
+```
+
+```
+![a](/p.png "T")
+.
+<img src="/p.png" alt="a" title="T">
+```

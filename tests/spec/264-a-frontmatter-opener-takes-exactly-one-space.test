@@ -1,0 +1,24 @@
+A frontmatter opener takes exactly one space
+
+```
+---  yaml
+title: T
+---
+
+body
+.
+<p>—  yaml
+title: T</p>
+<hr>
+<p>body</p>
+```
+
+```
+--- yaml
+title: T
+---
+
+body
+.
+<p>body</p>
+```

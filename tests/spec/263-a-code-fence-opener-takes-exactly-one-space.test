@@ -1,0 +1,20 @@
+A code fence opener takes exactly one space
+
+````
+```  php
+x = 1
+```
+.
+<p><code>  php
+x = 1
+</code></p>
+````
+
+````
+``` php
+x = 1
+```
+.
+<pre><code class="language-php">x = 1
+</code></pre>
+````
