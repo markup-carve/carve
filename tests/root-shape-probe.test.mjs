@@ -149,3 +149,27 @@ test('the two non-conformant answers are distinguishable', () => {
   const accepted = rootShapeVerdict({ shape, refused: false, renderRefused: false })
   assert.notEqual(late, accepted)
 })
+
+test('the inline host is an inline list, not any array named children', () => {
+  // A block_quote, div or footnote has `children` too. Grafting the probe onto
+  // one re-tests the BLOCK row under the inline row's name and leaves an engine
+  // that only mishandles inlines unmeasured.
+  const nested = {
+    type: 'document',
+    srcByteLength: 4,
+    children: [
+      {
+        type: 'block_quote',
+        children: [{ type: 'paragraph', children: [{ type: 'text', value: 'hi' }] }],
+      },
+    ],
+  }
+  const inline = refusableRootShapes(nested).find((s) => s.id === 'unknown-node-type-inline')
+  const host = inline.payload.children[0].children[0].children
+  assert.equal(host.at(-1).type, UNKNOWN_NODE_TYPE, 'the probe belongs in the paragraph')
+  assert.equal(
+    inline.payload.children[0].children.length,
+    1,
+    "the block quote's own children are left alone",
+  )
+})

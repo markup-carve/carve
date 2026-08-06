@@ -25,6 +25,34 @@ export const UNKNOWN_NODE_TYPE = 'zzBlockNotInTheSchema'
 export const EXTRA_ROOT_FIELD = 'zzRootFieldNotInTheSchema'
 
 /**
+ * The first array in `node` that demonstrably holds INLINES, or `undefined`.
+ *
+ * `text` is the marker: it is inline-only, so an array containing one cannot be
+ * a block list. Depth-first, so the innermost paragraph of a nested container is
+ * found rather than the container's own block children.
+ */
+function findInlineHost(node) {
+  if (Array.isArray(node)) {
+    for (const item of node) {
+      const found = findInlineHost(item)
+      if (found !== undefined) return found
+    }
+
+    return undefined
+  }
+  if (node === null || typeof node !== 'object') return undefined
+  for (const value of Object.values(node)) {
+    const found = findInlineHost(value)
+    if (found !== undefined) return found
+  }
+  for (const value of Object.values(node)) {
+    if (Array.isArray(value) && value.some((child) => child?.type === 'text')) return value
+  }
+
+  return undefined
+}
+
+/**
  * The shapes §12 requires an ingest to refuse, built from one valid payload.
  *
  * `doc` is a parsed tree with at least one block child. Each entry carries the
@@ -94,9 +122,14 @@ export function refusableRootShapes(doc) {
   // BLOCK away at the top of its child loop and still walk an inline one into
   // the tree, which is what carve-js did - both were accepted, and both threw
   // in the renderer, one step past where §12(c) puts the boundary.
-  const firstWithInlines = doc.children?.find((child) => Array.isArray(child?.children))
-  if (firstWithInlines !== undefined) {
-    const index = doc.children.indexOf(firstWithInlines)
+  //
+  // The host must be a genuinely INLINE child list. "The first child with a
+  // `children` array" is not: a `block_quote`, `div` or `footnote` has one too,
+  // and grafting the probe there re-tests the block row under the inline row's
+  // name while leaving an engine that only mishandles inlines unmeasured. So
+  // the host is found by looking for a `text` child, which only an inline list
+  // can hold.
+  if (findInlineHost(doc) !== undefined) {
     shapes.push({
       id: 'unknown-node-type-inline',
       clause: '§12(c)',
@@ -104,7 +137,7 @@ export function refusableRootShapes(doc) {
       names: UNKNOWN_NODE_TYPE,
       payload: (() => {
         const d = clone()
-        d.children[index].children.push({ type: UNKNOWN_NODE_TYPE })
+        findInlineHost(d).push({ type: UNKNOWN_NODE_TYPE })
         return d
       })(),
     })

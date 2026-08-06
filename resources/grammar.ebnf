@@ -5658,10 +5658,18 @@ EOF = (* end of file *) ;
 
       serializes an object literally shaped `{"type":"widget"}` inside the
       tree, and an implementation that refuses "any object whose `type` I do
-      not know" refuses that document. (c) is about NODE positions -- the root,
-      `children`, `items`, `rows`, `cells`, `inline`, `caption`, `target` --
-      and never about the interior of `keyValues`, whose values are strings and
-      hold no nodes at all.
+      not know" refuses that document.
+
+      (c) IS ABOUT NODE POSITIONS: the root, and every field the schema fills
+      with a node. It is deliberately NOT a list of field names. Which fields
+      hold nodes depends on the TYPE that carries them -- `content` is a node
+      list on `inline_extension` and a verbatim string on `code_block`, and
+      `title` is a node list on `admonition` and a string on `link` -- so a
+      list of names is either wrong for some type or has to repeat the schema.
+      Read it off `resources/ast-schema.json`, which is where the answer
+      already is. The one position the check must NEVER reach is the interior
+      of `attrs.keyValues`: its values are strings and hold no nodes at all,
+      which is what the trap above turns on.
 
       A `srcByteLength` THAT IS PRESENT BUT WRONG IS NOT THIS CLAUSE'S
       BUSINESS. It is derivable from the payload and nothing in the tree

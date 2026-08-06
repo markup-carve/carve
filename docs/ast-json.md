@@ -333,9 +333,14 @@ ordinary attribute identifiers, and `type` is a legal one:
 serializes an object literally shaped `{"type":"widget"}` inside the tree. An
 implementation that refuses *any* object whose `type` it does not recognize
 refuses a document its own parser just produced, which is what rule 1 above
-forbids. The unknown-type check belongs at node positions - the root,
-`children`, `items`, `rows`, `cells`, `inline`, `caption`, `target` - and never
-inside `keyValues`, whose values are strings and hold no nodes.
+forbids.
+
+The unknown-type check belongs at **node positions**: the root, and every field
+the schema fills with a node. That is not a fixed list of field names - which
+fields hold nodes depends on the type carrying them, so `content` is a node list
+on `inline_extension` and a verbatim string on `code_block` - so read it off the
+schema. The one position it must never reach is inside `attrs.keyValues`, whose
+values are strings and hold no nodes.
 
 ## What is not in it
 
