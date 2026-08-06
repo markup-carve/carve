@@ -46,7 +46,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `255-colon-fence-metadata-slots-must-be-a-space-too`,
 `256-table-cell-padding-must-be-a-space`,
 `257-link-and-image-title-slots-must-be-a-space`,
-`258-code-fence-metadata-slots-must-be-a-space-too`.
+`258-code-fence-metadata-slots-must-be-a-space-too`,
+`259-a-tab-continues-a-list-item-just-as-two-spaces-do`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the

@@ -1,0 +1,150 @@
+# The POSITION findings `npm run ast:check` reports, split into the two
+# populations it used to print as one number.
+#
+# PART 12 §4 exempts a node the producer REASSEMBLED - its value is not a slice
+# of the source at any offset, so no honest span exists. docs/ast-json.md:113
+# and :148-153 name those cases verbatim, and docs/ast-json.md:427 names
+# carve-js as the engine that omits a continued cell's position. Those lines are
+# `permitted` below and there is nothing to fix in any engine, ever.
+#
+# Everything else is OWED. docs/ast-json.md:116-117 narrows the exemption to
+# "nodes that *cannot* be placed, not nodes that have not been placed yet", and
+# the conformance section at docs/ast-json.md:438 states the test as "whether a
+# true span EXISTS rather than whether one was written down". Each of those
+# lines carries the issue tracking it.
+#
+# Printed as one number the two were indistinguishable, so the total moved
+# whenever the CORPUS grew and nobody could tell which half moved. Measured over
+# the three engines' mains on 2026-08-06 that is not hypothetical: the permitted
+# half is 16 findings in each of the three engines and grew with the fixtures
+# added over the preceding week, while the owed half - 7 in carve-js, 17 in
+# carve-rs, 4 in carve-php - did not move at all.
+#
+# Format: <engine>  <document>  <type>  <count>  <status>
+#
+# `status` is `permitted` or a fully qualified `owner/repo#N`. Exact in three
+# directions, the same contract resources/ast-value-divergence.txt uses:
+#
+#   - a finding no line covers          -> UNWAIVED, fails
+#   - a line whose count moved          -> COUNT, fails
+#   - a line nothing produces any more  -> FIXED, fails until you delete it
+#
+# The third is the one that used to be unreachable in the sibling file: its
+# reconciliation ran only when something diverged, which is never the state a
+# stale line needs deleting in (carve#534).
+#
+# NEVER widen a line to `permitted` to quiet a run. A finding is permitted
+# because the node CANNOT be placed, not because nobody has placed it.
+#
+# Per ENGINE, per DOCUMENT and per TYPE, because `missing pos on "text"` is one
+# cause in `03-links-12` that §4 permits and a different cause in
+# `182-openers-past-the-nesting-cap-are-one-paragraph` that is an engine gap,
+# and a per-type line would name the first and hide the second - which is
+# exactly what the grouped report did.
+
+# ---- PERMITTED: a merged `text` run whose pieces are not adjacent ------------
+#
+# docs/ast-json.md:148-153. An autolink unwrapped inside a link label
+# (03-links-12), the two halves of a table cell continued on a `+` line
+# (237, 249-4, 256-15/16/17, 63, 64), and line-block content rebuilt around the
+# indentation sentinel (41-line-blocks-9). All three engines omit; the clause
+# names the category, not the engine.
+#
+# A CONTROL: these lines pin unchanged behavior, so no A/B over an engine can
+# fail on them. What is falsifiable is the declaration itself - see the three
+# directions above, each exercised in tests/ast-waivers.test.mjs.
+
+carve-js   03-links-12.crv                                        text  1  permitted
+carve-js   237-a-continuation-row-carries-no-trailing-text.crv    text  2  permitted
+carve-js   249-trailing-whitespace-after-a-block-marker-4.crv     text  2  permitted
+carve-js   256-table-cell-padding-must-be-a-space-15.crv          text  2  permitted
+carve-js   256-table-cell-padding-must-be-a-space-16.crv          text  2  permitted
+carve-js   256-table-cell-padding-must-be-a-space-17.crv          text  2  permitted
+carve-js   41-line-blocks-9.crv                                   text  3  permitted
+carve-js   63-table-multi-line-cell-continuation.crv              text  1  permitted
+carve-js   64-table-rowspan-with-multi-line-content.crv           text  1  permitted
+
+carve-rs   03-links-12.crv                                        text  1  permitted
+carve-rs   237-a-continuation-row-carries-no-trailing-text.crv    text  2  permitted
+carve-rs   249-trailing-whitespace-after-a-block-marker-4.crv     text  2  permitted
+carve-rs   256-table-cell-padding-must-be-a-space-15.crv          text  2  permitted
+carve-rs   256-table-cell-padding-must-be-a-space-16.crv          text  2  permitted
+carve-rs   256-table-cell-padding-must-be-a-space-17.crv          text  2  permitted
+carve-rs   41-line-blocks-9.crv                                   text  3  permitted
+carve-rs   63-table-multi-line-cell-continuation.crv              text  1  permitted
+carve-rs   64-table-rowspan-with-multi-line-content.crv           text  1  permitted
+
+carve-php  03-links-12.crv                                        text  1  permitted
+carve-php  237-a-continuation-row-carries-no-trailing-text.crv    text  2  permitted
+carve-php  249-trailing-whitespace-after-a-block-marker-4.crv     text  2  permitted
+carve-php  256-table-cell-padding-must-be-a-space-15.crv          text  2  permitted
+carve-php  256-table-cell-padding-must-be-a-space-16.crv          text  2  permitted
+carve-php  256-table-cell-padding-must-be-a-space-17.crv          text  2  permitted
+carve-php  41-line-blocks-9.crv                                   text  3  permitted
+carve-php  63-table-multi-line-cell-continuation.crv              text  1  permitted
+carve-php  64-table-rowspan-with-multi-line-content.crv           text  1  permitted
+
+# ---- PERMITTED: a table cell continued on a `+` line -------------------------
+#
+# docs/ast-json.md:113 names the construct and docs/ast-json.md:427 already
+# names carve-js as the engine that omits it. carve-rs and carve-php place
+# these, which is permitted too - §4 exempts, it does not forbid. Also a
+# CONTROL.
+
+carve-js   237-a-continuation-row-carries-no-trailing-text.crv    table_cell  2  permitted
+carve-js   249-trailing-whitespace-after-a-block-marker-4.crv     table_cell  2  permitted
+carve-js   256-table-cell-padding-must-be-a-space-15.crv          table_cell  2  permitted
+carve-js   256-table-cell-padding-must-be-a-space-16.crv          table_cell  2  permitted
+carve-js   256-table-cell-padding-must-be-a-space-17.crv          table_cell  2  permitted
+carve-js   63-table-multi-line-cell-continuation.crv              table_cell  1  permitted
+carve-js   64-table-rowspan-with-multi-line-content.crv           table_cell  1  permitted
+
+# ---- OWED: carve-js ---------------------------------------------------------
+#
+# An emptied definition description. The dd's only content is a link reference
+# definition, which §7 hoists to the document root and leaves the dd empty - but
+# the dd is not REASSEMBLED and its authored line `:  [r]: /u` is right there,
+# so an honest span exists. carve-php publishes [8,18], exactly that line.
+carve-js   227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace.crv    definition_description  1  markup-carve/carve-js#813
+carve-js   227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace-2.crv  definition_description  1  markup-carve/carve-js#813
+
+# A list item continued with a TAB. Four contiguous lines, no reassembly, and
+# the same document with a two-space continuation keeps every position in this
+# same engine - that control is the second example in the same corpus section.
+carve-js   259-a-tab-continues-a-list-item-just-as-two-spaces-do.crv  paragraph   1  markup-carve/carve-js#814
+carve-js   259-a-tab-continues-a-list-item-just-as-two-spaces-do.crv  soft_break  1  markup-carve/carve-js#814
+carve-js   259-a-tab-continues-a-list-item-just-as-two-spaces-do.crv  text        2  markup-carve/carve-js#814
+
+# ---- OWED: carve-rs ---------------------------------------------------------
+#
+# The paragraph a CAPPED container degrades to, and its inlines. carve-js places
+# all eight, and its text spans pass the slice rule - so the spans are correct
+# rather than merely present.
+carve-rs   182-openers-past-the-nesting-cap-are-one-paragraph.crv  paragraph   1  markup-carve/carve-rs#716
+carve-rs   182-openers-past-the-nesting-cap-are-one-paragraph.crv  soft_break  3  markup-carve/carve-rs#716
+carve-rs   182-openers-past-the-nesting-cap-are-one-paragraph.crv  text        4  markup-carve/carve-rs#716
+
+# A figure over a REFERENCE image with a caption. carve-rs places the same
+# figure when the image is inline (`figure [0,18]`); only the reference form
+# loses it. carve-js and carve-php both publish [0,14], covering the image line
+# and the caption line together.
+carve-rs   207-a-reference-image-takes-a-caption.crv  figure  1  markup-carve/carve-rs#737
+
+# A footnote body whose continuation line is indented with a TAB. Not a
+# reassembly: the same construct with a space indent keeps all five positions in
+# this same engine, and carve-js and carve-php place them either way and agree
+# to the offset.
+carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do.crv    paragraph   1  markup-carve/carve-rs#736
+carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do.crv    text        1  markup-carve/carve-rs#736
+carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-2.crv  paragraph   1  markup-carve/carve-rs#736
+carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-2.crv  text        1  markup-carve/carve-rs#736
+carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-3.crv  footnote    1  markup-carve/carve-rs#736
+carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-3.crv  paragraph   1  markup-carve/carve-rs#736
+carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-3.crv  soft_break  1  markup-carve/carve-rs#736
+carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-3.crv  text        1  markup-carve/carve-rs#736
+
+# ---- OWED: carve-php --------------------------------------------------------
+#
+# The same capped-container site. carve-php places the paragraph and the soft
+# breaks there as of 876e312; only its text runs are left.
+carve-php  182-openers-past-the-nesting-cap-are-one-paragraph.crv  text  4  markup-carve/carve-php#965

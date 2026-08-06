@@ -42,7 +42,15 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
 import { classifyShapeDisagreement, shapeOf, shapePaths } from './spec/ast-shape.mjs'
-import { compareValues, valueSignature } from './spec/ast-values.mjs'
+import { compareValues, reconcileDeclared, valueSignature } from './spec/ast-values.mjs'
+import { compareSpans, countPlaced, reconcileSpans, spanSignature } from './spec/ast-spans.mjs'
+import {
+  describeDocuments,
+  groupFindings,
+  notReconciledBecause,
+  parseWaivers,
+  partitionFindings,
+} from './spec/ast-waivers.mjs'
 import { checkPositions } from './spec/ast-positions.mjs'
 import { checkReferenceFields } from './spec/ast-references.mjs'
 import {
@@ -299,6 +307,9 @@ const referenceShapes = new Map()
  */
 const engineValues = new Map()
 
+/** Every engine's SPAN signature per document, for `reportSpanDisagreements`. */
+const engineSpans = new Map()
+
 /**
  * Every independent engine's tree signature, kept so the run can compare the
  * engines to EACH OTHER and not only to the one that was chosen as reference.
@@ -358,62 +369,197 @@ function reportValueDisagreements(present) {
   console.log('')
   if (byKey.size === 0) {
     console.log('THREE-WAY VALUE COMPARISON: the engines publish the same values everywhere.')
-
-    return
-  }
-
-  const total = new Set([...byKey.values()].flatMap((v) => v.docs)).size
-  console.log(`THREE-WAY VALUE COMPARISON: ${byKey.size} field(s) disagree, across ${total} document(s)`)
-  for (const [key, { engines, docs }] of [...byKey].sort((a, b) => b[1].docs.length - a[1].docs.length)) {
-    const who = Object.entries(engines).map(([e, v]) => `${e}=${v}`).join('  ')
-    console.log(`  ${String(new Set(docs).size).padStart(4)} doc(s)  ${key}`)
-    console.log(`        ${who}`)
-    console.log(`        e.g. ${docs.slice(0, 2).join(', ')}`)
-  }
-
-  // The declaration, and the three ways it can be wrong.
-  const declared = new Map()
-  for (const line of readFileSync(VALUE_DIVERGENCE_FILE, 'utf8').split('\n')) {
-    const text = line.trim()
-    if (text === '' || text.startsWith('#')) continue
-    const [key, count] = text.split(/\s+/)
-    declared.set(key, Number(count))
-  }
-
-  const problems = []
-  for (const [key, { docs }] of byKey) {
-    // DOCUMENTS, not occurrences: `heading.attrs.id` diverges 72 times across
-    // 56 documents, and a declaration whose unit disagrees with its own header
-    // is a number nobody can check.
-    const documents = new Set(docs).size
-    if (!declared.has(key)) {
-      problems.push(`NEW        ${key} diverges in ${documents} document(s) and is not declared`)
-    } else if (declared.get(key) !== documents) {
-      problems.push(
-        `COUNT      ${key} declares ${declared.get(key)} document(s), measured ${documents}`,
-      )
-    }
-  }
-  for (const key of declared.keys()) {
-    if (!byKey.has(key)) {
-      problems.push(`FIXED      ${key} no longer diverges - delete its line`)
+  } else {
+    const total = new Set([...byKey.values()].flatMap((v) => v.docs)).size
+    console.log(
+      `THREE-WAY VALUE COMPARISON: ${byKey.size} field(s) disagree, across ${total} document(s)`,
+    )
+    for (const [key, { engines, docs }] of [...byKey].sort(
+      (a, b) => b[1].docs.length - a[1].docs.length,
+    )) {
+      const who = Object.entries(engines).map(([e, v]) => `${e}=${v}`).join('  ')
+      console.log(`  ${String(new Set(docs).size).padStart(4)} doc(s)  ${key}`)
+      console.log(`        ${who}`)
+      console.log(`        e.g. ${docs.slice(0, 2).join(', ')}`)
     }
   }
 
-  if (problems.length > 0) {
+  // RECONCILED UNCONDITIONALLY. The early return that used to sit above this -
+  // taken whenever `byKey` was empty - made the declaration's own "a listed
+  // field no longer diverges -> delete the line" direction unreachable in
+  // exactly the state it describes. See `reconcileDeclared` (carve#534).
+  //
+  // DOCUMENTS, not occurrences: `heading.attrs.id` diverged 72 times across 56
+  // documents, and a declaration whose unit disagrees with its own header is a
+  // number nobody can check.
+  const problems = reconcileDeclared(
+    new Map([...byKey].map(([key, { docs }]) => [key, new Set(docs)])),
+    readFileSync(VALUE_DIVERGENCE_FILE, 'utf8'),
+  )
+
+  // ACCUMULATED, not exited on. This used to `process.exit(1)` here, which
+  // meant the FIRST declaration to drift was the only one a run could report -
+  // the span panel below and the position waivers after it never printed, so
+  // fixing one drift revealed the next instead of showing all three at once.
+  // Same family as the early return this function's own reconciliation had.
+  declarationDrift.push({
+    file: 'resources/ast-value-divergence.txt',
+    what: 'THREE-WAY VALUE COMPARISON',
+    problems,
+    advice: [
+      'Each line there is a field the engines disagree about, with the number of',
+      'documents it shows up in. Update it in the commit that moves the number.',
+    ],
+  })
+
+  if (byKey.size > 0) {
+    console.log('  All declared in resources/ast-value-divergence.txt (carve#786).')
+  } else {
+    console.log('  resources/ast-value-divergence.txt declares nothing that still diverges.')
+  }
+}
+
+/**
+ * Where the engines disagree about a SPAN.
+ *
+ * The panel `ast-values.mjs` explicitly excludes ("compared elsewhere") and
+ * `checkPositions` does not supply: it compares each engine against the SOURCE,
+ * never against another engine, and its one content-level rule runs on `text`
+ * alone. See scripts/spec/ast-spans.mjs for the two live defects that hid
+ * behind that gap and why neither is reachable by asserting what a span slices
+ * to (carve#534).
+ *
+ * DECLARED, not gated at zero, for the reason the value panel gives one screen
+ * up: in this fleet a fix lands in one engine first, so the engine that is
+ * RIGHT is routinely the odd one out for a while, and gating at zero would make
+ * the fix for a red run "wait". A declared count still fails the moment an
+ * engine changes its mind about a span, which nothing else here can see.
+ *
+ * IT DECIDES NOTHING ABOUT WHICH SIDE IS RIGHT. Whether a span covers the
+ * markup that opens a node is markup-carve/carve#913, and most of these rows
+ * are that question.
+ */
+function reportSpanDisagreements(present) {
+  const byKey = new Map()
+  const names = engineSpans.get(present[0])
+  if (!names) return
+
+  // THE OPT-IN TRAP. Positions are behind a parse option in carve-rs and
+  // carve-php. An engine invoked without it publishes a tree with no `pos`
+  // anywhere, and every comparison below would then be absent-against-absent
+  // and unanimous - a clean panel that measured nothing. Assert each engine
+  // PLACED something before believing any of it.
+  const placed = new Map(present.map((engine) => [engine, 0]))
+  for (const engine of present) {
+    for (const signature of engineSpans.get(engine).values()) {
+      placed.set(engine, placed.get(engine) + countPlaced(signature))
+    }
+  }
+  const silent = present.filter((engine) => placed.get(engine) === 0)
+  if (silent.length > 0) {
     console.error('')
-    console.error('THREE-WAY VALUE COMPARISON does not match resources/ast-value-divergence.txt:')
-    for (const p of problems) console.error(`  ${p}`)
-    console.error('')
-    console.error('Each line there is a field the engines disagree about, with the number of')
-    console.error('documents it shows up in. Update it in the commit that moves the number.')
+    console.error(
+      `THREE-WAY SPAN COMPARISON cannot run: ${silent.join(', ')} published no position at all.`,
+    )
+    console.error('Positions are an opt-in parse option in carve-rs and carve-php, so a run that')
+    console.error('did not request them compares absence against absence on every node and calls')
+    console.error('it agreement. That is not a pass; it is the checker measuring nothing.')
     process.exit(1)
   }
 
-  console.log('  All declared in resources/ast-value-divergence.txt (carve#786).')
+  for (const name of names.keys()) {
+    const signatures = new Map()
+    let complete = true
+    for (const engine of present) {
+      const sig = engineSpans.get(engine)?.get(name)
+      if (!sig) { complete = false; break }
+      signatures.set(engine, sig)
+    }
+    if (!complete) continue
+
+    for (const found of compareSpans(signatures, name)) {
+      if (!byKey.has(found.key)) byKey.set(found.key, { engines: found.engines, docs: new Set() })
+      byKey.get(found.key).docs.add(found.sample)
+    }
+  }
+
+  console.log('')
+  const totalPlaced = [...placed.values()].reduce((a, b) => a + b, 0)
+  if (byKey.size === 0) {
+    console.log(
+      `THREE-WAY SPAN COMPARISON: the engines place every node identically (${totalPlaced} span(s) compared).`,
+    )
+  } else {
+    const total = new Set([...byKey.values()].flatMap((v) => [...v.docs])).size
+    console.log(
+      `THREE-WAY SPAN COMPARISON: ${byKey.size} row(s) disagree, across ${total} document(s) ` +
+        `(${totalPlaced} span(s) compared)`,
+    )
+    for (const [key, { engines, docs }] of [...byKey].sort((a, b) => b[1].docs.size - a[1].docs.size)) {
+      const who = Object.entries(engines).map(([e, v]) => `${e}=${v}`).join('  ')
+      console.log(`  ${String(docs.size).padStart(4)} doc(s)  ${key}`)
+      console.log(`        e.g. ${[...docs][0]}: ${who}`)
+    }
+    console.log('  EXTENT rows are the open convention question markup-carve/carve#913 - whether a')
+    console.log('  span covers the markup that opens a node. This panel names no side.')
+  }
+
+  const problems = reconcileSpans(
+    new Map([...byKey].map(([key, { docs }]) => [key, docs])),
+    readFileSync(SPAN_DIVERGENCE_FILE, 'utf8'),
+  )
+  declarationDrift.push({
+    file: 'resources/ast-span-divergence.txt',
+    what: 'THREE-WAY SPAN COMPARISON',
+    problems,
+    advice: [
+      'Each line there is a node type the engines span differently, with the number of',
+      'documents it shows up in. Update it in the commit that moves the number.',
+      'A row moving does NOT mean an engine is wrong: the extent convention is open',
+      '(markup-carve/carve#913). It means an engine changed its mind about a span.',
+    ],
+  })
+  if (byKey.size > 0) {
+    console.log('  All declared in resources/ast-span-divergence.txt (carve#534).')
+  }
 }
 
 const VALUE_DIVERGENCE_FILE = resolve(here, '..', 'resources', 'ast-value-divergence.txt')
+const SPAN_DIVERGENCE_FILE = resolve(here, '..', 'resources', 'ast-span-divergence.txt')
+const POSITION_WAIVER_FILE = resolve(here, '..', 'resources', 'ast-position-waivers.txt')
+
+/*
+ * The position declaration, read ONCE and up front.
+ *
+ * A malformed line is a hard stop rather than a skipped line: `permitted` is
+ * the status that silences a finding, so a typo that made a line unparseable
+ * would silently un-declare a waiver and, one direction over, a typo in the
+ * engine or document field would leave a real finding UNWAIVED with a
+ * confusing message. Neither should be reachable without the run saying so.
+ */
+const { declared: declaredWaivers, errors: waiverFileErrors } = parseWaivers(
+  readFileSync(POSITION_WAIVER_FILE, 'utf8'),
+)
+if (waiverFileErrors.length > 0) {
+  console.error('resources/ast-position-waivers.txt is malformed:')
+  for (const e of waiverFileErrors) console.error(`  ${e}`)
+  process.exit(2)
+}
+
+/** Accumulated across every engine's `report`, gated at the end of the run. */
+const waiverProblems = []
+
+/**
+ * Every declaration this run reconciles, gated together at the end.
+ *
+ * ONE gate for three files, because each of them used to exit the process
+ * itself: the value panel's exit ran before the span panel had printed, and
+ * both ran before any position waiver was reconciled. So a run with drift in
+ * all three reported one, and fixing it revealed the next - the numbers a
+ * reader most needs side by side are exactly the ones that could not appear
+ * together (carve#534).
+ */
+const declarationDrift = []
 
 const INDEPENDENT_ENGINES = ['carve-js', 'carve-rs', 'carve-php']
 let panelRan = false
@@ -436,6 +582,16 @@ function recordShape(engine, name, doc) {
     engineValues.set(engine, perDocValues)
   }
   perDocValues.set(name, valueSignature(doc))
+
+  // The same tree, signed a THIRD way. `shapeOf` drops scalars and
+  // `valueSignature` drops the position keys by name, so before this nothing
+  // carried a span into any cross-engine comparison at all (carve#534).
+  let perDocSpans = engineSpans.get(engine)
+  if (!perDocSpans) {
+    perDocSpans = new Map()
+    engineSpans.set(engine, perDocSpans)
+  }
+  perDocSpans.set(name, spanSignature(doc))
 }
 
 /**
@@ -495,6 +651,7 @@ function reportEngineDisagreement() {
   if (compared === unanimous) console.log('  no engine stood alone.')
 
   reportValueDisagreements(present)
+  reportSpanDisagreements(present)
 
   // A document one engine could not serialize leaves the panel with two votes,
   // so it is not compared. Say how many, or a run where half the corpus dropped
@@ -569,9 +726,17 @@ function checkDocument(name, doc, source, findings) {
   checkAdjacentTextRuns(doc, own)
   checkFrontmatterSurvives(doc, source, own)
   checkPositions(doc, source, own)
-  checkReferenceFields(doc, source, own)
+  // §3a's source-shape half cannot run on a node with no usable position, so it
+  // goes quiet on exactly the nodes an engine failed to place. Counted rather
+  // than reported - the missing position is checkPositions' finding - and rolled
+  // up at the end of the run, because a rule that silently stopped covering part
+  // of the corpus reads identically to one that found nothing (carve#534).
+  referenceCoverageGaps += checkReferenceFields(doc, source, own)
   for (const f of own) findings.push(name.endsWith('.crv') ? name + ': ' + f : f)
 }
+
+/** Referencing nodes §3a's source-shape rule could not be applied to. */
+let referenceCoverageGaps = 0
 
 /**
  * Provenance for the REFERENCE checkout, which had none.
@@ -804,7 +969,7 @@ for (const { name, source } of samples) {
 }
 const jsProv = referenceProvenance(jsDir)
 if (jsProv.suspect) staleBuilds.push('carve-js (reference)')
-report(`carve-js (reference) [${jsProv.text}]`, jsFindings)
+report('carve-js', `carve-js (reference) [${jsProv.text}]`, jsFindings)
 
 // ---- carve-rs: serializes through its own `carve --json` --------------------
 //
@@ -887,6 +1052,7 @@ let rsRootShaped = false
   const rsBuild = buildStatus(rsBinary, resolve(rsDir, 'src'), ['.rs'])
   if (rsBuild.stale) staleBuilds.push('carve-rs')
   report(
+    'carve-rs',
     `carve-rs (over ${rsBinary.replace(rsDir + '/', '')} [${rsBuild.text}], ${satelliteSamples.length} documents)`,
     rsFindings,
   )
@@ -945,6 +1111,7 @@ if (existsSync(resolve(rbDir, 'lib/carve'))) {
     : { text: 'no compiled extension found', stale: false }
   if (rbBuild.stale) staleBuilds.push('carve-rb')
   report(
+    'carve-rb',
     `carve-rb (over carve-rs [${rbBuild.text}], ${satelliteSamples.length} documents)`,
     rbFindings,
   )
@@ -1073,7 +1240,11 @@ let phpRootShaped = false
       )
     }
   }
-  report(`carve-php (over bin/carve --json, ${satelliteSamples.length} documents)`, phpFindings)
+  report(
+    'carve-php',
+    `carve-php (over bin/carve --json, ${satelliteSamples.length} documents)`,
+    phpFindings,
+  )
 } else if (existsSync(phpDir)) {
   skip('carve-php', 'checkout found but bin/carve is missing')
 } else {
@@ -1202,30 +1373,50 @@ function checkIngestIdentity(name, doc, findings, reserialize) {
   }
 }
 
-function report(label, findings) {
+function report(engine, label, findings) {
   const adjacent = findings.filter((f) => f.includes('§1a')).length
   if (adjacent > 0) adjacentTextRunCounts.push({ label, count: adjacent })
+
+  // THE WAIVER PARTITION, run even on a clean engine: the FIXED direction is
+  // only reachable when a finding stops occurring, so an engine with no
+  // findings at all is exactly when a stale line most needs deleting. This is
+  // the same defect the value panel had one screen up (carve#534).
+  //
+  // A DERIVED engine is exempt. carve-rb serializes carve-rs's tree, so
+  // reconciling it would demand a second set of lines for one engine's debt and
+  // fail the run on any host that has the Ruby binding built - while closing the
+  // carve-rs issue would then leave the run red until the duplicate lines went
+  // too. It is the same reason the shape panel does not give that engine a vote.
+  const exempt = notReconciledBecause(engine)
+  const { waived, outstanding, undeclared, unwaivable, problems } = exempt
+    ? { waived: 0, outstanding: 0, undeclared: 0, unwaivable: 0, problems: [] }
+    : partitionFindings(engine, findings, declaredWaivers)
+  waiverProblems.push(...problems)
+
   if (findings.length === 0) {
     console.log(`${label}: conformant\n`)
     return
   }
-  // Group, because one missing field repeats across every document. Keep ONE
-  // document per group: grouping strips the filename, and a finding nobody can
-  // reproduce is a finding nobody fixes. The example is the FIRST document that
-  // produced the group, so it is stable across runs.
-  const counts = new Map()
-  for (const f of findings) {
-    const file = /^([^:]+\.crv): /.exec(f)?.[1] ?? null
-    const key = f.replace(/^[^:]+\.crv: /, '').replace(/at \$[^\s]*/, 'at <path>')
-    const seen = counts.get(key)
-    if (seen) seen.n += 1
-    else counts.set(key, { n: 1, example: file })
-  }
-  console.log(`${label}: ${findings.length} findings, ${counts.size} distinct`)
-  const ranked = [...counts].sort((a, b) => b[1].n - a[1].n)
-  for (const [key, entry] of ranked.slice(0, DISPLAY_LIMIT)) {
-    const where = entry.example ? '  [' + entry.example + ']' : ''
-    console.log(`  ${String(entry.n).padStart(4)}x ${key}${where}`)
+
+  // Group, because one missing field repeats across every document - but keep
+  // the DOCUMENTS. Keeping one example made carve-php's entire report read as
+  // `14x missing pos on "text" [03-links-12.crv]`, "1 distinct", when it was
+  // six documents and at least two causes: a §4-permitted merged run in the
+  // named document, and four placeable text nodes in a document the line did
+  // not mention. The line named the cause nobody should act on and hid the one
+  // somebody should (carve#534).
+  const ranked = groupFindings(findings)
+  const split = exempt
+    ? `not reconciled: ${exempt}`
+    : waived + outstanding + undeclared + unwaivable === findings.length
+      ? `${waived} waived, ${outstanding} outstanding` +
+        (undeclared > 0 ? `, ${undeclared} UNDECLARED` : '') +
+        (unwaivable > 0 ? `, ${unwaivable} not a position` : '')
+      : 'partition disagrees with the total - this is a bug in partitionFindings'
+  console.log(`${label}: ${findings.length} findings, ${ranked.length} distinct (${split})`)
+  for (const entry of ranked.slice(0, DISPLAY_LIMIT)) {
+    const where = entry.documents.size > 0 ? '  in ' + describeDocuments(entry.documents) : ''
+    console.log(`  ${String(entry.n).padStart(4)}x ${entry.key}${where}`)
   }
   // Say so when the display is truncated. This used to end here, so a run with
   // nine distinct findings looked exactly like a run with eight.
@@ -1234,6 +1425,18 @@ function report(label, findings) {
     console.log(`  ... and ${hidden} more distinct finding${hidden === 1 ? '' : 's'} not shown`)
   }
   console.log('')
+}
+
+// §3a's coverage, said out loud. Zero is the expected value and the reason to
+// print it: a run where this number is not zero has a rule that quietly stopped
+// applying to part of the corpus, which reads exactly like a rule that applied
+// and found nothing.
+if (referenceCoverageGaps > 0) {
+  console.log(
+    `PART 12 §3a NOT APPLIED to ${referenceCoverageGaps} referencing node(s) - they carry no\n` +
+      '  usable position, so the rule about the reference form the author wrote could not run\n' +
+      '  on them. The missing position itself is reported above.\n',
+  )
 }
 
 // A closing statement of what was NOT measured, so the coverage of a run is
@@ -1327,6 +1530,42 @@ if (staleBuilds.length > 0) {
     console.error('CARVE_REQUIRE_ALL_ENGINES=1 and at least one engine was measured from a stale build.')
     process.exit(1)
   }
+}
+
+// THE POSITION DECLARATION, gated after every engine has reported.
+//
+// Gated rather than reported, unlike the shape and span panels above, because
+// this one is not a disagreement between engines that a fix will move through
+// over a few days - it is a statement about THIS repo's own record of what is
+// permitted and what is owed, and the whole point of splitting the two is that
+// the OWED number stops moving on its own. See scripts/spec/ast-waivers.mjs.
+//
+// Placed AFTER the panels so a run that fails here still prints them: a
+// declaration drifting is often the same event as a span moving, and reading
+// one without the other is how carve#534's own figures were mis-attributed.
+declarationDrift.push({
+  file: 'resources/ast-position-waivers.txt',
+  what: 'POSITION FINDINGS',
+  problems: waiverProblems,
+  advice: [
+    'Each line there is one engine, one document and one node type, with a count and',
+    'either "permitted" (PART 12 §4 exempts a REASSEMBLED node - see docs/ast-json.md',
+    'lines 113 and 148-153) or the issue tracking the gap. Update it in the commit',
+    'that moves the number, and never widen a line to "permitted" to quiet a run:',
+    'docs/ast-json.md:116-117 narrows the exemption to nodes that CANNOT be placed.',
+  ],
+})
+
+const drifted = declarationDrift.filter((d) => d.problems.length > 0)
+if (drifted.length > 0) {
+  for (const d of drifted) {
+    console.error('')
+    console.error(`${d.what} does not match ${d.file}:`)
+    for (const p of d.problems) console.error(`  ${p}`)
+    console.error('')
+    for (const line of d.advice) console.error(line)
+  }
+  process.exit(1)
 }
 
 if (adjacentTextRunCounts.length > 0) {

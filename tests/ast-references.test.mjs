@@ -193,3 +193,51 @@ test('a multi-line span is read across the lines it covers', () => {
   checkReferenceFields(doc, source, out)
   assert.equal(out.length, 1)
 })
+
+/*
+ * WHERE THE RULE DOES NOT RUN, counted.
+ *
+ * The test just above pins the right behavior - a node whose span the source
+ * cannot supply is left to checkPositions - and that behavior has a cost this
+ * file could not see: §3a's source-shape half goes silent on exactly the nodes
+ * an engine failed to place, and a silent rule reads identically to a rule that
+ * ran and found nothing. So the checker now returns how many nodes it skipped,
+ * and `ast:check` prints the number when it is not zero (carve#534).
+ *
+ * Latent today - all three engines place `link` and `image` on every corpus
+ * document - which is why it needs a test rather than a run to prove it fires.
+ */
+test('a referencing node with no usable position is counted as not measured', () => {
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'paragraph',
+        children: [{ type: 'link', href: '/u', children: [{ type: 'text', value: 'x' }] }],
+      },
+    ],
+  }
+  const out = []
+  assert.equal(checkReferenceFields(doc, 'see [x][r]\n', out), 1)
+  assert.deepEqual(out, [], 'the missing position is checkPositions findings to make, not this one')
+})
+
+test('a node the rule DID run on is not counted as skipped', () => {
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'paragraph',
+        children: [
+          {
+            type: 'link',
+            href: '/u',
+            pos: { startLine: 1, endLine: 1, startColumn: 1, endColumn: 10, startOffset: 0, endOffset: 9 },
+            children: [{ type: 'text', value: 'x' }],
+          },
+        ],
+      },
+    ],
+  }
+  assert.equal(checkReferenceFields(doc, '[x](/url)\n', []), 0)
+})
