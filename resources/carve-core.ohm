@@ -280,27 +280,31 @@ CarveCore {
   destChar   = destEsc | destParens | (~("(" | ")" | " " | "\t" | newline) any)
   destEsc    = "\\" ("(" | ")" | "\\")
   destParens = "(" destChar* ")"
-  // A TAB, TOO. `link_title` is spelled `whitespace` in grammar.ebnf - a
-  // space or a tab - because the slot is PADDING rather than a marker
-  // separator: a link is already a link once its destination has been read,
-  // so the title is trailing metadata (PART 7, carve#878). This file said
-  // `" "` only, so the two normative files in `resources/` answered one
-  // production two ways and `[t](/u<TAB>"T")` rendered literally here while
-  // all three engines produced a titled link (carve#888). `destChar` already
+  // NO TAB. `link_title` is spelled `space` in grammar.ebnf. The slot is
+  // PADDING rather than a marker separator - a link is already a link once its
+  // destination has been read, so the title is trailing metadata - but padding
+  // takes `space` too, because the slot sits after the first non-whitespace
+  // character of the line and a tab is syntax only in a leading indentation
+  // run (PART 7, MARKER SEPARATORS AND PADDING SLOTS; carve#901 correcting
+  // carve#878). This file briefly read `" " | "\t"` to match the widened
+  // production (carve#888); the production has since narrowed back, and the
+  // two normative files in `resources/` agree again. `destChar` already
   // excludes both space and tab, so the destination still ends at either.
   //
-  // CARDINALITY IS UNCHANGED, and deliberately so: this was `" "+` and stays a
-  // run, only a wider one. grammar.ebnf spells `link_title` as exactly ONE
-  // `whitespace`, so the run has always been the looser of the two, for spaces
-  // long before it admitted a tab. Tightening it here would not settle that
-  // disagreement, it would move it: measured, carve-js reads a title after two
-  // spaces AND after two tabs at both the inline and the definition site, so
-  // `exactly one` is a claim no implementation and neither executable file
-  // makes. Which side gives is a question for the production, not for this
-  // file, and narrowing to one would newly break `[t](/u<SP><SP>"T")` here
-  // while every engine kept reading it as a titled link.
+  // The three engines accept a tab here and now diverge from the production;
+  // that is reported upstream rather than encoded here. No corpus document
+  // carries a tab in this slot, so narrowing it moves no golden (measured:
+  // core:check stays 675/675).
+  //
+  // CARDINALITY IS UNCHANGED, and deliberately so: this stays a run rather
+  // than becoming exactly one. grammar.ebnf spells `link_title` as exactly ONE
+  // character, so the run has always been the looser of the two, and was so
+  // for spaces long before the tab question arose. Which side gives is a
+  // question for the production, not for this file: narrowing to one here
+  // would newly break `[t](/u<SP><SP>"T")`, which every engine reads as a
+  // titled link.
   destTitle  = titleSp+ (quoted | squoted)
-  titleSp    = " " | "\t"
+  titleSp    = " "
   squoted    = "'" sqChar* "'"
   sqChar     = sqEsc | (~"'" ~newline any)
   sqEsc      = "\\" "'"

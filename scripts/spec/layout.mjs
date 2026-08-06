@@ -49,13 +49,15 @@ const QUOTE = /^>(?: (.*)|)$/
 // the same way the inline form does (carve#806).
 //
 // The TITLE slot is the exception, and it is a different production. It is
-// `link_title`, whose separator grammar.ebnf spells `whitespace` = `' ' |
-// '\t'` because the slot is PADDING rather than a marker separator (PART 7,
-// carve#878). The whole White_Space property was two answers to one
-// production: `destTitle` in carve-core.ohm read the inline form's slot as a
-// literal space while this read the definition's as any Unicode space, so one
-// normative file admitted `[a]: /u<NBSP>"T"` and the other rejected
-// `[t](/u<TAB>"T")`. Both now spell it `' ' | '\t'` (carve#888).
+// `link_title`, whose separator grammar.ebnf spells `space`. The slot is
+// PADDING rather than a marker separator, but padding takes `space` too: it
+// sits after the first non-whitespace character of the line, and a tab is
+// syntax only in a leading indentation run (PART 7, MARKER SEPARATORS AND
+// PADDING SLOTS; carve#901 correcting carve#878). The whole White_Space
+// property was two answers to one production: `destTitle` in carve-core.ohm
+// read the inline form's slot one way while this read the definition's as any
+// Unicode space, so one normative file admitted `[a]: /u<NBSP>"T"` and the
+// other rejected `[t](/u<TAB>"T")` (carve#888). Both now spell it `' '`.
 //
 // The two runs on either side of it deliberately keep the wider class. The
 // leading one is entangled with the destination class above: PART 9 §25's
@@ -63,7 +65,7 @@ const QUOTE = /^>(?: (.*)|)$/
 // slip past the denylist, which corpus case 121 pins with a U+202F before
 // `javascript:`. Narrowing that run is a separate question about
 // `link_destination`, not about `link_title`, and is left alone here.
-const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?:[ \t]+"((?:\\"|[^"])*)")?(?:\p{White_Space}.*)?$/u
+const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?: +"((?:\\"|[^"])*)")?(?:\p{White_Space}.*)?$/u
 
 /*
  * Split a TRAILING attribute block off a definition line (carve#604).
@@ -73,9 +75,12 @@ const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?:[ \t
  * drops every attribute on the line silently. The scan tracks quote state, so
  * only a `}` outside quotes closes the block.
  *
- * The block must be preceded by whitespace and end the line, so `[a]: /u{.x}`
+ * The block must be preceded by a SPACE and end the line, so `[a]: /u{.x}`
  * keeps the braces in the DESTINATION, as the production's `space, attributes`
- * requires. Returns [lineWithoutBlock, blockText|null].
+ * requires. A tab does not separate it either: the slot is padding, and padding
+ * takes `space` because it sits after the first non-whitespace character of the
+ * line (PART 7, MARKER SEPARATORS AND PADDING SLOTS; carve#901).
+ * Returns [lineWithoutBlock, blockText|null].
  */
 function splitTrailingAttrBlock(line) {
   const trimmedEnd = line.replace(/\s+$/, '')
@@ -92,8 +97,8 @@ function splitTrailingAttrBlock(line) {
     if (c === '"' || c === "'") { quote = c; continue }
     if (c === '{') { if (open === -1) open = i; continue }
     if (c === '}' && open !== -1 && i === trimmedEnd.length - 1) {
-      // Must be separated from what precedes it by whitespace.
-      if (open === 0 || !/\s/.test(trimmedEnd[open - 1])) return [line, null]
+      // Must be separated from what precedes it by a space (PART 7).
+      if (open === 0 || trimmedEnd[open - 1] !== ' ') return [line, null]
       return [trimmedEnd.slice(0, open).replace(/\s+$/, ''), trimmedEnd.slice(open)]
     }
   }
@@ -327,12 +332,17 @@ function parseColonOpener(tail) {
     out.type = ty[1]
     s = s.slice(ty[0].length)
   }
-  const qt = /^[ \t]+"([^"]*)"/.exec(s)
+  // The `"title"` and `[label]` slots are PADDING and take `space`: they sit
+  // after the first non-whitespace character of the line, and a tab is syntax
+  // only in a leading indentation run (PART 7; carve#901). A tab here leaves
+  // the token unconsumed, so the trailing-junk check below turns the line into
+  // an ordinary paragraph rather than silently dropping the metadata.
+  const qt = /^ +"([^"]*)"/.exec(s)
   if (qt) {
     out.title = qt[1]
     s = s.slice(qt[0].length)
   }
-  const lb = /^[ \t]*\[([^\]]*)\]/.exec(s)
+  const lb = /^ *\[([^\]]*)\]/.exec(s)
   if (lb) {
     out.label = lb[1]
     s = s.slice(lb[0].length)
@@ -601,7 +611,10 @@ export function parse(src) {
   }
   // frontmatter (PART 1): consumed; renders nothing. The closer-lookahead
   // guard: with no closing --- the line is an ordinary thematic break.
-  if (lines[0] !== undefined && /^---(\s|[A-Za-z0-9]+\s*$|$)/.test(lines[0])) {
+  // The slot before the format token is PADDING and takes `space` (PART 7;
+  // carve#901): it sits after the `---`, and a tab is syntax only in a leading
+  // indentation run. `---<TAB>yaml` is therefore not a typed opener.
+  if (lines[0] !== undefined && /^---( |[A-Za-z0-9]+[ \t]*$|$)/.test(lines[0])) {
     for (let j = 1; j < lines.length; j++) {
       if (/^---[ \t]*$/.test(lines[j])) {
         lines.splice(0, j + 1)
@@ -1386,19 +1399,26 @@ function findCloser(lines, openIdx, run) {
 // { lang, title, label } or null on any other shape (INVALID-FENCE
 // FALLBACK: the line is not a fence).
 function parseFenceInfo(raw) {
-  let s = raw.trim()
+  // The opener slot before the info string, and the `"header"` / `[label]`
+  // slots inside it, are all PADDING and all take `space` (PART 7; carve#901):
+  // each sits after the first non-whitespace character of the line, and a tab
+  // is syntax only in a leading indentation run. So the leading run is stripped
+  // as spaces only - ```<TAB>js leaves the tab in place, matches no shape, and
+  // the line is not a fence at all. Only TRAILING whitespace keeps the wider
+  // class, which is the line-ending rule rather than a slot.
+  let s = raw.replace(/^ +/, '').replace(/[ \t]+$/, '')
   const out = { lang: '', title: null, label: null }
   const lm = /^([A-Za-z0-9\-_+#.=/]+)/.exec(s)
   if (lm) {
     out.lang = lm[1]
     s = s.slice(lm[0].length)
   }
-  const tm = /^[ \t]*"([^"]*)"/.exec(s)
+  const tm = /^ *"([^"]*)"/.exec(s)
   if (tm) {
     out.title = tm[1]
     s = s.slice(tm[0].length)
   }
-  const lb = /^[ \t]*\[([^\]]*)\]/.exec(s)
+  const lb = /^ *\[([^\]]*)\]/.exec(s)
   if (lb) {
     out.label = lb[1]
     s = s.slice(lb[0].length)
