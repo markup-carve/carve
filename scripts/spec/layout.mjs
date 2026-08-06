@@ -42,15 +42,32 @@ const MAX_NESTING_DEPTH = 200
 /// load, which is what makes tests/nested-container-rescan.test.mjs a guard
 /// rather than a coin toss.
 ///
-/// `scan` is the measure half (the indent gate and the stripper's own walk);
-/// `copy` is the materialize half (every character of a body line written into
-/// a fresh string). `lineVisits` is the container model itself - one per line
-/// per enclosing level - and is the floor neither half can go below.
-export const layoutWork = { scan: 0, copy: 0, lineVisits: 0 }
+/// `scan` is columns of indentation walked. `pad` is characters written to
+/// re-materialize a straddling tab's residual, the only place the strip builds
+/// string data rather than pointing at it. `views` counts the suffix slices
+/// themselves - each is O(1), a view over the same buffer, so what matters
+/// about them is HOW MANY are taken, not how long they are. `lineVisits` is the
+/// container model itself, one per line per enclosing level, and is the floor
+/// nothing here can go below.
+///
+/// Charging a suffix slice by its LENGTH is the modelling error that makes a
+/// healthy parse look cubic: the strip takes exactly one slice per line visit,
+/// which is O(1) work per visit, and `views` is asserted against `lineVisits`
+/// so a regression to walk-and-materialize is still caught.
+/// `quoteStrips` is the OTHER container prefix. It is counted separately
+/// because a `>` marker is not indentation and costs a fixed two columns; what
+/// can go wrong with it is the NUMBER of strips, not their width. One per
+/// quoted line per enclosing level is the floor and is what the model asks
+/// for; carve-rs was doing 77 times that on a deep quote (carve-rs#731), from a
+/// loop that unwound the whole remaining prefix to answer a question about the
+/// innermost line. A counter here is what would have caught it.
+export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0 }
 
 export function resetLayoutWork() {
   layoutWork.scan = 0
-  layoutWork.copy = 0
+  layoutWork.pad = 0
+  layoutWork.views = 0
+  layoutWork.quoteStrips = 0
   layoutWork.lineVisits = 0
 }
 
@@ -189,24 +206,55 @@ export const LAZY = '\u0000L\u0000'
 /// generates those shapes instead of listing them.
 export const stripLazy = (line) => (line.startsWith(LAZY) ? line.slice(LAZY.length) : line)
 
+// Measurements a collector knows without walking anything (carve#752). A blank
+// separator it synthesized stands at column 0 with no content; a lazily-folded
+// line is re-materialized behind the LAZY frame, whose first character is not
+// whitespace, so it stands at column 0 and IS its own content.
+const BLANK_MEAS = { col: 0, rest: '', tabs: false }
+const LAZY_MEAS = (rest) => ({ col: 0, rest: LAZY + rest, tabs: false })
+
 // Lines that put the whole document out of the executable subset.
 const REFUSERS = [
   [/^\[@/, 'citation definition'],
 ]
 
+// The leading whitespace run, removed. `line.replace(/^[ \t]+/, '')` spells the
+// same thing without being counted, and this is a walk over indentation like
+// any other - carve#752 is about how many times that walk happens, so all of
+// them go through the counter.
+function stripIndent(line) {
+  return indentCols(line).rest
+}
+
 // PART 9 SS24 C1: visual column of the first non-indent character.
+//
+// This is THE indentation walk. Every question the layout asks about a line's
+// leading whitespace is answered from the pair it returns - `col` for the
+// column arithmetic, `rest` for every pattern that would otherwise re-scan the
+// same run - so the counter above sees all of that work in one place. A
+// predicate that walks the indent itself, `/^[ \t]*$/` or `^([ \t]*)` in front
+// of a marker, is invisible to the counter and cubic in depth: that is how the
+// first instrument on this ticket read 1.5% of the work and concluded there
+// was nothing to fix.
+//
+// `tabs` records whether the run held one. A container that strips columns can
+// otherwise DERIVE its body's measurement instead of re-walking it, and a tab
+// is what makes the derivation unsafe: re-materializing a straddling tab's
+// residual as spaces moves every later tab stop on the line, so `\t\tx` minus
+// two columns reaches column 4, not column 6.
 function indentCols(line) {
   let col = 0
   let i = 0
+  let tabs = false
   for (; i < line.length; i++) {
     const ch = line[i]
     if (ch === ' ') col += 1
-    else if (ch === '\t') col = (Math.floor(col / 4) + 1) * 4
+    else if (ch === '\t') { col = (Math.floor(col / 4) + 1) * 4; tabs = true }
     else break
   }
   layoutWork.scan += i
-  layoutWork.copy += line.length - i
-  return { col, rest: line.slice(i) }
+  layoutWork.views += 1
+  return { col, rest: i === 0 ? line : line.slice(i), tabs }
 }
 
 // A footnote body's own column is fixed at 2 (grammar.ebnf, "Footnotes"),
@@ -528,6 +576,10 @@ const COMMENT_LINE = /^[ \t]*%%/
 // A fence line is DELIMITER + INSIGNIFICANT TAIL (SS28): only the leading run
 // of `%` is structural, so `%%% TODO` opens and `%%% end` closes.
 const COMMENT_FENCE = /^[ \t]*(%{3,})(.*)$/
+// The same fence, matched against a line's indent-free content rather than the
+// line: `[ \t]*` in front is what makes the pattern re-walk indentation an
+// enclosing container has already walked.
+const COMMENT_FENCE_BODY = /^(%{3,})(.*)$/
 
 const CONT_ROW = /^\+.*\|[ \t]*$/ // `+` replaces the leading pipe; must close with one
 const DELIM_CELL = /^ *:?-+:? *$/
@@ -803,7 +855,7 @@ function flattenPastCap(lines) {
 // single counter on `state` bounds the nesting uniformly (PART 26). The
 // counter is incremented on entry and decremented on exit (try/finally) so
 // sibling containers never accumulate depth.
-function parseBlocks(lines, state, top, inItem = false) {
+function parseBlocks(lines, state, top, inItem = false, meas = undefined) {
   state.blockDepth = (state.blockDepth ?? 0) + 1
   if (state.blockDepth > MAX_NESTING_DEPTH) {
     state.blockDepth--
@@ -821,17 +873,33 @@ function parseBlocks(lines, state, top, inItem = false) {
     return flattenPastCap(lines)
   }
   try {
-    return parseBlocksImpl(lines, state, top, inItem)
+    return parseBlocksImpl(lines, state, top, inItem, meas)
   } finally {
     state.blockDepth--
   }
 }
 
-function parseBlocksImpl(lines, state, top, inItem = false) {
+function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) {
   const blocks = []
   let i = 0
   const n = lines.length
   layoutWork.lineVisits += n
+
+  // Measurements for these lines, memoized per index and SEEDED by the
+  // enclosing container where it could derive them (carve#752). Without the
+  // seed each level re-walks the same leading whitespace, which is what made a
+  // nested document cost more than its bytes; with it the walk happens once
+  // per line for the whole document. A seeded entry of `null` means the
+  // container could not derive that one - a tab in the run, or a line it
+  // synthesized - so it is walked here, once.
+  const meas = seeded ?? new Array(n)
+  const ind = (idx) => {
+    const m = meas[idx]
+    if (m !== undefined && m !== null) return m
+    const line = lines[idx]
+    if (line === undefined) return undefined
+    return (meas[idx] = indentCols(line))
+  }
 
   const peekInterrupts = (idx) => {
     // PART 9 SS10: does lines[idx] interrupt an open paragraph?
@@ -867,7 +935,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
 
   while (i < n) {
     const line = lines[i]
-    if (isBlank(line)) {
+    if (ind(i).rest === '') { // isBlank, without re-walking the indent
       i++
       continue
     }
@@ -1124,7 +1192,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
             // is meaningful continuation whitespace (the engines preserve it), so
             // leave it intact -- only the LAZY (below-column) branch strips.
             const cc = cur.startsWith(LAZY)
-              ? cur.slice(LAZY.length).replace(/^[ \t]+/, '')
+              ? stripIndent(cur.slice(LAZY.length))
               : cur
             dt += '\n' + cc
             i++
@@ -1149,7 +1217,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
           // `:  ` never swallows the following flush-left block.
           let pullPending = CONT_MARKER.test(dm[1].trim())
           if (!pullPending) {
-            bodyLines.push(dm[1].replace(/^[ \t]+/, '').replace(/[ \t]+$/, ''))
+            bodyLines.push(stripIndent(dm[1]).replace(/[ \t]+$/, ''))
           }
           while (i < n) {
             const cur = lines[i] ?? ''
@@ -1187,7 +1255,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
               i = end
               continue
             }
-            if (foldablePlain(cur)) { bodyLines.push(cur.replace(/^[ \t]+/, '').replace(/[ \t]+$/, '')); i++; continue }
+            if (foldablePlain(cur)) { bodyLines.push(stripIndent(cur).replace(/[ \t]+$/, '')); i++; continue }
             break
           }
           node.items.push({ ddBlocks: bodyLines.length ? parseBlocks(bodyLines, state, false) : [] })
@@ -1373,6 +1441,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         // engine holds a literal `>bad`. PART 9 SS10 I1 says `>text` is prose,
         // not a quote marker, and an entry test that is stricter than the
         // consumption loop is how the two answers coexisted.
+        layoutWork.quoteStrips += 1
         const qm = QUOTE.exec(lines[i])
         if (qm) {
           inner.push(qm[1] ?? '')
@@ -1414,9 +1483,9 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
     }
 
     // --- lists ---
-    if (matchMarker(line)) {
+    if (matchMarkerAt(ind(i))) {
       const before = blocks.length
-      i = parseListRun(lines, i, blocks, state, peekInterrupts)
+      i = parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas)
       if (pending.length && blocks.length > before) flushAttrs(blocks[before])
       continue
     }
@@ -1461,7 +1530,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
         const f = FENCE.exec(lines[i])
         if (f && parseFenceInfo(f[2]) && hasCloser(lines, i)) break // I4: interrupts
       }
-      para.push(lines[i].replace(/^[ \t]+/, '').replace(/[ \t]+$/, ''))
+      para.push(stripIndent(lines[i]).replace(/[ \t]+$/, ''))
       i++
     }
     const pnode = { t: 'para', lines: para }
@@ -1506,7 +1575,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
             refImage[1] === ''
               ? para[0].slice(2, para[0].indexOf(']'))
               : refImage[1]
-          pnode.captionSrc = lines[j].replace(/^[ \t]+/, '').replace(/[ \t]+$/, '')
+          pnode.captionSrc = stripIndent(lines[j]).replace(/[ \t]+$/, '')
         }
         i = j + 1
       }
@@ -1593,10 +1662,10 @@ function takePulledBlockEnd(lines, start) {
 }
 
 // --- lists: PART 9 SS11 N1-N3, SS17 L1-L4, SS24 C3/C4 ----------------------
-function parseListRun(lines, i, blocks, state, peekInterrupts) {
+function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas) {
   const n = lines.length
   while (i < n) {
-    const head = matchMarker(lines[i])
+    const head = matchMarkerAt(ind(i))
     if (!head) break
     const list = {
       t: 'list',
@@ -1609,11 +1678,11 @@ function parseListRun(lines, i, blocks, state, peekInterrupts) {
     if (head.isOrdered) {
       list.ord = { delim: head.delim, dialects: head.dialects }
     }
-    i = collectItems(lines, i, list, state)
+    i = collectItems(lines, i, list, state, ind, meas)
     finalizeOrdered(list)
     blocks.push(list)
     // a marker-mismatch sibling list continues the run (SS11 N1)
-    if (i < n && matchMarker(lines[i])) continue
+    if (i < n && matchMarkerAt(ind(i))) continue
     break
   }
   return i
@@ -1621,10 +1690,24 @@ function parseListRun(lines, i, blocks, state, peekInterrupts) {
 
 function matchMarker(line) {
   if (line === undefined) return null
+  return matchMarkerAt(indentCols(line))
+}
+
+// The marker match, taken from a line's MEASUREMENT rather than from the line.
+//
+// `BULLET` and `ORDERED` lead with `([ \t]*)`, so running them on the raw line
+// re-walks the indentation the caller has usually just walked - twice per line
+// per level in the item collector, which was half the counted work on a deep
+// ladder. Run against `rest` that group matches empty and the remainder of the
+// pattern is anchored at exactly the same character, so the match is the same
+// match; the indent it would have reported is `col`, which the measurement
+// already carries.
+function matchMarkerAt(meas) {
+  if (meas === undefined) return null
+  const { col, rest: line } = meas
   let m = BULLET.exec(line)
   if (m && m[3] && m[3].replace(/[{} ]/g, '') !== '' && parseAttrList(m[3]) === null) m = null
   if (m) {
-    const { col } = indentCols(m[1])
     const whitespaceWidth = m[4].length
     return {
       indent: col,
@@ -1640,7 +1723,6 @@ function matchMarker(line) {
   m = ORDERED.exec(line)
   if (m && m[4] && m[4].replace(/[{} ]/g, '') !== '' && parseAttrList(m[4]) === null) m = null
   if (m) {
-    const { col } = indentCols(m[1])
     const dialects = classifyOrdered(m[2])
     if (dialects.length === 0) return null
     return {
@@ -1672,7 +1754,7 @@ function sameAxes(list, head) {
   return (head.task !== undefined) === list.task
 }
 
-function collectItems(lines, i, list, state) {
+function collectItems(lines, i, list, state, ind, meas) {
   const n = lines.length
   const baseIndent = matchMarker(lines[i]).indent
   while (i < n) {
@@ -1684,7 +1766,15 @@ function collectItems(lines, i, list, state) {
       list.ord.dialects = list.ord.dialects.filter((d) => heads.has(d.dialect))
     }
     let contentCol = head.indent + head.markerWidth
-    const itemLines = [head.text]
+    const itemLines = []
+    // Measurements for the body lines, carried to the item's own parse so it
+    // does not re-walk indentation this collector has already walked
+    // (carve#752). `null` means "not derivable here" - a line this collector
+    // synthesized, or one whose run held a tab - and the inner parse walks it
+    // once. Every push goes through `pushLine` so the two arrays cannot drift.
+    const itemMeas = []
+    const pushLine = (text, m = null) => { itemLines.push(text); itemMeas.push(m) }
+    pushLine(head.text)
     const item = { }
     if (head.attrs && head.attrs.replace(/[{} ]/g, '') !== '') item.attrs = head.attrs
     if (list.task) item.checked = /^[xX]$/.test(head.task)
@@ -1738,19 +1828,21 @@ function collectItems(lines, i, list, state) {
     let attachNext = false
     if (!list.task && head.text.trim() === '+') {
       itemLines.length = 0
+      itemMeas.length = 0
       attachNext = true
       closePara()
     }
     const attachFlushLeft = () => {
-      itemLines.push('')
+      pushLine('', BLANK_MEAS)
       while (
-        i < n && !isBlank(lines[i]) && !CONT_MARKER.test(lines[i]) &&
-        !(matchMarker(lines[i])?.indent === baseIndent)
+        i < n && ind(i).rest !== '' && !CONT_MARKER.test(lines[i]) &&
+        !(matchMarkerAt(ind(i))?.indent === baseIndent)
       ) {
-        itemLines.push(lines[i])
+        // attached VERBATIM, so the line keeps the measurement it has here
+        pushLine(lines[i], ind(i))
         i++
       }
-      itemLines.push('')
+      pushLine('', BLANK_MEAS)
       closePara()
     }
     if (attachNext) attachFlushLeft()
@@ -1758,7 +1850,8 @@ function collectItems(lines, i, list, state) {
       const line = lines[i]
       // `+` at the item's MARKER column attaches ONE following flush-left
       // block to this item (SS17 L3/L4)
-      if (CONT_MARKER.test(line) && indentCols(line).col === baseIndent) {
+      const lm = ind(i)
+      if (CONT_MARKER.test(line) && lm.col === baseIndent) {
         i++
         attachFlushLeft()
         continue
@@ -1767,24 +1860,25 @@ function collectItems(lines, i, list, state) {
         // a lazy line from an OUTER context propagates to the deepest open
         // paragraph (PART 9 SS10 I2)
         if (!openPara) break
-        itemLines.push(line)
+        pushLine(line, lm)
         i++
         continue
       }
-      if (isBlank(line)) {
+      if (lm.rest === '') {
         // A blank line INSIDE an open fenced code block is verbatim content:
         // keep it in the item body and stay tight (no looseness decision).
         if (fence) {
-          itemLines.push('')
+          pushLine('', BLANK_MEAS)
           i++
           continue
         }
         // decide with the NEXT content line
         let j = i + 1
-        while (j < n && isBlank(lines[j])) j++
+        while (j < n && ind(j).rest === '') j++
         if (j >= n) { i = j; break }
-        const { col } = indentCols(lines[j])
-        const nm = matchMarker(lines[j])
+        const jm = ind(j)
+        const { col } = jm
+        const nm = matchMarkerAt(jm)
         // A CONTINUATION MARKER survives the blank. §17 L3/L4 place the marker
         // at the item's marker column, and nothing there makes a preceding
         // blank line matter - but this branch decided the blank by what the
@@ -1798,7 +1892,7 @@ function collectItems(lines, i, list, state) {
         // render `- a` / blank / `+` / `c` exactly as `- a` / `+` / `c`, so
         // treating the blank as a separator here would invent a difference
         // none of them makes.
-        if (CONT_MARKER.test(lines[j]) && indentCols(lines[j]).col === baseIndent) {
+        if (CONT_MARKER.test(lines[j]) && jm.col === baseIndent) {
           i = j + 1
           attachFlushLeft()
           continue
@@ -1816,7 +1910,7 @@ function collectItems(lines, i, list, state) {
             // the SUB-LIST, not this item -- a blank inside the sub-list must
             // not loosen this (ancestor) item (carve#322). Attach, stay tight;
             // the recursive parse of itemLines decides the sub-list's looseness.
-            itemLines.push('')
+            pushLine('', BLANK_MEAS)
             closePara()
             i = j
             continue
@@ -1824,7 +1918,7 @@ function collectItems(lines, i, list, state) {
           const dedented = dedent(lines[j], contentCol)
           if (opensSubBlock(dedented)) {
             // sub-BLOCK after a blank: attaches, stays tight (SS17 L2)
-            itemLines.push('')
+            pushLine('', BLANK_MEAS)
             closePara()
             i = j
             continue
@@ -1846,7 +1940,7 @@ function collectItems(lines, i, list, state) {
             // + `  %% c` rendered `<li><p>a</p></li>` - an item wrapped because
             // of a line that produces no output at all. carve-rs renders every
             // one of these tight; carve-js does for two of the three.
-            itemLines.push('')
+            pushLine('', BLANK_MEAS)
             closePara()
             blankBeforeInvisible = true
             // §17 L1b: the invisible line is not a separator either, so the
@@ -1861,7 +1955,7 @@ function collectItems(lines, i, list, state) {
             continue
           }
           // a second PARAGRAPH inside the item -> loose (SS17 L1)
-          itemLines.push('')
+          pushLine('', BLANK_MEAS)
           list.tight = false
           startPara()
           i = j
@@ -1879,7 +1973,7 @@ function collectItems(lines, i, list, state) {
         if (nm && nm.indent >= contentCol) {
           // sub-list after a blank: attaches, stays tight (SS17 L2)
           if (subCol < 0) subCol = nm.indent + nm.markerWidth
-          itemLines.push('')
+          pushLine('', BLANK_MEAS)
           closePara()
           i = j
           continue
@@ -1887,17 +1981,20 @@ function collectItems(lines, i, list, state) {
         i = j
         break
       }
-      const { col } = indentCols(line)
-      const nm = matchMarker(line)
+      const { col } = lm
+      const nm = matchMarkerAt(lm)
       if (col >= contentCol) {
-        const dedented = dedent(line, contentCol)
+        const dd = dedentMeasured(lm, line, contentCol)
+        const dedented = dd.text
+        // The body line's own measurement, derived from this one rather than
+        // re-walked, and handed to the item's parse below (carve#752).
+        const dmeas = dd.meas ?? indentCols(dedented)
         if (
           pendingSeparation &&
-          !isBlank(dedented) &&
+          dmeas.rest !== '' &&
           !opensSubBlock(dedented) &&
-          !matchMarker(dedented) &&
-          !COMMENT_LINE.test(dedented) &&
-          !COMMENT_FENCE.test(dedented) &&
+          !matchMarkerAt(dmeas) &&
+          !dmeas.rest.startsWith('%%') &&
           !FOOTNOTE_DEF.test(dedented) &&
           !LINK_DEF.test(dedented) &&
           !ABBR_DEF.test(dedented) &&
@@ -1916,7 +2013,7 @@ function collectItems(lines, i, list, state) {
         // parse - `parseListRun` consumes it for a sub-list whose marker
         // column it sits at, and the block reader below leaves every other one
         // as text (carve#863).
-        itemLines.push(dedented)
+        pushLine(dedented, dmeas)
         // Track an open fenced code block (its matching closer clears it) so the
         // blank-line branch above knows an interior blank is fence content.
         if (fence) {
@@ -1947,7 +2044,7 @@ function collectItems(lines, i, list, state) {
           else openParaWith(dedented)
         }
         else if (dedented[0] === '|' || CONT_ROW.test(dedented)) closePara()
-        else if (matchMarker(dedented)) startPara()
+        else if (matchMarkerAt(dmeas)) startPara()
         // A quote opens a paragraph only if it CARRIES one. A bare `>` is an
         // empty quote, so there is nothing for a later flush-left line to fold
         // into, and the item closes instead -- PART 1 S4's NO OPEN PARAGRAPH,
@@ -1958,7 +2055,7 @@ function collectItems(lines, i, list, state) {
           if ((QUOTE.exec(dedented)[1] ?? '').trim() !== '') startPara()
           else closePara()
         }
-        else if (!isBlank(dedented)) openParaWith(dedented)
+        else if (dmeas.rest !== '') openParaWith(dedented)
         i++
         continue
       }
@@ -1975,7 +2072,7 @@ function collectItems(lines, i, list, state) {
       if (nm && nm.indent < contentCol && nm.indent > baseIndent && openPara && itemLines.length > 0) {
         // a marker BELOW the content column folds as lazy item text
         // (PART 9 SS24 C3; list markers never interrupt, SS10 I2)
-        itemLines.push(LAZY + line.replace(/^[ \t]+/, ''))
+        pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
         i++
         continue
       }
@@ -2000,17 +2097,20 @@ function collectItems(lines, i, list, state) {
       // agrees. Breaking rather than declining to claim the line matters:
       // falling through would fold the fence as text and make a comment
       // VISIBLE, the one outcome it may never have.
-      if (!nm && COMMENT_FENCE.test(line) && !/^[ \t]/.test(line) && itemLines.length > 0) {
+      if (!nm && COMMENT_FENCE_BODY.test(lm.rest) && lm.col === 0 && itemLines.length > 0) {
         break
       }
-      if (!nm && COMMENT_LINE.test(line) && itemLines.length > 0) {
+      if (!nm && lm.rest.startsWith('%%') && itemLines.length > 0) {
         // KEEP ONE COLUMN of the original indentation. Stripping it entirely
         // told the item's own parse that a line indented in the source had
         // been written flush left, and the rule above cannot then tell an
         // authored column-0 fence from one an enclosing dedent had clamped -
         // corpus 192 is parsed twice, once with ` %%% c` and once with the
         // stripped copy.
-        itemLines.push(/^[ \t]/.test(line) ? ' ' + line.replace(/^[ \t]+/, '') : line)
+        pushLine(
+          lm.col > 0 ? ' ' + lm.rest : line,
+          lm.col > 0 ? { col: 1, rest: lm.rest, tabs: false } : lm,
+        )
         i++
         continue
       }
@@ -2041,19 +2141,19 @@ function collectItems(lines, i, list, state) {
       // A definition BELOW every open content column is untouched - it never
       // reaches column 0 in any collector, so it still folds as text (corpus
       // 183).
-      if (!nm && indentCols(line).col === 0 && (FOOTNOTE_DEF.test(line) || LINK_DEF.test(line))) break
+      if (!nm && lm.col === 0 && (FOOTNOTE_DEF.test(line) || LINK_DEF.test(line))) break
       if (!nm && openPara && itemLines.length > 0 && !startsVisibleBlock(line) && !isTableRow(line) && !COLON_FENCE.test(line) && !(FENCE.test(line) && hasCloser(lines, i))) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/
         // heading does via startsVisibleBlock -- FENCE only matches at column 0,
         // so an indented (below-content) fence still folds as lazy text.
-        itemLines.push(LAZY + line.replace(/^[ \t]+/, ''))
+        pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
         i++
         continue
       }
       break
     }
-    item.blocks = parseBlocks(itemLines, state, false, true)
+    item.blocks = parseBlocks(itemLines, state, false, true, itemMeas)
     list.items.push(item)
   }
   return i
@@ -2078,9 +2178,42 @@ function dedent(line, cols) {
   // (carve-js#767, carve-php#890 - both engines had this exact bug, and so did
   // this oracle).
   layoutWork.scan += i
-  layoutWork.copy += (col > cols ? col - cols : 0) + line.length - i
-  if (col > cols) return ' '.repeat(col - cols) + line.slice(i)
-  return line.slice(i)
+  layoutWork.views += 1
+  if (col > cols) {
+    layoutWork.pad += col - cols
+    return ' '.repeat(col - cols) + line.slice(i)
+  }
+  return i === 0 ? line : line.slice(i)
+}
+
+// `dedent` plus the body line's own measurement, DERIVED rather than re-walked.
+//
+// This is the whole of carve#752 in the oracle. A line at depth `d` is handed
+// to `d` enclosing containers, and each one used to re-walk its leading run to
+// find out where its content starts - so the walk cost `O(depth)` per line per
+// level, cubic in depth for a document that is quadratic in bytes. The
+// enclosing container already knows the answer: it just removed `cols` columns
+// from a line whose column it had measured, so the body line stands at
+// `col - cols` and its content is the same string. Deriving that is O(1) and
+// the walk happens once for the document rather than once per level.
+//
+// The arithmetic `col - cols` is exact in two cases and no others:
+//
+//   - the run is SPACES, where a column is a character; or
+//   - `cols` is a multiple of 4, where every tab stop in the run shifts by
+//     exactly `cols` (a stop is `c + (4 - c % 4)`, so shifting `c` by a
+//     multiple of 4 shifts the stop with it) and no tab can straddle the
+//     boundary, since a tab always lands ON a multiple of 4.
+//
+// Otherwise the residual re-materialized as spaces moves every later stop on
+// the line - `\t\tx` minus two columns reaches column 4, not column 6 - and the
+// body line is measured the old way, once, on first use. That case is
+// deliberately left superlinear rather than approximated: a wrong column is a
+// wrong parse, and a tab-indented ladder is the shape this does not yet cover.
+function dedentMeasured(m, line, cols) {
+  const text = dedent(line, cols)
+  if (m.tabs && cols % 4 !== 0) return { text, meas: null }
+  return { text, meas: { col: m.col > cols ? m.col - cols : 0, rest: m.rest, tabs: m.tabs } }
 }
 
 function finalizeOrdered(list) {
