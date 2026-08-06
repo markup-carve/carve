@@ -13,6 +13,7 @@ import {
   UNKNOWN_PROPERTY_PROBE,
   countProbes,
   injectUnknownProperty,
+  unknownPropertyVerdict,
 } from '../scripts/spec/unknown-property-probe.mjs'
 
 const tree = () => ({
@@ -46,7 +47,9 @@ test('pos and attrs are not nodes, so they are not probed', () => {
 })
 
 test('a dropped property counts as dropped', () => {
-  // What carve-rs does. The runner must read this as a pass.
+  // What carve-rs used to do. The COUNT is what these helpers report; §11 makes
+  // the runner treat an accepted-and-dropped payload as a finding all the same,
+  // because refusing is now the only conformant answer.
   const doc = tree()
   injectUnknownProperty(doc)
   const stripped = JSON.parse(
@@ -72,4 +75,34 @@ test('the probe name is not a field the schema declares', () => {
   // handling that field correctly and report it as a leak.
   assert.match(UNKNOWN_PROPERTY_PROBE, /^zz/)
   assert.ok(!/^(id|href|src|number|ref|rawRef|value|type)$/.test(UNKNOWN_PROPERTY_PROBE))
+})
+
+test('refusing the payload is the conformant answer', () => {
+  // PART 12 §11. Nothing else passes.
+  assert.equal(unknownPropertyVerdict({ refused: true, injected: 5, echoed: 0 }), null)
+})
+
+test('echoing the property is a finding, and says how much', () => {
+  const verdict = unknownPropertyVerdict({ refused: false, injected: 5, echoed: 3 })
+  assert.match(verdict, /echoed an unknown property on 3 of 5/)
+  assert.match(verdict, /additionalProperties/)
+})
+
+test('accepting and dropping is a finding too', () => {
+  // The half §11 decided. This branch is why the verdict lives here: the
+  // runner's copy could only be reached by having an engine that misbehaves,
+  // so nothing exercised the decision itself - and a check nothing exercises
+  // is the shape of every defect this repo keeps finding.
+  const verdict = unknownPropertyVerdict({ refused: false, injected: 5, echoed: 0 })
+  assert.match(verdict, /accepted a tree with an unknown property on 5 node\(s\)/)
+  assert.match(verdict, /typed refusal/)
+})
+
+test('the three answers are distinguishable', () => {
+  // The control on the two above: one message for both non-conformant answers
+  // would satisfy each match while telling a maintainer nothing about which
+  // engine did what.
+  const echoed = unknownPropertyVerdict({ refused: false, injected: 5, echoed: 3 })
+  const dropped = unknownPropertyVerdict({ refused: false, injected: 5, echoed: 0 })
+  assert.notEqual(echoed, dropped)
 })

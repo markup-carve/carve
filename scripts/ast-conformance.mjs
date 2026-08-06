@@ -47,6 +47,7 @@ import { checkPositions } from './spec/ast-positions.mjs'
 import { checkReferenceFields } from './spec/ast-references.mjs'
 import {
   UNKNOWN_PROPERTY_PROBE,
+  unknownPropertyVerdict,
   countProbes,
   injectUnknownProperty,
 } from './spec/unknown-property-probe.mjs'
@@ -1001,26 +1002,28 @@ function checkUnknownPropertyIngest(name, doc, findings, reserialize) {
   const injected = injectUnknownProperty(payload).n
   if (injected === 0) return
   let out
+  let refused = false
   try {
     out = reserialize(JSON.stringify(payload))
   } catch {
-    // Refusing the payload is conformant: nothing invalid is published.
-    return
+    refused = true
   }
-  let round
-  try {
-    round = JSON.parse(out)
-  } catch {
-    findings.push(`${name}: ingest of a tree with an unknown property re-serialized to non-JSON`)
+  let echoed = 0
+  if (!refused) {
+    let round
+    try {
+      round = JSON.parse(out)
+    } catch {
+      findings.push(`${name}: ingest of a tree with an unknown property re-serialized to non-JSON`)
 
-    return
+      return
+    }
+    echoed = countProbes(round)
   }
-  const echoed = countProbes(round)
-  if (echoed === 0) return
-  findings.push(
-    `${name}: ingest echoed an unknown property on ${echoed} of ${injected} node(s), ` +
-      'so the re-published tree is invalid per additionalProperties: false',
-  )
+  // The verdict lives in the probe module, where a test can drive every branch
+  // without needing an engine that misbehaves.
+  const verdict = unknownPropertyVerdict({ refused, injected, echoed })
+  if (verdict !== null) findings.push(`${name}: ${verdict}`)
 }
 
 function checkIngestIdentity(name, doc, findings, reserialize) {

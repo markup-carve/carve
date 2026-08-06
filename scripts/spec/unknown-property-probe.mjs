@@ -2,16 +2,17 @@
  * A probe for the one thing an ingesting engine may never do.
  *
  * PART 12 pins the wire shape with `additionalProperties: false`. The engines
- * disagree about what to do with a property the schema does not name - carve-php
- * refuses the payload, carve-rs drops it, carve-js echoes it back
- * (carve-js#709) - and which of refuse-or-drop is right is open for §9
- * (carve#743).
+ * used to disagree about what to do with a property the schema does not name -
+ * carve-php refused the payload, carve-rs dropped it, carve-js echoed it back
+ * (carve-js#709) - and this probe was written while that was open, so it only
+ * refused to accept the ECHO.
  *
- * These helpers do not touch that question. Refusing is fine and so is dropping.
- * What is never fine is ACCEPTING and then re-publishing, because the result is
- * a tree the format rejects and the consumer that reads it and passes it on has
- * no way to know. Stated that way the bar follows from the schema contract that
- * already exists, so it can be measured before the decision lands.
+ * §11 has since decided it: an ingest MUST REFUSE, with a typed error naming
+ * the property and its path. Not a silent drop, for the reason §9(b) gives
+ * about depth - the caller is told the tree was accepted and learns nothing
+ * about what went missing. So the runner now reports a drop too, and these
+ * helpers stayed the same: they measure what came back, and the runner decides
+ * what that means.
  *
  * Kept here as pure functions so tests can drive them without an engine: the
  * version inside the runner could only be exercised by having an engine that
@@ -58,4 +59,33 @@ export function countProbes(node) {
   walk(node)
 
   return total
+}
+
+/**
+ * What an ingest's answer to the probe means, as a finding or `null`.
+ *
+ * SEPARATED FROM THE RUNNER on purpose. The runner's copy could only be reached
+ * by having an engine that misbehaves, which is the thing being looked for - so
+ * the branch that decides "this is a finding" was the one part of the apparatus
+ * nothing exercised. Now the runner measures and this decides, and a test can
+ * drive every verdict without an engine.
+ *
+ * `refused` means the ingest threw. That is the conformant answer and now the
+ * only one: PART 12 §11 requires a typed refusal naming the property, and rules
+ * out the silent drop for the reason §9(b) gives about depth - the caller is
+ * told the tree was accepted and learns nothing about what went missing.
+ */
+export function unknownPropertyVerdict({ refused, injected, echoed }) {
+  if (refused) return null
+  if (echoed > 0) {
+    return (
+      `ingest echoed an unknown property on ${echoed} of ${injected} node(s), ` +
+      'so the re-published tree is invalid per additionalProperties: false (PART 12 §11)'
+    )
+  }
+
+  return (
+    `ingest accepted a tree with an unknown property on ${injected} node(s) and ` +
+    'dropped it silently; §11 requires a typed refusal naming the property'
+  )
 }
