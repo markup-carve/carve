@@ -110,6 +110,14 @@ test('formatting a corpus document settles on the first pass', () => {
  * `.fmt` files existed for that and were read by nothing (carve#671). This
  * reads them for the pinned carve-js build; the engines need the same check
  * against their own writers, which is the other half of that issue.
+ *
+ * That other half is now `scripts/fmt-fixture-claims.mjs` (carve#841), which
+ * runs the same fixtures against carve-js, carve-rs and carve-php and gates in
+ * the conformance workflow, where the sibling checkouts are provisioned. Both
+ * are wanted: this one runs on every PR against the build this repo pins, that
+ * one cannot run per-PR and is the only thing that can see a writer defect
+ * sparing carve-js. A new fixture belongs to both, and adding it here is enough
+ * - that checker globs the same directory.
  */
 const pinned = documents
   .map(({ slug, source }) => {

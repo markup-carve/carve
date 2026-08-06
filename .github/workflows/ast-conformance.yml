@@ -222,6 +222,28 @@ jobs:
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run degradation:check
+
+      # A `tests/corpus/<slug>.fmt` file is PART 11's canonical form for one
+      # document - the exact source every conforming writer must produce for it.
+      # tests/corpus-fmt-roundtrip.test.mjs reads those fixtures through the
+      # single carve-js build package.json pins, so a writer defect that spares
+      # carve-js was invisible (carve#841): at carve-php ef28bbf, `fmt` on corpus
+      # 228 hoisted a footnote definition out of the list item that held it,
+      # while carve-js and carve-rs wrote it back where the author put it.
+      #
+      # The step above it covers PART 11 §1 - the SEMANTIC invariants, which
+      # admit latitude in spelling - for all three engines already. This covers
+      # the remaining question a .fmt fixture exists to answer: which of the
+      # spellings that satisfy §1 is the canonical one. For that, the bytes are
+      # the property, which is why this compares bytes where the degradation
+      # checker above deliberately does not.
+      - name: Canonical form, in every engine
+        if: always()
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run fmt:check
       # tests/profile-fixtures.json is the shared profile battery: carve-js and
       # carve-rs assert their profile output against it, and it is GENERATED
       # from carve-php by a command documented in a comment at the top of
