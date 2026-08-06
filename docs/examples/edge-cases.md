@@ -11983,8 +11983,11 @@ definition stands; a trailing NO-BREAK SPACE, EN QUAD or FORM FEED is content
 under that same ruling, so a line ending in one is not a definition. A trailing
 ZERO-WIDTH character is a third answer again: U+200B and U+FEFF are not
 whitespace at all, so they never reach the line ending -- `link_destination`
-reads them, the definition stands, and the character is in the href. Those
-shapes are pinned in
+reads them, the definition stands, and the character is in the href. The
+trailing attribute block is peeled by a scan that trims the line ending first,
+so that scan has to trim the SAME run the anchor accepts, or the same character
+answers one way with a block on the line and another without one. Those shapes
+are pinned in
 `tests/separator-role-split.test.mjs` rather than here, because a trailing
 whitespace run in a reviewable Markdown source file is one editor save from
 vanishing -- and because what a document does with trailing whitespace is its

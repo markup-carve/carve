@@ -1127,6 +1127,41 @@ for (const [name, src, isDefinition] of LINE_ENDING) {
   })
 }
 
+// THE ENDING RUN AND THE ATTRIBUTE SPLITTER HAVE TO AGREE.
+//
+// The trailing attribute block is peeled by a scan that trims the line ending
+// first, so that scan runs BEFORE the anchor sees the line. While it trimmed
+// `\s` and the anchor accepted `[ \t]`, one line-ending question had two
+// answers: `[a]: /u {.c}<NBSP>` resolved as a definition because the splitter
+// had already eaten the NBSP, while the bare `[a]: /u<NBSP>` did not. Same
+// character, same position, opposite answers, decided by whether the line
+// happened to carry an attribute block.
+for (const [name, ch, isDefinition] of [
+  ['a space', ' ', true],
+  ['a tab', '\t', true],
+  ['a no-break space', '\u00a0', false],
+  ['an en quad', '\u2000', false],
+  ['a form feed', '\f', false],
+  // Not a line-ending question: with a zero-width character after the block,
+  // the block no longer ENDS the line, so `[space, attributes]` does not match
+  // and the leftover makes the production fail. The anchor, not the ending.
+  ['a byte order mark', '\ufeff', false],
+  ['a zero-width space', '\u200b', false],
+]) {
+  test(`the attribute splitter trims the same run the anchor accepts: ${name}`, () => {
+    const src = `[a]: /u {.c}${ch}\n\n[a][]\n`
+    const resolved = renderDoc(parse(src)).includes('<a href="/u" class="c">')
+    assert.equal(
+      resolved,
+      isDefinition,
+      `the line ending was read one way with an attribute block and another\n` +
+        `  without one.\n  source: ${JSON.stringify(src)}\n` +
+        `  The splitter runs FIRST, so a wider trim there hides the character from\n` +
+        `  the anchor. Both are \`whitespace\` - a space or a tab (carve#911).`,
+    )
+  })
+}
+
 // The zero-width characters, pinned as what they are: DESTINATION content.
 //
 // `unicode_url_char` is "any non-whitespace" and the grammar says so explicitly
