@@ -26,6 +26,34 @@ export class Refuse extends Error {
 // pathologically nested document REFUSES instead of overflowing the JS stack.
 const MAX_NESTING_DEPTH = 200
 
+/// Counted character work in the indentation machinery (carve#752).
+///
+/// Every container hands its body to a nested parse, so a line at depth `d` is
+/// visited by `d` enclosing containers. What that costs per visit is what this
+/// counts: the columns an indent scanner actually walks, and the characters a
+/// stripper actually materializes. Loop indices, never string lengths.
+///
+/// It is a COUNT and not a clock deliberately. A wall-clock bound passes at
+/// every complexity on a fast enough machine, which is the class of check that
+/// cannot fail catalogued in carve#755; and this repository family has twice
+/// recorded that a timing RATIO cannot separate linear from superlinear on a
+/// shared machine (carve-js `test/writer-deep-list-perf.test.ts` and
+/// `test/perf-regression.test.ts`). Counts are identical run to run under any
+/// load, which is what makes tests/nested-container-rescan.test.mjs a guard
+/// rather than a coin toss.
+///
+/// `scan` is the measure half (the indent gate and the stripper's own walk);
+/// `copy` is the materialize half (every character of a body line written into
+/// a fresh string). `lineVisits` is the container model itself - one per line
+/// per enclosing level - and is the floor neither half can go below.
+export const layoutWork = { scan: 0, copy: 0, lineVisits: 0 }
+
+export function resetLayoutWork() {
+  layoutWork.scan = 0
+  layoutWork.copy = 0
+  layoutWork.lineVisits = 0
+}
+
 // Content after the marker+space must carry at least one non-ASCII-whitespace
 // character: `#  ` / `#   ` (marker + whitespace only) is NOT a heading, exactly
 // like a caption. A leading tab is content (`# \tx` is a heading with `\tx`).
@@ -176,6 +204,8 @@ function indentCols(line) {
     else if (ch === '\t') col = (Math.floor(col / 4) + 1) * 4
     else break
   }
+  layoutWork.scan += i
+  layoutWork.copy += line.length - i
   return { col, rest: line.slice(i) }
 }
 
@@ -801,6 +831,7 @@ function parseBlocksImpl(lines, state, top, inItem = false) {
   const blocks = []
   let i = 0
   const n = lines.length
+  layoutWork.lineVisits += n
 
   const peekInterrupts = (idx) => {
     // PART 9 SS10: does lines[idx] interrupt an open paragraph?
@@ -2046,6 +2077,8 @@ function dedent(line, cols) {
   // content column, where a block opener is text rather than a nested block
   // (carve-js#767, carve-php#890 - both engines had this exact bug, and so did
   // this oracle).
+  layoutWork.scan += i
+  layoutWork.copy += (col > cols ? col - cols : 0) + line.length - i
   if (col > cols) return ' '.repeat(col - cols) + line.slice(i)
   return line.slice(i)
 }
