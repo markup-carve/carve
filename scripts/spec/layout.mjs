@@ -311,7 +311,7 @@ function alphaToInt(s) {
 // Does this line OPEN an ordered item? `ORDERED` alone answers on shape, and
 // its optional attribute block is not validated there - so `.{+a+} text`, whose
 // payload yields no attributes, matched as a marker at the boundary checks below
-// while `matchMarker` rejected it and parsed the line as prose. The two now
+// while `matchMarkerAt` rejected it and parsed the line as prose. The two now
 // agree: an abutting block that yields nothing is not part of a marker (§15 A8),
 // whatever the marker's value.
 function isOrderedMarkerLine(line) {
@@ -1497,7 +1497,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
     // Every position where SS17 L3 makes it one is consumed before this: the
     // OUTER list's marker column by the parseListRun that collected this body,
     // and a SUB-LIST's marker column by that sub-list's own parseListRun,
-    // which runs from the matchMarker branch above. What is left is a `+` the
+    // which runs from the marker branch above. What is left is a `+` the
     // author wrote at the item's CONTENT column, which the dedent moved to
     // column 0 - so consuming it here read the content column as a marker
     // column and swallowed a marker that never existed. It is ordinary text:
@@ -1517,8 +1517,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
       }
       if (para.length > 0 && CAPTION.test(lines[i])) break // a caption ends the block (SS4); an orphan `^ ` line is literal text
       if (lines[i][0] === '{' && tryAttrLine(lines, i)) break // SS15 A1 / SS10 I5
-      if (COMMENT_LINE.test(lines[i]) || COMMENT_FENCE.test(lines[i])) break // SS10 I5
-      if (inItem && para.length > 0 && matchMarker(lines[i])) break // SS24 C3
+      if (ind(i).rest.startsWith('%%')) break // SS10 I5 (comment line or fence)
+      if (inItem && para.length > 0 && matchMarkerAt(ind(i))) break // SS24 C3
       if (para.length > 0) {
         // definitions interrupt and are consumed (SS10 I5)
         if (LINK_DEF.test(lines[i]) || FOOTNOTE_DEF.test(lines[i]) || (top && ABBR_DEF.test(lines[i]))) break
@@ -1688,10 +1688,6 @@ function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas) {
   return i
 }
 
-function matchMarker(line) {
-  if (line === undefined) return null
-  return matchMarkerAt(indentCols(line))
-}
 
 // The marker match, taken from a line's MEASUREMENT rather than from the line.
 //
@@ -1765,9 +1761,9 @@ function sameAxes(list, head) {
 
 function collectItems(lines, i, list, state, ind, meas) {
   const n = lines.length
-  const baseIndent = matchMarker(lines[i]).indent
+  const baseIndent = matchMarkerAt(ind(i)).indent
   while (i < n) {
-    const head = matchMarker(lines[i])
+    const head = matchMarkerAt(ind(i))
     if (!head || head.indent !== baseIndent || !sameAxes(list, head)) break
     if (list.ord && list.items.length > 0) {
       // narrow the dialect set per item (SS11 N2)
