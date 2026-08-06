@@ -318,7 +318,20 @@ CarveCore {
   // deliberately, and unlike a marker separator, which is a literal space.
   // This file said `" " | "\n"`, so the two normative files answered one
   // production two ways; all three engines follow the EBNF (carve#878).
-  attrSp     = " " | "\t" | "\n"
+  // NO NEWLINE. `attributes` pads and separates with `opt_ws = {whitespace}`,
+  // which grammar.ebnf annotates "spaces/tabs only, no line breaks". The
+  // line-spanning form is a different production: `block_attributes` uses
+  // `attr_separator = (whitespace | continuation), opt_ws`, and `continuation`
+  // is where a newline is admitted. This file owns the INLINE layer, so a
+  // newline here made `*x*{.a\n.b}` an attribute block in the oracle alone -
+  // all three engines leave it literal text (carve#878).
+  attrSp     = " " | "\t"
+  // The LINE-SPANNING form, `block_attributes` in grammar.ebnf: its separator
+  // is `attr_separator = (whitespace | continuation), opt_ws`, and
+  // `continuation` is a single line break. Only a standalone attribute LINE
+  // takes this; an inline block uses `attrs` above and stops at the newline.
+  blockAttrs = "{" battrSp* attrItem (battrSp+ attrItem)* battrSp* "}"
+  battrSp    = " " | "\t" | "\n"
   attrItem   = idAttr | classAttr | kvAttr | boolAttr
   idAttr     = "#" ident
   classAttr  = "." ident
