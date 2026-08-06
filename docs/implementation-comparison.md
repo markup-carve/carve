@@ -17,30 +17,30 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>634 / 638</strong>
+    <strong>639 / 640</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>635 / 638</strong>
+    <strong>640 / 640</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>636 / 638</strong>
+    <strong>640 / 640</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>6</strong>
+    <strong>4</strong>
     <span>cross-implementation diffs</span>
   </div>
 </div>
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `2f4bb02` | `634 / 638` | `4` | `0` | `2.57` |
-| JS | `a89017d` | `635 / 638` | `3` | `0` | `61.46` |
-| PHP | `f3eec4f` | `636 / 638` | `2` | `0` | `56.84` |
+| Rust | `93b0178` | `639 / 640` | `1` | `0` | `3.12` |
+| JS | `c9d8ef1` | `640 / 640` | `0` | `0` | `83.08` |
+| PHP | `a0d39be` | `640 / 640` | `0` | `0` | `73.82` |
 
-Spec commit: `b539d14`, plus the corpus case this change adds
+Spec commit: `d8dd824`, plus the corpus case this change adds
 
 The engines have caught up on the clauses that were ahead of them in the last
 snapshot: the synthesized-backlink cases (carve#799) and the collected-definition
@@ -399,30 +399,22 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=638 targets=html,markdown,plain,carve,ansi
-rust: pass=646/650 mismatch=4 error=0 skipped=0 runs=3190 avg_ms=2.57
-  mismatch: carve 16-reference-link-4
-  mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
-  mismatch: html 226-a-definition-attached-by-a-continuation-marker-is-collected-and-the-item-keeps-no-trace
+profile=default/no-opt-in corpus=core corpus_pairs=640 targets=html,markdown,plain,carve,ansi
+rust: pass=651/652 mismatch=1 error=0 skipped=0 runs=3200 avg_ms=3.12
   mismatch: html 228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block
-  mismatching documents: 4
-js: pass=647/650 mismatch=3 error=0 skipped=0 runs=3190 avg_ms=61.46
-  mismatch: carve 16-reference-link-4
-  mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
-  mismatch: html 228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block
-  mismatching documents: 3
-php: pass=648/650 mismatch=2 error=0 skipped=0 runs=3190 avg_ms=56.84
-  mismatch: carve 16-reference-link-4
-  mismatch: carve 195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column
-  mismatching documents: 2
-cross_impl_diffs=6
+  mismatching documents: 1
+js: pass=652/652 mismatch=0 error=0 skipped=0 runs=3200 avg_ms=83.08
+  mismatching documents: 0
+php: pass=652/652 mismatch=0 error=0 skipped=0 runs=3200 avg_ms=73.82
+  mismatching documents: 0
+cross_impl_diffs=4
 
 Target agreement (implementations compared against each other)
-html: compared=638 diffs=2 errors=0 fixtures=yes
-markdown: compared=638 diffs=0 errors=0 fixtures=1
-plain: compared=638 diffs=0 errors=0 fixtures=1
-carve: compared=638 diffs=4 errors=0 fixtures=10
-ansi: compared=638 diffs=0 errors=0 fixtures=none
+html: compared=640 diffs=1 errors=0 fixtures=yes
+markdown: compared=640 diffs=0 errors=0 fixtures=1
+plain: compared=640 diffs=0 errors=0 fixtures=1
+carve: compared=640 diffs=3 errors=0 fixtures=10
+ansi: compared=640 diffs=0 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix

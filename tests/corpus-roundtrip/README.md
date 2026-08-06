@@ -76,6 +76,31 @@ means the engine matches the spec, not that the spec was written down from the
 engine. The other two engines still over-escape; these bytes are what they are
 measured against.
 
+## 11-two-footnotes-in-source-order
+
+Not an escaping case. §7 orders collected definitions by source position and
+PART 11 §6 binds the writer to the order the tree holds, and nothing here pinned
+it: every fixture had at most one definition.
+
+The cost showed up in all three engines at once (carve#787). Each writer used a
+FIXED order - carve-js and carve-rs appended footnotes last, carve-rs also
+sorted them by label, carve-php emitted them first - and each looked correct on
+exactly the documents whose source order happened to match its rule. The corpus
+had one shape (`202-a-definition-on-a-footnote-body-s-continuation-line-is-
+collected`, footnote written first), so footnotes-first passed there for as long
+as it existed.
+
+Two footnotes written `[^b]` then `[^a]` separate the rules with nothing else in
+play: source order says `[^b]` first, label order says `[^a]`, and position is
+the only thing that distinguishes them.
+
+The MIRROR shape - a link definition written before a footnote - belongs here
+too and is not, because the pinned build predates carve#642 and inlines the
+resolved reference, so its fmt output drops the definition entirely. It lives in
+the corpus instead (`a link definition written before a footnote stays before
+it`), where `compare:impls` checks the three engines against each other on the
+`carve` target. Once the pin moves past that fix, it can be added here as bytes.
+
 ## Regenerating
 
 Do **not** regenerate expected files from an implementation's current output -
