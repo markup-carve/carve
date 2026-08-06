@@ -174,7 +174,7 @@ const isLinkDef = (line) => LINK_DEF.test(splitTrailingAttrBlock(line)[0])
  * Returns [lineWithoutBlock, blockText|null].
  */
 function splitTrailingAttrBlock(line) {
-  const trimmedEnd = line.replace(/\s+$/, '')
+  const trimmedEnd = line.replace(/[ \t]+$/, '')
   if (!trimmedEnd.endsWith('}')) return [line, null]
   let quote = null
   let open = -1
