@@ -1,0 +1,43 @@
+Link and image title slots must be a space
+
+```
+[t](/u	"T")
+.
+<p>[t](/u	“T”)</p>
+```
+
+```
+[t](/u 	"T")
+.
+<p>[t](/u 	“T”)</p>
+```
+
+```
+[t](/u	 "T")
+.
+<p>[t](/u	 “T”)</p>
+```
+
+```
+![a](/p.png	"T")
+.
+<p>![a](/p.png	“T”)</p>
+```
+
+```
+![a](/p.png 	"T")
+.
+<p>![a](/p.png 	“T”)</p>
+```
+
+```
+![a](/p.png	 "T")
+.
+<p>![a](/p.png	 “T”)</p>
+```
+
+```
+[t](/u "T")
+.
+<p><a href="/u" title="T">t</a></p>
+```

@@ -44,17 +44,34 @@ Spec commit: `2cde4a1`, plus the three corpus cases this change adds
 
 Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `255-colon-fence-metadata-slots-must-be-a-space-too`,
-`256-table-cell-padding-must-be-a-space`.
+`256-table-cell-padding-must-be-a-space`,
+`257-link-and-image-title-slots-must-be-a-space`,
+`258-code-fence-metadata-slots-must-be-a-space-too`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
 denominators by hand, which would have published a three-engine measurement
-nobody took - and one that is knowably wrong in both cases: carve-rs still opens
-an admonition on a tabbed metadata slot (markup-carve/carve-rs#722), and all
-three engines still accept a tab in every table-cell padding slot (measured on
-carve-js, carve-php and carve-rs main under carve#904 - every tab form renders
-byte-identical to its space form). Category 256 was added under the per-repo
-lock while three engine repositories were being edited concurrently, so
+nobody took - and one that is knowably wrong: all three engines still accept a
+tab in every table-cell padding slot (measured on carve-js, carve-php and
+carve-rs main under carve#904 - every tab form renders byte-identical to its
+space form), and carve-js and carve-php still read a title after a tab at every
+form of the `link_title` slot (measured under carve#907 on carve-js `3d95e94`
+and carve-php `876e312`).
+
+The engines have moved under two of those categories since the lines above were
+written, in opposite directions, which is exactly why the declaration names
+categories and never numbers. Category 258's rule is now implemented by all
+three (markup-carve/carve-js#800, markup-carve/carve-php#955,
+markup-carve/carve-rs#724); each renders every one of its documents
+byte-identically to the corpus, so what lags there is only the build this
+repository pins. Category 257's is implemented by carve-rs alone
+(markup-carve/carve-rs#729). An earlier revision of this note said carve-rs
+still opens an admonition on a tabbed metadata slot; that was corrected by
+markup-carve/carve-rs#724 and re-measured false on `378f0d5`, so the claim has
+been replaced rather than left to rot.
+
+Categories 256 through 258 were added under the per-repo lock while three engine
+repositories were being edited concurrently, so
 `compare:impls` could not be run at all: it drives those checkouts live, and a
 sweep across a tree mid-edit fabricates diffs. Declaring the gap is the same answer
 `resources/engine-pin-drift.txt` gives for the pinned JS build, and
