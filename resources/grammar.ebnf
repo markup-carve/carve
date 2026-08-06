@@ -2853,20 +2853,28 @@ EOF = (* end of file *) ;
          carve-php dropped it over the two reference definitions and applied
          it over the other three, and carve-js dropped it over all five --
          self-consistent, and the only answer that throws the attribute away.
-         All three agree when nothing intervenes, so this is specifically
+         All three agree when nothing intervenes, so this was specifically
          about what an invisible construct does to a floating attribute.
          (carve#529)
 
-         The executable spec in scripts/spec already applies it over all five,
-         so the rule above is what this repository's own implementation does
-         rather than a new behavior invented for the clause.
+         ALL THREE NOW FOLLOW THIS RULE. Measured on each engine's own main:
+         every one of the five kinds gives `<p id="i">e</p>` in carve-js,
+         carve-rs and carve-php alike (carve#857). The executable spec in
+         scripts/spec applied it over all five from the start, so the clause
+         was never a behavior invented for it.
 
-         The divergence is PINNED, one claim per kind, in
-         scripts/engine-claims.mjs. That is the direction that matters here: a
-         documented divergence which is silently RESOLVED leaves a false
-         sentence behind, so when the engines move to this rule those five
-         claims start failing, and the failure is the signal to rewrite this
-         paragraph as agreement rather than to relax the check.
+         The AGREEMENT is pinned, one claim per kind, in
+         scripts/engine-claims.mjs -- the five that used to pin the
+         divergence. Keeping five rather than collapsing to one is deliberate:
+         the engines disagreed per kind and none was self-consistent across
+         all of them, so a single case would let four kinds regress unnoticed.
+
+         Worth recording how this was found, because the mechanism is the
+         point. The divergence was pinned as a divergence, so the claims began
+         FAILING on the day the last engine came into line, and the failure
+         said to rewrite this paragraph rather than to relax the check. A
+         resolved divergence that nothing pins leaves a false sentence behind
+         with nothing to notice it.
 
       A3 MERGE (over all pending blocks, source order):
          * id -> last one wins;
