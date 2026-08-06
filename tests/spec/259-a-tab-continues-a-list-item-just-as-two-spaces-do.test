@@ -1,0 +1,27 @@
+A tab continues a list item just as two spaces do
+
+```
+- item
+	more
+
+x
+.
+<ul>
+  <li>item
+more</li>
+</ul>
+<p>x</p>
+```
+
+```
+- item
+  more
+
+x
+.
+<ul>
+  <li>item
+more</li>
+</ul>
+<p>x</p>
+```

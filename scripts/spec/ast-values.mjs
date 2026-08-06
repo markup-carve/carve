@@ -124,3 +124,69 @@ export function compareValues(signaturesByEngine, documentName) {
 
   return found
 }
+
+/**
+ * The declaration in `resources/ast-value-divergence.txt`, and the three ways
+ * it can be wrong.
+ *
+ * Extracted from `reportValueDisagreements` so it can be tested, and - the
+ * reason it had to move - so it can be called UNCONDITIONALLY.
+ *
+ * That function returned before reading the file whenever nothing diverged:
+ *
+ *     if (byKey.size === 0) {
+ *       console.log('... the engines publish the same values everywhere.')
+ *       return                      // <- the declaration is read below this
+ *     }
+ *
+ * The file's own header promises three directions, one of which is "a listed
+ * field no longer diverges -> fixed, delete the line, fails until you do". That
+ * direction could not fire in exactly the state it names: with the last real
+ * divergence gone, `byKey` is empty, the function returns, and every stale line
+ * in the declaration - including a line naming a field that never diverged at
+ * all - passes. Proven rather than reasoned: appending a fabricated
+ * `table_cell.align  42  x` to the file printed "the engines publish the same
+ * values everywhere" and exited 0 (carve#534).
+ *
+ * The file is comment-only today, which is why the defect was latent rather
+ * than active, and is also why it would have been found the day somebody
+ * deleted the last real line - the one day the check was supposed to speak.
+ *
+ * `measured` maps `type.field` to the documents exhibiting it; DOCUMENTS, not
+ * occurrences, because that is the unit the file's header declares.
+ */
+export function reconcileDeclared(measured, declaredText) {
+  const declared = new Map()
+  const problems = []
+  let lineNo = 0
+  for (const raw of declaredText.split('\n')) {
+    lineNo += 1
+    const line = raw.trim()
+    if (line === '' || line.startsWith('#')) continue
+    const [key, countText] = line.split(/\s+/)
+    const count = Number(countText)
+    if (!Number.isInteger(count) || count < 1) {
+      problems.push(
+        `MALFORMED  line ${lineNo}: expected "<type.field>  <document-count>  <note>", got "${line}"`,
+      )
+      continue
+    }
+    declared.set(key, count)
+  }
+
+  for (const [key, documents] of measured) {
+    const n = documents instanceof Set ? documents.size : new Set(documents).size
+    if (!declared.has(key)) {
+      problems.push(`NEW        ${key} diverges in ${n} document(s) and is not declared`)
+    } else if (declared.get(key) !== n) {
+      problems.push(`COUNT      ${key} declares ${declared.get(key)} document(s), measured ${n}`)
+    }
+  }
+  for (const key of declared.keys()) {
+    if (!measured.has(key)) {
+      problems.push(`FIXED      ${key} no longer diverges - delete its line`)
+    }
+  }
+
+  return problems
+}

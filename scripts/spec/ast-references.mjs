@@ -63,8 +63,28 @@ function sliceOf(codepoints, pos) {
   return codepoints.slice(pos.startOffset, pos.endOffset).join('')
 }
 
+/**
+ * PART 12 §3a over one document.
+ *
+ * Returns the number of referencing nodes the SOURCE-shape half of the rule
+ * could not be applied to, because the node carried no usable `pos`.
+ *
+ * That number exists because the rule goes QUIET on exactly the nodes an engine
+ * failed to place: `sliceOf` returns null, the loop continues, and a `link` with
+ * neither `ref` nor `rawRef` and no position passes a check whose whole subject
+ * is what the author wrote there. Harmless today - all three engines place
+ * `link` and `image` on every corpus document - and the kind of harmless that
+ * ends the moment one of them stops, which is precisely the event this file
+ * would otherwise stay silent about (carve#534).
+ *
+ * NOT a finding: the missing position is already `checkPositions`' report to
+ * make, and reporting it twice in two wordings is what the type check above was
+ * removed for. A coverage count says the different thing that needs saying -
+ * how much of the corpus this rule actually ran on.
+ */
 export function checkReferenceFields(doc, source, findings) {
   const codepoints = Array.from(source)
+  let unmeasured = 0
   for (const [node, path] of walkNodes(doc)) {
     if (!REFERENCING.has(node.type)) continue
     const hasRef = typeof node.ref === 'string'
@@ -82,7 +102,10 @@ export function checkReferenceFields(doc, source, findings) {
     if (hasRef) continue
 
     const slice = sliceOf(codepoints, node.pos)
-    if (slice === null) continue
+    if (slice === null) {
+      unmeasured += 1
+      continue
+    }
     const form = referenceForm(slice)
     if (!form) continue
     findings.push(
@@ -91,4 +114,6 @@ export function checkReferenceFields(doc, source, findings) {
         'beside the resolved destination',
     )
   }
+
+  return unmeasured
 }
