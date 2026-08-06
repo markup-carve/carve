@@ -9,6 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 7: a marker separator is a literal space, a padding slot takes
+  whitespace** (carve#878). Twenty-five productions took the `space` terminal
+  and a tab satisfied nine of them in the implementations, which split four
+  ways on which. The two whitespace terminals are now assigned by ROLE. A
+  MARKER SEPARATOR stands between a marker and the token that selects which
+  construct the line opens; it is `space` and a tab never satisfies it. That is
+  the rule already settled for the heading, list, task and definition markers
+  (carve#692, carve#698), and the colon fence joins them: `admonition_open`,
+  `div_open`, `line_block_open` and `local_hard_break_block_open` share one
+  separator slot, and the token after it decides between an admonition, a div,
+  a line block and a local hard-break block.
+
+  A PADDING SLOT is whitespace between two tokens on a line whose construct is
+  already fixed. It carries no recognition, so it is `whitespace` and admits a
+  tab. Four slots move to it: the admonition opener's `"title"` and `[label]`
+  metadata slots, `frontmatter_open`'s slot before the format token,
+  `link_title` at both of its sites, and the reference definition's slot before
+  its trailing attributes. Every implementation already accepts a tab in all
+  four, so nothing changes for them there. The colon-fence half is the half
+  that moves: all four still accept a tab after the fence and have to be
+  corrected.
+
 - **PART 9 §15 A3: a repeated class collapses** (carve#615). The merge said
   "ALL classes accumulate in source order, NO de-duplication ... class='a b b
   c', matching djot and carve-php", and no implementation did that. Measured on

@@ -196,11 +196,15 @@ frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatte
    thematic break and the following lines are ordinary blocks (same lookahead
    model as PART 9 §10). *)
 (* The opening delimiter may carry a format token (yaml | json | toml | neon |
-   ...); a bare `---` defaults to `yaml`. The space before the token is OPTIONAL
-   (lenient: both `---yaml` and `--- yaml` are accepted; `---yaml` is canonical).
+   ...); a bare `---` defaults to `yaml`. The whitespace before the token is
+   OPTIONAL (lenient: both `---yaml` and `--- yaml` are accepted; `---yaml` is
+   canonical) and it is a PADDING SLOT, not a marker separator (PART 7): the
+   `---` pair with its closer lookahead has already decided that this is
+   frontmatter, and the token only names the metadata dialect. So a tab
+   satisfies it, which is what all four implementations already do.
    The closing delimiter is always a bare `---`. The token distinguishes a typed
    opener from a thematic break. *)
-frontmatter_open = "---", [space], [frontmatter_format], newline ;
+frontmatter_open = "---", [whitespace], [frontmatter_format], newline ;
 frontmatter_close = "---", newline ;
 frontmatter_format = (letter | digit)+ ;
 frontmatter_content = {content_line - frontmatter_close} ;
@@ -784,6 +788,15 @@ caption_slot = [blank_line], caption ;
    quoting device: a nested container's fence differs in length from its
    parent's, and the canonical direction is +1 colon per level inward. *)
 colon_fence = ":::", {":"} ;
+(* The colon fence has ONE separator slot -- the whitespace immediately after
+   the fence run -- and all four openers share it. It is a MARKER SEPARATOR
+   (PART 7): the token after it selects which of the four blocks the line
+   opens, so it is spelled `space` and a tab does not satisfy it. `div_open`
+   makes the slot OPTIONAL because a bare `[label]` may sit flush against the
+   fence (`:::[First]`); optional is a different property from a different
+   role, and the slot answers the same way in all four openers whichever type
+   token follows it. All four implementations currently accept a tab here and
+   have to be corrected (carve#878). *)
 colon_fence_close = colon_fence:close
                     where len(close) = len(open) ;
 (* FORMAL (PART 9 §12, now a guard): `open` is the colon_fence captured by
@@ -881,8 +894,15 @@ admonition = admonition_open, newline,
        convention (those stay supported, deprecated). The `selected`
        default-tab marker is NOT a label -- it remains a boolean attribute on
        the preceding `{...}` line. *)
+(* The separator after the fence is a `space` and the two metadata slots take
+   `whitespace` -- the same line carries both roles, deliberately. The first
+   separator is what makes this an admonition rather than a div, a line block
+   or a local hard-break block, so it is a MARKER SEPARATOR; once
+   `admonition_type` has been read the block is decided and the "title" and
+   [label] slots are ordinary inter-token padding (PART 7, MARKER SEPARATORS
+   AND PADDING SLOTS). *)
 admonition_open = colon_fence:open, space, admonition_type,
-                  [space+, quoted_title], [space+, label] ;
+                  [whitespace+, quoted_title], [whitespace+, label] ;
 admonition_close = colon_fence_close ;
 
 admonition_type = "note" | "tip" | "warning" | "danger" | "info"
@@ -1304,12 +1324,24 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
    as the literal quote character and do NOT end the title. This is
    honored for the INLINE-link title (`[t](/url "ti\"tle")` -> title
    `ti"tle`); see the note at `reference_definition` for the ref-def slot. *)
-link_title = space, ('"', {('\', '"') | (character - '"')}, '"')
-           | space, ("'", {('\', "'") | (character - "'")}, "'") ;
+(* The whitespace before the quoted run is a PADDING SLOT, not a marker
+   separator (PART 7): a link is already a link once its destination has been
+   read, and a reference definition is already a definition, so the title is
+   optional trailing metadata in both. A tab satisfies it, which is what all
+   three engines already do at both sites. Cardinality is unchanged -- exactly
+   one whitespace character, as it was exactly one space. *)
+link_title = whitespace, ('"', {('\', '"') | (character - '"')}, '"')
+           | whitespace, ("'", {('\', "'") | (character - "'")}, "'") ;
 
 reference_label = (character - ']' - '@'), {character - ']'} ;
+(* Both roles appear on this one line (PART 7). The `']' ':'` separator is a
+   MARKER SEPARATOR -- `space` only, settled in the note below and rejected by
+   all four implementations for a tab -- while the slot before the trailing
+   `attributes` is PADDING: the definition is already complete at
+   `[a]: /url`, the attribute block is optional trailing metadata, and
+   `attributes` itself already admits `whitespace` internally (PART 4). *)
 reference_definition = '[', reference_label, ']', ':', space, link_destination,
-                       [link_title], [space, attributes], newline ;
+                       [link_title], [whitespace, attributes], newline ;
 (* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE. A `{...}` block at the end
    of the definition line attaches to the DEFINITION, and PART 9R R1 already
    says what that means: the attributes transfer to every link OR IMAGE that
@@ -2056,6 +2088,39 @@ letter = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j'
 
 digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
+(* MARKER SEPARATORS AND PADDING SLOTS -- NORMATIVE. Which of the two
+   whitespace terminals a production takes is decided by the ROLE the
+   whitespace plays, and the two roles are:
+
+     - A MARKER SEPARATOR is the whitespace that stands between a marker and
+       the token that SELECTS which construct the line opens. It is spelled
+       `space`, and a tab never satisfies it. `heading_first_line`,
+       `blockquote_line`, `unordered_item`, `ordered_item`, `task_marker`,
+       `definition_term` and the three definition markers already carry that
+       spelling; the prose is at MARKER REQUIRES CONTENT (PART 2) and at
+       `abbreviation_definition`. The colon fence joins them: `:::` +
+       separator + (`note` | `|` | `\` | `[label]`)
+       decides between an admonition, a line block, a local hard-break block
+       and a div, so the separator is part of recognizing the block.
+
+     - A PADDING SLOT is whitespace between two tokens on a line whose
+       construct is ALREADY fixed. It carries no recognition and its width
+       means nothing, so it is spelled `whitespace` and admits a tab. The
+       admonition opener's `"title"` and `[label]` slots (the type word has
+       already decided the block), `frontmatter_open`'s slot before the
+       format token (the `---` pair has already decided the block; the token
+       only names the metadata dialect), `link_title`, and the
+       reference-definition slot before its trailing `attributes` are all
+       padding.
+
+   A tab is otherwise meaningful ONLY as indentation, and indentation is at
+   the START of a line (PART 9 §24 C1) -- a tab after a marker is neither
+   (carve#692, carve#698, carve#878).
+
+   Cardinality is a separate question from the terminal: a slot that took
+   exactly one `space` takes exactly one `whitespace`, and a `space+` run
+   becomes a `whitespace+` run. Widening a slot's terminal never widens how
+   many characters it accepts. *)
 whitespace = ' ' | '\t' ;
 space = ' ' ;
 newline = '\n' | '\r\n' | '\r' ;
