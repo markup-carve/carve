@@ -1334,6 +1334,52 @@ for (const [name, src, expected] of STILL_A_DEFINITION) {
 }
 
 // ---------------------------------------------------------------------------
+// THE GRAMMAR TEXT for the two productions carve#892 corrected.
+//
+// The executable half below cannot see this. resources/grammar.ebnf is not
+// executed by anything, so re-spelling `space+` back to `space` at either
+// production leaves the whole suite green - measured as a surviving mutant
+// while writing this file's other half. That is the carve#755 shape, and a
+// text check is the only observer, exactly as it is for the SITES above.
+//
+// BOTH DIRECTIONS, so a silent re-spelling either way fails here: `space` is
+// the terminal these must carry (a tab never satisfies it) and `+` is the
+// cardinality they must carry (the separator is a run).
+for (const [production, required, forbidden] of [
+  [
+    'footnote_definition',
+    /footnote_definition = "\[\^", footnote_label, "\]:", space\+, inline_content, newline,/,
+    /footnote_definition = [^;]*"\]:", (?:space,|whitespace)/,
+  ],
+  [
+    'abbreviation_definition',
+    /abbreviation_definition = "\*\[", abbreviation_term, "\]:", space\+, abbreviation_expansion, newline ;/,
+    /abbreviation_definition = [^;]*"\]:", (?:space,|whitespace)/,
+  ],
+]) {
+  test(`the definition separator is spelled \`space+\`: ${production}`, () => {
+    assert.match(
+      flat,
+      required,
+      `resources/grammar.ebnf no longer spells this separator \`space+\`.\n` +
+        `  production: ${production}\n` +
+        `  The separator is a RUN of ASCII spaces (PART 7, THE DEFINITION MARKER\n` +
+        `  SEPARATOR; carve#892). Nothing executes this file, so this check is the\n` +
+        `  only thing that can see a re-spelling.`,
+    )
+    assert.doesNotMatch(
+      flat,
+      forbidden,
+      `resources/grammar.ebnf spells this separator as a single \`space\` or as\n` +
+        `  \`whitespace\`.\n  production: ${production}\n` +
+        `  A single \`space\` forbids a shape nothing rejects - which is what\n` +
+        `  carve#892 corrected - and \`whitespace\` would admit a tab as the\n` +
+        `  separator, which PART 7 rules out at every definition marker.`,
+    )
+  })
+}
+
+// ---------------------------------------------------------------------------
 // A DEFINITION MARKER'S SEPARATOR IS A RUN (carve#892), and the run stops at
 // the first character that is not an ASCII space.
 //
