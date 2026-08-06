@@ -383,6 +383,18 @@ CARVE_PHP_DIR=../carve-php \
 node scripts/compare-impls.mjs
 ```
 
+`avg_ms` IS NOT A BENCHMARK. It is wall-clock from whichever machine last
+refreshed this page, on whatever else that machine was doing, and it is
+re-rolled every time the block is regenerated for an unrelated reason - the
+corpus-size gate below requires a fresh run whenever the corpus grows, so these
+numbers change without any engine changing. The same three engines measured
+2.37 / 59.31 / 54.50 in one run and 3.21 / 83.35 / 75.68 in the next, purely
+from load.
+
+Read the `pass=` and `mismatch=` counts, which are facts about the engines.
+For a timing claim, use a benchmark run on an idle machine and say what it was
+measured on (carve#804).
+
 Default raw output:
 
 ```text
