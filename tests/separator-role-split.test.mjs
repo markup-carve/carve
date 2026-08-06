@@ -1039,3 +1039,46 @@ test('the indentation site states why its engine half is deferred', () => {
       `same reason every padding site must.`,
   )
 })
+
+// THE DEDENT IS COLUMNS TOO, and every check above this line is blind to it.
+//
+// The oracle spelled this rule in THREE places - the blank-line lookahead, the
+// continuation test, and the dedent that strips the body's margin off the line
+// before it is re-parsed. Two of them decide WHETHER a line continues, and the
+// fixtures above pin those. The third decides WHERE the line lands once it
+// does, and a single-line body cannot see it: `<TAB>more` and `   more` both
+// arrive as the paragraph text `more` whichever way the margin is stripped.
+//
+// Measured, not assumed: leaving the dedent spelled `replace(/^ {1,3}/, '')`
+// while both tests read columns kept this file green at 113 tests AND moved
+// zero of the 711 corpus documents. A fix reaching some of the spellings and
+// not the rest is the carve#755 shape, and this is the fixture that sees it.
+//
+// The shape is a MIXED-indentation body: a tab-indented line and a
+// space-indented line that must be dedented by the same number of COLUMNS for
+// their alignment to each other to survive the margin strip. Under the
+// character dedent the space line moves and the tab line does not, so the
+// second paragraph falls out of the list item.
+//
+// The expected reading is carve-rs's, byte for byte: carve-rs 83ab9c1 is the
+// one engine that already reads this continuation as a column, and it renders
+// the tab form exactly as the fixed oracle does. So this pins a measured
+// reading rather than an oracle-only artifact.
+test('the oracle dedents a definition body continuation by columns, not characters', () => {
+  // `\t` reaches column 4; `    ` reaches column 4. Same columns, different
+  // characters, and the `      b` line is common to both.
+  const tabForm = ':: t\n:  d\n\n\t- a\n\n      b\n'
+  const spaceForm = ':: t\n:  d\n\n    - a\n\n      b\n'
+  assert.equal(
+    renderDoc(parse(tabForm)),
+    renderDoc(parse(spaceForm)),
+    `a tab-indented definition body landed somewhere the identically-columned ` +
+      `space spelling did not.\n` +
+      `  tab form:   ${JSON.stringify(tabForm)}\n` +
+      `  space form: ${JSON.stringify(spaceForm)}\n` +
+      `  The body's margin is stripped by COLUMNS (PART 9 §24 C5, carve#893), so a ` +
+      `tab that straddles column 3 gives back the column it bought past the margin. ` +
+      `Stripping literal space characters instead leaves the tab line where it was ` +
+      `and moves the space line, which drops the second paragraph out of the item.`,
+  )
+})
