@@ -42,6 +42,14 @@ implementation exposes.
 
 Spec commit: `2cde4a1`, plus the three corpus cases this change adds
 
+The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
+to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS
+build (`52da7be`) reproducing 671 of the 672 documents, missing exactly that
+one; the Rust and PHP columns have not been re-run since, so their numbers
+still describe the corpus as it stood before that change. The window is
+declared in `resources/engine-pin-drift.txt`, and closes when the engines ship
+the rule.
+
 The engines have caught up further since the last snapshot: the `carve`-target
 differences it listed - `16-reference-link-4`,
 `195-a-definition-inside-a-container-...` and two more in carve-rs - are gone,

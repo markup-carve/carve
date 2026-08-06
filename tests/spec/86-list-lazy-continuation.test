@@ -130,7 +130,7 @@ tail
   <li>item
 :::note
 body
-:::</li>
+:::
+tail</li>
 </ul>
-<p>tail</p>
 ```

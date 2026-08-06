@@ -9,6 +9,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 1 S4: an absorbed colon fence leaves the item's paragraph open**
+  (carve#891). Corpus `86-list-lazy-continuation-9` pinned that the flush-left
+  line after
+
+  ```carve
+  - item
+    :::note
+    body
+    :::
+  tail
+  ```
+
+  ends the list item, and S4 says the opposite. `:::note` fails PART 9 section
+  12's opener test, since a type word wants a separator, so the line is
+  ordinary paragraph text and section 12 has the paragraph absorb the trailing
+  fence as text too. Nothing interrupted the item's paragraph, so it is still
+  open when `tail` arrives and S4 folds `tail` into it. The rendered answer for
+  this input therefore changes: `tail` moves from a document paragraph into the
+  item's. Its siblings were already coherent - `-6` folds into a block quote's
+  open paragraph, `-7` and `-8` close because a code fence and a table leave
+  none - and `-9` was the only row that ended an item whose paragraph was open.
+
+  The executable spec is corrected with the fixture. No engine folds this shape
+  yet; `resources/engine-pin-drift.txt` declares the window and the engine work
+  is tracked separately.
+
 - **PART 7: a marker separator is a literal space, a padding slot takes
   whitespace** (carve#878). Twenty-five productions took the `space` terminal
   and a tab satisfied nine of them in the implementations, which split four

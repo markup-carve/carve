@@ -2427,7 +2427,7 @@ tail
 
 :::
 
-A closed `:::` div or admonition is a complete block with no open paragraph either, so the dedented line ends the item too (only a blockquote, whose trailing paragraph stays open, folds the line in):
+A colon fence that is **not a valid opener** opens no block, so it leaves the paragraph open and the dedented line folds in. `:::note` has no space between the fence and the type word, so §12's opener test rejects it and the line is ordinary paragraph text; from there the paragraph absorbs the following fence-shaped line as text too (§12, "the absorption is not width-tagged"). Nothing ever interrupted the item's paragraph, so it is still **open** when `tail` arrives, and PART 1 S4 folds `tail` into it. What decides is whether a block was opened, never the shape of the line that tried - an absorbed fence is prose:
 
 ::::: compare
 
@@ -2444,12 +2444,16 @@ tail
   <li>item
 :::note
 body
-:::</li>
+:::
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::::
+
+Give the same fence its space and the contrast is exact. Written `::: note`, it is a valid opener: it interrupts the item's paragraph, its closer completes the block, and a closed `:::` div or admonition leaves no open paragraph - so there `tail` does end the item and becomes a document paragraph, exactly as after the fenced code block and the table above. One space between the fence and the type word decides which of the two answers the same five lines get.
+
+The same clause settles the neighboring shapes, which is how one knows it is the clause and not a special case, and each of them is a place an implementation could get the right answer here for the wrong reason. Indenting the lazy line to column 1 changes nothing, since it is still below the content column. The malformed fence may be the paragraph's FIRST line, written on the marker line itself (`- :::note`), and the item then opens with a paragraph that begins with fence-shaped text. Inside a block quote, `> tail` supplies the quote's prefix but not the item's indentation, which is the partial match S4 is written for. All three fold, for the one reason above; `tests/colon-fence-absorbed-in-an-item.test.mjs` pins them.
 
 ## Compact list blocks
 
