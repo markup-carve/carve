@@ -1,0 +1,11 @@
+The same column, written with four spaces
+
+```
+1. a
+    > quote
+.
+<ol>
+  <li>a
+&gt; quote</li>
+</ol>
+```
