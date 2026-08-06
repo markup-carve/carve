@@ -5549,6 +5549,18 @@ EOF = (* end of file *) ;
       version mismatch visible at the boundary where it can still be handled;
       dropping defers it to whatever the missing field was load-bearing for.
 
+      A DOCUMENTED LEGACY ALIAS IS THE ONE NARROW EXCEPTION. An implementation
+      MAY accept a property it once published itself, PROVIDED it decodes that
+      property onto a field the schema DOES name and says so in its
+      documentation -- `footnote.id`, which two engines published before §7
+      settled on `label`, is the case this is written for. Such a property is
+      not "a property the ingest cannot understand", which is what this clause
+      is about; refusing it would not protect a caller from a half-read tree,
+      it would take away the only reader that reads those stored trees whole.
+      The exception does NOT extend to a property the implementation merely
+      tolerates, and an implementation MUST NOT accept the alias on a type that
+      never carried it.
+
       THIS DOES NOT CLOSE THE DOOR ON EXTENSION DATA. An extension that wants
       to carry its own state across a round trip needs a DECLARED place to put
       it, not the absence of a check -- a namespace the schema names and every
