@@ -1807,6 +1807,15 @@ function dedent(line, cols) {
     else break
     i++
   }
+  // A TAB THAT STRADDLES THE BOUNDARY still advances to its stop, so the
+  // columns past `cols` are indentation this line keeps - they come back as
+  // spaces. Dropping them made a tab-indented line arrive flush where the
+  // space spelling of the same column arrives indented, and SS24 C1 says the
+  // two are the same claim: under `1. a` a tab reaches column 4, one past the
+  // content column, where a block opener is text rather than a nested block
+  // (carve-js#767, carve-php#890 - both engines had this exact bug, and so did
+  // this oracle).
+  if (col > cols) return ' '.repeat(col - cols) + line.slice(i)
   return line.slice(i)
 }
 
