@@ -303,6 +303,54 @@ The root type is not a leniency point either: §7 fixes it at `document` and the
 schema pins it as a `const`. Accepting `doc` means half-reading a ProseMirror
 payload instead of rejecting it.
 
+## A property the schema does not name
+
+`resources/ast-schema.json` closes every node with `additionalProperties: false`,
+so a payload carrying a property no node type names is not a Carve AST. §11
+says what an ingest does with one: **refuse it**, with a typed error naming the
+offending property and the path it sat at. Not a silent drop, and not a
+pass-through.
+
+The pass-through is the answer that cannot be right, and it fails on the
+engine's own contract rather than on taste. An implementation that copies a
+wire record wholesale re-emits the unknown property when it serializes again,
+so its own output stops validating - a consumer that reads a tree and publishes
+it again emits something the format rejects, having been told nothing. Measured
+before the rule landed, carve-js echoed 29 of 31 injected properties back
+([carve-js#709](https://github.com/markup-carve/carve-js/issues/709)).
+
+Refusing rather than dropping follows §9(b) one field down: "an ingest that
+accepts a tree and then silently renders only part of it is the worst of the
+three, because the caller is told nothing". If a later version gives that
+property a meaning, an engine that dropped it rendered a document that says
+something else and reported success.
+
+Forward compatibility does not argue the other way. `parse` and the schema ship
+in one build, so an unknown property means the payload came from a different
+version, and no engine can render a field it does not implement whatever it
+does with it. Refusing makes the mismatch visible where it can still be
+handled.
+
+**One narrow exception.** An implementation may accept a property it once
+published itself, provided it decodes that property onto a field the schema
+does name and documents it. `footnote.id` - what carve-js and carve-php
+published before §7 settled on `label` - is the case this is written for. Such
+a property is not one the ingest cannot understand, which is what the clause is
+about; refusing it would not protect a caller from a half-read tree, it would
+take away the only reader that reads those stored trees whole. The exception
+does not extend to a property an implementation merely tolerates.
+
+**Extension data needs a declared home, not the absence of a check.** Until the
+schema names one, extension state on the wire is invalid for the same reason
+any other unnamed property is, and an extension relying on a pass-through is
+relying on one engine's leak.
+
+All three engines refuse today
+([carve-js#763](https://github.com/markup-carve/carve-js/pull/763),
+[carve-rs#693](https://github.com/markup-carve/carve-rs/pull/693),
+[carve-php#913](https://github.com/markup-carve/carve-php/pull/913)), and the
+spec repo's `compare:impls` probe checks it across all three.
+
 ## What is not in it
 
 Formatter-internal nodes (PART 11, and the `raw_text` case the profiles
