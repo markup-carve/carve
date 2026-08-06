@@ -85,11 +85,19 @@ test('a blank line ends the absorption', () => {
   )
 })
 
-// The row above cannot tell a released latch from a stuck one: `::: note` is a
-// valid opener and interrupts whatever it meets. A BARE `:::` is the case that
-// needs the memory to have been cleared - it interrupts only when the open
-// paragraph holds no malformed fence - so it is the one that fails if the
-// paragraph's lines outlive the paragraph.
+// A BARE `:::` is the harder case, since it interrupts only when the open
+// paragraph holds no malformed fence, so it is the one that reads the memory
+// rather than bypassing it.
+//
+// Stated honestly, because it was measured: this row does NOT discriminate a
+// memory that is never cleared. With the reset removed, the first bare fence is
+// wrongly absorbed and the second then wrongly interrupts, and the two errors
+// cancel into the same rendering. No shape in this clause's scope separates
+// them - the one that does needs an UNTERMINATED fence in an item, which the
+// oracle answers wrongly for an unrelated reason (carve#891 records it as a
+// by-product and leaves it alone). So the reset is kept for the state to mean
+// what its name says, and this row pins the ANSWER rather than proving that
+// condition load-bearing.
 test('a bare fence after the blank interrupts, because the absorption did not survive it', () => {
   assert.equal(
     html('- item\n  :::note\n\n  :::\n  body\n  :::\ntail\n'),
