@@ -26,4 +26,3 @@
 #
 # Format: <type.field>  <document-count>  <who diverges and where it is tracked>
 
-list.tight                1  carve-rs has not implemented the clause behind corpus 228 yet, so it builds a loose list where the other two build a tight one - the HTML comparison reports the same document (carve#801)
