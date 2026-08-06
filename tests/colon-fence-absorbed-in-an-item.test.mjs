@@ -84,3 +84,15 @@ test('a blank line ends the absorption', () => {
     '<ul><li><p>item</p><p>:::note</p><aside class="admonition note"><p>body</p></aside></li></ul><p>tail</p>',
   )
 })
+
+// The row above cannot tell a released latch from a stuck one: `::: note` is a
+// valid opener and interrupts whatever it meets. A BARE `:::` is the case that
+// needs the memory to have been cleared - it interrupts only when the open
+// paragraph holds no malformed fence - so it is the one that fails if the
+// paragraph's lines outlive the paragraph.
+test('a bare fence after the blank interrupts, because the absorption did not survive it', () => {
+  assert.equal(
+    html('- item\n  :::note\n\n  :::\n  body\n  :::\ntail\n'),
+    '<ul><li>item :::note <div><p>body</p></div></li></ul><p>tail</p>',
+  )
+})
