@@ -1,0 +1,97 @@
+# Node types the three engines SPAN differently.
+#
+# `npm run ast:check` compares every corpus document's AST across carve-js,
+# carve-rs and carve-php four ways: the SHAPE (node types and nesting), the
+# schema, the scalar VALUES, and - here - the SPANS.
+#
+# The span panel did not exist until carve#534. The value comparison drops every
+# position key by name, on the stated grounds that they are "compared
+# elsewhere"; elsewhere is `checkPositions`, which compares each engine against
+# the SOURCE and never against another engine, and whose one content-level rule
+# runs on `text` nodes alone. So the run reported dozens of "missing pos"
+# findings and ZERO disagreements about where a present `pos` points, because it
+# never compared them.
+#
+# Two things that hid there, both still true of the engines' mains:
+#
+#   117-footnote-definition-inside-a-container-is-collected - carve-rs gives the
+#   `block_quote` [11,13], which slices "> ", the marker alone. carve-js and
+#   carve-php give [11,28], the whole quote. Invisible to the containment rule
+#   because the footnote hoists to the root and leaves the quote with no
+#   children to contain.
+#
+#   132-thematic-break-requires-contiguous-markers, source `* * *` - carve-php
+#   publishes `text [0,1]` where the other two publish [4,5]. BOTH slices are
+#   "*", so the one content-level rule passes for both. That is the trap this
+#   repo keeps re-finding: a rule that asserts a property the bug preserves.
+#
+# WHAT THIS FILE DOES NOT DECIDE. Whether a node's span covers the markup that
+# OPENS it - the list marker, the `>`, the `[^a]: ` - is markup-carve/carve#913,
+# needs-decision. Most of the EXTENT rows below are that question, and this file
+# records the disagreement without naming a side. That is worth doing before the
+# ruling: a count that moves means an engine changed its mind about a span, and
+# nothing else in this repo can see that happen.
+#
+# DECLARED rather than gated at zero, for the reason the value panel gives: in
+# this fleet a fix lands in one engine first, so the engine that is RIGHT is
+# routinely the odd one out for a while, and a zero gate would make the fix for
+# a red run "wait".
+#
+# Exact in three directions:
+#
+#   - a row that disagrees and is not listed  -> NEW, fails
+#   - a listed row's DOCUMENT COUNT moves     -> COUNT, fails
+#   - a listed row no longer disagrees        -> AGREED, delete the line, fails
+#     until you do
+#
+# PRESENCE and EXTENT are separate rows because they are different facts with
+# different owners. Presence is §4 and has a permitted category, declared per
+# engine and per document in resources/ast-position-waivers.txt; extent is the
+# open convention question and has none.
+#
+# Format: <type> (presence|extent)  <document-count>
+#
+# Measured 2026-08-06 over 716 documents (713 corpus plus 3 synthetic), at
+# carve 3a41f0e, carve-js 3d95e94, carve-rs 83ab9c1, carve-php 876e312.
+# 309 of those documents carry at least one span the three engines do not agree
+# on.
+
+# ---- EXTENT: the open convention question (markup-carve/carve#913) ----------
+
+list                    (extent)  127
+list_item               (extent)  73
+table_row               (extent)  65
+paragraph               (extent)  37
+footnote                (extent)  36
+definition_term         (extent)  21
+comment                 (extent)  18
+block_quote             (extent)  16
+definition_description  (extent)  14
+admonition              (extent)  12
+definition_list         (extent)  10
+heading                 (extent)  10
+code_block              (extent)  9
+hard_break              (extent)  6
+table                   (extent)  4
+table_cell              (extent)  4
+frontmatter             (extent)  3
+raw_block               (extent)  3
+div                     (extent)  2
+text                    (extent)  2
+code                    (extent)  1
+insert                  (extent)  1
+literal_inline          (extent)  1
+
+# ---- PRESENCE: one engine omits where the others place ---------------------
+#
+# Every row here is also declared per engine and per document, with the issue
+# tracking it, in resources/ast-position-waivers.txt. The two files disagree by
+# construction if one is updated without the other, which is deliberate.
+
+table_cell              (presence)  7
+paragraph               (presence)  5
+text                    (presence)  5
+soft_break              (presence)  3
+definition_description  (presence)  2
+figure                  (presence)  1
+footnote                (presence)  1
