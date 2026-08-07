@@ -1,0 +1,49 @@
+A real div in a container and the flush-left line after it
+
+```
+- item
+  ::: note
+  body
+tail
+.
+<ul>
+  <li>item
+    <aside class="admonition note">
+      <p>body
+tail</p>
+    </aside>
+  </li>
+</ul>
+```
+
+```
+- item
+  ::: note
+tail
+.
+<ul>
+  <li>item
+    <aside class="admonition note">
+
+    </aside>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- item
+  ::: note
+  body
+  :::
+tail
+.
+<ul>
+  <li>item
+    <aside class="admonition note">
+      <p>body</p>
+    </aside>
+  </li>
+</ul>
+<p>tail</p>
+```
