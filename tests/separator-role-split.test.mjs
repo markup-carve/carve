@@ -46,32 +46,41 @@
  * artifacts are checked at every site now, which is what the header above
  * always claimed.
  *
- * THE ENGINE HALF IS DEFERRED, deliberately, and this is the third time its
- * scope has moved - so the reason is written down rather than inferred.
+ * THE ENGINE HALF NOW RUNS, and that is new. It was deferred at every site
+ * through five revisions of its scope, each with its own written reason, and
+ * all five have now cleared at once.
  *
- * The loop that used to live here ran ONE engine, the pinned
- * `@markup-carve/carve` (carve-js), and asserted that a tab in a padding slot
- * parses as the space form does. Under carve#901 that assertion is exactly
- * backwards: carve-js DOES still accept a tab at every padding slot
- * (measured while writing this - every tab form renders byte-identical to
- * its space form), which is now a divergence from the production rather
- * than conformance with it. Asserting today's behavior would pin the bug and
- * the fix would have to delete the assertion; asserting the corrected behavior
- * would fail on an engine that has not been changed yet.
+ * What deferred it was never one fact. At the six original padding sites
+ * carve-js itself was behind the production; at the five TABLE-CELL sites
+ * (carve#904) and the four INLINE ATTRIBUTE sites (carve#906) all three
+ * reference engines were; at the title and code-fence slots the engines had
+ * narrowed and what lagged was the COMMIT this repo pins. Each reason said the
+ * same thing about this file, though: asserting the behavior of the day would
+ * pin a divergence and the fix would have to delete the assertion, while
+ * asserting the corrected behavior would fail on an engine nobody had changed
+ * yet. So the sites carried `engineDeferred` and the loop asserted only that
+ * the reason still held - a check whose useful failure mode was the engine
+ * catching up.
  *
- * So every site carries `engineDeferred` with its reason, and the test below
- * requires it. The engine question belongs in the cross-engine gates
- * (claims:check, compare:impls), which is where it should gain a row once the
- * engines narrow.
+ * It caught up. The pin moved from 52da7be to 816c3a3 and all 63 of those
+ * checks went red at once, which is the outcome the deferral text predicted in
+ * as many words: "clears on the next `npm run bump-carve-pin` rather than on
+ * any engine work". The pinned build now rejects a tab at every padding slot,
+ * every separator slot and every metadata slot, and renders byte-identically to
+ * the oracle rather than to the space form. So the engine half asserts the
+ * corrected behavior, alongside the oracle half, and the pair this file exists
+ * to run is finally symmetric.
  *
- * The three reasons are NOT the same fact, which is why they are three
- * constants. At the six original padding sites carve-js itself is behind the
- * production. At the five TABLE-CELL padding sites (carve#904) all three
- * reference engines are, measured from their own main, so there is no
- * majority to read there and no engine to single out. At the four
- * separator sites carve-js main has already narrowed the slot
- * (markup-carve/carve-js#794) and what is behind is the COMMIT this repo pins -
- * pin lag, which a pin bump clears and no engine work does.
+ * WHAT THIS DOES NOT SAY. The loop runs ONE engine, the pinned
+ * `@markup-carve/carve`, because that is the engine this repository executes.
+ * carve-php and carve-rs are still behind the production at some of these slots
+ * - the table cells, the inline attribute block, and the two title forms
+ * carve-rs already narrowed - and that question lives where it always did, in
+ * the cross-engine gates (claims:check, compare:impls) and in the tickets the
+ * retired reasons named: markup-carve/carve-php#985 and markup-carve/carve-rs#757
+ * for the inline attribute block, markup-carve/carve-js#836's siblings for the
+ * rest. A green run here is a statement about the pinned build and nothing
+ * wider.
  */
 
 import { test } from 'node:test'
@@ -110,108 +119,6 @@ const ohm = readFileSync(resolve(repo, 'resources/carve-core.ohm'), 'utf8')
 // line - the same normalization scripts/normative-clauses.mjs uses.
 const flat = grammar.replace(/\n\s*/g, ' ')
 
-// One reason, shared by all six padding sites, because it IS one fact about
-// one engine rather than six. Measured on the pinned `@markup-carve/carve`
-// build: all six tab forms below render byte-identical to their space forms.
-const ENGINE_DEFERRED =
-  'carve-js accepts a tab in this slot - measured on the pinned build, the tab form ' +
-  'renders byte-identical to the space form - so it diverges from the production ' +
-  'since carve#901 narrowed it back to `space`. Asserting the current behavior would ' +
-  'pin the divergence; asserting the corrected behavior would fail on an engine that ' +
-  'has not been changed yet. The cross-engine gates (claims:check, compare:impls) ' +
-  'carry the question. The ORACLE half runs regardless - it is not an engine.'
-
-// The separators are deferred for a DIFFERENT reason, and the difference is the
-// whole point of writing it out. carve-js main already narrowed this slot
-// (markup-carve/carve-js#794); what still opens the block on a tab is the
-// COMMIT this repo pins, 52da7be, which is from 08:09 on the day that PR merged
-// at 12:04. So this deferral is pin lag rather than an engine gap, and it clears
-// on the next `npm run bump-carve-pin` rather than on any engine work. The same
-// window is declared per document in resources/engine-pin-drift.txt.
-// The table-cell sites are deferred for a THIRD reason, and it is the widest of
-// the three, so it is its own constant rather than a reuse of ENGINE_DEFERRED.
-// At the six older padding sites the statement is about carve-js. Here it is
-// about all three reference engines: carve-js, carve-php and carve-rs were each
-// built from their own main under carve#904 and measured across every shape -
-// a tab before and after cell content in a delimiter, header and data row, plus
-// both mixed runs - and all three accept the tab everywhere, agreeing with each
-// other on all 35 shapes. There is no majority to read and no engine to blame;
-// the production is simply ahead of every implementation of it.
-//
-// The assertion loop below still runs against the PINNED build, because that is
-// the engine this repository actually executes. Its measured behavior is the
-// same.
-const TABLE_DEFERRED =
-  'a tab in this table-cell padding slot is accepted by every reference engine - carve-js, ' +
-  'carve-php and carve-rs were each built from their own main and measured under carve#904, ' +
-  'and all three render every tab form byte-identical to its space form, agreeing with one ' +
-  'another on every shape. So the production is ahead of all three rather than one of them ' +
-  'being defective. Asserting the current behavior would pin the divergence; asserting the ' +
-  'corrected behavior would fail on engines that have not been changed yet. The corpus ' +
-  'declares the window per document in resources/engine-pin-drift.txt. The ORACLE half runs ' +
-  'regardless - it is not an engine.'
-
-// The TITLE slots are deferred for a FOURTH reason, and it is narrower than
-// any of the three above, so it is its own constant. Measured under carve#907
-// on each engine's own main, built read-only on one host: carve-rs `378f0d5`
-// REJECTS a tab at every form of this slot - the inline link title, the image
-// title and the reference-definition title alike (markup-carve/carve-rs#729) -
-// and its rendering is byte-identical to the oracle's. carve-js `3d95e94` and
-// carve-php `876e312` still read a title after one at all three. So this is a
-// two-engine gap with a reference implementation to port against, not a rule
-// no implementation has reached; that is the difference from TABLE_DEFERRED,
-// which is what makes it a separate constant rather than a reuse.
-const TITLE_DEFERRED =
-  'carve-js and carve-php still read a title after a tab in this slot, at every form that ' +
-  'shares the `link_title` production - inline, image and reference definition. carve-rs main ' +
-  'has narrowed all three (markup-carve/carve-rs#729) and now answers exactly as the oracle ' +
-  'does, so there is a reference to port against rather than a rule nothing implements. ' +
-  'Asserting the current behavior would pin the divergence; asserting the corrected behavior ' +
-  'would fail on the two engines that have not been changed yet, and on the PINNED build, ' +
-  'which is what this loop executes. The ORACLE half runs regardless - it is not an engine.'
-
-// The three CODE-FENCE slots are deferred for the PIN_DEFERRED reason rather
-// than an engine one, and that changed while carve#907 was being worked, so
-// the date is worth writing down. markup-carve/carve-js#800 and
-// markup-carve/carve-php#955 both merged on 2026-08-06; carve-rs was already
-// correct there (markup-carve/carve-rs#724 and earlier). Measured after those
-// merges on carve-js `3d95e94`, carve-php `876e312` and carve-rs `378f0d5`:
-// all three reject a tab at the opener slot, the `"header"` slot and the
-// `[label]` slot, and all three render byte-identically to the oracle. What
-// still accepts one is the build this repository PINS.
-const FENCE_PIN_DEFERRED =
-  'all three reference engines have narrowed this slot - measured on carve-js `3d95e94`, ' +
-  'carve-php `876e312` and carve-rs `378f0d5`, every tab form renders byte-identically to ' +
-  'the oracle rather than to its space form. What still accepts a tab is the PINNED build ' +
-  '(52da7be), which predates markup-carve/carve-js#800 and markup-carve/carve-php#955. So ' +
-  'this is pin lag, not an engine gap, and it clears on the next `npm run bump-carve-pin` ' +
-  'rather than on any engine work. The ORACLE half runs regardless - it is not an engine.'
-
-// The four INLINE ATTRIBUTE sites are deferred for a FIFTH reason, and it is
-// the only one where the production reverses a pinned GOLDEN rather than
-// getting ahead of an unpinned behavior. Corpus 252, 252-2 and 252-3 asserted
-// the tab forms and all three engines produced them - measured under carve#906
-// on carve-js `0c71c7d`, carve-php `d993758` and carve-rs `2d5de72`, where
-// every tab form still renders as its space form does. The three documents are
-// rewritten to the narrowed answer here, so the corpus states the rule; the
-// engines are behind it until they narrow, which is what the three tickets are
-// for.
-const ATTR_DEFERRED =
-  'all three reference engines still read a tab as padding or as a separator inside an INLINE ' +
-  'attribute block - measured on carve-js `0c71c7d`, carve-php `d993758` and carve-rs ' +
-  '`2d5de72`, every tab form renders byte-identical to its space form at all five positions. ' +
-  'Unlike the table cells, this production reverses pinned goldens: corpus 252, 252-2 and ' +
-  '252-3 asserted the tab forms and are rewritten here rather than added to. Asserting the ' +
-  'current behavior would pin the divergence; asserting the corrected behavior would fail on ' +
-  'three engines that have not been changed yet (markup-carve/carve-js#836, ' +
-  'markup-carve/carve-php#985, markup-carve/carve-rs#757). The ORACLE half runs regardless - ' +
-  'it is not an engine.'
-
-const PIN_DEFERRED =
-  'the PINNED carve-js build (52da7be) still opens the block on a tabbed separator - ' +
-  'measured here, the tab form renders byte-identical to the space form. carve-js main ' +
-  'has narrowed it (markup-carve/carve-js#794), so this is pin lag, not an engine gap, and it ' +
-  'clears on the next pin bump. The ORACLE half runs regardless - it is not an engine.'
 
 // One slot, four openers, and the fixtures are written per OPENER rather than
 // per slot for a measured reason: implementations decide it in four separate
@@ -238,7 +145,6 @@ const SITES = [
       { slot: 'a tabbed type word', tab: ':::\tnote\nx\n:::\n', space: '::: note\nx\n:::\n' },
       { slot: 'a mixed run before the type word', tab: '::: \tnote\nx\n:::\n', space: '::: note\nx\n:::\n' },
     ],
-    engineDeferred: PIN_DEFERRED,
   },
   {
     role: 'separator',
@@ -250,7 +156,6 @@ const SITES = [
       { slot: 'a tabbed bare label', tab: ':::\t[First]\nx\n:::\n', space: '::: [First]\nx\n:::\n' },
       { slot: 'a mixed run before the bare label', tab: '::: \t[First]\nx\n:::\n', space: '::: [First]\nx\n:::\n' },
     ],
-    engineDeferred: PIN_DEFERRED,
   },
   {
     role: 'separator',
@@ -262,7 +167,6 @@ const SITES = [
       { slot: 'a tabbed pipe', tab: ':::\t|\nx\n:::\n', space: '::: |\nx\n:::\n' },
       { slot: 'a mixed run before the pipe', tab: '::: \t|\nx\n:::\n', space: '::: |\nx\n:::\n' },
     ],
-    engineDeferred: PIN_DEFERRED,
   },
   {
     role: 'separator',
@@ -274,7 +178,6 @@ const SITES = [
       { slot: 'a tabbed backslash', tab: ':::\t\\\nx\n:::\n', space: '::: \\\nx\n:::\n' },
       { slot: 'a mixed run before the backslash', tab: '::: \t\\\nx\n:::\n', space: '::: \\\nx\n:::\n' },
     ],
-    engineDeferred: PIN_DEFERRED,
   },
 
   // --- PADDING SLOTS: `space`, a tab satisfies them either -------------------
@@ -284,9 +187,10 @@ const SITES = [
   // a `space` because it sits after the first non-whitespace character of the
   // line, where a tab is not syntax (PART 7, carve#901).
   //
-  // Every one of these carries `engineDeferred`: carve-js accepts a tab at all
-  // six and so diverges from the production. See the file header. The five
-  // TABLE-CELL padding sites follow them, under their own constant.
+  // These six were the original padding sites, and the ones carve-js was behind
+  // the production at for longest. The pinned build now rejects a tab at all six
+  // and both halves of the pair run; see the file header. The five TABLE-CELL
+  // padding sites follow them.
   {
     role: 'padding',
     site: 'admonition_open, the "title" and [label] metadata slots',
@@ -306,7 +210,6 @@ const SITES = [
       { slot: 'the "title" slot', tab: '::: note\t"T" [L]\nx\n:::\n', space: '::: note "T" [L]\nx\n:::\n' },
       { slot: 'the [label] slot', tab: '::: note "T"\t[L]\nx\n:::\n', space: '::: note "T" [L]\nx\n:::\n' },
     ],
-    engineDeferred: ENGINE_DEFERRED,
   },
   {
     role: 'padding',
@@ -323,7 +226,6 @@ const SITES = [
       { slot: 'the format-token slot', tab: '---\tyaml\na: 1\n---\nx\n', space: '--- yaml\na: 1\n---\nx\n' },
       { slot: 'the format-token slot, mixed run', tab: '--- \tyaml\na: 1\n---\nx\n', space: '--- yaml\na: 1\n---\nx\n' },
     ],
-    engineDeferred: ENGINE_DEFERRED,
   },
   {
     role: 'padding',
@@ -366,7 +268,6 @@ const SITES = [
       { slot: 'the inline form, mixed run, tab first', tab: '[t](/u\t "T")\n', space: '[t](/u "T")\n' },
       { slot: 'the definition form', tab: '[a]: /u\t"T"\n\n[a][]\n', space: '[a]: /u "T"\n\n[a][]\n' },
     ],
-    engineDeferred: TITLE_DEFERRED,
   },
   {
     role: 'padding',
@@ -386,7 +287,6 @@ const SITES = [
       { slot: 'the image form, mixed run, space first', tab: '![a](/p.png \t"T")\n', space: '![a](/p.png "T")\n' },
       { slot: 'the image form, mixed run, tab first', tab: '![a](/p.png\t "T")\n', space: '![a](/p.png "T")\n' },
     ],
-    engineDeferred: TITLE_DEFERRED,
   },
   {
     role: 'padding',
@@ -417,7 +317,6 @@ const SITES = [
       { slot: 'the trailing-attributes slot', tab: '[a]: /u\t{.c}\n\n[a][]\n', space: '[a]: /u {.c}\n\n[a][]\n' },
       { slot: 'the trailing-attributes slot, mixed run', tab: '[a]: /u\t {.c}\n\n[a][]\n', space: '[a]: /u {.c}\n\n[a][]\n' },
     ],
-    engineDeferred: ENGINE_DEFERRED,
   },
   {
     role: 'padding',
@@ -442,7 +341,6 @@ const SITES = [
       { slot: 'the info-string slot, mixed run, space first', tab: '``` \tjs\nx\n```\n', space: '``` js\nx\n```\n' },
       { slot: 'the info-string slot, mixed run, tab first', tab: '```\t js\nx\n```\n', space: '``` js\nx\n```\n' },
     ],
-    engineDeferred: FENCE_PIN_DEFERRED,
   },
   {
     role: 'padding',
@@ -472,7 +370,6 @@ const SITES = [
       { slot: 'the [label] slot, mixed run, space first', tab: '```js "T" \t[L]\nx\n```\n', space: '```js "T" [L]\nx\n```\n' },
       { slot: 'the [label] slot, mixed run, tab first', tab: '```js "T"\t [L]\nx\n```\n', space: '```js "T" [L]\nx\n```\n' },
     ],
-    engineDeferred: FENCE_PIN_DEFERRED,
   },
 
   // --- TABLE-CELL PADDING SLOTS (carve#904) ---------------------------------
@@ -512,7 +409,6 @@ const SITES = [
       { slot: 'the trailing slot', tab: '| a | b |\n| ---\t| ---\t|\n| 1 | 2 |\n', space: '| a | b |\n| --- | --- |\n| 1 | 2 |\n' },
       { slot: 'the trailing slot, mixed run', tab: '| a | b |\n| --- \t| --- \t|\n| 1 | 2 |\n', space: '| a | b |\n| --- | --- |\n| 1 | 2 |\n' },
     ],
-    engineDeferred: TABLE_DEFERRED,
   },
   {
     role: 'padding',
@@ -526,7 +422,6 @@ const SITES = [
       { slot: 'the trailing slot', tab: '|= h\t|= i\t|\n| 1 | 2 |\n', space: '|= h |= i |\n| 1 | 2 |\n' },
       { slot: 'the trailing slot, mixed run', tab: '|= h \t|= i \t|\n| 1 | 2 |\n', space: '|= h |= i |\n| 1 | 2 |\n' },
     ],
-    engineDeferred: TABLE_DEFERRED,
   },
   {
     role: 'padding',
@@ -548,7 +443,6 @@ const SITES = [
       { slot: 'the continuation-row form, leading slot', tab: '| a | b |\n+\tx | y |\n', space: '| a | b |\n+ x | y |\n' },
       { slot: 'the continuation-row form, trailing slot', tab: '| a | b |\n+ x\t| y\t|\n', space: '| a | b |\n+ x | y |\n' },
     ],
-    engineDeferred: TABLE_DEFERRED,
   },
   {
     role: 'padding',
@@ -560,7 +454,6 @@ const SITES = [
       { slot: 'the leading slot', tab: '| a | b |\n|\t^ | c |\n', space: '| a | b |\n| ^ | c |\n' },
       { slot: 'the trailing slot', tab: '| a | b |\n| ^\t| c |\n', space: '| a | b |\n| ^ | c |\n' },
     ],
-    engineDeferred: TABLE_DEFERRED,
   },
   {
     role: 'padding',
@@ -572,7 +465,6 @@ const SITES = [
       { slot: 'the leading slot', tab: '| a | b |\n| c |\t< |\n', space: '| a | b |\n| c | < |\n' },
       { slot: 'the trailing slot', tab: '| a | b |\n| c | <\t|\n', space: '| a | b |\n| c | < |\n' },
     ],
-    engineDeferred: TABLE_DEFERRED,
   },
 
   // --- INLINE ATTRIBUTE-BLOCK INTERIOR (carve#906) --------------------------
@@ -602,7 +494,6 @@ const SITES = [
       { slot: 'the run after `{`', tab: '*y*{\t.c}\n', space: '*y*{ .c}\n' },
       { slot: 'the run before `}`', tab: '*z*{.d\t}\n', space: '*z*{.d }\n' },
     ],
-    engineDeferred: ATTR_DEFERRED,
   },
   {
     role: 'padding',
@@ -615,7 +506,6 @@ const SITES = [
       { slot: 'a mixed run between two classes', tab: '*x*{.a \t.b}\n', space: '*x*{.a .b}\n' },
       { slot: 'a mixed run the other way round', tab: '*x*{.a\t .b}\n', space: '*x*{.a .b}\n' },
     ],
-    engineDeferred: ATTR_DEFERRED,
   },
   {
     role: 'padding',
@@ -634,7 +524,6 @@ const SITES = [
     fixtures: [
       { slot: 'a tab after a bare value', tab: '*x*{k=a\t.b}\n', space: '*x*{k=a .b}\n' },
     ],
-    engineDeferred: ATTR_DEFERRED,
   },
   {
     role: 'padding',
@@ -648,7 +537,6 @@ const SITES = [
     fixtures: [
       { slot: 'a tab inside the empty block', tab: '[x]{\t}\n', space: '[x]{ }\n' },
     ],
-    engineDeferred: ATTR_DEFERRED,
   },
 ]
 
@@ -704,11 +592,12 @@ for (const { role, site, required, forbidden, why, requiredOhm, forbiddenOhm } o
   })
 }
 
-// EVERY site carries fixtures, with no exception: the oracle loop below runs
-// them all, and a site with no fixtures would silently drop out of it - the
-// check-that-cannot-fail class tracked in carve#755. `engineDeferred` does not
-// substitute for fixtures; it only says why the ENGINE half of the pair is
-// skipped, which is a statement about carve-js, not about the oracle.
+// EVERY site carries fixtures, with no exception: the oracle and engine loops
+// below run them all, and a site with no fixtures would silently drop out of
+// both - the check-that-cannot-fail class tracked in carve#755. This mattered
+// most while the engine half was deferred, when a fixtureless site was checked
+// by nothing at all; it still matters, because a site is only ever as covered
+// as the pairs it declares.
 //
 // The four SEPARATOR sites had no fixtures at all until carve#887. They were
 // checked against the grammar TEXT and nothing else, so the oracle went on
@@ -835,48 +724,33 @@ test('every slot carve#907 pinned carries a mixed run in both orders', () => {
   }
 })
 
-// A deferral is a claim about the engines, so it has to be written down and
-// readable. An empty string is not a reason, and a MISSING field is not one
-// either: with the engine loop gone, a padding site that declared nothing
-// would look identical to one that had been checked, which is precisely the
-// carve#755 shape. So the field is required at every padding site, and adding
-// one more without a reason fails here.
-test('every site states why its engine half is deferred', () => {
-  for (const s of SITES) {
-    assert.ok(
-      typeof s.engineDeferred === 'string' && s.engineDeferred.length > 0,
-      `site "${s.site}" must state why the engine half is deferred. ` +
-        `carve-js accepts a tab at every padding slot, and the PINNED build also ` +
-        `accepts one in the separator slot; if either has changed, assert it here ` +
-        `instead of deferring.`,
-    )
-  }
-})
-
-// The deferral REASON is itself a measurement, so it is measured rather than
-// asserted in prose. carve#896's first attempt at a deferral gave a rationale
-// that measurement showed was false for the engine actually executed, and
-// nothing caught it - a written reason nobody re-runs is a claim, not a check.
+// THE ENGINE HALF, at EVERY padding site, asserting the corrected behavior.
 //
-// This is NOT pinning the divergence. The assertion is "the reason for
-// deferring still holds", and its failure mode is the useful one: the day
-// carve-js narrows a padding slot to `space`, this goes red and says to delete
-// the deferral and assert the corrected behavior instead. A test that pinned
-// the bug would go red on the FIX and have to be deleted to allow it; this one
-// goes red on the fix and tells you what to write in its place.
+// This loop used to assert the opposite - that the pinned build still read a
+// tab as the space form - because the production was ahead of every engine and
+// pinning the behavior of the day would have meant deleting the assertion to
+// allow the fix. That deferral is retired: the pin now rejects a tab at all of
+// these slots.
+//
+// The direction is the one carve#901 settled, and it is stated as a PAIR for
+// the same reason the oracle half below states it as a pair: "rejects a tab" is
+// only observable against the space form that is accepted. An engine that broke
+// the slot outright would render both forms the same way and satisfy a bare
+// "the tab form is not a code block" check; it cannot satisfy this one, because
+// the space form still has to parse.
 for (const { role, site, fixtures } of SITES) {
   for (const { slot, tab, space } of fixtures) {
-    test(`the engine deferral still holds - carve-js admits a tab: ${site} - ${slot}`, () => {
-      assert.equal(
+    test(`${role} slot rejects a tab in the pinned engine: ${site} - ${slot}`, () => {
+      assert.notEqual(
         carveToHtml(tab),
         carveToHtml(space),
-        `carve-js no longer parses a tab in this padding slot as the space form.\n` +
+        `the pinned carve-js parses a tab in this padding slot as the space form.\n` +
           `  slot:       ${slot}\n` +
           `  tab form:   ${JSON.stringify(tab)}\n  space form: ${JSON.stringify(space)}\n` +
-          `  This is GOOD NEWS: the engine has caught up with the production ` +
-          `(PART 7, carve#901).\n` +
-          `  Drop \`engineDeferred\` at this site and assert the corrected behavior ` +
-          `instead of deferring it.`,
+          `  The slot takes a \`space\` and nothing else (PART 7, carve#901). A run ` +
+          `spelled\n` +
+          `  \`[ \\t]+\`, or a "first character is a space" test that lets a mixed ` +
+          `run through,\n  reads this pair as one answer.`,
       )
     })
   }
@@ -1563,23 +1437,21 @@ for (const [name, src, needle] of [
 // run BELOW the floor is what separates them: one space and two spaces must NOT
 // continue. Without those two rows, an oracle that dropped the column
 // comparison entirely would pass here.
-const INDENT_DEFERRED =
-  'no engine reads a definition body continuation as a column yet except carve-rs. ' +
-  'The production leads the implementations here by the carve#888 signoff, which said ' +
-  'so explicitly: measured on the discriminating shape (a blank line, which forces ' +
-  'this branch instead of lazy_continuation_line), carve-js 3d95e94 and carve-php ' +
-  '876e312 both end the body on a bare tab and disagree with each other on a mixed ' +
-  'two-space-then-tab run, while carve-rs 83ab9c1 continues on every run above the ' +
-  'floor. carve-js is fixed on markup-carve/carve-js#817 and carve-php on ' +
-  'markup-carve/carve-php#964, neither merged. Asserting the corrected behavior ' +
-  'against the pinned build would fail on an engine that has not changed; asserting ' +
-  'the current behavior would pin the pre-ruling reading. So the per-run PINNED ' +
-  'column below records what the pinned build actually does, and goes red the day it ' +
-  'catches up. The ORACLE half runs regardless - it is not an engine.'
-
-// `pinned` is a MEASUREMENT of `@markup-carve/carve` at the commit package.json
-// names, not a statement about carve-js main. Both were measured while writing
-// this and they agree on all eight runs.
+// THE ENGINE HALF RUNS HERE TOO, and it was the last of the deferrals to clear.
+//
+// Each run used to carry a `pinned` measurement - 'ends' or 'continues' on the
+// build package.json named - because the production led every engine but
+// carve-rs by the carve#888 signoff, and asserting the corrected behavior would
+// have failed on a build nobody had changed. markup-carve/carve-js#817 merged,
+// the pin moved to 816c3a3, and the four rows recorded as 'ends' went red
+// together: the pinned build now continues on every run at or above the column-3
+// floor and ends on every run below it. So the runs are asserted against the
+// floor directly and the per-run measurement is gone - there is nothing left for
+// it to disagree with.
+//
+// carve-php is still behind here (markup-carve/carve-php#964, unmerged). That is
+// a cross-engine question and it lives in claims:check and compare:impls, not in
+// this loop, which runs the pinned build alone.
 const DEFINITION_INDENT_SITE = {
   role: 'indentation',
   site: 'definition_continuation, the leading run before a definition body line',
@@ -1591,24 +1463,23 @@ const DEFINITION_INDENT_SITE = {
   // The space spelling of the floor. Every `above` fixture is compared to this.
   baseline: '   ',
   above: [
-    { run: 'a bare tab', indent: '\t', column: 4, pinned: 'ends' },
-    { run: 'a space then a tab', indent: ' \t', column: 4, pinned: 'ends' },
+    { run: 'a bare tab', indent: '\t', column: 4 },
+    { run: 'a space then a tab', indent: ' \t', column: 4 },
     // These two are not redundant with the one above. A "first character is a
     // space" implementation of the character rule accepts them and rejects the
     // bare tab, so the pinned build splits across these three rows - and
     // carve-js and carve-php split from EACH OTHER at the two-space form
     // (carve#893's table). One fixture would have reported a single engine gap
     // where there are three different readings.
-    { run: 'two spaces then a tab', indent: '  \t', column: 4, pinned: 'continues' },
-    { run: 'three spaces then a tab', indent: '   \t', column: 4, pinned: 'continues' },
-    { run: 'a tab then a space', indent: '\t ', column: 5, pinned: 'ends' },
-    { run: 'two tabs', indent: '\t\t', column: 8, pinned: 'ends' },
+    { run: 'two spaces then a tab', indent: '  \t', column: 4 },
+    { run: 'three spaces then a tab', indent: '   \t', column: 4 },
+    { run: 'a tab then a space', indent: '\t ', column: 5 },
+    { run: 'two tabs', indent: '\t\t', column: 8 },
   ],
   below: [
-    { run: 'a single space', indent: ' ', column: 1, pinned: 'ends' },
-    { run: 'two spaces', indent: '  ', column: 2, pinned: 'ends' },
+    { run: 'a single space', indent: ' ', column: 1 },
+    { run: 'two spaces', indent: '  ', column: 2 },
   ],
-  engineDeferred: INDENT_DEFERRED,
 }
 
 // The discriminating document. The BLANK LINE is load-bearing, and its absence
@@ -1669,32 +1540,38 @@ for (const f of DEFINITION_INDENT_SITE.below) {
   })
 }
 
-for (const f of [...DEFINITION_INDENT_SITE.above, ...DEFINITION_INDENT_SITE.below]) {
-  test(`the engine deferral still holds - the pinned carve-js ${f.pinned} on ${f.run}`, () => {
-    const same =
-      carveToHtml(definitionDoc(f.indent)) ===
-      carveToHtml(definitionDoc(DEFINITION_INDENT_SITE.baseline))
+// The engine half of the same pair, against the same floor. Split `above` from
+// `below` rather than run one loop over a recorded answer: the floor is what
+// separates "reaches column 3" from "is any whitespace run at all", and a single
+// loop comparing each run to a per-run measurement cannot state that difference.
+for (const f of DEFINITION_INDENT_SITE.above) {
+  test(`the pinned engine reads a definition body continuation as a column: ${f.run} (column ${f.column})`, () => {
     assert.equal(
-      same,
-      f.pinned === 'continues',
-      `the pinned carve-js no longer ${f.pinned} the definition body on this run.\n` +
-        `  run: ${JSON.stringify(f.indent)} (column ${f.column})\n` +
-        `  If it now CONTINUES every run at or above column 3 and ends every run ` +
-        `below it, that is GOOD NEWS: markup-carve/carve-js#817 has landed and the ` +
-        `pin has caught up with the production. Drop \`engineDeferred\` at this site ` +
-        `and assert the corrected behavior instead of recording the divergence.`,
+      carveToHtml(definitionDoc(f.indent)),
+      carveToHtml(definitionDoc(DEFINITION_INDENT_SITE.baseline)),
+      `the pinned carve-js did not continue the definition body on a run reaching ` +
+        `column ${f.column}, the way three spaces (column 3) do.\n` +
+        `  run:      ${JSON.stringify(f.indent)}\n` +
+        `  baseline: ${JSON.stringify(DEFINITION_INDENT_SITE.baseline)}\n` +
+        `  Indentation is columns, not characters (PART 9 §24 C1, carve#893, ` +
+        `markup-carve/carve-js#817).`,
     )
   })
 }
 
-test('the indentation site states why its engine half is deferred', () => {
-  assert.ok(
-    typeof DEFINITION_INDENT_SITE.engineDeferred === 'string' &&
-      DEFINITION_INDENT_SITE.engineDeferred.length > 0,
-    `the indentation site must state why the engine half is deferred, for the ` +
-      `same reason every padding site must.`,
-  )
-})
+for (const f of DEFINITION_INDENT_SITE.below) {
+  test(`the pinned engine keeps the column-3 floor: ${f.run} (column ${f.column}) does not continue`, () => {
+    assert.notEqual(
+      carveToHtml(definitionDoc(f.indent)),
+      carveToHtml(definitionDoc(DEFINITION_INDENT_SITE.baseline)),
+      `the pinned carve-js continued the definition body on a run reaching only ` +
+        `column ${f.column}.\n  run: ${JSON.stringify(f.indent)}\n` +
+        `  \`definition_indent\` is a run REACHING COLUMN 3, not any run at all ` +
+        `(carve#893). Widening it to "some whitespace" passes every other check ` +
+        `in this section.`,
+    )
+  })
+}
 
 // THE DEDENT IS COLUMNS TOO, and every check above this line is blind to it.
 //
