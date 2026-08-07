@@ -18,6 +18,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expectedFileFor, targetOf } from '../scripts/lib/corpus-targets.mjs'
+import { miscount, shortfall } from '../scripts/spec/participants.mjs'
 import {
   autolink,
   carveToAnsi,
@@ -134,7 +135,22 @@ const DECLARED_UNIMPLEMENTED = {
     'the reference engine has no quote-locale option at all; carve-php has the extension (carve#560)',
 }
 
+/*
+ * What the loop below actually reached. A runner that generates its cases from
+ * a manifest reports a clean run when the manifest is empty, because zero tests
+ * pass: measured, `manifest.cases = []` left this file exiting 0 with nothing
+ * registered (carve#755, variant 2). `tests/corpus-targets.test.mjs` does floor
+ * the manifest at one case, but a partial loss - the eight non-html entries
+ * removed, say - passes there and silently deletes eight comparisons here.
+ *
+ * `compared` is the count that matters, and it is deliberately not
+ * `manifest.cases.length`: a case that reached a `continue` above the assertion
+ * is a case nobody compared, and the two numbers are how you tell them apart.
+ */
+let reached = 0
+let compared = 0
 for (const entry of manifest.cases) {
+  reached++
   const slug = basename(entry.slug)
   const targetName = targetOf(entry)
   const target = targets[targetName]
@@ -176,6 +192,7 @@ for (const entry of manifest.cases) {
     continue
   }
 
+  compared++
   test(`${slug} (${entry.feature}, ${targetName})`, () => {
     assert.ok(existsSync(crvPath), `missing ${slug}.crv pair`)
     assert.ok(existsSync(expectedPath), `missing ${expectedFile} pair`)
@@ -184,3 +201,33 @@ for (const entry of manifest.cases) {
     assert.equal(runner(source, target.render).trim(), expected.trim())
   })
 }
+
+test('the run compared the cases the manifest declares', () => {
+  // The floor is what a manifest emptied or halved cannot get past. It is well
+  // under the count today (38 of 39 cases compare; one is a declared skip), for
+  // the same reason the other floors in this repo are: the optional corpus is
+  // append-only, so a number below it can only be reached by loss.
+  const thin = shortfall({
+    label: 'OPTIONAL',
+    actual: compared,
+    atLeast: 30,
+    of: 'case(s)',
+    hint: 'tests/corpus-optional/manifest.json is the population; a run over ' +
+      'fewer of it registers fewer tests and still exits 0.',
+  })
+  assert.equal(thin, null, thin ?? '')
+
+  // And the floor cannot see a case the loop reached and dropped, which is the
+  // failure a floor alone leaves standing (carve#955's M3). Every entry either
+  // compares or is one of the declared skips above.
+  const declaredSkips = manifest.cases.filter(
+    (e) => !featureRunners[e.feature] && DECLARED_UNIMPLEMENTED[e.feature],
+  ).length
+  const wrong = miscount({
+    label: 'OPTIONAL',
+    actual: compared + declaredSkips,
+    expected: reached,
+    of: 'case(s) compared or declared unimplemented',
+  })
+  assert.equal(wrong, null, wrong ?? '')
+})

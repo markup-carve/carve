@@ -23,6 +23,7 @@ import {
   targetNames,
   targetOf,
 } from '../scripts/lib/corpus-targets.mjs'
+import { shortfall } from '../scripts/spec/participants.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus-optional')
@@ -43,7 +44,22 @@ test('a core case may pin a non-HTML target by adding the file', () => {
   const known = new Set(Object.values(TARGET_EXTENSIONS))
   const stray = []
   const orphaned = []
-  for (const name of readdirSync(core)) {
+  const entries = readdirSync(core)
+  // Both assertions below are NEGATIVE: they pass when two lists came out
+  // empty, and an empty directory listing produces exactly that. Measured, not
+  // argued - with tests/corpus cleared this file passed all eleven of its tests
+  // (carve#755, variant 2). The floor is what makes the two empty lists mean
+  // something.
+  const thin = shortfall({
+    label: 'CORPUS',
+    actual: entries.length,
+    atLeast: 100,
+    of: 'file(s) in tests/corpus',
+    hint: 'run `npm run corpus:build` first; a sweep over an unbuilt corpus ' +
+      'finds no stray extension because it looked at nothing.',
+  })
+  assert.equal(thin, null, thin ?? '')
+  for (const name of entries) {
     // The directory's own README is prose, not an expectation.
     if (name === 'README.md') continue
     const ext = name.slice(name.lastIndexOf('.') + 1)
@@ -127,9 +143,24 @@ test('a non-html case does not also carry an html fixture', () => {
   // the old code looked for: the target is the pairing rule, not a fallback
   // chain, and two fixtures for one case would let the two runners disagree
   // about which one is authoritative.
-  for (const entry of manifest.cases) {
+  //
+  // The `continue` is a filter, and the assertion below it is only ever made
+  // about what survives it. Drop every non-html entry from the manifest and
+  // this test passes over zero cases while the optional runner quietly stops
+  // comparing eight of them - so the surviving subset gets a floor of its own.
+  // The subset is small on purpose: one is enough to catch it emptying, and an
+  // exact count would churn on every non-html case added.
+  const nonDefault = manifest.cases.filter((entry) => targetOf(entry) !== DEFAULT_TARGET)
+  const thin = shortfall({
+    label: 'NON-HTML',
+    actual: nonDefault.length,
+    atLeast: 1,
+    of: 'optional case(s) pinning a target other than html',
+    hint: 'the pairing rule this file exists for is unexercised without one.',
+  })
+  assert.equal(thin, null, thin ?? '')
+  for (const entry of nonDefault) {
     const target = targetOf(entry)
-    if (target === DEFAULT_TARGET) continue
     const slug = basename(entry.slug)
     assert.ok(
       !existsSync(resolve(corpusDir, `${slug}.html`)),
