@@ -442,8 +442,18 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    newline inside the `h1`. A Djot document that wraps a heading therefore
    renders differently in Carve; `carve lint --from-djot` reports it.
 
-   A caption (`^ ` ...) still attaches to a heading (§4) -- attachment is not
-   continuation, and the caption is its own construct on its own line.
+   A `^ ` caption line is no exception: it does not fold in, and it does not
+   attach either, because a heading is NOT one of §4's captionable hosts. It
+   opens an ordinary paragraph of its own.
+
+     # H              -> <h1>H</h1> then <p>^ cap</p>
+     ^ cap
+
+   This sentence used to read "a caption still attaches to a heading (§4)",
+   citing as its authority the very clause whose enumeration omits a heading,
+   and no engine attaches one. A false claim carrying a true citation is worse
+   than a bare one: a reader who checks the reference finds the opposite and has
+   no way to tell which of the two is the language (carve#991).
 
    NO TRAILING ATTRIBUTES (djot-strict). A heading line carries NO trailing
    `{...}` attribute block: a `{...}` at the end of a heading line is ordinary
@@ -1037,11 +1047,18 @@ caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
    caption text `cap\nmore`. The caption id (`#` placeholder) and cross-reference
    targeting use the full folded text. *)
 caption_slot = [blank_line], caption ;
-(* FORMAL adjacency (PART 9 §4, now structural): a caption attaches to the
-   immediately preceding captionable block, with AT MOST ONE blank line
-   between them -- the optional blank_line in caption_slot is the whole
-   allowance. Host productions reference caption_slot; a `^ ` line anywhere
-   else is ordinary inline/paragraph content. *)
+(* FORMAL adjacency (PART 9 §4): a caption attaches to the immediately
+   preceding captionable block, with AT MOST ONE blank line between them --
+   the optional blank_line in caption_slot is the whole allowance.
+
+   THREE OF THE FIVE HOSTS REFERENCE THIS SLOT: `code_block`, `blockquote` and
+   `table`. §4's other two -- the image paragraph and the standalone
+   display-math block -- attach the same caption under the same allowance, but
+   there is no production to hang the slot on, so for them §4 is the whole
+   rule. §4 says which, and why. A `^ ` line that follows neither a slot-
+   carrying host nor one of those two is ordinary inline/paragraph content.
+   (Reading this note as "only a production attaches a caption" would make a
+   captioned image a paragraph, which §4 denies and no engine does.) *)
 
 (* CAPTION NUMBER PLACEHOLDER -- NORMATIVE.
    The FIRST bare `#` in a caption's TOP-LEVEL inline_content is a number
@@ -3052,14 +3069,42 @@ EOF = (* end of file *) ;
         `//x//` and `__x__` (corpus 74-doubled-emphasis-delimiters). The
         braced-only `^`/`,` are not bare, so `^^x^^` is likewise literal.
 
-   4. CAPTION PLACEMENT -- FORMALIZED (caption_slot in PART 2). A `^ `
-      caption attaches via the [caption_slot] slot of the captionable
-      hosts: an image paragraph, a blockquote, a table, a fenced code block
+   4. CAPTION PLACEMENT -- ONE RULE, TWO SPELLINGS (caption_slot in PART 2).
+      A `^ ` caption attaches to exactly five captionable hosts: an image
+      paragraph, a blockquote, a table, a fenced code block
       (a captioned code block is a numbered LISTING), or a standalone
       display-math block (a numbered EQUATION; the block must be solely the
-      `$$`…`` span). caption_slot's single optional blank_line IS the
-      "one blank line allowed between block and caption" rule -- structural
-      now, not prose.
+      `$$`…`` span). The allowance is the same for all five: adjacent OR exactly
+      one blank line attaches, two blank lines detach and leave the `^ ` line
+      an ordinary paragraph.
+
+      WHERE THAT ALLOWANCE IS WRITTEN DOWN differs, and saying so is the point
+      of this paragraph. For THREE hosts it is STRUCTURAL -- `code_block`,
+      `blockquote` and `table` each end in `[caption_slot]` (PART 2), and
+      caption_slot's single optional blank_line IS the rule. For the IMAGE
+      PARAGRAPH and the STANDALONE DISPLAY-MATH BLOCK it is PROSE: this
+      clause is the rule, and PART 3 already says so beside `image` ("there
+      is no separate grammar production for the pair").
+
+      NOT AN OVERSIGHT. Neither of those two has a production to hang the slot
+      on. Both ARE a `paragraph` (PART 2), and what distinguishes them -- a
+      paragraph whose whole content is one image, a paragraph that is solely
+      the display-math span -- is a condition on that paragraph's inline
+      content, the same not-context-free class as PART 7's cell_content ("may
+      not contain an unescaped `|`") and §15's block_attributes. Two ways to
+      formalize it fail on inspection: hanging `[caption_slot]` on `paragraph`
+      itself would make EVERY paragraph captionable, which this enumeration
+      denies and no engine does; and a separate image / math paragraph
+      production would duplicate `paragraph` ambiguously AND inherit its
+      trailing `[blank_line]`, so the one blank line the slot exists to
+      account for could be consumed by either optional -- structural in
+      spelling and undecided in fact.
+
+      One rule, two spellings, not two rules. An engine implements this
+      clause; it does not implement three productions and then guess at the
+      remaining two hosts. This paragraph used to end "structural now, not
+      prose", which was true of three hosts out of five and read as true of
+      all five (carve#991).
 
    5. TABLE MODEL -- OPERATIONAL SEMANTICS (cell split, row validity,
       header cells, span walk, continuation rows, delimiter row, row
