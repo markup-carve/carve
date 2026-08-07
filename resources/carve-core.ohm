@@ -9,6 +9,15 @@ CarveCore {
   // conformance corpus in CI fashion: a corpus input that this grammar
   // matches must render to the corpus HTML byte-for-byte.
   //
+  // PRECEDENCE. This file is DERIVED and resources/grammar.ebnf is normative;
+  // where the two disagree, the production wins and this file is the defect.
+  // See the NORMATIVITY block at the top of that file. Historically both were
+  // described as "the two normative files", which is what let a disagreement
+  // sit unresolved with each one deferring to the other (carve#912) - there
+  // was no rule saying which was the language. There is now, and the
+  // conformance direction is one-way: core:check asks whether this grammar
+  // reproduces the committed corpus, never whether the corpus matches it.
+  //
   // SCOPE (Core). This file owns the INLINE layer and the leaf blocks of
   // the executable spec. Blocks: ATX headings, thematic breaks, paragraphs,
   // fenced code. Inline: the seven bare emphasis delimiters (/ * _ ~ ^ = ,)
@@ -88,9 +97,9 @@ CarveCore {
   // The slot before the info string is PADDING and takes `space`, matching
   // `fenced_code_block = code_fence_open, [space], [code_fence_info]` in
   // resources/grammar.ebnf. It said `spaceChar*` until carve#907, and
-  // `spaceChar` is a space OR A TAB - so the two normative files disagreed at
-  // this one production while every prose clause said a tab is syntax only in
-  // a line's leading indentation run (PART 7).
+  // `spaceChar` is a space OR A TAB - so this file disagreed with the
+  // production it implements at this one point, while every prose clause said
+  // a tab is syntax only in a line's leading indentation run (PART 7).
   //
   // The caveat this comment used to carry - THIS RULE IS NOT EXECUTED - was
   // true and is not any more. scripts/spec/render.mjs still matches only
@@ -309,7 +318,7 @@ CarveCore {
   // run (PART 7, MARKER SEPARATORS AND PADDING SLOTS; carve#901 correcting
   // carve#878). This file briefly read `" " | "\t"` to match the widened
   // production (carve#888); the production has since narrowed back, and the
-  // two normative files in `resources/` agree again. `destChar` already
+  // two files in `resources/` agree again. `destChar` already
   // excludes both space and tab, so the destination still ends at either.
   //
   // The three engines accept a tab here and now diverge from the production;
@@ -438,9 +447,9 @@ CarveCore {
   //
   // That was LATENT rather than wrong output: scripts/spec/layout.mjs bails
   // on a blank line before this rule is reached, so no document could show
-  // it. A contradiction between the two normative files is worth removing
-  // anyway - the next reader of either file has no way to tell which one is
-  // the language. tests/block-attribute-line-breaks.test.mjs drives this
+  // it. A contradiction between this file and the production it implements is
+  // worth removing anyway - a reader who hits one has to know which is the
+  // language, and at the time nothing said (it does now: the production). tests/block-attribute-line-breaks.test.mjs drives this
   // rule directly so the narrowing is observable rather than another
   // unevaluated edit (carve#755, carve#916).
   blockAttrs = "{" battrPad attrItem (battrSep attrItem)* battrPad "}"
