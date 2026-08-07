@@ -1486,11 +1486,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
       let openFence = null // run string of a fence opened inside the quote
       let prevBlank = true // fences open only at BLOCK START (I4 otherwise)
       let qOpenPara = false // does the quote currently end in an open paragraph?
-      const trackFence = (l) => {
+      let qPara = [] // its lines, for SS12's absorption test below
+      const trackFence = (l, idx) => {
         if (openFence) {
           const c = PURE_FENCE.exec(l)
           if (c && c[1][0] === openFence[0] && c[1].length >= openFence.length) openFence = null
           qOpenPara = false
+          qPara = []
           return
         }
         const f = FENCE.exec(l)
@@ -1504,11 +1506,37 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
         // nothing on the page for a lazy line to continue. Both were missing
         // here, exactly as they were missing in carve-js and carve-php
         // (carve-js#554, carve-php#652).
-        if (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
-            isColonParagraphInterrupt(l) || l[0] === '|' || l[0] === '{' ||
-            DEFLIST_TERM.test(l) || isLinkDef(l) ||
-            FOOTNOTE_DEF.test(l)) qOpenPara = false
-        else qOpenPara = true
+        //
+        // A COLON-CLOSER-SHAPED LINE THAT IS NOT ABSORBED leaves no open
+        // paragraph either, and it was the third omission (carve#920 shape C).
+        // A `:::` that really acts as a fence line either CLOSES a div - which
+        // closes the paragraph inside it - or, with nothing to close, OPENS an
+        // empty one, and a container that has just opened holds no paragraph.
+        // Either way S4's "ANY container in the open stack holds an OPEN
+        // PARAGRAPH" is false after it, and falling through to
+        // `else qOpenPara = true` treated the line as prose.
+        //
+        // The exception is SS12's absorption (carve#902, corpus 260): a bare
+        // `:::` with no body after it, or one under a paragraph that already
+        // holds an INVALID colon opener, is swallowed as paragraph text and the
+        // paragraph stays open. That is the same predicate the block reader
+        // uses, applied to the STRIPPED line and to the quote's own paragraph -
+        // spelling it a second way here is how the two answers would drift.
+        const absorbedColon = qOpenPara && COLON_CLOSER.test(l) &&
+          !colonFenceInterrupts(l, hasFollowingBody(lines, idx), qPara)
+        if (!absorbedColon &&
+            (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
+             isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
+             l[0] === '|' || l[0] === '{' ||
+             DEFLIST_TERM.test(l) || isLinkDef(l) ||
+             FOOTNOTE_DEF.test(l))) {
+          qOpenPara = false
+          qPara = []
+        } else {
+          if (!qOpenPara) qPara = []
+          qOpenPara = true
+          qPara.push(l)
+        }
       }
       while (i < n) {
         // The MARKER is `>` plus a space, or `>` alone - the same rule the
@@ -1522,7 +1550,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
         const qm = QUOTE.exec(lines[i])
         if (qm) {
           inner.push(qm[1] ?? '')
-          trackFence(qm[1] ?? '')
+          trackFence(qm[1] ?? '', i)
           i++
           continue
         }
@@ -1537,8 +1565,19 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
           i = attached.next
           continue
         }
-        if (lines[i] !== undefined && qOpenPara && !isBlank(lines[i]) && !peekInterrupts(i) && !CAPTION.test(lines[i])) {
+        if (lines[i] !== undefined && qOpenPara && !isBlank(lines[i]) &&
+            !peekInterrupts(i) && !COLON_CLOSER.test(lines[i]) && !CAPTION.test(lines[i])) {
           // lazy continuation folds into the open quoted paragraph (SS10 I6)
+          //
+          // A FLUSH-LEFT COLON FENCE NEVER FOLDS (carve#920 shape B).
+          // `peekInterrupts` answers SS12 for a line the paragraph already
+          // owns: a bare `:::` with no body after it is ABSORBED rather than an
+          // interruption. That rule is written about a paragraph's OWN lines,
+          // and this line is not one of the quote's - it supplies no `>`
+          // prefix, so it reaches the paragraph only by S4's lazy fold. The
+          // strict column-0 rule decides it instead: a flush-left fence-shaped
+          // line interrupts, the quote closes, and the line is re-classified at
+          // top level. All three engines already answer it that way.
           inner.push(lines[i])
           i++
           continue

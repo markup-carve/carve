@@ -58,7 +58,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `267-a-definition-marker-s-separator-is-a-space-and-it-is-a-run`,
 `268-trailing-whitespace-on-a-content-line-is-dropped`,
 `269-a-definition-body-continuation-indented-past-its-column-is-lazy-text`,
-`270-a-real-div-in-a-container-and-the-flush-left-line-after-it`.
+`270-a-real-div-in-a-container-and-the-flush-left-line-after-it`,
+`271-the-flush-left-line-after-a-container-a-quoted-line-opened`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the

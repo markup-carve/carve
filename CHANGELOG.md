@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 1 S4 and §12: the container kind is not a parameter, and absorption
+  reaches a paragraph's own lines only** (carve#920). A block quote answers S4
+  the way a list item does: `> quote` / `> ::: note` / `tail` closes the quote
+  and leaves `tail` at top level, because the div the quoted line opened is
+  empty and holds no open paragraph. The CLOSED form decides the same way - a
+  closed container holds none either. carve-js and carve-php produce the
+  top-level paragraph for the list item and fold the identical shape into the
+  block quote (carve-js#833, carve-php#982); carve-rs answers both alike.
+
+  §12's absorption is bounded by whose line it is. A flush-left `:::` under a
+  quoted paragraph supplies no `>` prefix, so it reaches that paragraph only
+  through S4's lazy fold; the strict column-0 rule decides it instead, the quote
+  closes, and the line opens a div of its own. The QUOTED `> :::` twin is still
+  absorbed, and the two are pinned side by side. The executable spec absorbed
+  the flush-left line and is corrected here.
+
 - **PART 1 S4: a real div in a container, and the flush-left line after it**
   (carve#909). An unterminated `::: ` div decides S4 on the same question every
   other container does, and the two answers differ by one line of body: a div
