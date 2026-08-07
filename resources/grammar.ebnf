@@ -162,6 +162,31 @@
         implementation does not follow it is worth flagging when it lands, not
         when someone next reads it. (carve#561, carve#572)
 
+        A REAL DIV IS A CONTAINER LIKE ANY OTHER -- NORMATIVE (carve#909). An
+        unterminated `::: ` div in a container decides the same way, on the same
+        question, and the two answers differ by one line of body:
+
+            - item              - item
+              ::: note            ::: note
+              body              tail
+            tail
+
+        On the left the div holds an OPEN PARAGRAPH, so `tail` folds into it.
+        On the right the div is EMPTY -- and the item's own paragraph was closed
+        by the div that followed it -- so nothing in the stack is open, the
+        containers close and `tail` is a top-level paragraph. Closing the div
+        with a `:::` line closes the paragraph inside it and inverts the left
+        answer, which is what the third document pins.
+
+        THE SPELLING MATTERS AND IS WHY THIS LOOKED CONTESTED. carve#909
+        measured `:::note`, with no separator. PART 7 has since narrowed the
+        colon fence's separator to a space (carve#900, carve#905), so that line
+        no longer passes the opener test: it is ABSORBED as paragraph text, and
+        its answer comes from SS12's absorption rule and carve#902 rather than
+        from this clause. Measured again on the `::: note` spelling, the oracle
+        and carve-js agree on all three documents above, so the oracle is not
+        stale here -- what was stale was the fence.
+
         This said "the innermost MATCHED context holds an OPEN PARAGRAPH",
         which describes something no implementation does. A lazy line carries
         no markers, so it matches ZERO containers and the innermost matched

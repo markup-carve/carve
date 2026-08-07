@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 1 S4: a real div in a container, and the flush-left line after it**
+  (carve#909). An unterminated `::: ` div decides S4 on the same question every
+  other container does, and the two answers differ by one line of body: a div
+  holding a paragraph has one open, so the flush-left line folds into it; an
+  empty div has none, so the containers close and the line is top-level.
+  Terminating the div closes the paragraph inside it and inverts the first
+  answer.
+
+  Nothing pinned any of the three, and the ticket's own shapes no longer parse
+  the way they did when it was written: they are spelled `:::note`, and PART 7
+  has since narrowed the colon fence's separator to a space (carve#900,
+  carve#905), so that line is ABSORBED paragraph text and its answer comes from
+  §12 and carve#902 instead. Measured again on `::: note`, the oracle and
+  carve-js agree on all three documents, so the oracle was not stale here - the
+  fence was.
+
 - **PART 9: a definition body's continuation indented past its column is lazy
   text** (carve#918). `definition_indent` REACHES the body's column - the one
   `:  ` establishes - and does not measure how far past it a line went, because
