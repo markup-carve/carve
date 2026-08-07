@@ -4732,10 +4732,15 @@ EOF = (* end of file *) ;
         resolved by rescanning the whole output per occurrence, and a crossref
         target is not cloned without bound.
       - NON-HTML TARGETS. The Markdown, plain-text, and terminal (ANSI)
-        renderers MUST NOT become injection vectors either: text, code, math,
-        AND URL values MUST be stripped of control characters before emission
-        to a terminal, and a Markdown link/image title MUST escape the `"`
-        that would otherwise terminate it.
+        renderers MUST NOT become injection vectors either. The TERMINAL
+        target MUST strip text, code, math AND URL values of every
+        non-whitespace C0 control before emission, because its consumer acts
+        on the character; a Markdown link/image title MUST escape the `"`
+        that would otherwise terminate it. WHICH TARGET STRIPS WHAT is §29,
+        not this bullet: this requirement used to read "before emission to a
+        terminal" and was implemented as a strip on all three non-HTML
+        targets, which deleted content on two of them (carve#979). §29 is
+        the single statement; this bullet is the security half of it.
 
    26. TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING -- NORMATIVE (CVE-2021-42574
       class). Visually deceptive or invisible Unicode MUST NOT produce
@@ -4825,6 +4830,90 @@ EOF = (* end of file *) ;
         "%%% html\nsecret\n%%%\n\nafter"  -> <p>after</p>
         "%%%\nsecret\n%%% end\n\nafter"   -> <p>after</p>
         "%%% TODO\nsecret\n\nafter"       -> <p>secret</p><p>after</p>
+
+   29. C0 CONTROLS ON THE RENDER TARGETS -- NORMATIVE (governs what each
+      target may emit; the companion to PART 7's ONE WHITESPACE DEFINITION,
+      IN EVERY CONSTRUCT, which governs what the LANGUAGE reads). The two
+      questions are different and were being answered as one: PART 7 makes a
+      character CONTENT, and a target then deleted it on the way out. Twice
+      in one day that strip was read as a PART 7 violation and nearly
+      "fixed" as one, by two agents independently, which is why it is
+      written down here rather than left as an implementation habit
+      (carve#963, carve#979).
+
+      THE SUBJECT IS A CLASS, NOT TWO CHARACTERS. After carve#963 the
+      whitespace of this language is exactly U+0020, U+0009, U+000A and
+      U+000D. EVERY OTHER C0 CONTROL -- U+0000..U+0008, U+000B, U+000C,
+      U+000E..U+001F -- is ordinary CONTENT: it parses as content, it
+      survives into the AST, and it satisfies no whitespace slot anywhere.
+      The rows below say what happens to ALL of them on each target. Naming
+      only the vertical tab and the form feed, because those are the two the
+      whitespace clause happens to mention, would leave the rest to habit,
+      which is the state this section replaces.
+
+      T1 HTML EMITS THEM. The HTML target does not strip a non-whitespace C0
+         control from rendered text. That is the status quo, and the
+         asymmetry with T4 is DELIBERATE rather than an oversight: it is
+         stated here because it was undocumented and therefore looked like
+         one. An HTML document is consumed by a parser that treats a stray
+         control as inert character data; it is not consumed by a device
+         that ACTS on the character. Note that this is a different rule from
+         §26, which REMOVES the bidi overrides and isolates from rendered
+         text -- those are an injection vector in a renderer, a C0 control
+         is not.
+
+      T2 MARKDOWN EMITS THEM. The Markdown target does not strip them
+         either. A target that silently removes content is lossy in exactly
+         the way carve#817 rejected for the wire, and the reason first
+         offered for the strip -- that a Markdown reader would reclassify
+         these characters as whitespace, so emitting them changes meaning at
+         the boundary -- was measured and did not hold. FOUR READERS WERE
+         MEASURED: the CommonMark reference implementation, and markdown-it
+         in default, commonmark and typographer modes. All four KEEP U+000B
+         and U+000C inline, on a lone line between paragraphs, inside a code
+         span, after a list marker and after an ATX hash. The sharpest case
+         is that `-<VT>item` opens no list in any of them, which it would if
+         the character were whitespace to that reader. They are dropped in
+         exactly two positions, leading and trailing on a line, which is
+         where Carve drops whitespace too. So the downstream reader agrees
+         with carve#963, and stripping makes Carve the lossy party for no
+         reason the consumer requires.
+
+      T3 PLAIN TEXT EMITS THEM, FOLLOWING MARKDOWN. This row is a JUDGEMENT
+         and is recorded as one rather than as a measurement: plain text is
+         a text SERIALIZATION rather than a terminal format, so it takes the
+         fidelity answer and not the device answer. If plain output turns
+         out to be piped to a terminal about as often as ANSI output is,
+         this row is the one to revisit, and revisiting it does not disturb
+         T2.
+
+      T4 ANSI STRIPS THEM. The terminal target removes every non-whitespace
+         C0 control from text, code, math and URL values before emission.
+         This is the one target whose consumer ACTS on the character: a form
+         feed feeds or clears, and the escape U+001B introduces a sequence
+         that can move the cursor, rewrite earlier output or reach the
+         clipboard. That is a property of the device, not a general worry
+         about control characters, so it reaches this target and no other.
+         Stated as a requirement in §25 NON-HTML TARGETS, which now cites
+         this section rather than restating it.
+
+      T5 WHAT THIS SECTION DOES NOT SETTLE, stated so its silence is not
+         read as agreement:
+         - PANDOC WAS NOT MEASURED. It is not installed on the host this
+           ruling was made on, and it is among the readers the Markdown
+           target answers to. T2 therefore claims what four named readers
+           do, and does NOT claim that every reader agrees. Measuring pandoc
+           is owed.
+         - CARVE-RS WAS NOT MEASURED on this behavior at all. The two
+           engines that agreed on the strip were carve-js and carve-php. The
+           first step of the carve-rs ticket is to MEASURE it, not to assume
+           it is wrong.
+         - DEL (U+007F) AND THE C1 CONTROLS are outside this section. A
+           security sweep found them already reaching Markdown output in
+           carve-js and carve-rs while carve-php refuses them, which is a
+           separate defect on its own ticket. This section is about C0, and
+           must not be read as saying the control-character story is
+           otherwise uniform across the targets.
 *)
 
 
