@@ -13811,13 +13811,22 @@ verbatim when the innermost matched container is a verbatim body; and §28 makes
 a comment fence's body verbatim and invisible. None of the three asks what the
 line looks like.
 
-Six rows, deliberately not one per cell. Each reaches a DIFFERENT collector, and
-in every reader those collectors are separate loops that a fix to one leaves
+Seven rows, deliberately not one per cell. Each reaches a DIFFERENT collector,
+and in every reader those collectors are separate loops that a fix to one leaves
 untouched - which is the failure `carve-php#1003` had to correct and the reason
 `278-a-list-marker-at-the-content-column-inside-an-open-fence` needed two rows
 rather than one. Each of the three fence spellings appears, because the fence
 kind is a real axis: a reader can survive a code fence and sever a colon fence
 at the same boundary.
+
+The seventh row arrived late, and why it did is worth recording. The list `+`
+collector is the largest severing group of the whole class, and it was the one
+cell this category could not pin, because the executable spec severed it too:
+its `+`-attach extent helpers were spelled twice and only one of the two
+consulted any fence state (`carve#982`). A checker is not an argument - THE
+EXECUTABLE ARTIFACTS DECIDE NOTHING - but a row whose expectation nothing in the
+repo could hold is not reviewable either. With the checker corrected against L3
+the cell became committable, and it is committed here.
 
 ### A definition line inside an attached code fence
 
@@ -14054,7 +14063,53 @@ body as two paragraphs.
 
 :::::
 
-These six rows are carried by `markup-carve/carve-js#884`,
+### The same blank, in a block attached to a LIST ITEM
+
+The fourth collector for the one boundary, and the one that severs hardest. A
+list item's `+` attach is a separate loop again - separate from the footnote
+body, separate from the `dd`, separate from the block quote - so nothing the
+other three `+` rows pin reaches it.
+
+What severing costs here is not a rearranged block but a broken document. End
+the attached block at the blank and the item keeps `a` alone, the closing fence
+is never consumed, and that stray delimiter run opens an EMPTY inline code
+element at document level: output that no reading of the source licenses, from
+an input whose only unusual feature is a blank line in a code block. L3 gives
+the whole fence to the item and leaves nothing at document level but `z`.
+
+The item also stays TIGHT. §17 L1 loosens on a blank-line-separated second
+PARAGRAPH; this blank is code text and there is no second paragraph, so it is
+not the kind of blank L1 asks about.
+
+::::: compare
+
+````carve
+- x
++
+```
+a
+
+b
+```
+
+z
+````
+
+```html
+<ul>
+  <li>x
+    <pre><code>a
+
+b
+</code></pre>
+  </li>
+</ul>
+<p>z</p>
+```
+
+:::::
+
+These seven rows are carried by `markup-carve/carve-js#884`,
 `markup-carve/carve-php#1049` and `markup-carve/carve-rs#802` rather than
 presented as a cross-reader agreement. No engine answers this class today and
 the three do not fail on the same rows, so a red engine corpus job against this

@@ -1842,28 +1842,66 @@ function parseFenceInfo(raw) {
   return out
 }
 
-// Parse ONE following flush-left block (for the `+` continuation marker).
-function takeOneBlock(lines, start, state) {
+/** The LAST line of a FENCED block opening at `start`, or -1 when none opens
+ *  there. All three fence kinds, in one place: a CODE fence and a COMMENT fence
+ *  (both opaque, so `opaqueSpanEnd` already answers them together) and a COLON
+ *  fence, whose closer search skips the opaque spans nested inside it.
+ *
+ *  A fence with no closer returns -1 and the caller falls back to its
+ *  line-by-line scan. That keeps the answer identical to the one the code-fence
+ *  spelling here has always given (`findCloser` returning -1 fell through the
+ *  same way), and it leaves the unterminated case where it was: no clause names
+ *  it for an ATTACHED block, so it is not settled here. */
+function fencedBlockEnd(lines, start) {
+  const opaque = opaqueSpanEnd(lines, start)
+  if (opaque !== -1) return opaque
+  const cf = COLON_FENCE.exec(lines[start] ?? '')
+  if (cf && parseColonOpener(cf[2]) !== null) {
+    const close = findColonCloser(lines, start, cf[1].length)
+    if (close !== -1) return close
+  }
+  return -1
+}
+
+/** Extent of the ONE flush-left block a `+` CONTINUATION MARKER attaches to its
+ *  container (PART 9 SS17 L3), as an EXCLUSIVE end index.
+ *
+ *  L3 names "fenced code" among the block kinds a `+` may attach, and bounds the
+ *  attachment "up to the next blank line, sibling marker, or a further `+`".
+ *  Those bound THE BLOCK: a fenced block ends at its closer, which is what makes
+ *  it one block, so a boundary line written between an opener and its closer is
+ *  fence CONTENT and ends nothing. A helper that scans for a blank with no fence
+ *  state consulted therefore severs a legal document, and severs it differently
+ *  per container.
+ *
+ *  ONE SPELLING FOR EVERY CONTAINER. This rule had two spellings and only one of
+ *  them knew about a fence, so the same input answered differently in a list, a
+ *  block quote, a footnote and a `dd`; neither spelling knew about a colon or a
+ *  comment fence, so those severed everywhere (carve#982). `endsBlock(idx)` is
+ *  the only per-container part: the boundary set differs (a quote line ends the
+ *  block-quote form, a sibling marker ends the list form), the fence rule does
+ *  not. The caller hands lines[start..end) to parseBlocks, which owns the actual
+ *  block classification. */
+function oneBlockEnd(lines, start, endsBlock) {
+  const fenced = fencedBlockEnd(lines, start)
+  if (fenced !== -1) return fenced + 1
   let end = start
-  while (end < lines.length && !isBlank(lines[end]) && !CONT_MARKER.test(lines[end]) && !QUOTE.test(lines[end])) end++
+  while (end < lines.length && !endsBlock(end)) end++
+  return end
+}
+
+// Parse ONE following flush-left block (for the `+` continuation marker).
+function takeOneBlock(lines, start) {
+  const end = oneBlockEnd(lines, start, (idx) =>
+    isBlank(lines[idx]) || CONT_MARKER.test(lines[idx]) || QUOTE.test(lines[idx]))
   return { rawMarker: lines.slice(start, end), next: end }
 }
 
-// Extent of the ONE flush-left block a `+` marker pulls into a footnote/<dd>
-// (SS17 L4). A fenced code block runs through its matching closer (so its body,
-// blanks and closing fence stay inside the container); any other block is the
-// maximal contiguous non-blank run up to the next blank or marker. Returns the
-// exclusive end index. The caller hands lines[start..end) to parseBlocks, which
-// owns the actual block classification.
+// The same extent for the block a `+` marker pulls into a footnote/<dd> (SS17
+// L4), whose boundary set is a blank line or a further marker.
 function takePulledBlockEnd(lines, start) {
-  const fm = FENCE.exec(lines[start] ?? '')
-  if (fm && parseFenceInfo(fm[2])) {
-    const close = findCloser(lines, start, fm[1])
-    if (close !== -1) return close + 1
-  }
-  let end = start
-  while (end < lines.length && !isBlank(lines[end]) && !CONT_MARKER.test(lines[end])) end++
-  return end
+  return oneBlockEnd(lines, start, (idx) =>
+    isBlank(lines[idx]) || CONT_MARKER.test(lines[idx]))
 }
 
 // --- lists: PART 9 SS11 N1-N3, SS17 L1-L4, SS24 C3/C4 ----------------------
@@ -2048,13 +2086,18 @@ function collectItems(lines, i, list, state, ind, meas) {
     }
     const attachFlushLeft = () => {
       pushLine('', BLANK_MEAS)
-      while (
-        i < n && ind(i).rest !== '' && !CONT_MARKER.test(lines[i]) &&
-        !(matchMarkerAt(ind(i))?.indent === baseIndent)
-      ) {
+      // ONE block, with the SAME extent rule every other container uses: a
+      // fence runs through its closer, so a boundary line written inside one is
+      // fence content (SS17 L3, carve#982). This loop used to be the blind
+      // spelling - it stopped at the first blank with no fence state consulted,
+      // which severed a `+`-attached fence here while a footnote body one
+      // container over kept it whole.
+      const end = oneBlockEnd(lines, i, (idx) =>
+        ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
+        matchMarkerAt(ind(idx))?.indent === baseIndent)
+      for (; i < end; i++) {
         // attached VERBATIM, so the line keeps the measurement it has here
         pushLine(lines[i], ind(i))
-        i++
       }
       pushLine('', BLANK_MEAS)
       closePara()

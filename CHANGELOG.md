@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 9 §17 L3: a `+`-attached block ends at its fence closer, not at a blank
+  line inside it** (carve#982). The clause names "fenced code" among the block
+  kinds a continuation marker attaches and bounds the attachment "up to the next
+  blank line, sibling marker, or a further `+`". Those bound THE BLOCK: a fenced
+  block ends at its closer, which is what makes it one block, so a boundary line
+  written between an opener and its closer is fence content and ends nothing.
+  No production changes - the reading was already the clause's - but the derived
+  checker had TWO extent helpers for that one block and only one consulted any
+  fence state, so the same document answered differently per container and
+  neither helper knew a colon or a comment fence at all. Now one shared spelling
+  with the per-container boundary set as its only parameter. A corpus row for
+  the list `+` collector, the largest severing group of the class, was blocked
+  on this and is committed with it as
+  `279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-7`; all
+  three engines are knowingly behind it, declared in
+  `resources/engine-pin-drift.txt` and carried by `markup-carve/carve-js#884`,
+  `markup-carve/carve-php#1049` and `markup-carve/carve-rs#802`. The six rows
+  already in that category are byte-identical.
+
 - **NORMATIVITY: the executable artifacts are derived checkers, and decide
   nothing.** `resources/carve-core.ohm` and `scripts/spec/*.mjs` execute what
   `resources/grammar.ebnf` states so a contradiction inside it becomes visible;
