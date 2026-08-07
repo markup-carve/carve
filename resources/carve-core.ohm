@@ -352,14 +352,55 @@ CarveCore {
   // --- Autolinks (PART 3): URL or email in angle brackets ------------------
   autolink   = "<" (urlBody | emailBody) ">" attrs?
   urlBody    = scheme ":" urlChar+
-  scheme     = letter (letter | digit | "+" | "-" | ".")*
+  // ASCII, per `scheme = letter, {letter | digit | '+' | '-' | '.'}` in
+  // grammar.ebnf, where `letter` is the enumerated ASCII alphabet. ohm's
+  // built-in `letter` is Unicode-aware, so this rule used to accept
+  // a scheme written in Han characters - an autolink no engine produces and
+  // the production never described. Only the BODY admits non-ASCII (carve#844).
+  scheme     = asciiLetter (asciiLetter | digit | "+" | "-" | ".")*
+  asciiLetter = "a".."z" | "A".."Z"
   emailBody  = emailLocal "@" (emailSeg ".")+ letter+
   emailLocal = emailChar+
   emailSeg   = (letter | digit | "-" | "_")+
   emailChar  = letter | digit | "-" | "_" | "." | "+"
-  urlChar    = letter | digit | "-" | "." | "_" | "~" | ":" | "/" | "?"
+  // The ASCII enumeration of `url_char`, plus every character outside ASCII
+  // that is neither whitespace nor a FORMAT character (carve#844). The ASCII
+  // exclusions are unchanged and deliberate - `"`, `\`, backtick, `{`, `}`,
+  // `|`, `^`, `<`, `>` still break the construct.
+  urlChar    = asciiLetter | digit | "-" | "." | "_" | "~" | ":" | "/" | "?"
              | "#" | "[" | "]" | "@" | "!" | "$" | "&" | "'" | "(" | ")"
-             | "*" | "+" | "," | ";" | "=" | "%"
+             | "*" | "+" | "," | ";" | "=" | "%" | uUrlChar
+  uUrlChar   = ~ascii ~uControl ~uSpace ~uFormat any
+  ascii      = "\u0000".."\u007F"
+  // The C1 controls. `~ascii` already rejects every C0 control, so this
+  // range is the whole of "not a control character" that is left to state -
+  // and it is not covered by `uSpace` (only U+0085 is whitespace) or by
+  // `uFormat` (none of them is Cf).
+  uControl   = "\u0080".."\u009F"
+  // The Unicode White_Space property outside ASCII; inside ASCII the `ascii`
+  // guard above has already rejected. Spelled as escapes rather than as the
+  // characters themselves: this file is reviewed as text, and a rule whose
+  // terminals are invisible is one editor save from silently admitting them.
+  uSpace     = "\u0085" | "\u00A0" | "\u1680" | "\u2000".."\u200A"
+             | "\u2028".."\u2029" | "\u202F" | "\u205F" | "\u3000"
+  // General_Category=Cf. An astral format character is matched at its HIGH
+  // surrogate, which is where the guard has to reject it: `any` consumes one
+  // UTF-16 code unit, so a lookahead spelled only over the BMP would let the
+  // pair through half at a time.
+  // Split in two because ohm requires the alternatives of one rule to have
+  // uniform arity, and a surrogate pair is two terminals where a BMP character
+  // is one.
+  uFormat    = uFormatBmp | uFormatAstral
+  uFormatBmp = "\u00AD" | "\u0600".."\u0605" | "\u061C" | "\u06DD" | "\u070F"
+             | "\u0890".."\u0891" | "\u08E2" | "\u180E"
+             | "\u200B".."\u200F" | "\u202A".."\u202E"
+             | "\u2060".."\u2064" | "\u2066".."\u206F"
+             | "\uFEFF" | "\uFFF9".."\uFFFB"
+  uFormatAstral = "\uD804" ("\uDCBD" | "\uDCCD")
+             | "\uD80D" ("\uDC30".."\uDC3F")
+             | "\uD82F" ("\uDCA0".."\uDCA3")
+             | "\uD834" ("\uDD73".."\uDD7A")
+             | "\uDB40" ("\uDC01" | "\uDC20".."\uDC7F")
 
   // --- Attribute block (PART 4, strict identifiers) ------------------------
   attrs      = "{" attrSp* attrItem (attrSp+ attrItem)* attrSp* "}"

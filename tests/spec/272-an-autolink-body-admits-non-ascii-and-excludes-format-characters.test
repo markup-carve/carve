@@ -1,0 +1,61 @@
+An autolink body admits non-ASCII and excludes format characters
+
+```
+<https://例.jp/>
+.
+<p><a href="https://例.jp/">https://例.jp/</a></p>
+```
+
+```
+<https://example.com/café>
+.
+<p><a href="https://example.com/café">https://example.com/café</a></p>
+```
+
+```
+<https://example.com/€10>
+.
+<p><a href="https://example.com/€10">https://example.com/€10</a></p>
+```
+
+```
+<https://e﻿.com/>
+.
+<p>&lt;https://e﻿.com/&gt;</p>
+```
+
+```
+<﻿https://e.com/>
+.
+<p>&lt;﻿https://e.com/&gt;</p>
+```
+
+```
+<https://e​.com/>
+.
+<p>&lt;https://e​.com/&gt;</p>
+```
+
+```
+<https://e .com/>
+.
+<p>&lt;https://e&nbsp;.com/&gt;</p>
+```
+
+```
+<https://example.com/"q">
+.
+<p>&lt;https://example.com/“q”&gt;</p>
+```
+
+```
+[t](https://e﻿.com/)
+.
+<p><a href="https://e﻿.com/">t</a></p>
+```
+
+```
+<例://example.com/>
+.
+<p>&lt;例://example.com/&gt;</p>
+```
