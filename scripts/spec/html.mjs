@@ -2,6 +2,13 @@
  * Executable PART 10 (block serialization) + PART 9R (resolution passes)
  * over the layout tree. Byte-parity with the conformance corpus is the
  * contract; anything the subset cannot render faithfully throws Refuse.
+ *
+ * STATUS: a DERIVED CHECKER, not an authority. It executes what grammar.ebnf
+ * states so a contradiction inside it becomes visible; it settles nothing. If
+ * this file and a committed corpus golden disagree, this file is wrong until a
+ * clause says otherwise - see the NORMATIVITY block at the top of
+ * resources/grammar.ebnf. It has been the fourth answer to a three-way
+ * disagreement before (carve#646).
  */
 
 import { Refuse, TIER1 } from './layout.mjs'

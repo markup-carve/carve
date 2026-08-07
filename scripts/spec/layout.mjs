@@ -8,6 +8,13 @@
  * or throws Refuse. REFUSE-DON'T-APPROXIMATE: any construct outside the
  * executable subset aborts the whole document, so a successful parse is a
  * full-fidelity claim.
+ *
+ * STATUS: a DERIVED CHECKER, not an authority. It executes what grammar.ebnf
+ * states so a contradiction inside it becomes visible; it settles nothing. If
+ * this file and a committed corpus golden disagree, this file is wrong until a
+ * clause says otherwise - see the NORMATIVITY block at the top of
+ * resources/grammar.ebnf. It has been the fourth answer to a three-way
+ * disagreement before (carve#646).
  */
 
 import { parseAttrList, parseBlockAttrList, parseAttrBlock } from './render.mjs'

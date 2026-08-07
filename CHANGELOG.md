@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **NORMATIVITY: the executable artifacts are derived checkers, and decide
+  nothing.** `resources/carve-core.ohm` and `scripts/spec/*.mjs` execute what
+  `resources/grammar.ebnf` states so a contradiction inside it becomes visible;
+  they are not a fourth implementation whose behavior the language follows.
+  Three clauses state the consequences: a ruling cites a clause rather than a
+  measurement, a golden is normative once committed rather than once generated,
+  and a checker that disagrees with a committed golden is wrong until a clause
+  says otherwise. Written down because the checkers have been wrong while being
+  believed (carve#645, and carve#646 where the executable spec was a fourth
+  answer to a three-way disagreement), and because the same mistake has a
+  cross-repo shape: grading a grammar against a stale pinned engine instead of
+  against the corpus produced nine false findings in one satellite
+  (tree-sitter-carve#160). Prose only: no production, no corpus document and no
+  engine behavior moves.
+
 - **PART 7: a trailing zero-width character does not defeat a reference
   definition** (carve#953). The end-of-line anchor clause (carve#911, landed in
   carve#934) listed `[a]: /u<U+FEFF>` among the shapes that are NOT

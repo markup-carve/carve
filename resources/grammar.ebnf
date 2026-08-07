@@ -61,6 +61,37 @@
      CONFORMANCE CONTRACT: every example is checked against the reference
      implementation in CI. A spec change is not real until a corpus pair
      pins it.
+   - resources/carve-core.ohm and scripts/spec/*.mjs are DERIVED CHECKERS.
+     They execute what this file states so that a contradiction inside it
+     becomes visible. They are not a fourth implementation whose behavior
+     the language follows; three consequences follow from that, each a
+     clause of its own.
+
+     THE EXECUTABLE ARTIFACTS DECIDE NOTHING -- NORMATIVE. A ruling cites a
+     clause. "The executable spec does X", or "carve-js does X", is a
+     measurement, never an argument for X. Where a question is genuinely
+     unruled, the answer is a new clause here, not the behavior of whatever
+     ran last.
+
+     A GOLDEN IS NORMATIVE ONCE COMMITTED, NOT ONCE GENERATED -- NORMATIVE.
+     `npm run corpus:build` PROPOSES pairs; a reviewed commit is what makes
+     one the answer. A generated golden nobody read is a claim about this
+     file, and it can be a wrong one.
+
+     A CHECKER THAT DISAGREES WITH A COMMITTED GOLDEN IS WRONG UNTIL A
+     CLAUSE SAYS OTHERWISE -- NORMATIVE. The disagreement is a question to
+     raise against this file, not a divergence to record against the
+     engines.
+
+     WHY. The checkers have been wrong, and while they were, they were
+     quietly the language: carve#645 leaked the layout automaton's internal
+     lazy frame into code text, and in carve#646 the executable spec was a
+     FOURTH answer where three engines already disagreed. An artifact that
+     can be wrong cannot also be the arbiter of what is right. The same
+     failure has a cross-repo shape: a satellite graded its grammar against
+     a pinned engine rather than against the corpus, and reported nine
+     grammar defects that were the pin being three weeks stale
+     (tree-sitter-carve#160).
    ============================================================================ *)
 
 (* ============================================================================

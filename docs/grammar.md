@@ -39,6 +39,20 @@ npm run core:check
 
 The gate demands byte-identical HTML for **every pair in the conformance corpus**. Rules a pure PEG cannot state are executed as declared predicates in the layout automaton (fence-length counting, the `where` guards) or as a pre-scan (the emphasis close-first delimiter-stack rule), so the pipeline never silently diverges from the delimiter-stack semantics.
 
+## Which artifact decides
+
+The executable artifacts are **derived checkers**, not a fourth implementation. They exist to execute what `grammar.ebnf` states, so that a contradiction inside it becomes visible. Three rules, normative in the grammar itself:
+
+1. **The executable artifacts decide nothing.** A ruling cites a clause. "The executable spec does X", or "carve-js does X", is a measurement, never an argument for X. An unruled question is answered by writing a clause, not by the behavior of whatever ran last.
+2. **A golden is normative once committed, not once generated.** `npm run corpus:build` proposes pairs; a reviewed commit makes one the answer. A generated golden nobody read is a claim about the grammar, and it can be a wrong one.
+3. **A checker that disagrees with a committed golden is wrong until a clause says otherwise.** The disagreement is a question to raise against the grammar, not a divergence to record against the engines.
+
+::: warning Why this is stated rather than assumed
+The checkers have been wrong, and while they were, they were quietly the language: [carve#645](https://github.com/markup-carve/carve/issues/645) leaked the layout automaton's internal lazy frame into code text, and in [carve#646](https://github.com/markup-carve/carve/issues/646) the executable spec turned out to be a *fourth* answer where three engines already disagreed. An artifact that can be wrong cannot also be the arbiter of what is right.
+
+The same mistake has a cross-repo shape. A satellite graded its grammar against a **pinned engine** instead of against the corpus; the pin was three weeks stale, and it reported nine grammar defects that were the pin ([tree-sitter-carve#160](https://github.com/markup-carve/tree-sitter-carve/issues/160)). Measure against the committed golden, never against an implementation.
+:::
+
 Implementations should match this grammar. The [case study](./case-study/) explains the design rationale, the [reference page](./edge-cases) covers parsing edge cases, and the [examples](./examples) show the expected HTML output for each construct.
 
 The full grammar lives at [`resources/grammar.ebnf`](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf) in the repository.
