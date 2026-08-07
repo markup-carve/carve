@@ -83,6 +83,18 @@ test('the shipped declaration parses', () => {
   // MALFORMED one. The file is comment-only today, so this is currently the
   // empty list; it is asserted this way so the test keeps meaning something
   // once a line is added.
+  //
+  // A CONTROL, labelled rather than counted (carve#755). Coverage over the
+  // whole suite shows this line never executing, and blanking
+  // resources/ast-value-divergence.txt leaves the file exiting 0 - both true,
+  // and neither is a gap to fix. There is no participant floor to add here,
+  // because a declaration of zero divergences is the state the panel is trying
+  // to reach; a floor would be the inverse defect, a gate that only works while
+  // something is wrong. What proves the parser discriminates is the six tests
+  // above, each of which feeds it a literal line and reads the verdict.
+  // `tests/ast-spans.test.mjs` and `tests/ast-waivers.test.mjs` DO floor their
+  // declarations, and the difference is not an inconsistency: their ledgers are
+  // non-empty, so an emptied one there is loss rather than progress.
   for (const p of problems) assert.match(p, /^FIXED/, p)
 })
 

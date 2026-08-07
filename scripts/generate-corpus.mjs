@@ -2,6 +2,7 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, renameSync, unlinkSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { shortfall } from './spec/participants.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..')
@@ -153,6 +154,37 @@ if (comparesOpened !== examples.length) {
   console.error(
     `generate-corpus: ${comparesOpened} compare blocks opened but ${examples.length} pairs written (unclosed block?).`,
   )
+  process.exit(1)
+}
+
+/*
+ * Both checks above compare the extraction against ITSELF, so both are 0 === 0
+ * on an empty read and report a clean run having produced nothing. Measured
+ * rather than reasoned: with the three example files emptied AND tests/corpus
+ * cleared, this script printed "Wrote 0 pairs" and exited 0 (carve#755).
+ *
+ * The renumber guard below does catch a partial loss - but only while
+ * tests/corpus still holds the previous generation to compare against, which is
+ * the shape carve#755 names as a gate that stops working once nothing is there
+ * to compare. `rm -rf tests/corpus && npm run corpus:build` is an ordinary way
+ * to clear stale artifacts and is exactly the state it cannot see.
+ *
+ * So the floor is absolute. The corpus is append-only - a category is removed
+ * only under CORPUS_RENUMBER=1 - so this number never needs lowering, and it
+ * sits far enough below today's count that no single category crosses it.
+ */
+const CORPUS_FLOOR = 700
+const thin = shortfall({
+  label: 'EXAMPLES',
+  actual: examples.length,
+  atLeast: CORPUS_FLOOR,
+  of: 'example pair(s)',
+  hint: 'docs/examples/{core,extensions,edge-cases}.md is where they come from; ' +
+    'an extraction that reached fewer of them writes a corpus every downstream ' +
+    'floor is happy with.',
+})
+if (thin) {
+  console.error(`generate-corpus: ${thin}`)
   process.exit(1)
 }
 
