@@ -25,12 +25,19 @@
 #   "*", so the one content-level rule passes for both. That is the trap this
 #   repo keeps re-finding: a rule that asserts a property the bug preserves.
 #
-# WHAT THIS FILE DOES NOT DECIDE. Whether a node's span covers the markup that
-# OPENS it - the list marker, the `>`, the `[^a]: ` - is markup-carve/carve#913,
-# needs-decision. Most of the EXTENT rows below are that question, and this file
-# records the disagreement without naming a side. That is worth doing before the
-# ruling: a count that moves means an engine changed its mind about a span, and
-# nothing else in this repo can see that happen.
+# WHAT THIS FILE DOES NOT DECIDE, AND WHAT IS NO LONGER OPEN. Whether a node's
+# span covers the markup that OPENS it - the list marker, the `>`, the `[^a]: `
+# - was markup-carve/carve#913, and it is RULED: docs/ast-json.md:108 states
+# that "a span begins at the markup that opens the construct", naming the two
+# exceptions (the inner half of a combined `/*x*/`, and a table cell, which runs
+# between the pipes). Most of the EXTENT rows below are that question, so each
+# of them is now an engine owing a fix rather than a convention nobody settled.
+#
+# This file still does not say WHICH engine owes it. That needs the source, and
+# the source-side rule is `checkOpeningMarkup` in scripts/spec/ast-positions.mjs,
+# which each engine runs against its own tree. What a row here records is that
+# the three do not agree, and what a COUNT records is an engine changing its
+# mind about a span - which nothing else in this repo can see happen.
 #
 # DECLARED rather than gated at zero, for the reason the value panel gives: in
 # this fleet a fix lands in one engine first, so the engine that is RIGHT is
@@ -47,51 +54,51 @@
 # PRESENCE and EXTENT are separate rows because they are different facts with
 # different owners. Presence is §4 and has a permitted category, declared per
 # engine and per document in resources/ast-position-waivers.txt; extent is the
-# open convention question and has none.
+# markup-inclusive rule above, and has none.
 #
 # Format: <type> (presence|extent)  <document-count>
 #
-# Measured 2026-08-06 over 716 documents (713 corpus plus 3 synthetic), at
-# carve 3a41f0e, carve-js 3d95e94, carve-rs 83ab9c1, carve-php 876e312.
-# 309 of those documents carry at least one span the three engines do not agree
-# on.
+# Measured 2026-08-07 over 833 documents (830 corpus plus 3 synthetic), at
+# carve 8ad86ee, carve-js 39b9223, carve-rs 0d560cc, carve-php d45e250.
+# 328 of those documents carry at least one span the three engines do not agree
+# on, over 16920 spans compared.
 
-# ---- EXTENT: the open convention question (markup-carve/carve#913) ----------
+# ---- EXTENT: PART 12 §4, markup-inclusive (markup-carve/carve#913) ----------
 
-list                    (extent)  127
-list_item               (extent)  73
-table_row               (extent)  65
-paragraph               (extent)  37
-footnote                (extent)  36
-definition_term         (extent)  21
-comment                 (extent)  18
-block_quote             (extent)  16
-definition_description  (extent)  14
-admonition              (extent)  12
-definition_list         (extent)  10
-heading                 (extent)  10
-code_block              (extent)  9
-hard_break              (extent)  6
+list                    (extent)  129
+table_row               (extent)  66
+list_item               (extent)  52
+paragraph               (extent)  47
+footnote                (extent)  40
+definition_term         (extent)  26
+definition_description  (extent)  21
+comment                 (extent)  11
+block_quote             (extent)  8
+hard_break              (extent)  7
+frontmatter             (extent)  4
 table                   (extent)  4
 table_cell              (extent)  4
-frontmatter             (extent)  3
-raw_block               (extent)  3
-div                     (extent)  2
-text                    (extent)  2
+admonition              (extent)  3
+definition_list         (extent)  3
+div                     (extent)  3
+text                    (extent)  3
 code                    (extent)  1
+heading                 (extent)  1
 insert                  (extent)  1
 literal_inline          (extent)  1
+soft_break              (extent)  1
 
 # ---- PRESENCE: one engine omits where the others place ---------------------
 #
 # Every row here is also declared per engine and per document, with the issue
 # tracking it, in resources/ast-position-waivers.txt. The two files disagree by
 # construction if one is updated without the other, which is deliberate.
+#
+# ONE ROW LEFT, and it is the permitted one: carve-js omits a table cell
+# continued on a `+` line, which docs/ast-json.md:113 and :427 exempt by name.
+# The six rows that stood here on 2026-08-06 - paragraph, text, soft_break,
+# definition_description, figure and footnote - all cleared when the engine
+# issues behind them landed, and the sibling file's OWED section emptied in the
+# same measurement.
 
 table_cell              (presence)  7
-paragraph               (presence)  5
-text                    (presence)  5
-soft_break              (presence)  3
-definition_description  (presence)  2
-figure                  (presence)  1
-footnote                (presence)  1

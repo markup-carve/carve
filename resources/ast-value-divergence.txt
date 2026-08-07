@@ -26,3 +26,6 @@
 #
 # Format: <type.field>  <document-count>  <who diverges and where it is tracked>
 
+link.ref                  2  carve-php publishes the heading's RENDERED text where carve-js and carve-rs publish the authored label, so a collapsed `[`code()` heading][]` gives "code() heading" against "`code()` heading" - the three agree on href and rawRef, and §3a's "the derived label" reads both ways when the label carries inline markup (carve#962)
+text.value                1  carve-php's table caption keeps the trailing space its own HTML drops, so corpus 268-6 publishes "Cap " where carve-js and carve-rs publish "Cap" - invisible to the HTML gate, which all three pass (carve#963)
+
