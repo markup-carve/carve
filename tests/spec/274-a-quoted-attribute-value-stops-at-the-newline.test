@@ -1,0 +1,47 @@
+A quoted attribute value stops at the newline
+
+```
+*x*{k="a
+b"}
+.
+<p><strong>x</strong>{k=“a
+b”}</p>
+```
+
+```
+*x*{k="a b"}
+.
+<p><strong k="a b">x</strong></p>
+```
+
+```
+{k="a
+b"}
+
+paragraph
+.
+<p>{k=“a
+b”}</p>
+<p>paragraph</p>
+```
+
+```
+{.a
+.b}
+
+paragraph
+.
+<p class="a b">paragraph</p>
+```
+
+```
+{.a
+
+.b}
+
+paragraph
+.
+<p>{.a</p>
+<p>.b}</p>
+<p>paragraph</p>
+```
