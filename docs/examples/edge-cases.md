@@ -13285,3 +13285,84 @@ paragraph
 ```
 
 :::
+
+## A collapsed reference reaches a heading by the heading's rendered text
+
+PART 9R R1's implicit heading fallback keys the index by each heading's RENDERED
+PLAIN TEXT, so `# *bold* heading` is registered as `bold heading`. R1 said the
+label and the heading text are "both" trimmed, collapsed, NFC-normalized and
+case-folded, but it never said which string the label side contributes - its
+source run or its rendered plain text. Read as the source run, the asterisks
+survive all four normalizations and no heading containing markup is reachable by
+its collapsed spelling; read as rendered plain text, it is. Nothing pinned
+either answer, and carve-js took the first reading while carve-rs, carve-php and
+the executable spec took the second (markup-carve/carve#648).
+
+It is settled as rendered plain text on this path: the heading side of the
+comparison is already rendered plain text, and two strings of different kinds
+can never meet.
+
+::: compare
+
+```carve
+# *bold* heading
+
+[*bold* heading][]
+```
+
+```html
+<section id="bold-heading">
+  <h1><strong>bold</strong> heading</h1>
+  <p><a href="#bold-heading"><strong>bold</strong> heading</a></p>
+</section>
+```
+
+:::
+
+A code span in the heading is the same row, and worth pinning separately because
+an implementation that strips a fixed list of emphasis characters can pass the
+first one and fail this one:
+
+::: compare
+
+```carve
+# `code()` heading
+
+[`code()` heading][]
+```
+
+```html
+<section id="code-heading">
+  <h1><code>code()</code> heading</h1>
+  <p><a href="#code-heading"><code>code()</code> heading</a></p>
+</section>
+```
+
+:::
+
+The strip is SCOPED TO THE HEADING INDEX. An authored definition is still
+matched by the label as written -
+`193-a-collapsed-reference-is-matched-by-the-label-the-author-wrote` pins both
+directions of that, and a change that reaches it is a deviation from R1 rather
+than a generalization of it. The tie-break is unaffected too: linkDefs wins, so
+a definition whose label carries the same markup beats the heading the fallback
+would otherwise find.
+
+::: compare
+
+```carve
+[*bold* heading]: /x
+
+# *bold* heading
+
+[*bold* heading][]
+```
+
+```html
+<section id="bold-heading">
+  <h1><strong>bold</strong> heading</h1>
+  <p><a href="/x"><strong>bold</strong> heading</a></p>
+</section>
+```
+
+:::

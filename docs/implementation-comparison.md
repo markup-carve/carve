@@ -62,7 +62,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `271-the-flush-left-line-after-a-container-a-quoted-line-opened`,
 `272-an-autolink-body-admits-non-ascii-and-excludes-format-characters`,
 `273-the-inline-attribute-interior-is-space-only-the-attribute-line-is-not`,
-`274-a-quoted-attribute-value-stops-at-the-newline`.
+`274-a-quoted-attribute-value-stops-at-the-newline`,
+`275-a-collapsed-reference-reaches-a-heading-by-the-heading-s-rendered-text`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the

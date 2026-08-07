@@ -1,0 +1,36 @@
+A collapsed reference reaches a heading by the heading's rendered text
+
+```
+# *bold* heading
+
+[*bold* heading][]
+.
+<section id="bold-heading">
+  <h1><strong>bold</strong> heading</h1>
+  <p><a href="#bold-heading"><strong>bold</strong> heading</a></p>
+</section>
+```
+
+```
+# `code()` heading
+
+[`code()` heading][]
+.
+<section id="code-heading">
+  <h1><code>code()</code> heading</h1>
+  <p><a href="#code-heading"><code>code()</code> heading</a></p>
+</section>
+```
+
+```
+[*bold* heading]: /x
+
+# *bold* heading
+
+[*bold* heading][]
+.
+<section id="bold-heading">
+  <h1><strong>bold</strong> heading</h1>
+  <p><a href="/x"><strong>bold</strong> heading</a></p>
+</section>
+```
