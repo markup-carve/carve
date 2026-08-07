@@ -254,6 +254,10 @@ const impls = [
     prepare: null,
     defaultCommand: (target = 'html') => [...rustBaseCommand, ...CLI_FLAGS[target]],
     optionalCommand(feature, target = DEFAULT_TARGET) {
+      // DEFAULT typography is the engine's ordinary rendering on whichever
+      // target the case names - no option at all, which is the whole point of
+      // the control (carve#915).
+      if (feature === 'smart-typography-default') return this.defaultCommand(target)
       const flags = CLI_FLAGS[target]
       if (!flags) return null
       if (feature === 'social-link-templates') {
@@ -305,6 +309,10 @@ const impls = [
       `,
     ],
     optionalCommand(feature, target = DEFAULT_TARGET) {
+      // DEFAULT typography is the engine's ordinary rendering on whichever
+      // target the case names - no option at all, which is the whole point of
+      // the control (carve#915).
+      if (feature === 'smart-typography-default') return this.defaultCommand(target)
       const entry = JS_ENTRY[target]
       if (!entry) return null
       if (feature === 'social-link-templates') {
@@ -383,6 +391,10 @@ const impls = [
     prepare: null,
     defaultCommand: (target = 'html') => ['php', 'bin/carve', ...CLI_FLAGS[target]],
     optionalCommand(feature, target = DEFAULT_TARGET) {
+      // DEFAULT typography is the engine's ordinary rendering on whichever
+      // target the case names - no option at all, which is the whole point of
+      // the control (carve#915).
+      if (feature === 'smart-typography-default') return this.defaultCommand(target)
       // These adapters drive CarveConverter::convert(), which is the HTML
       // target. Rendering another target needs a different converter factory
       // per case, so an unwired target reports "no adapter" - the same visible
