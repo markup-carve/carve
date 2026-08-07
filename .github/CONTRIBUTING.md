@@ -79,6 +79,48 @@ believed.
 - **Never settle a cross-engine question by counting engines.** Three engines
   agreeing is evidence that a shape is unpinned, not that it is correct.
 
+## What earns a clause
+
+Every normative clause is paid for by three engines, the executable checkers,
+the corpus, and every satellite grammar that then has to classify the new
+category. That cost is worth paying for a rule an author can run into, and is
+pure overhead for one nobody can.
+
+So a new clause needs at least one of:
+
+- **An author-visible document.** Someone writing Carve by hand can plausibly
+  produce the shape, and the answer changes what they get.
+- **A visible rendering difference.** Two implementations produce different
+  output for that shape today, and a reader of the output could tell.
+
+Neither is a measurement of what implementations happen to do - "the three
+engines disagree" is what makes it a *question*, not what makes it worth
+answering. A shape that fails both tests is recorded as **unruled: engines may
+differ**, in the ticket and in the divergence list, and the productions are
+left alone.
+
+Recording it that way is a real outcome, not a deferral. It states that the
+project looked, found nothing an author or a reader can observe, and declined
+to spend the cost. A later ticket that finds an author-visible consequence
+reopens it with evidence attached, which is a stronger starting point than the
+original.
+
+Two worked examples, both from the same week:
+
+- **Earns a clause.** The inline attribute block's interior (carve#906):
+  `*x*{.a<TAB>.b}` is a shape a hand-writing author produces by pressing Tab,
+  three corpus documents already pinned an answer, and the two readings differ
+  visibly - attributes applied, or literal braces in the output.
+- **Does not, on its own.** A tab in a link-title slot (carve#907):
+  `[t](/u<TAB>"T")`. No corpus document pinned either answer in either
+  direction, and no rendered output differs, because every engine and every
+  writer normalizes the slot away. It is worth a clause only as part of the
+  positional rule it belongs to, not as a question of its own.
+
+The gate binds new clauses. It is not a reason to delete an existing one: a
+clause already carried by the corpus and the engines costs nothing further to
+keep, and removing it re-opens a settled question.
+
 ## Typical change order
 
 For a cross-cutting behavior change:
