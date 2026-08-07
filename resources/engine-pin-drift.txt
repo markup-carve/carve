@@ -24,3 +24,6 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+
+278-a-list-marker-at-the-content-column-inside-an-open-fence  PART 9 §24 S1/S2: a list marker at an item's content column inside an open fence is code text. The pin reads the marker instead and opens a nested list (markup-carve/carve-php#1007, carve#974).
+278-a-list-marker-at-the-content-column-inside-an-open-fence-2  The same rule with the fence opened after a blank line inside the item, which the pin collects through a different loop and gets wrong the same way.

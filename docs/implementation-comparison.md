@@ -65,7 +65,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `274-a-quoted-attribute-value-stops-at-the-newline`,
 `275-a-collapsed-reference-reaches-a-heading-by-the-heading-s-rendered-text`,
 `276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column`,
-`277-a-below-column-marker-after-a-comment-where-no-paragraph-is-open`.
+`277-a-below-column-marker-after-a-comment-where-no-paragraph-is-open`,
+`278-a-list-marker-at-the-content-column-inside-an-open-fence`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
