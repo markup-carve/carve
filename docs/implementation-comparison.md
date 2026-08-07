@@ -73,6 +73,17 @@ space form), and carve-js and carve-php still read a title after a tab at every
 form of the `link_title` slot (measured under carve#907 on carve-js `3d95e94`
 and carve-php `876e312`).
 
+A CATEGORY THAT ALREADY EXISTED CAN GO STALE TOO, and the declaration above
+cannot say so - it names categories ADDED since the run, and its count is
+derived by listing their files, so adding an older category to it would subtract
+pairs the quoted denominator still counts. Corpus 252's three documents were
+REWRITTEN under carve#906, from a tab being an attribute-block separator to a
+tab disqualifying the block, and all three engines still produce the old answer
+(measured on carve-js `0c71c7d`, carve-php `d993758` and carve-rs `2d5de72`).
+So the `pass=690/690` above is stale by three documents in a way the
+declaration mechanism has no slot for; `resources/engine-pin-drift.txt` carries
+them per document, which is where a rewritten expectation is visible.
+
 The engines have moved under two of those categories since the lines above were
 written, in opposite directions, which is exactly why the declaration names
 categories and never numbers. Category 258's rule is now implemented by all
