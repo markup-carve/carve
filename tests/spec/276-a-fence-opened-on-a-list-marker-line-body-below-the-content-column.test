@@ -1,0 +1,104 @@
+A fence opened on a list marker line, body below the content column
+
+````
+- ```
+x
+```
+.
+<ul>
+  <li>
+    <pre><code>
+</code></pre>
+  </li>
+</ul>
+<p>x
+<code></code></p>
+````
+
+````
+- ```
+ x
+ ```
+.
+<ul>
+  <li>
+    <pre><code>
+</code></pre>
+  </li>
+</ul>
+<p>x
+<code></code></p>
+````
+
+````
+- ```
+  x
+  ```
+.
+<ul>
+  <li>
+    <pre><code>x
+</code></pre>
+  </li>
+</ul>
+````
+
+````
+> ```
+x
+```
+.
+<blockquote>
+  <pre><code>
+</code></pre>
+</blockquote>
+<p>x
+<code></code></p>
+````
+
+```
+- ~~~
+x
+~~~
+.
+<ul>
+  <li>
+    <pre><code>
+</code></pre>
+  </li>
+</ul>
+<p>x
+~~~</p>
+```
+
+````
+- ```
+  x
+ y
+  ```
+.
+<ul>
+  <li>
+    <pre><code>x
+</code></pre>
+  </li>
+</ul>
+<p>y
+<code></code></p>
+````
+
+````
+- a
+  ```
+  b
+ y
+  ```
+.
+<ul>
+  <li>a
+<code>
+b</code></li>
+</ul>
+<p>y
+<code></code></p>
+````

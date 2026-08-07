@@ -2262,6 +2262,22 @@ function collectItems(lines, i, list, state, ind, meas) {
         i++
         continue
       }
+      // A FENCED BODY IS NOT A PARAGRAPH, so nothing below the content column
+      // folds while one is open (PART 9 §24, carve#646). §24's STEP algorithm
+      // says it twice over: a below-column line supplies none of the body's
+      // indentation, so S1 MATCH PREFIXES stops at the ITEM and S2 FENCED BODY
+      // never fires -- S2 wants the innermost MATCHED container to be the body.
+      // S4 governs, and its lazy branch continues an open PARAGRAPH, which a
+      // verbatim body is not. So the unmatched containers close: the item holds
+      // an EMPTY code block and the residue re-parses in the surviving context.
+      //
+      // This is the SAME spelling the quote collector already uses one loop up
+      // (`if (openFence) break // the innermost open block is verbatim (S2)`),
+      // and the quote answer it produces is the one all three engines already
+      // agree on. The item collector had no equivalent, so a below-column line
+      // AND the closer folded into the code text and the fence never closed --
+      // four readers, four answers, and no corpus case below the column.
+      if (fence) break
       if (nm && nm.indent <= baseIndent) {
         // §17 L1, first clause: the item WAS followed by a blank line before
         // this sibling marker - an invisible attachment in between does not
