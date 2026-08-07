@@ -4076,6 +4076,46 @@ EOF = (* end of file *) ;
              lazily continues the open item paragraph (§10 I2), and after a
              blank it ends the item and parses at DOCUMENT level.
 
+             THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE (carve#682).
+             "Folds as lazy item text" names an OPERATION, and lazy
+             continuation continues an open paragraph (§10 I2). Where none is
+             open the instruction cannot be carried out, so the branch does not
+             decide the line: it is classified in the context that SURVIVES.
+             Which context that is depends on what closed the paragraph, and
+             the two cases already settled here differ:
+
+               - after a COMMENT, the item is still open -- the comment
+                 exception below is explicit that a comment "does not close the
+                 ITEM either" while it does end the paragraph. So the line stays
+                 in the item: a MARKER is at the item body's own column 0, where
+                 C4 Rule B opens a list, and any other line begins the item's
+                 SECOND paragraph. All three engines answer both ways round.
+               - after a BLANK LINE, the item is already ended by the clause
+                 above, so the branch is never reached at all.
+
+             Two things are NOT settled by this sentence, and both are recorded
+             rather than decided (carve#682):
+
+               - the paragraph closed by a construct that leaves the ITEM's fate
+                 open. A closed CODE fence is the measured one: carve-js and
+                 carve-rs nest a sublist, carve-php and the executable spec open
+                 a sibling list at the top level. That row turns on whether the
+                 item survives the fence, which no clause here states.
+               - the comment's own COLUMN. The comment exception is written
+                 without reference to a column, but the two spellings answer
+                 differently: at the content column the marker opens a sublist,
+                 while BELOW it the following line reaches the item only through
+                 the lazy fold, so ending the paragraph would take that path
+                 away. Corpus 189 and 192 pin the below-column answer (`- - a` /
+                 ` %% c` / ` b` keeps `b` in the INNER item, carve#618), so
+                 aligning the two means moving a pin, not tidying a clause.
+
+             The BLOCK QUOTE row is the control that shows this is the
+             mechanism and not a coincidence: a quote leaves ITS OWN paragraph
+             open, so the fold IS available and all readers agree the marker
+             folds into the quote. Every row where a paragraph is open is
+             unanimous; the disagreements are all rows where none is.
+
              AN INVISIBLE LINE FOLDS LIKE ANY OTHER -- NORMATIVE. "Every other
              line" includes the ones that are not block-SHAPED: a link
              reference, footnote or abbreviation definition below the column

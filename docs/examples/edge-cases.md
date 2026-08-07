@@ -13575,3 +13575,137 @@ b</code></li>
 ```
 
 :::::
+
+## A below-column marker after a comment, where no paragraph is open
+
+§24 C3's below-column branch says a dedented line "folds in as lazy item text".
+That names an OPERATION, and lazy continuation continues an OPEN PARAGRAPH (§10
+I2). A comment ends the paragraph and does NOT end the item - C3's comment
+exception says both in the same breath - so after one there is nothing to fold
+into, and the branch has no answer for a case it does not notice it is in
+(markup-carve/carve#682).
+
+The line is then classified in the context that survives. The item is still
+open, so a MARKER sits at the item body's own column 0, where C4 Rule B opens a
+list. carve-js, carve-rs and carve-php all answer this way; the executable spec
+was the lone dissenter, because it read the comment fence's BODY as prose and
+believed a paragraph was open.
+
+::: compare
+
+```carve
+- a
+  %%%
+  x
+  %%%
+ - s
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>s</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+An ordered marker is the same row, and a separate case because the two marker
+shapes are recognized by different productions:
+
+::: compare
+
+```carve
+- a
+  %%%
+  x
+  %%%
+ 1. o
+```
+
+```html
+<ul>
+  <li>a
+    <ol>
+      <li>o</li>
+    </ol>
+  </li>
+</ul>
+```
+
+:::
+
+A NON-marker line after the same comment fence is the other half of the clause:
+it stays in the item too, beginning the item's SECOND paragraph rather than
+continuing the first. ` # h` is not a heading below the content column, so it is
+that paragraph's text - and all four readers already agreed here, which is why
+only the marker shapes ever diverged:
+
+::: compare
+
+```carve
+- a
+  %%%
+  x
+  %%%
+ # h
+```
+
+```html
+<ul>
+  <li>a
+    # h
+  </li>
+</ul>
+```
+
+:::
+
+CONTROL, and the one that shows this is the mechanism rather than a coincidence
+about comments: with the paragraph still OPEN the fold is available and the
+marker is lazy item text, as C3 says. Deleting the comment fence from the first
+document inverts its answer.
+
+::: compare
+
+```carve
+- a
+  b
+ - s
+```
+
+```html
+<ul>
+  <li>a
+b
+- s</li>
+</ul>
+```
+
+:::
+
+CONTROL. A BLOCK QUOTE leaves its own paragraph open, so the fold is available
+there too and the marker folds into the quote - the same rule reaching a third
+answer purely on whether a paragraph is open:
+
+::: compare
+
+```carve
+- a
+  > q
+ - s
+```
+
+```html
+<ul>
+  <li>a
+    <blockquote><p>q
+- s</p></blockquote>
+  </li>
+</ul>
+```
+
+:::

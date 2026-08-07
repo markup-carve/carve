@@ -2019,6 +2019,10 @@ function collectItems(lines, i, list, state, ind, meas) {
     // separator (carve#326 C). Only a valid fence opener sets it; its matching
     // closer clears it.
     let fence = null
+    // The item's last collected content was an invisible comment, so the item
+    // is still OPEN - C3 is explicit that a comment "does not close the ITEM
+    // either" (carve#618) - but holds no open paragraph.
+    let afterComment = false
     {
       // A fence can open on the MARKER LINE (`- ``` `), where its opener is the
       // marker-line content, not a collected continuation line -- seed from it.
@@ -2226,12 +2230,26 @@ function collectItems(lines, i, list, state, ind, meas) {
           const fo = FENCE.exec(dedented)
           if (fo && parseFenceInfo(fo[2]) !== null) fence = fo[1]
         }
+        // A COMMENT IS INVISIBLE, SO IT LEAVES NO PARAGRAPH OPEN. §24 C3 says a
+        // comment "does end the open PARAGRAPH" (carve#677), of BOTH spellings
+        // - the `%%` line and the `%%%` fence, "whose body and closer travel
+        // with its opener" (carve#634). COMMENT_LINE recognizes every one of
+        // those delimiter lines, which is all this needs: a fence's CLOSER is
+        // itself comment-shaped and is the last line before anything that
+        // follows the fence, so tracking the span adds nothing an input can
+        // observe. A span tracker written here first was dead in exactly that
+        // way, and dead in a second way too - it looked its closer up through
+        // `findCloser`, whose alphabet is backticks and tildes, so it could
+        // never have been set at all.
+        if (COMMENT_LINE.test(dedented)) afterComment = true
+        else if (dmeas.rest !== '') afterComment = false
         // record the first sub-list's content column (carve#322)
         if (subCol < 0 && nm && nm.indent >= contentCol) subCol = nm.indent + nm.markerWidth
         // does the deepest structure now hold an OPEN paragraph that lazy
         // text may fold into? markers open a sub-item paragraph; quotes an
         // open quoted paragraph; fences/breaks close everything (SS10 I2/I6)
-        if (FENCE.test(dedented) || HR.test(dedented)) closePara()
+        if (COMMENT_LINE.test(dedented)) closePara()
+        else if (FENCE.test(dedented) || HR.test(dedented)) closePara()
         // A COLON FENCE CLOSES THE PARAGRAPH ONLY IF IT INTERRUPTED IT. SS12's
         // opener test rejects `:::note` (a type word wants a separator), which
         // makes the line ordinary paragraph text and makes the paragraph absorb
@@ -2295,6 +2313,25 @@ function collectItems(lines, i, list, state, ind, meas) {
         i++
         continue
       }
+      // C3'S BELOW BRANCH PRESUMES AN OPEN PARAGRAPH, AND AFTER A COMMENT THERE
+      // IS NONE. The branch says the dedented line "folds in as lazy paragraph
+      // text" -- an operation, not a classification, and lazy continuation
+      // continues an open paragraph (§10 I2). A comment ENDS that paragraph and
+      // does NOT end the item (C3's comment exception, carve#677 and
+      // carve#618), so the instruction has nothing to carry out and the marker
+      // is classified in the context that survives: still inside the item, at
+      // its own column 0, where C4 Rule B opens a list.
+      //
+      // carve-js, carve-rs and carve-php all answer this way; the executable
+      // spec was the lone dissenter, folding the marker as text because it read
+      // the comment fence's BODY as prose and thought a paragraph was open
+      // (carve#682).
+      if (nm && nm.indent < contentCol && nm.indent > baseIndent && !openPara &&
+          afterComment && itemLines.length > 0) {
+        pushLine(lm.rest, { col: 0, rest: lm.rest, tabs: false })
+        i++
+        continue
+      }
       // A COMMENT IS RECOGNIZED AT ANY COLUMN. Every other construct below the
       // content column folds as text (SS24 C3), but a comment is invisible by
       // nature and authors indent one freely, so all three engines find it
@@ -2330,6 +2367,17 @@ function collectItems(lines, i, list, state, ind, meas) {
           lm.col > 0 ? ' ' + lm.rest : line,
           lm.col > 0 ? { col: 1, rest: lm.rest, tabs: false } : lm,
         )
+        // NOT `closePara()`, and not `afterComment`. C3's comment exception
+        // does say a comment is recognized at ANY column and does end the open
+        // paragraph - but BELOW the content column the item's following line
+        // reaches the item only through the lazy fold, and closing the
+        // paragraph takes that path away: corpus 189 and 192 pin `- - a` /
+        // ` %% c` / ` b` with `b` inside the INNER item, which is carve#618's
+        // "a following line still belongs to the item", and closing here moves
+        // `b` to the outer one. So the below-column spelling answers this
+        // differently from the content-column spelling, on a rule whose text
+        // does not mention the comment's column. Left as it is, and recorded:
+        // deciding it means moving a corpus pin (carve#682).
         i++
         continue
       }
@@ -2361,7 +2409,14 @@ function collectItems(lines, i, list, state, ind, meas) {
       // reaches column 0 in any collector, so it still folds as text (corpus
       // 183).
       if (!nm && lm.col === 0 && (FOOTNOTE_DEF.test(line) || isLinkDef(line))) break
-      if (!nm && openPara && itemLines.length > 0 && !startsVisibleBlock(line) && !isTableRow(line) && !COLON_FENCE.test(line) && !(FENCE.test(line) && hasCloser(lines, i))) {
+      // `afterComment` joins `openPara` here for the other half of the same
+      // clause: a comment ends the paragraph but not the ITEM, so a below-column
+      // NON-marker line still belongs to the item -- it "begins the item's
+      // SECOND paragraph rather than continuing the first" (§24 C3, carve#677).
+      // All three engines fold ` # h`, ` > q`, ` ::: d` and ` | a |` after a
+      // closed comment fence as item text, and only the two MARKER shapes take
+      // the branch above (carve#682).
+      if (!nm && (openPara || afterComment) && itemLines.length > 0 && !startsVisibleBlock(line) && !isTableRow(line) && !COLON_FENCE.test(line) && !(FENCE.test(line) && hasCloser(lines, i))) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/
         // heading does via startsVisibleBlock -- FENCE only matches at column 0,
