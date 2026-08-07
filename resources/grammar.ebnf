@@ -4349,18 +4349,15 @@ EOF = (* end of file *) ;
         to the block parser, and it is why the reference does not settle this
         one by being the reference.
 
-        NOT YET CORPUS-PINNED, and the reason is worth stating exactly. No
-        corpus document reaches the cap, which is why this went unnoticed:
-        every gate compares HTML over the corpus, so a path with no corpus
-        case is a path with no comparison.
-
-        What blocks the fixture is the EXECUTABLE SPEC, not the engines. The
-        corpus is rendered by scripts/spec, and it REFUSES past
-        MAX_NESTING_DEPTH rather than degrading -- so a case added today would
-        have to go in the refusal allowlist, where it is skipped and pins
-        nothing, which is worse than no case at all. Pinning this needs the
-        degrade path implemented in scripts/spec first. Engine drift is a
-        separate matter and has its own ledger now
+        NOW CORPUS-PINNED. This was unpinned for as long as the EXECUTABLE
+        SPEC refused past MAX_NESTING_DEPTH rather than degrading, because a
+        case added then would have gone in the refusal allowlist, where it is
+        skipped and pins nothing -- worse than no case at all. The degrade
+        path is implemented in scripts/spec now, so
+        tests/corpus/182-openers-past-the-nesting-cap-are-one-paragraph.crv
+        carries an HTML fixture, renders in the executable subset, and
+        REFUSED_ALLOW (scripts/spec/refused-allow.mjs) is empty. Engine drift
+        is a separate matter and has its own ledger
         (resources/engine-pin-drift.txt, carve#533).
 
         Recursive RENDER / RESOLVE /

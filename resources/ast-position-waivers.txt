@@ -16,9 +16,21 @@
 # Printed as one number the two were indistinguishable, so the total moved
 # whenever the CORPUS grew and nobody could tell which half moved. Measured over
 # the three engines' mains on 2026-08-06 that is not hypothetical: the permitted
-# half is 16 findings in each of the three engines and grew with the fixtures
+# half was 16 findings in each of the three engines and grew with the fixtures
 # added over the preceding week, while the owed half - 7 in carve-js, 17 in
 # carve-rs, 4 in carve-php - did not move at all.
+#
+# THE OWED HALF IS NOW EMPTY. Re-measured 2026-08-07 at carve-js 39b9223,
+# carve-rs 0d560cc and carve-php d45e250 over 833 documents, every one of those
+# 28 owed findings is gone: carve-js#813 and carve-js#814, carve-rs#716, #736
+# and #737, and carve-php#965 all landed, and the run reports 28 findings in
+# carve-js and 16 in each of the other two, all of them waived and none
+# outstanding. What remains below is the permitted half alone.
+#
+# That is the state this file was written to reach, and it is not a reason to
+# retire the file: the permitted lines still fail if an engine stops producing
+# them, and the OWED section is where the next gap gets declared. A ledger only
+# kept while it is non-empty is a ledger nobody starts again.
 #
 # Format: <engine>  <document>  <type>  <count>  <status>
 #
@@ -99,52 +111,19 @@ carve-js   256-table-cell-padding-must-be-a-space-17.crv          table_cell  2 
 carve-js   63-table-multi-line-cell-continuation.crv              table_cell  1  permitted
 carve-js   64-table-rowspan-with-multi-line-content.crv           table_cell  1  permitted
 
-# ---- OWED: carve-js ---------------------------------------------------------
+# ---- OWED --------------------------------------------------------------------
 #
-# An emptied definition description. The dd's only content is a link reference
-# definition, which §7 hoists to the document root and leaves the dd empty - but
-# the dd is not REASSEMBLED and its authored line `:  [r]: /u` is right there,
-# so an honest span exists. carve-php publishes [8,18], exactly that line.
-carve-js   227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace.crv    definition_description  1  markup-carve/carve-js#813
-carve-js   227-a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace-2.crv  definition_description  1  markup-carve/carve-js#813
-
-# A list item continued with a TAB. Four contiguous lines, no reassembly, and
-# the same document with a two-space continuation keeps every position in this
-# same engine - that control is the second example in the same corpus section.
-carve-js   259-a-tab-continues-a-list-item-just-as-two-spaces-do.crv  paragraph   1  markup-carve/carve-js#814
-carve-js   259-a-tab-continues-a-list-item-just-as-two-spaces-do.crv  soft_break  1  markup-carve/carve-js#814
-carve-js   259-a-tab-continues-a-list-item-just-as-two-spaces-do.crv  text        2  markup-carve/carve-js#814
-
-# ---- OWED: carve-rs ---------------------------------------------------------
+# EMPTY as of 2026-08-07, and deliberately kept as a section.
 #
-# The paragraph a CAPPED container degrades to, and its inlines. carve-js places
-# all eight, and its text spans pass the slice rule - so the spans are correct
-# rather than merely present.
-carve-rs   182-openers-past-the-nesting-cap-are-one-paragraph.crv  paragraph   1  markup-carve/carve-rs#716
-carve-rs   182-openers-past-the-nesting-cap-are-one-paragraph.crv  soft_break  3  markup-carve/carve-rs#716
-carve-rs   182-openers-past-the-nesting-cap-are-one-paragraph.crv  text        4  markup-carve/carve-rs#716
-
-# A figure over a REFERENCE image with a caption. carve-rs places the same
-# figure when the image is inline (`figure [0,18]`); only the reference form
-# loses it. carve-js and carve-php both publish [0,14], covering the image line
-# and the caption line together.
-carve-rs   207-a-reference-image-takes-a-caption.crv  figure  1  markup-carve/carve-rs#737
-
-# A footnote body whose continuation line is indented with a TAB. Not a
-# reassembly: the same construct with a space indent keeps all five positions in
-# this same engine, and carve-js and carve-php place them either way and agree
-# to the offset.
-carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do.crv    paragraph   1  markup-carve/carve-rs#736
-carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do.crv    text        1  markup-carve/carve-rs#736
-carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-2.crv  paragraph   1  markup-carve/carve-rs#736
-carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-2.crv  text        1  markup-carve/carve-rs#736
-carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-3.crv  footnote    1  markup-carve/carve-rs#736
-carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-3.crv  paragraph   1  markup-carve/carve-rs#736
-carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-3.crv  soft_break  1  markup-carve/carve-rs#736
-carve-rs   224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-3.crv  text        1  markup-carve/carve-rs#736
-
-# ---- OWED: carve-php --------------------------------------------------------
+# What used to be here, each deleted because `ast:check` reported it FIXED
+# against the engine's main and a direct probe of that engine agreed:
 #
-# The same capped-container site. carve-php places the paragraph and the soft
-# breaks there as of 876e312; only its text runs are left.
-carve-php  182-openers-past-the-nesting-cap-are-one-paragraph.crv  text  4  markup-carve/carve-php#965
+#   carve-js   227 x2 (definition_description)     markup-carve/carve-js#813
+#   carve-js   259 x3 (paragraph, soft_break, text) markup-carve/carve-js#814
+#   carve-rs   182 x3 (paragraph, soft_break, text) markup-carve/carve-rs#716
+#   carve-rs   207 x1 (figure)                      markup-carve/carve-rs#737
+#   carve-rs   224 x8 (over three fixtures)         markup-carve/carve-rs#736
+#   carve-php  182 x1 (text)                        markup-carve/carve-php#965
+#
+# All six issues are closed. A new gap goes here, one line per engine, document
+# and type, with the issue that tracks it - never `permitted`.

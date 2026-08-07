@@ -519,8 +519,10 @@ function reportSpanDisagreements(present) {
     advice: [
       'Each line there is a node type the engines span differently, with the number of',
       'documents it shows up in. Update it in the commit that moves the number.',
-      'A row moving does NOT mean an engine is wrong: the extent convention is open',
-      '(markup-carve/carve#913). It means an engine changed its mind about a span.',
+      'A row moving does not say WHICH engine is wrong - this panel has the trees and',
+      'not the source - but the extent rule itself is settled: PART 12 §4 is',
+      'markup-inclusive (markup-carve/carve#913, docs/ast-json.md:108), and',
+      'checkOpeningMarkup in scripts/spec/ast-positions.mjs is what names a side.',
     ],
   })
   if (byKey.size > 0) {

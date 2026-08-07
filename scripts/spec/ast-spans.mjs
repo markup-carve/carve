@@ -37,12 +37,17 @@
  * assert anything about what a span slices to. It compares the spans.
  *
  * WHAT IT DOES NOT DECIDE. Whether a node's span covers the markup that OPENS
- * it - the list marker, the `>`, the `[^a]: ` - is unruled: markup-carve/carve#913,
- * needs-decision. Most of what this panel reports is that question, and it
- * reports it as a DISAGREEMENT without naming a side, which is what can be said
- * truthfully today. A declared count that moves is still a signal even while
- * the convention is open: it means an engine changed its mind about a span, and
- * nothing else in this repo can see that happen.
+ * it - the list marker, the `>`, the `[^a]: ` - was markup-carve/carve#913, and
+ * it is RULED: docs/ast-json.md:108 states that a span begins at the markup
+ * that opens the construct. Most of what this panel reports is that question,
+ * so those rows are engines owing a fix rather than an open convention.
+ *
+ * What this module still does not do is say WHICH engine owes it, because that
+ * needs the source and this module only has the trees. It reports a
+ * DISAGREEMENT; `checkOpeningMarkup` in ./ast-positions.mjs is the rule that
+ * names a side, and each engine runs it against its own tree. A declared count
+ * that moves means an engine changed its mind about a span, and nothing else in
+ * this repo can see that happen.
  */
 
 import { POS_KEYS } from './ast-shape.mjs'
@@ -96,8 +101,8 @@ export function spanOf(node) {
  *
  * PRESENCE and EXTENT are separated because they are different facts with
  * different owners. Presence is PART 12 §4 and has a permitted category
- * (`resources/ast-position-waivers.txt` declares which); extent is the unruled
- * convention question and has none. Folding them into one row would let a
+ * (`resources/ast-position-waivers.txt` declares which); extent is §4's
+ * markup-inclusive rule and has none. Folding them into one row would let a
  * permitted omission and a wrong span share a number.
  *
  * Keyed by TYPE rather than by document for the reason `compareValues` gives:

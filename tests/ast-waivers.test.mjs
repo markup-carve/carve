@@ -216,8 +216,23 @@ test('the shipped declaration parses and every outstanding line names an issue',
   assert.deepEqual(errors, [], errors.join('; '))
   assert.ok(declared.size > 0, 'the declaration is empty')
 
+  // NO FLOOR ON THE OWED HALF. This used to require at least one outstanding
+  // line, on the grounds that a split with an empty side is vacuous. That
+  // reasoning holds for the SPLIT and not for this file: what makes the split
+  // meaningful is that `parseWaivers` and `partitionFindings` treat the two
+  // statuses differently, which the eight synthetic tests above drive on
+  // hand-built input, each failing if its branch is removed. A floor here
+  // asserts something else entirely - that some engine currently owes a
+  // position - and on 2026-08-07 the last of those debts was paid
+  // (carve-js#813 and #814, carve-rs#716, #736 and #737, carve-php#965 all
+  // landed). A test that fails when the fleet becomes conformant is a test that
+  // has to be edited to accept good news, which is the wrong way round.
+  //
+  // What is still enforced below is the rule that outlives the emptiness: any
+  // line that IS outstanding names a fully qualified engine issue. That is the
+  // assertion a new declaration has to satisfy, and it is reachable the moment
+  // one is added.
   const owed = [...declared.values()].filter((d) => d.status !== 'permitted')
-  assert.ok(owed.length > 0, 'nothing is declared outstanding, which would make the split vacuous')
   for (const line of owed) {
     // FULLY QUALIFIED. A bare `#716` in this repo resolves to carve#716, not to
     // the engine issue it means, so it would link the wrong ticket.

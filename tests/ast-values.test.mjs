@@ -80,21 +80,19 @@ test('the shipped declaration parses', () => {
     readFileSync(resolve(root, 'resources/ast-value-divergence.txt'), 'utf8'),
   )
   // Every problem must be a FIXED - i.e. a real declared line - and never a
-  // MALFORMED one. The file is comment-only today, so this is currently the
-  // empty list; it is asserted this way so the test keeps meaning something
-  // once a line is added.
+  // MALFORMED one. The file carried no entries between carve#846 and
+  // 2026-08-07, when `link.ref` and `text.value` were declared (carve#962,
+  // carve#963), so this loop now runs over two problems rather than none - and
+  // that is the point of asserting it this way rather than counting.
   //
-  // A CONTROL, labelled rather than counted (carve#755). Coverage over the
-  // whole suite shows this line never executing, and blanking
-  // resources/ast-value-divergence.txt leaves the file exiting 0 - both true,
-  // and neither is a gap to fix. There is no participant floor to add here,
-  // because a declaration of zero divergences is the state the panel is trying
-  // to reach; a floor would be the inverse defect, a gate that only works while
-  // something is wrong. What proves the parser discriminates is the six tests
-  // above, each of which feeds it a literal line and reads the verdict.
-  // `tests/ast-spans.test.mjs` and `tests/ast-waivers.test.mjs` DO floor their
-  // declarations, and the difference is not an inconsistency: their ledgers are
-  // non-empty, so an emptied one there is loss rather than progress.
+  // NO FLOOR, and that is deliberate rather than an oversight: a declaration of
+  // zero divergences is the state the panel is trying to reach, so a floor
+  // would be the inverse defect, a gate that only works while something is
+  // wrong. What proves the parser discriminates is the six tests above, each of
+  // which feeds it a literal line and reads the verdict.
+  // `tests/ast-spans.test.mjs` floors its declaration, and the difference is
+  // not an inconsistency: that ledger records an open convention across two
+  // dozen node types, so an emptied one there is loss rather than progress.
   for (const p of problems) assert.match(p, /^FIXED/, p)
 })
 
