@@ -174,10 +174,15 @@ does not launder an attack:
   tags Markdown has no native form for), runs link / image destinations through
   the same URL-scheme denylist, and **escapes** raw `=html` instead of emitting
   it. So `carve(untrusted) -> Markdown -> Markdown-to-HTML` cannot inject script.
-- **ANSI** and **plain text** strip C0 / C1 control characters (keeping tab and
-  newline) from author text, code, math, and raw content, so attacker `ESC` /
-  OSC sequences cannot inject into a terminal (cursor / clipboard / output
-  spoofing).
+- **ANSI** strips C0 / C1 control characters (keeping tab and newline) from
+  author text, code, math, and raw content, so attacker `ESC` / OSC sequences
+  cannot inject into a terminal (cursor / clipboard / output spoofing). It is
+  the one target whose consumer *acts* on the character.
+- **Markdown** and **plain text** do **not** strip non-whitespace C0 controls.
+  Those characters are content (grammar PART 7), and a target that silently
+  deletes content is lossy rather than safe - a Markdown reader keeps them too.
+  Hardening on these two targets is escaping and URL filtering, not deletion.
+  The per-target rule is grammar PART 9 §29.
 - **HTML import** (`HtmlToCarve`, where provided) drops all `on*` event-handler
   attributes and dangerous URL schemes, so round-tripping HTML through Carve
   cannot smuggle a handler into the output.
