@@ -1758,12 +1758,77 @@ url = scheme, ':', {url_char}+ ;
 scheme = letter, {letter | digit | '+' | '-' | '.'} ;  (* 1+ chars; single-letter schemes ok *)
 url_char = letter | digit | '-' | '.' | '_' | '~' | ':' | '/' | '?'
          | '#' | '[' | ']' | '@' | '!' | '$' | '&' | "'" | '(' | ')'
-         | '*' | '+' | ',' | ';' | '=' | '%' ;
+         | '*' | '+' | ',' | ';' | '=' | '%'
+         | (unicode_url_char - format_char - control_char) ;
+format_char  = (* any character in Unicode General_Category Cf *) ;
+control_char = (* any character in Unicode General_Category Cc *) ;
 (* `url_char` therefore EXCLUDES `"`, `\`, `` ` ``, `{`, `}`, `|`, `^`
    (and `<` / `>`). Any of these inside `<...>` breaks the autolink: the
    whole run is not an autolink and renders as escaped literal text --
    `<http://a.com/"q">` is literal (the straight quotes additionally pick
    up smart-quote typography). *)
+(* AN AUTOLINK BODY ADMITS NON-ASCII AND EXCLUDES FORMAT CHARACTERS --
+   NORMATIVE (carve#844, carve#860). The last alternative is the whole of
+   the change: outside ASCII, `url_char` admits any character that is not
+   whitespace, not a format character and not a control character. An
+   internationalized domain written in its own script is an autolink, and
+   so is a non-ASCII PATH.
+
+   The CONTROL half is not redundant with the ASCII enumeration, which is
+   the trap it was written around: `unicode_url_char` is "non-whitespace,
+   non-ASCII", so the C1 block U+0080-U+009F satisfies it. Those characters
+   are Cc, are not Cf, and only U+0085 is whitespace - so without this term
+   fourteen control characters would be `url_char`s while every C0 control
+   is excluded, which is not a rule anyone would state on purpose. The
+   executable spec admitted them until its own class test said so.
+
+   WHY, since the ASCII enumeration was explicit. The same destination
+   written `[t](https://<IDN>/)` links in all three engines today, because
+   `link_destination` admits `unicode_url_char`. Two spellings of one
+   destination cannot answer differently on the character set, and the
+   inline form is the one with the corpus behind it, so the autolink
+   follows it. The exclusion also looks incidental rather than chosen: the
+   note above enumerates the punctuation `url_char` excludes and never
+   mentions non-ASCII, which is not what a decided exclusion reads like.
+
+   THE FORMAT-CHARACTER EXCLUSION IS THE PART THAT IS NEW RATHER THAN
+   PERMISSIVE. A format character (General_Category Cf: the byte order
+   mark, the zero-width space, the word joiner, the bidi marks) is
+   invisible by definition, so a host carrying one renders as the host
+   without it and links somewhere else. That is a spoofing surface, not an
+   authoring convenience, and no author types one on purpose. Stating it as
+   a PROPERTY rather than as a list of codepoints also makes the byte-order
+   -mark answer fall out of the rule: a host language whose own whitespace
+   class happens to hold U+FEFF gets the right answer for the wrong reason
+   and the wrong answer for U+200B, which is exactly the split carve#860
+   measured.
+
+   THE ASCII HALF DOES NOT MOVE. The nine characters the note above
+   enumerates are still not `url_char`s: they are exclusions with a stated
+   reason, and all four artifacts agree on them today. The rule reads
+   `unicode_url_char - format_char` for that reason -- spelling it "any
+   non-whitespace, non-control character" would additionally re-admit those
+   nine and move every implementation on a question nobody asked.
+
+   `link_destination` IS UNCHANGED. It admits `unicode_url_char` in its own
+   right, so a format character in an inline destination or a reference
+   definition is still an ordinary destination character (corpus
+   `240-a-zero-width-character-in-a-reference-definition-destination`). The
+   two productions exclude different characters -- notably the backslash --
+   and this clause moves only `url_char`.
+
+   `scheme` IS UNCHANGED AND IS ASCII. Only the BODY admits non-ASCII; a
+   scheme is `letter, {letter | digit | '+' | '-' | '.'}` and `letter` is
+   the enumerated ASCII alphabet. The executable spec accepted a non-ASCII
+   scheme because ohm's built-in `letter` is Unicode-aware, and is corrected
+   under this clause rather than beside it.
+
+   Engine state when this landed, measured on fresh mains: carve-rs makes
+   EVERY non-ASCII autolink literal and moves on the first half
+   (markup-carve/carve-rs#755); carve-js and carve-php link format
+   characters and control characters and move on the second
+   (markup-carve/carve-js#834, markup-carve/carve-php#983). No
+   implementation had both halves. *)
 
 (* --- Images --- *)
 (* An image has the same three forms as a link (inline / reference / collapsed

@@ -199,6 +199,43 @@ const INVENTORY = [
   // The line block. SS23 converts the two-column run into NBSPs, so the `.crv`
   // carries the run and the `.html` carries the entities rather than a run.
   { base: '268-trailing-whitespace-on-a-content-line-is-dropped-12', crv: ['trailing-WS'], html: [] },
+  // carve#844's category. The invisible character IS the assertion in each of
+  // these three: it is the one thing keeping the line from being an autolink,
+  // so an editor that strips it turns the pair into the plain `<https://e.com/>`
+  // control, which links - and the expected HTML would then be wrong rather
+  // than merely weak, so this is not a silent-decay shape. It is listed for the
+  // same reason anyway: the `.html` carries the character raw too, because the
+  // line renders as escaped literal TEXT and the text contains it.
+  {
+    base: '272-an-autolink-body-admits-non-ascii-and-excludes-format-characters-4',
+    crv: ['BOM'],
+    html: ['BOM'],
+  },
+  {
+    base: '272-an-autolink-body-admits-non-ascii-and-excludes-format-characters-5',
+    crv: ['BOM'],
+    html: ['BOM'],
+  },
+  {
+    base: '272-an-autolink-body-admits-non-ascii-and-excludes-format-characters-6',
+    crv: ['ZWSP'],
+    html: ['ZWSP'],
+  },
+  // The NBSP is spelled `&nbsp;` in the expected HTML, so it is not listed on
+  // that side.
+  {
+    base: '272-an-autolink-body-admits-non-ascii-and-excludes-format-characters-7',
+    crv: ['NBSP'],
+    html: [],
+  },
+  // The BOM is in the DESTINATION here, and this pair is the CONTROL that
+  // `link_destination` did not move: strip it and the pair becomes an ordinary
+  // inline link, which is pinned a dozen times over and would pass for free.
+  {
+    base: '272-an-autolink-body-admits-non-ascii-and-excludes-format-characters-9',
+    crv: ['BOM'],
+    html: ['BOM'],
+  },
 ]
 
 function scan(text) {

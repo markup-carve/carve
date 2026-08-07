@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 3: an autolink body admits non-ASCII and excludes format characters**
+  (carve#844, carve#860). `url_char` was an enumerated ASCII set, so read as
+  written an autolink admitted no non-ASCII at all. Outside ASCII it now admits
+  any character that is not whitespace, not a format character
+  (General_Category Cf) and not a control character. An internationalized
+  domain, an accented host, a non-ASCII path and a non-ASCII non-letter link;
+  a byte order mark, a zero-width space, a word joiner or a bidi mark do not.
+
+  The deciding argument is the asymmetry with the inline form: the same
+  destination written `[t](https://<IDN>/)` links in all three engines today,
+  because `link_destination` admits `unicode_url_char`. The format-character
+  exclusion is the half that is new rather than permissive - an invisible
+  character in a host is a spoofing surface, not an authoring convenience.
+
+  `link_destination` and `scheme` are unchanged, and the enumerated ASCII
+  exclusions (`"`, backslash, backtick, braces, pipe, caret, angle brackets)
+  do not move. carve-rs makes every non-ASCII autolink literal
+  (carve-rs#755); carve-js and carve-php link format and control characters
+  (carve-js#834, carve-php#983). No implementation had both halves.
+
 - **PART 1 S4 and §12: the container kind is not a parameter, and absorption
   reaches a paragraph's own lines only** (carve#920). A block quote answers S4
   the way a list item does: `> quote` / `> ::: note` / `tail` closes the quote
