@@ -521,7 +521,8 @@ function reportSpanDisagreements(present) {
       'documents it shows up in. Update it in the commit that moves the number.',
       'A row moving does not say WHICH engine is wrong - this panel has the trees and',
       'not the source - but the extent rule itself is settled: PART 12 §4 is',
-      'markup-inclusive (markup-carve/carve#913, docs/ast-json.md:108), and',
+      'markup-inclusive (markup-carve/carve#913; docs/ast-json.md: a span "begins at the',
+      'markup that opens the construct"), and',
       'checkOpeningMarkup in scripts/spec/ast-positions.mjs is what names a side.',
     ],
   })
@@ -1555,10 +1556,10 @@ declarationDrift.push({
   problems: waiverProblems,
   advice: [
     'Each line there is one engine, one document and one node type, with a count and',
-    'either "permitted" (PART 12 §4 exempts a REASSEMBLED node - see docs/ast-json.md',
-    'lines 113 and 148-153) or the issue tracking the gap. Update it in the commit',
-    'that moves the number, and never widen a line to "permitted" to quiet a run:',
-    'docs/ast-json.md:116-117 narrows the exemption to nodes that CANNOT be placed.',
+    'either "permitted" (PART 12 §4 exempts a REASSEMBLED node - see the §4 clause on',
+    'docs/ast-json.md) or the issue tracking the gap. Update it in the commit that',
+    'moves the number, and never widen a line to "permitted" to quiet a run: that page',
+    'narrows the exemption to nodes that CANNOT be placed, not nodes nobody has placed.',
   ],
 })
 

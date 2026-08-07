@@ -452,10 +452,11 @@ suffix in document order, so `# Notes` twice gives `Notes` and then `Notes-2`,
 and deriving the second one means having replayed every heading before it. A
 consumer holding only the tree - a table of contents, an LSP go-to-definition, a
 cross-document index - cannot do that, so the id rides in `heading.attrs.id`
-beside an authored `{#id}` rather than being left to be guessed. carve-js
-publishes it today; carve-rs and carve-php do not, a divergence declared in
-`resources/ast-value-divergence.txt` until each lands a producer
-([carve#750](https://github.com/markup-carve/carve/issues/750)).
+beside an authored `{#id}` rather than being left to be guessed. All three
+engines publish it today. It was the largest entry the value declaration ever
+carried - 45 documents, carve-js alone against the other two - and it was
+deleted when carve-rs landed the last producer
+([carve#750](https://github.com/markup-carve/carve/issues/750) is closed).
 
 ## Conformance status
 
@@ -463,11 +464,17 @@ Run `node scripts/ast-conformance.mjs` in this repo against sibling checkouts of
 the engines. It reports two things a schema cannot: nodes with no position, and
 spans that do not cover the text they claim.
 
+The rows below are MEASURED state, so they are reconciled rather than trusted.
+`tests/ast-json-claims.test.mjs` measures the carve-js row against the pinned
+engine, and holds every row to the two ledgers that run's satellites fill in -
+`resources/ast-position-waivers.txt` and `resources/ast-value-divergence.txt`.
+A row may name an issue only where one of those still declares the debt.
+
 | engine | shape | positions |
 |---|---|---|
-| carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together | blocks and inlines, except reassembled regions (table cells, line-block content) |
-| carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` (the open half of [carve#481](https://github.com/markup-carve/carve/issues/481), now measured) | blocks and most inlines; reconstructed regions are unplaced, as are the paragraphs a capped container degrades to ([carve#672](https://github.com/markup-carve/carve/issues/672)) |
-| carve-php | §3a conformant on both forms measured here: an unresolved reference is a `link` node (closing the shape [carve#486](https://github.com/markup-carve/carve/issues/486) reported), and the collapsed form carries the derived label in `ref` beside `rawRef`; two field-name divergences left: the root carries `abbreviations`, and `inline_extension` publishes `extensionType`/`children` ([carve-php#510](https://github.com/markup-carve/carve-php/issues/510)) | recorded behind a parse option, enabled whenever it serializes |
+| carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together | every block and inline placed, except the two categories §4 exempts: a coalesced `text` run, and a table cell continued on a `+` line |
+| carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` | every block and inline placed, except the coalesced `text` runs §4 exempts |
+| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries a derived label in `ref` beside `rawRef` - though WHICH label diverges once the label carries inline markup ([carve#962](https://github.com/markup-carve/carve/issues/962)) | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the coalesced `text` runs §4 exempts |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
@@ -480,12 +487,19 @@ column, and the test is whether a true span EXISTS rather than whether one was
 written down.
 
 The definition-list entry this paragraph used to name is fixed: carve-rs places
-`definition_term` and `definition_description` today, checked over every
-corpus document that contains one. What the same measurement does turn up is a
-different gap - carve-rs and carve-php leave the paragraphs a CAPPED container
-degrades to unplaced (`182-openers-past-the-nesting-cap-are-one-paragraph`),
-where carve-js places them against real offsets, so the reassembly exemption does
-not reach them ([carve#672](https://github.com/markup-carve/carve/issues/672)).
+`definition_term` and `definition_description` today, checked over every corpus
+document that contains one. So is the gap that replaced it. Re-measured over 833
+documents on 2026-08-07, the OWED half of `resources/ast-position-waivers.txt`
+is EMPTY: the paragraphs a capped container degrades to are placed in all three
+engines now, and so is everything else that stood in that column a day earlier.
+Every position finding left is `permitted` under §4.
+
+That is also how the carve-rs row went wrong. It named the capped-container gap
+for two days after the gap closed and the declaration behind it was deleted,
+because the one-engine test above declared that row out of scope and handed it to
+a script that never reads this page
+([carve#965](https://github.com/markup-carve/carve/issues/965)). A row citing an
+issue no ledger still declares is now a failing test rather than a sentence.
 
 The §3a entries were measured, on `See [getting started][] here.` with the label
 defined. All three engines now publish the whole triple - `href`, `ref` and
@@ -496,7 +510,17 @@ defined. All three engines now publish the whole triple - `href`, `ref` and
     carve-php  {"href":"/start","ref":"getting started","rawRef":"[getting started][]"}
 
 The unresolved form agrees too: `See [missing][] here.` is a `link` node in all
-three, not flattened text.
+three, not flattened text. Between them those two lines close what the rows used
+to carry as open: whether the serialized tree is pre- or post-resolve (carve#481)
+and carve-rs and carve-php flattening an unresolved reference (carve#486), both
+answered and both closed.
+
+What is NOT settled is WHICH label `ref` carries when the label holds inline
+markup. Given a collapsed reference whose label is `` `code()` heading ``,
+carve-php publishes the heading's rendered text where the other two publish the
+authored label, and §3a's "the derived label" reads both ways. That one is
+declared in `resources/ast-value-divergence.txt`, which is why the carve-php row
+may cite it.
 
 An earlier version of this paragraph recorded the opposite - none publishing
 `rawRef`, carve-php publishing `ref: ""` - and the rows above described the

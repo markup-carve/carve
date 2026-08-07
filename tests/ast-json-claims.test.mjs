@@ -20,9 +20,35 @@
  * checked. Both together mean the row and the engine cannot drift apart
  * quietly - which is the only failure mode this page has ever had.
  *
- * The carve-rs and carve-php rows are out of scope here: this suite has one
- * engine, the `@markup-carve/carve` pin. Those rows are measured by
- * `scripts/ast-conformance.mjs`, which runs the satellites nightly.
+ * THE SATELLITE ROWS ARE IN SCOPE TOO, and the note that said otherwise is why
+ * this file needed a second pass. It read: "those rows are measured by
+ * `scripts/ast-conformance.mjs`, which runs the satellites nightly". That script
+ * does not open this page and never did - every mention of the filename in
+ * scripts/ is a pointer inside a comment or an advice string. So two of the three
+ * rows were handed to a checker that never took the job, and the carve-rs row
+ * then rotted in exactly the direction this file was written to catch, naming
+ * carve#672 as a live gap for two days after it closed (carve#965).
+ *
+ * What the satellite rows are measured against is not a live checkout - this
+ * suite has one engine, and a check needing three built satellites is a check
+ * that does not run where most changes are written. They are measured against
+ * the two ledgers this repo commits, which `npm run ast:check` fills in BY
+ * driving those satellites:
+ *
+ *   resources/ast-position-waivers.txt - every position finding, per engine, per
+ *   document, per node type, each either `permitted` under §4 or an issue owing
+ *   a fix;
+ *   resources/ast-value-divergence.txt - the fields the three publish different
+ *   VALUES for, with the issue tracking each.
+ *
+ * Per carve#966 these checks are not the authority on what the page should say.
+ * They report where the page and a committed ledger disagree, and the ledger is
+ * the side that was measured.
+ *
+ * WHAT THEY DO NOT COVER, said out loud so the next reader is not handed a job
+ * nobody took: a shape claim about FIELD NAMES. No ledger here records one - the
+ * schema panel gates those at zero against a live checkout - so such a claim
+ * cannot be checked from this repo, and the carve-php row no longer makes one.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -40,10 +66,18 @@ import {
   toAstJson,
 } from '@markup-carve/carve'
 
+import { citedIssues, declaredDebt, parseConformanceTable } from '../scripts/spec/ast-json-table.mjs'
+import { PAGE_ANCHORS, countAnchor, flatten } from '../scripts/spec/ast-page-anchors.mjs'
+import { RECONCILED_ENGINES, parseWaivers } from '../scripts/spec/ast-waivers.mjs'
+
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const page = readFileSync(resolve(root, 'docs/ast-json.md'), 'utf8')
+const waiverText = readFileSync(resolve(root, 'resources/ast-position-waivers.txt'), 'utf8')
+const valueText = readFileSync(resolve(root, 'resources/ast-value-divergence.txt'), 'utf8')
 
-const jsRow = page.split('\n').find((line) => line.startsWith('| carve-js |'))
+const rows = parseConformanceTable(page)
+const rowFor = (engine) => rows.find((row) => row.engines.length === 1 && row.engines[0] === engine)
+const jsRow = rowFor('carve-js')?.shape
 
 const nodesOfType = (doc, type) => {
   const found = []
@@ -176,6 +210,7 @@ test('the markup targets blank it, which is why the tree may keep it', () => {
     ['html', carveToHtml],
     ['markdown', carveToMarkdown],
     ['plain', carveToPlainText],
+    ['ansi', carveToAnsi],
   ]) {
     const out = render(source)
     assert.ok(
@@ -194,8 +229,11 @@ test('the markup targets blank it, which is why the tree may keep it', () => {
  * (carve#773).
  *
  * The gated record that the PIN was behind the fix has been deleted, because the
- * pin has caught up - which is what that gate was for. The four-target
- * assertion above covers ansi like the rest.
+ * pin has caught up - which is what that gate was for. The loop above says it
+ * covers "the four targets" and listed three: `carveToAnsi` was imported and
+ * never called, so the terminal target section 25 names explicitly was asserted
+ * by nothing. Same family as the header note this file was fixed for, one scope
+ * smaller, and now `ansi` is in the loop.
  */
 test('feeding the tree back through the engine applies the denylist', () => {
   // The page tells a consumer this is the escape hatch: hand the tree back to a
@@ -220,4 +258,200 @@ test('the page still tells a consumer both halves', () => {
     /javascript:alert\(1\)/,
     'docs/ast-json.md no longer shows what an unsanitized destination looks like',
   )
+})
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE WHOLE TABLE, RECONCILED AGAINST THE LEDGERS.
+ *
+ * See the header for why these are here rather than "somebody else's problem".
+ * Each one is stated so that it can fail while the page is CORRECT - a guard
+ * that only works while a row is already wrong stops working the moment the row
+ * is fixed, which is the state this PR reaches (carve#955).
+ * ---------------------------------------------------------------------------
+ */
+
+/** The declaration lines that OWE a fix, per engine. `permitted` is not debt. */
+const owedByEngine = () => {
+  const { declared, errors } = parseWaivers(waiverText)
+  assert.deepEqual(errors, [], `resources/ast-position-waivers.txt did not parse: ${errors.join('; ')}`)
+  const owed = new Map()
+  for (const line of declared.values()) {
+    if (line.status === 'permitted') continue
+    if (!owed.has(line.engine)) owed.set(line.engine, [])
+    owed.get(line.engine).push(line)
+  }
+
+  return owed
+}
+
+/** The permitted node types the ledger records, per engine. */
+const permittedByEngine = () => {
+  const { declared } = parseWaivers(waiverText)
+  const permitted = new Map()
+  for (const line of declared.values()) {
+    if (line.status !== 'permitted') continue
+    if (!permitted.has(line.engine)) permitted.set(line.engine, new Set())
+    permitted.get(line.engine).add(line.type)
+  }
+
+  return permitted
+}
+
+/*
+ * How a positions cell spells a permitted category.
+ *
+ * A ledger type with no entry here fails rather than defaulting to "covered":
+ * a new permitted category is a new sentence the page owes, and a map that
+ * silently skips what it does not know is the same shape as the scope note this
+ * file was fixed for.
+ */
+const PERMITTED_PHRASE = {
+  text: 'coalesced `text` run',
+  table_cell: 'table cell',
+}
+
+test('every engine the position ledger names has a row, and every reconciled engine its own', () => {
+  const named = new Set()
+  for (const row of rows) for (const engine of row.engines) named.add(engine)
+
+  for (const engine of permittedByEngine().keys()) {
+    assert.ok(
+      named.has(engine),
+      `resources/ast-position-waivers.txt declares ${engine} and the conformance table has no row for it`,
+    )
+  }
+  for (const engine of RECONCILED_ENGINES) {
+    assert.ok(rowFor(engine), `${engine} is reconciled by ast:check but shares a row, or has none`)
+  }
+})
+
+test('a row names an issue only where a ledger still declares the debt', () => {
+  // THE ROT ITSELF. The carve-rs row named carve#672 for two days after the
+  // issue closed and its declaration line was deleted, and the carve-php row
+  // named carve-php#510 for six days after that issue closed on a full-corpus
+  // re-measurement. Both were readable as current state by anyone who did not
+  // go and check the issue.
+  const debt = declaredDebt({ waivers: waiverText, values: valueText })
+  for (const row of rows) {
+    for (const cell of [row.shape, row.positions]) {
+      for (const issue of citedIssues(cell)) {
+        assert.ok(
+          debt.has(issue),
+          `docs/ast-json.md:${row.lineNo} (${row.engineCell}) cites ${issue}, which neither ` +
+            'resources/ast-position-waivers.txt nor resources/ast-value-divergence.txt still ' +
+            'declares. A conformance row states measured state; the history goes in the prose below it.',
+        )
+      }
+    }
+  }
+})
+
+test('a declared position gap is named in its own engine row', () => {
+  // The other direction: a ledger may not owe something the table does not show.
+  // Vacuous today because the OWED half is empty, and NOT a control - adding one
+  // owed line to the ledger fails this without touching the page.
+  const debt = owedByEngine()
+  for (const [engine, lines] of debt) {
+    const row = rowFor(engine)
+    assert.ok(row, `${engine} owes ${lines.length} position finding(s) and has no row of its own`)
+    const cited = citedIssues(row.positions)
+    for (const line of lines) {
+      assert.ok(
+        cited.has(line.status),
+        `resources/ast-position-waivers.txt owes ${line.status} for ${engine} ` +
+          `(${line.document}, ${line.type}) and docs/ast-json.md:${row.lineNo} does not name it`,
+      )
+    }
+  }
+})
+
+test('a positions cell names exactly the permitted categories its ledger records', () => {
+  const permitted = permittedByEngine()
+  for (const engine of RECONCILED_ENGINES) {
+    const row = rowFor(engine)
+    const types = permitted.get(engine) ?? new Set()
+    const cell = flatten(row.positions)
+    for (const [type, phrase] of Object.entries(PERMITTED_PHRASE)) {
+      const named = cell.includes(phrase)
+      if (types.has(type)) {
+        assert.ok(
+          named,
+          `resources/ast-position-waivers.txt permits ${type} for ${engine} and ` +
+            `docs/ast-json.md:${row.lineNo} does not say so (expected the phrase "${phrase}")`,
+        )
+      } else {
+        assert.ok(
+          !named,
+          `docs/ast-json.md:${row.lineNo} tells a reader ${engine} omits a ${type} position, ` +
+            'and no line in resources/ast-position-waivers.txt records one',
+        )
+      }
+    }
+    for (const type of types) {
+      assert.ok(
+        type in PERMITTED_PHRASE,
+        `resources/ast-position-waivers.txt permits "${type}" for ${engine} and nothing here ` +
+          'knows how the page spells it - add it to PERMITTED_PHRASE and to the row',
+      )
+    }
+  }
+})
+
+test('an engine claiming §3a conformance has the measurement printed below the table', () => {
+  // The transcript block under the table is the recorded §3a measurement for all
+  // three. A row may not claim conformance the page cannot show.
+  for (const row of rows) {
+    if (!/§3a conformant/.test(row.shape)) continue
+    for (const engine of row.engines) {
+      const line = page
+        .split('\n')
+        .find((candidate) => candidate.trim().startsWith(`${engine}   `) || candidate.trim().startsWith(`${engine}  {`))
+      assert.ok(line, `docs/ast-json.md:${row.lineNo} claims §3a conformance for ${engine} with no measured line`)
+      for (const field of ['"href"', '"ref"', '"rawRef"']) {
+        assert.ok(
+          line.includes(field),
+          `the §3a transcript for ${engine} does not publish ${field}, and its row claims the whole triple`,
+        )
+      }
+    }
+  }
+})
+
+test('a paragraph citing the value ledger names only fields it still declares', () => {
+  // How the heading-id paragraph went stale: it said `heading.attrs.id` was "a
+  // divergence declared in resources/ast-value-divergence.txt", six weeks after
+  // carve-rs landed the last producer and the line was deleted. A page that
+  // points at a declaration has to point at one that is there.
+  const declaredFields = new Set(
+    valueText
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line !== '' && !line.startsWith('#'))
+      .map((line) => line.split(/\s+/)[0]),
+  )
+  for (const paragraph of page.split('\n\n')) {
+    if (!paragraph.includes('resources/ast-value-divergence.txt')) continue
+    for (const m of paragraph.matchAll(/`([a-z_]+(?:\.[a-z_]+)+)`/gi)) {
+      assert.ok(
+        declaredFields.has(m[1]),
+        `docs/ast-json.md points at resources/ast-value-divergence.txt for \`${m[1]}\`, ` +
+          'which that file no longer declares',
+      )
+    }
+  }
+})
+
+test('every clause another file cites still occurs exactly once on the page', () => {
+  // The line numbers these replaced had ALL drifted, and the correction carve#965
+  // proposed was itself stale on arrival: it put the narrowing clause at 131 when
+  // it was at 142. A phrase moves with its paragraph; a line number does not.
+  for (const [name, phrase] of Object.entries(PAGE_ANCHORS)) {
+    assert.equal(
+      countAnchor(page, phrase),
+      1,
+      `scripts/spec/ast-page-anchors.mjs cites "${name}" as "${phrase}", which docs/ast-json.md ` +
+        'no longer contains exactly once - reword the citation or restore the clause',
+    )
+  }
 })

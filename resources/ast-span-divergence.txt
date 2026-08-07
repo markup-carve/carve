@@ -27,7 +27,7 @@
 #
 # WHAT THIS FILE DOES NOT DECIDE, AND WHAT IS NO LONGER OPEN. Whether a node's
 # span covers the markup that OPENS it - the list marker, the `>`, the `[^a]: `
-# - was markup-carve/carve#913, and it is RULED: docs/ast-json.md:108 states
+# - was markup-carve/carve#913, and it is RULED: docs/ast-json.md states
 # that "a span begins at the markup that opens the construct", naming the two
 # exceptions (the inner half of a combined `/*x*/`, and a table cell, which runs
 # between the pipes). Most of the EXTENT rows below are that question, so each
@@ -95,7 +95,8 @@ soft_break              (extent)  1
 # construction if one is updated without the other, which is deliberate.
 #
 # ONE ROW LEFT, and it is the permitted one: carve-js omits a table cell
-# continued on a `+` line, which docs/ast-json.md:113 and :427 exempt by name.
+# continued on a `+` line, which docs/ast-json.md's §4 clause and its
+# conformance table exempt by name.
 # The six rows that stood here on 2026-08-06 - paragraph, text, soft_break,
 # definition_description, figure and footnote - all cleared when the engine
 # issues behind them landed, and the sibling file's OWED section emptied in the

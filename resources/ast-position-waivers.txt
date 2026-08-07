@@ -2,16 +2,22 @@
 # populations it used to print as one number.
 #
 # PART 12 §4 exempts a node the producer REASSEMBLED - its value is not a slice
-# of the source at any offset, so no honest span exists. docs/ast-json.md:113
-# and :148-153 name those cases verbatim, and docs/ast-json.md:427 names
-# carve-js as the engine that omits a continued cell's position. Those lines are
-# `permitted` below and there is nothing to fix in any engine, ever.
+# of the source at any offset, so no honest span exists. docs/ast-json.md names
+# those cases verbatim - "A table cell continued on a `+` line, the hard break a
+# line block makes" - and its conformance table's carve-js row names carve-js as
+# the engine that omits a continued cell's position. Those lines are `permitted`
+# below and there is nothing to fix in any engine, ever.
 #
-# Everything else is OWED. docs/ast-json.md:116-117 narrows the exemption to
-# "nodes that *cannot* be placed, not nodes that have not been placed yet", and
-# the conformance section at docs/ast-json.md:438 states the test as "whether a
-# true span EXISTS rather than whether one was written down". Each of those
-# lines carries the issue tracking it.
+# Everything else is OWED. docs/ast-json.md narrows the exemption to "covers
+# nodes that *cannot* be placed, not nodes that have not been placed yet", and
+# its conformance section states the test as "whether a true span EXISTS rather
+# than whether one was written down". Each of those lines carries the issue
+# tracking it.
+#
+# Cited by PHRASE, not by line: every line number this header used to carry had
+# drifted (carve#965), and the phrases are pinned in
+# scripts/spec/ast-page-anchors.mjs so a reworded clause fails a test instead of
+# quietly sending a reader to the wrong paragraph.
 #
 # Printed as one number the two were indistinguishable, so the total moved
 # whenever the CORPUS grew and nobody could tell which half moved. Measured over
@@ -56,7 +62,7 @@
 
 # ---- PERMITTED: a merged `text` run whose pieces are not adjacent ------------
 #
-# docs/ast-json.md:148-153. An autolink unwrapped inside a link label
+# The §4 reassembly clause. An autolink unwrapped inside a link label
 # (03-links-12), the two halves of a table cell continued on a `+` line
 # (237, 249-4, 256-15/16/17, 63, 64), and line-block content rebuilt around the
 # indentation sentinel (41-line-blocks-9). All three engines omit; the clause
@@ -98,8 +104,8 @@ carve-php  64-table-rowspan-with-multi-line-content.crv           text  1  permi
 
 # ---- PERMITTED: a table cell continued on a `+` line -------------------------
 #
-# docs/ast-json.md:113 names the construct and docs/ast-json.md:427 already
-# names carve-js as the engine that omits it. carve-rs and carve-php place
+# docs/ast-json.md names the construct in the §4 clause, and its conformance
+# table's carve-js row names the engine. carve-rs and carve-php place
 # these, which is permitted too - §4 exempts, it does not forbid. Also a
 # CONTROL.
 
