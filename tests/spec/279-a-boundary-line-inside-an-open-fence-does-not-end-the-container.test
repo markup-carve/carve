@@ -1,0 +1,126 @@
+A boundary line inside an open fence does not end the container
+
+````
+[^f]: n
++
+```
+a
+[^z]: zz
+b
+```
+
+see[^f]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n</p>
+      <pre><code>a
+[^z]: zz
+b
+</code></pre>
+      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+````
+
+````
+[^f]: n
++
+```
+a
+
+b
+```
+
+see[^f]
+.
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n</p>
+      <pre><code>a
+
+b
+</code></pre>
+      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+````
+
+````
+:: t
+:  d
++
+```
+a
+
+b
+```
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <pre><code>a
+
+b
+</code></pre>
+  </dd>
+</dl>
+````
+
+```
+> q
++
+:::
+a
+[^z]: zz
+b
+:::
+.
+<blockquote>
+  <p>q</p>
+  <div>
+    <p>a</p>
+    <p>b</p>
+  </div>
+</blockquote>
+```
+
+```
+- x
+  :::
+  a
+  - m
+  b
+  :::
+.
+<ul>
+  <li>x
+    <div>
+      <p>a
+- m
+b</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- %%%
+  a
+
+  b
+  %%%
+.
+<ul>
+  <li></li>
+</ul>
+```

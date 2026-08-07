@@ -13793,3 +13793,270 @@ Both rows are carried by the engine tickets rather than presented as a
 cross-reader agreement. No engine answers both shapes this way today, and the
 three do not fail on the same one, so a red engine corpus job against these two
 is the measurement the engine work is made against rather than a regression.
+
+## A boundary line inside an open fence does not end the container
+
+PART 9 §17 L3 attaches ONE BLOCK of ANY kind, "up to the next blank line,
+sibling marker, or a further `+`". That list bounds the ATTACHED BLOCK, and a
+block's own extent is settled before the list is ever consulted: a fenced block
+runs from its opener to its matching closer, so every line between the two is
+INSIDE the one block L3 attached. A blank line there is not "the next blank
+line" any more than the closer is "a sibling marker" - it is fence content, and
+the boundary list never sees it.
+
+The same holds one construct over, for a body collected by INDENTATION rather
+than by a marker. §24 S1 MATCH PREFIXES places a line by the column it reaches
+and never by its first character; §24 S2 FENCED BODY then makes the line
+verbatim when the innermost matched container is a verbatim body; and §28 makes
+a comment fence's body verbatim and invisible. None of the three asks what the
+line looks like.
+
+Six rows, deliberately not one per cell. Each reaches a DIFFERENT collector, and
+in every reader those collectors are separate loops that a fix to one leaves
+untouched - which is the failure `carve-php#1003` had to correct and the reason
+`278-a-list-marker-at-the-content-column-inside-an-open-fence` needed two rows
+rather than one. Each of the three fence spellings appears, because the fence
+kind is a real axis: a reader can survive a code fence and sever a colon fence
+at the same boundary.
+
+### A definition line inside an attached code fence
+
+The worst of them, and the reason this category exists. `[^z]: zz` sits inside
+an open code fence, so §24 S2 and §28 make it verbatim text: it defines nothing,
+and §17 L3's boundary list does not name a definition line at ALL, so nothing
+here ends the attached block early. The note body holds the whole fence.
+
+The `+` attach into a footnote body is already pinned by
+`66-footnote-with-multiple-blocks-2`; this row only says what a fence inside
+that attached block does.
+
+What the three readers do instead is worth stating, because it is not a near
+miss: each of them ends the note body at the definition line, the fence is left
+unterminated, and `b` escapes the note entirely to become the document's FIRST
+block - printed ahead of the paragraph that references the note. A line of
+verbatim code text moved a block from the end of the document to the beginning.
+
+::::: compare
+
+````carve
+[^f]: n
++
+```
+a
+[^z]: zz
+b
+```
+
+see[^f]
+````
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n</p>
+      <pre><code>a
+[^z]: zz
+b
+</code></pre>
+      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::::
+
+### A blank line inside the same fence
+
+The boundary L3 DOES name, in the one position where it cannot apply. The blank
+is between the fence's opener and its closer, so it is code text; the attached
+block ends at the closer, as it did above.
+
+Stated as its own row because the two are different predicates: one reader ends
+the block on a definition line, the other on a blank, and a fix to either is
+invisible to the other.
+
+::::: compare
+
+````carve
+[^f]: n
++
+```
+a
+
+b
+```
+
+see[^f]
+````
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n</p>
+      <pre><code>a
+
+b
+</code></pre>
+      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::::
+
+### The same blank, in a definition list's body
+
+A third row for the same blank line because a `dd` is collected by a DIFFERENT
+loop than a footnote body in every reader, and `carve-php#1003` is the
+precedent for one row letting the other half stay broken and still read as done.
+The `+` attach into a `dd` is pinned by `25-definition-lists-3`.
+
+::::: compare
+
+````carve
+:: t
+:  d
++
+```
+a
+
+b
+```
+````
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <pre><code>a
+
+b
+</code></pre>
+  </dd>
+</dl>
+```
+
+:::::
+
+### A definition line inside an attached COLON fence, in a block quote
+
+The same boundary, a different fence kind, and a different answer - which is
+exactly why the fence kind is its own axis. A colon fence's body is NOT verbatim:
+it holds blocks, so `[^z]: zz` really is a definition. §17 L6 collects it and
+leaves NO TRACE where it was written, and the same clause has it INTERRUPT the
+open paragraph, so `b` begins a new one rather than folding back into `a`.
+
+Two paragraphs, therefore, where the control (the same document without the
+definition line) has one. What no reading gives is a div that ENDS at the
+definition line, which is the answer one reader produces.
+
+::::: compare
+
+```carve
+> q
++
+:::
+a
+[^z]: zz
+b
+:::
+```
+
+```html
+<blockquote>
+  <p>q</p>
+  <div>
+    <p>a</p>
+    <p>b</p>
+  </div>
+</blockquote>
+```
+
+:::::
+
+### A list marker at the body's column inside an item's colon fence
+
+`- m` sits at the div body's own column zero, and the div body holds blocks, so
+the question is not §24 S2 this time but §10 I2: LIST MARKERS NEVER INTERRUPT. A
+marker line folds into the open paragraph as lazy continuation, and §10 I6
+applies that to EVERY open paragraph, containers included. So the div holds one
+paragraph of three lines and ends at its closer.
+
+This is the row that separates the fence kinds most sharply. Put the same marker
+inside a CODE fence at the same column and §24 S2 answers it instead, which is
+`278-a-list-marker-at-the-content-column-inside-an-open-fence`. Two clauses,
+two paths, one answer: the line is content. All three readers close the div at
+the marker, open a real list, and leave a stray empty div behind at the end.
+
+::::: compare
+
+```carve
+- x
+  :::
+  a
+  - m
+  b
+  :::
+```
+
+```html
+<ul>
+  <li>x
+    <div>
+      <p>a
+- m
+b</p>
+    </div>
+  </li>
+</ul>
+```
+
+:::::
+
+### A blank line inside an item's comment fence
+
+§28 makes a comment fence's body verbatim AND invisible, so the blank line, the
+text around it and the closer are all inside the fence and none of them renders.
+The item is left holding nothing visible, which is `<li></li>` -
+`117-footnote-definition-inside-a-container-is-collected-2` and
+`16-reference-link-4` already pin that shape for an item whose only content is
+invisible.
+
+The item also stays TIGHT: §17 L1 loosens on a blank-line-separated second
+PARAGRAPH, and there is no paragraph here at all. A reader that lets this blank
+line out of the fence gets the opposite of invisible - it prints the comment's
+body as two paragraphs.
+
+::::: compare
+
+```carve
+- %%%
+  a
+
+  b
+  %%%
+```
+
+```html
+<ul>
+  <li></li>
+</ul>
+```
+
+:::::
+
+These six rows are carried by `markup-carve/carve-js#884`,
+`markup-carve/carve-php#1049` and `markup-carve/carve-rs#802` rather than
+presented as a cross-reader agreement. No engine answers this class today and
+the three do not fail on the same rows, so a red engine corpus job against this
+category is the measurement the engine work is made against rather than a
+regression.
