@@ -1,0 +1,72 @@
+A below-column marker after a comment, where no paragraph is open
+
+```
+- a
+  %%%
+  x
+  %%%
+ - s
+.
+<ul>
+  <li>a
+    <ul>
+      <li>s</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  %%%
+  x
+  %%%
+ 1. o
+.
+<ul>
+  <li>a
+    <ol>
+      <li>o</li>
+    </ol>
+  </li>
+</ul>
+```
+
+```
+- a
+  %%%
+  x
+  %%%
+ # h
+.
+<ul>
+  <li>a
+    # h
+  </li>
+</ul>
+```
+
+```
+- a
+  b
+ - s
+.
+<ul>
+  <li>a
+b
+- s</li>
+</ul>
+```
+
+```
+- a
+  > q
+ - s
+.
+<ul>
+  <li>a
+    <blockquote><p>q
+- s</p></blockquote>
+  </li>
+</ul>
+```
