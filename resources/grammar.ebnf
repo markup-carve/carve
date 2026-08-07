@@ -1605,12 +1605,26 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    THE LINE ENDING is `whitespace` -- `' ' | '\t'` -- the same terminal
    `blank_line = {whitespace}` takes (PART 1; carve#890). So `[a]: /u<SP>` and
    `[a]: /u<TAB>` are still definitions, while `[a]: /u<NBSP>`,
-   `[a]: /u<U+2000>`, `[a]: /u<U+FEFF>` and `[a]: /u<FF>` are not: every one of
-   those is CONTENT under that ruling, and content after the production is
-   exactly what the anchor rejects. An implementation spelling the ending as a
-   Unicode whitespace PROPERTY reads all six as a line ending, and a tab
-   fixture cannot see the difference, because a tab is inside the property too
+   `[a]: /u<U+2000>` and `[a]: /u<FF>` are not: every one of those is CONTENT
+   under that ruling, and content after the production is exactly what the
+   anchor rejects. An implementation spelling the ending as a Unicode
+   whitespace PROPERTY reads all five as a line ending, and a tab fixture
+   cannot see the difference, because a tab is inside the property too
    (carve#888).
+
+   A TRAILING ZERO-WIDTH CHARACTER IS NOT ON THAT LIST, and listing it there
+   was an error carried from carve#911's ruling prose into this clause
+   (carve#953). `[a]: /u<U+FEFF>` and `[a]: /u<U+200B>` ARE definitions. The
+   anchor only ever sees what is left over after the production, and here
+   nothing is: U+FEFF and U+200B are not `White_Space`, so they do not END the
+   destination -- `link_destination` absorbs them as ordinary
+   `unicode_url_char`s, exactly as the note beside that production states, and
+   the character is in the href. The anchor is therefore never reached, and it
+   is `url_char` -- the AUTOLINK body, a different production -- that excludes
+   format characters, not `link_destination` (corpus 240). The row is the
+   reason a mutant widening the line ending to "any invisible character"
+   survived: it asserted a differing render, which was true because the HREF
+   carried the character rather than because the line was rejected.
 
    WHAT THE ANCHOR DOES NOT REJECT. `[a]: /u{.c}` is still a definition, with
    destination `/u{.c}`: nothing is left over, because `link_destination`
