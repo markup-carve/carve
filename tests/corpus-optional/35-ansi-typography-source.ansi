@@ -1,0 +1,6 @@
+[1m[95mThe renderer's output[0m
+[95m═════════════════════[0m
+
+The API returns "statusFilter" and the flag 'verification-link-sent'.
+
+Use 1--3 for a range, an aside -- like this one -- for a break, and ... to trail off. [93m--fmt[0m and [1mstrong[0m are untouched either way.

@@ -101,11 +101,30 @@ const featureRunners = {
   'bare-url-autolink': (source, render) => render(source, { extensions: [autolink()] }),
   'smart-typography-off': (source, render) => render(source, { smartTypography: false }),
   'markdown-typography-source': (source, render) => render(source, { smartTypography: 'source' }),
+  /*
+   * The same switch on the two presentation targets. Three feature ids rather
+   * than one shared id on three targets, because a manifest entry names one
+   * feature and one target, and an engine that carries the mode on Markdown but
+   * drops it on plain text has to be able to say so - which is exactly what all
+   * three engines used to do (carve#560).
+   */
+  'plain-typography-source': (source, render) => render(source, { smartTypography: 'source' }),
+  'ansi-typography-source': (source, render) => render(source, { smartTypography: 'source' }),
   'code-callouts': (source, render) => render(source, { extensions: [codeCallouts()] }),
   details: (source, render) => render(source, { extensions: [details()] }),
   'list-table': (source, render) => render(source, { extensions: [listTable()] }),
   spoiler: (source, render) => render(source, { extensions: [spoiler()] }),
   tabs: (source, render) => render(source, { extensions: [tabs()] }),
+}
+
+/*
+ * Features the reference engine genuinely does not implement, each with the
+ * reason. A skip listed here is a statement about the engine; a skip not listed
+ * here is a statement about this file, and fails.
+ */
+const DECLARED_UNIMPLEMENTED = {
+  'smart-quotes-locale-de':
+    'the reference engine has no quote-locale option at all; carve-php has the extension (carve#560)',
 }
 
 for (const entry of manifest.cases) {
@@ -130,7 +149,23 @@ for (const entry of manifest.cases) {
   const runner = featureRunners[entry.feature]
 
   if (!runner) {
-    test.skip(`${slug} (${entry.feature})`, () => {})
+    // An undeclared skip is the failure mode this corpus keeps hitting: three
+    // features once had no runner, read as unsupported, and matched their
+    // committed fixtures on the first try once one was written (carve#645). So
+    // a missing runner has to be DECLARED, with the reason, or it is a defect
+    // in this file rather than a gap in the engine.
+    const reason = DECLARED_UNIMPLEMENTED[entry.feature]
+    if (!reason) {
+      test(`${slug} (${entry.feature})`, () => {
+        assert.fail(
+          `no runner for '${entry.feature}' and no entry in DECLARED_UNIMPLEMENTED. ` +
+            `Either write the runner, or say why the reference engine cannot do it - ` +
+            `an undeclared skip reads as coverage.`,
+        )
+      })
+      continue
+    }
+    test.skip(`${slug} (${entry.feature}) - ${reason}`, () => {})
     continue
   }
 

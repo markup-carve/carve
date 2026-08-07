@@ -584,6 +584,16 @@ rather than a parser one.
 
 Optional raw output:
 
+Optional corpus added since this run: `34-plain-typography-source`,
+`35-ansi-typography-source`.
+
+Those two pin `smartTypography` on the plain-text and ANSI targets, and they
+landed on a host with no engine checkouts, so the run below predates them. The
+declaration is the same device the core block uses: it names the cases and
+carries no count, so there is nothing in it to fabricate, and
+`tests/implementation-comparison-counts.test.mjs` fails both when a named case
+stops existing and when the run is retaken without deleting the line.
+
 Timings are from one machine and mean nothing across rows; the counts are the
 point. `tests/implementation-comparison-counts.test.mjs` fails if the
 `corpus_pairs` quoted here stops matching the corpus, which is how this block

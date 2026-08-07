@@ -167,6 +167,18 @@
       "slug": "33-source-line-after-generated-id",
       "feature": "source-line-after-generated-id",
       "description": "The data-source-line render annotation is emitted AFTER the generated heading id, not merely after the author's attributes (PART 10 section 1). An engine that stamps the line at parse time carries it inside the authored run, where the generated-last rule alone would put the id behind it; carve-rs did exactly that until a test caught it (carve#427)."
+    },
+    {
+      "slug": "34-plain-typography-source",
+      "feature": "plain-typography-source",
+      "target": "plain",
+      "description": "With smartTypography set to source, the plain-text target emits the author's runs: the quotes, the double hyphen and the three dots stay as typed. A code span and strong emphasis are flattened the same way either mode (PART 9 section 8; carve#560)."
+    },
+    {
+      "slug": "35-ansi-typography-source",
+      "feature": "ansi-typography-source",
+      "target": "ansi",
+      "description": "The ANSI target carries the mode too, and its heading rule is a COLUMN count of the rendered heading rather than of the source: 'The renderer's output' is 21 columns whether the apostrophe is typed or curled, so the rule is 21 either way (PART 9 section 8; carve#560)."
     }
   ]
 }
