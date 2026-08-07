@@ -48,7 +48,26 @@ const shapes = {
   // and for a tab run only when the strip lands on a tab stop - this is that
   // second case, and it is here so the rule is exercised rather than asserted.
   'tab ladder': (d) => Array.from({ length: d }, (_, i) => '\t'.repeat(i) + '-   x').join('\n') + '\n',
+  // TAB indentation at a content column that is NOT a multiple of 4 - the case
+  // the derivation above does not cover, and the whole of carve#930. Stripping
+  // 2 columns off a tab run re-materializes the straddling tab's residual as
+  // spaces, which moves every later stop on the line, so `col - cols` is wrong
+  // here and the body line used to be re-walked once per level: 19.98 columns
+  // per byte at depth 100 and 36.78 at depth 200, climb 1.84, against the space
+  // ladder's 1.02 for twice the bytes.
+  'tab ladder off the stop': (d) => Array.from({ length: d }, (_, i) => '\t'.repeat(i) + '- x').join('\n') + '\n',
 }
+
+// Passes over the document, per shape. Four for the shapes whose body column is
+// a SUBTRACTION - one walk per source line and the dedent walks, no more.
+//
+// The residual shape pays two things the others do not, both of them counted
+// rather than excused: a second pass over each tab run to build the suffix
+// table that makes its column exact, and the padding SS24 C5 requires it to
+// re-materialize at every level. Measured 4.81; the ceiling is 6 so a further
+// regression of a whole pass still fails. The load-bearing assertion for this
+// shape is the CLIMB, which is 1.04.
+const ceilings = { 'tab ladder off the stop': 6 }
 
 // Indented, but flat: the indentation is read once, by the paragraph collector,
 // and never by an enclosing container. This is the control AND the liveness
@@ -115,9 +134,10 @@ for (const [name, gen] of Object.entries(shapes)) {
 
     // CEILING. A handful of passes over the document, no more. This is what a
     // uniformly slower parse fails, which the shape check above cannot see.
+    const ceiling = ceilings[name] ?? 4
     assert.ok(
-      perByte(large) <= 4,
-      `${perByte(large).toFixed(2)} characters of indentation work per byte, ceiling 4`,
+      perByte(large) <= ceiling,
+      `${perByte(large).toFixed(2)} characters of indentation work per byte, ceiling ${ceiling}`,
     )
 
     // CONTROL. Nesting may cost something; it may not cost a different order
