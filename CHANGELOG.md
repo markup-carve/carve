@@ -7,978 +7,397 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
+### Added
 
-- **PART 9 §17 L3: a `+`-attached block ends at its fence closer, not at a blank
-  line inside it** (carve#982). The clause names "fenced code" among the block
-  kinds a continuation marker attaches and bounds the attachment "up to the next
-  blank line, sibling marker, or a further `+`". Those bound THE BLOCK: a fenced
-  block ends at its closer, which is what makes it one block, so a boundary line
-  written between an opener and its closer is fence content and ends nothing.
-  No production changes - the reading was already the clause's - but the derived
-  checker had TWO extent helpers for that one block and only one consulted any
-  fence state, so the same document answered differently per container and
-  neither helper knew a colon or a comment fence at all. Now one shared spelling
-  with the per-container boundary set as its only parameter. A corpus row for
-  the list `+` collector, the largest severing group of the class, was blocked
-  on this and is committed with it as
-  `279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-7`; all
-  three engines are knowingly behind it, declared in
-  `resources/engine-pin-drift.txt` and carried by `markup-carve/carve-js#884`,
-  `markup-carve/carve-php#1049` and `markup-carve/carve-rs#802`. The six rows
-  already in that category are byte-identical.
+- **The AST serialization format is specified (new PART 12).** A parsed document
+  is exchangeable: an implementation may serialize its AST to JSON, and a
+  consumer written against one engine must be able to read another's output.
+  Nothing specified this before, and the engines' internal field names already
+  differed for the same node, so three incompatible dialects were the default
+  outcome rather than a risk. The shape is carve-js's. Field names are spec
+  surface exactly as node-type names are. `pos` is required on the wire.
+
+  Clauses added on top of it in this release:
+
+  - **§3a: the serialized AST is PRE-RESOLVE.** The tree records what the author
+    wrote. `[getting started][]` publishes a `link` carrying `ref` and `rawRef`,
+    resolved or not. A RESOLVED reference keeps its destination too - `href` is
+    empty only where nothing resolved the reference - and `ref` for the collapsed
+    `[label][]` form is the DERIVED label, since that is the label the reference
+    resolves by. This removes the need for a `raw_text` document node.
+  - **§4: a span begins at the construct's opening markup.** A node's `pos`
+    covers the construct as WRITTEN - the `>`, the `#`, the list marker and the
+    indentation placing it, the `[` - so a span round-trips to the source text
+    that produced the node. A trailing attribute block is part of the span
+    (`*x*{#i}` gives the `strong` 0..7, not 0..3). A discontiguous node's span is
+    its FIRST fragment; first-offset-to-last-offset is forbidden, because in
+    corpus 64 that range contains a sibling cell entirely. Two nodes keep a
+    content-only span: the inner half of a combined `/*x*/`, and a table cell.
+    Containment is now asserted in a pass of its own rather than derived from the
+    convention.
+  - **§4: position tracking may be opt-in, serialization may not.** An
+    implementation may gate tracking behind a parse option and must enable it
+    when asked to serialize. What is forbidden is a serialized document without
+    positions.
+  - **§7: hoisting a definition is not the same as defining it.** PART 12 §7 now
+    covers every definition kind, not only footnotes: an `abbreviation_def`
+    authored inside a div, list item or block quote is a child of the DOCUMENT.
+    It expands occurrences only when it was written at document level - §7's
+    rationale sentence was about tree shape and was reading as though it settled
+    expansion too.
+  - **§12(d): an ingest validates the whole payload against
+    `resources/ast-schema.json`.** Types and required fields together, refused at
+    decode with the typed error §12 already requires. One clause rather than a
+    row per field: the schema is the list. Ruling them one at a time is what
+    produced the state this replaces - a root `children` of `null` read as an
+    empty document by two engines, `attrs: {"class":"x"}` rendered as
+    `class="x"` by a third, `text.value: 7` rendered `<p>7</p>`. The shipped
+    schema was measured against all sixteen shapes and rejects every one.
+
+  Consequence for producers: the schema rejects trees two engines accept today,
+  and every future schema addition becomes a potential rejection for a producer
+  that has not caught up.
+
+- **The canonical source writer is specified (new PART 11).** `carve fmt` and the
+  `carve` render target had no normative text at all, so their behavior was
+  defined only by three implementations happening to agree. PART 11 pins the
+  invariants (`parse(fmt(x)) == parse(x)` and idempotence) and states the
+  escaping rule: a character is escaped if and only if omitting the escape would
+  change the re-parsed AST. A static per-character table cannot implement it -
+  `[` is literal alone but an opener in `[a](b)`. The conformant strategy pins
+  the output while leaving the computation free.
+
+  Amended after implementing it, each correction forced by the parser rather than
+  chosen:
+
+  - The escaping decision is **document-scoped**, not per line. A line re-parsed
+    alone has lost the document's link-reference and footnote definitions.
+  - The two renders are **compared with each other**, not against the document
+    being written, which would inherit the writer's existing round-trip gaps and
+    flip the decision between passes.
+  - The **caret is unconditional**, because its escape carries information the
+    AST records separately.
+  - **§1 is equality MODULO ESCAPING.** `escaped_text` and `text` compare equal,
+    and an adjacent run compares as one text node. Without this, §1 and §5
+    contradicted each other for every document containing a quote.
+  - **§2a: the writer does not substitute one construct for another.**
+    `to_html(fmt(x)) == to_html(x)` holding is necessary, not sufficient -
+    carve-rs wrote `* %%` as `* +`, turning a line comment into the continuation
+    marker.
+  - **§1 records a known gap**: `parse(fmt(x)) == parse(x)` is met by no engine
+    today. A corpus-wide sweep tracks the rest in markup-carve/carve#369.
+
+- **PART 11 §7: the Markdown target's escaping rule.** There was no normative
+  text for it at all. Markdown metacharacters are escaped unconditionally; an
+  `escaped_text` node is emitted as an escape whatever the character; nothing
+  else is escaped. The middle rule is the divergent one: `\-\-` was written
+  precisely so a downstream processor with smart punctuation on would not read an
+  en dash, and the characters this matters for are not Markdown metacharacters.
+
+- **PART 9 §8: smart typography has a normative AST representation, and is
+  unconditional by default.** A recognized substitution is a `smart_punctuation`
+  inline node carrying both the resolved kind and the author's source run.
+  Presentation renderers emit the glyph; the canonical writer emits the source
+  run. Writing the glyph straight into the text buffer is no longer conformant.
+  The eighteen kind names are spec surface; a quote node also records its
+  resolved locale-dependent glyph; a dash run partitions into one node per glyph.
+  A conformant implementation performs the substitution with no extension
+  registered, and a locale/glyph extension selects which characters are emitted
+  rather than whether the transform runs. Hosts may offer one document-global
+  `smartTypography` switch (default `true`); per-target defaults are
+  non-conformant. For profiles the node is classified as `text`.
+
+- **PART 9 §8 admits source output on the Markdown target as a named optional
+  feature** (`markdown-typography-source`). Read strictly, §8 made the glyph the
+  only conformant Markdown output, so an implementation offering the setting was
+  non-conformant. Per-render-call, Markdown only, changes no default. The other
+  presentation targets MUST NOT offer it.
+
+- **An optional `sections` switch on the HTML renderer.** Setting it to `false`
+  renders headings flat, with the id back on the `<h*>` and the blocks that would
+  have been section children left as siblings. HTML-only, since no other target
+  emits `<section>` and the AST has no `section` node. No engine shipped it when
+  this landed, so the optional-corpus case for it is visible as skipped.
+
+- **The optional corpus can pin a target other than HTML.** A case's manifest
+  entry may name a `target` - `markdown`, `plain` or `ansi` - paired with an
+  expected file carrying that target's extension; an entry without one keeps its
+  `NN-slug.html` pair, so all 29 existing cases are unchanged and a runner that
+  predates targets needs no change. This closes a wider gap: **no corpus,
+  mandatory or optional, pinned any target but HTML** - 498 mandatory and 29
+  optional cases, all HTML, which is how two engines came to disagree about
+  escaping intraword underscores with nothing failing. The first two
+  Markdown-target cases ship with it (`30-symbol-map-markdown`,
+  `31-markdown-typography-source`).
+
+- **New corpus pins.** `19-smart-typography-dashes-and-quotes-9` pins all four
+  quote/dash shapes, with expected output taken from the three engines, which
+  agree byte for byte. `85-compact-list-blocks-2` pins §17 L2's compact sub-list
+  rule with a following sibling - the variant was unpinned and carve-rs got it
+  wrong, rendering the whole list loose.
+
+### Changed
 
 - **NORMATIVITY: the executable artifacts are derived checkers, and decide
   nothing.** `resources/carve-core.ohm` and `scripts/spec/*.mjs` execute what
   `resources/grammar.ebnf` states so a contradiction inside it becomes visible;
-  they are not a fourth implementation whose behavior the language follows.
-  Three clauses state the consequences: a ruling cites a clause rather than a
+  they are not a fourth implementation whose behavior the language follows. Three
+  clauses state the consequences: a ruling cites a clause rather than a
   measurement, a golden is normative once committed rather than once generated,
   and a checker that disagrees with a committed golden is wrong until a clause
-  says otherwise. Written down because the checkers have been wrong while being
-  believed (carve#645, and carve#646 where the executable spec was a fourth
-  answer to a three-way disagreement), and because the same mistake has a
-  cross-repo shape: grading a grammar against a stale pinned engine instead of
-  against the corpus produced nine false findings in one satellite
-  (tree-sitter-carve#160). Prose only: no production, no corpus document and no
-  engine behavior moves.
+  says otherwise. Prose only: no production, no corpus document and no engine
+  behavior moves.
 
-- **PART 7: a trailing zero-width character does not defeat a reference
-  definition** (carve#953). The end-of-line anchor clause (carve#911, landed in
-  carve#934) listed `[a]: /u<U+FEFF>` among the shapes that are NOT
-  definitions, which does not follow from the anchor's own premise: the anchor
-  only sees what is LEFT OVER after the production, and U+FEFF is not
-  `White_Space`, so it never ends the destination. `link_destination` absorbs
-  it as an ordinary `unicode_url_char` and the character lands in the href, as
-  the note beside that production and corpus 240 already said. The clause now
-  strikes the row and states why, and the format-character exclusion is
-  attributed to `url_char` - the autolink body - where it actually lives. Prose
-  only: no production, no corpus document and no engine behavior moves, and
-  `docs/examples/edge-cases.md` already carried the correct reading.
+- **PART 7 assigns the whitespace terminals by ROLE, and pins their
+  cardinality.** Twenty-five productions took the `space` terminal and a tab
+  satisfied nine of them in the implementations, which split four ways on which.
+  The whole ruling, in one place:
 
-- **PART 4: a quoted attribute value stops at the newline** (carve#888).
-  `quoted_value` built its value out of `character`, which is any Unicode
-  character, so a line break inside the quotes was content - and it was the one
-  remaining way an INLINE attribute block could span lines, which carve#897
-  ruled it cannot. The production now excludes a newline in both alternatives,
-  matching the executable spec, which always did.
+  - A **MARKER SEPARATOR** stands between a marker and the token that selects
+    which construct the line opens. It is `space` and a tab never satisfies it.
+    The colon fence joins the heading, list, task and definition markers here:
+    `admonition_open`, `div_open`, `line_block_open` and
+    `local_hard_break_block_open` share one separator slot.
+  - A **PADDING SLOT** is whitespace between two tokens on a line whose construct
+    is already fixed. It carries no recognition, so it is `whitespace` and admits
+    a tab: the admonition opener's `"title"` and `[label]` slots,
+    `frontmatter_open`'s slot before the format token, `link_title` at both
+    sites, and the reference definition's slot before its trailing attributes.
+    The code fence's slot before its info string joins them under the same
+    discriminator, and `code_fence_info`'s `"header"` and `[label]` become
+    `whitespace+`. `raw_block` keeps its `space`: the `=` after that slot selects
+    a raw block over a code block, which is a separator's job.
+  - **Cardinality: a padding slot spelled `space` admits exactly ONE space.**
+    carve-js, carve-php, carve-rs and the executable spec all accepted a run at
+    every one of them - four artifacts agreeing with each other and disagreeing
+    with the written cardinality. So `[t](/u  "T")` is no longer a titled link,
+    ` ```  php ` is no longer a fence opener, `---  yaml` is no longer a typed
+    frontmatter opener, and `[a]: /u  {.c}` no longer carries the definition's
+    attributes.
+  - **Cardinality: a MARKER SEPARATOR is a run.** `footnote_definition` and
+    `abbreviation_definition` said `space` while all four artifacts consumed a
+    run; both now say `space+`. This is deliberately the OPPOSITE answer from the
+    padding slots, because the two govern different positions. The run is ASCII
+    spaces, so the first character that is not one BEGINS the content:
+    `*[HTML]: <NBSP>Hyper` expands to a title starting with the no-break space.
+  - **The INLINE attribute block's interior is space-only; the block-attribute
+    LINE is not.** All five inline slots sit after the first non-whitespace
+    character of their line, where a tab is not syntax. The block-attribute line
+    keeps `whitespace` at its three slots - it is the one construct whose
+    interior can hold a leading indentation run - so the distinction is
+    positional rather than per-construct.
+  - **A quoted attribute value stops at the newline.** `quoted_value` built its
+    value out of `character`, so a line break inside the quotes was content - the
+    one remaining way an INLINE attribute block could span lines. The block form
+    reads the same production, so a break inside a quoted value ends that block
+    too. A block attribute may still span lines: a `continuation` sits between
+    two tokens, never inside one.
 
-  The block-attribute line reads the same production, so a break inside a
-  quoted value ends that block too. A block attribute may still span lines: a
-  `continuation` sits between two tokens, never inside one. All three engines
-  accept the block form today and disagree on its meaning - one keeps the
-  newline, two collapse it to a space - so carve-js#838, carve-php#986 and
-  carve-rs#758 carry it.
-
-- **PART 4: the inline attribute-block interior is space-only, the
-  block-attribute line is not** (carve#906). Every whitespace slot of an INLINE
-  attribute block takes `space`: the run after `{`, the run between two
-  attributes, the run before `}`, the boundary after an unquoted value, and the
-  blessed empty block `{ }`. All five sit after the first non-whitespace
-  character of their line, where a tab is not syntax, so a tab at any of them
-  leaves the block unrecognized and its braces showing.
-
-  The block-attribute LINE keeps `whitespace` at its three slots. It is the one
-  construct whose interior can hold a leading indentation run - after a
-  continuation, the next line's leading whitespace IS indentation - so the
-  distinction is positional rather than per-construct.
-
-  This reverses pinned goldens: corpus 252, 252-2 and 252-3 asserted the tab
-  forms and all three engines produce them. They are rewritten to the narrowed
-  answer rather than deleted, so the shapes stay pinned as literal output.
-  carve-js#836, carve-php#985 and carve-rs#757 track the engine work.
-
-- **PART 3: an autolink body admits non-ASCII and excludes format characters**
-  (carve#844, carve#860). `url_char` was an enumerated ASCII set, so read as
-  written an autolink admitted no non-ASCII at all. Outside ASCII it now admits
-  any character that is not whitespace, not a format character
-  (General_Category Cf) and not a control character. An internationalized
-  domain, an accented host, a non-ASCII path and a non-ASCII non-letter link;
-  a byte order mark, a zero-width space, a word joiner or a bidi mark do not.
-
-  The deciding argument is the asymmetry with the inline form: the same
-  destination written `[t](https://<IDN>/)` links in all three engines today,
-  because `link_destination` admits `unicode_url_char`. The format-character
-  exclusion is the half that is new rather than permissive - an invisible
-  character in a host is a spoofing surface, not an authoring convenience.
-
-  `link_destination` and `scheme` are unchanged, and the enumerated ASCII
-  exclusions (`"`, backslash, backtick, braces, pipe, caret, angle brackets)
-  do not move. carve-rs makes every non-ASCII autolink literal
-  (carve-rs#755); carve-js and carve-php link format and control characters
-  (carve-js#834, carve-php#983). No implementation had both halves.
-
-- **PART 1 S4 and §12: the container kind is not a parameter, and absorption
-  reaches a paragraph's own lines only** (carve#920). A block quote answers S4
-  the way a list item does: `> quote` / `> ::: note` / `tail` closes the quote
-  and leaves `tail` at top level, because the div the quoted line opened is
-  empty and holds no open paragraph. The CLOSED form decides the same way - a
-  closed container holds none either. carve-js and carve-php produce the
-  top-level paragraph for the list item and fold the identical shape into the
-  block quote (carve-js#833, carve-php#982); carve-rs answers both alike.
-
-  §12's absorption is bounded by whose line it is. A flush-left `:::` under a
-  quoted paragraph supplies no `>` prefix, so it reaches that paragraph only
-  through S4's lazy fold; the strict column-0 rule decides it instead, the quote
-  closes, and the line opens a div of its own. The QUOTED `> :::` twin is still
-  absorbed, and the two are pinned side by side. The executable spec absorbed
-  the flush-left line and is corrected here.
-
-- **PART 1 S4: a real div in a container, and the flush-left line after it**
-  (carve#909). An unterminated `::: ` div decides S4 on the same question every
-  other container does, and the two answers differ by one line of body: a div
-  holding a paragraph has one open, so the flush-left line folds into it; an
-  empty div has none, so the containers close and the line is top-level.
-  Terminating the div closes the paragraph inside it and inverts the first
-  answer.
-
-  Nothing pinned any of the three, and the ticket's own shapes no longer parse
-  the way they did when it was written: they are spelled `:::note`, and PART 7
-  has since narrowed the colon fence's separator to a space (carve#900,
-  carve#905), so that line is ABSORBED paragraph text and its answer comes from
-  §12 and carve#902 instead. Measured again on `::: note`, the oracle and
-  carve-js agree on all three documents, so the oracle was not stale here - the
-  fence was.
-
-- **PART 9: a definition body's continuation indented past its column is lazy
-  text** (carve#918). `definition_indent` REACHES the body's column - the one
-  `:  ` establishes - and does not measure how far past it a line went, because
-  there is nothing past that column for indentation to mean. So
-
-  ```
-  :: t
-  :  body
-      > q
-  ```
-
-  keeps `> q` as a continuation of the body's open paragraph, and the `>` is a
-  greater-than sign rather than a block quote opener. The columns on either side
-  are unchanged and are pinned as controls: at the body's own column a block
-  opener still opens a block, and flush left the body ends.
-
-  The rejected reading - extra indentation opens a nested block, as it does
-  inside a list item - makes indentation depth mean two different things one
-  line apart, since lazy continuation already folds the line above into the same
-  paragraph. carve-js and carve-php both move
-  (markup-carve/carve-js#822, markup-carve/carve-php#974); carve-rs and the
-  oracle already answer this way.
-
-- **Trailing whitespace on a content line is dropped** (carve#926). PART 2's
-  rule was written down only for a paragraph's FINAL line, and PART 12 §7
-  asserted the opposite for a line before a SOFT BREAK - claiming
-  `a` + SPACE + newline + `b` renders `<p>a \nb</p>` and arguing from that
-  claim that a formatter must not strip it. It does not render that way. The
-  clause is now general and the contradiction is corrected.
-
-  The maintainer's reasoning is recorded in the clause, because it decides more
-  than the shape that raised it: "trailing (invisible and bad) whitespace is
-  the one important rule we have: no such thing."
-
-  So the run is dropped on every content line - a paragraph line, a heading, a
-  list item, a block quote line, a definition term or description, a footnote
-  body line, a table caption and a line-block line. The oracle was already
-  right for most of these and was missing the caption and the line-block cases;
-  both are corrected here. The three engines keep the run before a soft break
-  and are ticketed.
-
-  THE RUN IS `whitespace`, `' '` or a tab, the same two-character terminal
-  `blank_line = {whitespace}` takes (carve#890). Every other character is
-  content and survives, however invisible: a no-break space, a zero-width
-  space, a byte order mark, an en quad, an ideographic space, a form feed and a
-  vertical tab. U+FEFF was therefore a red herring in the shape that raised
-  this - in `<SP>U+FEFF<SP>` the BOM is content and what is dropped is the
-  trailing space.
-
-  Verbatim payloads keep their bytes, and whitespace INSIDE a construct is not
-  trailing: a code span, a literal inline, a table cell and the run before a
-  hard-break backslash all end at a delimiter rather than at the line's end. A
-  line block's MEDIAL GAPS rule converts a run of two or more columns into NBSP
-  content before this rule is reached, so only its one-column case is dropped.
-
-  Corpus 268 carries it, with the four non-reaching cases as controls.
-
-- **A definition marker's separator is a space, and it is a run** (carve#892).
-  `footnote_definition` and `abbreviation_definition` spelled their
-  marker-to-content separator as a single `space` while all three engines and
-  the executable spec consumed a run, so the productions forbade a shape
-  nothing rejected. Both now say `space+`.
-
-  The separator terminal is unchanged: a tab after the marker is still not a
-  separator, so `*[HTML]:<TAB>x` and `[^f]:<TAB>x` stay paragraphs. What is
-  settled is the cardinality, and it is the OPPOSITE answer from carve#912's
-  for the four padding slots. The two govern different positions: a padding
-  slot sits between two tokens on a line whose construct is already fixed and
-  its width means nothing, while a marker separator stands between the marker
-  and the content it introduces, where a writer aligning definitions in a
-  column is writing separator rather than content.
-
-  The run is ASCII spaces, so the first character that is not one ends the
-  separator and BEGINS the content. `*[HTML]: <NBSP>Hyper` expands to a title
-  that starts with the no-break space, and `[^f]: <NBSP>note` is a footnote
-  whose body starts with it. That is where the three engines disagreed, each in
-  a different place, and where the executable spec gave a fourth answer no
-  engine gave - it refused a footnote marker plus any non-ASCII whitespace as a
-  definition at all.
-
-  MARKER REQUIRES CONTENT still applies after the run: a marker followed by
-  spaces and nothing else is a paragraph. Corpus 267 carries the ruling, with
-  the tab separator, the spaces-only line and the one-space form as controls.
-- **PART 12 §12(d): an ingest validates the whole payload against
-  `resources/ast-schema.json`** (carve#881). Types and required fields
-  together, refused at decode with the typed error §12 already requires. One
-  clause rather than a row per field: the schema is the list, and it already
-  described every row that diverged.
-
-  Ruling them one at a time is what produced the state this replaces. After
-  §12(a)-(c) landed and all three engines agreed on those, a root `children` of
-  `null` was still read as an empty document by two of them, `attrs:
-  {"class":"x"}` was accepted and rendered as `class="x"` by carve-php while
-  the other two refused the payload, and `text.value: 7` made carve-php render
-  `<p>7</p>` - silent nonsense where a refusal is required. Two engines also
-  failed untyped, which §9(b) already forbids.
-
-  The shipped schema was measured against all sixteen shapes before the clause
-  was written and rejects every one, so it needed no tightening; each row is
-  now pinned in `tests/ast-schema.test.mjs` so a relaxed constraint cannot turn
-  the clause into a no-op in three engines at once. It rejects trees two
-  engines accept today, and every future schema addition becomes a potential
-  rejection for a producer that has not caught up.
-
-- **A reference definition is anchored at end of line** (carve#911).
-  `reference_definition` ends in `newline`, and always did, but all three
-  engines and the executable spec read `[a]: /u zzz` as a definition with
-  trailing junk. Nothing in the grammar authorized that reading. The line is
-  now an ordinary paragraph, and a reference below it does not resolve.
-
-  The tail is what made PART 7's promised failure mode unreachable here. That
-  clause says a slot which does not match "falls back to prose rather than
-  silently dropping metadata", and at this line there was no prose to fall back
-  to, so a failed title or attribute slot had its metadata quietly eaten
-  instead. With the line anchored the promise holds, and the tab and
-  cardinality rules at both slots on it follow from the general rule with no
-  special case: `[a]: /u<TAB>"T"`, `[a]: /u<SP><TAB>{.c}` and the four other
-  spellings are paragraphs now, and the two shapes carve#907 left deliberately
-  unpinned are pinned.
-
-  The line ending is `whitespace`, a space or a tab, the same terminal
-  `blank_line = {whitespace}` takes (carve#890). So `[a]: /u<SP>` is still a
-  definition and `[a]: /u<NBSP>` is not. `[a]: /u{.c}` is untouched, with
-  destination `/u{.c}`: nothing is left over there, because
-  `link_destination` reads the braces.
-
-  Cost, recorded: a shape all four artifacts accepted stops being a definition,
-  and one corpus document depended on it. `16-reference-link-5` pinned
-  `[r]: a b c` resolving the label to `a`; its golden moved. Corpus 266 carries
-  the ruling, with every legal shape of the line as a control.
-
-- **PART 7: a padding slot spelled `space` admits exactly one space**
-  (carve#912). Four productions spell their slot as a single `space` -
-  `link_title` (and so `image_title`), the code fence's opener slot,
-  `frontmatter_open`'s slot before the format token, and the reference
-  definition's slot before its trailing attributes - and carve-js, carve-php,
-  carve-rs and the executable spec all accepted a run at every one of them.
-  That was not an engine divergence to arbitrate: four artifacts agreed with
-  each other and disagreed with the written cardinality, and both normative
-  files carried a comment deferring the question to the other. The productions
-  are held right and the four artifacts narrow.
-
-  So `[t](/u  "T")` is no longer a titled link, ` ```  php ` is no longer a
-  fence opener, `---  yaml` is no longer a typed frontmatter opener, and
-  `[a]: /u  {.c}` no longer carries the definition's attributes. Every
-  document with two spaces at one of those slots reparses. At the three
-  slots on a line that can fall back, the failure mode is the one PART 7
-  already names: the token is left unconsumed and the line becomes prose, or
-  the INVALID-FENCE FALLBACK applies. On the reference-definition line it
-  cannot, because that line is not anchored at end of line, so the title and
-  the attribute block are dropped instead - carve#911 anchors it and restores
-  the promised fallback.
-
-  This is deliberately the opposite call from carve#905, which settled WHICH
-  character a slot admits and left HOW MANY alone. It is also the opposite of
-  the answer carve#892 gives for a MARKER SEPARATOR, which is a different
-  position and keeps its run. `code_fence_info`'s and the admonition opener's
-  metadata slots are spelled `space+` and are unaffected.
-
-  Corpus 262 through 265 carry it, each with its one-space CONTROL. Nothing
-  else can see the rule: zero of the 737 documents that existed before the
+  **Cost, recorded:** corpus 252, 252-2 and 252-3 asserted the tab forms and all
+  three engines produce them; they are rewritten to the narrowed answer rather
+  than deleted, so the shapes stay pinned as literal output. Corpus 262 through
+  265 and 267 carry the cardinality rulings, each with its one-space or
+  one-tab CONTROL. Zero of the 737 documents that existed before the padding
   ruling carried a two-space run at any of the five sites.
-- **PART 12 §4: a span begins at the construct's opening markup, and containment
-  is checked on its own** (carve#913). A node's `pos` covers the construct as
-  WRITTEN - the `>`, the `#`, the list marker and the indentation placing it,
-  the `[` - so a span round-trips to the source text that produced the node.
-  Two nodes keep a content-only span, both already described in §4: the inner
-  half of a combined `/*x*/`, derived from the outer by trimming the delimiters,
-  and a table cell, which runs between the pipes.
 
-  This was never decided, and could not have been enforced if it had been. The
-  three-way span panel added in carve#917 found 279 of 690 documents carrying a
-  span the engines do not agree on, and the check that existed asserted only
-  that a span SLICES TO plausible text - a property every one of those
-  divergences preserves, since carve-php's `[0, 1]` and the other two's
-  `[4, 5]` over `* * *` both slice to an asterisk.
+- **A reference definition is anchored at end of line.** `reference_definition`
+  ends in `newline`, and always did, but all three engines and the executable
+  spec read `[a]: /u zzz` as a definition with trailing junk. Nothing in the
+  grammar authorized that reading; the line is now an ordinary paragraph, and a
+  reference below it does not resolve. This makes PART 7's promised failure mode
+  reachable at this line for the first time - the clause says a slot that fails
+  to match falls back to prose rather than silently dropping metadata, and the
+  tail had been eating whatever a failed slot rejected. So `[a]: /u<TAB>"T"`,
+  `[a]: /u<SP><TAB>{.c}` and the four other spellings are paragraphs too.
 
-  Containment ("a parent's span contains every child's") was already normative
-  and is now asserted in a pass of its own, counting the pairs it compared. The
-  two rules agree today, which is the reason to separate them: a checker that
-  derived containment from the convention would go quiet, with nothing failing,
-  the day the convention was revisited.
+  The line ending is `whitespace`, so `[a]: /u<SP>` is still a definition and
+  `[a]: /u<NBSP>` is not. A trailing zero-width character does NOT defeat the
+  definition: the anchor only sees what is left over after the production, and
+  U+FEFF is not `White_Space`, so `link_destination` absorbs it as an ordinary
+  `unicode_url_char` and the character lands in the href. The format-character
+  exclusion is attributed to `url_char` - the autolink body - where it lives.
 
-  carve-js and carve-php both move, and consumers indexing on content offsets
-  move with them.
+  **Cost, recorded:** a shape all four artifacts accepted stops being a
+  definition, and corpus `16-reference-link-5` pinned `[r]: a b c` resolving to
+  `a`; its golden moved. Corpus 266 carries the ruling.
 
-- **PART 7: the code fence's metadata slots are padding** (carve#894).
-  `fenced_code_block` had the same shape as `frontmatter_open` - a fence, a
-  whitespace slot, then a token that names a dialect - and carve#878 moved only
-  the second of the two, leaving the code fence spelled `space` for no reason a
-  reader could state. It is padding under the same discriminator: the backtick
-  or tilde run has already decided the block, and `js` selects nothing. So the
-  slot before the info string becomes `[whitespace]`, and `code_fence_info`'s
-  `"header"` and `[label]` slots become `whitespace+`, matching the admonition
-  opener's identical pair.
+- **PART 3: an autolink body admits non-ASCII and excludes format characters.**
+  `url_char` was an enumerated ASCII set, so read as written an autolink admitted
+  no non-ASCII at all. Outside ASCII it now admits any character that is not
+  whitespace, not General_Category Cf and not a control character. The deciding
+  argument is the asymmetry with the inline form: `[t](https://<IDN>/)` links in
+  all three engines today. The format-character exclusion is the half that is new
+  rather than permissive - an invisible character in a host is a spoofing
+  surface. `link_destination` and `scheme` are unchanged. No implementation had
+  both halves.
 
-  This one runs the OPPOSITE way from the colon fence. The colon fence is a
-  separator, and all four implementations have to stop accepting a tab there;
-  the code fence is padding, and carve-js, carve-php and the oracle already
-  accept one. carve-rs is the only implementation that rejects it, so this
-  edit makes three conforming without moving them and leaves one to relax.
-  `raw_block` keeps its `space`: the `=` after that slot selects a raw block
-  over a code block, which is a separator's job.
+- **Trailing whitespace on a content line is dropped.** PART 2's rule was written
+  down only for a paragraph's FINAL line, and PART 12 §7 asserted the OPPOSITE
+  for a line before a SOFT BREAK - claiming `a` + SPACE + newline + `b` renders
+  `<p>a \nb</p>` and arguing from that claim that a formatter must not strip it.
+  It does not render that way. The clause is now general and the contradiction is
+  corrected: the run is dropped on a paragraph line, a heading, a list item, a
+  block quote line, a definition term or description, a footnote body line, a
+  table caption and a line-block line.
 
-- **PART 1 S4: an absorbed colon fence leaves the item's paragraph open**
-  (carve#891). Corpus `86-list-lazy-continuation-9` pinned that the flush-left
-  line after
+  The run is `whitespace` - a space or a tab. Every other character is content
+  and survives, however invisible. Verbatim payloads keep their bytes, and
+  whitespace INSIDE a construct is not trailing. A line block's MEDIAL GAPS rule
+  converts a run of two or more columns into NBSP content before this rule is
+  reached, so only its one-column case is dropped. Corpus 268 carries it.
 
-  ```carve
-  - item
-    :::note
-    body
-    :::
-  tail
-  ```
+- **A lazy continuation needs an OPEN PARAGRAPH, and the container kind is not a
+  parameter.** S4 already said a line folds only where some container holds an
+  open paragraph. Five shapes are now decided by that one sentence rather than by
+  the container's kind:
 
-  ends the list item, and S4 says the opposite. `:::note` fails PART 9 section
-  12's opener test, since a type word wants a separator, so the line is
-  ordinary paragraph text and section 12 has the paragraph absorb the trailing
-  fence as text too. Nothing interrupted the item's paragraph, so it is still
-  open when `tail` arrives and S4 folds `tail` into it. The rendered answer for
-  this input therefore changes: `tail` moves from a document paragraph into the
-  item's. Its siblings were already coherent - `-6` folds into a block quote's
-  open paragraph, `-7` and `-8` close because a code fence and a table leave
-  none - and `-9` was the only row that ended an item whose paragraph was open.
+  - A list item whose last block is a container: `. >` followed by a column-0 `X`
+    closes the item, because the quote is empty and nothing is open. `- > q` /
+    `lazy` still folds.
+  - A block quote answers the same way: `> quote` / `> ::: note` / `tail` closes
+    the quote and leaves `tail` at top level, because the div the quoted line
+    opened is empty. The CLOSED form decides the same way.
+  - An unterminated `::: ` div differs by one line of body: a div holding a
+    paragraph has one open, so the flush-left line folds into it; an empty div
+    has none. Terminating the div inverts the first answer.
+  - §12's absorption is bounded by whose line it is. A flush-left `:::` under a
+    quoted paragraph supplies no `>` prefix, so the strict column-0 rule decides
+    it, the quote closes, and the line opens a div of its own. The QUOTED
+    `> :::` twin is still absorbed, and the two are pinned side by side.
+  - An ABSORBED colon fence leaves the item's paragraph open. `:::note` fails the
+    opener test since a type word wants a separator, so the line is ordinary
+    paragraph text and §12 has the paragraph absorb the trailing fence as text
+    too. **Corpus `86-list-lazy-continuation-9` moves**: `tail` goes from a
+    document paragraph into the item's.
 
-  The executable spec is corrected with the fixture. No engine folds this shape
-  yet; `resources/engine-pin-drift.txt` declares the window and the engine work
-  is tracked separately.
+  A definition body's continuation indented PAST its column is lazy text, for the
+  same reason: `definition_indent` REACHES the body's column and does not measure
+  how far past it a line went. The rejected reading would make indentation depth
+  mean two different things one line apart.
 
-- **PART 7: a marker separator is a literal space, a padding slot takes
-  whitespace** (carve#878). Twenty-five productions took the `space` terminal
-  and a tab satisfied nine of them in the implementations, which split four
-  ways on which. The two whitespace terminals are now assigned by ROLE. A
-  MARKER SEPARATOR stands between a marker and the token that selects which
-  construct the line opens; it is `space` and a tab never satisfies it. That is
-  the rule already settled for the heading, list, task and definition markers
-  (carve#692, carve#698), and the colon fence joins them: `admonition_open`,
-  `div_open`, `line_block_open` and `local_hard_break_block_open` share one
-  separator slot, and the token after it decides between an admonition, a div,
-  a line block and a local hard-break block.
+- **PART 9 §17 L3: a `+`-attached block ends at its fence closer, not at a blank
+  line inside it** (carve#982). L3 bounds the attachment "up to the next blank
+  line, sibling marker, or a further `+`", and those bound THE BLOCK - a fenced
+  block ends at its closer, which is what makes it one block, so a boundary line
+  written between an opener and its closer is fence content and ends nothing. No
+  production changes; the reading was already the clause's, and is now stated.
+  The corpus pins it as
+  `279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-7`, the
+  list `+` collector being the largest severing group of the class. All three
+  engines are knowingly behind that row, declared in
+  `resources/engine-pin-drift.txt`; the six rows already in the category are
+  byte-identical everywhere.
 
-  A PADDING SLOT is whitespace between two tokens on a line whose construct is
-  already fixed. It carries no recognition, so it is `whitespace` and admits a
-  tab. Four slots move to it: the admonition opener's `"title"` and `[label]`
-  metadata slots, `frontmatter_open`'s slot before the format token,
-  `link_title` at both of its sites, and the reference definition's slot before
-  its trailing attributes. Every implementation already accepts a tab in all
-  four, so nothing changes for them there. The colon-fence half is the half
-  that moves: all four still accept a tab after the fence and have to be
-  corrected.
+- **PART 9 §17 L1a: a list item's first block does not decide loose or tight.**
+  L1 asks whether the item holds a blank-line-separated second paragraph, not
+  what its first block was. `- - a` followed by a blank line and `Body.` is
+  LOOSE, like every other lead. The sub-list lead was the one shape where the
+  engines split.
 
-- **PART 9 §15 A3: a repeated class collapses** (carve#615). The merge said
-  "ALL classes accumulate in source order, NO de-duplication ... class='a b b
-  c', matching djot and carve-php", and no implementation did that. Measured on
-  `{.a .b}` / `{.b .c}` / `text`: carve-js, carve-rs and carve-php all emit
-  `class="a b c"`, and the INLINE path in `scripts/spec` deduplicates too - so
-  the clause named as its witness the engine that contradicts it. Accumulating
-  is about the LISTS: a later block adds its classes rather than replacing the
-  earlier block's, and a class already present is not added twice.
+- **PART 9 §15: a floating attribute skips what renders nothing.** `{…}` on its
+  own line attaches to the next VISIBLE block: a reference, footnote or
+  abbreviation definition, and a comment, do not count. Attaching an attribute to
+  a construct that emits nothing discards it silently, and A4 already reserves
+  discarding for end of document. Three engines answered three ways and none was
+  self-consistent across the five invisible kinds.
 
-  The worked example in the clause has no repeated class, which is why it read
-  the same either way and why nothing caught this. `scripts/spec` implemented
-  the sentence rather than the engines and was the only implementation emitting
-  the duplicate - on a block attribute line, and on a reference definition's
-  attributes once §16 gained the slot.
+- **PART 9 §15 A3: a repeated class collapses.** The merge said "ALL classes
+  accumulate in source order, NO de-duplication ... matching djot and carve-php",
+  and no implementation did that - the clause named as its witness the engine
+  that contradicts it. Accumulating is about the LISTS: a later block adds its
+  classes rather than replacing the earlier block's, and a class already present
+  is not added twice. The worked example had no repeated class, which is why it
+  read the same either way.
 
-- **PART 12 §7: hoisting the node is not the same as defining the abbreviation**
-  (carve#708). An `abbreviation_def` written inside a container is a document
-  child wherever it was written, and it expands occurrences only when it was
-  written at document level. §7's rationale sentence - "an abbreviation is
-  document-global wherever it is written" - was about tree shape and read
-  literally also settled expansion, which it was not deciding. Three engines
-  gave three answers across the two container kinds; carve-js and carve-rs both
-  move.
+- **PART 10 §4 states the empty-container body shape.** A container whose body
+  renders nothing keeps a blank line where the body would be, except a bare `:::`
+  div, which closes on the next line. The exception has no principle behind it
+  and the clause says so - it stands because all three engines already produce it
+  and the corpus already pins it. What was genuinely unspecified is narrower: a
+  div with a WORD CLASS, which is exactly where carve-php diverged.
 
-### Changed
+- **PART 10 §1 says where a generated attribute goes, and where a render
+  annotation goes.** The author's own attributes keep their source order and
+  anything the engine minted follows them: `<h1 a="b" class="c" id="Auto">` for
+  an auto slug, `<h1 id="x" a="b">` for an id the author wrote. Provenance is the
+  discriminator, not the attribute's name. A render annotation is a third
+  category and is emitted last of all - `<h2 id="Nested" data-source-line="1">` -
+  because `data-source-line` records where a block was written rather than
+  describing the element. All three engines disagreed on the first, with nothing
+  able to catch it: the combination was reachable only through a heading inside a
+  container, and no corpus case gave such a heading attributes. carve-js is
+  canonical.
 
-- **PART 12 §4: a trailing attribute block is part of the node's span**
-  (carve#521). `*x*{#i}` gives the `strong` a span of 0..7, not 0..3. This
-  follows from the existing "a span covers the markup the author wrote" rule
-  rather than adding to it - an attribute block is markup of the node's own by
-  the same reading that makes a break's backslash part of the break. carve-rs
-  already covers it; carve-js stops at the content and moves.
+- **PART 9 §13 says where non-id heading attributes go, and what containers do.**
+  Two rules every engine already implemented and the spec never stated. On a
+  top-level heading the id hoists to the `<section>` and every other attribute
+  stays on the `<h*>`, identically for a slugged and a written id. A heading
+  inside a blockquote, div, admonition or list item is not wrapped at all: it
+  emits `<h* id="…">` in place, still slugged, still sharing the one dedup
+  namespace, still a `</#id>` target. Djot resolved the first question the other
+  way and then implemented that only when an explicit id is present, so its two
+  id cases contradict each other and its own stated rule (`jgm/djot.js#144`).
 
-### Changed
+- **PART 11 R1 describes the implicit heading fallback it always had.** A
+  `[text][]` that matches no link definition resolves against the document's
+  headings by their rendered text. The rule was documented in prose and
+  implemented in every engine, but the resolution pass never mentioned it -
+  including the parts a second implementation cannot guess: link definitions win
+  a tie, matching folds case and collapses whitespace (unlike the exact,
+  case-sensitive link-definition matching in the same rule), and a heading with a
+  blockquote ancestor is declined in either nesting order.
 
-- **PART 11 §10a is narrowed to the definition kinds that have a node**
-  (carve#592). It required a link, footnote or abbreviation definition nothing
-  references to survive the Markdown, plain-text and terminal renderers. The
-  link half is unimplementable in any engine: a link reference definition leaves
-  NO node in the tree, so a renderer walking blocks has nothing to walk - and
-  PART 12 §3a had already considered adding that node and declined it. One
-  section was requiring what another's recorded decision made unreachable. The
-  gap the narrowing leaves is stated rather than hidden: an unused link
-  definition survives nothing today, so `carve --markdown` loses the URL.
+- **PART 11 §10a: an unused definition survives the non-HTML targets, and the
+  clause is narrowed to the kinds that have a node.** A footnote or abbreviation
+  definition nothing references is still emitted by the Markdown, plain-text and
+  terminal renderers, with its marker as written; HTML still drops it. The LINK
+  half was unimplementable in any engine - a link reference definition leaves NO
+  node in the tree, and PART 12 §3a had already considered adding that node and
+  declined it, so one section was requiring what another's recorded decision made
+  unreachable. The gap the narrowing leaves is stated rather than hidden: an
+  unused link definition survives nothing today, so `carve --markdown` loses the
+  URL.
 
-### Fixed
+- **PART 9 §25: at the render ceiling, a renderer refuses.** §25 gave every
+  renderer a ceiling above the parse cap and did not say what happens AT it, so
+  eight of nine renderers across the three engines truncate silently and one had
+  no ceiling at all. Reaching the ceiling now MUST produce a typed, documented
+  failure naming the bound - the same rule PART 12 §9(b) already applies to
+  ingest. It costs nothing on any path a document travels: the ceiling exceeds
+  `MAX_NESTING_DEPTH` by construction. One of the silent renderers is the
+  canonical writer, so a tree built through the API and formatted came back with
+  its body gone and nothing in the return value to say so.
 
-- **The executable spec follows NO OPEN PARAGRAPH, NO LAZY LINE** (carve#582).
-  The clause landed in carve#576 and `scripts/spec` did not implement it: two
-  sites set the item's open-paragraph flag unconditionally, so `. >` - an EMPTY
-  quote on the marker line - counted as open and swallowed the next column-0
-  line. A quote now opens a paragraph only where it carries one. Pinned by three
-  corpus documents, including the contrast case where the quote has content and
-  the line still folds.
+- **PART 9 §25: a flattened over-cap opener is ordinary paragraph text.** §25
+  said an opener past `MAX_NESTING_DEPTH` "becomes literal paragraph text" and
+  did not say how consecutive ones GROUP, so the three engines produced three
+  byte-different outputs and all three satisfied the sentence. They now group by
+  the ordinary paragraph rule - one paragraph, ending at the first blank line, no
+  trailing newline before `</p>`.
 
-### Changed
-
-- **PART 12 §4: a discontiguous node's span is its first fragment** (carve#541).
-  §4 permitted omitting `pos` on a node whose content sits on non-adjacent lines
-  but did not say what a span means where one IS carried. It is the first
-  fragment - the construct's start, with `endOffset` ending that fragment rather
-  than the node. First-offset-to-last-offset is forbidden: in corpus 64 that
-  range contains the sibling cell `Apple` entirely, so two cells would claim
-  overlapping offsets. `scripts/spec/ast-positions.mjs` now reports overlapping
-  sibling spans, exempting hoisted definitions (§7 puts them at document level
-  with a `pos` inside the container they were written in) and breaks (anchored
-  at a shared line terminator).
-
-- **PART 11 §2a: the canonical writer does not substitute one construct for
-  another** (carve#544). `to_html(fmt(x)) == to_html(x)` holding is necessary,
-  not sufficient - carve-rs wrote `* %%` as `* +`, turning a line comment into
-  the continuation marker, and carve-js wrote `| %%%` as `| %% %`, splitting a
-  comment-block fence. Both render identically and re-parse to a different AST,
-  which is how the invariant passed while the output was wrong. The escaping
-  half was already decided by §2's own test: `}^p` and `[^` both re-parse
-  identically bare, so all three engines over-escape the first and two of three
-  over-escape the second.
-
-### Changed
-
-- **A lazy continuation needs an open paragraph, including after a container**
-  (carve#561, carve#572). The block algorithm's S4 already said a line folds
-  only where some container holds an OPEN PARAGRAPH, and closes the unmatched
-  containers otherwise. That "otherwise" now says explicitly that it binds when
-  the unmatched container is a list item whose last block is a container: `. >`
-  followed by a column-0 `X` closes the item, because the quote is empty and
-  nothing is open. `- > q` / `lazy` still folds, because there a paragraph IS
-  open. Three engines gave three answers; carve-rs is the one that matches, and
-  the executable spec in `scripts/spec` moves with carve-js and carve-php.
-
-- **PART 9 §17 L1a: a list item's first block does not decide loose or tight**
-  (carve#538). L1 asks whether the item holds a blank-line-separated second
-  paragraph, not what its first block was. `- - a` followed by a blank line and
-  `Body.` is therefore LOOSE, like every other lead - plain text, heading,
-  attribute block, block quote - which all three engines already render loose.
-  The sub-list lead was the one shape where they split.
-
-- **PART 11 §10a: an unused definition survives the non-HTML targets**
-  (carve#550). A link, footnote or abbreviation definition nothing references is
-  still emitted by the Markdown, plain-text and terminal renderers; HTML still
-  drops it. Those three are source-shaped enough that discarding an authored
-  construct makes the round trip lossy, and dropping it would make one line's
-  output depend on whether a reference exists elsewhere in the document. The
-  marker is emitted as written - `[^]: %` keeps its caret, and the `[]: %`
-  carve-rs produced on the plain target is neither the source nor a definition.
-
-- **PART 9 §8: accepting `smartTypography` and ignoring it is not conformant**
-  (carve#560). The switch was already normative where offered, and a host that
-  omits it stays conformant - but carve-js accepts `smartTypography: false`
-  without error and emits the glyphs anyway, which tells the caller the document
-  is configured when it is not. Omitting and implementing are both fine; the
-  silent middle is now forbidden. `docs/divergence-from-djot.md` gained an
-  implementation-status note, since it showed three call samples and none of the
-  three works today.
-
-### Changed
-
-- **PART 10 §4 states the empty-container body shape** (carve#531). A container
-  whose body renders nothing keeps a blank line where the body would be, except
-  a bare `:::` div, which closes on the next line. The exception has no
-  principle behind it and the clause says so: it stands because the compact bare
-  div is what all three engines already produce and what the corpus already
-  pins, and overturning a three-way agreement to fix a cosmetic inconsistency is
-  the worse trade. What was genuinely unspecified is narrower - a div with a
-  WORD CLASS was pinned by nothing, and it is exactly where carve-php diverges
-  from carve-js and carve-rs.
-
-- **PART 9 §15: a floating attribute skips what renders nothing** (carve#529).
-  `{…}` on its own line attaches to the next block; the clause did not say
-  whether a reference, footnote or abbreviation definition, or a comment,
-  counts as one. It does not - pending floats past them to the next VISIBLE
-  block, because attaching an attribute to a construct that emits nothing
-  discards it silently, and A4 already reserves discarding for end of document.
-  Three engines answered three ways and none was self-consistent across the
-  five invisible kinds; the executable spec already applies it over all five.
-
-### Fixed
-
-- **The pinned reference build is now checked against the corpus in CI**
-  (carve#533). `engine:report` existed as an npm script that no workflow ran,
-  so the pin drifted three documents behind the corpus with nothing reporting
-  it. It is not gated on drift itself - the corpus is deliberately allowed to
-  run ahead of the engine, and gating on the mismatch would reinstate the
-  deadlock the script's own header warns about. It gates on the drift being
-  DECLARED: `resources/engine-pin-drift.txt` names the slugs the pin is
-  knowingly behind on and why, and `npm run engine:report -- --check` fails
-  when the real set differs in either direction - undeclared drift, or a line
-  the pin has since caught up on.
-
-### Changed
-
-- **PART 12 §3a: a RESOLVED reference keeps its destination** (carve#524). The
-  clause pinned `href: ""` for every reference, resolved or not. Under it the
-  destination had nowhere to live: the vocabulary then had no node type for a
-  `[label]: url` link reference definition - a document holding only `[lbl]: /u`
-  published zero children - so a serialized resolved reference kept `ref` and
-  `rawRef` and dropped `/start` outright, and a consumer decoding it rendered a
-  link to nothing. PART 12 §10 has since given the definition its own
-  `link_reference_definition` node, so that premise no longer holds; the rule
-  below stands on §5's added-alongside rule, which is what it was argued from.
-  `href` is now empty ONLY where nothing resolved the
-  reference, which is §5's added-alongside rule applied to links exactly as it
-  already applies to footnote numbering: the authored construct (`ref`,
-  `rawRef`) survives and the resolution result sits beside it. All three engines
-  already publish the destination; what they are missing is the authored
-  construct beside it.
-
-  `ref`'s value for the collapsed form `[label][]` is pinned to the DERIVED
-  label rather than the empty string the author typed, since that is the label
-  the reference resolves by and `rawRef` already holds the authored spelling.
-  Three engines carried three spellings. `resources/ast-schema.json` said one
-  thing for `link.ref` ("resolved or not") and another for `image.ref`
-  ("Unresolved reference label"); the two now agree, and `href`/`src` gain a
-  description saying when they may be empty.
-
-- **PART 12 / PART 9 §25: a flattened over-cap opener is ordinary paragraph
-  text** (carve#494). §25 said an opener past `MAX_NESTING_DEPTH` "becomes
-  literal paragraph text" and did not say how consecutive ones GROUP, so the
-  three engines produced three byte-different outputs and all three satisfied
-  the sentence. They now group by the ordinary paragraph rule - one paragraph,
-  ending at the first blank line, no trailing newline before `</p>` - because
-  "degrades to literal text" is the whole rule and a degrade path with its own
-  block structure would be a second paragraph rule to specify and to test.
-
-- **PART 9 §25: at the render ceiling, a renderer refuses** (carve#526).
-  §25 gave every renderer a ceiling above the parse cap and did not say what
-  happens AT it, so eight of nine renderers across the three engines truncate
-  silently and carve-js's HTML renderer has no ceiling at all. Reaching the
-  ceiling now MUST produce a typed, documented failure naming the bound - the
-  same rule PART 12 §9(b) already applies to ingest, at the other end of the
-  same pipe. It costs nothing on any path a document travels: the ceiling
-  exceeds MAX_NESTING_DEPTH by construction and ingest already refuses deeper
-  trees, so what is left is a tree built through the API, where the caller is
-  the one who can act on the error.
-
-  Measured on the pinned carve-js build: the ceiling sits at 232 where §25
-  requires, but at it `renderMarkdown`, `renderCarve` and `renderPlainText`
-  emit the nested markers and delete only the BODY, so the output looks
-  complete; `renderAnsi` returns an empty string; and `renderHtml` has no
-  ceiling at all and raises `RangeError: Maximum call stack size exceeded` at
-  depth 2000. One of the silent three is the canonical writer, so a tree built
-  through the API and formatted comes back with its body gone and nothing in
-  the return value to say so.
+- **PART 9 §8: accepting `smartTypography` and ignoring it is not conformant.**
+  The switch was already normative where offered, and a host that omits it stays
+  conformant - but accepting `smartTypography: false` and emitting the glyphs
+  anyway tells the caller the document is configured when it is not. Omitting and
+  implementing are both fine; the silent middle is forbidden.
 
 ### Fixed
 
 - **Restored nine regions of `resources/grammar.ebnf` that a stale-copy merge
-  removed.** carve#525 rewrote the grammar from an out-of-date working copy. Its
-  merge-base was current, so git recorded ordinary deletions and merged with no
-  conflict, and four normative clauses left the file while the docs, the AST
-  schema and this changelog went on citing them: PART 12 §3a (the tree is
-  pre-resolve), PART 12 §7's extension to every definition kind, PART 12 §1a's
-  "the merge is part of `parse(x)`", and MARKER REQUIRES CONTENT's extension to
-  the definition-term marker `::`. Five further regions reverted to superseded
-  text - S4's lazy continuation, PART 9 §10 I4's closer lookahead, the line
-  block's leading whitespace, the math-attributes paragraph, and PART 12 §4's
-  implementation status. The blockquote-marker rule carve#525 was written to
-  land is untouched. The restoration itself landed in carve#537; this entry
-  records the loss and what closed it.
+  removed.** markup-carve/carve#525 rewrote the grammar from an out-of-date
+  working copy; its merge-base was current, so git recorded ordinary deletions
+  and merged with no conflict. Four normative clauses left the file while the
+  docs, the AST schema and this changelog went on citing them: PART 12 §3a, PART
+  12 §7's extension to every definition kind, PART 12 §1a's "the merge is part of
+  `parse(x)`", and MARKER REQUIRES CONTENT's extension to `::`. Five further
+  regions reverted to superseded text. An implementer who read the grammar in
+  that window read the wrong document.
 
   Guarded, so the class fails a test rather than surviving a merge:
   `resources/normative-clauses.txt` names every clause carrying the
-  `-- NORMATIVE` marker and `tests/normativity.test.mjs` checks the grammar
-  still contains each one, and every `PART 12 §N` citation in the docs, the
-  schema and this file must resolve to a real section. Removing a clause stays
-  allowed; removing it silently does not.
-
-### Added
-
-- **PART 12 §3a: the serialized AST is PRE-RESOLVE** (carve#481, carve#486,
-  carve-php#624). The tree records what the author wrote, not what the document
-  resolves to. `[getting started][]` publishes a `link` carrying `ref`, an empty
-  `href` and the `rawRef` source - resolved or not, and even when nothing
-  defines the label, where flattening it to text discarded the fact that a
-  reference was written at all. Both stages validated against the schema, which
-  is how three engines came to disagree without any of them being wrong; the tie
-  goes to the stage that keeps `rawRef`'s stated purpose reachable and keeps
-  `[x][]` alive through a format cycle. It also removes the need for a
-  `raw_text` document node: nothing reverts to literal source, so nothing has to
-  carry text that must not be escaped again.
-
-### Changed
-
-- **PART 12 §7 now covers every definition kind, not only footnotes**
-  (carve-php#631). An `abbreviation_def` authored inside a div, list item or
-  block quote is a child of the DOCUMENT, exactly as a `footnote` is. The clause
-  was written against PART 9 §16 and read as footnote-specific, so the engines
-  split - carve-php hoisted both, carve-js and carve-rs hoisted only the
-  footnote - while all three rendered identical HTML, because an abbreviation is
-  document-global wherever it is written. The formatter consequence is accepted
-  rather than overlooked: it already ships for footnotes, where `> [^a]: body`
-  formats to the definition after an emptied `>`.
-
-- **An optional `sections` switch on the HTML renderer** (carve#427). Setting it
-  to `false` renders headings flat, with the id back on the `<h*>` and the blocks
-  that would have been section children left as siblings. The default is
-  unchanged and is what the corpus pins; the switch is HTML-only, because no
-  other target emits `<section>` and the AST has no `section` node.
-
-  The wrapper is the one output change that breaks sites whose source migrated
-  cleanly: any CSS or JS assuming rendered blocks are direct children of the
-  content container - the `.stack > * + *` spacing idiom, `:first-child`,
-  `nth-child()` counting, `element.children` walks - stops matching once a
-  `<section>` sits in between. Djot users can unwrap the node with a filter.
-  Carve users cannot, because Carve synthesizes the element at render time from
-  a flat AST, so there is nothing to intercept - which left HTML post-processing
-  as the only escape.
-
-  Now specified rather than left to engines; no engine ships it yet, so the
-  optional-corpus case for it is visible as skipped.
-
-### Changed
-
-- **PART 9 §13 says where non-id heading attributes go, and what containers do**
-  (carve#427). Two rules every engine already implemented, neither of which the
-  spec stated. On a top-level heading the id hoists to the `<section>` and every
-  other attribute stays on the `<h*>`, identically for a slugged and a written
-  id. A heading inside a blockquote, div, admonition, or list item is not
-  wrapped at all: it emits `<h* id="…">` in place, still slugged, still sharing
-  the one dedup namespace, still a `</#id>` target.
-
-  Djot resolved the first question the other way (all attributes migrate to the
-  section) and then implemented that only when an explicit id is present, so its
-  two id cases contradict each other and its own stated rule
-  (`jgm/djot.js#144`). Carve's two cases agree, which is what lets the rule
-  survive the wrapper being switched off - the id returns to the `<h*>` and
-  nothing else moves, leaving one placement rule for the whole document.
-
-- **PART 10 §1 also says a render annotation goes after the generated
-  attribute** (carve#427). `data-source-line` records where a block was written
-  rather than describing the element, so it is emitted last of all:
-  `<h2 id="Nested" data-source-line="1">`.
-
-  A third category, and stating it is what stops an engine being conformant and
-  divergent at once. An engine that appends the stamp at render time gets the
-  order for free; one that attaches it at parse time carries it inside the
-  authored run, where "generated last" alone puts the id behind it. carve-rs did
-  exactly that, and a test caught it rather than this text.
-
-- **PART 10 §1 says where a generated attribute goes** (carve#427). The author's
-  own attributes keep their source order and anything the engine minted follows
-  them, so an unwrapped heading renders `<h1 a="b" class="c" id="Auto">` for an
-  auto slug and `<h1 id="x" a="b">` for an id the author wrote. Provenance is
-  the discriminator, not the attribute's name.
-
-  All three engines disagreed here, with nothing able to catch it: carve-js
-  appended a generated id but left an authored one in place, carve-php put the
-  id last in both cases, carve-rs put it first in both. No two agreed on both
-  cases. The combination was reachable only through a heading inside a
-  container, and no corpus case gave such a heading attributes - so each engine
-  picked an answer and stayed green. The executable spec was a fourth answer
-  again: it dropped the attributes entirely. carve-js is canonical; the rest
-  converge on it.
-
-  The `sections` switch is what surfaced this. With it off every heading takes
-  the unwrapped path, so a divergence that used to require a blockquote would
-  have shipped on ordinary documents.
-
-- **PART 11 R1 describes the implicit heading fallback it always had**
-  (carve#427). A `[text][]` that matches no link definition resolves against the
-  document's headings by their rendered text. The rule was documented in prose
-  and implemented in every engine, but the resolution pass never mentioned it -
-  including the parts a second implementation cannot guess: link definitions win
-  a tie, matching folds case and collapses whitespace (unlike the exact,
-  case-sensitive link-definition matching in the same rule), and a heading with
-  a blockquote ancestor is declined in either nesting order.
-
-
-- **PART 12 §4: position tracking may be opt-in, serialization may not.** An
-  implementation may gate position tracking behind a parse option and must
-  enable it when asked to serialize. What is forbidden is a serialized document
-  without positions, not a parse without them.
-
-  The cost is what forced this. Recording a span for every node is not free -
-  carve-rs builds its line map only when the source-line render option asks for
-  it, precisely so an ordinary parse does not pay - and serialization is an
-  operation most callers never perform. Charging every parse in the fastest
-  engine for a feature used by exporters and language servers is the wrong
-  trade, and a spec demanding it would be quietly ignored or quietly
-  unimplemented.
-
-  The contract a consumer relies on is unchanged: JSON it is handed carries
-  positions.
-
-### Added
-
-- **`compare-impls --roundtrip`** (carve#353). Formats each corpus case, then
-  feeds that output back in as a fresh input, so every case covers two inputs
-  instead of one - and the second is a document nobody wrote. The formatter
-  emits shapes an author rarely types (normalized indentation, inserted blank
-  lines, escape runs), which is exactly where the engines are least likely to
-  have been compared.
-
-  It also asserts the two PART 11 §1 invariants per engine while the outputs are
-  in hand: `to_html(fmt(x)) == to_html(x)` and `fmt(fmt(x)) == fmt(x)`. Those are
-  per-engine properties, reported separately from cross-engine agreement - all
-  three engines can agree and still be wrong together.
-
-### Fixed
-
-- **The executable spec's quote open/close decision matches the engines**
-  (carve#348). Three bugs in one lookbehind, all in `scripts/spec/render.mjs`:
-
-  A quote directly inside bare emphasis saw the delimiter rather than the start
-  of the emphasis content, so `*'q'*` closed where all three engines open. The
-  lookbehind now skips `*`, `_` and `~` - but not `/` or `=`, which are opening
-  contexts in their own right (`a="b"`).
-
-  A quote at the very start of the input always closed: the guard read
-  `prev !== ''`, so `"hello"` rendered `”hello”`. Nothing before a quote is the
-  most opening context there is.
-
-  A quote directly after another quote could not tell which half it followed.
-  The glyph the previous quote resolved to is now carried, so `"'nested'"`
-  opens the inner pair while `""` stays a closing pair.
-
-### Added
-
-- Corpus case `19-smart-typography-dashes-and-quotes-9` pins all four shapes.
-  Its expected output was taken from the engines, which agree byte for byte.
-
-### Changed
-
-- **PART 11 §1: the round-trip invariant is equality MODULO ESCAPING.**
-  `escaped_text` and `text` compare equal, and an adjacent run of them compares
-  as the single text node holding the same characters. Without this the
-  invariant is unattainable by construction rather than merely unmet: §5
-  requires the writer to escape `"` and `'` unconditionally (a bare quote in a
-  text node would otherwise re-derive as smart punctuation), so a text node
-  holding a quote MUST come back carrying an escape - which parses to
-  `escaped_text`. Read strictly, §1 and §5 contradicted each other for every
-  document containing a quote. It is also the comparison §4 already performs
-  internally.
-
-- **PART 11 §1's known gap updated.** The four constructs it recorded are
-  fixed; a corpus-wide sweep finds others, now tracked in carve#369.
-
-### Added
-
-- **PART 11 §7: the Markdown target's escaping rule** (carve#350). There was no
-  normative text for it at all. Markdown metacharacters are escaped
-  unconditionally; an `escaped_text` node is emitted as an escape whatever the
-  character; nothing else is escaped. The middle rule is the one that was
-  divergent: `\-\-` was written precisely so a downstream processor with smart
-  punctuation on would not read an en dash, and the characters this matters for
-  (`"` `'` `-` `.`) are not Markdown metacharacters, so the first rule does not
-  cover them.
-
-### Added
-
-- **The AST serialization format is now specified** (new PART 12). A parsed
-  document is exchangeable: an implementation may serialize its AST to JSON, and
-  a consumer written against one engine must be able to read another's output.
-  Nothing specified this before, and the engines' internal field names already
-  differed for the same node - one calls a link's destination `href`, another
-  `destination` - so three incompatible dialects were the default outcome rather
-  than a risk.
-
-  The shape is carve-js's, because it is the reference implementation, its AST is
-  already plain data, and the one serializer in the wild (carve-rb, over
-  carve-rs's tree) independently arrived at the same field names. Field names are
-  spec surface exactly as node-type and smart-punctuation kind names are.
-
-  Positions are required. `pos` is what makes a serialized AST worth exchanging -
-  an editor, a language server or a tool grounding output back to source needs to
-  say where - and an optional field is one every consumer must handle the absence
-  of, which in practice means not using it. Only carve-js records positions
-  today: carve-php has none, and carve-rs has a parser-internal line map but no
-  columns or offsets, so both need position tracking before they can serialize
-  conformantly.
-
-### Added
-
-- **The optional corpus can pin a target other than HTML** (carve#360). A case's
-  manifest entry may name a `target` - `markdown`, `plain` or `ansi` - and is
-  paired with an expected file carrying that target's extension; an entry
-  without one keeps its `NN-slug.html` pair, so all 29 existing cases are
-  unchanged and a runner that predates targets needs no change.
-
-  This closes a gap wider than the feature that prompted it: **no corpus,
-  mandatory or optional, pinned any target but HTML.** 498 mandatory and 29
-  optional cases, all HTML, which is how carve-php and carve-js came to disagree
-  about escaping intraword underscores with nothing failing.
-
-- **First two Markdown-target cases.** `30-symbol-map-markdown` pins that a
-  symbol keeps its `:name:` source spelling on the Markdown target while the map
-  resolves for HTML. All three engines already agree on that byte-for-byte and
-  nothing asserted it. Smart punctuation in the same case still resolves to its
-  glyph, which is the contrast the case is built around.
-  `31-markdown-typography-source` pins the new optional feature below.
-
-### Changed
-
-- **PART 9 §8 admits source output on the Markdown target as a named optional
-  feature** (`markdown-typography-source`, carve#360). Read strictly, §8 made
-  the glyph the only conformant Markdown output, so an implementation offering
-  the setting was non-conformant. The glyph stays the default on every target;
-  the feature is per-render-call, Markdown only, and changes no default, which
-  leaves the `smartTypography` switch's ban on per-target defaults intact. The
-  other presentation targets MUST NOT offer it - Markdown is re-parseable
-  source, which is what makes the canonical writer's round-trip argument apply
-  to it, and what does not apply to a terminal presentation.
-
-- **The PART 11 byte assertions now run.** `tests/roundtrip.test.mjs` skipped
-  seven byte comparisons while no engine implemented minimal escaping; the
-  vendored carve-lib does now (carve-js#397) and reproduces all seven fixtures
-  exactly. Only the §1 invariants were being checked before, and those are equal
-  for an over-escaping writer too - the escaping decision itself had nothing
-  asserting it. The fixtures were derived from PART 11 before any engine
-  implemented it, so agreement measures the engine against the spec.
-
-- **Vendored carve-lib refreshed** to carve-js `aa109b8`, which brings smart
-  typography as AST nodes (carve-js#396), the PART 11 writer (carve-js#397),
-  the Markdown renderer no longer de-escaping underscores inside verbatim
-  content (carve-js#401) and the writer no longer turning an em-dash paragraph
-  into a thematic break (carve-js#402).
-
-- **PART 11 amended after implementing it.** Three corrections, each forced by
-  the parser rather than chosen:
-
-  The escaping decision is **document-scoped**, not per line. A line re-parsed
-  on its own has lost the document's link-reference and footnote definitions, so
-  a paragraph carrying `[text][ref]` comes back with an empty destination and
-  reports a difference escaping never caused. Any scope smaller than the
-  document has that defect.
-
-  The two renders are **compared with each other**, not the minimal render
-  against the document being written. Comparing against the source document
-  inherits the writer's existing round-trip gaps and flips the escaping decision
-  between passes, breaking idempotence for a reason unrelated to escaping.
-
-  The **caret is unconditional**. It opens nothing on its own, but its escape
-  carries information the AST records separately - a text node whose leading
-  caret came from an escape is marked, so an image followed by a caret line is
-  not promoted to a figure. Comparing that mark would escalate every document
-  whose text begins with a caret; ignoring it would silently turn the image case
-  into a figure.
-
-- **PART 11 §1 now records a known gap.** The first invariant,
-  `parse(fmt(x)) == parse(x)`, is not met by any engine today: a table with a
-  colspan, a doubled alignment marker, some list-item attribute forms and one
-  line-block shape re-parse to a different document while rendering identical
-  HTML. Nothing caught it because every existing check compares HTML, which is
-  equal in all of those cases.
-
-- `scripts/compare-impls.mjs` now compares every render target, not just HTML.
-  `--targets=all` (the new default) covers `html`, `markdown`, `plain`, `carve`
-  and `ansi`; only `html` has expected-output fixtures, so the other four are
-  compared implementation-against-implementation (trailing-newline-insensitively,
-  as elsewhere in the project). Identical output across the three engines was an
-  invariant that four of five targets had nothing checking it.
-
-### Added
-
-- **Corpus pin for the compact sub-list rule with a following sibling**
-  (85-compact-list-blocks-2). §17 L2 keeps an item tight when a blank line
-  precedes its sub-block, and the existing pin used a block quote with no
-  sibling after it. The sub-list variant with a following item was unpinned, and
-  carve-rs got it wrong: the blank leaked past the sub-list and the sibling
-  marker read it as a blank between items, rendering the whole list loose
-  (carve-rs#286). Because the canonical writer emits exactly this shape for
-  ordinary nested lists, carve-rs was also breaking
-  `to_html(fmt(x)) == to_html(x)` on a plain two-level list.
-
-- **The canonical source writer is now specified** (new PART 11). `carve fmt`
-  and the `carve` render target had no normative text at all, so their behavior
-  was defined only by three implementations happening to agree. PART 11 pins the
-  invariants (`parse(fmt(x)) == parse(x)` and idempotence), states the escaping
-  rule - a character is escaped if and only if omitting the escape would change
-  the re-parsed AST - and records why a static per-character table cannot
-  implement it: `[` is literal alone but an opener in `[a](b)`, `^` is literal
-  at column 0 but an opener in `^[note]`. The conformant strategy pins the
-  output while leaving the computation free: build the minimal form, re-parse
-  it, and fall back to escaping the whole line only when the re-parse differs.
-  A new `tests/corpus-roundtrip/` corpus pins Carve-source-in, Carve-source-out
-  pairs; the invariant assertions run today, the byte assertions are skipped
-  until an engine implements minimal escaping.
-
-- Smart typography now has a normative AST representation (PART 9 §8): a
-  recognized substitution is a `smart_punctuation` inline node carrying both the
-  resolved kind and the author's source run. Presentation renderers emit the
-  glyph; the canonical Carve writer emits the source run, so `fmt` reproduces
-  the document instead of normalizing its punctuation. Writing the glyph
-  straight into the text buffer is no longer conformant. The eighteen kind names
-  are spec surface, a quote node also records its resolved (locale-dependent)
-  glyph, and a dash run partitions into one node per glyph so `----` round-trips
-  to four hyphens. For profiles the node is classified as `text`.
-
-- Smart typography is now specified as unconditional by default (PART 9 §8): a
-  conformant implementation performs the substitution with no extension
-  registered, and a locale/glyph extension selects which characters are emitted
-  rather than whether the transform runs. Hosts may offer one document-global
-  `smartTypography` switch (default `true`); with the node representation above
-  it is a rendering decision, so parsing is unchanged and the presentation
-  renderers emit each node's source run instead of its glyph. Per-target
-  defaults are non-conformant. Escapes, `:name:` symbols and heading ids are
-  unaffected in either mode. Pinned by the optional corpus feature
-  `smart-typography-off`, and explained in `docs/divergence-from-djot.md`
-  section 12, which also records why Carve uses one leaf node where Djot uses
-  two container types plus a leaf.
-
-### Fixed
-
-- **`npm run compare:impls -- --corpus=optional` runs again.** The optional
-  corpus learned per-case targets (carve#360) but `scripts/compare-impls.mjs`
-  kept forcing every optional case to HTML and opening `NN-slug.html`, so the
-  run died with `ENOENT ... 30-symbol-map-markdown.html` at the first
-  Markdown-target case - the whole optional comparison, not just that case.
-
-  A case now runs on the target its manifest entry pins, paired with the
-  expected file for that target, and `--targets` filters which cases run instead
-  of overriding what they render (a filtered run reports `filtered_out=`). The
-  per-engine adapters take the target too, so the Markdown cases compare
-  Markdown; an adapter that is not wired for the target reports no adapter and
-  the case is skipped for that engine, the same visible skip an unsupported
-  feature already gets. A missing expected file is a hard error naming the file
-  and target, not a silent downgrade to an engines-agree check.
-
-  The pairing rule now lives in `scripts/lib/corpus-targets.mjs` and is shared
-  with `tests/optional-corpus.test.mjs`, with `tests/corpus-targets.test.mjs`
-  pinning it. Two runners holding private copies of the rule is what let one of
-  them fall a release behind the manifest.
-
-- **`cross_impl_diffs` counts every target.** It only counted HTML, so a
-  Markdown, plain-text, Carve or ANSI divergence printed its `DIFF [target]`
-  line while the headline figure - the one the docs snapshot pins and a reader
-  takes away - still said zero.
+  `-- NORMATIVE` marker, and every `PART 12 §N` citation in the docs, the schema
+  and this file must resolve to a real section. Removing a clause stays allowed;
+  removing it silently does not.
 
 ## [0.1.1] - 2026-07-27
 
