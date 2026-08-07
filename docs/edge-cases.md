@@ -546,8 +546,9 @@ Normative statement: `resources/grammar.ebnf` PART 9 §10. Verified by corpus
 
 **Rule (normative, grammar PART 2):** a heading **ends at the newline**.
 Nothing folds into it - the next line begins whatever block it begins, exactly
-as after any other closed block. A caption (`^ `) still attaches to it (§4),
-because attachment is not continuation.
+as after any other closed block. A `^ ` caption line is no exception: it does
+not fold in, and it does not attach either, because a heading is not one of
+§4's captionable hosts. It opens an ordinary paragraph.
 
 The heading id derives from that single line.
 

@@ -2086,7 +2086,7 @@ int main() {}
 
 ## Single-line headings
 
-A heading **ends at the newline**. Nothing folds into it: the next line begins whatever block it begins, exactly as after any other closed block. This diverges from djot deliberately — djot folds a following plain line into the heading, which is a silent corruption for anyone arriving from Markdown, and `divergence-from-djot` §7 already broke from djot on the mirror case. A caption (`^ …`) still attaches via §4, because attachment is not continuation. The heading id is built from the single line. (Setext underline headings remain intentionally excluded.)
+A heading **ends at the newline**. Nothing folds into it: the next line begins whatever block it begins, exactly as after any other closed block. This diverges from djot deliberately — djot folds a following plain line into the heading, which is a silent corruption for anyone arriving from Markdown, and `divergence-from-djot` §7 already broke from djot on the mirror case. A `^ …` caption line is no exception: it does not fold in, and it does not attach either, because a heading is not one of §4's captionable hosts - it opens an ordinary paragraph. The heading id is built from the single line. (Setext underline headings remain intentionally excluded.)
 
 ::: compare
 
