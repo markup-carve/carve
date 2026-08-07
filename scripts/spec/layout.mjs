@@ -2059,11 +2059,51 @@ function collectItems(lines, i, list, state, ind, meas) {
     // not this item, so a descendant's looseness must not propagate up to this
     // item (carve#322).
     let subCol = -1
-    // Open fenced code block (its delimiter run) inside the item's own content,
-    // so an interior blank line is verbatim content, not an item-loosening
-    // separator (carve#326 C). Only a valid fence opener sets it; its matching
-    // closer clears it.
-    let fence = null
+    // Open fence state inside the item's own content, so an interior blank line
+    // is fence content, not an item-loosening separator (carve#326 C). This is
+    // deliberately an incremental tracker: only a valid opener sets state and
+    // its matching closer clears it, with no lookahead for a closer. carve#985
+    // requires all three fence kinds here rather than code fences alone.
+    //
+    // Code and comment fences are opaque. A colon fence can nest by delimiter
+    // length, and an opaque fence inside it suspends changes to the colon stack
+    // until that innermost span closes.
+    const fence = { opaque: null, colon: [] }
+    const insideFence = () => fence.opaque !== null || fence.colon.length !== 0
+    const trackFence = (line) => {
+      if (fence.opaque) {
+        if (fence.opaque.kind === 'code') {
+          const c = PURE_FENCE.exec(line)
+          if (c && c[1][0] === fence.opaque.run[0] && c[1].length >= fence.opaque.run.length) {
+            fence.opaque = null
+          }
+        } else {
+          const c = COMMENT_FENCE_BODY.exec(line)
+          if (c && c[1].length === fence.opaque.run.length) fence.opaque = null
+        }
+        return
+      }
+
+      const code = FENCE.exec(line)
+      if (code && parseFenceInfo(code[2]) !== null) {
+        fence.opaque = { kind: 'code', run: code[1] }
+        return
+      }
+      const comment = COMMENT_FENCE_BODY.exec(line)
+      if (comment) {
+        fence.opaque = { kind: 'comment', run: comment[1] }
+        return
+      }
+      const closer = COLON_CLOSER.exec(line)
+      if (closer) {
+        const len = closer[1].length
+        if (fence.colon.length !== 0 && len === fence.colon[fence.colon.length - 1]) fence.colon.pop()
+        else fence.colon.push(len)
+        return
+      }
+      const colon = COLON_FENCE.exec(line)
+      if (colon && parseColonOpener(colon[2]) !== null) fence.colon.push(colon[1].length)
+    }
     // The item's last collected content was an invisible comment, so the item
     // is still OPEN - C3 is explicit that a comment "does not close the ITEM
     // either" (carve#618) - but holds no open paragraph.
@@ -2071,8 +2111,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     {
       // A fence can open on the MARKER LINE (`- ``` `), where its opener is the
       // marker-line content, not a collected continuation line -- seed from it.
-      const fo = FENCE.exec(head.text)
-      if (fo && parseFenceInfo(fo[2]) !== null) fence = fo[1]
+      trackFence(head.text)
     }
     i++
     // FIRST-BLOCK form (SS17 L4): a bare `+` as the sole marker-line content
@@ -2122,9 +2161,9 @@ function collectItems(lines, i, list, state, ind, meas) {
         continue
       }
       if (lm.rest === '') {
-        // A blank line INSIDE an open fenced code block is verbatim content:
-        // keep it in the item body and stay tight (no looseness decision).
-        if (fence) {
+        // A blank line INSIDE any open fence is fence content: keep it in the
+        // item body and stay tight (no looseness decision).
+        if (insideFence()) {
           pushLine('', BLANK_MEAS)
           i++
           continue
@@ -2271,26 +2310,19 @@ function collectItems(lines, i, list, state, ind, meas) {
         // column it sits at, and the block reader below leaves every other one
         // as text (carve#863).
         pushLine(dedented, dmeas)
-        // Track an open fenced code block (its matching closer clears it) so the
-        // blank-line branch above knows an interior blank is fence content.
-        if (fence) {
-          const c = PURE_FENCE.exec(dedented)
-          if (c && c[1][0] === fence[0] && c[1].length >= fence.length) fence = null
-        } else {
-          const fo = FENCE.exec(dedented)
-          if (fo && parseFenceInfo(fo[2]) !== null) fence = fo[1]
-        }
+        // Advance the incremental three-kind tracker so the blank-line branch
+        // above knows whether an interior blank is fence content.
+        trackFence(dedented)
         // A COMMENT IS INVISIBLE, SO IT LEAVES NO PARAGRAPH OPEN. §24 C3 says a
         // comment "does end the open PARAGRAPH" (carve#677), of BOTH spellings
         // - the `%%` line and the `%%%` fence, "whose body and closer travel
         // with its opener" (carve#634). COMMENT_LINE recognizes every one of
-        // those delimiter lines, which is all this needs: a fence's CLOSER is
-        // itself comment-shaped and is the last line before anything that
-        // follows the fence, so tracking the span adds nothing an input can
-        // observe. A span tracker written here first was dead in exactly that
-        // way, and dead in a second way too - it looked its closer up through
-        // `findCloser`, whose alphabet is backticks and tildes, so it could
-        // never have been set at all.
+        // those delimiter lines, which is all the PARAGRAPH state needs: a
+        // fence's CLOSER is itself comment-shaped and is the last line before
+        // anything that follows the fence. The separate looseness tracker now
+        // does need the span (carve#985), and matches it with
+        // COMMENT_FENCE_BODY rather than `findCloser`, whose alphabet is
+        // backticks and tildes.
         if (COMMENT_LINE.test(dedented)) afterComment = true
         else if (dmeas.rest !== '') afterComment = false
         // record the first sub-list's content column (carve#322)
@@ -2345,7 +2377,10 @@ function collectItems(lines, i, list, state, ind, meas) {
       // agree on. The item collector had no equivalent, so a below-column line
       // AND the closer folded into the code text and the fence never closed --
       // four readers, four answers, and no corpus case below the column.
-      if (fence) break
+      // This below-column guard retains its narrower role: only an innermost
+      // opaque (code or comment) body is verbatim for S2. A colon container is
+      // tracked for interior blanks above, but is not itself opaque.
+      if (fence.opaque) break
       if (nm && nm.indent <= baseIndent) {
         // §17 L1, first clause: the item WAS followed by a blank line before
         // this sibling marker - an invisible attachment in between does not
