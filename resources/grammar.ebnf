@@ -132,9 +132,8 @@
            The executable spec did NOT, and rendered the heading as a paragraph
            - a divergence no corpus document could see, because none carried a
            BOM (carve#872).
-           Column arithmetic is
-           PART 9 §24 C1: a space advances the column by 1, a tab to the next
-           multiple of 4; tabs outside indentation are preserved verbatim.
+           Column arithmetic is PART 9 §24 C1. A TAB IS SYNTAX ONLY IN THE
+           LEADING RUN (PART 7).
    STATE.  open := stack of open containers, bottom-up (document ->
            innermost), plus the current leaf (none | paragraph | heading |
            ...). Container kinds and the per-line prefix each demands:
@@ -335,10 +334,9 @@ frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatte
    ...); a bare `---` defaults to `yaml`. The space before the token is
    OPTIONAL (lenient: both `---yaml` and `--- yaml` are accepted; `---yaml` is
    canonical) and it is a PADDING SLOT, not a marker separator (PART 7). Both
-   roles take `space`: the slot sits after the `---`, and a tab is syntax only
-   in a line's leading indentation run (PART 7, MARKER SEPARATORS AND PADDING SLOTS). So
-   `---<TAB>yaml` is not a typed opener; it is a thematic break followed by
-   ordinary lines. Implementations that read it as frontmatter today diverge
+   roles take `space`: the slot sits after the `---`, and A TAB IS SYNTAX ONLY
+   IN THE LEADING RUN (PART 7). So `---<TAB>yaml` is not a typed opener; it is
+   a thematic break followed by ordinary lines. Implementations that read it as frontmatter today diverge
    from this production (carve#901).
    CARDINALITY IS EXACTLY ONE, by ruling (carve#912): `---<SP><SP>yaml` is not
    a typed opener either, because the second space reaches
@@ -503,9 +501,9 @@ fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
    converters emit. It is a PADDING SLOT, not a marker separator (PART 7) --
    the fence run has already decided that this is a code block, and the info
    string only names the language and carries metadata -- but both roles take
-   `space`: the slot sits after the fence run, and a tab is syntax only in a
-   line's leading indentation run (PART 7, MARKER SEPARATORS AND PADDING SLOTS). The same
-   holds for the two slots inside code_fence_info below. raw_block (PART 9 §20)
+   `space`: the slot sits after the fence run, and A TAB IS SYNTAX ONLY IN THE
+   LEADING RUN (PART 7). The same holds for the two slots inside
+   code_fence_info below. raw_block (PART 9 §20)
    spells its otherwise identical slot the same way, for the additional reason
    that the `=` after it SELECTS a raw block over a code block.
    CARDINALITY DIFFERS BETWEEN THIS SLOT AND THE TWO INSIDE code_fence_info,
@@ -586,10 +584,9 @@ code_fence_info = ( language_info, [space+, quoted_title], [space+, label] )
    shared header token defined under Admonitions. Both metadata slots are
    PADDING (PART 7), the same classification the admonition opener's identical
    "title" and [label] slots carry: the fence has already decided the block --
-   and padding takes `space`, because every one of these slots sits after the
-   first non-whitespace character of the line, where a tab is not syntax. The
-   label slot appears in two alternatives and is one slot with one role, so both
-   spellings carry the same terminal -- otherwise ```js "T" [L] and ``` "T" [L]
+   and padding takes `space`, by A TAB IS SYNTAX ONLY IN THE LEADING RUN
+   (PART 7). The label slot appears in two alternatives and is one slot with
+   one role, so both spellings carry the same terminal -- otherwise ```js "T" [L] and ``` "T" [L]
    would disagree about a tab for no reason a reader could state. *)
 language_info = (letter | digit | '-' | '_' | '+' | '#' | '.' | '/')+ ;  (* a single token; the punctuation covers real language tags like c++, c#, f#, asp.net, text/html. May start with a digit. The `/` is normative across all impls (so `text/html`, `image/svg` are language tokens, not split). A token MUST NOT start with `=`: a leading `=` is the raw_block opener (above), not a language. *)
 label = '[', { character - ']' }, ']' ;  (* structured metadata, e.g. [Installation]; not part of the class *)
@@ -771,9 +768,9 @@ list_item_content = first_block_content
 list_continuation = indent, inline_content, newline ;
 nested_list = indent, list ;
 indent = whitespace, {whitespace} ;
-(* Indentation is measured in VISUAL COLUMNS (a tab advances to the next
-   multiple of 4 -- CommonMark tab stops); how much indent nests what is NOT
-   a fixed character count -- the content-column rules are PART 9 §24. *)
+(* This production IS a leading indentation run, so its column arithmetic is
+   A TAB IS SYNTAX ONLY IN THE LEADING RUN (PART 7); how much indent nests what
+   is NOT a fixed character count -- the content-column rules are PART 9 §24. *)
 (* MARKER-LINE NESTED LIST -- NORMATIVE. A sub-list whose first marker sits on
    the PARENT item's marker line (`- - A`) is an ordinary persistent nested_list,
    identical to writing the sub-marker on its own indented line. It is NOT a
@@ -850,8 +847,8 @@ definition_indent = whitespace, {whitespace} ;
    encoded character-by-character, exactly as `footnote_indent` states its
    own. This is INDENTATION, not a marker SEPARATOR: it does not touch the two
    literal `space`s the `:` marker itself requires (unchanged -- PART 7's
-   MARKER SEPARATORS AND PADDING SLOTS clause, where a tab is never syntax
-   because those slots sit after the line's first non-whitespace character).
+   MARKER SEPARATORS AND PADDING SLOTS clause, which is A TAB IS SYNTAX ONLY
+   IN THE LEADING RUN (PART 7) applied to a slot that sits inline).
 
    THIS PRODUCTION LEADS EVERY IMPLEMENTATION rather than recording them, and
    that direction is deliberate (carve#888 signoff, carve#893). Measured on
@@ -1003,9 +1000,9 @@ rowspan_marker = {space}, '^', {space} ;
 colspan_marker = {space}, '<', {space} ;
 (* TABLE-CELL PADDING (NORMATIVE, PART 7). Every padding slot in the five
    productions above is spelled `space`. All of them sit after the row's
-   opening `|`, so all of them are INLINE, and a tab is syntax only in a
-   line's leading indentation run. A tab written in one of these slots is not
-   padding: it stays where it is and becomes ordinary cell content, so
+   opening `|`, so all of them are INLINE, and A TAB IS SYNTAX ONLY IN THE
+   LEADING RUN (PART 7). A tab written in one of these slots is not padding:
+   it stays where it is and becomes ordinary cell content, so
    `|<TAB>a<TAB>|` is a cell whose text begins and ends with a tab, and
    `|<TAB>---<TAB>|` is not a delimiter_cell at all - the row is an ordinary
    row and promotes no header. Same for the two span markers: a tab beside
@@ -1179,10 +1176,9 @@ admonition = admonition_open, newline,
    or a local hard-break block, so it is a MARKER SEPARATOR; once
    `admonition_type` has been read the block is decided and the "title" and
    [label] slots are ordinary inter-token padding (PART 7, MARKER SEPARATORS
-   AND PADDING SLOTS). The roles differ, the terminal does not: a padding slot
-   sits after the first non-whitespace character of the line, and a tab is
-   syntax only in a line's leading indentation run. `::: note<TAB>"T"` is not
-   an admonition opener -- the line stays prose, the same way a tab after a
+   AND PADDING SLOTS). The roles differ, the terminal does not, because A TAB
+   IS SYNTAX ONLY IN THE LEADING RUN (PART 7). `::: note<TAB>"T"` is not an
+   admonition opener -- the line stays prose, the same way a tab after a
    marker leaves a line as prose (carve#692). *)
 admonition_open = colon_fence:open, space, admonition_type,
                   [space+, quoted_title], [space+, label] ;
@@ -1651,9 +1647,8 @@ unicode_url_char = (* any non-whitespace, non-ASCII Unicode character *) ;
 (* The space before the quoted run is a PADDING SLOT, not a marker separator
    (PART 7): a link is already a link once its destination has been read, and a
    reference definition is already a definition, so the title is optional
-   trailing metadata in both. It is spelled `space` all the same, because the
-   slot sits after the first non-whitespace character of the line and a tab is
-   syntax only in a line's leading indentation run. The three engines accept a
+   trailing metadata in both. It is spelled `space` all the same, because A
+   TAB IS SYNTAX ONLY IN THE LEADING RUN (PART 7). The three engines accept a
    tab here today and diverge from this production (carve#901). Cardinality is
    exactly one character, at both sites, and that is a RULING rather than an
    oversight: all three engines and the executable spec accepted a run here
@@ -1670,9 +1665,9 @@ reference_label = (character - ']' - '@'), {character - ']'} ;
    rejected by all four implementations for a tab -- while the slot before the
    trailing `attributes` is PADDING: the definition is already complete at
    `[a]: /url` and the attribute block is optional trailing metadata. The role
-   differs, the terminal does not: the padding slot sits after the first
-   non-whitespace character of the line, where a tab is not syntax. What
-   `attributes` admits INTERNALLY is a separate production (PART 4).
+   differs, the terminal does not, because A TAB IS SYNTAX ONLY IN THE LEADING
+   RUN (PART 7). What `attributes` admits INTERNALLY is a separate production
+   (PART 4).
    Cardinality is exactly one space at BOTH, and at the padding slot that is
    carve#912's ruling rather than an oversight. Where the rejected block goes
    differs by run, and the two cases are NOT the same: a ZERO-space run glues
@@ -2541,9 +2536,8 @@ attribute_list = attribute, {space+, attribute} ;
    NORMATIVE (carve#906). Every whitespace slot of the INLINE block takes
    `space`: the run after `{`, the run between two attributes, the run
    before `}`, the boundary after an unquoted value, and the blessed empty
-   block `{ }`. All five sit AFTER the first non-whitespace character of
-   their line, so PART 7's rule covers them verbatim with no exception to
-   write: a tab is syntax only in a line's leading indentation run.
+   block `{ }`. All five sit inline, so no exception has to be written. A TAB
+   IS SYNTAX ONLY IN THE LEADING RUN (PART 7).
 
    `block_attributes` keeps `whitespace` at its three, and that is the
    ruling rather than an oversight. It is the one construct in this grammar
@@ -2715,11 +2709,58 @@ letter = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j'
 
 digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
-(* MARKER SEPARATORS AND PADDING SLOTS -- NORMATIVE. A tab is syntax ONLY in a
-   line's LEADING INDENTATION RUN. From the first non-whitespace character of
-   the line onward a tab is not relevant to syntax at all: it satisfies no slot
-   in any production, and no construct is recognized by it. Two consequences
-   settle every whitespace slot in this grammar.
+(* A TAB IS SYNTAX ONLY IN THE LEADING RUN -- NORMATIVE. The whole of what a
+   tab does in this language, in one place, so that no construct has to decide
+   it again:
+
+     1. A line's LEADING INDENTATION RUN is measured in VISUAL COLUMNS rather
+        than in characters. A space advances the column by one.
+     2. A TAB IN THAT RUN advances the column to the next MULTIPLE OF 4
+        (CommonMark tab stops), so a leading tab indents to column 4.
+     3. FROM THE FIRST NON-WHITESPACE CHARACTER of a line onward, a tab is
+        CONTENT and never syntax. It satisfies no slot in any production, and
+        no construct is recognized by it.
+     4. INSIDE VERBATIM CONTENT -- fenced code and inline code spans -- a tab
+        is PRESERVED verbatim and never expanded. Stated in full at TABS IN
+        CODE (PART 2) and pinned by corpus tabs-in-code-preserved.
+
+   Every other mention of a tab in this grammar APPLIES one of those four
+   sentences to one construct; none of them restates it. Two of the four keep
+   an operational home this clause does not duplicate: the walk that turns a
+   run into a column, the content column a marker establishes and the
+   straddling tab at a dedent boundary are PART 9 §24 (C1, C3, C5), and 4 is
+   PART 2. MARKER SEPARATORS AND PADDING SLOTS below is 3 applied to every
+   whitespace slot in this grammar that sits inline.
+
+   CONSOLIDATING THE STATEMENT DOES NOT REMOVE THE MEASUREMENT. A tab advances
+   to a stop rather than by a fixed amount, so computing a line's content
+   column still needs the per-line indentation walk. Nor does it make a
+   tab-indented source and a space-indented source the same document: the
+   source records what the author wrote (carve#817, carve#966). A
+   whole-document tab-expanding pre-pass could not be written in any case,
+   because 4 preserves tabs inside verbatim content, so the leading run still
+   has to be identified line by line. NO SEMANTIC CHANGE IS INTENDED and no
+   corpus document moves: the four sentences are what the twelve restatements
+   said between them, and not one production changes spelling. That is a claim
+   about this file, NOT a claim that every engine conforms -- the divergences
+   this file already records against these slots (carve#901 at the frontmatter
+   token, the fence info string and `link_title`) are unaffected, neither
+   settled nor widened by saying the rule once.
+
+   WHY ONCE. This was written twelve times, once per construct. A rule spelled
+   per construct is a rule that can drift per construct, and a construct added
+   later inherits eleven precedents for spelling it a twelfth way. That is the
+   hazard ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT below was written
+   against (carve#963), one layer up: forty-two productions each spelling a
+   whitespace run for themselves is what let three engines reach into three
+   host languages for three different answers, and a carve-php sweep then
+   found fourteen spellings where its ticket named three. The count behaved
+   the same way here -- the ticket named five sites and the sweep found
+   twelve. (carve#984) *)
+
+(* MARKER SEPARATORS AND PADDING SLOTS -- NORMATIVE. A TAB IS SYNTAX ONLY IN
+   THE LEADING RUN, the clause directly above. Two consequences settle every
+   whitespace slot in this grammar.
 
    FIRST, the leading run itself. `indent = whitespace, {whitespace}` is where
    a tab belongs, and `blank_line = {whitespace}` is the degenerate case of the
