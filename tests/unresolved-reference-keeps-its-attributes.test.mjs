@@ -45,21 +45,27 @@ test('the block is emitted verbatim, not re-serialized', () => {
   assert.equal(html('[text][missing]{ .wide  #i }\n'), '<p>[text][missing]{ .wide  #i }</p>')
 })
 
-test('a tab separates two attributes, as a space does', () => {
-  // This used to assert the opposite - that a tab disqualifies the block - and
-  // it was wrong twice over. `attributes` pads with `opt_ws = {whitespace}` and
-  // separates with `whitespace+` (grammar.ebnf), and `whitespace` is a space OR
-  // a tab, deliberately unlike a marker separator, which is a literal space.
-  // All three engines follow the EBNF. Only this oracle rejected it, because
-  // resources/carve-core.ohm spelled the separator `" " | "\n"` - so the two
-  // normative files answered one production two ways and a test pinned the
-  // losing side (carve#878).
+test('a tab does not separate two attributes, and the reason is the position', () => {
+  // This assertion has been written both ways and the history is the point.
+  // carve#878 read `attributes` as padding with `opt_ws = {whitespace}`, so a
+  // tab separated; carve#901 corrected the reading - a tab is syntax only in a
+  // line's leading indentation run, and every slot of an INLINE attribute block
+  // sits after the first non-whitespace character of its line. carve#906 moved
+  // both normative files and the corpus to match (PART 4, THE INLINE INTERIOR
+  // IS SPACE-ONLY, THE BLOCK-ATTRIBUTE LINE IS NOT).
   //
-  // The unresolved half still shows a literal block, but for the other reason:
-  // the reference does not resolve, so the whole run is literal source.
+  // So the block is unrecognized on BOTH lines below, and for two different
+  // reasons: on the first the reference does not resolve either, and on the
+  // second the reference resolves and the tabbed block is still literal source
+  // trailing the link. That second line is the one that moved.
   assert.equal(html('[text][missing]{.a\t.b}\n'), '<p>[text][missing]{.a\t.b}</p>')
   assert.equal(
     html('[t][ok]{.a\t.b}\n\n[ok]: /u\n'),
+    '<p><a href="/u">t</a>{.a\t.b}</p>',
+  )
+  // The SPACE form is the control: the block still attaches.
+  assert.equal(
+    html('[t][ok]{.a .b}\n\n[ok]: /u\n'),
     '<p><a href="/u" class="a b">t</a></p>',
   )
 })

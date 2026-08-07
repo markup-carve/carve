@@ -60,7 +60,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `269-a-definition-body-continuation-indented-past-its-column-is-lazy-text`,
 `270-a-real-div-in-a-container-and-the-flush-left-line-after-it`,
 `271-the-flush-left-line-after-a-container-a-quoted-line-opened`,
-`272-an-autolink-body-admits-non-ascii-and-excludes-format-characters`.
+`272-an-autolink-body-admits-non-ascii-and-excludes-format-characters`,
+`273-the-inline-attribute-interior-is-space-only-the-attribute-line-is-not`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the

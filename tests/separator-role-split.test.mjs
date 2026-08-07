@@ -187,6 +187,26 @@ const FENCE_PIN_DEFERRED =
   'this is pin lag, not an engine gap, and it clears on the next `npm run bump-carve-pin` ' +
   'rather than on any engine work. The ORACLE half runs regardless - it is not an engine.'
 
+// The four INLINE ATTRIBUTE sites are deferred for a FIFTH reason, and it is
+// the only one where the production reverses a pinned GOLDEN rather than
+// getting ahead of an unpinned behavior. Corpus 252, 252-2 and 252-3 asserted
+// the tab forms and all three engines produced them - measured under carve#906
+// on carve-js `0c71c7d`, carve-php `d993758` and carve-rs `2d5de72`, where
+// every tab form still renders as its space form does. The three documents are
+// rewritten to the narrowed answer here, so the corpus states the rule; the
+// engines are behind it until they narrow, which is what the three tickets are
+// for.
+const ATTR_DEFERRED =
+  'all three reference engines still read a tab as padding or as a separator inside an INLINE ' +
+  'attribute block - measured on carve-js `0c71c7d`, carve-php `d993758` and carve-rs ' +
+  '`2d5de72`, every tab form renders byte-identical to its space form at all five positions. ' +
+  'Unlike the table cells, this production reverses pinned goldens: corpus 252, 252-2 and ' +
+  '252-3 asserted the tab forms and are rewritten here rather than added to. Asserting the ' +
+  'current behavior would pin the divergence; asserting the corrected behavior would fail on ' +
+  'three engines that have not been changed yet (markup-carve/carve-js#836, ' +
+  'markup-carve/carve-php#985, markup-carve/carve-rs#757). The ORACLE half runs regardless - ' +
+  'it is not an engine.'
+
 const PIN_DEFERRED =
   'the PINNED carve-js build (52da7be) still opens the block on a tabbed separator - ' +
   'measured here, the tab form renders byte-identical to the space form. carve-js main ' +
@@ -554,12 +574,88 @@ const SITES = [
     ],
     engineDeferred: TABLE_DEFERRED,
   },
+
+  // --- INLINE ATTRIBUTE-BLOCK INTERIOR (carve#906) --------------------------
+  //
+  // Five positions, and they are five ENTRIES rather than one because they
+  // revert in five places: `attributes` spells two of them, `attribute_list`
+  // the third, `unquoted_value` the fourth by having no whitespace in it at
+  // all, and the blessed empty block the fifth - which is not a use of the
+  // separator, so narrowing the separator alone leaves it accepting a tab.
+  // That last one is the whole reason the ohm file needed two edits, and it
+  // was measured: `attrSp = " "` on its own left corpus 252-3 green.
+  //
+  // The BLOCK-attribute line is deliberately NOT here. It keeps `whitespace`
+  // at all three of its slots, and the ruling is that distinction - see PART
+  // 4's THE INLINE INTERIOR IS SPACE-ONLY, THE BLOCK-ATTRIBUTE LINE IS NOT.
+  // `tests/corpus/273-*` pins the block line's tab forms as still valid, so a
+  // change that narrowed both surfaces at once fails there rather than here.
+  {
+    role: 'padding',
+    site: 'attributes, the slots inside the braces',
+    required: /attributes = '\{', attr_pad, attribute_list, attr_pad, '\}' ;/,
+    forbidden: /attributes = '\{', opt_ws|attribute_list, opt_ws, '\}'/,
+    why: 'the `{` glued to the construct has already decided the block; both slots sit inline',
+    // ONE PAIR PER SLOT: the opening and closing runs revert independently, and
+    // a fixture carrying a tab at both cannot tell them apart.
+    fixtures: [
+      { slot: 'the run after `{`', tab: '*y*{\t.c}\n', space: '*y*{ .c}\n' },
+      { slot: 'the run before `}`', tab: '*z*{.d\t}\n', space: '*z*{.d }\n' },
+    ],
+    engineDeferred: ATTR_DEFERRED,
+  },
+  {
+    role: 'padding',
+    site: 'attribute_list, the separator between two attributes',
+    required: /attribute_list = attribute, \{space\+, attribute\} ;/,
+    forbidden: /attribute_list = attribute, \{whitespace/,
+    why: 'the block is already an attribute block; the run between two entries sits inline',
+    fixtures: [
+      { slot: 'between two classes', tab: '*x*{.a\t.b}\n', space: '*x*{.a .b}\n' },
+      { slot: 'a mixed run between two classes', tab: '*x*{.a \t.b}\n', space: '*x*{.a .b}\n' },
+      { slot: 'a mixed run the other way round', tab: '*x*{.a\t .b}\n', space: '*x*{.a .b}\n' },
+    ],
+    engineDeferred: ATTR_DEFERRED,
+  },
+  {
+    role: 'padding',
+    site: 'unquoted_value, the boundary after a bare value',
+    // The production carries no whitespace terminal at all, which IS the
+    // assertion: a tab ends the value and then has to satisfy the separator,
+    // which is now `space+`. Spelled as the character set so a later widening
+    // of the value - the other way this position could be lost - fails here.
+    required: /unquoted_value = \(letter \| digit \| '-' \| '_' \| '\.' \| ':'\)\+ ;/,
+    forbidden: /unquoted_value = [^;]*whitespace/,
+    // The ohm file spells the same boundary as a negative set, and it is the
+    // half that actually executes. Both files, one position.
+    requiredOhm: /bareVal\s+= \(~\(" " \| "\\t" \| "\}" \| newline\) any\)\+/,
+    forbiddenOhm: /bareVal\s+= \(~\(" " \| "\}"/,
+    why: 'the value has been read; what follows it is the separator before the next attribute',
+    fixtures: [
+      { slot: 'a tab after a bare value', tab: '*x*{k=a\t.b}\n', space: '*x*{k=a .b}\n' },
+    ],
+    engineDeferred: ATTR_DEFERRED,
+  },
+  {
+    role: 'padding',
+    site: 'the blessed empty attribute block',
+    required: /empty or SPACE-only \(`\[text\]\{\}`, `\[text\]\{ \}`\)/,
+    forbidden: /empty or whitespace-only \(`\[text\]\{\}`/,
+    // The executable half, and the one that made this a separate entry.
+    requiredOhm: /emptyAttrs = "\{" " "\* "\}"/,
+    forbiddenOhm: /emptyAttrs = "\{" \(" " \| "\\t"\)\*/,
+    why: 'a blessed empty block is padding with nothing in it; it is not a use of the separator',
+    fixtures: [
+      { slot: 'a tab inside the empty block', tab: '[x]{\t}\n', space: '[x]{ }\n' },
+    ],
+    engineDeferred: ATTR_DEFERRED,
+  },
 ]
 
-test('all twenty-three classified slots are present', () => {
-  assert.equal(SITES.length, 16, 'the twenty-three slots live in sixteen entries')
+test('all twenty-nine classified slots are present', () => {
+  assert.equal(SITES.length, 20, 'the twenty-nine slots live in twenty entries')
   assert.equal(SITES.filter((s) => s.role === 'separator').length, 4)
-  assert.equal(SITES.filter((s) => s.role === 'padding').length, 12)
+  assert.equal(SITES.filter((s) => s.role === 'padding').length, 16)
 })
 
 for (const { role, site, required, forbidden, why, requiredOhm, forbiddenOhm } of SITES) {
@@ -681,6 +777,7 @@ const MULTI_SLOT = {
   'data_cell, the slots around the cell content': 6,
   'rowspan_marker, the slots around the `^`': 2,
   'colspan_marker, the slots around the `<`': 2,
+  'attributes, the slots inside the braces': 2,
 }
 test('a site with independently-revertible slots carries a fixture for each', () => {
   for (const [site, n] of Object.entries(MULTI_SLOT)) {
@@ -713,6 +810,7 @@ test('a site with independently-revertible slots carries a fixture for each', ()
 // So the registry names the SHAPES, and the assertion reads the fixture strings
 // rather than trusting their labels.
 const BOTH_DIRECTIONS = [
+  'attribute_list, the separator between two attributes',
   'link_title, the slot before the quoted run',
   'image_title, the slot before the quoted run',
   'fenced_code_block, the slot before the info string',

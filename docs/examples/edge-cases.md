@@ -10150,11 +10150,19 @@ x
 
 ## A tab separates two attributes, and pads a block, as a space does
 
-`opt_ws` and the separator inside `attribute_list` are spelled `whitespace`,
-which is a space OR a tab - deliberately, and unlike a marker separator, which
-is a literal space. Nothing pinned it, and the two normative files in
-`resources/` disagreed: the EBNF admits a tab and `carve-core.ohm` spelled the
-separator `" " | "\n"`. All three engines follow the EBNF.
+**The heading is the name this category was given when it pinned the opposite
+answer, and it is kept deliberately.** Corpus category names are an append-only
+contract - every engine allowlists them as `NN-slug`, so renaming one
+invalidates all of those lists at once. The documents below now pin the
+NARROWED answer (markup-carve/carve#906): a tab does not separate two attributes
+inside an INLINE block. The second half of the heading is still true, and is
+what the ruling turned on - a tab does pad a block-attribute LINE, which the
+category *The inline attribute interior is space-only, the attribute line is
+not* pins directly.
+
+Every whitespace slot of the inline block takes `space`. All of them sit AFTER
+the first non-whitespace character of their line, which is where PART 7's rule
+says a tab is not syntax, so the block is unrecognized and its braces show:
 
 ::: compare
 
@@ -10167,16 +10175,17 @@ separator `" " | "\n"`. All three engines follow the EBNF.
 ```
 
 ```html
-<p><strong class="a b">x</strong></p>
-<p><strong class="c">y</strong></p>
-<p><strong class="d">z</strong></p>
+<p><strong>x</strong>{.a	.b}</p>
+<p><strong>y</strong>{	.c}</p>
+<p><strong>z</strong>{.d	}</p>
 ```
 
 :::
 
-A tab after an UNQUOTED value is the separator too, because `unquoted_value`
-holds letters, digits, `-`, `_`, `.` and `:` and no whitespace at all. Inside a
-QUOTED value it is content, as any other character is.
+A tab after an UNQUOTED value ends the value - `unquoted_value` holds letters,
+digits, `-`, `_`, `.` and `:` and no whitespace at all - and then satisfies no
+separator either, so the whole block fails. Inside a QUOTED value it is content,
+as any other character is, and that half did not move:
 
 ::: compare
 
@@ -10187,14 +10196,16 @@ QUOTED value it is content, as any other character is.
 ```
 
 ```html
-<p><strong k="a" class="b">x</strong></p>
+<p><strong>x</strong>{k=a	.b}</p>
 <p><strong k="a	b">y</strong></p>
 ```
 
 :::
 
-An empty block is the same: valid only glued to a preceding `]`, and a tab
-inside it is padding rather than content.
+The blessed EMPTY block is a separate position rather than a use of the
+separator, and it has to move with it: narrow the separator alone and `[x]{`
+tab `}` is still a valid empty block, so the document below would keep passing
+and pin nothing.
 
 ::: compare
 
@@ -10203,7 +10214,7 @@ inside it is padding rather than content.
 ```
 
 ```html
-<p><span>x</span></p>
+<p>[x]{	}</p>
 ```
 
 :::
@@ -13090,6 +13101,78 @@ executable spec accepted one until this landed, for the same reason it linked
 
 ```html
 <p>&lt;例://example.com/&gt;</p>
+```
+
+:::
+
+
+## The inline attribute interior is space-only, the attribute line is not
+
+markup-carve/carve#906 is a POSITION distinction rather than a per-construct
+exception, and this category is the half that does not move. The three
+documents above pin the inline block narrowing; these pin what it narrowed
+against.
+
+CONTROL. The SPACE forms of all four inline positions - the run after `{`, the
+run between two attributes, the run before `}`, and the blessed empty block -
+are untouched, and a reader that narrowed too far breaks here rather than
+silently accepting less:
+
+::: compare
+
+```carve
+*x*{.a .b}
+
+*y*{ .c}
+
+*z*{.d }
+
+[w]{ }
+```
+
+```html
+<p><strong class="a b">x</strong></p>
+<p><strong class="c">y</strong></p>
+<p><strong class="d">z</strong></p>
+<p><span>w</span></p>
+```
+
+:::
+
+The block-attribute LINE keeps `whitespace` at all three of its slots. It is
+the one construct in this grammar whose interior can hold a leading indentation
+run: after a `continuation`, the next line's leading whitespace IS indentation,
+and the rule that narrows the inline block is the same rule that protects this
+one.
+
+::: compare
+
+```carve
+{	.a	.b	}
+
+paragraph
+```
+
+```html
+<p class="a b">paragraph</p>
+```
+
+:::
+
+And the continuation line's own indentation, which is the position the whole
+distinction is about:
+
+::: compare
+
+```carve
+{.a
+	.b}
+
+paragraph
+```
+
+```html
+<p class="a b">paragraph</p>
 ```
 
 :::
