@@ -4675,6 +4675,17 @@ EOF = (* end of file *) ;
       link text is then LABEL + NUMBER, e.g. "Figure 1", markup preserved).
       Resolution is ONE LEVEL: cloned heading text is not re-expanded, so
       self-references and cycles are safe. Unresolved -> literal.
+      WHAT IS CLONED IS THE HEADING'S INLINE NODES -- NORMATIVE (carve#915).
+      "Cloned heading text" means the nodes, not a rendered string. A node
+      carries its SOURCE RUN, and a string does not, so an implementation that
+      flattens the heading to glyphs while building its id index has destroyed
+      the run before any renderer is invoked. Smart typography's SOURCE mode
+      (§8) then cannot recover it on ANY target, and no renderer change reaches
+      the loss -- the label was materialized in the wrong subsystem. The same
+      argument covers every other run a renderer may want back: a code span, an
+      escape, an inline literal. "markup preserved" already said this for the
+      caption side; it holds for the heading side too, and for the source
+      spelling as much as for the markup.
    R5 NUMBERED CAPTIONS. Per kind, in document order, each caption whose
       top-level text carries a bare `#` placeholder receives the next
       number of its kind (PART 2, CAPTION NUMBER PLACEHOLDER); an {#id} on

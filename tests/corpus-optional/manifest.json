@@ -179,6 +179,30 @@
       "feature": "ansi-typography-source",
       "target": "ansi",
       "description": "The ANSI target carries the mode too, and its heading rule is a COLUMN count of the rendered heading rather than of the source: 'The renderer's output' is 21 columns whether the apostrophe is typed or curled, so the rule is 21 either way (PART 9 section 8; carve#560)."
+    },
+    {
+      "slug": "36-crossref-label-typography-source",
+      "feature": "plain-typography-source",
+      "target": "plain",
+      "description": "A RESOLVED CROSSREF carries the target heading's SOURCE RUN, so source mode recovers it. The label is the heading's inline NODES cloned (PART 9R R4), not its rendered glyphs: an engine that flattens the heading to a string at id-tracking time has already lost the run before any renderer sees it, and no renderer change reaches it (carve#915)."
+    },
+    {
+      "slug": "37-crossref-label-typography-source-markdown",
+      "feature": "markdown-typography-source",
+      "target": "markdown",
+      "description": "The same clause on the Markdown target. The heading's own run and the crossref's label move together, which is the point: they are the same nodes."
+    },
+    {
+      "slug": "38-crossref-label-typography-source-ansi",
+      "feature": "ansi-typography-source",
+      "target": "ansi",
+      "description": "The same clause on the ANSI target, where the heading rule is a COLUMN count of the rendered heading - 23 columns for the source spelling, against 22 for the glyph spelling, so the rule width moves with the mode."
+    },
+    {
+      "slug": "39-crossref-label-typography-glyphs",
+      "feature": "smart-typography-default",
+      "target": "plain",
+      "description": "CONTROL. The same document at DEFAULT typography: the crossref label takes the glyphs, exactly as the heading does. Without it the three cases above would also pass an engine that never applies typography to a crossref label at all."
     }
   ]
 }

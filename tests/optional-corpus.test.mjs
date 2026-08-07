@@ -109,6 +109,13 @@ const featureRunners = {
    * three engines used to do (carve#560).
    */
   'plain-typography-source': (source, render) => render(source, { smartTypography: 'source' }),
+  /*
+   * DEFAULT typography, with no switch at all. It exists so a source-mode case
+   * can carry its own control: without one, a case pinning the source spelling
+   * also passes an engine that never applies typography to that construct in
+   * either mode, which is precisely the failure carve#915 is about.
+   */
+  'smart-typography-default': (source, render) => render(source),
   'ansi-typography-source': (source, render) => render(source, { smartTypography: 'source' }),
   'code-callouts': (source, render) => render(source, { extensions: [codeCallouts()] }),
   details: (source, render) => render(source, { extensions: [details()] }),
