@@ -68,7 +68,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `277-a-below-column-marker-after-a-comment-where-no-paragraph-is-open`,
 `278-a-list-marker-at-the-content-column-inside-an-open-fence`,
 `279-a-boundary-line-inside-an-open-fence-does-not-end-the-container`,
-`280-a-container-a-lazy-line-folded-into-is-still-open`.
+`280-a-container-a-lazy-line-folded-into-is-still-open`,
+`281-a-caption-attaches-across-one-blank-line`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
