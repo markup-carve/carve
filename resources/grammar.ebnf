@@ -162,6 +162,36 @@
         implementation does not follow it is worth flagging when it lands, not
         when someone next reads it. (carve#561, carve#572)
 
+        A FENCED BODY IS NOT A PARAGRAPH -- NORMATIVE (carve#646). The same
+        rule, with the unmatched container's last block a CODE FENCE opened on
+        the marker line itself:
+
+            - ```
+            x
+            ```
+
+        `x` supplies none of the body's indentation, so S1 MATCH PREFIXES stops
+        at the ITEM and S2 FENCED BODY never fires -- S2 applies only when the
+        innermost MATCHED container is a fenced body. S4 governs, its lazy
+        branch asks for an open PARAGRAPH, and a verbatim body is not one: there
+        is no meaning to "fold in as lazy paragraph text" inside content that is
+        not markup. So the containers close, the item holds an EMPTY code block,
+        and `x` re-parses at document level -- where the trailing delimiter run
+        is ordinary inline text.
+
+        This is the SAME derivation the block-quote spelling already gets, and
+        all three engines agree there:
+
+            > ```
+            x
+            ```
+
+        gives an empty code block inside the quote and a top-level paragraph.
+        The list spelling is where they diverged, four readers four ways, and
+        the only difference between the two is which container the walk stops
+        at. AT the item's content column the body is the item's and nothing
+        leaves it, which is the shape every other corpus case uses.
+
         A REAL DIV IS A CONTAINER LIKE ANY OTHER -- NORMATIVE (carve#909). An
         unterminated `::: ` div in a container decides the same way, on the same
         question, and the two answers differ by one line of body:

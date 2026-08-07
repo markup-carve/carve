@@ -13366,3 +13366,212 @@ would otherwise find.
 ```
 
 :::
+
+## A fence opened on a list marker line, body below the content column
+
+A code fence opened on a list MARKER line, with its body below the item's
+content column, got four different answers from four readers - the executable
+spec swallowed the closer into the code text, carve-js did the same with an
+extra space, carve-php read the column-0 line as body and let the column-0 fence
+close it, and only carve-rs closed the item (markup-carve/carve#646). No corpus
+case put a fence body below the content column, so nothing could tell.
+
+PART 9 §24's STEP algorithm already decides it, without a new rule. Take `x` at
+column 0 with the stack `document > list > item(content_column 2) > code fence
+body`:
+
+- **S1 MATCH PREFIXES** walks the stack and stops at the first container whose
+  prefix the line does not supply. `x` supplies no indentation, so the walk stops
+  at the ITEM and the fenced body is never reached.
+- **S2 FENCED BODY** therefore does not fire: it applies only when the innermost
+  MATCHED container is a fenced body, and here that is the item.
+- **S4 PARTIAL MATCH** governs. Its lazy-continuation branch continues an OPEN
+  PARAGRAPH, and a fenced body is not one - the NO OPEN PARAGRAPH, NO LAZY LINE
+  clause the spec already spells out for `. >`. What remains is S4's otherwise:
+  close the unmatched containers and re-classify the residue in the surviving
+  context.
+
+So the item holds an EMPTY code block and `x` re-parses at document level:
+
+::::: compare
+
+````carve
+- ```
+x
+```
+````
+
+```html
+<ul>
+  <li>
+    <pre><code>
+</code></pre>
+  </li>
+</ul>
+<p>x
+<code></code></p>
+```
+
+:::::
+
+The trailing delimiter becoming EMPTY INLINE CODE is pinned deliberately rather
+than inherited. It is not part of the rule - it is what a backtick run means once
+the line is ordinary paragraph text - but it is the kind of output nobody would
+write down on purpose, so it is stated.
+
+One column in is the same answer, and it is a separate row because the two
+broken readings differed here: one kept the leading space in the code text and
+one stripped it. Below the content column is below the content column.
+
+::::: compare
+
+````carve
+- ```
+ x
+ ```
+````
+
+```html
+<ul>
+  <li>
+    <pre><code>
+</code></pre>
+  </li>
+</ul>
+<p>x
+<code></code></p>
+```
+
+:::::
+
+CONTROL. AT the content column the fence body is the item's, the closer closes
+it, and nothing leaves the item. All four readers always agreed here, which is
+the shape every existing corpus case uses:
+
+::::: compare
+
+````carve
+- ```
+  x
+  ```
+````
+
+```html
+<ul>
+  <li>
+    <pre><code>x
+</code></pre>
+  </li>
+</ul>
+```
+
+:::::
+
+The BLOCK QUOTE analogue is the same derivation with the same answer, and all
+three engines already agree on it - unenforced until now, which is why the list
+case could drift away from it:
+
+::::: compare
+
+````carve
+> ```
+x
+```
+````
+
+```html
+<blockquote>
+  <pre><code>
+</code></pre>
+</blockquote>
+<p>x
+<code></code></p>
+```
+
+:::::
+
+A tilde fence takes the same route, and the residue shows the empty inline code
+above was a property of the BACKTICK run rather than of this rule: `~~~` in
+paragraph text is just text.
+
+::::: compare
+
+```carve
+- ~~~
+x
+~~~
+```
+
+```html
+<ul>
+  <li>
+    <pre><code>
+</code></pre>
+  </li>
+</ul>
+<p>x
+~~~</p>
+```
+
+:::::
+
+The guard is on the OPEN FENCE, not on the item's paragraph state. Once the body
+has collected a line at the content column, a reader tracking "is a paragraph
+open" sees one again and folds - so this row and the first one need different
+mechanisms to pass, and only the fence-shaped rule passes both:
+
+::::: compare
+
+````carve
+- ```
+  x
+ y
+  ```
+````
+
+```html
+<ul>
+  <li>
+    <pre><code>x
+</code></pre>
+  </li>
+</ul>
+<p>y
+<code></code></p>
+```
+
+:::::
+
+The same clause reaches one shape further: a fence opened on a CONTINUATION line
+rather than on the marker line. S1 stops at the item either way, so the item
+closes at the below-column line and its closer never joins the body. What the
+truncated item then holds is §10 I4's business, not this clause's: `a` opened a
+paragraph, the fence that follows has no closer left inside the item, and I4
+says such a fence does not interrupt - so the delimiter run is paragraph text.
+
+This row is pinned because the executable spec's answer moves here too, and an
+unpinned move is the drift this corpus exists to prevent. No engine was measured
+on it - the ticket measured the marker-line spelling - so it is carried by the
+engine tickets rather than presented as a cross-reader agreement.
+
+::::: compare
+
+````carve
+- a
+  ```
+  b
+ y
+  ```
+````
+
+```html
+<ul>
+  <li>a
+<code>
+b</code></li>
+</ul>
+<p>y
+<code></code></p>
+```
+
+:::::
