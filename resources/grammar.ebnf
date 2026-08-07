@@ -2740,8 +2740,12 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    whole-document tab-expanding pre-pass could not be written in any case,
    because 4 preserves tabs inside verbatim content, so the leading run still
    has to be identified line by line. NO SEMANTIC CHANGE IS INTENDED and no
-   corpus document moves: every engine already behaves this way, and the four
-   sentences are what the twelve restatements said between them.
+   corpus document moves: the four sentences are what the twelve restatements
+   said between them, and not one production changes spelling. That is a claim
+   about this file, NOT a claim that every engine conforms -- the divergences
+   this file already records against these slots (carve#901 at the frontmatter
+   token, the fence info string and `link_title`) are unaffected, neither
+   settled nor widened by saying the rule once.
 
    WHY ONCE. This was written twelve times, once per construct. A rule spelled
    per construct is a rule that can drift per construct, and a construct added
