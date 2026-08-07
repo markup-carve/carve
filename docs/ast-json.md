@@ -375,14 +375,30 @@ unknown-type refusal at decode. An ingest **must refuse**:
 | a root missing `type`, `children` or `srcByteLength` | §7 fixes the three and the schema marks them `required`; supplying a default turns a truncated document into a valid-looking one |
 | a root carrying a fourth field | `document` is closed with `additionalProperties: false` like every other node, so §11 already covers it |
 | a node whose `type` the schema does not name | **at decode**, not in a renderer - a formatter, a linter or a language server holds the tree and never reaches one |
+| anything else the schema rejects | §12(d): the WHOLE payload is validated against `resources/ast-schema.json`, types and required fields together |
 
 Same argument as §11, one level out: a reader that invents a missing field or
 ignores an unexpected one has silently repaired attacker-controlled input, which
 is the opposite of what an ingest boundary is for. The refusal has to be an error
 of its own, naming what was wrong - not whatever the JSON library raised.
 
+The last row is one clause rather than a list because ruling the rows one at a
+time is what produced the state it replaces. After the first three landed and
+all three engines agreed on them, a root `children` of `null` was still read as
+an empty document by two of them, `attrs: {"class":"x"}` was accepted and
+rendered by one, and `text.value: 7` rendered as `<p>7</p>` - silent nonsense
+where a refusal is required. The schema already described every one of those;
+nothing consulted it. Validate the payload against it and refuse with a typed
+error, rather than agreeing leniencies field by field.
+
+The cost is real and is the point: this rejects trees two engines accept today,
+and every future addition to the schema becomes a potential rejection for a
+producer that has not caught up. That is what makes the schema the contract
+instead of a description of one.
+
 The VALUE of `srcByteLength` is not checked. It is derivable and nothing depends
-on it, so all three engines ignore it - §12 is about the field being **there**.
+on it, so all three engines ignore it - §12 is about the field being **there**,
+and §12(d) about its type and sign, not about the number being right.
 
 One trap sits under the unknown-type rule, and it is worth knowing before you
 implement it. `attrs.keyValues` is the schema's only free-form map, its keys are

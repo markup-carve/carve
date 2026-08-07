@@ -108,6 +108,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   MARKER REQUIRES CONTENT still applies after the run: a marker followed by
   spaces and nothing else is a paragraph. Corpus 267 carries the ruling, with
   the tab separator, the spaces-only line and the one-space form as controls.
+- **PART 12 §12(d): an ingest validates the whole payload against
+  `resources/ast-schema.json`** (carve#881). Types and required fields
+  together, refused at decode with the typed error §12 already requires. One
+  clause rather than a row per field: the schema is the list, and it already
+  described every row that diverged.
+
+  Ruling them one at a time is what produced the state this replaces. After
+  §12(a)-(c) landed and all three engines agreed on those, a root `children` of
+  `null` was still read as an empty document by two of them, `attrs:
+  {"class":"x"}` was accepted and rendered as `class="x"` by carve-php while
+  the other two refused the payload, and `text.value: 7` made carve-php render
+  `<p>7</p>` - silent nonsense where a refusal is required. Two engines also
+  failed untyped, which §9(b) already forbids.
+
+  The shipped schema was measured against all sixteen shapes before the clause
+  was written and rejects every one, so it needed no tightening; each row is
+  now pinned in `tests/ast-schema.test.mjs` so a relaxed constraint cannot turn
+  the clause into a no-op in three engines at once. It rejects trees two
+  engines accept today, and every future schema addition becomes a potential
+  rejection for a producer that has not caught up.
 
 - **A reference definition is anchored at end of line** (carve#911).
   `reference_definition` ends in `newline`, and always did, but all three
