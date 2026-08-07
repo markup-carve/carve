@@ -301,6 +301,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `resources/engine-pin-drift.txt`; the two loose ones reproduce in the pinned
   build already, which is what makes them controls rather than coverage.
 
+- **PART 9 §4: the one-blank-line caption allowance is pinned on every host**
+  (carve#991). §4 gives one rule for all five captionable hosts - adjacent OR
+  exactly one blank line attaches - but the corpus held exactly ONE document
+  separating a host from its caption with a blank line, and it was a blockquote,
+  one of the three hosts whose production already ends in `[caption_slot]`. The
+  allowance was unpinned for the table, the fenced code block, the image
+  paragraph and display math, and for the last two it is PROSE rather than
+  structural, so nothing held it at all. A reader could have dropped the
+  blank-line form on four of five hosts and stayed green. New category
+  `281-a-caption-attaches-across-one-blank-line` pins the four, each preceded by
+  the same document with the blank line removed, which must render identically.
+  No behavior changes; every one of the eight is what the engines already do.
+
 - **PART 9 §17 L1a: a list item's first block does not decide loose or tight.**
   L1 asks whether the item holds a blank-line-separated second paragraph, not
   what its first block was. `- - a` followed by a blank line and `Body.` is

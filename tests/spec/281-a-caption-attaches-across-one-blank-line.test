@@ -1,0 +1,103 @@
+A caption attaches across one blank line
+
+```
+|= Fruit |= Price |
+| Apple  | $1     |
+^ Fruit prices
+.
+<table>
+  <caption>Fruit prices</caption>
+  <thead><tr><th>Fruit</th><th>Price</th></tr></thead>
+  <tbody>
+    <tr><td>Apple</td><td>$1</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|= Fruit |= Price |
+| Apple  | $1     |
+
+^ Fruit prices
+.
+<table>
+  <caption>Fruit prices</caption>
+  <thead><tr><th>Fruit</th><th>Price</th></tr></thead>
+  <tbody>
+    <tr><td>Apple</td><td>$1</td></tr>
+  </tbody>
+</table>
+```
+
+````
+```python
+def greet():
+    return 1
+```
+^ Listing: a greeting
+.
+<figure>
+  <pre><code class="language-python">def greet():
+    return 1
+</code></pre>
+  <figcaption>Listing: a greeting</figcaption>
+</figure>
+````
+
+````
+```python
+def greet():
+    return 1
+```
+
+^ Listing: a greeting
+.
+<figure>
+  <pre><code class="language-python">def greet():
+    return 1
+</code></pre>
+  <figcaption>Listing: a greeting</figcaption>
+</figure>
+````
+
+```
+![Apollo 11](apollo.jpg)
+^ Figure 1: First moon landing
+.
+<figure>
+  <img src="apollo.jpg" alt="Apollo 11">
+  <figcaption>Figure 1: First moon landing</figcaption>
+</figure>
+```
+
+```
+![Apollo 11](apollo.jpg)
+
+^ Figure 1: First moon landing
+.
+<figure>
+  <img src="apollo.jpg" alt="Apollo 11">
+  <figcaption>Figure 1: First moon landing</figcaption>
+</figure>
+```
+
+```
+$$`E = mc^2`
+^ Equation: mass-energy
+.
+<figure>
+  <p><span class="math display">\[E = mc^2\]</span></p>
+  <figcaption>Equation: mass-energy</figcaption>
+</figure>
+```
+
+```
+$$`E = mc^2`
+
+^ Equation: mass-energy
+.
+<figure>
+  <p><span class="math display">\[E = mc^2\]</span></p>
+  <figcaption>Equation: mass-energy</figcaption>
+</figure>
+```

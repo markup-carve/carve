@@ -1,0 +1,5 @@
+```python
+def greet():
+    return 1
+```
+^ Listing: a greeting
