@@ -105,6 +105,20 @@ codepoint index always lands on a character boundary; the other two can point
 inside a UTF-8 sequence or a surrogate pair, which lets a consumer slice a
 document into invalid text.
 
+A span **begins at the markup that opens the construct** - the `>` of a block
+quote, the `#` of a heading, a list item's marker and the indentation that
+places it, the `[` of a link. `pos` therefore round-trips to the source text
+that produced the node, which is what a formatter, a linter and an editor
+selection each need. Two nodes legitimately start at their content instead, and
+both are stated in §4: the inner half of a combined `/*x*/`, whose span is the
+outer one trimmed by the two-character delimiters, and a table cell, which runs
+between the pipes because the `|` opens the row.
+
+A parent's span **contains every child's**. The two rules point the same way -
+covering the opening markup is what puts a parent's start before its first
+child's - and they are checked separately anyway, so that revisiting one cannot
+silently retire the other.
+
 An implementation that cannot place a node **omits `pos` rather than inventing
 one**, and says so. Absent is a fact a consumer can act on; a wrong span is not.
 
