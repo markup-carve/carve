@@ -288,6 +288,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `resources/engine-pin-drift.txt`; the six rows already in the category are
   byte-identical everywhere.
 
+- **PART 9 §17 L1: a blank line inside an item's own indented comment or colon
+  fence does not loosen the item** (carve#985). L1 loosens on a blank-line-
+  separated second PARAGRAPH. Inside a comment fence there is no paragraph at
+  all - §28 makes that body verbatim AND invisible, and L1b says a line
+  rendering nothing "cannot BE the second one". Inside a colon fence the blank
+  separates two paragraphs of the DIV, and the div is ONE block, so the item has
+  no second paragraph either. Four corpus rows land in
+  `279-a-boundary-line-inside-an-open-fence-does-not-end-the-container`: the two
+  above, each beside the same item with the blank moved past the closer, where
+  the item IS loose. The two that pin a defect are declared in
+  `resources/engine-pin-drift.txt`; the two loose ones reproduce in the pinned
+  build already, which is what makes them controls rather than coverage.
+
 - **PART 9 §17 L1a: a list item's first block does not decide loose or tight.**
   L1 asks whether the item holds a blank-line-separated second paragraph, not
   what its first block was. `- - a` followed by a blank line and `Body.` is

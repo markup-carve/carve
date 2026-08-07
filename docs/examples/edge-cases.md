@@ -14109,12 +14109,159 @@ b
 
 :::::
 
-These seven rows are carried by `markup-carve/carve-js#884`,
+### A blank line inside an item's INDENTED comment fence, with lead text
+
+The sixth row above is the same fence with the same interior blank, and it
+passes everywhere. The difference is one word. There the fence opens ON the
+marker line, so the item holds nothing visible at all and there is no paragraph
+for looseness to wrap - the tight and the loose answer coincide, and the row
+cannot see this cell. Put `x` on the marker line and the two answers separate
+(carve#985).
+
+§28 makes a comment fence's body verbatim AND invisible, so the blank line, the
+text around it and the closer are all fence content and none of them renders.
+§17 L1 loosens an item on a blank-line-separated second PARAGRAPH, and this item
+has no second paragraph anywhere: L1b says outright that a line rendering
+nothing "is not a paragraph, which is why it cannot BE the second one". The item
+is tight, and the document renders exactly one visible thing.
+
+This reaches a collector none of the seven rows above touches. Those pin the
+extent of the ONE block a `+` attaches (§17 L3); this is the item collector's
+OWN blank-line decision, a separate reader of separate state, and a fix to the
+first leaves it untouched.
+
+::::: compare
+
+```carve
+- x
+  %%%
+  a
+
+  b
+  %%%
+```
+
+```html
+<ul>
+  <li>x</li>
+</ul>
+```
+
+:::::
+
+### The same item, with the blank line OUTSIDE the fence
+
+The control the row above needs. Same item, same fence, same lead text; the
+blank line has moved past the closer, where it separates two paragraphs of the
+ITEM and §17 L1 does loosen.
+
+Without this document the row above is satisfied by a reader that simply stops
+loosening whenever a comment fence appears in an item, which is not the rule and
+would be a second defect wearing the first one's answer. The two documents
+differ only in which side of the closer the blank line sits on, and they must
+answer differently.
+
+::::: compare
+
+```carve
+- x
+  %%%
+  a
+  %%%
+
+  b
+```
+
+```html
+<ul>
+  <li><p>x</p>
+    <p>b</p>
+  </li>
+</ul>
+```
+
+:::::
+
+### A blank line inside an item's indented colon fence, with lead text
+
+The same collector, the other fence kind, and the kind is a real axis here as it
+is above: a colon fence's body is NOT verbatim, so this blank line is not
+invisible the way the comment fence's was. It genuinely separates two paragraphs
+- of the DIV.
+
+What it does not do is give the ITEM a second paragraph. §17 L1 asks for a
+blank-line-separated second paragraph of the item, and the div is ONE block, so
+the item stays tight and keeps `x` unwrapped. Both answers are visible in the
+one output: loose inside the div, tight outside it, from a single blank line. A
+reader that lets that blank reach the item's looseness scan gets `<p>x</p>` and
+an otherwise identical div.
+
+::::: compare
+
+```carve
+- x
+  :::
+  a
+
+  b
+  :::
+```
+
+```html
+<ul>
+  <li>x
+    <div>
+      <p>a</p>
+      <p>b</p>
+    </div>
+  </li>
+</ul>
+```
+
+:::::
+
+### The same item, with the blank line OUTSIDE the colon fence
+
+The control for the colon spelling, and it is not redundant with the comment
+one: the two rows are the two branches of the same tracker, and a reader can
+carry one kind and miss the other, which is exactly the shape this whole
+category keeps finding.
+
+Here the blank follows the closer, so the div is one block and `b` is a second
+paragraph of the item. The item is loose, and the div's own body - `a` alone,
+with no interior blank - is a single paragraph.
+
+::::: compare
+
+```carve
+- x
+  :::
+  a
+  :::
+
+  b
+```
+
+```html
+<ul>
+  <li><p>x</p>
+    <div>
+      <p>a</p>
+    </div>
+    <p>b</p>
+  </li>
+</ul>
+```
+
+:::::
+
+The first seven rows were carried by `markup-carve/carve-js#884`,
 `markup-carve/carve-php#1049` and `markup-carve/carve-rs#802` rather than
-presented as a cross-reader agreement. No engine answers this class today and
-the three do not fail on the same rows, so a red engine corpus job against this
-category is the measurement the engine work is made against rather than a
-regression.
+presented as a cross-reader agreement, because no engine answered the class
+when they landed. All three engine tickets are closed now. The last four arrive
+the same way, from `markup-carve/carve#985`, and the pinned reference build is
+knowingly behind on the two that pin a defect - declared in
+`resources/engine-pin-drift.txt` rather than tolerated.
 
 ## A container a lazy line folded into is still open
 
