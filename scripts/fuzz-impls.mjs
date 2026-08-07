@@ -62,6 +62,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { phpDir, rustDir } from './lib/engine-locations.mjs'
+import { shortfall } from './spec/participants.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -91,6 +92,29 @@ if (!Object.hasOwn(JS_ENTRY, target)) {
 const seed = numeric('seed', 1)
 const count = numeric('count', 200)
 const maxFindings = numeric('max-findings', 8)
+
+/*
+ * HOW MANY CASES THIS RUN WILL FUZZ (carve#755, variant 2).
+ *
+ * `--count=0` runs the loop zero times and reports `0 distinct divergence(s)`
+ * with exit 0 - a clean differential sweep that swept nothing.
+ *
+ * Deliberately BEFORE the three engine probes below, for two reasons. A caller
+ * error does not depend on the environment, and a guard that can only be
+ * reached on a host with all three engines built is one almost nobody can
+ * demonstrate: this one fails on any checkout.
+ */
+const population = shortfall({
+  label: 'CASES',
+  actual: count,
+  atLeast: 1,
+  of: 'case(s)',
+  hint: 'Raise --count.',
+})
+if (population !== null) {
+  console.error(population)
+  process.exit(2)
+}
 
 /**
  * Fragments biased toward where the corpus is thin: container openers and

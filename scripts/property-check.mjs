@@ -29,6 +29,7 @@ import { mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { tmpdir } from 'node:os'
+import { shortfall } from './spec/participants.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -63,6 +64,29 @@ function generate() {
 const lib = await import('@markup-carve/carve')
 
 const docs = Array.from({ length: count }, generate)
+
+/*
+ * HOW MANY DOCUMENTS THIS RUN GENERATED (carve#755, variant 2).
+ *
+ * Measured before this guard existed: `--count=0` printed `generated 0
+ * documents / idempotence failures: 0 / meaning changed: 0 / threw: 0` and
+ * exited 0. This script is a report rather than a gate, which makes the guard
+ * more necessary and not less: the number it reports is the whole product, and
+ * zero failures over zero documents is the reading a caller is most likely to
+ * carry away as "the invariants hold".
+ */
+const population = shortfall({
+  label: 'GENERATED',
+  actual: docs.length,
+  atLeast: 1,
+  of: 'document(s)',
+  hint: 'Raise --count.',
+})
+if (population !== null) {
+  console.error(population)
+  process.exit(2)
+}
+
 const failures = { idempotence: [], meaning: [], threw: [] }
 
 for (const src of docs) {
