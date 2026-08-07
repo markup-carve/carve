@@ -428,8 +428,26 @@ CarveCore {
   // is `attr_separator = (whitespace | continuation), opt_ws`, and
   // `continuation` is a single line break. Only a standalone attribute LINE
   // takes this; an inline block uses `attrs` above and stops at the newline.
-  blockAttrs = "{" battrSp* attrItem (battrSp+ attrItem)* battrSp* "}"
-  battrSp    = " " | "\t" | "\n"
+  // AT MOST ONE LINE BREAK PER SLOT, mirroring the three productions this
+  // rule implements: `opt_pad = opt_ws, [continuation]`,
+  // `attr_separator = (whitespace | continuation), opt_ws` and
+  // `continuation = newline, opt_ws`. It ran on `battrSp*` with the newline
+  // folded into `battrSp`, so `{.a` + blank line + `.b}` matched here while
+  // grammar.ebnf says a BLANK line ends a block attribute and is never
+  // interior padding (carve#888).
+  //
+  // That was LATENT rather than wrong output: scripts/spec/layout.mjs bails
+  // on a blank line before this rule is reached, so no document could show
+  // it. A contradiction between the two normative files is worth removing
+  // anyway - the next reader of either file has no way to tell which one is
+  // the language. tests/block-attribute-line-breaks.test.mjs drives this
+  // rule directly so the narrowing is observable rather than another
+  // unevaluated edit (carve#755, carve#916).
+  blockAttrs = "{" battrPad attrItem (battrSep attrItem)* battrPad "}"
+  battrPad   = battrSp* battrCont?
+  battrSep   = (battrSp | battrCont) battrSp*
+  battrCont  = "\n" battrSp*
+  battrSp    = " " | "\t"
   attrItem   = idAttr | classAttr | kvAttr | boolAttr
   idAttr     = "#" ident
   classAttr  = "." ident

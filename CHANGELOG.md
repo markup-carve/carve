@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 4: a quoted attribute value stops at the newline** (carve#888).
+  `quoted_value` built its value out of `character`, which is any Unicode
+  character, so a line break inside the quotes was content - and it was the one
+  remaining way an INLINE attribute block could span lines, which carve#897
+  ruled it cannot. The production now excludes a newline in both alternatives,
+  matching the executable spec, which always did.
+
+  The block-attribute line reads the same production, so a break inside a
+  quoted value ends that block too. A block attribute may still span lines: a
+  `continuation` sits between two tokens, never inside one. All three engines
+  accept the block form today and disagree on its meaning - one keeps the
+  newline, two collapse it to a space - so carve-js#838, carve-php#986 and
+  carve-rs#758 carry it.
+
 - **PART 4: the inline attribute-block interior is space-only, the
   block-attribute line is not** (carve#906). Every whitespace slot of an INLINE
   attribute block takes `space`: the run after `{`, the run between two

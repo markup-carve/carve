@@ -2420,8 +2420,35 @@ unquoted_value = (letter | digit | '-' | '_' | '.' | ':')+ ;
 (* A backslash escapes ASCII punctuation inside a quoted value (same
    `escaped_char` rule as inline text), so a value can contain a literal
    quote: `"a\"b"` -> the value `a"b`. *)
-quoted_value = '"', { escaped_char | (character - '"' - '\') }, '"'
-             | "'", { escaped_char | (character - "'" - '\') }, "'" ;
+quoted_value = '"', { escaped_char | (character - '"' - '\' - newline) }, '"'
+             | "'", { escaped_char | (character - "'" - '\' - newline) }, "'" ;
+(* A QUOTED VALUE STOPS AT THE NEWLINE -- NORMATIVE (carve#888). `character`
+   is any Unicode character, so this production used to admit a line break
+   inside the quotes while `resources/carve-core.ohm` excluded one at the
+   same slot: ONE production, two normative answers, which is this ticket's
+   subject rather than a consequence of any other clause.
+
+   It is settled the ohm file's way because the alternative falsifies a
+   sentence this grammar already states. `attributes` cannot span lines --
+   carve#897 ruled that an inline block stops at the newline, and since
+   carve#906 its padding is `attr_pad = {space}` and its separator `space+`,
+   neither of which admits one. The quoted VALUE was the last way through,
+   so `*x*{k="a` + newline + `b"}` was an attribute block under the EBNF
+   and literal text under the ohm. Narrowing here is what makes the note at
+   `block_attributes` -- "an inline block does not span lines in any
+   engine" -- true of the productions as well as of the engines.
+
+   THE BLOCK-ATTRIBUTE LINE FOLLOWS, and that is the part with a cost.
+   `block_attributes` reads the same `quoted_value`, so a line break inside
+   a quoted value ends that block too. A block attribute may still span
+   lines: `continuation` is where a newline is admitted, and it sits
+   BETWEEN tokens, never inside one. Measured when this landed, on carve-js
+   `0c71c7d`, carve-php `d993758` and carve-rs `2d5de72`: all three accept
+   the block form, and they do not even agree on what it means -- carve-js
+   keeps the newline in the value, carve-php and carve-rs collapse it to a
+   space, which no production describes. Three engines improvising is what
+   an unstated rule looks like; the oracle already answers both forms the
+   narrowed way. carve-js#838, carve-php#986 and carve-rs#758 carry it. *)
 
 (* Block-level attributes appear on their own line(s) preceding a block.
    A single attribute block may span multiple physical lines (the `}`
