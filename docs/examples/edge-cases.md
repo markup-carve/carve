@@ -12621,3 +12621,85 @@ def</p>
 ```
 
 ::::
+
+## A definition body continuation indented past its column is lazy text
+
+`definition_indent` (`resources/grammar.ebnf:700`) is a whitespace run REACHING
+the body's column - the one `:  ` establishes. REACHING it is what makes a line
+the body's own content; going past it does not make the line something else,
+because there is nothing past that column for indentation to mean. So a line
+indented further is a continuation of the body's OPEN PARAGRAPH, its content is
+inline, and a `>` on it is a greater-than sign rather than a block quote opener.
+
+The alternative reading - extra indentation opens a nested block, the way it
+does inside a list item - makes indentation depth mean two different things one
+line apart: the line above continues a paragraph lazily and this one would open
+a block. carve-js and carve-php read it that way and both move (carve#918).
+
+The two documents after it are CONTROLS. They pin the columns on either side of
+the boundary, which do not change and are not what was ruled: at the body's own
+column a block opener still opens a block, and flush left the body ends and the
+quote is its sibling. Without them the rule above reads as "an indented `>` is
+never a quote", which is not what it says.
+
+::: compare
+
+```carve
+:: t
+:  body
+    > q
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>body
+&gt; q</dd>
+</dl>
+```
+
+:::
+
+CONTROL, at the body's column. Three spaces reach column 3, so the line is the
+body's own block content and the quote opens.
+
+::: compare
+
+```carve
+:: t
+:  body
+   > q
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>body</p>
+    <blockquote><p>q</p></blockquote>
+  </dd>
+</dl>
+```
+
+:::
+
+CONTROL, flush left. Column 0 does not reach the body's column at all, so the
+body ends and the quote is a sibling of the list.
+
+::: compare
+
+```carve
+:: t
+:  body
+> q
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>body</dd>
+</dl>
+<blockquote><p>q</p></blockquote>
+```
+
+:::
