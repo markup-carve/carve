@@ -1,0 +1,84 @@
+A container a lazy line folded into is still open
+
+```
+- x
+  :::
+  a
+d
+  b
+  :::
+.
+<ul>
+  <li>x
+    <div>
+      <p>a
+d
+b</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- x
+  :::
+  a
+d
+  b
+.
+<ul>
+  <li>x
+    <div>
+      <p>a
+d
+b</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- x
+  > a
+d
+  > b
+.
+<ul>
+  <li>x
+    <blockquote><p>a
+d
+b</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- > a
+d
+  > b
+.
+<ul>
+  <li>
+    <blockquote><p>a
+d
+b</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- x
+  ::: note
+d
+  b
+.
+<ul>
+  <li>x
+    <aside class="admonition note">
+
+    </aside>
+  </li>
+</ul>
+<p>d
+b</p>
+```

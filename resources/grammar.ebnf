@@ -229,6 +229,64 @@
         at. AT the item's content column the body is the item's and nothing
         leaves it, which is the shape every other corpus case uses.
 
+        AND THE FENCE KIND IS NOT A PARAMETER -- NORMATIVE (carve#980). The
+        clause above is named for a code fence, and reads as though
+        VERBATIMNESS were the property doing the work. It is not. The reach of a container
+        is not extended by what its innermost block happens to be, and the
+        parameter S4 actually consults is whether ANY container in the open
+        stack holds an OPEN PARAGRAPH -- explicitly regardless of how many
+        containers the line failed to match. The fence kind never enters.
+
+        Read that way the two fence kinds are ONE rule and the asymmetry
+        between them falls out of the paragraph:
+
+          - A CODE fence body cannot hold an open paragraph at all, so the
+            column-0 line always takes S4's otherwise and the container ends.
+            That is the clause above, with no exception to carry.
+          - A COLON fence body CAN hold one, so it takes the lazy branch when
+            it does and the same otherwise when it does not.
+
+        The second bullet is not a widening. An EMPTY colon fence already ends
+        the container today -- corpus 270's second document pins it and the
+        oracle produces it -- so the reach rule ALREADY reaches colon fences.
+        What it must not do is override an open paragraph, because S4's lazy
+        branch is what the reach rule is made of, not an exception to it.
+
+        S1 and S2 are why this needed saying. S1 MATCH PREFIXES stops the walk
+        at the ITEM and S2 FENCED BODY does not fire, in the colon spelling
+        exactly as in the code spelling. But stopping the walk only ROUTES the
+        line to S4; it does not decide it. Reading the stop as the decision
+        makes VERBATIMNESS look load-bearing when it only ever stood in for
+        "no paragraph is open", and that derivation reaches the opposite of
+        what corpus 270 and A REAL DIV IS A CONTAINER LIKE ANY OTHER already
+        require. Stated here because a clause that is silent about which
+        property governs leaves the wrong derivation available to the next
+        reader, which is how it was reached once already (carve#980).
+
+        AND NOTHING CLOSES MEANS THE CONTAINER GOES ON COLLECTING -- NORMATIVE
+        (carve#980). S4's lazy branch says NOTHING closes, and that binds the
+        lines AFTER the folded one as much as the folded one itself. A line
+        that returns to the container's content column is still that
+        container's content:
+
+            - x                 - x
+              :::                 :::
+              a                   a
+            d                   d
+              b
+              :::
+
+        On the left `a`, `d` and `b` are one paragraph in one div. Folding `d`
+        and then ending the container -- so that `b` lands beside the div
+        rather than inside it -- is the reach over-extended in the other
+        direction, and it renders a document nothing in the stack ever closed.
+        The right-hand document is the same rule with the fold as the last
+        line, which is the only spelling corpus 270 carried, and it is why a
+        reader could fold correctly and still get the left one wrong. Corpus
+        category 280 pins both, and the CONTROL beside them: with nothing in
+        the stack open, the flush-left line still ENDS the container and the
+        line after it is outside too.
+
         A REAL DIV IS A CONTAINER LIKE ANY OTHER -- NORMATIVE (carve#909). An
         unterminated `::: ` div in a container decides the same way, on the same
         question, and the two answers differ by one line of body:
