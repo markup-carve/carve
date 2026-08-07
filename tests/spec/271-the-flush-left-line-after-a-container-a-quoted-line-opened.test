@@ -1,0 +1,60 @@
+The flush-left line after a container a quoted line opened
+
+```
+> quote
+> ::: note
+tail
+.
+<blockquote>
+  <p>quote</p>
+  <aside class="admonition note">
+
+  </aside>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> quote
+> ::: note
+>
+> :::
+tail
+.
+<blockquote>
+  <p>quote</p>
+  <aside class="admonition note">
+
+  </aside>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> quote
+> ::: note
+> body
+> :::
+tail
+.
+<blockquote>
+  <p>quote</p>
+  <aside class="admonition note">
+    <p>body</p>
+  </aside>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> quote
+> :::note
+> body
+:::
+.
+<blockquote><p>quote
+:::note
+body</p></blockquote>
+<div>
+</div>
+```
