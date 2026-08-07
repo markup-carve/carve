@@ -262,6 +262,35 @@
         not a parameter of this rule, per the paragraph below; neither is which
         container kind the unmatched prefix belonged to.
 
+        AND A DEFINITION BODY IS SUCH A CONTAINER -- NORMATIVE (carve#956).
+        The third indented-block collector answers the same way. A definition
+        body's `dd` demands indentation to column 3 (`definition_indent`), so a
+        fence opened on the `:  ` marker line whose body sits BELOW that column
+        is the list spelling above with a different prefix:
+
+            :: t
+            :  ```
+            body
+            ```
+
+        `body` supplies none of the body's indentation, so S1 MATCH PREFIXES
+        stops at the DEFINITION ENTRY and S2 FENCED BODY never fires. S4
+        governs, its lazy branch asks for an open PARAGRAPH, and a verbatim
+        body is not one. So the containers close, the `dd` holds an EMPTY code
+        block, and `body` re-parses at document level -- where the trailing
+        delimiter run is ordinary inline text, byte for byte the answer corpus
+        276 already pins for the `- ``` ` spelling.
+
+        A definition body is the LAST container kind that collects an indented
+        block, so with this the rule is CLOSED over the set rather than
+        enumerated across it. That is why it is stated rather than left to be
+        inherited: at the time of this ruling no reader followed it. The three
+        engines agreed with each other and against this derivation, keeping
+        the below-column line as code text, and the executable spec agreed
+        with neither of those answers -- four readers, three answers, and no
+        fixture, which is the state carve#755 catalogues. Corpus documents for
+        the shape are owed and are deferred to their own pass (carve#956).
+
         This said "the innermost MATCHED context holds an OPEN PARAGRAPH",
         which describes something no implementation does. A lazy line carries
         no markers, so it matches ZERO containers and the innermost matched
@@ -832,6 +861,44 @@ definition_indent = whitespace, {whitespace} ;
    regardless of its indentation, so nothing observable turns on it and no
    fixture below pins it. Recorded so the untouched-looking half is not read as
    an oversight.
+
+   BELOW THE BODY'S COLUMN THE BODY ENDS -- NORMATIVE (carve#932). The three
+   bands, in column order, so the rule can be read off once:
+
+     - BELOW the body's content column, the body ENDS and the line is
+       classified in the surviving context. Column 0 is not a special case of
+       this, it is the ordinary case: "below the content column" means the
+       same thing here as it does for a list item and for a footnote body.
+     - AT the column, the line is the body's own block content, so a block
+       opener opens inside the `dd`.
+     - PAST the column, the line is lazy text -- the clause below (carve#918).
+
+   `definition_indent` states the floor as column arithmetic; this states what
+   happens on the other side of it. Nothing else in the language gives a
+   sub-column indent a third meaning, and a rule that did would make
+   indentation depth mean two different things one column apart.
+
+   THE RULE IS UNCHANGED AND THE NAMING IS THE CHANGE. The bands were already
+   stated here in passing -- "AT the column the line is the body's own block
+   content and the quote opens; below it the body ends", in the clause below --
+   and being unnamed they were inventoried nowhere and pinned by nothing. An
+   engine that follows this clause is not being asked to follow new prose.
+
+   NO READER FOLLOWED IT and the failures were not the same failure. Measured
+   at the time of this ruling on `:: t` / `:  body` / `<N spaces>> q`, the
+   executable spec nested the quote inside the `dd` at one and two spaces where
+   the three engines folded it in as lazy text; every reader agreed at zero, at
+   three and at four. Both answers at one and two are wrong here, and the
+   coherent rule is preferred to either: two different incoherences are not
+   evidence for one of them.
+
+   THE FLOOR IS AN EQUIVALENT MUTANT UNTIL THE LADDER IS PINNED. Lowering a
+   reader's floor from column 3 to column 1 changes nothing any corpus document
+   can see today, because a line below the column falls through to the
+   flush-left branch and nests anyway. Documents covering all three bands, with
+   the two boundaries pinned on both sides, are owed and are deferred to their
+   own pass (carve#932); until they land this clause is the only thing that
+   makes the floor observable.
 
    A CONTINUATION INDENTED PAST THE BODY'S COLUMN IS LAZY TEXT -- NORMATIVE
    (carve#918). `definition_indent` REACHES the body's column; it does not
@@ -1666,7 +1733,45 @@ reference_definition = '[', reference_label, ']', ':', space, link_destination,
    THE COST, recorded: a shape all four artifacts accepted stops being a
    definition. One corpus document depended on it -- `16-reference-link-5`,
    which pinned `[r]: a b c` resolving the label to `a` -- and its golden moved
-   with this ruling. *)
+   with this ruling.
+
+   AN INVALID BLOCK IS NOT `attributes`, SO THE LINE IS NOT A DEFINITION --
+   NORMATIVE (carve#933). `[space, attributes]` names the `attributes`
+   production, and a balanced `{...}` that production does not accept is not
+   an instance of it. It is therefore leftover content, and the anchor above
+   disposes of it like any other leftover: the line falls back to prose.
+
+       [a]: /u {#}
+
+   is NOT a definition. `{#}` is not `attributes` -- there is no identifier
+   after the `#` -- so the line renders as the paragraph `[a]: /u {#}` and a
+   `[a][]` below it does not resolve. The same holds for `[a]: /u { }` and
+   `[a]: /u {=}`.
+
+   THE DECIDING ARGUMENT IS THAT THE SAME CHARACTERS ALREADY READ THIS WAY
+   ELSEWHERE. `x {#}` in a paragraph keeps the braces as text, because
+   `attributes` rejects that block there too and inline content keeps what it
+   cannot parse. Two readings of `{#}` one construct apart is the thing being
+   removed, and the reading kept is the one the rest of the language already
+   has.
+
+   WHY IT NEEDED SAYING WHEN THE ANCHOR ALREADY EXISTED. The anchor could not
+   SEE the failure. The trailing block is peeled off by a BALANCE SCAN before
+   anything validates it, so a block that failed validation had already been
+   consumed and DISCARDED, and the line went on to parse as a definition with
+   the author's `{...}` gone from the page -- the exact outcome PART 7 names as
+   the one to avoid, and the reason this anchor exists at all. The remedy is
+   structural rather than a flag: the scan must hand a rejected block BACK as
+   content, which is a THIRD outcome, distinct both from "there was no block"
+   and from "the block was empty". Where those two are the same value, the
+   failure has nowhere to be observed.
+
+   THE COMPATIBILITY BREAK THIS ADDS, recorded: a definition line carrying an
+   unparseable attribute block stops defining, and a document relying on it
+   resolves one fewer reference. Accepted (carve#933 signoff). Corpus rows --
+   including the control that a VALID block still defines and still transfers
+   its attributes, which is the row an over-eager fix breaks -- belong with
+   corpus 266 and are deferred to their own pass. *)
 (* TRAILING ATTRIBUTES ON A DEFINITION -- NORMATIVE. A `{...}` block at the end
    of the definition line attaches to the DEFINITION, and PART 9R R1 already
    says what that means: the attributes transfer to every link OR IMAGE that
@@ -4656,6 +4761,37 @@ EOF = (* end of file *) ;
       deliberate -- a linkDefs label is an identifier the author wrote
       twice and can keep identical, while a heading ref is prose the
       author is quoting from elsewhere in the document.
+      THE EXPLICIT FORM DOES NOT REACH THE INDEX -- NORMATIVE (carve#742).
+      The fallback above is scoped to the COLLAPSED `[text][]` and to
+      nothing else. An explicit `[text][label]` whose label matches no
+      linkDefs entry is unresolved and renders as literal source text; it
+      does not fall through to the heading index at ANY spelling, folded
+      or exact.
+      THE ASYMMETRY IS THE ONE THE PARAGRAPH ABOVE ALREADY GIVES. It is
+      the stated reason the two matchings differ in the first place: a
+      collapsed label is the author quoting prose from elsewhere in the
+      document, which is why its matching is loose, and an explicit label
+      is an identifier the author wrote twice and can keep identical,
+      which is why its matching is exact. An identifier that names nothing
+      names nothing; it is not retried as prose. Reading the fallback as
+      covering both forms deletes that distinction while leaving the
+      sentence that justifies it in place.
+      PROSE IS NORMATIVE AND A READER IS AN IMPLEMENTATION. Measured at
+      the time of this ruling, three of the four readers resolved a shape
+      this rule does not offer -- two of them on both the folded and the
+      exact spelling, one on the exact spelling only -- and one read the
+      rule as written. Which three is a measurement and belongs on the
+      implementation tickets, not here; that they were a majority is not
+      an argument (PART 0's THE EXECUTABLE ARTIFACTS DECIDE NOTHING). If
+      the explicit form SHOULD reach the index, that is a deliberate
+      widening with its own clause, not a retrofit to the engines.
+      THE COMPATIBILITY BREAK, recorded: a document whose
+      `[text][Some Heading]` resolves today renders the bracketed run
+      literally instead. Accepted (carve#742 signoff). Corpus rows -- with
+      the control that the collapsed form still reaches the index, and the
+      control that an explicit label matching a real linkDefs entry still
+      resolves, since a fix keyed on "unresolved" rather than on "collapsed"
+      breaks the second -- are deferred to their own pass.
       ON THIS PATH THE LABEL ENTERS AS ITS RENDERED PLAIN TEXT, the same
       string kind the heading side already enters as. The index is keyed
       by the heading's rendered plain text, so `# *bold* heading` is
@@ -4728,6 +4864,34 @@ EOF = (* end of file *) ;
       escape, an inline literal. "markup preserved" already said this for the
       caption side; it holds for the heading side too, and for the source
       spelling as much as for the markup.
+      DERIVED DISPLAY TEXT CLONES THE SAME NODES -- NORMATIVE (carve#957).
+      The clause above binds every consumer that derives display text from
+      a heading, not the crossref alone. A render-stage transform may not
+      undo a core resolution rule, so wherever anything builds visible text
+      from a heading -- a numbered cross-reference label, an index term's
+      display, a table-of-contents entry -- it clones the same inline
+      NODES. Flattening to a string at the derivation site destroys the
+      source run exactly as flattening at the index site does, and no
+      renderer downstream can recover it. Stated once here rather than
+      per consumer, because the reach of R4 is what is at issue and the
+      next consumer that derives display text inherits the answer.
+      THE LABEL IS TAKEN BEFORE ANY RENDER-STAGE INJECTION. A heading's
+      cloned nodes are its AUTHORED inline content. Whatever a render-stage
+      transform later adds to the heading -- a `section-number` span, a
+      permalink anchor -- is not part of the label and never appears in
+      derived text, so an implementation that resolves cross-references
+      AFTER such a transform must clone from the PRISTINE heading and not
+      from the live one.
+      That sentence is normative rather than incidental because two
+      implementations may differ HERE BY CONSTRUCTION rather than by
+      defect: one resolves cross-references before the numbering transform
+      runs, the other after it. Both follow the same words and produce
+      different labels -- one numbered, one plain -- unless the words say
+      which side of the injection the label comes from. Naming the side is
+      therefore the whole content of this half of the clause.
+      NUMBERING, PREFIXING AND JOINING REMAIN THE EXTENSION'S OWN
+      BUSINESS. This governs what the TITLE part is made of, not the label
+      word, not the number, and not the separator around them.
    R5 NUMBERED CAPTIONS. Per kind, in document order, each caption whose
       top-level text carries a bare `#` placeholder receives the next
       number of its kind (PART 2, CAPTION NUMBER PLACEHOLDER); an {#id} on
@@ -5561,6 +5725,52 @@ EOF = (* end of file *) ;
       about, in order to protect a distinction `ref` and `rawRef` already carry.
       What they are each missing is the authored construct BESIDE it, which is
       the half this clause actually asks for.
+
+      A NESTED LINK AND AN AUTOLINK STAY NODES -- NORMATIVE (carve#817).
+      "Links never nest" is a RENDERING rule: an anchor may not contain another
+      anchor. It binds the renderer, not the encoder. A link or an autolink
+      inside a link's label is serialized as the node the author wrote, and
+      every renderer unwraps it at the render seam exactly as it does today.
+
+      Flattening it at the encoder is the fold this section exists to forbid,
+      and it is strictly lossier than the case the section opens with. An
+      unresolved reference at least keeps enough to be written back; a nested
+      link's destination does not survive at all. `[[x](y)](z)` published as a
+      link to `z` whose only child is the text `x` has lost `y` from the tree
+      entirely, so `fmt` on the parsed document writes `[[x](y)](z)` back and
+      `fmt` on the same document taken through the AST writes `[x](z)` -- two
+      spellings of the same source, which is the §6 round trip failing. An
+      autolink flattened the same way returns as a bare URL, and that is a
+      DIFFERENT document: a bare URL stays literal where an autolink is a link.
+
+      THE PRECEDENT IS INSIDE THIS RULE ALREADY. A `heading_ref` inside a link
+      is exempt from the flattening for exactly this reason -- it reaches the
+      serialized tree and the renderers suppress the nested anchor instead. A
+      link and an autolink are the same case and take the same treatment. An
+      image and a code span inside a label were never flattened at all, which
+      is what makes this an extension of an existing exemption rather than a
+      new rule about what a label may contain.
+
+      THE NODE CARRIES NO NON-ANCHOR FLAG. Nothing on the wire marks the inner
+      link as unclickable; a consumer infers it from context. A field that
+      exactly one construct ever sets is a special case where the uniform rule
+      is available, and it would carry a RENDER fact -- "HTML cannot nest
+      anchors" -- back into the format that describes the SOURCE, which is the
+      layering this section rejects everywhere else. §3 already gives a link
+      `children`, and those children are inline nodes with `link` and
+      `autolink` among them, so keeping the node needs no new wire surface at
+      all: the flag would be the only reason to add one, on a surface §11 has
+      just made strict. The asymmetry is recorded rather than assumed -- adding
+      the flag later is a normal additive change, removing it later is a break,
+      and a worse one under strict ingest.
+
+      RENDERED OUTPUT DOES NOT MOVE. Every target still unwraps, so this is a
+      wire-format change with no HTML, Markdown, plain or ANSI consequence.
+      What moves is what a consumer of the TREE receives, which is why no
+      corpus golden pins it: a corpus pair here would pass before and after and
+      prove nothing. The pins that can fail are the §6 round trip on the two
+      shapes above and the AST-shape expectation that a `link` and an
+      `autolink` are admissible inside a link's children.
 
       A DESTINATION IS THE AUTHOR'S TEXT, UNSANITIZED -- NORMATIVE. `href`,
       `src`, and every other destination field carry what the author wrote,

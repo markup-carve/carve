@@ -738,6 +738,11 @@ back-links. Each implementation pins this in its own suite (occurrence
 anchoring, the codepoint sort, multi-occurrence back-links, and the
 no-marker / extension-off degradation).
 
+Where a term's display text is derived from a heading, it is R4's clone of that
+heading's inline nodes and not a flattened string - the grammar's DERIVED
+DISPLAY TEXT CLONES THE SAME NODES clause (PART 9R R4) binds this extension the
+same as the crossref itself.
+
 ## 8b. Placement directives: TOC & footnotes (Tier-3)
 
 Two directives let the author control *where* a piece of derived content
@@ -807,6 +812,12 @@ Both degrade gracefully (a labeled `<div>` floor).
   **not** corpus-pinned; the cross-impl contract is the byte-identical `<nav>`
   list fragment, and each implementation pins the window selection, id
   resolution, and degradation in its own suite.
+
+An entry's text is R4's clone of the heading's inline nodes, per the grammar's
+DERIVED DISPLAY TEXT CLONES THE SAME NODES clause (PART 9R R4), taken **before**
+any render-stage injection - so a `section-number` span added by HeadingNumbers
+(§9) never appears in a TOC entry, and heading markup is never flattened out of
+one.
 
 ## 9. HeadingNumbers (Tier-3)
 
@@ -893,6 +904,14 @@ render-stage transform.
     headings).
 - `label` (option, default `Section`) is the prefix word; set it to `§`, a
   localized word, etc. The `href` is never changed.
+- The `{title}` part is **not a string**. It is R4's clone of the heading's
+  inline nodes, per the grammar's DERIVED DISPLAY TEXT CLONES THE SAME NODES
+  clause (PART 9R R4), so a heading carrying emphasis or a code span keeps that
+  markup in the rewritten cross-reference instead of being flattened to glyphs.
+  The label is taken **before** this extension injects its `section-number`
+  span, so an implementation that resolves cross-references at render time must
+  clone from the pristine heading, not from the live one. The label word, the
+  number and the separator around them remain this extension's own.
 
 ### 9.4 Interaction with HeadingLevelShift
 
