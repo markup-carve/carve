@@ -2572,8 +2572,8 @@ attribute_list = attribute, {space+, attribute} ;
    five positions; only hand-written source does.
 
    Two neighbouring questions are explicitly NOT decided here and have
-   their own tickets: a NEWLINE inside a quoted value, where the two
-   normative files split and the engines are 2-1 (carve#888), and
+   their own tickets: a NEWLINE inside a quoted value, where this file and
+   carve-core.ohm split and the engines are 2-1 (carve#888), and
    carve-php capping a block-attribute block at one line break where the
    other two engines and the oracle accept N. *)
 (* RENDER ORDER -- NORMATIVE: attributes are emitted in the order they
@@ -2785,8 +2785,11 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    THE FOUR ARE NARROW BY RULING, not by accident (carve#912). carve-js,
    carve-php, carve-rs AND the executable spec all accepted a run at all
    four, so this was not an engine divergence: four artifacts agreed with
-   each other and disagreed with the written cardinality, and both normative
-   files carried a comment deferring the question to the other. The
+   each other and disagreed with the written cardinality, and this file and
+   carve-core.ohm each carried a comment deferring the question to the other.
+   That deadlock is what precedence exists to break -- see NORMATIVITY: the
+   production is the language and the ohm file is derived, so a split of this
+   shape now has an answer before anyone measures anything. The
    productions were held right and the four artifacts narrow. The cost is
    recorded so it is not re-litigated: every document with two spaces at one
    of those slots reparses.
