@@ -4733,14 +4733,17 @@ EOF = (* end of file *) ;
         target is not cloned without bound.
       - NON-HTML TARGETS. The Markdown, plain-text, and terminal (ANSI)
         renderers MUST NOT become injection vectors either. The TERMINAL
-        target MUST strip text, code, math AND URL values of every
-        non-whitespace C0 control before emission, because its consumer acts
-        on the character; a Markdown link/image title MUST escape the `"`
-        that would otherwise terminate it. WHICH TARGET STRIPS WHAT is §29,
-        not this bullet: this requirement used to read "before emission to a
-        terminal" and was implemented as a strip on all three non-HTML
-        targets, which deleted content on two of them (carve#979). §29 is
-        the single statement; this bullet is the security half of it.
+        target MUST strip text, code, math AND URL values of every control
+        character before emission -- the non-whitespace C0 controls, DEL
+        (U+007F) and the C1 controls alike, the last because CSI (U+009B)
+        and OSC (U+009D) are single-character forms of the very sequences
+        this bullet exists to stop. A Markdown link/image title MUST escape
+        the `"` that would otherwise terminate it. WHICH TARGET STRIPS A C0
+        CONTROL is §29, not this bullet: this requirement used to say only
+        "before emission to a terminal" and was implemented as a strip on
+        all three non-HTML targets, which deleted content on two of them
+        (carve#979). The narrowing is per TARGET and applies to C0 alone; it
+        never narrows what the terminal target strips.
 
    26. TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING -- NORMATIVE (CVE-2021-42574
       class). Visually deceptive or invisible Unicode MUST NOT produce
@@ -4894,8 +4897,12 @@ EOF = (* end of file *) ;
          that can move the cursor, rewrite earlier output or reach the
          clipboard. That is a property of the device, not a general worry
          about control characters, so it reaches this target and no other.
-         Stated as a requirement in §25 NON-HTML TARGETS, which now cites
-         this section rather than restating it.
+         WHAT THIS ROW DOES NOT DO IS NARROW THE TERMINAL TARGET. §25
+         NON-HTML TARGETS requires it to strip DEL and the C1 controls too,
+         and that requirement is untouched here -- CSI (U+009B) and OSC
+         (U+009D) are single-character forms of the sequences that bullet
+         exists to stop, so a rule about C0 must not be read as licensing
+         them.
 
       T5 WHAT THIS SECTION DOES NOT SETTLE, stated so its silence is not
          read as agreement:
