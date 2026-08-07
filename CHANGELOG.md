@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 7: a trailing zero-width character does not defeat a reference
+  definition** (carve#953). The end-of-line anchor clause (carve#911, landed in
+  carve#934) listed `[a]: /u<U+FEFF>` among the shapes that are NOT
+  definitions, which does not follow from the anchor's own premise: the anchor
+  only sees what is LEFT OVER after the production, and U+FEFF is not
+  `White_Space`, so it never ends the destination. `link_destination` absorbs
+  it as an ordinary `unicode_url_char` and the character lands in the href, as
+  the note beside that production and corpus 240 already said. The clause now
+  strikes the row and states why, and the format-character exclusion is
+  attributed to `url_char` - the autolink body - where it actually lives. Prose
+  only: no production, no corpus document and no engine behavior moves, and
+  `docs/examples/edge-cases.md` already carried the correct reading.
+
 - **PART 4: a quoted attribute value stops at the newline** (carve#888).
   `quoted_value` built its value out of `character`, which is any Unicode
   character, so a line break inside the quotes was content - and it was the one
