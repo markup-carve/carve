@@ -56,7 +56,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `265-a-reference-definition-s-metadata-slots-take-exactly-one-space`,
 `266-a-reference-definition-is-anchored-at-end-of-line`,
 `267-a-definition-marker-s-separator-is-a-space-and-it-is-a-run`,
-`268-trailing-whitespace-on-a-content-line-is-dropped`.
+`268-trailing-whitespace-on-a-content-line-is-dropped`,
+`269-a-definition-body-continuation-indented-past-its-column-is-lazy-text`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the

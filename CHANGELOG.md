@@ -9,6 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 9: a definition body's continuation indented past its column is lazy
+  text** (carve#918). `definition_indent` REACHES the body's column - the one
+  `:  ` establishes - and does not measure how far past it a line went, because
+  there is nothing past that column for indentation to mean. So
+
+  ```
+  :: t
+  :  body
+      > q
+  ```
+
+  keeps `> q` as a continuation of the body's open paragraph, and the `>` is a
+  greater-than sign rather than a block quote opener. The columns on either side
+  are unchanged and are pinned as controls: at the body's own column a block
+  opener still opens a block, and flush left the body ends.
+
+  The rejected reading - extra indentation opens a nested block, as it does
+  inside a list item - makes indentation depth mean two different things one
+  line apart, since lazy continuation already folds the line above into the same
+  paragraph. carve-js and carve-php both move
+  (markup-carve/carve-js#822, markup-carve/carve-php#974); carve-rs and the
+  oracle already answer this way.
+
 - **Trailing whitespace on a content line is dropped** (carve#926). PART 2's
   rule was written down only for a paragraph's FINAL line, and PART 12 §7
   asserted the opposite for a line before a SOFT BREAK - claiming

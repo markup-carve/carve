@@ -1,0 +1,39 @@
+A definition body continuation indented past its column is lazy text
+
+```
+:: t
+:  body
+    > q
+.
+<dl>
+  <dt>t</dt>
+  <dd>body
+&gt; q</dd>
+</dl>
+```
+
+```
+:: t
+:  body
+   > q
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>body</p>
+    <blockquote><p>q</p></blockquote>
+  </dd>
+</dl>
+```
+
+```
+:: t
+:  body
+> q
+.
+<dl>
+  <dt>t</dt>
+  <dd>body</dd>
+</dl>
+<blockquote><p>q</p></blockquote>
+```
