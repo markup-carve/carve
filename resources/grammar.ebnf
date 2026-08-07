@@ -92,6 +92,13 @@
      a pinned engine rather than against the corpus, and reported nine
      grammar defects that were the pin being three weeks stale
      (tree-sitter-carve#160).
+   - WHAT EARNS A CLAUSE is a process rule rather than a language rule, so it
+     lives in .github/CONTRIBUTING.md and not here. In short: a new clause
+     needs an author-visible document or a visible rendering difference, and a
+     shape with neither is recorded as "unruled, engines may differ" instead
+     of costing three engines, the checkers, the corpus and every satellite
+     grammar a change. It binds new clauses only -- keeping an existing one is
+     free, removing one re-opens a settled question.
    ============================================================================ *)
 
 (* ============================================================================
