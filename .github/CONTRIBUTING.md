@@ -60,6 +60,25 @@ the change rather than a courtesy.
   `miscount` from `scripts/spec/participants.mjs` rather than printing a count
   and trusting the reader to know the right one.
 
+## What settles a question
+
+Only `resources/grammar.ebnf` does. The executable artifacts
+(`resources/carve-core.ohm`, `scripts/spec/*.mjs`) and the engines are
+measured, never cited: "the executable spec does X" and "carve-js does X" are
+observations about an implementation, and both have been wrong while being
+believed.
+
+- **Open a ruling with the clause it turns on.** If no clause reaches the
+  shape, that is the finding, and the PR adds one.
+- **Measure against the committed golden, not against an implementation.** A
+  pinned engine goes stale, and then it reports the pin as a defect in whatever
+  it is grading. That has already produced nine false grammar findings in one
+  satellite (tree-sitter-carve#160).
+- **A generated golden is a proposal.** `npm run corpus:build` writes pairs;
+  the review that commits them is what makes them the answer.
+- **Never settle a cross-engine question by counting engines.** Three engines
+  agreeing is evidence that a shape is unpinned, not that it is correct.
+
 ## Typical change order
 
 For a cross-cutting behavior change:
