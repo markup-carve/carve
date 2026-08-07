@@ -4544,6 +4544,27 @@ EOF = (* end of file *) ;
       deliberate -- a linkDefs label is an identifier the author wrote
       twice and can keep identical, while a heading ref is prose the
       author is quoting from elsewhere in the document.
+      ON THIS PATH THE LABEL ENTERS AS ITS RENDERED PLAIN TEXT, the same
+      string kind the heading side already enters as. The index is keyed
+      by the heading's rendered plain text, so `# *bold* heading` is
+      keyed `bold heading`; a collapsed `[*bold* heading][]` reaches it
+      only if its own label contributes `bold heading` too, i.e. its
+      inline markup is stripped exactly as the heading's was. Without
+      that step no heading containing emphasis, a code span or a link is
+      reachable by its collapsed spelling at all, and the author sees no
+      reason why (carve#648). The four normalizations above then apply to
+      that plain text.
+      THE STRIP IS SCOPED TO THE HEADING INDEX. The linkDefs matching
+      above is unchanged and keys on the label AS WRITTEN: `[*bold*]: /x`
+      is matched by `[*bold*][]` and NOT by `[bold][]`, and `[bold]: /x`
+      is not matched by `[*bold*][]` (corpus
+      193-a-collapsed-reference-is-matched-by-the-label-the-author-wrote).
+      Stripping markup before the linkDefs lookup inverts that rule in
+      both directions and is a deviation from this clause rather than a
+      generalization of it (markup-carve/carve-php#768).
+      The tie-break is unaffected: linkDefs still wins, so a definition
+      whose label is written `[*bold* heading]` beats a same-named
+      heading even though the heading is now reachable.
       NFC and NOT NFKC: canonical equivalence only, so `ﬁle` does not
       match `file` and `① one` does not match `1 one` -- compatibility
       folding would change which text an author is quoting, not just how it
