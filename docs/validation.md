@@ -43,6 +43,14 @@ semantic shifts flagged too:
 carve lint --from-djot doc.crv
 ```
 
+Pass `--platform` when the output is destined for a host that re-linkifies bare
+tokens in the text it renders. The flag is repeatable, and the rules it enables
+report nothing without it:
+
+```sh
+carve lint --platform github doc.crv
+```
+
 ## Programmatic API
 
 JavaScript and TypeScript callers can use `lintCarve` directly:
@@ -96,6 +104,8 @@ the command-line and editor behavior stay aligned.
 | `carve-version-unsupported` | a document declaring a Carve spec version the processor does not implement, so constructs added after that version render as something else without any error |
 | `unclosed-container-fence` | a `:::` opener with no matching closer; the container runs to end of input, which is legal (PART 9 §12) and rarely what was meant |
 | `fence-title-syntax` | text after a fence type word that is neither a quoted `"title"` nor a `[label]`, which makes the whole opener line plain text |
+| `platform-mention-token` | an at-prefixed word in text the document publishes, which a host platform re-linkifies into a user mention; opt-in and off by default, see [platform autolink rules](#platform-autolink-rules) |
+| `platform-issue-reference` | a hash-number in text the document publishes, which a host platform re-linkifies into an issue reference; opt-in and off by default, see [platform autolink rules](#platform-autolink-rules) |
 
 ### Declaring a target version
 
@@ -121,6 +131,120 @@ document targets, versus what last processed it - and the rule is about intent.
 See [versioning](./versioning) for what a version difference means for a stored
 document.
 
+### Platform autolink rules
+
+`platform-mention-token` and `platform-issue-reference` are the only rules here
+that read the document as text some **other** system will re-scan, rather than as
+Carve. They are opt-in, platform-scoped, and **off by default**.
+
+A host that renders published Carve output often re-scans the resulting text and
+linkifies two token shapes on its own: an at-prefixed word becomes a user
+mention, which notifies whoever owns that handle, and a hash-number becomes an
+issue reference, which posts a backlink on whatever it resolves to. Neither was
+meant as a reference in documents that merely discuss cron shortcuts, docblock
+tags, decorators, package scope prefixes or numbered list items.
+
+**No render-time construct prevents this.** The inline literal in PART 9 §27
+guarantees that the *renderer* emits its content verbatim; it cannot bind a
+platform that consumes the rendered HTML and re-parses the characters, because by
+then the literal marker is gone and only the characters remain. Nor are inline
+code spans a reliable escape: fenced code blocks survive on the hosts measured so
+far, but some host surfaces linkify inside a code span. The source is the only
+place the author's intent still exists, which is what makes this a linter's job
+rather than the parser's.
+
+#### Selecting a platform
+
+A processor MUST NOT report either rule unless the caller names at least one
+platform. The selection is a **list of host names**, not a boolean, so a second
+host can bring its own token table without a second flag:
+
+```ts
+lintCarve(source)                              // neither rule can fire
+lintCarve(source, { platforms: ['github'] })   // both rules are enabled
+```
+
+```sh
+carve lint --platform github doc.crv
+```
+
+The command-line flag is repeatable. An unknown platform name is **ignored** on
+the programmatic API and **refused** on the command line. The asymmetry is
+deliberate: an API caller has a type checker to catch a misspelling, while a
+misspelt flag that silently reported nothing would be indistinguishable from a
+clean document.
+
+`github` is the one platform name this specification defines. See
+[what is left unspecified](#what-is-left-unspecified) below.
+
+#### What each rule flags
+
+For `github`:
+
+`platform-mention-token` flags an `@` that is **not** preceded by a word
+character, another `@`, a dot, a hyphen or a slash, followed by a name that
+starts with a letter, digit or underscore and continues over letters, digits,
+underscores, hyphens and interior dots. So an email address is not a mention,
+while a scope prefix and a docblock tag are:
+
+```
+Write to user@example.com today.       no finding
+Install @types/node now.               platform-mention-token
+The @param annotation.                 platform-mention-token
+```
+
+`platform-issue-reference` flags a `#` that is **not** preceded by a word
+character, another `#` or a slash, followed by **digits only** and not by a word
+character or hyphen. So a heading marker, an id-shaped token and a version tag
+are not issue references:
+
+```
+See #42 now.                           platform-issue-reference
+See (#123) now.                        platform-issue-reference
+The #a1 selector.                      no finding
+The #release-1.0 tag.                  no finding
+```
+
+Both rules read **prose and inline code spans**, for the reason given above:
+a code span is not reliably safe on every host.
+
+Each finding names the host, quotes the token, and suggests moving the example
+into a fenced code block, stripping the sigil and rephrasing, or rewriting an
+enumerated reference as "item 1" / "point 1".
+
+#### What neither rule flags
+
+Neither rule fires on text a host never renders as prose. That is one principle
+with several consequences, and a conforming implementation MUST apply all of
+them, because a rule that reports a token nobody can see is the over-eager rule
+this design exists to avoid:
+
+- **fenced code blocks**, which are reliably safe;
+- **raw blocks** and **comments**;
+- **frontmatter**, which the renderer omits from the body;
+- **link reference definitions** and **abbreviation definitions**, which render
+  as the empty string;
+- a **footnote definition that is never referenced**, which is dropped from the
+  output entirely and which `unused-footnote-definition` already reports;
+- an **inline link's destination**, and the path, query and fragment of a **bare
+  URL**, because the host linkifies those as a URL rather than as a separate
+  mention or reference.
+
+Two surfaces that look excluded are deliberately checked, because both reach the
+published page: the **caption of a captioned listing**, and the body of a
+**referenced** footnote.
+
+#### What is left unspecified
+
+- **Which host platforms exist beyond `github`.** The signoff on
+  [carve#297](https://github.com/markup-carve/carve/issues/297) settled that the
+  rules are enabled per platform; it did not enumerate the platforms. Adding one
+  means defining its token table with the same precision as the `github` table
+  above, since the ids are shared and two engines flagging different token sets
+  under one id is the portability break the next section forbids.
+- **Whether a processor may offer a per-rule opt-in** rather than only a
+  per-platform one. Nothing here forbids it; nothing requires it.
+
 ### Which implementations provide these rules
 
 The table above is carve-js. The other engines do not currently match it, and
@@ -129,8 +253,14 @@ The table above is carve-js. The other engines do not currently match it, and
 | implementation | `carve lint` | covers |
 |---|---|---|
 | carve-js | yes | the rules above, plus the Djot/Markdown migration checks |
-| carve-php | yes | Markdown-habit checks only (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`); none of the semantic rules above |
+| carve-php | yes | Markdown-habit checks only (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`); none of the semantic rules above, and neither platform autolink rule |
 | carve-rs | no | the binary has no `lint` command |
+
+The two platform autolink rules are carve-js only today. They are specified here
+rather than left to one engine because the ids are shared surface: a second
+engine implementing the same condition takes the same two ids, the same
+`platforms` selection, and the same token tables, or a `--platform` config stops
+being portable the moment it moves between engines.
 
 ### A rule id is a contract
 
