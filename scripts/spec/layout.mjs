@@ -309,7 +309,22 @@ function stripIndent(line) {
 // is what makes the derivation unsafe: re-materializing a straddling tab's
 // residual as spaces moves every later tab stop on the line, so `\t\tx` minus
 // two columns reaches column 4, not column 6.
-function indentCols(line) {
+export function indentCols(line) {
+  return rootView(lineRecord(line))
+}
+
+// ---- Source-run records, and the views a container derives from them -------
+//
+// A measurement is a VIEW of one source line's indentation run: `pad` spaces
+// materialized in front of `src.slice(start)`. The top-level line is the view
+// with `start = 0, pad = 0`; every dedent moves `start` forward and leaves at
+// most three residual columns behind as `pad` (a straddling tab lands on a
+// multiple of 4, so the residual is never larger).
+//
+// Keeping the source coordinates is what makes the derivation EXACT for a tab
+// run, which `col - cols` is not: the residual re-materialized as spaces moves
+// every later tab stop on the line. See `colFrom` for the arithmetic.
+function lineRecord(line) {
   let col = 0
   let i = 0
   let tabs = false
@@ -321,8 +336,67 @@ function indentCols(line) {
   }
   layoutWork.scan += i
   layoutWork.views += 1
-  return { col, rest: i === 0 ? line : line.slice(i), tabs }
+  // `nextTab` and `A` are built on first use, and only for a run that holds a
+  // tab: a space run needs neither, so a document without tabs pays nothing.
+  return { src: line, run: i, rest: i === 0 ? line : line.slice(i), hasTab: tabs, col, nextTab: null, A: null }
 }
+
+const rootView = (L) => ({ col: L.col, rest: L.rest, tabs: L.hasTab, L, start: 0, pad: 0 })
+
+// Two backward passes over the run, fused, computed once per source line:
+//
+//   nextTab[i] - index of the first tab at or after `i`, or `run`.
+//   A[i]       - columns advanced from `i` to the end of the run when the
+//                current column is a multiple of 4.
+//
+// A[i] is a valid recurrence because a tab RESETS the residue: everything past
+// a tab starts from a multiple of 4 again, so the spaces before the first tab
+// are the only part that depends on where the walk started.
+function runTable(L) {
+  if (L.A) return L
+  const { src, run } = L
+  const nextTab = new Int32Array(run + 1)
+  const A = new Int32Array(run + 1)
+  nextTab[run] = run
+  A[run] = 0
+  for (let i = run - 1; i >= 0; i--) {
+    const t = src[i] === '\t' ? i : nextTab[i + 1]
+    nextTab[i] = t
+    A[i] = t === run ? run - i : 4 * (Math.floor((t - i) / 4) + 1) + A[t + 1]
+  }
+  layoutWork.scan += run
+  L.nextTab = nextTab
+  L.A = A
+  return L
+}
+
+// The column the content stands at, for the view `pad` spaces + src.slice(start).
+//
+// Spaces are a column each, so a tab-free suffix is `c + (run - start)`. With a
+// tab at `t`, the walk reaches `c + (t - start)`, the tab rounds that up to the
+// next multiple of 4, and everything past it is residue-independent - which is
+// exactly what `A` holds.
+function colFrom(L, start, pad) {
+  if (!L.hasTab) return pad + (L.run - start)
+  runTable(L)
+  const t = L.nextTab[start]
+  if (t === L.run) return pad + (L.run - start)
+  return 4 * (Math.floor((pad + t - start) / 4) + 1) + L.A[t + 1]
+}
+
+// A view carries `tabs` CONSERVATIVELY - inherited from the line rather than
+// recomputed for the suffix. Answering it exactly would mean building the table
+// for every tab-bearing line, including the ones whose column arithmetic never
+// needs it; and the only thing `tabs` decides is whether to take the exact path
+// below, so erring towards it costs a table and never a wrong column.
+const view = (L, start, pad, tabs, col) => ({
+  col: col ?? colFrom(L, start, pad),
+  rest: L.rest,
+  tabs,
+  L,
+  start,
+  pad,
+})
 
 // A footnote body's own column is fixed at 2 (grammar.ebnf, "Footnotes"),
 // regardless of how the first continuation line is actually indented.
@@ -2288,7 +2362,9 @@ function collectItems(lines, i, list, state, ind, meas) {
   return i
 }
 
-function dedent(line, cols) {
+const dedent = (line, cols) => dedentParts(line, cols).text
+
+function dedentParts(line, cols) {
   // strip `cols` visual columns of indentation (PART 9 SS24 C5)
   let col = 0
   let i = 0
@@ -2310,9 +2386,9 @@ function dedent(line, cols) {
   layoutWork.views += 1
   if (col > cols) {
     layoutWork.pad += col - cols
-    return ' '.repeat(col - cols) + line.slice(i)
+    return { text: ' '.repeat(col - cols) + line.slice(i), i, col }
   }
-  return i === 0 ? line : line.slice(i)
+  return { text: i === 0 ? line : line.slice(i), i, col }
 }
 
 // `dedent` plus the body line's own measurement, DERIVED rather than re-walked.
@@ -2326,23 +2402,43 @@ function dedent(line, cols) {
 // `col - cols` and its content is the same string. Deriving that is O(1) and
 // the walk happens once for the document rather than once per level.
 //
-// The arithmetic `col - cols` is exact in two cases and no others:
+// The subtraction `col - cols` this used to do is exact in two cases and no
+// others: a run of SPACES, where a column is a character, and a `cols` that is
+// a multiple of 4, where every tab stop shifts with it. Everywhere else the
+// residual re-materialized as spaces moves every later stop on the line -
+// `\t\tx` minus two columns reaches column 4, not column 6 - so the body line
+// was walked the old way instead, once per level, and a tab ladder at a content
+// column that is not a multiple of 4 stayed superlinear (carve#930: 36.78
+// columns per byte at depth 200 against the space ladder's 1.96).
 //
-//   - the run is SPACES, where a column is a character; or
-//   - `cols` is a multiple of 4, where every tab stop in the run shifts by
-//     exactly `cols` (a stop is `c + (4 - c % 4)`, so shifting `c` by a
-//     multiple of 4 shifts the stop with it) and no tab can straddle the
-//     boundary, since a tab always lands ON a multiple of 4.
-//
-// Otherwise the residual re-materialized as spaces moves every later stop on
-// the line - `\t\tx` minus two columns reaches column 4, not column 6 - and the
-// body line is measured the old way, once, on first use. That case is
-// deliberately left superlinear rather than approximated: a wrong column is a
-// wrong parse, and a tab-indented ladder is the shape this does not yet cover.
-function dedentMeasured(m, line, cols) {
-  const text = dedent(line, cols)
-  if (m.tabs && cols % 4 !== 0) return { text, meas: null }
-  return { text, meas: { col: m.col > cols ? m.col - cols : 0, rest: m.rest, tabs: m.tabs } }
+// It is now derived in every case, from SOURCE coordinates rather than from a
+// column. The dedented line is `pad` spaces in front of `src.slice(start)`, and
+// both move forward monotonically, so `colFrom` answers each level in O(1) off
+// one table per source line. `pad` is at most 3: a straddling tab lands on a
+// multiple of 4.
+// Exported for tests/tab-ladder-derivation.test.mjs, which compares what this
+// derives against a fresh walk of the line it produced, exhaustively.
+export function dedentMeasured(m, line, cols) {
+  const { text, i, col } = dedentParts(line, cols)
+  // A synthesized measurement (a blank the container inserted, a lazy
+  // continuation) has no source run behind it, so there is nothing to derive
+  // from and the line is walked. Reachable only for lines the container wrote.
+  if (!m.L) return { text, meas: indentCols(text) }
+  // Consuming `i` characters eats the pad first, then the source run. Stopping
+  // inside the pad leaves the rest of it in place; `col` is then exactly `cols`
+  // (pad is spaces, a column each), so there is no new residual.
+  const start = i <= m.pad ? m.start : m.start + (i - m.pad)
+  const pad = i <= m.pad ? m.pad - i : col > cols ? col - cols : 0
+  // Where the subtraction IS exact - a space run, or a strip that lands on a
+  // tab stop - take it and leave the table unbuilt. The exhaustive check in
+  // tests/tab-ladder-derivation.test.mjs compares the two paths on every run of
+  // spaces and tabs up to length 7, so this is a shortcut rather than a second
+  // rule.
+  const cheap = !m.tabs || cols % 4 === 0
+  return {
+    text,
+    meas: view(m.L, start, pad, m.tabs, cheap ? (m.col > cols ? m.col - cols : 0) : undefined),
+  }
 }
 
 function finalizeOrdered(list) {
