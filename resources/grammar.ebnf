@@ -2830,6 +2830,75 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    not what a slot recognizes but WHERE it sits, and every padding slot named
    above sits inline. Engines that accept a tab in one of them today diverge
    from the production. *)
+
+(* ONE WHITESPACE DEFINITION, IN EVERY CONSTRUCT -- NORMATIVE. The three
+   terminals below are the whole of it, and nothing in the language adds to
+   them. `whitespace` is a SPACE or a TAB. `newline` is a LINE FEED, a
+   CARRIAGE RETURN, or the pair. `space` is the narrower slot that admits the
+   first of those and nothing else. PART 0's guard notation spells the same
+   set once more and adds nothing -- `ws = space | tab | newline`.
+
+   So the whitespace characters Carve has are exactly four: U+0020, U+0009,
+   U+000A and U+000D. EVERY OTHER CHARACTER IS CONTENT. The two an
+   implementation is likeliest to admit by accident are named here so their
+   absence cannot be read as an oversight:
+
+     VERTICAL TAB (U+000B) is CONTENT.
+     FORM FEED     (U+000C) is CONTENT.
+
+   IN EVERY CONSTRUCT, which is the half that had to be said. A production
+   that spells a whitespace run for itself spells THIS one: `blank_line`,
+   `indent`, `definition_indent`, `line_block_line`, `comment_line`,
+   `comment_block_open`, `comment_block_close`, `crossref_id`,
+   `footnote_indent`, `opt_ws` and `attr_separator` all read `whitespace`,
+   and the thirty-one productions that read `space` -- from
+   `heading_first_line` and `caption` to `include_options` -- read the
+   narrower slot of the same definition. Forty-two spellings, one set. An
+   implementation that reaches for a wider class in any of them is not
+   reading its own production, and the language it implements is a different
+   one at that construct only.
+
+   AND IN THE CONSTRUCTS THAT SPELL NO RUN AT ALL, which is where this bites
+   hardest, because there an implementation had to invent something. A
+   heading, a caption, a definition term, a bullet item and an ordered item
+   take `space` -- one, exactly, not a class. The CONTINUATION MARKER takes
+   none: `continuation_marker = '+', newline`, so any character between the
+   `+` and the line end is content and the line is not a marker. The
+   block-attribute line takes `opt_ws`, `attr_separator` and `continuation`,
+   all three built from `whitespace`. A VERTICAL TAB or a FORM FEED in any of
+   those positions is therefore CONTENT, and each construct's own rule reads
+   it as content: MARKER REQUIRES CONTENT (PART 2) is satisfied by it, an
+   emptiness test is not satisfied by its absence, and a line holding one is
+   not a `blank_line`.
+
+   THIS WAS ALREADY WRITTEN DOWN, one position at a time. PART 2's NO
+   TRAILING WHITESPACE says of the end of a content line that "every other
+   character is CONTENT and survives, however invisible", and names the form
+   feed and the vertical tab among the survivors. This clause is that
+   sentence with the position taken out: what is content at the end of a line
+   is content at the start of one, after a marker, and inside a construct's
+   emptiness test. Deriving it per construct is what produced the divergence
+   -- the same character was content where the sentence had been read and
+   whitespace where it had not.
+
+   THE TWO WIDER NOTIONS ARE MARKED AS SUCH, and a construct carrying no such
+   mark takes this definition. WHITESPACE HERE IS UNICODE WHITESPACE beside
+   `unicode_url_char` (PART 3) means the Unicode White_Space property, for a
+   destination only. PART 9 §25's scheme probe strips a wider class again --
+   the C0 controls, which include both characters above, plus the Unicode
+   spaces and the BOM -- and gives its reason there: it strips what a URL
+   parser strips, before a scheme is read, and it is a SECURITY PROBE over a
+   destination rather than a reading of the source.
+
+   WHY UNIFORM RATHER THAN PER CONSTRUCT. One definition maintained once
+   cannot drift; forty-two cannot help it. The alternative is not a second
+   coherent answer but a per-construct patchwork, since no artifact states
+   the wider set -- an implementation reaches one through its host language
+   (a default trim charlist, a regular-expression `\s`, a locale-aware class),
+   and those disagree with each other as readily as with the production. A
+   definition arrived at that way belongs to the host language and not to
+   Carve, which is the same objection this file already makes to the
+   executable artifacts deciding anything. (carve#963) *)
 whitespace = ' ' | '\t' ;
 space = ' ' ;
 newline = '\n' | '\r\n' | '\r' ;
@@ -5296,6 +5365,64 @@ EOF = (* end of file *) ;
       documented form into one documented nowhere. That is the concrete harm
       behind the general rule.
 
+   6a. A THEMATIC BREAK IS WRITTEN `---` -- NORMATIVE. The canonical writer
+      emits a thematic break as three hyphens whatever the author wrote, so
+      `***` and `___` both come back as `---`.
+
+      This is where §6 runs out, and it runs out for the reason §6 itself
+      gives. §6 leaves a spelling alone because "those are the author's
+      choices AND THE AST RECORDS THEM", and the second half is the whole of
+      that argument: `thematic_break` records no marker (PART 12 §3), so there
+      is no author's choice in the tree for the writer to preserve and §6
+      cannot be applied as written. A rule that cannot be applied leaves the
+      question open rather than answering it, and this one was open long
+      enough for one construct to normalize two ways.
+
+      `---` AND NOT ONE OF THE OTHER TWO, on §6's own second argument. It is
+      the spelling Carve teaches: docs/cheatsheet.md writes `---` and names
+      `***` and `___` as its alternatives, the same relation `/*x*/` has to
+      `*/x/*` on the page §6 cites. Emitting the form the documentation
+      presents as the alternative is the concrete harm §6 ends on, reached
+      from the other direction.
+
+      THIS IS A PIN AND SAYS SO. §6's precedent is the whole answer here:
+      bold italic was two spellings, one AST and nothing pinning which to
+      emit, and it was settled by giving the AST the mark so the writer could
+      reproduce the author's. The thematic break is owed the same, tracked at
+      carve#976. When the marker reaches the AST, §6 governs again and this
+      clause is removed with the field that supersedes it -- so pinning `---`
+      today forecloses nothing.
+
+   6b. A FRONTMATTER OPENER IS WRITTEN `---yaml` -- NORMATIVE. The canonical
+      writer spells the format token on the opening delimiter for EVERY
+      format, the default one included. Frontmatter in `yaml` comes back as
+      `---yaml`, never as a bare `---`; frontmatter in `toml` comes back as
+      `---toml`; nothing about the writer's output turns on which format the
+      document named.
+
+      This is §6's other gap, and the same one: `---` and `---yaml` open the
+      same frontmatter (PART 1, "a bare `---` defaults to `yaml`"), so the two
+      are synonyms with nothing in the tree to tell them apart.
+
+      PART 1 ALREADY NAMES THE FORM. That production calls `---yaml` canonical
+      in as many words, and PART 11 is the canonical writer -- so the writer
+      emits it. The counter-reading is that the word sits in a sentence about
+      the optional SPACE and therefore settles `---yaml` against `--- yaml`
+      only. It does not survive contact with what the sentence names: the
+      string it calls canonical is a WHOLE OPENER, not the space inside one,
+      and reading it to reach one of the two ways an opener can differ from it
+      but not the other takes an argument the sentence does not make.
+
+      A READER'S LENIENCY IS NOT A WRITER'S LICENSE, which is what the bare
+      form would be. "A bare `---` defaults to `yaml`" tells the PARSER what
+      to do with an opener that names nothing; the writer is not parsing, it
+      is choosing, and `frontmatter_format` is one production over every
+      format with no default case in it. So a writer that omits the token for
+      `yaml` special-cases a value the grammar distinguishes nowhere except in
+      that leniency rule -- and §2 already refuses the mirror of that move,
+      where the writer emits the shortest form that happens to survive
+      re-parsing rather than the form that says what it means.
+
    7. NO WHITESPACE-ONLY LINE -- NORMATIVE. `fmt` never emits a line whose only
       content is ASCII spaces or tabs. Such a line is emitted EMPTY.
 
@@ -5359,6 +5486,52 @@ EOF = (* end of file *) ;
       list of exceptions. Corpus case 141-trailing-whitespace-boundaries-4 pins
       it (this text said case 139, which has been an inline-literal category
       for some time).
+
+   7a. AN EMPTY CONTAINER BODY IS A BLANK LINE HERE TOO -- NORMATIVE. A COLON
+      FENCE whose body is empty is written with a BLANK LINE between its
+      opener and its closer:
+
+        ::: note          :::             ::: myclass
+        [blank line]      [blank line]    [blank line]
+        :::               :::             :::
+
+      -- an admonition, a BARE div and a div with a word class alike, and the
+      same for a line block (`::: |`) and a local hard-break block
+      (`::: \`). THERE IS NO EXCEPTION ON THIS TARGET: the shape does not vary
+      by container kind, by type word, or by attribute. A body that renders
+      nothing is an empty body here as it is in PART 10 §4, so a container
+      holding only a comment takes this shape too.
+
+      IT REACHES THE CONSTRUCTS THAT HAVE A CLOSER LINE, which is what a colon
+      fence has and a block quote does not. An empty block quote is a `>` line
+      and the question does not arise; §7's rule governs that line, not this
+      one.
+
+      THE SIBLING CLAUSE ALREADY DECIDED THIS QUESTION one layer out and chose
+      the blank line. PART 10 §4 asks what a container whose body renders
+      nothing serializes to, and this asks the same of the same document at
+      the other target. Nothing about the emptiness differs between them, so
+      answering it twice with two answers would be a difference the document
+      cannot account for -- and one rule for "an empty body" across both
+      targets is one rule to maintain.
+
+      THE EXCEPTION IS NOT IMPORTED WITH IT, and §4 is where the reason is
+      written. §4 says of its bare-div exception, in its own words, that it
+      "has no principle behind it", that the split is on "a property of the
+      RENDERING PATH and not of the document", and that a uniform rule "would
+      be easier to state and to implement". What carries the exception there
+      is none of those: it is that overturning a settled three-way agreement
+      to fix a cosmetic inconsistency is the worse trade. That is a reason
+      about the state of §4's own target, and a reason of that shape does not
+      travel to a target it was never about. What is left of §4 once it is set
+      aside is the uniform rule §4 itself prefers, and that is what this clause
+      takes.
+
+      SO THE TWO TARGETS AGREE ON THE RULE AND DIFFER ON ONE SHAPE, which is
+      stated rather than smoothed over: a bare `:::` div closes compactly in
+      HTML and takes the blank line here. That is the cost of §4 keeping an
+      exception it calls principle-free, and it is confined to the one shape
+      §4 names.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
       the canonical writer and does not follow §2. It has a different
