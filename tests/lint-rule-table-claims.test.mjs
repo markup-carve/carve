@@ -22,6 +22,13 @@
  *
  * The trigger map is what makes the second direction checkable, so it is itself
  * asserted: every entry must actually provoke the rule it names.
+ *
+ * A THIRD DIRECTION arrived with carve#297's opt-in rules, and neither of the
+ * two above reaches it. A rule the page documents as OFF BY DEFAULT that fires
+ * anyway is on the page, is emittable, and provokes its trigger - green on
+ * every check here - while breaking the one property the ruling turned on. So
+ * "reports nothing until asked for" is asserted on its own, against the same
+ * documents the triggers use.
  */
 
 import { test } from 'node:test'
