@@ -227,9 +227,22 @@ const UNREACHABLE_REASONS = {
     'carve-js has no quote-locale option; carve-php has the extension (carve#560)',
 }
 
+// Cases that ask an engine for the author's source runs instead of the glyph.
+// One per target, because a manifest entry names one feature and one target -
+// and because an engine carrying the mode on one target and dropping it on
+// another is precisely the state carve#560 recorded.
+const SOURCE_TYPOGRAPHY_FEATURES = new Set([
+  'smart-typography-off',
+  'markdown-typography-source',
+  'plain-typography-source',
+  'ansi-typography-source',
+])
+
 const JS_OPTION_FEATURES = {
   'smart-typography-off': '{ smartTypography: false }',
   'markdown-typography-source': "{ smartTypography: 'source' }",
+  'plain-typography-source': "{ smartTypography: 'source' }",
+  'ansi-typography-source': "{ smartTypography: 'source' }",
   'section-wrapper-off': '{ sections: false }',
   'source-line-after-generated-id': '{ sourceLine: true, sections: false }',
 }
@@ -260,7 +273,9 @@ const impls = [
           ...flags,
         ]
       }
-      if (feature === 'smart-typography-off' || feature === 'markdown-typography-source') {
+      // One flag, whichever target the case pins: the mode is a property of
+      // the renderer, and every presentation renderer carries it.
+      if (SOURCE_TYPOGRAPHY_FEATURES.has(feature)) {
         return [...rustBaseCommand, '--smart-typography', 'source', ...flags]
       }
       return null
@@ -387,6 +402,19 @@ const impls = [
             echo $converter->convert(file_get_contents($argv[1]));
           `,
         ]
+      }
+      // Plain text and ANSI carry the mode too, and the CLI is where they are
+      // reachable: `bin/carve --smart-typography source --plain|--ansi` sets it
+      // on whichever presentation renderer the format flag selected. Both used
+      // to accept the flag and emit the glyph anyway, which is the half of
+      // carve#560 that lived in this file - the adapter returned null for
+      // every non-html target, so the two cases had nothing to compare and the
+      // silence read as coverage.
+      if (target === 'plain' && feature === 'plain-typography-source') {
+        return ['php', 'bin/carve', '--smart-typography', 'source', ...CLI_FLAGS.plain]
+      }
+      if (target === 'ansi' && feature === 'ansi-typography-source') {
+        return ['php', 'bin/carve', '--smart-typography', 'source', ...CLI_FLAGS.ansi]
       }
       if (target !== 'html') return null
       if (feature === 'smart-typography-off') {

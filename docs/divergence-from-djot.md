@@ -494,14 +494,16 @@ let options = Options { smart_typography: SmartTypographyMode::Source, ..Options
 
 :::
 
-**Implementation status.** All three engines honor the switch on HTML and on
-Markdown, each with its own spelling - it is host API, not syntax, so the
-spelling is the engine's to choose:
+**Implementation status.** All three engines honor the switch on every
+presentation target, each with its own spelling - it is host API, not syntax, so
+the spelling is the engine's to choose:
 
 | | carve-js | carve-php | carve-rs |
 |---|---|---|---|
 | HTML | `carveToHtml(src, { smartTypography: false })` | `(new HtmlRenderer())->setSmartTypography(SmartTypographyMode::Source)` | `Options { smart_typography: SmartTypographyMode::Source, .. }` |
 | Markdown | `carveToMarkdown(src, { smartTypography: 'source' })` | `(new MarkdownRenderer())->setSmartTypography(...)` | same `Options` field |
+| Plain text | `carveToPlainText(src, { smartTypography: 'source' })` | `(new PlainTextRenderer())->setSmartTypography(...)` | same `Options` field |
+| ANSI | `carveToAnsi(src, { smartTypography: 'source' })` | `(new AnsiRenderer())->setSmartTypography(...)` | same `Options` field |
 
 Both also expose it on the command line, where machine-facing output is most
 often produced: `carve --html --smart-typography source` in carve-php and
@@ -512,14 +514,21 @@ Two spellings this page used to show do not exist: carve-php has no
 on the renderer), and carve-rs has no `with_smart_typography` builder (the field
 is set on `Options`). The code group above shows the real ones.
 
-Plain text and ANSI still emit the glyph in all three, which the sentence above
-- "the presentation renderers emit each node's source run" - reads as covering.
-That gap is open ([carve#560][st-issue]); the two targets a host reaches for
-machine-facing output are the two that are done.
+Plain text and ANSI used to emit the glyph whatever the switch said, in all
+three engines - accepted and ignored, which is worse than unimplemented. That
+gap is closed ([carve#560][st-issue]).
 
-This section's claim is now measured rather than asserted: the optional corpus
-case `29-smart-typography-off` is rendered by all three engines through the
-comparison harness, so a regression fails there instead of leaving this
+One thing worth stating about the ANSI target, because it is the kind of
+arithmetic that looks like it must change and does not: the heading rule is a
+COLUMN count of the RENDERED heading, so it does not move with the mode. `The
+renderer's output` is 21 columns whether the apostrophe is typed as `'` or
+curled to `’` - each is one character - and the rule under it is 21 either way.
+
+This section's claim is measured rather than asserted. Four optional corpus
+cases pin it, one per target, and all four are rendered by all three engines
+through the comparison harness: `29-smart-typography-off` (HTML),
+`31-markdown-typography-source`, `34-plain-typography-source` and
+`35-ansi-typography-source`. A regression fails there instead of leaving this
 paragraph quietly wrong - which is the state it was in for as long as it named
 three calls that no longer matched any engine.
 

@@ -1,0 +1,6 @@
+# The renderer's output
+
+The API returns "statusFilter" and the flag 'verification-link-sent'.
+
+Use 1--3 for a range, an aside -- like this one -- for a break, and ... to
+trail off. `--fmt` and *strong* are untouched either way.

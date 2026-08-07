@@ -61,13 +61,27 @@ const quoted = [...page.matchAll(/corpus=(core|optional) corpus_pairs=(\d+)/g)].
 // The categories the page declares as added after its quoted run. Names only:
 // every number below is counted from the corpus directory, never read from the
 // page. Absent line = no lag, which is the normal state.
-const laggedCategories = (() => {
-  const m = page.match(/^Corpus added since this run: (.+?)\.$/ms)
+const declaredAfterRun = (label) => {
+  const m = page.match(new RegExp(`^${label} added since this run: (.+?)\\.$`, 'ms'))
   if (!m) return []
   return [...m[1].matchAll(/`([^`]+)`/g)].map((x) => x[1])
-})()
+}
+
+const laggedCategories = declaredAfterRun('Corpus')
+
+// The OPTIONAL corpus needs the same declaration, and used to be excused from
+// it on the grounds that "nothing has ever added to it from a host that could
+// not re-run the tool". carve#560 is that host: it adds the two cases that pin
+// smartTypography on the plain-text and ANSI targets, on a machine with no
+// engine checkouts, so the choice was a declared lag or a hand-edited
+// three-engine measurement nobody took. Same rule, same two directions of
+// failure.
+const laggedOptional = declaredAfterRun('Optional corpus')
 
 const corpusFiles = readdirSync(resolve(root, 'tests/corpus')).filter((f) => f.endsWith('.crv'))
+const optionalFiles = readdirSync(resolve(root, 'tests/corpus-optional')).filter((f) =>
+  f.endsWith('.crv'),
+)
 
 /** The fixtures one declared category contributes: `NN-slug.crv` and `NN-slug-K.crv`. */
 const fixturesOf = (category) =>
@@ -81,6 +95,11 @@ const fixturesOf = (category) =>
   )
 
 const laggedPairs = laggedCategories.reduce((n, c) => n + fixturesOf(c).length, 0)
+
+// An optional case is one `.crv`, with no `-K` sub-pairs, so its slug is the
+// whole of the pairing rule.
+const optionalFixturesOf = (slug) => optionalFiles.filter((f) => f === `${slug}.crv`)
+const laggedOptionalPairs = laggedOptional.reduce((n, c) => n + optionalFixturesOf(c).length, 0)
 
 // The quoted run's denominator plus whatever it could not have covered. With no
 // declaration this is exactly the live count, i.e. the original rule.
@@ -98,10 +117,10 @@ for (const corpus of ['core', 'optional']) {
   test(`the quoted ${corpus} corpus size is the real one`, () => {
     const entry = quoted.find((q) => q.corpus === corpus)
     assert.ok(entry, `no quoted summary line for the ${corpus} corpus`)
-    // The optional corpus has no declaration mechanism and needs none: nothing
-    // has ever added to it from a host that could not re-run the tool.
     const live =
-      corpus === 'core' ? effectiveCore() : countPairs('tests/corpus-optional')
+      corpus === 'core'
+        ? effectiveCore()
+        : countPairs('tests/corpus-optional') - laggedOptionalPairs
     // Name the CHEAP command first. This message used to say `npm run
     // compare:impls`, which is the five-target sweep - roughly twenty minutes -
     // and it was the only instruction offered for a failure that turns on two
@@ -112,9 +131,11 @@ for (const corpus of ['core', 'optional']) {
     const suffix = corpus === 'optional' ? ' -- --corpus=optional' : ''
     const rerun = `npm run compare:counts${suffix}`
     const full = `npm run compare:impls${suffix}`
+    const declared = corpus === 'core' ? laggedCategories : laggedOptional
+    const declaredPairs = corpus === 'core' ? laggedPairs : laggedOptionalPairs
     const lagNote =
-      corpus === 'core' && laggedPairs > 0
-        ? ` (${laggedPairs} pair(s) in ${laggedCategories.length} declared-lag categor(ies) are excluded)`
+      declaredPairs > 0
+        ? ` (${declaredPairs} pair(s) in ${declared.length} declared-lag categor(ies) are excluded)`
         : ''
     assert.equal(
       entry.pairs,
@@ -129,8 +150,11 @@ for (const corpus of ['core', 'optional']) {
 // removed outright - and both leave a line that keeps subtracting zero while
 // reading as though it still describes something.
 test('every declared-lag category still contributes fixtures', () => {
-  for (const category of laggedCategories) {
-    const files = fixturesOf(category)
+  const declared = [
+    ...laggedCategories.map((c) => [c, fixturesOf(c)]),
+    ...laggedOptional.map((c) => [c, optionalFixturesOf(c)]),
+  ]
+  for (const [category, files] of declared) {
     assert.ok(
       files.length > 0,
       `docs/implementation-comparison.md declares "${category}" as added since its quoted ` +
