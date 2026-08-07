@@ -7,15 +7,21 @@
  *   PERMITTED. PART 12 §4 exempts a node the producer REASSEMBLED - a table
  *   cell continued on a `+` line, a `text` run coalesced across a gap - because
  *   its value is not a slice of the source at any offset, so no honest span
- *   exists. docs/ast-json.md:113 and :148-153 name those cases verbatim, and
- *   docs/ast-json.md:427 already names carve-js as the engine that omits a
+ *   exists. docs/ast-json.md names those cases verbatim - the clause is "A table
+ *   cell continued on a `+` line, the hard break a line block makes" - and its
+ *   conformance table's carve-js row names carve-js as the engine that omits a
  *   continued cell's position. Nothing to fix, in any engine, ever.
  *
- *   OWED. Everything else in that column. docs/ast-json.md:116-117 narrows the
- *   exemption to "nodes that *cannot* be placed, not nodes that have not been
- *   placed yet", and the conformance section at docs/ast-json.md:438 states the
- *   test as "whether a true span EXISTS rather than whether one was written
- *   down". Each of these is an engine defect with an issue.
+ *   OWED. Everything else in that column. docs/ast-json.md narrows the exemption
+ *   to "covers nodes that *cannot* be placed, not nodes that have not been
+ *   placed yet", and its conformance section states the test as "whether a true
+ *   span EXISTS rather than whether one was written down". Each of these is an
+ *   engine defect with an issue.
+ *
+ * Those clauses are cited by PHRASE and not by line, and the phrases are pinned
+ * in scripts/spec/ast-page-anchors.mjs: the line numbers that used to stand here
+ * had all drifted by the time carve#965 tabulated them, and the numbers that
+ * issue proposed as the correction were stale before it was filed.
  *
  * Printed as one number, the two were indistinguishable, so the count moved
  * whenever the corpus grew and nobody could tell which half moved. Declaring

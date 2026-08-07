@@ -38,8 +38,8 @@
  *
  * WHAT IT DOES NOT DECIDE. Whether a node's span covers the markup that OPENS
  * it - the list marker, the `>`, the `[^a]: ` - was markup-carve/carve#913, and
- * it is RULED: docs/ast-json.md:108 states that a span begins at the markup
- * that opens the construct. Most of what this panel reports is that question,
+ * it is RULED: docs/ast-json.md states that a span "begins at the markup that
+ * opens the construct". Most of what this panel reports is that question,
  * so those rows are engines owing a fix rather than an open convention.
  *
  * What this module still does not do is say WHICH engine owes it, because that
