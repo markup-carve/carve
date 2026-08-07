@@ -30,9 +30,9 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, chmodSync, existsSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, chmodSync, existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { resolve, dirname, join } from 'node:path'
+import { resolve, dirname, join, isAbsolute } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -231,8 +231,21 @@ exit 0
   return stub
 }
 
+/*
+ * `os.tmpdir()` is whatever TMPDIR says, and TMPDIR is not always an absolute
+ * path that exists: a sandbox that sets it to a relative `.tmp` made every
+ * scenario below fail on `mkdtemp ENOENT` while the same test passed on the
+ * machine it was written on. Fall back to a directory that certainly exists,
+ * and never resolve a relative one - that would drop fixtures into the repo.
+ */
+function fixtureRoot() {
+  const t = tmpdir()
+  if (isAbsolute(t) && existsSync(t)) return t
+  return '/tmp'
+}
+
 function runScenario({ humanCommit, branchAfterBump = false, botExtraFile = false }) {
-  const root = mkdtempSync(join(tmpdir(), 'carve-bump-'))
+  const root = mkdtempSync(join(fixtureRoot(), 'carve-bump-'))
   const carve = buildCarveRemote(root)
   const downstreamBare = buildDownstream(root, carve, { humanCommit, branchAfterBump, botExtraFile })
 
@@ -280,13 +293,17 @@ function runScenario({ humanCommit, branchAfterBump = false, botExtraFile = fals
     output = `${err.stdout ?? ''}${err.stderr ?? ''}`
   }
 
-  return {
+  const result = {
     status,
     output,
     calls: readFileSync(log, 'utf8'),
     prStillOpen: existsSync(prState) && readFileSync(prState, 'utf8').trim() !== '',
     carve,
   }
+  // Several git repositories per scenario; leaving them behind fills the temp
+  // directory over a run of the suite.
+  rmSync(root, { recursive: true, force: true })
+  return result
 }
 
 test('the Bump step carries no workflow templating, so it can be run as written', () => {
