@@ -7,9 +7,9 @@ A tab separates two attributes, and pads a block, as a space does
 
 *z*{.d	}
 .
-<p><strong class="a b">x</strong></p>
-<p><strong class="c">y</strong></p>
-<p><strong class="d">z</strong></p>
+<p><strong>x</strong>{.a	.b}</p>
+<p><strong>y</strong>{	.c}</p>
+<p><strong>z</strong>{.d	}</p>
 ```
 
 ```
@@ -17,12 +17,12 @@ A tab separates two attributes, and pads a block, as a space does
 
 *y*{k="a	b"}
 .
-<p><strong k="a" class="b">x</strong></p>
+<p><strong>x</strong>{k=a	.b}</p>
 <p><strong k="a	b">y</strong></p>
 ```
 
 ```
 [x]{	}
 .
-<p><span>x</span></p>
+<p>[x]{	}</p>
 ```

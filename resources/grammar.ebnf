@@ -2344,11 +2344,51 @@ soft_break = newline ;        (* regular line ending within paragraph *)
    PART 4: ATTRIBUTES
    ============================================================================ *)
 
-attributes = '{', opt_ws, attribute_list, opt_ws, '}' ;
-attribute_list = attribute, {whitespace+, attribute} ;
+attributes = '{', attr_pad, attribute_list, attr_pad, '}' ;
+attribute_list = attribute, {space+, attribute} ;
 (* interior padding is accepted: `{ .a }` and `{.a  .b}` are valid inline
-   attribute blocks, same whitespace handling as block_attributes (minus
-   the line-continuation, which is block-level only) *)
+   attribute blocks. The terminal is `space`, NOT `whitespace`: see
+   THE INLINE INTERIOR IS SPACE-ONLY below. block_attributes pads and
+   separates differently, and deliberately. *)
+(* THE INLINE INTERIOR IS SPACE-ONLY, THE BLOCK-ATTRIBUTE LINE IS NOT --
+   NORMATIVE (carve#906). Every whitespace slot of the INLINE block takes
+   `space`: the run after `{`, the run between two attributes, the run
+   before `}`, the boundary after an unquoted value, and the blessed empty
+   block `{ }`. All five sit AFTER the first non-whitespace character of
+   their line, so PART 7's rule covers them verbatim with no exception to
+   write: a tab is syntax only in a line's leading indentation run.
+
+   `block_attributes` keeps `whitespace` at its three, and that is the
+   ruling rather than an oversight. It is the one construct in this grammar
+   whose interior can contain a LEADING INDENTATION RUN: after a
+   `continuation`, the next line's leading whitespace IS indentation, and
+   the rule that narrows the inline block is the same rule that protects
+   this one. The distinction is POSITIONAL, not per-construct - inline
+   padding is space-only everywhere, and a continuation line's leading run
+   is indentation like any other leading run.
+
+   `opt_ws` was ONE name for both roles, used at five sites, and the two
+   are split rather than substituted so no site can keep the old meaning by
+   accident: `attr_pad` is the inline one, `opt_ws` now serves only
+   `opt_pad`, `attr_separator` and `continuation`, all three of which are
+   block-level.
+
+   THIS REVERSES PINNED GOLDENS, which is why it needed a decision rather
+   than a correction. Corpus 252, 252-2 and 252-3 pinned a tab as a
+   separator, as padding after an unquoted value, and inside the empty
+   block; all three engines produce them. They are rewritten to the
+   narrowed answer rather than deleted, so the shapes stay pinned - as
+   LITERAL output now. The failure mode is visible rather than silent: a
+   narrowed reader leaves `{.a<TAB>.b}` with its braces showing, which is
+   what this clause already promised. And all three writers normalize the
+   tab away, so no canonically formatted document carries one at any of the
+   five positions; only hand-written source does.
+
+   Two neighbouring questions are explicitly NOT decided here and have
+   their own tickets: a NEWLINE inside a quoted value, where the two
+   normative files split and the engines are 2-1 (carve#888), and
+   carve-php capping a block-attribute block at one line break where the
+   other two engines and the oracle accept N. *)
 (* RENDER ORDER -- NORMATIVE: attributes are emitted in the order they
    appear in the source, with all classes merged into a single `class`
    attribute placed at the position of the FIRST class. So `{.a #b k=c}`
@@ -2400,13 +2440,22 @@ block_attributes = '{', opt_pad, attribute, {attr_separator, attribute}, opt_pad
    `class="a b"` accordingly. The prose above the production already said a
    block "may span multiple physical lines (the `}` need not be on the
    opening line)" - the padding spelling was narrower than the sentence
-   describing it (carve#878). The INLINE `attributes` production keeps
-   `opt_ws`: an inline block does not span lines in any engine. *)
+   describing it (carve#878). The INLINE `attributes` production does not
+   follow: it pads with `attr_pad = {space}` (carve#906), which admits neither
+   a tab nor a line break, and an inline block does not span lines in any
+   engine. *)
 (* block_attributes requires AT LEAST ONE attribute -- there is NO block-level
    blessed-empty form (unlike the inline `[text]{}` span, which is blessed).
    A bare `{}` line is therefore NOT a block-attribute block; it stays a
    literal paragraph (`<p>{}</p>`). *)
-opt_ws = {whitespace} ;                  (* spaces/tabs only, no line breaks *)
+attr_pad = {space} ;                     (* INLINE attribute-block padding:
+                                            spaces only, no tab and no line
+                                            break -- it sits inline *)
+opt_ws = {whitespace} ;                  (* spaces/tabs only, no line breaks.
+                                            BLOCK-LEVEL ONLY since carve#906:
+                                            read by opt_pad, attr_separator
+                                            and continuation, never by the
+                                            inline `attributes` production *)
 opt_pad = opt_ws, [continuation] ;       (* block-attribute padding: spaces/tabs,
                                             then AT MOST ONE line break plus its
                                             indentation -- a blank line ends the
@@ -2536,12 +2585,16 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
    reason stated there: a separator is a different position from a padding
    slot (carve#892).
 
-   NOT YET RECONCILED. The interior of an attribute block (`opt_ws`,
-   `attribute_list`) still spells inline padding `whitespace`. It predates
-   this clause and is inline by the rule above, so it is a divergence from it
-   rather than an exception to it. It is pinned by corpus 252, which all three
-   engines produce, so correcting it is a behavior change and is tracked
-   separately (carve#901).
+   RECONCILED SINCE, and it is the one that reversed goldens. The INLINE
+   attribute block's interior spelled its padding `whitespace` and was
+   corrected under carve#906; `attributes` now reads `attr_pad = {space}`
+   and `attribute_list` separates with `space+`. Unlike the table cells
+   below, this one WAS observable: corpus 252, 252-2 and 252-3 pinned the
+   tab forms and all three engines produced them, so the three documents
+   were rewritten to the narrowed answer rather than added to. The
+   block-attribute LINE deliberately did not move with it - see THE INLINE
+   INTERIOR IS SPACE-ONLY beside `attributes` in PART 4 for why a
+   continuation line's leading run is indentation rather than padding.
 
    RECONCILED SINCE. The five table-cell productions (`delimiter_cell`,
    `header_cell`, `data_cell`, `rowspan_marker`, `colspan_marker`) spelled
@@ -3335,8 +3388,11 @@ EOF = (* end of file *) ;
       `{...}` is classified by its content:
         - yields at least one attribute (`[text]{.c}`) -> span with those
           attributes.
-        - empty or whitespace-only (`[text]{}`, `[text]{ }`) -> a valid EMPTY
-          block: a bare `<span>text</span>`. Both reference impls agree, even
+        - empty or SPACE-only (`[text]{}`, `[text]{ }`) -> a valid EMPTY
+          block: a bare `<span>text</span>`. A TAB inside it is not padding
+          and the block is unrecognized (carve#906, the A7 position of THE
+          INLINE INTERIOR IS SPACE-ONLY in PART 4). Both reference impls
+          agree on the space form, even
           though the bare `attribute_list` production nominally needs >= 1
           attribute; the empty block is a blessed exception so a
           default-attribute processor can target the span.

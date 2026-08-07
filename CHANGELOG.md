@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 4: the inline attribute-block interior is space-only, the
+  block-attribute line is not** (carve#906). Every whitespace slot of an INLINE
+  attribute block takes `space`: the run after `{`, the run between two
+  attributes, the run before `}`, the boundary after an unquoted value, and the
+  blessed empty block `{ }`. All five sit after the first non-whitespace
+  character of their line, where a tab is not syntax, so a tab at any of them
+  leaves the block unrecognized and its braces showing.
+
+  The block-attribute LINE keeps `whitespace` at its three slots. It is the one
+  construct whose interior can hold a leading indentation run - after a
+  continuation, the next line's leading whitespace IS indentation - so the
+  distinction is positional rather than per-construct.
+
+  This reverses pinned goldens: corpus 252, 252-2 and 252-3 asserted the tab
+  forms and all three engines produce them. They are rewritten to the narrowed
+  answer rather than deleted, so the shapes stay pinned as literal output.
+  carve-js#836, carve-php#985 and carve-rs#757 track the engine work.
+
 - **PART 3: an autolink body admits non-ASCII and excludes format characters**
   (carve#844, carve#860). `url_char` was an enumerated ASCII set, so read as
   written an autolink admitted no non-ASCII at all. Outside ASCII it now admits

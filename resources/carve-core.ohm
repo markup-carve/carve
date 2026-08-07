@@ -404,20 +404,26 @@ CarveCore {
 
   // --- Attribute block (PART 4, strict identifiers) ------------------------
   attrs      = "{" attrSp* attrItem (attrSp+ attrItem)* attrSp* "}"
-  emptyAttrs = "{" (" " | "\t")* "}"
-  // A TAB, TOO. `opt_ws` and the separator inside `attribute_list` are
-  // spelled `whitespace` in grammar.ebnf, which is a space or a tab -
-  // deliberately, and unlike a marker separator, which is a literal space.
-  // This file said `" " | "\n"`, so the two normative files answered one
-  // production two ways; all three engines follow the EBNF (carve#878).
-  // NO NEWLINE. `attributes` pads and separates with `opt_ws = {whitespace}`,
-  // which grammar.ebnf annotates "spaces/tabs only, no line breaks". The
-  // line-spanning form is a different production: `block_attributes` uses
+  // SPACE ONLY, the A7 position of PART 4's THE INLINE INTERIOR IS SPACE-ONLY.
+  // This ran on `(" " | "\t")*` until carve#906, and it is a SECOND site rather
+  // than a use of `attrSp`: narrowing `attrSp` alone leaves `[x]{<TAB>}` a valid
+  // empty block, so the two have to move together or corpus 252-3 survives the
+  // change it is supposed to pin.
+  emptyAttrs = "{" " "* "}"
+  // NO TAB. `attributes` pads with `attr_pad = {space}` in grammar.ebnf and
+  // `attribute_list` separates with `space+` (carve#906). Every one of those
+  // slots sits after the first non-whitespace character of its line, where a
+  // tab is not syntax - PART 7's rule covers them with no exception to write.
+  // This rule said `" " | "\t"` for one day, under the reading carve#901 then
+  // corrected; before that it said `" " | "\n"`, which was wrong the other way.
+  // The block-attribute LINE below deliberately keeps the tab AND the newline.
+  // NO NEWLINE EITHER, for a different reason. The line-spanning form is a
+  // different production: `block_attributes` uses
   // `attr_separator = (whitespace | continuation), opt_ws`, and `continuation`
   // is where a newline is admitted. This file owns the INLINE layer, so a
   // newline here made `*x*{.a\n.b}` an attribute block in the oracle alone -
   // all three engines leave it literal text (carve#878).
-  attrSp     = " " | "\t"
+  attrSp     = " "
   // The LINE-SPANNING form, `block_attributes` in grammar.ebnf: its separator
   // is `attr_separator = (whitespace | continuation), opt_ws`, and
   // `continuation` is a single line break. Only a standalone attribute LINE

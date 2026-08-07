@@ -1,0 +1,33 @@
+The inline attribute interior is space-only, the attribute line is not
+
+```
+*x*{.a .b}
+
+*y*{ .c}
+
+*z*{.d }
+
+[w]{ }
+.
+<p><strong class="a b">x</strong></p>
+<p><strong class="c">y</strong></p>
+<p><strong class="d">z</strong></p>
+<p><span>w</span></p>
+```
+
+```
+{	.a	.b	}
+
+paragraph
+.
+<p class="a b">paragraph</p>
+```
+
+```
+{.a
+	.b}
+
+paragraph
+.
+<p class="a b">paragraph</p>
+```
