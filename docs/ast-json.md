@@ -75,6 +75,17 @@ added-alongside rule - the same one that lets a resolved footnote reference keep
 its label and gain its number - not a retreat from pre-resolve: the authored
 construct is `ref` and `rawRef`, and it survives intact.
 
+**A nested link and an autolink stay nodes** (§3a). "Links never nest" is a
+rendering rule - an anchor may not contain another anchor - so it binds the
+renderer and not the encoder. A `link` or an `autolink` inside a link's label is
+published as the node the author wrote, and every render target unwraps it at
+the render seam, exactly as it already does for a `heading_ref`. The node
+carries **no** non-anchor flag: a consumer that renders an anchor infers it from
+context, the way it already does for the nested `heading_ref`. So a consumer
+walking a link's `children` must expect a `link` or an `autolink` there and must
+not emit a nested anchor for it. Rendered output does not move; what moves is
+what a consumer of the tree receives.
+
 It works this way because a consumer should not have to resolve references
 itself. The definition does survive the trip: **§10 gives `[label]: url` its own
 `link_reference_definition` node**, hoisted to the document, so `/start` is not

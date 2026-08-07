@@ -92,7 +92,7 @@ the command-line and editor behavior stay aligned.
 | ---- | ------- |
 | `duplicate-heading-id` | two headings producing the same id, either by slug collision or repeated explicit `{#id}` |
 | `broken-crossref` | a `</#id>` cross-reference with no matching heading or numbered caption id |
-| `unresolved-reference-link` | a `[text][label]` or `[text][]` reference link with no matching link definition or implicit heading target |
+| `unresolved-reference-link` | a `[text][label]` or `[text][]` reference link with no matching link definition; only the collapsed `[text][]` also falls back to the implicit heading target, so an explicit label that names no definition is unresolved even when a heading carries that text (PART 9R R1) |
 | `unresolved-footnote` | a `[^label]` footnote reference with no matching `[^label]: ...` definition |
 | `duplicate-footnote-definition` | a repeated `[^label]: ...` definition; the first definition wins and later ones are ignored |
 | `unused-footnote-definition` | a footnote definition that is never referenced and is omitted from rendered output |
