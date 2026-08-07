@@ -1,0 +1,29 @@
+A list marker at the content column inside an open fence
+
+````
+- ```
+  - x
+  ```
+.
+<ul>
+  <li>
+    <pre><code>- x
+</code></pre>
+  </li>
+</ul>
+````
+
+````
+- a
+
+  ```
+  - x
+  ```
+.
+<ul>
+  <li>a
+    <pre><code>- x
+</code></pre>
+  </li>
+</ul>
+````
