@@ -244,7 +244,7 @@ function fixtureRoot() {
   return '/tmp'
 }
 
-function runScenario({ humanCommit, branchAfterBump = false, botExtraFile = false }) {
+function runScenario({ humanCommit, branchAfterBump = false, botExtraFile = false, openPr = true }) {
   const root = mkdtempSync(join(fixtureRoot(), 'carve-bump-'))
   const carve = buildCarveRemote(root)
   const downstreamBare = buildDownstream(root, carve, { humanCommit, branchAfterBump, botExtraFile })
@@ -253,7 +253,7 @@ function runScenario({ humanCommit, branchAfterBump = false, botExtraFile = fals
   const log = join(root, 'gh.log')
   const prState = join(root, 'pr-open.txt')
   writeFileSync(log, '')
-  writeFileSync(prState, '723\n')
+  writeFileSync(prState, openPr ? '723\n' : '')
   writeGhStub(binDir, { downstreamBare, log, prState })
   writeFileSync(
     join(binDir, 'compare.txt'),
@@ -382,6 +382,36 @@ test('a bot branch that also changes files outside the submodule is left open', 
  * whose branch already contains main: the merge is a no-op, so the exit falls
  * through to the guard itself.
  */
+/*
+ * Human commits ahead of `main` are not by themselves live work. A commit stays
+ * ahead by AUTHOR whatever became of its CONTENT, so a squash-merged or closed
+ * bump PR leaves its branch reading as human work forever - and the preserve
+ * path then merges `main` into a branch holding the same content in a different
+ * shape, and aborts on the conflict, on every run, until a human resets it. It
+ * did that on tree-sitter-carve for eight commits (carve#971), and reported it
+ * only by commenting on a PR that was not open.
+ *
+ * With no open PR the branch has no reviewer and no route to `main`, so the
+ * normal recreate-from-main path is the right one. `humanCommit` is what makes
+ * this scenario prove something: without the open-PR gate it takes the preserve
+ * path, which is the wedge.
+ */
+test('a branch with human commits but no open PR is abandoned, not preserved', () => {
+  const { status, output, calls } = runScenario({ humanCommit: true, openPr: false })
+
+  assert.equal(status, 0, `the skip path should exit 0\n${output}`)
+  assert.match(
+    output,
+    /carries 1 non-workflow commit\(s\) but has no open PR -> abandoned, recreating from main/,
+    `the branch was not recognised as abandoned\n${output}`,
+  )
+  assert.doesNotMatch(
+    output,
+    /-> preserving/,
+    `the preserve path ran for a branch nobody has open - this is the wedge in carve#971\ngh calls:\n${calls}\noutput:\n${output}`,
+  )
+})
+
 test('a human bump PR that is already up to date is left open, not closed', () => {
   const { status, output, calls, prStillOpen } = runScenario({
     humanCommit: true,

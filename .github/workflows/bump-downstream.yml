@@ -179,8 +179,29 @@ jobs:
             done <<< "$ahead"
           fi
 
+          # AND an open PR, which is what the heading above says and what the
+          # identity scan alone cannot tell. Commits stay ahead of `main` by
+          # AUTHOR no matter what became of their CONTENT, so once a bump PR is
+          # SQUASH-MERGED or closed its branch reads as human work forever: every
+          # later run takes the preserve path, merges `main` into a branch that
+          # already has the same content in a different shape, and aborts on the
+          # conflict. Nothing clears that but a human resetting the branch, and
+          # the abort's only reader-facing report is a comment on a PR that by
+          # definition is not open -- so it fails silently. It did, on
+          # tree-sitter-carve, for eight commits (carve#971).
+          #
+          # The two states are not the same. With a PR open somebody is working
+          # on the branch, refusing to force-push is right, and the comment
+          # reaches them. With no PR open the branch is abandoned: no reviewer,
+          # no comment target, and no route by which its commits reach `main`.
+          # Preserving it buys nothing and wedges every future bump.
+          open_pr="$(gh pr list --repo "$REPO" --head automation/bump-spec --state open --json number --jq '.[0].number // empty')"
+
           preserve=""
-          if [ "$foreign" -gt 0 ]; then
+          if [ "$foreign" -gt 0 ] && [ -z "$open_pr" ]; then
+            echo "automation/bump-spec on $REPO carries $foreign non-workflow commit(s) but has no open PR -> abandoned, recreating from main"
+          fi
+          if [ "$foreign" -gt 0 ] && [ -n "$open_pr" ]; then
             preserve=1
             echo "automation/bump-spec on $REPO carries $foreign non-workflow commit(s) -> preserving"
             # Need real history to merge: restore the full refspec and deepen.
@@ -195,10 +216,10 @@ jobs:
               conflict_msg="Bump aborted for \`$REPO\`: merging \`main\` into \`automation/bump-spec\` conflicts. The branch carries $foreign human commit(s), so this workflow will not force-push over them. Resolve the conflict on the branch, then re-run."
               echo "::error::$conflict_msg"
               echo "$conflict_msg" >> "$GITHUB_STEP_SUMMARY"
-              pr="$(gh pr list --repo "$REPO" --head automation/bump-spec --state open --json number --jq '.[0].number // empty')"
-              if [ -n "$pr" ]; then
-                gh pr comment "$pr" --repo "$REPO" --body "$conflict_msg" 2>/dev/null || true
-              fi
+              # `$open_pr` is non-empty here: it is what selected this path, so
+              # the comment always has somewhere to land. Before the gate above
+              # it did not, and this was the abort with no reader.
+              gh pr comment "$open_pr" --repo "$REPO" --body "$conflict_msg" 2>/dev/null || true
               exit 1
             fi
           else
