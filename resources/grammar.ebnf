@@ -5560,6 +5560,114 @@ EOF = (* end of file *) ;
       in the AST, not licence to skip the rule -- `escaped_text` is in the
       inline vocabulary (docs/profiles.md).
 
+   8a. THE MARKDOWN TARGET'S ESCAPING NARROWS ON THE LINE -- NORMATIVE. M1 is
+      not one rule across the metacharacter set. It splits three ways:
+
+      M1a THE ASTERISK KEEPS M1 UNCONDITIONALLY. A literal `*` reaching this
+          target in a text node is escaped, whatever else stands on the line.
+      M1b `_`, `#` AND `[` ARE ESCAPED IF AND ONLY IF the character is
+          ADJACENT ON THE EMITTED LINE to an UNESCAPED DELIMITER OF THE SAME
+          CHARACTER -- that is, the position immediately before it or
+          immediately after it in the line the writer is building holds that
+          same character, put there by the writer as MARKUP and not behind a
+          backslash. Adjacent -> escape it. Not adjacent -> emit it bare.
+      M1c NOTHING ELSE NARROWS. Every other Markdown metacharacter keeps M1
+          as written, and M2 and M3 are untouched by this clause.
+
+      THE FINDING IS §3'S, ONE TARGET OUT. §3 records, for the canonical
+      writer, that "whether a character is significant depends on the line,
+      not on the character", and §4 is that section's answer to it. M1 was the
+      opposite choice, and a deliberate one: §2's test is answered by the
+      Carve parser, this target has no Markdown parser to hand, and a
+      character table was what remained. But §3's finding is about lines and
+      characters, not about which writer is asking. The Markdown writer builds
+      a line too, and what stands on that line is what decides whether a bare
+      metacharacter is read as markup downstream. So the test here is stated
+      over the EMITTED LINE, as §3 says it has to be, and M1b is this
+      section's §4.
+
+      THE ASTERISK DIFFERS IN KIND, NOT IN DEGREE, which is what M1a is for.
+      This writer emits `*` as an emphasis delimiter. So the asterisk is not a
+      character that MIGHT meet markup on the line; it is the character the
+      line's markup is made of, and a collision with it is the ordinary case
+      rather than the corner one.
+
+      A document whose emphasis contains two literal asterisks is written
+      under M1 as
+
+        *\*\**
+
+      A narrowing that weighs the delimiter runs in the block sees one
+      four-character run flanking nothing, and drops both escapes:
+
+        ****
+
+      Through a CommonMark reader those are not two spellings of one
+      document:
+
+        *\*\**  ->  <p><em>**</em></p>
+        ****    ->  <hr />
+
+      Emphasis containing two asterisks is published as a thematic break. The
+      run being weighed was partly the writer's OWN delimiters, which the
+      escaped literals had merged into, and nothing about the character said
+      so. That is a property of this target's output read by this target's
+      consumers, so it holds for any implementation that narrows the asterisk,
+      whichever one writes it first (carve#970).
+
+      M1b would hold this document on its own terms -- both literals are
+      adjacent to a delimiter the writer wrote. M1a is stated anyway, and it
+      is PERMANENT rather than a fix deferred: for `*` the adjacency is not an
+      accident of one document but the shape of the target, and a condition
+      that holds for every document of a construct is better spelled as an
+      exemption than rediscovered per document. It lapses only if this writer
+      stops spelling emphasis with `*`.
+
+      WHY ADJACENCY IS THE TEST THAT OWES NO PER-READER ARGUMENT. This target
+      answers to a re-parser Carve does not control, and there are several of
+      them -- CommonMark, GFM, markdown-it with typographer, pandoc. That is
+      why M1 was blunt, and the reason does not go away: an escape that
+      protects nothing under one of them may protect something under another,
+      so dropping one is an argument owed once per reader. The adjacency case
+      owes none. Every one of those readers resolves a delimiter by RUN
+      LENGTH, so an escape sitting next to a live delimiter of the same
+      character is holding a run boundary apart under all of them at once.
+      M1b keeps exactly those escapes, and that is why the minimum is stated
+      at this width and not another.
+
+      THE BOUNDARY IS THE CLAUSE, NOT A FLOOR. M1b is written as an
+      if-and-only-if on purpose. An escape it drops is dropped and an escape
+      it keeps is kept; it is not a minimum an implementation may build a
+      wider narrowing on top of, and it is not a permission one engine may
+      take up before another. Three engines implement this clause, and a
+      permissive reading of it yields three outputs -- which is the failure
+      this question came out of, not a latitude worth preserving.
+
+      SO A WIDER NARROWING IS NOT AUTHORIZED HERE. Not for a fourth
+      character, and not for a laxer test on these three. Anything further has
+      to be justified against the standard this clause was written to: state
+      it over the EMITTED LINE, and show it survives a case where the writer's
+      own output supplies the collision. Until that argument is made and
+      written down here, M1 stands unchanged for everything M1b does not name.
+
+      M2 IS WHY A LINE-LEVEL TEST REACHES WHERE §2 NEEDS A PARSER. M1 governs
+      a character that reached the writer inside a TEXT node -- one the Carve
+      grammar did not read as an opener and the author did not mark. A
+      character the author DID escape is an `escaped_text` node, and M2 emits
+      it AS AN ESCAPE whatever the character, untouched by anything above. So
+      a document that MEANT `[a](b)` as text carries the author's escapes in
+      the tree and gets them back on this target under M2, and M1b never sees
+      it. That does not make the two grammars agree and is not claimed to; it
+      takes out of the question every case where the author said which reading
+      they meant, which is where guessing wrong costs the most.
+
+      ALL THREE ENGINES LAND IT IN ONE RELEASE. The clause is what the engines
+      implement, and it moves the bytes of every document carrying one of
+      these three characters. An engine that narrows on its own is diverging
+      from the other two rather than implementing this early: one doing so put
+      28 corpus documents into disagreement inside four hours, which is what
+      raised the question (carve#961, carve#970).
+
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE. A `hard_break` is emitted
       as a BACKSLASH before the newline, never as two trailing spaces.
 
