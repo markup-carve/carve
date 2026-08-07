@@ -37,6 +37,29 @@ For this repo in particular:
 - If you move the pinned `@markup-carve/carve` commit (`npm run bump-carve-pin`),
   pin only a commit merged to `carve-js` `main`, not a local branch build.
 
+## Every new guard ships with a demonstrated failure
+
+A check nobody has watched fail is not evidence of anything. This repo has found
+enough green checks that could not fail on their own subject
+(`markup-carve/carve#755` collects them) that the demonstration is now part of
+the change rather than a courtesy.
+
+- When you add or tighten a test, gate or assertion, break the thing it guards,
+  observe it fail, and put both in the PR body: the named mutation, and which
+  cases it broke. Then restore and confirm green again.
+- When you fix a defect, the same in reverse: put the old code back and say how
+  many of the new cases fail on it. A fix where that number is zero has not been
+  tested.
+- Say what the guard cannot see. A check is bounded by the inputs it is given,
+  and "no input we ever feed it would fail this" is the failure mode hardest to
+  spot in review.
+- A mutation that comes back green needs diagnosing before it is believed. A
+  no-op patch, a stale build and a genuinely unpinned rule all look the same.
+- Any runner that compares or conforms a population must state how large that
+  population should be and fail when it is smaller. Use `shortfall` and
+  `miscount` from `scripts/spec/participants.mjs` rather than printing a count
+  and trusting the reader to know the right one.
+
 ## Typical change order
 
 For a cross-cutting behavior change:

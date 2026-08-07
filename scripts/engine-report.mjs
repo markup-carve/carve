@@ -30,6 +30,7 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { resolve, dirname, basename } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToHtml } from '@markup-carve/carve'
+import { shortfall } from './spec/participants.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, '..', 'tests/corpus')
@@ -40,6 +41,31 @@ const slugs = readdirSync(corpusDir)
   .filter((f) => f.endsWith('.crv'))
   .map((f) => basename(f, '.crv'))
   .sort()
+
+/*
+ * HOW MANY DOCUMENTS THE PIN WAS ACTUALLY MEASURED AGAINST (carve#755,
+ * variant 2).
+ *
+ * Measured before this guard existed: with tests/corpus emptied and no line in
+ * `engine-pin-drift.txt`, `--check` printed `corpus pairs: 0` followed by
+ * `Drift matches what is declared.` and exited 0. The declared-drift ledger
+ * looks like it covers this - an empty corpus turns every declared line STALE
+ * and goes red - but that only holds while the ledger is non-empty, and an
+ * empty ledger is the state this repository is trying to reach. A gate that
+ * stops working once its subject is healthy is not a gate.
+ */
+const population = shortfall({
+  label: 'CORPUS',
+  actual: slugs.length,
+  atLeast: 100,
+  of: 'document(s)',
+  hint: 'Run `npm run corpus:build`, or check the checkout.',
+})
+if (population !== null) {
+  console.error(population)
+  console.error('Nothing below describes how the pinned build reads the corpus.')
+  process.exit(2)
+}
 
 const mismatches = []
 const threw = []

@@ -38,6 +38,7 @@ import { join } from 'node:path'
 import { carveToHtml } from '@markup-carve/carve'
 import { parse as specParse, Refuse } from './spec/layout.mjs'
 import { renderDoc as specRender } from './spec/html.mjs'
+import { miscount, shortfall } from './spec/participants.mjs'
 import { phpDir, rustDir } from './lib/engine-locations.mjs'
 
 const verbose = process.argv.includes('--verbose')
@@ -326,6 +327,36 @@ try {
     }
 
     if (verbose) console.log(`  ${doc.id}`)
+  }
+
+  /*
+   * HOW MANY DOCUMENTS THE MATRIX ACTUALLY PRODUCED (carve#755, variant 2).
+   *
+   * Measured before this guard existed: emptying HEADINGS left `documents()`
+   * yielding nothing, and the run printed `0 documents x 2 engines` followed by
+   * `no divergences` and exited 0. The engine guard above is the sibling check
+   * and does not cover this - a matrix with an empty dimension compares two
+   * real engines on nothing at all.
+   *
+   * Two different failures, so two checks. The floor catches a dimension that
+   * emptied; the exact count catches a `continue` in the loop above dropping
+   * cases the generator did produce. The expected value is the matrix's own
+   * dimensions, which is why it has to be read off the four lists rather than
+   * off `documents()` - a count compared against itself cannot fail.
+   */
+  const dimensions = HEADINGS.length * ATTRS.length * CONTAINERS.length * BODIES.length
+  const population =
+    shortfall({
+      label: 'MATRIX',
+      actual: count,
+      atLeast: 1,
+      of: 'document(s)',
+      hint: 'One of HEADINGS / ATTRS / CONTAINERS / BODIES is empty.',
+    }) ?? miscount({ label: 'MATRIX', actual: count, expected: dimensions, of: 'document(s)' })
+  if (population !== null) {
+    console.error(`\n${population}`)
+    console.error('No cross-engine claim below describes the matrix this script defines.')
+    process.exit(2)
   }
 
   const report = (title, rows, format) => {

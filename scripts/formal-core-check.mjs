@@ -42,6 +42,7 @@ import { parse, Refuse } from './spec/layout.mjs'
 import { renderDoc } from './spec/html.mjs'
 // Shared with tests/corpus.test.mjs so both gates agree on deliberate refusals.
 import { REFUSED_ALLOW } from './spec/refused-allow.mjs'
+import { miscount, shortfall } from './spec/participants.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repo = resolve(here, '..')
@@ -49,6 +50,32 @@ const corpusDir = resolve(repo, 'tests/corpus')
 const inputs = readdirSync(corpusDir)
   .filter((f) => f.endsWith('.crv'))
   .sort()
+
+/*
+ * HOW MANY DOCUMENTS THIS GATE ACTUALLY SAW (carve#755, variant 2).
+ *
+ * Measured before this guard existed: with tests/corpus emptied, this script
+ * printed `corpus inputs: 0 / conformant: 0 / DEFECTS: 0` and exited 0. A
+ * corpus that failed to build, a checkout without its fixtures, or a filter
+ * that stopped matching all read as a clean run of the executable spec.
+ *
+ * The floor is the shape of the population rather than its exact size, because
+ * the corpus is append-only and grows on most spec PRs. 100 is the same floor
+ * `scripts/ast-conformance.mjs` uses for the same reason: below it this is not
+ * the corpus this repository ships, whatever else it is.
+ */
+const population = shortfall({
+  label: 'CORPUS',
+  actual: inputs.length,
+  atLeast: 100,
+  of: 'document(s)',
+  hint: 'Run `npm run corpus:build`, or check the checkout.',
+})
+if (population !== null) {
+  console.error(population)
+  console.error('Nothing below describes the corpus this repository ships.')
+  process.exit(2)
+}
 
 const listMode = process.argv.includes('--list')
 const diffMode = process.argv.includes('--diff')
@@ -84,6 +111,24 @@ for (const f of inputs) {
   } else {
     diffs.push({ f, got, expected })
   }
+}
+
+/*
+ * And that every input landed in exactly one bucket. The floor above catches a
+ * corpus that is not there; this catches one that is there and is not being
+ * counted - a `continue` added to the loop, or a bucket that stops being
+ * appended to, would otherwise shrink the question silently rather than fail.
+ */
+const accounting = miscount({
+  label: 'BUCKETS',
+  actual: core + refused.length + diffs.length,
+  expected: inputs.length,
+  of: 'document(s)',
+})
+if (accounting !== null) {
+  console.error(accounting)
+  console.error('Some corpus documents were read and then counted nowhere.')
+  process.exit(2)
 }
 
 console.log(`\ncorpus inputs:               ${inputs.length}`)
