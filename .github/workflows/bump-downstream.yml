@@ -124,6 +124,11 @@ jobs:
           SUB: ${{ matrix.submodule }}
           TEST_CMD: ${{ matrix.test }}
           ALLOWLIST: ${{ matrix.allowlist }}
+          # Where the corpus is read from. An env var rather than an inline
+          # `${{ }}` expression so the script below contains no workflow
+          # templating at all and can be executed verbatim by
+          # tests/bump-downstream-early-exit.test.mjs against local fixtures.
+          CARVE_REMOTE: https://github.com/${{ github.repository }}.git
           # Optional: set the CODEX_API_KEY secret to let codex attempt the
           # implementation when a bump fails conformance. Dormant if unset.
           CODEX_API_KEY: ${{ secrets.CODEX_API_KEY }}
@@ -133,7 +138,7 @@ jobs:
           # Resolve carve's current main HEAD (not github.sha, which on a
           # manual dispatch would be the dispatched branch's tip). Always
           # converging on main also self-heals if main moved since the push.
-          CARVE_SHA="$(git ls-remote "https://github.com/${{ github.repository }}.git" refs/heads/main | cut -f1)"
+          CARVE_SHA="$(git ls-remote "$CARVE_REMOTE" refs/heads/main | cut -f1)"
           short="${CARVE_SHA:0:7}"
           echo "Bumping $REPO to carve main $short"
 
@@ -207,13 +212,59 @@ jobs:
           git -C "$SUB" checkout "$CARVE_SHA"
 
           if git diff --quiet -- "$SUB"; then
-            # Already at the target SHA. In the preserve path the merge above
-            # may still have produced a commit; pushing it keeps the open PR
-            # current instead of silently discarding it.
+            # SKIP: this repo's main already pins the target commit, so there
+            # is no bump to make and no conformance to run. That skip is the
+            # intended behavior and stays (carve#850).
+            #
+            # In the preserve path the merge above may still have produced a
+            # commit; pushing it keeps the open PR current instead of silently
+            # discarding it.
             if [ -n "$preserve" ] \
                && [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/automation/bump-spec)" ]; then
               git push origin automation/bump-spec
               echo "$REPO already pins carve $short; pushed the merge of main onto the open bump branch."
+              exit 0
+            fi
+
+            if [ -n "$preserve" ]; then
+              # Human commits sit on the branch. Nothing to bump, but the PR is
+              # NOT this workflow's to close - somebody is working on it.
+              echo "$REPO already pins carve $short; leaving the open bump PR alone ($foreign human commit(s) on the branch)."
+              exit 0
+            fi
+
+            # Nothing to bump AND nothing human on the branch, so any bump PR
+            # still open here was opened by an earlier run of this workflow and
+            # is now a no-op: the bump it carries arrived by another route.
+            # Leaving it open was the defect in carve#850 - this early exit used
+            # to `exit 0` and the orphan stayed forever, because every later run
+            # took this same path and said "nothing to do" again.
+            # markup-carve/carve-rs#723 had to be closed by hand for exactly
+            # that. It is not only clutter: once main moves the submodule
+            # forward, the orphan branch carries an OLDER sha, so merging it
+            # reverts the pin.
+            #
+            # "Written by this workflow" is not by itself "carries only a
+            # bump". With CODEX_API_KEY set, the codex attempt above commits
+            # implementation changes under the same bot identity, so a
+            # bot-authored branch can hold real work. Ask the API what the
+            # branch actually changes and close only when the answer is
+            # nothing outside the submodule; the compare needs no fetch, so
+            # the clone stays shallow and single-branch.
+            orphan="$(gh pr list --repo "$REPO" --head automation/bump-spec --state open --json number --jq '.[0].number // empty')"
+            other=""
+            if [ -n "$orphan" ]; then
+              other="$(gh api "repos/$REPO/compare/main...automation/bump-spec" \
+                --jq '.files[].filename' 2>/dev/null | grep -v "^$SUB\$" || true)"
+            fi
+            if [ -n "$orphan" ] && [ -n "$other" ]; then
+              echo "::warning::$REPO#$orphan is a no-op bump but its branch also changes $(echo "$other" | tr '\n' ' ')- leaving it open"
+              echo "$REPO already pins carve $short; left PR #$orphan open (it carries changes outside $SUB)."
+            elif [ -n "$orphan" ]; then
+              gh pr close "$orphan" --repo "$REPO" --delete-branch --comment \
+                "Closing: \`$REPO\` main already pins carve \`$short\`, so this bump arrived by another route and this PR is a no-op. The branch carries no commits from anyone but this workflow. A later corpus change will open a fresh bump PR." \
+                || echo "::warning::could not close the orphaned bump PR $REPO#$orphan"
+              echo "$REPO already pins carve $short; closed orphaned bump PR #$orphan."
             else
               echo "$REPO already pins carve $short; nothing to do."
             fi
