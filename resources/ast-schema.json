@@ -2770,7 +2770,7 @@
             "*",
             "_"
           ],
-          "description": "Thematic-break character AS AUTHORED (PART 11 section 6). Absent means the default `-`."
+          "description": "Thematic-break marker character AS AUTHORED (PART 11 section 6). Absent means the default `-`. The CHARACTER only: `***` and `*****` are one spelling and no run length is recorded (carve#1000)."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
