@@ -524,7 +524,15 @@ to remove it from a document; a failing document is forgiven only when removing
 that shape makes it satisfy both invariants, so a document that also fails for a
 second reason is reported rather than absorbed. Each entry carries a witness
 that must keep failing, so when the engine is fixed the gate goes red and the
-entry has to be deleted. One entry is declared today, `carve#1027`.
+entry has to be deleted. Two entries are declared today: `carve#1027`, an
+escaped space as the last column of a line, and `carve#1030`, a ragged table
+written back rectangular. Both are live in all three engines.
+
+The alphabet is the gate's reach, so extending it is how the gate grows rather
+than something to avoid. Both declared shapes were found by extending it, and
+the extension is also what made the gate able to fail: reverting the
+`carve-js#903` guard in the pinned writer leaves it green under the old
+alphabet and turns it red with 99 undeclared violations under the current one.
 
 The `--engines` mode does not gate yet. The three writers disagree on roughly
 one generated document in 17 (`carve#1028`); it is wired when that closes.

@@ -262,7 +262,7 @@ jobs:
       # The same generated sweep the per-PR job runs, ten times larger.
       #
       # ci.yml runs 2000 documents so a PR is not made to wait; this runs 20000,
-      # measured at 5s. Same fixed seed, so the per-PR set is a PREFIX of this
+      # measured at 6.3s. Same fixed seed, so the per-PR set is a PREFIX of this
       # one: a shape only this job reaches is genuinely a shape the cheaper run
       # cannot see, rather than a different lottery.
       #

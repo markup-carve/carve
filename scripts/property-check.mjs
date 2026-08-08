@@ -52,6 +52,14 @@ export const ATOMS = [
   '*b*', '/i/', '_u_', '~s~', '=h=', '{.cls}', '^[fn]', '@user', '#tag', ':name:',
   '- item', '# head', '> quote', '| a | b |', '::: note', ':::', '%% c', ':: term',
   '1. x', 'a) y', '$m$', '!img', '![a](/u)', '^ cap', '\\ ', '10\\ kg', '{^x^}', '{,y,}',
+  // Added when the sweep was gated. The six shapes carve#994 opened with were
+  // found by a different generator, and this alphabet reached NONE of them: it
+  // has no thematic-break spelling other than `---`, no definition line, no
+  // empty footnote body, no `+` attachment and no header cell. A gate whose
+  // alphabet cannot reach the shape class it is gating is decorative, and the
+  // way to find that out is to reintroduce a fixed defect and watch it stay
+  // green, which is what happened here before these six lines existed.
+  '***', '[a]: /u', '[^f]:', '| ~x~ |', '|= ~x~ |', '+ x',
 ]
 
 /**
@@ -72,29 +80,6 @@ export function generateDocuments({ count, seed }) {
   return Array.from({ length: count }, one)
 }
 
-/*
- * SHAPES THE WRITER IS KNOWN TO BREAK TODAY.
- *
- * The point of a declaration rather than a lowered bar: a generated sweep that
- * simply reported "15 failures" told a reader nothing about whether the number
- * had grown for a new reason, and a sweep whose alphabet was trimmed until it
- * came back clean would report nothing at all. So each known cause is named
- * once, with the ticket that owns it and a mechanical way to remove it from a
- * document, and EVERYTHING ELSE FAILS THE JOB.
- *
- * `without` must delete the shape and nothing else. A failing document is
- * attributed to an entry only when removing that entry's shape makes the
- * document satisfy both invariants - so a document that fails for a second
- * reason as well is never absorbed by the first, it is reported.
- *
- * Each entry is held to two assertions of its own, in `auditDeclarations`:
- *
- *   - its `witness` must STILL FAIL. When the engine fixes the shape, the
- *     declaration goes red and has to be deleted. A waiver that outlives its
- *     defect is how an allowlist becomes the thing being tested.
- *   - its `without` must leave `control` untouched, so an over-broad rewrite
- *     that quietly repairs unrelated documents cannot pass for an explanation.
- */
 /**
  * Apply a rewrite until it stops changing the document.
  *
@@ -121,6 +106,31 @@ export function untilStable(rewrite, src) {
   return current
 }
 
+/*
+ * SHAPES THE WRITER IS KNOWN TO BREAK TODAY.
+ *
+ * The point of a declaration rather than a lowered bar: a generated sweep that
+ * simply reported "38 failures" tells a reader nothing about whether the number
+ * grew for a new reason, and a sweep whose alphabet was trimmed until it came
+ * back clean would report nothing at all. So each known cause is named once,
+ * with the ticket that owns it and a mechanical way to remove it from a
+ * document, and EVERYTHING ELSE FAILS THE JOB.
+ *
+ * `without` must delete the shape and nothing else. A failing document is
+ * attributed to an entry only when removing that entry's shape makes the
+ * document satisfy both invariants - so a document that fails for a second
+ * reason as well is never absorbed by the first, it is reported.
+ *
+ * Each entry is held to three assertions of its own, in `auditDeclarations`:
+ *
+ *   - its `witness` must STILL FAIL. When the engine fixes the shape, the
+ *     declaration goes red and has to be deleted. A waiver that outlives its
+ *     defect is how an allowlist becomes the thing being tested.
+ *   - its `without` must actually remove its own witness, or it explains
+ *     nothing and forgives nothing while looking like it does.
+ *   - its `without` must leave `control` untouched, so an over-broad rewrite
+ *     that quietly repairs unrelated documents cannot pass for an explanation.
+ */
 export const DECLARED = [
   {
     id: 'trailing-nbsp',
@@ -139,7 +149,51 @@ export const DECLARED = [
     // itself escaped - `\\ ` is a literal backslash followed by a real space.
     without: (src) => untilStable((s) => s.replace(/(^|[^\\])\\ +$/gm, '$1'), src),
   },
+  {
+    id: 'ragged-table',
+    ticket: 'markup-carve/carve#1030',
+    what:
+      'a table whose rows do not all carry the same number of cells. The writer ' +
+      'aligns the pipes into a rectangle, which pads the short rows with cells the ' +
+      'source does not have, and those cells reach the rendered document. All three ' +
+      'engines emit the same bytes and all three are wrong. Which of the two ' +
+      'conforming spellings is canonical is unruled, which is why it is declared.',
+    witness: '| ~x~ |\n| a | b |\n',
+    control: '| a | b |\n| c | d |\n',
+    without: (src) => dropShortTableRows(src),
+  },
 ]
+
+/**
+ * Remove the rows that make a table ragged, and nothing else.
+ *
+ * A run of consecutive pipe lines is one table. Every row narrower than the
+ * widest in its own run is dropped, so what is left is rectangular and the shape
+ * is gone; a run that is already rectangular is returned untouched, which is
+ * what the entry's `control` asserts.
+ *
+ * @param {string} src
+ * @returns {string}
+ */
+function dropShortTableRows(src) {
+  const cells = (line) => line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').length
+  const lines = src.split('\n')
+  const out = []
+  for (let i = 0; i < lines.length; i++) {
+    if (!/^\s*\|/.test(lines[i])) {
+      out.push(lines[i])
+      continue
+    }
+    let end = i
+    while (end + 1 < lines.length && /^\s*\|/.test(lines[end + 1])) end++
+    const run = lines.slice(i, end + 1)
+    const widest = Math.max(...run.map(cells))
+    out.push(...run.filter((line) => cells(line) === widest))
+    i = end
+  }
+
+  return out.join('\n')
+}
 
 /**
  * Both PART 11 invariants over one document.
