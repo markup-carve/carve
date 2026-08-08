@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "exact": [{
+    "name": "ascii paragraph",
+    "source": "Hello",
+    "layout": {"version": 1, "encoding": "utf-8", "source": "Hello", "lineEndings": "none", "bom": false,
+      "nodes": [
+        {"path": "/children/0", "startByte": 0, "endByte": 5},
+        {"path": "/children/0/children/0", "startByte": 0, "endByte": 5}
+      ]}
+  }],
+  "sourceFacts": [
+    {"name": "utf8 bom and crlf", "source": "﻿- 😀\r\n", "lineEndings": "crlf", "bom": true},
+    {"name": "mixed endings", "source": "a\r\nb\nc\r", "lineEndings": "mixed", "bom": false},
+    {"name": "explicit continuation", "source": "- a\n+\n```sh\nx\n```\n", "lineEndings": "lf", "bom": false},
+    {"name": "marker-line fence", "source": "- ::: note\n  body\n  :::\n", "lineEndings": "lf", "bom": false},
+    {"name": "loose list", "source": "- a\n\n- b\n", "lineEndings": "lf", "bom": false},
+    {"name": "table padding and orphan span", "source": "| < | b |\n|---|---|\n", "lineEndings": "lf", "bom": false}
+  ]
+}

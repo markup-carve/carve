@@ -54,6 +54,18 @@ test('source layout is a separate closed versioned sidecar', () => {
   assert.equal(validate({ type: 'document', children: [], srcByteLength: 0, sourceLayout: {} }), false)
 })
 
+test('shared source-layout fixtures validate', () => {
+  const layoutSchema = JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-schema.json'), 'utf8'))
+  const validateLayout = new Ajv2020({ strict: true }).compile(layoutSchema)
+  const fixtures = JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-fixtures.json'), 'utf8'))
+  for (const fixture of fixtures.exact) assert.equal(validateLayout(fixture.layout), true, fixture.name)
+  for (const fixture of fixtures.sourceFacts) {
+    const layout = { version: 1, encoding: 'utf-8', source: fixture.source,
+      lineEndings: fixture.lineEndings, bom: fixture.bom, nodes: [] }
+    assert.equal(validateLayout(layout), true, fixture.name)
+  }
+})
+
 /** The reference build: the package pin, or a checkout named by CARVE_JS_DIR. */
 const jsDir = process.env.CARVE_JS_DIR
 const lib = await import(jsDir ? resolve(jsDir, 'dist/index.js') : '@markup-carve/carve')
