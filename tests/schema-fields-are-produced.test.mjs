@@ -56,6 +56,11 @@ const OPT_IN_ONLY = {
   'citation_group.*': 'citations (Tier-2): the group wrapper and the integral `+` form',
 }
 
+/** Fields permitted by the schema before the corresponding engine rollout. */
+const ENGINE_ROLLOUT_PENDING = {
+  'thematic_break.marker': 'markup-carve/carve#976: engine support lands before the final pin bump',
+}
+
 /**
  * `attrs` and `pos` are shared `$ref`s every node may carry. They are not a
  * promise an individual type makes, and the corpus attaches attributes to about
@@ -162,7 +167,9 @@ test('every schema field is produced by a corpus document, or named as opt-in', 
     `schema walk found only ${declared.byType.size} types with fields`,
   )
 
-  const orphaned = orphanedPromises().filter((key) => !(key in OPT_IN_ONLY))
+  const orphaned = orphanedPromises().filter(
+    (key) => !(key in OPT_IN_ONLY) && !(key in ENGINE_ROLLOUT_PENDING),
+  )
 
   assert.deepEqual(
     orphaned,
@@ -188,6 +195,20 @@ test('every opt-in exemption is still needed', () => {
     [],
     `OPT_IN_ONLY names promise(s) the corpus now keeps: ${stale.join(', ')}. ` +
       'Remove the entry - the exemption is hiding a field that is covered.',
+  )
+})
+
+test('every pending engine-rollout exemption is still needed', () => {
+  const orphans = new Set(orphanedPromises())
+  const stale = Object.keys(ENGINE_ROLLOUT_PENDING)
+    .filter((key) => !orphans.has(key))
+    .sort()
+
+  assert.deepEqual(
+    stale,
+    [],
+    `ENGINE_ROLLOUT_PENDING names promise(s) the pinned engine now keeps: ${stale.join(', ')}. ` +
+      'Remove the entry - the engine rollout is complete.',
   )
 })
 

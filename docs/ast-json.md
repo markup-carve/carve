@@ -56,6 +56,11 @@ where that was.
 `children`. An implementation whose internals differ maps on the way out; it does
 not export its internals, and it does not invent a synonym.
 
+Author-choice fields preserve a spelling when it differs from the default.
+`list.bulletChar` records `*` while absence means `-`; likewise,
+`thematic_break.marker` records `*` or `_` while absence means `-`. A writer
+reproduces the recorded character and uses the default when the field is absent.
+
 **The tree is pre-resolve** (§3a). It records what the author wrote, not what the
 document resolves to. `[getting started][]` publishes a `link` carrying `ref` and
 the `rawRef` source whether or not anything defines the label. Both stages
