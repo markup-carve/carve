@@ -23,6 +23,94 @@ A collapsed reference reaches a heading by the heading's rendered text
 ```
 
 ```
+# an /em/ heading
+
+[an /em/ heading][]
+.
+<section id="an-em-heading">
+  <h1>an <em>em</em> heading</h1>
+  <p><a href="#an-em-heading">an <em>em</em> heading</a></p>
+</section>
+```
+
+```
+# a\_b heading
+
+[a\_b heading][]
+.
+<section id="a-b-heading">
+  <h1>a_b heading</h1>
+  <p><a href="#a-b-heading">a_b heading</a></p>
+</section>
+```
+
+```
+# a [x](/y) b
+
+[a [x](/y) b][]
+.
+<section id="a-x-b">
+  <h1>a <a href="/y">x</a> b</h1>
+  <p><a href="#a-x-b">a x b</a></p>
+</section>
+```
+
+```
+# it's a heading
+
+[it's a heading][]
+.
+<section id="it-s-a-heading">
+  <h1>it’s a heading</h1>
+  <p><a href="#it-s-a-heading">it’s a heading</a></p>
+</section>
+```
+
+```
+# a !`Cat` b
+
+[a !`Cat` b][]
+.
+<section id="a-Cat-b">
+  <h1>a Cat b</h1>
+  <p><a href="#a-Cat-b">a Cat b</a></p>
+</section>
+```
+
+```
+# a :smile: b
+
+[a :smile: b][]
+.
+<section id="a-b">
+  <h1>a :smile: b</h1>
+  <p><a href="#a-b">a :smile: b</a></p>
+</section>
+```
+
+```
+# a :smile: b
+
+[a b][]
+.
+<section id="a-b">
+  <h1>a :smile: b</h1>
+  <p><a href="#a-b">a b</a></p>
+</section>
+```
+
+```
+# a :smile: /b/ c
+
+[a :smile: /b/ c][]
+.
+<section id="a-b-c">
+  <h1>a :smile: <em>b</em> c</h1>
+  <p><a href="#a-b-c">a :smile: <em>b</em> c</a></p>
+</section>
+```
+
+```
 [*bold* heading]: /x
 
 # *bold* heading

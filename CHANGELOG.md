@@ -481,6 +481,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The executable spec slugs a heading id from its RENDERED text, not its
+  source** (markup-carve/carve#1011, syntax.md §4.1 step 1). The oracle took the
+  heading's source with `</#id>` runs deleted, which reaches the right answer for
+  most headings by accident - the slug replaces each run of non-alphanumeric
+  ASCII with a `-`, so `*`, `` ` `` and `/` fall out on their own. What a source
+  string cannot do is tell a delimiter from content: `# a [x](/y) b` slugged as
+  `a-x-y-b`, carrying a link DESTINATION into the id, and `# a :smile: b` slugged
+  as `a-smile-b`, carrying a shortcode name the rendered document need not print
+  at all. Step 1 excludes both already. The derivation now runs over the rendered
+  inline output with the PART 9R sentinels and the symbols removed, so it needs
+  no list of delimiters, and reverses smart typography to ASCII the way step 1
+  says (`# it's a heading` stays `it-s-a-heading`).
+
+  The IMPLICIT-REFERENCE INDEX takes the same derivation, on both sides. It is
+  keyed by the same rendered plain text, so a heading that excludes the shortcode
+  from its id is keyed `a b` and reachable by that spelling: keying the id one
+  way and the index the other left `# a :smile: b` reachable by
+  `[a :smile: b][]` and not by `[a b][]`, where all three engines resolve both.
+  Corpus rows added for every shape (PART 9R R1's section grew from three
+  documents to eleven).
+
 - **Restored nine regions of `resources/grammar.ebnf` that a stale-copy merge
   removed.** markup-carve/carve#525 rewrote the grammar from an out-of-date
   working copy; its merge-base was current, so git recorded ordinary deletions

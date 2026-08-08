@@ -1,5 +1,3 @@
-[*bold* heading]: /x
+# an /em/ heading
 
-# *bold* heading
-
-[*bold* heading][]
+[an /em/ heading][]
