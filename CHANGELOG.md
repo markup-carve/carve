@@ -493,6 +493,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Adjacent mergeable blocks in a tight attached run stay separate.** The
+  canonical writer retains `+` from the first sequence boundary that would
+  otherwise collapse two blocks, without changing isolated block openers.
+
 - **Canonical formatting preserves ragged table rows.** A writer emits exactly
   the cells each row carries instead of padding short rows to the widest row;
   when a header delimiter is needed, its width comes from the header row.
