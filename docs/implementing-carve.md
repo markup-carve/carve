@@ -58,6 +58,40 @@ A new parser only needs to:
 2. Produce HTML.
 3. Compare against the paired `.html`, normalizing trailing whitespace.
 
+## Renderer architecture
+
+The executable spec in this repository is an oracle, not a recommended engine
+architecture. Its sentinel-based passes are allowed because they run against the
+trusted corpus and make byte comparisons easy. That trust bounds the security
+argument; it does not make the oracle maintenance-free. The oracle can still
+drift from the engines when a rule is copied into another local string pass.
+
+Production engines should resolve document-level semantics on the tree before
+serializing HTML:
+
+1. Parse block and inline structure.
+2. Collect definitions and generated ids.
+3. Resolve references, footnotes, cross-references, caption numbers, and
+   abbreviation applications into tree state.
+4. Render the resolved tree to the requested target.
+
+Avoid rendering temporary HTML and then rewriting it with string replacements.
+That style is acceptable in the oracle, but production renderers should prefer
+semantic nodes and target-specific serializers.
+
+For example, a paragraph that resolves to a single image with a caption should
+be represented internally as block-level image or figure state before
+serialization. The resolved state can then render directly as `<figure>` /
+`<figcaption>` on HTML, or as the target's own block-image form elsewhere.
+
+The same resolved tree should feed HTML, Markdown, plain text, ANSI, and static
+HTML renderers. Target-specific renderers may choose different output shapes,
+but they should not reimplement reference and caption resolution separately.
+
+Keeping the oracle's current shape is a deliberate maintenance cost, not an
+exemption from the same class of drift production engines avoid by resolving
+tree state first.
+
 ## Getting your project into the org
 
 The org is curated, and the entry point is an issue - not a surprise transfer
