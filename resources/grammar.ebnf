@@ -5584,9 +5584,36 @@ EOF = (* end of file *) ;
 
    6. WHAT IS NOT THE WRITER'S JOB. `fmt` does not re-wrap prose, reorder
       attributes, or respell a construct to a synonym (`*` vs `-` bullets,
-      fence length, ordered-list dialect). Those are the author's choices and
-      the AST records them; changing one would satisfy §1 while still
-      surprising the author.
+      ordered-list dialect). Those are the author's choices and the AST records
+      them; changing one would satisfy §1 while still surprising the author.
+
+      FENCE LENGTH WAS A THIRD EXAMPLE HERE AND IS NOT ONE (carve#1000). It is
+      removed rather than implemented, on this section's own second half: a
+      spelling is the author's to keep BECAUSE THE AST RECORDS IT, and
+      `code_block` records no fence at all (PART 12 §3). Neither the length of
+      the run nor the character it is made of survives the tree, so
+
+        ```js        all three publish the SAME node, and the writer
+        `````js      has nothing to reproduce
+        ~~~js
+
+      That is §6a's objection to the thematic break, reached one construct over:
+      a rule that cannot be applied leaves the question open rather than
+      answering it. The difference between the two is only that one was noticed.
+
+      THE WRITER COMPUTES THE WIDTH IT NEEDS, which is why removing the example
+      costs no document. A fence is widened to clear the longest fence-character
+      run in its content and narrowed when nothing requires the extra width, and
+      §1 holds through both: content carrying a three-backtick run keeps a
+      four-backtick opener, while plain content under a four-backtick opener
+      comes back as three. Measured in all three engines, and the narrowing row
+      is the one that matters -- it is the behavior this section forbade in
+      words and every engine performed, with the round trip intact through it.
+
+      So the mention was decorative. Had the writer instead relied on the
+      AUTHOR's length, removing it would have broken every document whose
+      content contains its own fence character, and the example would have been
+      load-bearing by accident rather than by design.
 
       NESTED BOLD ITALIC joins that list, and needed the AST to catch up before
       it could. `/*x*/` is a single production (`bold_italic`, PART 3) while
@@ -5632,6 +5659,14 @@ EOF = (* end of file *) ;
       carve#976. When the marker reaches the AST, §6 governs again and this
       clause is removed with the field that supersedes it -- so pinning `---`
       today forecloses nothing.
+
+      THE FIELD CARRIES THE MARKER CHARACTER, NOT THE RUN LENGTH (carve#1000).
+      `***` and `*****` are one spelling for this purpose, and both come back
+      as `***` -- the three-character width this clause already pins for `---`,
+      applied to whichever character the field names. The argument for
+      recording a length was §6's own mention of FENCE length, by analogy; that
+      mention has been removed as unimplemented, so the analogy points at
+      nothing and no construct's run length is recorded anywhere.
 
    6b. A FRONTMATTER OPENER IS WRITTEN `---yaml` -- NORMATIVE. The canonical
       writer spells the format token on the opening delimiter for EVERY
