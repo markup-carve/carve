@@ -493,6 +493,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Canonical formatting preserves ragged table rows.** A writer emits exactly
+  the cells each row carries instead of padding short rows to the widest row;
+  when a header delimiter is needed, its width comes from the header row.
+
 - **The executable spec slugs a heading id from its RENDERED text, not its
   source** (markup-carve/carve#1011, syntax.md §4.1 step 1). The oracle took the
   heading's source with `</#id>` runs deleted, which reaches the right answer for

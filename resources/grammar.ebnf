@@ -6235,6 +6235,21 @@ EOF = (* end of file *) ;
       carve-php#702 item 8 was filed against the old reading and resolved to
       no change once the contradiction was untangled. (carve#605)
 
+  10b. A TABLE ROW KEEPS ITS OWN CELL COUNT -- NORMATIVE. The canonical
+      writer emits exactly the cells the row carries. It MAY align the padding
+      of cells that exist, but MUST NOT append empty cells to make every row as
+      wide as the widest row in the table. A missing trailing cell is not an
+      empty cell: adding one changes both the re-parsed tree and the rendered
+      table, so §1a makes rectangular alignment yield.
+
+      Where a delimiter row is required to promote the first row to a header,
+      that delimiter carries exactly one cell for each cell in the HEADER ROW,
+      not one for each column reached by a wider body row. Its job is to mark
+      that row as a header; extending it to the table width both manufactures
+      header cells and can stop the delimiter from matching the row it belongs
+      to. Native `=` header markers remain preferred wherever they can express
+      the header, including when a later body row is wider. (carve#1030)
+
   11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE. A resolved
       cross-reference is emitted as a Markdown link to the target heading's id,
       and the target heading gains an explicit `{#id}` suffix. Both halves are

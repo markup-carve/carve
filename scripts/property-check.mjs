@@ -149,51 +149,7 @@ export const DECLARED = [
     // itself escaped - `\\ ` is a literal backslash followed by a real space.
     without: (src) => untilStable((s) => s.replace(/(^|[^\\])\\ +$/gm, '$1'), src),
   },
-  {
-    id: 'ragged-table',
-    ticket: 'markup-carve/carve#1030',
-    what:
-      'a table whose rows do not all carry the same number of cells. The writer ' +
-      'aligns the pipes into a rectangle, which pads the short rows with cells the ' +
-      'source does not have, and those cells reach the rendered document. All three ' +
-      'engines emit the same bytes and all three are wrong. Which of the two ' +
-      'conforming spellings is canonical is unruled, which is why it is declared.',
-    witness: '| ~x~ |\n| a | b |\n',
-    control: '| a | b |\n| c | d |\n',
-    without: (src) => dropShortTableRows(src),
-  },
 ]
-
-/**
- * Remove the rows that make a table ragged, and nothing else.
- *
- * A run of consecutive pipe lines is one table. Every row narrower than the
- * widest in its own run is dropped, so what is left is rectangular and the shape
- * is gone; a run that is already rectangular is returned untouched, which is
- * what the entry's `control` asserts.
- *
- * @param {string} src
- * @returns {string}
- */
-function dropShortTableRows(src) {
-  const cells = (line) => line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').length
-  const lines = src.split('\n')
-  const out = []
-  for (let i = 0; i < lines.length; i++) {
-    if (!/^\s*\|/.test(lines[i])) {
-      out.push(lines[i])
-      continue
-    }
-    let end = i
-    while (end + 1 < lines.length && /^\s*\|/.test(lines[end + 1])) end++
-    const run = lines.slice(i, end + 1)
-    const widest = Math.max(...run.map(cells))
-    out.push(...run.filter((line) => cells(line) === widest))
-    i = end
-  }
-
-  return out.join('\n')
-}
 
 /**
  * Both PART 11 invariants over one document.
