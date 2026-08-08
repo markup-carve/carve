@@ -29,8 +29,9 @@
  * the repository that reaches the shapes carve#994 is about was both unexecuted
  * and, had it been executed, unable to fail. The header comment it used to carry
  * said "reporting only ... these invariants do not hold across the board today
- * (carve#359)". carve#359 is closed. What remains failing is one shape, named in
- * DECLARED below, and naming it is what lets everything else gate.
+ * (carve#359)". carve#359 is closed, and so is every shape that was named in
+ * DECLARED below to let the rest of the sweep gate while it waited. DECLARED is
+ * empty now, so nothing is forgiven.
  */
 
 import { execFileSync } from 'node:child_process'
@@ -109,12 +110,29 @@ export function untilStable(rewrite, src) {
 /*
  * SHAPES THE WRITER IS KNOWN TO BREAK TODAY.
  *
+ * EMPTY, AND THAT IS THE DESIGNED END STATE. Every entry that has stood here so
+ * far was removed by the change that fixed its shape, because the audit below
+ * makes a stale entry fail the run: a waiver cannot outlive its defect.
+ * `trailing-nbsp` (markup-carve/carve#1027) was the last of them, and the sweep
+ * now gates PART 11 section 1 with nothing forgiven.
+ *
  * The point of a declaration rather than a lowered bar: a generated sweep that
  * simply reported "38 failures" tells a reader nothing about whether the number
  * grew for a new reason, and a sweep whose alphabet was trimmed until it came
  * back clean would report nothing at all. So each known cause is named once,
  * with the ticket that owns it and a mechanical way to remove it from a
  * document, and EVERYTHING ELSE FAILS THE JOB.
+ *
+ * The shape of an entry, for whoever adds the next one:
+ *
+ *   {
+ *     id: 'short-name',
+ *     ticket: 'markup-carve/carve#N',
+ *     what: 'the shape, and why it is declared rather than fixed',
+ *     witness: 'the smallest document carrying it',
+ *     control: 'a document that does NOT carry it',
+ *     without: (src) => untilStable(rewrite, src),
+ *   }
  *
  * `without` must delete the shape and nothing else. A failing document is
  * attributed to an entry only when removing that entry's shape makes the
@@ -131,25 +149,7 @@ export function untilStable(rewrite, src) {
  *   - its `without` must leave `control` untouched, so an over-broad rewrite
  *     that quietly repairs unrelated documents cannot pass for an explanation.
  */
-export const DECLARED = [
-  {
-    id: 'trailing-nbsp',
-    ticket: 'markup-carve/carve#1027',
-    what:
-      'an escaped space (a backslash followed by a space) as the last column of a ' +
-      'line. All three writers emit the same bytes and all three drop the space; ' +
-      'the bare backslash left behind re-parses as a hard line break. carve-rs and ' +
-      'carve-php read the source that way to begin with, so only carve-js - the ' +
-      'engine this sweep runs through - violates section 1 on it. The parse ' +
-      'divergence underneath is unruled, which is why this is declared rather ' +
-      'than fixed.',
-    witness: 'x \\ \n',
-    control: '# head\n\np 10\\ kg /i/\n',
-    // Only a backslash-space at end of line, and not one whose backslash is
-    // itself escaped - `\\ ` is a literal backslash followed by a real space.
-    without: (src) => untilStable((s) => s.replace(/(^|[^\\])\\ +$/gm, '$1'), src),
-  },
-]
+export const DECLARED = []
 
 /**
  * Both PART 11 invariants over one document.
