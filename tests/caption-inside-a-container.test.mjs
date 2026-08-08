@@ -32,6 +32,26 @@ test('a captioned image paragraph promotes at the top level', () => {
   assert.match(out, /<figcaption>Figure 1: caption<\/figcaption>/)
 })
 
+test('a resolved reference image promotes before paragraph serialization', () => {
+  const out = html('![alt][img]\n^ Figure 1: caption\n\n[img]: /i.png\n')
+  assert.equal(
+    out,
+    '<figure>\n  <img src="/i.png" alt="alt">\n  <figcaption>Figure 1: caption</figcaption>\n</figure>',
+  )
+})
+
+test('a resolved reference image keeps block attrs on the figure', () => {
+  const out = html('{.gallery}\n![alt][img]\n^ Figure 1: caption\n\n[img]: /i.png\n')
+  assert.match(out, /^<figure class="gallery">/, out)
+  assert.match(out, /<img src="\/i\.png" alt="alt">/, out)
+  assert.match(out, /<figcaption>Figure 1: caption<\/figcaption>/, out)
+})
+
+test('an uncaptioned reference image keeps block attrs on the image', () => {
+  const out = html('{.gallery}\n![alt][img]\n\n[img]: /i.png\n')
+  assert.equal(out, '<img class="gallery" src="/i.png" alt="alt">')
+})
+
 test('and inside a div', () => {
   const out = html(`:::\n${IMAGE_WITH_CAPTION}:::\n`)
   assert.match(out, /<figcaption>Figure 1: caption<\/figcaption>/)

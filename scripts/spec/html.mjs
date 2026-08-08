@@ -12,7 +12,7 @@
  */
 
 import { Refuse, TIER1 } from './layout.mjs'
-import { renderInline, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, renderBlockAttrs, renderAttrs } from './render.mjs'
+import { renderInline, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -79,18 +79,6 @@ export function renderDoc(doc) {
   let html = out.join('\n')
   html = resolveFootnotes(html, ctx) // first: bodies may add ref/xref sentinels
   html = resolveRefs(html, ctx)
-  // PART 10: a paragraph that is ONLY an image renders as a bare <img>. The
-  // inline form is caught at paragraph-render time (IMG_ONLY above), but an
-  // image REFERENCE is still a sentinel then and only becomes an <img> here,
-  // so the same unwrap has to run once resolution has happened.
-  // The paragraph's own block attributes come with it, spliced into the tag the
-  // same way the inline path does at renderBlock. Matching only a bare `<p>`
-  // left `{.block}` above an image REFERENCE rendering as
-  // `<p class="block"><img ...></p>`, where the direct form one line up gives a
-  // bare `<img class="block" ...>`.
-  html = html.replace(/<p( [^>]*)?>(<img [^>]*>)<\/p>/g, (_m, pattrs, img) =>
-    pattrs ? img.replace('<img ', `<img${pattrs} `) : img,
-  )
   html = resolveCrossrefs(html, ctx)
   html = applyAbbreviations(html, ctx)
   return html
@@ -154,16 +142,19 @@ function renderBlock(b, depth, ctx) {
   const ba = b.battrs ? renderBlockAttrs(b.battrs) : ''
   switch (b.t) {
     case 'para': {
-      const html = renderInline(b.lines.join('\n'))
-      if (b.lines.length === 1 && IMG_ONLY.test(html)) {
+      const image = b.lines.length === 1
+        ? renderStandaloneImage(b.lines[0], b.caption === undefined ? ba : '', ctx)
+        : null
+      if (image !== null) {
         // a standalone image paragraph renders as a bare <img> (PART 10)
         if (b.caption !== undefined) {
           const id = / id="([^"]*)"/.exec(ba)?.[1]
           const cap = numberCaption(b.caption, ctx, id)
-          return `${pad}<figure${ba}>\n${pad}  ${html}\n${pad}  <figcaption>${renderInline(cap)}</figcaption>\n${pad}</figure>`
+          return `${pad}<figure${ba}>\n${pad}  ${image}\n${pad}  <figcaption>${renderInline(cap)}</figcaption>\n${pad}</figure>`
         }
-        return pad + (ba ? html.replace('<img ', `<img${ba} `.replace(/ $/, ' ')) : html)
+        return pad + image
       }
+      const html = renderInline(b.lines.join('\n'))
       if (b.caption !== undefined) {
         const id = / id="([^"]*)"/.exec(ba)?.[1]
         const cap = numberCaption(b.caption, ctx, id)
@@ -343,6 +334,31 @@ function renderBlock(b, depth, ctx) {
     default:
       throw new Refuse(`unknown block ${b.t}`)
   }
+}
+
+function renderStandaloneImage(line, attrs, ctx) {
+  // Resolve reference images before paragraph serialization, so PART 10's
+  // standalone-image shape is a block decision rather than a final HTML rewrite.
+  const ref = /^!\[([^\]]*)\]\[([^\]]*)\](\{[^}]*\})?$/.exec(line)
+  if (ref) {
+    const attrSrc = ref[3] ?? ''
+    const attrList = attrSrc === '' ? [] : parseAttrList(attrSrc)
+    if (attrList === null) return null
+    const image = resolveImageRef({
+      alt: ref[1],
+      label: ref[2] === '' ? null : ref[2],
+      attrList,
+      attrSrc,
+    }, ctx, '')
+    return IMG_ONLY.test(image) ? withBlockImageAttrs(image, attrs) : null
+  }
+
+  const html = renderInline(line)
+  return IMG_ONLY.test(html) ? withBlockImageAttrs(html, attrs) : null
+}
+
+function withBlockImageAttrs(image, attrs) {
+  return attrs ? image.replace('<img ', `<img${attrs} `) : image
 }
 
 function renderList(list, depth, ctx) {
