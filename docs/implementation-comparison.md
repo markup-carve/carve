@@ -524,9 +524,10 @@ to remove it from a document; a failing document is forgiven only when removing
 that shape makes it satisfy both invariants, so a document that also fails for a
 second reason is reported rather than absorbed. Each entry carries a witness
 that must keep failing, so when the engine is fixed the gate goes red and the
-entry has to be deleted. Two entries are declared today: `carve#1027`, an
-escaped space as the last column of a line, and `carve#1030`, a ragged table
-written back rectangular. Both are live in all three engines.
+entry has to be deleted. **`DECLARED` is empty today**, so nothing is forgiven.
+The two entries it has carried both came off that way: `carve#1030`, a ragged
+table written back rectangular, and `carve#1027`, an escaped space as the last
+column of a line.
 
 The alphabet is the gate's reach, so extending it is how the gate grows rather
 than something to avoid. Both declared shapes were found by extending it, and

@@ -1,13 +1,16 @@
 /*
  * The gate's own machinery, driven on hand-built inputs.
  *
- * scripts/property-check.mjs gates PART 11 section 1 over generated documents,
- * and it does so while ONE shape is still failing (carve#1027). Everything
- * therefore turns on the attribution: a failing document is forgiven only when
- * removing a declared shape makes it satisfy both invariants, and is reported
- * otherwise. An attribution that is too generous turns the gate back into the
- * report it used to be, silently, and the generated documents are the wrong
- * place to notice that - they are regenerated per run and nobody reads them.
+ * scripts/property-check.mjs gates PART 11 section 1 over generated documents.
+ * `DECLARED` is EMPTY today - carve#1027 was the last shape in it - so nothing
+ * is forgiven, and everything below is exercised against a STUB writer with its
+ * own declaration rather than against the shipped list. That is deliberate: the
+ * machinery has to keep working for the next entry, and a test that could only
+ * run while a real waiver existed would have died with the waiver, leaving the
+ * attribution unguarded exactly when someone adds the next one. An attribution
+ * that is too generous turns the gate back into the report it used to be,
+ * silently, and the generated documents are the wrong place to notice that -
+ * they are regenerated per run and nobody reads them.
  *
  * So each direction below is exercised against a stub writer whose behavior is
  * chosen, not observed. Every assertion fails if its branch is removed:
