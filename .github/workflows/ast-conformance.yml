@@ -22,6 +22,20 @@ on:
 
 permissions:
   contents: read
+  # The verdict step at the end of the job files what this run found. `issues`
+  # to open, update and close the tracking issue; `actions` to read back which
+  # of this job's own steps failed, so the report names them rather than
+  # sending a reader to hunt through a 40-minute log.
+  issues: write
+  actions: read
+
+# Two runs at once - the 04:00 schedule and a dispatch someone wanted NOW - would
+# reach the verdict step together and each find no open ticket, filing two. The
+# group serializes them; `cancel-in-progress: false` because a run that is 30
+# minutes into building four engines is worth finishing.
+concurrency:
+  group: ast-conformance
+  cancel-in-progress: false
 
 jobs:
   conformance:
@@ -262,3 +276,133 @@ jobs:
           php tests/gen-profile-fixtures.php > /tmp/profile-fixtures.regenerated.json
           diff -u tests/profile-fixtures.json /tmp/profile-fixtures.regenerated.json \
             || { echo "::error::tests/profile-fixtures.json no longer matches carve-php. Regenerate it (see the header of tests/gen-profile-fixtures.php) and re-check carve-js and carve-rs against the new file."; exit 1; }
+
+      # THE READER. Everything above reports into a job nobody is obliged to
+      # open. This workflow runs on a SCHEDULE, so no pull request gate can see
+      # it go red, `main` shows green push CI while it is failing, and for weeks
+      # nothing looked (carve#961). That is the check-with-no-reader family
+      # catalogued in carve#755: the check exists, runs, and reports, and no one
+      # consumes the result. A second check reporting into the same void would
+      # be the defect rather than the fix, so what this step adds is a CONSUMER.
+      #
+      # The run files its own verdict where this project's backlog already
+      # looks: one tracking issue, opened by the first red run, kept current by
+      # every later one, and CLOSED by the first green run. An open issue is
+      # what the org-wide sweep enumerates and what a human sees on the issue
+      # list, so a red schedule now costs someone a ticket instead of nothing.
+      #
+      # Closing it by hand does not mute it. The lookup below matches OPEN
+      # issues only, so the next red run opens a fresh one; the only way to stop
+      # the reports is to make the run green. Nor does it accumulate: a red run
+      # with an open ticket edits that ticket rather than filing another.
+      #
+      # It carries no label on purpose - `hold` and `needs-decision` are the two
+      # labels this org's automation reads as "do not touch", and an alert that
+      # lands pre-silenced is no alert.
+      #
+      # THE TICKET IS SCOPED TO THE REF. `workflow_dispatch` can be aimed at any
+      # branch, so without the scope a green dispatch from a feature branch would
+      # CLOSE a ticket about `main` - silencing the alarm by testing something
+      # else, which is this issue's own failure mode wearing a different hat.
+      # A branch keeps its own ticket, and it self-closes the same way.
+      #
+      # This step FAILS if it cannot file. A reporter that swallows its own
+      # errors is exactly the defect it exists to fix, so a missing permission
+      # or a rate limit turns the job red rather than passing quietly.
+      - name: File the verdict where someone reads it
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          JOB_STATUS: ${{ job.status }}
+          HEAD_SHA: ${{ github.sha }}
+          REF_NAME: ${{ github.ref_name }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+
+          TITLE="AST conformance is failing on $REF_NAME"
+          MARKER="<!-- ast-conformance-verdict ref=$REF_NAME -->"
+
+          # Which steps failed, read back from the run itself. A hand-kept list
+          # of step ids would go stale the first time a step is added, and a
+          # step this report forgot to name is a step whose failure is invisible
+          # again.
+          failed="$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs" --paginate \
+            --jq '.jobs[].steps[] | select(.conclusion == "failure") | "- `" + .name + "`"')"
+
+          # Matched on the marker in the body rather than on the title, so
+          # renaming the issue does not fork it into two, and listed rather than
+          # searched, because the search index lags behind a fresh issue by
+          # enough to file a duplicate.
+          open_issues="$(gh api "repos/$REPO/issues?state=open&per_page=100" --paginate \
+            | jq -r --arg m "$MARKER" \
+                '.[] | select(.pull_request == null) | select((.body // "") | contains($m)) | .number')"
+          issue="${open_issues%%$'\n'*}"
+
+          if [ "$JOB_STATUS" = "success" ]; then
+            echo "AST conformance is green on $HEAD_SHA."
+            if [ -n "$issue" ]; then
+              gh issue comment "$issue" --repo "$REPO" --body \
+                "Green again: run $RUN_URL on \`$HEAD_SHA\`. Closing. The next red run opens a fresh ticket rather than reopening this one, so a closed ticket always means the last run passed."
+              gh issue close "$issue" --repo "$REPO"
+              echo "Closed #$issue."
+            fi
+            echo "AST conformance green on \`$HEAD_SHA\`. Nothing filed." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          {
+            echo "$MARKER"
+            echo
+            echo "\`AST conformance\` is failing on \`$REF_NAME\`. This workflow builds four"
+            echo "engines and runs on a daily schedule, so no pull request gate sees it and"
+            echo "the branch shows green push CI while this is red."
+            echo
+            echo "| | |"
+            echo "| --- | --- |"
+            echo "| run | $RUN_URL |"
+            echo "| commit | \`$HEAD_SHA\` |"
+            echo "| ref | \`$REF_NAME\` |"
+            echo "| trigger | \`$EVENT_NAME\` |"
+            echo
+            echo "### Failing steps"
+            echo
+            if [ -n "$failed" ]; then
+              printf '%s\n' "$failed"
+            else
+              echo "- (none reported; the job did not complete - see the run)"
+            fi
+            echo
+            echo "### Before acting on this"
+            echo
+            echo "The counts in the run are a snapshot. Four engines merge into their own"
+            echo "\`main\` through the day and this workflow runs once at 04:00 UTC, so a"
+            echo "figure read here can be hours and a dozen merges old. Re-dispatch"
+            echo "(\`gh workflow run ast-conformance.yml -R $REPO\`) and quote the run id you"
+            echo "measured, rather than rerunning this one - a rerun overwrites the evidence."
+            echo
+            echo "This ticket is filed and maintained by the workflow. It is EDITED by each"
+            echo "later red run and CLOSED by the first green one. Closing it by hand does"
+            echo "not silence it: the next red run files a new one."
+          } > /tmp/ast-conformance-verdict.md
+
+          if [ -n "$issue" ]; then
+            gh issue edit "$issue" --repo "$REPO" --body-file /tmp/ast-conformance-verdict.md
+            echo "Updated #$issue."
+            url="$(gh issue view "$issue" --repo "$REPO" --json url --jq .url)"
+          else
+            url="$(gh issue create --repo "$REPO" --title "$TITLE" \
+              --body-file /tmp/ast-conformance-verdict.md)"
+            echo "Filed $url."
+          fi
+
+          {
+            echo "## AST conformance is red"
+            echo
+            echo "Filed at $url"
+            echo
+            printf '%s\n' "${failed:-- (no step reported a failure)}"
+          } >> "$GITHUB_STEP_SUMMARY"
