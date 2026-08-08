@@ -282,11 +282,13 @@ const sem = g.createSemantics().addOperation('h', {
     // No symbol map in Core: the literal `:name:` fallback. Consuming it as one
     // token is what keeps smart typography out of the name (`:+-:` stays the
     // symbol `+-`, it does not become `:±:`).
+    if (omitSymbols) return ''
     return `:${escapeHtml(name.sourceString)}:`
   },
   symbolAttr(_c1, name, _c2, attrs) {
     // `:name:{...}`: an UNMAPPED symbol renders as its literal `:name:` text,
     // wrapped in a <span> that carries the attribute block (PART 9 §7).
+    if (omitSymbols) return ''
     return `<span${renderAttrs(attrs.parseAttrs())}>:${escapeHtml(name.sourceString)}:</span>`
   },
   mention(_a, name) {
@@ -851,6 +853,51 @@ function smartQuote(node, open, close, single) {
 }
 
 let quotePrevCtx = '' // preceding character for recursive inline parses
+
+/*
+ * A SYMBOL CONTRIBUTES NOTHING TO A HEADING ID. syntax.md section 4.1 step 1
+ * takes the heading's rendered plain text "(inline markup removed; symbols
+ * `:name:` and footnote references excluded)", and the exclusion is by
+ * CONSTRUCT rather than by what the symbol renders as - it has to be, because a
+ * symbol resolves through processor configuration (a handler, else the
+ * `symbols` map, else the literal `:name:`) while an id is assigned before any
+ * of that is consulted. An id keyed on the shortcode name would name a spelling
+ * the document stops rendering the moment a host configures a map.
+ *
+ * The flag rather than a sentinel: a sentinel that leaked would corrupt output,
+ * and the id derivation is the only caller that wants the symbol gone, so it
+ * renders its own copy of the heading (markup-carve/carve#1011).
+ */
+let omitSymbols = false
+
+export function renderInlineWithoutSymbols(text, prevCtx = '') {
+  omitSymbols = true
+  try {
+    return renderInline(text, prevCtx)
+  } finally {
+    omitSymbols = false
+  }
+}
+
+/*
+ * PART 2 HEADING IDENTIFIERS step 1: smart typography is reversed to ASCII
+ * before slugging, so `# Don't repeat yourself` gives `Don-t-repeat-yourself`
+ * and not a curly apostrophe inside the id. The id side is the only consumer -
+ * the implicit-reference index compares two RENDERED strings, which already
+ * carry the same glyphs on both sides.
+ */
+const SMART_TO_ASCII = {
+  '\u2194': '<->', '\u2122': '(tm)', '\u2026': '...', '\u2192': '->', '\u2190': '<-',
+  '\u21d2': '=>', '\u2264': '<=', '\u2265': '>=', '\u2260': '!=', '\u00b1': '+-',
+  '\u00a9': '(c)', '\u00ae': '(r)', '\u2013': '-', '\u2014': '-',
+  '\u2018': "'", '\u2019': "'", '\u201c': '"', '\u201d': '"',
+}
+
+export function deTypography(s) {
+  let out = ''
+  for (const ch of s) out += SMART_TO_ASCII[ch] ?? ch
+  return out
+}
 
 export function renderInline(text, prevCtx = '') {
   const saved = quotePrevCtx

@@ -12,7 +12,7 @@
  */
 
 import { Refuse, TIER1 } from './layout.mjs'
-import { renderInline, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs } from './render.mjs'
+import { renderInline, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -60,9 +60,9 @@ export function renderDoc(doc) {
         }
         hAttrs = renderBlockAttrs(rest)
       }
-      if (id === null) id = ctx.slug(b.text.replace(/<\/#[^>]*>/g, '').replace(/[ \t]+$/, ''))
+      if (id === null) id = ctx.slug(slugText(b.text))
       ctx.headingIds.set(id.toLowerCase(), { id, html })
-      noteHeadingRef(ctx, html, id)
+      noteHeadingRef(ctx, derivedText(b.text), id)
       out.push(`${indent()}<section id="${escapeAttr(id)}">`)
       sections.push(b.level)
       out.push(`${indent()}<h${b.level}${hAttrs}>${html}</h${b.level}>`)
@@ -322,10 +322,9 @@ function renderBlock(b, depth, ctx) {
         for (const a of list) if (a[0] === 'id') authored = a[1]
       }
       const attrStr = b.battrs ? renderBlockAttrs(b.battrs) : ''
-      const id =
-        authored ?? ctx.slug(b.text.replace(/<\/#[^>]*>/g, '').replace(/[ \t]+$/, ''))
+      const id = authored ?? ctx.slug(slugText(b.text))
       ctx.headingIds.set(id.toLowerCase(), { id, html })
-      noteHeadingRef(ctx, html, id)
+      noteHeadingRef(ctx, derivedText(b.text), id)
       const idAttr = authored === null ? ` id="${escapeAttr(id)}"` : ''
       return `${pad}<h${b.level}${attrStr}${idAttr}>${html}</h${b.level}>`
     }
@@ -630,7 +629,15 @@ function resolveRefs(html, ctx) {
       // does this; the oracle did not, and no corpus case could tell because
       // each one pairing `[X][]` with a definition never reaches the branch
       // (carve#453).
-      const heading = ctx.headingRefs.get(refKey(label ?? text))
+      // THE LABEL ENTERS AS ITS RENDERED PLAIN TEXT (R1), which is the same
+      // derivation the heading side registered under - symbols excluded and
+      // all. Keying the label on `text`, the rendered HTML, kept a symbol on
+      // this side only, so `# a :smile: b` was reachable by
+      // `[a :smile: b][]` and not by `[a b][]`, while all three engines
+      // resolve both (markup-carve/carve#1011).
+      const indexKey =
+        label == null && typeof source === 'string' ? derivedText(source) : (label ?? text)
+      const heading = ctx.headingRefs.get(refKey(indexKey))
       if (heading !== undefined) {
         return `<a href="#${escapeAttr(heading)}"${renderAttrs(attrList ?? [])}>${text}</a>`
       }
@@ -685,6 +692,38 @@ function noteHeadingRef(ctx, text, id) {
 
 function stripTags(s) {
   return s.replace(/<[^>]*>/g, '')
+}
+
+const ENTITIES = { '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&nbsp;': '\u00a0', '&amp;': '&' }
+
+/*
+ * The text a heading's id is slugged from: the heading's RENDERED PLAIN TEXT
+ * (syntax.md section 4.1 step 1), not its source.
+ *
+ * It used to be the source with `</#id>` runs deleted, which reaches the right
+ * answer for most headings by accident: the slug replaces each run of
+ * non-alphanumeric ASCII with a `-`, so `*`, `` ` `` and `/` fall out on their
+ * own. What it cannot do is tell a delimiter from content. A nested link
+ * `[x](/y)` slugged as `x-y`, carrying a DESTINATION into the id, and a symbol
+ * `:smile:` slugged as `smile`, carrying a shortcode name the rendered document
+ * may not print at all. Both are what the rule already excludes; deriving the
+ * text from the render rather than the source needs no list of delimiters
+ * (markup-carve/carve#1011).
+ *
+ * Three deletions before the tags come off. A `\uE000...\uE001` span is a PART
+ * 9R sentinel - a footnote reference, an inline note, a cross-reference - and
+ * each is excluded from a heading's derived text, which is also what deleting
+ * the `</#id>` run did before. A symbol is excluded by re-rendering without it.
+ * The escapes then come back off, so `# A & B` is `A-B` and not `A-amp-B`.
+ */
+function derivedText(source) {
+  const html = renderInlineWithoutSymbols(source).replace(/\uE000[\s\S]*?\uE001/g, '')
+
+  return stripTags(html).replace(/&(?:lt|gt|quot|#39|nbsp|amp);/g, (m) => ENTITIES[m])
+}
+
+function slugText(source) {
+  return deTypography(derivedText(source)).replace(/[ \t]+$/, '')
 }
 
 // --- PART 9R R2: footnotes ---------------------------------------------------
