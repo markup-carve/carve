@@ -43,6 +43,17 @@ const schema = JSON.parse(readFileSync(resolve(root, 'resources/ast-schema.json'
 const ajv = new Ajv2020({ allErrors: true, strict: true })
 const validate = ajv.compile(schema)
 
+test('source layout is a separate closed versioned sidecar', () => {
+  const layoutSchema = JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-schema.json'), 'utf8'))
+  const validateLayout = new Ajv2020({ strict: true }).compile(layoutSchema)
+  const layout = { version: 1, encoding: 'utf-8', source: '- a\r\n', lineEndings: 'crlf', bom: false,
+    nodes: [{ path: '/children/0', startByte: 0, endByte: 3, markerRaw: '-', markerColumn: 1, contentColumn: 3 }] }
+  assert.equal(validateLayout(layout), true, JSON.stringify(validateLayout.errors))
+  assert.equal(validateLayout({ ...layout, version: 2 }), false)
+  assert.equal(validateLayout({ ...layout, unknown: true }), false)
+  assert.equal(validate({ type: 'document', children: [], srcByteLength: 0, sourceLayout: {} }), false)
+})
+
 /** The reference build: the package pin, or a checkout named by CARVE_JS_DIR. */
 const jsDir = process.env.CARVE_JS_DIR
 const lib = await import(jsDir ? resolve(jsDir, 'dist/index.js') : '@markup-carve/carve')

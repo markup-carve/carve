@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/ast-source-layout-schema.json",
+  "title": "Carve AST source-layout sidecar",
+  "type": "object",
+  "required": ["version", "encoding", "source", "lineEndings", "bom", "nodes"],
+  "properties": {
+    "version": { "const": 1 },
+    "encoding": { "const": "utf-8" },
+    "source": { "type": "string" },
+    "lineEndings": { "enum": ["none", "lf", "crlf", "cr", "mixed"] },
+    "bom": { "type": "boolean" },
+    "nodes": { "type": "array", "items": { "$ref": "#/$defs/nodeLayout" } }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "nodeLayout": {
+      "type": "object",
+      "required": ["path", "startByte", "endByte"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^(?:|(?:/(?:[^~/]|~[01])*)+)$" },
+        "startByte": { "type": "integer", "minimum": 0 },
+        "endByte": { "type": "integer", "minimum": 0 },
+        "markerRaw": { "type": "string" },
+        "markerColumn": { "type": "integer", "minimum": 1 },
+        "contentColumn": { "type": "integer", "minimum": 1 },
+        "continuationStyle": { "enum": ["none", "indent", "explicit", "lazy", "marker_line"] },
+        "blankLinesBefore": { "type": "integer", "minimum": 0 },
+        "blankLinesAfter": { "type": "integer", "minimum": 0 },
+        "openerRaw": { "type": "string" },
+        "closerRaw": { "type": "string" },
+        "metadataSeparatorRaw": { "type": "string" },
+        "leadingPipe": { "type": "boolean" },
+        "trailingPipe": { "type": "boolean" },
+        "paddingRaw": { "type": "string" },
+        "attachment": { "enum": ["none", "preceding", "continuation", "detached"] }
+      },
+      "additionalProperties": false
+    }
+  }
+}
