@@ -258,6 +258,27 @@ jobs:
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run fmt:check
+
+      # The same generated sweep the per-PR job runs, ten times larger.
+      #
+      # ci.yml runs 2000 documents so a PR is not made to wait; this runs 20000,
+      # measured at 6.3s. Same fixed seed, so the per-PR set is a PREFIX of this
+      # one: a shape only this job reaches is genuinely a shape the cheaper run
+      # cannot see, rather than a different lottery.
+      #
+      # SINGLE ENGINE, deliberately, even though this job is the one with three
+      # built checkouts. The script's --engines mode compares the three writers
+      # byte for byte on the same generated documents, and it does not pass:
+      # measured with all three built, 23 of 400 generated documents diverge,
+      # roughly one in 17 (carve#1028). Wiring it now would mean either a
+      # permanently red job,
+      # which gets muted, or a step that prints its findings and exits 0, which
+      # is the defect this whole change is undoing. It gets wired when its
+      # ticket closes.
+      - name: PART 11 canonical-writer invariants (generated sweep)
+        if: always()
+        run: npm run property:check -- --count=20000
+
       # tests/profile-fixtures.json is the shared profile battery: carve-js and
       # carve-rs assert their profile output against it, and it is GENERATED
       # from carve-php by a command documented in a comment at the top of
