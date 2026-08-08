@@ -1,0 +1,122 @@
+Two blank lines detach a caption
+
+```
+|= City |= People |
+| Oslo  | 700k   |
+
+^ Table: city sizes
+.
+<table>
+  <caption>Table: city sizes</caption>
+  <thead><tr><th>City</th><th>People</th></tr></thead>
+  <tbody>
+    <tr><td>Oslo</td><td>700k</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|= City |= People |
+| Oslo  | 700k   |
+
+
+^ Table: city sizes
+.
+<table>
+  <thead><tr><th>City</th><th>People</th></tr></thead>
+  <tbody>
+    <tr><td>Oslo</td><td>700k</td></tr>
+  </tbody>
+</table>
+<p>^ Table: city sizes</p>
+```
+
+````
+```lua
+local n = 1
+```
+
+^ Listing: a local
+.
+<figure>
+  <pre><code class="language-lua">local n = 1
+</code></pre>
+  <figcaption>Listing: a local</figcaption>
+</figure>
+````
+
+````
+```lua
+local n = 1
+```
+
+
+^ Listing: a local
+.
+<pre><code class="language-lua">local n = 1
+</code></pre>
+<p>^ Listing: a local</p>
+````
+
+```
+> the cited line
+
+^ Source: the cited work
+.
+<figure>
+  <blockquote><p>the cited line</p></blockquote>
+  <figcaption>Source: the cited work</figcaption>
+</figure>
+```
+
+```
+> the cited line
+
+
+^ Source: the cited work
+.
+<blockquote><p>the cited line</p></blockquote>
+<p>^ Source: the cited work</p>
+```
+
+```
+![Ganymede](ganymede.jpg)
+
+^ Figure: the largest moon
+.
+<figure>
+  <img src="ganymede.jpg" alt="Ganymede">
+  <figcaption>Figure: the largest moon</figcaption>
+</figure>
+```
+
+```
+![Ganymede](ganymede.jpg)
+
+
+^ Figure: the largest moon
+.
+<img src="ganymede.jpg" alt="Ganymede">
+<p>^ Figure: the largest moon</p>
+```
+
+```
+$$`a + b = c`
+
+^ Equation: the sum
+.
+<figure>
+  <p><span class="math display">\[a + b = c\]</span></p>
+  <figcaption>Equation: the sum</figcaption>
+</figure>
+```
+
+```
+$$`a + b = c`
+
+
+^ Equation: the sum
+.
+<p><span class="math display">\[a + b = c\]</span></p>
+<p>^ Equation: the sum</p>
+```
