@@ -21,6 +21,11 @@ for every honestly positioned node. Optional facts cover markers, content
 columns, continuation style, blank lines, fences, attachments, and table
 spelling. Missing means unknown, never a guessed default.
 
+All producers consume the shared cases in
+[`resources/ast-source-layout-fixtures.json`](https://github.com/markup-carve/carve/blob/main/resources/ast-source-layout-fixtures.json).
+`exact` compares complete sidecars; `sourceFacts` pins encoding facts while AST
+position conformance independently tracks range agreement.
+
 Default parsing, AST JSON, CLI JSON, and rendering do not change. An AST decoder
 does not accept a sidecar as an AST, and a sidecar reader rejects versions it
 does not implement.
