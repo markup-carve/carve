@@ -20,16 +20,15 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const source = resolve(root, 'resources/ast-schema.json')
-const target = resolve(root, 'docs/public/ast-schema.json')
-
-const schema = JSON.parse(readFileSync(source, 'utf8'))
-const expected = 'https://markup-carve.github.io/carve/ast-schema.json'
-if (schema.$id !== expected) {
-  console.error(`ast-schema.json declares $id ${schema.$id}, but it is published at ${expected}.`)
-  process.exit(1)
+for (const name of ['ast-schema.json', 'ast-source-layout-schema.json']) {
+  const source = resolve(root, 'resources', name)
+  const target = resolve(root, 'docs/public', name)
+  const schema = JSON.parse(readFileSync(source, 'utf8'))
+  const expected = `https://markup-carve.github.io/carve/${name}`
+  if (schema.$id !== expected) process.exitCode = 1
+  else {
+    mkdirSync(dirname(target), { recursive: true })
+    copyFileSync(source, target)
+    console.log(`published ${schema.$id}`)
+  }
 }
-
-mkdirSync(dirname(target), { recursive: true })
-copyFileSync(source, target)
-console.log(`published ${schema.$id}`)

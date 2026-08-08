@@ -7502,3 +7502,22 @@ EOF = (* end of file *) ;
       majority vote was deliberately NOT followed: it would have decided two
       security-relevant rows by accident, and on the missing-field rows the
       majority was the lenient answer.
+
+   13. SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR -- NORMATIVE. A producer MAY
+      return source-fidelity metadata beside an AST only when the caller asks
+      for it. It MUST NOT insert that data into the AST: §§2, 7, 11 and 12 keep
+      the canonical tree closed and unchanged.
+
+      The sidecar validates against `resources/ast-source-layout-schema.json`.
+      Version is 1, encoding is UTF-8, and each RFC 6901 `path` addresses the
+      accompanying canonical AST. `startByte` is inclusive and `endByte`
+      exclusive in the ORIGINAL input, including BOM and CRLF bytes. Entries
+      are sorted by path; a producer MUST NOT invent an unplaceable range.
+
+      Original source and byte ranges are the portable minimum. Optional
+      measured facts carry markers and columns, continuation style, blank
+      lines, fences, attachment and table spelling. Absent means unknown.
+
+      DEFAULT OUTPUT DOES NOT MOVE. Ordinary parse, AST encoding, CLI JSON and
+      rendering retain their existing APIs and shapes. An AST decoder does not
+      accept this sidecar as an AST. A layout reader refuses an unknown version.
