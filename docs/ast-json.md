@@ -496,7 +496,7 @@ A row may name an issue only where one of those still declares the debt.
 |---|---|---|
 | carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together | every block and inline placed, except the two categories §4 exempts: a coalesced `text` run, and a table cell continued on a `+` line |
 | carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` | every block and inline placed, except the coalesced `text` runs §4 exempts |
-| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the coalesced `text` runs §4 exempts |
+| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish on every corpus document | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the coalesced `text` runs §4 exempts |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
@@ -540,15 +540,23 @@ answered and both closed.
 WHICH label `ref` carries when the label holds inline markup is now RULED, and
 the fleet already implements the ruling: given a collapsed reference whose label
 is `` `code()` heading ``, all three engines publish the heading's rendered
-text, `code() heading`. Measured on carve-js `5e3b723`, carve-rs `04f9284` and
-carve-php `9375df1`, each built from `main`.
+text, `code() heading`. Measured on carve-js `79175a5`, carve-rs `d855367` and
+carve-php `e2c3a97`, each built from a fresh clone of `main` on 2026-08-08.
 
-`resources/ast-value-divergence.txt` still declares `link.ref` as a divergence,
-in the pre-merge terms this paragraph used to use. That file is filled in by
-`npm run ast:check` driving three BUILT satellites, and it has not been re-run
-since js and rs moved. The ruling asks no engine to change, so what that line
-owes is a re-measurement rather than a fix - and until it is re-run, the SHAs
-above are the measured side and the ledger is the older claim.
+`resources/ast-value-divergence.txt` declared that disagreement until the same
+day, in the pre-merge terms this paragraph used to use. It was re-measured on
+those three builds - a full `npm run ast:check` over 870 samples - and the
+declaration is now EMPTY: no field the three publish differs anywhere in the
+corpus, so both lines were deleted rather than reworded. The caption line that
+sat beside it went the same way, fixed under
+[carve#963](https://github.com/markup-carve/carve/issues/963).
+
+An empty declaration is a statement about the corpus, which is the only thing
+the run measures. Four collapsed-reference labels the corpus does not hold - one
+carrying `/emphasis/`, one an escape, one a nested link, one a symbol shortcode
+- do still split carve-php from the other two, and they split the HTML with it,
+so they are owed a fixture rather than a declaration
+([carve#1011](https://github.com/markup-carve/carve/issues/1011)).
 
 **This paragraph said the opposite until 2026-08-08**, recording carve-php as
 publishing the rendered text where the other two published the authored label.

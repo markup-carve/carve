@@ -63,6 +63,9 @@ import {
   fromAstJson,
   parse,
   renderHtml,
+  // Aliased: `resolve` is already taken here by node:path, and the two are one
+  // letter apart in a file that uses both on adjacent lines.
+  resolve as resolveReferences,
   toAstJson,
 } from '@markup-carve/carve'
 
@@ -113,6 +116,46 @@ test('a resolved reference publishes href, ref and rawRef - and the row says so'
     jsRow,
     /§3a conformant on the resolved form/,
     'the engine publishes the whole §3a triple; the carve-js row no longer says so',
+  )
+})
+
+/*
+ * §3a's RULING, measured against the pin rather than described.
+ *
+ * "`ref` is the resolution key" was ruled at carve#962 and written onto the page
+ * with three engine SHAs beside it, and nothing here read `ref` on a label that
+ * holds inline markup - the one shape where the key and the authored label are
+ * different strings. So the pin could sit 368 commits behind the ruling, publish
+ * the authored label, and every assertion on this page stay green: the same
+ * "no case can fail" shape one layer up from the ledger it cites (carve#1003).
+ *
+ * RESOLVED, not parse-only. A heading anchor is not a link reference
+ * definition, so `resolve()` is where the reference finds it; `treeOf` above
+ * stops short of that and reports `href: ""` with the authored label in `ref`
+ * on BOTH sides of the ruling, which would have made this test pass against the
+ * build it was written to catch.
+ */
+test('ref carries the resolution key, not the authored label, when the label holds markup', () => {
+  const tree = toAstJson(resolveReferences(parse('# `code()` heading\n\n[`code()` heading][]\n')))
+  const [link] = nodesOfType(tree, 'link')
+  assert.ok(link, 'no link node for a collapsed reference to a heading')
+  assert.equal(link.href, '#code-heading')
+  assert.equal(
+    link.ref,
+    'code() heading',
+    'the pinned build publishes the authored label where §3a rules the key - the pin predates carve#962',
+  )
+  assert.equal(link.rawRef, '[`code()` heading][]')
+
+  // The page states the ruling with this exact pair; a build that moved off it
+  // must not leave the sentence standing.
+  assert.ok(
+    page.includes('**`ref` is the resolution key**'),
+    'docs/ast-json.md no longer states the §3a ruling this measures',
+  )
+  assert.ok(
+    page.includes('"ref": "code() heading"'),
+    'the §3a example on docs/ast-json.md no longer publishes the key this measures',
   )
 })
 

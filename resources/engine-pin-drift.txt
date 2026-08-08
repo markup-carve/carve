@@ -24,13 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-
-278-a-list-marker-at-the-content-column-inside-an-open-fence  PART 9 §24 S1/S2: a list marker at an item's content column inside an open fence is code text. The pin reads the marker instead and opens a nested list (markup-carve/carve-php#1007, carve#974).
-278-a-list-marker-at-the-content-column-inside-an-open-fence-2  The same rule with the fence opened after a blank line inside the item, which the pin collects through a different loop and gets wrong the same way.
-279-a-boundary-line-inside-an-open-fence-does-not-end-the-container  PART 9 §17 L3 attaches ONE BLOCK and a fenced block ends at its closer, so a definition line inside a `+`-attached open code fence is verbatim text. The pin ends the note body there, leaves the fence unterminated and prints the trailing text as the document's FIRST block (markup-carve/carve-js#884).
-279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-2  The same fence with a blank line in it, which the pin ends the attached block on for the same reason.
-279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-3  The same blank line in a definition list's body, which the pin collects through a different loop and gets wrong the same way.
-279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-5  PART 9 §10 I2: a list marker at a colon fence body's own column folds into the open paragraph. The pin closes the div there, opens a real list and leaves a stray empty div behind.
-279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-7  The same blank line in a block a `+` attaches to a LIST ITEM, the largest severing group of the class and a fourth collector again. The pin ends the attached block at the blank, so the closing fence is never consumed and the stray run opens an empty inline code element at document level (markup-carve/carve-js#884).
-279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-8  PART 9 §17 L1 and §28: a blank line inside an item's INDENTED comment fence is verbatim and invisible, so the item holds no second paragraph and stays tight. The pin loosens it, wrapping `x` in a paragraph because of a line that renders nothing (markup-carve/carve#985).
-279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-10  The same blank inside an item's indented COLON fence. The blank separates two paragraphs of the DIV, not of the item, so the item stays tight; the pin hands it to the item's looseness scan instead.
