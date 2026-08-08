@@ -88,6 +88,28 @@ jobs:
       - name: Executable-spec gate (formal Core grammar vs corpus)
         run: npm run core:check
 
+      # PART 11 section 1, over documents the corpus cannot reach.
+      #
+      # The corpus pins documents somebody wrote, and every one of them
+      # round-trips - which is why a year of corpus testing did not find any of
+      # the six shapes carve#994 opened with, and why the round-trip gates that
+      # do exist can only confirm that documents already known to round-trip
+      # still do. scripts/property-check.mjs generates documents nobody wrote
+      # and asserts the same invariant over them. It found the six.
+      #
+      # It ran in NO job, was in no test, and was imported by no test. Not a
+      # check that cannot fail - a check that is never executed (carve#755).
+      #
+      # Bounded and deterministic so it can gate per PR: 2000 documents from a
+      # fixed seed, measured at 0.9s. The seed makes a failure reproducible and
+      # comparable between builds, and the scheduled sweep below uses the SAME
+      # seed at a larger count, so this set is a prefix of that one.
+      #
+      # Single-engine only here. The --engines mode needs three built
+      # checkouts, which only ast-conformance.yml provisions.
+      - name: PART 11 canonical-writer invariants (generated documents)
+        run: npm run property:check -- --count=2000
+
       # The pinned reference build vs the corpus. NOT a gate on drift -- the
       # corpus is deliberately allowed to run ahead of the engine, and gating
       # on the mismatch itself would reinstate exactly the deadlock

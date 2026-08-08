@@ -508,9 +508,26 @@ npm run property:check -- --count=2000 --seed=7
 ```
 
 It is deterministic by seed, so a failure is reproducible and one build's counts
-are comparable against another's - which is how it is used: run it against a
-branch and against the base, and compare, rather than reading the absolute
-number as a pass/fail.
+are comparable against another's.
+
+**It gates.** A violation exits non-zero, and two jobs run it: CI runs 2000
+documents per pull request, and the scheduled conformance run repeats the same
+seed at 20000, so the per-PR set is a prefix of the larger one. For most of its
+life it ran nowhere at all and its own last line said "reporting only", which
+made the one check that reaches the shapes `carve#994` is about both unexecuted
+and unable to fail (`carve#755`).
+
+Gating while a real defect is outstanding works through a declaration rather
+than a lowered bar. `DECLARED` in `scripts/property-check.mjs` names each shape
+the writer is known to break, with the ticket that owns it and a mechanical way
+to remove it from a document; a failing document is forgiven only when removing
+that shape makes it satisfy both invariants, so a document that also fails for a
+second reason is reported rather than absorbed. Each entry carries a witness
+that must keep failing, so when the engine is fixed the gate goes red and the
+entry has to be deleted. One entry is declared today, `carve#1027`.
+
+The `--engines` mode does not gate yet. The three writers disagree on roughly
+one generated document in 17 (`carve#1028`); it is wired when that closes.
 
 The reason it exists is that the corpus cannot reach some shapes. Generated
 input combines constructs at indentations a human would not type, and that is
