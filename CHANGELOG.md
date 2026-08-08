@@ -172,6 +172,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   what §1 requires; the HTML form is weaker and satisfying it alone is still a
   failure.
 
+- **PART 11 §7b: a footnote definition with no blocks is written with the
+  sentinel `{empty}`.** §1a's first application. A definition whose body holds no
+  blocks - reachable whenever the body line is a block-attribute run, which the
+  line consumes and discards - cannot be written back as a bare `[^f]:`, because
+  that line is not a definition: the definition degrades to a paragraph and every
+  reference to it degrades to literal text. The parse rule is UNCHANGED; what the
+  clause pins is the writer's spelling, and it pins it in one place rather than
+  leaving three engines to invent three sentinels. The non-obvious half is stated
+  with it: the sentinel must be a valid attribute block, so `{ }` and `{}` - the
+  two spellings a reader reaches for first - do NOT work, because a
+  block-attribute line requires at least one attribute and both therefore stay
+  literal text in the note's body. So does the consequence: `{empty}` is a
+  BOOLEAN ATTRIBUTE and renders `empty=""` anywhere attributes survive; it is
+  inert here because a footnote body is its own container and a block-attribute
+  line with no following block inside it is dropped, which is a parse rule rather
+  than a property of the word.
+
 - **PART 7 assigns the whitespace terminals by ROLE, and pins their
   cardinality.** Twenty-five productions took the `space` terminal and a tab
   satisfied nine of them in the implementations, which split four ways on which.

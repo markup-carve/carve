@@ -702,10 +702,17 @@ function resolveFootnotes(html, ctx) {
   const notes = order.map((label, idx) => {
     const n = idx + 1
     let rendered
+    // A body holding NO BLOCKS is not the same as a body whose blocks render
+    // to nothing, and the two answer differently below.
+    let noBlocks = false
     if (typeof label === 'object') {
       rendered = `      <p>${inlineNotes[label.inline]}</p>`
     } else {
       const body = ctx.footnoteDefs.get(label)
+      // `holdsAnInvisibleBlock` is set by the layout pass for a body whose only
+      // content was a comment -- see its note there for why a block count
+      // cannot answer this on its own.
+      noBlocks = body.length === 0 && !body.holdsAnInvisibleBlock
       rendered = body
         .map((b) => renderBlock(b, 3, ctx))
         .join('\n')
@@ -722,7 +729,17 @@ function resolveFootnotes(html, ctx) {
     if (rendered.endsWith('</p>')) {
       rendered = rendered.slice(0, -4) + backlink + '</p>'
     } else {
-      rendered += `\n      <p>${backlink}</p>`
+      // A body holding NO BLOCKS renders as the empty string, and the
+      // separator would then open the `<li>` with a blank line that no engine
+      // emits. The shape is reachable: a definition line whose whole body is a
+      // block-attribute run leaves the body empty, which is what PART 11 SS7b's
+      // sentinel is written for.
+      //
+      // A body holding ONE block that RENDERS to nothing -- a comment -- keeps
+      // the blank line, because that is what all three engines emit for it.
+      // The two look identical here (`rendered` is '' either way) and are told
+      // apart by the block count, not by the string.
+      rendered += `${noBlocks ? '' : '\n'}      <p>${backlink}</p>`
     }
     return `    <li id="fn${n}">\n${rendered}\n    </li>`
   })
