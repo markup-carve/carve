@@ -5690,6 +5690,49 @@ EOF = (* end of file *) ;
       emits a thematic break as three hyphens whatever the author wrote, so
       `***` and `___` both come back as `---`.
 
+      EXCEPT WHERE `---` WOULD OPEN FRONTMATTER. A `---` line at byte 0 of the
+      EMITTED document is the frontmatter opener, not a break. Spelling this
+      clause's form there can manufacture a block the document does not have,
+      and everything down to whatever closes it is swallowed with it: a
+      document of `***`, a blank line and `---` renders two breaks, and written
+      by the literal reading of this clause it renders NOTHING -- with any
+      paragraph standing between them lost too. Where that would happen the
+      writer spells the break `***` instead, and that deviation is §1a's --
+      §1's invariant outranks a per-construct rule, and this is the case §1a
+      was reached for.
+      It is CONFORMANT. It is not a divergence from this section, and an
+      implementation that has it is not to be corrected back.
+
+      THE CONDITION IS THE WHOLE EMITTED DOCUMENT, NOT ITS FIRST LINE. An
+      opener needs a closer, so three hyphens at byte 0 open nothing unless a
+      later line closes them -- `***` alone, and `***` above a paragraph, are
+      both written `---` with no exception at all. The document that survives
+      and the document that is destroyed are IDENTICAL on line 1 and differ
+      several lines down, which is why the check this clause most invites, a
+      pattern match on the first line, answers a different question than the
+      one asked. What an implementation owes is §1a's test: read the emitted
+      bytes with its own parser.
+
+      WHICH break moves is not pinned, because more than one departure
+      restores §1 and §1a already says to take the smallest. Usually it is the
+      break at byte 0. Where the writer itself PROMOTED something else there --
+      hoisting a definition below the body can leave a paragraph at the head --
+      the text at byte 0 is not the writer's to respell, and the departure
+      available is to respell the CLOSER instead. What IS pinned is the
+      spelling a moved break takes, `***`, for the reason this clause exists at
+      all: a construct left with two admissible spellings normalizes two ways,
+      and an exception is no more exempt from that than the rule is.
+
+      STATED HERE RATHER THAN LEFT TO §1a. §1a makes the deviation conformant
+      wherever it is reached, and this clause would still read as though no
+      deviation were permitted. A clause that reads unconditionally is applied
+      unconditionally: an engine that has this right invites a later reader to
+      file it as a defect against this section and revert it, which has cost
+      one engine a ticket already (carve-rs#732). When the marker reaches the
+      AST (carve#976) the writer reproduces what the author wrote, no leading
+      `---` is manufactured from anything, and this exception is removed with
+      the clause it qualifies.
+
       This is where §6 runs out, and it runs out for the reason §6 itself
       gives. §6 leaves a spelling alone because "those are the author's
       choices AND THE AST RECORDS THEM", and the second half is the whole of
