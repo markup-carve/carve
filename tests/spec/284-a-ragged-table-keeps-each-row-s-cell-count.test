@@ -1,0 +1,39 @@
+A ragged table keeps each row's cell count
+
+```
+| ~x~ |
+| a | b |
+.
+<table>
+  <tbody>
+    <tr><td><s>x</s></td></tr>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| |x |
+|---|
+| y |
+.
+<table>
+  <thead><tr><th></th><th>x</th></tr></thead>
+  <tbody>
+    <tr><td>y</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| h |
+|---|
+| |x |
+.
+<table>
+  <thead><tr><th>h</th></tr></thead>
+  <tbody>
+    <tr><td></td><td>x</td></tr>
+  </tbody>
+</table>
+```
