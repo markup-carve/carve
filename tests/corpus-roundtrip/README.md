@@ -101,6 +101,27 @@ the corpus instead (`a link definition written before a footnote stays before
 it`), where `compare:impls` checks the three engines against each other on the
 `carve` target. Once the pin moves past that fix, it can be added here as bytes.
 
+## 12-thematic-break-spellings
+
+Not an escaping case either. PART 11 §6 leaves a construct's spelling alone
+because the AST records it, and `thematic_break` recorded no marker until
+carve#976 gave it one - so all three writers normalized `***` and `___` to
+`---`, which §6a pinned as the interim answer while the field was missing.
+
+The document writes all three spellings, and writes two of them where a writer
+is most likely to lose the mark: inside a block quote and inside a list item,
+both of which re-emit their children through a prefix. Expected output is the
+input, byte for byte.
+
+It also pins the interaction with §1a, which is why the document OPENS with a
+break. Frontmatter is a `---` at byte 0 plus a bare `---` closer below it, so a
+writer that normalizes the leading `___` manufactures frontmatter out of a
+document that had none, and §1a licenses a respelling to escape it. Measured
+before the field landed, the three engines took three different routes through
+that: carve-js and carve-php respelled EVERY break to `***`, carve-rs respelled
+only the leading one. Reproducing the author's `___` removes the collision
+instead of paying for it, and the three converge on the identity.
+
 ## Regenerating
 
 Do **not** regenerate expected files from an implementation's current output -

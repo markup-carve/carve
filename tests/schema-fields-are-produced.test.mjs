@@ -58,7 +58,6 @@ const OPT_IN_ONLY = {
 
 /** Fields permitted by the schema before the corresponding engine rollout. */
 const ENGINE_ROLLOUT_PENDING = {
-  'thematic_break.marker': 'markup-carve/carve#976: engine support lands before the final pin bump',
 }
 
 /**

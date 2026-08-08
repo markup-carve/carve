@@ -138,6 +138,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **BREAKING: a `thematic_break` carries the marker the author wrote, and the
+  writer reproduces it.** `---`, `***` and `___` are three spellings of one
+  construct, and the tree kept none of them - so PART 11 §6, which leaves a
+  spelling alone BECAUSE THE AST RECORDS IT, could not be applied to the break
+  at all, and §6a pinned `---` as the interim answer. PART 12 §3 gives the node
+  a `marker` field, absent for the default `-`, and §6a is removed with the pin
+  it held. `***` now comes back as `***`, `___` as `___`, and a tree with no
+  marker still writes `---` - so a converter's tree and every document written
+  before the field get the spelling Carve teaches. The field carries the
+  CHARACTER only: `***` and `*****` are one spelling, per the run-length ruling
+  above.
+
 - **BREAKING: `beforeRender` takes a read-only context, not the document alone.**
   The hook runs before the render starts, so a hook that produces output of its
   own had nothing to inherit and rendered with defaults: a table-of-contents

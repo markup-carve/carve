@@ -5440,8 +5440,9 @@ EOF = (* end of file *) ;
       of them changes the document, which is the thing §1 forbids.
 
       WHY IT NEEDS SAYING, measured across six shapes (carve#994). Every one of
-      them follows its own clause correctly -- §6a writes a thematic break
-      `---` with no exception stated, PART 12 §10 hoists definitions to
+      them follows its own clause correctly -- the break rule then in force
+      wrote a thematic break `---` with no exception stated (§6a, since removed
+      by carve#976), PART 12 §10 hoists definitions to
       document level and the writer emits the tree's order, PART 9 §5 reads a
       cell's first character as its alignment marker -- and three of the six
       destroy the document outright. No clause said the emitted document must
@@ -5455,9 +5456,13 @@ EOF = (* end of file *) ;
       byte 0 -- also covers a relocated definition promoting a block to byte 0
       and a block whose indentation the writer mixed, neither of which it was
       written for. A general rule was doing general work before it was written
-      down. §6a's own text still says `---` unconditionally; stating the
-      exception there is tracked at carve#961, and until it lands this section
-      is what makes the deviation conformant rather than a divergence.
+      down. §6 now says the writer reproduces the author's marker and still
+      states no exception; stating it there is tracked at carve#961, and until
+      it lands this section is what makes the deviation conformant rather than
+      a divergence. Recording the marker does not retire the deviation -- a
+      `---` the author WROTE is reproduced faithfully and can still gain a
+      frontmatter closer from a later break, which is the shape §6a's
+      normalization only made more common.
 
    2. THE ESCAPING RULE -- NORMATIVE. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
@@ -5638,8 +5643,9 @@ EOF = (* end of file *) ;
 
    6. WHAT IS NOT THE WRITER'S JOB. `fmt` does not re-wrap prose, reorder
       attributes, or respell a construct to a synonym (`*` vs `-` bullets,
-      ordered-list dialect). Those are the author's choices and the AST records
-      them; changing one would satisfy §1 while still surprising the author.
+      ordered-list dialect, thematic-break marker). Those are the author's
+      choices and the AST records them; changing one would satisfy §1 while
+      still surprising the author.
 
       FENCE LENGTH WAS A THIRD EXAMPLE HERE AND IS NOT ONE (carve#1000). It is
       removed rather than implemented, on this section's own second half: a
@@ -5686,9 +5692,23 @@ EOF = (* end of file *) ;
       documented form into one documented nowhere. That is the concrete harm
       behind the general rule.
 
-   6a. A THEMATIC BREAK IS WRITTEN `---` -- NORMATIVE. The canonical writer
-      emits a thematic break as three hyphens whatever the author wrote, so
-      `***` and `___` both come back as `---`.
+      THE THEMATIC BREAK JOINS IT ON THE SAME TERMS (carve#976), and needed the
+      same catching up. `---`, `***` and `___` are three spellings of one
+      construct; until now `thematic_break` recorded none of them, so this
+      section's second half was false for it and could not be applied, and §6a
+      pinned `---` in the meantime rather than leaving three writers to pick
+      separately. The AST RECORDS the character now -- `marker` (PART 12 §3) --
+      and the writer reproduces it, so `***` comes back as `***` and `___` as
+      `___`. §6a is REMOVED with the pin it held, which is what its own text
+      said would happen.
+
+      THE MARKER IS THE CHARACTER, NOT THE RUN LENGTH (carve#1000). `***` and
+      `*****` are ONE spelling here and both come back as `***`: three
+      characters is the width §6a already pinned, applied to whichever character
+      the field names. The argument for recording a length was this section's
+      own mention of FENCE length by analogy, and that mention is the one
+      removed above -- so the analogy points at nothing, and no construct's run
+      length is recorded anywhere.
 
       EXCEPT WHERE `---` WOULD OPEN FRONTMATTER. A `---` line at byte 0 of the
       EMITTED document is the frontmatter opener, not a break. Spelling this
@@ -5723,47 +5743,15 @@ EOF = (* end of file *) ;
       all: a construct left with two admissible spellings normalizes two ways,
       and an exception is no more exempt from that than the rule is.
 
-      STATED HERE RATHER THAN LEFT TO §1a. §1a makes the deviation conformant
-      wherever it is reached, and this clause would still read as though no
-      deviation were permitted. A clause that reads unconditionally is applied
-      unconditionally: an engine that has this right invites a later reader to
-      file it as a defect against this section and revert it, which has cost
-      one engine a ticket already (carve-rs#732). When the marker reaches the
-      AST (carve#976) the writer reproduces what the author wrote, no leading
-      `---` is manufactured from anything, and this exception is removed with
-      the clause it qualifies.
-
-      This is where §6 runs out, and it runs out for the reason §6 itself
-      gives. §6 leaves a spelling alone because "those are the author's
-      choices AND THE AST RECORDS THEM", and the second half is the whole of
-      that argument: `thematic_break` records no marker (PART 12 §3), so there
-      is no author's choice in the tree for the writer to preserve and §6
-      cannot be applied as written. A rule that cannot be applied leaves the
-      question open rather than answering it, and this one was open long
-      enough for one construct to normalize two ways.
-
-      `---` AND NOT ONE OF THE OTHER TWO, on §6's own second argument. It is
-      the spelling Carve teaches: docs/cheatsheet.md writes `---` and names
-      `***` and `___` as its alternatives, the same relation `/*x*/` has to
-      `*/x/*` on the page §6 cites. Emitting the form the documentation
-      presents as the alternative is the concrete harm §6 ends on, reached
-      from the other direction.
-
-      THIS IS A PIN AND SAYS SO. §6's precedent is the whole answer here:
-      bold italic was two spellings, one AST and nothing pinning which to
-      emit, and it was settled by giving the AST the mark so the writer could
-      reproduce the author's. The thematic break is owed the same, tracked at
-      carve#976. When the marker reaches the AST, §6 governs again and this
-      clause is removed with the field that supersedes it -- so pinning `---`
-      today forecloses nothing.
-
-      THE FIELD CARRIES THE MARKER CHARACTER, NOT THE RUN LENGTH (carve#1000).
-      `***` and `*****` are one spelling for this purpose, and both come back
-      as `***` -- the three-character width this clause already pins for `---`,
-      applied to whichever character the field names. The argument for
-      recording a length was §6's own mention of FENCE length, by analogy; that
-      mention has been removed as unimplemented, so the analogy points at
-      nothing and no construct's run length is recorded anywhere.
+      AN ABSENT MARKER IS `---`, which is what a tree assembled by hand or by a
+      converter carries and what every document written before the field means.
+      That default is not arbitrary: `---` is the spelling Carve teaches
+      (docs/cheatsheet.md writes it and names `***` and `___` as its
+      alternatives), so a break with no authored choice to preserve is written
+      the documented way. §1a still outranks this, and the one deviation it
+      licenses here is real -- a `---` the writer emits at byte 0 can gain a
+      frontmatter closer from a later break, and respelling every break in the
+      document is the smallest departure that restores the invariant.
 
    6b. A FRONTMATTER OPENER IS WRITTEN `---yaml` -- NORMATIVE. The canonical
       writer spells the format token on the opening delimiter for EVERY
@@ -5772,7 +5760,8 @@ EOF = (* end of file *) ;
       `---toml`; nothing about the writer's output turns on which format the
       document named.
 
-      This is §6's other gap, and the same one: `---` and `---yaml` open the
+      This is §6's REMAINING gap, and the same one the thematic break had until
+      carve#976 closed it: `---` and `---yaml` open the
       same frontmatter (PART 1, "a bare `---` defaults to `yaml`"), so the two
       are synonyms with nothing in the tree to tell them apart.
 
@@ -6414,6 +6403,13 @@ EOF = (* end of file *) ;
                    every other marker flavor keeps (carve#480)
         strong     `children`, and `boldItalic` when the author wrote the
                    combined `/*…*/` form rather than nesting `*` around `/`
+        thematic_break
+                   `marker` when the author wrote `*` or `_` rather than the
+                   default `-` (PART 11 §6). It carries the CHARACTER only:
+                   `***` and `*****` are one spelling, and the run's LENGTH is
+                   recorded nowhere (carve#1000). Absent means `---`, so every
+                   tree written before this field, and every tree a converter
+                   assembles, decodes to the spelling Carve teaches (carve#976)
       An implementation MUST NOT invent a synonym, and MUST NOT expose an
       internal field the reference does not have. A consumer reading `href`
       must not have to know which engine produced the document.

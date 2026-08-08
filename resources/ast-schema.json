@@ -2757,6 +2757,7 @@
     "thematic_break": {
       "type": "object",
       "title": "thematic_break (block)",
+      "description": "`marker` is an author-choice field: the three spellings render alike, so a writer has to reproduce the one the author wrote.",
       "required": [
         "type"
       ],
