@@ -474,7 +474,7 @@ A row may name an issue only where one of those still declares the debt.
 |---|---|---|
 | carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together | every block and inline placed, except the two categories §4 exempts: a coalesced `text` run, and a table cell continued on a `+` line |
 | carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` | every block and inline placed, except the coalesced `text` runs §4 exempts |
-| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries a derived label in `ref` beside `rawRef` - though WHICH label diverges once the label carries inline markup ([carve#962](https://github.com/markup-carve/carve/issues/962)) | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the coalesced `text` runs §4 exempts |
+| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries a derived label in `ref` beside `rawRef`, the same label the other two publish - what remains open is which label it SHOULD be, a design question rather than a divergence ([carve#962](https://github.com/markup-carve/carve/issues/962)) | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the coalesced `text` runs §4 exempts |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
@@ -515,18 +515,38 @@ to carry as open: whether the serialized tree is pre- or post-resolve (carve#481
 and carve-rs and carve-php flattening an unresolved reference (carve#486), both
 answered and both closed.
 
-What is NOT settled is WHICH label `ref` carries when the label holds inline
-markup. Given a collapsed reference whose label is `` `code()` heading ``,
-carve-php publishes the heading's rendered text where the other two publish the
-authored label, and §3a's "the derived label" reads both ways. That one is
-declared in `resources/ast-value-divergence.txt`, which is why the carve-php row
-may cite it.
+What is NOT settled is WHICH label `ref` SHOULD carry when the label holds
+inline markup. The fleet is unanimous on it: given a collapsed reference whose
+label is `` `code()` heading ``, all three engines publish the heading's
+rendered text, `code() heading`. Measured on carve-js `5e3b723`, carve-rs
+`04f9284` and carve-php `9375df1`, each built from `main`.
 
-An earlier version of this paragraph recorded the opposite - none publishing
-`rawRef`, carve-php publishing `ref: ""` - and the rows above described the
-same. The engines moved and the page did not, which is the failure mode this
-table exists to prevent, so it is worth saying that a measured claim needs
-re-measuring rather than citing.
+**This paragraph said the opposite until 2026-08-08**, recording carve-php as
+publishing the rendered text where the other two published the authored label.
+That was true when written and stopped being true within hours: carve-js#875 and
+carve-rs#799 moved js and rs onto the rendered text the same afternoon. A screen
+written from the stale text then reasoned carve-php was the defective engine and
+filed against it, which would have made it the sole outlier and undone two
+merges.
+
+So what remains open is a design question rather than a divergence, and it is
+tracked at [carve#962](https://github.com/markup-carve/carve/issues/962): §3a's
+"the derived label" reads both ways, `rawRef` already holds the authored
+spelling, and if `ref` moved to the authored spelling too then the resolution key
+would be nowhere in the tree - `href` holds the SLUG (`#code-heading`), which is
+a different string from the key (`code() heading`).
+
+An earlier version of this paragraph recorded something different again - none
+publishing `rawRef`, carve-php publishing `ref: ""` - and the rows above
+described the same. The engines moved and the page did not, which is the failure
+mode this table exists to prevent.
+
+That has now happened to this section **twice**, the second time eleven lines
+below this warning. So the warning is worth stating as a rule rather than an
+observation: **a measured claim on this page needs re-measuring before it is
+cited, and citing it without re-measuring has produced a wrong ticket.** Every
+claim above now carries the engine SHA it was measured against, so a reader can
+see how old it is.
 
 The §7 clause the rows used to carry - carve-js and carve-rs leaving an
 `abbreviation_def` inside its container instead of hoisting it - is gone, and
