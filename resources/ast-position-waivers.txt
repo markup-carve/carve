@@ -55,24 +55,32 @@
 # because the node CANNOT be placed, not because nobody has placed it.
 #
 # Per ENGINE, per DOCUMENT and per TYPE, because `missing pos on "text"` is one
-# cause in `03-links-12` that §4 permits and a different cause in
-# `182-openers-past-the-nesting-cap-are-one-paragraph` that is an engine gap,
-# and a per-type line would name the first and hide the second - which is
-# exactly what the grouped report did.
+# cause in `237-a-continuation-row-carries-no-trailing-text` that §4 permits and
+# a different cause in `182-openers-past-the-nesting-cap-are-one-paragraph` that
+# is an engine gap, and a per-type line would name the first and hide the
+# second - which is exactly what the grouped report did.
 
 # ---- PERMITTED: a merged `text` run whose pieces are not adjacent ------------
 #
-# The §4 reassembly clause. An autolink unwrapped inside a link label
-# (03-links-12), the two halves of a table cell continued on a `+` line
-# (237, 249-4, 256-15/16/17, 63, 64), and line-block content rebuilt around the
-# indentation sentinel (41-line-blocks-9). All three engines omit; the clause
-# names the category, not the engine.
+# The §4 reassembly clause. The two halves of a table cell continued on a `+`
+# line (237, 249-4, 256-15/16/17, 63, 64), and line-block content rebuilt around
+# the indentation sentinel (41-line-blocks-9). All three engines omit; the
+# clause names the category, not the engine.
+#
+# `03-links-12` STOOD HERE and came off on 2026-08-08, one line per engine. It
+# was an autolink UNWRAPPED inside a link label: the label collapsed to a single
+# `text` run joined across the gap the autolink left, which is a value no offset
+# slices. §3a ended the unwrap - "a nested link and an autolink stay nodes"
+# (markup-carve/carve#967) - and all three engines now publish
+# `text > autolink > text` for `[pre <http://h> post](/u)`, each of the three
+# placed. Nothing is reassembled, so there is nothing for §4 to exempt, and a
+# waiver outliving its defect is a hole sized exactly to the old one
+# (markup-carve/carve#755).
 #
 # A CONTROL: these lines pin unchanged behavior, so no A/B over an engine can
 # fail on them. What is falsifiable is the declaration itself - see the three
 # directions above, each exercised in tests/ast-waivers.test.mjs.
 
-carve-js   03-links-12.crv                                        text  1  permitted
 carve-js   237-a-continuation-row-carries-no-trailing-text.crv    text  2  permitted
 carve-js   249-trailing-whitespace-after-a-block-marker-4.crv     text  2  permitted
 carve-js   256-table-cell-padding-must-be-a-space-15.crv          text  2  permitted
@@ -82,7 +90,6 @@ carve-js   41-line-blocks-9.crv                                   text  3  permi
 carve-js   63-table-multi-line-cell-continuation.crv              text  1  permitted
 carve-js   64-table-rowspan-with-multi-line-content.crv           text  1  permitted
 
-carve-rs   03-links-12.crv                                        text  1  permitted
 carve-rs   237-a-continuation-row-carries-no-trailing-text.crv    text  2  permitted
 carve-rs   249-trailing-whitespace-after-a-block-marker-4.crv     text  2  permitted
 carve-rs   256-table-cell-padding-must-be-a-space-15.crv          text  2  permitted
@@ -92,7 +99,6 @@ carve-rs   41-line-blocks-9.crv                                   text  3  permi
 carve-rs   63-table-multi-line-cell-continuation.crv              text  1  permitted
 carve-rs   64-table-rowspan-with-multi-line-content.crv           text  1  permitted
 
-carve-php  03-links-12.crv                                        text  1  permitted
 carve-php  237-a-continuation-row-carries-no-trailing-text.crv    text  2  permitted
 carve-php  249-trailing-whitespace-after-a-block-marker-4.crv     text  2  permitted
 carve-php  256-table-cell-padding-must-be-a-space-15.crv          text  2  permitted
