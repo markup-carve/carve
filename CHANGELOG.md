@@ -338,6 +338,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the same document with the blank line removed, which must render identically.
   No behavior changes; every one of the eight is what the engines already do.
 
+- **PART 9 §4: where the caption allowance STOPS is pinned on every host**
+  (carve#997). The clause has two halves - at most one blank line attaches, and
+  anything wider does not - and only the first was held by a document. Widening
+  `caption_slot` from `[blank_line], caption` to `{blank_line}, caption`, so that
+  any number of blank lines attaches, broke NOTHING in 856 documents: every
+  captioned document in the corpus had zero or one blank line, so not one of them
+  could tell "at most one" apart from "any number". New category
+  `282-two-blank-lines-detach-a-caption`, ten documents in five pairs, one pair
+  per captionable host. Each two-blank-line row pins the host UNCAPTIONED and the
+  `^ ` line as an ordinary paragraph, and is preceded by the same document with
+  one blank line, which attaches; without that control a row would be equally
+  satisfied by a reader that stopped attaching captions across a blank line at
+  all. The widening now breaks five documents where it broke none. No behavior
+  changes; carve-js, carve-php and carve-rs produce all ten of these outputs
+  today.
+
 - **PART 9 §17 L1a: a list item's first block does not decide loose or tight.**
   L1 asks whether the item holds a blank-line-separated second paragraph, not
   what its first block was. `- - a` followed by a blank line and `Body.` is
