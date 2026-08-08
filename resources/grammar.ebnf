@@ -5862,6 +5862,75 @@ EOF = (* end of file *) ;
       exception it calls principle-free, and it is confined to the one shape
       §4 names.
 
+   7b. A FOOTNOTE DEFINITION WITH NO BLOCKS IS WRITTEN WITH THE SENTINEL
+      `{empty}` -- NORMATIVE. A `footnote_definition` whose body holds NO
+      blocks is written as the marker, its separator space, and the SENTINEL
+      ATTRIBUTE BLOCK `{empty}`:
+
+        [^f]: {empty}
+
+      and NOT as `[^f]:`. The bare marker line is not a definition at all --
+      MARKER REQUIRES CONTENT (PART 2) says so in as many words, "`[^f]:`
+      followed by spaces and nothing else is a paragraph" -- so a writer
+      emitting it destroys the document: the definition degrades to a
+      paragraph, and every reference to it degrades to literal text with it.
+
+      §1a IS THE RULE THIS SERVES. Spelling the construct by its own rule
+      emits bytes that do not re-parse to the tree they were written from, so
+      §1 wins and the writer takes the smallest departure that restores it.
+      THE PARSE RULE IS UNCHANGED HERE: `[^f]:` stays a paragraph, as corpus
+      267-a-definition-marker-s-separator-is-a-space-and-it-is-a-run-9 and
+      corpus 134-footnote-definition-requires-an-inline-body pin it. What this
+      clause governs is what the WRITER emits, which is the half that was
+      defective in two engines (carve#999).
+
+      THE SENTINEL MUST BE A VALID ATTRIBUTE BLOCK, and this is the part a
+      later reader gets wrong, because the two spellings that LOOK like the
+      empty form are the two that do not work:
+
+        [^f]: {empty}   body EMPTY                            -- works
+        [^f]: {#i}      body EMPTY                            -- works
+        [^f]: { }       body holds the literal text `{ }`     -- does NOT
+        [^f]: {}        body holds the literal text `{}`      -- does NOT
+
+      `block_attributes` requires AT LEAST ONE attribute and there is no
+      block-level blessed-empty form -- PART 4 says it of `{}` in as many
+      words, and `{ }` is blessed INLINE only -- so on this line neither run
+      is an attribute block. Both stay CONTENT, the body then holds a text
+      node the author never wrote, and §1 fails exactly as it does for the
+      bare marker: a different shape, the same defect. Measured in all three
+      engines rather than derived.
+
+      SO EVERY AVAILABLE SPELLING CARRIES MEANING. `{empty}` is a BOOLEAN
+      ATTRIBUTE (PART 9 §14): a bare identifier with no value, rendered
+      `name=""` wherever attributes survive, so `{empty}` on an ordinary
+      paragraph's attribute line gives `<p empty="">`. It is inert HERE
+      because a footnote definition's body is its own container, and a
+      block-attribute line with no following block inside that container is
+      dropped (PART 9 §15 A4) -- the attribute reaches neither the endnote
+      `<li>`, nor the next block, nor the next definition. That is a PARSE
+      RULE and not a property of the word: nothing about `empty` is
+      semantically empty, and it is stated here so the inertness does not
+      read as accidental.
+
+      WHY THE BARE WORD AND NOT AN ID, A CLASS OR A KEY/VALUE. All four reach
+      the same empty body and all four are discarded on this node, so the
+      choice is among constructs that mean something rather than between one
+      that does and one that does not -- there is no meaningless candidate to
+      prefer, and the grammar is why. §1a asks for the SMALLEST departure and
+      the bare word is it: an id also occupies the document-wide identifier
+      space, a class is a name a stylesheet can match, and a key/value invents
+      two tokens where one will do.
+
+      ONE SPELLING, PINNED HERE RATHER THAN PER ENGINE. Any of the four would
+      have worked, which is precisely why the writer cannot be left to pick:
+      a sentinel each engine invents is three sentinels, and canonical output
+      stops being the same bytes everywhere. `empty` is the word one engine
+      had already emitted before any clause named it (carve-js#911), so
+      pinning it costs no writer a second change -- and a reader meeting
+      `{empty}` in formatted source now has this clause to look it up in,
+      which is the objection carve#999 opened with.
+
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
       the canonical writer and does not follow §2. It has a different
       re-parser to answer to, so it escapes on a different rule:

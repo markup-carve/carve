@@ -1184,7 +1184,24 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
       }
       if (!state.footnoteDefs.has(label)) {
         // FIRST definition wins (PART 9R state)
-        state.footnoteDefs.set(label, parseBlocks(bodyLines, state, false))
+        const bodyBlocks = parseBlocks(bodyLines, state, false)
+        if (bodyBlocks.length === 0) {
+          // A body holding NO BLOCKS and a body holding one block that RENDERS
+          // NOTHING are two different documents, and PART 9R R2 spells their
+          // endnote items differently -- the second keeps a blank line where
+          // the block was, the first has nothing to keep. This file has no
+          // comment BLOCK: a comment line is skipped during layout (SS21), so
+          // a body whose only content was a comment arrives here as zero
+          // blocks and is indistinguishable from an empty one. All three
+          // engines keep the node and emit the blank line for it, so the two
+          // are told apart HERE, on the source, and the answer is carried to
+          // the renderer rather than re-derived from a block count that cannot
+          // carry it.
+          bodyBlocks.holdsAnInvisibleBlock = bodyLines.some(
+            (l) => COMMENT_LINE.test(l) || COMMENT_FENCE.test(l),
+          )
+        }
+        state.footnoteDefs.set(label, bodyBlocks)
       }
       continue
     }
