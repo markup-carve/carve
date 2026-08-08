@@ -75,7 +75,9 @@ interface CarveExtension {
   matchInline?: InlineMatcher          // parse stage: add inline syntax
   matchBlock?: BlockMatcher            // parse stage: add block syntax
   afterParse?(doc): Document           // transform the AST
-  beforeRender?(doc): Document         // transform before rendering
+  beforeRender?(doc, ctx): Document    // transform before rendering; `ctx` is
+                                       // read-only: options, effective mode,
+                                       // whether the target is HTML
   blockRenderers?: Record<string, …>   // render a block node type -> HTML
   inlineRenderers?: Record<string, …>  // render an inline node type -> HTML
   staticBlockRenderers?: …             // build-time (mode: "static") variants

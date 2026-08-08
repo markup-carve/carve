@@ -138,6 +138,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **BREAKING: `beforeRender` takes a read-only context, not the document alone.**
+  The hook runs before the render starts, so a hook that produces output of its
+  own had nothing to inherit and rendered with defaults: a table-of-contents
+  entry and the heading it was cloned from disagreed whenever a render option
+  (a `symbols` map, the raw-HTML policy) reached inline rendering. The context
+  carries the render options, the effective mode for the target format, and
+  whether the final target is HTML - the last so an extension emitting HTML in
+  the hook can skip its transform on the Markdown, plain-text and ANSI targets
+  and leave the source node for that renderer. It is READ-ONLY as a matter of
+  contract: the guards run after the hooks, so a hook handed live options could
+  clear the field a guard measures. The effective mode is `"interactive"` on
+  every non-HTML target whatever the caller passed, which §2.5 now says in place
+  of the claim that those renderers force `"static"` - no engine did that, and
+  the same section already said `renderStatic` is the HTML path only.
+
 - **PART 11 §6 no longer protects a fence's length.** The section named three
   author choices `fmt` must not respell, and its own argument backs two of them:
   a spelling is preserved because THE AST RECORDS IT, and `code_block` records

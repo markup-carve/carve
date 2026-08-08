@@ -143,8 +143,8 @@ The engine does **not** sniff the target. Degradation is set by a render
 **mode** - `"interactive"` (default) or `"static"` - plus the output format:
 
 - **Output format.** Markdown, plain text, and ANSI are inherently static and
-  force `"static"`; the label-caption rule and source-fallbacks apply
-  unconditionally there.
+  degrade unconditionally; the label-caption rule and source-fallbacks apply
+  there whatever mode the caller passed.
 - **Mode (HTML only).** `"interactive"` renders the live forms; `"static"`
   renders through each extension's `renderStatic` path (and the core caption
   floor for any unconsumed label). See the

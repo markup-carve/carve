@@ -194,9 +194,64 @@ An extension is a named unit contributing any subset of four things, run as:
 ### 2.2 Transforms
 
 - afterParse `(Document) -> Document` (collection/inspection)
-- beforeRender `(Document) -> Document` (mutation)
+- beforeRender `(Document, BeforeRenderContext) -> Document` (mutation)
 - Every extension's afterParse runs before any extension's beforeRender; within a
   phase, registration order.
+
+#### The beforeRender context
+
+`beforeRender` runs before the render starts, so a hook that produces output of
+its own has nothing to inherit: with the document alone in hand it renders with
+DEFAULTS. The table-of-contents extension is the case that shows it, because it
+builds its `<nav>` in exactly that hook - the entry and the heading it was cloned
+from disagree whenever a render option reaches inline rendering. Given
+
+```
+{#h}
+# :ok: h
+```
+
+and a symbols map of `ok` to `OK`, a hook rendering with defaults produces
+
+```html
+<nav class="toc">
+<ul>
+<li><a href="#h">:ok: h</a></li>
+</ul>
+</nav>
+<section id="h">
+  <h1>OK h</h1>
+</section>
+```
+
+The context is what the hook inherits instead. It carries:
+
+- **the render options** the conversion was called with, so a hook that renders
+  something renders it the way the caller asked;
+- **the effective mode** for the target format. It is `"interactive"` for the
+  Markdown, plain-text and ANSI renderers whatever the caller passed, because
+  static rendering is an HTML-only concern (§2.5): a caller reusing one set of
+  options across formats gets unchanged non-HTML output;
+- **whether the final target is HTML**. An extension that emits HTML in this hook
+  reads this to skip its transform on a non-HTML target and leave the source node
+  for that renderer to emit as source.
+
+The context is **READ-ONLY**, and that is part of the contract rather than an
+implementation detail. A hook must not be able to talk the renderer out of the
+caller's own hardening: the guard that reads an option runs after the hooks, so a
+hook handed the live options could clear the very field that guard measures.
+carve-rs met that shape from the other side - its `max_length` cap sat behind
+these hooks, and because the hook took the document by value a hook could empty
+the field the cap measured. An implementation therefore passes a value the hook
+cannot write back through: a frozen copy that is not the object the renderer is
+handed, or an immutable reference. Where a nested value is the caller's own
+object, read-only remains the contract even where the language cannot enforce it
+past the first level.
+
+The spelling is implementation-idiomatic (accessor methods in carve-rs and
+carve-php, readonly properties in carve-js); what an implementation MUST carry is
+the three items above. `afterParse` takes no context: it runs before rendering is
+a question at all.
 
 ### 2.3 Renderers
 
@@ -216,8 +271,11 @@ A render carries a **mode** - a render option, not document syntax:
 - `"interactive"` (default) - online HTML; extensions render their interactive
   form (live tabs, mermaid via a client script, KaTeX).
 - `"static"` - HTML for a medium that cannot interact or run client scripts
-  (print, PDF source, archival HTML). The Markdown, plain-text, and ANSI
-  renderers force `"static"` and the caller cannot override it.
+  (print, PDF source, archival HTML). The mode is an HTML concern: the Markdown,
+  plain-text and ANSI renderers ignore it, reaching the same end by flattening
+  (see the end of this section), so their output does not vary with it and the
+  effective mode a `beforeRender` context reports on those targets is
+  `"interactive"` whatever the caller passed (§2.2).
 
 `"print"`, `"email"`, and similar names are **reserved** for future named
 presets; an implementation MUST reject an unknown mode value rather than guess.
