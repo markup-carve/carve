@@ -25,7 +25,28 @@
 # one field behaving one way everywhere it appears.
 #
 # Format: <type.field>  <document-count>  <who diverges and where it is tracked>
-
-link.ref                  2  carve-php publishes the heading's RENDERED text where carve-js and carve-rs publish the authored label, so a collapsed `[`code()` heading][]` gives "code() heading" against "`code()` heading" - the three agree on href and rawRef, and §3a's "the derived label" reads both ways when the label carries inline markup (carve#962)
-text.value                1  carve-php's table caption keeps the trailing space its own HTML drops, so corpus 268-6 publishes "Cap " where carve-js and carve-rs publish "Cap" - invisible to the HTML gate, which all three pass (carve#963)
+#
+# EMPTY, and re-measured rather than assumed. Both lines this file carried until
+# 2026-08-08 were deleted on a full run of `npm run ast:check` over 870 samples
+# against carve-js 79175a5, carve-rs d855367 and carve-php e2c3a97, each built
+# from a fresh clone of main:
+#
+#   link.ref    declared 2 documents, measured 0. The engines had disagreed
+#               about which label a collapsed reference publishes; ruled at
+#               carve#962 and implemented by all three.
+#   text.value  declared 1 document, measured 0. carve-php kept the trailing
+#               space on a caption line; fixed under carve#963.
+#
+# WHAT AN EMPTY FILE DOES NOT MEAN. It says the three agree on every scalar in
+# 870 documents, and the corpus is what it can say. A shape the corpus does not
+# hold is a shape this file has never measured - so deleting a line is evidence
+# about the corpus, not a certificate about the engines.
+#
+# Measured off-corpus while emptying it: in a collapsed reference whose label
+# holds `/emphasis/`, a `\_` escape, a `:symbol:` shortcode or a nested link,
+# carve-php derives a different resolution key from carve-js and carve-rs. That
+# does NOT belong here. This file is for divergences the HTML gate cannot see,
+# and those four shapes change the HTML too - carve-php leaves the reference
+# unresolved, or slugs the heading differently - so they are ordinary corpus
+# conformance, owed a fixture rather than a line (markup-carve/carve#1011).
 
