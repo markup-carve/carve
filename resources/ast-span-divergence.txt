@@ -58,30 +58,49 @@
 #
 # Format: <type> (presence|extent)  <document-count>
 #
-# Measured 2026-08-07 over 833 documents (830 corpus plus 3 synthetic), at
-# carve 8ad86ee, carve-js 39b9223, carve-rs 0d560cc, carve-php d45e250.
-# 328 of those documents carry at least one span the three engines do not agree
-# on, over 16920 spans compared.
+# Measured 2026-08-08 over 883 documents (880 corpus plus 3 synthetic), at
+# carve 02a947c, carve-js e35cfcb, carve-rs fa4d3f7, carve-php 177989a.
+# 353 of those documents carry at least one span the three engines do not agree
+# on, over 18069 spans compared.
+#
+# TEN counts moved since the 2026-08-07 measurement above and the ROW SET did
+# not: no row is new and none agreed, so this is the same set of disagreements
+# over a corpus 50 documents larger.
+#
+# EIGHT of the ten rose, which 50 new documents account for. TWO FELL -
+# block_quote 8 to 7 and text 3 to 2 - and corpus growth cannot lower a count,
+# since each document is judged on its own. Neither is corpus churn either: no
+# corpus document has been deleted or renamed since those numbers were written,
+# and the one that was MODIFIED does not account for either row - swapping its
+# earlier content back in leaves both rows exactly where they are. So one
+# document per row that used to disagree now agrees, which is an engine moving
+# onto the other two. Not carve-js: rebuilt at the commit before its most recent
+# behavior change, the block_quote row measures the same 7 over this corpus.
+#
+# WHICH document left is not recoverable here, and that is this file's design
+# rather than an omission - it records counts precisely so it does not churn on
+# every corpus insertion (see the header above). A count falling is the signal;
+# the engine's own history is where the reason lives.
 
 # ---- EXTENT: PART 12 §4, markup-inclusive (markup-carve/carve#913) ----------
 
-list                    (extent)  129
-table_row               (extent)  66
-list_item               (extent)  52
+list                    (extent)  143
+table_row               (extent)  74
+list_item               (extent)  55
 paragraph               (extent)  47
-footnote                (extent)  40
-definition_term         (extent)  26
-definition_description  (extent)  21
+footnote                (extent)  43
+definition_term         (extent)  27
+definition_description  (extent)  22
 comment                 (extent)  11
-block_quote             (extent)  8
+block_quote             (extent)  7
 hard_break              (extent)  7
+admonition              (extent)  4
+div                     (extent)  4
 frontmatter             (extent)  4
 table                   (extent)  4
 table_cell              (extent)  4
-admonition              (extent)  3
 definition_list         (extent)  3
-div                     (extent)  3
-text                    (extent)  3
+text                    (extent)  2
 code                    (extent)  1
 heading                 (extent)  1
 insert                  (extent)  1
