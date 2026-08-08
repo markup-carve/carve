@@ -2764,6 +2764,14 @@
         "type": {
           "const": "thematic_break"
         },
+        "marker": {
+          "enum": [
+            "-",
+            "*",
+            "_"
+          ],
+          "description": "Thematic-break character AS AUTHORED (PART 11 section 6). Absent means the default `-`."
+        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
