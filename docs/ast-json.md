@@ -60,6 +60,9 @@ Author-choice fields preserve a spelling when it differs from the default.
 `list.bulletChar` records `*` while absence means `-`; likewise,
 `thematic_break.marker` records `*` or `_` while absence means `-`. A writer
 reproduces the recorded character and uses the default when the field is absent.
+The marker records the CHARACTER only: `***` and `*****` are one spelling, and
+no run length is recorded, on the same reasoning that took fence length off this
+list in carve#1000.
 
 **The tree is pre-resolve** (§3a). It records what the author wrote, not what the
 document resolves to. `[getting started][]` publishes a `link` carrying `ref` and
