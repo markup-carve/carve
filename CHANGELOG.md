@@ -159,6 +159,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   says otherwise. Prose only: no production, no corpus document and no engine
   behavior moves.
 
+- **PART 11 §1a: the round-trip invariant outranks the per-construct writer
+  rules.** §1 says what `fmt` must achieve and §2 through §11 say how it spells
+  each construct, and nothing said which wins. Six shapes were measured where a
+  writer follows its own clause correctly and emits a document that re-parses as
+  something else, three of them destroying the document outright. The invariant
+  now governs: the per-construct rule yields, the test is on the EMITTED BYTES
+  read back with the writer's own parser rather than on the source, a deviation
+  taken to satisfy §1 is conformant and must not be corrected back, and the
+  latitude reaches only the smallest departure that restores the invariant - it
+  is not a license to respell. Stated over `parse(fmt(x)) == parse(x)`, which is
+  what §1 requires; the HTML form is weaker and satisfying it alone is still a
+  failure.
+
 - **PART 7 assigns the whitespace terminals by ROLE, and pins their
   cardinality.** Twenty-five productions took the `space` terminal and a tab
   satisfied nine of them in the implementations, which split four ways on which.

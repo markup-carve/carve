@@ -5405,6 +5405,60 @@ EOF = (* end of file *) ;
       stated rather than left implied: an implementation that satisfies §2 can
       still fail §1, and §4's comparison is built to be unaffected by that.
 
+   1a. THE INVARIANT OUTRANKS THE PER-CONSTRUCT RULES -- NORMATIVE. §1 states
+      what the writer must ACHIEVE; §2 through §11 state how it SPELLS each
+      construct. Where spelling a construct by its own rule would emit a
+      document that does not re-parse to the tree it was written from, §1 wins
+      and the per-construct rule yields. A writer that deviates for that reason
+      is CONFORMANT: its output must not be corrected back to the literal
+      reading of the rule it departed from, and the deviation is not a defect
+      to be filed against it.
+
+      THE TEST IS ON THE EMITTED BYTES, not on the source and not on the
+      construct in isolation. Whether an emitted run opens what it appears to
+      open is a property of the WHOLE output document: an opener's meaning
+      depends on what precedes it, an opener that needs a closer is not one
+      without it, and the same three characters at byte 0 open something they
+      do not open on line 12. So what an implementation owes is to read its own
+      OUTPUT with its own parser. Pattern-matching the SOURCE cannot answer the
+      question -- the source is the document that already round-trips, and the
+      bytes at risk are the ones the writer just produced.
+
+      THE INVARIANT IS §1's, WHICH IS THE PARSE FORM. `parse(fmt(x)) ==
+      parse(x)` is the requirement. `to_html(fmt(x)) == to_html(x)` is a
+      consequence of it and is strictly weaker -- §2a already says that holding
+      is necessary, not sufficient -- so a writer satisfying only the HTML form
+      still fails this section. The distinction is easy to lose because the
+      HTML form is what a person can SEE, and reports of these defects are
+      usually written against it; the rule is stated over the parse.
+
+      IT IS NOT A LICENSE TO RESPELL. §2a and §6 are unchanged. What this
+      section permits is the SMALLEST departure that restores the invariant,
+      and another spelling of the SAME construct is preferred over a different
+      construct that happens to render alike. Dropping content, re-wrapping
+      prose or swapping a construct for a synonym are not available here: each
+      of them changes the document, which is the thing §1 forbids.
+
+      WHY IT NEEDS SAYING, measured across six shapes (carve#994). Every one of
+      them follows its own clause correctly -- §6a writes a thematic break
+      `---` with no exception stated, PART 12 §10 hoists definitions to
+      document level and the writer emits the tree's order, PART 9 §5 reads a
+      cell's first character as its alignment marker -- and three of the six
+      destroy the document outright. No clause said the emitted document must
+      re-parse to its own tree, so each decision was locally reasonable and
+      nothing bound them together. This section is that binding.
+
+      ONE ENGINE ALREADY IMPLEMENTS IT, which is why this is written as a rule
+      rather than proposed as a design. carve-rs routes its finished bytes
+      through the parser's own opener test instead of pattern-matching the
+      first line, and that ONE deviation -- reached for the thematic break at
+      byte 0 -- also covers a relocated definition promoting a block to byte 0
+      and a block whose indentation the writer mixed, neither of which it was
+      written for. A general rule was doing general work before it was written
+      down. §6a's own text still says `---` unconditionally; stating the
+      exception there is tracked at carve#961, and until it lands this section
+      is what makes the deviation conformant rather than a divergence.
+
    2. THE ESCAPING RULE -- NORMATIVE. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
 
