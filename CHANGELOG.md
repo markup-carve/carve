@@ -138,6 +138,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 11 §6 no longer protects a fence's length.** The section named three
+  author choices `fmt` must not respell, and its own argument backs two of them:
+  a spelling is preserved because THE AST RECORDS IT, and `code_block` records
+  no fence - neither its length nor its character. All three engines narrow a
+  four-backtick fence to three, and all three widen a fence to clear a run in
+  its content, so the round trip holds through both and the author's length is
+  load-bearing nowhere. The example is removed rather than implemented. The same
+  ruling answers the run-length question left open on the thematic break: the
+  marker field tracked at carve#976 carries the CHARACTER only, so `***` and
+  `*****` both come back as `***`.
+
 - **NORMATIVITY: the executable artifacts are derived checkers, and decide
   nothing.** `resources/carve-core.ohm` and `scripts/spec/*.mjs` execute what
   `resources/grammar.ebnf` states so a contradiction inside it becomes visible;
