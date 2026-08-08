@@ -1,0 +1,45 @@
+Adjacent block openers in an attached run stay separate
+
+```
+- x
++
+> q
++
+> q
+.
+<ul>
+  <li>x
+    <blockquote><p>q</p></blockquote>
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- x
++
+| a |
+|---|
+| b |
++
+| a |
+|---|
+| b |
+.
+<ul>
+  <li>x
+    <table>
+      <thead><tr><th>a</th></tr></thead>
+      <tbody>
+        <tr><td>b</td></tr>
+      </tbody>
+    </table>
+    <table>
+      <thead><tr><th>a</th></tr></thead>
+      <tbody>
+        <tr><td>b</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+```

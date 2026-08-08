@@ -6250,6 +6250,20 @@ EOF = (* end of file *) ;
       to. Native `=` header markers remain preferred wherever they can express
       the header, including when a later body row is wider. (carve#1030)
 
+  10c. ADJACENT BLOCKS THAT WOULD MERGE KEEP THE CONTINUATION MARKER --
+       NORMATIVE. In a tight list item, deciding whether to retain `+` is a
+       property of the emitted BLOCK SEQUENCE, not only of each child in
+       isolation. If two adjacent children written at the item's content
+       column would re-parse as one block, the writer emits each child from the
+       first such child onward at the marker column, preceded by its own `+`.
+
+       This includes adjacent block quotes, tables, line blocks, definition
+       lists, and lists whose marker kind is compatible. A single block opener
+       that cannot fold into the paragraph above it remains canonically
+       indented at the content column. A blank line is not the fallback: it
+       would make a tight item loose and change its rendered structure.
+       (carve#1033)
+
   11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE. A resolved
       cross-reference is emitted as a Markdown link to the target heading's id,
       and the target heading gains an explicit `{#id}` suffix. Both halves are
