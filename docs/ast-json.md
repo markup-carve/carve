@@ -99,6 +99,28 @@ For the collapsed form `[getting started][]`, `ref` is the **derived** label
 (`getting started`) - the label the reference resolves by. `rawRef` holds the
 authored spelling, so the empty brackets are not lost.
 
+Where the label carries inline markup the two readings of "derived" part, and
+**`ref` is the resolution key** - the string the reference matched on, not the
+label as authored. Given
+
+```
+# `code()` heading
+
+[`code()` heading][]
+```
+
+the reference publishes:
+
+```json
+{ "type": "link", "href": "#code-heading", "ref": "code() heading", "rawRef": "[`code()` heading][]" }
+```
+
+The authored label is recoverable from `rawRef` by stripping its brackets; the
+key is recoverable from nothing, because `href` holds the SLUG
+(`#code-heading`), a different string from the key. So `ref` carrying the key
+adds information, where carrying the authored label would only repeat `rawRef`.
+Ruled at [carve#962](https://github.com/markup-carve/carve/issues/962).
+
 **Type identifiers come from the [profiles vocabulary](/profiles)** (§1-2), and
 are `snake_case` always. The AST carries a few types a profile cannot deny -
 `document`, `smart_punctuation`, `literal_inline`, `tag`, `abbreviation_def` -
@@ -474,7 +496,7 @@ A row may name an issue only where one of those still declares the debt.
 |---|---|---|
 | carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together | every block and inline placed, except the two categories §4 exempts: a coalesced `text` run, and a table cell continued on a `+` line |
 | carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` | every block and inline placed, except the coalesced `text` runs §4 exempts |
-| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries a derived label in `ref` beside `rawRef`, the same label the other two publish - what remains open is which label it SHOULD be, a design question rather than a divergence ([carve#962](https://github.com/markup-carve/carve/issues/962)) | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the coalesced `text` runs §4 exempts |
+| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the coalesced `text` runs §4 exempts |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
@@ -515,11 +537,18 @@ to carry as open: whether the serialized tree is pre- or post-resolve (carve#481
 and carve-rs and carve-php flattening an unresolved reference (carve#486), both
 answered and both closed.
 
-What is NOT settled is WHICH label `ref` SHOULD carry when the label holds
-inline markup. The fleet is unanimous on it: given a collapsed reference whose
-label is `` `code()` heading ``, all three engines publish the heading's
-rendered text, `code() heading`. Measured on carve-js `5e3b723`, carve-rs
-`04f9284` and carve-php `9375df1`, each built from `main`.
+WHICH label `ref` carries when the label holds inline markup is now RULED, and
+the fleet already implements the ruling: given a collapsed reference whose label
+is `` `code()` heading ``, all three engines publish the heading's rendered
+text, `code() heading`. Measured on carve-js `5e3b723`, carve-rs `04f9284` and
+carve-php `9375df1`, each built from `main`.
+
+`resources/ast-value-divergence.txt` still declares `link.ref` as a divergence,
+in the pre-merge terms this paragraph used to use. That file is filled in by
+`npm run ast:check` driving three BUILT satellites, and it has not been re-run
+since js and rs moved. The ruling asks no engine to change, so what that line
+owes is a re-measurement rather than a fix - and until it is re-run, the SHAs
+above are the measured side and the ledger is the older claim.
 
 **This paragraph said the opposite until 2026-08-08**, recording carve-php as
 publishing the rendered text where the other two published the authored label.
@@ -529,12 +558,13 @@ written from the stale text then reasoned carve-php was the defective engine and
 filed against it, which would have made it the sole outlier and undone two
 merges.
 
-So what remains open is a design question rather than a divergence, and it is
-tracked at [carve#962](https://github.com/markup-carve/carve/issues/962): §3a's
-"the derived label" reads both ways, `rawRef` already holds the authored
-spelling, and if `ref` moved to the authored spelling too then the resolution key
-would be nowhere in the tree - `href` holds the SLUG (`#code-heading`), which is
-a different string from the key (`code() heading`).
+So it was a design question rather than a divergence, and it is ruled at
+[carve#962](https://github.com/markup-carve/carve/issues/962): `ref` carries the
+RESOLUTION KEY, and §3a above now says so instead of leaving "the derived label"
+to be read both ways. What decided it is that the authored label is recoverable
+from `rawRef` by stripping its brackets while the key is recoverable from
+nothing - `href` holds the SLUG (`#code-heading`), which is a different string
+from the key (`code() heading`).
 
 An earlier version of this paragraph recorded something different again - none
 publishing `rawRef`, carve-php publishing `ref: ""` - and the rows above
