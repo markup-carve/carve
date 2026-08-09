@@ -27,6 +27,27 @@ const roundtrip = args.has('--roundtrip')
 // disagreeing about a document's canonical form went unnoticed (carve#478).
 const failOnDiff = args.has('--fail-on-diff')
 
+// Where to write this run's counts as JSON, so a SECOND gate can be applied to
+// them without re-running the comparison.
+//
+// The two gated conformance steps used to be two invocations of this script
+// over the same corpus with the same three engines: `--roundtrip --fail-on-diff`
+// and `--fail-on-diff`. Together they were 83% of the workflow's wall clock, and
+// the second one was almost entirely repeated work - `--roundtrip` does not
+// narrow `targets`, `pairs` or the comparison loop, so the roundtrip run already
+// computes `crossImplDiffs` and every engine's fixture `mismatch` count. It just
+// does not GATE them: the ternaries below hand each mode a different subset of
+// the failing conditions.
+//
+// So the fix is not to delete a run. Deleting the plain run would have dropped
+// the only gate on an engine disagreeing with a FIXTURE, which is the check
+// whose own comment records that it "could not fail the job" until it was added.
+// The fix is to compute once and gate twice: this run writes what it found, and
+// scripts/check-compare-report.mjs applies the cross-implementation half of the
+// gate to the file. Same six conditions, one pass over the corpus.
+const reportArg = process.argv.find((a) => a.startsWith('--report='))
+const reportPath = reportArg ? reportArg.slice('--report='.length) : null
+
 // The cheap half of the run. `tests/implementation-comparison-counts.test.mjs`
 // reads exactly two things off this output - `corpus_pairs=N` and each engine's
 // `pass=N/M` - and NEITHER is a timing: `grep avg_ms` over that test returns
@@ -1140,6 +1161,55 @@ console.log(
 
 if (bench) {
   console.log('\nBenchmark note: timings include process startup and are useful for CLI-level smoke comparison only.')
+}
+
+// Written BEFORE the gate below, and unconditionally, because the gate exits.
+// A report that only appears on success would leave the second gate with
+// nothing to read on exactly the runs that matter, and a missing report is
+// indistinguishable from a clean one to anything downstream - so the reader
+// treats absence as failure and this writer makes sure absence means the run
+// died before reaching here.
+//
+// The MODE goes in the file, not just the counts. `--counts-only` and
+// `--targets=` narrow what was compared, and a narrowed run produces a report
+// whose zeros are true but answer a smaller question. The reader refuses those
+// rather than passing on them, so the second gate cannot silently come to cover
+// less than the invocation it replaced.
+if (reportPath) {
+  writeFileSync(
+    reportPath,
+    `${JSON.stringify(
+      {
+        schema: 1,
+        mode: {
+          roundtrip,
+          countsOnly,
+          corpus: corpusName,
+          limit: limit === Infinity ? null : limit,
+          targets: activeTargets,
+          engines: active.map((impl) => impl.name),
+        },
+        // The cross-implementation half of the gate: engines disagreeing with
+        // each other, and engines disagreeing with a fixture.
+        crossImplDiffs,
+        mismatches: active.reduce((total, impl) => total + stats[impl.name].mismatch, 0),
+        mismatchedBy: Object.fromEntries(
+          active.map((impl) => [impl.name, stats[impl.name].mismatch]),
+        ),
+        // The round-trip half, recorded so the file is a full account of the run
+        // rather than only the part the reader gates on.
+        roundtripDiffs,
+        semanticFailures,
+        idempotenceFailures,
+        crossReadFailures,
+        staleUnreachable,
+        undocumentedUnreachable: undocumentedUnreachable.map((u) => u.feature),
+      },
+      null,
+      2,
+    )}\n`,
+  )
+  console.log(`\nWrote ${reportPath}.`)
 }
 
 // The gate. In roundtrip mode a diff means an engine's formatter changed what a
