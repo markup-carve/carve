@@ -493,6 +493,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A `^ ` caption line does not end a paragraph it cannot caption**
+  (markup-carve/carve#1046, new §10 I7). A caret line is in neither §10 I1 nor
+  §10 I5, so it never interrupts an open paragraph on its own; §4 is what ends
+  one at a caret, and only for the five captionable hosts. The executable spec
+  ended the paragraph on EVERY caret line and opened a second one, where all
+  three engines fold the line in. Only the indented spelling was in the corpus,
+  where both readings agree, so the divergence stayed invisible until the
+  canonical writer stopped force-escaping a line-initial caret.
+
 - **Adjacent mergeable blocks in a tight attached run stay separate.** The
   canonical writer retains `+` from the first sequence boundary that would
   otherwise collapse two blocks, without changing isolated block openers.

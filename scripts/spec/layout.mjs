@@ -239,6 +239,18 @@ const ABBR_DEF = /^\*\[([A-Za-z0-9]+)\]: +(?![ \t]*$)([^ ].*)$/
 // than at each use: five places read this capture, and the rule was missing
 // from all five - one rule, one spelling.
 const CAPTION = /^\^ (.*?)[ \t]*$/
+// SS4's two PROSE-spelled captionable hosts: a paragraph whose WHOLE content is
+// one image (inline or reference form, trailing attribute block allowed), and
+// one whose whole content is a display-math span. The other three hosts have a
+// `[caption_slot]` production of their own. ONE spelling, read from two places -
+// the paragraph collector, which decides whether a `^ ` line ends the paragraph,
+// and the wrapper below it, which decides whether the caption attaches. Two
+// copies would let those two answers drift apart, and the collector's copy would
+// be the one nothing tested.
+const CAPTIONABLE_PARAGRAPH = /^(?:!\[[^\]]*\](?:\([^)]*\)|\[[^\]]*\])(?:\{[^}]*\})?|\$\$`.*`)$/
+function isCaptionableParagraph(para) {
+  return para.length === 1 && CAPTIONABLE_PARAGRAPH.test(para[0])
+}
 // The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
 // engine, so a tab here must not open a list (PART 9 SS11). Its width is the
 // item's content column for a non-task bullet.
@@ -1729,7 +1741,22 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
       for (const [re, what] of REFUSERS) {
         if (re.test(lines[i])) throw new Refuse(`${what} interrupting a paragraph`)
       }
-      if (para.length > 0 && CAPTION.test(lines[i])) break // a caption ends the block (SS4); an orphan `^ ` line is literal text
+      // SS4, NOT SS10. A `^ ` line ends an open paragraph only where SS4 has
+      // something to attach it to: a paragraph whose WHOLE content is one image
+      // or one display-math span, the two hosts SS4 spells in prose. SS10's
+      // interruption relation does not list a caption line at all - neither I1's
+      // visible openers nor I5's invisible constructs - so anywhere else the
+      // line is ordinary paragraph text and FOLDS IN, caret and all, which is
+      // what all three engines do.
+      //
+      // This used to break on every caption line. The paragraph then ended and
+      // the caret line opened a second one, and only the indented spelling was
+      // in the corpus (158-indented-image-and-caption-stay-literal), where both
+      // readings agree because an indented line opens nothing. The flush-left
+      // form went unpinned until the canonical writer stopped force-escaping a
+      // line-initial caret and `oracle(fmt(x))` parted from `oracle(x)` on a
+      // document every engine agreed about (carve#1046).
+      if (isCaptionableParagraph(para) && CAPTION.test(lines[i])) break
       if (lines[i][0] === '{' && tryAttrLine(lines, i)) break // SS15 A1 / SS10 I5
       if (ind(i).rest.startsWith('%%')) break // SS10 I5 (comment line or fence)
       if (inItem && para.length > 0 && matchMarkerAt(ind(i))) break // SS24 C3
@@ -1759,10 +1786,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
       // text under a reference image while all three engines built the
       // figure - and nothing caught it, because every captioned-image case
       // in the corpus uses the inline form.
-      if (
-        para.length === 1 &&
-        (/^!\[[^\]]*\](\([^)]*\)|\[[^\]]*\])(\{[^}]*\})?$/.test(para[0]) || /^\$\$`.*`$/.test(para[0]))
-      ) {
+      if (isCaptionableParagraph(para)) {
         pnode.caption = cap[1]
         // A reference image is captionable ONLY IF IT RESOLVES, and the
         // definition may sit below it - so the decision cannot be made
