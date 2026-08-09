@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "vectors": [
+    {
+      "name": "untrusted-default-off", "description": "Untrusted input cannot acquire include I/O merely by containing a directive.",
+      "requirement": "S1-opt-in", "kind": "activation", "trusted": false, "enabled": false,
+      "entry": "{{ child.crv }}\n", "files": { "child.crv": "secret\n" },
+      "expected": { "resolverCalls": [] }
+    },
+    {
+      "name": "dotdot-inside-root", "description": "Containment is decided after canonicalization, not by banning the dot-dot spelling.",
+      "requirement": "S2-contained-paths", "kind": "filesystem",
+      "tree": { "root/book/main.crv": "", "root/shared/ok.crv": "ok\n" }, "root": "root", "from": "root/book/main.crv", "request": "../shared/ok.crv",
+      "expected": { "status": "allowed", "canonicalId": "<ROOT>/shared/ok.crv" }
+    },
+    {
+      "name": "dotdot-escape", "description": "A canonical target outside the configured root is denied.",
+      "requirement": "S2-contained-paths", "kind": "filesystem",
+      "tree": { "root/main.crv": "", "outside.crv": "secret\n" }, "root": "root", "from": "root/main.crv", "request": "../outside.crv",
+      "expected": { "status": "denied", "denial": "outside-root" }
+    },
+    {
+      "name": "symlink-file-escape", "description": "A file symlink inside the root cannot point to content outside it.",
+      "requirement": "S2-contained-paths", "kind": "filesystem",
+      "tree": { "root/main.crv": "", "outside.crv": "secret\n", "root/link.crv": { "symlink": "outside.crv" } }, "root": "root", "from": "root/main.crv", "request": "link.crv",
+      "expected": { "status": "denied", "denial": "outside-root" }
+    },
+    {
+      "name": "symlink-directory-escape", "description": "A symlinked directory component cannot escape the configured root.",
+      "requirement": "S2-contained-paths", "kind": "filesystem",
+      "tree": { "root/main.crv": "", "outside/secret.crv": "secret\n", "root/link": { "symlink": "outside" } }, "root": "root", "from": "root/main.crv", "request": "link/secret.crv",
+      "expected": { "status": "denied", "denial": "outside-root" }
+    },
+    {
+      "name": "absolute-escape", "description": "Opting into absolute paths still cannot escape the root.",
+      "requirement": "S2-contained-paths", "kind": "filesystem",
+      "tree": { "root/main.crv": "", "outside.crv": "secret\n" }, "root": "root", "from": "root/main.crv", "request": "<ABS:outside.crv>", "allowAbsolute": true,
+      "expected": { "status": "denied", "denial": "outside-root" }
+    },
+    {
+      "name": "remote-without-allowlist", "description": "A remote URL cannot trigger a fetch without an explicit host allowlist.",
+      "requirement": "S3-remote-allowlist", "kind": "remote", "request": "https://example.invalid/chapter.crv", "allowedRemoteHosts": [],
+      "expected": { "status": "denied", "denial": "remote-not-allowed", "remoteFetches": [] }
+    },
+    {
+      "name": "allowlist-does-not-require-fetching", "description": "An allowlist removes the prohibition but does not require remote support.",
+      "requirement": "S3-remote-allowlist", "kind": "remote", "request": "https://docs.example/chapter.crv", "allowedRemoteHosts": ["docs.example"],
+      "expected": { "status": "unsupported", "remoteFetches": [] }
+    },
+    {
+      "name": "depth-stops-before-resolve", "description": "The first target beyond the depth limit is not passed to the resolver.",
+      "requirement": "S4-depth-bound", "kind": "graph", "entry": "{{ a }}", "files": { "a": "{{ b }}", "b": "{{ c }}", "c": "never read" }, "maxDepth": 2, "maxBytes": 1000,
+      "expected": { "resolverCalls": ["a", "b"], "maxVisitedDepth": 2, "status": "denied", "denial": "depth" }
+    },
+    {
+      "name": "transitive-byte-budget", "description": "The byte budget is charged across the transitive graph.",
+      "requirement": "S5-byte-bound", "kind": "graph", "entry": "{{ a }}", "files": { "a": "{{ b }}", "b": "12345" }, "maxDepth": 8, "maxBytes": 8,
+      "expected": { "resolverCalls": ["a", "b"], "chargedBytes": 12, "status": "denied", "denial": "budget" }
+    },
+    {
+      "name": "repeated-target-charged-per-occurrence", "description": "Repeated includes are charged per occurrence, not per distinct identity.",
+      "requirement": "S5-byte-bound", "kind": "graph", "entry": "{{ a }} {{ a }} {{ a }}", "files": { "a": "1234" }, "maxDepth": 8, "maxBytes": 9,
+      "expected": { "resolverCalls": ["a", "a", "a"], "chargedBytes": 12, "status": "denied", "denial": "budget" }
+    },
+    {
+      "name": "budget-exhaustion-skips-later-resolver", "description": "After exhaustion, later siblings are refused without resolver I/O.",
+      "requirement": "S6-post-budget-no-read", "kind": "graph", "entry": "{{ large }} {{ must-not-read }}", "files": { "large": "12345", "must-not-read": "secret" }, "maxDepth": 8, "maxBytes": 4,
+      "expected": { "resolverCalls": ["large"], "chargedBytes": 5, "status": "denied", "denial": "budget" }
+    }
+  ]
+}

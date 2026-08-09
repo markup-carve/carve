@@ -4293,7 +4293,13 @@ EOF = (* end of file *) ;
         fetch remote URLs unless an allowlist is explicitly configured, and
         MUST bound BOTH recursion depth AND total expanded byte size to
         prevent include-bomb amplification (a file that includes another N
-        times, transitively). See PART 9 §25 for the general security model.
+        times, transitively). Once the total byte budget is exhausted, it MUST
+        refuse later include directives BEFORE invoking their resolver; the
+        byte bound also bounds reads, not only emitted output. See PART 9 §25
+        for the general security model. The processor-neutral security vectors
+        under `tests/include-security-conformance/` pin these requirements;
+        they do NOT specify the broader include language reserved for a
+        processor.
 
    20. RAW PASSTHROUGH -- NORMATIVE (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT
