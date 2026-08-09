@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://carve.dev/schema/include-security-conformance.json",
+  "type": "object",
+  "required": ["version", "vectors"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": 1 },
+    "vectors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "requirement", "kind", "expected"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$" },
+          "description": { "type": "string", "minLength": 1 },
+          "requirement": { "enum": ["S1-opt-in", "S2-contained-paths", "S3-remote-allowlist", "S4-depth-bound", "S5-byte-bound", "S6-post-budget-no-read"] },
+          "kind": { "enum": ["activation", "filesystem", "remote", "graph"] },
+          "trusted": { "type": "boolean" },
+          "enabled": { "type": "boolean" },
+          "entry": { "type": "string" },
+          "files": { "type": "object", "additionalProperties": { "type": "string" } },
+          "tree": { "type": "object" },
+          "root": { "type": "string" },
+          "from": { "type": "string" },
+          "request": { "type": "string" },
+          "allowAbsolute": { "type": "boolean" },
+          "allowedRemoteHosts": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "maxDepth": { "type": "integer", "minimum": 0 },
+          "maxBytes": { "type": "integer", "minimum": 0 },
+          "expected": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": false,
+            "properties": {
+              "resolverCalls": { "type": "array", "items": { "type": "string" } },
+              "remoteFetches": { "type": "array", "items": { "type": "string" } },
+              "status": { "enum": ["allowed", "denied", "unsupported"] },
+              "denial": { "enum": ["outside-root", "remote-not-allowed", "depth", "budget"] },
+              "canonicalId": { "type": "string" },
+              "maxVisitedDepth": { "type": "integer", "minimum": 0 },
+              "chargedBytes": { "type": "integer", "minimum": 0 }
+            }
+          }
+        }
+      }
+    }
+  }
+}
