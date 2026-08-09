@@ -537,6 +537,9 @@ collected/consumed (an attribute line floats forward to the next block, §15).
 | `> p` / `> - x` | one quoted paragraph | quoted bullet folds (paragraph interruption inside the quote) |
 | `- a` / `  - b` | nested sublist | indented sublist still nests (content column) |
 | `- a` / ` - b` | one item (folds) | below the content column → lazy continuation |
+| `1. a` / `[r]: /u` / `after` | list, then document paragraph | column-zero definition interrupts and closes the item |
+| `1. a` / ` [r]: /u` | one item (literal definition text) | nonzero column below content column reaches no definition opener |
+| `1. a` / `   [r]: /u` / `   after` | one tight item with two paragraphs | definition is at the item's content column |
 | `- text` / `  # H` | item: text + heading | heading interrupts inside the item |
 
 Normative statement: `resources/grammar.ebnf` PART 9 §10. Verified by corpus

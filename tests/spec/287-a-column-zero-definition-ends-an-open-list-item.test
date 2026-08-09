@@ -1,0 +1,59 @@
+A column-zero definition ends an open list item
+
+```
+1. x
+[t](u)
+_u_
+[r]: /u
+[t][r]
+\#
+.
+<ol>
+  <li>x
+<a href="u">t</a>
+<u>u</u></li>
+</ol>
+<p><a href="/u">t</a>
+#</p>
+```
+
+```
+- a
+[^f]: note
+after[^f]
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>after<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+1. x
+ [r]: /u
+.
+<ol>
+  <li>x
+[r]: /u</li>
+</ol>
+```
+
+```
+1. x
+   [r]: /u
+   [t][r]
+.
+<ol>
+  <li>x
+    <a href="/u">t</a>
+  </li>
+</ol>
+```
