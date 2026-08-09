@@ -100,9 +100,22 @@ jobs:
           repository: markup-carve/carve-rb
           path: carve-rb
 
+      # `bundler-cache: true` restores carve-rb's gems from the actions cache
+      # instead of resolving and building them from scratch, which was 54s of
+      # pure setup on every run. It needs `working-directory` because the
+      # Gemfile is in the carve-rb checkout, not in this repo.
+      #
+      # carve-rb commits no Gemfile.lock, so setup-ruby resolves once and keys
+      # the cache on the lock it generates. The `bundle install` in the build
+      # step below is kept deliberately: it costs about a second against a warm
+      # cache and it is what makes a cache miss, or a bundle path this action
+      # configures differently than expected, an ordinary slow run rather than a
+      # red job.
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: carve-rb
 
       - uses: dtolnay/rust-toolchain@stable
 
@@ -159,7 +172,13 @@ jobs:
           CARVE_JS_DIR: ${{ github.workspace }}/carve-js
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
-        run: npm run compare:impls -- --roundtrip --fail-on-diff
+        # `--report` makes this the ONLY pass over the corpus. The step below
+        # used to be a second full invocation of this same script, over the same
+        # corpus with the same three engines, purely to apply a different subset
+        # of the gate; `--roundtrip` is additive, so this run already computes
+        # the cross-engine and fixture counts it needs. It now writes them out
+        # and the step below gates them. See the note there.
+        run: npm run compare:impls -- --roundtrip --fail-on-diff --report=/tmp/compare-impls.json
 
       # EVERY render target, gated.
       #
@@ -185,13 +204,35 @@ jobs:
       # unresolved question teaches people to ignore the job, which is how both
       # of these checkers came to be unwired in the first place; gating on a
       # settled one is what keeps them settled.
+      #
+      # THIS STEP NO LONGER RE-RUNS THE COMPARISON. It used to be
+      # `compare:impls -- --fail-on-diff`, a second walk of the whole corpus
+      # with the same three engines, and at 669s it was 29% of this job. The
+      # step above already computed everything it needed: `--roundtrip` does not
+      # narrow the targets, the corpus or the comparison loop, it only adds a
+      # pass on top. What differed was the GATE - compare-impls hands each mode
+      # a different subset of the failing conditions and zeroes the other's
+      # counts - so the second invocation existed for its gate, not its work.
+      #
+      # Deleting it was therefore not an option: it carries the only gate on an
+      # engine disagreeing with a FIXTURE, the check whose comment in
+      # compare-impls records that it "could not fail the job" until it was
+      # added. So the run above writes its counts and this reads them. Both
+      # conditions still fail the job; the corpus is walked once.
+      #
+      # It stays a SEPARATE STEP rather than being folded into the one above
+      # because the verdict step at the end of this job reports failures by STEP
+      # NAME. One merged step would tell the tracking ticket that "conformance"
+      # broke without saying whether the formatter changed a document or the
+      # engines disagree about a render target, which is most of what makes that
+      # ticket worth reading.
+      #
+      # `if: always()`, for the reason the step above documents: this gate is
+      # independent of that one, and a round-trip failure must not skip it.
+      # A missing report is a failure here, not a pass - see the script.
       - name: Cross-engine render comparison (all targets)
         if: always()
-        env:
-          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
-          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
-          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
-        run: npm run compare:impls -- --fail-on-diff
+        run: npm run compare:report -- /tmp/compare-impls.json
 
 
       # The grammar names engines and says what they do - "all impls support
