@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **A column-zero link or footnote definition closes an open list item**
+  (carve#1045). Definitions are column-scoped: at the item's content column the
+  definition belongs to the item; at a nonzero column below it the line is
+  literal lazy text and does not register; at document column zero it is a
+  document-level interrupter, so the following block is outside the list.
+  Comments retain their explicit column-independent invisibility exception.
+  Corpus category 286 pins link and footnote definitions plus both column
+  controls.
+
 ### Added
 
 - **The AST serialization format is specified (new PART 12).** A parsed document

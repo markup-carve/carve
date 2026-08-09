@@ -3500,6 +3500,17 @@ EOF = (* end of file *) ;
          "Para\n{.x}" ends the paragraph with the attribute line floating
          forward (§15; corpus 84-block-attribute-lines-7). (A small
          deviation from djot, which keeps such a line as paragraph text.)
+
+         DEFINITION OWNERSHIP IS COLUMN-SCOPED. A link or footnote definition
+         belongs to an open list item only at that item's content_column, or
+         when L3's `+` marker explicitly attaches its flush-left block. At
+         DOCUMENT column 0 it is a document-level interrupter: it ends the item,
+         is collected into the shared symbol table, and the following block is
+         a document sibling. At a nonzero column BELOW content_column it is lazy
+         paragraph text and does not register. Comments are the explicit
+         exception in §24 C3: their invisibility is accepted independently of
+         column and they do not by themselves close the item. Pinned by corpus
+         286-a-column-zero-definition-ends-an-open-list-item (carve#1045).
       I6 SCOPE + THE HEADING EXCEPTION. The relation applies to EVERY open
          paragraph, including a blockquote's lazy continuation: "> quoted
          \n - item" folds into ONE quote whose paragraph is
@@ -4473,6 +4484,13 @@ EOF = (* end of file *) ;
              every other line, likewise, never nests -- with no blank it
              lazily continues the open item paragraph (§10 I2), and after a
              blank it ends the item and parses at DOCUMENT level.
+
+             A definition at DOCUMENT column 0 is the I5 interrupter, not the
+             lazy-text branch: column 0 is the surrounding document's own
+             opener column, so it closes the item and registers there. A
+             definition at a nonzero column below content_column reaches no
+             opener column and follows the lazy-text rule above. This boundary
+             is what distinguishes corpus 286's columns 0 and 1.
 
              THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE (carve#682).
              "Folds as lazy item text" names an OPERATION, and lazy
