@@ -84,11 +84,11 @@
 
 # ---- EXTENT: PART 12 §4, markup-inclusive (markup-carve/carve#913) ----------
 
-list                    (extent)  143
+list                    (extent)  145
 table_row               (extent)  74
 list_item               (extent)  55
 paragraph               (extent)  47
-footnote                (extent)  43
+footnote                (extent)  44
 definition_term         (extent)  27
 definition_description  (extent)  22
 comment                 (extent)  11
