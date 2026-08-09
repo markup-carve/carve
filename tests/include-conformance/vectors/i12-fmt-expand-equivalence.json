@@ -1,0 +1,36 @@
+{
+  "name": "i12-fmt-expand-equivalence",
+  "description": "Expanding the formatted document yields the same html + dependency set as expanding the original (I12 stronger invariant).",
+  "rules": [
+    "I12",
+    "I14"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a.crv }}\n\nSee {{ b.crv }} and here:\n\n{{ \"c d.crv\" @shift:auto }}",
+  "files": {
+    "a.crv": "# Chapter\n\nBody.",
+    "b.crv": "inline bit",
+    "c d.crv": "## Quoted path"
+  },
+  "checkFmtExpandEquivalence": true,
+  "expected": {
+    "html": "<section id=\"Chapter\">\n  <h1>Chapter</h1>\n  <p>Body.</p>\n  <p>See inline bit and here:</p>\n  <section id=\"Quoted-path\">\n    <h2>Quoted path</h2>\n  </section>\n</section>",
+    "fmt": "{{ a.crv }}\n\nSee {{ b.crv }} and here\\:\n\n{{ \"c d.crv\" @shift:auto }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "a.crv",
+        "resolved": true
+      },
+      {
+        "id": "b.crv",
+        "resolved": true
+      },
+      {
+        "id": "c d.crv",
+        "resolved": true
+      }
+    ]
+  }
+}

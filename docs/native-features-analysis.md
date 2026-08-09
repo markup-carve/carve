@@ -184,7 +184,7 @@ Conformance Core below for the full split).
 |------|----------|--------------|
 | **Core (MUST)** | captions, abbreviations, tables (rowspan/colspan/multi-line), autolinks, emphasis family, links, math, footnotes, crossrefs, the `:type[content]` extension *syntax* | **No.** Corpus-pinned; identical across implementations. Disabling one means the processor is no longer Carve-conformant. |
 | **Default-on (SHOULD)** | `@mention`, `#tag`, smart typography | **Yes.** On by default in the conformant core; a processor MAY disable them. Normative: `resources/grammar.ebnf` PART 9 §19. |
-| **Out of core (MAY)** | includes (<code v-pre>{{ … }}</code>), the extension *registry* beyond the generic fallback, all "implementation extensions" above | **Yes / opt-in.** Processor-level; a conformant core MAY omit them entirely (e.g. leave <code v-pre>{{ … }}</code> literal). |
+| **Out of core (MAY)** | includes (<code v-pre>{{ … }}</code>) - **specified in PART 9 §19** (processor-level; the core leaves the directive literal), the extension *registry* beyond the generic fallback, all "implementation extensions" above | **Yes / opt-in.** Processor-level; a conformant core MAY omit them entirely (e.g. leave <code v-pre>{{ … }}</code> literal). Includes now have a full normative spec (syntax, host-resolver contract, collision + limit + security rules) even though the core builds none of it. |
 
 Separately, **Profiles** (case-study spec §4.21) restrict which features are
 *allowed* in a given context rather than disabling output globally. A profile
@@ -226,7 +226,9 @@ feature-level boundary.
 
 ### MAY / out of core (processor-level)
 
-- Includes (<code v-pre>{{ … }}</code>, §19, with the security requirements there).
+- Includes (<code v-pre>{{ … }}</code>) - specified in PART 9 §19 (host-resolver
+  model, collision + limit + security rules; the [File inclusion](/includes)
+  page); processor-level, and the core leaves the directive literal.
 - The `:type[content]` extension *registry* beyond the generic fallback.
 - Everything under "Keep as implementation extensions" above.
 

@@ -4284,22 +4284,270 @@ EOF = (* end of file *) ;
       - Mentions (`@user`), tags (`#tag`) and smart typography are ON by
         default in the conformant core; a processor MAY disable them. The
         corpus pins the default-on behavior.
-      - Includes (`{{ path }}`) are a PROCESSOR-LEVEL directive, NOT part
-        of the core parser; a conformant core MAY leave `{{ … }}` literal.
-        An implementing processor MUST treat includes as opt-in (off for
-        untrusted input) and MUST resolve include paths only to files under
-        the configured project root AFTER symlink resolution (rejecting
-        `..`-traversal and absolute paths that escape the root). It MUST NOT
-        fetch remote URLs unless an allowlist is explicitly configured, and
-        MUST bound BOTH recursion depth AND total expanded byte size to
-        prevent include-bomb amplification (a file that includes another N
-        times, transitively). Once the total byte budget is exhausted, it MUST
-        refuse later include directives BEFORE invoking their resolver; the
-        byte bound also bounds reads, not only emitted output. See PART 9 §25
-        for the general security model. The processor-neutral security vectors
-        under `tests/include-security-conformance/` pin these requirements;
-        they do NOT specify the broader include language reserved for a
-        processor.
+      - FILE INCLUSION / TRANSCLUSION (`{{ … }}`) is a PROCESSOR-LEVEL
+        directive, NOT part of the core parser. Its syntax is PART 6; its
+        normative semantics are below and mirrored, with worked examples, in
+        docs/includes.md. A conformant CORE never recognizes the directive
+        (unreachable from `block`/`inline`) and leaves `{{ … }}` LITERAL --
+        it parses the bytes under ordinary inline rules, so a bare-path
+        directive with no active inline markers emits verbatim (corpus
+        "Include directive with no resolver renders literal"). The rules a
+        conforming PROCESSOR that DOES expand includes MUST follow:
+
+        I1 SYNTAX. `{{ path }}`, `{{ path #section }}`, `{{ path @key:value }}`,
+           combinable `{{ path #section @key:value }}` (PART 6). `path` is bare
+           (stops at space / `#` / `@` / `}`) or double-quoted for spaces, and
+           is resolved RELATIVE TO THE INCLUDING FILE. Options split into two
+           disjoint kinds. SELECTION options choose WHICH content is pulled in:
+           `#section` (semantic -- the subtree rooted at the heading whose id
+           equals `section`, that heading through content up to the next
+           same-or-higher-level heading) and `@lines:N-M` (physical -- a 1-based
+           inclusive line range). The two SELECTION mechanisms are MUTUALLY
+           EXCLUSIVE: a directive MUST select by `#section` OR by a line-range,
+           NEVER both; a directive carrying both is an ERROR (Warning + literal,
+           per I7). TRANSFORM options reshape already-selected content and are
+           orthogonal to selection: `@shift:N` shifts every included heading's
+           level by the SIGNED integer N (I8). `@shift` MAY accompany `#section`,
+           a line-range, or neither. `@shift` takes EITHER a signed integer OR
+           the literal value `auto` (context-relative, computed by the processor
+           per I8), never both. Every other `@key` is RESERVED.
+
+        I2 BLOCK vs INLINE. A directive ALONE on its own line is a BLOCK
+           include: the resolved content merges as BLOCKS at the directive
+           site. A directive within inline content is an INLINE include: the
+           resolved content MUST parse (as an I4 fragment) to INLINE-ONLY
+           content -- a single paragraph, or nothing -- and its inlines are
+           spliced into the surrounding inline sequence. Resolved content
+           with any other block structure in inline position is an ERROR
+           (Warning + literal, per I7). Mirrors the §10 block/inline model.
+
+        I3 RESOLUTION MODEL. The CORE performs NO file I/O. The HOST supplies a
+           resolver with the contract: given (path, section?, options?,
+           includingFileContext) it returns resolved Carve source text OR an
+           error. If NO resolver is configured the directive is left LITERAL
+           (the processor emits the verbatim `{{ … }}`). This mirrors the
+           bibliography loader precedent (host resolves, parser stays pure;
+           docs/extensions.md §6.1) and preserves browser / WASM parity.
+
+        I4 MECHANISM (normative on OUTCOME, permissive on mechanism). The
+           observable result MUST be AS IF the resolved content appeared inline
+           at the directive site, SUBJECT TO FRAGMENT CONTAINMENT: included
+           content is parsed as a SELF-CONTAINED FRAGMENT. A construct still
+           open at the end of the included content CLOSES at child EOF (an
+           unclosed fence or div terminates there, exactly as at the end of a
+           standalone document); included content NEVER captures or
+           reinterprets parent content that follows the directive. An
+           implementation MAY splice source pre-parse OR parse-and-merge
+           events / AST -- but ONLY where the result equals the fragment-
+           containment outcome. The two diverge exactly when the child ends
+           inside an unterminated construct (a naive textual splice would let
+           an unclosed child fence swallow the rest of the parent); that
+           result is NON-conformant. This matters doubly for `@lines:N-M`,
+           whose physical slice can cut a fence or div in half: the torn
+           construct is bounded to the fragment, never the parent. Source
+           positions SHOULD be remapped so source-mapped hosts can attribute
+           included spans to the child file (Carve's AST already distinguishes
+           snippet-local from document-space offsets; carve-js src/ast.ts
+           `Position`).
+
+        I5 CROSS-FILE COLLISIONS. An identifier that expansion brings together
+           is handled according to whether it is DOCUMENT-VISIBLE or FILE-LOCAL.
+
+           DOCUMENT-VISIBLE IDENTIFIERS -- DETERMINISTIC RENAME-ON-COLLISION.
+           EXPLICIT heading ids (the link targets of `</#id>` cross-references)
+           and FOOTNOTE labels (footnotes are collected and numbered globally in
+           the assembled document) are document-visible: they are exposed by the
+           assembled document and can be targeted across file boundaries. When
+           expansion brings together duplicates of either, the FIRST occurrence
+           in document order keeps its label / id and each later duplicate is
+           renamed. Order is: parent before child, and an earlier include before
+           a later include (the fully expanded document read top to bottom).
+           The rename appends the least `-N` (integer N >= 2) that is not already
+           taken in that namespace: first `-2`, then `-3`, and so on. Explicit
+           heading ids and footnote labels are SEPARATE namespaces. References to
+           a renamed target follow the rename, so the renamed target's own
+           `</#id>` cross-references and footnote references still resolve to it.
+           A Warning MUST be emitted per rename.
+
+           FILE-LOCAL IDENTIFIERS -- SCOPED, NOT RENAMED. A REFERENCE-DEFINITION
+           label is file-local metadata: it is resolved WITHIN the document that
+           defines it, BEFORE that document is merged into its parent. Two files
+           MAY therefore use the same label with different destinations, and each
+           file's references resolve to its own definition -- a parent `[a][]`
+           resolves to the parent's `[a]: /PARENT` and a child `[a][]` to the
+           child's `[a]: /CHILD`. This is NOT a collision: it MUST NOT emit a
+           Warning and MUST NOT rename anything.
+
+           RATIONALE: a reference-definition label is never addressable from
+           another file, so renaming it would be pure churn plus a spurious
+           warning. An explicit heading id or a footnote label genuinely IS
+           document-visible, so a duplicate there must be resolved and surfaced.
+
+           SCOPE: the include-time rename pass covers EXPLICIT heading ids and
+           footnote labels ONLY. Auto-generated (slug) heading-id collisions are
+           NOT part of it; they continue to dedup via the existing heading-id
+           tracker (§13, which suffixes duplicate slugs once the files are
+           merged). ORDERING: the include-time explicit-id / footnote rename runs
+           BEFORE the §13 slug dedup, so ids are deterministic (the explicit-id
+           namespace is settled first, then §13 dedups auto-slug ids against the
+           final set).
+
+        I6 LIMITS. The processor MUST detect inclusion CYCLES (a file that
+           transitively includes itself): the offending directive is left
+           literal, not expanded, and a Warning is emitted. Cycle detection is
+           the PRIMARY guard. As a SECONDARY DoS bound, implementations MUST
+           enforce a FINITE include-depth limit; the RECOMMENDED default is at
+           least 16 (a small, human-scale nesting bound, far under the structural
+           MAX_NESTING = 200 of §25) and the host MAY configure it. No exact hard
+           constant is pinned. A directive at greater depth is left literal with
+           a Warning. Total expanded output is charged against the same per-
+           render byte budget as other amplifying features -- `max(1 MB,
+           8 x input length)` (§25); once exceeded, further expansion degrades
+           to the literal directive with a Warning. Once the budget is
+           exhausted, later directives MUST be refused BEFORE invoking their
+           resolver, so the byte bound limits reads as well as emitted output.
+
+        I7 ERRORS. Unreadable path, binary / non-text content, BOTH selection
+           mechanisms present (`#section` + a line-range, I1), block-structured
+           content in INLINE position (I2), cycle, depth-exceeded, and
+           size-exceeded EACH emit a Warning and leave the
+           directive LITERAL (visible and debuggable). Inclusion NEVER silently
+           drops a directive. See PART 9 §25 (File inclusion) for the security
+           model: parser stays pure, resolver is host-supplied and MUST enforce
+           canonical path containment after symlink resolution and MUST NOT
+           fetch remote URLs without an explicit allowlist. Included content
+           receives the same sanitization as its parent. The processor-neutral
+           vectors in `tests/include-security-conformance/` pin these security
+           requirements separately from the broader include-language suite.
+
+        I8 HEADING-LEVEL SHIFT (`@shift:N` | `@shift:auto`). A TRANSFORM option
+           (I1), orthogonal to selection. `@shift` takes EITHER a SIGNED integer
+           OR the literal value `auto`, NEVER both.
+           LITERAL FORM. N is a SIGNED integer; every heading in the included
+           content has its level increased by N (N=2: an h1 becomes an h3; a
+           NEGATIVE N raises levels, N=-1: an h2 becomes an h1). An omitted
+           `@shift` is `@shift:0` (no shift, the default; current behavior
+           unchanged). CLAMP: the resulting level is clamped to the valid range
+           [1, 6]; a shift that would push a heading below 1 or above 6 clamps to
+           the bound and emits a Warning -- the heading is KEPT, never dropped.
+           IDS/SLUGS UNCHANGED: `@shift` changes only the level, never a
+           heading's id / slug (ids are name-based), so `</#id>` cross-references
+           into shifted headings still resolve. AUTO-NUMBERING: if section
+           auto-numbering (HeadingNumbers, docs/extensions.md) is enabled,
+           shifted headings renumber at their NEW level as a consequence.
+
+           AUTO FORM (`@shift:auto`). CONTEXT-RELATIVE: the processor COMPUTES
+           the shift instead of taking it from the author.
+           CONTEXT LEVEL C: the level of the nearest PRECEDING heading, in
+           document order, that is in the directive's OWN block container or an
+           ENCLOSING (ancestor) container. A heading inside a SIBLING container
+           that has already CLOSED does NOT set the context. If no such heading
+           exists, C = 0.
+           TOP LEVEL T: the MINIMUM heading level present in the resolved
+           content, AFTER any `#section` or line-range selection has been
+           applied. The MINIMUM (not the first heading's level) is used so the
+           included document's internal relative structure is preserved.
+           COMPUTED SHIFT: N = (C + 1) - T. N is then applied EXACTLY as a
+           literal shift under the rules above -- clamp to [1, 6] with a Warning
+           on clamp, heading KEPT never dropped, ids / slugs unchanged so
+           cross-references still resolve, and auto-numbering renumbering at the
+           new level.
+           NO HEADINGS: if the resolved content contains NO headings, `auto` is a
+           NO-OP (N = 0) and emits NO Warning.
+           NESTED INCLUDES: `auto` resolves against the document AS ASSEMBLED at
+           that point, so a shift already applied by an ANCESTOR include is in
+           effect when a nested `auto` is computed. Expansion proceeds
+           OUTSIDE-IN, which makes the result DETERMINISTIC.
+           INLINE INCLUDES: inline content cannot contain headings, so `auto` on
+           an INLINE include (I2) is a no-op.
+           EXAMPLE: an including document with `## Chapters` before the directive
+           gives C = 2; a child starting at `# Chapter One` gives T = 1; so
+           N = (2 + 1) - 1 = 2 and the child's h1 renders as an h3.
+           RATIONALE: `auto` makes a chapter file PORTABLE -- the same file can
+           be included at any depth without editing its heading levels. Because
+           the author writes `@shift:auto` explicitly at the include site, the
+           position-dependence is OPT-IN PER DIRECTIVE, not ambient behavior.
+
+        I9a RECOGNITION SHAPE -- RUN, NOT NODE. Grammar-level recognition does
+           NOT mean "one parsed text node matches the directive grammar". A
+           directive's own syntax overlaps constructs the core already parses:
+           `#section` is TAG syntax, `@key:value` is MENTION syntax, and a
+           double-quoted path is rewritten by smart quotes, so by the time the
+           include pass runs `{{ x #intro @shift:1 }}` is SEVERAL adjacent nodes.
+           A processor MUST recognize a directive over a CONTIGUOUS RUN of inline
+           nodes carrying only LITERAL TEXT content (text, tag, mention, and any
+           other node whose source form is recoverable verbatim): reassemble the
+           single nodes silently drops every directive carrying `#section` or an
+           option, and every directive appearing mid-sentence. The run STOPS at
+           any node that is not literal-text-shaped, so a directive interrupted
+           by emphasis, a link, or a code span is NOT recognized and stays
+           literal (same rule as a bare-path directive with active inline
+           markers).
+
+        I9 VERBATIM PROTECTION. An include directive is recognized ONLY where
+           inline and block constructs are recognized. Inside a code span, a
+           fenced or raw code block, or any other verbatim context, `{{ ... }}`
+           is ordinary LITERAL text and is NEVER resolved. This is a consequence
+           of Carve's general invariant that CODE IS VERBATIM -- no construct
+           transforms inside a code span or code block -- of which the include
+           directive is no exception. A literal `{{ ... }}` can therefore always
+           be written and displayed by placing it in code.
+
+        I10 CONTAINMENT ROOT + CANONICAL CONTAINMENT CHECK. Every resolved path
+           is checked against a single CONTAINMENT ROOT.
+           DEFAULT ROOT (RECOMMENDED): for FILE-BASED entry points (a CLI
+           invocation on a document path, or a convert-from-file API) the root
+           SHOULD default to the DIRECTORY OF THE TOP-LEVEL DOCUMENT -- a
+           document path is already known, so requiring the host to name a root
+           explicitly is not necessary. The root MUST NOT default to the process
+           working directory (arbitrary with respect to the document, and
+           possibly `/` or a home directory).
+           NO PATH CONTEXT, NO DEFAULT: for STRING-INPUT APIs there is no
+           document path and therefore no inferable root; a host MUST supply the
+           root explicitly, otherwise inclusion stays DISABLED and directives
+           remain LITERAL (I3). This preserves the opt-in posture for embedders.
+           ONE ROOT PER EXPANSION: relative include paths resolve relative to the
+           INCLUDING file (I1), but containment is checked against the single
+           TOP-LEVEL root. The root MUST NOT re-base per included file; a
+           re-based root shrinks at every nesting level, so a nested document
+           could never reference a sibling directory of the project.
+           CANONICAL, NOT LEXICAL (MUST): a processor MUST canonicalize the
+           candidate path (resolving symbolic links) and then verify the
+           canonical result is contained within the canonical root. A `..`
+           segment is PERMITTED exactly when the canonical result stays inside
+           the root. A lexical `..` rejection is wrong on both sides: TOO STRICT
+           (it rejects legitimate sibling-directory layouts, e.g. a document in
+           `chapters/` including `../shared/glossary.crv` whose target is inside
+           the project root) and TOO WEAK (symbolic links and absolute paths
+           escape a root with no `..` present at all). Absolute paths remain
+           DENIED unless they canonicalize inside the root. Given the layout
+           `book/{main.crv, chapters/ch1.crv, shared/glossary.crv}` with root
+           `book/`: from `chapters/ch1.crv`, `../shared/glossary.crv` is ALLOWED
+           and `../../../etc/passwd` is DENIED. See PART 9 §25 (File inclusion)
+           and docs/security.md.
+
+        I11 DEPENDENCY REPORTING. A processor that expands includes MUST report,
+           alongside the expanded document and any Warnings, the SET OF INCLUDE
+           TARGETS it touched during the expansion.
+           SCOPE: the set covers the ENTIRE recursive expansion, including
+           nested children, DE-DUPLICATED, in a DETERMINISTIC order.
+           IDENTITY: each target is identified by the resolver's CANONICAL ID
+           where one is supplied -- the same identity the cycle guard uses in
+           I6 -- and otherwise by the RESOLVED PATH.
+           ATTEMPTED TARGETS ARE INCLUDED: the set MUST contain targets that
+           were ATTEMPTED but NOT resolved -- missing or unreadable, binary,
+           containment-denied (I10), cycle-broken (I6), and depth- or
+           size-exceeded (I6). RATIONALE: a host that watches only the files it
+           successfully read never learns that a previously-missing target now
+           EXISTS, so a preview would stay stale at exactly the moment the
+           author fixes the problem.
+           DISTINGUISHABILITY: each entry MUST be distinguishable as RESOLVED
+           versus ATTEMPTED-BUT-UNRESOLVED.
+           PURPOSE: hosts use this set for INVALIDATION (file watching) and for
+           DIAGNOSTICS. It is a CROSS-IMPLEMENTATION CONTRACT, so an editor can
+           rely on it regardless of which engine backs it. Without it, preview
+           invalidation cannot be implemented correctly. See docs/includes.md
+           (Reported dependencies, and Editor and IDE integration).
 
    20. RAW PASSTHROUGH -- NORMATIVE (governs `raw_inline` in PART 3 and the
       semantics of `raw_block` in PART 2). The BLOCK form (```=FORMAT

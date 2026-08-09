@@ -1,0 +1,24 @@
+{
+  "name": "i02-inline-in-sentence-merges-inline",
+  "description": "A directive inside a sentence splices its inlines into the surrounding text.",
+  "rules": [
+    "I2"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "Before {{ child }} after.",
+  "files": {
+    "child": "middle"
+  },
+  "expected": {
+    "html": "<p>Before middle after.</p>",
+    "fmt": "Before {{ child }} after\\.\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

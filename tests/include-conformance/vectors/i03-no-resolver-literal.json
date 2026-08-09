@@ -1,0 +1,17 @@
+{
+  "name": "i03-no-resolver-literal",
+  "description": "With no resolver configured the directive stays literal, no warnings, no dependencies.",
+  "rules": [
+    "I3"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "See {{ child.crv }} here.",
+  "files": {},
+  "expected": {
+    "html": "<p>See {{ child.crv }} here.</p>",
+    "fmt": "See {{ child.crv }} here\\.\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

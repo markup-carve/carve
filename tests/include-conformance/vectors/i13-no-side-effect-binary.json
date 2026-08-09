@@ -1,0 +1,33 @@
+{
+  "name": "i13-no-side-effect-binary",
+  "description": "A binary include reserves nothing.",
+  "rules": [
+    "I13"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "Text {{ bin }} text.\n\n{{ later }}",
+  "files": {
+    "later": "{#dup}\n# Later\n\nSee [^note].\n\n[^note]: Later note.",
+    "bin": "a\u0000b"
+  },
+  "expected": {
+    "html": "<p>Text {{ bin }} text.</p>\n<section id=\"dup\">\n  <h1>Later</h1>\n  <p>See <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n</section>\n<section role=\"doc-endnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>Later note.<a href=\"#fnref1\" role=\"doc-backlink\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "fmt": "Text {{ bin }} text\\.\n\n{{ later }}\n",
+    "warnings": [
+      {
+        "rule": "include-non-text"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "bin",
+        "resolved": false
+      },
+      {
+        "id": "later",
+        "resolved": true
+      }
+    ]
+  }
+}

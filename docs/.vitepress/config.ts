@@ -88,6 +88,7 @@ export default defineConfig({
               { text: 'SVG Images', link: '/svg-images' },
               { text: 'Formal Grammar', link: '/grammar' },
               { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
+              { text: 'File Inclusion', link: '/includes' },
               { text: 'Validation', link: '/validation' },
               { text: 'Extensions Contract', link: '/extensions' },
               { text: 'Writing an Extension (QR case study)', link: '/extension-tutorial' },
@@ -184,6 +185,7 @@ export default defineConfig({
           items: [
             { text: 'Technical Rationale', link: '/technical-rationale' },
             { text: 'Blocks & Attributes', link: '/blocks-and-attributes' },
+            { text: 'File Inclusion', link: '/includes' },
             { text: 'Validation', link: '/validation' },
             { text: 'Extensions Contract', link: '/extensions' },
             { text: 'Writing an Extension', link: '/extension-tutorial' },

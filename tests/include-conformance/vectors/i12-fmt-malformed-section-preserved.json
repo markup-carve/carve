@@ -1,0 +1,17 @@
+{
+  "name": "i12-fmt-malformed-section-preserved",
+  "description": "A shape-well-formed directive with a malformed section is preserved.",
+  "rules": [
+    "I12"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "{{ chapter.crv #1bad }}",
+  "files": {},
+  "expected": {
+    "html": "<p>{{ chapter.crv <span class=\"tag\"><strong>#1bad</strong></span> }}</p>",
+    "fmt": "{{ chapter.crv #1bad }}\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

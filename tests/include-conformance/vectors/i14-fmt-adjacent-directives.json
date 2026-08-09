@@ -1,0 +1,17 @@
+{
+  "name": "i14-fmt-adjacent-directives",
+  "description": "Adjacent directives with no prose between them both survive.",
+  "rules": [
+    "I14"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "{{ a.crv }}{{ b.crv }}",
+  "files": {},
+  "expected": {
+    "html": "<p>{{ a.crv }}{{ b.crv }}</p>",
+    "fmt": "{{ a.crv }}{{ b.crv }}\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

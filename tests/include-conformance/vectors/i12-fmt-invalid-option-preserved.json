@@ -1,0 +1,17 @@
+{
+  "name": "i12-fmt-invalid-option-preserved",
+  "description": "A shape-well-formed directive with an invalid option is preserved (the typo stays fixable).",
+  "rules": [
+    "I12"
+  ],
+  "mode": "virtual",
+  "resolver": "none",
+  "entry": "{{ chapter.crv @bogus:1 }}",
+  "files": {},
+  "expected": {
+    "html": "<p>{{ chapter.crv <span class=\"mention\"><strong>@bogus</strong></span>:1 }}</p>",
+    "fmt": "{{ chapter.crv @bogus:1 }}\n",
+    "warnings": [],
+    "dependencies": []
+  }
+}

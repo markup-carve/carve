@@ -1,0 +1,24 @@
+{
+  "name": "i02-block-alone-merges-blocks",
+  "description": "A directive alone on a line merges its content as blocks.",
+  "rules": [
+    "I2"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child }}",
+  "files": {
+    "child": "# Head\n\nBody."
+  },
+  "expected": {
+    "html": "<section id=\"Head\">\n  <h1>Head</h1>\n  <p>Body.</p>\n</section>",
+    "fmt": "{{ child }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "i04-attribution-toplevel",
+  "description": "An unresolvable directive is attributed to the top-level document.",
+  "rules": [
+    "I4"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ missing }}",
+  "files": {},
+  "options": {
+    "sourcePath": "book.crv"
+  },
+  "expected": {
+    "html": "<p>{{ missing }}</p>",
+    "fmt": "{{ missing }}\n",
+    "warnings": [
+      {
+        "rule": "include-unresolved",
+        "file": "book.crv"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "missing",
+        "resolved": false
+      }
+    ]
+  }
+}

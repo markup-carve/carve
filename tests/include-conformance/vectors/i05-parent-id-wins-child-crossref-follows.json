@@ -1,0 +1,29 @@
+{
+  "name": "i05-parent-id-wins-child-crossref-follows",
+  "description": "A parent explicit id wins the collision; the child crossref follows the rename to -2.",
+  "rules": [
+    "I5"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ a }}\n\n{#dup}\n# Parent",
+  "files": {
+    "a": "{#dup}\n# Child\n\nSee </#dup>."
+  },
+  "expected": {
+    "html": "<section id=\"dup-2\">\n  <h1>Child</h1>\n  <p>See <a href=\"#dup-2\">Child</a>.</p>\n</section>\n<section id=\"dup\">\n  <h1>Parent</h1>\n</section>",
+    "fmt": "{{ a }}\n\n{#dup}\n# Parent\n",
+    "warnings": [
+      {
+        "rule": "include-heading-id-rename",
+        "file": "a"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "a",
+        "resolved": true
+      }
+    ]
+  }
+}

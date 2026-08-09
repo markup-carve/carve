@@ -1,0 +1,24 @@
+{
+  "name": "i08-shift-ids-unchanged-crossref",
+  "description": "@shift changes only the level; ids/slugs are unchanged so a crossref into a shifted heading resolves.",
+  "rules": [
+    "I8"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @shift:2 }}",
+  "files": {
+    "child": "# Alpha\n\nSee </#Alpha>."
+  },
+  "expected": {
+    "html": "<section id=\"Alpha\">\n  <h3>Alpha</h3>\n  <p>See <a href=\"#Alpha\">Alpha</a>.</p>\n</section>",
+    "fmt": "{{ child @shift:2 }}\n",
+    "warnings": [],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

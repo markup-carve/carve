@@ -162,6 +162,88 @@ or a quadratic blow-up.
 For an explicit input-size ceiling (and broader feature restriction), configure
 a `Profile` / safe mode `maxLength`.
 
+## File inclusion
+
+File inclusion / transclusion - the <code v-pre>{{ … }}</code> directive (PART 9 §19, full page
+at [File inclusion](/includes)) - is a **processor-level** feature and is
+**off by default**. The core parser performs **no file I/O**: it never opens,
+reads, or resolves a path, so a browser / WASM / sandboxed build is inert here
+by construction, and an unconfigured processor leaves <code v-pre>{{ … }}</code> literal. All
+filesystem behavior lives in a **host-supplied resolver** that you opt into.
+
+Because inclusion is the one feature that can pull in *new source you did not
+author inline*, it carries its own threat surface. The division of
+responsibility:
+
+- **The parser stays pure.** No inclusion can make the core touch the
+  filesystem or the network. Absent a resolver, the directive renders as inert
+  text.
+- **The host resolver owns containment.** A resolver you enable MUST:
+  - **Confine paths to a configured root.** Resolve `..` and symlinks *first*,
+    then reject any target that lands outside the root. A path is contained only
+    after canonicalization, not before.
+  - **Check containment canonically, never lexically.** Canonicalize the
+    candidate path, resolving symbolic links, then verify the canonical result is
+    contained within the canonical root. A `..` segment is permitted exactly when
+    the canonical result stays inside the root. A lexical `..` rejection is wrong
+    on both sides: **too strict**, because it rejects legitimate
+    sibling-directory layouts (a document in `chapters/` including
+    `../shared/glossary.crv`, whose target is inside the project root); and **too
+    weak**, because symbolic links and absolute paths escape a root with no `..`
+    present at all. Absolute paths remain denied unless they canonicalize inside
+    the root.
+  - **Apply a symlink / escape policy.** A symlink whose real target escapes the
+    root is rejected the same as a literal `../` traversal.
+  - **Refuse remote fetches by default.** URL schemes (`file:`, `http:`, `data:`,
+    …) MAY be denied outright; enable a remote source only behind an explicit
+    allowlist.
+- **The root is well defined, and is never the working directory.** For
+  file-based entry points (a CLI invocation on a document path, or a
+  convert-from-file API) the root SHOULD default to the **directory of the
+  top-level document**; it MUST NOT default to the process working directory,
+  which is arbitrary and may be `/` or a home directory. For string-input APIs
+  no path context exists, so a host MUST supply the root explicitly or inclusion
+  stays disabled and directives remain literal. The root is fixed for the whole
+  expansion: relative paths resolve against the *including* file, but containment
+  is always checked against the single top-level root, which MUST NOT re-base per
+  included file.
+
+```
+book/            <- root (default: directory of the top-level document)
+  main.crv
+  chapters/ch1.crv
+  shared/glossary.crv
+```
+
+From `chapters/ch1.crv`, `../shared/glossary.crv` is allowed (it canonicalizes
+inside `book/`), while `../../../etc/passwd` is denied.
+
+- **Included content is parsed under the SAME sanitization as any Carve.**
+  Inclusion is a *source-merge*, not a privilege boundary: raw-HTML passthrough,
+  the URL-scheme denylist, attribute hardening, and Trojan-Source stripping all
+  apply to included bytes exactly as to inline bytes. An include can never
+  reintroduce a capability the host disabled for the parent - there is **no
+  privilege escalation via include**.
+- **Amplification is bounded.** The processor MUST detect inclusion **cycles**
+  (a file that transitively includes itself) and leave the offending directive
+  literal; **cycle detection is the primary guard**. As a secondary DoS bound,
+  implementations MUST enforce a **finite** include-depth limit (recommended
+  default **at least 16**, host-configurable) and charge total expanded output
+  against the same `max(1 MB, 8 × input length)` byte budget as other expansion
+  features (see *Resource limits* above). Past any limit the directive degrades
+  to literal text with a Warning - never a silent drop.
+
+Threats this policy addresses: **path traversal** (`../../etc/passwd`),
+**symlink escape** (a link inside the root pointing out of it), **include
+cycles** (A includes B includes A), **include-bomb / size amplification** (a
+small file included N times, transitively - the zip-bomb analog), and
+**DoS by depth** (unbounded nesting). Non-filesystem hosts have no resolver, so
+every directive is inert.
+
+For the directive syntax, the resolver contract, cross-file id / footnote /
+reference collision handling, and error behavior, see the
+[File inclusion](/includes) page.
+
 ## Non-HTML render targets
 
 The guarantees above are not HTML-only. The Markdown, plain-text, and ANSI
