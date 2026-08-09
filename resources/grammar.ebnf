@@ -1114,7 +1114,10 @@ caption_slot = [blank_line], caption ;
    display-math block -- attach the same caption under the same allowance, but
    there is no production to hang the slot on, so for them §4 is the whole
    rule. §4 says which, and why. A `^ ` line that follows neither a slot-
-   carrying host nor one of those two is ordinary inline/paragraph content.
+   carrying host nor one of those two is ordinary inline/paragraph content --
+   which, when a paragraph is OPEN above it, means it folds INTO that
+   paragraph rather than starting a second one. §10 I7 is that half, and it
+   is where the reading was left to inference for long enough to diverge.
    (Reading this note as "only a production attaches a caption" would make a
    captioned image a paragraph, which §4 denies and no engine does.) *)
 
@@ -3508,6 +3511,28 @@ EOF = (* end of file *) ;
          and every other line likewise begins its own block (PART 2,
          SINGLE-LINE HEADINGS). Djot folds a plain or same-`#` line in; this
          is the deliberate divergence, not a restatement of it.
+      I7 A CAPTION LINE DOES NOT INTERRUPT. A `^ ` line appears in neither
+         I1 nor I5. What ends a paragraph at a caret is §4, and §4 reaches
+         only the five captionable hosts; for the two it spells in prose that
+         is a paragraph whose WHOLE content is one image or one display-math
+         span, and there the caret line ends the paragraph and ATTACHES.
+         Anywhere else it folds in as ordinary paragraph text, caret and all:
+         "Text \n ^ cap" is one paragraph, and so is
+         "Text \n ![a](x.png) \n ^ cap", where the image is not the whole
+         paragraph and so there is no host to attach to.
+         NOT IN CONFLICT WITH THE CAPTION'S OWN RULE. A `^ ` line DOES end an
+         open CAPTION (PART 2, MULTI-LINE CAPTIONS, item 4) -- that is a rule
+         about a caption, stated separately from item 2's "a line that
+         interrupts a paragraph" precisely because a caret line is not one of
+         those. Item 4 would be redundant if it were.
+         WHY IT NEEDED WRITING DOWN. Only the INDENTED spelling was in the
+         corpus (158-indented-image-and-caption-stay-literal), where both
+         readings agree because an indented line opens no top-level block at
+         all. The executable spec ended the paragraph on EVERY caret line, all
+         three engines folded it in, and nothing failed until the canonical
+         writer stopped force-escaping a line-initial caret and `oracle(fmt(x))`
+         parted from `oracle(x)` (carve#1046). Pinned by corpus
+         286-a-caret-line-does-not-end-a-paragraph-it-cannot-caption.
 
    11. LIST MARKER CHANGE STARTS A NEW LIST -- OPERATIONAL (governs `list`
       in PART 2). §10 decides FIRST whether marker lines establish a list

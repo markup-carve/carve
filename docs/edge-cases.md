@@ -527,6 +527,8 @@ collected/consumed (an attribute line floats forward to the next block, §15).
 | `Text` / `` ``` `` / `code` | one paragraph | unterminated fence — no closer |
 | `Text` / `---` / `more` | paragraph + `<hr>` + paragraph | thematic break interrupts |
 | `Text` / `![a](u)` | one paragraph (inline image) | image excluded |
+| `Text` / `^ cap` | one paragraph | a caption line is not an interrupter (I7); §4 attaches only to a captionable host |
+| `![a](u)` / `^ cap` | `<figure>` | the paragraph IS the image, so §4 has a host and the caption attaches |
 | `See[^m].` / `[^m]: note` | paragraph + endnotes | invisible construct |
 | `# H` / `- item` | heading + sibling list | list marker ENDS the heading |
 | `# H` / `1. one` | heading + sibling list | list marker ENDS the heading (ordered too) |
