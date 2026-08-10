@@ -717,7 +717,11 @@ const ENTITIES = { '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&nbsp
  * The escapes then come back off, so `# A & B` is `A-B` and not `A-amp-B`.
  */
 function derivedText(source) {
-  const html = renderInlineWithoutSymbols(source).replace(/\uE000[\s\S]*?\uE001/g, '')
+  const html = renderInlineWithoutSymbols(source)
+    .replace(/\uE000[\s\S]*?\uE001/g, '')
+    // An image's plain-text projection is its alternative text. Preserve it
+    // before the generic tag strip removes the `<img>` leaf altogether.
+    .replace(/<img\b[^>]*\balt="([^"]*)"[^>]*>/g, '$1')
 
   return stripTags(html).replace(/&(?:lt|gt|quot|#39|nbsp|amp);/g, (m) => ENTITIES[m])
 }

@@ -5170,6 +5170,14 @@ EOF = (* end of file *) ;
       reachable by its collapsed spelling at all, and the author sees no
       reason why (carve#648). The four normalizations above then apply to
       that plain text.
+      VISIBLE LEAVES STAY VISIBLE. An autolink contributes its display text
+      and an image contributes its alternative text to both the slug and this
+      index. They are not among §25's named exclusions. A label's parsed inline
+      children survive resolution; an implementation's link-derived internal
+      representation for a non-link mention or tag cannot make that node
+      disappear inside the resolved outer link. If the normalized plain text is
+      empty, no index entry is created and no collapsed label resolves through
+      the fallback slug `s`; the heading itself still receives `s` as §25 says.
       THE STRIP IS SCOPED TO THE HEADING INDEX. The linkDefs matching
       above is unchanged and keys on the label AS WRITTEN: `[*bold*]: /x`
       is matched by `[*bold*][]` and NOT by `[bold][]`, and `[bold]: /x`
