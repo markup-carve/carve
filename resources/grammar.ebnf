@@ -5058,11 +5058,15 @@ EOF = (* end of file *) ;
 
       T5 WHAT THIS SECTION DOES NOT SETTLE, stated so its silence is not
          read as agreement:
-         - PANDOC WAS NOT MEASURED. It is not installed on the host this
-           ruling was made on, and it is among the readers the Markdown
-           target answers to. T2 therefore claims what four named readers
-           do, and does NOT claim that every reader agrees. Measuring pandoc
-           is owed.
+         - PANDOC HAS NOW BEEN MEASURED, and it agrees. pandoc 3.5 keeps
+           U+000B and U+000C in all five positions T2 names -- inline, on a
+           lone line between paragraphs, inside a code span, after a list
+           marker and after an ATX hash -- in its `commonmark`, `gfm` and
+           `markdown` readers alike, and `-<VT>item` opens no list in any of
+           them. T2's finding therefore rests on five readers rather than
+           four. What it still does NOT claim is that EVERY reader agrees: a
+           reader that reclassified these characters as whitespace would be a
+           reason to revisit T2, and none measured so far does.
          - CARVE-RS WAS NOT MEASURED on this behavior at all. The two
            engines that agreed on the strip were carve-js and carve-php. The
            first step of the carve-rs ticket is to MEASURE it, not to assume
