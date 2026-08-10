@@ -113,7 +113,7 @@ jobs:
       # own CI), so the bump can decide draft-vs-ready.
       - name: Set up Node
         if: matrix.lang == 'node'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
       - name: Set up Rust
