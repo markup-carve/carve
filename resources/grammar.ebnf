@@ -4909,11 +4909,21 @@ EOF = (* end of file *) ;
         slugging. Consequences: a precomposed `é` (U+00E9) and a decomposed
         `e` + U+0301 yield the SAME id (NFC); a heading containing U+202E and
         U+200B yields an id with NEITHER codepoint.
-      - RENDERED TEXT and CODE-SPAN / CODE-BLOCK content strip the
-        bidi-override / isolate controls (U+202A..U+202E, U+2066..U+2069):
-        these are DOM-inert, and entity-encoding one would let it DECODE BACK
-        to the raw control downstream, so they are REMOVED, not escaped. A
-        control in a code span is likewise stripped, NOT entity-encoded.
+      - PRESENTATION TARGETS -- HTML, Markdown, plain text, and terminal
+        (ANSI) -- strip the bidi-override / isolate controls (U+202A..U+202E,
+        U+2066..U+2069) from rendered text and CODE-SPAN / CODE-BLOCK content.
+        They are REMOVED, not escaped: in HTML, entity-encoding one would let
+        it DECODE BACK to the raw control downstream; in the other presentation
+        targets it would either remain live or change the author's visible
+        content. This target rule is independent of §25's C0-control split:
+        bidi override/isolate characters are Unicode format characters, not
+        C0 controls.
+      - The canonical `carve` target is a SOURCE SERIALIZER, not a presentation
+        target. It MUST preserve authored bidi-override / isolate controls so
+        parse-render-parse does not silently destroy source. A processor that
+        exposes lint diagnostics SHOULD report a preserved control with the
+        rule id `bidi-control-in-source` so an author can remove or explicitly
+        accept it before publishing.
       - PRESERVED in rendered text: the directional MARKS LRM (U+200E) and
         RLM (U+200F), and the zero-width characters (U+200B etc.) -- these are
         stripped from IDS (above) but kept in TEXT, since they can be
