@@ -93,7 +93,10 @@ heading text by the following algorithm, applied in order:
 
 1. Take the heading's rendered plain text (inline markup removed; symbols
    `:name:` and footnote references excluded): `# *Setup* guide` yields
-   `Setup guide`.
+   `Setup guide`. Visible leaf content remains: an autolink contributes its
+   display text and an image contributes its alternative text. If every child
+   is excluded, the heading still receives the fallback id in step 6 but it
+   creates no empty implicit-reference key.
 2. **NFC normalization.** The text is normalized to NFC first, so a precomposed
    `é` and a decomposed `e` + combining acute yield the SAME slug.
 3. Replace each maximal run of **non-alphanumeric ASCII** characters
