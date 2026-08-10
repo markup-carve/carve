@@ -111,9 +111,8 @@ carve-php  64-table-rowspan-with-multi-line-content.crv           text  1  permi
 # ---- PERMITTED: a table cell continued on a `+` line -------------------------
 #
 # docs/ast-json.md names the construct in the §4 clause, and its conformance
-# table's carve-js row names the engine. carve-rs and carve-php place
-# these, which is permitted too - §4 exempts, it does not forbid. Also a
-# CONTROL.
+# table's carve-js row names the original engine. All engines now omit them,
+# because §4 requires omission when no exact contiguous extent exists.
 
 carve-js   237-a-continuation-row-carries-no-trailing-text.crv    table_cell  2  permitted
 carve-js   249-trailing-whitespace-after-a-block-marker-4.crv     table_cell  2  permitted
@@ -122,6 +121,20 @@ carve-js   256-table-cell-padding-must-be-a-space-16.crv          table_cell  2 
 carve-js   256-table-cell-padding-must-be-a-space-17.crv          table_cell  2  permitted
 carve-js   63-table-multi-line-cell-continuation.crv              table_cell  1  permitted
 carve-js   64-table-rowspan-with-multi-line-content.crv           table_cell  1  permitted
+carve-rs   237-a-continuation-row-carries-no-trailing-text.crv    table_cell  2  permitted
+carve-rs   249-trailing-whitespace-after-a-block-marker-4.crv     table_cell  2  permitted
+carve-rs   256-table-cell-padding-must-be-a-space-15.crv          table_cell  2  permitted
+carve-rs   256-table-cell-padding-must-be-a-space-16.crv          table_cell  2  permitted
+carve-rs   256-table-cell-padding-must-be-a-space-17.crv          table_cell  2  permitted
+carve-rs   63-table-multi-line-cell-continuation.crv              table_cell  1  permitted
+carve-rs   64-table-rowspan-with-multi-line-content.crv           table_cell  1  permitted
+carve-php  237-a-continuation-row-carries-no-trailing-text.crv    table_cell  2  permitted
+carve-php  249-trailing-whitespace-after-a-block-marker-4.crv     table_cell  2  permitted
+carve-php  256-table-cell-padding-must-be-a-space-15.crv          table_cell  2  permitted
+carve-php  256-table-cell-padding-must-be-a-space-16.crv          table_cell  2  permitted
+carve-php  256-table-cell-padding-must-be-a-space-17.crv          table_cell  2  permitted
+carve-php  63-table-multi-line-cell-continuation.crv              table_cell  1  permitted
+carve-php  64-table-rowspan-with-multi-line-content.crv           table_cell  1  permitted
 
 # ---- OWED --------------------------------------------------------------------
 #

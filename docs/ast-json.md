@@ -155,6 +155,12 @@ both are stated in §4: the inner half of a combined `/*x*/`, whose span is the
 outer one trimmed by the two-character delimiters, and a table cell, which runs
 between the pipes because the `|` opens the row.
 
+A span **ends immediately after the last source codepoint the construct owns**.
+Closing delimiters and attached attributes are included; a following newline,
+blank line, or unattached attribute block is not. Containers end at their
+closer, or at their last child when they have no closer. Break nodes own their
+line terminator and therefore end at column 1 of the following line.
+
 A parent's span **contains every child's**. The two rules point the same way -
 covering the opening markup is what puts a parent's start before its first
 child's - and they are checked separately anyway, so that revisiting one cannot
@@ -164,7 +170,7 @@ An implementation that cannot place a node **omits `pos` rather than inventing
 one**, and says so. Absent is a fact a consumer can act on; a wrong span is not.
 
 A **reassembled** node - one the producer joined from pieces the source
-separates, or synthesized outright - **may omit `pos` and is conformant doing
+separates, or synthesized outright - **must omit `pos`**. It is conformant doing
 so**. A table cell continued on a `+` line, the hard break a line block makes
 from a soft one, line-block content rebuilt around an indentation sentinel, and
 a `text` run coalesced across such a gap all have values that are not a slice of
@@ -503,8 +509,8 @@ A row may name an issue only where one of those still declares the debt.
 | engine | shape | positions |
 |---|---|---|
 | carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together | every block and inline placed, except the two categories §4 exempts: a coalesced `text` run, and a table cell continued on a `+` line |
-| carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` | every block and inline placed, except the coalesced `text` runs §4 exempts |
-| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish on every corpus document | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the coalesced `text` runs §4 exempts |
+| carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` | every block and inline placed, except the two categories §4 exempts: a coalesced `text` run, and a reassembled table cell |
+| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish on every corpus document | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the two categories §4 exempts: a coalesced `text` run, and a reassembled table cell |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"

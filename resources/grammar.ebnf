@@ -6920,6 +6920,15 @@ EOF = (* end of file *) ;
          a cell claiming it would overlap the cell before it -- which the
          sibling-overlap rule forbids.
 
+      A SPAN ENDS IMMEDIATELY AFTER THE CONSTRUCT'S LAST OWNED SOURCE
+      CODEPOINT -- NORMATIVE. Closing delimiters and trailing attribute blocks
+      belong to the construct and are included. A following line terminator,
+      blank line, or unattached attribute block does not and is excluded.
+      A container ends after its explicit closer when it has one, otherwise
+      after its last placed child. A soft or hard break is the exception: the
+      line terminator is the source codepoint the break owns, so its exclusive
+      end is column 1 of the following line.
+
       WHY IT IS WRITTEN DOWN. Nothing compared two engines' spans until
       carve#917 built the panel, and the first run of it reported 279 of 690
       documents carrying a span the three engines do not agree on. The check
@@ -6961,7 +6970,7 @@ EOF = (* end of file *) ;
       The contract a consumer relies on is unchanged: JSON it is handed carries
       positions. How the producer arranged that is the producer's business.
 
-      A REASSEMBLED NODE MAY OMIT `pos` -- NORMATIVE. A node whose value is not
+      A REASSEMBLED NODE MUST OMIT `pos` -- NORMATIVE. A node whose value is not
       a contiguous slice of the source, because the producer joined it from
       pieces the source separates or synthesized it outright, MAY omit `pos`
       rather than invent one, and is CONFORMANT doing so. This is a permitted
@@ -6990,21 +6999,14 @@ EOF = (* end of file *) ;
       kind of content -- is the evidence that this is a property of the rules
       and not of anyone's parser.
 
-      A DISCONTIGUOUS NODE'S SPAN IS ITS FIRST FRAGMENT -- NORMATIVE. Where
-      such a node DOES carry `pos` -- the clause above permits omitting it,
-      it does not require it -- the span is the node's first fragment: it
-      starts where the construct starts, and `endOffset` is the end of that
-      FRAGMENT, not the end of the node.
+      A discontiguous node therefore has no span. A first-fragment span is not
+      an alternative: it locates the beginning but falsely describes `pos` as
+      the construct's extent.
 
           |= Category       |= Item   |
           | Fresh Fruits    | Apple   |
           + from local      |         |
           + farms           |         |
-
-      The first body cell's value is `Fresh Fruits from local farms`; its span
-      covers ` Fresh Fruits    ` and stops there. A consumer gets somewhere to
-      navigate to, which is the one thing omitting loses, and does not get a
-      claim about extent that would be false.
 
       FIRST-TO-LAST IS FORBIDDEN, and it is the tempting third answer. In the
       table above that range runs from line 2 to line 4 and CONTAINS the
@@ -7012,12 +7014,9 @@ EOF = (* end of file *) ;
       offsets and a consumer resolving a click to a node could not tell which
       it hit. Sibling spans that overlap are checked for, and are a finding.
 
-      The cost is stated: `pos` then means "where this begins" on a
-      discontiguous node and "what this covers" everywhere else. That is the
-      lesser evil against a span that overlaps a sibling or against no span at
-      all, and it is what two of the three engines already publish -- carve-php
-      and carve-rs give the first fragment, carve-js omits (still permitted).
-      (carve#541)
+      The cost is an absent navigation target for that node; its contiguous
+      children may still be placed. This keeps `pos` meaning one thing:
+      the exact extent the node owns. (carve#541, carve#1060.)
 
       THE EXEMPTION IS NARROW. The test is whether a true span EXISTS, not
       whether one was computed. A node the producer has simply not placed yet
