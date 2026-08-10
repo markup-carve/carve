@@ -26,7 +26,7 @@ export const PAGE_ANCHORS = {
   markupInclusive: 'begins at the markup that opens the construct',
 
   /** §4's exemption for a node the producer reassembled. */
-  reassembledExemption: '**may omit `pos` and is conformant doing so**',
+  reassembledExemption: '**must omit `pos`**',
 
   /** The reassembled cases, named one by one. */
   reassembledCases: 'A table cell continued on a `+` line, the hard break a line block makes',

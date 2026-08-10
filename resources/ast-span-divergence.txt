@@ -1,124 +1,17 @@
 # Node types the three engines SPAN differently.
 #
 # `npm run ast:check` compares every corpus document's AST across carve-js,
-# carve-rs and carve-php four ways: the SHAPE (node types and nesting), the
-# schema, the scalar VALUES, and - here - the SPANS.
+# carve-rs and carve-php. This ledger makes a newly introduced position
+# presence or extent disagreement fail conformance instead of becoming an
+# unnoticed baseline.
 #
-# The span panel did not exist until carve#534. The value comparison drops every
-# position key by name, on the stated grounds that they are "compared
-# elsewhere"; elsewhere is `checkPositions`, which compares each engine against
-# the SOURCE and never against another engine, and whose one content-level rule
-# runs on `text` nodes alone. So the run reported dozens of "missing pos"
-# findings and ZERO disagreements about where a present `pos` points, because it
-# never compared them.
+# Format: <type> (presence|extent) <document-count>
 #
-# Two things that hid there, both still true of the engines' mains:
+# Measured 2026-08-10 over 895 documents (892 corpus plus 3 synthetic), at the
+# implementations linked from markup-carve/carve#1060. All 18,315 comparable
+# spans agree. Each engine has the same 27 permitted omissions: 15 reconstructed
+# text nodes and 12 continued/reassembled table cells, declared per engine and
+# document in resources/ast-position-waivers.txt.
 #
-#   117-footnote-definition-inside-a-container-is-collected - carve-rs gives the
-#   `block_quote` [11,13], which slices "> ", the marker alone. carve-js and
-#   carve-php give [11,28], the whole quote. Invisible to the containment rule
-#   because the footnote hoists to the root and leaves the quote with no
-#   children to contain.
-#
-#   132-thematic-break-requires-contiguous-markers, source `* * *` - carve-php
-#   publishes `text [0,1]` where the other two publish [4,5]. BOTH slices are
-#   "*", so the one content-level rule passes for both. That is the trap this
-#   repo keeps re-finding: a rule that asserts a property the bug preserves.
-#
-# WHAT THIS FILE DOES NOT DECIDE, AND WHAT IS NO LONGER OPEN. Whether a node's
-# span covers the markup that OPENS it - the list marker, the `>`, the `[^a]: `
-# - was markup-carve/carve#913, and it is RULED: docs/ast-json.md states
-# that "a span begins at the markup that opens the construct", naming the two
-# exceptions (the inner half of a combined `/*x*/`, and a table cell, which runs
-# between the pipes). Most of the EXTENT rows below are that question, so each
-# of them is now an engine owing a fix rather than a convention nobody settled.
-#
-# This file still does not say WHICH engine owes it. That needs the source, and
-# the source-side rule is `checkOpeningMarkup` in scripts/spec/ast-positions.mjs,
-# which each engine runs against its own tree. What a row here records is that
-# the three do not agree, and what a COUNT records is an engine changing its
-# mind about a span - which nothing else in this repo can see happen.
-#
-# DECLARED rather than gated at zero, for the reason the value panel gives: in
-# this fleet a fix lands in one engine first, so the engine that is RIGHT is
-# routinely the odd one out for a while, and a zero gate would make the fix for
-# a red run "wait".
-#
-# Exact in three directions:
-#
-#   - a row that disagrees and is not listed  -> NEW, fails
-#   - a listed row's DOCUMENT COUNT moves     -> COUNT, fails
-#   - a listed row no longer disagrees        -> AGREED, delete the line, fails
-#     until you do
-#
-# PRESENCE and EXTENT are separate rows because they are different facts with
-# different owners. Presence is §4 and has a permitted category, declared per
-# engine and per document in resources/ast-position-waivers.txt; extent is the
-# markup-inclusive rule above, and has none.
-#
-# Format: <type> (presence|extent)  <document-count>
-#
-# Measured 2026-08-08 over 883 documents (880 corpus plus 3 synthetic), at
-# carve 02a947c, carve-js e35cfcb, carve-rs fa4d3f7, carve-php 177989a.
-# 353 of those documents carry at least one span the three engines do not agree
-# on, over 18069 spans compared.
-#
-# TEN counts moved since the 2026-08-07 measurement above and the ROW SET did
-# not: no row is new and none agreed, so this is the same set of disagreements
-# over a corpus 50 documents larger.
-#
-# EIGHT of the ten rose, which 50 new documents account for. TWO FELL -
-# block_quote 8 to 7 and text 3 to 2 - and corpus growth cannot lower a count,
-# since each document is judged on its own. Neither is corpus churn either: no
-# corpus document has been deleted or renamed since those numbers were written,
-# and the one that was MODIFIED does not account for either row - swapping its
-# earlier content back in leaves both rows exactly where they are. So one
-# document per row that used to disagree now agrees, which is an engine moving
-# onto the other two. Not carve-js: rebuilt at the commit before its most recent
-# behavior change, the block_quote row measures the same 7 over this corpus.
-#
-# WHICH document left is not recoverable here, and that is this file's design
-# rather than an omission - it records counts precisely so it does not churn on
-# every corpus insertion (see the header above). A count falling is the signal;
-# the engine's own history is where the reason lives.
-
-# ---- EXTENT: PART 12 §4, markup-inclusive (markup-carve/carve#913) ----------
-
-list                    (extent)  145
-table_row               (extent)  74
-list_item               (extent)  55
-paragraph               (extent)  47
-footnote                (extent)  44
-definition_term         (extent)  27
-definition_description  (extent)  22
-comment                 (extent)  11
-block_quote             (extent)  7
-hard_break              (extent)  7
-admonition              (extent)  4
-div                     (extent)  4
-frontmatter             (extent)  4
-table                   (extent)  4
-table_cell              (extent)  4
-definition_list         (extent)  3
-text                    (extent)  2
-code                    (extent)  1
-heading                 (extent)  1
-insert                  (extent)  1
-literal_inline          (extent)  1
-soft_break              (extent)  1
-
-# ---- PRESENCE: one engine omits where the others place ---------------------
-#
-# Every row here is also declared per engine and per document, with the issue
-# tracking it, in resources/ast-position-waivers.txt. The two files disagree by
-# construction if one is updated without the other, which is deliberate.
-#
-# ONE ROW LEFT, and it is the permitted one: carve-js omits a table cell
-# continued on a `+` line, which docs/ast-json.md's §4 clause and its
-# conformance table exempt by name.
-# The six rows that stood here on 2026-08-06 - paragraph, text, soft_break,
-# definition_description, figure and footnote - all cleared when the engine
-# issues behind them landed, and the sibling file's OWED section emptied in the
-# same measurement.
-
-table_cell              (presence)  7
+# There are currently no declared cross-engine span divergences. Any new row,
+# changed count, or undeclared disagreement is a conformance failure.
