@@ -119,11 +119,19 @@ displayed source differs from what executes — the "Trojan Source" attack
 ([CVE-2021-42574](https://nvd.nist.gov/vuln/detail/CVE-2021-42574)). Carve
 neutralizes them (grammar PART 9 §26):
 
-- **Rendered text and code strip** the bidi-override / isolate controls. They
-  are *removed*, not entity-encoded — an HTML parser decodes `&#x202e;` back to
-  the live control, so removal is the only DOM-inert mitigation. The directional
-  *marks* LRM / RLM (U+200E / U+200F), which are legitimate for laying out
-  genuine right-to-left text, are kept.
+- **Presentation output strips** bidi-override / isolate controls from text and
+  code. This applies to HTML, Markdown, plain text, and terminal (ANSI) output.
+  They are *removed*, not entity-encoded — an HTML parser decodes `&#x202e;`
+  back to the live control, while a textual presentation target would otherwise
+  keep the deceptive control live. The directional *marks* LRM / RLM (U+200E /
+  U+200F), which are legitimate for laying out genuine right-to-left text, are
+  kept.
+- **Canonical Carve preserves source.** The `carve` target is a source
+  serializer rather than a presentation target, so it retains authored bidi
+  controls for lossless round trips. Processors with lint diagnostics report
+  them as `bidi-control-in-source`; publish through a presentation target or
+  remove an intentional-looking warning before treating canonical source as
+  display text.
 - **Heading ids are NFC-normalized** and strip the bidi controls plus
   zero-width characters (U+200B/C/D, U+2060, U+FEFF, U+00AD). So a precomposed
   `é` and a decomposed `e` + combining acute produce the **same** id (no
@@ -134,9 +142,9 @@ neutralizes them (grammar PART 9 §26):
 run `if (admin)‮ //‬ ok` then deploy
 ```
 
-renders as `run <code>if (admin) // ok</code> then deploy` — the override is gone,
-so the code reads the way it executes. No Markdown implementation defends this
-by default.
+renders through every presentation target without the override, so the code
+reads the way it executes. Canonical Carve output retains it and emits the lint
+warning described above.
 
 ## Resource limits (denial-of-service)
 
