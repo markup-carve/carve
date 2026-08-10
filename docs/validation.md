@@ -90,6 +90,7 @@ the command-line and editor behavior stay aligned.
 
 | Rule | Catches |
 | ---- | ------- |
+| `bidi-control-in-source` | a Trojan-Source bidi override or isolate control (U+202A–U+202E, U+2066–U+2069) that canonical Carve preserves but every presentation target strips |
 | `duplicate-heading-id` | two headings producing the same id, either by slug collision or repeated explicit `{#id}` |
 | `broken-crossref` | a `</#id>` cross-reference with no matching heading or numbered caption id |
 | `unresolved-reference-link` | a `[text][label]` or `[text][]` reference link with no matching link definition; only the collapsed `[text][]` also falls back to the implicit heading target, so an explicit label that names no definition is unresolved even when a heading carries that text (PART 9R R1) |
@@ -253,7 +254,7 @@ The table above is carve-js. The other engines do not currently match it, and
 | implementation | `carve lint` | covers |
 |---|---|---|
 | carve-js | yes | the rules above, plus the Djot/Markdown migration checks |
-| carve-php | yes | Markdown-habit checks only (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`); none of the semantic rules above, and neither platform autolink rule |
+| carve-php | yes | `bidi-control-in-source` plus Markdown-habit checks (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`); none of the other semantic rules above, and neither platform autolink rule |
 | carve-rs | no | the binary has no `lint` command |
 
 The two platform autolink rules are carve-js only today. They are specified here
