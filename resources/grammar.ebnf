@@ -6085,7 +6085,16 @@ EOF = (* end of file *) ;
           immediately after it in the line the writer is building holds that
           same character, put there by the writer as MARKUP and not behind a
           backslash. Adjacent -> escape it. Not adjacent -> emit it bare.
-      M1c NOTHING ELSE NARROWS. Every other Markdown metacharacter keeps M1
+      M1c A PARAGRAPH LINE MUST NOT BECOME A LIST. When a text character at a
+          paragraph line's content position would begin a Markdown list marker,
+          the target escapes the marker character: `-` and `+` before a space
+          or tab become `\-` and `\+`; after one to nine ASCII digits, `.` and
+          `)` before a space or tab become `\.` and `\)`. Up to three leading
+          spaces are part of the same content position for Markdown readers.
+          The rule applies to paragraph text only: a marker the renderer emits
+          for an actual list remains live, and punctuation inside code remains
+          content. `*` needs no extra case because M1a already escapes it.
+      M1d NOTHING ELSE NARROWS. Every other Markdown metacharacter keeps M1
           as written, and M2 and M3 are untouched by this clause.
 
       THE FINDING IS §3'S, ONE TARGET OUT. §3 records, for the canonical
@@ -6148,6 +6157,14 @@ EOF = (* end of file *) ;
       character is holding a run boundary apart under all of them at once.
       M1b keeps exactly those escapes, and that is why the minimum is stated
       at this width and not another.
+
+   8b. THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH -- NORMATIVE. A nested list
+      item is indented by TWO ASCII SPACES for each list ancestor. The target
+      may discard marker style and tight/loose layout, but it MUST NOT flatten
+      parent, child, and grandchild items into siblings: indentation is the
+      plain-text representation of that structure. ANSI and canonical Carve
+      use the same two-space depth step; plain text differs only by omitting
+      presentation styling, not by erasing hierarchy.
 
       THE BOUNDARY IS THE CLAUSE, NOT A FLOOR. M1b is written as an
       if-and-only-if on purpose. An escape it drops is dropped and an escape
