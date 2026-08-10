@@ -798,6 +798,11 @@ let crossImplDiffs = 0
 const targetStats = Object.fromEntries(
   activeTargets.map((t) => [t, { compared: 0, diffs: 0, errors: 0 }]),
 )
+// Roundtrip starts with fmt(x), then checks to_html(fmt(x)) against to_html(x).
+// The comparison pass has already computed fmt(x) (the Carve target) and
+// to_html(x) with the same commands, so retain both instead of launching every
+// engine two more times for every corpus case.
+const sourceRenders = new Map()
 
 for (const pair of pairs) {
   const pairTargets = targetsFor(pair)
@@ -819,6 +824,9 @@ for (const pair of pairs) {
       }
       stats[impl.name].runnable++
       const result = run(command, impl.cwd, [pair.file])
+      if (roundtrip && (target === 'html' || target === 'carve')) {
+        sourceRenders.set(`${impl.name}\0${target}\0${pair.file}`, result)
+      }
       stats[impl.name].ms += result.elapsedMs
       if (!result.ok) {
         stats[impl.name].error++
@@ -901,7 +909,8 @@ if (roundtrip) {
         const htmlCmd = commandFor(impl, pair, 'html')
         if (!carveCmd || !htmlCmd) continue
 
-        const formatted = run(carveCmd, impl.cwd, [pair.file])
+        const formatted = sourceRenders.get(`${impl.name}\0carve\0${pair.file}`)
+          ?? run(carveCmd, impl.cwd, [pair.file])
         if (!formatted.ok) continue
 
         // fmt(x) written back out as a real file, so each engine re-reads it
@@ -913,7 +922,8 @@ if (roundtrip) {
         writeFileSync(once, raw.endsWith('\n') ? raw : `${raw}\n`)
 
         const htmlOfFormatted = run(htmlCmd, impl.cwd, [once])
-        const htmlOfSource = run(htmlCmd, impl.cwd, [pair.file])
+        const htmlOfSource = sourceRenders.get(`${impl.name}\0html\0${pair.file}`)
+          ?? run(htmlCmd, impl.cwd, [pair.file])
         const formattedTwice = run(carveCmd, impl.cwd, [once])
 
         // Per-engine properties, reported apart from cross-engine agreement:
