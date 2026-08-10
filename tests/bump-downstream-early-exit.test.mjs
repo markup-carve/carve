@@ -437,3 +437,27 @@ test('a human bump PR that is already up to date is left open, not closed', () =
   )
   assert.equal(prStillOpen, true, 'the human PR was closed')
 })
+
+test('pandoc-carve installs its required host executable before conformance', () => {
+  const text = readFileSync(workflow, 'utf8')
+  const row = text.match(
+    /- repo: markup-carve\/pandoc-carve\n(?<body>[\s\S]*?)(?=\n\s+- repo:)/,
+  )
+  assert.ok(row, 'pandoc-carve is absent from the bump matrix')
+  assert.match(row.groups.body, /setup: \|[\s\S]*pandoc-3\.5-1-amd64\.deb/)
+  assert.match(row.groups.body, /pandoc --version/)
+  assert.match(
+    text,
+    /- name: Set up downstream prerequisites[\s\S]*if: matrix\.setup != ''[\s\S]*run: \$\{\{ matrix\.setup \}\}/,
+  )
+})
+
+test('carve-lsp is covered by the downstream bump matrix', () => {
+  const text = readFileSync(workflow, 'utf8')
+  const row = text.match(
+    /- repo: markup-carve\/carve-lsp\n(?<body>[\s\S]*?)(?=\n\s+# NOT here:)/,
+  )
+  assert.ok(row, 'carve-lsp is absent from the bump matrix')
+  assert.match(row.groups.body, /submodule: tests\/spec/)
+  assert.match(row.groups.body, /test: npm ci && npm run build && npm test/)
+})

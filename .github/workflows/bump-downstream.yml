@@ -87,6 +87,10 @@ jobs:
           - repo: markup-carve/pandoc-carve
             submodule: spec
             lang: node
+            setup: |
+              curl -sSL -o /tmp/pandoc.deb https://github.com/jgm/pandoc/releases/download/3.5/pandoc-3.5-1-amd64.deb
+              sudo dpkg -i /tmp/pandoc.deb
+              pandoc --version | head -1
             test: npm ci && npm test
             allowlist: none - its conversion tests read the corpus directly
           - repo: markup-carve/carve-skill
@@ -94,6 +98,11 @@ jobs:
             lang: node
             test: npm ci && npm test
             allowlist: the drift guard in `test/` (the skill text has to state what the spec now says)
+          - repo: markup-carve/carve-lsp
+            submodule: tests/spec
+            lang: node
+            test: npm ci && npm run build && npm test
+            allowlist: none - its regression tests consume the pinned engine and spec fixtures
           # NOT here: markup-carve/intellij-carve, which also carries the spec
           # submodule. Its corpus snapshots run through Gradle with an IDE SDK
           # download, which does not fit this workflow's node/rust/php shape.
@@ -116,6 +125,13 @@ jobs:
         with:
           php-version: '8.2'
           coverage: none
+
+      # Some downstream suites need a host executable in addition to their
+      # language runtime. Keep that setup beside the matrix entry so a missing
+      # prerequisite cannot be misreported as corpus non-conformance.
+      - name: Set up downstream prerequisites
+        if: matrix.setup != ''
+        run: ${{ matrix.setup }}
 
       - name: Bump ${{ matrix.repo }}
         env:
@@ -478,7 +494,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Every repo with a spec submodule is bumped by this workflow
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
