@@ -1,0 +1,45 @@
+Adjacent sibling lists survive the round trip
+
+```
+1. a
+
+ 1. b
+.
+<ol>
+  <li>a</li>
+</ol>
+<ol>
+  <li>b</li>
+</ol>
+```
+
+```
+1. a
+
+ 1. b
+
+  1. c
+.
+<ol>
+  <li>a</li>
+</ol>
+<ol>
+  <li>b</li>
+</ol>
+<ol>
+  <li>c</li>
+</ol>
+```
+
+```
+- a
+
+* b
+.
+<ul>
+  <li>a</li>
+</ul>
+<ul>
+  <li>b</li>
+</ul>
+```
