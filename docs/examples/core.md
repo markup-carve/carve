@@ -994,6 +994,30 @@ lazy</li>
 
 :::
 
+Two or more consecutive blank lines are a hard list boundary. The compatible
+marker after the boundary opens a new sibling list; in ordinary LF source this
+means three newline bytes between the two item lines.
+
+::: compare
+
+```carve
+- apples
+
+
+- oranges
+```
+
+```html
+<ul>
+  <li>apples</li>
+</ul>
+<ul>
+  <li>oranges</li>
+</ul>
+```
+
+:::
+
 ## Task lists
 
 ::: compare

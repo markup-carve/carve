@@ -243,3 +243,17 @@ lazy</li>
   </li>
 </ol>
 ```
+
+```
+- apples
+
+
+- oranges
+.
+<ul>
+  <li>apples</li>
+</ul>
+<ul>
+  <li>oranges</li>
+</ul>
+```
