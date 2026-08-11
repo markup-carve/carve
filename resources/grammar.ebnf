@@ -467,7 +467,7 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    SINGLE-LINE HEADINGS). (Within a container the column is
    measured after the container's own markers are stripped, e.g. "> # H" is a
    quoted heading.) Matches Djot (which dropped CommonMark's indent fuzz);
-   pinned by corpus 101-heading-marker-column-zero. *)
+   pinned by corpus 103-heading-marker-column-zero. *)
 
 (* SINGLE-LINE HEADINGS -- NORMATIVE (diverges from Djot). A heading ENDS AT
    THE NEWLINE. It has no continuation line, and nothing following it folds in:
@@ -1060,7 +1060,7 @@ data_cell = [cell_attributes], [alignment_marker], {space}, cell_content, {space
    cell carrying attributes is never a bare span_cell -- its content is literal
    even if it is just '^' or '<'. A computed rowspan/colspan/alignment is
    authoritative, so an author copy of those keys is dropped. (corpus
-   97-table-cell-attributes.) *)
+   99-table-cell-attributes.) *)
 cell_attributes = attributes ;
 span_cell = rowspan_marker | colspan_marker ;
 
@@ -2010,7 +2010,7 @@ crossref_id = {character - ('>' | whitespace | newline)}+ ;
    matched against the case-preserved id table, then the link emits the target's
    actual id (`</#café-notes>` resolves to `Café-Notes`). Matching is NOT
    ASCII-folded, so an ASCII spelling of a non-ASCII id (`cafe` vs `Café`) does
-   NOT resolve (corpus 19-heading-ids). EXPLICIT ids (`{#id}`) remain ASCII
+   NOT resolve (corpus 15-heading-ids). EXPLICIT ids (`{#id}`) remain ASCII
    `identifier`s -- the asymmetry is deliberate: authors control explicit
    ids, auto ids follow the heading text. *)
 
@@ -2242,7 +2242,7 @@ forced_content    = (inline_element | text_run | literal_special)+ ;
    `<strong class="real">x</strong>`. It is the SAME `[attributes]` slot
    every other inline carrier uses (code_span, link, image, inline_span,
    extension_inline, autolink). Pinned by corpus
-   75-trailing-attribute-block-edge-cases; both reference impls agree. *)
+   80-trailing-attribute-block-edge-cases; both reference impls agree. *)
 
 (* Content MAY contain the delimiter character: a delimiter that does not
    satisfy the close condition (PART 9 §1) is literal content, not the span
@@ -2480,7 +2480,7 @@ name_word = (letter | digit | '_' | '-')+ ;
    character continues the name (`@john.doe`, `#release-1.0`); a dot at the
    end of the run is sentence punctuation, never part of the name
    (`ping @markus.` -> mention `markus` + literal `.`). Pinned by corpus
-   89-mention-and-tag-name-boundaries / 31-mention-ignores-email-addresses. *)
+   91-mention-and-tag-name-boundaries / 31-mention-ignores-email-addresses. *)
 
 (* ATTRIBUTES ON A MENTION OR TAG (normative, PART 10 §1). The node carries an
    `attrs` slot (PART 12) and those attributes RENDER, with the author's
@@ -2500,7 +2500,7 @@ name_word = (letter | digit | '_' | '-')+ ;
 
    NOT REACHABLE FROM SOURCE, and therefore not corpus-pinnable: an attribute
    block after a mention stays literal (corpus
-   151-attribute-block-after-a-mention-stays-literal), so `@alice{.x}` never
+   153-attribute-block-after-a-mention-stays-literal), so `@alice{.x}` never
    produces an attributed mention. The slot is filled by a decoded wire
    payload, the ProseMirror bridge (a stock Tiptap mention carries an id), or
    an application building the node. Each implementation pins this in its own
@@ -3127,7 +3127,7 @@ EOF = (* end of file *) ;
       - A consequence (§9 SAME-DELIMITER ADJACENCY): a doubled bare delimiter
         never opens nested same-type emphasis -- it is literal text. So `**x**`
         -> `**x**` and `~~x~~` -> `~~x~~`, uniform with the already-literal
-        `//x//` and `__x__` (corpus 74-doubled-emphasis-delimiters). The
+        `//x//` and `__x__` (corpus 76-doubled-emphasis-delimiters). The
         braced-only `^`/`,` are not bare, so `^^x^^` is likewise literal.
 
    4. CAPTION PLACEMENT -- ONE RULE, TWO SPELLINGS (caption_slot in PART 2).
@@ -3206,14 +3206,14 @@ EOF = (* end of file *) ;
          position and mark that position consumed. A `^` MAY reach a HEADER
          cell: the rowspan crosses the thead/tbody boundary
          (`<th rowspan="N">`), for native `|=` and GFM-promoted headers
-         alike (corpus 99-table-header-cell-rowspan).
+         alike (corpus 101-table-header-cell-rowspan).
          NO origin (the walk runs off the edge) -> the marker renders as an
          EMPTY cell (`<td></td>` / `<th></th>`, no content, no span); never
          dropped, never literal. Covers uniformly:
            * ORPHAN -- `^` in the FIRST row / `<` in the FIRST column
-             (corpus 96-table-span-marker-in-first-column);
+             (corpus 98-table-span-marker-in-first-column);
            * BLOCKED -- every intermediate position consumed by other spans
-             (corpus 104-blocked-span-marker-renders-as-empty-cell). A
+             (corpus 106-blocked-span-marker-renders-as-empty-cell). A
              marker that skips consumed neighbors and still reaches an
              available cell DOES extend it -- not blocked.
       T6 CONTINUATION ROWS (`+` in the first column instead of `|`).
@@ -3252,12 +3252,12 @@ EOF = (* end of file *) ;
          `}`, not `|`) is not even a table row. Applies to header and body
          rows; composes with the delimiter row and with cell attributes:
          `|{.c} a |{.r}` -> `<tr class="r">` with `<td class="c">`. Pinned
-         by corpus 98-table-row-attributes.
+         by corpus 100-table-row-attributes.
 
    6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R (rules
       R1-R3; this §-anchor stays for existing references). Summary: link
       labels match EXACTLY (case-sensitive, no whitespace folding; corpus
-      73-reference-labels-are-case-sensitive); LAST link definition wins
+      78-reference-labels-are-case-sensitive); LAST link definition wins
       vs FIRST footnote definition (deliberate asymmetry, §16); collapsed
       references [text][] use their text as the label; abbreviations match
       at word boundaries only; ALL definitions (link / footnote /
@@ -3424,7 +3424,7 @@ EOF = (* end of file *) ;
       CONSEQUENCES (pinned): SAME-DELIMITER ADJACENCY is bare_opener's
       <!(d) / !(d) guards -- a doubled bare delimiter is literal, never
       nested same-type emphasis: `**x**`, `~~x~~`, `==x==` like `//x//`,
-      `__x__` (corpus 74-doubled-emphasis-delimiters, 01-emphasis-11);
+      `__x__` (corpus 76-doubled-emphasis-delimiters, 01-emphasis-11);
       longer runs (`===y===`) all-literal. (The braced-only `^`/`,` are not
       bare, so `^^x^^` and `,,x,,` are likewise literal.) SLASH-ADJACENCY
       (slash_if(d), bare_opener's extra left guard): italic `/` and underline
@@ -3432,7 +3432,7 @@ EOF = (* end of file *) ;
       `a/_y_` and `/a/_b_` -> <em>a</em>_b_ stay literal at the `_`; for `/`
       this is same-delimiter adjacency. The other delimiters `* ~ =` are NOT
       guarded against a preceding `/` (a/~y~ -> a/<s>y</s>, a/=y= ->
-      a/<mark>y</mark>) (corpus 127-emphasis-opener-slash-adjacency). WORD BOUNDARY: (/x/) ->
+      a/<mark>y</mark>) (corpus 129-emphasis-opener-slash-adjacency). WORD BOUNDARY: (/x/) ->
       (<em>x</em>), a./b/ -> a.<em>b</em> (01-emphasis-8); foo_bar_baz,
       foo*bar*baz, snake_case, x = 5, key=value literal (01-emphasis-10,
       -11); "x /a/b y" literal -- the candidate closer is followed by `b`
@@ -3457,7 +3457,7 @@ EOF = (* end of file *) ;
          - a `:::` opener, closer or not (I4).
          So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more"
          is <p>intro</p> + <hr> + <p>more</p> (corpus
-         76-paragraph-interruption).
+         81-paragraph-interruption).
       I2 LIST MARKERS NEVER INTERRUPT (symmetric). NEITHER a bullet
          (`- `/`* `, `- [x] ` task) NOR an ordered marker (decimal, letter,
          roman, any value) interrupts: the line FOLDS into P as lazy
@@ -3498,7 +3498,7 @@ EOF = (* end of file *) ;
          block-attribute line (`{…}` alone on a line, §15). "See[^m].\n
          [^m]: note" resolves the footnote; "para\n%% x" drops the comment;
          "Para\n{.x}" ends the paragraph with the attribute line floating
-         forward (§15; corpus 84-block-attribute-lines-7). (A small
+         forward (§15; corpus 89-block-attribute-lines-7). (A small
          deviation from djot, which keeps such a line as paragraph text.)
 
          DEFINITION OWNERSHIP IS COLUMN-SCOPED. A link or footnote definition
@@ -3510,7 +3510,7 @@ EOF = (* end of file *) ;
          paragraph text and does not register. Comments are the explicit
          exception in §24 C3: their invisibility is accepted independently of
          column and they do not by themselves close the item. Pinned by corpus
-         286-a-column-zero-definition-ends-an-open-list-item (carve#1045).
+         287-a-column-zero-definition-ends-an-open-list-item (carve#1045).
       I6 SCOPE + THE HEADING EXCEPTION. The relation applies to EVERY open
          paragraph, including a blockquote's lazy continuation: "> quoted
          \n - item" folds into ONE quote whose paragraph is
@@ -3881,7 +3881,7 @@ EOF = (* end of file *) ;
       with id/class/key=value in source order; multiple are allowed; a
       digit-first bare word is not a valid name (the block stays literal, as for
       any digit-first identifier). All impls support it (a carve extension
-      beyond canonical djot, matching djot-php; corpus 95-boolean-attributes).
+      beyond canonical djot, matching djot-php; corpus 97-boolean-attributes).
       A COLON is not an `identifier` character, so a colon-bearing name is
       unrecognized in every form -- `{xml:lang="en"}`, `{.sm:hover}`, `{#a:b}`
       and a bare `{a:b}` all leave the run literal, in every engine (corpus
@@ -4008,13 +4008,13 @@ EOF = (* end of file *) ;
          at the top level -- a container does not get its own attribute
          rules.
          Decided in carve#454. The two halves were each pinned (corpus
-         88-list-item-attributes-7 for the literal form, 84 for A1/A2) and
+         90-list-item-attributes-7 for the literal form, 84 for A1/A2) and
          their boundary was not, so carve-rs read the marker line as
          literal while carve-js, carve-php and the executable spec read it
          as an attribute line. None of them could be shown wrong until the
          boundary was stated.
       Implementation status: php, js, and rs implement §15 in full. Pinned
-      by corpus 84-block-attribute-lines.
+      by corpus 89-block-attribute-lines.
 
    16. FOOTNOTES -- NORMATIVE (governs `footnote` / `footnote_definition`
       in PART 3). The reference form `[^label]` + `[^label]: body` and the
@@ -4330,7 +4330,7 @@ EOF = (* end of file *) ;
       - Without preceding whitespace (e.g. `50%%` or `a%%b`) the `%%` is
         literal -- percentages and doubled-percent tokens in prose are safe.
       - The comment does NOT cross a line break; a soft-wrapped continuation on
-        the next line of the same paragraph is unaffected (corpus 46-comments-6).
+        the next line of the same paragraph is unaffected (corpus 26-comments-6).
 
    22. FORCED INTRAWORD EMPHASIS -- NORMATIVE (governs the forced_* productions
       in PART 3). The brace-pair family is the escape hatch for emphasis where a
@@ -4436,7 +4436,7 @@ EOF = (* end of file *) ;
         to preserve a layout, so what has to hold inside it is that nothing is
         claimed and nothing is dropped that was not a comment.
 
-      (corpus 88-line-blocks*.)
+      (corpus 41-line-blocks*.)
 
       LOCAL HARD-BREAK BLOCK -- NORMATIVE (governs `local_hard_break_block` in
       PART 2). A `::: \` fenced block is the smaller local opt-in for visible
@@ -4452,7 +4452,7 @@ EOF = (* end of file *) ;
       - NO WHITESPACE PRESERVATION. Unlike `::: |`, leading whitespace has no
         special visual-preservation rule. Ordinary paragraph parsing trims or
         folds it as usual.
-      (corpus 88-line-blocks*.)
+      (corpus 41-line-blocks*.)
 
    24. TABS AND INDENTATION -- FORMALIZED COLUMN ARITHMETIC (governs
       `indent` in PART 2 and every indentation-sensitive comparison; the
@@ -4909,11 +4909,21 @@ EOF = (* end of file *) ;
         slugging. Consequences: a precomposed `é` (U+00E9) and a decomposed
         `e` + U+0301 yield the SAME id (NFC); a heading containing U+202E and
         U+200B yields an id with NEITHER codepoint.
-      - RENDERED TEXT and CODE-SPAN / CODE-BLOCK content strip the
-        bidi-override / isolate controls (U+202A..U+202E, U+2066..U+2069):
-        these are DOM-inert, and entity-encoding one would let it DECODE BACK
-        to the raw control downstream, so they are REMOVED, not escaped. A
-        control in a code span is likewise stripped, NOT entity-encoded.
+      - PRESENTATION TARGETS -- HTML, Markdown, plain text, and terminal
+        (ANSI) -- strip the bidi-override / isolate controls (U+202A..U+202E,
+        U+2066..U+2069) from rendered text and CODE-SPAN / CODE-BLOCK content.
+        They are REMOVED, not escaped: in HTML, entity-encoding one would let
+        it DECODE BACK to the raw control downstream; in the other presentation
+        targets it would either remain live or change the author's visible
+        content. This target rule is independent of §25's C0-control split:
+        bidi override/isolate characters are Unicode format characters, not
+        C0 controls.
+      - The canonical `carve` target is a SOURCE SERIALIZER, not a presentation
+        target. It MUST preserve authored bidi-override / isolate controls so
+        parse-render-parse does not silently destroy source. A processor that
+        exposes lint diagnostics SHOULD report a preserved control with the
+        rule id `bidi-control-in-source` so an author can remove or explicitly
+        accept it before publishing.
       - PRESERVED in rendered text: the directional MARKS LRM (U+200E) and
         RLM (U+200F), and the zero-width characters (U+200B etc.) -- these are
         stripped from IDS (above) but kept in TEXT, since they can be
@@ -5058,21 +5068,38 @@ EOF = (* end of file *) ;
 
       T5 WHAT THIS SECTION DOES NOT SETTLE, stated so its silence is not
          read as agreement:
-         - PANDOC WAS NOT MEASURED. It is not installed on the host this
-           ruling was made on, and it is among the readers the Markdown
-           target answers to. T2 therefore claims what four named readers
-           do, and does NOT claim that every reader agrees. Measuring pandoc
-           is owed.
-         - CARVE-RS WAS NOT MEASURED on this behavior at all. The two
-           engines that agreed on the strip were carve-js and carve-php. The
-           first step of the carve-rs ticket is to MEASURE it, not to assume
-           it is wrong.
-         - DEL (U+007F) AND THE C1 CONTROLS are outside this section. A
-           security sweep found them already reaching Markdown output in
-           carve-js and carve-rs while carve-php refuses them, which is a
-           separate defect on its own ticket. This section is about C0, and
-           must not be read as saying the control-character story is
-           otherwise uniform across the targets.
+         - PANDOC HAS NOW BEEN MEASURED, and it agrees. pandoc 3.5 keeps
+           U+000B and U+000C in all five positions T2 names -- inline, on a
+           lone line between paragraphs, inside a code span, after a list
+           marker and after an ATX hash -- in its `commonmark`, `gfm` and
+           `markdown` readers alike, and `-<VT>item` opens no list in any of
+           them. T2's finding therefore rests on five readers rather than
+           four. What it still does NOT claim is that EVERY reader agrees: a
+           reader that reclassified these characters as whitespace would be a
+           reason to revisit T2, and none measured so far does.
+         - CARVE-RS HAS NOW BEEN MEASURED, and it conforms. Driving both
+           U+000B and U+000C through the five positions T2 names, on each
+           target: carve-rs keeps them on HTML, Markdown and plain text and
+           strips them on ANSI -- T1, T2, T3 and T4 respectively, ten of ten
+           on each row. carve-js and carve-php were measured the same way at
+           the same time and agree with it on all four. So the three engines
+           are uniform here and the row's worry -- that carve-rs might be
+           doing something else unseen -- did not hold. Assuming it was wrong
+           would have been the error this row was written to prevent.
+         - DEL (U+007F) AND THE C1 CONTROLS are outside this section, which
+           is about C0. The sweep that prompted this note found them reaching
+           Markdown output in carve-js and carve-rs while carve-php refused
+           them; that has since been fixed, and re-measuring finds all three
+           engines identical -- DEL, CSI (U+009B), OSC (U+009D) and U+0080 are
+           stripped on Markdown, plain text and ANSI alike. §25's NON-HTML
+           TARGETS requirement is met on those three.
+           WHAT IS STILL OPEN is the CANONICAL WRITER: all three engines let
+           every one of those characters through on the `carve` target. That
+           may be right -- a writer that drops content is lossy, and the
+           round-trip invariant is what that target answers to -- but §25 says
+           "non-HTML targets" without saying whether the canonical writer is
+           one, and the same question is open for §26's bidi overrides
+           (carve#1076). Deciding it once would settle both.
 *)
 
 
@@ -5110,7 +5137,7 @@ EOF = (* end of file *) ;
    RULES (PASS 2):
    R1 LINK REFERENCES. [text][label] and [text][] (label := text) resolve
       against linkDefs. Matching is EXACT: case-sensitive, no whitespace
-      folding (corpus 73-reference-labels-are-case-sensitive). Definition
+      folding (corpus 78-reference-labels-are-case-sensitive). Definition
       attributes transfer to the link OR IMAGE that resolves the label; the
       reference site's own attributes override per key.
       Unresolved -> the bracketed run renders as literal source text. Carve
@@ -5225,7 +5252,7 @@ EOF = (* end of file *) ;
    R4 CROSSREFS (behavior detail in PART 9 §19). </#id> folds
       case-insensitively and matches against the case-preserved headingIds
       (an ASCII spelling of a non-ASCII id does NOT resolve; corpus
-      19-heading-ids), then against captionIds for numbered captions (the
+      15-heading-ids), then against captionIds for numbered captions (the
       link text is then LABEL + NUMBER, e.g. "Figure 1", markup preserved).
       Resolution is ONE LEVEL: cloned heading text is not re-expanded, so
       self-references and cycles are safe. Unresolved -> literal.
@@ -6058,7 +6085,16 @@ EOF = (* end of file *) ;
           immediately after it in the line the writer is building holds that
           same character, put there by the writer as MARKUP and not behind a
           backslash. Adjacent -> escape it. Not adjacent -> emit it bare.
-      M1c NOTHING ELSE NARROWS. Every other Markdown metacharacter keeps M1
+      M1c A PARAGRAPH LINE MUST NOT BECOME A LIST. When a text character at a
+          paragraph line's content position would begin a Markdown list marker,
+          the target escapes the marker character: `-` and `+` before a space
+          or tab become `\-` and `\+`; after one to nine ASCII digits, `.` and
+          `)` before a space or tab become `\.` and `\)`. Up to three leading
+          spaces are part of the same content position for Markdown readers.
+          The rule applies to paragraph text only: a marker the renderer emits
+          for an actual list remains live, and punctuation inside code remains
+          content. `*` needs no extra case because M1a already escapes it.
+      M1d NOTHING ELSE NARROWS. Every other Markdown metacharacter keeps M1
           as written, and M2 and M3 are untouched by this clause.
 
       THE FINDING IS §3'S, ONE TARGET OUT. §3 records, for the canonical
@@ -6121,6 +6157,14 @@ EOF = (* end of file *) ;
       character is holding a run boundary apart under all of them at once.
       M1b keeps exactly those escapes, and that is why the minimum is stated
       at this width and not another.
+
+   8b. THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH -- NORMATIVE. A nested list
+      item is indented by TWO ASCII SPACES for each list ancestor. The target
+      may discard marker style and tight/loose layout, but it MUST NOT flatten
+      parent, child, and grandchild items into siblings: indentation is the
+      plain-text representation of that structure. ANSI and canonical Carve
+      use the same two-space depth step; plain text differs only by omitting
+      presentation styling, not by erasing hierarchy.
 
       THE BOUNDARY IS THE CLAUSE, NOT A FLOOR. M1b is written as an
       if-and-only-if on purpose. An escape it drops is dropped and an escape

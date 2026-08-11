@@ -57,6 +57,7 @@ const page = readFileSync(resolve(root, 'docs/validation.md'), 'utf8')
  * opt-in options provokes its trigger either way.
  */
 const TRIGGERS = {
+  'bidi-control-in-source': 'a‮b\n',
   'duplicate-heading-id': '# A\n\n# A\n',
   'broken-crossref': 'see </#nope>\n',
   'unresolved-reference-link': 'see [text][nope]\n',
