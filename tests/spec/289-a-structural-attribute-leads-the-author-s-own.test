@@ -1,0 +1,19 @@
+A structural attribute leads the author's own
+
+```
+{k=v .attr}
+a. alpha
+.
+<ol type="a" k="v" class="attr">
+  <li>alpha</li>
+</ol>
+```
+
+```
+{.attr}
+1. one
+.
+<ol class="attr">
+  <li>one</li>
+</ol>
+```

@@ -363,12 +363,21 @@ function withBlockImageAttrs(image, attrs) {
 function renderList(list, depth, ctx) {
   const pad = '  '.repeat(depth)
   let tag = 'ul'
-  let attrs = list.battrs ? renderBlockAttrs(list.battrs) : ''
+  const authored = list.battrs ? renderBlockAttrs(list.battrs) : ''
+  // A STRUCTURAL ATTRIBUTE LEADS (PART 11 §5.1). `type` and `start` are fixed
+  // by the first item's marker, so they are the element's own shape rather than
+  // something added on top of what the author wrote, and they are emitted
+  // BEFORE the authored attributes. This appended them instead, which read the
+  // "generated attribute joins at the end" rule as covering them -- the reading
+  // carve-rs also took, against carve-js, carve-php and reference djot
+  // (carve#1090). Pinned by corpus 289.
+  let structural = ''
   if (list.ord) {
     tag = 'ol'
-    if (list.ord.type) attrs += ` type="${list.ord.type}"`
-    if (list.ord.start) attrs += ` start="${list.ord.start}"`
+    if (list.ord.type) structural += ` type="${list.ord.type}"`
+    if (list.ord.start) structural += ` start="${list.ord.start}"`
   }
+  const attrs = structural + authored
   const items = list.items.map((item) => renderItem(item, list, depth + 1, ctx))
   return `${pad}<${tag}${attrs}>\n${items.join('\n')}\n${pad}</${tag}>`
 }
