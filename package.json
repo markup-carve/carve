@@ -8,6 +8,7 @@
     "node": ">=24"
   },
   "scripts": {
+    "html-import:check": "node --test tests/html-import-contract.check.mjs",
     "docs:dev": "node scripts/publish-schema.mjs && vitepress dev docs",
     "docs:build": "node scripts/publish-schema.mjs && vitepress build docs",
     "docs:preview": "vitepress preview docs",
