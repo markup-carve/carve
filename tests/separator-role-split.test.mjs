@@ -1208,20 +1208,20 @@ for (const [name, src] of ANCHORED) {
 // then found 42 of them moving. That is the carve#922 shape: one rule, many
 // spellings, and a corpus that only ever carried the form they agree on.
 const INTERRUPTS = [
-  ['at the top level', 'text\n[a]: /u {.c}\n\n[a][]\n'],
-  ['inside a block quote', '> text\n> [a]: /u {.c}\n\n[a][]\n'],
-  ['inside a list item', '- text\n  [a]: /u {.c}\n\n[a][]\n'],
-  ['inside an ordered item', '1. text\n   [a]: /u {.c}\n\n[a][]\n'],
+  ['at the top level', 'text\n\n[a]: /u {.c}\n\n[a][]\n'],
+  ['inside a block quote', '> text\n>\n> [a]: /u {.c}\n\n[a][]\n'],
+  ['inside a list item', '- text\n\n  [a]: /u {.c}\n\n[a][]\n'],
+  ['inside an ordered item', '1. text\n\n   [a]: /u {.c}\n\n[a][]\n'],
   ['after a definition term', ':: term\n[a]: /u {.c}\n\n[a][]\n'],
   ['inside a definition description', ':: term\n:  def\n[a]: /u {.c}\n\n[a][]\n'],
-  ['inside an admonition', '::: note\ntext\n[a]: /u {.c}\n:::\n\n[a][]\n'],
-  ['as a lazy line under an item', '- text\n[a]: /u {.c}\n\n[a][]\n'],
+  ['inside an admonition', '::: note\ntext\n\n[a]: /u {.c}\n:::\n\n[a][]\n'],
+  ['as a lazy line under an item', '- text\n\n[a]: /u {.c}\n\n[a][]\n'],
   // The block quote's LAZY-CONTINUATION test is a second site asking the same
   // question, and reverting only it left the 72-shape sweep unmoved: the
   // quote's inner lines are re-parsed, where the paragraph collector's own I5
   // fires anyway. It takes a line BELOW the definition to separate them - with
   // the raw predicate `more` lazily continues INSIDE the quote.
-  ['before a lazy line under a block quote', '> text\n[a]: /u {.c}\nmore\n\n[a][]\n'],
+  ['before a lazy line under a block quote', '> text\n>\n[a]: /u {.c}\nmore\n\n[a][]\n'],
 ]
 
 // Three of the eight sites survived every shape above when reverted ALONE, and
@@ -1233,7 +1233,7 @@ const INTERRUPTS = [
 const PREDICATE_SHAPES = [
   [
     'a definition inside a quote leaves no open paragraph',
-    '> text\n> [a]: /u {.c}\nlazy\n',
+    '> text\n>\n> [a]: /u {.c}\nlazy\n',
     '<blockquote><p>text</p></blockquote>\n<p>lazy</p>',
   ],
   [

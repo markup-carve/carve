@@ -21,16 +21,13 @@ turning your content into a JavaScript program.
 | Consistent inline rules         | ❌ |  ✅   | ❌ | ✅ |
 | No-backtracking parse guarantee | ❌ |  ✅   | ❌ | ✅ \* |
 | Markdown-familiar syntax        | ✅ |  ⚠️  | ✅ | ⚠️ |
-| Paragraph interruption (no blank line) | ✅ | ❌ | ✅ | ✅ \*\* |
+| Paragraph interruption (no blank line) | ✅ | ❌ | ✅ | ❌ |
 | Feature completeness/consistency | ❌ | ❌ | ❌ | ✅ |
 
 \* Inline parsing is single-pass with a delimiter stack; at the block level a
 fence / `:::` opener uses a bounded forward scan for a matching closer
 (closer lookahead, not backtracking) - see
 [Technical Rationale](/technical-rationale).
-\*\* Like Markdown for quotes, headings, tables and closed fences; list markers
-(both bullet and ordered) deliberately never interrupt a paragraph - a list
-needs a blank line (no CommonMark `1.`-only heuristic).
 
 ### Paragraph interruption, by rule count
 
@@ -44,11 +41,10 @@ grammar productions, so they are approximate - the point is the regularity.)
 | Markdown (CommonMark) | ~8–10, irregular - setext underline, ordered list only if it starts with `1`, indented code *can't* interrupt, HTML-block type 7 *can't*, bullet only if the first item is non-empty, … |
 | MDX | inherits Markdown's (~8–10), plus JSX block handling |
 | Djot | **1** - nothing interrupts; a blank line precedes every block |
-| **Carve** | **3** - visible block-openers interrupt (heading, quote, table row, open fence, thematic break); list markers fold (never interrupt); fence / `:::` closers and bare images don't interrupt |
+| **Carve** | **1** - nothing interrupts; a blank line precedes every block |
 
-Carve trades Djot's single uniform rule for Markdown familiarity on the common
-blocks, but keeps it to three regular rules instead of CommonMark's pile of
-special cases.
+Carve 0.2 uses Djot's single uniform rule instead of CommonMark's special-case
+matrix.
 
 ## Authoring features
 

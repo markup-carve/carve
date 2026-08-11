@@ -7,11 +7,8 @@ Definition list as a first-class block opener
 .
 <ul>
   <li>one
-    <dl>
-      <dt>term</dt>
-      <dd>def</dd>
-    </dl>
-  </li>
+:: term
+:  def</li>
 </ul>
 ```
 
@@ -21,12 +18,10 @@ Definition list as a first-class block opener
 :  def
 .
 <ul>
-  <li>one</li>
+  <li>one
+:: term
+:  def</li>
 </ul>
-<dl>
-  <dt>term</dt>
-  <dd>def</dd>
-</dl>
 ```
 
 ```

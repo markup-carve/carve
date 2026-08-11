@@ -30,25 +30,25 @@ const html = (src) => renderDoc(parse(src)).replace(/\s+/g, ' ').replace(/> </g,
 
 const collected = (out) => out.includes('doc-endnotes') || out.includes('<a href="/u">')
 
-test('a footnote definition at column 0 ends the item and registers', () => {
+test('a footnote definition at column 0 cannot interrupt an open item paragraph', () => {
   const out = html('- x\n[^f]: y\n\nsee[^f]\n')
-  assert.ok(collected(out), `expected the note to be collected, got: ${out}`)
-  assert.ok(!out.includes('[^f]: y'), 'the definition line must not render as text')
+  assert.ok(!collected(out), `the misplaced note must not be collected: ${out}`)
+  assert.ok(out.includes('[^f]: y'), 'the definition-shaped line must remain text')
 })
 
-test('a link reference definition at column 0 ends the item and resolves', () => {
+test('a link reference definition at column 0 cannot interrupt an open item paragraph', () => {
   const out = html('- x\n[r]: /u\n\n[t][r]\n')
-  assert.ok(out.includes('<a href="/u">t</a>'), `expected the link to resolve, got: ${out}`)
-  assert.ok(!out.includes('[r]: /u'), 'the definition line must not render as text')
+  assert.ok(!out.includes('<a href="/u">t</a>'), `the misplaced definition resolved: ${out}`)
+  assert.ok(out.includes('[r]: /u'), 'the definition-shaped line must remain text')
 })
 
-test('the OUTER item content column reaches column 0 for the inner collector', () => {
+test('a definition at an outer column still cannot interrupt the inner paragraph', () => {
   // `- - a` opens two items; the definition sits at the outer item's content
   // column, which dedents to column 0 before the inner list's collector sees
   // it. Same rule, one nesting level in.
   const out = html('- - a\n  [^f]: x\n\nsee[^f]\n')
-  assert.ok(collected(out), `expected the note to be collected, got: ${out}`)
-  assert.ok(!out.includes('[^f]: x'), 'the definition line must not render as text')
+  assert.ok(!collected(out), `the misplaced note must not be collected: ${out}`)
+  assert.ok(out.includes('[^f]: x'), 'the definition-shaped line must remain text')
 })
 
 test('BELOW every open content column still folds as text', () => {

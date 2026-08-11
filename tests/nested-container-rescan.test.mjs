@@ -141,11 +141,14 @@ for (const [name, gen] of Object.entries(shapes)) {
     )
 
     // CONTROL. Nesting may cost something; it may not cost a different order
-    // of magnitude than the same bytes laid out flat.
+    // of magnitude than the same bytes laid out flat. The 0.2 paragraph rule
+    // makes the flat control cheaper by removing opener classification from
+    // its continuation lines, so the ratio ceiling is six while the absolute
+    // and depth-climb ceilings above remain unchanged.
     const vsFlat = perByte(large) / perByte(control)
     assert.ok(
-      vsFlat <= 4,
-      `the ladder costs ${vsFlat.toFixed(1)}x the same bytes laid out flat, ceiling 4`,
+      vsFlat <= 6,
+      `the ladder costs ${vsFlat.toFixed(1)}x the same bytes laid out flat, ceiling 6`,
     )
 
     // The strip takes a VIEW of the line rather than walking it, so what

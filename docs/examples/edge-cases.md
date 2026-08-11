@@ -791,10 +791,11 @@ the container's body is what remains.
 ```
 
 ```html
-<blockquote>
-  <p>q</p>
-  <p>body</p>
-</blockquote>
+<blockquote><p>q
+%%%
+x
+%%%
+body</p></blockquote>
 ```
 
 ::::
@@ -1309,9 +1310,8 @@ lazy
   <li>a
     <ul>
       <li>b
-        <h1 id="N">N</h1>
-        lazy
-      </li>
+# N
+lazy</li>
     </ul>
   </li>
 </ul>
@@ -1387,8 +1387,7 @@ belongs to the item only if it reaches that column.
 ```html
 <ul>
   <li>item
-    <h1 id="Wide">Wide</h1>
-  </li>
+# Wide</li>
 </ul>
 ```
 
@@ -1577,10 +1576,8 @@ text
 ```
 
 ```html
-<p>text</p>
-<section id="H">
-  <h1>H</h1>
-</section>
+<p>text
+# H</p>
 ```
 
 :::
@@ -1597,9 +1594,10 @@ code
 ````
 
 ```html
-<p>text</p>
-<pre><code>code
-</code></pre>
+<p>text
+<code>
+code
+</code></p>
 ```
 
 :::
@@ -1616,9 +1614,9 @@ more
 ```
 
 ```html
-<p>text</p>
-<hr>
-<p>more</p>
+<p>text
+—
+more</p>
 ```
 
 :::
@@ -1633,8 +1631,8 @@ text
 ```
 
 ```html
-<p>text</p>
-<blockquote><p>q</p></blockquote>
+<p>text
+&gt; q</p>
 ```
 
 :::
@@ -1708,12 +1706,8 @@ text
 ```
 
 ```html
-<p>text</p>
-<table>
-  <tbody>
-    <tr><td>a</td><td>b</td></tr>
-  </tbody>
-</table>
+<p>text
+| a | b |</p>
 ```
 
 :::
@@ -1863,7 +1857,8 @@ para
 ```
 
 ```html
-<p>para</p>
+<p>para
+%% c</p>
 ```
 
 :::
@@ -1878,7 +1873,8 @@ a[r]
 ```
 
 ```html
-<p>a[r]</p>
+<p>a[r]
+[r]: http://x</p>
 ```
 
 :::
@@ -1939,10 +1935,9 @@ stuff
 ```
 
 ```html
-<p>Text</p>
-<div>
-  <p>stuff</p>
-</div>
+<p>Text
+:::
+stuff</p>
 ```
 
 ::::
@@ -2202,8 +2197,8 @@ b
   <pre><code>a
 </code></pre>
 </blockquote>
-<p>b</p>
-<blockquote><p>c</p></blockquote>
+<p>b
+&gt; c</p>
 ```
 
 :::
@@ -2242,8 +2237,8 @@ code no marker
   <pre><code>
 </code></pre>
 </blockquote>
-<p>code no marker</p>
-<blockquote><p>still</p></blockquote>
+<p>code no marker
+&gt; still</p>
 ```
 
 :::
@@ -2277,11 +2272,9 @@ lazy</li>
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+# H</li>
 </ul>
-<section id="H">
-  <h1>H</h1>
-</section>
 ```
 
 :::
@@ -2370,9 +2363,8 @@ tail
 ```html
 <ul>
   <li>item
-    <blockquote><p>q
-tail</p></blockquote>
-  </li>
+&gt; q
+tail</li>
 </ul>
 ```
 
@@ -2393,11 +2385,11 @@ tail
 ```html
 <ul>
   <li>item
-    <pre><code>c
-</code></pre>
-  </li>
+<code>
+c
+</code>
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
@@ -2415,14 +2407,9 @@ tail
 ```html
 <ul>
   <li>item
-    <table>
-      <tbody>
-        <tr><td>a</td><td>b</td></tr>
-      </tbody>
-    </table>
-  </li>
+| a | b |
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
@@ -2949,7 +2936,8 @@ Para
 ```
 
 ```html
-<p>Para</p>
+<p>Para
+{.class}</p>
 ```
 
 :::
@@ -2966,8 +2954,9 @@ Next
 ```
 
 ```html
-<p>Para</p>
-<p class="class">Next</p>
+<p>Para
+{.class}</p>
+<p>Next</p>
 ```
 
 :::
@@ -3209,7 +3198,8 @@ The HTML spec is long.
 ```
 
 ```html
-<p>The <abbr title="HyperText Markup Language">HTML</abbr> spec is long.</p>
+<p>The HTML spec is long.
+*[HTML]: HyperText Markup Language</p>
 ```
 
 :::
@@ -5153,12 +5143,8 @@ And an unclosed line does not swallow a following well-formed row: the row still
 ```
 
 ```html
-<p>| a</p>
-<table>
-  <tbody>
-    <tr><td>b</td></tr>
-  </tbody>
-</table>
+<p>| a
+| b |</p>
 ```
 
 :::
@@ -5257,10 +5243,11 @@ c
 
 ````html
 <ul>
-  <li>one</li>
+  <li>one
+<code>
+c
+</code></li>
 </ul>
-<pre><code>c
-</code></pre>
 ````
 
 :::
@@ -5378,11 +5365,8 @@ At the content column, the definition list nests inside the item.
 ```html
 <ul>
   <li>one
-    <dl>
-      <dt>term</dt>
-      <dd>def</dd>
-    </dl>
-  </li>
+:: term
+:  def</li>
 </ul>
 ```
 
@@ -5400,12 +5384,10 @@ At column 0 (below the content column), it interrupts: the list ends and the def
 
 ```html
 <ul>
-  <li>one</li>
+  <li>one
+:: term
+:  def</li>
 </ul>
-<dl>
-  <dt>term</dt>
-  <dd>def</dd>
-</dl>
 ```
 
 :::
@@ -5469,13 +5451,8 @@ A `|`-delimited table row is a block opener under the same content-column rule: 
 ```html
 <ul>
   <li>one
-    <table>
-      <thead><tr><th>H</th></tr></thead>
-      <tbody>
-        <tr><td>x</td></tr>
-      </tbody>
-    </table>
-  </li>
+|= H |
+| x |</li>
 </ul>
 ```
 
@@ -5551,10 +5528,9 @@ b
 ```html
 <ul>
   <li>one
-    <aside class="admonition note">
-      <p>b</p>
-    </aside>
-  </li>
+::: note
+b
+:::</li>
 </ul>
 ```
 
@@ -5693,11 +5669,8 @@ Under-indented (below the content column, still above column 0): the definition 
 ```html
 <ul>
   <li>one
-    <dl>
-      <dt>term</dt>
-      <dd>def</dd>
-    </dl>
-  </li>
+:: term
+:  def</li>
 </ul>
 ```
 
@@ -5716,11 +5689,8 @@ At column 0, the definition still attaches: the `:  ` marker is a lenient except
 ```html
 <ul>
   <li>one
-    <dl>
-      <dt>term</dt>
-      <dd>def</dd>
-    </dl>
-  </li>
+:: term
+:  def</li>
 </ul>
 ```
 
@@ -5739,11 +5709,8 @@ Over-indented (above the term): the line folds into the term, preserving its ove
 ```html
 <ul>
   <li>one
-    <dl>
-      <dt>term
- :  def</dt>
-    </dl>
-  </li>
+:: term
+:  def</li>
 </ul>
 ```
 
@@ -5798,11 +5765,8 @@ At column 1, one below the content column 2: the leading space is stripped befor
 ```html
 <ul>
   <li>one
-    <dl>
-      <dt>term
-wrapped</dt>
-    </dl>
-  </li>
+:: term
+wrapped</li>
 </ul>
 ```
 
@@ -5821,11 +5785,8 @@ wrapped
 ```html
 <ul>
   <li>one
-    <dl>
-      <dt>term
-wrapped</dt>
-    </dl>
-  </li>
+:: term
+wrapped</li>
 </ul>
 ```
 
@@ -6201,10 +6162,10 @@ wraps its paragraphs.
 ```html
 <ul>
   <li>item
-    <pre><code>c
-</code></pre>
-    tail
-  </li>
+<code>
+c
+</code>
+tail</li>
 </ul>
 ```
 
@@ -7674,8 +7635,8 @@ b
 ```html
 <ul>
   <li>a
-    b
-  </li>
+%% c
+b</li>
 </ul>
 ```
 
@@ -7806,8 +7767,10 @@ An invisible line on its own is still not a second paragraph, so the item stays 
 ```html
 <ul>
   <li>a
-    tail
-  </li>
+%%% n
+x
+%%%
+tail</li>
 </ul>
 ```
 
@@ -7852,8 +7815,8 @@ A comment renders nothing, so it cannot decide which item the line after it belo
   <li>
     <ul>
       <li>a
-        b
-      </li>
+%% c
+b</li>
     </ul>
   </li>
 </ul>
@@ -7897,7 +7860,8 @@ A comment renders nothing, so it neither closes the item nor holds it open acros
 <ul>
   <li>
     <ul>
-      <li>a</li>
+      <li>a
+%% c</li>
     </ul>
   </li>
 </ul>
@@ -7925,8 +7889,10 @@ The fence form behaves as the `%%` line does: it is invisible, it leaves the ite
   <li>
     <ul>
       <li>a
-        b
-      </li>
+%%% c
+x
+%%%
+b</li>
     </ul>
   </li>
 </ul>
@@ -8006,9 +7972,10 @@ see [t][r]
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+[r]: /u</li>
 </ul>
-<p>see <a href="/u">t</a></p>
+<p>see [t][r]</p>
 ```
 
 :::
@@ -8031,10 +7998,11 @@ see [t][r]
 ```html
 <blockquote>
   <ul>
-    <li>a</li>
+    <li>a
+[r]: /u</li>
   </ul>
 </blockquote>
-<p>see <a href="/u">t</a></p>
+<p>see [t][r]</p>
 ```
 
 :::
@@ -8053,12 +8021,9 @@ see [t][r]
 ```html
 <ul>
   <li>a
-    <blockquote>
-
-    </blockquote>
-  </li>
+&gt; [r]: /u</li>
 </ul>
-<p>see <a href="/u">t</a></p>
+<p>see [t][r]</p>
 ```
 
 :::
@@ -8154,9 +8119,9 @@ Staying open is not the same as staying in the same *paragraph*. A comment rende
 
 ```html
 <ul>
-  <li><p>a</p>
-    <p>b</p>
-  </li>
+  <li><p>a
+%% x
+b</p></li>
   <li><p>c</p></li>
 </ul>
 ```
@@ -8247,12 +8212,13 @@ see[^a] and [t][r]
 ```
 
 ```html
-<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and <a href="/u">t</a></p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and [t][r]</p>
 <section role="doc-endnotes">
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note
+[r]: /u<a href="#fnref1" role="doc-backlink">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8490,10 +8456,9 @@ The caption attaches to a captionable block, and a reference image that resolves
 ```
 
 ```html
-<blockquote>
-  <p>a</p>
-  <p class="c">text</p>
-</blockquote>
+<blockquote><p>a
+{.c}
+text</p></blockquote>
 ```
 
 :::
@@ -8513,17 +8478,10 @@ see[^f]
 ```
 
 ```html
-<p>a</p>
-<p>b</p>
-<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
-    </li>
-  </ol>
-</section>
+<p>a
+[^f]: note
+b</p>
+<p>see[^f]</p>
 ```
 
 :::
@@ -8562,9 +8520,12 @@ b
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+%%%
+c
+%%%
+b</li>
 </ul>
-<p>b</p>
 ```
 
 :::::
@@ -8582,8 +8543,8 @@ b
 ```html
 <ul>
   <li>a
-    b
-  </li>
+%% c
+b</li>
 </ul>
 ```
 
@@ -8944,10 +8905,10 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>note</p>
-      <pre><code>code
-</code></pre>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note
+<code>
+code
+</code><a href="#fnref1" role="doc-backlink">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8974,9 +8935,8 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>note</p>
-      <blockquote><p>quoted</p></blockquote>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note
+&gt; quoted<a href="#fnref1" role="doc-backlink">↩</a></p>
     </li>
   </ol>
 </section>
@@ -9173,18 +9133,10 @@ see[^f]
 ```html
 <ul>
   <li>a
-    more
-  </li>
+[^f]: x
+more</li>
 </ul>
-<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>x<a href="#fnref1" role="doc-backlink">↩</a></p>
-    </li>
-  </ol>
-</section>
+<p>see[^f]</p>
 ```
 
 :::
@@ -9645,8 +9597,7 @@ At the content column itself it nests, which is the boundary the rule above is d
 ```html
 <ol>
   <li>a
-    <blockquote><p>quote</p></blockquote>
-  </li>
+&gt; quote</li>
 </ol>
 ```
 
@@ -9727,9 +9678,10 @@ see [t][r]
 ```html
 <ul>
   <li>a
-+</li>
++
+[r]: /u</li>
 </ul>
-<p>see <a href="/u">t</a></p>
+<p>see [t][r]</p>
 ```
 
 :::
@@ -11719,8 +11671,8 @@ body
 
 ```html
 <p>—  yaml
-title: T</p>
-<hr>
+title: T
+—</p>
 <p>body</p>
 ```
 
@@ -12047,8 +11999,9 @@ text
 ```
 
 ```html
-<p>text</p>
-<p><a href="/u" class="c">a</a></p>
+<p>text
+[a]: /u {.c}</p>
+<p>[a][]</p>
 ```
 
 :::
@@ -12064,9 +12017,10 @@ text
 
 ```html
 <ul>
-  <li>text</li>
+  <li>text
+[a]: /u {.c}</li>
 </ul>
-<p><a href="/u" class="c">a</a></p>
+<p>[a][]</p>
 ```
 
 :::
@@ -12108,9 +12062,10 @@ more
 ```
 
 ```html
-<blockquote><p>text</p></blockquote>
-<p>more</p>
-<p><a href="/u" class="c">a</a></p>
+<blockquote><p>text
+[a]: /u {.c}
+more</p></blockquote>
+<p>[a][]</p>
 ```
 
 :::
@@ -12129,8 +12084,9 @@ lazy
 ```
 
 ```html
-<blockquote><p>text</p></blockquote>
-<p>lazy</p>
+<blockquote><p>text
+[a]: /u {.c}
+lazy</p></blockquote>
 ```
 
 :::
@@ -12685,10 +12641,8 @@ body's own block content and the quote opens.
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>body</p>
-    <blockquote><p>q</p></blockquote>
-  </dd>
+  <dd>body
+&gt; q</dd>
 </dl>
 ```
 
@@ -12727,7 +12681,7 @@ the flush-left line folds into it. An unterminated div holding NOTHING has none,
 so the line ends the container instead. The two documents differ by one line of
 body, and that line is the whole rule (carve#909).
 
-::: compare
+:::: compare
 
 ```carve
 - item
@@ -12739,22 +12693,20 @@ tail
 ```html
 <ul>
   <li>item
-    <aside class="admonition note">
-      <p>body
-tail</p>
-    </aside>
-  </li>
+::: note
+body
+tail</li>
 </ul>
 ```
 
-:::
+::::
 
 The same shape with an empty div. Nothing in the stack holds an open paragraph
 when `tail` arrives - the item's own paragraph was closed by the div that
 followed it, and the div itself is empty - so S4 folds nothing and the line is a
 top-level paragraph.
 
-::: compare
+:::: compare
 
 ```carve
 - item
@@ -12765,21 +12717,18 @@ tail
 ```html
 <ul>
   <li>item
-    <aside class="admonition note">
-
-    </aside>
-  </li>
+::: note
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
-:::
+::::
 
 CONTROL, and the reason the rule is about an UNTERMINATED div. Close the div and
 the paragraph inside it closes with it, so the first document's answer inverts
 on the strength of one `:::` line. This pins behavior that does not change.
 
-::: compare
+:::: compare
 
 ```carve
 - item
@@ -12792,15 +12741,14 @@ tail
 ```html
 <ul>
   <li>item
-    <aside class="admonition note">
-      <p>body</p>
-    </aside>
-  </li>
+::: note
+body
+:::
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
-:::
+::::
 
 A note on the spelling, because it is what made this look like a four-way split
 when carve#909 was written. The shapes there are spelled `:::note`, with no
@@ -12835,13 +12783,9 @@ tail
 ```
 
 ```html
-<blockquote>
-  <p>quote</p>
-  <aside class="admonition note">
-
-  </aside>
-</blockquote>
-<p>tail</p>
+<blockquote><p>quote
+::: note
+tail</p></blockquote>
 ```
 
 :::::
@@ -12862,10 +12806,10 @@ tail
 
 ```html
 <blockquote>
-  <p>quote</p>
-  <aside class="admonition note">
-
-  </aside>
+  <p>quote
+::: note</p>
+  <div>
+  </div>
 </blockquote>
 <p>tail</p>
 ```
@@ -12883,13 +12827,11 @@ tail
 ```
 
 ```html
-<blockquote>
-  <p>quote</p>
-  <aside class="admonition note">
-    <p>body</p>
-  </aside>
-</blockquote>
-<p>tail</p>
+<blockquote><p>quote
+::: note
+body
+:::
+tail</p></blockquote>
 ```
 
 :::::
@@ -12915,9 +12857,8 @@ re-classified at top level, where it opens a div of its own:
 ```html
 <blockquote><p>quote
 :::note
-body</p></blockquote>
-<div>
-</div>
+body
+:::</p></blockquote>
 ```
 
 :::::
@@ -13748,10 +13689,10 @@ engine tickets rather than presented as a cross-reader agreement.
 <ul>
   <li>a
 <code>
-b</code></li>
+b
+y
+</code></li>
 </ul>
-<p>y
-<code></code></p>
 ```
 
 :::::
@@ -13784,10 +13725,10 @@ believed a paragraph was open.
 ```html
 <ul>
   <li>a
-    <ul>
-      <li>s</li>
-    </ul>
-  </li>
+%%%
+x
+%%%
+- s</li>
 </ul>
 ```
 
@@ -13809,10 +13750,10 @@ shapes are recognized by different productions:
 ```html
 <ul>
   <li>a
-    <ol>
-      <li>o</li>
-    </ol>
-  </li>
+%%%
+x
+%%%
+1. o</li>
 </ul>
 ```
 
@@ -13837,8 +13778,10 @@ only the marker shapes ever diverged:
 ```html
 <ul>
   <li>a
-    # h
-  </li>
+%%%
+x
+%%%
+# h</li>
 </ul>
 ```
 
@@ -13882,9 +13825,8 @@ answer purely on whether a paragraph is open:
 ```html
 <ul>
   <li>a
-    <blockquote><p>q
-- s</p></blockquote>
-  </li>
+&gt; q
+- s</li>
 </ul>
 ```
 
@@ -14164,8 +14106,9 @@ b
 <blockquote>
   <p>q</p>
   <div>
-    <p>a</p>
-    <p>b</p>
+    <p>a
+[^z]: zz
+b</p>
   </div>
 </blockquote>
 ```
@@ -14200,11 +14143,13 @@ the marker, open a real list, and leave a stray empty div behind at the end.
 ```html
 <ul>
   <li>x
-    <div>
-      <p>a
-- m
-b</p>
-    </div>
+:::
+a
+    <ul>
+      <li>m
+b
+:::</li>
+    </ul>
   </li>
 </ul>
 ```
@@ -14323,7 +14268,12 @@ first leaves it untouched.
 
 ```html
 <ul>
-  <li>x</li>
+  <li><p>x
+%%%
+a</p>
+    <p>b
+%%%</p>
+  </li>
 </ul>
 ```
 
@@ -14354,7 +14304,10 @@ answer differently.
 
 ```html
 <ul>
-  <li><p>x</p>
+  <li><p>x
+%%%
+a
+%%%</p>
     <p>b</p>
   </li>
 </ul>
@@ -14389,11 +14342,11 @@ an otherwise identical div.
 
 ```html
 <ul>
-  <li>x
-    <div>
-      <p>a</p>
-      <p>b</p>
-    </div>
+  <li><p>x
+:::
+a</p>
+    <p>b
+:::</p>
   </li>
 </ul>
 ```
@@ -14424,10 +14377,10 @@ with no interior blank - is a single paragraph.
 
 ```html
 <ul>
-  <li><p>x</p>
-    <div>
-      <p>a</p>
-    </div>
+  <li><p>x
+:::
+a
+:::</p>
     <p>b</p>
   </li>
 </ul>
@@ -14470,12 +14423,11 @@ d
 ```html
 <ul>
   <li>x
-    <div>
-      <p>a
+:::
+a
 d
-b</p>
-    </div>
-  </li>
+b
+:::</li>
 </ul>
 ```
 
@@ -14498,12 +14450,10 @@ d
 ```html
 <ul>
   <li>x
-    <div>
-      <p>a
+:::
+a
 d
-b</p>
-    </div>
-  </li>
+b</li>
 </ul>
 ```
 
@@ -14525,10 +14475,9 @@ d
 ```html
 <ul>
   <li>x
-    <blockquote><p>a
+&gt; a
 d
-b</p></blockquote>
-  </li>
+&gt; b</li>
 </ul>
 ```
 
@@ -14576,13 +14525,10 @@ d
 ```html
 <ul>
   <li>x
-    <aside class="admonition note">
-
-    </aside>
-  </li>
+::: note
+d
+b</li>
 </ul>
-<p>d
-b</p>
 ```
 
 :::::
@@ -15388,10 +15334,11 @@ _u_
 <ol>
   <li>x
 <a href="u">t</a>
-<u>u</u></li>
+<u>u</u>
+[r]: /u
+[t][r]
+#</li>
 </ol>
-<p><a href="/u">t</a>
-#</p>
 ```
 
 :::
@@ -15406,17 +15353,10 @@ after[^f]
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+[^f]: note
+after[^f]</li>
 </ul>
-<p>after<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 :::
@@ -15448,8 +15388,8 @@ after[^f]
 ```html
 <ol>
   <li>x
-    <a href="/u">t</a>
-  </li>
+[r]: /u
+[t][r]</li>
 </ol>
 ```
 

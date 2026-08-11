@@ -9,7 +9,9 @@ A comment fence is a comment at any column too
 .
 <ul>
   <li>a
-    tail
-  </li>
+%%% n
+x
+%%%
+tail</li>
 </ul>
 ```

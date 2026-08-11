@@ -64,6 +64,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
 
+      - name: Prefer HTTPS for Git dependencies
+        run: |
+          git config --global --add url."https://github.com/".insteadOf ssh://git@github.com/
+          git config --global --add url."https://github.com/".insteadOf git@github.com:
+
       # Installs ohm-js (the executable spec) and the pinned
       # `@markup-carve/carve` reference build the conformance steps render
       # through. The pin is an exact carve-js commit in package.json.
@@ -151,8 +156,8 @@ jobs:
 
       - name: Prefer HTTPS for Git dependencies
         run: |
-          git config --global url."https://github.com/".insteadOf ssh://git@github.com/
-          git config --global url."https://github.com/".insteadOf git@github.com:
+          git config --global --add url."https://github.com/".insteadOf ssh://git@github.com/
+          git config --global --add url."https://github.com/".insteadOf git@github.com:
 
       - run: npm ci
 
@@ -175,8 +180,8 @@ jobs:
 
       - name: Prefer HTTPS for Git dependencies
         run: |
-          git config --global url."https://github.com/".insteadOf ssh://git@github.com/
-          git config --global url."https://github.com/".insteadOf git@github.com:
+          git config --global --add url."https://github.com/".insteadOf ssh://git@github.com/
+          git config --global --add url."https://github.com/".insteadOf git@github.com:
 
       - run: npm ci
 

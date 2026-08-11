@@ -10,12 +10,11 @@ d
 .
 <ul>
   <li>x
-    <div>
-      <p>a
+:::
+a
 d
-b</p>
-    </div>
-  </li>
+b
+:::</li>
 </ul>
 ```
 
@@ -28,12 +27,10 @@ d
 .
 <ul>
   <li>x
-    <div>
-      <p>a
+:::
+a
 d
-b</p>
-    </div>
-  </li>
+b</li>
 </ul>
 ```
 
@@ -45,10 +42,9 @@ d
 .
 <ul>
   <li>x
-    <blockquote><p>a
+&gt; a
 d
-b</p></blockquote>
-  </li>
+&gt; b</li>
 </ul>
 ```
 
@@ -74,11 +70,8 @@ d
 .
 <ul>
   <li>x
-    <aside class="admonition note">
-
-    </aside>
-  </li>
+::: note
+d
+b</li>
 </ul>
-<p>d
-b</p>
 ```

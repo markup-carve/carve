@@ -5,11 +5,12 @@ Outer note.
 
 - item one
 
-  ::: tip
+  :::::: tip
   Hidden under a list item.
-  :::
+  ::::::
 
 - item two
+
 :::::
 ::::
 :::

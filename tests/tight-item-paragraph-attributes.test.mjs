@@ -34,7 +34,7 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (src) => renderDoc(parse(src))
 
 test('a tight item keeps an attribute line written after its first line', () => {
-  const out = html('- a\n  {.c}\n  text\n')
+  const out = html('- a\n+\n{.c}\ntext\n')
   assert.match(out, /<p class="c">text<\/p>/, out)
   // The two lines must not become one run of text.
   assert.ok(!/a text/.test(out), out)
@@ -67,15 +67,15 @@ test('a single-line tight item still renders bare', () => {
 test('an id and a class both reach a tight item paragraph', () => {
   // Not just the class - the attribute rendering is shared, so this pins that
   // the whole block is carried rather than one key of it.
-  const out = html('- a\n  {#i .c}\n  text\n')
+  const out = html('- a\n+\n{#i .c}\ntext\n')
   assert.match(out, /<p id="i" class="c">text<\/p>/, out)
 })
 
 test('the same shape in an ordered item', () => {
-  assert.match(html('1. a\n   {.c}\n   text\n'), /<p class="c">text<\/p>/)
+  assert.match(html('1. a\n+\n{.c}\ntext\n'), /<p class="c">text<\/p>/)
 })
 
 test('the same shape in a nested item', () => {
-  const out = html('- outer\n  - a\n    {.c}\n    text\n')
+  const out = html('- outer\n  - a\n  +\n  {.c}\n  text\n')
   assert.match(out, /<p class="c">text<\/p>/, out)
 })
