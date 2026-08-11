@@ -1,6 +1,6 @@
 (* ============================================================================
    Carve Markup Language - EBNF Grammar
-   Version: 0.1
+   Version: 0.2
 
    This grammar defines the syntax of Carve, a post-Markdown lightweight markup
    language with visual mnemonics and human-centered design.
@@ -155,18 +155,17 @@
      S2 FENCED BODY. If the innermost matched container is a fenced body, L
         is verbatim content unless it matches that fence's where-guarded
         closer (then pop). No other rule applies to L.
-     S3 FULL MATCH (every prefix consumed). The residue of L continues the
-        innermost container: BLANK -> close the open paragraph (recorded for
-        tight/loose, PART 9 §17 L1); a BLOCK OPENER -> the interruption
-        relation decides (PART 9 §10); a LIST MARKER reaching
-        content_column -> sublist (PART 9 §24 C3); otherwise paragraph /
-        lazy item text.
+     S3 FULL MATCH (every prefix consumed). BLANK closes an open paragraph
+        (and is recorded for tight/loose, PART 9 §17 L1). If a paragraph is
+        open, every other residue continues it. If none is open, classify the
+        residue as a block opener or paragraph start. A LIST MARKER reaching
+        content_column may open a structural sublist (PART 9 §24 C3).
      S4 PARTIAL MATCH. The unmatched containers are candidates to close.
         LAZY CONTINUATION: if ANY container in the open stack holds an OPEN
-        PARAGRAPH and the residue is NOT an interrupting line (PART 9 §10 --
-        list markers and plain text fold; visible openers interrupt), L
-        folds into the INNERMOST such paragraph and NOTHING closes --
-        regardless of how many containers the line failed to match.
+        PARAGRAPH and the residue is nonblank, L folds into the INNERMOST such
+        paragraph and NOTHING closes, regardless of how many containers the
+        line failed to match. Marker shape is irrelevant while it is open
+        (PART 9 §10).
         Otherwise close the unmatched containers and re-classify the residue
         in the surviving context (S3).
 
@@ -439,8 +438,8 @@ block = heading
    `comment_line`, `reference_definition`, `footnote_definition` and
    `abbreviation_definition` are the INVISIBLE blocks: they are parsed and
    consumed (collected into the definition table / dropped) and emit no
-   output; like `block_attributes` they also interrupt an open paragraph
-   (PART 9 §10, INVISIBLE CONSTRUCTS). *)
+   output. They are recognized only in block position; inside an open
+   paragraph their marker bytes remain paragraph text (PART 9 §10). *)
 
 blank_line = {whitespace}, newline ;
 
@@ -753,11 +752,9 @@ ordered_list = ordered_item+ ;
 ordered_item = ordered_marker, [item_attributes], space, list_item_content ;
 (* The first item fixes the dialect (decimal / alpha / roman) and the
    delimiter (`.` or `)`); classification and the ambiguous-letter
-   tie-break are in PART 9 §11. No list -- ordered OR unordered -- interrupts a
-   paragraph: an ordered marker in any dialect/value (`1.`, `2.`, `1985.`, `a.`,
-   `i.`) and a bullet (`- `/`* `) alike need a blank line before them (matching
-   Djot, avoiding the CommonMark `1.`-only heuristic) -- the symmetric
-   paragraph-interruption rule is PART 9 §10.
+   tie-break are in PART 9 §11. Like every block opener, an ordered or unordered
+   list marker needs block position under PART 9 §10. This matches Djot and
+   avoids CommonMark's `1.`-only interruption heuristic.
    The two delimiters are the trailing `.` and `)` only. djot's
    parenthesized `(1)` / `(a)` form is INTENTIONALLY NOT a marker -- it is
    too easily confused with a prose parenthetical -- so `(1) text` stays
@@ -1008,9 +1005,9 @@ definition_indent = whitespace, {whitespace} ;
    paragraphs -- FORM A); a lone `+` attaches the FOLLOWING flush-left block
    with no indentation (`continuation_marker_block` -- FORM B, the un-prefixed
    analogue of the list-item and block-quote `+` forms); and a flush-left line
-   with no blank before it that does not start an interrupting block lazily
-   continues the open paragraph (`lazy_continuation_line`, the same rule as list
-   items and block quotes, matching djot). A blank line that is NOT followed by
+   with no blank before it lazily continues the open paragraph
+   (`lazy_continuation_line`, the same rule as list items and block quotes,
+   matching Djot), whatever marker-shaped bytes it begins with. A blank line that is NOT followed by
    an indented continuation ends the body: the single-blank entry separator
    before the next `:: term` is preserved. *)
 
@@ -1088,16 +1085,13 @@ cell_content = inline_content ;
 (* --- Captions --- *)
 caption = '^', space, inline_content, newline, {caption_continuation_line} ;
 caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
-(* MULTI-LINE CAPTIONS -- NORMATIVE. A caption is multi-line inline CONTENT, so
-   its text spills onto following lines exactly like a PARAGRAPH (§10), NOT like
-   a heading. It ends the same way an open paragraph does:
+(* MULTI-LINE CAPTIONS -- NORMATIVE. A caption is bounded inline CONTENT, not
+   an open paragraph. Its continuation has the following explicit extent:
      1. a blank line ends the caption;
-     2. a line that INTERRUPTS a paragraph -- a heading, blockquote, table,
-        fenced code, `:::` div, thematic break, or `%%%` comment -- ends the
-        caption and starts that block;
-     3. a LIST MARKER does NOT end the caption: like a paragraph, a caption
-        folds a `- ` / `1.` line in as literal text (djot -- a list needs a
-        blank line to interrupt). `^ cap` + `- x` yields the caption `cap\n- x`;
+     2. a line that is a block opener at this position ends the caption and
+        starts that block;
+     3. a LIST MARKER is ordinary caption continuation text. `^ cap` + `- x`
+        yields the caption `cap\n- x`;
      4. a further `^ ` line does NOT continue the caption (there is no repeated
         marker); it ends the caption and, having no captionable block to attach
         to, is ordinary paragraph text.
@@ -1116,8 +1110,7 @@ caption_slot = [blank_line], caption ;
    rule. §4 says which, and why. A `^ ` line that follows neither a slot-
    carrying host nor one of those two is ordinary inline/paragraph content --
    which, when a paragraph is OPEN above it, means it folds INTO that
-   paragraph rather than starting a second one. §10 I7 is that half, and it
-   is where the reading was left to inference for long enough to diverge.
+   paragraph rather than starting a second one. PART 9 §10 decides that half.
    (Reading this note as "only a production attaches a caption" would make a
    captioned image a paragraph, which §4 denies and no engine does.) *)
 
@@ -1208,8 +1201,8 @@ admonition = admonition_open, newline,
    A CLOSER IS REQUIRED. Only a fence that closes is opaque. A ``` or ~~~
    opener with no closer ahead opens NO span: the container's own closer
    stays structural, and the lines after it are parsed normally. This is the
-   same test PART 9 §10 I4 applies one level up -- an opener with no closer
-   is not a fence -- and the same test the `%%%` rule above already states
+   same structural validation used at block position -- an opener with no
+   closer is not a fence -- and the same test the `%%%` rule above already states
    ("an opener with no exact closer ahead opens nothing"). It was written
    for the comment block and not for the code fence, and all three engines
    implemented exactly what was written: `%%%` guarded, ``` not (carve#515).
@@ -1227,10 +1220,10 @@ admonition = admonition_open, newline,
    inside it. With the guard the fence is not a span, the `:::` closes the
    admonition, and `after` is a top-level paragraph.
 
-   This does NOT change a fence with nothing to interrupt: `` ``` `` alone,
+   This does NOT change a fence beginning at block position: `` ``` `` alone,
    or as the whole content of a blockquote, still opens a code block that
-   runs to the end. I4 and this clause both gate a fence that would take
-   structure away from something else, not a fence that is the content. *)
+   runs to the end. This clause gates a fence that would take structure away
+   from its enclosing container, not a fence that is the content. *)
 
 (* STRICT (djot): the opener line carries NO inline `{...}` attributes -- it
    is colon_fence, type, an optional quoted "header", an optional [label],
@@ -1323,9 +1316,9 @@ local_hard_break_block_open = colon_fence:open, space, backslash ;
 (* --- Comments --- *)
 (* A line comment may be indented: optional leading whitespace before `%%` does
    not matter, so an indented line whose first non-whitespace content is `%%` is
-   a comment line just like one in the first column. Like every block, it
-   interrupts an open paragraph (the lines before and after become separate
-   paragraphs) and renders nothing. *)
+   a comment line just like one in the first column. It is recognized only in
+   block position and renders nothing. Inside an open paragraph it is literal
+   paragraph content (§10). *)
 comment_line = [whitespace], "%%", {character}, newline ;
 
 (* A `%%%` fence line is a DELIMITER plus an INSIGNIFICANT TAIL: only the
@@ -1422,16 +1415,12 @@ format_name = "html" | "latex" | identifier ;
 raw_content = (* any content until closing fence *) ;
 
 (* --- Paragraphs --- *)
-(* A VISIBLE block (heading, quote, table, fence, thematic break,
-   admonition/div) interrupts a paragraph with no blank line before it
-   (Markdown-like); invisible constructs (reference definitions, comments,
-   block-attribute lines) interrupt too. A LIST marker (bullet OR ordered) is
-   the exception: it does NOT interrupt -- a list needs a blank line before it
-   (symmetric, Djot-like; see §10). This is the semantic constraint
-   PART 9 §10, not a context-free one. A paragraph is terminated by a blank
-   line, an interrupting block (§10), or end of file -- the optional trailing
-   blank_line here is the paragraph's own terminator, not a precondition for
-   the NEXT block.
+(* Once open, a paragraph consumes every following nonblank line. Block-looking
+   bytes are literal inline content there; visible and invisible constructs
+   alike require block position. A paragraph is terminated only by a blank
+   line, EOF, or the boundary of an enclosing structural container (PART 9
+   §10). The optional trailing blank_line here is the paragraph's own
+   terminator and creates block position for whatever follows.
    NO TRAILING WHITESPACE -- NORMATIVE. A `whitespace` run at the END of a
    CONTENT LINE is DROPPED. It does not reach the output, and it is not
    content.
@@ -3050,8 +3039,8 @@ EOF = (* end of file *) ;
        local hard-break block with \, generic div when bare; longest-token
        wins: a `::: x` line is never a `:: ` definition term)
    11. Paragraphs (everything else)
-   Recognition order is NOT interruption: which of these may interrupt an
-   open paragraph is PART 9 §10 (list markers -- bullet and ordered -- never do).
+   Recognition order applies only at block position. Once a paragraph is open,
+   PART 9 §10 consumes every nonblank line without consulting this list.
 
    Inline parsing precedence (second pass):
    1. Escaped characters (\x)
@@ -3178,19 +3167,19 @@ EOF = (* end of file *) ;
          cells; `\|` and a `|` inside a code span are content. (The
          code-span state carried across the scan is what makes this
          non-context-free.)
-      T2 VALID TABLE ROW. ONE predicate, used both for the §10 I1
-         interruption test and for opening a table at a block start:
+      T2 VALID TABLE ROW. ONE predicate used for opening a table at block
+         position:
          valid_row(L) := L's first non-indent character is `|` AND its last
          non-whitespace character is `|` AND at least one cell lies between.
          (T8's row attribute block is glued to that closing `|`, so a row
          ending `|{.x}` still qualifies -- strip the block, then test.)
          A line-initial `|` WITHOUT the closing `|` is prose, wherever it
-         appears: `| a | b` neither interrupts a paragraph nor opens a table
+         appears: `| a | b` neither opens a table at block position nor
+         acquires any special meaning inside a paragraph
          (corpus 140). This matches the `standard_row` production, which
          ends in `'|'`; there is no lenient open form.
-         The two uses may never disagree: a line the block parser builds a
-         table from but the §17 sub-block test calls prose would make a list
-         item loose AND fill it with a table.
+         Container sub-block classification must use the same predicate, or an
+         item could be loosened by a line its body later treats as prose.
       T3 HEADER CELL. A leading `=` GLUED to the cell's opening `|` marks a
          HEADER cell; `\=` yields a data cell whose text starts with `=`.
       T4 SPAN MARKERS. A cell whose WHOLE content is `^` (rowspan) or `<`
@@ -3548,31 +3537,21 @@ EOF = (* end of file *) ;
       Both columns above are therefore one paragraph. Fence width matters only
       after a fence has actually opened at block position.
 
-      ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY -- NORMATIVE
-      (carve#920). The absorbed line has to be one the paragraph's container
-      supplied a prefix for. A FLUSH-LEFT fence-shaped line under a QUOTED
-      paragraph is not:
+      ABSORPTION AND LAZY CONTINUATION -- NORMATIVE. A malformed fence-shaped
+      line opens nothing and is paragraph text. A later nonblank line may
+      reach that same open paragraph through PART 1 S4 even when it omits an
+      enclosing quote prefix:
 
           > quote
           > :::note
           > body
           :::
 
-      `:::note` has no separator, so it opens nothing and is absorbed, and the
-      QUOTED `> :::` under it would be absorbed on the same terms. The `:::`
-      above supplies no `>` prefix: it is a PARTIAL match, and it could reach
-      that paragraph only through PART 1 S4's lazy fold. The strict column-0
-      rule decides it instead -- a flush-left fence-shaped line interrupts, the
-      quote closes, and the line is re-classified at top level, where it opens
-      a div of its own. Change one line to `> :::` and the answer inverts,
-      because then it IS one of the paragraph's lines.
-
-      The two shapes are pinned side by side
-      (`260-an-absorbed-colon-fence-leaves-a-block-quote-s-paragraph-open`,
-      `271-the-flush-left-line-after-a-container-a-quoted-line-opened-4`).
-      All three engines already answer both; the executable spec absorbed the
-      flush-left line and is corrected here, which is stated rather than
-      implied because it has been the deciding artifact for this family.
+      `:::note` has no separator, so it opens nothing. The final `:::` supplies
+      no `>` prefix, but the quoted paragraph is still open; S4 therefore folds
+      it into that paragraph as literal text. It is not reclassified as a div.
+      Marker shape cannot override §10 merely because a container prefix is
+      missing.
 
       FENCE OPENER WITH A NESTED-LIST BODY: a `:::` opener inside a LIST
       ITEM opens its block even when the opener's body is a nested list
@@ -3799,10 +3778,11 @@ EOF = (* end of file *) ;
       ordered list of collected attribute blocks not yet attached.
       A1 COLLECT. A `{…}` alone on a line (the `}` may arrive on a later
          line, A5) that parses as a valid attribute list appends to
-         pending and renders NOTHING. It also interrupts an open paragraph
-         (§10 I5) and NEVER attaches backward: "Para\n{.class}" ->
-         <p>Para</p> (pending then dropped, A4); "Para\n{.class}\n\nNext"
-         -> <p>Para</p> then <p class="class">Next</p>.
+         pending and renders NOTHING. It is recognized only in block position
+         (§10) and NEVER attaches backward. With no preceding blank,
+         "Para\n{.class}" is one literal paragraph; with block position,
+         "Para\n\n{.class}\n\nNext" is <p>Para</p> then
+         <p class="class">Next</p>.
       A2 FLOAT FORWARD. pending survives blank lines and further attribute
          lines and attaches to the NEXT block element: `{#id}\n\nText` ->
          <p id="id">Text</p>.
@@ -4132,28 +4112,12 @@ EOF = (* end of file *) ;
          forbids on ANY reading -- the line renders nowhere AND defines
          nothing, so the author's text is simply gone (carve#666).
 
-         "No trace" is about OUTPUT, not about block structure -- it does
-         not exempt a definition line from §10 I5, which already governs
-         paragraph interruption everywhere, containers included (I6): a
-         definition line INTERRUPTS an open paragraph exactly as any other
-         invisible construct does, ending it with no blank line needed, so
-         a plain line immediately after a definition starts a NEW block
-         rather than folding back into the paragraph the definition
-         interrupted. What decides how that new block RENDERS is L1/L2, not
-         L6: no blank line appeared anywhere, so the item stays TIGHT
-         (L2 loosens on a blank line, never on block count alone), and by
-         L1 a tight item's paragraphs are ALL bare, this new one included --
-         not because the definition is transparent to structure, but
-         because nothing here ever loosened the item in the first place.
-         A footnote definition sitting on a list item's OWN line, followed
-         by a plain continuation line, is this exact shape: the item holds
-         TWO paragraph blocks with no blank between them and renders both
-         bare, `<li>first\n  second\n</li>` (carve#668). Treating the
-         definition as if it both interrupted AND merged -- attaching the
-         following line back onto the block it just ended -- would need a
-         rule found nowhere else in this grammar; treating it as loosening
-         the item on its own would contradict L2 directly. Three engines
-         each did one of those two things; neither is this rule.
+         "No trace" applies only after the definition has been recognized in
+         block position. A definition-shaped line inside an open paragraph is
+         paragraph text by §10; it is neither collected nor structurally
+         invisible. Inside a list item the same rule applies at its content
+         column. A preceding blank first closes the paragraph, after which the
+         definition is collected and leaves no rendered block behind.
 
    18. MATH -- NORMATIVE (governs `math` in PART 3; djot form). Inline
       `$` + verbatim backtick span; display `$$` + verbatim backtick
@@ -4375,111 +4339,35 @@ EOF = (* end of file *) ;
          indentation. `-<TAB>a` is NOT a list item (paragraph text).
       C3 CONTENT COLUMN. content_column(item) := the visual column where
          the item's content starts (marker width + separator: `- ` -> 2,
-         `1. ` -> 3, `10. ` -> 4). A child -- a LIST MARKER (bullet `-`/`*`,
-         task, or ordered, SYMMETRIC) opening a sublist, OR any OTHER block
-         opener -- must reach the parent item's content_column to belong to the
-         item. The block-opener set is UNIFORM and closed: block quote (`>` or
+         `1. ` -> 3, `10. ` -> 4). A LIST MARKER (bullet `-`/`*`, task, or
+         ordered, SYMMETRIC) reaching that column may open a structural sublist
+         even while the item paragraph is open. This is §10's sole nesting
+         exception. Any OTHER child block requires block position first and
+         must then reach content_column to belong to the item. The block-opener
+         set is UNIFORM and closed: block quote (`>` or
          `> `), heading (`#`), thematic break, fenced code, colon fence / admonition
          (`:::`), TABLE (a `|`-delimited row), and DEFINITION LIST (a `:: term`
          opener; the two-line `:: `/`:  ` marker is recognized by the same
          look-ahead the top level uses, and only the `:: ` TERM line opens the
-         block). None of these is special-cased: a def-list or table interrupts
-         at column 0 and nests at content_column exactly as a quote or heading
-         does (carve#295). The content_column is
+         block). None of these is special-cased: a def-list or table nests at
+         content_column exactly as a quote or heading does (carve#295). At
+         column 0 it can become a document block only when no item paragraph is
+         open to lazily continue under §10. The content_column is
          the item body's COLUMN 0: a block opener is recognized there exactly
          as a block opener is recognized only at column 0 at the top level.
-         This one rule holds whether or not a blank line precedes the child;
-         the blank only decides tight vs loose (§17), and there is no relaxed
+         The structural nested-list exception can apply without a preceding
+         blank; every other child needs the blank (or another real paragraph
+         boundary) that creates block position. There is no relaxed
          `base_column + 2` channel.
-           - BELOW content_column: the line is outside the item body. A list
-             marker folds as lazy item text (markers never interrupt, §10 I2);
-             every other line, likewise, never nests -- with no blank it
-             lazily continues the open item paragraph (§10 I2), and after a
-             blank it ends the item and parses at DOCUMENT level.
-
-             A definition at DOCUMENT column 0 is the I5 interrupter, not the
-             lazy-text branch: column 0 is the surrounding document's own
-             opener column, so it closes the item and registers there. A
-             definition at a nonzero column below content_column reaches no
-             opener column and follows the lazy-text rule above. This boundary
-             is what distinguishes corpus 286's columns 0 and 1.
-
-             THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE (carve#682).
-             "Folds as lazy item text" names an OPERATION, and lazy
-             continuation continues an open paragraph (§10 I2). Where none is
-             open the instruction cannot be carried out, so the branch does not
-             decide the line: it is classified in the context that SURVIVES.
-             Which context that is depends on what closed the paragraph, and
-             the two cases already settled here differ:
-
-               - after a COMMENT, the item is still open -- the comment
-                 exception below is explicit that a comment "does not close the
-                 ITEM either" while it does end the paragraph. So the line stays
-                 in the item: a MARKER is at the item body's own column 0, where
-                 C4 Rule B opens a list, and any other line begins the item's
-                 SECOND paragraph. All three engines answer both ways round.
-               - after a BLANK LINE, the item is already ended by the clause
-                 above, so the branch is never reached at all.
-
-             Two things are NOT settled by this sentence, and both are recorded
-             rather than decided (carve#682):
-
-               - the paragraph closed by a construct that leaves the ITEM's fate
-                 open. A closed CODE fence is the measured one: carve-js and
-                 carve-rs nest a sublist, carve-php and the executable spec open
-                 a sibling list at the top level. That row turns on whether the
-                 item survives the fence, which no clause here states.
-               - the comment's own COLUMN. The comment exception is written
-                 without reference to a column, but the two spellings answer
-                 differently: at the content column the marker opens a sublist,
-                 while BELOW it the following line reaches the item only through
-                 the lazy fold, so ending the paragraph would take that path
-                 away. Corpus 189 and 192 pin the below-column answer (`- - a` /
-                 ` %% c` / ` b` keeps `b` in the INNER item, carve#618), so
-                 aligning the two means moving a pin, not tidying a clause.
-
-             The BLOCK QUOTE row is the control that shows this is the
-             mechanism and not a coincidence: a quote leaves ITS OWN paragraph
-             open, so the fold IS available and all readers agree the marker
-             folds into the quote. Every row where a paragraph is open is
-             unanimous; the disagreements are all rows where none is.
-
-             AN INVISIBLE LINE FOLDS LIKE ANY OTHER -- NORMATIVE. "Every other
-             line" includes the ones that are not block-SHAPED: a link
-             reference, footnote or abbreviation definition below the column
-             folds as TEXT, and registers nothing. It is text, so a `[^f]`
-             elsewhere in the document stays literal; half-folding it -- text
-             on the page, definition in the tables -- is not an option the
-             rule offers.
-
-               - - a
-                [^f]: x
-
-             renders `a` and the literal `[^f]: x` inside the inner item. The
-             failure this guards against is not a wrong shape but a
-             DISAPPEARANCE: a definition that fell past the fold branch was
-             pushed trimmed into the item stream, landed at the item's own
-             column 0, and was skipped there as already-extracted, so the
-             author's line rendered as nothing at all (carve-php#721).
-
-             A COMMENT IS THE ONE EXCEPTION -- NORMATIVE. A comment is
-             recognized at ANY column, above the content column, at it, or
-             below it, and stays invisible. BOTH SPELLINGS: the `%%` line form
-             and the `%%%` fence form, whose body and closer travel with its
-             opener. Leaving the fence out made the same rule answer twice one
-             delimiter apart -- the line form invisible, the fence form
-             VISIBLE text -- which is what carve#629 reported and carve#634
-             settled (corpus 186). Folding it would make the comment VISIBLE, which
-             is the one outcome a comment may never have, and an indented
-             comment at the top level is already invisible for the same
-             reason. It does not close the ITEM either: a following line still
-             belongs to the item rather than parsing at document level
-             (carve#618). It does end the open PARAGRAPH, though, so that line
-             begins the item's SECOND paragraph rather than continuing the
-             first. One sentence used to make both claims and only the first
-             was true; nothing pinned the difference, because it shows only in
-             a LOOSE list -- in a tight one both readings render the same
-             (carve#677).
+           - BELOW content_column: the line supplies no item-body prefix. If
+             the item or an inner container still holds an open paragraph, a
+             nonblank line lazily continues the innermost such paragraph under
+             PART 1 S4 and §10, regardless of whether it resembles a list,
+             definition, comment, fence, or other opener. Marker-shaped bytes
+             stay visible text and register no definition or comment. If no
+             paragraph is open, the unmatched item closes and the line is
+             reclassified in the surviving outer context. A preceding blank
+             therefore makes a column-zero opener document-level.
            - AT content_column: dedented to the body's column 0, a block
              opener nests and a list marker opens a sublist.
            - ABOVE content_column: the residual indent means the line is no
@@ -4495,7 +4383,7 @@ EOF = (* end of file *) ;
          column-0 restriction (unlike CommonMark, `    - x` is a list, not
          indented code); an ordered marker behaves the same. Scope: WHERE a
          top-level list may open -- NOT sublist nesting (C3) and NOT
-         interrupting an open paragraph (§10 I2).
+         ending an open paragraph (§10).
       C5 DEDENT. Re-parsing nested content strips the container's
          structural indent BY COLUMNS. A tab straddling the dedent boundary
          is consumed WHOLE on non-marker lines (Carve has no

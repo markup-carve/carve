@@ -5,7 +5,7 @@ description: Corner cases and robustness guarantees, side by side with the HTML 
 
 # Edge Cases examples
 
-The corner cases: precise boundary rules, table alignment variants, lazy continuation, paragraph interruption, security hardening, and other robustness guarantees. These pin behavior that is easy to get subtly wrong.
+The corner cases: precise block-position rules, table alignment variants, lazy continuation, security hardening, and other robustness guarantees. These pin behavior that is easy to get subtly wrong.
 
 ## Table column alignment
 
@@ -1526,9 +1526,11 @@ node.
 
 :::
 
-A line-leading image is a standalone block image only when a trailing `{…}`
-yields real attributes. An empty/whitespace or invalid block falls through to
-a paragraph and stays literal.
+A line-leading image followed immediately by `{…}` is a standalone block image
+only when that suffix yields real attributes. An empty/whitespace or invalid
+suffix keeps the whole line in a paragraph and stays literal. At end of input,
+before a blank line, or before a caption, the bare image itself can still occupy
+block position under PART 9 §4.
 
 ::: compare
 
@@ -1556,17 +1558,13 @@ a paragraph and stays literal.
 
 ## Paragraph interruption
 
-A paragraph ends at a blank line — or at a line that begins an interrupting
-block. Under the Markdown-like rule (§10) a **visible** block interrupts an open
-paragraph with no blank line before it, at the top level and inside nested
-content. Three carve-outs keep common prose safe: **list markers never
-interrupt** — neither a bullet (`- `/`* `) nor an ordered marker, in any dialect
-or value, so a list always needs a blank line before it (symmetric, Djot-like);
-a fence or `:::` interrupts only when it has a matching closer ahead; and a bare
-image is never a block. Invisible constructs (reference definitions, comments,
-block-attribute lines) interrupt as they always have.
+A paragraph ends at a blank line, EOF, or its enclosing structural boundary.
+Every nonblank line otherwise remains paragraph content. Headings, quotes,
+lists, tables, fences, definitions, attributes, comments, divs, and extension
+blocks all need block position. The rule is identical at top level and inside
+containers.
 
-A heading marker after a prose line interrupts.
+A heading marker after prose therefore remains paragraph text.
 
 ::: compare
 
@@ -1582,7 +1580,7 @@ text
 
 :::
 
-A fenced code block with a closer interrupts (an inline span no longer).
+A fenced-code-looking run after prose remains inline paragraph content.
 
 ::: compare
 
@@ -1602,8 +1600,7 @@ code
 
 :::
 
-A thematic break interrupts; the line after it parses fresh (not a smart
-em-dash any more).
+A thematic-break-looking line after prose remains paragraph content.
 
 ::: compare
 
@@ -1621,7 +1618,7 @@ more</p>
 
 :::
 
-A block quote marker followed by a space interrupts.
+A block-quote marker after prose remains paragraph content too.
 
 ::: compare
 
@@ -1658,8 +1655,7 @@ text
 
 :::
 
-An unordered list does **not** interrupt — like an ordered marker it needs a
-blank line, so the bullet lines fold into the paragraph.
+An unordered list marker follows the same rule.
 
 ::: compare
 
@@ -1677,8 +1673,7 @@ text
 
 :::
 
-An ordered-list marker does **not** interrupt either — the bullet and the
-ordered marker behave identically at the paragraph boundary.
+An ordered-list marker behaves identically.
 
 ::: compare
 
@@ -1696,7 +1691,7 @@ text
 
 :::
 
-A valid table row interrupts.
+A valid table-row shape still needs block position.
 
 ::: compare
 
@@ -1712,7 +1707,7 @@ text
 
 :::
 
-An admonition (or generic div) with a closer interrupts.
+An admonition or generic-div shape after prose remains paragraph text.
 
 :::: compare
 
@@ -1732,13 +1727,8 @@ body
 
 ::::
 
-**Carve-out — list markers never interrupt.** Neither a bullet nor an ordered
-marker interrupts a paragraph; both need a blank line. An ordered marker is too
-common in prose ("see step 2.", "version 1985.", "upgrade to 1. today") to
-interrupt, and making the bullet match removes the asymmetry (and the residual
-false positive where a hard-wrapped prose line beginning with a bullet became a
-list). So no ordered value — `1.`, `2.`, a year — and no bullet interrupts; all
-stay paragraph text.
+The uniform rule also protects ordered-marker-looking prose such as years and
+step numbers. There is no special `1.` exception.
 
 ::: compare
 
@@ -1770,9 +1760,9 @@ text
 
 :::
 
-**Carve-out — closer lookahead.** A `:::` block (or a fence) with no matching
-closer ahead does not interrupt; it stays paragraph text, so a stray marker
-never swallows the rest of the block.
+No closer lookahead is needed while a paragraph is open: a `:::` or fence line
+is already paragraph text. Closer validation applies only after block position
+has been established.
 
 :::: compare
 
@@ -1790,8 +1780,7 @@ body</p>
 
 ::::
 
-**Carve-out — image excluded.** A bare image is inline content, so it renders
-in the same paragraph, never as its own block.
+A bare image is inline content and naturally remains in the paragraph.
 
 ::: compare
 
@@ -1807,9 +1796,8 @@ text
 
 :::
 
-**Nested content.** The rule applies inside a block quote too: a list marker
-after a prose line does not interrupt within the quote — it folds into the
-quoted paragraph (a blank line is needed to start the list).
+**Nested content.** The same rule applies inside a block quote: a marker after
+quoted prose remains in the quoted paragraph.
 
 ::: compare
 
@@ -1846,8 +1834,8 @@ An indented sublist still nests with no blank line (unchanged).
 
 :::
 
-**Invisible constructs** still interrupt with no blank line: a comment line is
-consumed,
+Definition-, comment-, and attribute-looking lines are not invisible while a
+paragraph is open. They remain literal, as the comment-shaped line does here:
 
 ::: compare
 
@@ -1863,7 +1851,7 @@ para
 
 :::
 
-and a reference definition is collected, leaving only the paragraph.
+The same applies to a reference-definition-looking line:
 
 ::: compare
 
@@ -1899,10 +1887,9 @@ text
 
 :::
 
-An **unterminated** code fence opener does not interrupt a paragraph (§10
-closer lookahead): with no matching closer ahead, the ` ``` ` line stays
-paragraph text. It is then an unclosed inline verbatim run, which renders as a `<code>`
-span to the end of the block (matching the `code_span` maximal-run rule).
+An unterminated code-fence-looking line also stays paragraph text. Inline
+verbatim rules then render its backtick run as a `<code>` span to the end of the
+paragraph.
 
 ::: compare
 
@@ -1920,11 +1907,8 @@ code</code></p>
 
 :::
 
-A `:::` opener goes the other way: its closer is optional (PART 9 §12), so
-there is nothing to look ahead for. The opener interrupts, and the container it
-opens closes at the end of the input. That is the counterweight to the exact
-closer - a mistyped closer costs the container's extent, not the rest of the
-document.
+A `:::` line inside the same open paragraph behaves identically. In block
+position it opens a container whose explicit closer is optional (PART 9 §12).
 
 :::: compare
 
@@ -1944,7 +1928,9 @@ stuff</p>
 
 ## Blockquote lazy continuation
 
-A line that follows a `>` line, is not blank, and does not begin its own block continues the blockquote — the `>` may be omitted on continuation lines (CommonMark-style). A blank line ends the quote.
+A nonblank line following a quoted open paragraph continues the blockquote; the
+`>` may be omitted on continuation lines. A blank or enclosing structural
+boundary ends the paragraph.
 
 ::: compare
 
@@ -1960,7 +1946,9 @@ continued</p></blockquote>
 
 :::
 
-A block-opener is not a lazy continuation: it ends the quote and starts that block outside it. A **list marker — bullet or ordered — folds in**, though: a quoted line ends in an open paragraph, and a list marker folds into an open paragraph (§10), exactly as at the top level. So `> quoted` then `- item` is one quote whose paragraph is `quoted` + `- item`, not a quote plus a sibling list. (A heading, a bounded title, is still ended by a list marker; to put a real list in a quote, `>`-prefix it or use the `+` continuation marker.)
+Block-looking bytes continue that open paragraph just like prose. Thus
+`> quoted` followed by `- item` is one quoted paragraph. To put a real list in
+the quote, establish block position and `>`-prefix it or use `+` attachment.
 
 ::: compare
 
@@ -2181,7 +2169,7 @@ spaces leave the line as paragraph text.
 
 ## Blockquote lazy continuation stops at a fenced block
 
-Lazy continuation only extends an open paragraph. A non-`>` line that lands inside an open fenced code block ends the quote instead of being swallowed into the code. After the quote ends, `b` starts a paragraph and the trailing `> c` interrupts it into a fresh block quote (§10 — a `>` marker interrupts a paragraph). In the second example the mid-paragraph ` ``` ` has no closer, so it does not interrupt (§10 closer lookahead); it is then an unclosed inline verbatim run that renders as a `<code>` span to the end of the block (matching djot and carve-php), and the lazy line still folds in.
+Lazy continuation only extends an open paragraph. A non-`>` line that lands inside an open fenced code block ends the quote instead of being swallowed into the code. After the quote ends, `b` starts a paragraph and the trailing `> c` is literal continuation text because that paragraph is open (§10). In the second example the mid-paragraph fence-shaped line is likewise paragraph content; inline parsing then treats its delimiter run as unclosed verbatim and the lazy line folds in.
 
 ::: compare
 
@@ -2414,7 +2402,7 @@ tail</li>
 
 :::
 
-A colon fence that is **not a valid opener** opens no block, so it leaves the paragraph open and the dedented line folds in. `:::note` has no space between the fence and the type word, so §12's opener test rejects it and the line is ordinary paragraph text; from there the paragraph absorbs the following fence-shaped line as text too (§12, "the absorption is not width-tagged"). Nothing ever interrupted the item's paragraph, so it is still **open** when `tail` arrives, and PART 1 S4 folds `tail` into it. What decides is whether a block was opened, never the shape of the line that tried - an absorbed fence is prose:
+A colon fence that is **not a valid opener** opens no block, so it leaves the paragraph open and the dedented line folds in. `:::note` has no space between the fence and the type word, so §12's opener test rejects it and the line is ordinary paragraph text; from there the paragraph absorbs the following fence-shaped line as text too (§12, "the absorption is not width-tagged"). The item's paragraph remains **open** when `tail` arrives, and PART 1 S4 folds `tail` into it. What decides is whether a block was opened, never the shape of the line that tried - an absorbed fence is prose:
 
 ::::: compare
 
@@ -2438,7 +2426,7 @@ tail</li>
 
 :::::
 
-Give the same fence its space and the contrast is exact. Written `::: note`, it is a valid opener: it interrupts the item's paragraph, its closer completes the block, and a closed `:::` div or admonition leaves no open paragraph - so there `tail` does end the item and becomes a document paragraph, exactly as after the fenced code block and the table above. One space between the fence and the type word decides which of the two answers the same five lines get.
+Giving the fence its required space does not override paragraph extent. Written directly after item prose, `::: note` is still paragraph text because no blank created block position. The separator matters only when classification is allowed to run.
 
 The same clause settles the neighboring shapes, which is how one knows it is the clause and not a special case, and each of them is a place an implementation could get the right answer here for the wrong reason. Indenting the lazy line to column 1 changes nothing, since it is still below the content column. The malformed fence may be the paragraph's FIRST line, written on the marker line itself (`- :::note`), and the item then opens with a paragraph that begins with fence-shaped text. Inside a block quote, `> tail` supplies the quote's prefix but not the item's indentation, which is the partial match S4 is written for. All three fold, for the one reason above; `tests/colon-fence-absorbed-in-an-item.test.mjs` pins them.
 
@@ -2926,7 +2914,9 @@ line before a table attaches to the `<table>`:
 
 :::
 
-A `{...}` line that directly *trails* a paragraph (no blank line) is still a leading block-attribute line: it interrupts the paragraph and floats forward. With no following block it is dropped:
+A `{...}` line that directly trails a paragraph without a blank remains literal
+paragraph content. A leading block-attribute line is recognized only in block
+position; from there it floats forward and never attaches backward.
 
 ::: compare
 
@@ -3188,7 +3178,7 @@ See *[the docs](url) for more* info.
 
 ## Abbreviation definition interrupts a paragraph
 
-An abbreviation definition is an invisible construct (§10): on the line directly after prose it is consumed and applied, with no blank line needed.
+An abbreviation definition is recognized only at block position (§10). On the line directly after prose its bytes remain visible paragraph text and no abbreviation is registered.
 
 ::: compare
 
@@ -4795,7 +4785,7 @@ A contiguous run at column zero is still a thematic break.
 
 ## Sublist marker interrupts a continuation paragraph
 
-A list marker reaching a list item's **content column** always starts a sublist, even when the item holds an open continuation paragraph (PART 0 S3, PART 9 §24 C3). The general rule that list markers never interrupt a paragraph applies to markers *below* the content column (lazy continuation) and at the top level — not to a correctly indented sublist marker.
+A list marker reaching a list item's **content column** starts a structural sublist even when the item holds an open continuation paragraph (PART 0 S3, PART 9 §24 C3). This is the narrow structural exception to §10. Below the content column or at top level, the same bytes remain continuation text while a paragraph is open.
 
 ::: compare
 
@@ -5099,7 +5089,9 @@ A trailing no-break space 
 
 ## Table row closing pipe
 
-A table row must close with a pipe. A line that starts with `|` but has content dangling after its last pipe is prose, wherever it appears - it neither opens a table at a block start nor interrupts an open paragraph.
+A table row must close with a pipe. A line that starts with `|` but has content
+dangling after its last pipe is prose even in block position. While a paragraph
+is open, every row-shaped line is paragraph content regardless.
 
 ::: compare
 
@@ -5230,7 +5222,7 @@ With no blank line, a line below the content column lazily continues the open it
 
 :::
 
-A block opener at column 0 is a document-level block: it interrupts and ends the list, exactly as a quote or heading there would.
+A block-looking line at column 0 still folds into the item's open paragraph. A blank line is required before it can end the item and be classified at document level.
 
 ::: compare
 
@@ -5350,9 +5342,9 @@ An item's own second paragraph after a blank still loosens it - non-propagation 
 
 ## Definition list as a first-class block opener
 
-A `:: term` definition-list opener is a block opener like every other (quote, heading, fence, table) under the content-column rule (PART 9 §24 C3): it *interrupts* an open list item at column 0, and *nests* at the item's content column. The two-line `:: `/`:  ` marker is recognized by look-ahead; only the `:: ` term line opens the block.
+A `:: term` definition-list opener follows the uniform block-position rule. It does not end an open item paragraph at column 0 and does not nest merely by reaching the content column. After a separating blank, its content-column placement decides whether it belongs to the item. The two-line `:: `/`:  ` marker is recognized by look-ahead; only the `:: ` term line opens the block.
 
-At the content column, the definition list nests inside the item.
+Without a separating blank, the content-column spelling stays paragraph text.
 
 ::: compare
 
@@ -5372,7 +5364,7 @@ At the content column, the definition list nests inside the item.
 
 :::
 
-At column 0 (below the content column), it interrupts: the list ends and the definition list parses at document level.
+At column 0 with the paragraph still open, it also stays literal continuation text.
 
 ::: compare
 
@@ -5676,7 +5668,7 @@ Under-indented (below the content column, still above column 0): the definition 
 
 :::
 
-At column 0, the definition still attaches: the `:  ` marker is a lenient exception to the column-0 interrupt rule, so it does not end the item and orphan the definition.
+At column 0, the definition-shaped line remains part of the open paragraph; there is no interruption exception to orphan the term.
 
 ::: compare
 
@@ -8445,7 +8437,8 @@ The caption attaches to a captionable block, and a reference image that resolves
 
 ## A block-attribute line inside a quote ends the paragraph above it
 
-§10 I5 lists the block-attribute line among the invisible constructs that interrupt an open paragraph, and that holds inside a container as much as at the top level: the paragraph ends, and the attributes attach to the block that follows.
+The block-position rule holds inside containers. Without a separating blank,
+`{.c}` remains literal quoted paragraph text and does not float forward.
 
 ::: compare
 
@@ -9118,7 +9111,10 @@ see[^f]
 
 ## A line at a footnote definition's own column, followed by non-blank text, forms its own tight block
 
-A footnote definition on a list item's own content column renders no trace (above), and none of the three reference engines loosens the item on account of it - agreed already. What was not settled is what a plain line right after the definition, with no blank line anywhere, does to the item. §10 I5 already answers half of it: an invisible construct interrupts an open paragraph exactly like a visible one, so the line after the definition starts a NEW block rather than folding back into the paragraph the definition ended. §17 L1/L2 answer the rest: nothing here is a blank line, so the item never loosens, and a tight item's paragraphs are ALL bare - the new block included, not only the first one. The item ends up holding two paragraph blocks with no blank between them, both unwrapped (carve#668; §17 L6).
+Reaching the item's content column is not enough to end a paragraph. Without a
+blank, the definition-shaped line and the text after it remain one item
+paragraph. With block position, the definition is collected and leaves no
+rendered trace by §17 L6.
 
 ::: compare
 
@@ -11320,8 +11316,7 @@ wrong indefinitely without any document moving - which is what happened
 
 `:::note` has no space between the fence and the type word, so §12's opener test
 rejects it: it opens no block and is ordinary paragraph text. From that point
-the paragraph **absorbs the next fence-shaped line as text too, instead of being
-interrupted by it**. Nothing ever interrupted the quote's paragraph, so it is
+the paragraph **absorbs the next fence-shaped line as text too**. The quote's paragraph is
 still open when `tail` arrives at column 0, and PART 1 S4 folds `tail` in. The
 quote's own prefix is missing on that line, which is exactly the partial match
 S4 is written for:
@@ -11417,10 +11412,9 @@ tail</p></blockquote>
 
 :::::
 
-Give the same fence its space and the answer inverts, exactly as it does in an
-item: written `::: note` it is a valid opener, it interrupts the quote's
-paragraph, and its closer completes the block - so nothing is open when `tail`
-arrives. One space decides which of the two answers the same five lines get.
+Giving the fence its space does not invert the answer while the quote paragraph
+is open: `::: note` also remains literal text until a blank creates block
+position. The separator decides validity only after that boundary.
 
 ## A blank line holds spaces and tabs and nothing else
 
@@ -11973,16 +11967,16 @@ simply reads the braces.
 
 :::
 
-### A definition still INTERRUPTS, attribute block and all
+### A definition is recognized in block position, attribute block and all
 
 The anchor changes what the pattern matches, and the pattern is read in nine
-places rather than one: eight of them ask "is this line a definition" to decide
-paragraph interruption, lazy continuation, the def-list fold, the container
-scan, the item fold and the marker scan. While the pattern ended in a
+places rather than one: the consumers ask whether a line is a definition in
+block position, belongs to a def-list fold, or affects container/item scanning.
+While the pattern ended in a
 swallow-everything tail those eight could test the RAW line and be right by
 accident, because `[a]: /u {.c}` matched it raw. Anchored, they cannot: the
 trailing attribute block has to be split off first, or a definition carrying
-one stops interrupting anything and folds into the paragraph above it.
+one is not collected after block position has been established.
 
 Nothing pinned that. Reverting all eight to the raw line left the entire suite
 green, and a differential sweep then found 42 of 72 generated shapes moving.
@@ -12045,11 +12039,9 @@ text
 
 :::
 
-The fourth is the one the other three cannot reach. A block quote's open
-paragraph asks the same question in a SECOND place -- the lazy-continuation
-test, not the paragraph collector -- and reverting only that one site left even
-the differential sweep above unmoved. Here the definition has to interrupt, or
-the line below it lazily continues INSIDE the quote:
+The fourth reaches the lazy-continuation path rather than the top-level
+paragraph collector. The result is deliberately the same: the definition-shaped
+line is literal text and the following line continues inside the quote.
 
 ::: compare
 
@@ -13666,9 +13658,8 @@ mechanisms to pass, and only the fence-shaped rule passes both:
 The same clause reaches one shape further: a fence opened on a CONTINUATION line
 rather than on the marker line. S1 stops at the item either way, so the item
 closes at the below-column line and its closer never joins the body. What the
-truncated item then holds is §10 I4's business, not this clause's: `a` opened a
-paragraph, the fence that follows has no closer left inside the item, and I4
-says such a fence does not interrupt - so the delimiter run is paragraph text.
+truncated item then holds is §10's business: `a` opened a paragraph, so the
+fence-shaped line is paragraph text without any closer lookahead.
 
 This row is pinned because the executable spec's answer moves here too, and an
 unpinned move is the drift this corpus exists to prevent. No engine was measured
@@ -15217,14 +15208,12 @@ header row becomes part of the first table's body.
 
 ## A caret line does not end a paragraph it cannot caption
 
-PART 9 §10 I1 enumerates the lines that interrupt an open paragraph: a heading, a
-thematic break, a block quote, a valid table row, a guarded fence opener and a
-`:::` opener. I5 adds the invisible ones - a reference definition, a comment, a
-block-attribute line. A `^ ` caption line is in neither list, so it does not
-interrupt. What ends a paragraph at a caret is §4, and §4 reaches exactly five
-captionable hosts; for the two it spells in prose that means a paragraph whose
-WHOLE content is one image or one display-math span. Everywhere else the `^ `
-line is ordinary paragraph text and folds in, caret and all.
+PART 9 §10 gives every block-looking line the same answer while a paragraph is
+open: it remains paragraph content. A `^ ` line has one additional,
+host-sensitive role under §4, which reaches exactly five captionable hosts. For
+the two it spells out in prose, that means a paragraph whose whole content is
+one image or one display-math span. Everywhere else the caret line is ordinary
+paragraph text.
 
 `158-indented-image-and-caption-stay-literal` pins the INDENTED spelling, where
 both readings agree because an indented line opens no top-level block at all. The
@@ -15311,13 +15300,11 @@ and passes everything else in the section.
 :::
 ## A column-zero definition ends an open list item
 
-Column zero is the surrounding document's opener column. A link or footnote
-definition there interrupts and closes the item, registers as document
-metadata, and leaves the following block at document level. Only a nonzero
-column below the item content column reaches no definition opener and folds as
-literal text. At the content column the definition belongs to the item, as
-category 228 pins. A comment remains the explicit exception: its invisibility
-is accepted independently of column and does not itself close the item.
+Column zero is the surrounding document's opener column only after the item has
+no open paragraph. While one is open, a link, footnote, or abbreviation
+definition there folds in as visible text and registers nothing, exactly like
+the same shape at a nonzero column. A blank line is required before it can be
+classified as document metadata.
 
 ::: compare
 

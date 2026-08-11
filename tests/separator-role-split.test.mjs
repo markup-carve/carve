@@ -1195,19 +1195,19 @@ for (const [name, src] of ANCHORED) {
 // THE PATTERN IS READ IN NINE PLACES, and eight of them are predicates.
 //
 // `LINK_DEF` builds the node in one place and answers "is this line a
-// definition" in eight others - paragraph interruption, lazy continuation, the
+// definition" in eight others - block position, lazy continuation, the
 // def-list fold, the container scan, the item fold and the marker scan. While
 // the pattern ended in a swallow-everything tail those eight could test the RAW
 // line and be right by accident, because `[a]: /u {.c}` matched it raw. With
 // the line anchored they cannot: the trailing attribute block has to be split
 // off first (that is what `isLinkDef` is for), or a definition carrying one
-// stops interrupting and folds into the paragraph above it.
+// stops being recognized at block position.
 //
 // NOTHING PINNED THAT. Reverting all eight to the raw line left the entire
 // suite green - measured - and a differential sweep over 72 generated shapes
 // then found 42 of them moving. That is the carve#922 shape: one rule, many
 // spellings, and a corpus that only ever carried the form they agree on.
-const INTERRUPTS = [
+const BLOCK_POSITIONS = [
   ['at the top level', 'text\n\n[a]: /u {.c}\n\n[a][]\n'],
   ['inside a block quote', '> text\n>\n> [a]: /u {.c}\n\n[a][]\n'],
   ['inside a list item', '- text\n\n  [a]: /u {.c}\n\n[a][]\n'],
@@ -1257,12 +1257,12 @@ for (const [name, src, expected] of PREDICATE_SHAPES) {
   })
 }
 
-for (const [name, src] of INTERRUPTS) {
-  test(`a definition carrying an attribute block still interrupts: ${name}`, () => {
+for (const [name, src] of BLOCK_POSITIONS) {
+  test(`a definition carrying an attribute block is recognized: ${name}`, () => {
     const html = renderDoc(parse(src))
     assert.ok(
       html.includes('<a href="/u" class="c">a</a>'),
-      `the definition folded into the paragraph above it instead of interrupting,\n` +
+      `the definition was not recognized at block position,\n` +
         `  so the label never resolved and the attribute block was lost.\n` +
         `  source: ${JSON.stringify(src)}\n` +
         `  got:    ${JSON.stringify(html.trim())}\n` +

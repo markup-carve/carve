@@ -21,7 +21,7 @@ turning your content into a JavaScript program.
 | Consistent inline rules         | ❌ |  ✅   | ❌ | ✅ |
 | No-backtracking parse guarantee | ❌ |  ✅   | ❌ | ✅ \* |
 | Markdown-familiar syntax        | ✅ |  ⚠️  | ✅ | ⚠️ |
-| Paragraph interruption (no blank line) | ✅ | ❌ | ✅ | ❌ |
+| Block may end open paragraph (no blank) | ✅ | ❌ | ✅ | ❌ |
 | Feature completeness/consistency | ❌ | ❌ | ❌ | ✅ |
 
 \* Inline parsing is single-pass with a delimiter stack; at the block level a
@@ -29,7 +29,7 @@ fence / `:::` opener uses a bounded forward scan for a matching closer
 (closer lookahead, not backtracking) - see
 [Technical Rationale](/technical-rationale).
 
-### Paragraph interruption, by rule count
+### Block position after prose, by rule count
 
 How many distinct rules an author has to remember for "when does a block break
 an open paragraph without a blank line". Fewer and more regular is easier to

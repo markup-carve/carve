@@ -460,16 +460,12 @@ Ordered lists support **decimal, alphabetic (`a.`/`A.`), and roman
 fixes the dialect, the `<ol type>`, and `start`; a marker outside that
 dialect (or the other delimiter) starts a new list (PART 9 §11).
 
-Unlike the other blocks, a **list marker does not interrupt a paragraph** (the
-§10 paragraph rule): a list — bullet (`- `/`* `, task) or ordered (`1.`, `2.`,
-`1985.`, `a.`, `i.`, any value) — needs a blank line before it. Both marker
-classes behave identically here. An ordered marker is too common in prose
-("step 2.", "version 1985.", "upgrade to 1. today") to interrupt, and a
-hard-wrapped prose line that happens to begin with a bullet should not silently
-become a list; the only way to allow either would be the CommonMark `1.`-only
-heuristic Djot removed, so Carve keeps both on the blank-line rule. (`+` is the
-continuation marker, not a bullet.) Inside an existing list item, indentation
-alone still nests a sublist.
+Like every block, a list needs block position (§10), normally a preceding blank
+line. While a paragraph is open, bullet, task, and ordered markers are literal
+continuation text. This avoids CommonMark's `1.`-only exception and keeps
+hard-wrapped prose safe. (`+` is the continuation marker, not a bullet.) A list
+marker at an existing item's content column is the narrow structural exception:
+it may start a sublist while the item paragraph is open.
 
 A bullet opens a list at **any indentation** at the top level, not only at
 column 0: a `- `/`* ` line is always a bullet, so even an indented one opens a
@@ -500,9 +496,8 @@ marker: `- ` / `* ` → column 2, `1. ` → 3, `10. ` → 4. A **task** item's c
 is content, not marker, so its content column is the **bullet width (2)**, not
 the full `- [x] ` width.
 
-How a deeper marker inside an open list item is read - this is sub-list nesting,
-a different axis from the §10 paragraph rule (no list marker interrupts a
-paragraph; both need a blank line):
+How a deeper marker inside an open list item is read is the structural sub-list
+exception to §10:
 
 A **list marker** (bullet or ordered) is **gated by the content column** - and
 bullet and ordered behave identically here. A marker **at or past** the parent's
