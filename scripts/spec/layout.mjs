@@ -735,11 +735,9 @@ function splitRow(line, openRun = 0, openRunAt = 0, kind = 'standard') {
   return { cells, rowAttrs, openRun: inCode, openRunAt: cells.length - 1 }
 }
 
-// T2: is this line a table row? One test, used both for the §10 I1 paragraph
-// interruption and for opening a table at a block start -- a line is a row or
-// it is not, and the two answers may never differ (a line the block parser
-// builds a table from but the §17 sub-block test calls prose would make an item
-// loose AND fill it with a table).
+// T2: is this line a table row? The block parser and container sub-block
+// classifier share one predicate, so a line is never prose in one and a table
+// in the other.
 export function isTableRow(line) {
   // splitRow owns the closing-pipe test, so a row whose closing pipe carries a
   // `{...}` attribute block (T8) still qualifies -- the line ends in `}`.
@@ -866,10 +864,6 @@ function isColonBlockOpener(line) {
   return !!(cf && parseColonOpener(cf[2]) !== null)
 }
 
-function isColonParagraphInterrupt(line) {
-  return isColonBlockOpener(line) && !COLON_CLOSER.test(line)
-}
-
 function hasFollowingBody(lines, idx) {
   for (let j = idx + 1; j < lines.length; j++) {
     if (!isBlank(lines[j])) return true
@@ -881,27 +875,10 @@ function bareColonHasFollowingBody(lines, idx) {
   return COLON_CLOSER.test(lines[idx] ?? '') && hasFollowingBody(lines, idx)
 }
 
-function paraHasInvalidColonOpener(para) {
-  return para.some((l) => {
-    const cf = COLON_FENCE.exec(l)
-    return cf && parseColonOpener(cf[2]) === null
-  })
-}
-
-/** SS12's interruption rule for one colon-fence LINE, decoupled from where the
- *  line was read. `followingBody` is whether any non-blank line follows it,
- *  `para` the lines of the paragraph currently open. Kept as a function of its
- *  three inputs so the block reader and the list-item collector below can share
- *  ONE spelling of the rule: the collector used to carry its own, a bare
- *  `COLON_FENCE.test(line)`, which closed the paragraph for a fence that had
- *  been ABSORBED into it and never interrupted anything (carve#891). */
-function colonFenceInterrupts(line, followingBody, para) {
-  if (isColonParagraphInterrupt(line)) return true
-  return COLON_CLOSER.test(line) && followingBody && !paraHasInvalidColonOpener(para)
-}
-
-function colonInterruptsParagraph(lines, idx, para) {
-  return colonFenceInterrupts(lines[idx], bareColonHasFollowingBody(lines, idx), para)
+/** Whether one colon-fence line opens a block when classification is allowed. */
+function colonFenceOpensBlock(line, followingBody) {
+  if (isColonBlockOpener(line)) return true
+  return COLON_CLOSER.test(line) && followingBody
 }
 
 const COMMENT_LINE = /^[ \t]*%%/
@@ -1090,12 +1067,11 @@ function isBlank(line) {
   return /^[ \t]*$/.test(line)
 }
 
-// A line that begins a VISIBLE block (PART 9 SS10 I1) in the executable
-// subset. Fence interruption needs the closer lookahead (I4) - handled by
-// the caller which owns the remaining lines.
+// A line that begins a visible block in the executable subset. Called only
+// where block classification is allowed.
 // A definition-list TERM opener `:: ` (two colons + space; not the `:::` colon
 // fence). A `:: term` is a first-class block opener under PART 9 SS24 C3
-// (carve#295): it interrupts an open paragraph/item at column 0 and nests at
+// (carve#295): it opens at block position at column 0 and nests at
 // the content column, exactly as a heading/quote/fence does. The two-line
 // marker means only the TERM line opens the block; the `:  def` line is its
 // body, handled by the def-list parser once opened.
@@ -2200,65 +2176,18 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const isOpener = !!(f && prevBlank && parseFenceInfo(f[2]))
         if (isOpener) openFence = f[1]
         prevBlank = isBlank(l)
-        // PART 1 S4 makes the fold conditional on an OPEN PARAGRAPH, so every
-        // block that leaves none clears this. A definition TERM is bounded like
-        // a heading (it holds inline content, not a paragraph), and a
-        // reference/footnote/abbreviation definition is invisible - it leaves
-        // nothing on the page for a lazy line to continue. Both were missing
-        // here, exactly as they were missing in carve-js and carve-php
-        // (carve-js#554, carve-php#652).
-        //
-        // A COLON-CLOSER-SHAPED LINE THAT IS NOT ABSORBED leaves no open
-        // paragraph either, and it was the third omission (carve#920 shape C).
-        // A `:::` that really acts as a fence line either CLOSES a div - which
-        // closes the paragraph inside it - or, with nothing to close, OPENS an
-        // empty one, and a container that has just opened holds no paragraph.
-        // Either way S4's "ANY container in the open stack holds an OPEN
-        // PARAGRAPH" is false after it, and falling through to
-        // `else qOpenPara = true` treated the line as prose.
-        //
-        // The exception is SS12's absorption (carve#902, corpus 260): a bare
-        // `:::` with no body after it, or one under a paragraph that already
-        // holds an INVALID colon opener, is swallowed as paragraph text and the
-        // paragraph stays open. That is the same predicate the block reader
-        // uses, applied to the STRIPPED line and to the quote's own paragraph -
-        // spelling it a second way here is how the two answers would drift.
-        const absorbedColon = qOpenPara && COLON_CLOSER.test(l) &&
-          !colonFenceInterrupts(l, hasFollowingBody(lines, idx), qPara)
-        // Asked with the run as it stood BEFORE this line, then advanced: a
-        // continuation row is a row relative to what is above it, never to
-        // itself.
+        // Reaching here proves there is no open quoted paragraph. Classify the
+        // line structurally; bounded and invisible blocks leave no paragraph
+        // available for a later lazy continuation.
         const contRow = isContinuationRow(l, qTableOpen)
         qTableOpen = tableRunStep(qTableOpen, l)
-        /*
-         * A QUOTE INSIDE A QUOTE IS ASKED WHAT IT ENDS ON -- PART 1 S4
-         * (carve#1355). S4 puts the question to a quote RECURSIVELY and says
-         * "its own last block answers"; this loop reads the OUTER quote's
-         * stripped lines, so a line still beginning with `>` is an inner
-         * quote's line and fell into the prose branch below whatever that
-         * quote ends on.
-         *
-         * The one-level spelling already answers correctly here, which is what
-         * makes this a contradiction rather than a gap: `> # H` over `tail`
-         * ends the quote in all four implementations, and `> > # H` over
-         * `tail` kept `tail` in the OUTER quote in three of them - as a
-         * paragraph continuing nothing, since the outer quote's last block is
-         * the inner quote and the inner quote's is a heading.
-         *
-         * `opensParagraph` is the same predicate the item collector uses and
-         * it already recurses through the marker, so the two containers cannot
-         * drift apart on the nested spelling the way they did on the bare one.
-         */
-        // Every depth ends when a line stops supplying its marker, so a line
-        // that is not a nested quote at all clears the whole ladder.
         if (!QUOTE.test(l)) qNestedTable.length = 0
         const nestedQuoteEnds = QUOTE.test(l) && !nestedQuoteOpensParagraph(l)
-        if (!absorbedColon &&
-            (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
-             isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
-             l[0] === '|' || l[0] === '{' || contRow || nestedQuoteEnds ||
-             DEFLIST_TERM.test(l) || isLinkDef(l) || COMMENT_LINE.test(l) ||
-             FOOTNOTE_DEF.test(l))) {
+        if (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
+            isColonBlockOpener(l) || COLON_CLOSER.test(l) ||
+            l[0] === '|' || l[0] === '{' || contRow || nestedQuoteEnds ||
+            DEFLIST_TERM.test(l) || isLinkDef(l) || COMMENT_LINE.test(l) ||
+            FOOTNOTE_DEF.test(l)) {
           qOpenPara = false
           qPara = []
         } else {
@@ -2372,13 +2301,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         continue
       }
       for (const [re, what] of REFUSERS) {
-        if (re.test(lines[i])) throw new Refuse(`${what} interrupting a paragraph`)
+        if (re.test(lines[i])) throw new Refuse(`${what} inside a paragraph`)
       }
       // SS4, NOT SS10. A `^ ` line ends an open paragraph only where SS4 has
       // something to attach it to: a paragraph whose WHOLE content is one image
       // or one display-math span, the two hosts SS4 spells in prose. SS10's
-      // interruption relation does not list a caption line at all - neither I1's
-      // visible openers nor I5's invisible constructs - so anywhere else the
+      // host-sensitive attachment rule does not apply, so anywhere else the
       // line is ordinary paragraph text and FOLDS IN, caret and all, which is
       // what all three engines do.
       //
@@ -3300,7 +3228,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // (carve#891). Same rule, same spelling, as the block reader's
         // colonInterruptsParagraph.
         else if (COLON_FENCE.test(dedented)) {
-          if (colonFenceInterrupts(dedented, hasFollowingBody(lines, i), para)) closePara()
+          if (colonFenceOpensBlock(dedented, hasFollowingBody(lines, i))) closePara()
           else openParaWith(dedented)
         }
         // A TABLE ROW closes the paragraph, and so does the continuation row
@@ -3474,7 +3402,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       }
       if (nm && nm.indent < contentCol && nm.indent > baseIndent && openPara && itemLines.length > 0) {
         // a marker BELOW the content column folds as lazy item text
-        // (PART 9 SS24 C3; list markers never interrupt, SS10 I2)
+        // (PART 9 SS24 C3; the marker is a structural nesting exception to §10)
         pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
         i++
         continue

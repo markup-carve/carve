@@ -3,11 +3,11 @@
  * folds into it.
  *
  * PART 1 S4 folds a lazy line whenever any container in the open stack holds
- * an OPEN PARAGRAPH and the residue is not interrupting. PART 9 §12's opener
+ * an OPEN PARAGRAPH and the residue is nonblank. PART 9 §12's opener
  * test rejects `:::note` - a type word wants a separator - so that line is
  * ordinary paragraph text, and §12 then has the paragraph absorb the next
  * fence-shaped line as text too. Neither line opened a block, neither
- * interrupted anything, and the paragraph is still open when the lazy line
+ * changed that paragraph's extent, and it is still open when the lazy line
  * arrives. Corpus 86-list-lazy-continuation-9 pinned the opposite answer
  * (carve#891).
  *
@@ -42,9 +42,8 @@ test('the absorbed fence leaves the paragraph open and the lazy line folds', () 
   )
 })
 
-// The discriminator. Same five lines, one space added, and the answer inverts:
-// `::: note` IS a valid opener, so it interrupts the item's paragraph and its
-// closer completes the block, leaving nothing open for `tail` to fold into.
+// Same five lines, one space added. The opener shape is valid only at block
+// position; the already-open paragraph keeps it literal here.
 test('a valid opener shape is literal while the item paragraph is open', () => {
   assert.equal(
     html('- item\n  ::: note\n  body\n  :::\ntail\n'),
@@ -85,20 +84,9 @@ test('a blank line ends the absorption', () => {
   )
 })
 
-// A BARE `:::` is the harder case, since it interrupts only when the open
-// paragraph holds no malformed fence, so it is the one that reads the memory
-// rather than bypassing it.
-//
-// Stated honestly, because it was measured: this row does NOT discriminate a
-// memory that is never cleared. With the reset removed, the first bare fence is
-// wrongly absorbed and the second then wrongly interrupts, and the two errors
-// cancel into the same rendering. No shape in this clause's scope separates
-// them - the one that does needs an UNTERMINATED fence in an item, which the
-// oracle answers wrongly for an unrelated reason (carve#891 records it as a
-// by-product and leaves it alone). So the reset is kept for the state to mean
-// what its name says, and this row pins the ANSWER rather than proving that
-// condition load-bearing.
-test('a bare fence after the blank interrupts, because the absorption did not survive it', () => {
+// After a blank there is no open paragraph, so the bare fence is classified as
+// a div and its matching closer is structural.
+test('a bare fence after the blank opens a div', () => {
   assert.equal(
     html('- item\n  :::note\n\n  :::\n  body\n  :::\ntail\n'),
     '<ul><li><p>item :::note</p><div><p>body</p></div><p>tail</p></li></ul>',

@@ -316,9 +316,9 @@ stack in a single left-to-right pass: linear time, no backtracking.
 - `\%%` (escaped first percent) is literal
 - A **whole-line** comment may be **indented**: leading whitespace before `%%`
   does not matter, so an indented line whose first non-whitespace content is
-  `%%` is a comment line just like one in the first column. Like any block it
-  interrupts an open paragraph and renders nothing (it leaves no empty
-  paragraph)
+  `%%` is a comment line just like one in the first column. It is recognized
+  only in block position; inside an open paragraph the same bytes remain
+  paragraph text. As a block it renders nothing and leaves no empty paragraph.
 
 **Block comments:**
 - `%%%` must start the line to open/close; the **leading run of `%` is the
@@ -474,30 +474,24 @@ Inside code spans, backslash is literal:
 
 ---
 
-## 17. Block Openers Interrupt Paragraphs (Paragraph Interruption)
+## 17. Block Position After an Open Paragraph
 
-**Rule:** a **visible** block — *except a list marker* — interrupts an open
-paragraph with no blank line before it, at the document top level **and** inside
-nested content (list item, block quote, admonition/div body). A continuation
-line that begins such a block is parsed as that block; the paragraph ends on the
-line before it. This is the Markdown-like rule (CommonMark "a paragraph can be
-interrupted") for those blocks. **List markers follow Djot:** a list needs a
-blank line before it, so a bullet or ordered marker after a prose line **folds
-into the paragraph** as lazy continuation.
+**Rule:** once a paragraph opens, every following nonblank line remains in that
+paragraph. A heading, quote, list, table, fence, definition, attribute, comment,
+div, or extension block therefore needs block position, normally a preceding
+blank line. The rule is uniform at document level and inside containers.
 
 ```carve
 Die Frage ist x = 5
 * 3 + 17 wahr.
 ```
 
-This is **one paragraph** (`Die Frage ist x = 5\n* 3 + 17 wahr.`): a list marker
-does not interrupt a paragraph, so a hard-wrapped prose line beginning with a
-bullet stays prose. Add a blank line before the marker to start a list.
+This is **one paragraph** (`Die Frage ist x = 5\n* 3 + 17 wahr.`): block-looking
+text cannot end an open paragraph. Add a blank line before the marker to start a
+list.
 
-**Symmetric list rule.** Neither a bullet (`- `/`* `, `- [x]` task) nor an
-ordered marker (`1.`, `2.`, `1985.`, `a.`, `i.`) interrupts a paragraph — they
-behave identically. This avoids the CommonMark `1.`-only heuristic Djot removed,
-and removes the old false positive where a wrapped prose line became a list.
+This avoids CommonMark's per-opener interruption exceptions and the false
+positive where hard-wrapped prose becomes a block.
 
 **A heading and a blockquote are different:** a list marker **ends** an open
 heading (a bounded title) and starts a top-level **sibling list**. A blockquote
@@ -507,18 +501,10 @@ into it as lazy continuation — `> q` / `- a` is **one** quote whose paragraph 
 plain text included - a heading ends at the newline (§18). The blockquote half
 of this matches Djot; the heading half deliberately does not.
 
-**Other carve-outs:**
-
-1. **Closer lookahead** — a fence (`` ``` ``/`~~~`) or `:::` interrupts only
-   when a matching closer exists ahead. An unterminated opener stays paragraph
-   text, so a stray marker never swallows the rest of the block.
-2. **Image excluded** — a bare image `![alt](url)` is inline content, not a
-   block, so it renders inside the paragraph.
-
-**Invisible constructs** (link/footnote/abbreviation reference definitions,
-`%%`/`%%%` comments, and `{…}` block-attribute lines) interrupt with no blank
-line, as they always have — they produce no block of their own, so they are
-collected/consumed (an attribute line floats forward to the next block, §15).
+This has two structural boundaries rather than opener exceptions: a marker at a
+container's applicable content column may open nested content, and a container
+closer ends that container. Captions remain host-sensitive (§4). A bare image is
+inline content and needs no special block rule.
 
 | Input | Result | Reason |
 |-------|--------|--------|
@@ -526,28 +512,28 @@ collected/consumed (an attribute line floats forward to the next block, §15).
 | `x = 5` / `* 3 + 17` | one paragraph | list marker folds (no false positive) |
 | `Text` / `1. a` (or `2. a`, `1985. a`) | one paragraph | list marker folds |
 | `Text` / (blank) / `- a` | paragraph + list | blank line starts the list |
-| `Text` / `# H` | paragraph + heading | heading interrupts |
-| `Text` / `` ``` `` / `code` / `` ``` `` | paragraph + code block | fence with a closer interrupts |
-| `Text` / `` ``` `` / `code` | one paragraph | unterminated fence — no closer |
-| `Text` / `---` / `more` | paragraph + `<hr>` + paragraph | thematic break interrupts |
+| `Text` / `# H` | one paragraph | no blank establishes block position |
+| `Text` / `` ``` `` / `code` / `` ``` `` | one paragraph | fence-looking lines stay prose |
+| `Text` / `` ``` `` / `code` | one paragraph | same uniform rule |
+| `Text` / `---` / `more` | one paragraph | thematic-break-looking line stays prose |
 | `Text` / `![a](u)` | one paragraph (inline image) | image excluded |
-| `Text` / `^ cap` | one paragraph | a caption line is not an interrupter (I7); §4 attaches only to a captionable host |
+| `Text` / `^ cap` | one paragraph | §10 keeps it literal; §4 attaches only to a captionable host |
 | `![a](u)` / `^ cap` | `<figure>` | the paragraph IS the image, so §4 has a host and the caption attaches |
-| `See[^m].` / `[^m]: note` | paragraph + endnotes | invisible construct |
+| `See[^m].` / `[^m]: note` | one paragraph | definition needs block position |
 | `# H` / `- item` | heading + sibling list | list marker ENDS the heading |
 | `# H` / `1. one` | heading + sibling list | list marker ENDS the heading (ordered too) |
 | `> q` / `- a` | one quoted paragraph | the bullet folds in (lazy continuation) |
-| `> text` / `> # H` | quote: paragraph + heading | heading interrupts inside the quote |
-| `> p` / `> - x` | one quoted paragraph | quoted bullet folds (paragraph interruption inside the quote) |
+| `> text` / `> # H` | one quoted paragraph | the rule is identical inside the quote |
+| `> p` / `> - x` | one quoted paragraph | quoted marker remains paragraph text |
 | `- a` / `  - b` | nested sublist | indented sublist still nests (content column) |
 | `- a` / ` - b` | one item (folds) | below the content column → lazy continuation |
-| `1. a` / `[r]: /u` / `after` | list, then document paragraph | column-zero definition interrupts and closes the item |
+| `1. a` / `[r]: /u` / `after` | one item paragraph | definition-looking bytes cannot interrupt it |
 | `1. a` / ` [r]: /u` | one item (literal definition text) | nonzero column below content column reaches no definition opener |
-| `1. a` / `   [r]: /u` / `   after` | one tight item with two paragraphs | definition is at the item's content column |
-| `- text` / `  # H` | item: text + heading | heading interrupts inside the item |
+| `1. a` / `   [r]: /u` / `   after` | one item paragraph | no blank ends the paragraph |
+| `- text` / `  # H` | one item paragraph | heading-looking bytes remain prose |
 
 Normative statement: `resources/grammar.ebnf` PART 9 §10. Verified by corpus
-`05-lists-12` and the `76-paragraph-interruption` family.
+`05-lists-12` and the `81-paragraph-interruption` family.
 
 ---
 

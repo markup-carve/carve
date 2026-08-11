@@ -204,9 +204,9 @@ numbers the whole group (`</#panel-id>` then renders as "Figure 2a"):
 ^ Figure #: The pair
 ```
 
-A caption spans multiple lines like a paragraph — following lines fold in until
-a blank line or a block that would interrupt a paragraph (a list marker folds
-in, it does not end the caption):
+A caption spans multiple lines under its own bounded rule: following lines fold
+in until a blank line or a recognized non-list block opener. A list marker folds
+in rather than ending the caption:
 
 ```carve
 ![Photo](img.jpg)

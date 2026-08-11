@@ -2,12 +2,9 @@
  * A colon-fence line that fails the opener test leaves the paragraph expecting a
  * closer, and the absorption is not width-tagged.
  *
- * Both halves are what all three engines do; neither was written down until
- * carve#770. §10 says which openers interrupt a paragraph - a bare `:::` does -
- * and nothing said that a malformed sibling earlier in the SAME paragraph turns
- * that interruption off for the rest of it. A grammar cannot implement a rule
- * nobody wrote, and tree-sitter-carve gets this case wrong today while its own
- * notes blame the opener line rather than the trailing fence.
+ * Under §10, every fence-shaped line is literal once the paragraph is open.
+ * The malformed opener is still useful as a closer-width control: because it
+ * opened no fence, no later run has a width to match.
  *
  * WHY THIS IS A TEST HERE AND NOT A CORPUS CASE. The obvious home is
  * `resources/examples/core.md`, which generates the corpus - and adding two pairs
@@ -19,9 +16,8 @@
  * (`24-generic-divs-2`), and the part that was unpinned - the width behavior -
  * is pinned here against the same engine the rest of this suite measures.
  *
- * The interruption row is included as a CONTROL. Without it, "these all come out
- * as one paragraph" would also pass if `:::` had stopped interrupting paragraphs
- * altogether, which is a different and much larger bug.
+ * The block-position row is included as a control. Without it, these assertions
+ * would also pass if `:::` were never recognized as a block at all.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -38,7 +34,7 @@ test('a bare ::: inside an open paragraph is literal', () => {
 
 test('a malformed opener makes the paragraph absorb the closing fence', () => {
   // `::: {.x}` is not an opener - the fence takes a type word, not an attribute
-  // block - so it is paragraph text, and the `:::` below it no longer interrupts.
+  // block, so it and the `:::` below it are paragraph text.
   assert.equal(
     collapse(carveToHtml('::: {.x}\nnot a div\n:::\n')),
     '<p>::: {.x} not a div :::</p>',

@@ -11,7 +11,7 @@ This is the canonical formal specification of Carve. It is **layered**, and each
 |---|---|---|
 | PART 0 | Line layout: indentation, container prefixes, lazy continuation | Deterministic line automaton |
 | PARTS 1-8 | Block and inline productions | EBNF + declared guard notation (lookahead, lookbehind classes, `where` counting guards) |
-| PART 9 | Semantic constraints a context-free production cannot carry (emphasis resolution, paragraph interruption, table span walk, attribute floating, tabs) | Operational semantics: labeled rules over declared state |
+| PART 9 | Semantic constraints a context-free production cannot carry (paragraph extent, emphasis resolution, table span walk, attribute floating, tabs) | Operational semantics: labeled rules over declared state |
 | PART 9R | Whole-document resolution (references, footnotes, crossrefs, numbering) | Two-pass rules over declared symbol tables |
 | PART 10 | HTML serialization | Tree-transform conventions |
 | PART 11 | Canonical source writer (`carve fmt`): round-trip invariants and the escaping rule | Invariants over `parse`/`fmt` + a decision procedure |

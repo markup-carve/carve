@@ -134,15 +134,14 @@ This matters because block structure is decided before inline parsing starts.
 You do not need an inline parser guessing whether a later line will turn the
 current line into some different block type.
 
-### One bounded exception: fence/`:::` closer lookahead
+### One bounded exception: fence closer lookahead in block position
 
 There is a single, deliberate departure from "decided from the line beginning
-alone". Under the paragraph-interruption rule (`resources/grammar.ebnf` PART 9
-§10), a fenced-code or `:::` opener interrupts an open paragraph **only when a
-matching closer exists ahead** in the same context; an unterminated opener stays
-paragraph text instead of swallowing the rest of the block. Deciding that needs
-a forward scan over later lines — so for fences and divs, a *later* line does
-co-determine whether the current line is a block opener or prose.
+alone". Once block position has been established, a fenced-code or comment
+opener is recognized only when a matching closer exists ahead in the same
+context; an unterminated opener degrades without swallowing the remainder.
+Inside an open paragraph no lookahead is needed: every nonblank line is already
+paragraph content by PART 9 §10.
 
 This is a conscious trade, not an oversight:
 
@@ -156,8 +155,8 @@ This is a conscious trade, not an oversight:
   bounded *block-level* forward scan, bounded by the enclosing container.
 
 The payoff is a usability guarantee neither CommonMark nor Djot give: a stray
-` ``` ` or `:::` inside prose can never eat the remainder of the document. Carve
-accepts the narrower parser contract to buy that. Everything else in block
+fence in block position cannot eat the remainder of the document. Carve accepts
+the narrower parser contract to buy that. Everything else in block
 structure — headings, quotes, bullet lists, thematic breaks, table rows — is
 still decided from the line beginning alone, with no lookahead.
 

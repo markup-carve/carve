@@ -879,9 +879,8 @@ preceding attribute line, never inline on the opener):
   emitted heading anchors). **Every heading is included in document order**,
   recursing into containers (`::: note`, blockquotes, divs) — those headings
   render with id anchors, so they belong in the TOC. Footnote-definition
-  headings get no id and are excluded. (A heading inside a list item is subject
-  to the core list-interruption rules, which currently differ across engines;
-  the TOC faithfully reflects each engine's parse.)
+  headings get no id and are excluded. A heading inside a list item follows the
+  same core block-position rule in every engine.
 - The nested `<ul>` HTML is byte-identical to the standalone TOC extension
   (one tag per line).
 

@@ -27,6 +27,36 @@ see [Technical Rationale](/technical-rationale). For the feature matrix against
 Markdown and MDX too, see [Carve vs Markdown, Djot & MDX](/comparison).
 :::
 
+## Audited divergence inventory
+
+This inventory was rechecked for Carve 0.2 against `@djot/djot` 0.3.2. A row
+marked **addition** extends Djot without changing how shared syntax parses;
+**source break** means the same bytes intentionally parse differently. The
+HTML-observable claims are executable in `tests/divergence-claims.test.mjs`;
+AST- or option-dependent claims cite their dedicated corpus/spec coverage.
+
+| Item | Kind | Intentional reason | Primary proof |
+|---|---|---|---|
+| 1. Cross-reference resolution | addition | Preserve Djot-shaped ids while making authored references case-tolerant | cross-reference corpus |
+| 1b. Heading-id punctuation | source break | An ASCII allowlist is deterministic and avoids punctuation leaking into fragments | divergence claim + heading-id corpus |
+| 1c. Heading attribute ownership | source break | Only the id names the section region; authored styling stays on the heading | divergence claim + heading-attribute corpus |
+| 2. Non-empty list items | source break | A lone dash is common prose and must not depend on trailing whitespace | divergence claim + list corpus |
+| 3. `+` continuation | source break | Reserves one unambiguous spelling for attaching flush-left blocks to an item | divergence claim + continuation corpus |
+| 4. Visual emphasis delimiters | source break | Delimiters visually suggest their rendered effect and cover underline/highlight | divergence claims + inline corpus |
+| 5. No `(1)` list marker | source break | Parenthesized numbers are overwhelmingly prose; supported ordered forms remain ample | divergence claim + ordered-list corpus |
+| 6. Plain-text comments | source break/addition | `%%` supports cheap line and trailing comments without brace syntax | divergence claim + comment corpus |
+| 7. Block position | aligned | Carve deliberately converges with Djot for hard-wrap safety and one extension-safe rule | agreement claim + paragraph corpus |
+| 8. Symbol boundaries | source break | Prevent substitutions inside words/times and collisions with underline syntax | symbol-boundary corpus |
+| 9. Explicit definition lists | source break | Separate term/definition markers remove colon ambiguity and support multiple bodies | definition-list corpus |
+| 10. Target-routed raw blocks | aligned syntax / capability boundary | A renderer must not leak content intended for a different output target; Pandoc supplies writers Carve does not bundle | agreement claims + raw-target corpus |
+| 11. List content column | source break | Exact visual columns make tabs/spaces and sibling/nested ownership deterministic | divergence claim + nesting corpus |
+| 12. Smart punctuation AST | AST break | A leaf records the authored token without inventing container structure | AST-shape tests |
+| 13. Exact colon-fence closer | source break | Fence width encodes local depth and makes canonical writing single-pass | divergence claims + nested-container corpus |
+| 14. Single-line headings | source break | A heading is a bounded title with stable extent and id, not an open paragraph | divergence claim + heading corpus |
+
+No unlisted behavioral difference is accepted merely because an engine happens
+to produce it: it must either be added here with a reason and a test, or fixed.
+
 ## 1. Case-preserving heading ids with case-insensitive cross-references
 
 **Djot:** heading ids preserve case and non-ASCII, with no Unicode
@@ -627,14 +657,12 @@ Some text.
 | result | one `<h1>` holding both lines | `<h1>Title</h1>` then `<p>Some text.</p>` |
 | id | `Title-Some-text` | `Title` |
 
-**Why.** This is the same argument as section 7, applied to the other ordering.
-Section 7 already broke from Djot's blank-line rule because a heading written
-directly under prose silently stayed prose - it surprises authors arriving from
-Markdown more often than it helps. The mirror case, prose written directly under
-a heading, was left folding: same two lines, order swapped, opposite doctrines.
-`docs/parsing-ambiguities.md` called it "the biggest authoring trap in the heading
-syntax", and a documented trap is still a trap. Now both orderings answer the
-same way.
+**Why.** A heading is a bounded title rather than an open paragraph. Ending it
+at its newline makes its source extent, generated id, and following sibling
+independent of later lines. Section 7 governs only an already-open paragraph,
+so the ordering is intentionally asymmetric: `text\n# H` remains one paragraph,
+while `# H\ntext` is a heading followed by a paragraph. The asymmetry follows
+the node that is open, rather than an opener-specific interruption exception.
 
 It also makes one model true across the language. The grammar describes a
 heading as "a bounded title, not an open paragraph" while giving it

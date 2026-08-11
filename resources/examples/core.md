@@ -690,7 +690,7 @@ Lists can mix markers — an ordered list may contain a nested unordered list (a
 
 :::
 
-An ordered list nests the same way — a child indented to the parent's content column (three spaces under `1. `) is a sub-list, even though an ordered marker does not interrupt a paragraph (§10).
+An ordered list nests the same way — a child indented to the parent's content column (three spaces under `1. `) is a structural sub-list even while the parent paragraph is open (§10, §24 C3).
 
 ::: compare
 
@@ -711,7 +711,7 @@ An ordered list nests the same way — a child indented to the parent's content 
 
 :::
 
-An ordered child *below* the content column does not nest: an ordered marker does not interrupt a paragraph (§10), so it folds into the item as lazy text.
+An ordered child *below* the content column does not nest: with the item paragraph open, it folds in as lazy text (§10).
 
 ::: compare
 
@@ -788,7 +788,7 @@ After a blank line the **same content-column rule** applies: a continuation belo
 
 :::
 
-A task item's content column is the bullet width (2), since the checkbox is content, not marker, so a child indented to column 2 nests. A marker indented below the content column folds in as lazy continuation rather than nesting; no list marker interrupts (§10), so only a marker at or past the content column opens a sub-list.
+A task item's content column is the bullet width (2), since the checkbox is content, not marker, so a child indented to column 2 nests. A marker below the content column folds in as lazy continuation when a paragraph is open; only a marker at the content column opens a structural sub-list.
 
 ::: compare
 
@@ -809,7 +809,8 @@ A task item's content column is the bullet width (2), since the checkbox is cont
 
 :::
 
-A list marker does not interrupt an open paragraph — like an ordered marker, a bullet needs a blank line before it. An indented bullet after a prose line folds into the paragraph (lazy continuation).
+Every block marker needs block position after prose. With no blank line, an
+indented bullet is ordinary paragraph content (lazy continuation).
 
 ::: compare
 
@@ -862,15 +863,11 @@ A blank line between items produces a loose list — each item wraps in a paragr
 
 :::
 
-A paragraph ends at a blank line — or at a line that begins an interrupting
-block. A continuation line that starts with `>`, a valid `|…|` table row, a
-heading `#`, a thematic break, or a fence with a closer interrupts the
-paragraph and starts that block, with no blank line required (the
-Markdown-like rule; §10). A **list marker is the exception**: neither a
-bullet (`- ` / `* `) nor an ordered marker (`1.`, `1)`, `a.`, …) interrupts —
-a list needs a blank line before it (symmetric, Djot-like). So a
-hard-wrapped prose line that happens to begin with a bullet stays prose; the
-bullet lines fold into the paragraph as lazy continuation.
+A paragraph consumes every following nonblank line. A line beginning with `>`,
+`|`, `#`, a thematic marker, a fence, a definition, a comment, an attribute,
+or a list marker is therefore prose while the paragraph is open. Insert a
+blank line to create block position. This uniform Djot-style rule makes hard
+wrapping safe and automatically covers extension block markers (§10).
 
 ::: compare
 
@@ -886,8 +883,8 @@ Die Frage ist x = 5
 
 :::
 
-A heading under a prose line still interrupts it; a list — bullet or
-ordered — does not, so these fold into one paragraph.
+A heading or list marker directly under prose is literal continuation text, so
+these lines fold into one paragraph.
 
 ::: compare
 
@@ -2961,7 +2958,7 @@ wraps onto the next line</dt>
 
 :::
 
-A definition list also does **not** interrupt a paragraph - a `::` line
+A definition list does **not** interrupt a paragraph - a `::` line
 directly under prose folds into that paragraph, so a list needs a blank line
 before it.
 
@@ -3101,7 +3098,8 @@ bar</p>
 
 Leading whitespace before `%%` does not matter: an indented line whose first
 non-whitespace content is `%%` is a line comment, exactly like one in the first
-column. It renders nothing and, like any block, interrupts an open paragraph.
+column. It renders nothing when recognized in block position; inside an open
+paragraph those same bytes remain paragraph text.
 
 ::: compare
 
