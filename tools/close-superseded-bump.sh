@@ -9,7 +9,7 @@ set -euo pipefail
 
 pr="$(gh pr list --repo "$REPO" --head automation/bump-spec --state open \
   --json number,isDraft,headRefOid \
-  --jq 'map(select(.isDraft)) | .[0] | [.number, .headRefOid] | @tsv' 2>/dev/null || true)"
+  --jq 'map(select(.isDraft))[0] // empty | [.number, .headRefOid] | @tsv' 2>/dev/null || true)"
 if [ -z "$pr" ]; then
   echo "$REPO: no open draft bump PR."
   exit 0

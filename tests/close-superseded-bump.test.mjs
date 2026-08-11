@@ -67,3 +67,10 @@ test('the workflow schedules cleanup without scheduling the full bump', async ()
   assert.deepEqual(repos(cleanup), [...new Set(repos(beforeCleanup))],
     'scheduled cleanup must cover every downstream bump-matrix repository')
 })
+
+test('an empty draft query produces no synthetic null PR', () => {
+  const query = "map(select(.isDraft))[0] // empty | [.number, .headRefOid] | @tsv"
+  const result = spawnSync('jq', ['-r', query], { input: '[]\n', encoding: 'utf8' })
+  assert.equal(result.status, 0)
+  assert.equal(result.stdout, '')
+})
