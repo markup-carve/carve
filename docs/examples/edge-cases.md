@@ -2455,6 +2455,31 @@ Give the same fence its space and the contrast is exact. Written `::: note`, it 
 
 The same clause settles the neighboring shapes, which is how one knows it is the clause and not a special case, and each of them is a place an implementation could get the right answer here for the wrong reason. Indenting the lazy line to column 1 changes nothing, since it is still below the content column. The malformed fence may be the paragraph's FIRST line, written on the marker line itself (`- :::note`), and the item then opens with a paragraph that begins with fence-shaped text. Inside a block quote, `> tail` supplies the quote's prefix but not the item's indentation, which is the partial match S4 is written for. All three fold, for the one reason above; `tests/colon-fence-absorbed-in-an-item.test.mjs` pins them.
 
+The same rule reaches a list item's second paragraph. The blank before
+`spaced` makes the item loose, but it does not close the paragraph that
+`spaced` opens. The following flush-left line therefore folds into that
+innermost paragraph; paragraph depth does not create a special boundary.
+
+::: compare
+
+```carve
+1. item
+
+   spaced
+flush
+```
+
+```html
+<ol>
+  <li><p>item</p>
+    <p>spaced
+flush</p>
+  </li>
+</ol>
+```
+
+:::
+
 ## Compact list blocks
 
 A blank line is still required to start a block inside a list item, but it no longer makes the list *loose* when the indented content opens a block (sub-list, block quote, fenced code, fenced div, heading, table). The item stays **tight** — lead text inline, the block attached — so a checklist with notes or steps with code stay compact. (A Carve deviation: canonical djot renders these loose. Only the tight/loose rendering changes, not the block structure.)
