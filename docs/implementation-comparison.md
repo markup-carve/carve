@@ -72,7 +72,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `281-a-caption-attaches-across-one-blank-line`,
 `282-two-blank-lines-detach-a-caption`,
 `283-an-empty-footnote-body-is-written-with-the-empty-sentinel`,
-`289-a-structural-attribute-leads-the-author-s-own`.
+`289-a-structural-attribute-leads-the-author-s-own`,
+`290-adjacent-sibling-lists-survive-the-round-trip`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
