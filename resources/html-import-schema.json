@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/html-import-schema.json",
+  "title": "Carve HTML import report",
+  "type": "object",
+  "required": ["mode", "adapter", "diagnostics"],
+  "additionalProperties": false,
+  "properties": {
+    "mode": { "enum": ["safe", "semantic", "roundtrip"] },
+    "adapter": { "enum": ["generic", "tiptap", "prosemirror", "ckeditor", "tinymce", "word", "google-docs"] },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "message", "severity"],
+        "additionalProperties": false,
+        "properties": {
+          "code": { "enum": ["element-dropped", "element-unwrapped", "attribute-dropped", "style-unmapped", "table-degraded", "raw-preserved"] },
+          "message": { "type": "string" },
+          "severity": { "enum": ["info", "warning", "error"] },
+          "path": { "type": "string" },
+          "line": { "type": "integer", "minimum": 1 },
+          "column": { "type": "integer", "minimum": 1 }
+        }
+      }
+    }
+  }
+}

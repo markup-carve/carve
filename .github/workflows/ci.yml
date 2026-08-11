@@ -85,6 +85,9 @@ jobs:
       - name: Conformance
         run: npm test
 
+      - name: HTML import contract
+        run: npm run html-import:check
+
       - name: Executable-spec gate (formal Core grammar vs corpus)
         run: npm run core:check
 
