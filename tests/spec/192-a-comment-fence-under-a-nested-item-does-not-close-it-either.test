@@ -11,8 +11,10 @@ A comment fence under a nested item does not close it either
   <li>
     <ul>
       <li>a
-        b
-      </li>
+%%% c
+x
+%%%
+b</li>
     </ul>
   </li>
 </ul>

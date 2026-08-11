@@ -200,7 +200,7 @@ the [Case Study](https://markup-carve.github.io/carve/case-study/) and the
 
 ### From Markdown
 
-12. **Paragraph interruption** - A block opener on a new line starts a block, no blank line required (§10). Djot requires a blank line here; Carve follows Markdown instead.
+12. **Paragraph extent** - Once prose starts, every following nonblank line remains in that paragraph (§10). Like Djot, a new block normally needs a preceding blank line.
 
 ### Carve Additions
 

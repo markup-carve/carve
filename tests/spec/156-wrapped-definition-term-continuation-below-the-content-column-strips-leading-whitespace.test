@@ -7,11 +7,8 @@ Wrapped definition term continuation below the content column strips leading whi
 .
 <ul>
   <li>one
-    <dl>
-      <dt>term
-wrapped</dt>
-    </dl>
-  </li>
+:: term
+wrapped</li>
 </ul>
 ```
 
@@ -22,10 +19,7 @@ wrapped
 .
 <ul>
   <li>one
-    <dl>
-      <dt>term
-wrapped</dt>
-    </dl>
-  </li>
+:: term
+wrapped</li>
 </ul>
 ```

@@ -4616,127 +4616,33 @@ EOF = (* end of file *) ;
       (01-emphasis-9). Intraword emphasis: forced family only, x{*y*}z ->
       x<strong>y</strong>z (§22).
 
-   10. PARAGRAPH INTERRUPTION -- OPERATIONAL SEMANTICS (governs
-      `paragraph` in PART 2). The relation interrupts(L, P) decides whether
-      a line L ends an OPEN paragraph P with NO blank line between, at the
-      document top level AND inside nested content (list item, block quote,
-      admonition/div body). L interrupts -> L is parsed as its block and P
-      ends on the preceding line (the Markdown-like rule for every block
-      EXCEPT lists, which follow Djot).
-      I1 VISIBLE OPENERS interrupt. interrupts(L, P) holds when L begins:
-         - a heading (`#`..`######` + space);
-         - a thematic break (a lone `---` / `***` / `___` line);
-         - a block quote (`>` alone or `> `; `>text`, `>= 5`, and `>>=`
-           are prose, not quote markers);
-         - a valid table row (valid_row(L), §5 T2; a stray `|` in prose,
-           and a line-initial `|` with no closing `|`, are NOT ones);
-         - a fenced code opener WITH a matching closer ahead (I4);
-         - a `:::` opener, closer or not (I4).
-         So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more"
-         is <p>intro</p> + <hr> + <p>more</p> (corpus
-         81-paragraph-interruption).
-      I2 LIST MARKERS NEVER INTERRUPT (symmetric). NEITHER a bullet
-         (`- `/`* `, `- [x] ` task) NOR an ordered marker (decimal, letter,
-         roman, any value) interrupts: the line FOLDS into P as lazy
-         continuation; a list needs a blank line before it (matching Djot).
-         "Liste: \n - eins \n - zwei" is ONE paragraph, so is
-         "x = 5 \n * 3 + 17"; a blank line starts the list. (Deliberate
-         change from the earlier bullet/ordered asymmetry: an ordered
-         marker is too common in prose, and the symmetric rule removes the
-         hard-wrapped-bullet false positive. Pinned by corpus 05-lists-12/13,
-         76-paragraph-interruption, 77-blockquote-lazy-continuation,
-         82-single-line-headings.) TIGHT NESTED LISTS UNAFFECTED: an
-         indented marker inside an open list ITEM opens a sublist with no
-         blank line -- that is §24 C3 (content column), not this relation.
-      I3 IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)")
-         does not interrupt: an image is not a block of its own in Carve;
-         it stays an inline image inside the paragraph.
-      I4 CLOSER LOOKAHEAD -- the same &(...) the VERBATIM fence productions
-         carry. An UNTERMINATED ``` or ~~~ opener does not interrupt; the line
-         stays paragraph text, and a stray ``` in prose then opens an unclosed
-         inline verbatim run rendering as <code> to the end of the block (the
-         code_span maximal-run rule). Pinned by corpus
-         81-paragraph-interruption-19.
+   10. PARAGRAPH EXTENT -- OPERATIONAL SEMANTICS (governs `paragraph` in
+      PART 2). Once a paragraph is open, every following nonblank line belongs
+      to it. A block opener is classified only at the start of a block sequence
+      or after a blank line; inside an open paragraph its marker is literal
+      inline content. Only a blank line, EOF, or the boundary of an enclosing
+      structural container closes the paragraph.
 
-         A `:::` OPENER IS NOT GUARDED. It interrupts whether or not a closer
-         follows, and an unterminated one closes at EOF (PART 9 §25). Pinned by
-         corpus 81-paragraph-interruption-20: `Text` / `:::` / `stuff` is a
-         paragraph followed by a div holding `stuff`.
+      This rule applies uniformly to headings, thematic breaks, block quotes,
+      tables, code and colon fences, definition lists, reference/footnote/
+      abbreviation definitions, comments, block-attribute lines, divs, and
+      extension blocks. A misplaced opener is preserved literally rather than
+      consumed. Tight nested-list markers at an item's applicable content
+      column remain the structural exception defined by §24 C3; caption
+      attachment remains the separate host-sensitive rule in §4.
 
-         This clause used to guard both, and cited a corpus that pins the
-         opposite for `:::`. All three engines follow the corpus. The `:::`
-         half was superseded when unclosed containers changed from degrading
-         to closing at EOF (carve#439) and was not updated with it; the stale
-         citation to "corpus 76" is the same paragraph renumbering that
-         accompanied that change.
-      I5 INVISIBLE CONSTRUCTS interrupt AND are consumed: a reference
-         definition (link `[r]: url`, footnote `[^r]: …`, abbreviation
-         `*[A]: …`), a comment (`%%` line, `%%%` block), and a
-         block-attribute line (`{…}` alone on a line, §15). "See[^m].\n
-         [^m]: note" resolves the footnote; "para\n%% x" drops the comment;
-         "Para\n{.x}" ends the paragraph with the attribute line floating
-         forward (§15; corpus 89-block-attribute-lines-7). (A small
-         deviation from djot, which keeps such a line as paragraph text.)
+      Therefore `intro` followed immediately by `# Heading` is one paragraph;
+      a blank line before `# Heading` produces a paragraph and a heading.
 
-         DEFINITION OWNERSHIP IS COLUMN-SCOPED. A link or footnote definition
-         belongs to an open list item only at that item's content_column, or
-         when L3's `+` marker explicitly attaches its flush-left block. At
-         DOCUMENT column 0 it is a document-level interrupter: it ends the item,
-         is collected into the shared symbol table, and the following block is
-         a document sibling. At a nonzero column BELOW content_column it is lazy
-         paragraph text and does not register. Comments are the explicit
-         exception in §24 C3: their invisibility is accepted independently of
-         column and they do not by themselves close the item. Pinned by corpus
-         287-a-column-zero-definition-ends-an-open-list-item (carve#1045).
-
-         A DEFINITION COLLECTED AT content_column ENDS THE ITEM'S OPEN
-         PARAGRAPH. The next nonblank line therefore stays in the item only if
-         it reaches content_column and opens item prose, except that a footnote
-         line reaching content_column + 2 belongs to the definition body and
-         leaves no item paragraph open. A line one column short of that body is
-         item prose. The comment exception above does not extend to definitions.
-         The bare decimal-dot marker `. ` claims one marker column and one
-         separator column, so its content_column is the same as `- `. Pinned
-         by corpus 374 (carve#1376).
-      I6 SCOPE + THE HEADING EXCEPTION. The relation applies to EVERY open
-         paragraph, including a blockquote's lazy continuation: "> quoted
-         \n - item" folds into ONE quote whose paragraph is
-         "quoted\n- item" (NOT quote + <ul>); "> text \n > # H" is a quoted
-         heading; a quoted bullet ("> p \n > - x") folds the same way.
-         HEADING is the SOLE exception: a bounded title holds no block and
-         ENDS AT THE NEWLINE, so nothing folds into it at all -- a list
-         marker starts a sibling list ("# H \n - item" -> heading + <ul>),
-         and every other line likewise begins its own block (PART 2,
-         SINGLE-LINE HEADINGS). Djot folds a plain or same-`#` line in; this
-         is the deliberate divergence, not a restatement of it.
-      I7 A CAPTION LINE DOES NOT INTERRUPT. A `^ ` line appears in neither
-         I1 nor I5. What ends a paragraph at a caret is §4, and §4 reaches
-         only the five captionable hosts; for the two it spells in prose that
-         is a paragraph whose WHOLE content is one image or one display-math
-         span, and there the caret line ends the paragraph and ATTACHES.
-         Anywhere else it folds in as ordinary paragraph text, caret and all:
-         "Text \n ^ cap" is one paragraph, and so is
-         "Text \n ![a](x.png) \n ^ cap", where the image is not the whole
-         paragraph and so there is no host to attach to.
-         NOT IN CONFLICT WITH THE CAPTION'S OWN RULE. A `^ ` line DOES end an
-         open CAPTION (PART 2, MULTI-LINE CAPTIONS, item 4) -- that is a rule
-         about a caption, stated separately from item 2's "a line that
-         interrupts a paragraph" precisely because a caret line is not one of
-         those. Item 4 would be redundant if it were.
-         WHY IT NEEDED WRITING DOWN. Only the INDENTED spelling was in the
-         corpus (158-indented-image-and-caption-stay-literal), where both
-         readings agree because an indented line opens no top-level block at
-         all. The executable spec ended the paragraph on EVERY caret line, all
-         three engines folded it in, and nothing failed until the canonical
-         writer stopped force-escaping a line-initial caret and `oracle(fmt(x))`
-         parted from `oracle(x)` (carve#1046). Pinned by corpus
-         286-a-caret-line-does-not-end-a-paragraph-it-cannot-caption.
+      The former I1-I7 interruption matrix is removed. Lists no longer need a
+      special non-interruption exception, fence closer lookahead no longer
+      participates in paragraph extent, and invisible constructs require block
+      position like every other block.
 
    11. LIST MARKER CHANGE STARTS A NEW LIST -- OPERATIONAL (governs `list`
-      in PART 2). §10 decides FIRST whether marker lines establish a list
-      at all (the interruption gate); §11 then partitions established
-      same-indent items into sibling lists. The rules layer; §11 never
-      overrides §10.
+      in PART 2). A marker is classified only at block position under §10
+      (apart from §24 C3 structural nesting); §11 then partitions established
+      same-indent items into sibling lists.
       N1 SAME LIST iff two adjacent items at the same indent match on ALL
          axes: bullet character (`-` vs `*`; `+` is NOT a bullet in Carve --
          it is the continuation marker, §17), ordered_marker alternative,
@@ -4803,34 +4709,16 @@ EOF = (* end of file *) ;
       rather than quietly corrected because the two sentences had been read as
       the rule (carve#770).
 
-      A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH
-      EXPECTING A CLOSER -- NORMATIVE. A `:::` line that is not a valid opener
-      (an attribute block where the opener takes a type word, say) is ordinary
-      paragraph text, and from that point the paragraph absorbs the next
-      fence-shaped line as text too, INSTEAD of being interrupted by it:
+      A COLON-FENCE LINE INSIDE AN OPEN PARAGRAPH IS TEXT -- NORMATIVE. Whether
+      it would be a valid opener at block position is immaterial: §10 keeps it
+      and every following nonblank line in the paragraph.
 
           text                    ::: {.x}
           not a div               not a div
           :::                     :::
 
-      The left column is a paragraph followed by an empty div, because a bare
-      `:::` interrupts an open paragraph (§10). The right column is ONE
-      paragraph holding all three lines. The malformed line need not be the
-      paragraph's first.
-
-      THE ABSORPTION IS NOT WIDTH-TAGGED, unlike the closer rule it resembles:
-      after a malformed `::: {.x}`, a following `::::` is absorbed too, and
-      after a malformed `:::: {.x}` so is a following `:::`. A malformed opener
-      has no length to match against, so there is nothing for a width test to
-      compare; the paragraph simply continues.
-
-      Both halves are what all three engines do and the corpus pins the shape
-      (`24-generic-divs-2`), but neither was stated -- §10 says which openers
-      interrupt a paragraph and nothing said that a malformed sibling earlier
-      in the same paragraph turns that interruption off. A grammar cannot
-      implement a rule nobody wrote down, and tree-sitter-carve gets this case
-      wrong today while its own notes blame the opener line rather than the
-      trailing fence (carve#770).
+      Both columns above are therefore one paragraph. Fence width matters only
+      after a fence has actually opened at block position.
 
       ABSORPTION REACHES A PARAGRAPH'S OWN LINES ONLY -- NORMATIVE
       (carve#920). The absorbed line has to be one the paragraph's container

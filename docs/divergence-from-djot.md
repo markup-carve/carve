@@ -222,34 +222,26 @@ and for that Carve takes Djot's `{% … %}` unchanged (PART 9 §21a), including
 its rules: no nesting, opaque in code spans, an unterminated opener stays
 literal. A Djot document's comments therefore keep working as written.
 
-## 7. Block openers interrupt paragraphs (Markdown-like)
+## 7. Block position follows Djot
 
 **Djot:** an open paragraph runs until a blank line. A line that begins with a
 block marker - a `-`/`*` bullet, `>` quote, `#` heading, a `|` table row, or a
 fence - stays part of the paragraph; the block needs a blank line before it.
 
-**Carve:** a **visible** block interrupts an open paragraph with no blank line
-before it - the Markdown / CommonMark rule. The exception is **list markers**:
-neither a bullet (`-`/`*`, task) nor an ordered marker interrupts a paragraph -
-a list still needs a blank line before it (matching Djot). Both list-marker
-classes behave identically here; fence and `:::` closers and bare images are
-also excluded (PART 9 §10).
+**Carve 0.2:** the same uniform rule. Once a paragraph opens, every following
+nonblank line belongs to it. Headings, quotes, tables, fences, definitions,
+comments, attributes, divs, and extension blocks therefore need block position,
+normally provided by a preceding blank line (PART 9 §10).
 
 ```
 intro
 # Heading
 
 Djot:   <p>intro\n# Heading</p>                  (one paragraph)
-Carve:  <p>intro</p><h1>Heading</h1>             (paragraph + heading)
+Carve:  <p>intro\n# Heading</p>                  (one paragraph)
 ```
 
-An attribute line between the prose and the block is where the two differ by
-more than block position: Djot consumes it as attributes on the soft break and
-the bytes vanish, while Carve ends the paragraph and applies them to the block
-below. Section 18 records that separately, because "block position is aligned"
-is true of the heading and false of the attribute line above it.
-
-A list marker is the exception - it does NOT interrupt:
+A list marker follows the same rule:
 
 ```
 intro
@@ -258,16 +250,10 @@ intro
 Carve:  <p>intro\n- item</p>                     (one paragraph; add a blank line to start a list)
 ```
 
-**Why.** Djot's blank-line rule is hard-wrap-safe, but it surprises authors
-coming from Markdown more often than it helps: a heading or quote written
-directly under a line of prose silently stayed prose. Carve follows the
-near-universal Markdown expectation for those blocks. Lists keep Djot's
-blank-line rule on purpose: an ordered marker is common in prose ("see step
-2.") and a hard-wrapped line that happens to begin with a bullet should not
-silently become a list. Escape a marker (`\# H`, `\- item`) or add a blank line
-to control it. This block-interruption rule is one of Carve's larger
-block-level breaks from Djot, and part of why the project frames itself as
-post-Markdown rather than post-Djot.
+**Why.** One blank-line rule is hard-wrap safe, applies automatically to new
+extensions, and removes the former visible/list/fence/invisible interruption
+matrix. Tight sublist markers at an item's applicable content column remain a
+structural nesting exception; captions remain host-sensitive (§4).
 
 ## 8. Symbols: same name, stricter shape and boundary
 

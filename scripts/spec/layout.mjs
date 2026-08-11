@@ -1,6 +1,6 @@
 /*
  * Executable PART 0: the layout-layer line automaton (grammar.ebnf PART 0
- * S1-S5), plus the block classification it feeds (PART 9 SS10 interruption,
+ * S1-S5), plus the block classification it feeds (PART 9 SS10 paragraph extent,
  * SS11 list partition, SS17 tight/loose + continuation marker, SS24 column
  * arithmetic).
  *
@@ -157,7 +157,7 @@ const LINK_DEF = /^\[([^\]@][^\]]*)\]: \p{White_Space}*(\P{White_Space}+)(?: "((
  * could test the raw line and get the right answer by accident.
  *
  * With the line anchored it matters at every one of them, and there are eight
- * - paragraph interruption, lazy continuation, the def-list fold, the
+ * - paragraph extent, lazy continuation, the def-list fold, the
  * container scan, the item fold and the marker scan. That is the carve#922
  * shape: one rule spelled once and read in eight places, where narrowing the
  * one spelling silently changes all eight. So the split is done HERE, once,
@@ -1490,29 +1490,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     return (meas[idx] = indentCols(line))
   }
 
-  const peekInterrupts = (idx) => {
-    // PART 9 SS10: does lines[idx] interrupt an open paragraph?
-    const line = lines[idx]
-    if (line === undefined) return false
-    if (startsVisibleBlock(line)) return true
-    if (isTableRow(line)) return true
-    if (isColonParagraphInterrupt(line) || bareColonHasFollowingBody(lines, idx)) return true
-    const fence = FENCE.exec(line)
-    if (fence && hasCloser(lines, idx)) return true // I4
-    // ABBR_DEF only at document level: elsewhere the line is paragraph text,
-    // so it neither opens a block nor interrupts one (PART 12 SS7).
-    if (isLinkDef(line) || FOOTNOTE_DEF.test(line) || (top && ABBR_DEF.test(line))) return true // I5
-    // A BLOCK-ATTRIBUTE LINE is in I5's list too - "a reference definition, a
-    // comment, and a block-attribute line" - and it was the one member missing
-    // here. Inside a list item that meant `- a` / `{.c}` / `text` folded all
-    // three lines into one paragraph and dropped the attribute, where every
-    // engine ends the paragraph and puts the class on `text`. It only showed
-    // in a container: at the top level the paragraph collector stops for its
-    // own reasons before this predicate decides anything.
-    if (line[0] === '{' && tryAttrLine(lines, idx)) return true // I5
-    return false
-  }
-
   const pending = [] // PART 9 SS15: collected attribute lists, float forward
   const flushAttrs = (node) => {
     if (pending.length) {
@@ -2197,6 +2174,16 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qPara = []
           return
         }
+        if (isBlank(l)) {
+          prevBlank = true
+          qOpenPara = false
+          qPara = []
+          return
+        }
+        if (qOpenPara) {
+          qPara.push(l)
+          return
+        }
         const comment = COMMENT_FENCE_BODY.exec(l)
         if (comment) {
           for (let j = idx + 1; j < n; j++) {
@@ -2307,8 +2294,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           i = attached.next
           continue
         }
-        if (lines[i] !== undefined && qOpenPara && !isBlank(lines[i]) &&
-            !peekInterrupts(i) && !COLON_CLOSER.test(lines[i]) && !CAPTION.test(lines[i])) {
+        if (lines[i] !== undefined && qOpenPara && !isBlank(lines[i]) && !CAPTION.test(lines[i])) {
           // lazy continuation folds into the open quoted paragraph (SS10 I6)
           //
           // A FLUSH-LEFT COLON FENCE NEVER FOLDS (carve#920 shape B).
@@ -2358,7 +2344,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // --- lists ---
     if (matchMarkerAt(ind(i))) {
       const before = blocks.length
-      i = parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas)
+      i = parseListRun(lines, i, blocks, state, ind, meas)
       if (pending.length && blocks.length > before) flushAttrs(blocks[before])
       continue
     }
@@ -2404,20 +2390,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // line-initial caret and `oracle(fmt(x))` parted from `oracle(x)` on a
       // document every engine agreed about (carve#1046).
       if (isCaptionableParagraph(para) && CAPTION.test(lines[i])) break
-      if (lines[i][0] === '{' && tryAttrLine(lines, i)) break // SS15 A1 / SS10 I5
-      if (ind(i).rest.startsWith('%%')) break // SS10 I5 (comment line or fence)
       if (inItem && para.length > 0 && matchMarkerAt(ind(i))) break // SS24 C3
-      if (para.length > 0) {
-        // definitions interrupt and are consumed (SS10 I5)
-        if (isLinkDef(lines[i]) || FOOTNOTE_DEF.test(lines[i]) || (top && ABBR_DEF.test(lines[i]))) break
-        if (startsVisibleBlock(lines[i])) break // I1
-        if (isTableRow(lines[i])) break // I1: valid table row
-        {
-          if (colonInterruptsParagraph(lines, i, para)) break // I1/I4
-        }
-        const f = FENCE.exec(lines[i])
-        if (f && parseFenceInfo(f[2]) && hasCloser(lines, i)) break // I4: interrupts
-      }
       para.push(stripIndent(lines[i]).replace(/[ \t]+$/, ''))
       i++
     }
@@ -2638,7 +2611,7 @@ function takePulledBlockEnd(lines, start) {
 }
 
 // --- lists: PART 9 SS11 N1-N3, SS17 L1-L4, SS24 C3/C4 ----------------------
-function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas) {
+function parseListRun(lines, i, blocks, state, ind, meas) {
   const n = lines.length
   while (i < n) {
     const head = matchMarkerAt(ind(i))
@@ -2937,10 +2910,12 @@ function collectItems(lines, i, list, state, ind, meas) {
     // FIRST-BLOCK form (SS17 L4): a bare `+` as the sole marker-line content
     // opens an item whose body is the following flush-left block(s)
     let attachNext = false
+    let usedContinuationMarker = false
     if (!list.task && head.text.trim() === '+') {
       itemLines.length = 0
       itemMeas.length = 0
       attachNext = true
+      usedContinuationMarker = true
       closePara()
     }
     const attachFlushLeft = () => {
@@ -2961,7 +2936,8 @@ function collectItems(lines, i, list, state, ind, meas) {
       const end = firstBlockEnd(lines, i, extent, state)
       for (; i < end; i++) {
         // attached VERBATIM, so the line keeps the measurement it has here
-        pushLine(lines[i], ind(i))
+        const attached = ind(i)
+        pushLine(attached.col >= baseIndent ? attached.rest : lines[i], attached)
       }
       pushLine('', BLANK_MEAS)
       closePara()
@@ -2972,7 +2948,8 @@ function collectItems(lines, i, list, state, ind, meas) {
       // `+` at the item's MARKER column attaches ONE following flush-left
       // block to this item (SS17 L3/L4)
       const lm = ind(i)
-      if (CONT_MARKER.test(line) && lm.col === baseIndent) {
+      if (CONT_MARKER.test(lm.rest) && lm.col === baseIndent) {
+        usedContinuationMarker = true
         i++
         attachFlushLeft()
         continue
@@ -3071,6 +3048,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // treating the blank as a separator here would invent a difference
         // none of them makes.
         if (CONT_MARKER.test(lines[j]) && jm.col === baseIndent) {
+          usedContinuationMarker = true
           i = j + 1
           attachFlushLeft()
           continue
@@ -3260,6 +3238,14 @@ function collectItems(lines, i, list, state, ind, meas) {
         // and `startPara`, so the value has to be read first.
         const defBody = defBodyIndent
         pushLine(dedented, dmeas)
+        // Once the item holds an open paragraph, every non-marker nonblank line
+        // remains prose. Marker classification resumes after a blank; a nested
+        // list marker at the applicable content column remains structural.
+        if (openPara && !nm) {
+          openParaWith(dedented)
+          i++
+          continue
+        }
         // Advance the incremental three-kind tracker so the blank-line branch
         // above knows whether an interior blank is fence content.
         trackFence(dedented, bodyFenceOpens(i, dedented))
@@ -3462,6 +3448,11 @@ function collectItems(lines, i, list, state, ind, meas) {
       // (carve#1387). The quote and the `dd` spellings of this shape already
       // fold in every reader.
       if (fence.opaque && fence.opaque.opens !== false) break
+      const enclosingColonCloser = COLON_CLOSER.exec(lm.rest)
+      if (
+        enclosingColonCloser && lm.col <= baseIndent && fence.colon.length !== 0 &&
+        enclosingColonCloser[1].length === fence.colon[fence.colon.length - 1]
+      ) break
       if (nm && nm.indent <= baseIndent) {
         // §17 L1, first clause: the item WAS followed by a blank line before
         // this sibling marker - an invisible attachment in between does not
@@ -3495,6 +3486,15 @@ function collectItems(lines, i, list, state, ind, meas) {
       if (nm && nm.indent < contentCol && nm.indent > baseIndent && !openPara &&
           afterComment && itemLines.length > 0) {
         pushLine(lm.rest, { col: 0, rest: lm.rest, tabs: false })
+        i++
+        continue
+      }
+      // §10 (0.2): while the item still ends in an open paragraph, every
+      // non-marker, nonblank below-column line is literal paragraph text.
+      // Comment/definition-shaped lines reach their old block-only handling
+      // below only when no paragraph is open.
+      if (!nm && openPara && itemLines.length > 0) {
+        pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
         i++
         continue
       }
@@ -3600,7 +3600,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // comment and the definition differently at one column, though §10 I5
       // makes both interrupters and an ATTRIBUTE BLOCK there already ends the
       // item in every implementation. Two enumerations, one rule.
-      if (!nm && (openPara || (afterComment && lm.col > 0)) && itemLines.length > 0 && !startsVisibleBlock(line) && !isTableRow(line) && !COLON_FENCE.test(line) && !(FENCE.test(line) && hasCloser(lines, i))) {
+      if (!nm && (openPara || (afterComment && lm.col > 0)) && itemLines.length > 0) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/
         // heading does via startsVisibleBlock -- FENCE only matches at column 0,
@@ -3612,6 +3612,9 @@ function collectItems(lines, i, list, state, ind, meas) {
       break
     }
     item.blocks = parseBlocks(itemLines, state, false, true, itemMeas)
+    if (!usedContinuationMarker && item.blocks.filter((block) => block.t === 'para').length > 1) {
+      list.tight = false
+    }
     list.items.push(item)
   }
   return i

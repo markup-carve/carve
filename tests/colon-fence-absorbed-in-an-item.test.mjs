@@ -45,10 +45,10 @@ test('the absorbed fence leaves the paragraph open and the lazy line folds', () 
 // The discriminator. Same five lines, one space added, and the answer inverts:
 // `::: note` IS a valid opener, so it interrupts the item's paragraph and its
 // closer completes the block, leaving nothing open for `tail` to fold into.
-test('a VALID opener closes the paragraph and the lazy line ends the item', () => {
+test('a valid opener shape is literal while the item paragraph is open', () => {
   assert.equal(
     html('- item\n  ::: note\n  body\n  :::\ntail\n'),
-    '<ul><li>item <aside class="admonition note"><p>body</p></aside></li></ul><p>tail</p>',
+    '<ul><li>item ::: note body ::: tail</li></ul>',
   )
 })
 
@@ -81,7 +81,7 @@ test('the same shape inside a block quote folds too', () => {
 test('a blank line ends the absorption', () => {
   assert.equal(
     html('- item\n\n  :::note\n\n  ::: note\n  body\n  :::\ntail\n'),
-    '<ul><li><p>item</p><p>:::note</p><aside class="admonition note"><p>body</p></aside></li></ul><p>tail</p>',
+    '<ul><li><p>item</p><p>:::note</p><aside class="admonition note"><p>body</p></aside><p>tail</p></li></ul>',
   )
 })
 
@@ -101,6 +101,6 @@ test('a blank line ends the absorption', () => {
 test('a bare fence after the blank interrupts, because the absorption did not survive it', () => {
   assert.equal(
     html('- item\n  :::note\n\n  :::\n  body\n  :::\ntail\n'),
-    '<ul><li>item :::note <div><p>body</p></div></li></ul><p>tail</p>',
+    '<ul><li><p>item :::note</p><div><p>body</p></div><p>tail</p></li></ul>',
   )
 })

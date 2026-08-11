@@ -5,8 +5,7 @@ A block-attribute line inside a quote ends the paragraph above it
 > {.c}
 > text
 .
-<blockquote>
-  <p>a</p>
-  <p class="c">text</p>
-</blockquote>
+<blockquote><p>a
+{.c}
+text</p></blockquote>
 ```

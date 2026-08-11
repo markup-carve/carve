@@ -20,7 +20,8 @@ The HTML spec.
 see [t][r]
 .
 <ul>
-  <li>a</li>
+  <li>a
+[r]: /u</li>
 </ul>
-<p>see <a href="/u">t</a></p>
+<p>see [t][r]</p>
 ```

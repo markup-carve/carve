@@ -124,16 +124,7 @@ CarveCore {
 
   // --- Paragraph: 1+ lines of Core-only inline content ----------------------
   paragraph  = paraLine+
-  paraLine   = ~blankLine ~structural inline+ lineEnd
-  structural = headingStart | thematicBreak | btOpen | tdOpen
-             | colonFence | ordMarker
-  headingStart = hashes " "
-  colonFence = ":::"
-  // an ordered-list marker line (digit/letter run + `)` + space) is a
-  // Full-Carve list: Core refuses the document rather than rendering a
-  // paragraph. (The `.`-delimited form already fails: `.` is not a Core
-  // character.)
-  ordMarker  = alnumCh+ ")" " "
+  paraLine   = ~blankLine inline+ lineEnd
 
   // ==========================================================================
   // INLINE (Core)

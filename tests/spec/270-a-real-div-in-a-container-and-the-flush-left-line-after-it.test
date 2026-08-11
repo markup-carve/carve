@@ -8,11 +8,9 @@ tail
 .
 <ul>
   <li>item
-    <aside class="admonition note">
-      <p>body
-tail</p>
-    </aside>
-  </li>
+::: note
+body
+tail</li>
 </ul>
 ```
 
@@ -23,12 +21,9 @@ tail
 .
 <ul>
   <li>item
-    <aside class="admonition note">
-
-    </aside>
-  </li>
+::: note
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 ```
@@ -40,10 +35,9 @@ tail
 .
 <ul>
   <li>item
-    <aside class="admonition note">
-      <p>body</p>
-    </aside>
-  </li>
+::: note
+body
+:::
+tail</li>
 </ul>
-<p>tail</p>
 ```

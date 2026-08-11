@@ -19,10 +19,8 @@ A definition body continuation indented past its column is lazy text
 .
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>body</p>
-    <blockquote><p>q</p></blockquote>
-  </dd>
+  <dd>body
+&gt; q</dd>
 </dl>
 ```
 

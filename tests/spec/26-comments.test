@@ -55,8 +55,9 @@ x
   %% indented comment
 y
 .
-<p>x</p>
-<p>y</p>
+<p>x
+%% indented comment
+y</p>
 ```
 
 ```

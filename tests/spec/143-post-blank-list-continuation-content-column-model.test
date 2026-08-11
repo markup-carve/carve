@@ -52,8 +52,9 @@ c
 ```
 .
 <ul>
-  <li>one</li>
+  <li>one
+<code>
+c
+</code></li>
 </ul>
-<pre><code>c
-</code></pre>
 ````

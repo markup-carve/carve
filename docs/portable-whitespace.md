@@ -4,10 +4,9 @@ description: How Carve treats tabs, trailing spaces and line endings so a docume
 
 # Portable Whitespace
 
-Carve is not required to follow Djot's whitespace rules, and a document that
-ignores this page is not wrong - it renders exactly as written. But Carve and
-Djot disagree about whitespace in two places, and a document that keeps to the
-Djot-shaped form in both is also valid Djot source. If you ever expect your
+Carve is not required to follow every Djot whitespace rule. Carve 0.2 and Djot
+now agree that blocks need block position after prose, but still differ in
+container details. If you ever expect your
 `.crv` files to be read by a Djot processor, it is worth writing them that way
 from the start.
 
@@ -24,17 +23,17 @@ where `carve lint` already reports a missing space as
 
 ## Leave a blank line before a block opener
 
-In Carve a visible block opener interrupts an open paragraph. In Djot it does
-not - the opener folds into the paragraph as text.
+In both Carve 0.2 and Djot, a block opener does not interrupt an open paragraph;
+the opener folds into the paragraph as text.
 
 ```
 Some text
 # A heading
 ```
 
-Carve renders a paragraph and a heading. Djot renders one paragraph reading
-`Some text # A heading`. The same applies to `>`, a code fence, `---`, a
-`:::` fence, a table, and a definition list.
+Both render one paragraph reading `Some text # A heading`. The same applies to
+`>`, a code fence, `---`, a `:::` fence, a table, definitions, comments,
+attributes, and extension blocks.
 
 The portable form is a blank line:
 
@@ -54,9 +53,8 @@ The same holds one level in, where the "paragraph" is a list item's content:
 Carve nests the second bullet; Djot reads it as a continuation line of the
 first. A blank line between them nests in both.
 
-A top-level list is the exception that needs nothing: a list marker does not
-interrupt a paragraph in Carve either, so `Some text` followed by `- a` is a
-single paragraph in both languages already.
+A tight sublist marker that reaches its item's content column is Carve's
+explicit structural exception; it nests without requiring a blank line.
 
 
 ## Put a space after every `>`
@@ -114,12 +112,9 @@ sup/sub are braced-only. Those are on
 [Divergence from Djot](/divergence-from-djot) and no whitespace rule recovers
 them - a document using them is Carve, not Djot, by design.
 
-**Link reference definitions.** A `[b]: /url` line directly under a paragraph
-diverges the same way, but it leaves no node in the tree for the linter to
-anchor on, so `carve lint` does not report it. Give it a blank line too.
-
-(Abbreviation definitions and comment fences were once listed here as well.
-They are not exceptions: both produce real nodes and both **are** reported.)
+**Definitions and comments.** Give them block position too. Without a blank,
+their marker is literal paragraph content; `carve lint` reports likely missing
+boundaries.
 
 **Places where Carve is the stricter engine.** Djot accepts a block opener
 indented one to three spaces; Carve requires column zero and reads the indented
