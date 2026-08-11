@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+05-lists-22  The pinned 0.2 JS writer predates carve#1088's hard list boundary; remove when the next-branch pin advances.
