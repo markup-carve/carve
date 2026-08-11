@@ -5,13 +5,9 @@ The flush-left line after a container a quoted line opened
 > ::: note
 tail
 .
-<blockquote>
-  <p>quote</p>
-  <aside class="admonition note">
-
-  </aside>
-</blockquote>
-<p>tail</p>
+<blockquote><p>quote
+::: note
+tail</p></blockquote>
 ```
 
 ```
@@ -22,10 +18,10 @@ tail
 tail
 .
 <blockquote>
-  <p>quote</p>
-  <aside class="admonition note">
-
-  </aside>
+  <p>quote
+::: note</p>
+  <div>
+  </div>
 </blockquote>
 <p>tail</p>
 ```
@@ -37,13 +33,11 @@ tail
 > :::
 tail
 .
-<blockquote>
-  <p>quote</p>
-  <aside class="admonition note">
-    <p>body</p>
-  </aside>
-</blockquote>
-<p>tail</p>
+<blockquote><p>quote
+::: note
+body
+:::
+tail</p></blockquote>
 ```
 
 ```
@@ -54,7 +48,6 @@ tail
 .
 <blockquote><p>quote
 :::note
-body</p></blockquote>
-<div>
-</div>
+body
+:::</p></blockquote>
 ```

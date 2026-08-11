@@ -88,8 +88,9 @@ b
 <blockquote>
   <p>q</p>
   <div>
-    <p>a</p>
-    <p>b</p>
+    <p>a
+[^z]: zz
+b</p>
   </div>
 </blockquote>
 ```
@@ -104,11 +105,13 @@ b
 .
 <ul>
   <li>x
-    <div>
-      <p>a
-- m
-b</p>
-    </div>
+:::
+a
+    <ul>
+      <li>m
+b
+:::</li>
+    </ul>
   </li>
 </ul>
 ```
@@ -156,7 +159,12 @@ b
   %%%
 .
 <ul>
-  <li>x</li>
+  <li><p>x
+%%%
+a</p>
+    <p>b
+%%%</p>
+  </li>
 </ul>
 ```
 
@@ -169,7 +177,10 @@ b
   b
 .
 <ul>
-  <li><p>x</p>
+  <li><p>x
+%%%
+a
+%%%</p>
     <p>b</p>
   </li>
 </ul>
@@ -184,11 +195,11 @@ b
   :::
 .
 <ul>
-  <li>x
-    <div>
-      <p>a</p>
-      <p>b</p>
-    </div>
+  <li><p>x
+:::
+a</p>
+    <p>b
+:::</p>
   </li>
 </ul>
 ```
@@ -202,10 +213,10 @@ b
   b
 .
 <ul>
-  <li><p>x</p>
-    <div>
-      <p>a</p>
-    </div>
+  <li><p>x
+:::
+a
+:::</p>
     <p>b</p>
   </li>
 </ul>

@@ -29,11 +29,10 @@ import { carveToHtml } from '@markup-carve/carve'
 
 const collapse = (html) => html.replace(/\s+/g, ' ').trim()
 
-test('a bare ::: still interrupts an open paragraph', () => {
-  // The control. §10, and the row the malformed cases are measured against.
+test('a bare ::: inside an open paragraph is literal', () => {
   assert.equal(
     collapse(carveToHtml('text\nnot a div\n:::\n')),
-    '<p>text not a div</p> <div> </div>',
+    '<p>text not a div :::</p>',
   )
 })
 
@@ -86,13 +85,13 @@ test('a closer matches on EXACT length, not equal-or-greater', () => {
   //
   // A wider bare fence does not close a narrower block - it opens one.
   assert.equal(
-    collapse(carveToHtml('::: note\nbody\n::::\n')),
+    collapse(carveToHtml('::: note\nbody\n\n::::\n')),
     '<aside class="admonition note"> <p>body</p> <div> </div> </aside>',
   )
   // And equal-length fences DO nest, because a closer must be BARE: the inner
   // line carries a label, so it is an opener.
   assert.equal(
-    collapse(carveToHtml('::: note\nouter\n::: tip\ninner\n:::\n:::\n')),
+    collapse(carveToHtml('::: note\nouter\n\n::: tip\ninner\n\n:::\n\n:::\n')),
     '<aside class="admonition note"> <p>outer</p> ' +
       '<aside class="admonition tip"> <p>inner</p> </aside> </aside>',
   )

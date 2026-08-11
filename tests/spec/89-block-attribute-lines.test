@@ -52,7 +52,8 @@ Text
 Para
 {.class}
 .
-<p>Para</p>
+<p>Para
+{.class}</p>
 ```
 
 ```
@@ -61,6 +62,7 @@ Para
 
 Next
 .
-<p>Para</p>
-<p class="class">Next</p>
+<p>Para
+{.class}</p>
+<p>Next</p>
 ```

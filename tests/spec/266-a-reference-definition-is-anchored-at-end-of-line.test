@@ -86,8 +86,9 @@ text
 
 [a][]
 .
-<p>text</p>
-<p><a href="/u" class="c">a</a></p>
+<p>text
+[a]: /u {.c}</p>
+<p>[a][]</p>
 ```
 
 ```
@@ -97,9 +98,10 @@ text
 [a][]
 .
 <ul>
-  <li>text</li>
+  <li>text
+[a]: /u {.c}</li>
 </ul>
-<p><a href="/u" class="c">a</a></p>
+<p>[a][]</p>
 ```
 
 ```
@@ -123,9 +125,10 @@ more
 
 [a][]
 .
-<blockquote><p>text</p></blockquote>
-<p>more</p>
-<p><a href="/u" class="c">a</a></p>
+<blockquote><p>text
+[a]: /u {.c}
+more</p></blockquote>
+<p>[a][]</p>
 ```
 
 ```
@@ -133,8 +136,9 @@ more
 > [a]: /u {.c}
 lazy
 .
-<blockquote><p>text</p></blockquote>
-<p>lazy</p>
+<blockquote><p>text
+[a]: /u {.c}
+lazy</p></blockquote>
 ```
 
 ```

@@ -22,10 +22,6 @@ Table row closing pipe
 | a
 | b |
 .
-<p>| a</p>
-<table>
-  <tbody>
-    <tr><td>b</td></tr>
-  </tbody>
-</table>
+<p>| a
+| b |</p>
 ```

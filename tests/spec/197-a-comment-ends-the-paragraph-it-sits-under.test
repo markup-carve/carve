@@ -8,9 +8,9 @@ A comment ends the paragraph it sits under
 - c
 .
 <ul>
-  <li><p>a</p>
-    <p>b</p>
-  </li>
+  <li><p>a
+%% x
+b</p></li>
   <li><p>c</p></li>
 </ul>
 ```

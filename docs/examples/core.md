@@ -2500,16 +2500,9 @@ See the note[^m].
 ```
 
 ```html
-<p>See the note<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
-<section role="doc-endnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>First line of the note
-and a continuation line.<a href="#fnref1" role="doc-backlink">↩</a></p>
-    </li>
-  </ol>
-</section>
+<p>See the note[^m].
+[^m]: First line of the note
+and a continuation line.</p>
 ```
 
 :::
@@ -2524,7 +2517,8 @@ text
 ```
 
 ```html
-<p>text</p>
+<p>text
+[^f]: note</p>
 ```
 
 :::
@@ -3057,8 +3051,9 @@ y
 ```
 
 ```html
-<p>x</p>
-<p>y</p>
+<p>x
+%% indented comment
+y</p>
 ```
 
 :::

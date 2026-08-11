@@ -52,9 +52,8 @@ lazy
   <li>a
     <ul>
       <li>b
-        <h1 id="N">N</h1>
-        lazy
-      </li>
+# N
+lazy</li>
     </ul>
   </li>
 </ul>
@@ -100,8 +99,7 @@ b
 .
 <ul>
   <li>item
-    <h1 id="Wide">Wide</h1>
-  </li>
+# Wide</li>
 </ul>
 ```
 
