@@ -4654,6 +4654,11 @@ EOF = (* end of file *) ;
            * c
            * d
          `- a` followed by `- [x] b` is likewise two lists.
+         A run of TWO OR MORE blank lines is a hard list boundary: an item
+         marker after that run starts a new sibling list even when every N1
+         axis matches. One blank line remains the ordinary loose-list
+         separator. In the common LF spelling this distinction is three
+         newline bytes (`item\n\n\nitem`) versus two (`item\n\nitem`).
       N2 ORDERED DIALECT. A list's dialect (decimal / lower- or upper-alpha
          / lower- or upper-roman) and delimiter are fixed by its FIRST
          item; a later marker outside the dialect, or with the other
@@ -5237,6 +5242,9 @@ EOF = (* end of file *) ;
          (<li><p>text</p></li>). An item can hold more than one paragraph
          block and still be tight -- L2 and L6 below cover the ways that
          happens without a blank line ever appearing.
+         This definition applies to the ONE-blank-line separator. Two or more
+         blank lines invoke §11 N1's hard boundary and therefore separate two
+         lists instead of loosening one list.
       L1a THE ITEM'S FIRST BLOCK DOES NOT MATTER -- NORMATIVE. L1 asks
          whether the item holds a blank-line-separated second PARAGRAPH. It
          does not ask what the FIRST block was, and nothing here depends on

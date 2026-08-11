@@ -1678,3 +1678,27 @@ test('the definition body dedent strips no further than column 3', () => {
       `strip leaves as text.\n  doc: ${JSON.stringify(doc)}`,
   )
 })
+
+const siblingLists = (source) => parse(source).blocks.filter((block) => block.t === 'list')
+const compactHtml = (source) => renderDoc(parse(source)).replace(/\s+/g, ' ').replace(/> </g, '><').trim()
+
+test('one blank line remains the loose-list separator', () => {
+  const parsed = siblingLists('1. a\n\n1. b\n')
+  assert.equal(parsed.length, 1)
+  assert.equal(parsed[0].items.length, 2)
+  assert.equal(parsed[0].tight, false)
+})
+
+test('two blank lines are a hard boundary between compatible lists', () => {
+  const source = '1. a\n\n\n1. b\n'
+  const parsed = siblingLists(source)
+  assert.equal(parsed.length, 2)
+  assert.deepEqual(parsed.map((list) => list.items.length), [1, 1])
+  assert.equal(compactHtml(source), '<ol><li>a</li></ol><ol><li>b</li></ol>')
+})
+
+test('the hard list boundary applies to bullets too', () => {
+  const source = '- a\n\n\n- b\n'
+  assert.equal(siblingLists(source).length, 2)
+  assert.equal(compactHtml(source), '<ul><li>a</li></ul><ul><li>b</li></ul>')
+})

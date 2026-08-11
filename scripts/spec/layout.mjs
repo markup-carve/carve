@@ -2824,6 +2824,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     // A blank line was seen, and only invisible lines have followed it so far
     // (§17 L1b). The next PARAGRAPH closes the separation and loosens.
     let pendingSeparation = false
+    let hardListBoundary = false
     {
       // The marker line's content is the item's FIRST BLOCK, so it answers S4's
       // question exactly as any other line does. Only the quote spelling was
@@ -3054,6 +3055,14 @@ function collectItems(lines, i, list, state, ind, meas) {
           continue
         }
         if (nm && nm.indent === baseIndent) {
+          // 0.2 hard boundary: one blank line is the ordinary loose-list
+          // separator; two or more blank lines end the list even when every
+          // N1 axis matches. `j - i` is the exact blank-line run length.
+          if (j - i >= 2 && sameAxes(list, nm)) {
+            hardListBoundary = true
+            i = j
+            break
+          }
           // blank line between ITEMS of this list -> loose (SS17 L1); a
           // following DIFFERENT list is a sibling and loosens nothing
           if (sameAxes(list, nm)) list.tight = false
@@ -3616,6 +3625,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       list.tight = false
     }
     list.items.push(item)
+    if (hardListBoundary) return i
   }
   return i
 }
