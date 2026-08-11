@@ -11,7 +11,7 @@ The examples are split into three pages:
 
 - [**Core**](/examples/core) — the everyday syntax: emphasis, headings, links, images, lists, tables, code, attributes, frontmatter and more.
 - [**Extensions**](/examples/extensions) — tier-2/3 features layered on the core language: admonitions, abbreviations, mentions and tags, inline extensions, symbols, and cross-reference numbering.
-- [**Edge cases**](/examples/edge-cases) — precise boundary rules, table-alignment variants, lazy continuation, paragraph interruption, security hardening and other robustness guarantees.
+- [**Edge cases**](/examples/edge-cases) — precise block-position rules, table-alignment variants, lazy continuation, security hardening and other robustness guarantees.
 
 Every `::: compare` pair on those pages is also part of the [conformance corpus](/grammar): the HTML shown is generated from the same fixtures the reference implementations are tested against, so it cannot drift from real output.
 
