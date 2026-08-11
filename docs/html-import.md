@@ -39,6 +39,7 @@ lossy decision should be observable. The common diagnostic codes are:
 - `style-unmapped`: CSS had no explicit semantic mapping.
 - `table-degraded`: a table could not be represented structurally.
 - `raw-preserved`: unsupported trusted markup was retained as raw HTML.
+- `diagnostics-truncated`: the diagnostic cap was reached.
 
 Diagnostics have `code`, `message`, `severity` (`info`, `warning`, or `error`),
 and optional `path`, `line`, and `column`. Their order follows document order.
@@ -74,5 +75,6 @@ with stable Carve semantics, initially `text-align`, `font-weight`,
 ## Resource limits
 
 Importers must bound DOM depth, AST depth, node count, and diagnostic count.
-On a limit, return or throw a typed error rather than emitting a partial
-document without notice.
+On a structural limit, return or throw a typed error rather than emitting a
+partial document. A diagnostic cap may instead replace its last entry with the
+`diagnostics-truncated` error diagnostic.
