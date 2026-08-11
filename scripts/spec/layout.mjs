@@ -1306,6 +1306,22 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
       if (info) {
         // valid opener, no closer: at BLOCK START the code runs to the end
         // of the container (oracle-verified; corpus 80)
+        //
+        // A `=FORMAT` opener is a RAW block whether or not it is terminated.
+        // Only the terminated branch above tested the prefix, so an
+        // unterminated one fell through to here and rendered as code with the
+        // marker still in the info string - `class="language-=html"`, which is
+        // not a class any renderer emits, with the raw bytes escaped into it.
+        // All three engines pass the content through in both cases (carve#1104).
+        if (info.lang.startsWith('=')) {
+          push({
+            t: 'raw',
+            format: info.lang.slice(1),
+            text: lines.slice(i + 1).map(stripLazy).join('\n'),
+          })
+          i = n
+          continue
+        }
         push({
           t: 'code',
           lang: info.lang,
