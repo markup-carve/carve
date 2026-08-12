@@ -175,8 +175,18 @@ export function renderAttrs(list) {
         parts.push(` ${a[1]}="${escapeAttr(h.value)}"`)
       }
     } else {
+      // A BOOLEAN IS A KEY/VALUE WHOSE VALUE IS EMPTY, so it takes the same
+      // slot as `kv` of the same name rather than emitting a second attribute.
+      // PART 4 defines `{disabled}` as `disabled=""`, and RENDER ORDER says a
+      // repeated key keeps the LAST value at its FIRST position - pushing here
+      // unconditionally produced `a="1" a=""`, which is not valid HTML and is
+      // not what any engine writes (carve#1123).
       if (!hardenAttr(a[1], '')) continue
-      parts.push(` ${a[1]}=""`)
+      if (seen.has(a[1])) parts[seen.get(a[1])] = ` ${a[1]}=""`
+      else {
+        seen.set(a[1], parts.length)
+        parts.push(` ${a[1]}=""`)
+      }
     }
   }
   if (classAt !== -1) parts[classAt] = ` class="${escapeAttr(classes.join(' '))}"`
@@ -794,8 +804,14 @@ export function renderBlockAttrs(lists) {
           parts.push(` ${a[1]}="${escapeAttr(h.value)}"`)
         }
       } else {
+        // Same rule as the inline merge above: a boolean is a key/value with an
+        // empty value and shares that name's slot (carve#1123).
         if (!hardenAttr(a[1], '')) continue
-        parts.push(` ${a[1]}=""`)
+        if (seen.has(a[1])) parts[seen.get(a[1])] = ` ${a[1]}=""`
+        else {
+          seen.set(a[1], parts.length)
+          parts.push(` ${a[1]}=""`)
+        }
       }
     }
   }
