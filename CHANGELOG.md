@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Compact semantic span attributes are portable core syntax** (carve#1124).
+  `[Ctrl]{kbd}`, `[HTML]{abbr="…"}`, and combinations such as
+  `[CSS]{dfn abbr="…"}` now share one normative HTML mapping across PHP,
+  JavaScript, and Rust. The fixed registry is `abbr`, `time`, `code`, `mark`,
+  `samp`, `var`, `kbd`, `cite`, and `dfn`; non-semantic attributes remain on a
+  hardened outer span. This is an observable HTML change for JS/Rust and for
+  PHP without its former opt-in extension. AST, plain/ANSI, and canonical
+  source behavior remain ordinary span behavior.
+
 ## [0.1.2] - 2026-08-10
 
 ### Changed

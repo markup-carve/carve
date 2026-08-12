@@ -17,15 +17,15 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>694 / 694</strong>
+    <strong>692 / 692</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>694 / 694</strong>
+    <strong>692 / 692</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>694 / 694</strong>
+    <strong>692 / 692</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -36,9 +36,9 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `5b03787` | `694 / 694` | `0` | `0` | `3.01` |
-| JS | `8105210` | `694 / 694` | `0` | `0` | `76.02` |
-| PHP | `a5f18fb` | `694 / 694` | `0` | `0` | `68.54` |
+| Rust | `5b03787` | `692 / 692` | `0` | `0` | `3.01` |
+| JS | `8105210` | `692 / 692` | `0` | `0` | `76.02` |
+| PHP | `a5f18fb` | `692 / 692` | `0` | `0` | `68.54` |
 
 Spec commit: `2cde4a1`, plus the three corpus cases this change adds
 
@@ -77,7 +77,10 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `291-a-fence-keeps-the-blank-line-at-the-end-of-its-content`,
 `292-a-boolean-and-a-key-value-of-the-same-name-are-one-attribute`,
 `45-inline-extensions-7`,
-`45-inline-extensions-8`.
+`45-inline-extensions-8`,
+`45-inline-extensions-9`,
+`45-inline-extensions-10`; `97-boolean-attributes` changed its expected HTML
+under the same semantic-span rule.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
@@ -583,7 +586,7 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=694 targets=html,markdown,plain,carve,ansi
+profile=default/no-opt-in corpus=core corpus_pairs=692 targets=html,markdown,plain,carve,ansi
 rust: pass=690/690 mismatch=0 error=0 skipped=0 runs=3375 avg_ms=3.01
   mismatching documents: 0
 js: pass=690/690 mismatch=0 error=0 skipped=0 runs=3375 avg_ms=76.02
@@ -593,11 +596,11 @@ php: pass=690/690 mismatch=0 error=0 skipped=0 runs=3375 avg_ms=68.54
 cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=693 diffs=0 errors=0 fixtures=yes
-markdown: compared=693 diffs=0 errors=0 fixtures=1
-plain: compared=693 diffs=0 errors=0 fixtures=1
-carve: compared=693 diffs=0 errors=0 fixtures=13
-ansi: compared=693 diffs=0 errors=0 fixtures=none
+html: compared=691 diffs=0 errors=0 fixtures=yes
+markdown: compared=691 diffs=0 errors=0 fixtures=1
+plain: compared=691 diffs=0 errors=0 fixtures=1
+carve: compared=691 diffs=0 errors=0 fixtures=13
+ansi: compared=691 diffs=0 errors=0 fixtures=none
 target_agreement_note=html has an expected-output fixture per case; another target has one wherever a case added it (fixtures=N), and asserts engine agreement everywhere else.
 
 Extension capability matrix

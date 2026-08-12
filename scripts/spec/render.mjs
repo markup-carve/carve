@@ -193,6 +193,34 @@ export function renderAttrs(list) {
   return parts.join('')
 }
 
+// PART 10 §10: compact semantic-span attributes are an HTML rendering sugar
+// over the ordinary `span` node.  Keep PHP's established relative order and
+// outer span for non-semantic attributes; the authored attribute list remains
+// untouched in the AST and source targets.
+const SEMANTIC_SPAN_ORDER = ['abbr', 'time', 'code', 'mark', 'samp', 'var', 'kbd', 'cite', 'dfn']
+function renderSemanticSpan(text, list) {
+  const semantic = new Map()
+  const rest = []
+  for (const attr of list) {
+    const name = attr[0] === 'bool' || attr[0] === 'kv' ? attr[1] : null
+    if (name && SEMANTIC_SPAN_ORDER.includes(name)) semantic.set(name, attr[0] === 'kv' ? attr[2] : '')
+    else rest.push(attr)
+  }
+  if (semantic.size === 0) return `<span${renderAttrs(list)}>${text}</span>`
+
+  let html = text
+  for (const name of SEMANTIC_SPAN_ORDER) {
+    if (!semantic.has(name)) continue
+    const value = semantic.get(name)
+    const mapped = value !== '' && name === 'abbr' ? ` title="${escapeAttr(value)}"`
+      : value !== '' && name === 'dfn' ? ` title="${escapeAttr(value)}"`
+        : value !== '' && name === 'time' ? ` datetime="${escapeAttr(value)}"`
+          : ''
+    html = `<${name}${mapped}>${html}</${name}>`
+  }
+  return rest.length === 0 ? html : `<span${renderAttrs(rest)}>${html}</span>`
+}
+
 const sem = g.createSemantics().addOperation('h', {
   inlines(items) {
     // The bare single-char emphasis delimiters are NOT resolved by the PEG.
@@ -453,7 +481,7 @@ sem.addOperation('applyTail(text, source)', {
   },
   attrs(_o, _s1, _first, _s2, _rest, _s3, _c) {
     const { text } = this.args
-    return `<span${renderAttrs(this.parseAttrs())}>${text}</span>`
+    return renderSemanticSpan(text, this.parseAttrs())
   },
   emptyAttrs(_o, _sp, _c) {
     const { text } = this.args

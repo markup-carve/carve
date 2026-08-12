@@ -3258,9 +3258,9 @@ Check if (x < 5) holds, and 3<4 too.
 ## Boolean attributes
 
 A bare word in a `{…}` block (no `#` / `.` / `=`) is a value-less (boolean)
-attribute, rendered `name=""`. It works in any attribute position and mixes
-with id / class / key=value. A carve extension beyond canonical djot, matching
-djot-php.
+attribute, normally rendered `name=""`. It works in any attribute position and
+mixes with id / class / key=value. The nine semantic span names are the core
+exception: on `[content]{attrs}` they select their semantic wrapper.
 
 ::: compare
 
@@ -3269,7 +3269,7 @@ Press [Tab]{kbd} to indent.
 ```
 
 ```html
-<p>Press <span kbd="">Tab</span> to indent.</p>
+<p>Press <kbd>Tab</kbd> to indent.</p>
 ```
 
 :::
