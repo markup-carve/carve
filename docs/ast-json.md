@@ -44,6 +44,16 @@ The encoding turns an N×M integration problem into N+M.
 
 Five rules carry most of the weight:
 
+Captioned `figure` and `table` nodes may also carry an optional
+`shortCaption` array of inline nodes. It is a structured publishing/navigation
+label (for example Pandoc's list-of-figures caption), not another visible
+caption. Carve 0.1 source has no spelling for it: parsers do not synthesize it,
+ordinary HTML/plain/ANSI renderers ignore it, and format bridges preserve it
+where their target has an equivalent field. This AST capability is independent
+of source serialization: a Carve 0.1 writer omits the field, and conversion
+APIs with diagnostics should report that loss. It is also independent
+of the proposed `^^` author syntax.
+
 **The root carries exactly three fields** - `type`, `children`, `srcByteLength`
 (PART 12 §7). Frontmatter and definitions are **block nodes in the tree**, not
 root fields, because a root field cannot carry a position and both are source an
