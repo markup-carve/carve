@@ -459,11 +459,40 @@ CarveCore {
   battrSep   = (battrSp | battrCont) battrSp*
   battrCont  = "\n" battrSp*
   battrSp    = " " | "\t"
-  attrItem   = idAttr | classAttr | kvAttr | boolAttr
+  attrItem   = langAttr | idAttr | classAttr | kvAttr | boolAttr
   idAttr     = "#" ident
   classAttr  = "." ident
   kvAttr     = ident "=" attrVal
   boolAttr   = ident
+  // `{:TAG}` is EXACT SUGAR for `lang=TAG`, and `{:}` for `lang=""`
+  // (`language_attribute` in grammar.ebnf). The desugaring happens in the
+  // `parseAttrs` action, not here, so every downstream rule - merge order,
+  // last-wins, hardening, the HTML serializer - reaches it as an ordinary
+  // key/value and needs no case of its own. That is the claim the shorthand
+  // makes, and routing it through one action is what makes the claim testable
+  // rather than restated.
+  //
+  // ASCII ONLY. Ohm's `alnum` follows Unicode, so it accepts `ç` and `é` and
+  // would have made `{:français}` a language attribute reading `français` -
+  // one of the shapes grammar.ebnf names as staying literal. `asciiLetter`
+  // and `digit` are both ASCII-bounded, which is what `language_subtag`
+  // means by "ASCII alphanumeric".
+  //
+  // EIGHT OPTIONAL CHARACTERS rather than `alnum+`, because BCP 47 caps a
+  // subtag at eight and Ohm has no counted repetition. A ninth character then
+  // has no rule to match, `attrs` fails at the `}`, and the whole block stays
+  // literal source - which is what PART 9 §14 already promises for a malformed
+  // attribute block. Writing `alnum+` here would have moved the cap into a
+  // semantic action, where a violation cannot fail the match and would have to
+  // be smuggled out as a wrong answer.
+  langAttr   = ":" langTag?
+  langTag    = langSubtag ("-" langSubtag)*
+  // `langSubChar`, not `langChar`: that name is taken by the code-fence
+  // language token above, which is a different alphabet on purpose (it admits
+  // `+`, `#`, `.` and `/` for `c++`, `f#` and `objective-c`).
+  langSubtag = langSubChar langSubChar? langSubChar? langSubChar? langSubChar?
+               langSubChar? langSubChar? langSubChar?
+  langSubChar = asciiLetter | digit
   attrVal    = quoted | squoted | bareVal
   // NO TAB EITHER. `unquoted_value` in grammar.ebnf is letters, digits, `-`,
   // `_`, `.` and `:` - a tab is not among them - so a tab after a bare value

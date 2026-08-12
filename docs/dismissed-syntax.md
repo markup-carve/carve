@@ -398,9 +398,10 @@ Ship it{:+1:}now
 - It would mirror the brace-pair convention Carve already has: `{*bold*}`
   forces intraword emphasis, and `{^x^}` / `{,x,}` are the *only* form of
   superscript and subscript. "Braces force it intraword" is already learned.
-- The syntax is unclaimed: an attribute block cannot start with `:`, and
+- ~~The syntax is unclaimed: an attribute block cannot start with `:`~~, and
   `{:name:}` today produces the nonsense `{` + resolved symbol + `}` (the
   brace merely satisfies the boundary guard and is then literal).
+  **The first half of that is no longer true** - see the amendment below.
 
 **Considerations:**
 - **No demonstrated need.** Shortcodes sit between spaces in essentially all
@@ -422,9 +423,28 @@ Ship it{:+1:}now
   Documenting it would freeze both artifacts.
 
 **Decision:** Deferred, not rejected. The design is recorded here so it is not
-re-litigated; `{:` stays unclaimed. If a real document ever needs an intraword
-symbol, this is the form to add - and the argument for it will be an actual use
-case rather than a hypothetical one.
+re-litigated. If a real document ever needs an intraword symbol, this is the
+form to add - and the argument for it will be an actual use case rather than a
+hypothetical one.
+
+**Amendment (`carve#1114`): `{:` is now partly claimed, and this form survives
+it.** An attribute block may start with `:` - it is the language attribute,
+`{:fr}` for `lang="fr"` (`language_attribute` in `resources/grammar.ebnf`).
+So the "unclaimed slot" bullet above no longer describes the language.
+
+That does not withdraw this entry, because the two forms cannot collide. A
+language subtag is ASCII alphanumeric, so a tag can never end in `:`, while a
+braced symbol always does; `{:tada:}` fails the language production on its
+trailing colon and stays literal exactly as it did before. The corpus pins that
+directly (`138-unclaimed-openers-stay-literal`), so the day this form ships,
+the fixture that protects it is already there.
+
+What DID change is the cost side of the argument, in this form's favour. The
+language attribute proved a `{:`-opening attribute costs one alternative in the
+attribute rule and one action, because it desugars into an existing key/value.
+A braced symbol would still be a new INLINE form, which is the bill the third
+consideration above prices - grammars, editors, three engines. The two are not
+comparable, and the fact that one was cheap is not evidence that the other is.
 
 ---
 

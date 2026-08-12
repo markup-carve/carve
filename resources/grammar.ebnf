@@ -2663,8 +2663,82 @@ attribute_list = attribute, {space+, attribute} ;
    b"`, and classes accumulated across adjacent/continued attribute blocks
    dedup the same way. *)
 
-attribute = id_attribute | class_attribute | key_value_attribute
-          | boolean_attribute ;
+attribute = language_attribute | id_attribute | class_attribute
+          | key_value_attribute | boolean_attribute ;
+
+(* `{:TAG}` is EXACT SUGAR for `key_value_attribute` `lang=TAG`, and the empty
+   `{:}` for `lang=""`. It desugars during attribute parsing, so there is no
+   new AST node, no new AST field, and a consumer that has never heard of the
+   shorthand sees an ordinary `lang` key/value.
+
+   `{:}` is not the same as omitting the attribute. Omitting it leaves the
+   content inheriting a surrounding language; `{:}` declares the language
+   explicitly unknown and stops that inheritance. It is also distinct from
+   `{:und}` (BCP 47 `und`, undetermined) and `{:zxx}` (no linguistic content).
+
+   PARSING CHECKS THE STRUCTURAL ENVELOPE ONLY, never a registry: conformance
+   must not depend on the IANA Language Subtag Registry, which changes. So
+   subtags are ASCII alphanumerics, one to eight characters, hyphen-separated,
+   with no empty subtag and no leading or trailing hyphen. Tags are stored
+   EXACTLY as authored -- BCP 47 comparison is case-insensitive but parsing and
+   formatting do not change case. A candidate that fails this envelope is not
+   a partially consumed attribute: the whole block stays literal (PART 9 §14),
+   so `{:en_US}`, `{:en--GB}`, `{:-en}` and `{:français}` are literal source.
+
+   LANGUAGE NEVER IMPLIES WRITING DIRECTION. A tag need not carry a script
+   subtag, so deriving direction would require changing CLDR likely-subtag and
+   script-direction data and could change unchanged output after a data update.
+   No tag produces `dir` in either direction. Authors use HTML's independent
+   mechanism explicitly where needed: `[…]{:ar dir=rtl}` or `dir=auto`.
+
+   The deferred braced-symbol spelling `{:name:}` stays literal under this
+   production, because a trailing `:` is not a subtag character -- see
+   `docs/dismissed-syntax.md`, which reserves `{:` for that form. The two are
+   distinguishable (a symbol ends `:}` and a language tag cannot), and that
+   entry is amended in the same change rather than read around.
+
+   THE SIGIL TAKES NO PADDING -- NORMATIVE: the tag is optional, not the
+   separator, so `{: fr}` is the empty language attribute followed by a
+   SEPARATE boolean `fr`, giving `lang="" fr=""`. It is not a language
+   attribute reading `fr`, and it does not fail the block. This follows from
+   `':', [ language_tag ]` with no special case, and it is the answer a reader
+   derives from the production; a rule that made a space here fail the whole
+   block would be one the grammar does not say. The cost lands on a typo rather
+   than on a shape anyone writes deliberately.
+
+   COLLISION -- NORMATIVE: `:TAG` and `lang=TAG` ARE THE SAME KEY, so writing
+   both is a repeated key and nothing more. RENDER ORDER above already decides
+   it: the LAST value wins and the slot stays at the FIRST appearance. That
+   holds inside one block and across merged block-attribute lines, because the
+   shorthand desugars before either merge sees it. So `{:fr lang=de}` and
+   `{lang=de :fr}` are `lang="de"` and `lang="fr"`; `{k=1 :fr lang=de}` is
+   `k="1" lang="de"`, with `lang` in the slot `:fr` opened. This clause adds no
+   rule -- it records that the shorthand needed none, which is the whole claim
+   of "exact sugar" and is worth stating where a reader would otherwise look
+   for a special case.
+
+   CANONICAL FORM: the writer COLLAPSES a repeated `lang` to the one attribute
+   that survives the merge, and spells it `:TAG` -- `{:fr lang=de}` formats to
+   `{:de}`. An empty value is `{:}`, which is therefore the canonical spelling
+   of `{lang=""}` too. Both follow from PART 11's rule that the writer emits
+   the canonical spelling of what the AST holds, and the AST holds one `lang`.
+   The `.fmt` byte fixture that pins this lands with the engine bump: those
+   fixtures are read THROUGH the pinned build, which does not know the
+   shorthand yet, and `tests/corpus-fmt-roundtrip.test.mjs` has no drift valve
+   for them.
+
+   A BOOLEAN `lang` IS THE SAME KEY AS WELL: `{lang}` means `lang=""` under
+   PART 4's boolean rule, so `{:fr lang}` ends at `lang=""` and `{lang :fr}` at
+   `lang="fr"`. carve-js and carve-php both do this. The EXECUTABLE SPEC does
+   not: it emits a boolean unconditionally, so `{a=1 a}` leaves it as
+   `a="1" a=""`, two attributes of the same name, which is not valid HTML and
+   is not what any engine writes. That defect predates this production and is
+   not confined to `lang`, so it is fixed under carve#1123 rather than here,
+   and no fixture below pins a boolean `lang` until it is. *)
+language_attribute = ':', [ language_tag ] ;
+language_tag       = language_subtag, { '-', language_subtag } ;
+language_subtag    = ( letter | digit ), { letter | digit } ;
+(* One to eight characters per subtag. *)
 
 id_attribute = '#', identifier ;
 class_attribute = '.', identifier ;
