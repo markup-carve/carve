@@ -401,6 +401,23 @@ Non-semantic attributes remain on one hardened outer span.
 
 :::
 
+An explicit `abbr` value takes precedence over automatic abbreviation
+definitions, avoiding invalid nested `<abbr>` markup.
+
+::: compare
+
+```carve
+*[HTML]: Hyper Text Markup Language
+
+[HTML]{abbr="Custom"}
+```
+
+```html
+<p><abbr title="Custom">HTML</abbr></p>
+```
+
+:::
+
 `:cite[text]` is a work title or source, not a bibliographic `[@key]`
 citation. `:abbr[text]{title="…"}` is independent of automatic abbreviation
 definitions. Names outside the fixed registry retain the readable generic

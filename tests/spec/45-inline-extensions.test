@@ -67,3 +67,11 @@ Press :kbd[Ctrl+C] to copy.
 <p><span id="copy" class="shortcut" data-key="copy"><kbd><strong>Ctrl</strong>+C</kbd></span>
 <span><kbd>x</kbd></span></p>
 ```
+
+```
+*[HTML]: Hyper Text Markup Language
+
+[HTML]{abbr="Custom"}
+.
+<p><abbr title="Custom">HTML</abbr></p>
+```
