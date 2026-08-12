@@ -1,0 +1,25 @@
+A malformed language tag leaves the whole block literal
+
+```
+[a]{:en_US} [b]{:-en} [c]{:en-} [d]{:français}
+.
+<p>[a]{:en_US} [b]{:-en} [c]{:en-} [d]{:français}</p>
+```
+
+```
+[a]{:abcdefgh} [b]{:abcdefghi}
+.
+<p><span lang="abcdefgh">a</span> [b]{:abcdefghi}</p>
+```
+
+```
+[x]{:tada:}
+.
+<p>[x]{:tada:}</p>
+```
+
+```
+[x]{xml:lang=en}
+.
+<p>[x]{xml:lang=en}</p>
+```

@@ -107,6 +107,15 @@ const attrSem = g.createSemantics().addOperation('parseAttrs', {
   boolAttr(name) {
     return ['bool', name.sourceString]
   },
+  // `{:TAG}` DESUGARS HERE and nowhere else: it leaves this action as the
+  // ordinary `['kv', 'lang', TAG]` tuple every other `lang=` attribute
+  // produces, so the merge below cannot tell the two spellings apart. The
+  // empty form `{:}` carries an empty tag and becomes `lang=""`, which is a
+  // declaration that the language is unknown rather than an omission - the
+  // content stops inheriting a surrounding language.
+  langAttr(_c, tag) {
+    return ['kv', 'lang', tag.sourceString]
+  },
   attrVal(v) {
     return v.parseAttrs()
   },
@@ -518,6 +527,12 @@ sem.addOperation('parseAttrs', {
   },
   boolAttr(name) {
     return ['bool', name.sourceString]
+  },
+  // The same desugaring as the `attrSem` copy above. Both operations walk the
+  // same `attrItem` rule, so a shorthand handled in one and missing from the
+  // other throws `missingSemanticAction` on whichever path reaches it second.
+  langAttr(_c, tag) {
+    return ['kv', 'lang', tag.sourceString]
   },
   attrVal(v) {
     return v.parseAttrs()

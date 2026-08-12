@@ -24,3 +24,14 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+
+292-a-language-attribute-is-exact-sugar-for-lang  The `{:TAG}` production this change adds (carve#1114). The pinned build has no rule for it, so the block stays literal source and the span never gets its `lang`. Clears with markup-carve/carve-js#1005 and a pin bump; there is no engine work left after that.
+292-a-language-attribute-is-exact-sugar-for-lang-2  Same rule, script/region/private-use/grandfathered tags.
+292-a-language-attribute-is-exact-sugar-for-lang-3  Same rule, the empty form `{:}` and its `lang=""`.
+292-a-language-attribute-is-exact-sugar-for-lang-4  Same rule, mixed with the other attribute kinds.
+292-a-language-attribute-is-exact-sugar-for-lang-5  Same rule, on a block-attribute line.
+293-a-malformed-language-tag-leaves-the-whole-block-literal-2  The eight-character subtag cap. The pin agrees on the NINE-character half of this case (literal either way, which is why the other three examples in this category are not declared) and disagrees on the eight-character half, where the tag is valid and the pin still has no production for it.
+294-a-language-attribute-and-lang-are-one-key  The collision rule. `{:fr lang=de}` needs the shorthand to desugar before the merge sees it; without the production the pin leaves the whole block literal, so there is nothing to merge.
+294-a-language-attribute-and-lang-are-one-key-2  Same, with the surviving value in the slot the shorthand opened.
+294-a-language-attribute-and-lang-are-one-key-3  Same, two shorthands colliding.
+294-a-language-attribute-and-lang-are-one-key-4  Same, across accumulated block-attribute lines.

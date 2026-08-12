@@ -1,0 +1,27 @@
+A language attribute and lang are one key
+
+```
+[a]{:fr lang=de} [b]{lang=de :fr}
+.
+<p><span lang="de">a</span> <span lang="fr">b</span></p>
+```
+
+```
+[x]{k=1 :fr lang=de title=t}
+.
+<p><span k="1" lang="de" title="t">x</span></p>
+```
+
+```
+[x]{:fr :de}
+.
+<p><span lang="de">x</span></p>
+```
+
+```
+{:fr}
+{lang=de}
+Text
+.
+<p lang="de">Text</p>
+```

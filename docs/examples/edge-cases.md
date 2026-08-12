@@ -15813,75 +15813,215 @@ between them keeps its own place:
 
 :::
 
-## A semantic span keeps its wrapper unless consumption empties it
+## A language attribute is exact sugar for lang
 
-An authored `[content]{attrs}` span renders its `<span>` element whether or not
-any attribute reaches the output. The one exception is PART 9 §10: when every
-authored attribute is a consumed semantic name, the semantic element stands
-alone.
-
-The authored empty block is the baseline. There is no attribute to emit and the
-element is still the one the author wrote.
+`{:TAG}` sets the natural language of the content it attaches to. It is sugar
+for `lang=TAG` and nothing else: the attribute reaching the AST, the merge, and
+the HTML are the ones the long form already produced (`language_attribute` in
+`resources/grammar.ebnf`, `markup-carve/carve#1114`).
 
 ::: compare
 
 ```carve
-[x]{}
+The title is [Le Bon Usage]{:fr}.
 ```
 
 ```html
-<p><span>x</span></p>
+<p>The title is <span lang="fr">Le Bon Usage</span>.</p>
 ```
 
 :::
 
-An attribute removed by hardening does not take the element with it. PART 9 §25
-is an attribute policy: it removes attributes, never the element the author
-wrote. So this renders exactly like the empty block above - the wrapper marks
-nothing, and the two are byte-identical - and `108-security-hardening-8` pins
-these same bytes.
+A tag is structure, not a registry lookup: any hyphen-separated run of ASCII
+alphanumeric subtags of one to eight characters parses, so script and region
+subtags, private use and grandfathered tags all reach `lang` unchanged and with
+their case intact.
 
 ::: compare
 
 ```carve
-[x]{onclick="steal()"}
+[a]{:de-CH} [b]{:sr-Latn-RS} [c]{:x-acme} [d]{:i-klingon}
 ```
 
 ```html
-<p><span>x</span></p>
+<p><span lang="de-CH">a</span> <span lang="sr-Latn-RS">b</span> <span lang="x-acme">c</span> <span lang="i-klingon">d</span></p>
 ```
 
 :::
 
-The same holds with a semantic name beside it: the semantic attribute is
-consumed into its element, the hostile one is stripped, and the wrapper the
-author wrote stays.
+The empty form declares the language explicitly unknown. That is not the same
+as leaving the attribute off: `lang=""` stops the content inheriting the
+language of whatever surrounds it.
 
 ::: compare
 
 ```carve
-[x]{kbd onclick="steal()"}
+{:de}
+> Der Titel ist [unbekannt]{:}.
 ```
 
 ```html
-<p><span><kbd>x</kbd></span></p>
+<blockquote lang="de"><p>Der Titel ist <span lang="">unbekannt</span>.</p></blockquote>
 ```
 
 :::
 
-Only consumption drops the wrapper, and it differs in kind from the two above:
-a semantic name is not an attribute that was removed from the output, it never
-was one. The rule turns it into an element and that element takes the span's
-place, so a wrapper carrying nothing would be noise around it.
+It takes its place in source order among the other attribute kinds.
 
 ::: compare
 
 ```carve
-[x]{kbd}
+[x]{#quote :fr .formal title=bonjour}
 ```
 
 ```html
-<p><kbd>x</kbd></p>
+<p><span id="quote" lang="fr" class="formal" title="bonjour">x</span></p>
+```
+
+:::
+
+A block attribute line carries it as well.
+
+::: compare
+
+```carve
+{:grc}
+Μῆνιν ἄειδε θεά
+```
+
+```html
+<p lang="grc">Μῆνιν ἄειδε θεά</p>
+```
+
+:::
+
+## A malformed language tag leaves the whole block literal
+
+The envelope is checked while parsing, so a candidate that misses it is not a
+half-consumed attribute: the block fails and the braces stay in the text, which
+is what a malformed attribute block does everywhere else (PART 9 §14). An
+underscore, an empty subtag, a leading or trailing hyphen and a non-ASCII
+letter each fail it.
+
+::: compare
+
+```carve
+[a]{:en_US} [b]{:-en} [c]{:en-} [d]{:français}
+```
+
+```html
+<p>[a]{:en_US} [b]{:-en} [c]{:en-} [d]{:français}</p>
+```
+
+:::
+
+A subtag runs to eight characters. The ninth has nothing to match, so the block
+fails there rather than truncating the tag.
+
+::: compare
+
+```carve
+[a]{:abcdefgh} [b]{:abcdefghi}
+```
+
+```html
+<p><span lang="abcdefgh">a</span> [b]{:abcdefghi}</p>
+```
+
+:::
+
+The deferred braced-symbol spelling keeps its slot: a trailing `:` is not a
+subtag character, so `{:name:}` stays literal under this production
+(`docs/dismissed-syntax.md`).
+
+::: compare
+
+```carve
+[x]{:tada:}
+```
+
+```html
+<p>[x]{:tada:}</p>
+```
+
+:::
+
+An attribute NAME still admits no colon, so a namespaced spelling stays literal
+too - the language sigil leads its attribute, it does not appear inside one.
+
+::: compare
+
+```carve
+[x]{xml:lang=en}
+```
+
+```html
+<p>[x]{xml:lang=en}</p>
+```
+
+:::
+
+## A language attribute and lang are one key
+
+`{:TAG}` desugars before any merge runs, so writing it beside `lang=TAG` is a
+repeated key and follows the rule every repeated key follows: the last value
+wins and the slot stays where the key first appeared (§15 - accumulation).
+There is no precedence between the two spellings; only their order matters.
+
+::: compare
+
+```carve
+[a]{:fr lang=de} [b]{lang=de :fr}
+```
+
+```html
+<p><span lang="de">a</span> <span lang="fr">b</span></p>
+```
+
+:::
+
+The surviving value lands in the slot the FIRST of the two opened, which is
+what makes the shorthand invisible to the serializer.
+
+::: compare
+
+```carve
+[x]{k=1 :fr lang=de title=t}
+```
+
+```html
+<p><span k="1" lang="de" title="t">x</span></p>
+```
+
+:::
+
+Two shorthands collide the same way.
+
+::: compare
+
+```carve
+[x]{:fr :de}
+```
+
+```html
+<p><span lang="de">x</span></p>
+```
+
+:::
+
+Across accumulated block-attribute lines the answer is the same, because the
+desugaring happens before that merge too.
+
+::: compare
+
+```carve
+{:fr}
+{lang=de}
+Text
+```
+
+```html
+<p lang="de">Text</p>
 ```
 
 :::

@@ -2690,7 +2690,37 @@ attribute = language_attribute | id_attribute | class_attribute
    `docs/dismissed-syntax.md`, which reserves `{:` for that form. The two are
    distinguishable (a symbol ends `:}` and a language tag cannot), but the
    reservation is a recorded decision and this allocation has to be read
-   against it rather than around it. *)
+   against it rather than around it.
+
+   COLLISION -- NORMATIVE: `:TAG` and `lang=TAG` ARE THE SAME KEY, so writing
+   both is a repeated key and nothing more. RENDER ORDER above already decides
+   it: the LAST value wins and the slot stays at the FIRST appearance. That
+   holds inside one block and across merged block-attribute lines, because the
+   shorthand desugars before either merge sees it. So `{:fr lang=de}` and
+   `{lang=de :fr}` are `lang="de"` and `lang="fr"`; `{k=1 :fr lang=de}` is
+   `k="1" lang="de"`, with `lang` in the slot `:fr` opened. This clause adds no
+   rule -- it records that the shorthand needed none, which is the whole claim
+   of "exact sugar" and is worth stating where a reader would otherwise look
+   for a special case.
+
+   CANONICAL FORM: the writer COLLAPSES a repeated `lang` to the one attribute
+   that survives the merge, and spells it `:TAG` -- `{:fr lang=de}` formats to
+   `{:de}`. An empty value is `{:}`, which is therefore the canonical spelling
+   of `{lang=""}` too. Both follow from PART 11's rule that the writer emits
+   the canonical spelling of what the AST holds, and the AST holds one `lang`.
+   The `.fmt` byte fixture that pins this lands with the engine bump: those
+   fixtures are read THROUGH the pinned build, which does not know the
+   shorthand yet, and `tests/corpus-fmt-roundtrip.test.mjs` has no drift valve
+   for them.
+
+   A BOOLEAN `lang` IS THE SAME KEY AS WELL: `{lang}` means `lang=""` under
+   PART 4's boolean rule, so `{:fr lang}` ends at `lang=""` and `{lang :fr}` at
+   `lang="fr"`. carve-js and carve-php both do this. The EXECUTABLE SPEC does
+   not: it emits a boolean unconditionally, so `{a=1 a}` leaves it as
+   `a="1" a=""`, two attributes of the same name, which is not valid HTML and
+   is not what any engine writes. That defect predates this production and is
+   not confined to `lang`, so it is fixed under carve#1123 rather than here,
+   and no fixture below pins a boolean `lang` until it is. *)
 language_attribute = ':', [ language_tag ] ;
 language_tag       = language_subtag, { '-', language_subtag } ;
 language_subtag    = ( letter | digit ), { letter | digit } ;
