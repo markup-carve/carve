@@ -95,9 +95,8 @@ const featureRunners = {
    * three expected files were being verified by nothing (carve#645 is the same
    * shape: a guard whose inputs are a fixed list only guards that list).
    *
-   * `smart-quotes-locale-de` stays skipped and is the reason a skip is worth
-   * having: the engine has no locale-quote option at all, so that pair really
-   * is describing something unimplemented.
+   * Locale quote selection is implementation configuration rather than Djot
+   * syntax, so the reference engine intentionally does not run that case.
    */
   'bare-url-autolink': (source, render) => render(source, { extensions: [autolink()] }),
   'smart-typography-off': (source, render) => render(source, { smartTypography: false }),
@@ -132,7 +131,7 @@ const featureRunners = {
  */
 const DECLARED_UNIMPLEMENTED = {
   'smart-quotes-locale-de':
-    'the reference engine has no quote-locale option at all; carve-php has the extension (carve#560)',
+    'locale quote selection is an implementation extension/configuration, not canonical Djot syntax',
 }
 
 /*

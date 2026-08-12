@@ -243,10 +243,7 @@ const PLAIN_EXTENSION_FEATURES = {
  * stamp ordering the second case turns on, so both are wired below instead
  * (carve#535).
  */
-const UNREACHABLE_REASONS = {
-  'smart-quotes-locale-de':
-    'carve-js has no quote-locale option; carve-php has the extension (carve#560)',
-}
+const UNREACHABLE_REASONS = {}
 
 // Cases that ask an engine for the author's source runs instead of the glyph.
 // One per target, because a manifest entry names one feature and one target -
@@ -297,6 +294,9 @@ const impls = [
           '--symbol', 'rocket=🚀', '--symbol', 'tada=🎉', '--symbol', '+1=👍', '--symbol', 'UPPER=⬆️',
           ...flags,
         ]
+      }
+      if (feature === 'smart-quotes-locale-de') {
+        return [...rustBaseCommand, '--quote-locale', 'de', ...flags]
       }
       // One flag, whichever target the case pins: the mode is a property of
       // the renderer, and every presentation renderer carries it.
@@ -349,6 +349,17 @@ const impls = [
               mentionUrl: '/users/{name}',
               tagUrl: '/topics/{name}',
             }));
+          `,
+        ]
+      }
+      if (feature === 'smart-quotes-locale-de') {
+        return [
+          'node', '--input-type=module', '-e',
+          `
+            import { readFileSync } from 'node:fs';
+            import { ${entry}, smartQuotes } from './dist/index.js';
+            const source = readFileSync(process.argv[1], 'utf8');
+            process.stdout.write(${entry}(source, { extensions: [smartQuotes({ locale: 'de' })] }));
           `,
         ]
       }
