@@ -15672,3 +15672,94 @@ that this pair renders the same way with no indentation at all.
 ```
 
 :::
+
+## A fence keeps the blank line at the end of its content
+
+A blank line inside a fence is content, and the last one is content too. That
+holds wherever the fence ends: at its own closer, at the end of a container, or
+at the end of the document.
+
+Nothing pinned this before, and all three engines lost the blank independently -
+each by a different mechanism, and each only on some of the shapes below
+(markup-carve/carve-js#988, markup-carve/carve-php#1177,
+markup-carve/carve-rs#908).
+
+::: compare
+
+````carve
+```
+x
+
+```
+````
+
+````html
+<pre><code>x
+
+</code></pre>
+````
+
+:::
+
+An unterminated fence runs to the end of the document, and the blank before that
+end is still its content.
+
+::: compare
+
+````carve
+```
+x
+
+````
+
+````html
+<pre><code>x
+
+</code></pre>
+````
+
+:::
+
+A container's closer ends the fence the same way its own closer would.
+
+::: compare
+
+````carve
+::: note
+```
+x
+
+:::
+````
+
+````html
+<aside class="admonition note">
+  <pre><code>x
+
+</code></pre>
+</aside>
+````
+
+:::
+
+So does the end of a list item.
+
+::: compare
+
+````carve
+- ```
+  x
+
+````
+
+````html
+<ul>
+  <li>
+    <pre><code>x
+
+</code></pre>
+  </li>
+</ul>
+````
+
+:::
