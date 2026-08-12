@@ -53,7 +53,7 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | Mermaid / FencedRender, MathBlock, Glossary, Index, HeadingNumbers, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | Bibliography (§6) — an **option on Citations**, not a separate registration: the host passes a CSL-JSON pool to the Citations extension | <Badge type="warning" text="extension" /> | off | — |
 | TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
-| SemanticSpan — **carve-php only** today; carve-js and carve-rs ship no such extension | <Badge type="warning" text="extension" /> | off | — |
+| SemanticSpan — **carve-php only** legacy attributes (`[x]{kbd}`); distinct from the built-in portable `:kbd[x]` semantic registry | <Badge type="warning" text="extension" /> | off | — |
 | [ImgFence](/svg-images) (sanitized SVG `img` fence — sandboxed by default) | <Badge type="warning" text="extension" /> | off | — |
 
 A `:name[…]` / `::: name` whose word has no registered handler renders via the
@@ -117,7 +117,9 @@ differs by processor. The narrative below details each tier.
   on each heading - and rewrite auto-filled `</#id>` cross-references to
   "Section 1.2 - Title"; opt-in, no new syntax; §9),
   HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks,
-  SemanticSpan (carve-php only),
+  PHP's legacy attribute-based SemanticSpan (the portable `:abbr[…]`,
+  `:cite[…]`, `:dfn[…]`, `:kbd[…]`, `:samp[…]`, `:var[…]`, `:time[…]`,
+  `:code[…]`, and `:mark[…]` mappings are built in and need no registration),
   ColorSwatch (inline `:color[value]` -> a validated color chip; carve-php,
   carve-js and carve-rs — see the [extension tutorial](./extension-tutorial)),
   and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
