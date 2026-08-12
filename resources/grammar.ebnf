@@ -2663,8 +2663,38 @@ attribute_list = attribute, {space+, attribute} ;
    b"`, and classes accumulated across adjacent/continued attribute blocks
    dedup the same way. *)
 
-attribute = id_attribute | class_attribute | key_value_attribute
-          | boolean_attribute ;
+attribute = language_attribute | id_attribute | class_attribute
+          | key_value_attribute | boolean_attribute ;
+
+(* `{:TAG}` is EXACT SUGAR for `key_value_attribute` `lang=TAG`, and the empty
+   `{:}` for `lang=""`. It desugars during attribute parsing, so there is no
+   new AST node, no new AST field, and a consumer that has never heard of the
+   shorthand sees an ordinary `lang` key/value.
+
+   `{:}` is not the same as omitting the attribute. Omitting it leaves the
+   content inheriting a surrounding language; `{:}` declares the language
+   explicitly unknown and stops that inheritance. It is also distinct from
+   `{:und}` (BCP 47 `und`, undetermined) and `{:zxx}` (no linguistic content).
+
+   PARSING CHECKS THE STRUCTURAL ENVELOPE ONLY, never a registry: conformance
+   must not depend on the IANA Language Subtag Registry, which changes. So
+   subtags are ASCII alphanumerics, one to eight characters, hyphen-separated,
+   with no empty subtag and no leading or trailing hyphen. Tags are stored
+   EXACTLY as authored -- BCP 47 comparison is case-insensitive but parsing and
+   formatting do not change case. A candidate that fails this envelope is not
+   a partially consumed attribute: the whole block stays literal (PART 9 §14),
+   so `{:en_US}`, `{:en--GB}`, `{:-en}` and `{:français}` are literal source.
+
+   The deferred braced-symbol spelling `{:name:}` stays literal under this
+   production, because a trailing `:` is not a subtag character -- see
+   `docs/dismissed-syntax.md`, which reserves `{:` for that form. The two are
+   distinguishable (a symbol ends `:}` and a language tag cannot), but the
+   reservation is a recorded decision and this allocation has to be read
+   against it rather than around it. *)
+language_attribute = ':', [ language_tag ] ;
+language_tag       = language_subtag, { '-', language_subtag } ;
+language_subtag    = ( letter | digit ), { letter | digit } ;
+(* One to eight characters per subtag. *)
 
 id_attribute = '#', identifier ;
 class_attribute = '.', identifier ;
