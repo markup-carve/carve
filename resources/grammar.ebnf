@@ -7679,3 +7679,28 @@ EOF = (* end of file *) ;
       DEFAULT OUTPUT DOES NOT MOVE. Ordinary parse, AST encoding, CLI JSON and
       rendering retain their existing APIs and shapes. An AST decoder does not
       accept this sidecar as an AST. A layout reader refuses an unknown version.
+
+   14. A CAPTION MAY CARRY AN OPTIONAL STRUCTURED SHORT CAPTION -- NORMATIVE.
+      A `figure` or `table` MAY carry `shortCaption`, an array of inline nodes.
+      It is an abbreviated navigation label for structured publishing targets
+      such as a list of figures or tables. It is NOT a second visible caption,
+      alternative text, an accessible description, or a replacement for the
+      required `figure.caption` / optional `table.caption`.
+
+      CARVE 0.1 SOURCE HAS NO SPELLING FOR THIS FIELD. A source parser therefore
+      never synthesizes it. It enters a tree through an AST consumer or format
+      bridge and survives AST encode/decode by §6. This structural capability
+      is intentionally independent of any future `^^` source proposal.
+
+      ORDINARY HTML, PLAIN AND ANSI OUTPUT IGNORE `shortCaption`; they continue
+      to render the full caption exactly once. A structured exporter MAY map it
+      to its target's corresponding navigation-caption field. A canonical
+      Carve source writer MUST omit the field because this version has no
+      source spelling; it MUST NOT substitute it for the full caption or
+      invent source syntax. A bridge or API which exposes conversion
+      diagnostics SHOULD report that structural loss.
+
+      The field is optional rather than an empty array by default. Absent means
+      no short caption was supplied. A processor MUST NOT derive one by
+      truncating or taking the first sentence of the full caption: abbreviation
+      is an editorial choice and may be language-dependent.

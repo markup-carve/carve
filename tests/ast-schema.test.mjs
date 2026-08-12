@@ -54,6 +54,16 @@ test('source layout is a separate closed versioned sidecar', () => {
   assert.equal(validate({ type: 'document', children: [], srcByteLength: 0, sourceLayout: {} }), false)
 })
 
+test('figures and tables accept an optional structural short caption', () => {
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  const shortCaption = [{ type: 'text', value: 'Navigation label', pos }]
+  const image = { type: 'image', src: '/x.png', alt: 'x', pos }
+  const figure = { type: 'figure', target: image, caption: [], shortCaption, pos }
+  const table = { type: 'table', rows: [], shortCaption, pos }
+  assert.equal(validate({ type: 'document', children: [figure, table], srcByteLength: 1 }), true, firstErrors())
+  assert.equal(validate({ type: 'document', children: [{ ...figure, shortCaption: 'label' }], srcByteLength: 1 }), false)
+})
+
 test('shared source-layout fixtures validate', () => {
   const layoutSchema = JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-schema.json'), 'utf8'))
   const validateLayout = new Ajv2020({ strict: true }).compile(layoutSchema)

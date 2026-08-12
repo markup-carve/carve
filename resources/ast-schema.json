@@ -1102,6 +1102,13 @@
             "$ref": "#/$defs/inlineNode"
           }
         },
+        "shortCaption": {
+          "type": "array",
+          "description": "Optional abbreviated navigation caption imported from or destined for a structured publishing format. Carve 0.1 source has no spelling for this field; ordinary renderers ignore it.",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
@@ -2622,6 +2629,13 @@
         },
         "caption": {
           "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "shortCaption": {
+          "type": "array",
+          "description": "Optional abbreviated navigation caption imported from or destined for a structured publishing format. Carve 0.1 source has no spelling for this field; ordinary renderers ignore it.",
           "items": {
             "$ref": "#/$defs/inlineNode"
           }
