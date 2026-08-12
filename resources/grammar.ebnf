@@ -5507,10 +5507,40 @@ EOF = (* end of file *) ;
       §1-2 plus PART 9 §25 attribute hardening. If no semantic attribute is
       present, the ordinary `<span>` rendering is unchanged.
 
+      THE OUTER `<span>` IS DROPPED ONLY BY CONSUMPTION -- NORMATIVE. An
+      authored span renders its `<span>` element whether or not any attribute
+      reaches the output; the ONE exception is this rule, where every authored
+      attribute is a consumed semantic name and the semantic element stands
+      alone. So, in full:
+
+        `[x]{}`                  ->  `<span>x</span>`
+        `[x]{onclick="e"}`       ->  `<span>x</span>`
+        `[x]{kbd onclick="e"}`   ->  `<span><kbd>x</kbd></span>`
+        `[x]{kbd}`               ->  `<kbd>x</kbd>`
+
+      Rows two and three are not an accident to be tidied away, and the reason
+      is not that the wrapper signals anything: row two renders identically to
+      row one, so nothing about the output distinguishes a stripped attribute
+      from an empty block. It is simpler than that. PART 9 §25 is an ATTRIBUTE
+      policy -- it removes attributes and never the element the author wrote --
+      so a span whose attributes are all stripped renders exactly like the
+      authored empty block in row one, and corpus `108-security-hardening-8`
+      and `-10` pin those bytes today.
+
+      Row four differs in KIND, not in degree. A consumed semantic name is not
+      an attribute that was removed from the output; it never was one. The rule
+      turns it into an element, and that element takes the span's place, so a
+      wrapper carrying nothing would be noise around it. Consumption is
+      therefore the only thing that drops the `<span>`, and a rule keyed on
+      "nothing survived" instead would also drop rows one and two, which is a
+      different change to a different clause.
+
       This rule changes only HTML rendering. The AST remains an ordinary
-      `span` carrying the authored attributes. Plain and ANSI targets render
-      its inline content, and the canonical Carve writer preserves
-      `[content]{attrs}`. The `:name[content]` form in §9 remains the generic,
+      `span` carrying the authored attributes, and plain and ANSI targets render
+      its inline content. The canonical writer emits the span with its
+      attributes; per PART 11 §1 it MAY normalize their spelling, so a boolean
+      is written `name=""` here as everywhere else and `[x]{kbd}` formats to
+      `[x]{kbd=""}`. The `:name[content]` form in §9 remains the generic,
       independently nestable spelling and the only spelling for extension
       names outside this fixed registry.
 

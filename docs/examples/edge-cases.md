@@ -15812,3 +15812,76 @@ between them keeps its own place:
 ```
 
 :::
+
+## A semantic span keeps its wrapper unless consumption empties it
+
+An authored `[content]{attrs}` span renders its `<span>` element whether or not
+any attribute reaches the output. The one exception is PART 9 §10: when every
+authored attribute is a consumed semantic name, the semantic element stands
+alone.
+
+The authored empty block is the baseline. There is no attribute to emit and the
+element is still the one the author wrote.
+
+::: compare
+
+```carve
+[x]{}
+```
+
+```html
+<p><span>x</span></p>
+```
+
+:::
+
+An attribute removed by hardening does not take the element with it. PART 9 §25
+is an attribute policy: it removes attributes, never the element the author
+wrote. So this renders exactly like the empty block above - the wrapper marks
+nothing, and the two are byte-identical - and `108-security-hardening-8` pins
+these same bytes.
+
+::: compare
+
+```carve
+[x]{onclick="steal()"}
+```
+
+```html
+<p><span>x</span></p>
+```
+
+:::
+
+The same holds with a semantic name beside it: the semantic attribute is
+consumed into its element, the hostile one is stripped, and the wrapper the
+author wrote stays.
+
+::: compare
+
+```carve
+[x]{kbd onclick="steal()"}
+```
+
+```html
+<p><span><kbd>x</kbd></span></p>
+```
+
+:::
+
+Only consumption drops the wrapper, and it differs in kind from the two above:
+a semantic name is not an attribute that was removed from the output, it never
+was one. The rule turns it into an element and that element takes the span's
+place, so a wrapper carrying nothing would be noise around it.
+
+::: compare
+
+```carve
+[x]{kbd}
+```
+
+```html
+<p><kbd>x</kbd></p>
+```
+
+:::

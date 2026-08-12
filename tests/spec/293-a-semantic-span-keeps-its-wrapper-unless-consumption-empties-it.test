@@ -1,0 +1,25 @@
+A semantic span keeps its wrapper unless consumption empties it
+
+```
+[x]{}
+.
+<p><span>x</span></p>
+```
+
+```
+[x]{onclick="steal()"}
+.
+<p><span>x</span></p>
+```
+
+```
+[x]{kbd onclick="steal()"}
+.
+<p><span><kbd>x</kbd></span></p>
+```
+
+```
+[x]{kbd}
+.
+<p><kbd>x</kbd></p>
+```
