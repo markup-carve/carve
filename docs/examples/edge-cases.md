@@ -15722,7 +15722,7 @@ x
 
 A container's closer ends the fence the same way its own closer would.
 
-::: compare
+:::: compare
 
 ````carve
 ::: note
@@ -15740,7 +15740,7 @@ x
 </aside>
 ````
 
-:::
+::::
 
 So does the end of a list item.
 
