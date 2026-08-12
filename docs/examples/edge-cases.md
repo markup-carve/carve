@@ -15813,6 +15813,61 @@ between them keeps its own place:
 
 :::
 
+## A semantic span keeps its wrapper unless consumption empties it
+
+An authored `[content]{attrs}` span renders its `<span>` element whether or not
+any attribute reaches the output. The one exception is PART 9 §10: when every
+authored attribute is a consumed semantic name, the semantic element stands
+alone.
+
+::: compare
+
+```carve
+[x]{}
+```
+
+```html
+<p><span>x</span></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[x]{onclick="steal()"}
+```
+
+```html
+<p><span>x</span></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[x]{kbd onclick="steal()"}
+```
+
+```html
+<p><span><kbd>x</kbd></span></p>
+```
+
+:::
+
+::: compare
+
+```carve
+[x]{kbd}
+```
+
+```html
+<p><kbd>x</kbd></p>
+```
+
+:::
+
 ## A language attribute is exact sugar for lang
 
 `{:TAG}` sets the natural language of the content it attaches to. It is sugar
@@ -16022,6 +16077,42 @@ Text
 
 ```html
 <p lang="de">Text</p>
+```
+
+:::
+
+## The language sigil takes no padding
+
+A space after `:` does not belong to the language attribute. The TAG is
+optional, the separator is not, so `{: fr}` is the empty language attribute
+followed by a SEPARATE boolean `fr` - not a language attribute reading `fr`,
+and not a failed block. It follows from `':', [ language_tag ]` with no special
+case, and the cost falls on a typo rather than on anything written
+deliberately.
+
+::: compare
+
+```carve
+[x]{: fr}
+```
+
+```html
+<p><span lang="" fr="">x</span></p>
+```
+
+:::
+
+The same source without the space is the ordinary form, which is the control:
+the two differ by one character and by one attribute.
+
+::: compare
+
+```carve
+[x]{:fr}
+```
+
+```html
+<p><span lang="fr">x</span></p>
 ```
 
 :::

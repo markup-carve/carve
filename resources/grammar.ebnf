@@ -2685,12 +2685,26 @@ attribute = language_attribute | id_attribute | class_attribute
    a partially consumed attribute: the whole block stays literal (PART 9 §14),
    so `{:en_US}`, `{:en--GB}`, `{:-en}` and `{:français}` are literal source.
 
+   LANGUAGE NEVER IMPLIES WRITING DIRECTION. A tag need not carry a script
+   subtag, so deriving direction would require changing CLDR likely-subtag and
+   script-direction data and could change unchanged output after a data update.
+   No tag produces `dir` in either direction. Authors use HTML's independent
+   mechanism explicitly where needed: `[…]{:ar dir=rtl}` or `dir=auto`.
+
    The deferred braced-symbol spelling `{:name:}` stays literal under this
    production, because a trailing `:` is not a subtag character -- see
    `docs/dismissed-syntax.md`, which reserves `{:` for that form. The two are
-   distinguishable (a symbol ends `:}` and a language tag cannot), but the
-   reservation is a recorded decision and this allocation has to be read
-   against it rather than around it.
+   distinguishable (a symbol ends `:}` and a language tag cannot), and that
+   entry is amended in the same change rather than read around.
+
+   THE SIGIL TAKES NO PADDING -- NORMATIVE: the tag is optional, not the
+   separator, so `{: fr}` is the empty language attribute followed by a
+   SEPARATE boolean `fr`, giving `lang="" fr=""`. It is not a language
+   attribute reading `fr`, and it does not fail the block. This follows from
+   `':', [ language_tag ]` with no special case, and it is the answer a reader
+   derives from the production; a rule that made a space here fail the whole
+   block would be one the grammar does not say. The cost lands on a typo rather
+   than on a shape anyone writes deliberately.
 
    COLLISION -- NORMATIVE: `:TAG` and `lang=TAG` ARE THE SAME KEY, so writing
    both is a repeated key and nothing more. RENDER ORDER above already decides
