@@ -44,7 +44,9 @@ const CLAIMS = [
   { section: '1b', input: '# a; b: c\n', differs: true, note: 'Carve keeps alphanumerics only, so a-b-c against Djot a;-b:-c' },
   { section: '1c', input: '{a=b .c #x}\n# abc\n', differs: true, note: 'with an explicit id, Carve keeps non-id attributes on the heading; Djot moves them to the section' },
   { section: '6', input: '%% a comment\n', differs: true, note: 'Carve has plain-text comments; Djot renders the line' },
+  { section: '6', input: '%%% note\nx\n', differs: true, note: 'an unterminated Carve comment fence degrades to a line comment' },
   { section: '7', input: 'text\n# Heading\n', differs: false, note: 'both require block position after an open paragraph' },
+  { section: '7', input: 'intro\n{.c}\n# H\n', differs: true, note: 'Carve preserves an attribute line inside prose while Djot consumes it on the soft break' },
   { section: '11', input: '1. one\n\n  > quoted\n', differs: true, note: 'below the content column the block detaches in Carve, attaches in Djot' },
   { section: '2', input: '-\n', differs: true, note: 'a bare marker is a paragraph in Carve, an empty item in Djot' },
   { section: '3', input: '+ text\n', differs: true, note: '+ is the continuation marker in Carve, a bullet in Djot' },
@@ -67,6 +69,13 @@ const CLAIMS = [
   { section: '13', input: ':::\nX\n', differs: false, note: 'an unclosed container closes at end of input in BOTH' },
   { section: '13', input: ':::\nOuter\n\n::::\nInner\n::::\n:::\n', differs: true, note: 'widening inward nests in Carve, closes the outer in Djot' },
   { section: '14', input: '# One\ntwo\n', differs: true, note: 'a heading ends at the newline in Carve, folds in Djot' },
+  { section: '15', input: '- lead\n\n  > quote\n', differs: true, note: 'Carve keeps an item compact when a sub-block follows; Djot makes it loose' },
+  { section: '16', input: ' # H\n', differs: true, note: 'Carve requires the exact block column; Djot accepts leading indentation' },
+  { section: '16', input: '>\tq\n', differs: true, note: 'Carve requires a literal separator space after a quote marker' },
+  { section: '17', input: '[x]{.123}\n', differs: true, note: 'Carve rejects digit-first attribute identifiers' },
+  { section: '18', input: '-{.c} x\n', differs: true, note: 'Carve provides an explicit list-item attribute channel' },
+  { section: '19', input: '::: note\nx\n:::\n', differs: true, note: 'Carve renders a recognized type as a native admonition' },
+  { section: '20', input: '```\nx\n', differs: false, note: 'an unterminated top-level code fence closes at EOF in both' },
 ]
 
 for (const { section, input, differs, note } of CLAIMS) {
@@ -113,6 +122,15 @@ test('divergence-from-djot section 8: symbols cannot open inside words', () => {
   assert.deepEqual(carveChildren.map((node) => [node.type, node.value]), [['text', 'a:b:c']])
 })
 
+test('divergence-from-djot section 20: an unclosed nested code fence cannot hide the container closer', () => {
+  const input = '::: note\n```\nx\n:::\nafter\n'
+  const carve = normalize(carveToHtml(input))
+  const djot = normalize(djotRender(djotParse(input)))
+
+  assert.match(carve, /<\/aside> <p>after<\/p>$/)
+  assert.match(djot, /after <\/code><\/pre> <\/div>$/)
+})
+
 test('every claim names a section that exists in the page', async () => {
   const { readFileSync } = await import('node:fs')
   const page = readFileSync(new URL('../docs/divergence-from-djot.md', import.meta.url), 'utf8')
@@ -135,6 +153,7 @@ test('every numbered divergence has an audited justification row', async () => {
 
   assert.deepEqual(sections, [
     '1', '1b', '1c', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14',
+    '15', '16', '17', '18', '19', '20',
   ])
   for (const section of sections) {
     assert.match(

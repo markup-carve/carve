@@ -37,7 +37,7 @@ AST- or option-dependent claims cite their dedicated corpus/spec coverage.
 | 4. Visual emphasis delimiters | source break | Delimiters visually suggest their rendered effect and cover underline/highlight | divergence claims + inline corpus |
 | 5. No `(1)` list marker | source break | Parenthesized numbers are overwhelmingly prose; supported ordered forms remain ample | divergence claim + ordered-list corpus |
 | 6. Plain-text comments | source break/addition | `%%` supports cheap line and trailing comments without brace syntax | divergence claim + comment corpus |
-| 7. Block position | aligned | Carve deliberately converges with Djot for hard-wrap safety and one extension-safe rule | agreement claim + paragraph corpus |
+| 7. Block position | aligned with one source-preservation break | Carve follows Djot for hard-wrap safety but does not consume an attribute line inside prose | agreement/divergence claims + paragraph corpus |
 | 8. Symbol boundaries | source break | Prevent substitutions inside words/times and collisions with underline syntax | symbol-boundary corpus |
 | 9. Explicit definition lists | source break | Separate term/definition markers remove colon ambiguity and support multiple bodies | definition-list corpus |
 | 10. Target-routed raw blocks | aligned syntax / capability boundary | A renderer must not leak content intended for a different output target; Pandoc supplies writers Carve does not bundle | agreement claims + raw-target corpus |
@@ -45,6 +45,12 @@ AST- or option-dependent claims cite their dedicated corpus/spec coverage.
 | 12. Smart punctuation AST | AST break | A leaf records the authored token without inventing container structure | AST-shape tests |
 | 13. Exact colon-fence closer | source break | Fence width encodes local depth and makes canonical writing single-pass | divergence claims + nested-container corpus |
 | 14. Single-line headings | source break | A heading is a bounded title with stable extent and id, not an open paragraph | divergence claim + heading corpus |
+| 15. Compact item sub-blocks | rendering break | Attached blocks do not make list lead text visually loose | divergence claim + compact-list corpus |
+| 16. Strict block columns and separators | source break | Literal columns and spaces keep ownership deterministic | divergence claim + portable-whitespace tests |
+| 17. Strict attribute identifiers | source break | HTML/CSS-safe identifier starts avoid surprising numeric names | divergence claim + attribute corpus |
+| 18. List-item attributes | source break/addition | An abutting attribute block targets the item without positional inference | divergence claim + list-attribute corpus |
+| 19. Typed admonitions | renderer specialization | Recognized types render with native admonition semantics instead of a generic div | divergence claim + admonition corpus |
+| 20. Unterminated code fences | aligned top level / contextual guard | EOF closes a top-level fence; an unclosed nested fence cannot hide its container closer | agreement claim + container corpus |
 
 No unlisted behavioral difference is accepted merely because an engine happens
 to produce it: it must either be added here with a reason and a test, or fixed.
@@ -664,6 +670,52 @@ differently in Carve, which is what `carve lint --from-djot` reports.
 Pinned in the corpus as `82-single-line-headings*` - the five cases that used to
 pin the folding rules, kept as the regression guard for what replaced them.
 
+## 15. Compact item sub-blocks stay tight
+
+After a blank line, Djot makes an item loose when its lead paragraph is followed
+by a nested list, quote, fence, div, heading, or table. Carve attaches the same
+block but keeps the lead text unwrapped. Only a genuine second paragraph or a
+blank between items makes the list loose. Structure agrees; visible paragraph
+wrapping differs. This keeps task lists and steps with supporting blocks compact.
+
+## 16. Block columns and marker separators are strict
+
+Djot accepts one-to-three leading spaces before block openers and a tab after a
+quote marker. Carve requires a block opener at its container's exact content
+column and a literal separator space: ` # H` and `>\tq` remain paragraph text.
+The same column model governs list ownership (section 11), so tabs and visually
+similar indentation cannot silently choose different parents.
+
+## 17. Attribute identifiers have a strict start
+
+Djot accepts digit-first attribute identifiers, such as `[x]{.123}`. Carve
+leaves the whole run literal. An id, class, boolean name, or key must start with
+an identifier character; digits, `-`, and `_` remain valid after that start.
+
+## 18. List-item attributes abut the marker
+
+Carve adds `-{.c} text` and `1.{#id} text` as explicit attributes on `<li>`.
+Djot has no list-item-attribute channel and reads the shared bytes differently.
+Abutting the marker makes ownership independent of later item contents; a space
+before `{` instead makes it ordinary item content.
+
+## 19. Recognized div types are native admonitions
+
+For shared source such as `::: note`, Djot emits a generic `<div class="note">`.
+Carve recognizes its core admonition types and emits
+`<aside class="admonition note">`. Unknown types remain generic divs. This is a
+renderer specialization over the common colon-fence structure, not a different
+closer or nesting rule.
+
+## 20. Unterminated code fences align at top level and are guarded in containers
+
+At top-level block position, Carve and Djot both let an otherwise valid code
+fence run through end of input. Carve's closer lookahead is contextual: an
+unterminated fence inside another container is not opaque and therefore cannot
+hide that container's closer. A fence-shaped line inside an open paragraph is
+paragraph content under section 7. An unterminated `%%%` comment fence instead
+degrades to a line comment; Djot has no corresponding comment syntax.
+
 ## What Carve adds on top (not breaks)
 
 These aren't divergences - Djot has no equivalent - but they're why Carve exists
@@ -705,9 +757,11 @@ Most Djot source needs only mechanical changes:
    `</#Anchor>` links work as written - cross-references resolve
    case-insensitively. For lowercase anchors, enable the opt-in
    `lowercaseHeadingIds` transform.
-6. A marker line (`- `, `> `, `# `, a table row, a fence) directly under a line
-   of prose now starts a block. Where you relied on Djot keeping it in the
-   paragraph, add a blank line or escape the marker.
+6. Block-looking lines directly under prose remain in that open paragraph in
+   both languages. One attribute edge is not portable: Djot consumes a lone
+   `{…}` line as soft-break attributes, while Carve preserves it literally.
+   Move intended block attributes after a blank and immediately before their
+   target; escape braces that were intended as prose.
 7. Definition lists: rewrite `: term` (+ indented body) as `:: term` then
    `:  definition`. A multi-paragraph Djot `<dd>` carries over - a Carve
    definition continues like a list item (indent a block after a blank line, or
@@ -717,6 +771,15 @@ Most Djot source needs only mechanical changes:
    Two things need attention. A single bare closer that you relied on to close
    several containers at once now closes only the innermost - give each its
    own. And `:::note` needs a space: `::: note`. See section 13.
+9. Rebase indented block openers to the exact container content column and use
+   a literal space, never a tab, after `>`.
+10. Rename digit-first attribute ids/classes/keys so they start with an
+    identifier character.
+11. If a Djot list item begins with an attributed span, keep a space before it;
+    Carve's abutting `-{…}` spelling targets the `<li>` itself.
+12. Close code fences written inside containers. At top level both languages
+    close an unterminated fence at EOF, but inside a container Djot lets it hide
+    the container closer while Carve deliberately does not.
 
 The bundled `markdownToCarve` helper and Djot migration warnings flag most of
 these automatically.

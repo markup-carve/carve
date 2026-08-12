@@ -134,14 +134,18 @@ This matters because block structure is decided before inline parsing starts.
 You do not need an inline parser guessing whether a later line will turn the
 current line into some different block type.
 
-### One bounded exception: fence closer lookahead in block position
+### One bounded exception: contextual fence closer lookahead
 
 There is a single, deliberate departure from "decided from the line beginning
-alone". Once block position has been established, a fenced-code or comment
-opener is recognized only when a matching closer exists ahead in the same
-context; an unterminated opener degrades without swallowing the remainder.
-Inside an open paragraph no lookahead is needed: every nonblank line is already
-paragraph content by PART 9 §10.
+alone". A fenced-code opener that would take structure away from an enclosing
+container is opaque only when a matching closer exists ahead in that container.
+Without one, the container's own closer remains structural. A comment fence
+likewise needs its exact closer; otherwise its opener is only a line comment.
+
+This is deliberately contextual. At top-level block position, an otherwise
+valid unterminated code fence opens a code block through end of input, matching
+Djot and every Carve 0.1 implementation. Inside an open paragraph no lookahead
+is needed: every nonblank line is already paragraph content by PART 9 §10.
 
 This is a conscious trade, not an oversight:
 
@@ -154,11 +158,11 @@ This is a conscious trade, not an oversight:
 - It is **not** the "bounded local lookahead" the inline layer uses; it is a
   bounded *block-level* forward scan, bounded by the enclosing container.
 
-The payoff is a usability guarantee neither CommonMark nor Djot give: a stray
-fence in block position cannot eat the remainder of the document. Carve accepts
-the narrower parser contract to buy that. Everything else in block
-structure — headings, quotes, bullet lists, thematic breaks, table rows — is
-still decided from the line beginning alone, with no lookahead.
+The payoff is bounded damage inside a container: a missing code-fence closer
+cannot hide the container's closer and move later content into that container.
+It is not a top-level recovery rule; there, end of input closes the code block.
+Everything else in block structure — headings, quotes, bullet lists, thematic
+breaks, table rows — is still decided from the line beginning alone.
 
 ## No backtracking for emphasis resolution
 

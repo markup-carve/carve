@@ -561,7 +561,15 @@ code_block = fenced_code_block, [caption_slot] ;
 
 fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
                     code_content,
-                    code_fence_close, newline ;
+                    [code_fence_close, newline] ;
+(* EOF CLOSE -- NORMATIVE. At top-level block position, or when the fence is
+   the whole content of its container, an otherwise valid opener needs no
+   written closer: end of input / end of that container closes the code block.
+   This is canonical djot behavior and the behavior shipped by every Carve 0.1
+   engine. The optional closer does NOT make an unclosed fence opaque while a
+   surrounding container is being scanned; the contextual guard in PART 9
+   §12 below preserves that container's own closer. Inside an open paragraph,
+   PART 9 §10 keeps the fence-shaped line as paragraph content. *)
 (* The space between the fence and the info string is OPTIONAL (lenient:
    both ```php and ``` php are accepted; Markdown writes no space, Djot writes
    the space). The no-space form (```php) is canonical and is what the X->Carve
@@ -1201,8 +1209,8 @@ admonition = admonition_open, newline,
    A CLOSER IS REQUIRED. Only a fence that closes is opaque. A ``` or ~~~
    opener with no closer ahead opens NO span: the container's own closer
    stays structural, and the lines after it are parsed normally. This is the
-   same structural validation used at block position -- an opener with no
-   closer is not a fence -- and the same test the `%%%` rule above already states
+   contextual validation used while collecting a container, and the same test
+   the `%%%` rule above already states
    ("an opener with no exact closer ahead opens nothing"). It was written
    for the comment block and not for the code fence, and all three engines
    implemented exactly what was written: `%%%` guarded, ``` not (carve#515).
@@ -1220,7 +1228,7 @@ admonition = admonition_open, newline,
    inside it. With the guard the fence is not a span, the `:::` closes the
    admonition, and `after` is a top-level paragraph.
 
-   This does NOT change a fence beginning at block position: `` ``` `` alone,
+   This does NOT change a fence beginning at top-level block position: `` ``` `` alone,
    or as the whole content of a blockquote, still opens a code block that
    runs to the end. This clause gates a fence that would take structure away
    from its enclosing container, not a fence that is the content. *)
