@@ -5514,6 +5514,12 @@ EOF = (* end of file *) ;
       independently nestable spelling and the only spelling for extension
       names outside this fixed registry.
 
+      An explicit `abbr` semantic attribute is authoritative over automatic
+      abbreviation expansion inside that span. A resolved `abbreviation` child
+      contributes only its visible abbreviation text there; renderers MUST NOT
+      emit a nested `<abbr>` element. Thus a document-level `*[HTML]: Long`
+      definition does not override `[HTML]{abbr="Custom"}`.
+
    ============================================================================
    PART 11: CANONICAL SOURCE WRITER (NORMATIVE)
    ============================================================================

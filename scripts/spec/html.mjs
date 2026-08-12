@@ -842,14 +842,17 @@ function applyAbbreviations(html, ctx) {
   // transform only text segments outside tags and outside code/pre
   const parts = html.split(/(<[^>]*>)/)
   let inCode = 0
+  let inAbbr = 0
   for (let i = 0; i < parts.length; i++) {
     const p = parts[i]
     if (p.startsWith('<')) {
       if (/^<(code|pre)[\s>]/.test(p)) inCode++
       else if (/^<\/(code|pre)>/.test(p)) inCode--
+      if (/^<abbr[\s>]/.test(p)) inAbbr++
+      else if (/^<\/abbr>/.test(p)) inAbbr--
       continue
     }
-    if (inCode > 0 || p === '') continue
+    if (inCode > 0 || inAbbr > 0 || p === '') continue
     let s = p
     for (const [term, expansion] of ctx.abbrDefs) {
       const re = new RegExp(`(^|[^\\p{L}\\p{N}])(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?![\\p{L}\\p{N}])`, 'gu')
