@@ -53,7 +53,7 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | Mermaid / FencedRender, MathBlock, Glossary, Index, HeadingNumbers, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | Bibliography (§6) — an **option on Citations**, not a separate registration: the host passes a CSL-JSON pool to the Citations extension | <Badge type="warning" text="extension" /> | off | — |
 | TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
-| SemanticSpan — **carve-php only** legacy attributes (`[x]{kbd}`); distinct from the built-in portable `:kbd[x]` semantic registry | <Badge type="warning" text="extension" /> | off | — |
+| Semantic spans — compact portable attributes (`[x]{kbd}`, `[HTML]{abbr="…"}`); PHP's former opt-in extension is now a compatibility shim | <Badge type="tip" text="core" /> | on | no |
 | [ImgFence](/svg-images) (sanitized SVG `img` fence — sandboxed by default) | <Badge type="warning" text="extension" /> | off | — |
 
 A `:name[…]` / `::: name` whose word has no registered handler renders via the

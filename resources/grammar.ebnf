@@ -5492,6 +5492,28 @@ EOF = (* end of file *) ;
       coincide. Accessible ruby is NOT in this registry: it requires structured
       base/annotation children rather than a single inline container.
 
+   10. COMPACT SEMANTIC SPANS. On an ordinary `[content]{attrs}` span, the
+      boolean or key/value attributes `abbr`, `time`, `code`, `mark`, `samp`,
+      `var`, `kbd`, `cite`, and `dfn` are reserved HTML rendering sugar. Each
+      present name is consumed as an attribute and wraps the rendered inline
+      content in its same-named HTML element. A non-empty `abbr`, `dfn`, or
+      `time` value becomes `title`, `title`, or `datetime`, respectively;
+      values on the other names only select their wrapper.
+
+      Multiple semantic attributes nest in this fixed INNER-TO-OUTER order:
+      `abbr`, `time`, `code`, `mark`, `samp`, `var`, `kbd`, `cite`, `dfn`.
+      This order is independent of author attribute order. Any id, class, or
+      other key/value attributes remain on one outer `<span>` and pass through
+      §1-2 plus PART 9 §25 attribute hardening. If no semantic attribute is
+      present, the ordinary `<span>` rendering is unchanged.
+
+      This rule changes only HTML rendering. The AST remains an ordinary
+      `span` carrying the authored attributes. Plain and ANSI targets render
+      its inline content, and the canonical Carve writer preserves
+      `[content]{attrs}`. The `:name[content]` form in §9 remains the generic,
+      independently nestable spelling and the only spelling for extension
+      names outside this fixed registry.
+
    ============================================================================
    PART 11: CANONICAL SOURCE WRITER (NORMATIVE)
    ============================================================================

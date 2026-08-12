@@ -24,3 +24,6 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+45-inline-extensions-9  compact semantic span attributes await the downstream carve-js merge
+45-inline-extensions-10  compact semantic span nesting and hardening await the downstream carve-js merge
+97-boolean-attributes  kbd changed from a generic boolean span attribute to portable semantic sugar

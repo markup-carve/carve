@@ -366,6 +366,41 @@ The semantic element keeps nested inline content and authored attributes.
 
 :::
 
+For semantic spans, the same registry is available as compact attribute sugar.
+This is especially useful when several semantic wrappers belong to one label.
+`abbr`, `dfn`, and `time` values map to `title`, `title`, and `datetime`; the
+fixed nesting order preserves the established PHP spelling.
+
+::: compare
+
+```carve
+[CSS]{dfn abbr="Cascading Style Sheets"}
+[Noon]{time="12:00"} [x]{code mark samp var kbd cite}
+```
+
+```html
+<p><dfn><abbr title="Cascading Style Sheets">CSS</abbr></dfn>
+<time datetime="12:00">Noon</time> <cite><kbd><var><samp><mark><code>x</code></mark></samp></var></kbd></cite></p>
+```
+
+:::
+
+Non-semantic attributes remain on one hardened outer span.
+
+::: compare
+
+```carve
+[*Ctrl*+C]{#copy .shortcut kbd data-key="copy" onclick="alert(1)"}
+[x]{kbd onclick="alert(1)"}
+```
+
+```html
+<p><span id="copy" class="shortcut" data-key="copy"><kbd><strong>Ctrl</strong>+C</kbd></span>
+<span><kbd>x</kbd></span></p>
+```
+
+:::
+
 `:cite[text]` is a work title or source, not a bibliographic `[@key]`
 citation. `:abbr[text]{title="…"}` is independent of automatic abbreviation
 definitions. Names outside the fixed registry retain the readable generic
