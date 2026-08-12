@@ -776,6 +776,69 @@ carries that where a `<div>` does not. RENDERER SPECIALIZATION rather than a
 source or AST break: the same source produces the same tree shape, and only the
 element it renders to differs.
 
+## 21. Footnote labels are matched exactly
+
+**Djot:** a footnote label is normalized before lookup, so runs of whitespace
+collapse and the ends are trimmed. Every reference below binds to the same
+definition.
+
+**Carve:** the label runs to the closing `]` and is matched exactly. Whitespace
+is not normalized, the ends are part of the identifier, and a reference may not
+contain a newline at all - so only a reference written the way the definition
+was written binds.
+
+Definition:
+
+```
+[^a b]: foo
+```
+
+References, measured against djot.js 0.3.2:
+
+```
+[^a b]      Djot: binds    Carve: binds
+[^a  b]     Djot: binds    Carve: literal text
+[^a<TAB>b]  Djot: binds    Carve: literal text
+[^ a b ]    Djot: binds    Carve: literal text
+```
+
+A reference may not contain a newline in Carve, so a wrapped one is literal:
+
+```
+see[^two
+words].
+
+[^two words]: foo
+```
+
+renders
+
+```html
+<p>see[^two
+words].</p>
+```
+
+Released Djot agrees on that one: djot.js 0.3.2 also leaves it literal, so this
+half is not a divergence today. It is becoming one - jgm/djot.js#146 rules the
+two sides asymmetric, letting a reference wrap and folding the newline away in
+normalization, and djot-php#269 follows that upstream. Carve's answer stays no:
+a definition marker is one line, and without normalization a wrapped reference
+would be an identifier no definition can bind.
+
+**Why.** A label is an identifier, and normalization makes two visibly different
+identifiers the same key: `[^a b]` and `[^a  b]` are one footnote in Djot,
+which is a difference an author can see in their source but not in their
+output. Matching the bytes keeps the source the authority, and it is the same
+ruling the link-reference labels take.
+
+The cost is real and worth stating: a long label cannot be wrapped. Djot buys
+that ability with normalization; Carve does not, and a reference broken across
+lines stays literal text rather than binding. `carve portability` reports the
+difference on a document that relies on either behavior.
+
+A SOURCE break: the bytes decide, and nothing is silently dropped - an
+unmatched reference stays visible as the text the author typed.
+
 ## What Carve adds on top (not breaks)
 
 An unterminated `%%%` degrades to a line comment rather than opening an opaque
