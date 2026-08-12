@@ -75,6 +75,7 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `289-a-structural-attribute-leads-the-author-s-own`,
 `290-adjacent-sibling-lists-survive-the-round-trip`,
 `291-a-fence-keeps-the-blank-line-at-the-end-of-its-content`,
+`292-a-boolean-and-a-key-value-of-the-same-name-are-one-attribute`,
 `45-inline-extensions-7`,
 `45-inline-extensions-8`.
 
