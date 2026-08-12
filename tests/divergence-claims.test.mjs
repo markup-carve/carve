@@ -75,6 +75,22 @@ const CLAIMS = [
   { section: '13', input: ':::\nX\n', differs: false, note: 'an unclosed container closes at end of input in BOTH' },
   { section: '13', input: ':::\nOuter\n\n::::\nInner\n::::\n:::\n', differs: true, note: 'widening inward nests in Carve, closes the outer in Djot' },
   { section: '14', input: '# One\ntwo\n', differs: true, note: 'a heading ends at the newline in Carve, folds in Djot' },
+  { section: '15', input: ' # H\n', differs: true, note: 'an indented block opener is prose in Carve, a heading in Djot' },
+  { section: '15', input: '>\tq\n', differs: true, note: 'a tab does not satisfy the quote separator in Carve' },
+  { section: '16', input: '[x]{.123}\n', differs: true, note: 'a class may not start with a digit in Carve, so the braces stay literal' },
+  { section: '17', input: '-{.c} x\n', differs: true, note: 'the attribute block binds to the marker in Carve, to a span in Djot' },
+  { section: '18', input: 'intro\n{.c}\n# H\n', differs: true, note: 'Djot consumes the attribute line and drops the bytes; Carve applies them to the block below' },
+  { section: '19', input: '- a\n\n  > q\n', differs: true, note: 'an attached quote leaves the item tight in Carve, loose in Djot' },
+  { section: '19', input: '- a\n\n  # H\n', differs: true, note: 'same for an attached heading' },
+  // A nested LIST is the boundary of section 19's claim and is NOT listed here.
+  // Both languages leave that item tight - neither emits `<li><p>` - so the
+  // claim genuinely does not extend to it. It is not expressible as HTML
+  // equality either: the two pretty-print the nesting differently (`<li> a` vs
+  // `<li>a`), so `differs: false` fails on whitespace while `differs: true`
+  // would assert a divergence that is not there. Same shape as the section 13
+  // nesting claim above. The scope is stated in the page instead.
+  { section: '20', input: '::: note\nbody\n:::\n', differs: true, note: 'a recognized type renders as a native admonition in Carve, a plain div in Djot' },
+  { section: '6', input: '%%%\nx\n', differs: true, note: 'an unterminated comment fence degrades to a line comment in Carve; Djot renders the bytes' },
 ]
 
 for (const { section, input, differs, note } of CLAIMS) {

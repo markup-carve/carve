@@ -230,6 +230,12 @@ Djot:   <p>intro\n# Heading</p>                  (one paragraph)
 Carve:  <p>intro</p><h1>Heading</h1>             (paragraph + heading)
 ```
 
+An attribute line between the prose and the block is where the two differ by
+more than block position: Djot consumes it as attributes on the soft break and
+the bytes vanish, while Carve ends the paragraph and applies them to the block
+below. Section 18 records that separately, because "block position is aligned"
+is true of the heading and false of the attribute line above it.
+
 A list marker is the exception - it does NOT interrupt:
 
 ```
@@ -644,7 +650,138 @@ differently in Carve, which is what `carve lint --from-djot` reports.
 Pinned in the corpus as `82-single-line-headings*` - the five cases that used to
 pin the folding rules, kept as the regression guard for what replaced them.
 
+## 15. Block markers are column-strict and their separator is a literal space
+
+**Djot:** a block marker tolerates leading indentation and accepts any
+whitespace as its separator, so ` # H` is a heading and `>\tq` is a quote.
+
+**Carve:** a top-level block opener must start at column 0, and a marker's
+separator is a literal space that a tab does not satisfy (PART 9 §24 C1 gives a
+tab a column value; the separator rule is about the byte, not the column).
+
+```
+ # H            Djot:  <section id="H"><h1>H</h1></section>
+                Carve: <p># H</p>
+
+>\tq            Djot:  <blockquote><p>q</p></blockquote>
+                Carve: <p>&gt;\tq</p>
+```
+
+**Why.** Both spellings are invisible in a diff and in most editors, so a
+document that renders one way for the author renders another way after a
+reformat. Requiring the column and the byte makes the shape of the source
+decide, not the width of a tab stop. This is a SOURCE break: the bytes mean
+something different, and nothing is silently dropped.
+
+## 16. Attribute identifiers are strict
+
+**Djot:** an attribute value is largely unconstrained, so `{.123}` is a class
+named `123`.
+
+**Carve:** a class or id must be an identifier - it may not start with a digit -
+and an attribute block that fails the shape is not an attribute block at all. It
+stays literal text.
+
+```
+[x]{.123}       Djot:  <p><span class="123">x</span></p>
+                Carve: <p>[x]{.123}</p>
+```
+
+**Why.** A class that cannot be written as a CSS selector is a class nobody can
+style, and accepting it hides the typo that produced it. A SOURCE break, and a
+loud one - the braces stay visible rather than turning into an element.
+
+## 17. A list marker takes attributes
+
+**Djot:** `-{.c} x` is a paragraph: the `-` is text carrying a span, because a
+bullet needs its separator before anything else.
+
+**Carve:** the attribute block binds to the MARKER and the line is a list item.
+
+```
+-{.c} x         Djot:  <p><span class="c">-</span> x</p>
+                Carve: <ul><li class="c">x</li></ul>
+```
+
+**Why.** Attributing the item is the thing authors want, and Djot's reading
+turns a would-be list into prose with a stray bullet in it. An EXTENSION that is
+also a source break, since the same bytes parse to different block structure.
+
+## 18. An attribute line in inline position is preserved, not consumed
+
+**Djot:** a `{...}` line inside an open paragraph is consumed as attributes on
+the soft break. Those bytes leave no trace in the output.
+
+**Carve:** the paragraph ends at the block opener below (section 7), and the
+attribute line applies to the block that follows.
+
+```
+intro
+{.c}
+# H
+
+Djot:   <p>intro # H</p>                       ({.c} is gone; the heading is text)
+Carve:  <p>intro</p><h1 class="c">H</h1>       (the attributes land on the heading)
+```
+
+**Why.** Silently discarding authored bytes is the failure mode hardest to
+notice, because the output is well-formed and merely missing something. This is
+an AST break as much as a source one: Djot's tree has no node carrying those
+attributes at all.
+
+## 19. An attached sub-block leaves the item tight
+
+**Djot:** a blank line inside an item makes the item loose, so its lead becomes
+a `<p>`, whatever follows the blank.
+
+**Carve:** a sub-block attached after a blank keeps the item tight - the lead
+stays bare. §17 L2.
+
+```
+- a
+
+  > q
+
+Djot:   <li><p>a</p><blockquote><p>q</p></blockquote></li>
+Carve:  <li>a<blockquote><p>q</p></blockquote></li>
+```
+
+Measured across the attached kinds: a block quote, a code fence, a colon div, a
+heading and a table all diverge this way. **A nested list does not** - Djot keeps
+that item tight too, so the two agree there. A plain paragraph after the blank is
+loose in both, which is the control.
+
+**Why.** The blank line is how a sub-block is attached at all, so treating it as
+a looseness signal makes attachment and spacing the same gesture. An AST break:
+the difference is a `<p>` wrapper, not the content.
+
+## 20. A typed container is a native admonition
+
+**Djot:** `::: note` is a div with a class.
+
+**Carve:** a recognized type renders as an `<aside>` carrying the admonition
+role, and unrecognized types still render as a div.
+
+```
+::: note
+body
+:::
+
+Djot:   <div class="note"><p>body</p></div>
+Carve:  <aside class="admonition note"><p>body</p></aside>
+```
+
+**Why.** An admonition is a landmark for assistive technology, and `<aside>`
+carries that where a `<div>` does not. RENDERER SPECIALIZATION rather than a
+source or AST break: the same source produces the same tree shape, and only the
+element it renders to differs.
+
 ## What Carve adds on top (not breaks)
+
+An unterminated `%%%` degrades to a line comment rather than opening an opaque
+block, so `%%%` then `x` renders `<p>x</p>` where Djot - which has no comment
+syntax - renders both lines as text. That is part of the comment addition
+(section 6) rather than a separate design decision.
 
 These aren't divergences - Djot has no equivalent - but they're why Carve exists
 as more than restyled Djot:
@@ -692,7 +829,22 @@ Most Djot source needs only mechanical changes:
    `:  definition`. A multi-paragraph Djot `<dd>` carries over - a Carve
    definition continues like a list item (indent a block after a blank line, or
    use a lone `+`; see section 9).
-8. Nested containers mostly carry over: equal-length fences nest in both
+8. **Attribute blocks that Djot accepted and Carve does not.** A class or id
+   starting with a digit (`{.123}`) is no longer an attribute block - it stays
+   literal text, so it becomes visible rather than silently styling nothing.
+   Rename it (section 16).
+9. **An attribute line inside a paragraph.** Djot consumed `{...}` on a soft
+   break and dropped the bytes; Carve ends the paragraph at the block below and
+   applies them to it. If you relied on the Djot reading, the attributes now
+   land on something. This is the one form on this list that silently CHANGED
+   meaning rather than becoming an error (section 18).
+10. **Indented block openers and tab separators.** ` # H` is prose in Carve and
+   `>\tq` is prose too - the opener must start at column 0 and the separator is
+   a literal space. Both are invisible in most editors, so search for them
+   rather than reading for them (section 15).
+11. **`-{.c} x`** is a list item with attributes in Carve and a paragraph in
+   Djot. Nothing is lost, but the block structure changes (section 17).
+12. Nested containers mostly carry over: equal-length fences nest in both
    languages, and an unclosed container ends at the end of the input in both.
    Two things need attention. A single bare closer that you relied on to close
    several containers at once now closes only the innermost - give each its
