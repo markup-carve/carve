@@ -2466,6 +2466,13 @@ A `[^label]` reference is numbered by document order; its `[^label]: …`
 definition renders in an endnotes section with a backlink, using djot's
 `doc-noteref` / `doc-endnotes` / `doc-backlink` roles.
 
+The label is a non-empty physical-line identifier. Spaces and tabs are allowed
+and matched exactly, but a source newline ends the opportunity to form the
+reference: an editor's visual wrapping is harmless, while an inserted hard
+line break leaves the bracketed source literal. A definition marker likewise
+occupies one physical line, so there is no multiline identifier that only one
+side could produce.
+
 ::: compare
 
 ```carve
@@ -2575,6 +2582,27 @@ See[^m] and again[^m].
     </li>
   </ol>
 </section>
+```
+
+:::
+
+::: compare
+
+```carve
+Wrapped[^two
+words].
+
+[^two words]: This definition is not referenced.
+
+[^broken
+label]: This is not a definition.
+```
+
+```html
+<p>Wrapped[^two
+words].</p>
+<p>[^broken
+label]: This is not a definition.</p>
 ```
 
 :::

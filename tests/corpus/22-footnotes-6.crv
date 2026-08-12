@@ -1,0 +1,7 @@
+Wrapped[^two
+words].
+
+[^two words]: This definition is not referenced.
+
+[^broken
+label]: This is not a definition.
