@@ -2273,7 +2273,11 @@ highlight_content = (inline_element | text_run | literal_special)+ ;
    see docs/dismissed-syntax.md. *)
 footnote = reference_footnote | inline_footnote ;
 reference_footnote = "[^", footnote_label, ']' ;
-footnote_label = {character - ']'}+ ;
+(* A label is a physical-line identifier. It may contain spaces and tabs, but
+   never a source newline: a definition marker occupies one line, and admitting
+   a newline only on the reference side would create an identifier no valid
+   definition can bind. Matching is exact; whitespace is not normalized. *)
+footnote_label = {character - ']' - newline}+ ;
 inline_footnote = "^[", inline_content, ']' ;
 (* the closing `]` is the balanced, escape- and code-span-aware close
    (PART 9 §16); footnote recognition is DISABLED inside the content *)

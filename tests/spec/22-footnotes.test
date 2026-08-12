@@ -71,3 +71,18 @@ See[^m] and again[^m].
   </ol>
 </section>
 ```
+
+```
+Wrapped[^two
+words].
+
+[^two words]: This definition is not referenced.
+
+[^broken
+label]: This is not a definition.
+.
+<p>Wrapped[^two
+words].</p>
+<p>[^broken
+label]: This is not a definition.</p>
+```

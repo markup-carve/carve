@@ -242,6 +242,8 @@ CarveCore {
 
   // --- Footnotes (PART 3; a bare `^` is literal, so `^[` is unambiguous) --
   footnoteRef = "[^" fnLabel "]" attrs?
+  // A physical-line identifier: spaces and tabs are data, newlines are not.
+  // This mirrors the one-line definition marker and grammar.ebnf §16.
   fnLabel    = (~"]" ~newline any)+
   inlineNote = "^[" brContent* "]" attrs?
 

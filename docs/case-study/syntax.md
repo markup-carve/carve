@@ -1023,6 +1023,9 @@ renders as
 ```
 
 **Rules** (PART 9 §16):
+- A label is a non-empty physical-line identifier. It may contain spaces and
+  tabs, matched exactly, but never a source newline; `[^two` then `words]` is
+  literal text rather than a reference.
 - Definitions may appear anywhere (order-independent); the first
   definition for a label wins. A body is the def line plus any indented
   continuation lines (parsed as blocks).
