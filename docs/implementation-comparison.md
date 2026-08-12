@@ -74,7 +74,9 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `283-an-empty-footnote-body-is-written-with-the-empty-sentinel`,
 `289-a-structural-attribute-leads-the-author-s-own`,
 `290-adjacent-sibling-lists-survive-the-round-trip`,
-`291-a-fence-keeps-the-blank-line-at-the-end-of-its-content`.
+`291-a-fence-keeps-the-blank-line-at-the-end-of-its-content`,
+`45-inline-extensions-7`,
+`45-inline-extensions-8`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the

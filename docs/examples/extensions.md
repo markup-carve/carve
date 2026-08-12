@@ -247,6 +247,12 @@ Hey @alice, see #release-1.0.
 
 ## Inline extensions
 
+Nine names have a built-in, portable semantic HTML mapping: `abbr`, `cite`,
+`dfn`, `kbd`, `samp`, `var`, `time`, `code`, and `mark`. They remain ordinary
+`inline_extension` AST nodes; the mapping is renderer behavior, not an opt-in
+extension. Attributes land on the semantic element and use the same hardening
+as every other authored attribute.
+
 ::: compare
 
 ```carve
@@ -331,6 +337,39 @@ An authored `{.class}` on a generic inline extension merges into the single `cla
 ```
 
 :::
+
+::: compare
+
+```carve
+:abbr[HTML]{title="HyperText Markup Language"} :cite[The Book] :dfn[term]
+:samp[ready] :var[x] :time[noon]{datetime="12:00"} :code[x] :mark[relevant]
+```
+
+```html
+<p><abbr title="HyperText Markup Language">HTML</abbr> <cite>The Book</cite> <dfn>term</dfn>
+<samp>ready</samp> <var>x</var> <time datetime="12:00">noon</time> <code>x</code> <mark>relevant</mark></p>
+```
+
+:::
+
+The semantic element keeps nested inline content and authored attributes.
+
+::: compare
+
+```carve
+:kbd[*Ctrl*+C]{#copy .shortcut data-key="copy" onclick="alert(1)"}
+```
+
+```html
+<p><kbd id="copy" class="shortcut" data-key="copy"><strong>Ctrl</strong>+C</kbd></p>
+```
+
+:::
+
+`:cite[text]` is a work title or source, not a bibliographic `[@key]`
+citation. `:abbr[text]{title="…"}` is independent of automatic abbreviation
+definitions. Names outside the fixed registry retain the readable generic
+fallback.
 
 ## Symbols
 

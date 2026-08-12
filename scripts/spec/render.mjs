@@ -349,11 +349,11 @@ const sem = g.createSemantics().addOperation('h', {
     const inner = renderInline(content.sourceString, '[')
     const extra = attrsOf(attrs).filter((a) => a[0] === 'class').map((a) => a[1])
     const rest = attrsOf(attrs).filter((a) => a[0] !== 'class')
-    // the kbd extension renders its own element (attrs apply to it);
-    // everything else is the generic ext-<name> span
-    if (n === 'kbd') {
-      const cls = extra.length ? ` class="${escapeAttr(extra.join(' '))}"` : ''
-      return `<kbd${cls}${renderAttrs(rest)}>${inner}</kbd>`
+    // PART 10 §9: the fixed semantic registry renders its own element (attrs
+    // apply to it); everything else is the generic ext-<name> span.
+    const semantic = new Set(['abbr', 'cite', 'dfn', 'kbd', 'samp', 'var', 'time', 'code', 'mark'])
+    if (semantic.has(n)) {
+      return `<${n}${renderAttrs(attrsOf(attrs))}>${inner}</${n}>`
     }
     const cls = [`ext-${n}`, ...extra].join(' ')
     return `<span class="${cls}"${renderAttrs(rest)}>${inner}</span>`

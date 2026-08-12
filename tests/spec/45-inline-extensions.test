@@ -37,3 +37,17 @@ Press :kbd[Ctrl+C] to copy.
 .
 <p><span class="ext-foo cls">a</span></p>
 ```
+
+```
+:abbr[HTML]{title="HyperText Markup Language"} :cite[The Book] :dfn[term]
+:samp[ready] :var[x] :time[noon]{datetime="12:00"} :code[x] :mark[relevant]
+.
+<p><abbr title="HyperText Markup Language">HTML</abbr> <cite>The Book</cite> <dfn>term</dfn>
+<samp>ready</samp> <var>x</var> <time datetime="12:00">noon</time> <code>x</code> <mark>relevant</mark></p>
+```
+
+```
+:kbd[*Ctrl*+C]{#copy .shortcut data-key="copy" onclick="alert(1)"}
+.
+<p><kbd id="copy" class="shortcut" data-key="copy"><strong>Ctrl</strong>+C</kbd></p>
+```

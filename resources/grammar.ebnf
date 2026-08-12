@@ -2416,8 +2416,9 @@ citation_definition = '[@', citation_key, "]:", space, [attributes], inline_cont
 extension_inline = ':', extension_name, '[', extension_content, ']', [attributes] ;
 extension_name = identifier ;
 (* `identifier` already permits a leading `_`, so `_` is a valid extension
-   name: `:_[x]` -> `<span class="ext-_">x</span>` (an unrecognized name
-   falls back to a generic `<span class="ext-NAME">`). It MUST start with a
+   name: `:_[x]` -> `<span class="ext-_">x</span>` (a name outside the
+   built-in semantic registry in PART 10 §9 falls back to a generic
+   `<span class="ext-NAME">`). It MUST start with a
    letter or `_`, so a digit-first name is NOT an extension: `:1[x]` stays
    literal text, while `:a1[x]` (digit only after the first letter) is valid.
    On a GENERIC extension an authored `{.class}` MERGES into the single
@@ -5465,6 +5466,31 @@ EOF = (* end of file *) ;
       when no URL template is configured; a configured template links to them. The footnote
       backlink glyph is `↩` (§16). Math wraps content in `\(…\)` /
       `\[…\]` inside `<span class="math inline|display">` (§18).
+
+   9. BUILT-IN SEMANTIC INLINE EXTENSIONS. The following extension names render
+      as their same-named HTML element: `abbr`, `cite`, `dfn`, `kbd`, `samp`,
+      `var`, `time`, `code`, and `mark`. Thus `:kbd[x]` is `<kbd>x</kbd>` and
+      `:abbr[HTML]{title="HyperText Markup Language"}` is
+      `<abbr title="HyperText Markup Language">HTML</abbr>`.
+
+      These are renderer mappings over the ordinary `inline_extension` node;
+      they introduce no new syntax or AST node type and require no opt-in
+      extension registration. Authored id, classes and key/value attributes
+      land on the semantic element in the normal author order and pass through
+      §1-2 plus PART 9 §25 attribute hardening.
+      An implementation MUST NOT turn
+      an arbitrary extension name into an HTML tag. Every name outside this
+      fixed registry retains the generic `<span class="ext-NAME">` fallback.
+
+      Plain and ANSI targets render only the extension's inline content. The
+      canonical Carve writer preserves `:name[content]{attrs}`. `:cite[text]`
+      denotes a work title or source and is unrelated to a bibliographic
+      `[@key]` citation. `:abbr[text]{title="…"}` is an explicitly authored
+      semantic wrapper and neither declares nor changes automatic abbreviation
+      definitions. `:code` and `:mark` remain extension spellings distinct from
+      the ordinary code-span and highlight syntaxes even though their HTML tags
+      coincide. Accessible ruby is NOT in this registry: it requires structured
+      base/annotation children rather than a single inline container.
 
    ============================================================================
    PART 11: CANONICAL SOURCE WRITER (NORMATIVE)

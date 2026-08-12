@@ -1,0 +1,1 @@
+:kbd[*Ctrl*+C]{#copy .shortcut data-key="copy" onclick="alert(1)"}
