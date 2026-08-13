@@ -1,0 +1,13 @@
+A derived title yields to an authored one
+
+```
+[x]{abbr="derived" title="authored"} [y]{time="2026" datetime="custom"}
+.
+<p><abbr title="authored">x</abbr> <time datetime="custom">y</time></p>
+```
+
+```
+[HTML]{abbr="HyperText Markup Language"}
+.
+<p><abbr title="HyperText Markup Language">HTML</abbr></p>
+```

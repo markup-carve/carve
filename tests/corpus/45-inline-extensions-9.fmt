@@ -1,2 +1,2 @@
-[CSS]{dfn abbr="Cascading Style Sheets"}
-[Noon]{time=12:00} [x]{code mark samp var kbd cite}
+[*Ctrl*+C]{#copy .shortcut kbd data-key=copy onclick=alert(1)}
+[x]{kbd onclick=alert(1)}

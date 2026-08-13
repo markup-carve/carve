@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Semantic spans split by tier** (carve#1146). Core reserves three span
+  attributes - `abbr`, `time`, `kbd` - because the first two carry data the
+  author would otherwise lose and the third is what every comparable system
+  ships. `samp`, `var`, `cite` and `dfn` are the new Tier-2 `SemanticSpan`
+  extension's, off by default. The `:name[…]` spelling has no core handler at
+  all: it falls back to `<span class="ext-NAME">`, and the extension accepts it
+  as a SOFT-DEPRECATED form for the seven names, scheduled for removal in 0.2 -
+  it was released behavior in carve-js and carve-rs, and it cannot express a
+  combination (`:dfn[:abbr[CSS]]` does not nest, where `[CSS]{dfn abbr="…"}`
+  does).
+
+- **Leftover attributes ride the outermost semantic element** (carve#1146). A
+  consumed name RENAMES the span rather than wrapping it, so `[Tab]{#k .key kbd}`
+  is `<kbd id="k" class="key">Tab</kbd>` rather than a `<span>` around a `<kbd>`,
+  and `[x]{kbd onclick="…"}` is a bare `<kbd>`. A span with no semantic name is
+  unchanged: hardening removes attributes, never the element the author wrote.
+
+
 - **Compact semantic span attributes are portable core syntax** (carve#1124).
   `[Ctrl]{kbd}`, `[HTML]{abbr="…"}`, and combinations such as
   `[CSS]{dfn abbr="…"}` now share one normative HTML mapping across PHP,

@@ -164,8 +164,9 @@ continues on the next line.
 ```carve
 {#id .class key=value}        (attach to the preceding/following element)
 {:fr}  {:de-CH}  {:}          (language: short for lang="fr"; {:} = unknown)
-[Tab]{kbd}                    (semantic span: <kbd>Tab</kbd>; also abbr, time,
-[HTML]{abbr="HyperText …"}     samp, var, cite, dfn)
+[Tab]{kbd}                    (semantic span: <kbd>Tab</kbd>; core names are
+[HTML]{abbr="HyperText …"}     kbd, abbr, time — samp/var/cite/dfn need the
+[now]{time="2026-01-01"}       SemanticSpan extension)
 
 *[HTML]: HyperText Markup Language   (abbreviation definition)
 

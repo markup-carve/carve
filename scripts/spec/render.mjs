@@ -206,7 +206,10 @@ export function renderAttrs(list) {
 // over the ordinary `span` node.  Keep PHP's established relative order and
 // outer span for non-semantic attributes; the authored attribute list remains
 // untouched in the AST and source targets.
-const SEMANTIC_SPAN_ORDER = ['abbr', 'time', 'samp', 'var', 'kbd', 'cite', 'dfn']
+// PART 9 §9: three names are core - the two that carry data plus `kbd`. The
+// other four are the Tier-2 SemanticSpan extension's (§10), and the oracle
+// renders the CORE, so they stay ordinary attributes here.
+const SEMANTIC_SPAN_ORDER = ['abbr', 'time', 'kbd']
 function renderSemanticSpan(text, list) {
   const semantic = new Map()
   const rest = []
@@ -218,16 +221,25 @@ function renderSemanticSpan(text, list) {
   if (semantic.size === 0) return `<span${renderAttrs(list)}>${text}</span>`
 
   let html = text
+  const outermost = [...SEMANTIC_SPAN_ORDER].reverse().find((name) => semantic.has(name))
+  const MAPS_TO = { abbr: 'title', time: 'datetime' }
   for (const name of SEMANTIC_SPAN_ORDER) {
     if (!semantic.has(name)) continue
     const value = semantic.get(name)
-    const mapped = value !== '' && name === 'abbr' ? ` title="${escapeAttr(value)}"`
-      : value !== '' && name === 'dfn' ? ` title="${escapeAttr(value)}"`
-        : value !== '' && name === 'time' ? ` datetime="${escapeAttr(value)}"`
-          : ''
-    html = `<${name}${mapped}>${html}</${name}>`
+    // The mapped attribute is an ordinary key/value in the SAME SLOT an author
+    // could have written, so it goes through renderAttrs with the rest rather
+    // than being concatenated beside it. Emitting both produced
+    // `<abbr title="x" title="y">` for `[x]{abbr="x" title="y"}`; as one list
+    // the repeated-key rule decides it - last value, first position - which is
+    // what a repeated key does everywhere else in the language.
+    const mapped = value !== '' && MAPS_TO[name] ? [['kv', MAPS_TO[name], value]] : []
+    // PART 9 §9: leftovers RIDE the outermost semantic element. The span is
+    // renamed rather than wrapped, so an authored id or class lands on the
+    // element the author wrote it on.
+    const own = name === outermost ? [...mapped, ...rest] : mapped
+    html = `<${name}${renderAttrs(own)}>${html}</${name}>`
   }
-  return rest.length === 0 ? html : `<span${renderAttrs(rest)}>${html}</span>`
+  return html
 }
 
 const sem = g.createSemantics().addOperation('h', {
@@ -398,10 +410,11 @@ const sem = g.createSemantics().addOperation('h', {
     const rest = attrsOf(attrs).filter((a) => a[0] !== 'class')
     // PART 10 §9: the fixed semantic registry renders its own element (attrs
     // apply to it); everything else is the generic ext-<name> span.
-    // `code` and `mark` are deliberately absent: the registry holds no element
-    // Carve already spells, and those two are written `` `x` `` / `` !`x` ``
-    // and `=x=` (PART 9 §9).
-    const semantic = new Set(['abbr', 'cite', 'dfn', 'kbd', 'samp', 'var', 'time'])
+    // PART 9 §10: the `:name[…]` spelling has NO core handler at all. It is a
+    // soft-deprecated compatibility form the SemanticSpan extension accepts,
+    // so the core - which is what this oracle renders - gives every name the
+    // generic fallback.
+    const semantic = new Set()
     if (semantic.has(n)) {
       return `<${n}${renderAttrs(attrsOf(attrs))}>${inner}</${n}>`
     }

@@ -1,2 +1,1 @@
-:abbr[HTML]{title="HyperText Markup Language"} :cite[The Book] :dfn[term]
-:samp[ready] :var[x] :time[noon]{datetime="12:00"} :code[x] :mark[relevant]
+:foo[a]{.cls}

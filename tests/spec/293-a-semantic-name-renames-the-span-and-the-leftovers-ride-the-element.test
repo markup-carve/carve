@@ -1,4 +1,4 @@
-A semantic span keeps its wrapper unless consumption empties it
+A semantic name renames the span, and the leftovers ride the element
 
 ```
 [x]{}
@@ -15,7 +15,7 @@ A semantic span keeps its wrapper unless consumption empties it
 ```
 [x]{kbd onclick="steal()"}
 .
-<p><span><kbd>x</kbd></span></p>
+<p><kbd>x</kbd></p>
 ```
 
 ```
