@@ -262,11 +262,13 @@ Hey @alice, see #release-1.0.
 
 ## Inline extensions
 
-Nine names have a built-in, portable semantic HTML mapping: `abbr`, `cite`,
-`dfn`, `kbd`, `samp`, `var`, `time`, `code`, and `mark`. They remain ordinary
+Seven names have a built-in, portable semantic HTML mapping: `abbr`, `cite`,
+`dfn`, `kbd`, `samp`, `var`, and `time`. They remain ordinary
 `inline_extension` AST nodes; the mapping is renderer behavior, not an opt-in
 extension. Attributes land on the semantic element and use the same hardening
-as every other authored attribute.
+as every other authored attribute. A name is in the registry only where Carve
+has no other way to write the element, so `code` and `mark` are not: `` `x` ``
+writes `<code>` and `=x=` writes `<mark>`.
 
 ::: compare
 
@@ -362,7 +364,7 @@ An authored `{.class}` on a generic inline extension merges into the single `cla
 
 ```html
 <p><abbr title="HyperText Markup Language">HTML</abbr> <cite>The Book</cite> <dfn>term</dfn>
-<samp>ready</samp> <var>x</var> <time datetime="12:00">noon</time> <code>x</code> <mark>relevant</mark></p>
+<samp>ready</samp> <var>x</var> <time datetime="12:00">noon</time> <span class="ext-code">x</span> <span class="ext-mark">relevant</span></p>
 ```
 
 :::
@@ -395,7 +397,7 @@ fixed nesting order preserves the established PHP spelling.
 
 ```html
 <p><dfn><abbr title="Cascading Style Sheets">CSS</abbr></dfn>
-<time datetime="12:00">Noon</time> <cite><kbd><var><samp><mark><code>x</code></mark></samp></var></kbd></cite></p>
+<time datetime="12:00">Noon</time> <span code="" mark=""><cite><kbd><var><samp>x</samp></var></kbd></cite></span></p>
 ```
 
 :::

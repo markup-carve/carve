@@ -3960,8 +3960,8 @@ EOF = (* end of file *) ;
       digit-first bare word is not a valid name (the block stays literal, as for
       any digit-first identifier). All impls support it (a carve extension
       beyond canonical djot, matching djot-php; corpus 97-boolean-attributes).
-      THE NINE NAMES OF PART 9 §10 ARE THE EXCEPTION TO `name=""`: on an
-      ordinary span, `abbr`, `time`, `code`, `mark`, `samp`, `var`, `kbd`,
+      THE SEVEN NAMES OF PART 9 §10 ARE THE EXCEPTION TO `name=""`: on an
+      ordinary span, `abbr`, `time`, `samp`, `var`, `kbd`,
       `cite` and `dfn` are consumed into an HTML element instead of reaching
       the output as an attribute, so `[Tab]{kbd}` is `<kbd>Tab</kbd>` and not
       `<span kbd="">Tab</span>`. They are boolean attributes everywhere else,
@@ -5551,7 +5551,7 @@ EOF = (* end of file *) ;
 
    9. BUILT-IN SEMANTIC INLINE EXTENSIONS. The following extension names render
       as their same-named HTML element: `abbr`, `cite`, `dfn`, `kbd`, `samp`,
-      `var`, `time`, `code`, and `mark`. Thus `:kbd[x]` is `<kbd>x</kbd>` and
+      `var`, and `time`. Thus `:kbd[x]` is `<kbd>x</kbd>` and
       `:abbr[HTML]{title="HyperText Markup Language"}` is
       `<abbr title="HyperText Markup Language">HTML</abbr>`.
 
@@ -5569,13 +5569,35 @@ EOF = (* end of file *) ;
       denotes a work title or source and is unrelated to a bibliographic
       `[@key]` citation. `:abbr[text]{title="…"}` is an explicitly authored
       semantic wrapper and neither declares nor changes automatic abbreviation
-      definitions. `:code` and `:mark` remain extension spellings distinct from
-      the ordinary code-span and highlight syntaxes even though their HTML tags
-      coincide. Accessible ruby is NOT in this registry: it requires structured
+      definitions.
+
+      THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS -- NORMATIVE. A name
+      belongs here only when Carve has no other way to write that element.
+      `code` and `mark` do not qualify and are ordinary extension names with
+      the `<span class="ext-NAME">` fallback: a code span (`` `x` ``) writes
+      `<code>` and the highlight syntax (`=x=`) writes `<mark>`. (The inline
+      literal `` !`x` `` is not a third spelling of `<code>`: §27 drops the
+      wrapper, which is the whole point of it.)
+
+      One construct, one spelling. A second spelling for the same element
+      costs an author a choice with no criterion, splits every downstream
+      grammar, lint rule and search across two forms, and gives the corpus two
+      shapes to pin where one describes the language. `code` made that concrete
+      rather than merely untidy: a code span is VERBATIM -- `` `*b*` `` is
+      `<code>*b*</code>` -- while an extension body is parsed, so
+      `:code[*b*]` produced `<code><strong>b</strong></code>`. The same tag
+      with a different content model, selected by which spelling the author
+      reached for, reported by nothing.
+
+      The seven that remain have no other spelling in the language. This is the
+      admission test for any future name: not "is the element semantic" but
+      "can Carve already write it".
+
+      Accessible ruby is NOT in this registry: it requires structured
       base/annotation children rather than a single inline container.
 
    10. COMPACT SEMANTIC SPANS. On an ordinary `[content]{attrs}` span, the
-      boolean or key/value attributes `abbr`, `time`, `code`, `mark`, `samp`,
+      boolean or key/value attributes `abbr`, `time`, `samp`,
       `var`, `kbd`, `cite`, and `dfn` are reserved HTML rendering sugar. Each
       present name is consumed as an attribute and wraps the rendered inline
       content in its same-named HTML element. A non-empty `abbr`, `dfn`, or
@@ -5583,8 +5605,11 @@ EOF = (* end of file *) ;
       values on the other names only select their wrapper.
 
       Multiple semantic attributes nest in this fixed INNER-TO-OUTER order:
-      `abbr`, `time`, `code`, `mark`, `samp`, `var`, `kbd`, `cite`, `dfn`.
-      This order is independent of author attribute order. Any id, class, or
+      `abbr`, `time`, `samp`, `var`, `kbd`, `cite`, `dfn`. The registry is
+      §9's, name for name: `code` and `mark` are not in it, so `[x]{code}` and
+      `[x]{mark}` are ordinary boolean attributes (`<span code="">x</span>`),
+      for the reason §9 gives. This order is independent of author attribute
+      order. Any id, class, or
       other key/value attributes remain on one outer `<span>` and pass through
       §1-2 plus PART 9 §25 attribute hardening. If no semantic attribute is
       present, the ordinary `<span>` rendering is unchanged.
@@ -6112,7 +6137,7 @@ EOF = (* end of file *) ;
       9 §10 documents and the form an author writes; a writer that returned
       `[Tab]{kbd=""}` rewrote the documentation's own example into a shape the
       documentation never shows, and did it for a name whose VALUE is discarded
-      (§10: values on `code`, `mark`, `samp`, `var`, `kbd` and `cite` only
+      (§10: values on `samp`, `var`, `kbd` and `cite` only
       select the wrapper). An empty value there is not just longer, it points
       at a slot that does nothing.
 

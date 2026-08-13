@@ -1,0 +1,25 @@
+The semantic registry holds no element Carve already spells
+
+```
+`x` !`x` =x=
+.
+<p><code>x</code> x <mark>x</mark></p>
+```
+
+```
+:code[*b*] :mark[*b*]
+.
+<p><span class="ext-code"><strong>b</strong></span> <span class="ext-mark"><strong>b</strong></span></p>
+```
+
+```
+[*b*]{code} [*b*]{mark}
+.
+<p><span code=""><strong>b</strong></span> <span mark=""><strong>b</strong></span></p>
+```
+
+```
+`*b*`
+.
+<p><code>*b*</code></p>
+```

@@ -25,3 +25,7 @@
 #
 # Format: <slug><space><space><reason>
 
+299-the-semantic-registry-holds-no-element-carve-already-spells-2  `code` and `mark` leave the semantic registry with this change (PART 9 §9), so `:code[…]` and `:mark[…]` take the generic `<span class="ext-NAME">` fallback. The pinned build still has both names in its registry and renders `<code>` and `<mark>`. Clears with the engine PRs and a pin bump.
+299-the-semantic-registry-holds-no-element-carve-already-spells-3  Same rule, the compact spelling: `[*b*]{code}` and `[*b*]{mark}` are ordinary boolean attributes now, where the pin still consumes both names into an element.
+45-inline-extensions-7  The registry line. `:code[x]` and `:mark[relevant]` are the two names of the nine that changed; the rest of the line is unaffected and pins that.
+45-inline-extensions-9  The combination line. `code` and `mark` drop out of the nesting and land on the outer span as leftover attributes, which is also what pins that the wrapper survives a NON-semantic name (`<span code="" mark="">` around the rest).
