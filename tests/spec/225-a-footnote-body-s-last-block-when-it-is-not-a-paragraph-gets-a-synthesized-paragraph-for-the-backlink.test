@@ -57,7 +57,7 @@ see[^a]
     <li id="fn1">
       <p>note</p>
       <table>
-        <thead><tr><th>a</th></tr></thead>
+        <thead><tr><th scope="col">a</th></tr></thead>
         <tbody>
           <tr><td>b</td></tr>
         </tbody>

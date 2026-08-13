@@ -29,16 +29,16 @@ const html = (src) => renderDoc(parse(src))
 const table = (firstRow) => `${firstRow}\n|---|---|\n| a | b |\n`
 
 test('a glued attribute block applies', () => {
-  assert.match(html(table('|{.hl}Total| 99 |')), /<th class="hl">Total<\/th>/)
+  assert.match(html(table('|{.hl}Total| 99 |')), /<th scope="col" class="hl">Total<\/th>/)
 })
 
 test('a spaced attribute block still applies', () => {
   // The form corpus 99 pins. It must not regress while widening the other.
-  assert.match(html(table('|{.hl} Total | 99 |')), /<th class="hl">Total<\/th>/)
+  assert.match(html(table('|{.hl} Total | 99 |')), /<th scope="col" class="hl">Total<\/th>/)
 })
 
 test('several spaces after the block are still layout, not content', () => {
-  assert.match(html(table('|{.hl}   Total | 99 |')), /<th class="hl">Total<\/th>/)
+  assert.match(html(table('|{.hl}   Total | 99 |')), /<th scope="col" class="hl">Total<\/th>/)
 })
 
 test('an attribute block on a body cell applies glued too', () => {
@@ -49,13 +49,13 @@ test('an attribute block on a body cell applies glued too', () => {
 
 test('an invalid payload is literal content, not a refusal', () => {
   // Both spacings, because the spaced one is what used to throw.
-  assert.match(html(table('|{bad!!} Total | 99 |')), /<th>\{bad!!\} Total<\/th>/)
-  assert.match(html(table('|{bad!!}Total| 99 |')), /<th>\{bad!!\}Total<\/th>/)
+  assert.match(html(table('|{bad!!} Total | 99 |')), /<th scope="col">\{bad!!\} Total<\/th>/)
+  assert.match(html(table('|{bad!!}Total| 99 |')), /<th scope="col">\{bad!!\}Total<\/th>/)
 })
 
 test('a cell whose content is only an attribute block still carries it', () => {
   const out = html(table('|{.hl}| 99 |'))
-  assert.match(out, /<th class="hl">/, out)
+  assert.match(out, /<th scope="col" class="hl">/, out)
 })
 
 test('there is still no attributed span marker', () => {
@@ -68,10 +68,10 @@ test('there is still no attributed span marker', () => {
 
 test('an unbraced cell is untouched', () => {
   // The boundary: no braces, no change.
-  assert.match(html(table('| Total | 99 |')), /<th>Total<\/th>/)
+  assert.match(html(table('| Total | 99 |')), /<th scope="col">Total<\/th>/)
 })
 
 test('a brace run that never closes stays literal', () => {
   // No closing `}`, so there is no attribute block to test for validity.
-  assert.match(html(table('|{.hl Total | 99 |')), /<th>\{\.hl Total<\/th>/)
+  assert.match(html(table('|{.hl Total | 99 |')), /<th scope="col">\{\.hl Total<\/th>/)
 })

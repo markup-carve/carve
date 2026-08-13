@@ -3332,6 +3332,40 @@ EOF = (* end of file *) ;
          `|{.c} a |{.r}` -> `<tr class="r">` with `<td class="c">`. Pinned
          by corpus 100-table-row-attributes.
 
+      T9 A HEADER CELL STATES WHAT IT HEADS -- NORMATIVE. Every `th` carries a
+         `scope`: `col` for a cell in the head-row run, `row` for one below it.
+         `|=` already distinguishes the two positions -- a header cell in the
+         first rows opens `<thead>`, one in a later row is a row header inside
+         `<tbody>` (corpus 09-tables-7) -- so the attribute states an
+         association the table already has rather than adding a concept.
+
+         IT IS NOT DECORATION. Without it a screen reader guesses the
+         association from position, and guesses wrong on any table with both
+         kinds of header; `scope` is the mechanism WCAG 1.3.1 names for
+         programmatically determined relationships. Carve emits real `<table>`
+         markup precisely so assistive technology can read it, and this was the
+         one part of that markup the language left to inference.
+
+         AN AUTHORED `scope` REPLACES THE DEFAULT rather than joining it. A
+         cell block naming `scope` suppresses the emitted one, so
+         `|={scope="colgroup"} a |` is `<th scope="colgroup">` and not
+         `<th scope="col" scope="colgroup">`. That is how `colgroup` and
+         `rowgroup`, which have no marker spelling here, stay reachable. The
+         duplicate was the first thing this rule produced when the default was
+         emitted unconditionally: two attributes of one name, which is not
+         valid HTML and is not an override.
+
+         THE TEST IS CASE-INSENSITIVE, which is the one place this rule departs
+         from Carve's case-sensitive attribute names. `{Scope="colgroup"}` is a
+         different Carve attribute from `{scope=…}` and still reaches the output
+         as `Scope`, but HTML attribute names are ASCII case-insensitive, so
+         emitting the default beside it is the same collision by another
+         spelling. The suppression is about the collision, not about folding the
+         author's name.
+
+         Otherwise `scope` precedes `rowspan`, `colspan` and the authored
+         block in the serialization.
+
    6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R (rules
       R1-R3; this §-anchor stays for existing references). Summary: link
       labels match EXACTLY (case-sensitive, no whitespace folding; corpus
