@@ -6455,6 +6455,49 @@ EOF = (* end of file *) ;
       M1d NOTHING ELSE NARROWS. Every other Markdown metacharacter keeps M1
           as written, and M2 and M3 are untouched by this clause.
 
+      M1e `<` IS ESCAPED WHEN THE EMITTED LINE WOULD READ IT AS MARKUP --
+          NORMATIVE. A `<` is escaped with a BACKSLASH when the next character
+          is an ASCII letter, `/`, `!` or `?`, and left alone otherwise. `>`
+          takes nothing here: mid-line it is inert in every flavour, and at the
+          start of a line it is a block quote marker, which M1 already covers.
+
+          THE HAZARD IS RAW HTML, and it is real. CommonMark and GFM both admit
+          it, so a document whose text contains `<b>` emits a line a reader
+          turns into a tag -- the author's text silently becomes markup, which
+          is the corruption §8 exists to prevent. Measured through a CommonMark
+          reader:
+
+            a <b> c        ->  a <b> c          the tag opens
+            a </b> c       ->  a </b> c         so does a closing one
+            a <!-- c -->   ->  a <!-- c -->     and a comment
+            a <?php ?>     ->  a <?php ?>       and a processing instruction
+
+          Those four next-characters are the whole hazard. Everything else is
+          inert:
+
+            a < b          ->  a &lt; b         a bare `<` is not markup
+            x > y          ->  x &gt; y         nor is a mid-line `>`
+
+          ESCAPING THE `<` ALONE IS SUFFICIENT. The closing `>` needs no escape
+          of its own, because a tag that cannot open cannot be closed:
+
+            a \<b> c       ->  a &lt;b&gt; c
+
+          A BACKSLASH, NOT AN ENTITY. Every engine wrote `&lt;` and `&gt;` here
+          and no clause said so (carve#1148). The reason it could not be derived
+          from this section is that it is not the operation this section
+          describes: M2 and M3 are written in terms of ESCAPING -- protecting a
+          character so it survives as itself -- and `&lt;` does not protect `<`,
+          it replaces it with a different sequence that happens to render
+          alike. `\<` protects it, and a CommonMark reader gives the character
+          back.
+
+          CONDITIONAL, BECAUSE M1b ALREADY ARGUES FOR IT. `<` is the same shape
+          as `_`, `#` and `[`: significant before a tag name, inert before a
+          space. Rewriting every `<` in a document -- the overwhelming majority
+          of them harmless -- is the character-table answer M1b abandoned, and
+          the test belongs on the emitted line like every other one here.
+
       THE FINDING IS §3'S, ONE TARGET OUT. §3 records, for the canonical
       writer, that "whether a character is significant depends on the line,
       not on the character", and §4 is that section's answer to it. M1 was the
