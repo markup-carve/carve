@@ -6088,6 +6088,16 @@ EOF = (* end of file *) ;
       the value is an empty STRING, where the tree says the attribute has no
       value at all.
 
+      THE `.fmt` FIXTURE FOR `297-the-language-sigil-takes-no-padding` IS
+      WITHDRAWN, not updated, and comes back with the pin bump. Those fixtures
+      are read THROUGH the pinned build by
+      `tests/corpus-fmt-roundtrip.test.mjs`, and by the engines through their
+      own `spec` submodule, so a fixture carrying the NEW bytes fails in both
+      places until every writer ships this clause, while one carrying the OLD
+      bytes fails afterwards. There is no spelling of it that is green on both
+      sides of the change, so it is absent for the length of the rollout rather
+      than wrong at one end of it.
+
       THE OLD SPELLING WAS AN INCONSISTENCY INSIDE ONE WRITER, not a decision.
       Measured on carve-js `a59df0fa` before this clause: `[x]{lang}` formatted
       to `[x]{:}` -- a boolean CONTRACTED into the shortest dedicated form --
