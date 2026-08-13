@@ -45,7 +45,7 @@ Grammar references point at `resources/grammar.ebnf`.
 |---------|-----------------|-------------|--------|
 | **Captions** | `^ caption` after block | `^ caption` | ✅ In grammar (caption rule; image/blockquote/table placement). |
 | **Abbreviations** | `*[ABBR]: expansion` | `*[ABBR]: expansion` | ✅ In grammar (PART 5: Abbreviations). |
-| **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `:kbd[text]` | ✅ Via `:type[content]` extension syntax (4.20). |
+| **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `[text]{kbd}` or `:kbd[text]` | ✅ Both spellings are core (PART 9 §9 and §10). Nine names: `abbr`, `time`, `code`, `mark`, `samp`, `var`, `kbd`, `cite`, `dfn`. |
 | **Autolinks** | `<url>` / `<email>` | Angle-bracket autolinks only | ✅ In spec (4.3). Bare URLs are *not* auto-linked (djot-aligned). |
 | **Inline footnotes** | `[content]{.fn}` | `^[content]` | ✅ Tier-1 core, in grammar (§16). A carve addition (not in djot); pandoc-style `^[content]`, numbered into the shared endnotes. |
 | **Table alignment** | `:--`, `--:`, `:--:` | `\|=<` / `\|=>` / `\|=~` markers | ✅ In spec (4.8). |

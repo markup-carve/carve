@@ -3954,13 +3954,20 @@ EOF = (* end of file *) ;
           digit-first identifiers / `class="123"`; see jgm/djot issue 399.)
           A digit/`-`/`_` AFTER the first character is valid (`{.a1}`).
       BOOLEAN (value-less) ATTRIBUTES -- NORMATIVE. A bare identifier with no
-      value (`[text]{kbd}`, `{.note open}`, `{disabled}` on a block line) is a
-      boolean attribute, rendered `name=""`. It is matched after the
+      value (`[text]{featured}`, `{.note open}`, `{disabled}` on a block line)
+      is a boolean attribute, rendered `name=""`. It is matched after the
       `key_value_attribute` form (so `k=v` stays a key/value) and mixes freely
       with id/class/key=value in source order; multiple are allowed; a
       digit-first bare word is not a valid name (the block stays literal, as for
       any digit-first identifier). All impls support it (a carve extension
       beyond canonical djot, matching djot-php; corpus 97-boolean-attributes).
+      THE NINE NAMES OF PART 9 §10 ARE THE EXCEPTION TO `name=""`: on an
+      ordinary span, `abbr`, `time`, `code`, `mark`, `samp`, `var`, `kbd`,
+      `cite` and `dfn` are consumed into an HTML element instead of reaching
+      the output as an attribute, so `[Tab]{kbd}` is `<kbd>Tab</kbd>` and not
+      `<span kbd="">Tab</span>`. They are boolean attributes everywhere else,
+      including in the AST and in the canonical writer, which spells the same
+      span `[Tab]{kbd=""}`.
       A COLON is not an `identifier` character, so a colon-bearing name is
       unrecognized in every form -- `{xml:lang="en"}`, `{.sm:hover}`, `{#a:b}`
       and a bare `{a:b}` all leave the run literal, in every engine (corpus

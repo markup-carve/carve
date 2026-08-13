@@ -194,6 +194,58 @@ A language tag never sets writing direction. Direction follows the script, and a
 
 A tag that is not structurally well formed leaves the whole block as literal text rather than half-parsing it - `{:en_US}`, `{:-en}` and `{:français}` all stay visible in the output. And the sigil takes no padding: `{: fr}` (with a space) is the empty language attribute plus a separate boolean `fr`, not a language tag.
 
+### Semantic spans: `{kbd}`, `{abbr="…"}`
+
+On an **inline span**, nine attribute names are consumed and become the HTML element of the same name: `abbr`, `time`, `code`, `mark`, `samp`, `var`, `kbd`, `cite`, `dfn`.
+
+```carve
+Press [Tab]{kbd} to indent.
+```
+
+```html
+<p>Press <kbd>Tab</kbd> to indent.</p>
+```
+
+Three of them keep what you wrote: an `abbr` or `dfn` value becomes `title`, a `time` value becomes `datetime`.
+
+```carve
+[HTML]{abbr="HyperText Markup Language"} is a markup language.
+```
+
+```html
+<p><abbr title="HyperText Markup Language">HTML</abbr> is a markup language.</p>
+```
+
+On the other six a value only picks the wrapper and is **not** written out, so `[x]{cite="https://example.org/dune"}` renders `<cite>x</cite>` and the URL reaches no output at all.
+
+Several at once nest in a **fixed** order - `abbr`, `time`, `code`, `mark`, `samp`, `var`, `kbd`, `cite`, `dfn`, innermost first - regardless of the order you typed them, so no document can come to depend on the spelling:
+
+```carve
+[CSS]{dfn abbr="Cascading Style Sheets"}
+```
+
+```html
+<p><dfn><abbr title="Cascading Style Sheets">CSS</abbr></dfn></p>
+```
+
+Anything left over - id, classes, other key/value pairs - stays on one outer `<span>`:
+
+```carve
+[x]{.shortcut kbd}
+```
+
+```html
+<p><span class="shortcut"><kbd>x</kbd></span></p>
+```
+
+Three things worth knowing:
+
+- **The `<span>` disappears only when every attribute was consumed.** `[x]{kbd}` is a bare `<kbd>x</kbd>`, but `[x]{kbd onclick="…"}` keeps the wrapper (`<span><kbd>x</kbd></span>`) even though hardening strips the handler: you wrote a non-semantic attribute, and that is counted before it is removed.
+- **The scope is exactly an ordinary span.** The same names on a code span, link, image or block-attribute line are ordinary attributes, so `` `c`{kbd} `` is `<code kbd="">c</code>`, not a `<kbd>`.
+- **Only HTML changes.** The AST keeps an ordinary span carrying the authored attributes, plain-text and terminal output render the content, and `carve fmt` writes the span back out with its attributes - a boolean as `name=""`, so `[Tab]{kbd}` formats to `[Tab]{kbd=""}`.
+
+The generic `:name[content]{attrs}` form (see [extensions](/extensions)) spells the same nine elements and is the only spelling for anything outside this registry.
+
 ## The one outlier: list items
 
 Every block takes its attributes on the preceding line and every inline takes them trailing - with a single exception: a list item's attribute block **abuts its marker**.
@@ -223,6 +275,8 @@ This is a Carve addition (djot cannot attribute list items at all) and is the **
 text [span]{.c}       ← inline: directly AFTER, no space
 
 [phrase]{:fr}         ← language: short for lang="fr"
+
+[Tab]{kbd}            ← semantic span: <kbd>Tab</kbd>
 
 -{#item} list item    ← list item: abuts the marker (no space!)
 
