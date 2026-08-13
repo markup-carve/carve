@@ -12,11 +12,10 @@ forms, so following this page does not trade Markdown compatibility for Djot
 compatibility - it gives up neither.
 
 ::: tip
-These are advisory. They are reported only when you ask for them:
-
-```sh
-carve lint --portable doc.crv
-```
+These are advisory. Nothing reports them: the blank-line form is a portability
+convention rather than a defect, and the marker-space form became core syntax,
+where `carve lint` already reports a missing space as
+`blockquote-marker-without-space`.
 :::
 
 ## Leave a blank line before a block opener
@@ -55,7 +54,6 @@ A top-level list is the exception that needs nothing: a list marker does not
 interrupt a paragraph in Carve either, so `Some text` followed by `- a` is a
 single paragraph in both languages already.
 
-Reported as `portable-blank-line-before-block`.
 
 ## Put a space after every `>`
 

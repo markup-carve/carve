@@ -59,6 +59,47 @@ and nothing says so. The two fields do not compete - the frontmatter key is the
 author's intent, the trailing marker is what last processed the file - and a
 document carrying only the marker is still checked.
 
+### Behavior changes inside 0.1.x
+
+A `0.1.x` release may still change what an existing document renders to, and one
+already has. The compact semantic span gave nine attribute names a meaning they
+did not have before:
+
+`abbr`, `time`, `code`, `mark`, `samp`, `var`, `kbd`, `cite`, `dfn`
+
+On an ordinary `[content]{attrs}` span each is now consumed into its HTML element
+instead of reaching the output as an attribute
+([PART 9 §10](./blocks-and-attributes#semantic-spans-kbd-abbr)). A document that used one
+of those names as a plain marker attribute renders differently after upgrading.
+
+Eight of them change shape and keep their content:
+
+```carve
+[x]{time="2026-01-01"}
+```
+
+```html
+<span time="2026-01-01">x</span>   <!-- before -->
+<time datetime="2026-01-01">x</time>   <!-- after -->
+```
+
+**`cite` is the one to check.** It is a real HTML attribute - on `blockquote` and
+`q` - so `{cite="…"}` on a span was a reasonable thing to write, and its value now
+reaches no output at all:
+
+```carve
+[Dune]{cite="https://example.org/dune"}
+```
+
+```html
+<span cite="https://example.org/dune">Dune</span>   <!-- before -->
+<cite>Dune</cite>                                   <!-- after -->
+```
+
+To find affected documents, search for those nine names used as attributes on a
+span. Where the value mattered, move it to an attribute that survives - a `title`,
+or a link if it was a URL.
+
 ### Checking documents mechanically
 
 The marker is machine-readable, so this does not have to be done by eye. In
