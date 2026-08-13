@@ -530,13 +530,29 @@ function renderTable(node, depth, ctx) {
   const renderCell = (cell, r, c) => {
     const tag = cell.header ? 'th' : 'td'
     let a = ''
+    // The cell's own block is parsed FIRST, only to see whether it names
+    // `scope`. Emitting the default unconditionally and letting the authored
+    // one follow produced `<th scope="col" scope="colgroup">` - two attributes
+    // of one name, which is not valid HTML and is not an override.
+    let parsed = ''
+    if (cell.attrs) {
+      parsed = parseAttrBlock(cell.attrs)
+      if (parsed === null) throw new Refuse('invalid cell attribute block')
+    }
+    // PART 10 §T9: a header cell states what it heads. A `th` in the head row
+    // run heads its COLUMN, one below heads its ROW - the association a screen
+    // reader has no other way to make, and the one WCAG 1.3.1 is about.
+    // CASE-INSENSITIVE on the way in, deliberately. Carve attribute NAMES are
+    // case-sensitive, so `{Scope=…}` is a different Carve attribute - but HTML
+    // attribute names are not, so emitting the default beside it produces two
+    // `scope`s as far as any consumer is concerned. The test is about avoiding
+    // that collision, not about folding the author's name.
+    if (cell.header && !/ scope="/i.test(parsed)) {
+      a += r < headCount ? ' scope="col"' : ' scope="row"'
+    }
     if (cell.rowspan) a += ` rowspan="${cell.rowspan}"`
     if (cell.colspan) a += ` colspan="${cell.colspan}"`
-    if (cell.attrs) {
-      const parsed = parseAttrBlock(cell.attrs)
-      if (parsed === null) throw new Refuse('invalid cell attribute block')
-      a += parsed
-    }
+    a += parsed
     const align = cell.empty ? null : (cell.align ?? colAlign[c] ?? null)
     if (align) a += ` style="text-align: ${align};"`
     const content = cell.empty || cell.content === '' ? '' : renderInline(cell.content)

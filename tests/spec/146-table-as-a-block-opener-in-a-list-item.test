@@ -8,7 +8,7 @@ Table as a block opener in a list item
 <ul>
   <li>one
     <table>
-      <thead><tr><th>H</th></tr></thead>
+      <thead><tr><th scope="col">H</th></tr></thead>
       <tbody>
         <tr><td>x</td></tr>
       </tbody>

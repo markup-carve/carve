@@ -24,3 +24,51 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+
+# PART 10 §T9: every `th` carries a `scope`. The pinned build emits none, so
+# every document with a header cell differs by exactly that attribute and by
+# nothing else. Clears in one bump once the engines ship the rule.
+09-tables  A header cell now carries `scope`; the pin emits none.
+09-tables-2  A header cell now carries `scope`; the pin emits none.
+09-tables-3  A header cell now carries `scope`; the pin emits none.
+09-tables-4  A header cell now carries `scope`; the pin emits none.
+09-tables-5  A header cell now carries `scope`; the pin emits none.
+09-tables-6  A header cell now carries `scope`; the pin emits none.
+09-tables-7  A header cell now carries `scope`; the pin emits none.
+09-tables-8  A header cell now carries `scope`; the pin emits none.
+10-tables-with-rowspan-and-colspan  A header cell now carries `scope`; the pin emits none.
+100-table-row-attributes  A header cell now carries `scope`; the pin emits none.
+101-table-header-cell-rowspan  A header cell now carries `scope`; the pin emits none.
+106-blocked-span-marker-renders-as-empty-cell  A header cell now carries `scope`; the pin emits none.
+107-colspan-marker-scans-left-past-a-consumed-cell  A header cell now carries `scope`; the pin emits none.
+115-a-continuation-row-needs-a-body-row  A header cell now carries `scope`; the pin emits none.
+146-table-as-a-block-opener-in-a-list-item  A header cell now carries `scope`; the pin emits none.
+203-a-footnote-body-holds-blocks-and-they-render-where-they-were-written  A header cell now carries `scope`; the pin emits none.
+225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-3  A header cell now carries `scope`; the pin emits none.
+256-table-cell-padding-must-be-a-space-18  A header cell now carries `scope`; the pin emits none.
+256-table-cell-padding-must-be-a-space-19  A header cell now carries `scope`; the pin emits none.
+256-table-cell-padding-must-be-a-space-6  A header cell now carries `scope`; the pin emits none.
+256-table-cell-padding-must-be-a-space-7  A header cell now carries `scope`; the pin emits none.
+256-table-cell-padding-must-be-a-space-8  A header cell now carries `scope`; the pin emits none.
+256-table-cell-padding-must-be-a-space-9  A header cell now carries `scope`; the pin emits none.
+281-a-caption-attaches-across-one-blank-line  A header cell now carries `scope`; the pin emits none.
+281-a-caption-attaches-across-one-blank-line-2  A header cell now carries `scope`; the pin emits none.
+282-two-blank-lines-detach-a-caption  A header cell now carries `scope`; the pin emits none.
+282-two-blank-lines-detach-a-caption-2  A header cell now carries `scope`; the pin emits none.
+284-a-ragged-table-keeps-each-row-s-cell-count-2  A header cell now carries `scope`; the pin emits none.
+284-a-ragged-table-keeps-each-row-s-cell-count-3  A header cell now carries `scope`; the pin emits none.
+285-adjacent-block-openers-in-an-attached-run-stay-separate-2  A header cell now carries `scope`; the pin emits none.
+47-numbered-cross-references-4  A header cell now carries `scope`; the pin emits none.
+48-table-column-alignment  A header cell now carries `scope`; the pin emits none.
+49-table-per-cell-alignment-override  A header cell now carries `scope`; the pin emits none.
+51-table-without-alignment  A header cell now carries `scope`; the pin emits none.
+52-table-alignment-with-colspan  A header cell now carries `scope`; the pin emits none.
+53-table-doubled-alignment-marker  A header cell now carries `scope`; the pin emits none.
+56-table-cell-escaped-pipe  A header cell now carries `scope`; the pin emits none.
+57-table-cell-pipe-inside-code-span  A header cell now carries `scope`; the pin emits none.
+61-table-stacked-rowspan  A header cell now carries `scope`; the pin emits none.
+63-table-multi-line-cell-continuation  A header cell now carries `scope`; the pin emits none.
+64-table-rowspan-with-multi-line-content  A header cell now carries `scope`; the pin emits none.
+89-block-attribute-lines-4  A header cell now carries `scope`; the pin emits none.
+98-table-span-marker-in-first-column  A header cell now carries `scope`; the pin emits none.
+99-table-cell-attributes  A header cell now carries `scope`; the pin emits none.

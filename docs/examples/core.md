@@ -1122,7 +1122,7 @@ block-attribute line, which floats onto the outer block (§15).
 ```html
 <table>
   <caption>Fruit prices</caption>
-  <thead><tr><th>Fruit</th><th>Price</th></tr></thead>
+  <thead><tr><th scope="col">Fruit</th><th scope="col">Price</th></tr></thead>
   <tbody>
     <tr><td>Apple</td><td>$1</td></tr>
     <tr><td>Pear</td><td>$2</td></tr>
@@ -1144,7 +1144,7 @@ Single-column tables follow the same rules — one `|=` cell yields the header r
 
 ```html
 <table>
-  <thead><tr><th>Heading</th></tr></thead>
+  <thead><tr><th scope="col">Heading</th></tr></thead>
   <tbody>
     <tr><td>Row 1</td></tr>
     <tr><td>Row 2</td></tr>
@@ -1166,7 +1166,7 @@ A GFM-style separator row (the second row, all dashes with optional alignment co
 
 ```html
 <table>
-  <thead><tr><th style="text-align: left;">Name</th><th style="text-align: right;">Age</th></tr></thead>
+  <thead><tr><th scope="col" style="text-align: left;">Name</th><th scope="col" style="text-align: right;">Age</th></tr></thead>
   <tbody>
     <tr><td style="text-align: left;">Alice</td><td style="text-align: right;">28</td></tr>
   </tbody>
@@ -1186,7 +1186,7 @@ An escaped pipe inside cell content (`\|`) renders as a literal `|` and does not
 
 ```html
 <table>
-  <thead><tr><th>Symbol</th><th>Meaning</th></tr></thead>
+  <thead><tr><th scope="col">Symbol</th><th scope="col">Meaning</th></tr></thead>
   <tbody>
     <tr><td>|</td><td>pipe char</td></tr>
   </tbody>
@@ -1206,7 +1206,7 @@ Empty cells produce empty `<td>` elements — placement is preserved, not collap
 
 ```html
 <table>
-  <thead><tr><th>A</th><th>B</th><th>C</th></tr></thead>
+  <thead><tr><th scope="col">A</th><th scope="col">B</th><th scope="col">C</th></tr></thead>
   <tbody>
     <tr><td>1</td><td></td><td>3</td></tr>
   </tbody>
@@ -1228,7 +1228,7 @@ Inline emphasis applies inside cells just like in paragraphs.
 
 ```html
 <table>
-  <thead><tr><th>Style</th><th>Sample</th></tr></thead>
+  <thead><tr><th scope="col">Style</th><th scope="col">Sample</th></tr></thead>
   <tbody>
     <tr><td>italic</td><td><em>soft</em></td></tr>
     <tr><td>strong</td><td><strong>firm</strong></td></tr>
@@ -1239,7 +1239,7 @@ Inline emphasis applies inside cells just like in paragraphs.
 
 :::
 
-A `|=` cell in a body row is a row header: it renders as `<th>` inside `<tbody>` while the row stays a body row. This expresses row headers (a leading first-column `<th>` per data row), which a separator row cannot. The thead is still only the leading all-header rows.
+A `|=` cell in a body row is a row header: it renders as `<th scope="row">` inside `<tbody>` while the row stays a body row. This expresses row headers (a leading first-column `<th scope="row">` per data row), which a separator row cannot. The thead is still only the leading all-header rows.
 
 ::: compare
 
@@ -1251,10 +1251,10 @@ A `|=` cell in a body row is a row header: it renders as `<th>` inside `<tbody>`
 
 ```html
 <table>
-  <thead><tr><th></th><th>Diameter (km)</th><th>Size vs Earth</th></tr></thead>
+  <thead><tr><th scope="col"></th><th scope="col">Diameter (km)</th><th scope="col">Size vs Earth</th></tr></thead>
   <tbody>
-    <tr><th>Mercury</th><td>4,879.4</td><td>38%</td></tr>
-    <tr><th>Venus</th><td>12,104</td><td>95%</td></tr>
+    <tr><th scope="row">Mercury</th><td>4,879.4</td><td>38%</td></tr>
+    <tr><th scope="row">Venus</th><td>12,104</td><td>95%</td></tr>
   </tbody>
 </table>
 ```
@@ -1273,8 +1273,8 @@ With no leading header row, every first cell can still be a row header — the t
 ```html
 <table>
   <tbody>
-    <tr><th>Mercury</th><td>4,879</td></tr>
-    <tr><th>Venus</th><td>12,104</td></tr>
+    <tr><th scope="row">Mercury</th><td>4,879</td></tr>
+    <tr><th scope="row">Venus</th><td>12,104</td></tr>
   </tbody>
 </table>
 ```
@@ -1294,7 +1294,7 @@ With no leading header row, every first cell can still be a row header — the t
 
 ```html
 <table>
-  <thead><tr><th>Category</th><th>Item</th><th>Price</th></tr></thead>
+  <thead><tr><th scope="col">Category</th><th scope="col">Item</th><th scope="col">Price</th></tr></thead>
   <tbody>
     <tr><td rowspan="2">Fruit</td><td>Apple</td><td>$1</td></tr>
     <tr><td>Banana</td><td>$0.50</td></tr>

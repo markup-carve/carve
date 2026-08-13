@@ -7,7 +7,7 @@ Tables with rowspan and colspan
 | Total     | <        | $1.50  |
 .
 <table>
-  <thead><tr><th>Category</th><th>Item</th><th>Price</th></tr></thead>
+  <thead><tr><th scope="col">Category</th><th scope="col">Item</th><th scope="col">Price</th></tr></thead>
   <tbody>
     <tr><td rowspan="2">Fruit</td><td>Apple</td><td>$1</td></tr>
     <tr><td>Banana</td><td>$0.50</td></tr>

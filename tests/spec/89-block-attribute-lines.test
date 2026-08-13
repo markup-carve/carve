@@ -34,7 +34,7 @@ Text
 | 1  | 2  |
 .
 <table class="data">
-  <thead><tr><th>A</th><th>B</th></tr></thead>
+  <thead><tr><th scope="col">A</th><th scope="col">B</th></tr></thead>
   <tbody>
     <tr><td>1</td><td>2</td></tr>
   </tbody>
