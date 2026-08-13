@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, renameSync, unlinkSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, renameSync, unlinkSync, existsSync } from 'node:fs'
+import { createHash } from 'node:crypto'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { shortfall } from './spec/participants.mjs'
@@ -339,6 +340,42 @@ for (const ex of examples) {
 }
 console.log(`\nWrote ${examples.length} pairs to ${outDir}`)
 for (const moved of renamedSidecars) console.log(`  moved with its case: ${moved}`)
+
+/*
+ * A SIDECAR HAS TO BE RE-DERIVED WHEN ITS CASE'S CONTENT MOVES.
+ *
+ * The rename handling above carries a hand-written sidecar across a RENUMBER.
+ * What it cannot see is the other way a sidecar goes stale: the case keeps its
+ * number and its slug, and its INPUT is rewritten. The sidecar then still
+ * exists, still sits beside a `.crv`, and describes a different document.
+ *
+ * Nothing in this repository can tell by rendering, because a non-HTML target
+ * needs an engine and the suite here does not run one. So `45-inline-extensions-9.txt`
+ * kept the plain text of the abbr/time document it used to be (`CSS Noon x`) for
+ * four commits after carve#1162 replaced the case with a `kbd` one, and the only
+ * thing that noticed was a carve-js pin bump - a red suite in another repo, on a
+ * change that had nothing to do with it (carve#1165).
+ *
+ * The lock file closes that: it records the `.crv` each sidecar was derived
+ * against. `tests/corpus-targets.test.mjs` compares, and a case whose input moved
+ * without its sidecar moving fails HERE, in the commit that moved it.
+ */
+const sidecarLock = {}
+for (const f of readdirSync(outDir).sort()) {
+  const ext = f.slice(f.lastIndexOf('.'))
+  if (ext === '.crv' || ext === '.html') continue
+  const crv = resolve(outDir, `${f.slice(0, -ext.length)}.crv`)
+  if (!existsSync(crv)) continue
+  sidecarLock[f] = createHash('sha256').update(readFileSync(crv)).digest('hex').slice(0, 16)
+}
+// In `resources/`, not beside the cases: `tests/corpus` holds inputs and
+// expected outputs, and its own extension check refuses anything else - which
+// is how the first attempt to park it there was caught.
+writeFileSync(
+  resolve(repoRoot, 'resources/corpus-sidecars.lock.json'),
+  JSON.stringify(sidecarLock, null, 2) + '\n',
+)
+console.log(`  locked ${Object.keys(sidecarLock).length} sidecar(s) to their case input`)
 
 // --- djot-style mirror: NN-slug.test files for implementations whose runners
 // already speak djot's fenced-pair format (e.g. carve-php's OfficialTestSuiteTest).
