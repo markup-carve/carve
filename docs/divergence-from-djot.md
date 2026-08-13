@@ -864,10 +864,16 @@ as more than restyled Djot:
   is a spelling of decimal-dot, not a dialect, so it mixes with `1.` in one
   list; only `.` may drop its value, since a leading `) ` collides with prose
   parentheticals far more often (grammar, ordered_marker).
-- **Boolean attributes** - a bare word in `{…}` (`[Tab]{kbd}`, `{.note open}`)
-  is a value-less attribute rendered `name=""`. Canonical djot rejects bare
-  words (the whole block stays literal); carve accepts them, following djot-php
-  (grammar §14).
+- **Boolean attributes** - a bare word in `{…}` (`[text]{featured}`,
+  `{.note open}`) is a value-less attribute rendered `name=""`. Canonical djot
+  rejects bare words (the whole block stays literal); carve accepts them,
+  following djot-php (grammar §14). The nine semantic names below are consumed
+  instead of rendered.
+- **Compact semantic spans** - `abbr`, `time`, `code`, `mark`, `samp`, `var`,
+  `kbd`, `cite` and `dfn` on an ordinary span select an HTML element rather than
+  an attribute, so `[Tab]{kbd}` is `<kbd>Tab</kbd>`; `abbr`, `dfn` and `time`
+  values become `title`, `title` and `datetime`. Djot has no equivalent: there
+  the same span is `<span kbd="">` (PART 9 §10).
 - **Target-aware rendering** - one parsed document, multiple renderers (HTML,
   ANSI, Markdown, plain text) behind a single extension contract.
 
