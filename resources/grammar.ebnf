@@ -3965,8 +3965,10 @@ EOF = (* end of file *) ;
       `cite` and `dfn` are consumed into an HTML element instead of reaching
       the output as an attribute, so `[Tab]{kbd}` is `<kbd>Tab</kbd>` and not
       `<span kbd="">Tab</span>`. They are boolean attributes everywhere else,
-      including in the AST and in the canonical writer, which spells the same
-      span `[Tab]{kbd=""}`.
+      including in the AST and in the canonical writer, which writes the span
+      back as `[Tab]{kbd}` -- a value-less attribute is spelled bare there
+      (PART 11 §6c), so the consumed name comes back in the form the author
+      wrote it.
       A COLON is not an `identifier` character, so a colon-bearing name is
       unrecognized in every form -- `{xml:lang="en"}`, `{.sm:hover}`, `{#a:b}`
       and a bare `{a:b}` all leave the run literal, in every engine (corpus
