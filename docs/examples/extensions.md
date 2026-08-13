@@ -442,6 +442,38 @@ citation. `:abbr[text]{title="…"}` is independent of automatic abbreviation
 definitions. Names outside the fixed registry retain the readable generic
 fallback.
 
+On that fallback the structural `ext-NAME` class is not written ahead of
+everything: authored attributes keep their SOURCE order (PART 10 §1), and the
+base class merges into the class slot at the position the author put their own
+class. An id written before a class therefore stays before it.
+
+::: compare
+
+```carve
+:widget[x]{#i .c k=v}
+```
+
+```html
+<p><span id="i" class="ext-widget c" k="v">x</span></p>
+```
+
+:::
+
+With no class of their own there is no authored position to respect, so the
+base class leads.
+
+::: compare
+
+```carve
+:widget[x]{#i k=v}
+```
+
+```html
+<p><span class="ext-widget" id="i" k="v">x</span></p>
+```
+
+:::
+
 ## Symbols
 
 `:name:` is a symbol: a generic named inline placeholder with no built-in

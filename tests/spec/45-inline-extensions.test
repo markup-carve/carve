@@ -71,3 +71,15 @@ Press [Ctrl+C]{kbd} to copy.
 .
 <p><abbr title="Custom">HTML</abbr></p>
 ```
+
+```
+:widget[x]{#i .c k=v}
+.
+<p><span id="i" class="ext-widget c" k="v">x</span></p>
+```
+
+```
+:widget[x]{#i k=v}
+.
+<p><span class="ext-widget" id="i" k="v">x</span></p>
+```

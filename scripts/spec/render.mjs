@@ -406,8 +406,6 @@ const sem = g.createSemantics().addOperation('h', {
   extension(_c, name, _o, content, _cl, attrs) {
     const n = name.sourceString
     const inner = renderInline(content.sourceString, '[')
-    const extra = attrsOf(attrs).filter((a) => a[0] === 'class').map((a) => a[1])
-    const rest = attrsOf(attrs).filter((a) => a[0] !== 'class')
     // PART 10 §9: the fixed semantic registry renders its own element (attrs
     // apply to it); everything else is the generic ext-<name> span.
     // PART 9 §10: the `:name[…]` spelling has NO core handler at all. It is a
@@ -418,8 +416,19 @@ const sem = g.createSemantics().addOperation('h', {
     if (semantic.has(n)) {
       return `<${n}${renderAttrs(attrsOf(attrs))}>${inner}</${n}>`
     }
-    const cls = [`ext-${n}`, ...extra].join(' ')
-    return `<span class="${cls}"${renderAttrs(rest)}>${inner}</span>`
+    // The base class is a CLASS, not a prefix: it joins the author's class
+    // slot rather than being written ahead of everything. Splitting it out and
+    // emitting `class="..."` first reordered the author's attributes, so
+    // `:widget[x]{#i .c}` lost the id-before-class order PART 10 §1 requires
+    // (carve#1164). renderAttrs already merges every class into the FIRST
+    // class position, so inserting the base beside the author's first class
+    // puts it exactly there; with no class of their own it leads.
+    const list = attrsOf(attrs)
+    const firstClass = list.findIndex((a) => a[0] === 'class')
+    const merged = firstClass === -1
+      ? [['class', `ext-${n}`], ...list]
+      : [...list.slice(0, firstClass), ['class', `ext-${n}`], ...list.slice(firstClass)]
+    return `<span${renderAttrs(merged)}>${inner}</span>`
   },
   spComment(_sp, _pp, _rest) {
     return ''
