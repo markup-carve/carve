@@ -1,0 +1,13 @@
+A math span's base class keeps the class slot in place
+
+```
+$`E=mc^2`{#i .c k=v}
+.
+<p><span id="i" class="math inline c" k="v">\(E=mc^2\)</span></p>
+```
+
+```
+$`E=mc^2`{#i k=v}
+.
+<p><span class="math inline" id="i" k="v">\(E=mc^2\)</span></p>
+```
