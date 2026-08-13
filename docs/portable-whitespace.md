@@ -112,7 +112,7 @@ them - a document using them is Carve, not Djot, by design.
 
 **Link reference definitions.** A `[b]: /url` line directly under a paragraph
 diverges the same way, but it leaves no node in the tree for the linter to
-anchor on, so `--portable` does not report it. Give it a blank line too.
+anchor on, so `carve lint` does not report it. Give it a blank line too.
 
 (Abbreviation definitions and comment fences were once listed here as well.
 They are not exceptions: both produce real nodes and both **are** reported.)
