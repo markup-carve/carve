@@ -257,3 +257,67 @@ test('every ::: compare container marker exceeds its body colon-run (VitePress r
     `compare containers that would break the VitePress render:\n${offenders.join('\n')}`,
   )
 })
+
+/*
+ * A MASS DELETION HAS TO FAIL SOMETHING.
+ *
+ * `resources/normative-clauses.txt` is regenerated FROM the grammar, so the
+ * inventory check above compares a file with its own derivative: delete a
+ * clause, regenerate, and the two agree about a smaller language. That is the
+ * shape carve#755 collects - a check that cannot fail for the case it looks
+ * like it covers.
+ *
+ * It was not hypothetical. A python slice with a wrong end marker removed PART
+ * 11 and its §§1-10a - about 950 lines, ~12% of the normative text, including
+ * the formatter invariants and the Markdown and plain target rules - and the
+ * suite stayed green at 1993 pass, 0 fail. codex review found it; nothing here
+ * did (carve#1163).
+ *
+ * These two rows are what the inventory cannot be: a floor that does not move
+ * when the grammar shrinks, and a structural fact about the document that a
+ * regenerate cannot restate.
+ */
+
+/** Every PART the grammar declares, as `PART <n>` in a heading line. */
+const PART_HEADINGS = [...grammar.matchAll(/^\s*PART (\d+):/gm)].map((m) => Number(m[1]))
+
+test('every PART heading is present exactly once', () => {
+  // The one-line check that would have caught the deletion outright. PART 11
+  // vanished entirely, and no assertion anywhere noticed the document had lost
+  // a whole numbered division.
+  const expected = Array.from({ length: 13 }, (_, i) => i) // PART 0 through 12
+  const missing = expected.filter((n) => !PART_HEADINGS.includes(n))
+  assert.deepEqual(
+    missing,
+    [],
+    `grammar.ebnf is missing PART heading(s): ${missing.map((n) => `PART ${n}`).join(', ')}. ` +
+      'A PART cannot be removed silently - if a division was deliberately retired, ' +
+      'update the expected range here in the same commit.',
+  )
+
+  const duplicated = PART_HEADINGS.filter((n, i) => PART_HEADINGS.indexOf(n) !== i)
+  assert.deepEqual(
+    duplicated,
+    [],
+    `duplicate PART heading(s): ${duplicated.map((n) => `PART ${n}`).join(', ')}`,
+  )
+})
+
+test('the normative inventory does not fall below its floor', () => {
+  // A FLOOR, not an exact count: clauses are added often and a count would be a
+  // chore on every addition, while a floor only speaks when the language SHRINKS
+  // sharply. Set a little under today's total, so the ordinary drift of one or
+  // two deliberate removals passes and a mass deletion does not.
+  //
+  // Raise it when the inventory has grown well past it. Lowering it is the
+  // thing to argue for in review, because that is what a silent deletion needs.
+  const FLOOR = 138
+  const clauses = extractNormativeClauses(grammar)
+  assert.ok(
+    clauses.length >= FLOOR,
+    `the grammar declares ${clauses.length} normative clauses, below the floor of ${FLOOR}. ` +
+      'The inventory is regenerated from the grammar, so it agrees with a smaller ' +
+      'language and cannot report this on its own (carve#1163). If clauses were ' +
+      'removed deliberately, lower the floor in the same commit and say why.',
+  )
+})
