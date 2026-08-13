@@ -163,6 +163,7 @@ continues on the next line.
 
 ```carve
 {#id .class key=value}        (attach to the preceding/following element)
+{:fr}  {:de-CH}  {:}          (language: short for lang="fr"; {:} = unknown)
 
 *[HTML]: HyperText Markup Language   (abbreviation definition)
 

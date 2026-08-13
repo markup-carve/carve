@@ -152,6 +152,47 @@ The same `{…}` block is used in both positions:
 - `.class` - add a class (repeatable)
 - `key=value` / `key="value"` - arbitrary attribute; quote when the value has spaces
 - `boolean` - a bare word (no `#`/`.`/`=`) becomes a value-less attribute, rendered `name=""` (e.g. `{.note open}` adds `open=""`). Registered semantic names on inline spans instead select their HTML element (e.g. `[Tab]{kbd}` → `<kbd>Tab</kbd>`).
+- `:tag` - the natural language of the content, short for `lang=tag` (see below)
+
+### Language: `{:fr}`
+
+`{:tag}` sets the language of what it attaches to. It is exact sugar for `lang=tag`, so it works anywhere an attribute block does and needs no extension:
+
+```carve
+The title is [Le Bon Usage]{:fr}.
+
+{:de}
+> Das ist ein deutschsprachiger Absatz.
+```
+
+```html
+<p>The title is <span lang="fr">Le Bon Usage</span>.</p>
+<blockquote lang="de"><p>Das ist ein deutschsprachiger Absatz.</p></blockquote>
+```
+
+Any BCP 47 tag works, including script, region and private-use subtags: `{:de-CH}`, `{:sr-Latn-RS}`, `{:x-acme}`. The tag is stored exactly as written, so its case is preserved.
+
+The empty form `{:}` says the language is explicitly **unknown**, which is different from leaving the attribute off. Omitting it lets the content inherit the surrounding language; `{:}` stops that inheritance:
+
+```carve
+{:de}
+> Der Titel ist [unbekannt]{:}.
+```
+
+::: tip Direction is separate
+A language tag never sets writing direction. Direction follows the script, and a tag need not name one, so set it explicitly where it matters: `[…]{:ar dir=rtl}`. HTML's `dir="auto"` is available too.
+:::
+
+`:tag` and `lang=tag` are the same attribute, so writing both is just a repeated key - the last value wins:
+
+```carve
+[a]{:fr lang=de}   →   lang="de"
+[b]{lang=de :fr}   →   lang="fr"
+```
+
+`carve fmt` writes the short spelling, so `{lang=fr}` is formatted to `{:fr}` and `{lang=""}` to `{:}`.
+
+A tag that is not structurally well formed leaves the whole block as literal text rather than half-parsing it - `{:en_US}`, `{:-en}` and `{:français}` all stay visible in the output. And the sigil takes no padding: `{: fr}` (with a space) is the empty language attribute plus a separate boolean `fr`, not a language tag.
 
 ## The one outlier: list items
 
@@ -180,6 +221,8 @@ This is a Carve addition (djot cannot attribute list items at all) and is the **
 # Heading
 
 text [span]{.c}       ← inline: directly AFTER, no space
+
+[phrase]{:fr}         ← language: short for lang="fr"
 
 -{#item} list item    ← list item: abuts the marker (no space!)
 
