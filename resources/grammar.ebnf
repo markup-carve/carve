@@ -2729,12 +2729,11 @@ attribute = language_attribute | id_attribute | class_attribute
 
    A BOOLEAN `lang` IS THE SAME KEY AS WELL: `{lang}` means `lang=""` under
    PART 4's boolean rule, so `{:fr lang}` ends at `lang=""` and `{lang :fr}` at
-   `lang="fr"`. carve-js and carve-php both do this. The EXECUTABLE SPEC does
-   not: it emits a boolean unconditionally, so `{a=1 a}` leaves it as
-   `a="1" a=""`, two attributes of the same name, which is not valid HTML and
-   is not what any engine writes. That defect predates this production and is
-   not confined to `lang`, so it is fixed under carve#1123 rather than here,
-   and no fixture below pins a boolean `lang` until it is. *)
+   `lang="fr"`. This paragraph carried a caveat until carve#1125: the executable
+   spec used to emit a boolean unconditionally, so `{a=1 a}` came out as
+   `a="1" a=""` where every engine gave `a=""`. That is fixed, the three
+   spellings of the key now meet in one slot everywhere, and the corpus pins the
+   boolean form beside the other two rather than leaving it to prose. *)
 language_attribute = ':', [ language_tag ] ;
 language_tag       = language_subtag, { '-', language_subtag } ;
 language_subtag    = ( letter | digit ), { letter | digit } ;
@@ -5619,9 +5618,9 @@ EOF = (* end of file *) ;
       This rule changes only HTML rendering. The AST remains an ordinary
       `span` carrying the authored attributes, and plain and ANSI targets render
       its inline content. The canonical writer emits the span with its
-      attributes; per PART 11 §1 it MAY normalize their spelling, so a boolean
-      is written `name=""` here as everywhere else and `[x]{kbd}` formats to
-      `[x]{kbd=""}`. The `:name[content]` form in §9 remains the generic,
+      attributes; per PART 11 §6c a value-less attribute comes back as the bare
+      name, so `[Tab]{kbd}` formats to itself rather than to `[Tab]{kbd=""}`.
+      The `:name[content]` form in §9 remains the generic,
       independently nestable spelling and the only spelling for extension
       names outside this fixed registry.
 
@@ -6061,6 +6060,48 @@ EOF = (* end of file *) ;
       that leniency rule -- and §2 already refuses the mirror of that move,
       where the writer emits the shortest form that happens to survive
       re-parsing rather than the form that says what it means.
+
+   6c. A VALUE-LESS ATTRIBUTE IS WRITTEN AS A BOOLEAN -- NORMATIVE. An
+      attribute whose value is the empty string comes back as the bare name:
+      `[x]{kbd}`, not `[x]{kbd=""}`. `boolean_attribute = identifier` is the
+      production the language has for "this attribute is present and carries no
+      value" (PART 4), so that is the form the writer emits.
+
+      THE WRITER USES THE DEDICATED PRODUCTION, which is the one rule behind
+      all three of these:
+
+        `{lang=fr}`   ->  `{:fr}`     `language_attribute`
+        `{lang=""}`   ->  `{:}`       the same, empty
+        `{kbd=""}`    ->  `{kbd}`     `boolean_attribute`
+
+      and `lang` keeps the sigil when it is written bare, so `{lang}` is `{:}`
+      rather than `{lang}` -- the more specific production wins where both
+      apply.
+
+      THIS IS NOT §6b'S MIRROR. That clause makes the writer spell `---yaml`
+      rather than the shorter `---`, and its reason is that a bare `---` is
+      NOT a production for yaml frontmatter: it is an opener that names no
+      format, which a PARSER leniency rule then defaults. Leaning on that
+      leniency is what §6b refuses. A boolean attribute is the opposite case --
+      the grammar has a production for exactly this shape, and no default is
+      being relied on. `{kbd=""}` is not more explicit than `{kbd}`; it says
+      the value is an empty STRING, where the tree says the attribute has no
+      value at all.
+
+      THE OLD SPELLING WAS AN INCONSISTENCY INSIDE ONE WRITER, not a decision.
+      Measured on carve-js `a59df0fa` before this clause: `[x]{lang}` formatted
+      to `[x]{:}` -- a boolean CONTRACTED into the shortest dedicated form --
+      while `[x]{kbd}` formatted to `[x]{kbd=""}` and `[x]{disabled}` to
+      `[x]{disabled=""}`, the same boolean EXPANDED. One writer, one release,
+      opposite directions, and nothing in the spec asked for either.
+
+      A COMPACT SEMANTIC SPAN IS WHERE IT SHOWS. `[Tab]{kbd}` is the form PART
+      9 §10 documents and the form an author writes; a writer that returned
+      `[Tab]{kbd=""}` rewrote the documentation's own example into a shape the
+      documentation never shows, and did it for a name whose VALUE is discarded
+      (§10: values on `code`, `mark`, `samp`, `var`, `kbd` and `cite` only
+      select the wrapper). An empty value there is not just longer, it points
+      at a slot that does nothing.
 
    7. NO WHITESPACE-ONLY LINE -- NORMATIVE. `fmt` never emits a line whose only
       content is ASCII spaces or tabs. Such a line is emitted EMPTY.
