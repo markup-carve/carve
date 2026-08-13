@@ -86,3 +86,9 @@
 07-blockquote-with-attribution  A captioned quote renders `<blockquote><footer>`; the pin renders `<figure><figcaption>`.
 55-blockquote-caption-after-a-blank-line  A captioned quote renders `<blockquote><footer>`; the pin renders `<figure><figcaption>`.
 282-two-blank-lines-detach-a-caption-5  A captioned quote renders `<blockquote><footer>`; the pin renders `<figure><figcaption>`.
+
+# PART 9R R3: a term expands in rendered text at word boundaries, whatever
+# container the text sits in. The pinned carve-js build drops the expansion
+# inside the `:name[…]` extension form specifically (carve#1151); it is correct
+# on every other row of the same case. Clears with the engine fix and a pin bump.
+305-an-abbreviation-expands-inside-an-inline-container-3  The pin drops an abbreviation expansion inside `:name[…]`.
