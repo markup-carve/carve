@@ -1,11 +1,26 @@
 ---
 title: "Examples: Extensions"
-description: Tier-2/3 extension features, side by side with the HTML they produce.
+description: Admonitions, abbreviations, mentions, symbols, cross-references and the extension syntax, side by side with the HTML they produce.
 ---
 
 # Extensions examples
 
-Features provided by extensions on top of the core language: admonitions, abbreviations, mentions and tags, inline extensions, symbols, and cross-reference numbering.
+Admonitions, abbreviations, mentions and tags, the extension syntax, symbols, and
+numbered cross-references, plus one genuine extension: diagrams.
+
+**Most of what is on this page is core, not an extension.** Everything down to
+and including [Numbered cross-references](#numbered-cross-references) is
+default-on core syntax per the
+[feature-tier table](/extensions#feature-tiers-quick-reference). `@mention`,
+`#tag` and `:symbol:` parsing are core too, and are the only ones on this page a
+processor may turn off (grammar PART 9 §19). The nine semantic names under
+[Inline extensions](#inline-extensions) are renderer behavior rather than an
+opt-in extension, and so is the compact `[x]{kbd}` spelling. Only
+[Diagrams and charts](#diagrams-and-charts) is an extension in the tier sense.
+
+The page keeps its name because a corpus category's number is its position among
+these example sections, so moving one renumbers every category after it and
+invalidates the per-implementation lists that cite them.
 
 ## Admonitions
 
