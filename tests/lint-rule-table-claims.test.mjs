@@ -80,7 +80,21 @@ const TRIGGERS = {
     source: 'See #123 for the discussion.\n',
     options: { platforms: ['github'] },
   },
+  'footnote-labels-differ-only-in-whitespace': 'see [^a b] and [^a  b]\n\n[^a b]: one\n\n[^a  b]: two\n',
+  'semantic-attribute-value-ignored': '[x]{cite="https://example.org/dune"}\n',
+  'semantic-attribute-outside-span': '`c`{kbd}\n',
 }
+
+/*
+ * A rule id the build carries but no trigger names.
+ *
+ * `collectPortableWhitespace` is retained behind an explicit `void` reference
+ * in carve-js and called from nowhere, so `portable-quote-marker-space` cannot
+ * be emitted by any input or option. It is listed here rather than silently
+ * skipped: the scan below would otherwise report it forever, and a reader has
+ * to be able to tell "no producer, known" from "no producer, nobody noticed".
+ */
+const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
 
 /** The rules this map calls with options, i.e. the ones that are not default-on. */
 const OPT_IN = Object.entries(TRIGGERS)
@@ -173,6 +187,68 @@ test('an opt-in rule reports nothing until it is asked for', () => {
     `rule(s) reported without being asked for: ${leaked.join(', ')}. ` +
       'docs/validation.md states a processor MUST NOT report these unless the ' +
       'caller names a platform.',
+  )
+})
+
+/*
+ * THE SCAN, because the comparison above cannot see a rule it was never told
+ * about.
+ *
+ * `emittedRules()` runs the TRIGGERS documents, so the set it produces is
+ * bounded by the rules already documented. A rule the engine gained with a
+ * condition no trigger document meets contributes nothing to it, and "every
+ * rule the engine emits is on the page" passes while the page is short. That
+ * is not hypothetical: at the pin this test was extended on, carve-js emitted
+ * `footnote-labels-differ-only-in-whitespace`,
+ * `semantic-attribute-value-ignored` and `semantic-attribute-outside-span`,
+ * the page listed none of the three, and every assertion above was green.
+ *
+ * So the ids are read out of the pinned build itself instead of being inferred
+ * from what this file already knows to ask for. That reads a build artifact,
+ * which is brittle by nature - the floor is what makes the brittleness loud: a
+ * bundler change that stops matching the pattern fails here rather than
+ * quietly turning the check into a statement about an empty list.
+ *
+ * THE PATTERN IS DELIBERATELY BROAD - every kebab-case string literal in the
+ * file, not the ids in one emission form. carve-js spells a rule id three ways
+ * today: `rule: 'x'` in a warning object, a positional `push(…, 'x', …)`, and
+ * an entry in a rule tuple. A pattern per form is a pattern per form somebody
+ * has to remember to add, which is the same blindness one level down; matching
+ * every kebab literal costs a `NOT_A_RULE` line the first time a non-rule
+ * kebab string appears, and that entry is visible where an unmatched form is
+ * not. Measured at the pin: 21 literals, all 21 of them rule ids, no noise.
+ */
+const NOT_A_RULE = new Set()
+
+function ruleIdsInBuild() {
+  const lintSource = readFileSync(
+    new URL('../node_modules/@markup-carve/carve/dist/lint.js', import.meta.url),
+    'utf8',
+  )
+  const literals = [...lintSource.matchAll(/['"]([a-z][a-z0-9]*(?:-[a-z0-9]+)+)['"]/g)].map((m) => m[1])
+
+  return [...new Set(literals)].filter((id) => !NOT_A_RULE.has(id)).sort()
+}
+
+test('the build was actually scanned', () => {
+  const found = ruleIdsInBuild()
+  assert.ok(
+    found.length >= 18,
+    `only ${found.length} rule id(s) found in the pinned build; the scan pattern no longer matches ` +
+      'how carve-js spells a rule id, so the check below is about an empty list.',
+  )
+})
+
+test('every rule id in the pinned build is on the page', () => {
+  const documented = documentedRules()
+  const missing = ruleIdsInBuild().filter(
+    (rule) => !documented.includes(rule) && !UNPRODUCIBLE_IN_BUILD.has(rule),
+  )
+  assert.deepEqual(
+    missing,
+    [],
+    `the pinned carve-js build carries rule id(s) docs/validation.md does not list: ${missing.join(', ')}. ` +
+      'A warning a user can read in their terminal and nowhere else is the contract this page exists to keep.',
   )
 })
 
