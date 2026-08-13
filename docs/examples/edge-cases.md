@@ -960,11 +960,11 @@ On an inline extension (the attributes attach to its output element):
 ::: compare
 
 ```carve
-:kbd[x]{k="{y}"}
+:widget[x]{k="{y}"}
 ```
 
 ```html
-<p><kbd k="{y}">x</kbd></p>
+<p><span class="ext-widget" k="{y}">x</span></p>
 ```
 
 :::
@@ -985,16 +985,32 @@ its delimiters (grammar `quoted_value`).
 :::
 
 Author attributes on an inline extension attach to its rendered element —
-a class on a semantic shorthand lands on its tag.
+a class lands on the fallback span, and on the semantic element where an
+extension supplies one.
 
 ::: compare
 
 ```carve
-:kbd[x]{.foo}
+:widget[x]{.foo}
 ```
 
 ```html
-<p><kbd class="foo">x</kbd></p>
+<p><span class="ext-widget foo">x</span></p>
+```
+
+:::
+
+A semantic span carries its attributes on the element it names, because a
+consumed name RENAMES the span rather than wrapping it (PART 9 §9).
+
+::: compare
+
+```carve
+[x]{#k .key kbd}
+```
+
+```html
+<p><kbd id="k" class="key">x</kbd></p>
 ```
 
 :::
@@ -15813,12 +15829,14 @@ between them keeps its own place:
 
 :::
 
-## A semantic span keeps its wrapper unless consumption empties it
+## A semantic name renames the span, and the leftovers ride the element
 
 An authored `[content]{attrs}` span renders its `<span>` element whether or not
-any attribute reaches the output. The one exception is PART 9 §10: when every
-authored attribute is a consumed semantic name, the semantic element stands
-alone.
+any attribute reaches the output - hardening removes attributes, never the
+element the author wrote. A semantic name is not an attribute that was removed:
+it never reaches the output as one. It renames the element (PART 9 §9), so the
+span does not survive as a wrapper and every remaining attribute lands on the
+outermost semantic element.
 
 ::: compare
 
@@ -15851,7 +15869,7 @@ alone.
 ```
 
 ```html
-<p><span><kbd>x</kbd></span></p>
+<p><kbd>x</kbd></p>
 ```
 
 :::
@@ -16304,6 +16322,38 @@ the next whitespace, so it is one attribute and the block is valid.
 
 ```html
 <p><span k="a:b">x</span></p>
+```
+
+:::
+
+## A derived title yields to an authored one
+
+`abbr` and `time` values become `title` and `datetime`, which are ordinary
+attribute names an author may also write. Where both are present the authored
+one wins - one element never carries the same attribute twice (PART 9 §9).
+
+::: compare
+
+```carve
+[x]{abbr="derived" title="authored"} [y]{time="2026" datetime="custom"}
+```
+
+```html
+<p><abbr title="authored">x</abbr> <time datetime="custom">y</time></p>
+```
+
+:::
+
+Without an authored one the derived attribute is what the element carries.
+
+::: compare
+
+```carve
+[HTML]{abbr="HyperText Markup Language"}
+```
+
+```html
+<p><abbr title="HyperText Markup Language">HTML</abbr></p>
 ```
 
 :::

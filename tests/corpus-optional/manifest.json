@@ -203,6 +203,16 @@
       "feature": "smart-typography-default",
       "target": "plain",
       "description": "CONTROL. The same document at DEFAULT typography: the crossref label takes the glyphs, exactly as the heading does. Without it the three cases above would also pass an engine that never applies typography to a crossref label at all."
+    },
+    {
+      "slug": "40-semantic-span-extension",
+      "feature": "semantic-span",
+      "description": "The four names core does not reserve - samp, var, cite, dfn - render as their elements when the SemanticSpan extension is enabled, under the same attribute spelling, nesting order and value mapping core uses for its three (PART 9 §10)."
+    },
+    {
+      "slug": "41-semantic-span-extension-deprecated-spelling",
+      "feature": "semantic-span",
+      "description": "The extension also accepts the SOFT-DEPRECATED `:name[...]` spelling for all seven names, because it was released behavior in carve-js and carve-rs. Scheduled for removal in 0.2; the compact attribute is the form to write."
     }
   ]
 }

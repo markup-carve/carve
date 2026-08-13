@@ -262,15 +262,12 @@ Hey @alice, see #release-1.0.
 
 ## Inline extensions
 
-Seven names have a built-in, portable semantic HTML mapping: `abbr`, `cite`,
-`dfn`, `kbd`, `samp`, `var`, and `time`. They remain ordinary
-`inline_extension` AST nodes; the mapping is renderer behavior, not an opt-in
-extension. Attributes land on the semantic element and use the same hardening
-as every other authored attribute. A name is in the registry only where Carve
-has no other INLINE spelling for the element, so `code` and `mark` are not:
-`` `x` `` writes `<code>` and `=x=` writes `<mark>`. A document-level
-`*[HTML]: …` definition also emits `<abbr>` and does not disqualify `abbr`: it
-expands every occurrence automatically, where the inline name marks one.
+The `:name[…]` syntax is core; the HANDLERS are not. Core registers none of
+them, so every name — including the semantic ones — falls back to a generic
+`<span class="ext-NAME">` until an extension claims it. The seven semantic
+names are the [SemanticSpan extension](/extensions)'s, and the `:name[…]`
+spelling for them is soft-deprecated there: write the span attribute instead
+(PART 9 §9, §10).
 
 ::: compare
 
@@ -279,12 +276,27 @@ Press :kbd[Ctrl+C] to copy.
 ```
 
 ```html
+<p>Press <span class="ext-kbd">Ctrl+C</span> to copy.</p>
+```
+
+:::
+
+The same keystroke as core writes it — a semantic span attribute, which needs
+no extension:
+
+::: compare
+
+```carve
+Press [Ctrl+C]{kbd} to copy.
+```
+
+```html
 <p>Press <kbd>Ctrl+C</kbd> to copy.</p>
 ```
 
 :::
 
-An unrecognized extension name falls back to a generic `<span class="ext-NAME">`.
+An unrecognized extension name falls back to the same generic span.
 
 ::: compare
 
@@ -357,54 +369,26 @@ An authored `{.class}` on a generic inline extension merges into the single `cla
 
 :::
 
-::: compare
-
-```carve
-:abbr[HTML]{title="HyperText Markup Language"} :cite[The Book] :dfn[term]
-:samp[ready] :var[x] :time[noon]{datetime="12:00"} :code[x] :mark[relevant]
-```
-
-```html
-<p><abbr title="HyperText Markup Language">HTML</abbr> <cite>The Book</cite> <dfn>term</dfn>
-<samp>ready</samp> <var>x</var> <time datetime="12:00">noon</time> <span class="ext-code">x</span> <span class="ext-mark">relevant</span></p>
-```
-
-:::
-
-The semantic element keeps nested inline content and authored attributes.
+Core reserves three of the seven names as SPAN ATTRIBUTES - `abbr` and `time`,
+which carry data, and `kbd`, which every comparable system ships. A value on
+`abbr` becomes `title` and a value on `time` becomes `datetime`; several names
+nest in the fixed order `abbr`, `time`, `kbd`.
 
 ::: compare
 
 ```carve
-:kbd[*Ctrl*+C]{#copy .shortcut data-key="copy" onclick="alert(1)"}
+[HTML]{abbr="HyperText Markup Language"} [Noon]{time="12:00"} [Tab]{kbd}
 ```
 
 ```html
-<p><kbd id="copy" class="shortcut" data-key="copy"><strong>Ctrl</strong>+C</kbd></p>
+<p><abbr title="HyperText Markup Language">HTML</abbr> <time datetime="12:00">Noon</time> <kbd>Tab</kbd></p>
 ```
 
 :::
 
-For semantic spans, the same registry is available as compact attribute sugar.
-This is especially useful when several semantic wrappers belong to one label.
-`abbr`, `dfn`, and `time` values map to `title`, `title`, and `datetime`; the
-fixed nesting order preserves the established PHP spelling.
-
-::: compare
-
-```carve
-[CSS]{dfn abbr="Cascading Style Sheets"}
-[Noon]{time="12:00"} [x]{code mark samp var kbd cite}
-```
-
-```html
-<p><dfn><abbr title="Cascading Style Sheets">CSS</abbr></dfn>
-<time datetime="12:00">Noon</time> <span code="" mark=""><cite><kbd><var><samp>x</samp></var></kbd></cite></span></p>
-```
-
-:::
-
-Non-semantic attributes remain on one hardened outer span.
+Leftover attributes RIDE the outermost semantic element: a consumed name
+renames the span rather than wrapping it, so an id or class lands on the
+element the author wrote it on, and hardening applies there.
 
 ::: compare
 
@@ -414,8 +398,24 @@ Non-semantic attributes remain on one hardened outer span.
 ```
 
 ```html
-<p><span id="copy" class="shortcut" data-key="copy"><kbd><strong>Ctrl</strong>+C</kbd></span>
-<span><kbd>x</kbd></span></p>
+<p><kbd id="copy" class="shortcut" data-key="copy"><strong>Ctrl</strong>+C</kbd>
+<kbd>x</kbd></p>
+```
+
+:::
+
+The four names core does not reserve - `samp`, `var`, `cite`, `dfn` - are the
+SemanticSpan extension's, so a core processor leaves them as ordinary
+attributes.
+
+::: compare
+
+```carve
+[x]{samp} [y]{dfn="a term"}
+```
+
+```html
+<p><span samp="">x</span> <span dfn="a term">y</span></p>
 ```
 
 :::
@@ -464,11 +464,11 @@ Carve's boundary rule deliberately does not — see the djot divergence notes.)
 ::: compare
 
 ```carve
-Great :rocket: and :kbd[Ctrl] is an extension.
+Great :rocket: and :widget[Ctrl] is an extension.
 ```
 
 ```html
-<p>Great :rocket: and <kbd>Ctrl</kbd> is an extension.</p>
+<p>Great :rocket: and <span class="ext-widget">Ctrl</span> is an extension.</p>
 ```
 
 :::

@@ -61,44 +61,59 @@ document carrying only the marker is still checked.
 
 ### Behavior changes inside 0.1.x
 
-A `0.1.x` release may still change what an existing document renders to, and one
-already has. The compact semantic span gave seven attribute names a meaning they
-did not have before:
+A `0.1.x` release may still change what an existing document renders to, and
+the semantic-span work did it more than once. The end state is three reserved
+span attributes in core - `abbr`, `time`, `kbd` - and here is what moved.
 
-`abbr`, `time`, `samp`, `var`, `kbd`, `cite`, `dfn`
-
-On an ordinary `[content]{attrs}` span each is now consumed into its HTML element
-instead of reaching the output as an attribute
-([PART 9 §10](./blocks-and-attributes#semantic-spans-kbd-abbr)). A document that used one
-of those names as a plain marker attribute renders differently after upgrading.
-
-Eight of them change shape and keep their content:
+**1. Three names gained a meaning as span attributes.** On an ordinary
+`[content]{attrs}` span each is now consumed into its HTML element instead of
+reaching the output as an attribute
+([PART 9 §9](./blocks-and-attributes#semantic-spans-kbd-abbr-time)):
 
 ```carve
 [x]{time="2026-01-01"}
 ```
 
 ```html
-<span time="2026-01-01">x</span>   <!-- before -->
-<time datetime="2026-01-01">x</time>   <!-- after -->
+<span time="2026-01-01">x</span>         <!-- before -->
+<time datetime="2026-01-01">x</time>     <!-- after -->
 ```
 
-**`cite` is the one to check.** It is a real HTML attribute - on `blockquote` and
-`q` - so `{cite="…"}` on a span was a reasonable thing to write, and its value now
-reaches no output at all:
+A document that used `abbr`, `time` or `kbd` as a plain marker attribute on a
+span renders differently after upgrading.
+
+**2. Leftover attributes moved onto the semantic element.** A consumed name
+renames the span rather than wrapping it, so an id or class lands on the element:
 
 ```carve
-[Dune]{cite="https://example.org/dune"}
+[Tab]{#k .key kbd}
 ```
 
 ```html
-<span cite="https://example.org/dune">Dune</span>   <!-- before -->
-<cite>Dune</cite>                                   <!-- after -->
+<span id="k" class="key"><kbd>Tab</kbd></span>   <!-- before -->
+<kbd id="k" class="key">Tab</kbd>                <!-- after -->
 ```
 
-To find affected documents, search for those seven names used as attributes on a
-span. Where the value mattered, move it to an attribute that survives - a `title`,
-or a link if it was a URL.
+A stylesheet or script written against the wrapper needs a look.
+
+**3. Four names left core for an extension.** `samp`, `var`, `cite` and `dfn`
+briefly selected elements too; they are now the opt-in
+[SemanticSpan extension](./extensions)'s, so a core processor leaves them as
+ordinary attributes. **`cite` is the one to check** - it is a real HTML
+attribute on `blockquote` and `q`, so `{cite="…"}` on a span was a reasonable
+thing to write, and while the extension is enabled its value reaches no output
+at all.
+
+**4. The `:name[…]` spelling lost its handlers.** `:kbd[Tab]` renders
+`<span class="ext-kbd">Tab</span>` in a core processor; the SemanticSpan
+extension accepts it as a soft-deprecated form, scheduled for removal in 0.2.
+This is the one break in RELEASED behavior rather than in a development window:
+`:kbd[x]` has rendered `<kbd>` in carve-js since its first release. The rewrite
+is mechanical - `:kbd[Tab]` becomes `[Tab]{kbd}`.
+
+To find affected documents, search for the seven names used as attributes on a
+span, and for `:name[…]` with any of them. Where a value mattered, move it to an
+attribute that survives - a `title`, or a link if it was a URL.
 
 ### Checking documents mechanically
 

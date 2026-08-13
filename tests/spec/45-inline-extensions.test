@@ -3,6 +3,12 @@ Inline extensions
 ```
 Press :kbd[Ctrl+C] to copy.
 .
+<p>Press <span class="ext-kbd">Ctrl+C</span> to copy.</p>
+```
+
+```
+Press [Ctrl+C]{kbd} to copy.
+.
 <p>Press <kbd>Ctrl+C</kbd> to copy.</p>
 ```
 
@@ -39,33 +45,23 @@ Press :kbd[Ctrl+C] to copy.
 ```
 
 ```
-:abbr[HTML]{title="HyperText Markup Language"} :cite[The Book] :dfn[term]
-:samp[ready] :var[x] :time[noon]{datetime="12:00"} :code[x] :mark[relevant]
+[HTML]{abbr="HyperText Markup Language"} [Noon]{time="12:00"} [Tab]{kbd}
 .
-<p><abbr title="HyperText Markup Language">HTML</abbr> <cite>The Book</cite> <dfn>term</dfn>
-<samp>ready</samp> <var>x</var> <time datetime="12:00">noon</time> <span class="ext-code">x</span> <span class="ext-mark">relevant</span></p>
-```
-
-```
-:kbd[*Ctrl*+C]{#copy .shortcut data-key="copy" onclick="alert(1)"}
-.
-<p><kbd id="copy" class="shortcut" data-key="copy"><strong>Ctrl</strong>+C</kbd></p>
-```
-
-```
-[CSS]{dfn abbr="Cascading Style Sheets"}
-[Noon]{time="12:00"} [x]{code mark samp var kbd cite}
-.
-<p><dfn><abbr title="Cascading Style Sheets">CSS</abbr></dfn>
-<time datetime="12:00">Noon</time> <span code="" mark=""><cite><kbd><var><samp>x</samp></var></kbd></cite></span></p>
+<p><abbr title="HyperText Markup Language">HTML</abbr> <time datetime="12:00">Noon</time> <kbd>Tab</kbd></p>
 ```
 
 ```
 [*Ctrl*+C]{#copy .shortcut kbd data-key="copy" onclick="alert(1)"}
 [x]{kbd onclick="alert(1)"}
 .
-<p><span id="copy" class="shortcut" data-key="copy"><kbd><strong>Ctrl</strong>+C</kbd></span>
-<span><kbd>x</kbd></span></p>
+<p><kbd id="copy" class="shortcut" data-key="copy"><strong>Ctrl</strong>+C</kbd>
+<kbd>x</kbd></p>
+```
+
+```
+[x]{samp} [y]{dfn="a term"}
+.
+<p><span samp="">x</span> <span dfn="a term">y</span></p>
 ```
 
 ```

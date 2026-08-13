@@ -1,1 +1,1 @@
-:foo[a]{.cls}
+:foo[a [b] c]

@@ -53,7 +53,8 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | Mermaid / FencedRender, MathBlock, Glossary, Index, HeadingNumbers, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | Bibliography (§6) — an **option on Citations**, not a separate registration: the host passes a CSL-JSON pool to the Citations extension | <Badge type="warning" text="extension" /> | off | — |
 | TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
-| Semantic spans — compact portable attributes (`[x]{kbd}`, `[HTML]{abbr="…"}`); PHP's former opt-in extension is now a compatibility shim | <Badge type="tip" text="core" /> | on | no |
+| Semantic span attributes — `[x]{kbd}`, `[HTML]{abbr="…"}`, `[now]{time="…"}` (three names; PART 9 §9) | <Badge type="tip" text="core" /> | on | no |
+| SemanticSpan — the four names core does not reserve (`samp`, `var`, `cite`, `dfn`), plus the soft-deprecated `:name[…]` spelling for all seven; **specified ahead of the engines**, so no implementation registers it yet | <Badge type="info" text="standard" /> | off | — |
 | [ImgFence](/svg-images) (sanitized SVG `img` fence — sandboxed by default) | <Badge type="warning" text="extension" /> | off | — |
 
 A `:name[…]` / `::: name` whose word has no registered handler renders via the
@@ -117,11 +118,11 @@ differs by processor. The narrative below details each tier.
   on each heading - and rewrite auto-filled `</#id>` cross-references to
   "Section 1.2 - Title"; opt-in, no new syntax; §9),
   HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks,
-  PHP's legacy attribute-based SemanticSpan (the portable `:abbr[…]`,
-  `:cite[…]`, `:dfn[…]`, `:kbd[…]`, `:samp[…]`, `:var[…]` and `:time[…]`
-  mappings are built in and need no registration; `:code[…]` and `:mark[…]`
-  are NOT among them and take the generic `ext-NAME` fallback, because
-  `` `x` `` and `=x=` already write those elements),
+  SemanticSpan (§11: the four names core does not reserve, plus the
+  soft-deprecated `:name[…]` spelling for all seven; core reserves `abbr`,
+  `time` and `kbd` as span attributes and registers no `:name[…]` handler at
+  all, so every one of them falls back to `ext-NAME` until this extension is
+  enabled),
   ColorSwatch (inline `:color[value]` -> a validated color chip; carve-php,
   carve-js and carve-rs — see the [extension tutorial](./extension-tutorial)),
   and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
@@ -1067,3 +1068,72 @@ line, both leave the `<n>` literal).
 - Comment-anchored markers (`// <1>`) - bare `<n>` only for v1.
 - Linking a marker to its list item (anchor/back-ref) - the marker is a
   styleable bubble, not a link, in v1.
+
+## 11. SemanticSpan (Tier-2)
+
+The four semantic span names core does not reserve, plus the compatibility
+spelling for all seven. Tier-2: spec-defined, identical across implementations,
+**off by default**, pinned in `tests/corpus-optional` when enabled.
+
+Core reserves `abbr`, `time` and `kbd` as span attributes (PART 9 §9) because
+the first two carry data and the third is ubiquitous. `samp`, `var`, `cite` and
+`dfn` carry no data and collide with no core clause, so a conformant core leaves
+them as ordinary attributes. This extension gives them the same meaning core
+gives its three.
+
+### 11.1 Syntax
+
+- On an ordinary `[content]{attrs}` span, `samp`, `var`, `cite` and `dfn` are
+  consumed and wrap the rendered content in their same-named element.
+- A non-empty `dfn` value becomes `title`. Values on `samp`, `var` and `cite`
+  only select the wrapper - the value reaches no output, which `carve lint`
+  reports as `semantic-attribute-value-ignored`.
+- The nesting order extends core's, inner to outer: `abbr`, `time`, `samp`,
+  `var`, `kbd`, `cite`, `dfn`.
+- Leftover attributes ride the outermost semantic element, exactly as PART 9 §9
+  states for core.
+
+::: compare
+
+```carve
+[x]{samp} [y]{var} [Dune]{cite} [CSS]{dfn="Cascading Style Sheets"}
+```
+
+```html
+<p><samp>x</samp> <var>y</var> <cite>Dune</cite> <dfn title="Cascading Style Sheets">CSS</dfn></p>
+```
+
+:::
+
+### 11.2 The `:name[…]` spelling is soft-deprecated
+
+The extension also accepts `:abbr[…]`, `:time[…]`, `:kbd[…]`, `:samp[…]`,
+`:var[…]`, `:cite[…]` and `:dfn[…]`, rendering the same elements with authored
+attributes on the element.
+
+It is accepted for compatibility, not because two spellings are wanted: it was
+released behavior in carve-js and carve-rs, so removing it outright would break
+documents that shipped. **Write the span attribute.** The form is scheduled for
+removal in 0.2, and it cannot express a combination - `:dfn[:abbr[CSS]]` does
+not nest, where `[CSS]{dfn abbr="…"}` does.
+
+Core registers no `:name[…]` handler at all, so with the extension off every one
+of the seven takes the ordinary `<span class="ext-NAME">` fallback.
+
+### 11.3 What is NOT here
+
+- `code` and `mark`. Carve already spells both inline - `` `x` `` and `=x=` -
+  and `code` would additionally give one tag two content models, since a code
+  span is verbatim while an extension body is parsed.
+- `ruby`. Accessible ruby needs structured base and annotation children rather
+  than a single inline container.
+- Any name outside the seven. An implementation MUST NOT turn an arbitrary
+  extension name into an HTML tag.
+
+### 11.4 Conformance (`tests/corpus-optional`)
+
+`40-semantic-span-extension` pins the four names, their value mapping and the
+riding rule; `41-semantic-span-extension-deprecated-spelling` pins the
+compatibility form. Both are declared unreachable until an engine registers the
+extension - see `tests/optional-corpus.test.mjs`, which names the window rather
+than skipping silently.

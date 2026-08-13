@@ -151,7 +151,7 @@ The same `{…}` block is used in both positions:
 - `#id` - element id (one per element)
 - `.class` - add a class (repeatable)
 - `key=value` / `key="value"` - arbitrary attribute; quote when the value has spaces
-- `boolean` - a bare word (no `#`/`.`/`=`) becomes a value-less attribute, rendered `name=""` (e.g. `{.note open}` adds `open=""`). Registered semantic names on inline spans instead select their HTML element (e.g. `[Tab]{kbd}` → `<kbd>Tab</kbd>`).
+- `boolean` - a bare word (no `#`/`.`/`=`) becomes a value-less attribute, rendered `name=""` (e.g. `{.note open}` adds `open=""`). Three reserved names on inline spans instead select their HTML element (e.g. `[Tab]{kbd}` → `<kbd>Tab</kbd>`).
 - `:tag` - the natural language of the content, short for `lang=tag` (see below)
 
 ### Language: `{:fr}`
@@ -194,9 +194,9 @@ A language tag never sets writing direction. Direction follows the script, and a
 
 A tag that is not structurally well formed leaves the whole block as literal text rather than half-parsing it - `{:en_US}`, `{:-en}` and `{:français}` all stay visible in the output. And the sigil takes no padding: `{: fr}` (with a space) is the empty language attribute plus a separate boolean `fr`, not a language tag.
 
-### Semantic spans: `{kbd}`, `{abbr="…"}`
+### Semantic spans: `{kbd}`, `{abbr="…"}`, `{time="…"}`
 
-On an **inline span**, seven attribute names are consumed and become the HTML element of the same name: `abbr`, `time`, `samp`, `var`, `kbd`, `cite`, `dfn`.
+On an **inline span**, three attribute names are consumed and become the HTML element of the same name: `abbr`, `time`, `kbd`.
 
 ```carve
 Press [Tab]{kbd} to indent.
@@ -206,45 +206,43 @@ Press [Tab]{kbd} to indent.
 <p>Press <kbd>Tab</kbd> to indent.</p>
 ```
 
-Three of them keep what you wrote: an `abbr` or `dfn` value becomes `title`, a `time` value becomes `datetime`.
+Two of them keep what you wrote: an `abbr` value becomes `title`, a `time` value becomes `datetime`. A value on `kbd` only picks the wrapper.
 
 ```carve
-[HTML]{abbr="HyperText Markup Language"} is a markup language.
+[HTML]{abbr="HyperText Markup Language"} shipped in [1993]{time="1993"}.
 ```
 
 ```html
-<p><abbr title="HyperText Markup Language">HTML</abbr> is a markup language.</p>
+<p><abbr title="HyperText Markup Language">HTML</abbr> shipped in <time datetime="1993">1993</time>.</p>
 ```
 
-On the other four a value only picks the wrapper and is **not** written out, so `[x]{cite="https://example.org/dune"}` renders `<cite>x</cite>` and the URL reaches no output at all.
+Several at once nest in a **fixed** order - `abbr`, `time`, `kbd`, innermost first - regardless of the order you typed them, so no document can come to depend on the spelling.
 
-Several at once nest in a **fixed** order - `abbr`, `time`, `samp`, `var`, `kbd`, `cite`, `dfn`, innermost first - regardless of the order you typed them, so no document can come to depend on the spelling:
+**Anything left over rides the outermost element.** A consumed name *renames* the span rather than wrapping it, so an id or class lands on the element you wrote it on:
 
 ```carve
-[CSS]{dfn abbr="Cascading Style Sheets"}
+[Tab]{#k .key kbd}
 ```
 
 ```html
-<p><dfn><abbr title="Cascading Style Sheets">CSS</abbr></dfn></p>
-```
-
-Anything left over - id, classes, other key/value pairs - stays on one outer `<span>`:
-
-```carve
-[x]{.shortcut kbd}
-```
-
-```html
-<p><span class="shortcut"><kbd>x</kbd></span></p>
+<p><kbd id="k" class="key">Tab</kbd></p>
 ```
 
 Three things worth knowing:
 
-- **The `<span>` disappears only when every attribute was consumed.** `[x]{kbd}` is a bare `<kbd>x</kbd>`, but `[x]{kbd onclick="…"}` keeps the wrapper (`<span><kbd>x</kbd></span>`) even though hardening strips the handler: you wrote a non-semantic attribute, and that is counted before it is removed.
+- **The span survives only when no name was consumed.** `[x]{onclick="…"}` is still `<span>x</span>` - hardening removes attributes, never the element you wrote. A semantic name is not a removed attribute; it never reaches the output as one.
 - **The scope is exactly an ordinary span.** The same names on a code span, link, image or block-attribute line are ordinary attributes, so `` `c`{kbd} `` is `<code kbd="">c</code>`, not a `<kbd>`.
 - **Only HTML changes.** The AST keeps an ordinary span carrying the authored attributes, plain-text and terminal output render the content, and `carve fmt` writes the span back out with its attributes - a value-less one bare, so `[Tab]{kbd}` formats to itself.
 
-The generic `:name[content]{attrs}` form (see [extensions](/extensions)) spells the same seven elements and is the only spelling for anything outside this registry. A name is in the registry only where Carve has no other **inline** spelling for that element, so `code` and `mark` are **not**: write `` `x` `` for `<code>` and `=x=` for `<mark>`. An abbreviation definition (`*[HTML]: HyperText Markup Language`) also emits `<abbr>`, and that is a different mechanism rather than a second spelling - it expands every occurrence document-wide, where `[HTML]{abbr="…"}` marks one.
+#### Why only three
+
+A name is reserved only where Carve has no other **inline** spelling for that element, and only where it earns core: it carries data the author would otherwise lose (`abbr`, `time`), or it is ubiquitous enough that needing an opt-in would be absurd (`kbd`).
+
+- `code` and `mark` are **nobody's**: `` `x` `` writes `<code>` and `=x=` writes `<mark>`.
+- `samp`, `var`, `cite` and `dfn` are the [SemanticSpan extension](/extensions)'s - same spelling, same rules, off until a host enables it. Until then they stay ordinary attributes.
+- An abbreviation definition (`*[HTML]: HyperText Markup Language`) also emits `<abbr>`, and that is a different mechanism rather than a second spelling: it expands every occurrence document-wide, where `[HTML]{abbr="…"}` marks one, with its own title, and can mark a term no definition declares.
+
+The `:name[content]{attrs}` form has no core handler at all - `:kbd[Tab]` is `<span class="ext-kbd">Tab</span>` unless the extension is enabled, where it is accepted as a **soft-deprecated** spelling and slated for removal in 0.2.
 
 ## The one outlier: list items
 

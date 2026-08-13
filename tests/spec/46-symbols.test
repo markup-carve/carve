@@ -1,9 +1,9 @@
 Symbols
 
 ```
-Great :rocket: and :kbd[Ctrl] is an extension.
+Great :rocket: and :widget[Ctrl] is an extension.
 .
-<p>Great :rocket: and <kbd>Ctrl</kbd> is an extension.</p>
+<p>Great :rocket: and <span class="ext-widget">Ctrl</span> is an extension.</p>
 ```
 
 ```

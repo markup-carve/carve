@@ -132,6 +132,12 @@ const featureRunners = {
 const DECLARED_UNIMPLEMENTED = {
   'smart-quotes-locale-de':
     'locale quote selection is an implementation extension/configuration, not canonical Djot syntax',
+  // The tier split (PART 9 §10) moves four semantic names and the deprecated
+  // `:name[...]` spelling into an extension no engine ships yet. The reference
+  // engine is the pinned build, so this stays declared until carve-js
+  // registers `semanticSpan`; the runner below then takes it off this list.
+  'semantic-span':
+    'the SemanticSpan extension is specified before it is implemented: no engine registers it yet',
 }
 
 /*

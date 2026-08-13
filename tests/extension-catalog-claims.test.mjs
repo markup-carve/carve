@@ -36,6 +36,12 @@ const page = readFileSync(resolve(root, 'docs/extensions.md'), 'utf8')
  */
 const NOT_A_REFERENCE_EXPORT = {
   Bibliography: 'option on Citations',
+  // PART 9 §10 specifies it before any engine ships it: the four names it
+  // carries were core until this change, so the contract exists and the
+  // registration does not yet. The entry goes when carve-js exports
+  // `semanticSpan` and the pin moves - the same window the optional corpus
+  // declares in tests/optional-corpus.test.mjs.
+  SemanticSpan: 'specified ahead of the engines; carve-js does not export it yet',
 }
 
 /** Prose words the row text carries that are not extension names. */
@@ -100,7 +106,12 @@ test('each exception says on the page what it says here', () => {
   for (const [name, reason] of Object.entries(NOT_A_REFERENCE_EXPORT)) {
     const row = page.split('\n').find((line) => line.includes(name) && /Badge/.test(line))
     assert.ok(row, `${name} is no longer on a tier row; drop it from NOT_A_REFERENCE_EXPORT`)
-    const qualified = /carve-php only/.test(row) || /option on Citations/i.test(row)
+    // Three shapes of qualifier, all of which say "not simply available":
+    // one engine has it, it is an option on another extension, or the spec
+    // reached it before any engine did.
+    const qualified = /carve-php only/.test(row)
+      || /option on Citations/i.test(row)
+      || /specified ahead of the engines/i.test(row)
     assert.ok(
       qualified,
       `the row naming ${name} does not say it is ${reason}: ${row}`,

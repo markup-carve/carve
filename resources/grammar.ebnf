@@ -5583,126 +5583,120 @@ EOF = (* end of file *) ;
       backlink glyph is `↩` (§16). Math wraps content in `\(…\)` /
       `\[…\]` inside `<span class="math inline|display">` (§18).
 
-   9. BUILT-IN SEMANTIC INLINE EXTENSIONS. The following extension names render
-      as their same-named HTML element: `abbr`, `cite`, `dfn`, `kbd`, `samp`,
-      `var`, and `time`. Thus `:kbd[x]` is `<kbd>x</kbd>` and
-      `:abbr[HTML]{title="HyperText Markup Language"}` is
-      `<abbr title="HyperText Markup Language">HTML</abbr>`.
+   9. SEMANTIC SPAN ATTRIBUTES -- NORMATIVE. On an ordinary `[content]{attrs}`
+      span, three attribute names are reserved HTML rendering sugar: `abbr`,
+      `time` and `kbd`. Each present name is consumed as an attribute and wraps
+      the rendered inline content in its same-named element.
 
-      These are renderer mappings over the ordinary `inline_extension` node;
-      they introduce no new syntax or AST node type and require no opt-in
-      extension registration. Authored id, classes and key/value attributes
-      land on the semantic element in the normal author order and pass through
-      §1-2 plus PART 9 §25 attribute hardening.
-      An implementation MUST NOT turn
-      an arbitrary extension name into an HTML tag. Every name outside this
-      fixed registry retains the generic `<span class="ext-NAME">` fallback.
+        `Press [Tab]{kbd} to indent.`        ->  `<kbd>Tab</kbd>`
+        `[HTML]{abbr="HyperText Markup Language"}`
+                                             ->  `<abbr title="HyperText Markup Language">HTML</abbr>`
+        `[now]{time="2026-01-01"}`           ->  `<time datetime="2026-01-01">now</time>`
 
-      Plain and ANSI targets render only the extension's inline content. The
-      canonical Carve writer preserves `:name[content]{attrs}`. `:cite[text]`
-      denotes a work title or source and is unrelated to a bibliographic
-      `[@key]` citation. `:abbr[text]{title="…"}` is an explicitly authored
-      semantic wrapper and neither declares nor changes automatic abbreviation
-      definitions.
+      A non-empty `abbr` or `time` value becomes `title` or `datetime`; a value
+      on `kbd` only selects the wrapper. A DERIVED ATTRIBUTE YIELDS TO AN
+      AUTHORED ONE OF THE SAME NAME -- NORMATIVE. `title` and `datetime` are
+      ordinary attribute names an author may also write, so
+      `[x]{abbr="gen" title="authored"}` is `<abbr title="authored">`, not two
+      `title` attributes on one element. The author wrote that one in the
+      output's own vocabulary; the derived one is a convenience for the case
+      where they did not. Several names nest in this fixed
+      INNER-TO-OUTER order, independent of the order the author typed them:
+      `abbr`, `time`, `kbd`.
+
+      LEFTOVER ATTRIBUTES RIDE THE OUTERMOST SEMANTIC ELEMENT -- NORMATIVE.
+      Where a semantic name is present, the span does not survive as a wrapper:
+      every remaining id, class and key/value attribute lands on the outermost
+      semantic element and passes through §1-2 plus PART 9 §25 hardening
+      there.
+
+        `[Tab]{#k .key kbd}`     ->  `<kbd id="k" class="key">Tab</kbd>`
+        `[x]{#i time="12:00" kbd}`
+                                 ->  `<kbd id="i"><time datetime="12:00">x</time></kbd>`
+        `[x]{kbd onclick="e"}`   ->  `<kbd>x</kbd>`
+        `[x]{}`                  ->  `<span>x</span>`
+        `[x]{onclick="e"}`       ->  `<span>x</span>`
+
+      The last two rows are the unchanged case and the reason the rule is
+      stated this way. PART 9 §25 is an ATTRIBUTE policy: it removes attributes
+      and never the element the author wrote, so a span with no semantic name
+      renders its `<span>` whether or not anything survives hardening, and
+      corpus `108-security-hardening-8` and `-10` pin those bytes. A semantic
+      name is not an attribute that was removed - it never reaches the output
+      as one. It RENAMES the element the author wrote, and the author's
+      attributes ride the element they were written on rather than a wrapper
+      the author did not write.
 
       THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE -- NORMATIVE.
-      A name belongs here only when the language offers no OTHER INLINE
+      A name is reserved only where the language offers no OTHER INLINE
       SPELLING for that element -- no second way to wrap a run of text where it
-      stands. `code` and `mark` do not qualify and are ordinary extension names
-      with the `<span class="ext-NAME">` fallback: a code span (`` `x` ``)
-      writes `<code>` and the highlight syntax (`=x=`) writes `<mark>`, each of
-      them the same authoring gesture on the same run as `:code[x]` /
-      `:mark[x]`. (The inline literal `` !`x` `` is not a third spelling of
-      `<code>`: §27 drops the wrapper, which is the whole point of it.)
-
-      One construct, one spelling. A second spelling for the same element costs
-      an author a choice with no criterion, splits every downstream grammar,
-      lint rule and search across two forms, and gives the corpus two shapes to
-      pin where one describes the language. `code` made that concrete rather
-      than merely untidy: a code span is VERBATIM -- `` `*b*` `` is
-      `<code>*b*</code>` -- while an extension body is parsed, so
-      `:code[*b*]` produced `<code><strong>b</strong></code>`. The same tag
-      with a different content model, selected by which spelling the author
-      reached for, reported by nothing.
+      stands. `code` and `mark` do not qualify: a code span (`` `x` ``) writes
+      `<code>` and the highlight syntax (`=x=`) writes `<mark>`, each the same
+      authoring gesture on the same run. (The inline literal `` !`x` `` is not
+      a third spelling of `<code>`: §27 drops the wrapper, which is the point
+      of it.) `code` made the cost concrete rather than merely untidy: a code
+      span is VERBATIM -- `` `*b*` `` is `<code>*b*</code>` -- while an
+      extension body is parsed, so `:code[*b*]` produced
+      `<code><strong>b</strong></code>`, one tag with two content models,
+      selected by which spelling the author reached for and reported by
+      nothing.
 
       THE TEST IS THE SPELLING, NOT THE TAG, and `abbr` is why it has to be
       said. A document-level `*[HTML]: …` definition also emits `<abbr>`, and
       that does NOT disqualify the name: a definition is a different mechanism
       at a different level. It expands EVERY occurrence of its term
-      automatically and document-wide, and there is no way to mark one
-      occurrence with it. `[HTML]{abbr="Custom"}` marks exactly one, with its
-      own title, while the definition keeps expanding the rest; `[WHO]{abbr="World
-      Health Organization"}` marks a term no definition declares; `[HTML]{abbr}`
-      marks an abbreviation with no expansion at all. None of those is writable
-      with `*[…]:`, so the inline name is the only inline spelling and stays.
+      automatically and document-wide, and cannot mark one.
+      `[HTML]{abbr="Custom"}` marks exactly one, with its own title, while the
+      definition keeps expanding the rest; `[WHO]{abbr="World Health
+      Organization"}` marks a term no definition declares; `[HTML]{abbr}` marks
+      an abbreviation with no expansion at all. None of those is writable with
+      `*[…]:`.
 
-      So the admission test for a future name is not "is the element semantic",
-      and not "does any construct in Carve emit this tag" -- it is "can an
-      author already wrap a run of text in this element where it stands".
+      WHY THESE THREE ARE CORE AND THE REST ARE NOT -- NORMATIVE. A name is
+      core when it carries data the author would otherwise lose, or when a core
+      clause already rules its interaction. `abbr` carries the expansion and
+      collides with core abbreviation definitions (the precedence rule below);
+      `time` carries `datetime`, which a reader cannot reconstruct from the
+      text. `kbd` carries neither and is core on ubiquity alone: it is the one
+      name every comparable system ships, and a language that cannot write a
+      keyboard key without an opt-in is thinner than it needs to be. `samp`,
+      `var`, `cite` and `dfn` fail both tests and are the SemanticSpan
+      extension's, per §10.
 
-      Accessible ruby is NOT in this registry: it requires structured
+      An explicit `abbr` attribute is authoritative over automatic abbreviation
+      expansion inside that span. A resolved `abbreviation` child contributes
+      only its visible abbreviation text there; renderers MUST NOT emit a
+      nested `<abbr>`. Thus a document-level `*[HTML]: Long` definition does not
+      override `[HTML]{abbr="Custom"}`.
+
+      This rule changes only HTML rendering. The AST remains an ordinary `span`
+      carrying the authored attributes, plain and ANSI targets render its
+      inline content, and the canonical writer emits the span with its
+      attributes, a value-less one spelled bare per PART 11 §6c.
+
+      Accessible ruby is NOT reserved here: it requires structured
       base/annotation children rather than a single inline container.
 
-   10. COMPACT SEMANTIC SPANS. On an ordinary `[content]{attrs}` span, the
-      boolean or key/value attributes `abbr`, `time`, `samp`,
-      `var`, `kbd`, `cite`, and `dfn` are reserved HTML rendering sugar. Each
-      present name is consumed as an attribute and wraps the rendered inline
-      content in its same-named HTML element. A non-empty `abbr`, `dfn`, or
-      `time` value becomes `title`, `title`, or `datetime`, respectively;
-      values on the other names only select their wrapper.
+   10. THE OTHER SEMANTIC NAMES ARE AN EXTENSION -- NORMATIVE. `samp`, `var`,
+      `cite` and `dfn` carry no data and collide with no core clause, so they
+      are not core: a conformant core renders `[x]{samp}` as an ordinary
+      boolean attribute (`<span samp="">x</span>`) and `:samp[x]` through the
+      generic `<span class="ext-samp">` fallback.
 
-      Multiple semantic attributes nest in this fixed INNER-TO-OUTER order:
-      `abbr`, `time`, `samp`, `var`, `kbd`, `cite`, `dfn`. The registry is
-      §9's, name for name: `code` and `mark` are not in it, so `[x]{code}` and
-      `[x]{mark}` are ordinary boolean attributes (`<span code="">x</span>`),
-      for the reason §9 gives. This order is independent of author attribute
-      order. Any id, class, or
-      other key/value attributes remain on one outer `<span>` and pass through
-      §1-2 plus PART 9 §25 attribute hardening. If no semantic attribute is
-      present, the ordinary `<span>` rendering is unchanged.
+      They are the `SemanticSpan` extension, Tier-2 and off by default, whose
+      contract is `docs/extensions.md` §8: when it is enabled the four names
+      behave exactly as §9's three do, under the same nesting order, the same
+      value mapping for `dfn`, the same attribute riding, and the same
+      hardening. The extension additionally accepts the `:name[…]` spelling for
+      all seven names as a SOFT-DEPRECATED compatibility form, because
+      `:kbd[x]` was released behavior in carve-js and carve-rs; it is scheduled
+      for removal in 0.2 and the compact spelling is the one to write.
 
-      THE OUTER `<span>` IS DROPPED ONLY BY CONSUMPTION -- NORMATIVE. An
-      authored span renders its `<span>` element whether or not any attribute
-      reaches the output; the ONE exception is this rule, where every authored
-      attribute is a consumed semantic name and the semantic element stands
-      alone. So, in full:
+      A core implementation MUST NOT turn an arbitrary extension name into an
+      HTML tag: outside `SemanticSpan`, every `:name[…]` keeps the generic
+      fallback. `cite` denotes a work title or source and is unrelated to a
+      bibliographic `[@key]` citation, which is the Citations extension's.
 
-        `[x]{}`                  ->  `<span>x</span>`
-        `[x]{onclick="e"}`       ->  `<span>x</span>`
-        `[x]{kbd onclick="e"}`   ->  `<span><kbd>x</kbd></span>`
-        `[x]{kbd}`               ->  `<kbd>x</kbd>`
-
-      Rows two and three are not an accident to be tidied away, and the reason
-      is not that the wrapper signals anything: row two renders identically to
-      row one, so nothing about the output distinguishes a stripped attribute
-      from an empty block. It is simpler than that. PART 9 §25 is an ATTRIBUTE
-      policy -- it removes attributes and never the element the author wrote --
-      so a span whose attributes are all stripped renders exactly like the
-      authored empty block in row one, and corpus `108-security-hardening-8`
-      and `-10` pin those bytes today.
-
-      Row four differs in KIND, not in degree. A consumed semantic name is not
-      an attribute that was removed from the output; it never was one. The rule
-      turns it into an element, and that element takes the span's place, so a
-      wrapper carrying nothing would be noise around it. Consumption is
-      therefore the only thing that drops the `<span>`, and a rule keyed on
-      "nothing survived" instead would also drop rows one and two, which is a
-      different change to a different clause.
-
-      This rule changes only HTML rendering. The AST remains an ordinary
-      `span` carrying the authored attributes, and plain and ANSI targets render
-      its inline content. The canonical writer emits the span with its
-      attributes; per PART 11 §6c a value-less attribute comes back as the bare
-      name, so `[Tab]{kbd}` formats to itself rather than to `[Tab]{kbd=""}`.
-      The `:name[content]` form in §9 remains the generic,
-      independently nestable spelling and the only spelling for extension
-      names outside this fixed registry.
-
-      An explicit `abbr` semantic attribute is authoritative over automatic
-      abbreviation expansion inside that span. A resolved `abbreviation` child
-      contributes only its visible abbreviation text there; renderers MUST NOT
-      emit a nested `<abbr>` element. Thus a document-level `*[HTML]: Long`
-      definition does not override `[HTML]{abbr="Custom"}`.
 
    ============================================================================
    PART 11: CANONICAL SOURCE WRITER (NORMATIVE)

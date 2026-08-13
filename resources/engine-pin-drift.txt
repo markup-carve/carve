@@ -72,3 +72,9 @@
 89-block-attribute-lines-4  A header cell now carries `scope`; the pin emits none.
 98-table-span-marker-in-first-column  A header cell now carries `scope`; the pin emits none.
 99-table-cell-attributes  A header cell now carries `scope`; the pin emits none.
+293-a-semantic-name-renames-the-span-and-the-leftovers-ride-the-element-3  PART 9 §9's riding rule: `[x]{kbd onclick="steal()"}` is `<kbd>x</kbd>` now, where the pin still wraps the consumed name in the span the author's stripped attribute left behind.
+45-inline-extensions  The `:name[…]` spelling has no core handler with the tier split, so `:kbd[Ctrl+C]` takes the generic `ext-kbd` fallback here. The pin still renders `<kbd>`; it clears when the SemanticSpan extension lands in the engines and the pin moves.
+45-inline-extensions-9  The riding rule again, on the case that also carries a hostile attribute: the id and class land on the `<kbd>` rather than on an outer span.
+45-inline-extensions-10  `samp`, `var`, `cite` and `dfn` are the extension's now, so a core render leaves them as ordinary attributes where the pin consumes them.
+71-attribute-edge-cases-11  The riding rule on an authored id and class (`[x]{#k .key kbd}` -> `<kbd id="k" class="key">`).
+301-a-derived-title-yields-to-an-authored-one  PART 9 §9: a derived `title`/`datetime` occupies the same slot as an authored one, so the authored value wins and the element carries the attribute once. The pin emits both, which is the defect the rule closes; it clears with the engine work and a pin bump.
