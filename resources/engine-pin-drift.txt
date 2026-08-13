@@ -72,3 +72,21 @@
 89-block-attribute-lines-4  A header cell now carries `scope`; the pin emits none.
 98-table-span-marker-in-first-column  A header cell now carries `scope`; the pin emits none.
 99-table-cell-attributes  A header cell now carries `scope`; the pin emits none.
+
+# `:code[…]` and `:mark[…]` left the semantic registry (carve-js#1027): Carve
+# already spells both, so the extension form renders as the generic
+# `<span class="ext-NAME">` fallback rather than as `<code>` / `<mark>`. The pin
+# predates that and still emits the elements.
+45-inline-extensions-7  `:code` and `:mark` render as the generic ext-span; the pin emits <code> and <mark>.
+45-inline-extensions-9  As 45-inline-extensions-7.
+299-the-semantic-registry-holds-no-element-carve-already-spells-2  As 45-inline-extensions-7.
+299-the-semantic-registry-holds-no-element-carve-already-spells-3  As 45-inline-extensions-7.
+
+# PART 7 requires `space+` between two attributes (carve#1157). The pin accepts
+# an adjacent pair and the corpus refuses it. These three were declared under
+# their old numbers and the category was renumbered 299 -> 300 when
+# `299-the-semantic-registry-…` landed alongside it, which left the
+# declarations pointing at slugs that no longer exist.
+300-two-attributes-need-a-separator-between-them  `{.a.b}` is literal; the pin reads two classes.
+300-two-attributes-need-a-separator-between-them-2  `{.a#i}` is literal; the pin reads a class and an id.
+300-two-attributes-need-a-separator-between-them-3  `{#i.c}` is literal; the pin reads an id and a class.
