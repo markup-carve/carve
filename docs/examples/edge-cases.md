@@ -179,10 +179,10 @@ quote becomes a `<figure>` with a `<figcaption>`.
 ```
 
 ```html
-<figure>
-  <blockquote><p>quote text</p></blockquote>
-  <figcaption>Source: Someone</figcaption>
-</figure>
+<blockquote>
+  <p>quote text</p>
+  <footer>Source: Someone</footer>
+</blockquote>
 ```
 
 :::
@@ -15018,10 +15018,10 @@ one-blank-line form since long before this category existed.
 ```
 
 ```html
-<figure>
-  <blockquote><p>the cited line</p></blockquote>
-  <figcaption>Source: the cited work</figcaption>
-</figure>
+<blockquote>
+  <p>the cited line</p>
+  <footer>Source: the cited work</footer>
+</blockquote>
 ```
 
 :::::

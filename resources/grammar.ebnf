@@ -3245,6 +3245,50 @@ EOF = (* end of file *) ;
       prose", which was true of three hosts out of five and read as true of
       all five (carve#991).
 
+   4a. A CAPTION ON A QUOTE IS AN ATTRIBUTION -- NORMATIVE. Four of the five
+      hosts take a caption and become a numbered thing: a FIGURE, a TABLE, a
+      LISTING, an EQUATION. The blockquote is the odd one, and it is not a
+      figure. Its caption names the SOURCE of the quotation.
+
+      So a captioned quote is a `block_quote` carrying an `attribution` (an
+      array of inline nodes), NOT a `figure` whose target is a quote, and the
+      HTML puts the source where a quotation's source belongs:
+
+        > To be
+        ^ Hamlet
+
+        <blockquote>
+          <p>To be</p>
+          <footer>Hamlet</footer>
+        </blockquote>
+
+      `^` IS UNCHANGED as the spelling. No document migrates, and the canonical
+      writer emits the same source it read.
+
+      A QUOTE TAKES NO NUMBER, which is the point rather than a side effect.
+      Numbering keys on the `#` placeholder, so `^ Figure #: Hamlet` on a quote
+      used to produce "Figure 1", consume a number from the document's figure
+      sequence, and be reachable by a numbered cross-reference - an epigraph
+      counted among the figures. Under this clause the placeholder has nothing
+      to resolve against and stays LITERAL, which is the visible failure this
+      language prefers to a silent one; `carve lint` reports it.
+
+      BOTH SPELLINGS ARE VALID HTML and the argument is not a conformance one.
+      A `figure` may wrap a quotation, and `footer` inside `blockquote` is the
+      attribution idiom. The argument is about this language's model: `figure`
+      was doing two jobs, the AST wrapper for ANY captioned block and the
+      semantic notion "figure", and the second one is wrong for a quote.
+      Anything walking the tree for figures found every captioned epigraph.
+
+      THE FIGURE-NESS IS NOW WRITTEN RATHER THAN INFERRED. A document that
+      wants a quotation numbered as a figure says so, once `:::` is a
+      captionable host (carve#1122):
+
+        ::: figure
+        > To be
+        :::
+        ^ Figure #: A pull quote
+
    5. TABLE MODEL -- OPERATIONAL SEMANTICS (cell split, row validity,
       header cells, span walk, continuation rows, delimiter row, row
       attributes). STATE: a parsed table is a grid of logical cells;

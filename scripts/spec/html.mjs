@@ -196,10 +196,14 @@ function renderBlock(b, depth, ctx) {
         }
       })()
       if (b.caption !== undefined) {
-        // single-paragraph attribution form pins the compact figure layout
+        // PART 9 §4a: the caption on a quote is its ATTRIBUTION, not a figure
+        // caption. It renders inside the quote, which is where HTML puts the
+        // source of a quotation, and the quote does not become a `figure` -
+        // so it takes no figure number and no consumer counting figures finds
+        // it (carve#1159).
         if (b.children.length === 1 && b.children[0].t === 'para') {
           const p = renderBlock(b.children[0], 0, ctx)
-          return `${pad}<figure${ba}>\n${pad}  <blockquote>${p}</blockquote>\n${pad}  <figcaption>${renderInline(b.caption)}</figcaption>\n${pad}</figure>`
+          return `${pad}<blockquote${ba}>\n${pad}  ${p}\n${pad}  <footer>${renderInline(b.caption)}</footer>\n${pad}</blockquote>`
         }
         throw new Refuse('captioned multi-block quote')
       }
