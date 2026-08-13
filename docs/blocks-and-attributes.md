@@ -244,7 +244,7 @@ Three things worth knowing:
 - **The scope is exactly an ordinary span.** The same names on a code span, link, image or block-attribute line are ordinary attributes, so `` `c`{kbd} `` is `<code kbd="">c</code>`, not a `<kbd>`.
 - **Only HTML changes.** The AST keeps an ordinary span carrying the authored attributes, plain-text and terminal output render the content, and `carve fmt` writes the span back out with its attributes - a value-less one bare, so `[Tab]{kbd}` formats to itself.
 
-The generic `:name[content]{attrs}` form (see [extensions](/extensions)) spells the same seven elements and is the only spelling for anything outside this registry. A name is in the registry only where Carve has no other way to write that element, so `code` and `mark` are **not**: write `` `x` `` for `<code>` and `=x=` for `<mark>`.
+The generic `:name[content]{attrs}` form (see [extensions](/extensions)) spells the same seven elements and is the only spelling for anything outside this registry. A name is in the registry only where Carve has no other **inline** spelling for that element, so `code` and `mark` are **not**: write `` `x` `` for `<code>` and `=x=` for `<mark>`. An abbreviation definition (`*[HTML]: HyperText Markup Language`) also emits `<abbr>`, and that is a different mechanism rather than a second spelling - it expands every occurrence document-wide, where `[HTML]{abbr="…"}` marks one.
 
 ## The one outlier: list items
 

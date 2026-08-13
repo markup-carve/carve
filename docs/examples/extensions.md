@@ -267,8 +267,10 @@ Seven names have a built-in, portable semantic HTML mapping: `abbr`, `cite`,
 `inline_extension` AST nodes; the mapping is renderer behavior, not an opt-in
 extension. Attributes land on the semantic element and use the same hardening
 as every other authored attribute. A name is in the registry only where Carve
-has no other way to write the element, so `code` and `mark` are not: `` `x` ``
-writes `<code>` and `=x=` writes `<mark>`.
+has no other INLINE spelling for the element, so `code` and `mark` are not:
+`` `x` `` writes `<code>` and `=x=` writes `<mark>`. A document-level
+`*[HTML]: …` definition also emits `<abbr>` and does not disqualify `abbr`: it
+expands every occurrence automatically, where the inline name marks one.
 
 ::: compare
 

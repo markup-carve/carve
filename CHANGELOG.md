@@ -15,9 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   JavaScript, and Rust. The registry is seven names - `abbr`, `time`, `samp`,
   `var`, `kbd`, `cite`, `dfn` - and is the same list for the `:name[content]`
   spelling; non-semantic attributes remain on a hardened outer span. A name
-  belongs in it only where Carve has no other way to write that element, so
-  `code` and `mark` are not in it: `` `x` `` writes `<code>` and `=x=` writes
-  `<mark>`. This is an observable HTML change for JS/Rust and for
+  belongs in it only where Carve has no other INLINE spelling for that
+  element, so `code` and `mark` are not in it: `` `x` `` writes `<code>` and
+  `=x=` writes `<mark>`. An abbreviation definition also emits `<abbr>` and is
+  a different mechanism rather than a second spelling - it expands every
+  occurrence document-wide, where `[HTML]{abbr="…"}` marks one. This is an observable HTML change for JS/Rust and for
   PHP without its former opt-in extension. AST, plain/ANSI, and canonical
   source behavior remain ordinary span behavior.
 

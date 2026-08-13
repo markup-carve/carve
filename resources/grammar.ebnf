@@ -5571,27 +5571,40 @@ EOF = (* end of file *) ;
       semantic wrapper and neither declares nor changes automatic abbreviation
       definitions.
 
-      THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS -- NORMATIVE. A name
-      belongs here only when Carve has no other way to write that element.
-      `code` and `mark` do not qualify and are ordinary extension names with
-      the `<span class="ext-NAME">` fallback: a code span (`` `x` ``) writes
-      `<code>` and the highlight syntax (`=x=`) writes `<mark>`. (The inline
-      literal `` !`x` `` is not a third spelling of `<code>`: §27 drops the
-      wrapper, which is the whole point of it.)
+      THE REGISTRY HOLDS NO ELEMENT CARVE ALREADY SPELLS INLINE -- NORMATIVE.
+      A name belongs here only when the language offers no OTHER INLINE
+      SPELLING for that element -- no second way to wrap a run of text where it
+      stands. `code` and `mark` do not qualify and are ordinary extension names
+      with the `<span class="ext-NAME">` fallback: a code span (`` `x` ``)
+      writes `<code>` and the highlight syntax (`=x=`) writes `<mark>`, each of
+      them the same authoring gesture on the same run as `:code[x]` /
+      `:mark[x]`. (The inline literal `` !`x` `` is not a third spelling of
+      `<code>`: §27 drops the wrapper, which is the whole point of it.)
 
-      One construct, one spelling. A second spelling for the same element
-      costs an author a choice with no criterion, splits every downstream
-      grammar, lint rule and search across two forms, and gives the corpus two
-      shapes to pin where one describes the language. `code` made that concrete
-      rather than merely untidy: a code span is VERBATIM -- `` `*b*` `` is
+      One construct, one spelling. A second spelling for the same element costs
+      an author a choice with no criterion, splits every downstream grammar,
+      lint rule and search across two forms, and gives the corpus two shapes to
+      pin where one describes the language. `code` made that concrete rather
+      than merely untidy: a code span is VERBATIM -- `` `*b*` `` is
       `<code>*b*</code>` -- while an extension body is parsed, so
       `:code[*b*]` produced `<code><strong>b</strong></code>`. The same tag
       with a different content model, selected by which spelling the author
       reached for, reported by nothing.
 
-      The seven that remain have no other spelling in the language. This is the
-      admission test for any future name: not "is the element semantic" but
-      "can Carve already write it".
+      THE TEST IS THE SPELLING, NOT THE TAG, and `abbr` is why it has to be
+      said. A document-level `*[HTML]: …` definition also emits `<abbr>`, and
+      that does NOT disqualify the name: a definition is a different mechanism
+      at a different level. It expands EVERY occurrence of its term
+      automatically and document-wide, and there is no way to mark one
+      occurrence with it. `[HTML]{abbr="Custom"}` marks exactly one, with its
+      own title, while the definition keeps expanding the rest; `[WHO]{abbr="World
+      Health Organization"}` marks a term no definition declares; `[HTML]{abbr}`
+      marks an abbreviation with no expansion at all. None of those is writable
+      with `*[…]:`, so the inline name is the only inline spelling and stays.
+
+      So the admission test for a future name is not "is the element semantic",
+      and not "does any construct in Carve emit this tag" -- it is "can an
+      author already wrap a run of text in this element where it stands".
 
       Accessible ruby is NOT in this registry: it requires structured
       base/annotation children rather than a single inline container.
