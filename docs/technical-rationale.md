@@ -494,7 +494,7 @@ Example:
 
 *[HTML]: HyperText Markup Language
 
-Press :kbd[Ctrl+C].
+Press [Ctrl+C]{kbd}.
 ```
 
 The technical point is not merely convenience. Native syntax gives the parser a

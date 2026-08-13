@@ -27,8 +27,9 @@ implementation — except rows marked **✦**, which are opt-in extensions
 | `` `code` `` | `code` | backticks |
 | `` !`/kaet/` `` | /kaet/ | inline literal — verbatim prose, no `code` styling; `!` mirrors `$`-math |
 | `[text](url)` | link | |
+| `[text][ref]` | reference link | `[ref]: https://url` on its own line, anywhere |
 | `[Page Name][]` | wiki-style link | resolves to a heading |
-| `<https://url>` | autolink | |
+| `<https://url>` | autolink | bare URLs stay literal (autolinking them is Tier-2 opt-in) |
 | `</#section-id>` | cross-reference | link text cloned from the target |
 | `![alt](img.jpg)` | image | |
 | `[^1]` / `^[inline note]` | footnote | reference / inline form |
