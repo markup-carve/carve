@@ -6090,8 +6090,9 @@ EOF = (* end of file *) ;
       the value is an empty STRING, where the tree says the attribute has no
       value at all.
 
-      THE `.fmt` FIXTURE FOR `297-the-language-sigil-takes-no-padding` IS
-      WITHDRAWN, not updated, and comes back with the pin bump. Those fixtures
+      THREE `.fmt` FIXTURES ARE WITHDRAWN, not updated, and come back with the
+      pin bump: `297-the-language-sigil-takes-no-padding`,
+      `97-boolean-attributes` and `45-inline-extensions-9`. Those fixtures
       are read THROUGH the pinned build by
       `tests/corpus-fmt-roundtrip.test.mjs`, and by the engines through their
       own `spec` submodule, so a fixture carrying the NEW bytes fails in both
