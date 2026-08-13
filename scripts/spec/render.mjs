@@ -206,7 +206,7 @@ export function renderAttrs(list) {
 // over the ordinary `span` node.  Keep PHP's established relative order and
 // outer span for non-semantic attributes; the authored attribute list remains
 // untouched in the AST and source targets.
-const SEMANTIC_SPAN_ORDER = ['abbr', 'time', 'code', 'mark', 'samp', 'var', 'kbd', 'cite', 'dfn']
+const SEMANTIC_SPAN_ORDER = ['abbr', 'time', 'samp', 'var', 'kbd', 'cite', 'dfn']
 function renderSemanticSpan(text, list) {
   const semantic = new Map()
   const rest = []
@@ -398,7 +398,10 @@ const sem = g.createSemantics().addOperation('h', {
     const rest = attrsOf(attrs).filter((a) => a[0] !== 'class')
     // PART 10 §9: the fixed semantic registry renders its own element (attrs
     // apply to it); everything else is the generic ext-<name> span.
-    const semantic = new Set(['abbr', 'cite', 'dfn', 'kbd', 'samp', 'var', 'time', 'code', 'mark'])
+    // `code` and `mark` are deliberately absent: the registry holds no element
+    // Carve already spells, and those two are written `` `x` `` / `` !`x` ``
+    // and `=x=` (PART 9 §9).
+    const semantic = new Set(['abbr', 'cite', 'dfn', 'kbd', 'samp', 'var', 'time'])
     if (semantic.has(n)) {
       return `<${n}${renderAttrs(attrsOf(attrs))}>${inner}</${n}>`
     }

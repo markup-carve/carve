@@ -196,7 +196,7 @@ A tag that is not structurally well formed leaves the whole block as literal tex
 
 ### Semantic spans: `{kbd}`, `{abbr="…"}`
 
-On an **inline span**, nine attribute names are consumed and become the HTML element of the same name: `abbr`, `time`, `code`, `mark`, `samp`, `var`, `kbd`, `cite`, `dfn`.
+On an **inline span**, seven attribute names are consumed and become the HTML element of the same name: `abbr`, `time`, `samp`, `var`, `kbd`, `cite`, `dfn`.
 
 ```carve
 Press [Tab]{kbd} to indent.
@@ -216,9 +216,9 @@ Three of them keep what you wrote: an `abbr` or `dfn` value becomes `title`, a `
 <p><abbr title="HyperText Markup Language">HTML</abbr> is a markup language.</p>
 ```
 
-On the other six a value only picks the wrapper and is **not** written out, so `[x]{cite="https://example.org/dune"}` renders `<cite>x</cite>` and the URL reaches no output at all.
+On the other four a value only picks the wrapper and is **not** written out, so `[x]{cite="https://example.org/dune"}` renders `<cite>x</cite>` and the URL reaches no output at all.
 
-Several at once nest in a **fixed** order - `abbr`, `time`, `code`, `mark`, `samp`, `var`, `kbd`, `cite`, `dfn`, innermost first - regardless of the order you typed them, so no document can come to depend on the spelling:
+Several at once nest in a **fixed** order - `abbr`, `time`, `samp`, `var`, `kbd`, `cite`, `dfn`, innermost first - regardless of the order you typed them, so no document can come to depend on the spelling:
 
 ```carve
 [CSS]{dfn abbr="Cascading Style Sheets"}
@@ -244,7 +244,7 @@ Three things worth knowing:
 - **The scope is exactly an ordinary span.** The same names on a code span, link, image or block-attribute line are ordinary attributes, so `` `c`{kbd} `` is `<code kbd="">c</code>`, not a `<kbd>`.
 - **Only HTML changes.** The AST keeps an ordinary span carrying the authored attributes, plain-text and terminal output render the content, and `carve fmt` writes the span back out with its attributes - a value-less one bare, so `[Tab]{kbd}` formats to itself.
 
-The generic `:name[content]{attrs}` form (see [extensions](/extensions)) spells the same nine elements and is the only spelling for anything outside this registry.
+The generic `:name[content]{attrs}` form (see [extensions](/extensions)) spells the same seven elements and is the only spelling for anything outside this registry. A name is in the registry only where Carve has no other **inline** spelling for that element, so `code` and `mark` are **not**: write `` `x` `` for `<code>` and `=x=` for `<mark>`. An abbreviation definition (`*[HTML]: HyperText Markup Language`) also emits `<abbr>`, and that is a different mechanism rather than a second spelling - it expands every occurrence document-wide, where `[HTML]{abbr="…"}` marks one.
 
 ## The one outlier: list items
 

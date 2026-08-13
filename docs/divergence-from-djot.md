@@ -867,9 +867,9 @@ as more than restyled Djot:
 - **Boolean attributes** - a bare word in `{…}` (`[text]{featured}`,
   `{.note open}`) is a value-less attribute rendered `name=""`. Canonical djot
   rejects bare words (the whole block stays literal); carve accepts them,
-  following djot-php (grammar §14). The nine semantic names below are consumed
+  following djot-php (grammar §14). The seven semantic names below are consumed
   instead of rendered.
-- **Compact semantic spans** - `abbr`, `time`, `code`, `mark`, `samp`, `var`,
+- **Compact semantic spans** - `abbr`, `time`, `samp`, `var`,
   `kbd`, `cite` and `dfn` on an ordinary span select an HTML element rather than
   an attribute, so `[Tab]{kbd}` is `<kbd>Tab</kbd>`; `abbr`, `dfn` and `time`
   values become `title`, `title` and `datetime`. Djot has no equivalent: there

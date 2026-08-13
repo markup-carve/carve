@@ -62,10 +62,10 @@ document carrying only the marker is still checked.
 ### Behavior changes inside 0.1.x
 
 A `0.1.x` release may still change what an existing document renders to, and one
-already has. The compact semantic span gave nine attribute names a meaning they
+already has. The compact semantic span gave seven attribute names a meaning they
 did not have before:
 
-`abbr`, `time`, `code`, `mark`, `samp`, `var`, `kbd`, `cite`, `dfn`
+`abbr`, `time`, `samp`, `var`, `kbd`, `cite`, `dfn`
 
 On an ordinary `[content]{attrs}` span each is now consumed into its HTML element
 instead of reaching the output as an attribute
@@ -96,7 +96,7 @@ reaches no output at all:
 <cite>Dune</cite>                                   <!-- after -->
 ```
 
-To find affected documents, search for those nine names used as attributes on a
+To find affected documents, search for those seven names used as attributes on a
 span. Where the value mattered, move it to an attribute that survives - a `title`,
 or a link if it was a URL.
 

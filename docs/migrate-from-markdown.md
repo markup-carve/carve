@@ -44,7 +44,7 @@ The table below covers the constructs you use most often. Items marked **same** 
 | Tables | GFM pipe tables with a `\|---\|` row | `\|=` header cells | **Changed** - see below (GFM delimiter row also accepted) |
 | Footnotes | `[^label]` + `[^label]: text` (GFM ext.) | same | Plus inline `^[...]` |
 | Raw HTML | Inline and block, on by default | Bare tags are literal; explicit `=html` passthrough only | See below |
-| Keys, abbreviations, dates | raw `<kbd>`, `<abbr title="…">`, `<time datetime="…">` | `[Tab]{kbd}`, `[HTML]{abbr="…"}`, `[today]{time="…"}` | Carve adds this - raw HTML is off, so the nine semantic names (`abbr`, `time`, `code`, `mark`, `samp`, `var`, `kbd`, `cite`, `dfn`) are how you reach those elements |
+| Keys, abbreviations, dates | raw `<kbd>`, `<abbr title="…">`, `<time datetime="…">` | `[Tab]{kbd}`, `[HTML]{abbr="…"}`, `[today]{time="…"}` | Carve adds this - raw HTML is off, so the seven semantic names (`abbr`, `time`, `samp`, `var`, `kbd`, `cite`, `dfn`) are how you reach those elements |
 
 ## Emphasis: the most important change
 

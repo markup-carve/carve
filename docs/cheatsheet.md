@@ -165,7 +165,7 @@ continues on the next line.
 {#id .class key=value}        (attach to the preceding/following element)
 {:fr}  {:de-CH}  {:}          (language: short for lang="fr"; {:} = unknown)
 [Tab]{kbd}                    (semantic span: <kbd>Tab</kbd>; also abbr, time,
-[HTML]{abbr="HyperText …"}     code, mark, samp, var, cite, dfn)
+[HTML]{abbr="HyperText …"}     samp, var, cite, dfn)
 
 *[HTML]: HyperText Markup Language   (abbreviation definition)
 

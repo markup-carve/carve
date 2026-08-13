@@ -118,8 +118,10 @@ differs by processor. The narrative below details each tier.
   "Section 1.2 - Title"; opt-in, no new syntax; §9),
   HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks,
   PHP's legacy attribute-based SemanticSpan (the portable `:abbr[…]`,
-  `:cite[…]`, `:dfn[…]`, `:kbd[…]`, `:samp[…]`, `:var[…]`, `:time[…]`,
-  `:code[…]`, and `:mark[…]` mappings are built in and need no registration),
+  `:cite[…]`, `:dfn[…]`, `:kbd[…]`, `:samp[…]`, `:var[…]` and `:time[…]`
+  mappings are built in and need no registration; `:code[…]` and `:mark[…]`
+  are NOT among them and take the generic `ext-NAME` fallback, because
+  `` `x` `` and `=x=` already write those elements),
   ColorSwatch (inline `:color[value]` -> a validated color chip; carve-php,
   carve-js and carve-rs — see the [extension tutorial](./extension-tutorial)),
   and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
