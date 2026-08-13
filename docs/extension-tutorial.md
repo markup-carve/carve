@@ -54,7 +54,7 @@ url: https://example.com
 and gets a scannable QR for each - a link to open, a network to join, a text to
 send, a contact to save. Same extension, different payload convention (Step 1).
 
-::: tip Tier
+::: tip "Tier"
 Everything here is [Tier-3](./extensions#_1-feature-taxonomy): an app extension,
 off by default, never part of the conformance corpus. It changes nothing about
 core Carve - it only claims the `qr` info word on fenced code blocks, which core
@@ -123,7 +123,7 @@ hyphenated, not a second word: `` ```qr wifi `` is, per the grammar's
 info word disqualifies the fence), so the type has to be part of the single
 `language_info` token — and `-` is a valid token character.
 
-::: tip Authors never escape
+::: tip "Authors never escape"
 WiFi / MeCard / vCard treat `\ ; , :` (and `"` for WiFi) as **structural**, but
 that is the *builder's* problem, not the author's. The author always writes the
 plain value — `password: pa;ss`, `org: ACME, Inc` — and `buildQrPayload`

@@ -21,7 +21,7 @@ Or skim the **[Cheat Sheet](/cheatsheet)** — the whole syntax fits on one page
 
 There are three reference engines. All of them turn a Carve string into HTML and pass the shared Tier-1 corpus.
 
-::: tip Published packages
+::: tip "Published packages"
 The three reference engines are published: npm [`@markup-carve/carve`](https://www.npmjs.com/package/@markup-carve/carve), Packagist [`markup-carve/carve-php`](https://packagist.org/packages/markup-carve/carve-php), and crates.io [`carve-lang`](https://crates.io/crates/carve-lang). The install commands below use them.
 :::
 

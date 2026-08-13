@@ -176,7 +176,7 @@ used `+` as a bullet (most don't).
 output is learnable in seconds and memorable after weeks away - the "ten-second
 rule." It is a source-compatibility break with Djot, but a small, teachable one.
 
-::: warning One delimiter flips meaning
+::: warning "One delimiter flips meaning"
 `~text~` is **subscript** in Djot but **strikethrough** in Carve (the tilde looks
 like a line through text). Carve writes subscript as the braced `{,text,}` only.
 This is the one inline delimiter whose meaning differs between the two
@@ -376,7 +376,7 @@ Carve's `` `x`{=format} `` byte-identically and routes it correctly per writer:
 | `latex` | `{=latex}` | html, typst, markdown |
 | `typst` | `{=typst}` | html, latex, markdown |
 
-::: warning Do not pipe a whole Carve document through pandoc
+::: warning "Do not pipe a whole Carve document through pandoc"
 Only the raw-passthrough construct is byte-shared. A full Carve document is **not**
 valid Djot: pandoc's Djot reader reads `/italic/` as literal text and remaps
 `_underline_` to `<em>` (Djot emphasis). Carve's visual-mnemonic emphasis

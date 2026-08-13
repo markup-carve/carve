@@ -3672,7 +3672,8 @@ are always on and identical across implementations.
 A `javascript:` link destination is rejected, leaving an empty `href` (the link
 text is preserved):
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 [click here](javascript:stealCookies)
@@ -3686,7 +3687,8 @@ text is preserved):
 
 An autolink with a dangerous scheme is blanked the same way:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 <vbscript:msgbox>
@@ -3703,7 +3705,8 @@ The denylist also covers OS protocol-handler and command-execution schemes
 launch a binary or open a macro-bearing document. A Windows document handler
 such as `ms-office:` is blanked, even when it embeds an inner URL:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 [a](ms-office:ofe|u|http://evil/x.docm)
@@ -3717,7 +3720,8 @@ such as `ms-office:` is blanked, even when it embeds an inner URL:
 
 The Follina-class `ms-msdt:` handler is blanked:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 [b](ms-msdt:/id)
@@ -3731,7 +3735,8 @@ The Follina-class `ms-msdt:` handler is blanked:
 
 The `shell:` scheme (and an `ms-msdt:` autolink) are blanked the same way:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 [c](shell:Startup)
@@ -3749,7 +3754,8 @@ The `shell:` scheme (and an `ms-msdt:` autolink) are blanked the same way:
 Ordinary web and contact schemes remain allowed -- only the dangerous classes
 are neutralized. An `https:` link and a `tel:` link are kept intact:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 [d](https://ok.com)
@@ -3767,7 +3773,8 @@ are neutralized. An `https:` link and a `tel:` link are kept intact:
 An image whose source uses a dangerous scheme keeps its `alt` but drops the
 `src` value:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 ![logo](javascript:stealCookies)
@@ -3781,7 +3788,8 @@ An image whose source uses a dangerous scheme keeps its `alt` but drops the
 
 An event-handler attribute (any `on*` name) is dropped entirely:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 A [danger]{onclick="steal()"} span.
@@ -3796,7 +3804,8 @@ A [danger]{onclick="steal()"} span.
 A `style` value containing a CSS `expression(` (or `url(`, `@import`,
 `behavior:`, `-moz-binding`) is blanked, keeping the harmless `style` slot:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 A [danger]{style="x:expression(steal())"} span.
@@ -3810,7 +3819,8 @@ A [danger]{style="x:expression(steal())"} span.
 
 The `srcdoc` and `formaction` attribute names are dropped:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 A [danger]{srcdoc="<script>"} span.
@@ -3825,7 +3835,8 @@ A [danger]{srcdoc="<script>"} span.
 An attribute-block `href`/`src` override cannot reintroduce a dangerous scheme;
 the safe destination is kept and the override is ignored:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 [safe](https://example.com){href="javascript:steal"}
@@ -4347,7 +4358,8 @@ target.
 <!-- The carve body holds a precomposed e-acute (U+00E9). -->
 A precomposed `é` (U+00E9) yields id `Café`:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 # Café
@@ -4365,7 +4377,8 @@ A precomposed `é` (U+00E9) yields id `Café`:
 A decomposed `e` + U+0301 yields the SAME id `Café` (NFC), while the rendered
 heading text keeps the author's decomposed sequence:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 # Café
@@ -4383,7 +4396,8 @@ heading text keeps the author's decomposed sequence:
 A heading containing U+202E and U+200B yields an id with NEITHER (`ABC`); the
 rendered text drops the bidi-override but keeps the zero-width space:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 # A‮B​C
@@ -4406,7 +4420,8 @@ to the raw control downstream, so it is removed rather than escaped.
 <!-- The carve body holds a, RIGHT-TO-LEFT OVERRIDE (U+202E), b. -->
 In paragraph text the control is stripped:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 a‮b
@@ -4421,7 +4436,8 @@ a‮b
 <!-- The carve body holds a code span: a, RIGHT-TO-LEFT OVERRIDE (U+202E), b. -->
 In a code span the control is stripped too (not entity-encoded):
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 `a‮b`
@@ -4443,7 +4459,8 @@ SPACE (U+202F) -- before matching the scheme (PART 9 §25), so an obfuscated
 A reference destination prefixed by U+202F then `javascript:` is rejected,
 leaving an empty `href`:
 
-::: compare no-render
+{.no-render}
+::: compare
 
 ```carve
 [click][a]
