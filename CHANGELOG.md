@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **A compact language attribute, `{:TAG}`** (carve#1114). `[Le Bon Usage]{:fr}`
+  is exact sugar for `{lang=fr}`, on inline spans and on block attribute lines
+  alike. The empty form `{:}` means the language is explicitly UNKNOWN and
+  desugars to `lang=""`, which stops inheritance where omitting the attribute
+  would keep it; it is distinct from the BCP 47 `und` and `zxx` tags. A tag is
+  ASCII-alphanumeric subtags of at most eight characters, hyphen-separated; a
+  malformed candidate leaves the whole block literal rather than half-parsing
+  it, and the sigil takes no padding, so `{: fr}` is the empty attribute plus a
+  separate boolean. `:tag` and `lang=tag` are ONE key: the last value wins at
+  the first position. This is an observable parsing change inside 0.1.x -
+  `[x]{:fr}` was literal before - accepted because the slot was unclaimed and
+  unassigned, after an audit of the organization and public `.crv` code search
+  found no literal use.
+
+- **The HTML import contract is specified** (carve#1098). Import is a migration
+  boundary, not an HTML serializer: an HTML5 parse, a documented policy, the
+  Carve AST, then the ordinary writer. Three modes (`safe`, `semantic`,
+  `roundtrip`), an ordered diagnostic list with portable codes for every lossy
+  decision, the required API surface per language plus `carve migrate --from
+  html`, the adapter names, a CSS policy that maps only explicit declarations,
+  and resource limits that fail with a typed error rather than a partial
+  document. Shared fixtures under `tests/html-import` define the portable
+  minimum.
+
+- **PART 12 §14: a caption may carry a structured short caption** (carve#1117).
+  A `figure` or `table` MAY carry `shortCaption`, an array of inline nodes, for
+  a target's list of figures or tables. Carve 0.1 source has no spelling for it,
+  so a parser never synthesizes one - it enters through an AST consumer or a
+  format bridge and survives encode/decode. HTML, plain and ANSI ignore it, the
+  canonical writer MUST omit it, and no processor may derive one by truncating
+  the full caption.
+
 ### Changed
 
 - **Semantic spans split by tier** (carve#1146). Core reserves three span
@@ -40,6 +74,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   occurrence document-wide, where `[HTML]{abbr="…"}` marks one. This is an observable HTML change for JS/Rust and for
   PHP without its former opt-in extension. AST, plain/ANSI, and canonical
   source behavior remain ordinary span behavior.
+
+- **PART 11 §6c: a value-less attribute is written as a boolean** (carve#1137).
+  The canonical writer contradicted itself over one construct: a boolean whose
+  key is `lang` contracted to the shortest dedicated form (`{:}`) while every
+  other boolean expanded to the longest (`{kbd=""}`). PART 11 §1 permitted both
+  and no clause chose. The writer now uses the DEDICATED production - the
+  language attribute for a `lang` key, the boolean attribute for a value-less
+  one - so `[Tab]{kbd}` formats back to `[Tab]{kbd}` rather than to a spelling
+  that says the value is an empty string where the tree says there is no value.
+
+- **A boolean and a key/value of the same name are one attribute**
+  (carve#1125). A boolean IS a key/value with an empty value, so it takes that
+  name's slot and the repeated key keeps the LAST value at the FIRST position,
+  like any repeated key. Emitting both would produce two HTML attributes with
+  one name.
+
+- **A structural attribute leads the author's own** (carve#1090). An attribute
+  an element derives from its own marker or destination - `<ol>`'s `type` and
+  `start`, a link's `href`, an image's `src` and `alt` - is part of the
+  element's shape rather than something added on top, so it is emitted BEFORE
+  the authored attributes, which then follow in source order; engine-minted
+  attributes come last. A structural CLASS still merges at the front of the
+  class slot. This matches reference djot on every shape measured.
+
+- **Footnote labels are matched exactly, and never cross a line**
+  (carve#1112). A label is a physical-line identifier: it may contain spaces
+  and tabs but not a source newline, and matching does not normalize
+  whitespace. A reference that spanned a newline used to resolve against a
+  definition it could not have been written as.
+
+- **An explicit `abbr` semantic attribute outranks automatic expansion**
+  (carve#1127). Inside such a span a resolved abbreviation contributes only its
+  visible text and renderers MUST NOT emit a nested `<abbr>`, so a
+  document-level `*[HTML]: …` definition no longer overrides
+  `[HTML]{abbr="Custom"}`.
+
+- **PART 10 §8b: the plain-text target preserves list depth** (carve#1084). A
+  nested item is indented two spaces per list ancestor. The target may discard
+  marker style and tight/loose layout, but flattening parent, child and
+  grandchild into siblings erases structure the reader has no other way to
+  recover - indentation is what plain text has.
+
+- **Bidi controls are stripped by presentation target** (carve#1082, #1083).
+  Canonical Carve preserves a Trojan-Source bidi override or isolate control
+  because it is the source; every presentation target strips it. `carve lint`
+  reports the source occurrence as `bidi-control-in-source`.
 
 ## [0.1.2] - 2026-08-10
 

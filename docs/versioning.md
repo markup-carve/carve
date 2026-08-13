@@ -111,6 +111,29 @@ This is the one break in RELEASED behavior rather than in a development window:
 `:kbd[x]` has rendered `<kbd>` in carve-js since its first release. The rewrite
 is mechanical - `:kbd[Tab]` becomes `[Tab]{kbd}`.
 
+**5. The language attribute claimed the `{:…}` slot**, which was unassigned and
+therefore literal:
+
+```carve
+[Le Bon Usage]{:fr}
+```
+
+```html
+<p>[Le Bon Usage]{:fr}</p>                        <!-- before -->
+<p><span lang="fr">Le Bon Usage</span></p>        <!-- after -->
+```
+
+The exception was taken deliberately and on evidence: attribute names cannot
+start with `:`, so nothing could collide, and an audit of the organization plus
+a public `.crv` code search found no literal use to break. A malformed tag
+(`{:en_US}`, `{:français}`) still leaves the block literal, so a typo looks like
+a typo rather than half-parsing.
+
+**6. The plain-text target stopped flattening nested lists.** Before, depth was
+erased and every item came out a sibling; now each list ancestor indents its
+item by two spaces (PART 10 §8b). A pipeline that parsed the plain output by
+column will see different columns.
+
 To find affected documents, search for the seven names used as attributes on a
 span, and for `:name[…]` with any of them. Where a value mattered, move it to an
 attribute that survives - a `title`, or a link if it was a URL.
