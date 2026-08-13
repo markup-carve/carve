@@ -60,6 +60,8 @@ const OPT_IN_ONLY = {
 const ENGINE_ROLLOUT_PENDING = {
   'figure.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
+  'block_quote.attribution':
+    'PART 9 §4a landed ahead of the engines: the pinned build still emits a `figure` whose target is the quote (carve#1159). Clears with the engine fixes and a pin bump.',
 }
 
 /**

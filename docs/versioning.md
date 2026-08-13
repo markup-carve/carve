@@ -115,6 +115,33 @@ To find affected documents, search for the seven names used as attributes on a
 span, and for `:name[…]` with any of them. Where a value mattered, move it to an
 attribute that survives - a `title`, or a link if it was a URL.
 
+**A captioned block quote is no longer a figure.** Its caption is the source of
+the quotation, which is what it always read as, and the HTML now says so:
+
+```carve
+> To be
+^ Hamlet
+```
+
+```html
+<figure>                                  <!-- before -->
+  <blockquote><p>To be</p></blockquote>
+  <figcaption>Hamlet</figcaption>
+</figure>
+
+<blockquote>                              <!-- after -->
+  <p>To be</p>
+  <footer>Hamlet</footer>
+</blockquote>
+```
+
+The `^` spelling does not change and no document needs editing. Two things do
+change beyond the markup: a quote no longer takes a figure number, so a `#`
+placeholder in its caption stays literal and a numbered cross-reference to it
+stops resolving; and the AST node is a `block_quote` carrying an `attribution`
+rather than a `figure` wrapping the quote, which matters to anything reading the
+tree. To number a quotation as a figure, write the figure (PART 9 §4a).
+
 ### Checking documents mechanically
 
 The marker is machine-readable, so this does not have to be done by eye. In

@@ -961,10 +961,10 @@ Intro
 
 ```html
 <p>Intro</p>
-<figure>
-  <blockquote><p>Stay hungry</p></blockquote>
-  <figcaption>Steve Jobs</figcaption>
-</figure>
+<blockquote>
+  <p>Stay hungry</p>
+  <footer>Steve Jobs</footer>
+</blockquote>
 ```
 
 :::
@@ -1044,10 +1044,10 @@ Only `[x]`/`[X]` render a checked box; every other state (`[ ]`, `[-]`, `[_]`, `
 ```
 
 ```html
-<figure>
-  <blockquote><p>Stay hungry, stay foolish.</p></blockquote>
-  <figcaption>Steve Jobs</figcaption>
-</figure>
+<blockquote>
+  <p>Stay hungry, stay foolish.</p>
+  <footer>Steve Jobs</footer>
+</blockquote>
 ```
 
 :::

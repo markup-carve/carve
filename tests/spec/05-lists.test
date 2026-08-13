@@ -221,10 +221,10 @@ Intro
 ^ Steve Jobs
 .
 <p>Intro</p>
-<figure>
-  <blockquote><p>Stay hungry</p></blockquote>
-  <figcaption>Steve Jobs</figcaption>
-</figure>
+<blockquote>
+  <p>Stay hungry</p>
+  <footer>Steve Jobs</footer>
+</blockquote>
 ```
 
 ```

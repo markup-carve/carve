@@ -160,13 +160,45 @@ test('the corpus is non-trivial', () => {
   assert.ok(corpus.length > 400, `corpus looks truncated: ${corpus.length} documents`)
 })
 
+/**
+ * Documents the schema describes and the PINNED build does not yet produce.
+ *
+ * The schema is the spec's, so a rule may land here before the engines ship it -
+ * the same window `resources/engine-pin-drift.txt` declares for rendered HTML,
+ * which this test cannot use because it validates the AST rather than the bytes.
+ * DECLARED rather than tolerated, and checked in BOTH directions below: a slug
+ * that starts validating again has to leave this list in the commit that bumps
+ * the pin, or the list becomes a blanket excuse with no expiry.
+ */
+const SCHEMA_ROLLOUT_PENDING = new Map([
+  [
+    '05-lists-20.crv',
+    'PART 9 §4a: a captioned quote is a `block_quote` with an `attribution`; the pin still emits a `figure` whose target is the quote (carve#1159)',
+  ],
+  ['07-blockquote-with-attribution.crv', 'as 05-lists-20.crv'],
+  ['55-blockquote-caption-after-a-blank-line.crv', 'as 05-lists-20.crv'],
+  ['282-two-blank-lines-detach-a-caption-5.crv', 'as 05-lists-20.crv'],
+])
+
 test('every corpus document serializes to a schema-valid AST', () => {
   const failures = []
+  const cleared = []
   for (const { name, source } of corpus) {
+    const ok =
+      validate(serialize(source)) ? validate(serializeResolved(source)) ? true : false : false
+    if (SCHEMA_ROLLOUT_PENDING.has(name)) {
+      if (ok) cleared.push(name)
+      continue
+    }
     if (!validate(serialize(source))) failures.push(`${name} (parse): ${firstErrors()}`)
     if (!validate(serializeResolved(source))) failures.push(`${name} (resolved): ${firstErrors()}`)
   }
   assert.deepEqual(failures.slice(0, 8), [], `${failures.length} documents fail the schema`)
+  assert.deepEqual(
+    cleared,
+    [],
+    `these documents validate now and are still listed in SCHEMA_ROLLOUT_PENDING - delete the entry in the commit that bumps the pin: ${cleared.join(', ')}`,
+  )
 })
 
 test('every node type the reference emits is declared in the schema', () => {

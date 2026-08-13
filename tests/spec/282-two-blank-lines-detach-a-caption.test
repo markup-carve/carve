@@ -63,10 +63,10 @@ local n = 1
 
 ^ Source: the cited work
 .
-<figure>
-  <blockquote><p>the cited line</p></blockquote>
-  <figcaption>Source: the cited work</figcaption>
-</figure>
+<blockquote>
+  <p>the cited line</p>
+  <footer>Source: the cited work</footer>
+</blockquote>
 ```
 
 ```

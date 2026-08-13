@@ -611,6 +611,13 @@
             "$ref": "#/$defs/blockNode"
           }
         },
+        "attribution": {
+          "description": "The source of the quotation (PART 9 \u00a74a). Present when a `^` caption attaches to the quote; it is not a figure caption and takes no number.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
@@ -872,7 +879,7 @@
     "definition_list": {
       "type": "object",
       "title": "definition_list (block)",
-      "description": "Its items are the `<dt>` / `<dd>` sequence, in document order: a run of `definition_term` nodes followed by the `definition_description` nodes they share. The grouping is not published because it is not a shared fact - two engines that published it grouped the same document differently while rendering the same list - and because a plain object can carry no `pos`, which left a term the only content in a serialized document an editor could not navigate to (PART 12 §4).",
+      "description": "Its items are the `<dt>` / `<dd>` sequence, in document order: a run of `definition_term` nodes followed by the `definition_description` nodes they share. The grouping is not published because it is not a shared fact - two engines that published it grouped the same document differently while rendering the same list - and because a plain object can carry no `pos`, which left a term the only content in a serialized document an editor could not navigate to (PART 12 \u00a74).",
       "required": [
         "type",
         "items"
@@ -1077,13 +1084,10 @@
           "const": "figure"
         },
         "target": {
-          "description": "The captioned block: an image, block quote, table, code block or paragraph.",
+          "description": "The captioned block: an image, table, code block or paragraph. A captioned block quote is NOT a figure - it is a quote carrying an `attribution` (PART 9 \u00a74a, carve#1159).",
           "oneOf": [
             {
               "$ref": "#/$defs/image"
-            },
-            {
-              "$ref": "#/$defs/block_quote"
             },
             {
               "$ref": "#/$defs/table"
@@ -1249,7 +1253,7 @@
         },
         "attrs": {
           "$ref": "#/$defs/attrs",
-          "description": "`id` holds the heading's id whether the author wrote `{#id}` or it was slugged from the heading text. A GENERATED id is assigned during resolution and is a resolution result under PART 12 §5, serialized because recomputing it means replaying every earlier heading and the dedup suffix rule (`Notes`, then `Notes-2`) - a consumer holding only the tree cannot derive it."
+          "description": "`id` holds the heading's id whether the author wrote `{#id}` or it was slugged from the heading text. A GENERATED id is assigned during resolution and is a resolution result under PART 12 \u00a75, serialized because recomputing it means replaying every earlier heading and the dedup suffix rule (`Notes`, then `Notes-2`) - a consumer holding only the tree cannot derive it."
         },
         "pos": {
           "$ref": "#/$defs/pos"
@@ -1274,7 +1278,7 @@
         },
         "href": {
           "type": "string",
-          "description": "The resolved destination (`#` + the heading's id), present only where the crossref resolved. PART 12 §3a: the resolution is published beside the authored construct, not in place of it."
+          "description": "The resolved destination (`#` + the heading's id), present only where the crossref resolved. PART 12 \u00a73a: the resolution is published beside the authored construct, not in place of it."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
