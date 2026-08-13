@@ -418,8 +418,23 @@ const sem = g.createSemantics().addOperation('h', {
     if (semantic.has(n)) {
       return `<${n}${renderAttrs(attrsOf(attrs))}>${inner}</${n}>`
     }
+    // PART 10 SS1 again: `ext-<name>` is a base class, so it is prepended INSIDE
+    // the class slot and the slot keeps its first-appearance position. An id the
+    // author wrote before any class still serializes first (carve#1164).
     const cls = [`ext-${n}`, ...extra].join(' ')
-    return `<span class="${cls}"${renderAttrs(rest)}>${inner}</span>`
+    const list = attrsOf(attrs)
+    let out = ''
+    let emittedClasses = false
+    for (const a of list) {
+      if (a[0] === 'class') {
+        if (!emittedClasses) {
+          out += ` class="${cls}"`
+          emittedClasses = true
+        }
+      } else out += renderAttrs([a])
+    }
+    if (!emittedClasses) out = ` class="${cls}"` + out
+    return `<span${out}>${inner}</span>`
   },
   spComment(_sp, _pp, _rest) {
     return ''
@@ -782,9 +797,21 @@ function mathSpan(kind, code, attrs) {
   const wrap = kind === 'inline' ? ['\\(', '\\)'] : ['\\[', '\\]']
   const list = attrsOf(attrs)
   const classes = ['math', kind, ...list.filter((a) => a[0] === 'class').map((a) => a[1])]
+  // PART 10 SS1: the base class is prepended INSIDE the class slot, and the
+  // slot stays at the FIRST-APPEARANCE position of a class in the author's
+  // order. Emitting `class` unconditionally first instead moves it ahead of an
+  // id the author wrote before any class - which is what this did, and what
+  // carve-php and carve-rs still do (carve#1164).
   let rest = ''
+  let emittedClasses = false
+  const classAttr = () => ` class="${classes.join(' ')}"`
   for (const a of list) {
-    if (a[0] === 'id') rest += ` id="${escapeAttr(a[1])}"`
+    if (a[0] === 'class') {
+      if (!emittedClasses) {
+        rest += classAttr()
+        emittedClasses = true
+      }
+    } else if (a[0] === 'id') rest += ` id="${escapeAttr(a[1])}"`
     else if (a[0] === 'kv') {
       const h = hardenAttr(a[1], a[2])
       if (h) rest += ` ${a[1]}="${escapeAttr(h.value)}"`
@@ -792,6 +819,9 @@ function mathSpan(kind, code, attrs) {
       if (hardenAttr(a[1], '')) rest += ` ${a[1]}=""`
     }
   }
+  // No authored class at all: the base class still needs its slot, and with
+  // nothing to place it after it leads.
+  if (!emittedClasses) rest = classAttr() + rest
   const inner = code.child(0)
   // codeU (unclosed run) carries its content in a different child slot
   const body = escapeHtml(
@@ -799,7 +829,7 @@ function mathSpan(kind, code, attrs) {
       ? inner.child(2).sourceString.replace(/\s+$/, '')
       : codeText(inner.child(1))
   )
-  return `<span class="${classes.join(' ')}"${rest}>${wrap[0]}${body}${wrap[1]}</span>`
+  return `<span${rest}>${wrap[0]}${body}${wrap[1]}</span>`
 }
 
 // parse a standalone `{...}` attribute block (table row/cell attrs);

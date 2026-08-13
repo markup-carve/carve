@@ -87,7 +87,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `45-inline-extensions-8`,
 `45-inline-extensions-9`,
 `45-inline-extensions-10`; `97-boolean-attributes` changed its expected HTML
-under the same semantic-span rule.
+under the same semantic-span rule,
+`302-a-base-class-keeps-the-class-slot-in-place`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the

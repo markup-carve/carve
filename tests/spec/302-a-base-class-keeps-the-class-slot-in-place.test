@@ -1,0 +1,19 @@
+A base class keeps the class slot in place
+
+```
+:widget[x]{#i .c k=v}
+.
+<p><span id="i" class="ext-widget c" k="v">x</span></p>
+```
+
+```
+$`E=mc^2`{#i .c k=v}
+.
+<p><span id="i" class="math inline c" k="v">\(E=mc^2\)</span></p>
+```
+
+```
+:widget[x]{#i k=v}
+.
+<p><span class="ext-widget" id="i" k="v">x</span></p>
+```

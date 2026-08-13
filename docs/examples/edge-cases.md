@@ -16357,3 +16357,54 @@ Without an authored one the derived attribute is what the element carries.
 ```
 
 :::
+
+## A base class keeps the class slot in place
+
+A mandatory base class - the `math inline` of a math span, the `ext-NAME` of the
+generic extension fallback - is prepended INSIDE the class slot. It does not move
+the slot: the slot stays at the first-appearance position of a class in the
+author's order (PART 10 §1), so an id written before any class still serializes
+before it.
+
+Nothing pinned this shape, and two engines emitted `class` unconditionally first,
+which reorders what the author wrote (markup-carve/carve#1164).
+
+::: compare
+
+```carve
+:widget[x]{#i .c k=v}
+```
+
+```html
+<p><span id="i" class="ext-widget c" k="v">x</span></p>
+```
+
+:::
+
+The math span carries its base class the same way and takes the same placement.
+
+::: compare
+
+```carve
+$`E=mc^2`{#i .c k=v}
+```
+
+```html
+<p><span id="i" class="math inline c" k="v">\(E=mc^2\)</span></p>
+```
+
+:::
+
+With no authored class there is no slot to keep, so the base class leads.
+
+::: compare
+
+```carve
+:widget[x]{#i k=v}
+```
+
+```html
+<p><span class="ext-widget" id="i" k="v">x</span></p>
+```
+
+:::
