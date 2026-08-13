@@ -218,8 +218,16 @@ CarveCore {
   // --- Mentions and tags (PART 9 SS7): name = letters/digits/_/- with
   // INTERIOR dots; a trailing dot is punctuation. Word boundary on the
   // left is enforced by the word rule's atGlue/hashGlue absorption.
-  mention    = "@" tagName
-  tag        = "#" tagName
+  // The glued TAIL is the right half of the same boundary rule. A second
+  // marker written directly against a name (`#i#j`, `@a@b`) is preceded by a
+  // word character - the last character of the first name - so it cannot open
+  // a second mention or tag. `word`'s atGlue/hashGlue absorption cannot see
+  // that case, because the run starts with the marker and never enters `word`
+  // at all, so the tail is absorbed here and rendered as literal text
+  // (carve#1156).
+  mention    = "@" tagName gluedMarker*
+  tag        = "#" tagName gluedMarker*
+  gluedMarker = ("@" | "#") tagName
   tagName    = tagChar+ (tagDot tagChar+)*
   tagChar    = letter | digit | "_" | "-"
   tagDot     = "." &tagChar

@@ -350,11 +350,17 @@ const sem = g.createSemantics().addOperation('h', {
     if (omitSymbols) return ''
     return `<span${renderAttrs(attrs.parseAttrs())}>:${escapeHtml(name.sourceString)}:</span>`
   },
-  mention(_a, name) {
-    return `<span class="mention"><strong>@${escapeHtml(name.sourceString)}</strong></span>`
+  mention(_a, name, glued) {
+    return (
+      `<span class="mention"><strong>@${escapeHtml(name.sourceString)}</strong></span>` +
+      escapeHtml(glued.sourceString)
+    )
   },
-  tag(_h, name) {
-    return `<span class="tag"><strong>#${escapeHtml(name.sourceString)}</strong></span>`
+  tag(_h, name, glued) {
+    return (
+      `<span class="tag"><strong>#${escapeHtml(name.sourceString)}</strong></span>` +
+      escapeHtml(glued.sourceString)
+    )
   },
   forcedSpan(f) {
     return f.h()

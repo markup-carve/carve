@@ -1,0 +1,19 @@
+A marker glued to a name opens nothing
+
+```
+#i#j
+.
+<p><span class="tag"><strong>#i</strong></span>#j</p>
+```
+
+```
+@a@b
+.
+<p><span class="mention"><strong>@a</strong></span>@b</p>
+```
+
+```
+#a #b
+.
+<p><span class="tag"><strong>#a</strong></span> <span class="tag"><strong>#b</strong></span></p>
+```
