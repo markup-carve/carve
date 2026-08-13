@@ -242,7 +242,7 @@ Three things worth knowing:
 
 - **The `<span>` disappears only when every attribute was consumed.** `[x]{kbd}` is a bare `<kbd>x</kbd>`, but `[x]{kbd onclick="…"}` keeps the wrapper (`<span><kbd>x</kbd></span>`) even though hardening strips the handler: you wrote a non-semantic attribute, and that is counted before it is removed.
 - **The scope is exactly an ordinary span.** The same names on a code span, link, image or block-attribute line are ordinary attributes, so `` `c`{kbd} `` is `<code kbd="">c</code>`, not a `<kbd>`.
-- **Only HTML changes.** The AST keeps an ordinary span carrying the authored attributes, plain-text and terminal output render the content, and `carve fmt` writes the span back out with its attributes - a boolean as `name=""`, so `[Tab]{kbd}` formats to `[Tab]{kbd=""}`.
+- **Only HTML changes.** The AST keeps an ordinary span carrying the authored attributes, plain-text and terminal output render the content, and `carve fmt` writes the span back out with its attributes - a value-less one bare, so `[Tab]{kbd}` formats to itself.
 
 The generic `:name[content]{attrs}` form (see [extensions](/extensions)) spells the same nine elements and is the only spelling for anything outside this registry.
 
