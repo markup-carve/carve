@@ -5425,6 +5425,30 @@ EOF = (* end of file *) ;
       draws a fresh anonymous number from the SAME footnoteSeq (it cannot
       be re-referenced). Unresolved reference -> literal source text;
       unreferenced definition -> dropped.
+      A NOTE INSIDE AN UNRESOLVED REFERENCE IS NOT A REFERENCE -- NORMATIVE
+      (carve#1198). R1 degrades an unresolved reference to its literal
+      SOURCE, so the link text that was rendered for it is discarded rather
+      than written into the document. A [^label] use or an ^[content] note
+      sitting in that text therefore references nothing: it draws no number
+      from footnoteSeq, a definition it was the only use of stays
+      unreferenced and is dropped by the sentence above, and no endnotes
+      section is written on its account.
+      RESOLUTION ORDER IS NOT THE ANSWER. An implementation that numbers
+      footnotes before it knows whether the reference resolved counts the
+      discarded use, and the numbering then says so out loud: the note a
+      reader can see is numbered fnref{n}-2, a repeat of a reference the
+      document does not contain, and a lone one leaves an endnote whose
+      backlink names an id no element carries. Which pass runs first is a
+      property of a pipeline rather than of the language, and ratifying it
+      would make an ordering artifact into a rule (carve#1198 signoff).
+      WHAT IS COUNTED IS WHAT THE OUTPUT HOLDS, which decides the cases
+      either side of this one the same way. A note in a reference that DOES
+      resolve is an ordinary reference, because the resolved link text is
+      written (PART 9 §16; corpus
+      311-a-footnote-in-reference-link-text-nests-the-anchors-too). A note in
+      a bracketed run that never carried a tail is an ordinary reference too,
+      because PART 9 §14 renders that run's content. The rule is not about
+      brackets; it is about whether the text reached the reader.
    R3 ABBREVIATIONS. Each abbrDefs term matches in rendered text at WORD
       BOUNDARIES only and emits <abbr>. Expansion is bounded per PART 9 §25
       (an empty term is rejected; total work stays O(n)).

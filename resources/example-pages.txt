@@ -455,6 +455,7 @@ index: examples/edge-cases/index.md
   a-footnote-in-reference-link-text-nests-the-anchors-too
   a-note-body-s-own-references-resolve
   a-reference-link-s-text-survives-its-own-frame
+  a-footnote-in-an-unresolved-reference-is-not-a-reference
   22-footnotes-3
   22-footnotes-6
 

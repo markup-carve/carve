@@ -97,3 +97,12 @@
 # inside the `:name[…]` extension form specifically (carve#1151); it is correct
 # on every other row of the same case. Clears with the engine fix and a pin bump.
 305-an-abbreviation-expands-inside-an-inline-container-3  The pin drops an abbreviation expansion inside `:name[…]`.
+
+# PART 9R R2: a footnote inside an unresolved reference is not a reference.
+# R1 discards the link text an unresolved reference rendered, so the note in it
+# draws no number and its definition stays unreferenced. The pinned build
+# numbers it anyway, because it resolves footnotes before it knows the
+# reference failed. Clears with the engine fixes for carve#1198 and a pin bump.
+314-a-footnote-in-an-unresolved-reference-is-not-a-reference  The pin writes an endnote for a note the output does not reference.
+314-a-footnote-in-an-unresolved-reference-is-not-a-reference-2  The pin numbers the discarded reference, so the surviving noteref reads as a repeat.
+314-a-footnote-in-an-unresolved-reference-is-not-a-reference-3  The pin writes an endnote for an inline note the output does not reference.
