@@ -50,3 +50,6 @@
 # unresolved, or slugs the heading differently - so they are ordinary corpus
 # conformance, owed a fixture rather than a line (markup-carve/carve#1011).
 
+
+link.href   3  carve-rs publishes "" where carve-js and carve-php publish the resolved destination. Two spec rules landed 2026-08-14 that carve-rs has not shipped: markup-carve/carve#1196 (a reference link's text survives its own resolution frame) and #1203 (an inline note carries a frame its content can nest inside). Delete on the carve-rs release that ships them.
+image.src   2  Same rules, same engine, the image half of them: carve-rs publishes "" for a reference image's resolved source. Delete with the line above.

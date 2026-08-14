@@ -37,6 +37,36 @@ const POSITION_KEYS = new Set([
  * `keyValues`, which is where the heading-id and fence-title divergences sit -
  * but its ORDER array is compared as a whole, since that is the field's meaning.
  */
+/*
+ * Stringify an attrs slot so that only MEANINGFUL order survives.
+ *
+ * `attrs.keyValues` is a JSON object, and the schema says so: it carries the
+ * pairs, while the sibling `attrs.order` array carries "source-appearance order
+ * of the slots". Object key order therefore means nothing there - which is the
+ * whole reason `order` exists as a separate field.
+ *
+ * Stringifying the object as-is made that meaningless order load-bearing:
+ * carve-rs emitted {"fr":"","lang":""} where carve-js and carve-php emitted
+ * {"lang":"","fr":""}, all three agreed on `order`, and the panel reported a
+ * span.attrs.keyValues divergence across three documents that is not one. It is
+ * the same mistake the comment below already describes for node fields, applied
+ * one level deeper.
+ *
+ * Arrays keep their order: `order` and `classes` accumulate in source order and
+ * a reordering there IS a divergence.
+ */
+const canonicalJson = (value) => {
+  if (Array.isArray(value)) return JSON.stringify(value)
+  if (value && typeof value === 'object') {
+    const sorted = {}
+    for (const key of Object.keys(value).sort()) sorted[key] = value[key]
+
+    return JSON.stringify(sorted)
+  }
+
+  return JSON.stringify(value)
+}
+
 export function valueSignature(node, out = [], path = '$') {
   if (Array.isArray(node)) {
     node.forEach((n, i) => valueSignature(n, out, `${path}[${i}]`))
@@ -54,7 +84,7 @@ export function valueSignature(node, out = [], path = '$') {
         fields.push(`${key}=${JSON.stringify(value)}`)
       } else if (key === 'attrs') {
         for (const attrKey of Object.keys(value).sort()) {
-          fields.push(`attrs.${attrKey}=${JSON.stringify(value[attrKey])}`)
+          fields.push(`attrs.${attrKey}=${canonicalJson(value[attrKey])}`)
         }
       }
     }
