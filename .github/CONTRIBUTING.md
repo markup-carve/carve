@@ -32,7 +32,7 @@ For this repo in particular:
 - Node.js 24 is the minimum (`package.json` `engines`, and `.nvmrc` selects it).
   CI runs the conformance corpus on Node 24 and 26.
 - Spec or examples changes should normally keep `npm test` green.
-- If you change `docs/examples.md`, regenerate the corpus and verify the
+- If you change `resources/examples/*.md`, regenerate the corpus and verify the
   resulting fixture diff is intentional.
 - If you move the pinned `@markup-carve/carve` commit (`npm run bump-carve-pin`),
   pin only a commit merged to `carve-js` `main`, not a local branch build.

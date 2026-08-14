@@ -1,0 +1,597 @@
+# Which generated page each example section appears on.
+#
+# resources/examples/{core,extensions,edge-cases}.md are APPEND-ONLY:
+# scripts/generate-corpus.mjs numbers a fixture by its section's POSITION in
+# the concatenation of those three files, and every engine allowlists
+# categories by `NN-slug`. So a section can never move in the SOURCE.
+#
+# This file is the reading order instead. A section may appear on any page
+# regardless of which source file holds it - section titles are unique across
+# all three (generate-corpus enforces that), so a slug names exactly one
+# section. An individual fixture name instead routes only that pair's segment.
+# scripts/generate-example-pages.mjs writes one page per entry below, in this
+# order, listing its sections or fixture segments in the order given.
+#
+# Format:
+#   [page-id] Page title
+#   > Page description
+#   out: <path under docs/, always a .md file>
+#   order: <integer>                (optional; defaults to 0)
+#   level: <2 or 3>                (optional; section heading level, defaults to 2)
+#   index: <path under docs/>      (optional; pages sharing one value get a
+#                                   generated index page listing all of them)
+#   followed by one section slug or fixture name per line, indented two spaces.
+#
+# The generator hard-errors unless every corpus pair is routed exactly once,
+# and when an entry names no section or fixture. A corpus pair on no page has
+# no reader.
+
+[core] Examples: Core
+> The everyday syntax, plus every Tier-1 construct the feature-tier table calls core.
+out: examples/core.md
+  01-emphasis
+  01-emphasis-4
+  01-emphasis-5
+  01-emphasis-12
+  01-emphasis-13
+  01-emphasis-14
+  01-emphasis-15
+  02-headings
+  02-headings-2
+  02-headings-3
+  02-headings-4
+  03-links
+  03-links-2
+  03-links-3
+  03-links-5
+  03-links-6
+  03-links-7
+  03-links-9
+  03-links-10
+  images
+  05-lists
+  05-lists-4
+  05-lists-5
+  05-lists-6
+  05-lists-12
+  05-lists-19
+  list-continuation-marker
+  list-item-attributes
+  task-lists
+  blockquote-with-attribution
+  block-quote-continuation-marker
+  image-with-caption
+  09-tables
+  09-tables-2
+  09-tables-3
+  09-tables-6
+  09-tables-7
+  09-tables-8
+  table-column-alignment
+  table-multi-line-cell-continuation
+  tables-with-rowspan-and-colspan
+  11-fenced-code
+  11-fenced-code-3
+  11-fenced-code-4
+  11-fenced-code-5
+  11-fenced-code-6
+  11-fenced-code-7
+  11-fenced-code-8
+  11-fenced-code-9
+  11-fenced-code-11
+  11-fenced-code-12
+  11-fenced-code-13
+  11-fenced-code-14
+  11-fenced-code-15
+  12-inline-code
+  12-inline-code-2
+  12-inline-code-3
+  12-inline-code-4
+  13-attributes
+  13-attributes-2
+  13-attributes-3
+  13-attributes-5
+  13-attributes-6
+  frontmatter
+  15-heading-ids
+  15-heading-ids-2
+  15-heading-ids-3
+  16-reference-link
+  16-reference-link-2
+  16-reference-link-6
+  collapsed-reference-link
+  19-smart-typography-dashes-and-quotes
+  smart-typography-arrows-and-symbols
+  math
+  22-footnotes
+  22-footnotes-2
+  22-footnotes-4
+  22-footnotes-5
+  inline-footnotes
+  24-generic-divs
+  24-generic-divs-5
+  nested-containers
+  25-definition-lists
+  25-definition-lists-2
+  25-definition-lists-3
+  25-definition-lists-4
+  25-definition-lists-5
+  25-definition-lists-6
+  26-comments
+  26-comments-2
+  26-comments-5
+  26-comments-9
+  raw-blocks
+  hard-line-breaks
+  29-non-breaking-space
+  29-non-breaking-space-2
+  raw-inline
+  ordered-list-start-and-delimiter
+  ordered-list-dialects
+  editorial-markup
+  thematic-breaks
+  cross-reference
+  36-autolinks
+  36-autolinks-4
+  36-autolinks-5
+  36-autolinks-6
+  escapes
+  39-inline-span
+  40-superscript-and-subscript
+  41-line-blocks
+  41-line-blocks-2
+  41-line-blocks-3
+  41-line-blocks-4
+  41-line-blocks-5
+  41-line-blocks-6
+  41-line-blocks-7
+  42-admonitions
+  42-admonitions-2
+  42-admonitions-3
+  42-admonitions-4
+  42-admonitions-6
+  42-admonitions-7
+  42-admonitions-9
+  42-admonitions-10
+  abbreviations
+  mentions-and-tags
+  46-symbols
+  46-symbols-4
+  45-inline-extensions
+  45-inline-extensions-2
+  45-inline-extensions-3
+  45-inline-extensions-7
+  45-inline-extensions-8
+  45-inline-extensions-12
+  45-inline-extensions-13
+  47-numbered-cross-references
+  47-numbered-cross-references-2
+  47-numbered-cross-references-3
+  47-numbered-cross-references-4
+  47-numbered-cross-references-5
+  47-numbered-cross-references-8
+  47-numbered-cross-references-9
+
+[extensions] Examples: Extensions
+> Features that ship off and must be switched on, covering both corpus-pinned Tier-2 behavior and snapshot-verified Tier-3 extensions.
+out: examples/extensions.md
+order: 0
+
+[tier3] Tier-3 extensions
+> Tier-3 is never corpus-pinned; these examples are verified by `tests/examples-tier3.test.mjs` instead. See also [diagrams](/diagrams), [SVG images](/svg-images), the [extension tutorial](/extension-tutorial), and the numbered Tier-3 sections in [Extensions](/extensions#6-bibliography-tier-3).
+out: examples/extensions.md
+order: 3
+level: 3
+source: examples-tier3.md
+  diagrams-and-charts
+
+[edge-tables] Tables
+> Alignment, spans, multi-line cells, ragged rows and the pipe rules that decide whether a table exists at all.
+out: examples/edge-cases/tables.md
+index: examples/edge-cases/index.md
+  table-per-cell-alignment-override
+  headerless-table-alignment
+  table-without-alignment
+  table-alignment-with-colspan
+  table-doubled-alignment-marker
+  table-cell-escaped-pipe
+  table-cell-pipe-inside-code-span
+  table-stacked-rowspan
+  table-rowspan-with-multi-line-content
+  superscript-in-a-table-cell
+  table-span-marker-in-first-column
+  table-cell-attributes
+  table-row-attributes
+  table-header-cell-rowspan
+  blocked-span-marker-renders-as-empty-cell
+  colspan-marker-scans-left-past-a-consumed-cell
+  a-pipe-pair-with-no-cell-is-not-a-table
+  a-continuation-row-needs-a-body-row
+  table-row-closing-pipe
+  a-table-delimiter-cell-needs-at-least-one-dash
+  a-continuation-row-carries-no-trailing-text
+  a-ragged-table-keeps-each-row-s-cell-count
+  09-tables-4
+  09-tables-5
+
+[edge-lists] Lists
+> Markers, looseness, the content-column model, continuation markers and block openers inside items.
+out: examples/edge-cases/lists.md
+index: examples/edge-cases/index.md
+  05-lists-2
+  05-lists-3
+  05-lists-7
+  05-lists-8
+  05-lists-9
+  05-lists-10
+  05-lists-11
+  05-lists-13
+  05-lists-14
+  05-lists-15
+  05-lists-16
+  05-lists-17
+  05-lists-18
+  05-lists-20
+  05-lists-21
+  ordered-marker-vs-prose
+  parenthesized-ordered-marker
+  list-nesting-and-looseness
+  list-lazy-continuation
+  compact-list-blocks
+  marker-line-nested-lists
+  fence-opener-with-a-nested-list-body-inside-a-list-item
+  sublist-marker-interrupts-a-continuation-paragraph
+  post-blank-list-continuation-content-column-model
+  nested-item-looseness-does-not-propagate-to-the-outer-item
+  table-as-a-block-opener-in-a-list-item
+  colon-fence-as-a-block-opener-in-a-list-item
+  fence-folds-as-lazy-inline-code-above-the-content-column
+  indented-ordered-marker-content-column-includes-the-marker-indent
+  outer-item-with-an-internal-blank-before-an-attached-block-is-loose
+  tight-list-item-keeps-trailing-text-after-a-block-bare
+  bare-dot-ordered-markers
+  a-definition-attached-by-a-continuation-marker-is-collected-and-the-item-keeps-no-trace
+  an-uppercase-roman-numeral-is-a-list-marker
+  sibling-markers-that-reach-one-column-are-one-list
+  the-continuation-marker-at-an-item-s-own-column-and-what-follows-it
+  a-continuation-marker-after-a-blank-line-in-the-item
+  a-continuation-marker-after-a-blank-line-in-a-loose-item
+  a-fence-opened-on-a-list-marker-line-body-below-the-content-column
+  a-below-column-marker-after-a-comment-where-no-paragraph-is-open
+  a-column-zero-definition-ends-an-open-list-item
+  adjacent-sibling-lists-survive-the-round-trip
+  a-multi-letter-ordered-marker-opens-no-list
+
+[edge-containers] Containers, quotes and fences
+> Divs, block quotes, code and comment fences: nesting, lazy continuation, absorption and what closes what.
+out: examples/edge-cases/containers.md
+index: examples/edge-cases/index.md
+  fenced-code-shorter-inner-fence
+  blockquote-caption-after-a-blank-line
+  opaque-spans-inside-a-container
+  blockquote-lazy-continuation
+  fenced-code-language-with-punctuation
+  blockquote-lazy-continuation-stops-at-a-fenced-block
+  nested-comment-fences
+  indented-colon-fence-blocks-stay-literal
+  below-content-column-div-body-in-a-list-item-stays-literal
+  comment-fence-with-trailing-text
+  unterminated-comment-fence
+  widened-verbatim-fences
+  a-comment-is-recognized-at-any-column
+  a-comment-fence-is-a-comment-at-any-column-too
+  a-comment-under-a-nested-item-does-not-close-it
+  a-definition-inside-a-comment-registers-nothing
+  a-blank-after-a-comment-still-ends-the-item
+  a-comment-fence-under-a-nested-item-does-not-close-it-either
+  a-comment-ends-the-paragraph-it-sits-under
+  a-quote-marker-is-plus-a-space-and-a-lazy-line-keeps-its-own-text
+  a-block-attribute-line-inside-a-quote-ends-the-paragraph-above-it
+  a-comment-fence-at-column-0-ends-the-item-a-line-does-not
+  two-backticks-are-not-a-code-fence-opening-or-closing
+  a-single-percent-is-not-a-comment
+  a-multi-line-raw-block-is-placed-at-its-opening-and-verbatim-after-it
+  an-absorbed-colon-fence-leaves-a-block-quote-s-paragraph-open
+  a-real-div-in-a-container-and-the-flush-left-line-after-it
+  the-flush-left-line-after-a-container-a-quoted-line-opened
+  a-list-marker-at-the-content-column-inside-an-open-fence
+  a-boundary-line-inside-an-open-fence-does-not-end-the-container
+  a-container-a-lazy-line-folded-into-is-still-open
+  a-fence-keeps-the-blank-line-at-the-end-of-its-content
+  a-captioned-quote-holds-more-than-one-block
+  11-fenced-code-10
+  42-admonitions-5
+  42-admonitions-8
+  26-comments-3
+  26-comments-4
+  26-comments-6
+  41-line-blocks-8
+  12-inline-code-5
+  24-generic-divs-2
+  24-generic-divs-3
+  24-generic-divs-4
+
+[edge-blocks] Paragraphs, breaks and captions
+> Paragraph folding, thematic breaks, caption attachment and adjacent block openers.
+out: examples/edge-cases/blocks.md
+index: examples/edge-cases/index.md
+  blocks-that-render-to-nothing
+  paragraph-interruption
+  thematic-break-requires-contiguous-markers
+  a-flush-left-line-needs-an-open-paragraph-to-fold-into
+  two-dashes-are-not-a-thematic-break
+  a-caption-attaches-across-one-blank-line
+  two-blank-lines-detach-a-caption
+  adjacent-block-openers-in-an-attached-run-stay-separate
+  a-caret-line-does-not-end-a-paragraph-it-cannot-caption
+
+[edge-inline] Inline spans
+> Emphasis flanking, mentions and tags, smart typography, inline literals and escaping.
+out: examples/edge-cases/inline.md
+index: examples/edge-cases/index.md
+  mention-ignores-email-addresses
+  tag-requires-a-word-boundary
+  smart-typography-escapes-and-code
+  empty-delimiters
+  escape-coverage
+  emphasis-edge-cases
+  doubled-emphasis-delimiters
+  two-char-delimiter-runs
+  mention-and-tag-name-boundaries
+  strong-emphasis-starting-with-a-link
+  literal-less-than-in-prose
+  editorial-markup-takes-a-trailing-attribute
+  emphasis-opener-slash-adjacency
+  bold-italic-delimiter-needs-content
+  emphasis-span-closes-before-a-following-delimiter
+  unclaimed-openers-stay-literal
+  inline-literal
+  all-space-verbatim-content
+  adjacent-slash-and-underscore-emphasis-nest
+  quote-flanking-after-an-escaped-character
+  a-combined-bold-italic-span-may-cross-a-line
+  a-tag-inside-a-literal-brace-run-is-still-a-tag
+  a-math-span-s-base-class-keeps-the-class-slot-in-place
+  a-marker-glued-to-a-name-opens-nothing
+  an-angle-bracket-is-escaped-only-where-it-opens-markup
+  01-emphasis-2
+  01-emphasis-3
+  01-emphasis-6
+  01-emphasis-7
+  01-emphasis-8
+  01-emphasis-9
+  01-emphasis-10
+  01-emphasis-11
+  45-inline-extensions-4
+  45-inline-extensions-5
+  45-inline-extensions-6
+  45-inline-extensions-10
+  45-inline-extensions-11
+  19-smart-typography-dashes-and-quotes-2
+  19-smart-typography-dashes-and-quotes-3
+  19-smart-typography-dashes-and-quotes-4
+  19-smart-typography-dashes-and-quotes-5
+  19-smart-typography-dashes-and-quotes-6
+  19-smart-typography-dashes-and-quotes-7
+  19-smart-typography-dashes-and-quotes-8
+  19-smart-typography-dashes-and-quotes-9
+  12-inline-code-6
+  29-non-breaking-space-3
+  40-superscript-and-subscript-2
+  46-symbols-2
+  46-symbols-3
+
+[edge-links] Links, images and references
+> Destinations, titles, reference and collapsed forms, autolinks and where a definition may live.
+out: examples/edge-cases/links.md
+index: examples/edge-cases/index.md
+  nested-brackets-in-link-text
+  reference-labels-are-case-sensitive
+  link-destination-parentheses-balance
+  empty-link-and-image-titles-are-preserved
+  a-backslash-in-a-link-destination-is-a-literal-character
+  autolink-display-keeps-the-raw-content
+  link-reference-definition-separator-must-be-a-space
+  indented-image-and-caption-stay-literal
+  indented-reference-and-footnote-definitions-stay-literal
+  a-repeated-definition-which-one-wins
+  a-collapsed-reference-is-matched-by-the-label-the-author-wrote
+  a-definition-inside-a-container-is-collected-at-that-container-s-content-column
+  trailing-attributes-on-a-link-reference-definition
+  an-image-takes-a-reference-the-way-a-link-does
+  a-collapsed-image-reference-uses-its-alt-text-as-the-label
+  one-definition-serves-a-link-and-an-image
+  an-unresolved-image-reference-stays-literal
+  a-reference-image-takes-a-caption
+  an-unresolved-reference-image-takes-no-caption
+  an-at-sign-is-a-reference-label-character-everywhere-but-the-first-position
+  a-link-definition-written-before-a-footnote-stays-before-it
+  a-zero-width-character-in-a-reference-definition-destination
+  a-block-image-is-separated-from-the-block-after-it-on-every-target
+  a-reference-definition-is-anchored-at-end-of-line
+  an-autolink-body-admits-non-ascii-and-excludes-format-characters
+  unresolved-reference-link
+  bare-urls-stay-literal
+  03-links-4
+  03-links-8
+  03-links-11
+  03-links-12
+  03-links-13
+  16-reference-link-3
+  16-reference-link-4
+  16-reference-link-5
+  16-reference-link-7
+  16-reference-link-8
+  36-autolinks-3
+
+[edge-footnotes] Footnotes
+> Bodies as blocks, the body content column, collection inside containers and placement of the rendered list.
+out: examples/edge-cases/footnotes.md
+index: examples/edge-cases/index.md
+  footnote-with-multiple-blocks
+  cross-references-resolve-inside-footnote-bodies
+  footnote-definition-inside-a-container-is-collected
+  footnotes-placement
+  footnote-definition-requires-an-inline-body
+  footnote-definition-separator-must-be-a-space
+  unresolved-footnote-reference-with-a-trailing-attribute-stays-literal
+  a-caret-is-a-reference-label-not-an-empty-footnote
+  a-definition-on-a-footnote-body-s-continuation-line-is-collected
+  a-footnote-body-holds-blocks-and-they-render-where-they-were-written
+  a-heading-in-a-footnote-body-takes-an-id-but-no-section-wrapper
+  an-attribute-line-inside-a-footnote-body-attaches-inside-it
+  a-nested-list-in-a-footnote-body-stays-nested
+  a-flush-left-line-after-a-footnote-definition-belongs-to-the-document
+  a-footnote-body-s-own-column-is-two-and-a-third-column-is-its-text
+  a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text
+  a-definition-past-a-footnote-body-s-column-is-the-body-s-own-text
+  a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do
+  a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink
+  a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block
+  an-empty-footnote-body-is-written-with-the-empty-sentinel
+  an-empty-inline-note-is-literal
+  a-note-s-content-recognizes-no-note
+  a-footnote-in-link-text-nests-the-anchors
+  a-footnote-in-reference-link-text-nests-the-anchors-too
+  a-note-body-s-own-references-resolve
+  a-reference-link-s-text-survives-its-own-frame
+  22-footnotes-3
+  22-footnotes-6
+
+[edge-definitions] Definition lists and abbreviations
+> Terms and descriptions, abbreviation definitions and the document levels that may declare them.
+out: examples/edge-cases/definitions.md
+index: examples/edge-cases/index.md
+  abbreviation-matches-on-word-boundaries-only
+  abbreviation-definition-interrupts-a-paragraph
+  abbreviation-definition-separator-must-be-a-space
+  definition-list-as-a-first-class-block-opener
+  abbreviation-title-escapes-its-markup-characters
+  under-indented-definition-attaches-over-indented-definition-folds
+  wrapped-definition-term-continuation-below-the-content-column-strips-leading-whitespace
+  two-abbreviation-definitions
+  an-abbreviation-definition-is-recognized-only-at-document-level
+  a-list-item-does-not-define-an-abbreviation-either
+  a-div-does-not-define-an-abbreviation-either
+  a-definition-below-every-content-column-folds-as-text
+  an-abbreviation-at-a-list-item-s-content-column-is-still-not-a-definition
+  a-description-line-needs-a-term-above-it
+  a-tab-as-the-first-character-of-a-definition-term
+  an-abbreviation-term-is-one-ascii-alphanumeric-word
+  a-definition-inside-a-definition-list-dd-is-collected-and-the-entry-keeps-no-trace
+  an-empty-abbreviation-term-is-not-a-definition
+  a-definition-body-continuation-indented-past-its-column-is-lazy-text
+  an-abbreviation-expands-inside-an-inline-container
+  25-definition-lists-7
+
+[edge-attributes] Attributes
+> Attribute lines and inline blocks, names and values, classes, booleans and the semantic/language sugar.
+out: examples/edge-cases/attributes.md
+index: examples/edge-cases/index.md
+  attribute-edge-cases
+  trailing-attribute-block-edge-cases
+  block-attribute-lines
+  boolean-attributes
+  unquoted-attribute-values-may-contain-dots-and-colons
+  adjacent-attribute-blocks-on-one-line-merge
+  classes-are-deduplicated
+  code-span-and-image-trailing-attributes-are-strict
+  a-bare-attribute-block-on-its-own-line-is-literal
+  leading-attribute-brace-before-an-inline-span-stays-literal
+  attribute-block-after-a-mention-stays-literal
+  image-trailing-attribute-is-strict-about-the-glue
+  indented-attribute-line-stays-literal
+  attribute-braces-on-a-list-item-marker-line
+  a-floating-attribute-stops-at-the-item-boundary
+  a-marker-attribute-may-hold-a-quoted-brace
+  an-attribute-name-admits-no-colon
+  an-inline-attribute-block-does-not-span-lines-but-an-attribute-line-does
+  the-inline-attribute-interior-is-space-only-the-attribute-line-is-not
+  a-quoted-attribute-value-stops-at-the-newline
+  a-structural-attribute-leads-the-author-s-own
+  a-boolean-and-a-key-value-of-the-same-name-are-one-attribute
+  a-semantic-name-renames-the-span-and-the-leftovers-ride-the-element
+  a-language-attribute-is-exact-sugar-for-lang
+  a-malformed-language-tag-leaves-the-whole-block-literal
+  a-language-attribute-and-lang-are-one-key
+  the-language-sigil-takes-no-padding
+  a-boolean-lang-is-the-third-spelling-of-the-same-key
+  the-semantic-registry-holds-no-element-carve-already-spells
+  two-attributes-need-a-separator-between-them
+  a-derived-title-yields-to-an-authored-one
+  13-attributes-4
+  39-inline-span-2
+  39-inline-span-3
+  39-inline-span-4
+  39-inline-span-5
+
+[edge-headings] Headings and cross-references
+> Section wrapping, id derivation and normalization, implicit and collapsed heading references.
+out: examples/edge-cases/headings.md
+index: examples/edge-cases/index.md
+  single-line-headings
+  heading-marker-column-zero
+  cyclic-cross-reference-resolves-to-one-level
+  only-the-id-hoists-to-the-section-wrapper
+  headings-inside-containers-are-not-wrapped
+  attribute-order-on-an-unwrapped-heading
+  implicit-heading-references-with-no-definition
+  a-heading-id-keeps-a-non-ascii-space
+  a-heading-reference-folds-unicode-normalization-but-not-compatibility
+  a-collapsed-reference-reaches-a-heading-by-the-heading-s-rendered-text
+  heading-index-plain-text-covers-visible-leaves-and-rejects-an-empty-key
+  02-headings-5
+  02-headings-6
+  47-numbered-cross-references-6
+  47-numbered-cross-references-7
+  15-heading-ids-4
+  15-heading-ids-5
+  15-heading-ids-6
+
+[edge-whitespace] Whitespace, tabs and columns
+> Where a space is required, where a tab reaches, blank lines, line endings and trailing whitespace.
+out: examples/edge-cases/whitespace.md
+index: examples/edge-cases/index.md
+  paragraph-trailing-whitespace
+  trailing-whitespace-boundaries
+  a-marker-separator-is-a-space-never-a-tab
+  an-invisible-line-does-not-cancel-a-blank-line-separation
+  a-tab-after-a-heading-quote-or-caption-marker-leaves-the-line-as-prose
+  a-tab-indent-is-the-column-it-reaches-whatever-the-line-holds
+  the-same-column-written-with-four-spaces
+  trailing-whitespace-after-a-block-marker
+  line-endings-and-a-byte-order-mark
+  a-tab-separates-two-attributes-and-pads-a-block-as-a-space-does
+  colon-fence-separator-must-be-a-space
+  colon-fence-metadata-slots-must-be-a-space-too
+  table-cell-padding-must-be-a-space
+  link-and-image-title-slots-must-be-a-space
+  code-fence-metadata-slots-must-be-a-space-too
+  a-tab-continues-a-list-item-just-as-two-spaces-do
+  a-blank-line-holds-spaces-and-tabs-and-nothing-else
+  a-link-title-takes-exactly-one-space
+  a-code-fence-opener-takes-exactly-one-space
+  a-frontmatter-opener-takes-exactly-one-space
+  a-reference-definition-s-metadata-slots-take-exactly-one-space
+  a-definition-marker-s-separator-is-a-space-and-it-is-a-run
+  trailing-whitespace-on-a-content-line-is-dropped
+  11-fenced-code-2
+  11-fenced-code-16
+  11-fenced-code-17
+  16-reference-link-9
+  26-comments-7
+  26-comments-8
+  41-line-blocks-9
+
+[edge-security] Security and limits
+> Trojan-Source stripping, scheme probes, attribute hardening and the nesting cap.
+out: examples/edge-cases/security.md
+index: examples/edge-cases/index.md
+  security-hardening
+  trojan-source-heading-ids-are-nfc-normalized-and-strip-invisible-controls
+  trojan-source-rendered-text-and-code-strip-bidi-override-controls
+  scheme-probe-strips-unicode-whitespace
+  openers-past-the-nesting-cap-are-one-paragraph
+  a-format-character-before-a-scheme-is-not-stripped-and-is-inert
+  45-inline-extensions-9
+  36-autolinks-2

@@ -8,7 +8,7 @@
  * satisfied the clause as written; none matched another byte for byte.
  *
  * WHY THIS IS NOT A CORPUS CASE, which is what carve#494 asked for. The corpus
- * is GENERATED from the `::: compare` blocks in docs/examples/*.md, so a
+ * is GENERATED from the `::: compare` blocks in resources/examples/*.md, so a
  * fixture has to be a readable example on a page a human reads. Reaching the
  * cap takes 203 opener lines and produces 404 lines / 88 KB of expected HTML -
  * against a corpus whose largest existing case is 17 lines. The input cannot

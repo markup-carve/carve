@@ -1,3 +1,7 @@
+---
+description: How the reference engines compare on conformance, and how the cross-implementation sweep is run.
+---
+
 # Implementation Comparison
 
 The shared comparison runner lives in `scripts/compare-impls.mjs` because this
@@ -424,7 +428,7 @@ those fire even when every engine agrees and all of them are wrong, which has
 happened here before.
 
 A divergence it reports is a QUESTION, not a verdict. Decide the canonical
-answer, then promote it to a corpus case in `docs/examples/edge-cases.md` so it
+answer, then promote it to a corpus case in `resources/examples/edge-cases.md` so it
 is pinned from then on.
 
 ```bash

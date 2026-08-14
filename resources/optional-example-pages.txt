@@ -1,0 +1,39 @@
+# Optional-corpus features grouped by what users must configure. Entries sharing
+# an out: path are adjacent and become separate ## groups on that page.
+# order: is an integer and defaults to 0.
+
+[extensions-enable] Extensions you enable
+> These extensions ship off. Register their exported handler in the processor's extensions array to switch them on.
+kind: extensions-enable
+out: examples/extensions.md
+order: 1
+  citations-numbered
+  citations-author-date
+  code-callouts
+  details
+  list-table
+  spoiler
+  tabs
+  semantic-span
+
+[core-configured] Core syntax with configured resolution
+> This syntax is Tier-1 core; these examples show resolution behavior supplied through processor configuration.
+kind: core-configured
+out: examples/extensions.md
+order: 2
+  social-link-templates
+  symbol-map
+  smart-quotes-locale-de
+  bare-url-autolink
+
+[processor-options] Examples: Processor options
+> These are renderer and processor switches, not extensions; each changes how already-parsed core syntax is resolved or emitted.
+kind: processor-options
+out: examples/processor-options.md
+  smart-typography-off
+  smart-typography-default
+  section-wrapper-off
+  source-line-after-generated-id
+  markdown-typography-source
+  plain-typography-source
+  ansi-typography-source

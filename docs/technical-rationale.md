@@ -670,7 +670,7 @@ Authors get:
 Use this page as the overview, then drill down:
 
 - [Parsing & AST](./case-study/parsing-ast) for the parser model
-- [Edge cases](./edge-cases) for tricky concrete scenarios
+- [Parsing ambiguities](./parsing-ambiguities) for tricky concrete scenarios
 - [Design](./case-study/design) for the "why not just fix Markdown?" argument
 - [Formal grammar](./grammar) for the canonical rules
 - [Examples](./examples) for source-to-HTML behavior

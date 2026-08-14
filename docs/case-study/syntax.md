@@ -1,8 +1,12 @@
-# Syntax Specification
+---
+description: "The original syntax write-up from the design research. Historical: the normative grammar is resources/grammar.ebnf."
+---
+
+# Original Syntax Write-up
 
 > **Non-normative.** This page is explanatory prose. The normative
 > specification is [`resources/grammar.ebnf`](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf)
-> (PART 9 for semantic constraints); `docs/examples.md` + `tests/corpus`
+> (PART 9 for semantic constraints); `resources/examples/*.md` + `tests/corpus`
 > are the conformance contract. On any disagreement, the grammar wins.
 
 ## Part 4: Carve Syntax Specification

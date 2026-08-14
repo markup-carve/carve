@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitepress'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import container from 'markdown-it-container'
@@ -9,6 +9,11 @@ import carve from '@markup-carve/vite-plugin-carve'
 import { carveExtensions } from './carve-extensions.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
+const generatedExamplesFile = resolve(__dirname, 'generated-examples.json')
+/* A direct VitePress invocation must still boot before generated pages exist. */
+const generatedExamples = existsSync(generatedExamplesFile)
+  ? JSON.parse(readFileSync(generatedExamplesFile, 'utf8'))
+  : { edgeCases: [] }
 const loadGrammar = (file: string) =>
   JSON.parse(readFileSync(resolve(__dirname, `./syntaxes/${file}`), 'utf8'))
 
@@ -19,6 +24,24 @@ const loadGrammar = (file: string) =>
 const ebnfGrammar = loadGrammar('ebnf.tmLanguage.json')
 const orgGrammar = loadGrammar('org.tmLanguage.json')
 const textileGrammar = loadGrammar('textile.tmLanguage.json')
+
+const caseStudySidebar = [
+  {
+    text: 'Case Study',
+    items: [
+      { text: 'Overview', link: '/case-study/' },
+      { text: 'Background', link: '/case-study/background' },
+      { text: 'Design', link: '/case-study/design' },
+      { text: 'Original Syntax Write-up', link: '/case-study/syntax' },
+      { text: 'Parsing & AST', link: '/case-study/parsing-ast' },
+      { text: 'Compatibility & Open Questions', link: '/case-study/compatibility' },
+      { text: 'Implementation & Reflection', link: '/case-study/implementation' },
+      { text: 'Dismissed Syntax', link: '/dismissed-syntax' },
+      { text: 'Appendices', link: '/case-study/appendices' },
+    ],
+  },
+  { text: '← Back to docs', link: '/get-started' },
+]
 
 // If the repo is published at https://markup-carve.github.io/carve/
 // keep `base: '/carve/'`. If you publish from an org page repo named
@@ -93,7 +116,9 @@ export default defineConfig({
               { text: 'Writing an Extension (QR case study)', link: '/extension-tutorial' },
               { text: 'Profiles Contract', link: '/profiles' },
               { text: 'AST Exchange Format', link: '/ast-json' },
-              { text: 'Edge Cases', link: '/edge-cases' },
+              { text: 'AST Source Layout', link: '/ast-source-layout' },
+              { text: 'HTML Import', link: '/html-import' },
+              { text: 'Parsing Ambiguities', link: '/parsing-ambiguities' },
               { text: 'Versioning & Changelog', link: '/versioning' },
             ],
           },
@@ -136,23 +161,12 @@ export default defineConfig({
     // own sidebar and is dropped from the main one — keeping the sidebar on
     // every other page short enough to avoid overflow/scroll on small screens.
     sidebar: {
-      '/case-study/': [
-        {
-          text: 'Case Study',
-          items: [
-            { text: 'Overview', link: '/case-study/' },
-            { text: 'Background', link: '/case-study/background' },
-            { text: 'Design', link: '/case-study/design' },
-            { text: 'Syntax Specification', link: '/case-study/syntax' },
-            { text: 'Parsing & AST', link: '/case-study/parsing-ast' },
-            { text: 'Compatibility & Open Questions', link: '/case-study/compatibility' },
-            { text: 'Implementation & Reflection', link: '/case-study/implementation' },
-            { text: 'Dismissed Syntax', link: '/dismissed-syntax' },
-            { text: 'Appendices', link: '/case-study/appendices' },
-          ],
-        },
-        { text: '← Back to docs', link: '/get-started' },
-      ],
+      // Dismissed Syntax belongs to the case study but lives at a top-level
+      // route, so it needs its own sidebar key: VitePress picks a sidebar by
+      // PATH PREFIX, and without this the page drops out of the case-study
+      // sidebar and snaps back to the main one mid-read.
+      '/case-study/': caseStudySidebar,
+      '/dismissed-syntax': caseStudySidebar,
       '/': [
         {
           text: 'Introduction',
@@ -168,7 +182,13 @@ export default defineConfig({
               items: [
                 { text: 'Core', link: '/examples/core' },
                 { text: 'Extensions', link: '/examples/extensions' },
-                { text: 'Edge cases', link: '/examples/edge-cases' },
+                { text: 'Processor options', link: '/examples/processor-options' },
+                {
+                  text: 'Edge cases',
+                  link: '/examples/edge-cases/',
+                  items: generatedExamples.edgeCases,
+                  collapsed: true,
+                },
               ],
             },
             { text: 'Diagrams & Charts', link: '/diagrams' },
@@ -189,6 +209,8 @@ export default defineConfig({
             { text: 'Writing an Extension', link: '/extension-tutorial' },
             { text: 'Profiles Contract', link: '/profiles' },
             { text: 'AST Exchange Format', link: '/ast-json' },
+            { text: 'AST Source Layout', link: '/ast-source-layout' },
+            { text: 'HTML Import', link: '/html-import' },
             { text: 'Formal Grammar', link: '/grammar' },
             { text: 'Native Features', link: '/native-features-analysis' },
             { text: 'Carve vs Markdown/Djot/MDX', link: '/comparison' },
@@ -200,7 +222,7 @@ export default defineConfig({
             { text: 'Graceful Degradation', link: '/graceful-degradation' },
               { text: 'Static Rendering Recipes', link: '/static-rendering-recipes' },
             { text: 'Performance', link: '/performance' },
-            { text: 'Edge Cases', link: '/edge-cases' },
+            { text: 'Parsing Ambiguities', link: '/parsing-ambiguities' },
             { text: 'Versioning & Changelog', link: '/versioning' },
           ],
         },

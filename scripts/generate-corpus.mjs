@@ -4,35 +4,22 @@ import { createHash } from 'node:crypto'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { shortfall } from './spec/participants.mjs'
+import { numberExamples, readExampleFiles, scanExampleSource } from './lib/example-sections.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..')
-const examplesDir = resolve(repoRoot, 'docs/examples')
 const outDir = resolve(repoRoot, 'tests/corpus')
 
-// The example pairs live in docs/examples/{core,extensions,edge-cases}.md.
+// The example pairs live in resources/examples/{core,extensions,edge-cases}.md.
 // Read them in a fixed tier order so corpus numbering is deterministic across
 // machines and CI (readdir order is filesystem-dependent).
-const exampleFiles = ['core', 'extensions', 'edge-cases']
-const src = exampleFiles
-  .map((name) => readFileSync(resolve(examplesDir, `${name}.md`), 'utf8'))
-  .join('\n')
+const src = readExampleFiles(repoRoot)
 const lines = src.split('\n')
-
-const examples = []
-let currentSection = null
-let mode = 'scanning'
-let pendingBlocks = { carve: null, html: null }
-let currentLang = null
-let fenceMarker = null
-let compareMarker = null
-let compareModifiers = new Set()
-let blockLines = []
 
 /*
  * BYTES THE EXAMPLE SOURCE CANNOT HOLD.
  *
- * A corpus pair is generated from docs/examples/*.md, which is ordinary
+ * A corpus pair is generated from resources/examples/*.md, which is ordinary
  * reviewable Markdown: `.gitattributes` protects `tests/corpus/**` from
  * line-ending normalization but says nothing about the examples, and this
  * script splits the source on '\n'. So a document whose SUBJECT is its line
@@ -56,93 +43,26 @@ const applyModifiers = (carve, modifiers) => {
   if (modifiers.has('bom')) out = '\ufeff' + out
   return out
 }
-const seenTitles = new Set()
-let comparesOpened = 0
-let compareOpenLine = 0
-const dropped = []
-
-const finalizePair = () => {
-  if (currentSection && pendingBlocks.carve && pendingBlocks.html) {
-    examples.push({
-      section: currentSection,
-      carve: pendingBlocks.carve,
-      html: pendingBlocks.html,
-      modifiers: compareModifiers,
-    })
-  } else if (currentSection) {
-    // A compare block that closed without BOTH a carve and an html fence would
-    // otherwise vanish from the corpus with no signal (the observability
-    // lesson). Record it so the run can fail loudly below.
-    const miss = [!pendingBlocks.carve && 'carve', !pendingBlocks.html && 'html']
-      .filter(Boolean)
-      .join(' + ')
-    dropped.push(`line ${compareOpenLine} (section "${currentSection}"): missing ${miss} fence`)
-  }
-  pendingBlocks = { carve: null, html: null }
-}
-
-for (let li = 0; li < lines.length; li++) {
-  const line = lines[li]
-  const h2 = line.match(/^##\s+(.+?)\s*$/)
-  if (h2 && mode === 'scanning') {
-    currentSection = h2[1]
-    // Section numbering keys on the title, so two files sharing a title would
-    // silently merge their examples into one numbered section.
-    if (seenTitles.has(currentSection)) {
-      console.error(`generate-corpus: duplicate section title "${currentSection}" across example files - numbering would merge them.`)
-      process.exit(1)
-    }
-    seenTitles.add(currentSection)
-    pendingBlocks = { carve: null, html: null }
-    continue
-  }
-  // Accept `::: compare` plus optional modifiers like `::: compare no-render`
-  // (a docs-only rendering hint); the pair is still part of the corpus.
-  const compareOpen = mode === 'scanning' && /^:{3,}\s+compare(\s+\S.*)?$/.test(line.trim())
-  if (compareOpen) {
-    compareMarker = line.trim().match(/^(:{3,})/)[1]
-    compareModifiers = new Set(line.trim().split(/\s+/).slice(2))
-    for (const mod of compareModifiers) {
-      if (!KNOWN_MODIFIERS.has(mod)) {
-        console.error(`generate-corpus: line ${li + 1}: unknown ::: compare modifier "${mod}".`)
-        console.error(`  Known: ${[...KNOWN_MODIFIERS].join(', ')}`)
-        console.error('  A typo here would otherwise be read as "no modifier" and the pair')
-        console.error('  would be written with ordinary bytes, testing nothing it claims to.')
-        process.exit(1)
+let scan
+try {
+  scan = scanExampleSource(lines, {
+    validateModifiers(modifiers, line) {
+      for (const mod of modifiers) {
+        if (!KNOWN_MODIFIERS.has(mod)) {
+          console.error(`generate-corpus: line ${line}: unknown ::: compare modifier "${mod}".`)
+          console.error(`  Known: ${[...KNOWN_MODIFIERS].join(', ')}`)
+          console.error('  A typo here would otherwise be read as "no modifier" and the pair')
+          console.error('  would be written with ordinary bytes, testing nothing it claims to.')
+          process.exit(1)
+        }
       }
-    }
-    comparesOpened++
-    compareOpenLine = li + 1
-    mode = 'in_compare'
-    continue
-  }
-  if (mode === 'in_compare') {
-    if (line.trim() === compareMarker) {
-      finalizePair()
-      mode = 'scanning'
-      compareMarker = null
-      continue
-    }
-    const fenceOpen = line.match(/^(`{3,})(carve|html)\s*$/)
-    if (fenceOpen) {
-      fenceMarker = fenceOpen[1]
-      currentLang = fenceOpen[2]
-      blockLines = []
-      mode = 'in_fence'
-    }
-    continue
-  }
-  if (mode === 'in_fence') {
-    if (line.startsWith(fenceMarker) && line.slice(fenceMarker.length).trim() === '') {
-      pendingBlocks[currentLang] = blockLines.join('\n')
-      mode = 'in_compare'
-      currentLang = null
-      fenceMarker = null
-      continue
-    }
-    blockLines.push(line)
-  }
+    },
+  })
+} catch (error) {
+  console.error(`generate-corpus: ${error.message}`)
+  process.exit(1)
 }
+const { examples, comparesOpened, dropped } = scan
 
 // Reconcile: every opened compare block must have produced a pair. A silent
 // gap here means a broken example dropped out of the conformance corpus.
@@ -180,7 +100,7 @@ const thin = shortfall({
   actual: examples.length,
   atLeast: CORPUS_FLOOR,
   of: 'example pair(s)',
-  hint: 'docs/examples/{core,extensions,edge-cases}.md is where they come from; ' +
+  hint: 'resources/examples/{core,extensions,edge-cases}.md is where they come from; ' +
     'an extraction that reached fewer of them writes a corpus every downstream ' +
     'floor is happy with.',
 })
@@ -189,26 +109,10 @@ if (thin) {
   process.exit(1)
 }
 
-const slugify = (s) =>
-  s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
-
 // Stable per-section numbering. Examples in the same section share the section
 // index; their suffix increments per example within the section (omitted for the
 // first example so single-example sections keep their existing filenames).
-const sectionState = new Map()
-let sectionCounter = 0
-for (const ex of examples) {
-  let state = sectionState.get(ex.section)
-  if (!state) {
-    sectionCounter += 1
-    state = { idx: sectionCounter, count: 0 }
-    sectionState.set(ex.section, state)
-  }
-  state.count += 1
-  ex.idx = String(state.idx).padStart(2, '0')
-  ex.slug = slugify(ex.section)
-  ex.exampleIdx = state.count
-}
+numberExamples(scan)
 
 // --- APPEND-ONLY NUMBERING (guard) -----------------------------------------
 //
@@ -279,7 +183,7 @@ if (existingNumbers.size > 0 && process.env['CORPUS_RENUMBER'] !== '1') {
     }
     console.error('  Every engine allowlists categories by `NN-slug`, so this invalidates')
     console.error('  all of those lists at once. Move the new section to the END of the last')
-    console.error('  examples file (docs/examples/edge-cases.md) instead.')
+    console.error('  examples file (resources/examples/edge-cases.md) instead.')
     console.error('')
     console.error('  If the renumber is deliberate, re-run with CORPUS_RENUMBER=1 and update')
     console.error('  every engine allowlist in the same change.')

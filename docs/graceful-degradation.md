@@ -1,3 +1,7 @@
+---
+description: What every Carve construct renders as when JavaScript, or a whole target, is unavailable.
+---
+
 # Graceful Degradation
 
 Carve renders to several targets: interactive HTML, static HTML (and PDF derived

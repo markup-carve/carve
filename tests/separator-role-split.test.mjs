@@ -1037,7 +1037,7 @@ for (const { site, two, one } of RUN_SITES) {
 // failure is visible.
 //
 // What this block adds is the LINE ENDING, which corpus 266 deliberately does
-// not carry: a trailing whitespace run in docs/examples/*.md is one editor
+// not carry: a trailing whitespace run in resources/examples/*.md is one editor
 // save from vanishing, and it would be invisible in review. Here the bytes are
 // in a string literal.
 const LINE_ENDING = [
@@ -1361,7 +1361,7 @@ for (const [production, required, forbidden] of [
 // separator stands between the marker and the content it introduces. Corpus
 // 267 carries the ruling. What lives here is the one shape the corpus cannot
 // hold - a marker followed by SPACES and nothing else - because trailing
-// whitespace in docs/examples/*.md is one editor save from vanishing and
+// whitespace in resources/examples/*.md is one editor save from vanishing and
 // invisible in review either way.
 //
 // It is not decoration. MARKER REQUIRES CONTENT is what separates the rule

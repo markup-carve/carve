@@ -1,3 +1,7 @@
+---
+description: What it takes to write a new Carve implementation, and which documents are normative for it.
+---
+
 # Build Your Own Implementation
 
 Carve is designed to be re-implementable. The parsing is linear-time with no
@@ -22,7 +26,7 @@ repository. In rough order of usefulness when implementing:
   and [Implementation & Reflection](./case-study/implementation).
 - **[Extensions Contract](./extensions)** - the normative contract for the
   `:type[content]{attrs}` extension syntax (optional - see tiers below).
-- **[Edge Cases](./edge-cases)** and **[Divergence from Djot](./divergence-from-djot)**
+- **[Parsing Ambiguities](./parsing-ambiguities)** and **[Divergence from Djot](./divergence-from-djot)**
   - the corners where Carve makes a specific, tested choice.
 
 ## Conformance tiers

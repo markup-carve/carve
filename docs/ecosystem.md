@@ -1,3 +1,7 @@
+---
+description: Every implementation, editor integration and tool that speaks Carve, grouped by role.
+---
+
 # Ecosystem
 
 Everything that speaks Carve, grouped by role. All of it lives under the

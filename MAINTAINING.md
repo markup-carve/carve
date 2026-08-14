@@ -4,7 +4,7 @@ The spec and three implementations move in lockstep:
 
 | Repo | Role |
 |------|------|
-| [`carve`](https://github.com/markup-carve/carve) | Specification. `resources/grammar.ebnf` is **normative**; `docs/examples.md` generates the `tests/corpus/*.crv` + `*.html` pairs that are the **cross-impl conformance contract**. |
+| [`carve`](https://github.com/markup-carve/carve) | Specification. `resources/grammar.ebnf` is **normative**; `resources/examples/*.md` generates the `tests/corpus/*.crv` + `*.html` pairs that are the **cross-impl conformance contract**. |
 | [`carve-js`](https://github.com/markup-carve/carve-js) | Reference implementation (TypeScript). Its compiled output is vendored into `carve` to render the docs and validate the corpus. |
 | [`carve-php`](https://github.com/markup-carve/carve-php) | PHP implementation. Conforms to the same corpus. |
 | [`carve-rs`](https://github.com/markup-carve/carve-rs) | Rust implementation. Conforms to the same corpus. |
@@ -27,7 +27,7 @@ battery and keep all three in agreement.
 `npm run bump-carve-pin [sha|ref]` moves the pin; that one line is the whole
 statement of which reference build the corpus and the Playground run against.
 The corpus is generated separately by `scripts/generate-corpus.mjs`, which
-extracts the ` ```carve ` / ` ```html ` pairs from `docs/examples.md`
+extracts the ` ```carve ` / ` ```html ` pairs from `resources/examples/*.md`
 **verbatim** (`npm run corpus:build` + `git diff --exit-code`).
 
 **The corpus oracle is the executable spec, not an engine.** `tests/corpus.test.mjs`
@@ -75,7 +75,7 @@ in each impl repo — weekly + manual dispatch, idempotent on a single
 
 1. **carve-js first.** Land the behavior in the reference impl with unit tests.
    Merge to `main`.
-2. **carve next.** Add the `docs/examples.md` pair(s), cover the rule in
+2. **carve next.** Add the `resources/examples/*.md` pair(s), cover the rule in
    `scripts/spec` so the executable spec renders it, then `npm run corpus:build`
    and `npm test`. Commit the examples, the regenerated corpus and the
    executable-spec change together. Bump the pin
@@ -109,7 +109,7 @@ in each impl repo — weekly + manual dispatch, idempotent on a single
 ### Resolved (now pinned in the corpus)
 
 These were verified carve-js ↔ carve-php differences; both impls now agree and
-the behavior is pinned in `docs/examples.md`:
+the behavior is pinned in `resources/examples/*.md`:
 
 | Input | Resolution |
 |-------|------------|
@@ -170,6 +170,6 @@ definitions, matching carve-php and carve-rs. All three impls now realize the
 full four-point contract.
 
 When a new divergence is found, verify it on both impls, decide the canonical,
-and either pin it as a `docs/examples.md` pair (and move it to *Resolved*) or
+and either pin it as a `resources/examples/*.md` pair (and move it to *Resolved*) or
 record it as *Intentional* with the reason, or under *Open (tracked)* if it is
 an implementation bug still being worked through.

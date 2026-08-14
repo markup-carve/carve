@@ -57,7 +57,7 @@
      PART 9R are the authority for behavior the productions cannot encode.
    - docs/case-study/syntax.md and docs/edge-cases.md are EXPLANATORY and
      DERIVED — prose for humans, non-normative.
-   - docs/examples.md and the generated tests/corpus/* pairs are the
+   - resources/examples/*.md and the generated tests/corpus/* pairs are the
      CONFORMANCE CONTRACT: every example is checked against the reference
      implementation in CI. A spec change is not real until a corpus pair
      pins it.
@@ -3848,7 +3848,7 @@ EOF = (* end of file *) ;
       empty body (opener immediately followed by its closer) opens too. With
       NO matching closer, the opener degrades to literal text and the marker
       lines form an ordinary nested list. The corpus pins these
-      (docs/examples.md "Fence opener with a nested-list body inside a list
+      (resources/examples/edge-cases.md "Fence opener with a nested-list body inside a list
       item").
 
       The two tiers for a typed block:
@@ -4048,11 +4048,15 @@ EOF = (* end of file *) ;
       digit-first bare word is not a valid name (the block stays literal, as for
       any digit-first identifier). All impls support it (a carve extension
       beyond canonical djot, matching djot-php; corpus 97-boolean-attributes).
-      THE SEVEN NAMES OF PART 9 §10 ARE THE EXCEPTION TO `name=""`: on an
-      ordinary span, `abbr`, `time`, `samp`, `var`, `kbd`,
-      `cite` and `dfn` are consumed into an HTML element instead of reaching
-      the output as an attribute, so `[Tab]{kbd}` is `<kbd>Tab</kbd>` and not
-      `<span kbd="">Tab</span>`. They are boolean attributes everywhere else,
+      THE THREE NAMES OF PART 9 §9 ARE THE EXCEPTION TO `name=""`: on an
+      ordinary span, `abbr`, `time` and `kbd` are consumed into an HTML
+      element instead of reaching the output as an attribute, so `[Tab]{kbd}`
+      is `<kbd>Tab</kbd>` and not `<span kbd="">Tab</span>`. The OTHER four
+      semantic names -- `samp`, `var`, `cite` and `dfn` -- are NOT core: a
+      conformant core leaves them as ordinary boolean attributes
+      (`<span samp="">x</span>`), and only the Tier-2 SemanticSpan extension
+      consumes them (§10; corpus 45-inline-extensions-10 pins the core render).
+      All seven are boolean attributes everywhere else,
       including in the AST and in the canonical writer, which writes the span
       back as `[Tab]{kbd}` -- a value-less attribute is spelled bare there
       (PART 11 §6c), so the consumed name comes back in the form the author
@@ -4213,7 +4217,7 @@ EOF = (* end of file *) ;
         though the line were never written -- §17 L6 states the general
         rule once, for every block-level container that can hold a
         definition, rather than enumerating them per definition kind. The
-        corpus pins this (docs/examples.md "Footnote definition inside a
+        corpus pins this (resources/examples/edge-cases.md "Footnote definition inside a
         container is collected").
       - A reference with NO matching definition renders as literal source
         text `[^label]` (a trailing `{attrs}` on an unresolved ref is not
@@ -4449,7 +4453,7 @@ EOF = (* end of file *) ;
         not re-expanded). One-level resolution makes a self-reference
         (`# A </#a>`) and a mutual cycle (`# A </#b>` + `# B </#a>`) SAFE --
         each side resolves once, no infinite expansion. A normal, non-cyclic
-        crossref still resolves. The corpus pins this (docs/examples.md
+        crossref still resolves. The corpus pins this (resources/examples/edge-cases.md
         "Cyclic cross-reference resolves to one level").
       - `</#id>` to a NUMBERED CAPTION (a figure / table / listing / equation
         whose caption carries a number placeholder and an `{#id}`) yields the
@@ -4779,7 +4783,7 @@ EOF = (* end of file *) ;
       previously stated only in docs/security.md (non-normative); they are
       hoisted here so an implementation written to this grammar + the corpus
       cannot be conformant yet a trivial XSS vector. The corpus pins
-      representative cases (docs/examples.md "Security hardening").
+      representative cases (resources/examples/edge-cases.md "Security hardening").
       - URL SINK SCHEME DENYLIST. On every clickable URL sink -- link
         destination (`href`), image source (`src`), and autolink -- an HTML
         renderer MUST reject any URL whose scheme is `javascript`, `vbscript`,
@@ -4801,7 +4805,7 @@ EOF = (* end of file *) ;
         line/paragraph separators (U+2028 / U+2029), and the BOM (U+FEFF) --
         before matching the scheme, so an obfuscated `<U+202F>javascript:`
         destination cannot slip past the denylist. The corpus pins the
-        U+202F case (docs/examples.md "Scheme probe strips Unicode
+        U+202F case (resources/examples/edge-cases.md "Scheme probe strips Unicode
         whitespace").
 
         THE CLASS STOPS THERE ON PURPOSE, and the reason is a property of URL
@@ -5075,7 +5079,7 @@ EOF = (* end of file *) ;
    26. TROJAN-SOURCE / INVISIBLE-UNICODE HARDENING -- NORMATIVE (CVE-2021-42574
       class). Visually deceptive or invisible Unicode MUST NOT produce
       diverging heading ids nor smuggle a live control character into the
-      output. The corpus pins representative cases (docs/examples.md
+      output. The corpus pins representative cases (resources/examples/edge-cases.md
       "Trojan-Source: heading ids ...", "Trojan-Source: rendered text and
       code ...").
       - HEADING IDS are NFC-normalized and stripped of bidi-override /

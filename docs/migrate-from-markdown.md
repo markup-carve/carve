@@ -5,6 +5,10 @@ description: A task-oriented guide for Markdown and GFM authors switching to Car
 
 # Coming from Markdown
 
+::: info Who this is for
+**Authors who already write CommonMark or GFM** and want to move documents across. Task-oriented: what to change, not why it differs.
+:::
+
 This guide is for authors who already know CommonMark or GitHub-Flavored Markdown (GFM) and want to rewrite documents in Carve. It focuses on what to change, not on why Carve differs from Markdown - for the design rationale see [Carve vs Markdown/Djot/MDX](/comparison).
 
 ::: tip Automated conversion

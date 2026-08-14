@@ -1,3 +1,7 @@
+---
+description: The affirmative case for a new language, and the negative case against extending Markdown.
+---
+
 # Design
 
 _Both the affirmative case (what we chose) and the negative case (why we didn't just extend Markdown)._

@@ -6,7 +6,7 @@
  * zero-width space, a no-break space. It cannot reasonably pin the rest:
  *
  *   - a CONTROL character (U+0001, U+007F, the C1 block) in
- *     docs/examples/edge-cases.md is invisible in review and one editor save
+ *     resources/examples/edge-cases.md is invisible in review and one editor save
  *     from vanishing, and unlike the characters in tests/fixture-bytes.test.mjs
  *     it has no WATCHED entry to notice the loss;
  *   - the FORMAT category has 170 codepoints in 21 ranges, and pinning one of
