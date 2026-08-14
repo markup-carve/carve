@@ -25,6 +25,24 @@ const ebnfGrammar = loadGrammar('ebnf.tmLanguage.json')
 const orgGrammar = loadGrammar('org.tmLanguage.json')
 const textileGrammar = loadGrammar('textile.tmLanguage.json')
 
+const caseStudySidebar = [
+  {
+    text: 'Case Study',
+    items: [
+      { text: 'Overview', link: '/case-study/' },
+      { text: 'Background', link: '/case-study/background' },
+      { text: 'Design', link: '/case-study/design' },
+      { text: 'Original Syntax Write-up', link: '/case-study/syntax' },
+      { text: 'Parsing & AST', link: '/case-study/parsing-ast' },
+      { text: 'Compatibility & Open Questions', link: '/case-study/compatibility' },
+      { text: 'Implementation & Reflection', link: '/case-study/implementation' },
+      { text: 'Dismissed Syntax', link: '/dismissed-syntax' },
+      { text: 'Appendices', link: '/case-study/appendices' },
+    ],
+  },
+  { text: '← Back to docs', link: '/get-started' },
+]
+
 // If the repo is published at https://markup-carve.github.io/carve/
 // keep `base: '/carve/'`. If you publish from an org page repo named
 // `markup-carve.github.io`, change `base` to '/'.
@@ -143,23 +161,12 @@ export default defineConfig({
     // own sidebar and is dropped from the main one — keeping the sidebar on
     // every other page short enough to avoid overflow/scroll on small screens.
     sidebar: {
-      '/case-study/': [
-        {
-          text: 'Case Study',
-          items: [
-            { text: 'Overview', link: '/case-study/' },
-            { text: 'Background', link: '/case-study/background' },
-            { text: 'Design', link: '/case-study/design' },
-            { text: 'Original Syntax Write-up', link: '/case-study/syntax' },
-            { text: 'Parsing & AST', link: '/case-study/parsing-ast' },
-            { text: 'Compatibility & Open Questions', link: '/case-study/compatibility' },
-            { text: 'Implementation & Reflection', link: '/case-study/implementation' },
-            { text: 'Dismissed Syntax', link: '/dismissed-syntax' },
-            { text: 'Appendices', link: '/case-study/appendices' },
-          ],
-        },
-        { text: '← Back to docs', link: '/get-started' },
-      ],
+      // Dismissed Syntax belongs to the case study but lives at a top-level
+      // route, so it needs its own sidebar key: VitePress picks a sidebar by
+      // PATH PREFIX, and without this the page drops out of the case-study
+      // sidebar and snaps back to the main one mid-read.
+      '/case-study/': caseStudySidebar,
+      '/dismissed-syntax': caseStudySidebar,
       '/': [
         {
           text: 'Introduction',
