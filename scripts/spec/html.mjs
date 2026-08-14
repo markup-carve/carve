@@ -201,11 +201,20 @@ function renderBlock(b, depth, ctx) {
         // source of a quotation, and the quote does not become a `figure` -
         // so it takes no figure number and no consumer counting figures finds
         // it (carve#1159).
-        if (b.children.length === 1 && b.children[0].t === 'para') {
-          const p = renderBlock(b.children[0], 0, ctx)
-          return `${pad}<blockquote${ba}>\n${pad}  ${p}\n${pad}  <footer>${renderInline(b.caption)}</footer>\n${pad}</blockquote>`
-        }
-        throw new Refuse('captioned multi-block quote')
+        //
+        // §4a DOES NOT COUNT THE QUOTE'S BLOCKS, and no other clause does
+        // either: a multi-paragraph epigraph, a quoted list, a nested quote,
+        // a quoted code block and a quoted heading each take an attribution
+        // the same way. This used to render only a single-paragraph quote and
+        // Refuse everything else, which no corpus document could reach - the
+        // refusal was guarded by the absence of a fixture rather than by a
+        // decision, so nothing failed while the oracle alone declined what
+        // every engine renders (carve#1181, the carve#755 class).
+        //
+        // `inner` rather than a re-render of the children: it is the one that
+        // was produced under `inBlockquote`, which is what keeps a quoted
+        // heading out of the implicit-reference index.
+        return `${pad}<blockquote${ba}>\n${inner}\n${pad}  <footer>${renderInline(b.caption)}</footer>\n${pad}</blockquote>`
       }
       if (b.children.length === 1 && b.children[0].t === 'para') {
         const p = renderBlock(b.children[0], 0, ctx)

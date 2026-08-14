@@ -90,7 +90,8 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 under the same semantic-span rule,
 `302-a-math-span-s-base-class-keeps-the-class-slot-in-place`,
 `304-an-angle-bracket-is-escaped-only-where-it-opens-markup`,
-`305-an-abbreviation-expands-inside-an-inline-container`.
+`305-an-abbreviation-expands-inside-an-inline-container`,
+`306-a-captioned-quote-holds-more-than-one-block`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the

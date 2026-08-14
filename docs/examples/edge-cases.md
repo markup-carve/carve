@@ -16565,3 +16565,127 @@ The [HTML]{abbr="Custom"} key.
 ```
 
 :::
+
+## A captioned quote holds more than one block
+
+PART 9 §4a makes a caption on a block quote its ATTRIBUTION: the source goes
+inside the `<blockquote>` as a `<footer>`, and the quote takes no figure number.
+
+The clause does not count the quote's blocks, and nothing else does either. A
+multi-paragraph epigraph is ordinary, and so are a quoted list, a nested quote, a
+quoted code block and a quoted heading. Each one takes its attribution the same
+way, in the same place.
+
+This needed pinning because the executable spec refused every shape but a single
+paragraph, and no corpus document held any of the others - so the refusal was
+unreachable, `npm run core:check` reported every input conformant either way, and
+the gap was guarded by the absence of a fixture rather than by a decision
+(markup-carve/carve#1181, the markup-carve/carve#755 class).
+
+::: compare
+
+```carve
+> Nothing in this world is certain except death and taxes.
+>
+> The second of the two arrives rather more often.
+^ Benjamin Franklin
+```
+
+```html
+<blockquote>
+  <p>Nothing in this world is certain except death and taxes.</p>
+  <p>The second of the two arrives rather more often.</p>
+  <footer>Benjamin Franklin</footer>
+</blockquote>
+```
+
+:::
+
+A quoted list. The attribution follows the list inside the quote; it is not a
+sibling of it and not an item of it.
+
+::: compare
+
+```carve
+> - Be skeptical.
+> - Be kind.
+^ House rules
+```
+
+```html
+<blockquote>
+  <ul>
+    <li>Be skeptical.</li>
+    <li>Be kind.</li>
+  </ul>
+  <footer>House rules</footer>
+</blockquote>
+```
+
+:::
+
+A nested quote. The caption attaches to the OUTER quote - the one whose marker
+column the caption line sits against - so the inner quote carries no attribution
+of its own.
+
+::: compare
+
+```carve
+> > I never said that.
+^ Quoted in the report
+```
+
+```html
+<blockquote>
+  <blockquote><p>I never said that.</p></blockquote>
+  <footer>Quoted in the report</footer>
+</blockquote>
+```
+
+:::
+
+A quoted code block. The `<pre>` is the quote's only child and the attribution
+still lands beside it, which is the case that shows the rule is about the quote
+rather than about a paragraph.
+
+::: compare
+
+```carve
+> ~~~
+> git bisect run ./check
+> ~~~
+^ The release runbook
+```
+
+```html
+<blockquote>
+  <pre><code>git bisect run ./check
+</code></pre>
+  <footer>The release runbook</footer>
+</blockquote>
+```
+
+:::
+
+A quoted heading. The heading keeps its id, and PART 9R leaves it out of the
+implicit-reference index because it sits inside a quote - the attribution does
+not change that either way.
+
+::: compare
+
+```carve
+> ## Terms
+>
+> Delivery is at the discretion of the vendor.
+^ Appendix B
+```
+
+```html
+<blockquote>
+  <h2 id="Terms">Terms</h2>
+  <p>Delivery is at the discretion of the vendor.</p>
+  <footer>Appendix B</footer>
+</blockquote>
+```
+
+:::

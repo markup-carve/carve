@@ -3265,6 +3265,16 @@ EOF = (* end of file *) ;
       `^` IS UNCHANGED as the spelling. No document migrates, and the canonical
       writer emits the same source it read.
 
+      THE QUOTE'S BLOCKS ARE NOT COUNTED. A multi-paragraph epigraph is
+      ordinary, and so are a quoted list, a nested quote, a quoted code block
+      and a quoted heading; each takes its attribution the same way, and the
+      `footer` is the LAST child of the `blockquote` whatever precedes it.
+      This sentence was implied rather than written, and the executable spec
+      read the silence the other way: it rendered a single-paragraph quote and
+      refused every other shape. No corpus document held one, so the refusal
+      was unreachable and nothing failed (carve#1181, carve#755). Corpus
+      `306-a-captioned-quote-holds-more-than-one-block` pins the five shapes.
+
       A QUOTE TAKES NO NUMBER, which is the point rather than a side effect.
       Numbering keys on the `#` placeholder, so `^ Figure #: Hamlet` on a quote
       used to produce "Figure 1", consume a number from the document's figure
