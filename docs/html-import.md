@@ -1,3 +1,7 @@
+---
+description: The contract for converting HTML into Carve - a migration boundary, deliberately not a general HTML serializer.
+---
+
 # HTML import contract
 
 HTML import is a migration boundary, not an HTML serializer. Implementations

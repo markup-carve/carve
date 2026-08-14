@@ -1,3 +1,7 @@
+---
+description: "The Carve linter: which rules exist, what each catches, and how to run it over a document set."
+---
+
 # Validation
 
 Carve validation is exposed as a linter. It is designed for documents that

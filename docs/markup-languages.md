@@ -1,4 +1,12 @@
+---
+description: A neutral survey of the wider lightweight-markup landscape, from AsciiDoc to Textile.
+---
+
 # Modern Markup Languages Comparison
+
+::: info Who this is for
+**Anyone surveying the field.** A neutral tour of the wider lightweight-markup landscape, Carve included but not centered. For the Carve-centric take, see [Carve vs Markdown/Djot/MDX](/comparison).
+:::
 
 A broad, neutral survey of the lightweight markup languages available today.
 

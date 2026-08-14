@@ -1,3 +1,7 @@
+---
+description: Build a Tier-3 extension end to end, in carve-js and carve-php, using a QR-code block as the worked example.
+---
+
 # Writing an extension: a QR-code case study
 
 This is the hands-on companion to the normative

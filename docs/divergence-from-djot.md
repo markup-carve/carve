@@ -1,4 +1,12 @@
+---
+description: Every place Carve deliberately parses differently from Djot - the reference for porting a Djot parser.
+---
+
 # Divergence from Djot
+
+::: info Who this is for
+**Implementers porting a Djot parser**, and authors coming from Djot who hit a surprise. This is the exhaustive list of deliberate parse differences - not an introduction to Carve.
+:::
 
 Carve starts from [Djot](https://djot.net) - John MacFarlane's predictable,
 backtracking-free reimagining of Markdown - and keeps almost all of it: the
@@ -633,7 +641,7 @@ Section 7 already broke from Djot's blank-line rule because a heading written
 directly under prose silently stayed prose - it surprises authors arriving from
 Markdown more often than it helps. The mirror case, prose written directly under
 a heading, was left folding: same two lines, order swapped, opposite doctrines.
-`docs/edge-cases.md` called it "the biggest authoring trap in the heading
+`docs/parsing-ambiguities.md` called it "the biggest authoring trap in the heading
 syntax", and a documented trap is still a trap. Now both orderings answer the
 same way.
 

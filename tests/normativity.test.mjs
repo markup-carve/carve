@@ -4,7 +4,7 @@
  * Enforces the single-source-of-truth policy declared in
  * resources/grammar.ebnf:
  *   - grammar.ebnf is normative; PART 9 holds the semantic constraints
- *   - syntax.md / edge-cases.md are explanatory and must say so
+ *   - syntax.md / parsing-ambiguities.md are explanatory and must say so
  *   - every "PART 9 §N" reference across the docs must resolve to a
  *     real PART 9 section (no dangling normative cross-references)
  *
@@ -191,7 +191,7 @@ test('every PART 12 section reference resolves to a real clause', () => {
 })
 
 test('explanatory docs carry the non-normative banner', () => {
-  for (const rel of ['docs/case-study/syntax.md', 'docs/edge-cases.md']) {
+  for (const rel of ['docs/case-study/syntax.md', 'docs/parsing-ambiguities.md']) {
     const text = readFileSync(resolve(repo, rel), 'utf8')
     assert.match(text, /\*\*Non-normative\.\*\*/, `${rel} missing banner`)
     assert.match(text, /grammar\.ebnf/, `${rel} must point to the grammar`)
@@ -202,8 +202,8 @@ test('the conformance contract exists and is non-empty', () => {
   assert.ok(existsSync(resolve(repo, 'docs/examples.md')))
   for (const name of ['core', 'extensions', 'edge-cases']) {
     assert.ok(
-      existsSync(resolve(repo, `docs/examples/${name}.md`)),
-      `docs/examples/${name}.md (corpus source) is missing`,
+      existsSync(resolve(repo, `resources/examples/${name}.md`)),
+      `resources/examples/${name}.md (corpus source) is missing`,
     )
   }
   const crv = readdirSync(resolve(repo, 'tests/corpus')).filter((f) =>
@@ -218,11 +218,11 @@ test('the conformance contract exists and is non-empty', () => {
 // leaks as literal text. Guard: every `compare` container's colon marker must
 // be LONGER than the longest `:`-run anywhere in its body.
 test('every ::: compare container marker exceeds its body colon-run (VitePress render safety)', () => {
-  // The compare blocks live in docs/examples/{core,extensions,edge-cases}.md
+  // The compare blocks live in resources/examples/{core,extensions,edge-cases}.md
   // (the corpus source). Scan all of them, not the examples.md index.
   const exampleFiles = ['core', 'extensions', 'edge-cases']
   const lines = exampleFiles.flatMap((name) =>
-    readFileSync(resolve(repo, `docs/examples/${name}.md`), 'utf8').split('\n'),
+    readFileSync(resolve(repo, `resources/examples/${name}.md`), 'utf8').split('\n'),
   )
   const fenceRe = /^(`{3,}|~{3,})/
   const offenders = []

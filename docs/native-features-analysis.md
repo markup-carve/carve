@@ -1,3 +1,7 @@
+---
+description: Which features earn a place in core syntax and which belong in an extension, with the MUST/SHOULD/MAY reasoning.
+---
+
 # Native Features Analysis
 
 Comparing djot-php extensions with Carve's design to determine what should be native syntax vs. implementation extensions.

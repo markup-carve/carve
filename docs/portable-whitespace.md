@@ -1,3 +1,7 @@
+---
+description: How Carve treats tabs, trailing spaces and line endings so a document survives an editor save.
+---
+
 # Portable Whitespace
 
 Carve is not required to follow Djot's whitespace rules, and a document that

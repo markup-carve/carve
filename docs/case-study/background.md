@@ -1,3 +1,7 @@
+---
+description: The markup landscape Carve was designed against, and what each existing language got wrong.
+---
+
 # Background
 
 ## Part 1: The Landscape of Lightweight Markup

@@ -1,3 +1,7 @@
+---
+description: "The profiles contract: restricting which node types a document may contain, so a host can accept untrusted input."
+---
+
 # Profiles Contract
 
 A **profile** restricts which node types a document may contain, so a host can

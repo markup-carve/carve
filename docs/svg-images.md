@@ -1,3 +1,7 @@
+---
+description: "The img fence: rendering a sanitized inline SVG from a source block, and the bypasses it blocks."
+---
+
 # SVG Images (`img` fence)
 
 The `img` fence renders an **SVG image** from an SVG source block, sanitized,

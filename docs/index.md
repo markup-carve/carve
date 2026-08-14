@@ -36,6 +36,7 @@ features:
     details: ":type[content]{attrs} for video embeds and the rest of the handler family. Keyboard hints and the other semantic spans are core attributes instead — [Tab]{kbd}. @mentions and #tags as you'd expect from social platforms."
   - title: Safe With Untrusted Input
     details: "Always-on URL-scheme and attribute hardening, Trojan-Source stripping in presentation targets, and linear-time DoS limits neutralize the common Markdown attack classes with no separate sanitizer. Canonical Carve preserves source and warns through lint. Raw HTML passthrough is the one switch you own: on by default, off with a single flag or a safe mode. Carve never executes embedded code (unlike MDX)."
+description: Carve is a post-Markdown markup language with visual mnemonics, a formal grammar, and safe-by-default rendering.
 ---
 
 ## Quick Reference
@@ -189,7 +190,7 @@ Pre-1.0, a minor release may still change the grammar.
 
 Reference material covers the normative [grammar](./grammar) and
 [extensions contract](./extensions), the [security model](./security), the
-[technical rationale](./technical-rationale), [parsing edge cases](./edge-cases),
+[technical rationale](./technical-rationale), [parsing ambiguities](./parsing-ambiguities),
 [native features](./native-features-analysis), and the
 [broader markup landscape](./markup-languages). The [Case Study](./case-study/)
 records the original design research the language grew out of; it is history,

@@ -1,3 +1,7 @@
+---
+description: How the Carve specification is versioned, and the record of every change to it.
+---
+
 # Versioning & Changelog
 
 This page defines how the **Carve specification** is versioned and records every
@@ -14,7 +18,7 @@ bump.
 
 Implementations declare which spec version they conform to. The `carve fmt
 --stamp` tool records it inside a document as a trailing
-[provenance marker](/edge-cases):
+[provenance marker](/parsing-ambiguities):
 
 ```
 %% carve-version: 0.1; generated-by: carve-js 0.1.0

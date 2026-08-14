@@ -1,3 +1,7 @@
+---
+description: The parsing pipeline and node model as first designed - historical, not normative.
+---
+
 # Parsing & AST
 
 ## Part 5: Parsing Rules
@@ -37,7 +41,7 @@ Parse in this precedence order:
 
 This is *not* "shortest span / earliest opening wins": that rule would truncate
 `/usr/local/` to `<em>usr</em>` and break nested emphasis. See
-`resources/grammar.ebnf` PART 8 and PART 9 §9, and `docs/edge-cases.md` §1, §8.
+`resources/grammar.ebnf` PART 8 and PART 9 §9, and `docs/parsing-ambiguities.md` §1, §8.
 
 ### 5.4 Whitespace Rules
 

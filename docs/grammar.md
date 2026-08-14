@@ -53,7 +53,7 @@ The checkers have been wrong, and while they were, they were quietly the languag
 The same mistake has a cross-repo shape. A satellite graded its grammar against a **pinned engine** instead of against the corpus; the pin was three weeks stale, and it reported nine grammar defects that were the pin ([tree-sitter-carve#160](https://github.com/markup-carve/tree-sitter-carve/issues/160)). Measure against the committed golden, never against an implementation.
 :::
 
-Implementations should match this grammar. The [case study](./case-study/) explains the design rationale, the [reference page](./edge-cases) covers parsing edge cases, and the [examples](./examples) show the expected HTML output for each construct.
+Implementations should match this grammar. The [case study](./case-study/) explains the design rationale, the [parsing ambiguities page](./parsing-ambiguities) covers parsing edge cases, and the [examples](./examples) show the expected HTML output for each construct.
 
 The full grammar lives at [`resources/grammar.ebnf`](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf) in the repository.
 

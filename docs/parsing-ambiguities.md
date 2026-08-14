@@ -1,8 +1,12 @@
-# Carve Edge Cases Analysis
+---
+description: Non-normative analysis of the parsing situations most likely to surprise an author or an implementer.
+---
+
+# Carve Parsing Ambiguities
 
 > **Non-normative.** This document analyzes tricky cases for humans. The
 > normative specification is [`resources/grammar.ebnf`](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf)
-> (PART 9 for semantic constraints); `docs/examples.md` + `tests/corpus`
+> (PART 9 for semantic constraints); `resources/examples/*.md` + `tests/corpus`
 > are the conformance contract. On any disagreement, the grammar wins.
 
 This document analyzes potentially ambiguous or tricky parsing scenarios in Carve syntax.

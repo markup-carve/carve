@@ -1,3 +1,7 @@
+---
+description: Where an attribute attaches on a block versus an inline element, and why the two differ.
+---
+
 # Block & inline elements (and attributes)
 
 Carve has two kinds of element, and **attributes attach to each kind in a different place**. Getting this one rule right removes almost all attribute confusion.

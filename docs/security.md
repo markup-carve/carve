@@ -1,3 +1,7 @@
+---
+description: The normative defenses that make Carve safe to render from untrusted input without a separate sanitizer.
+---
+
 # Security
 
 Carve is designed to be safe to render from untrusted input by default. This

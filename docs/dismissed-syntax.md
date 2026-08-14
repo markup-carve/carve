@@ -1,3 +1,7 @@
+---
+description: Syntax ideas considered during design and rejected, with the reasoning that killed each one.
+---
+
 # Dismissed Syntax Ideas
 
 Ideas that were considered during Carve's design but ultimately rejected. Documented here for historical context and to explain why certain paths weren't taken.
