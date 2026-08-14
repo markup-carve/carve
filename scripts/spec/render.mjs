@@ -180,6 +180,35 @@ export function refFrame(payload) {
   return `\uE000ref:${json}\uE001`
 }
 
+/*
+ * The PART 9R note frame: `U+E000 note: <json> U+E001`.
+ *
+ * An inline note used to carry a RAW frame - the rendered content, then U+0002,
+ * then the rendered attributes - so nothing that renders as a frame of its own
+ * could sit inside one. The pass reading the note frame would have ended it at
+ * the inner frame's terminator, so this file refused the whole class rather
+ * than emit a mis-framed note (markup-carve/carve#1199).
+ *
+ * The payload is a JSON object for the same reason the reference frame's is,
+ * and that is a CHOICE rather than a reuse: the reference frame already had a
+ * JSON payload and needed only its escapes fixed, while a note frame has to be
+ * given an encoding. Keeping it raw means a second, bespoke escape vocabulary
+ * for U+E000, U+E001 and U+0002, with its own unescape at every consumer. JSON
+ * escapes U+0002 as a control character on its own, spelling the other two as
+ * `\uXXXX` costs the consumer nothing because `JSON.parse` decodes them, and
+ * the separator field disappears rather than needing to be protected. One
+ * encoding in the pipeline instead of two.
+ */
+export const NOTE_FRAME = /\uE000note:(\{[^\uE000\uE001]*?\})\uE001/g
+
+export function noteFrame(payload) {
+  const json = JSON.stringify(payload).replace(
+    /[\uE000\uE001]/g,
+    (c) => '\\u' + c.charCodeAt(0).toString(16),
+  )
+  return `\uE000note:${json}\uE001`
+}
+
 export function renderAttrs(list) {
   // serialization: SOURCE order; all classes merge (deduplicated, corpus
   // 121) into one class attribute at the position of the FIRST class;
@@ -344,14 +373,13 @@ const sem = g.createSemantics().addOperation('h', {
     } finally {
       noFootnotes = saved
     }
-    // What remains is not a SS16 question but a limit of this pipeline: a
-    // crossref, a reference link or a reference image renders as a
-    // `\uE000...\uE001` sentinel, and nesting one inside the note's own
-    // sentinel breaks the framing the PART 9R passes read. Refuse rather than
-    // emit a mis-framed note.
-    if (inner.includes('\uE000')) throw new Refuse('sentinel-producing construct in an inline note')
+    // A crossref, a reference link or a reference image renders as a frame of
+    // its own and reaches here unresolved, because PART 9R resolves them in a
+    // later pass. `noteFrame` spells the frame characters as JSON escapes, so
+    // an inner frame cannot end this one early, and the content survives to
+    // the pass that resolves it (markup-carve/carve#1199).
     const a = renderAttrs(attrsOf(attrs))
-    return `\uE000note:${inner}\u0002${a}\uE001`
+    return noteFrame({ content: inner, attrs: a })
   },
   bracketed(_o, content, _c, tail) {
     // link text is FULL inline content; parse the raw source recursively

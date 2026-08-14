@@ -12,7 +12,7 @@
  */
 
 import { Refuse, TIER1 } from './layout.mjs'
-import { renderInline, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME } from './render.mjs'
+import { renderInline, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, NOTE_FRAME } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -797,14 +797,26 @@ function resolveFootnotes(html, ctx) {
   const order = [] // labels by first reference
   const counts = new Map()
   const inlineNotes = [] // rendered content per anonymous note, by number
-  const substitute = (s) => s.replace(/(fn|note):([\s\S]*?)\u0002(.*?)/g, (_, kind, payload, attrs) => {
-    if (kind === 'note') {
-      // an inline note draws a fresh number from the SAME sequence (R2)
-      order.push({ inline: inlineNotes.length })
-      inlineNotes.push(payload)
-      const n = order.length
-      return `<a id="fnref${n}" href="#fn${n}" role="doc-noteref"${attrs}><sup>${n}</sup></a>`
+  // TWO FRAMES, TWO SCANS. A footnote REFERENCE frame stays raw - its payload
+  // is a label, which cannot hold a frame - while an inline NOTE frame carries
+  // a JSON payload so that a reference or a crossref inside the note cannot end
+  // the note's own frame early (render.mjs `noteFrame`, carve#1199). One
+  // alternation cannot read both, and the note is consumed first because its
+  // content is re-scanned below once the payload is decoded.
+  const substituteNotes = (s) => s.replace(NOTE_FRAME, (m, json) => {
+    let parsed
+    try {
+      parsed = JSON.parse(json)
+    } catch {
+      return m
     }
+    // an inline note draws a fresh number from the SAME sequence (R2)
+    order.push({ inline: inlineNotes.length })
+    inlineNotes.push(parsed.content)
+    const n = order.length
+    return `<a id="fnref${n}" href="#fn${n}" role="doc-noteref"${parsed.attrs}><sup>${n}</sup></a>`
+  })
+  const substitute = (s) => substituteNotes(s).replace(/fn:([\s\S]*?)\u0002(.*?)/g, (_, payload, attrs) => {
     const label = payload
     if (!ctx.footnoteDefs.has(label)) return `[^${label}]` // unresolved -> literal
     let n = order.indexOf(label) + 1
@@ -830,9 +842,17 @@ function resolveFootnotes(html, ctx) {
   for (let i = 0; i < order.length; i++) {
     const label = order[i]
     if (typeof label === 'object') {
-      // An inline note's content was rendered inline, and render.mjs refuses a
-      // frame-producing construct inside one, so there is nothing left to do.
-      bodies.push({ rendered: `      <p>${inlineNotes[label.inline]}</p>`, noBlocks: false })
+      // An inline note's content was rendered inline, but a reference or an
+      // image reference inside it is STILL A FRAME here: the note frame carried
+      // it across the document pass unresolved, so this is the first point at
+      // which it can be resolved. Both passes run, exactly as they do for a
+      // labelled body below. A crossref inside the content needs no pass here -
+      // resolveCrossrefs runs over the whole document after this function
+      // returns, and the endnotes section is part of what it returns.
+      bodies.push({
+        rendered: `      <p>${substitute(resolveRefs(inlineNotes[label.inline], ctx))}</p>`,
+        noBlocks: false,
+      })
       continue
     }
     const body = ctx.footnoteDefs.get(label)
@@ -891,9 +911,19 @@ function resolveCrossrefs(html, ctx) {
       const esc = id.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
       return `&lt;/#${esc}&gt;`
     }
-    // one-level resolution: nested sentinels in the cloned text flatten to
-    // their literal source (PART 9R R4)
-    const text = hit.html.replace(/xref(?:text)?:(.*?)/g, '')
+    // ONE LEVEL (R4): the cloned text is not re-expanded, so every PART 9R
+    // frame in it is dropped rather than resolved a second time.
+    //
+    // ALL THREE FRAMES, not the crossref alone. A heading is stored here as
+    // rendered HTML before any resolution pass runs, so it can still hold a
+    // footnote reference or an inline note, and only the crossref frame was
+    // being removed - the other two rode into the reader's HTML as the framing
+    // text `fn:1` and `note:...`, which is the one thing this pipeline must
+    // never emit. The heading's own derived text already excludes exactly
+    // these three (see `derivedText`), and R4 binds every consumer that derives
+    // display text from a heading to the same clone, so the two derivations
+    // agree rather than differing by which frame each remembered to strip.
+    const text = hit.html.replace(/\uE000[\s\S]*?\uE001/g, '')
     return textOnly ? text : `<a href="#${hit.id}">${text}</a>`
   })
 }
