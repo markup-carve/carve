@@ -452,6 +452,9 @@ index: examples/edge-cases/index.md
   an-empty-inline-note-is-literal
   a-note-s-content-recognizes-no-note
   a-footnote-in-link-text-nests-the-anchors
+  a-footnote-in-reference-link-text-nests-the-anchors-too
+  a-note-body-s-own-references-resolve
+  a-reference-link-s-text-survives-its-own-frame
   22-footnotes-3
   22-footnotes-6
 
