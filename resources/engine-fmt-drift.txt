@@ -9,3 +9,15 @@
 #
 # Format: <slug><space><space><reason>
 
+# The alt-text close again, on the WRITER side (carve#1197). The pinned build
+# READS a bracket in alt text correctly - every one of these documents renders
+# byte-for-byte - but `fmt` escapes the bracket on the way out, as if the run
+# stopped at the first `]`. Nothing resolves that escape: alt is an HTML
+# attribute and its content is raw, so the backslash lands in the attribute
+# value and the document says something else. It is not idempotent either -
+# each pass escapes the backslash it wrote last time. Clears with the carve-js
+# formatter fix and a pin bump.
+316-an-image-s-alt-text-closes-where-a-link-s-text-closes-2  `fmt` writes `![t\[z\]](/i.png)`, so the alt becomes `t\[z\]`.
+316-an-image-s-alt-text-closes-where-a-link-s-text-closes-4  `fmt` escapes the backslash of an already-escaped `]`, and again on every later pass.
+316-an-image-s-alt-text-closes-where-a-link-s-text-closes-5  `fmt` escapes the `]` inside a code span in alt text, where it was already content.
+317-an-editorial-comment-s-bracket-is-content-not-the-close-4  `fmt` escapes the `]` inside an editorial comment in alt text, where it was already content.
