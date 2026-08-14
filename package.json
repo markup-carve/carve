@@ -39,7 +39,7 @@
     "@markup-carve/carve": "github:markup-carve/carve-js#f05f3a7622e55f8b90f0b8c60e44feae4066eeee",
     "@markup-carve/carve-grammars": "github:markup-carve/carve-grammars",
     "@markup-carve/vite-plugin-carve": "git+https://github.com/markup-carve/vite-plugin-carve.git",
-    "@mermaid-lint/cli": "^0.42.1",
+    "@mermaid-lint/cli": "^0.53.1",
     "ajv": "^8.20.0",
     "markdown-it-container": "^4.0.0",
     "ohm-js": "^17.5.0",
