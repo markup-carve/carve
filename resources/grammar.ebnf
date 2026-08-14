@@ -6944,6 +6944,106 @@ EOF = (* end of file *) ;
       the same hole §10d came out of. Agreement across implementations is
       evidence about implementations. (carve#1179)
 
+  10f. A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET -- NORMATIVE.
+      §10a rules the definition NOTHING references: the Markdown, plain-text
+      and terminal renderers all emit it, because those targets do not get to
+      drop content the author wrote. It says nothing about the definition that
+      IS referenced, and each of the three got that one wrong in its own way:
+
+          *[HTML]: Hyper Text  ->  markdown  *[HTML]: Hyper Text
+                                             (blank)
+          HTML                               <abbr title="Hyper Text">HTML</abbr>
+
+                                   plain     *[HTML]: Hyper Text
+                                             (blank)
+                                             HTML
+
+                                   terminal  *[HTML]: Hyper Text   (dim)
+                                             (blank)
+                                             HTML (Hyper Text)
+
+      On two of them the same words are emitted twice. On the third a line of
+      CARVE SOURCE sits in a plain-text document AND the expansion the author
+      defined never appears anywhere, so that target is wrong on both halves.
+
+      WHAT THIS CLAUSE DECIDES is where the definition LINE goes on those
+      three targets when the definition is consumed, and what the plain target
+      prints in its place. It neither restates the floor in
+      `docs/graceful-degradation.md` nor narrows it: a construct/target pair
+      this clause does not name is open rather than allowed.
+
+      T1 MARKDOWN KEEPS THE LINE, and keeps the expansion beside it exactly as
+         today. `*[TERM]: expansion` is the spelling PHP Markdown Extra uses
+         for an abbreviation, so on this target the line is CONTENT rather
+         than leaked source, and keeping it is what lets the export round-trip
+         back to a working abbreviation. The duplication is the price of that
+         round trip, and it is paid only here.
+
+      T2 PLAIN TEXT AND THE TERMINAL DROP THE LINE and emit only the
+         expansion, in the `TERM (expansion)` shape, at every occurrence:
+
+             *[HTML]: Hyper Text  ->  plain     HTML (Hyper Text)
+             (blank)                  terminal  HTML (Hyper Text)
+             HTML
+
+         Neither half is invented. The terminal already writes
+         `TERM (expansion)` for an automatic expansion; PART 9 §9's
+         authored-`abbr` rule already writes the same shape on the PLAIN
+         target for an authored value (carve#1178). Plain lacked the automatic
+         case for a reason this clause removes -- carve#1178 left it out on
+         the ground that the definition line carried the mapping instead -- so
+         the expansion is not an addition to this ruling but the other half of
+         it. Emitting neither, which is what plain does today, loses the
+         author's expansion outright.
+
+      THE TEST IS WHETHER THIS DEFINITION'S EXPANSION IS EMITTED, not whether
+      its term appears. The line is dropped on plain and the terminal exactly
+      where the same output carries the expansion that definition supplies,
+      and kept otherwise. That is not a refinement for its own sake: the line
+      goes because the content is emitted TWICE, and it is emitted twice only
+      where the expansion is emitted. Three shapes already in the corpus fail
+      the test, and in each the definition's text is carried by its own line
+      and by nothing else, so dropping it would be the content loss §10a
+      exists to prevent:
+
+        - THE TERM NEVER APPEARS. That is §10a, which this clause leaves
+          exactly as it stands.
+
+        - AN AUTHORED `abbr` OUTRANKS THE DEFINITION. PART 9 §9 makes
+          `[HTML]{abbr="Custom"}` authoritative and a resolved `abbreviation`
+          child contributes only its visible text there, so the definition's
+          own expansion reaches no target. `45-inline-extensions-11` pins
+          `HTML (Custom)` on plain and on the terminal with the definition
+          line above it, and this clause leaves that case as carve#1178 left
+          it.
+
+        - A LATER DEFINITION OF THE SAME TERM WON. PART 9R R3 is last-wins, so
+          in
+
+              *[A]: a
+              *[A]: b
+
+              A here.
+
+          only `b` is ever emitted. `*[A]: b` goes and `*[A]: a` stays, on
+          plain and on the terminal alike. Dropping every definition of a term
+          that expanded anywhere was considered and rejected: it deletes the
+          string `a` from the document outright, and the reason this clause
+          moves anything at all is that the plain target should not be losing
+          text.
+
+      THE MARKDOWN TARGET NEEDS NONE OF THAT TEST -- it keeps every definition
+      line whatever became of it. So does the canonical writer, where PART 11
+      §1's `parse(fmt(x)) == parse(x)` requires it, which leaves the round
+      trip intact on both of the targets that have one.
+
+      WHY THIS NEEDED SAYING. The corpus pinned HTML for these cases and
+      nothing else, so `compare:impls` reported cross-engine agreement on the
+      Markdown and terminal rows rather than a defect, and reported nothing at
+      all about the plain row because no fixture asked for one. That is the
+      hole §10d and §10e came out of. Agreement across implementations is
+      evidence about implementations. (carve#1185)
+
   11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE. A resolved
       cross-reference is emitted as a Markdown link to the target heading's id,
       and the target heading gains an explicit `{#id}` suffix. Both halves are
