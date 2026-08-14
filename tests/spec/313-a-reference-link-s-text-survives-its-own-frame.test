@@ -1,0 +1,37 @@
+A reference link's text survives its own frame
+
+```
+a [t</#}>][r] b
+
+[r]: /u
+.
+<p>a <a href="/u">t&lt;/#}&gt;</a> b</p>
+```
+
+```
+a [t[x][r2]][r] b
+
+[r]: /u
+
+[r2]: /v
+.
+<p>a <a href="/u">tx</a> b</p>
+```
+
+```
+a [t[x][r2]](/u) b
+
+[r2]: /v
+.
+<p>a <a href="/u">tx</a> b</p>
+```
+
+```
+a [t![z][r2]][r] b
+
+[r]: /u
+
+[r2]: /i.png
+.
+<p>a <a href="/u">t<img src="/i.png" alt="z"></a> b</p>
+```

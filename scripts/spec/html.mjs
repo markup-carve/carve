@@ -12,7 +12,7 @@
  */
 
 import { Refuse, TIER1 } from './layout.mjs'
-import { renderInline, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs } from './render.mjs'
+import { renderInline, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -77,8 +77,18 @@ export function renderDoc(doc) {
   }
 
   let html = out.join('\n')
-  html = resolveFootnotes(html, ctx) // first: bodies may add ref/xref sentinels
+  // REFERENCES FIRST. A reference tail carries its link text through a JSON
+  // payload, and JSON.stringify escapes U+0002 as a control character - so a
+  // noteref sitting in that payload was invisible to the footnote pass and
+  // rode out as the bare text `fn:1` (markup-carve/carve#1195). Unwrapping
+  // the frame first hands the footnote pass a live sentinel again.
+  //
+  // What the old order bought is paid for inside resolveFootnotes instead: a
+  // note BODY is rendered there, after this line, and can introduce both
+  // reference frames and further notes, so that pass runs both over each body
+  // as it appears.
   html = resolveRefs(html, ctx)
+  html = resolveFootnotes(html, ctx)
   html = resolveCrossrefs(html, ctx)
   html = applyAbbreviations(html, ctx)
   return html
@@ -636,7 +646,20 @@ function resolveImageRef(parsed, ctx, literal) {
 
 // --- PART 9R R1: reference links --------------------------------------------
 function resolveRefs(html, ctx) {
-  return html.replace(/ref:(\{.*?\})/g, (_, json) => {
+  // A payload can hold another frame - an image reference inside link text -
+  // and `String.replace` never rescans what it substituted. Each pass consumes
+  // the outermost frame of every chain, and a nested payload is strictly
+  // shorter than the one holding it, so this settles at the nesting depth.
+  let prev
+  do {
+    prev = html
+    html = resolveRefsOnce(html, ctx)
+  } while (html !== prev)
+  return html
+}
+
+function resolveRefsOnce(html, ctx) {
+  return html.replace(REF_FRAME, (_, json) => {
     // Belt-and-suspenders: a genuine ref sentinel always carries well-formed
     // JSON. Anything else is spoofed/garbage (sentinel chars are stripped from
     // document text upstream) -- degrade to the literal match, never throw.
@@ -774,7 +797,7 @@ function resolveFootnotes(html, ctx) {
   const order = [] // labels by first reference
   const counts = new Map()
   const inlineNotes = [] // rendered content per anonymous note, by number
-  html = html.replace(/(fn|note):([\s\S]*?)\u0002(.*?)/g, (_, kind, payload, attrs) => {
+  const substitute = (s) => s.replace(/(fn|note):([\s\S]*?)\u0002(.*?)/g, (_, kind, payload, attrs) => {
     if (kind === 'note') {
       // an inline note draws a fresh number from the SAME sequence (R2)
       order.push({ inline: inlineNotes.length })
@@ -794,26 +817,36 @@ function resolveFootnotes(html, ctx) {
     const refId = k === 1 ? `fnref${n}` : `fnref${n}-${k}`
     return `<a id="${refId}" href="#fn${n}" role="doc-noteref"${attrs}><sup>${n}</sup></a>`
   })
+  html = substitute(html)
   if (order.length === 0) return html.replace(/\uE000fnplacement\uE001\n?/g, '')
+
+  // BODIES ARE RENDERED HERE, after the pass over the document text, and a
+  // body can introduce both reference frames and further notes. So each body
+  // gets both passes as it appears, and the walk is by INDEX because
+  // substituting a body appends to `order`. Rendering is separated from the
+  // `<li>` build because a late body can add a repeat reference to an EARLIER
+  // note, whose backlink list has to count it (markup-carve/carve#1195).
+  const bodies = []
+  for (let i = 0; i < order.length; i++) {
+    const label = order[i]
+    if (typeof label === 'object') {
+      // An inline note's content was rendered inline, and render.mjs refuses a
+      // frame-producing construct inside one, so there is nothing left to do.
+      bodies.push({ rendered: `      <p>${inlineNotes[label.inline]}</p>`, noBlocks: false })
+      continue
+    }
+    const body = ctx.footnoteDefs.get(label)
+    // `holdsAnInvisibleBlock` is set by the layout pass for a body whose only
+    // content was a comment -- see its note there for why a block count
+    // cannot answer this on its own.
+    const noBlocks = body.length === 0 && !body.holdsAnInvisibleBlock
+    const out = body.map((b) => renderBlock(b, 3, ctx)).join('\n')
+    bodies.push({ rendered: substitute(resolveRefs(out, ctx)), noBlocks })
+  }
 
   const notes = order.map((label, idx) => {
     const n = idx + 1
-    let rendered
-    // A body holding NO BLOCKS is not the same as a body whose blocks render
-    // to nothing, and the two answer differently below.
-    let noBlocks = false
-    if (typeof label === 'object') {
-      rendered = `      <p>${inlineNotes[label.inline]}</p>`
-    } else {
-      const body = ctx.footnoteDefs.get(label)
-      // `holdsAnInvisibleBlock` is set by the layout pass for a body whose only
-      // content was a comment -- see its note there for why a block count
-      // cannot answer this on its own.
-      noBlocks = body.length === 0 && !body.holdsAnInvisibleBlock
-      rendered = body
-        .map((b) => renderBlock(b, 3, ctx))
-        .join('\n')
-    }
+    let { rendered, noBlocks } = bodies[idx]
     // backlink into the LAST paragraph (PART 9 SS16); a k-th repeat
     // reference adds an indexed backlink `↩<sup>k</sup>`
     const total = counts.get(label) ?? 1
