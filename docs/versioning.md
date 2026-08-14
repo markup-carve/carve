@@ -163,7 +163,31 @@ change beyond the markup: a quote no longer takes a figure number, so a `#`
 placeholder in its caption stays literal and a numbered cross-reference to it
 stops resolving; and the AST node is a `block_quote` carrying an `attribution`
 rather than a `figure` wrapping the quote, which matters to anything reading the
-tree. To number a quotation as a figure, write the figure (PART 9 §4a).
+tree.
+
+There is no replacement for the number in this version. PART 9 §4a describes
+writing the figure explicitly, and that form depends on `:::` becoming a
+captionable host, which has not landed (carve#1122). Written today it does not
+number anything - the caption line is not attached to the fence and renders as
+literal text:
+
+```carve
+{#ep}
+::: figure
+> To be
+:::
+^ Figure #: A pull quote
+```
+
+```html
+<div class="figure" id="ep">
+  <blockquote><p>To be</p></blockquote>
+</div>
+<p>^ Figure #: A pull quote</p>
+```
+
+So a quotation that has to carry a figure number needs a host that already takes
+one - an image, a table, a listing or an equation - until carve#1122 lands.
 
 ### Checking documents mechanically
 
