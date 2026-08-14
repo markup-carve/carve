@@ -58,6 +58,29 @@ CI green:
    entry names a rule the pinned build has not shipped. An entry whose rule the
    pin already reproduces is the "nobody ran the bump" case wearing the
    "corpus is ahead" label, and those are different facts.
+
+   **Three more files declare the same kind of debt, and they read a different
+   thing.** `engine:report` renders through the INSTALLED carve-js, so the pin
+   is its whole input. These three drive all three engine CHECKOUTS:
+
+   ```sh
+   npm run ast:check   # resources/ast-value-divergence.txt, ast-span-divergence.txt
+   npm run fmt:check   # resources/engine-fmt-drift.txt
+   ```
+
+   So their precondition is not the pin - it is that `../carve-js`, `../carve-rs`
+   and `../carve-php` are at their `main` AND rebuilt. Pulling without rebuilding
+   leaves the old binary in place and the gates read it. Measured 2026-08-14,
+   stale checkouts reported carve-rs at 39 distinct AST findings where `main` had
+   2, carve-php at 11 where it had 2, and four `fmt:check` failures that did not
+   exist. Both gates fail in both directions, like the pin report, so reconciling
+   means editing until they are green rather than appending.
+
+   ```sh
+   (cd ../carve-js  && git pull --ff-only && npm ci && npm run build)
+   (cd ../carve-rs  && git pull --ff-only && cargo build --release)
+   (cd ../carve-php && git pull --ff-only && composer install)
+   ```
 4. **Run the pre-tag check** (fails on a stale version field, an un-cut
    changelog, a dirty tree, a missing tag, an uninitialized spec submodule, or a
    drift entry the pinned build now reproduces):
