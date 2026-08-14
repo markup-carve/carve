@@ -208,33 +208,47 @@ for (const page of pages) {
   const selectedSections = page.slugs.map((entry) => sectionsBySlug.get(entry) ?? segmentsByName.get(entry).section)
   const sourceNames = new Set(selectedSections.map((section) => section.sourceName))
   if (sourceNames.size > 0) lines.push(banner(sourceNames), '')
-  const headed = new Set()
+  /*
+   * Group by section BEFORE emitting. A per-fixture route makes each pair its
+   * own page entry, so a section's pairs arrive as several entries and its
+   * fixture names have to be collected before the heading is written.
+   */
+  const bySection = new Map()
   for (const entry of page.slugs) {
     const section = sectionsBySlug.get(entry) ?? segmentsByName.get(entry).section
     const segments = sectionsBySlug.has(entry) ? section.segments : [segmentsByName.get(entry).segment]
-    if (!headed.has(section.slug)) {
-      lines.push(sectionHeading(section, page.level, `page "${page.id}"`))
-      headed.add(section.slug)
+    if (!bySection.has(section.slug)) bySection.set(section.slug, { section, segments: [] })
+    bySection.get(section.slug).segments.push(...segments)
+  }
+  for (const { section, segments } of bySection.values()) {
+    lines.push(sectionHeading(section, page.level, `page "${page.id}"`))
+    /*
+     * ONE collapsed list per section, not a citation line per pair. The
+     * fixture name serves one flow - a maintainer asking which fixture pins a
+     * broken example - and paying a line of GitHub URL per pair for it put
+     * 973 lines of filenames across the site, in the worst possible position:
+     * between the prose introducing an example and the example itself.
+     */
+    const fixtures = segments.map((segment) => segment.corpusName).filter(Boolean)
+    if (fixtures.length) {
+      lines.push(
+        '',
+        `::: details ${fixtures.length} conformance fixture${fixtures.length === 1 ? '' : 's'}`,
+        '',
+        ...fixtures.map((name) => `- [\`${name}\`](${corpusUrl(name)})`),
+        '',
+        ':::',
+      )
     }
     for (const segment of segments) {
-      /*
-       * A segment is the prose that introduces an example plus the example
-       * itself. The fixture link belongs ON the example, so it goes directly
-       * above the compare block - emitting it first puts a filename between
-       * the heading and the sentence that explains what follows.
-       */
       const body = segmentLines(segment)
       while (body[0] === '') body.shift()
-      const compareAt = body.findIndex((line) => /^:{3,}\s+compare(\s+\S.*)?$/.test(line.trim()))
-      const citation = `Corpus fixture: [\`${segment.corpusName}\`](${corpusUrl(segment.corpusName)})`
       /* A segment already carries its own leading blank, so only add a
        * separator when the previous line is not one. Doing this on the
        * separator alone keeps blank lines inside fences untouched - those are
        * fixture content. */
       if (lines.at(-1) !== '') lines.push('')
-      lines.push(...(compareAt === -1
-        ? [citation, ...body]
-        : [...body.slice(0, compareAt), citation, '', ...body.slice(compareAt)]))
+      lines.push(...body)
     }
   }
   if (page.source) {
