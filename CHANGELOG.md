@@ -98,6 +98,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   attributes come last. A structural CLASS still merges at the front of the
   class slot. This matches reference djot on every shape measured.
 
+- **A mandatory base class keeps the author's class slot in place**
+  (carve#1168, carve#1170). A base class merges INTO the class slot at the
+  position a class first appears in what the author wrote, rather than being
+  emitted ahead of everything. Writing it first silently reordered the rest:
+  `:widget[x]{#i .c k=v}` produced `class="ext-widget c" id="i" k="v"` and
+  `` $`E=mc^2`{#i .c k=v} `` produced `class="math inline c" id="i"`, both
+  moving an id the author had put first. With no class slot to merge into
+  there is no authored position to respect, so the base class leads.
+
+- **A table header cell states what it heads** (carve#1149). Every `<th>`
+  carries a `scope`: `col` in the run of header rows, `row` for a `|=` cell in
+  a body row. The language already distinguished those two positions, so this
+  states an association the table had rather than adding a concept - without
+  it assistive technology infers from position and infers wrong on any table
+  carrying both kinds. An authored `scope` REPLACES the default rather than
+  joining it.
+
+- **A caption on a block quote is an attribution** (carve#1161). Four of the
+  five captionable hosts become a numbered thing - figure, table, listing,
+  equation. The quote is the odd one out: `^ Socrates` under a `>` block is who
+  said it, not what it depicts, so it renders `<footer>` inside the
+  `<blockquote>` rather than wrapping the quote in `<figure>` /
+  `<figcaption>`. A captioned quote is therefore not numbered and not a figure
+  cross-reference target.
+
+- **The Markdown target escapes an angle bracket only where it opens markup**
+  (carve#1172). PART 11 §8 defines that target's escaping as exactly M1-M3 and
+  none of them mentions an entity, yet every engine rewrote `<` and `>` to
+  `&lt;` / `&gt;` in ordinary text - three engines agreeing on behavior the
+  document did not describe, which the corpus then scored as conformance
+  (carve#1148). Measured through a CommonMark reader, `a <b> c` round-trips
+  unchanged, so the escape is now applied where a bracket would open a tag and
+  nowhere else.
+
 - **Footnote labels are matched exactly, and never cross a line**
   (carve#1112). A label is a physical-line identifier: it may contain spaces
   and tabs but not a source newline, and matching does not normalize

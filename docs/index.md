@@ -29,11 +29,11 @@ features:
   - title: Interactive Online, Readable Offline
     details: "Built for the interactive web first — diagrams, math, charts and tabs hydrate into rich output online. With no JavaScript every block degrades to clean semantic HTML: a Mermaid fence still shows its source, <details> stays native, tables stay tables."
   - title: Captions Everywhere
-    details: One ^ prefix adds captions to images, blockquotes, and tables — emitting semantic figure / figcaption / caption HTML.
+    details: One ^ prefix captions images, tables, listings and equations — emitting semantic figure / figcaption / caption HTML. On a blockquote it is an attribution instead, and renders footer.
   - title: Friendly Tables
     details: "|= for headers, ^ for rowspan, < for colspan, + for multi-line cells. No separator row required."
   - title: Built-in Extensions
-    details: ":type[content]{attrs} for keyboard hints, semantic spans, video embeds. @mentions and #tags as you'd expect from social platforms."
+    details: ":type[content]{attrs} for video embeds and the rest of the handler family. Keyboard hints and the other semantic spans are core attributes instead — [Tab]{kbd}. @mentions and #tags as you'd expect from social platforms."
   - title: Safe With Untrusted Input
     details: "Always-on URL-scheme and attribute hardening, Trojan-Source stripping in presentation targets, and linear-time DoS limits neutralize the common Markdown attack classes with no separate sanitizer. Canonical Carve preserves source and warns through lint. Raw HTML passthrough is the one switch you own: on by default, off with a single flag or a safe mode. Carve never executes embedded code (unlike MDX)."
 ---

@@ -74,8 +74,11 @@ part of Carve syntax; the examples remain as a feature-level reference.
 ```
 
 Output varies by context:
-- Images/blockquotes → `<figure>` + `<figcaption>`
+- Images → `<figure>` + `<figcaption>`
 - Tables → `<caption>` element
+- Blockquotes → `<footer>` inside the `<blockquote>`: the line names the source
+  of the quotation rather than describing it, so it is an attribution and is not
+  numbered as a figure
 
 ### 2. Abbreviations
 
@@ -92,15 +95,21 @@ The HTML spec defines WWW standards.
 
 ### 3. Semantic Inline Elements
 
-Use the extension syntax for semantic elements:
+The attribute form names the element:
 
 ```carve
-Press :kbd[Ctrl+C] to copy.
-The term :dfn[markup] means...
-:abbr[HTML]{title="HyperText Markup Language"} is a standard.
+Press [Ctrl+C]{kbd} to copy.
+The term [markup]{dfn} means...
+[HTML]{abbr="HyperText Markup Language"} is a standard.
 ```
 
-This fits the `:type[content]{attrs}` pattern already in the spec.
+`abbr`, `time` and `kbd` are core; `dfn` (with `samp`, `var` and `cite`) needs
+the SemanticSpan extension and is an ordinary attribute until it is enabled.
+
+This shipped as an attribute rather than as the `:type[content]{attrs}` pattern
+this document originally proposed: a consumed name renames the span, so the id
+and classes an author wrote land on the produced element, and several names
+combine on one span where the `:type[…]` form cannot nest.
 
 ### 4. Table Enhancements (from proposals)
 
