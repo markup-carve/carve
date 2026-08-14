@@ -34,6 +34,7 @@ out: examples/core.md
   01-emphasis-5
   01-emphasis-12
   01-emphasis-13
+  01-emphasis-14
   01-emphasis-15
   02-headings
   02-headings-2
@@ -44,6 +45,7 @@ out: examples/core.md
   03-links-3
   03-links-5
   03-links-6
+  03-links-7
   03-links-9
   03-links-10
   images
@@ -53,8 +55,11 @@ out: examples/core.md
   05-lists-6
   05-lists-12
   05-lists-19
+  list-continuation-marker
+  list-item-attributes
   task-lists
   blockquote-with-attribution
+  block-quote-continuation-marker
   image-with-caption
   09-tables
   09-tables-2
@@ -62,6 +67,8 @@ out: examples/core.md
   09-tables-6
   09-tables-7
   09-tables-8
+  table-column-alignment
+  table-multi-line-cell-continuation
   tables-with-rowspan-and-colspan
   11-fenced-code
   11-fenced-code-3
@@ -71,6 +78,8 @@ out: examples/core.md
   11-fenced-code-7
   11-fenced-code-8
   11-fenced-code-9
+  11-fenced-code-11
+  11-fenced-code-12
   11-fenced-code-13
   11-fenced-code-14
   11-fenced-code-15
@@ -97,9 +106,11 @@ out: examples/core.md
   22-footnotes
   22-footnotes-2
   22-footnotes-4
+  22-footnotes-5
   inline-footnotes
   24-generic-divs
   24-generic-divs-5
+  nested-containers
   25-definition-lists
   25-definition-lists-2
   25-definition-lists-3
@@ -123,6 +134,7 @@ out: examples/core.md
   36-autolinks
   36-autolinks-4
   36-autolinks-5
+  36-autolinks-6
   escapes
   39-inline-span
   40-superscript-and-subscript
@@ -177,7 +189,6 @@ source: examples-tier3.md
 > Alignment, spans, multi-line cells, ragged rows and the pipe rules that decide whether a table exists at all.
 out: examples/edge-cases/tables.md
 index: examples/edge-cases/index.md
-  table-column-alignment
   table-per-cell-alignment-override
   headerless-table-alignment
   table-without-alignment
@@ -186,7 +197,6 @@ index: examples/edge-cases/index.md
   table-cell-escaped-pipe
   table-cell-pipe-inside-code-span
   table-stacked-rowspan
-  table-multi-line-cell-continuation
   table-rowspan-with-multi-line-content
   superscript-in-a-table-cell
   table-span-marker-in-first-column
@@ -228,7 +238,6 @@ index: examples/edge-cases/index.md
   list-nesting-and-looseness
   list-lazy-continuation
   compact-list-blocks
-  list-continuation-marker
   marker-line-nested-lists
   fence-opener-with-a-nested-list-body-inside-a-list-item
   sublist-marker-interrupts-a-continuation-paragraph
@@ -259,13 +268,11 @@ out: examples/edge-cases/containers.md
 index: examples/edge-cases/index.md
   fenced-code-shorter-inner-fence
   blockquote-caption-after-a-blank-line
-  nested-containers
   opaque-spans-inside-a-container
   blockquote-lazy-continuation
   fenced-code-language-with-punctuation
   blockquote-lazy-continuation-stops-at-a-fenced-block
   nested-comment-fences
-  block-quote-continuation-marker
   indented-colon-fence-blocks-stay-literal
   below-content-column-div-body-in-a-list-item-stays-literal
   comment-fence-with-trailing-text
@@ -293,8 +300,6 @@ index: examples/edge-cases/index.md
   a-fence-keeps-the-blank-line-at-the-end-of-its-content
   a-captioned-quote-holds-more-than-one-block
   11-fenced-code-10
-  11-fenced-code-11
-  11-fenced-code-12
   42-admonitions-5
   42-admonitions-8
   26-comments-3
@@ -357,7 +362,6 @@ index: examples/edge-cases/index.md
   01-emphasis-9
   01-emphasis-10
   01-emphasis-11
-  01-emphasis-14
   45-inline-extensions-4
   45-inline-extensions-5
   45-inline-extensions-6
@@ -409,7 +413,6 @@ index: examples/edge-cases/index.md
   unresolved-reference-link
   bare-urls-stay-literal
   03-links-4
-  03-links-7
   03-links-8
   03-links-11
   03-links-12
@@ -420,7 +423,6 @@ index: examples/edge-cases/index.md
   16-reference-link-7
   16-reference-link-8
   36-autolinks-3
-  36-autolinks-6
 
 [edge-footnotes] Footnotes
 > Bodies as blocks, the body content column, collection inside containers and placement of the rendered list.
@@ -451,7 +453,6 @@ index: examples/edge-cases/index.md
   a-note-s-content-recognizes-no-note
   a-footnote-in-link-text-nests-the-anchors
   22-footnotes-3
-  22-footnotes-5
   22-footnotes-6
 
 [edge-definitions] Definition lists and abbreviations
@@ -487,7 +488,6 @@ index: examples/edge-cases/index.md
   attribute-edge-cases
   trailing-attribute-block-edge-cases
   block-attribute-lines
-  list-item-attributes
   boolean-attributes
   unquoted-attribute-values-may-contain-dots-and-colons
   adjacent-attribute-blocks-on-one-line-merge
