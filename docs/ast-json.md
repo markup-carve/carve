@@ -54,6 +54,17 @@ of source serialization: a Carve 0.1 writer omits the field, and conversion
 APIs with diagnostics should report that loss. It is also independent
 of the proposed `^^` author syntax.
 
+A `figure` may target a `table` (§17). That is a different document from a
+table carrying its own `caption`: the wrapper renders `<figure>` and
+`<figcaption>` around the table, while `table.caption` renders `<caption>`
+inside it. Carve 0.1 source spells only the second, so the wrapper reaches a
+tree through a format bridge - an HTML importer reading
+`<figure><table>…<figcaption>` - and a canonical Carve writer loses it, writing
+the table and its caption line. Conversion APIs with diagnostics should report
+that loss. Every other captionable host - an image, a quote, a code block, a
+display-math paragraph - becomes a `figure` from source, so its wrapper is
+written back exactly.
+
 A `table` may likewise carry an optional `rowGroups` object (§15), which
 partitions its `rows` into a head, any number of body groups and a foot:
 
