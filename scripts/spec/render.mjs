@@ -283,16 +283,47 @@ const sem = g.createSemantics().addOperation('h', {
     return `xref:${id.sourceString}`
   },
   footnoteRef(_o, label, _c, attrs) {
+    if (noFootnotes) {
+      // SS16: recognition is DISABLED inside a note, EITHER DIRECTION - so
+      // `[^1]` there is not a reference. What is left is an ordinary bracketed
+      // run over the content `^1`, which is literal with no tail and a
+      // semantic span with an attribute one. Rebuilt here rather than
+      // re-parsed: the source spells `[^`, so re-parsing would match this rule
+      // again and never terminate.
+      const literal = renderInline('^' + label.sourceString, '[')
+      if (attrs.numChildren === 0) return `[${literal}]`
+      return renderSemanticSpan(literal, attrsOf(attrs))
+    }
     const a = renderAttrs(attrsOf(attrs))
     return `fn:${label.sourceString}\u0002${a}`
   },
   inlineNote(_o, content, _c, attrs) {
+    if (noFootnotes) {
+      // Same clause, the other direction: `^[` inside a note opens nothing, so
+      // the `^` is text and the rest is an ordinary bracketed run. Dropping the
+      // `^` from the source is what makes the re-parse terminate.
+      return '^' + renderInline(this.sourceString.slice(1), '^')
+    }
     // anonymous note: content renders now; numbering happens in PART 9R.
-    // Footnote/crossref recognition is DISABLED inside a note (SS16); a
-    // nested sentinel would also break the sentinel framing, so refuse.
-    const inner = renderInline(content.sourceString, '[')
-    if (inner.includes('\uE000')) throw new Refuse('nested construct in an inline note')
-    if (content.sourceString.trim() === '') throw new Refuse('empty inline note')
+    // SS16 DISABLES footnote recognition inside the content, in both
+    // directions, so a nested `^[...]` or `[^ref]` renders as its own literal
+    // spelling rather than a note - the flag carries that down the whole
+    // subtree, since re-enabling it one level in would make `^[a ^[b ^[c] d] e]`
+    // find a note at depth two (markup-carve/carve#1188).
+    const saved = noFootnotes
+    noFootnotes = true
+    let inner
+    try {
+      inner = renderInline(content.sourceString, '[')
+    } finally {
+      noFootnotes = saved
+    }
+    // What remains is not a SS16 question but a limit of this pipeline: a
+    // crossref, a reference link or a reference image renders as a
+    // `\uE000...\uE001` sentinel, and nesting one inside the note's own
+    // sentinel breaks the framing the PART 9R passes read. Refuse rather than
+    // emit a mis-framed note.
+    if (inner.includes('\uE000')) throw new Refuse('sentinel-producing construct in an inline note')
     const a = renderAttrs(attrsOf(attrs))
     return `\uE000note:${inner}\u0002${a}\uE001`
   },
@@ -500,14 +531,27 @@ const sem = g.createSemantics().addOperation('h', {
 sem.addOperation('applyTail(text, source)', {
   linkTail(_o, dest, title, _c, attrs) {
     const { text } = this.args
-    if (text.includes('\uE000fn:')) throw new Refuse('footnote inside link text')
+    // A footnote in link text is a §16 LIMITATION, not an unrenderable
+    // document: the clause states the outcome ("nests an <a> in an <a>") and
+    // advises against writing it. The noteref sentinel travels inside the link
+    // text and PART 9R resolves it in place, which is what the reference
+    // engines do - and what this pipeline already did for the INLINE note form,
+    // whose sentinel this check never named (markup-carve/carve#1188).
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
     const a = renderAttrs(attrsOf(attrs))
     return `<a href="${escapeAttr(checkUrl(destValue(dest)))}"${t}${a}>${text}</a>`
   },
   refTail(_o, label, _c, attrs) {
     const { text, source } = this.args
-    if (text.includes('\uE000fn:')) throw new Refuse('footnote inside link text')
+    // NOT the §16 limitation linkTail renders - a limit of this pipeline. A
+    // reference tail carries its text through a JSON payload inside its own
+    // `\uE000ref:{…}\uE001` frame, and PART 9R resolves footnotes BEFORE
+    // references (a note body may itself add ref sentinels). A noteref
+    // substituted into the payload puts raw `"` inside the JSON string, the
+    // parse fails, and the reference degrades to literal source. Measured, not
+    // assumed: `a [t[^1]][r] b` rendered `<a href="/u">tfn:1</a>` with the
+    // check removed. Refuse rather than emit that (markup-carve/carve#1188).
+    if (text.includes('\uE000fn:')) throw new Refuse('noteref inside a reference link payload')
     const lbl = label.numChildren ? label.child(0).sourceString : null
     // The RAW list travels, not the rendered string: a definition may carry
     // attributes too, and PART 9R R1 merges the two per SS15 A3 - which needs
@@ -974,6 +1018,22 @@ let quotePrevCtx = '' // preceding character for recursive inline parses
  * renders its own copy of the heading (markup-carve/carve#1011).
  */
 let omitSymbols = false
+
+/*
+ * FOOTNOTE RECOGNITION IS OFF INSIDE A NOTE (grammar.ebnf §16).
+ *
+ * "Content is INLINE-only, parsed recursively with footnote recognition
+ * DISABLED inside it (no `^[…]` or `[^ref]` nested in a note, either
+ * direction)." Disabled recognition makes the inner spelling ordinary text -
+ * `^` plus a bracketed run, or a bracketed run over `^label` - not an
+ * unrenderable document, which is how the executable spec used to read it
+ * (markup-carve/carve#1188).
+ *
+ * A flag rather than a second grammar: the two rules that must stop matching
+ * are reached from every inline position, and the state has to survive the
+ * recursive renderInline calls the note's own content makes, at any depth.
+ */
+let noFootnotes = false
 
 export function renderInlineWithoutSymbols(text, prevCtx = '') {
   omitSymbols = true

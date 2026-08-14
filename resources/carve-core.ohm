@@ -253,7 +253,13 @@ CarveCore {
   // A physical-line identifier: spaces and tabs are data, newlines are not.
   // This mirrors the one-line definition marker and grammar.ebnf §16.
   fnLabel    = (~"]" ~newline any)+
-  inlineNote = "^[" brContent* "]" attrs?
+  // An EMPTY or WHITESPACE-ONLY note is literal (grammar.ebnf §16: "Empty or
+  // whitespace-only (`^[]`, `^[ ]`) is literal"), so `^[` does not open one -
+  // the `^` falls through to text and the `[...]` is an ordinary bracketed run,
+  // which is why `^[]{.c}` renders `^<span class="c"></span>` rather than a
+  // note. Stated here rather than in the semantics: the rendering of the
+  // literal fallback is the bracketed rule's, not this one's.
+  inlineNote = "^[" ~((" " | "\t")* "]") brContent* "]" attrs?
 
   // --- Forced intraword spans {X...X} (PART 9 SS22) and editorial markup.
   // A same-type delimiter inside a forced span is literal until the `X}`

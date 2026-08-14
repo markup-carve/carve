@@ -91,7 +91,11 @@ under the same semantic-span rule,
 `302-a-math-span-s-base-class-keeps-the-class-slot-in-place`,
 `304-an-angle-bracket-is-escaped-only-where-it-opens-markup`,
 `305-an-abbreviation-expands-inside-an-inline-container`,
-`306-a-captioned-quote-holds-more-than-one-block`.
+`306-a-captioned-quote-holds-more-than-one-block`,
+`307-an-empty-inline-note-is-literal`,
+`308-a-multi-letter-ordered-marker-opens-no-list`,
+`309-a-note-s-content-recognizes-no-note`,
+`310-a-footnote-in-link-text-nests-the-anchors`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
