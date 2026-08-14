@@ -81,7 +81,11 @@ const TRIGGERS = {
     options: { platforms: ['github'] },
   },
   'footnote-labels-differ-only-in-whitespace': 'see [^a b] and [^a  b]\n\n[^a b]: one\n\n[^a  b]: two\n',
-  'semantic-attribute-value-ignored': '[x]{cite="https://example.org/dune"}\n',
+  // `kbd`, not `cite`: PART 9 §10 moved `samp`, `var`, `cite` and `dfn` into the
+  // SemanticSpan extension, so in a core lint they are ordinary attributes and
+  // provoke nothing. `kbd` is one of the three names core still reserves, which
+  // is the case the page's row names first.
+  'semantic-attribute-value-ignored': '[x]{kbd="https://example.org/dune"}\n',
   'semantic-attribute-outside-span': '`c`{kbd}\n',
 }
 

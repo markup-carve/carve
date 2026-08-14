@@ -36,12 +36,6 @@ const page = readFileSync(resolve(root, 'docs/extensions.md'), 'utf8')
  */
 const NOT_A_REFERENCE_EXPORT = {
   Bibliography: 'option on Citations',
-  // PART 9 §10 specifies it before any engine ships it: the four names it
-  // carries were core until this change, so the contract exists and the
-  // registration does not yet. The entry goes when carve-js exports
-  // `semanticSpan` and the pin moves - the same window the optional corpus
-  // declares in tests/optional-corpus.test.mjs.
-  SemanticSpan: 'specified ahead of the engines; carve-js does not export it yet',
 }
 
 /** Prose words the row text carries that are not extension names. */
