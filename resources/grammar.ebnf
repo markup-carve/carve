@@ -6835,6 +6835,13 @@ EOF = (* end of file *) ;
       silently discarded. Three authored tokens were discarded anyway, by all
       three engines, in the same way §10d's attribution was:
 
+      WHAT THIS CLAUSE DECIDES is where those three tokens go on the targets
+      named below, and nothing else. It neither restates the floor nor
+      narrows it: a loss this clause does not name is still a loss, and the
+      floor still forbids it. Reading a construct/target pair as CONFORMING
+      because no rendering for it is written here inverts the clause -- the
+      pairs it leaves open are open, not allowed.
+
           |= H |             ->  markdown  | H |
           | a |                            | --- |
           ^ Table caption                  | a |
@@ -6913,8 +6920,11 @@ EOF = (* end of file *) ;
       `<table>` a pipe table produces is built by the READER, so there is
       nowhere to put one.
 
-      TWO ADJACENT LOSSES THIS CLAUSE DOES NOT REACH, both measured on the
-      same build that produced the rows above:
+      TWO MORE LOSSES OF THE SAME TOKENS ARE RECORDED HERE AND LEFT OPEN,
+      both measured on the same build that produced the rows above. Each
+      breaks the floor exactly as the three rows above did; what is missing
+      is a decided rendering, not a rule. Neither is settled by this clause
+      and neither is thereby permitted:
 
         - A fence title on a fence with NO LANGUAGE is dropped by the
           MARKDOWN writer too: ``` "src/app.js" emits a bare ``` and the
@@ -6924,8 +6934,9 @@ EOF = (* end of file *) ;
         - A code-group label never reaches the HTML target at all:
           ``` js [Node] gives `<pre><code class="language-js">`. Core
           assigns the label no meaning and a group extension consumes it, so
-          on HTML with no such extension the token has nowhere to go. That
-          is a question about the HTML target, which is PART 10's business.
+          on HTML with no such extension the token has nowhere to go. Where
+          it should go is a question about the HTML target, which is PART
+          10's business rather than this section's.
 
       WHY THIS NEEDED SAYING. All three engines agreed on dropping all three
       tokens, and the corpus pinned HTML for these constructs and nothing
