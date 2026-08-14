@@ -16689,3 +16689,261 @@ not change that either way.
 ```
 
 :::
+
+## An empty inline note is literal
+
+PART 9 §16 says it in as many words: "Empty or whitespace-only (`^[]`, `^[ ]`)
+is literal; an unclosed `^[…` is literal." So `^[` does not open a note there.
+
+What is left is ordinary text plus an ordinary bracketed run, and that matters
+for the third case below: a bare `[]` is literal, but `[]{.c}` carries an
+attribute tail and is a span (PART 9 §14), so the `^` is the only part of
+`^[]{.c}` that stays as written.
+
+This needed pinning because the executable spec refused all three, and no corpus
+document held an empty note - so the refusal was unreachable, `npm run
+core:check` reported every input conformant either way, and the gap was guarded
+by the absence of a fixture rather than by a decision (markup-carve/carve#1188,
+the markup-carve/carve#755 class).
+
+::: compare
+
+```carve
+x ^[]
+```
+
+```html
+<p>x ^[]</p>
+```
+
+:::
+
+Whitespace-only is the same case: a space between the brackets is not content.
+
+::: compare
+
+```carve
+x ^[ ]
+```
+
+```html
+<p>x ^[ ]</p>
+```
+
+:::
+
+With an attribute block the brackets are a span, and only the `^` is literal.
+
+::: compare
+
+```carve
+x ^[]{.c}
+```
+
+```html
+<p>x ^<span class="c"></span></p>
+```
+
+:::
+
+## A multi-letter ordered marker opens no list
+
+PART 2 spells the marker as `ordered_marker = (digit+ | letter | roman_numeral),
+('.' | ')')`. `abc` is not a run of digits, not the single `letter` the
+production admits, and not a roman numeral, so `abc. item` matches nothing and
+the line is an ordinary paragraph.
+
+`ABC)` is the same reading in the other case and with the other delimiter. Note
+that a SINGLE letter still is a marker - it is the second letter that ends the
+match - and that a roman run of any length still is one, so `iv. item` is a
+list.
+
+The executable spec refused both instead, and no corpus document began a line
+with a multi-letter word and a dot (markup-carve/carve#1188).
+
+::: compare
+
+```carve
+abc. item
+```
+
+```html
+<p>abc. item</p>
+```
+
+:::
+
+::: compare
+
+```carve
+ABC) item
+```
+
+```html
+<p>ABC) item</p>
+```
+
+:::
+
+## A note's content recognizes no note
+
+PART 9 §16 on the inline form: "Content is INLINE-only, parsed recursively with
+footnote recognition DISABLED inside it (no `^[…]` or `[^ref]` nested in a note,
+either direction)."
+
+Disabled recognition makes the inner spelling ORDINARY TEXT rather than an
+unrenderable document. Inside a note `^[` opens nothing, so the `^` is text and
+`[b]` is a bracketed run; and `[^1]` is not a reference, so it is a bracketed run
+over the content `^1` - which is why the second case renders `[^1]` even though
+the document defines that label. The definition is then referenced by nothing and
+renders nothing of its own.
+
+Recognition stays off for the WHOLE content, not one level of it: the third case
+holds a note spelling two deep and both stay literal.
+
+The executable spec refused all three, and no corpus document nested a note in a
+note (markup-carve/carve#1188).
+
+::: compare
+
+```carve
+x ^[a ^[b] c]
+```
+
+```html
+<p>x <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a ^[b] c<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+x ^[a [^1] c]
+
+[^1]: n
+```
+
+```html
+<p>x <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a [^1] c<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+x ^[a ^[b ^[c] d] e]
+```
+
+```html
+<p>x <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a ^[b ^[c] d] e<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+An attribute block on the inner spelling attaches to the bracketed run it turns
+out to be, on either side of the pair.
+
+::: compare
+
+```carve
+x ^[a [^1]{.k} c]
+
+[^1]: n
+```
+
+```html
+<p>x <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a <span class="k">^1</span> c<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## A footnote in link text nests the anchors
+
+PART 9 §16 records this as a LIMITATION: a footnote "inside link text
+(`[t[^1]](u)`) or inside a heading later cloned by a `</#id>` crossref nests an
+`<a>` in an `<a>`; avoid footnotes in those positions."
+
+That is advice about what an author should expect, and it states the outcome. It
+does not put the document outside the language: the noteref lands where it was
+written, inside the link text, and the note takes its number from the one
+document-order sequence like any other.
+
+Both note forms reach it the same way, which is what makes the pairing worth
+pinning - the executable spec rendered the inline form and refused the reference
+one (markup-carve/carve#1188).
+
+::: compare
+
+```carve
+a [t[^1]](/u) b
+
+[^1]: n
+```
+
+```html
+<p>a <a href="/u">t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+a [t^[n]](/u) b
+```
+
+```html
+<p>a <a href="/u">t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::

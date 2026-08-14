@@ -1,0 +1,13 @@
+A multi-letter ordered marker opens no list
+
+```
+abc. item
+.
+<p>abc. item</p>
+```
+
+```
+ABC) item
+.
+<p>ABC) item</p>
+```

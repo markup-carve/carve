@@ -500,9 +500,11 @@ function classifyOrdered(token) {
   if (/^[a-z]$/i.test(token) && (lower || upper)) {
     out.push({ dialect: lower ? 'alpha' : 'Alpha', value: alphaToInt(token) })
   }
-  if (token.length > 1 && /^[a-z]+$/i.test(token) && !ROMAN_CHARS.test(token.toLowerCase())) {
-    throw new Refuse(`multi-letter non-roman ordered marker: ${token}`)
-  }
+  // No dialect claims the token, so it is NOT an ordered marker: PART 2's
+  // `ordered_marker` admits `digit+`, a single `letter` or a `roman_numeral`
+  // and nothing else, and `abc.` is none of the three. The caller reads the
+  // empty list as "not a marker" and the line stays a paragraph, which is what
+  // the production already says (markup-carve/carve#1188).
   return out
 }
 
