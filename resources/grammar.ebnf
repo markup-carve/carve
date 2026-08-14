@@ -8257,7 +8257,10 @@ EOF = (* end of file *) ;
 
    15. A TABLE MAY CARRY AN OPTIONAL ROW GROUPING -- NORMATIVE. A `table` MAY
       carry `rowGroups`, an object which PARTITIONS the existing `rows` array
-      into a head, one or more bodies and a foot. It is the representation of a
+      into a head, any number of body groups and a foot. `bodies` MAY be empty:
+      a table whose rows are all head and foot is a partition like any other,
+      and refusing it would make a head-only table the one shape the field
+      cannot describe. It is the representation of a
       table model richer than the one Carve source can spell: several body
       groups, a group's own intermediate header rows, a foot, and a count of
       leading row-header columns per group.

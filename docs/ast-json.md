@@ -55,7 +55,7 @@ APIs with diagnostics should report that loss. It is also independent
 of the proposed `^^` author syntax.
 
 A `table` may likewise carry an optional `rowGroups` object (§15), which
-partitions its `rows` into a head, one or more bodies and a foot:
+partitions its `rows` into a head, any number of body groups and a foot:
 
 ```json
 {

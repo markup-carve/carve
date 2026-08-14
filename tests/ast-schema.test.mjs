@@ -114,6 +114,9 @@ test('a table accepts an optional row grouping, and only a complete one', () => 
     true,
     firstErrors(),
   )
+  // An EMPTY `bodies` is a partition like any other, and deliberately so: a
+  // head-only table would otherwise be the one shape the field cannot describe.
+  assert.equal(validate(table({ headRows: 1, bodies: [], footRows: 0 })), true, firstErrors())
 })
 
 test('§15 does NOT make the schema the check that the counts sum', () => {
