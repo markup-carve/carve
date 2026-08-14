@@ -255,6 +255,11 @@ const SCHEMA_ROLLOUT_PENDING = new Map([
   ['07-blockquote-with-attribution.crv', 'as 05-lists-20.crv'],
   ['55-blockquote-caption-after-a-blank-line.crv', 'as 05-lists-20.crv'],
   ['282-two-blank-lines-detach-a-caption-5.crv', 'as 05-lists-20.crv'],
+  ['306-a-captioned-quote-holds-more-than-one-block.crv', 'as 05-lists-20.crv'],
+  ['306-a-captioned-quote-holds-more-than-one-block-2.crv', 'as 05-lists-20.crv'],
+  ['306-a-captioned-quote-holds-more-than-one-block-3.crv', 'as 05-lists-20.crv'],
+  ['306-a-captioned-quote-holds-more-than-one-block-4.crv', 'as 05-lists-20.crv'],
+  ['306-a-captioned-quote-holds-more-than-one-block-5.crv', 'as 05-lists-20.crv'],
 ])
 
 test('every corpus document serializes to a schema-valid AST', () => {

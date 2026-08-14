@@ -86,6 +86,11 @@
 07-blockquote-with-attribution  A captioned quote renders `<blockquote><footer>`; the pin renders `<figure><figcaption>`.
 55-blockquote-caption-after-a-blank-line  A captioned quote renders `<blockquote><footer>`; the pin renders `<figure><figcaption>`.
 282-two-blank-lines-detach-a-caption-5  A captioned quote renders `<blockquote><footer>`; the pin renders `<figure><figcaption>`.
+306-a-captioned-quote-holds-more-than-one-block  A captioned quote renders `<blockquote><footer>`; the pin renders `<figure><figcaption>`.
+306-a-captioned-quote-holds-more-than-one-block-2  A captioned quote renders `<blockquote><footer>`; the pin renders `<figure><figcaption>`.
+306-a-captioned-quote-holds-more-than-one-block-3  A captioned quote renders `<blockquote><footer>`; the pin renders `<figure><figcaption>`.
+306-a-captioned-quote-holds-more-than-one-block-4  A captioned quote renders `<blockquote><footer>`; the pin renders `<figure><figcaption>`.
+306-a-captioned-quote-holds-more-than-one-block-5  A captioned quote renders `<blockquote><footer>`; the pin renders `<figure><figcaption>`.
 
 # PART 9R R3: a term expands in rendered text at word boundaries, whatever
 # container the text sits in. The pinned carve-js build drops the expansion
