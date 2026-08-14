@@ -41,6 +41,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   canonical writer MUST omit it, and no processor may derive one by truncating
   the full caption.
 
+- **PART 12 §15: a table may carry a row grouping** (carve#1117). A `table` MAY
+  carry `rowGroups`, an object partitioning its `rows` into a head, one or more
+  bodies and a foot, with a per-group count of intermediate header rows and of
+  leading row-header columns. It holds COUNTS, never rows: they consume `rows`
+  in order and must account for every row exactly once, so a grouping can never
+  contradict the table's content. Absent means the implicit structure renderers
+  already derive, so no existing tree changes shape and a parser never
+  synthesizes one - Carve 0.1 source has no spelling for it, and core pipe
+  tables do not grow a second separator language. HTML, plain and ANSI ignore
+  it and keep flattening the table; the canonical writer MUST omit it.
+
 ### Changed
 
 - **Semantic spans split by tier** (carve#1146). Core reserves three span

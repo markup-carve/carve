@@ -54,6 +54,32 @@ of source serialization: a Carve 0.1 writer omits the field, and conversion
 APIs with diagnostics should report that loss. It is also independent
 of the proposed `^^` author syntax.
 
+A `table` may likewise carry an optional `rowGroups` object (§15), which
+partitions its `rows` into a head, one or more bodies and a foot:
+
+```json
+{
+  "type": "table",
+  "rows": ["..."],
+  "rowGroups": {
+    "headRows": 1,
+    "bodies": [{ "headRows": 1, "bodyRows": 3, "rowHeadColumns": 1 }],
+    "footRows": 1
+  }
+}
+```
+
+It holds **counts, never rows**: the counts consume `rows` in order and have to
+account for every row exactly once, so the grouping can never contradict the
+table's content. `rows` stays the one sequence every consumer reads. Absent
+means the implicit structure renderers already derive - a leading run of header
+rows as the head, everything after it as one body, no foot - so a parser never
+synthesizes the field and no existing tree changes shape. Like `shortCaption`,
+it exists so a richer table model (several `tbody` groups, a group's own
+intermediate header rows, a foot, a count of leading row-header columns)
+survives a format bridge; HTML, plain and ANSI output ignore it and keep
+flattening the table on the way out.
+
 **The root carries exactly three fields** - `type`, `children`, `srcByteLength`
 (PART 12 §7). Frontmatter and definitions are **block nodes in the tree**, not
 root fields, because a root field cannot carry a position and both are source an

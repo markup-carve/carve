@@ -64,6 +64,80 @@ test('figures and tables accept an optional structural short caption', () => {
   assert.equal(validate({ type: 'document', children: [{ ...figure, shortCaption: 'label' }], srcByteLength: 1 }), false)
 })
 
+test('a table accepts an optional row grouping, and only a complete one', () => {
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  const table = (rowGroups) => ({
+    type: 'document',
+    srcByteLength: 1,
+    children: [{ type: 'table', rows: [], rowGroups, pos }],
+  })
+  const grouping = {
+    headRows: 1,
+    bodies: [
+      { headRows: 1, bodyRows: 3, rowHeadColumns: 1 },
+      { headRows: 0, bodyRows: 2 },
+    ],
+    footRows: 1,
+  }
+  assert.equal(validate(table(grouping)), true, firstErrors())
+  // A table with no grouping at all is the ordinary case and stays valid: the
+  // field is optional, which is what lets an engine that has never heard of it
+  // keep producing valid trees.
+  assert.equal(
+    validate({ type: 'document', srcByteLength: 1, children: [{ type: 'table', rows: [], pos }] }),
+    true,
+    firstErrors(),
+  )
+  // PART 12 §15: the three parts are required TOGETHER. A partition missing one
+  // of them would have to be read as a zero, and a zero head is a claim.
+  for (const missing of ['headRows', 'bodies', 'footRows']) {
+    const partial = { ...grouping }
+    delete partial[missing]
+    assert.equal(validate(table(partial)), false, `a grouping without ${missing} must be refused`)
+  }
+  assert.equal(validate(table({ ...grouping, footRows: -1 })), false, 'a negative row count')
+  assert.equal(validate(table({ ...grouping, headRows: 1.5 })), false, 'a fractional row count')
+  assert.equal(validate(table({ ...grouping, rows: [] })), false, 'an unknown key in the grouping')
+  assert.equal(
+    validate(table({ ...grouping, bodies: [{ bodyRows: 2 }] })),
+    false,
+    'a body group without its intermediate-header count',
+  )
+  assert.equal(
+    validate(table({ ...grouping, bodies: [{ headRows: 0, bodyRows: 2, span: 1 }] })),
+    false,
+    'an unknown key in a body group',
+  )
+  // `rowHeadColumns` is the one part that IS optional - it partitions nothing.
+  assert.equal(
+    validate(table({ headRows: 0, bodies: [{ headRows: 0, bodyRows: 1 }], footRows: 0 })),
+    true,
+    firstErrors(),
+  )
+})
+
+test('§15 does NOT make the schema the check that the counts sum', () => {
+  // The clause says the counts MUST account for every row exactly once. JSON
+  // Schema cannot express a sum across sibling fields, so validation is not
+  // that check and must not be mistaken for it - same reason the srcByteLength
+  // row below is pinned. A consumer enforces §15 itself.
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  const row = { type: 'table_row', cells: [{ type: 'table_cell', header: false, children: [] }] }
+  const doc = {
+    type: 'document',
+    srcByteLength: 1,
+    children: [
+      {
+        type: 'table',
+        rows: [row],
+        rowGroups: { headRows: 9, bodies: [{ headRows: 0, bodyRows: 9 }], footRows: 9 },
+        pos,
+      },
+    ],
+  }
+  assert.equal(validate(doc), true, `the schema is not the sum check: ${firstErrors()}`)
+})
+
 test('shared source-layout fixtures validate', () => {
   const layoutSchema = JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-schema.json'), 'utf8'))
   const validateLayout = new Ajv2020({ strict: true }).compile(layoutSchema)
