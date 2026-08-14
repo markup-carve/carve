@@ -11,7 +11,7 @@
  * disagreement before (carve#646).
  */
 
-import { Refuse, TIER1 } from './layout.mjs'
+import { Refuse, TIER1, bracketRunEnd } from './layout.mjs'
 import { renderInline, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, NOTE_FRAME } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
@@ -361,14 +361,20 @@ function renderBlock(b, depth, ctx) {
 function renderStandaloneImage(line, attrs, ctx) {
   // Resolve reference images before paragraph serialization, so PART 10's
   // standalone-image shape is a block decision rather than a final HTML rewrite.
-  const ref = /^!\[([^\]]*)\]\[([^\]]*)\](\{[^}]*\})?$/.exec(line)
+  // The alt run is scanned, not matched: the close is balanced and a
+  // `[^\]]*` spelling of it stops at the first `]` at any depth, so
+  // `![t[z]][r]` on a line of its own missed this branch and fell through to
+  // the inline pass (carve#1197). The LABEL half stays a pattern - a
+  // `reference_label` really does stop at the first `]`.
+  const altEnd = line.startsWith('![') ? bracketRunEnd(line, 1) : -1
+  const ref = altEnd === -1 ? null : /^\[([^\]]*)\](\{[^}]*\})?$/.exec(line.slice(altEnd))
   if (ref) {
-    const attrSrc = ref[3] ?? ''
+    const attrSrc = ref[2] ?? ''
     const attrList = attrSrc === '' ? [] : parseAttrList(attrSrc)
     if (attrList === null) return null
     const image = resolveImageRef({
-      alt: ref[1],
-      label: ref[2] === '' ? null : ref[2],
+      alt: line.slice(2, altEnd - 1),
+      label: ref[1] === '' ? null : ref[1],
       attrList,
       attrSrc,
     }, ctx, '')

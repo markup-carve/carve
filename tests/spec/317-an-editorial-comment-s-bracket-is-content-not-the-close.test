@@ -1,0 +1,33 @@
+An editorial comment's bracket is content, not the close
+
+```
+a [t{# n #}z](/u) b
+.
+<p>a <a href="/u">t<span class="critic-comment"> n </span>z</a> b</p>
+```
+
+```
+a [t{# ] #}z]{.c} b
+.
+<p>a <span class="c">t<span class="critic-comment"> ] </span>z</span> b</p>
+```
+
+```
+a ^[t{# ] #}z] b
+.
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>t<span class="critic-comment"> ] </span>z<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+a ![t{# ] #}z](/i.png) b
+.
+<p>a <img src="/i.png" alt="t{# ] #}z"> b</p>
+```

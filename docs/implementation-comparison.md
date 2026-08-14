@@ -104,7 +104,9 @@ under the same semantic-span rule,
 `312-a-note-body-s-own-references-resolve`,
 `313-a-reference-link-s-text-survives-its-own-frame`,
 `314-a-footnote-in-an-unresolved-reference-is-not-a-reference`,
-`315-an-inline-note-s-content-resolves-after-the-note`.
+`315-an-inline-note-s-content-resolves-after-the-note`,
+`316-an-image-s-alt-text-closes-where-a-link-s-text-closes`,
+`317-an-editorial-comment-s-bracket-is-content-not-the-close`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the

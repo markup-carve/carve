@@ -55,7 +55,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToCarve, carveToHtml } from '@markup-carve/carve'
-import { loadDeclaredFmtDrift } from './fmt-drift.mjs'
+import { loadDeclaredFmtDrift, loadWriterOnlyDrift } from './fmt-drift.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus')
@@ -86,17 +86,54 @@ test('formatting never changes what a corpus document says', () => {
   )
 })
 
+// The declared-drift excuse applies here for the same reason it applies to the
+// sweep above: a writer that changes what a document SAYS has no reason to
+// settle on the next pass either, so the two failures are one defect reported
+// twice. This sweep was the only one of the three that did not consult the
+// files, which nothing noticed while `engine-fmt-drift.txt` was empty.
 test('formatting a corpus document settles on the first pass', () => {
   const unsettled = []
   for (const { slug, source } of documents) {
     const once = carveToCarve(source)
     if (carveToCarve(once) !== once) unsettled.push(slug)
   }
+  const undeclared = unsettled.filter((slug) => !declaredDrift.has(slug))
   assert.deepEqual(
-    unsettled,
+    undeclared,
     [],
     `formatting these twice differs from formatting once, so every run produces a diff:\n  ` +
-      unsettled.join('\n  '),
+      undeclared.join('\n  '),
+  )
+})
+
+// THE RATCHET ON THE EXCUSE ITSELF. Every other declared-drift file in this
+// repo is checked in both directions; this one was checked in neither, because
+// a slug in it can only ever turn a failure into a pass. So a line that the
+// next pin bump makes untrue would keep excusing a document that no longer
+// needs excusing, and the first person to notice would be whoever eventually
+// removed it by hand.
+test('every writer-drift line still names a document the pin writes wrongly', () => {
+  const declared = loadWriterOnlyDrift(here)
+  const byslug = new Map(documents.map((d) => [d.slug, d.source]))
+  const stale = []
+  for (const slug of declared) {
+    const source = byslug.get(slug)
+    // A slug naming no corpus document is stale in the strongest sense: the
+    // fixture was renamed or removed and the line outlived it.
+    if (source === undefined) {
+      stale.push(`${slug} (no such corpus document)`)
+      continue
+    }
+    const once = carveToCarve(source)
+    const changesMeaning = carveToHtml(once).trim() !== carveToHtml(source).trim()
+    const unsettled = carveToCarve(once) !== once
+    if (!changesMeaning && !unsettled) stale.push(`${slug} (round-trips clean)`)
+  }
+  assert.deepEqual(
+    stale,
+    [],
+    'resources/engine-fmt-drift.txt declares drift that no longer happens - ' +
+      `delete the line in the commit that moves the pin past it:\n  ${stale.join('\n  ')}`,
   )
 })
 
