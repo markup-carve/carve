@@ -6737,7 +6737,36 @@ EOF = (* end of file *) ;
       carve-php#702 item 8 was filed against the old reading and resolved to
       no change once the contradiction was untangled. (carve#605)
 
-  10c. AN ATTRIBUTION STAYS ATTACHED TO ITS QUOTE ON EVERY TARGET --
+  10b. A TABLE ROW KEEPS ITS OWN CELL COUNT -- NORMATIVE. The canonical
+      writer emits exactly the cells the row carries. It MAY align the padding
+      of cells that exist, but MUST NOT append empty cells to make every row as
+      wide as the widest row in the table. A missing trailing cell is not an
+      empty cell: adding one changes both the re-parsed tree and the rendered
+      table, so §1a makes rectangular alignment yield.
+
+      Where a delimiter row is required to promote the first row to a header,
+      that delimiter carries exactly one cell for each cell in the HEADER ROW,
+      not one for each column reached by a wider body row. Its job is to mark
+      that row as a header; extending it to the table width both manufactures
+      header cells and can stop the delimiter from matching the row it belongs
+      to. Native `=` header markers remain preferred wherever they can express
+      the header, including when a later body row is wider. (carve#1030)
+
+  10c. ADJACENT BLOCKS THAT WOULD MERGE KEEP THE CONTINUATION MARKER --
+       NORMATIVE. In a tight list item, deciding whether to retain `+` is a
+       property of the emitted BLOCK SEQUENCE, not only of each child in
+       isolation. If two adjacent children written at the item's content
+       column would re-parse as one block, the writer emits each child from the
+       first such child onward at the marker column, preceded by its own `+`.
+
+       This includes adjacent block quotes, tables, line blocks, definition
+       lists, and lists whose marker kind is compatible. A single block opener
+       that cannot fold into the paragraph above it remains canonically
+       indented at the content column. A blank line is not the fallback: it
+       would make a tight item loose and change its rendered structure.
+       (carve#1033)
+
+  10d. AN ATTRIBUTION STAYS ATTACHED TO ITS QUOTE ON EVERY TARGET --
       NORMATIVE. PART 9 §4a makes a caption on a block quote an ATTRIBUTION:
       it names the source of the quotation, and the HTML puts it inside the
       `<blockquote>` as a `<footer>`. That clause governs the tree and the
@@ -6798,34 +6827,122 @@ EOF = (* end of file *) ;
       `compare:impls` reported agreement rather than a defect. Agreement
       across implementations is evidence about implementations (carve#1179).
 
-  10b. A TABLE ROW KEEPS ITS OWN CELL COUNT -- NORMATIVE. The canonical
-      writer emits exactly the cells the row carries. It MAY align the padding
-      of cells that exist, but MUST NOT append empty cells to make every row as
-      wide as the widest row in the table. A missing trailing cell is not an
-      empty cell: adding one changes both the re-parsed tree and the rendered
-      table, so §1a makes rectangular alignment yield.
+  10e. A PRESENTATION TARGET KEEPS A CAPTION, A FENCE TITLE AND A FENCE
+      LABEL -- NORMATIVE. `docs/graceful-degradation.md` states the floor for
+      every non-interactive target: a renderer MUST preserve the construct's
+      CONTENT and may drop only its INTERACTION, and authored text -- a label
+      or a title that distinguishes one block from another -- MUST NOT be
+      silently discarded. Three authored tokens were discarded anyway, by all
+      three engines, in the same way §10d's attribution was:
 
-      Where a delimiter row is required to promote the first row to a header,
-      that delimiter carries exactly one cell for each cell in the HEADER ROW,
-      not one for each column reached by a wider body row. Its job is to mark
-      that row as a header; extending it to the table width both manufactures
-      header cells and can stop the delimiter from matching the row it belongs
-      to. Native `=` header markers remain preferred wherever they can express
-      the header, including when a later body row is wider. (carve#1030)
+      WHAT THIS CLAUSE DECIDES is where those three tokens go on the targets
+      named below, and nothing else. It neither restates the floor nor
+      narrows it: a loss this clause does not name is still a loss, and the
+      floor still forbids it. Reading a construct/target pair as CONFORMING
+      because no rendering for it is written here inverts the clause -- the
+      pairs it leaves open are open, not allowed.
 
-  10c. ADJACENT BLOCKS THAT WOULD MERGE KEEP THE CONTINUATION MARKER --
-       NORMATIVE. In a tight list item, deciding whether to retain `+` is a
-       property of the emitted BLOCK SEQUENCE, not only of each child in
-       isolation. If two adjacent children written at the item's content
-       column would re-parse as one block, the writer emits each child from the
-       first such child onward at the marker column, preceded by its own `+`.
+          |= H |             ->  markdown  | H |
+          | a |                            | --- |
+          ^ Table caption                  | a |
 
-       This includes adjacent block quotes, tables, line blocks, definition
-       lists, and lists whose marker kind is compatible. A single block opener
-       that cannot fold into the paragraph above it remains canonically
-       indented at the content column. A blank line is not the fallback: it
-       would make a tight item loose and change its rendered structure.
-       (carve#1033)
+          ``` js "src/app.js"  ->  plain     const a = 1
+          const a = 1              terminal  ┌── js
+          ```                                  const a = 1
+
+          ``` js [Node]        ->  plain     const a = 1
+          const a = 1              terminal  ┌── js
+          ```                                  const a = 1
+
+      T1 A FENCE'S TITLE AND LABEL RENDER THE WAY A DIV'S ALREADY DO. This
+         clause writes down an existing rule rather than a new one. A fenced
+         div already surfaces both tokens on every target, which is the
+         caption rule `docs/graceful-degradation.md` makes normative for an
+         unconsumed label: `::: note "T" [L]` emits `**T**` then `**L**` in
+         Markdown, a standalone line each in plain text, and a bold
+         standalone line each on the terminal, the title always before the
+         label. A code fence carries the SAME two tokens in the SAME two
+         slots of its info string, so it renders them the same way, above the
+         block:
+
+             ``` php "src/Auth.php" [Composer]  ->  src/Auth.php
+             composer require x                     (blank)
+             ```                                    Composer
+                                                    (blank)
+                                                    composer require x
+
+         The language tag is untouched: it keeps whatever slot the target
+         already gives it, which on the terminal is the `┌── ` header line
+         and in plain text is nothing. Folding the title into that header
+         instead was considered and rejected -- the header exists only when
+         the fence has a language, so a titled fence with no language would
+         have needed a header invented for it, and a fence carrying both a
+         title and a label would have needed a separator invented too. The
+         div's shape needs neither and already ships.
+
+      T2 A TABLE CAPTION SURVIVES THE MARKDOWN TARGET as body text AFTER the
+         table, separated by one blank line. The position is what this target
+         already does for the other two captioned hosts -- an image caption
+         and a listing caption both follow their block as body text -- so the
+         table was the odd one out rather than a consequence of Markdown
+         having no caption syntax:
+
+             |= H |             ->  | H |
+             | a |                  | --- |
+             ^ Table caption        | a |
+                                    (blank)
+                                    Table caption
+
+      ADJACENCY IS NOT AVAILABLE HERE, AND THAT IS THE GENERAL FORM.
+      §10d attached an attribution to its quote on the plain target by
+      REMOVING the blank line, on the ground that a blank line is what
+      separates blocks there. That move is unavailable to both halves of this
+      clause, and measuring why gives the rule its shape: attachment by
+      adjacency is only available on a target where adjacency does not change
+      what the adjacent block IS.
+
+      A caption written directly after the last row of a Markdown table is
+      read by a GFM reader as ANOTHER ROW -- `| a |` then `Table caption`
+      yields `<td>a</td>` and `<td>Table caption</td>`. The words survive as
+      a fabricated data cell, which is worse than losing them, because a
+      reader cannot tell an authored cell from a caption and neither can a
+      parser. A line written directly above a code block in plain text reads
+      as the FIRST LINE OF THE CODE, for the same reason: that target draws
+      no delimiter around a code block at all.
+
+      So both halves take the separation their target forces and accept that
+      the ATTACHMENT is weaker than §10d's. That is a floor being met, not a
+      relationship being preserved: this clause is about the words surviving.
+      Modeling a caption as something a round trip can recover on the
+      Markdown target is carve#1121's business, not this clause's. The
+      element route §10d used for the attribution is not open here either --
+      a `<caption>` is only valid as the first child of a `<table>`, and the
+      `<table>` a pipe table produces is built by the READER, so there is
+      nowhere to put one.
+
+      TWO MORE LOSSES OF THE SAME TOKENS ARE RECORDED HERE AND LEFT OPEN,
+      both measured on the same build that produced the rows above. Each
+      breaks the floor exactly as the three rows above did; what is missing
+      is a decided rendering, not a rule. Neither is settled by this clause
+      and neither is thereby permitted:
+
+        - A fence title on a fence with NO LANGUAGE is dropped by the
+          MARKDOWN writer too: ``` "src/app.js" emits a bare ``` and the
+          title is gone. The Markdown target keeps the title only when a
+          language precedes it.
+
+        - A code-group label never reaches the HTML target at all:
+          ``` js [Node] gives `<pre><code class="language-js">`. Core
+          assigns the label no meaning and a group extension consumes it, so
+          on HTML with no such extension the token has nowhere to go. Where
+          it should go is a question about the HTML target, which is PART
+          10's business rather than this section's.
+
+      WHY THIS NEEDED SAYING. All three engines agreed on dropping all three
+      tokens, and the corpus pinned HTML for these constructs and nothing
+      else, so `compare:impls` reported agreement rather than a defect --
+      the same hole §10d came out of. Agreement across implementations is
+      evidence about implementations. (carve#1179)
 
   11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE. A resolved
       cross-reference is emitted as a Markdown link to the target heading's id,
