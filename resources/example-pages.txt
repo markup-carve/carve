@@ -29,9 +29,23 @@
 [core] Examples: Core
 > The everyday syntax, plus every Tier-1 construct the feature-tier table calls core.
 out: examples/core.md
-  emphasis
-  headings
-  links
+  01-emphasis
+  01-emphasis-4
+  01-emphasis-5
+  01-emphasis-12
+  01-emphasis-13
+  01-emphasis-15
+  02-headings
+  02-headings-2
+  02-headings-3
+  02-headings-4
+  03-links
+  03-links-2
+  03-links-3
+  03-links-5
+  03-links-6
+  03-links-9
+  03-links-10
   images
   05-lists
   05-lists-4
@@ -42,23 +56,48 @@ out: examples/core.md
   task-lists
   blockquote-with-attribution
   image-with-caption
-  tables
+  09-tables
+  09-tables-2
+  09-tables-3
+  09-tables-6
+  09-tables-7
+  09-tables-8
   tables-with-rowspan-and-colspan
-  fenced-code
+  11-fenced-code
+  11-fenced-code-3
+  11-fenced-code-4
+  11-fenced-code-5
+  11-fenced-code-6
+  11-fenced-code-7
+  11-fenced-code-8
+  11-fenced-code-9
+  11-fenced-code-13
+  11-fenced-code-14
+  11-fenced-code-15
   inline-code
   attributes
   frontmatter
   heading-ids
-  reference-link
+  16-reference-link
+  16-reference-link-2
+  16-reference-link-6
   collapsed-reference-link
-  smart-typography-dashes-and-quotes
+  19-smart-typography-dashes-and-quotes
   smart-typography-arrows-and-symbols
   math
   footnotes
   inline-footnotes
   generic-divs
-  definition-lists
-  comments
+  25-definition-lists
+  25-definition-lists-2
+  25-definition-lists-3
+  25-definition-lists-4
+  25-definition-lists-5
+  25-definition-lists-6
+  26-comments
+  26-comments-2
+  26-comments-5
+  26-comments-9
   raw-blocks
   hard-line-breaks
   non-breaking-space
@@ -72,13 +111,38 @@ out: examples/core.md
   escapes
   inline-span
   superscript-and-subscript
-  line-blocks
-  admonitions
+  41-line-blocks
+  41-line-blocks-2
+  41-line-blocks-3
+  41-line-blocks-4
+  41-line-blocks-5
+  41-line-blocks-6
+  41-line-blocks-7
+  42-admonitions
+  42-admonitions-2
+  42-admonitions-3
+  42-admonitions-4
+  42-admonitions-6
+  42-admonitions-7
+  42-admonitions-9
+  42-admonitions-10
   abbreviations
   mentions-and-tags
   symbols
-  inline-extensions
-  numbered-cross-references
+  45-inline-extensions
+  45-inline-extensions-2
+  45-inline-extensions-3
+  45-inline-extensions-7
+  45-inline-extensions-8
+  45-inline-extensions-12
+  45-inline-extensions-13
+  47-numbered-cross-references
+  47-numbered-cross-references-2
+  47-numbered-cross-references-3
+  47-numbered-cross-references-4
+  47-numbered-cross-references-5
+  47-numbered-cross-references-8
+  47-numbered-cross-references-9
 
 [extensions] Examples: Extensions
 > Features that ship off and must be switched on, covering both corpus-pinned Tier-2 behavior and snapshot-verified Tier-3 extensions.
@@ -121,6 +185,8 @@ index: examples/edge-cases/index.md
   a-table-delimiter-cell-needs-at-least-one-dash
   a-continuation-row-carries-no-trailing-text
   a-ragged-table-keeps-each-row-s-cell-count
+  09-tables-4
+  09-tables-5
 
 [edge-lists] Lists
 > Markers, looseness, the content-column model, continuation markers and block openers inside items.
@@ -210,6 +276,15 @@ index: examples/edge-cases/index.md
   a-container-a-lazy-line-folded-into-is-still-open
   a-fence-keeps-the-blank-line-at-the-end-of-its-content
   a-captioned-quote-holds-more-than-one-block
+  11-fenced-code-10
+  11-fenced-code-11
+  11-fenced-code-12
+  42-admonitions-5
+  42-admonitions-8
+  26-comments-3
+  26-comments-4
+  26-comments-6
+  41-line-blocks-8
 
 [edge-blocks] Paragraphs, breaks and captions
 > Paragraph folding, thematic breaks, caption attachment and adjacent block openers.
@@ -254,6 +329,28 @@ index: examples/edge-cases/index.md
   a-math-span-s-base-class-keeps-the-class-slot-in-place
   a-marker-glued-to-a-name-opens-nothing
   an-angle-bracket-is-escaped-only-where-it-opens-markup
+  01-emphasis-2
+  01-emphasis-3
+  01-emphasis-6
+  01-emphasis-7
+  01-emphasis-8
+  01-emphasis-9
+  01-emphasis-10
+  01-emphasis-11
+  01-emphasis-14
+  45-inline-extensions-4
+  45-inline-extensions-5
+  45-inline-extensions-6
+  45-inline-extensions-10
+  45-inline-extensions-11
+  19-smart-typography-dashes-and-quotes-2
+  19-smart-typography-dashes-and-quotes-3
+  19-smart-typography-dashes-and-quotes-4
+  19-smart-typography-dashes-and-quotes-5
+  19-smart-typography-dashes-and-quotes-6
+  19-smart-typography-dashes-and-quotes-7
+  19-smart-typography-dashes-and-quotes-8
+  19-smart-typography-dashes-and-quotes-9
 
 [edge-links] Links, images and references
 > Destinations, titles, reference and collapsed forms, autolinks and where a definition may live.
@@ -286,6 +383,17 @@ index: examples/edge-cases/index.md
   an-autolink-body-admits-non-ascii-and-excludes-format-characters
   unresolved-reference-link
   bare-urls-stay-literal
+  03-links-4
+  03-links-7
+  03-links-8
+  03-links-11
+  03-links-12
+  03-links-13
+  16-reference-link-3
+  16-reference-link-4
+  16-reference-link-5
+  16-reference-link-7
+  16-reference-link-8
 
 [edge-footnotes] Footnotes
 > Bodies as blocks, the body content column, collection inside containers and placement of the rendered list.
@@ -340,6 +448,7 @@ index: examples/edge-cases/index.md
   an-empty-abbreviation-term-is-not-a-definition
   a-definition-body-continuation-indented-past-its-column-is-lazy-text
   an-abbreviation-expands-inside-an-inline-container
+  25-definition-lists-7
 
 [edge-attributes] Attributes
 > Attribute lines and inline blocks, names and values, classes, booleans and the semantic/language sugar.
@@ -393,6 +502,10 @@ index: examples/edge-cases/index.md
   a-heading-reference-folds-unicode-normalization-but-not-compatibility
   a-collapsed-reference-reaches-a-heading-by-the-heading-s-rendered-text
   heading-index-plain-text-covers-visible-leaves-and-rejects-an-empty-key
+  02-headings-5
+  02-headings-6
+  47-numbered-cross-references-6
+  47-numbered-cross-references-7
 
 [edge-whitespace] Whitespace, tabs and columns
 > Where a space is required, where a tab reaches, blank lines, line endings and trailing whitespace.
@@ -421,6 +534,13 @@ index: examples/edge-cases/index.md
   a-reference-definition-s-metadata-slots-take-exactly-one-space
   a-definition-marker-s-separator-is-a-space-and-it-is-a-run
   trailing-whitespace-on-a-content-line-is-dropped
+  11-fenced-code-2
+  11-fenced-code-16
+  11-fenced-code-17
+  16-reference-link-9
+  26-comments-7
+  26-comments-8
+  41-line-blocks-9
 
 [edge-security] Security and limits
 > Trojan-Source stripping, scheme probes, attribute hardening and the nesting cap.
@@ -432,3 +552,4 @@ index: examples/edge-cases/index.md
   scheme-probe-strips-unicode-whitespace
   openers-past-the-nesting-cap-are-one-paragraph
   a-format-character-before-a-scheme-is-not-stripped-and-is-inert
+  45-inline-extensions-9
