@@ -26,8 +26,41 @@ CI green:
    the `lastTag..main` range (the draft release notes are the source of truth for
    scope), then cut it to `## [X.Y.Z] - YYYY-MM-DD` and open a fresh empty
    `## [Unreleased]` above it.
-3. **Run the pre-tag check** (fails on a stale version field, an un-cut
-   changelog, a dirty tree, a missing tag, or an uninitialized spec submodule):
+3. **`carve` only - reconcile the engine pin drift.** `resources/engine-pin-drift.txt`
+   lists the corpus documents the pinned reference build does not reproduce, and
+   a release is the moment that list has to be true rather than merely present:
+
+   ```sh
+   npm run bump-carve-pin          # against current carve-js main
+   npm install                     # the bump edits package.json and installs nothing
+   npm run engine:report -- --check
+   ```
+
+   `npm install` is not optional. The report renders through the INSTALLED
+   build, so skipping it produces a ledger for the pin you just replaced. The
+   bump script prints the same instruction, and the pre-tag check below refuses
+   to run the report when the two disagree.
+
+   Delete every line the report says now reproduces, in the same commit that
+   moves the pin. That is the step the drift file's own header already describes
+   ("emptying this file is the normal end state after `npm run bump-carve-pin`")
+   and the release process used to omit.
+
+   The drift file is not the only thing a bump makes stale - extension
+   classification and the Tier-3 snapshots go with it. `MAINTAINING.md`, under
+   "What a pin bump has to sweep", is the list; do not move the pin without it.
+
+   **The bar is accurate, not empty.** The pin is a git dependency on a carve-js
+   COMMIT, `bump-carve-pin` will only move it to a merged one, and the order
+   above releases `carve` FIRST - so at this repo's tag moment the corpus is
+   routinely ahead of a build that has not shipped the newest rules yet, and a
+   non-empty file is the correct state. What must hold is that every remaining
+   entry names a rule the pinned build has not shipped. An entry whose rule the
+   pin already reproduces is the "nobody ran the bump" case wearing the
+   "corpus is ahead" label, and those are different facts.
+4. **Run the pre-tag check** (fails on a stale version field, an un-cut
+   changelog, a dirty tree, a missing tag, an uninitialized spec submodule, or a
+   drift entry the pinned build now reproduces):
 
    ```sh
    bash scripts/pre-tag-check.sh X.Y.Z
@@ -35,8 +68,8 @@ CI green:
    bash ../carve/scripts/pre-tag-check.sh X.Y.Z
    ```
 
-4. Land steps 1-2 via a PR to `main` and merge it.
-5. **Publish the prepared draft GitHub Release.** Publishing creates the tag at
+5. Land steps 1-3 via a PR to `main` and merge it.
+6. **Publish the prepared draft GitHub Release.** Publishing creates the tag at
    the current `main`; the tag then drives the registry publish.
 
 ## Guards
@@ -56,6 +89,8 @@ The publish step is gated so a mistake cannot ship the wrong version:
 ## Never
 
 - Never tag before `pre-tag-check.sh` passes.
+- Never tag `carve` on a drift file nobody reconciled. CI gates that drift is
+  DECLARED; only the step above gates that it is CURRENT.
 - Never publish a version whose field or changelog does not match the tag.
 - Never bump a version field except as part of a release (version numbers are
   release artifacts, not commit counters).
