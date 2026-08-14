@@ -107,7 +107,7 @@ the command-line and editor behavior stay aligned.
 | `fence-title-syntax` | text after a fence type word that is neither a quoted `"title"` nor a `[label]`, which makes the whole opener line plain text |
 | `footnote-labels-differ-only-in-whitespace` | two footnote definitions whose labels differ only in whitespace; labels are matched exactly, so they are two separate footnotes and a reader comparing them sees no reason why |
 | `semantic-attribute-value-ignored` | a non-empty value on a semantic span name that only selects its wrapper - `kbd` in core, and `samp`, `var`, `cite` where the SemanticSpan extension is enabled. The value reaches no output at all, so `[Dune]{cite="https://example.org/dune"}` renders `<cite>Dune</cite>` and loses the URL (PART 9 §9, §10) |
-| `semantic-attribute-outside-span` | a reserved semantic name used where PART 9 §9 does not apply - a code span, link, image, block-attribute line or table cell - where it stays an ordinary attribute, so `` `c`{kbd} `` is `<code kbd="">` rather than a `<kbd>` |
+| `semantic-attribute-outside-span` | a reserved semantic name used where PART 9 §9 does not apply - a code span, link, image, block-attribute line or table row - where it stays an ordinary attribute, so `` `c`{kbd} `` is `<code kbd="">` rather than a `<kbd>`; `cite` on a block quote is exempt, see [semantic span attribute rules](#semantic-span-attribute-rules) |
 | `platform-mention-token` | an at-prefixed word in text the document publishes, which a host platform re-linkifies into a user mention; opt-in and off by default, see [platform autolink rules](#platform-autolink-rules) |
 | `platform-issue-reference` | a hash-number in text the document publishes, which a host platform re-linkifies into an issue reference; opt-in and off by default, see [platform autolink rules](#platform-autolink-rules) |
 
@@ -134,6 +134,65 @@ frontmatter declaration wins: the two answer different questions - what the
 document targets, versus what last processed it - and the rule is about intent.
 See [versioning](./versioning) for what a version difference means for a stored
 document.
+
+### Semantic span attribute rules
+
+`semantic-attribute-value-ignored` and `semantic-attribute-outside-span` read
+the same reserved names, and both are scoped to the names the render being
+linted actually turns into an element. PART 9 §9 reserves `abbr`, `time` and
+`kbd` in core; `samp`, `var`, `cite` and `dfn` become elements only once the
+`SemanticSpan` extension is registered. A name the caller's render leaves alone
+is an ordinary attribute whose value reaches the output intact, so reporting it
+would report a loss that is not happening.
+
+That makes the extension selection an input to the linter, not just to the
+renderer, and it is passed the way each engine already passes one:
+`lintCarve(source, { extensions })` in carve-js, an `extensions` option on
+`lint()` in carve-php, and `lint_carve_with_options` in carve-rs. The scoping was
+settled in [carve#1167](https://github.com/markup-carve/carve/issues/1167). A
+build predating it takes no such selection and treats all seven reserved names
+as core, so the scoping described here is what to expect from an engine at or
+after that ruling rather than from every build in circulation.
+
+Whether an engine can register `SemanticSpan` at all is a separate question from
+the scoping, and the [extension catalog](./extensions) is where it is tracked -
+the reference engine does not export it yet, so its four names are what the
+scoping is for rather than something every caller can switch on today.
+
+#### The block quote exception
+
+`cite` on a block quote MUST NOT be reported by `semantic-attribute-outside-span`.
+It is not a semantic span there, but `cite` is a URL attribute of `blockquote`
+and `q` in HTML, so the value the author wrote does reach the output:
+
+```
+{cite="https://example.org/dune"}
+> Fear is the mind-killer.
+```
+
+```html
+<blockquote cite="https://example.org/dune"><p>Fear is the mind-killer.</p></blockquote>
+```
+
+The exception is exactly that pairing. `cite` on any other off-span target still
+reports, and any other reserved name on a block quote still reports. An engine
+that ports the rule without the exception diverges on the first quote carrying a
+citation URL.
+
+#### What counts as an off-span target
+
+Every node an authored `{attrs}` block can reach other than an ordinary
+`[content]{attrs}` span. The size of that set is an AST fact rather than part of
+the rule, so it differs between engines without either being wrong: carve-php
+reaches 26 node types and carve-rs 29. carve-php folds an inline link, a
+reference link and an autolink into one `link` type where carve-rs carries a
+separate `autolink`, and each reaches a few types the other does not. An
+implementation should test the node type against the reserved names rather than
+enumerate the targets.
+
+One shape is not a target in any engine: a table **cell** takes no attributes,
+and `| a{kbd} |` leaves the braces literal. The table **row** takes them, on its
+closing pipe, and that is what the rule reports.
 
 ### Platform autolink rules
 
@@ -251,20 +310,31 @@ published page: the **caption of a captioned listing**, and the body of a
 
 ### Which implementations provide these rules
 
-The table above is carve-js. The other engines do not currently match it, and
-`carve lint` is not the same command everywhere:
+carve-js implements every rule in the table above. The other two engines
+implement part of it, and `carve lint` is not the same command everywhere:
 
 | implementation | `carve lint` | covers |
 |---|---|---|
-| carve-js | yes | the rules above, plus the Djot/Markdown migration checks |
-| carve-php | yes | `bidi-control-in-source` plus Markdown-habit checks (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`); none of the other semantic rules above, and neither platform autolink rule |
-| carve-rs | no | the binary has no `lint` command |
+| carve-js | yes | every rule above, plus the Djot/Markdown migration checks |
+| carve-php | yes | both semantic span attribute rules, both platform autolink rules, `bidi-control-in-source`, and Markdown-habit checks of its own (`markdown-strong-asterisks`, `markdown-strong-underscores`, `markdown-strikethrough`); none of the other rules above |
+| carve-rs | no | both semantic span attribute rules, through the library entry points `lint_carve` and `lint_carve_with_options`; the binary has no `lint` command |
 
-The two platform autolink rules are carve-js only today. They are specified here
-rather than left to one engine because the ids are shared surface: a second
-engine implementing the same condition takes the same two ids, the same
-`platforms` selection, and the same token tables, or a `--platform` config stops
-being portable the moment it moves between engines.
+`semantic-attribute-value-ignored` and `semantic-attribute-outside-span` are the
+first two rules all three engines carry. They share their ids, their triggers and
+the block quote exception above. Their **messages** are not aligned yet: the tail
+of the `semantic-attribute-outside-span` sentence quotes the attribute the
+renderer actually emits in carve-php, and a fixed empty value in carve-js and
+carve-rs, which is untrue whenever the author wrote one. Which spelling the
+engines converge on is open and tracked in
+[carve-js#1058](https://github.com/markup-carve/carve-js/issues/1058), so neither
+form is canonical here. A consumer keys on the rule id, which the next section
+makes binding, rather than on the sentence.
+
+The two platform autolink rules are in carve-js and carve-php, and not in
+carve-rs. They are specified here rather than left to one engine because the ids
+are shared surface: a second engine implementing the same condition takes the
+same two ids, the same `platforms` selection, and the same token tables, or a
+`--platform` config stops being portable the moment it moves between engines.
 
 ### A rule id is a contract
 
