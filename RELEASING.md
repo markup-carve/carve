@@ -32,13 +32,23 @@ CI green:
 
    ```sh
    npm run bump-carve-pin          # against current carve-js main
+   npm install                     # the bump edits package.json and installs nothing
    npm run engine:report -- --check
    ```
+
+   `npm install` is not optional. The report renders through the INSTALLED
+   build, so skipping it produces a ledger for the pin you just replaced. The
+   bump script prints the same instruction, and the pre-tag check below refuses
+   to run the report when the two disagree.
 
    Delete every line the report says now reproduces, in the same commit that
    moves the pin. That is the step the drift file's own header already describes
    ("emptying this file is the normal end state after `npm run bump-carve-pin`")
    and the release process used to omit.
+
+   The drift file is not the only thing a bump makes stale - extension
+   classification and the Tier-3 snapshots go with it. `MAINTAINING.md`, under
+   "What a pin bump has to sweep", is the list; do not move the pin without it.
 
    **The bar is accurate, not empty.** The pin is a git dependency on a carve-js
    COMMIT, `bump-carve-pin` will only move it to a merged one, and the order
