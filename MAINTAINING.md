@@ -30,6 +30,30 @@ The corpus is generated separately by `scripts/generate-corpus.mjs`, which
 extracts the ` ```carve ` / ` ```html ` pairs from `resources/examples/*.md`
 **verbatim** (`npm run corpus:build` + `git diff --exit-code`).
 
+### What a pin bump has to sweep
+
+Moving the pin changes which build the docs render with and which build the
+snapshots were taken against, so three things go stale at the same moment and
+none of them is the pin itself:
+
+1. **Extension classification.** A new factory in carve-js must be ENABLED or
+   EXCLUDED in `docs/.vitepress/carve-extensions.js`, or
+   `tests/playground-extensions.test.mjs` fails. Classify it *before* bumping;
+   the entry is harmless while the pinned build still lacks the export.
+2. **`resources/engine-pin-drift.txt`.** Every entry describes a document the
+   *pinned* build does not reproduce. An entry the new build satisfies is now a
+   lie about the engine - re-run `npm run engine:report` and delete what it no
+   longer reports.
+3. **Tier-3 snapshots.** `tests/examples-tier3.test.mjs` compares hand-written
+   examples against the pinned build. Tier-3 is never corpus-pinned, so this
+   test is their only verifier; a bump that changes Tier-3 output must be
+   re-snapshotted deliberately, not waved through.
+
+Claims keyed to the pinned build live in the docs too - the SemanticSpan row in
+`docs/extensions.md` says "no implementation registers it yet", which
+`tests/extension-catalog-claims.test.mjs` ties to the pinned export. That test
+tells you when the sentence stops being true.
+
 **The corpus oracle is the executable spec, not an engine.** `tests/corpus.test.mjs`
 renders every pair through `scripts/spec` (the layout automaton plus the
 PART 9R / PART 10 renderer driven by `resources/carve-core.ohm`), and
