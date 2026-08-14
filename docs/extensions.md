@@ -1,3 +1,7 @@
+---
+description: "The normative extension contract: the feature tiers, what each guarantees, and how a processor registers a handler."
+---
+
 # Carve extensions contract (NORMATIVE)
 
 This document is normative. The conformance corpus (`tests/corpus`) remains the
@@ -69,8 +73,10 @@ differs by processor. The narrative below details each tier.
   typography and `@mention` / `#tag` / `:symbol:` parsing are also default-on and
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, symbol map (e.g. emoji glyphs),
-  locale smart-quote sets, bare-URL autolinking, citations (§4), and code
-  callouts (`<n>` markers inside fenced code + a bound explanation list; §10) —
+  locale smart-quote sets, bare-URL autolinking, citations (§4), code
+  callouts (`<n>` markers inside fenced code + a bound explanation list; §10),
+  and SemanticSpan (§11: the four names core does not reserve, plus the
+  soft-deprecated `:name[…]` spelling for all seven) —
   plus four block features that ship in carve-js, carve-php and carve-rs and
   carry pinned cases in `tests/corpus-optional`: ListTable (a `::: list-table`
   div whose nested list renders as a real HTML `<table>`, so cells can hold
@@ -118,11 +124,6 @@ differs by processor. The narrative below details each tier.
   on each heading - and rewrite auto-filled `</#id>` cross-references to
   "Section 1.2 - Title"; opt-in, no new syntax; §9),
   HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks,
-  SemanticSpan (§11: the four names core does not reserve, plus the
-  soft-deprecated `:name[…]` spelling for all seven; core reserves `abbr`,
-  `time` and `kbd` as span attributes and registers no `:name[…]` handler at
-  all, so every one of them falls back to `ext-NAME` until this extension is
-  enabled),
   ColorSwatch (inline `:color[value]` -> a validated color chip; carve-php,
   carve-js and carve-rs — see the [extension tutorial](./extension-tutorial)),
   and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).

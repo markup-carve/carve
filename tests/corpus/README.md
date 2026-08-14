@@ -28,18 +28,18 @@ in, and this is it.
 
 Add one only where the rule is settled and the expected output is the spec's
 answer rather than a transcript of what the engines happen to print. The `.crv`
-inputs and `.html` outputs are regenerated from `docs/examples/`; a target file
+inputs and `.html` outputs are regenerated from `resources/examples/`; a target file
 added here is kept as written.
 
 ## Regenerating
 
-The corpus is generated from the example pages in [`../../docs/examples/`](../../docs/examples/) (`core.md`, `extensions.md`, `edge-cases.md`):
+The corpus is generated from the sources in [`../../resources/examples/`](../../resources/examples/) (`core.md`, `extensions.md`, `edge-cases.md`):
 
 ```sh
 npm run corpus:build
 ```
 
-Each `::: compare` block in those pages containing one ```` ```carve ```` and one ```` ```html ```` fence becomes one pair here. Editing the pair files directly will be overwritten on the next build — edit the source pages under `docs/examples/` and regenerate.
+Each `::: compare` block in those files containing one ```` ```carve ```` and one ```` ```html ```` fence becomes one pair here. Editing the pair files directly will be overwritten on the next build — edit the sources under `resources/examples/` and regenerate.
 
 The generator preserves this README; only `.crv` / `.html` files are replaced on rebuild.
 

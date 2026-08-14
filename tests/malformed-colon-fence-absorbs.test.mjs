@@ -10,7 +10,7 @@
  * notes blame the opener line rather than the trailing fence.
  *
  * WHY THIS IS A TEST HERE AND NOT A CORPUS CASE. The obvious home is
- * `docs/examples/core.md`, which generates the corpus - and adding two pairs
+ * `resources/examples/core.md`, which generates the corpus - and adding two pairs
  * there moves the corpus from 610 to 612, which three documents quote. Two of
  * those quotes are a VERBATIM `compare:impls` run (`corpus_pairs=610`,
  * `html: compared=610 diffs=0 ...`), and hand-editing a quoted tool output to

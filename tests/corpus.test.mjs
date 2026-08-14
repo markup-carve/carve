@@ -17,7 +17,7 @@
  * executable subset and are skipped here; the refusal ratchet in
  * `npm run core:check` is what keeps that list honest in both directions.
  *
- * The corpus is generated from docs/examples/{core,extensions,edge-cases}.md by
+ * The corpus is generated from resources/examples/{core,extensions,edge-cases}.md by
  * `npm run corpus:build`; CI regenerates it first, so a mismatch here means the
  * examples drifted from the committed corpus or the spec changed.
  *

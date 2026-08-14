@@ -11513,14 +11513,15 @@ arrives. One space decides which of the two answers the same five lines get.
 
 ## A blank line holds spaces and tabs and nothing else
 
-`blank_line = {whitespace}, newline` (`resources/grammar.ebnf:246`) over
-`whitespace = ' ' | '\t'` (`resources/grammar.ebnf:2262`). Two characters, and
+`blank_line = {whitespace}, newline` (`resources/grammar.ebnf`, PART 1) over
+`whitespace = ' ' | '\t'` (PART 7). Two characters, and
 no third. Every other character that a host language's whitespace class might
 sweep up - a Unicode space separator, a C0 control, a zero-width character - is
 CONTENT, so a line holding one of them keeps the paragraph open and soft-breaks
 into it.
 
-PART 1 states the U+FEFF row of that outright at `resources/grammar.ebnf:85-90`:
+PART 0 states the U+FEFF row of that outright, under A LEADING BYTE ORDER MARK
+IS STRIPPED:
 a leading byte order mark is stripped, "ONE, and only there: a U+FEFF anywhere
 else is an ordinary zero-width character". The three documents below carry the
 characters raw; they are invisible in review, which is why
@@ -12676,7 +12677,7 @@ def</p>
 
 ## A definition body continuation indented past its column is lazy text
 
-`definition_indent` (`resources/grammar.ebnf:700`) is a whitespace run REACHING
+`definition_indent` (`resources/grammar.ebnf`, PART 2) is a whitespace run REACHING
 the body's column - the one `:  ` establishes. REACHING it is what makes a line
 the body's own content; going past it does not make the line something else,
 because there is nothing past that column for indentation to mean. So a line
