@@ -247,9 +247,79 @@ const CAPTION = /^\^ (.*?)[ \t]*$/
 // and the wrapper below it, which decides whether the caption attaches. Two
 // copies would let those two answers drift apart, and the collector's copy would
 // be the one nothing tested.
-const CAPTIONABLE_PARAGRAPH = /^(?:!\[[^\]]*\](?:\([^)]*\)|\[[^\]]*\])(?:\{[^}]*\})?|\$\$`.*`)$/
+// THE §16 BRACKETED-RUN CLOSE, SCANNED RATHER THAN MATCHED (carve#1197).
+//
+// `line[open]` is a `[`; the return value is the index just past the `]` that
+// closes it, or -1 if the line holds no close. grammar.ebnf states the rule
+// beside `link_text` ("SEMANTIC CONSTRAINT: the link text ends at the matching
+// `]` -- the close is balanced-bracket, escape- and LITERAL-SPAN-aware ...
+// Not expressible context-free"), and PART 3's Images note binds an image to
+// the same run: "only the leading `!` and the `<img src>` output differ".
+//
+// A REGEX CANNOT STATE THIS, which is why it kept being written as one. The
+// close is BALANCED, so `[^\]]*` answers a different question - it stops at the
+// first `]` at any depth - and it is right on exactly the inputs that have no
+// nesting, which is every image in the corpus. Three copies of that spelling
+// were live in this pipeline and all three agreed with each other and with
+// nothing else. So this is a scanner: the depth counter is the part a pattern
+// cannot carry.
+//
+// The three literal spans (inline code, the `!`-prefixed literal, an editorial
+// comment) are skipped whole, because a `]` inside them is content and cannot
+// be escaped. An UNCLOSED backtick run opens a verbatim span to the end of the
+// block (PART 3 code_span), so the run has no close on this line: -1.
+export function bracketRunEnd(line, open) {
+  if (line[open] !== '[') return -1
+  let depth = 0
+  let i = open
+  while (i < line.length) {
+    const c = line[i]
+    if (c === '\\') {
+      i += 2
+      continue
+    }
+    if (c === '`') {
+      const run = /^`+/.exec(line.slice(i))[0]
+      const closer = new RegExp('(?<!`)`{' + run.length + '}(?!`)', 'g')
+      closer.lastIndex = i + run.length
+      const hit = closer.exec(line)
+      if (hit === null) return -1
+      i = hit.index + run.length
+      continue
+    }
+    if (c === '{' && line[i + 1] === '#') {
+      const close = line.indexOf('#}', i + 2)
+      if (close !== -1) {
+        i = close + 2
+        continue
+      }
+    }
+    if (c === '[') depth++
+    if (c === ']') {
+      depth--
+      if (depth === 0) return i + 1
+    }
+    i++
+  }
+  return -1
+}
+// SS4's two PROSE-spelled captionable hosts: a paragraph whose WHOLE content is
+// one image (inline or reference form, trailing attribute block allowed), and
+// one whose whole content is a display-math span. The other three hosts have a
+// `[caption_slot]` production of their own. ONE spelling, read from two places -
+// the paragraph collector, which decides whether a `^ ` line ends the paragraph,
+// and the wrapper below it, which decides whether the caption attaches. Two
+// copies would let those two answers drift apart, and the collector's copy would
+// be the one nothing tested.
+const CAPTIONABLE_IMAGE_TAIL = /^(?:\([^)]*\)|\[[^\]]*\])(?:\{[^}]*\})?$/
+const CAPTIONABLE_MATH = /^\$\$`.*`$/
 function isCaptionableParagraph(para) {
-  return para.length === 1 && CAPTIONABLE_PARAGRAPH.test(para[0])
+  if (para.length !== 1) return false
+  const line = para[0]
+  if (CAPTIONABLE_MATH.test(line)) return true
+  if (!line.startsWith('![')) return false
+  const altEnd = bracketRunEnd(line, 1)
+  return altEnd !== -1 && CAPTIONABLE_IMAGE_TAIL.test(line.slice(altEnd))
 }
 // The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
 // engine, so a tab here must not open a list (PART 9 SS11). Its width is the
@@ -1813,7 +1883,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
         // known. Without that, an unresolved reference produced a figure
         // wrapped around literal text, where all three engines produce one
         // paragraph holding both lines.
-        const refImage = /^!\[[^\]]*\]\[([^\]]*)\]/.exec(para[0])
+        // The alt run is scanned, not matched: see `bracketRunEnd`. The label
+        // that follows is a `reference_label`, which really does stop at the
+        // first `]` (grammar.ebnf: `{character - ']'}`), so that half stays a
+        // pattern.
+        const altEnd = para[0].startsWith('![') ? bracketRunEnd(para[0], 1) : -1
+        const refImage = altEnd === -1 ? null : /^\[([^\]]*)\]/.exec(para[0].slice(altEnd))
         if (refImage) {
           // KEYED THE WAY RESOLUTION KEYS IT (html.mjs, carve#648): the
           // label as written with whitespace collapsed, and the alt text
@@ -1827,10 +1902,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
           // text, trimmed and collapsed. Using one rule for both directions
           // put a figure around literal text in one case and dropped a caption
           // from a resolving image in the other.
-          pnode.pendingRef =
-            refImage[1] === ''
-              ? para[0].slice(2, para[0].indexOf(']'))
-              : refImage[1]
+          pnode.pendingRef = refImage[1] === '' ? para[0].slice(2, altEnd - 1) : refImage[1]
           pnode.captionSrc = stripIndent(lines[j]).replace(/[ \t]+$/, '')
         }
         i = j + 1

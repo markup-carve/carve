@@ -2097,7 +2097,28 @@ image = inline_image | reference_image | collapsed_reference_image ;
 inline_image = '!', '[', alt_text, ']', '(', image_source, [image_title], ')', [attributes] ;
 reference_image = '!', '[', alt_text, ']', '[', reference_label, ']', [attributes] ;
 collapsed_reference_image = '!', '[', alt_text, ']', '[', ']', [attributes] ;
-alt_text = {character - ']'} ;
+alt_text = {character} ;
+(* SEMANTIC CONSTRAINT: the alt text ends at the matching `]` -- THE SAME
+   close as `link_text`, balanced-bracket, escape- and LITERAL-SPAN-aware, and
+   for the same reason: the sentence above this block says an image has the
+   same three forms as a link and that only the leading `!` and the `<img src>`
+   output differ. The bracketed run is not one of the things that differ. Not
+   expressible context-free, which is why this production reads `{character}`
+   and defers to the constraint rather than pretending to enumerate it.
+
+   THIS WAS `{character - ']'}`, a flat run stopping at the first `]`, and the
+   two statements sat four lines apart contradicting each other. Read as
+   written it says `![t[z]][r]` is not an image, so the executable spec parsed
+   the `!` as literal text and the rest as a reference LINK, while all three
+   engines rendered an `<img>` (carve#1197). The prose is the rule; the
+   production was the defect.
+
+   The VALUE is not `inline_content`. `alt` is an HTML attribute, so nothing
+   inside the run is inline-parsed and no smart typography applies:
+   `![x /b/ y](/u)` gives `alt="x /b/ y"`, an escape stays as authored
+   (`![x \] y](/u)` gives `alt="x \] y"`), and a nested link or image inside
+   the run contributes its source bytes, not an element. Only the CLOSE is
+   shared with `link_text`; the content model is not. *)
 image_source = link_destination ;  (* absolute or relative, like links *)
 image_title = link_title ;
 (* A reference / collapsed-reference image resolves its label against the
@@ -2279,8 +2300,11 @@ reference_footnote = "[^", footnote_label, ']' ;
    definition can bind. Matching is exact; whitespace is not normalized. *)
 footnote_label = {character - ']' - newline}+ ;
 inline_footnote = "^[", inline_content, ']' ;
-(* the closing `]` is the balanced, escape- and code-span-aware close
-   (PART 9 §16); footnote recognition is DISABLED inside the content *)
+(* the closing `]` is the balanced, escape- and LITERAL-SPAN-aware close
+   (PART 9 §16) -- the same scan `link_text` states, and the same three spans
+   it skips. This read "code-span-aware", naming only the first of the three,
+   which is the spelling carve#403 replaced at `link_text` and did not replace
+   here; footnote recognition is DISABLED inside the content *)
 
 footnote_definition = "[^", footnote_label, "]:", space+, inline_content, newline,
                       {footnote_continuation | continuation_marker_block} ;
