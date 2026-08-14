@@ -8254,3 +8254,63 @@ EOF = (* end of file *) ;
       no short caption was supplied. A processor MUST NOT derive one by
       truncating or taking the first sentence of the full caption: abbreviation
       is an editorial choice and may be language-dependent.
+
+   15. A TABLE MAY CARRY AN OPTIONAL ROW GROUPING -- NORMATIVE. A `table` MAY
+      carry `rowGroups`, an object which PARTITIONS the existing `rows` array
+      into a head, any number of body groups and a foot. `bodies` MAY be empty:
+      a table whose rows are all head and foot is a partition like any other,
+      and refusing it would make a head-only table the one shape the field
+      cannot describe. It is the representation of a
+      table model richer than the one Carve source can spell: several body
+      groups, a group's own intermediate header rows, a foot, and a count of
+      leading row-header columns per group.
+
+      IT PARTITIONS `rows`; IT DOES NOT REPEAT THEM. `rowGroups` holds counts,
+      never row nodes. The counts consume `rows` in order -- `headRows` first,
+      then each body's `headRows` and `bodyRows` in sequence, then `footRows` --
+      and they MUST account for every row exactly once. A producer MUST NOT
+      publish a partition whose counts do not sum to `rows.length`; a consumer
+      MUST treat one that does not as invalid rather than repairing it. Holding
+      counts instead of a second copy of the rows is what makes a contradiction
+      between the grouping and the table's content unrepresentable, so `rows`
+      remains the single sequence every consumer reads.
+
+      `headRows` IS STATED RATHER THAN DERIVED. The leading run of header rows
+      is what an HTML renderer already uses for `<thead>`, and it cannot serve
+      here: a body's intermediate header rows are header rows too, so a table
+      whose first body opens with one has a leading run that spans both, and
+      the boundary between them is not recoverable from the rows. The count is
+      therefore explicit whenever `rowGroups` is present.
+
+      `rowHeadColumns` SITS ON THE GROUP, not on the table, matching the model
+      being exchanged, so a table whose groups disagree survives and there is
+      exactly one home for the value. Absent means zero.
+
+      THE OBJECT IS OPTIONAL; ITS THREE PARTS ARE NOT. `headRows`, `bodies` and
+      `footRows` are required together, because a partition missing one of them
+      describes no structure at all -- the omission would have to be read as a
+      zero, and a zero head is a claim rather than a silence. `rowHeadColumns`
+      is the exception and is optional, since it does not partition anything.
+
+      ABSENT MEANS TODAY'S STRUCTURE, and this is why the field breaks nothing:
+      a table without `rowGroups` has the implicit partition every renderer
+      already derives -- the leading run of header rows as the head, everything
+      after it as one body, no foot, no row-head columns. A parser therefore
+      never synthesizes the field, since Carve 0.1 source has no spelling that
+      would distinguish those cases, and it need not: the implicit reading is
+      already correct for every table a source document can produce.
+
+      CARVE 0.1 SOURCE HAS NO SPELLING FOR THIS FIELD. Like `shortCaption` in
+      §14, it enters a tree through an AST consumer or a format bridge and
+      survives AST encode/decode by §6. Being able to REPRESENT a grouping is
+      not being able to AUTHOR one: core pipe tables do not grow a second
+      separator language for it.
+
+      ORDINARY HTML, PLAIN AND ANSI OUTPUT IGNORE `rowGroups`. They keep
+      rendering the flat `rows` exactly as they do now, which flattens the
+      grouping on the way out; that degradation is deliberate and is the point
+      of holding the structure in the model rather than in the output. A
+      structured exporter MAY map the partition to its target's equivalent. A
+      canonical Carve source writer MUST omit the field, MUST NOT invent source
+      syntax for it, and MUST NOT drop or reorder rows to suit it. A bridge or
+      API which exposes conversion diagnostics SHOULD report the loss.

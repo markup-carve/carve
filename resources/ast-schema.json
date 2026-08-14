@@ -2644,6 +2644,60 @@
             "$ref": "#/$defs/inlineNode"
           }
         },
+        "rowGroups": {
+          "type": "object",
+          "description": "Optional explicit head/body/foot partition of `rows`, imported from or destined for a format whose table model has one. It PARTITIONS `rows` and never repeats them: the counts consume `rows` in order, head first, then each body, then the foot, and they MUST account for every row exactly once. Carve 0.1 source has no spelling for this field; absent means the implicit structure every renderer already derives - the leading run of header rows as the head, everything after it as one body, no foot, no row-head columns. HTML, plain and ANSI output ignore it.",
+          "required": [
+            "headRows",
+            "bodies",
+            "footRows"
+          ],
+          "properties": {
+            "headRows": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Rows at the start of `rows` forming the table head. Stated rather than derived, because a body's own intermediate header rows are header rows too and the leading run alone cannot say where one ends and the other begins."
+            },
+            "bodies": {
+              "type": "array",
+              "description": "The body groups, in order, each consuming the next `headRows + bodyRows` rows. An empty array is a table whose rows are all head and foot.",
+              "items": {
+                "type": "object",
+                "required": [
+                  "headRows",
+                  "bodyRows"
+                ],
+                "properties": {
+                  "headRows": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Rows at the start of this group forming its intermediate header."
+                  },
+                  "bodyRows": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Rows in this group after its intermediate header."
+                  },
+                  "rowHeadColumns": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Leading columns of this group's rows that are row headers. Absent means zero. It sits on the group rather than on the table because that is where the exchanged model puts it."
+                  },
+                  "attrs": {
+                    "$ref": "#/$defs/attrs"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "footRows": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Rows at the end of `rows` forming the table foot."
+            }
+          },
+          "additionalProperties": false
+        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
