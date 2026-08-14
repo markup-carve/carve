@@ -6737,6 +6737,67 @@ EOF = (* end of file *) ;
       carve-php#702 item 8 was filed against the old reading and resolved to
       no change once the contradiction was untangled. (carve#605)
 
+  10c. AN ATTRIBUTION STAYS ATTACHED TO ITS QUOTE ON EVERY TARGET --
+      NORMATIVE. PART 9 §4a makes a caption on a block quote an ATTRIBUTION:
+      it names the source of the quotation, and the HTML puts it inside the
+      `<blockquote>` as a `<footer>`. That clause governs the tree and the
+      HTML only, and the other three targets each emitted the attribution as a
+      SIBLING of the quote, separated by a blank line:
+
+          > quoted        ->  markdown  > quoted
+          ^ Socrates                    (blank)
+                                        Socrates
+
+      The words survived, so §10a's floor was met. What did not survive is
+      what they MEAN: read back, `Socrates` is a paragraph that follows a
+      quotation rather than its source, attached to nothing. A reader cannot
+      recover the relationship, and neither can a parser -- round-tripping
+      that Markdown yields a document whose blockquote has no attribution.
+      §10a's principle is that a target may drop INTERACTION but not CONTENT;
+      an attachment is content, not decoration.
+
+      So each target keeps the attachment, using what that target actually
+      has:
+
+      T1 MARKDOWN emits the attribution as a `<footer>` element inside the
+         quote. Markdown has no attribution syntax but it does admit HTML,
+         and this target already emits `<u>`, `<mark>`, `<sub>`, `<ins>` and
+         `<del>` for the same reason -- a construct with no Markdown spelling
+         is written as the element it means. Measured through a CommonMark
+         reader, `<footer>` opens an HTML block inside the quote and is not
+         wrapped in a paragraph, so the rendered HTML is what the HTML target
+         produced from the same source:
+
+             > quoted        ->  > quoted
+             ^ Socrates          >
+                                 > <footer>Socrates</footer>
+
+         A plain quoted paragraph (`>` then `Socrates`) attaches too, and was
+         considered. It loses the attribution ROLE -- it re-reads as an
+         ordinary second paragraph -- and this clause prefers the spelling
+         that survives the round trip intact.
+
+      T2 THE TERMINAL carries its quote bar onto the attribution line. The
+         target already prefixes quoted lines with `│` and already styles the
+         attribution italic-dim; it simply did not prefix it. The bar IS this
+         target's attachment marker, so nothing new is invented:
+
+             │ quoted
+             │
+             │ Socrates          (italic, dim)
+
+      T3 PLAIN TEXT attaches by ADJACENCY: the blank line between the quote
+         and its attribution goes away. A blank line is what separates blocks
+         on this target, so removing it is exactly the statement that the
+         attribution is not a separate block. No punctuation is invented --
+         a dash prefix was considered and rejected, because a writer
+         reproduces what the author wrote and the author wrote no dash.
+
+      WHY THIS NEEDED SAYING. All three engines agreed on the detached form,
+      and the corpus pinned HTML for the construct and nothing else, so
+      `compare:impls` reported agreement rather than a defect. Agreement
+      across implementations is evidence about implementations (carve#1179).
+
   10b. A TABLE ROW KEEPS ITS OWN CELL COUNT -- NORMATIVE. The canonical
       writer emits exactly the cells the row carries. It MAY align the padding
       of cells that exist, but MUST NOT append empty cells to make every row as
