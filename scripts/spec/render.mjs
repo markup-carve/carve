@@ -485,16 +485,17 @@ const sem = g.createSemantics().addOperation('h', {
     const a = renderAttrs(attrsOf(attrs))
     return `<del${a}>${renderInline(oldC.sourceString, '{')}</del><ins${a}>${renderInline(newC.sourceString, '{')}</ins>`
   },
-  edComment(_o, content, _c, attrs) {
+  edComment(body, attrs) {
     // comment content is verbatim (spaces preserved)
-    return `<span class="critic-comment"${renderAttrs(attrsOf(attrs))}>${escapeHtml(content.sourceString)}</span>`
+    return `<span class="critic-comment"${renderAttrs(attrsOf(attrs))}>${escapeHtml(body.child(1).sourceString)}</span>`
   },
   rawInline(code, _ob, fmt, _cb) {
     // PART 9 SS20: emitted UNESCAPED for the html format, dropped otherwise
     const text = codeText(code.child(0).child(1))
     return fmt.sourceString === 'html' ? text : ''
   },
-  litInline(_bang, code, attrs) {
+  litInline(span, attrs) {
+    const code = span.child(1)
     // PART 9 §27: "!" prefix on a verbatim code span. Content is HTML-ESCAPED,
     // emitted by every renderer and never dropped, with the <code> wrapper
     // removed. Bare text when no attribute block is present; a <span> carrying

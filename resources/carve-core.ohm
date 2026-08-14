@@ -242,7 +242,15 @@ CarveCore {
   // ORDINARY code-span attribute block -- with attributes a <span> carries
   // them, with none bare escaped text is emitted. Tried before `image` and
   // `bang` in the inline alternation so `!` binds to a following backtick run.
-  litInline  = "!" code attrs?
+  // Split so the BODY has a name. A construct is skipped in `brContent` for
+  // its extent, and a trailing attribute block is NOT part of what is
+  // skipped: `[t{# c #}{title="]"}x](/u)` closes at the `]` inside the
+  // attribute value, in every engine. The clause skips a span because its
+  // CONTENT is literal, and an attribute value is not that span's content -
+  // `code` already stopped short of `attrs?` there for the same reason. One
+  // spelling of the body, read from both places, so the two cannot drift.
+  litInline  = litInlineBody attrs?
+  litInlineBody = "!" code
 
   // --- Cross-reference with auto text (PART 3 auto_text_link) -------------
   crossref   = "</#" xrefId ">"
@@ -280,7 +288,9 @@ CarveCore {
   edIns      = "{+" (~"+}" edChar)* "+}" attrs?
   edDel      = "{-" (~"-}" edChar)* "-}" attrs?
   edSub      = "{~" (~"~>" ~"~}" edChar)* "~>" (~"~}" edChar)* "~}" attrs?
-  edComment  = "{#" (~"#}" edChar)* "#}" attrs?
+  edComment  = edCommentBody attrs?
+  // The body, without the attribute block - see `litInlineBody`.
+  edCommentBody = "{#" (~"#}" edChar)* "#}"
   edChar     = ~newline any
 
   // raw inline passthrough: a code span whose trailing block is EXACTLY
@@ -319,17 +329,22 @@ CarveCore {
   // cannot be escaped, so ending the run there leaves the author no spelling
   // that keeps both the construct and the text (carve#403).
   //
-  // Only `code` was listed here. `litInline` shares `code`'s extent (`!` fell
-  // through to the last alternative and the backtick run matched `code`), so
-  // that name was already covered by accident; `edComment` was NOT, and
-  // `[t{# ] #}z](/u)` stayed literal text in the oracle while every engine
-  // linked it. Both are named now, so a reader auditing this rule against the
-  // clause finds three spans and not one (carve#1197).
+  // Only `code` was listed here. The inline literal shares `code`'s extent
+  // (`!` fell through to the last alternative and the backtick run matched
+  // `code`), so that span was already covered by accident; the comment was
+  // NOT, and `[t{# ] #}z](/u)` stayed literal text in the oracle while every
+  // engine linked it. All three are named now, so a reader auditing this rule
+  // against the clause finds three spans and not one (carve#1197).
+  //
+  // The BODY rules, not the full spans: what is skipped is the span's content,
+  // and a trailing attribute block is not that. `[t{# c #}{title="]"}x](/u)`
+  // closes at the `]` inside the attribute value in every engine, and `code`
+  // already stopped short of `codeAttrd` here for the same reason.
   //
   // `{+ +}`, `{- -}` and `{~ ~> ~}` take inline content and are deliberately
   // absent: an escape inside them IS an escape, so `[{+a\]b+}](u)` already has
   // a spelling.
-  brContent  = escape | litInline | code | edComment | nested | (~"]" ~newline any)
+  brContent  = escape | litInlineBody | code | edCommentBody | nested | (~"]" ~newline any)
   nested     = "[" brContent* "]"
   brTail     = linkTail | refTail | attrs | emptyAttrs
   linkTail   = "(" dest destTitle? ")" attrs?
