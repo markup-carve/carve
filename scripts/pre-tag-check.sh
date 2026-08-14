@@ -3,8 +3,9 @@
 # pre-tag-check.sh <version> [repo-dir]
 #
 # Validates that a repository is ready to be tagged <version>, so a release is
-# never cut with a stale version field or an un-cut changelog. Run it from a
-# repo root (or pass the repo dir) BEFORE publishing the draft release / tagging.
+# never cut with a stale version field, an un-cut changelog, or - in the spec
+# repo - an engine pin drift file nobody reconciled. Run it from a repo root (or
+# pass the repo dir) BEFORE publishing the draft release / tagging.
 #
 #   bash scripts/pre-tag-check.sh 0.1.2                 # check the current repo
 #   bash /path/to/carve/scripts/pre-tag-check.sh 0.1.1 ../carve-rs
@@ -96,6 +97,36 @@ if [ -f .gitmodules ] && grep -q 'carve' .gitmodules 2>/dev/null; then
       bad "spec submodule '$SPEC' is not initialized (git submodule update --init)"
     else
       ok "spec submodule '$SPEC' initialized"
+    fi
+  fi
+fi
+
+# 7. Engine pin drift is CURRENT, not merely declared (carve#1200).
+#
+# CI gates that every mismatch between the corpus and the pinned reference build
+# is DECLARED in resources/engine-pin-drift.txt. Nothing gated that the
+# declarations are still true. A release is exactly where the difference shows:
+# an entry whose rule the pinned build now reproduces reads as "the corpus is
+# ahead of the engines" while meaning "nobody has run bump-carve-pin in a
+# while", and a reader of the release cannot tell those apart.
+#
+# `engine:report --check` already fails in both directions, so this is a gate on
+# a report rather than a second implementation of it.
+#
+# Only this repo has the file. Invoked from carve-js/carve-rs/carve-php the
+# block does not run, which is why it tests the file rather than the version
+# field.
+if [ -f resources/engine-pin-drift.txt ]; then
+  if [ ! -d node_modules ]; then
+    # NOT a skip. The drift file is present, so the claim is checkable and
+    # unchecked; passing here would report a verification that did not happen.
+    bad "engine pin drift not verified - node_modules missing, run npm ci first"
+  else
+    if DRIFT_OUT="$(npm run --silent engine:report -- --check 2>&1)"; then
+      ok "engine pin drift matches what is declared"
+    else
+      bad "engine pin drift is stale or undeclared - run npm run bump-carve-pin, then delete every line that now reproduces"
+      printf '%s\n' "$DRIFT_OUT" | grep -E 'UNDECLARED|reproduces|no longer|declared drift' | sed 's/^/         /'
     fi
   fi
 fi
