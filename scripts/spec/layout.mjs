@@ -280,6 +280,15 @@ export function bracketRunEnd(line, open) {
     }
     if (c === '`') {
       const run = /^`+/.exec(line.slice(i))[0]
+      // THE 1..3 TIER, because that is what the inline layer this feeds
+      // accepts. resources/carve-core.ohm reads `code = code3 | code2 | code1 |
+      // codeU` and says of the last one that longer runs are out of Core: a run
+      // of four or more matches `codeU` and opens a verbatim span to the end of
+      // the block whether or not an equal run follows. A scanner that paired
+      // them anyway would hand this pass a close the inline pass does not
+      // believe in, and the two answers meeting produced a `<figure>` wrapped
+      // around a paragraph - a shape neither layer would have emitted alone.
+      if (run.length > 3) return -1
       const closer = new RegExp('(?<!`)`{' + run.length + '}(?!`)', 'g')
       closer.lastIndex = i + run.length
       const hit = closer.exec(line)
