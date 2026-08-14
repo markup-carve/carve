@@ -58,7 +58,7 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | Bibliography (§6) — an **option on Citations**, not a separate registration: the host passes a CSL-JSON pool to the Citations extension | <Badge type="warning" text="extension" /> | off | — |
 | TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
 | Semantic span attributes — `[x]{kbd}`, `[HTML]{abbr="…"}`, `[now]{time="…"}` (three names; PART 9 §9) | <Badge type="tip" text="core" /> | on | no |
-| SemanticSpan — the four names core does not reserve (`samp`, `var`, `cite`, `dfn`), plus the soft-deprecated `:name[…]` spelling for all seven; **specified ahead of the engines**, so no implementation registers it yet | <Badge type="info" text="standard" /> | off | — |
+| SemanticSpan — the four names core does not reserve (`samp`, `var`, `cite`, `dfn`), plus the soft-deprecated `:name[…]` spelling for all seven | <Badge type="info" text="standard" /> | off | — |
 | [ImgFence](/svg-images) (sanitized SVG `img` fence — sandboxed by default) | <Badge type="warning" text="extension" /> | off | — |
 
 A `:name[…]` / `::: name` whose word has no registered handler renders via the

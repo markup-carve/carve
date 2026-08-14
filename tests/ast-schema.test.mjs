@@ -247,20 +247,7 @@ test('the corpus is non-trivial', () => {
  * that starts validating again has to leave this list in the commit that bumps
  * the pin, or the list becomes a blanket excuse with no expiry.
  */
-const SCHEMA_ROLLOUT_PENDING = new Map([
-  [
-    '05-lists-20.crv',
-    'PART 9 §4a: a captioned quote is a `block_quote` with an `attribution`; the pin still emits a `figure` whose target is the quote (carve#1159)',
-  ],
-  ['07-blockquote-with-attribution.crv', 'as 05-lists-20.crv'],
-  ['55-blockquote-caption-after-a-blank-line.crv', 'as 05-lists-20.crv'],
-  ['282-two-blank-lines-detach-a-caption-5.crv', 'as 05-lists-20.crv'],
-  ['306-a-captioned-quote-holds-more-than-one-block.crv', 'as 05-lists-20.crv'],
-  ['306-a-captioned-quote-holds-more-than-one-block-2.crv', 'as 05-lists-20.crv'],
-  ['306-a-captioned-quote-holds-more-than-one-block-3.crv', 'as 05-lists-20.crv'],
-  ['306-a-captioned-quote-holds-more-than-one-block-4.crv', 'as 05-lists-20.crv'],
-  ['306-a-captioned-quote-holds-more-than-one-block-5.crv', 'as 05-lists-20.crv'],
-])
+const SCHEMA_ROLLOUT_PENDING = new Map([])
 
 test('every corpus document serializes to a schema-valid AST', () => {
   const failures = []

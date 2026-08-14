@@ -19,6 +19,7 @@ import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expectedFileFor, targetOf } from '../scripts/lib/corpus-targets.mjs'
 import { miscount, shortfall } from '../scripts/spec/participants.mjs'
+import * as lib from '@markup-carve/carve'
 import {
   autolink,
   carveToAnsi,
@@ -29,6 +30,7 @@ import {
   codeCallouts,
   details,
   listTable,
+  semanticSpan,
   spoiler,
   tabs,
 } from '@markup-carve/carve'
@@ -120,6 +122,7 @@ const featureRunners = {
   'code-callouts': (source, render) => render(source, { extensions: [codeCallouts()] }),
   details: (source, render) => render(source, { extensions: [details()] }),
   'list-table': (source, render) => render(source, { extensions: [listTable()] }),
+  'semantic-span': (source, render) => render(source, { extensions: [semanticSpan()] }),
   spoiler: (source, render) => render(source, { extensions: [spoiler()] }),
   tabs: (source, render) => render(source, { extensions: [tabs()] }),
 }
@@ -132,13 +135,41 @@ const featureRunners = {
 const DECLARED_UNIMPLEMENTED = {
   'smart-quotes-locale-de':
     'locale quote selection is an implementation extension/configuration, not canonical Djot syntax',
-  // The tier split (PART 9 §10) moves four semantic names and the deprecated
-  // `:name[...]` spelling into an extension no engine ships yet. The reference
-  // engine is the pinned build, so this stays declared until carve-js
-  // registers `semanticSpan`; the runner below then takes it off this list.
-  'semantic-span':
-    'the SemanticSpan extension is specified before it is implemented: no engine registers it yet',
 }
+
+/*
+ * THE RATCHET ON THE EXCUSE, because an entry above can only ever turn a
+ * comparison into a skip.
+ *
+ * `semantic-span` sat here carrying its own expiry condition in a comment -
+ * "this stays declared until carve-js registers `semanticSpan`" - and when the
+ * pin moved past it, nothing in this file noticed. Both its cases then matched
+ * their committed fixtures on the first try, so two comparisons had been
+ * reported as intentional skips for as long as the entry outlived its reason,
+ * and the only thing standing between the corpus and that state was somebody
+ * rereading the comment.
+ *
+ * The condition is checkable, so it is checked: a feature whose name the
+ * reference build now EXPORTS is implemented, whatever this map says. That is
+ * the same instrument `tests/extension-catalog-claims.test.mjs` uses on the
+ * catalog page, and it is the one that fired on this bump. A feature that is a
+ * render option rather than an extension exports nothing and passes - which is
+ * correct, since an option's absence is not something an export can report.
+ */
+test('no unimplemented declaration outlives the engine gaining the feature', () => {
+  const asExport = (feature) =>
+    feature.replace(/-([a-z])/g, (_, c) => c.toUpperCase())
+  const exported = new Set(Object.keys(lib))
+  const stale = Object.keys(DECLARED_UNIMPLEMENTED)
+    .filter((feature) => exported.has(asExport(feature)))
+    .sort()
+  assert.deepEqual(
+    stale,
+    [],
+    `the reference build now exports ${stale.join(', ')} - give the feature a runner ` +
+      'in featureRunners and delete its DECLARED_UNIMPLEMENTED entry.',
+  )
+})
 
 /*
  * What the loop below actually reached. A runner that generates its cases from

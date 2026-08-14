@@ -11,9 +11,11 @@
  * That gap is the same shape as PART 10 §10a, which every engine violated
  * identically, and as §3a's resolved half, which the reference implementation
  * did not meet: a rule stated in one place, enforced in none. Here it hid
- * `block_quote.attribution`, described as "the `-- attribution` line" - a syntax
- * the grammar does not define, that no engine emits, and that two engines carry
- * dead plumbing for (carve#599).
+ * `block_quote.attribution`, described as "the `-- attribution` line" - at the
+ * time a syntax the grammar did not define, that no engine emitted, and that
+ * two engines carried dead plumbing for (carve#599). PART 9 §4a has since
+ * specified the captioned quote and the engines emit the field, which is why it
+ * no longer needs an entry below.
  *
  * PER TYPE, because per NAME was not enough. This check used to collect every
  * field name appearing anywhere in the produced trees into one set, so a name
@@ -62,8 +64,6 @@ const ENGINE_ROLLOUT_PENDING = {
   'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'table.rowGroups':
     'structural exchange field (PART 12 §15): Carve 0.1 source has no spelling for a head/body/foot partition, and absent already means the implicit one, so a parser never synthesizes it; produced only by AST/format-bridge consumers',
-  'block_quote.attribution':
-    'PART 9 §4a landed ahead of the engines: the pinned build still emits a `figure` whose target is the quote (carve#1159). Clears with the engine fixes and a pin bump.',
 }
 
 /**
