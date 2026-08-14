@@ -138,13 +138,21 @@ document.
 ### Semantic span attribute rules
 
 `semantic-attribute-value-ignored` and `semantic-attribute-outside-span` read
-the same reserved names, and both depend on which of those names the render they
-are linting actually turns into an element. PART 9 §9 reserves `abbr`, `time`
-and `kbd` in core; `samp`, `var`, `cite` and `dfn` become elements only once the
+the same reserved names, and both are scoped to the names the render being
+linted actually turns into an element. PART 9 §9 reserves `abbr`, `time` and
+`kbd` in core; `samp`, `var`, `cite` and `dfn` become elements only once the
 `SemanticSpan` extension is registered. A name the caller's render leaves alone
 is an ordinary attribute whose value reaches the output intact, so reporting it
-would report a loss that is not happening. Lint with the same extension set you
-render with.
+would report a loss that is not happening.
+
+That makes the extension selection an input to the linter, not just to the
+renderer, and it is passed the way each engine already passes one:
+`lintCarve(source, { extensions })` in carve-js, an `extensions` option on
+`lint()` in carve-php, and `lint_carve_with_options` in carve-rs. The scoping was
+settled in [carve#1167](https://github.com/markup-carve/carve/issues/1167). A
+build predating it takes no such selection and treats all seven reserved names
+as core, so the scoping described here is what to expect from an engine at or
+after that ruling rather than from every build in circulation.
 
 #### The block quote exception
 
