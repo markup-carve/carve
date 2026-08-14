@@ -154,6 +154,11 @@ build predating it takes no such selection and treats all seven reserved names
 as core, so the scoping described here is what to expect from an engine at or
 after that ruling rather than from every build in circulation.
 
+Whether an engine can register `SemanticSpan` at all is a separate question from
+the scoping, and the [extension catalog](./extensions) is where it is tracked -
+the reference engine does not export it yet, so its four names are what the
+scoping is for rather than something every caller can switch on today.
+
 #### The block quote exception
 
 `cite` on a block quote MUST NOT be reported by `semantic-attribute-outside-span`.
