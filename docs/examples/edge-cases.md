@@ -16947,3 +16947,251 @@ a [t^[n]](/u) b
 ```
 
 :::
+
+## A footnote in reference link text nests the anchors too
+
+The PART 9 §16 limitation is about LINK TEXT, not about one spelling of a
+link: "a footnote (reference `[^1]` or inline `^[…]`) inside link text
+(`[t[^1]](u)`) or inside a heading later cloned by a `</#id>` crossref nests an
+`<a>` in an `<a>`". A reference tail reaches the same place by a different
+route, and reaches the same answer - the noteref lands where it was written and
+the note draws its number from the one document-order sequence.
+
+The neighboring section pins the inline-tail half of that cross. This one pins
+the reference-tail half, which the executable spec used to refuse: its own
+resolution frame carried the link text through a JSON payload, and
+`JSON.stringify` escaped the frame's field separator, so the footnote pass never
+saw the noteref sitting in it (markup-carve/carve#1195).
+
+::: compare
+
+```carve
+a [t[^1]][r] b
+
+[r]: /u
+
+[^1]: n
+```
+
+```html
+<p>a <a href="/u">t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+a [t^[n]][r] b
+
+[r]: /u
+```
+
+```html
+<p>a <a href="/u">t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+a [t[^1]][r] c [^1] b
+
+[r]: /u
+
+[^1]: n
+```
+
+```html
+<p>a <a href="/u">t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></a> c <a id="fnref1-2" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n<a href="#fnref1" role="doc-backlink">↩<sup>1</sup></a> <a href="#fnref1-2" role="doc-backlink">↩<sup>2</sup></a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## A note body's own references resolve
+
+A footnote body is rendered when the endnotes list is built, which is after the
+document text has been walked. Whatever the body introduces - a reference link,
+another footnote, a reference link whose text holds a footnote - is therefore
+introduced late, and still has to be resolved.
+
+The later note takes the next number in the same sequence, and its own body is
+resolved on the same terms, so the list can grow while it is being built.
+
+::: compare
+
+```carve
+a [^1] b
+
+[^1]: see [x][r]
+
+[r]: /u
+```
+
+```html
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <a href="/u">x</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+a [^1] b
+
+[^1]: see [^2]
+
+[^2]: two
+```
+
+```html
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>two<a href="#fnref2" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+::: compare
+
+```carve
+a [^1] b
+
+[^1]: see [t[^2]][r]
+
+[r]: /u
+
+[^2]: two
+```
+
+```html
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <a href="/u">t<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></a><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>two<a href="#fnref2" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+## A reference link's text survives its own frame
+
+Resolving a reference is deferred: the tail is recorded when the inline pass
+reaches it and matched against the definitions afterwards. Everything the link
+text holds is carried across that gap, and comes out the other side unchanged -
+including the constructs whose own resolution is deferred the same way.
+
+Two of those are worth stating outright. A reference link inside link text is
+still a link, so PART 3's rule that links never nest applies to it exactly as it
+applies to an inline one: the inner link flattens to its text. An image
+reference is not a link, so it stays, and an image inside an anchor is what the
+document asked for.
+
+::: compare
+
+```carve
+a [t</#}>][r] b
+
+[r]: /u
+```
+
+```html
+<p>a <a href="/u">t&lt;/#}&gt;</a> b</p>
+```
+
+:::
+
+::: compare
+
+```carve
+a [t[x][r2]][r] b
+
+[r]: /u
+
+[r2]: /v
+```
+
+```html
+<p>a <a href="/u">tx</a> b</p>
+```
+
+:::
+
+::: compare
+
+```carve
+a [t[x][r2]](/u) b
+
+[r2]: /v
+```
+
+```html
+<p>a <a href="/u">tx</a> b</p>
+```
+
+:::
+
+::: compare
+
+```carve
+a [t![z][r2]][r] b
+
+[r]: /u
+
+[r2]: /i.png
+```
+
+```html
+<p>a <a href="/u">t<img src="/i.png" alt="z"></a> b</p>
+```
+
+:::

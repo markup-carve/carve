@@ -154,6 +154,32 @@ function hardenAttr(name, value) {
 // Exported for PART 9R R1: a reference link with no definition attributes takes
 // this inline path, where a repeated class inside ONE block deduplicates. Only
 // the cross-list merge (renderBlockAttrs) accumulates (carve#604).
+/*
+ * The PART 9R reference frame: `U+E000 ref: <json> U+E001`.
+ *
+ * The payload must not carry the frame characters RAW. The resolution pass
+ * ends a frame at the first `}` that a U+E001 follows, and link text can put
+ * one inside the payload - a crossref whose id ends in `}`, an inline note, a
+ * nested image reference. The scan then ended the frame early and the raw
+ * JSON reached the reader (markup-carve/carve#1195). JSON's own \uXXXX escapes
+ * survive JSON.parse unchanged, so spelling those two characters that way
+ * costs the consumer nothing and makes the frame unambiguous.
+ *
+ * U+0002 needs no help here: JSON.stringify already escapes it as a control
+ * character. That is exactly why the footnote pass could not see a noteref
+ * sitting in a payload, and why PART 9R resolves references FIRST - see the
+ * pass order in html.mjs.
+ */
+export const REF_FRAME = /\uE000ref:(\{[^\uE000\uE001]*?\})\uE001/g
+
+export function refFrame(payload) {
+  const json = JSON.stringify(payload).replace(
+    /[\uE000\uE001]/g,
+    (c) => '\\u' + c.charCodeAt(0).toString(16),
+  )
+  return `\uE000ref:${json}\uE001`
+}
+
 export function renderAttrs(list) {
   // serialization: SOURCE order; all classes merge (deduplicated, corpus
   // 121) into one class attribute at the position of the FIRST class;
@@ -339,6 +365,21 @@ const sem = g.createSemantics().addOperation('h', {
     // own text content; an inner crossref flattens to its resolved TEXT
     inner = inner.replace(/<a [^>]*>([\s\S]*?)<\/a>/g, '$1')
     inner = inner.replaceAll('\uE000xref:', '\uE000xreftext:')
+    // A REFERENCE link is still a frame at this point, not an `<a>`, so the
+    // unwrap above cannot see it: it has to be flattened by reading the
+    // payload's own text. Without this the inner reference resolved after the
+    // outer one and nested an `<a>` inside an `<a>`, which no engine emits
+    // (markup-carve/carve#1195). An image reference is not a link, so it
+    // stays - `<a><img></a>` is what the engines render for that one.
+    inner = inner.replace(REF_FRAME, (m, json) => {
+      let parsed
+      try {
+        parsed = JSON.parse(json)
+      } catch {
+        return m
+      }
+      return parsed.img ? m : parsed.text
+    })
     return tail.child(0).applyTail(inner, raw)
   },
   image(_b, _o, alt, _c, _p, dest, title, _cp, attrs) {
@@ -351,7 +392,7 @@ const sem = g.createSemantics().addOperation('h', {
     // <img>. The label resolves against the same linkDefs entry and takes
     // url, title and attrs from it (PART 9R R1).
     const lbl = label.numChildren ? label.child(0).sourceString : null
-    return `ref:${JSON.stringify({ label: lbl, alt: alt.sourceString, img: true, attrList: attrsOf(attrs), attrSrc: attrs.sourceString })}`
+    return refFrame({ label: lbl, alt: alt.sourceString, img: true, attrList: attrsOf(attrs), attrSrc: attrs.sourceString })
   },
   autolink(_o, body, _c, attrs) {
     const raw = body.sourceString
@@ -543,15 +584,11 @@ sem.addOperation('applyTail(text, source)', {
   },
   refTail(_o, label, _c, attrs) {
     const { text, source } = this.args
-    // NOT the §16 limitation linkTail renders - a limit of this pipeline. A
-    // reference tail carries its text through a JSON payload inside its own
-    // `\uE000ref:{…}\uE001` frame, and PART 9R resolves footnotes BEFORE
-    // references (a note body may itself add ref sentinels). A noteref
-    // substituted into the payload puts raw `"` inside the JSON string, the
-    // parse fails, and the reference degrades to literal source. Measured, not
-    // assumed: `a [t[^1]][r] b` rendered `<a href="/u">tfn:1</a>` with the
-    // check removed. Refuse rather than emit that (markup-carve/carve#1188).
-    if (text.includes('\uE000fn:')) throw new Refuse('noteref inside a reference link payload')
+    // A footnote in reference link text is the SAME §16 limitation linkTail
+    // renders: it nests an `<a>` in an `<a>`, which is what every engine
+    // emits for it. It used to be refused here because the frame hid the
+    // noteref from the footnote pass; the frame now carries it through
+    // (markup-carve/carve#1195).
     const lbl = label.numChildren ? label.child(0).sourceString : null
     // The RAW list travels, not the rendered string: a definition may carry
     // attributes too, and PART 9R R1 merges the two per SS15 A3 - which needs
@@ -561,7 +598,7 @@ sem.addOperation('applyTail(text, source)', {
     // decorated key, and keying on the rendered form both missed that
     // definition and matched a plain one the author never referenced.
     // carve-js and carve-rs key on the written label (carve#648).
-    return `ref:${JSON.stringify({ label: lbl, text, source, attrList: attrsOf(attrs), attrSrc: attrs.sourceString })}`
+    return refFrame({ label: lbl, text, source, attrList: attrsOf(attrs), attrSrc: attrs.sourceString })
   },
   attrs(_o, _s1, _first, _s2, _rest, _s3, _c) {
     const { text } = this.args

@@ -95,7 +95,10 @@ under the same semantic-span rule,
 `307-an-empty-inline-note-is-literal`,
 `308-a-multi-letter-ordered-marker-opens-no-list`,
 `309-a-note-s-content-recognizes-no-note`,
-`310-a-footnote-in-link-text-nests-the-anchors`.
+`310-a-footnote-in-link-text-nests-the-anchors`,
+`311-a-footnote-in-reference-link-text-nests-the-anchors-too`,
+`312-a-note-body-s-own-references-resolve`,
+`313-a-reference-link-s-text-survives-its-own-frame`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
