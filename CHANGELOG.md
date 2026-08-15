@@ -111,6 +111,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   one - so `[Tab]{kbd}` formats back to `[Tab]{kbd}` rather than to a spelling
   that says the value is an empty string where the tree says there is no value.
 
+- **PART 11 §6d: a code fence opener is written glued to its info string**
+  (carve#1219). The reader takes both ` ```php ` and ` ``` php `, and PART 2
+  already calls the glued form canonical, but nothing said which one the
+  canonical WRITER emits - so carve-js and carve-php normalized to the glued
+  form and carve-rs to the spaced one. The writer now emits no padding space
+  before the info string and exactly one space before each metadata token
+  inside it, so a fence carrying a header and a label comes back as
+  ` ```php "src/Auth.php" [Composer] ` whatever run of spaces the author wrote.
+  The rule covers every info string, a header or a label with no language ahead
+  of it and the raw passthrough selector included.
+
 - **A boolean and a key/value of the same name are one attribute**
   (carve#1125). A boolean IS a key/value with an empty value, so it takes that
   name's slot and the repeated key keeps the LAST value at the FIRST position,

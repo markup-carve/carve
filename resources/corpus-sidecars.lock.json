@@ -56,6 +56,8 @@
   "296-a-language-attribute-and-lang-are-one-key.fmt": "701b1c6436909cf3",
   "297-the-language-sigil-takes-no-padding.fmt": "59985ff3bc7cc182",
   "304-an-angle-bracket-is-escaped-only-where-it-opens-markup.md": "a5c20219a50decd0",
+  "320-the-canonical-writer-glues-a-code-fence-to-its-info-string-2.fmt": "aea9fb74f9cbccb1",
+  "320-the-canonical-writer-glues-a-code-fence-to-its-info-string.fmt": "9c280a0ce3124f6e",
   "34-thematic-breaks.fmt": "24dd5947e79012c3",
   "40-superscript-and-subscript-2.fmt": "2fcb4ff9ef264022",
   "43-abbreviations.ansi": "4332a088c2ae546d",

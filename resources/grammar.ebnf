@@ -6526,6 +6526,44 @@ EOF = (* end of file *) ;
       select the wrapper). An empty value there is not just longer, it points
       at a slot that does nothing.
 
+   6d. A CODE FENCE OPENER IS WRITTEN GLUED TO ITS INFO STRING -- NORMATIVE.
+      The canonical writer emits NO padding space between the fence run and
+      the info string: ```php, never ``` php. The two separator slots INSIDE
+      the info string take exactly one space each, so a fence carrying a
+      header and a label comes back as
+
+          ```php "src/Auth.php" [Composer]
+
+      whatever run of spaces the author wrote in either slot. That pins the
+      whole opener LINE rather than its first token, and it holds for every
+      info string, not only a language: a header or a label with no language
+      ahead of it is glued the same way (```"src/app.js"), and so is the raw
+      passthrough selector (```=html, PART 9 §20).
+
+      PART 2 ALREADY NAMES THE FORM. `fenced_code_block` calls the no-space
+      spelling canonical in as many words and records that it is what the
+      X->Carve converters emit; the READER is lenient and takes either, which
+      is a leniency and not a writer's license (§6b makes the same
+      distinction one construct over). This clause is the writer half of that
+      sentence, which nothing stated.
+
+      THE TREE RECORDS NO SLOT, which is why the writer has to be told. §6
+      leaves a spelling to the author BECAUSE THE AST RECORDS IT, and
+      `code_block` records the padding slot no more than it records the fence
+      length or the fence character (PART 12 §3) -- so the writer has nothing
+      to reproduce and must CHOOSE, exactly as §6b and §6c must. Left
+      unchosen, it was chosen twice: carve-js and carve-php normalize to the
+      glued form, carve-rs to the spaced one (carve#1219).
+
+      NOTHING PINNED IT, and the reason is the one this project keeps
+      rediscovering. The fmt corpus held no document whose canonical form
+      contains an info string at all -- twenty-nine `.fmt` fixtures, and the
+      two carrying a code fence carry a BARE one. So the three writers met
+      only on the shape the corpus pins and drifted on the shape it does not,
+      and the drift was invisible to every gate: the HTML is identical, §1's
+      round trip holds for either spelling, and `compare:impls` had no
+      expected bytes to adjudicate between them. A corpus case pins it now.
+
    7. NO WHITESPACE-ONLY LINE -- NORMATIVE. `fmt` never emits a line whose only
       content is ASCII spaces or tabs. Such a line is emitted EMPTY.
 
@@ -7085,11 +7123,11 @@ EOF = (* end of file *) ;
           | a |                            | --- |
           ^ Table caption                  | a |
 
-          ``` js "src/app.js"  ->  plain     const a = 1
+          ```js "src/app.js"   ->  plain     const a = 1
           const a = 1              terminal  ┌── js
           ```                                  const a = 1
 
-          ``` js [Node]        ->  plain     const a = 1
+          ```js [Node]         ->  plain     const a = 1
           const a = 1              terminal  ┌── js
           ```                                  const a = 1
 
@@ -7104,7 +7142,7 @@ EOF = (* end of file *) ;
          slots of its info string, so it renders them the same way, above the
          block:
 
-             ``` php "src/Auth.php" [Composer]  ->  src/Auth.php
+             ```php "src/Auth.php" [Composer]   ->  src/Auth.php
              composer require x                     (blank)
              ```                                    Composer
                                                     (blank)
@@ -7166,12 +7204,12 @@ EOF = (* end of file *) ;
       and neither is thereby permitted:
 
         - A fence title on a fence with NO LANGUAGE is dropped by the
-          MARKDOWN writer too: ``` "src/app.js" emits a bare ``` and the
+          MARKDOWN writer too: ```"src/app.js" emits a bare ``` and the
           title is gone. The Markdown target keeps the title only when a
           language precedes it.
 
         - A code-group label never reaches the HTML target at all:
-          ``` js [Node] gives `<pre><code class="language-js">`. Core
+          ```js [Node] gives `<pre><code class="language-js">`. Core
           assigns the label no meaning and a group extension consumes it, so
           on HTML with no such extension the token has nowhere to go. Where
           it should go is a question about the HTML target, which is PART
