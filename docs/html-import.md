@@ -17,6 +17,56 @@ HTML bytes -> HTML5 DOM -> import policy -> Carve AST -> canonical writer
 Imported nodes do not carry Carve source positions. An implementation may
 report HTML locations separately, but must not put HTML offsets in `pos`.
 
+The writer at the end of that pipeline is what makes a shared fixture
+comparable at all, so it is also the rule for anything an importer spells: an
+importer emits the source `carve fmt` emits, down to whether an attribute value
+carries quotes and which slot it sits in. An importer that builds its source
+by hand rather than through the writer has to hold that line itself.
+
+## Semantic elements
+
+Seven inline elements import as the compact semantic span, which is the exact
+round trip of what the HTML said and stays one node.
+
+| HTML | Carve | value source |
+| --- | --- | --- |
+| `<kbd>` | `[c]{kbd}` | none, the bare boolean |
+| `<abbr title="X">` | `[c]{abbr="X"}` | `title` |
+| `<time datetime="X">` | `[c]{time="X"}` | `datetime` |
+| `<samp>`, `<var>`, `<cite>` | `[c]{samp}` etc. | none, the bare boolean |
+| `<dfn title="X">` | `[c]{dfn="X"}` | `title` |
+
+The attribute a value came from is consumed rather than repeated beside the
+name, and a name whose value attribute is absent or empty gives the bare
+boolean (`<abbr>` and `<abbr title="">` both give `[c]{abbr}`). A leftover
+`id`, `class` or `data-*` rides the same span, in the writer's slot order, so
+`<kbd id="k" class="key">Tab</kbd>` is `[Tab]{#k .key kbd}` - the consumed name
+last, not first.
+
+**Three of the seven are core; four are the SemanticSpan extension's.** `kbd`,
+`abbr` and `time` are core names and come back as their elements anywhere.
+`samp`, `var`, `cite` and `dfn` are the extension's, so `[out]{samp}` renders
+`<span samp="">out</span>` in a core processor and `<samp>out</samp>` only
+where the extension is registered. That is still what an importer should write:
+the semantic survives as an attribute a reader can recover by enabling the
+extension, where unwrapping the element discarded it outright. It is not a full
+round trip through a core render, and the `semantic-spans-extension` fixture
+exists to keep the two cases apart.
+
+Three elements deliberately do NOT take this form:
+
+- `<mark>` maps to `=m=`, which is lossless and idiomatic. One input with two
+  spellings across importers is the thing to avoid.
+- Inline `<code>` maps to a code span, `` `c` ``.
+- `<code>` inside `<pre>` maps to a code block. The compact form is the inline
+  case only.
+
+None of the seven is active content - no URL, no event handler, no script - so
+`safe` maps them exactly as `semantic` and `roundtrip` do, and none of them
+needs a mode branch. An event handler on one of them is still stripped and
+still diagnosed: the mapping renames the element, it does not exempt it from
+hardening.
+
 ## Modes
 
 - `safe` is the default for arbitrary input. It removes active content and
@@ -68,6 +118,22 @@ may add platform-specific fixtures, but shared fixtures define the portable
 minimum. AST comparison ignores object-key order and absent optional fields;
 source comparison uses the canonical writer byte-for-byte. Diagnostic fixture
 objects are minimum matches: implementations may add optional location fields.
+
+The shared set is deliberately small and each directory has one subject:
+
+| fixture | subject |
+| --- | --- |
+| `basic` | a heading, emphasis and a link - the shape everything else assumes |
+| `security` | an event handler and a `<script>` removed, and said so |
+| `semantic-spans-core` | `kbd`, `abbr` and `time`, the three core names |
+| `semantic-spans-extension` | `samp`, `var`, `cite` and `dfn`, which need the extension to render as elements |
+| `semantic-span-attributes` | a consumed value beside a leftover `id`/`class`, a value that needs quotes, an empty value, and an event handler still stripped |
+| `semantic-span-carve-outs` | `<mark>`, inline `<code>` and `<pre><code>`, none of which take the compact form |
+
+Because source comparison is byte-exact, every `expected.crv` here is also a
+fixed point of `carve fmt` in all three engines. A fixture that is not one
+would be pinning source no writer produces, and the first engine to run its
+formatter over it would disagree.
 
 ## CSS policy
 
