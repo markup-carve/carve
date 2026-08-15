@@ -299,6 +299,7 @@ index: examples/edge-cases/index.md
   a-container-a-lazy-line-folded-into-is-still-open
   a-fence-keeps-the-blank-line-at-the-end-of-its-content
   a-captioned-quote-holds-more-than-one-block
+  composite-figures
   11-fenced-code-10
   42-admonitions-5
   42-admonitions-8

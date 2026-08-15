@@ -142,6 +142,40 @@ To find affected documents, search for the seven names used as attributes on a
 span, and for `:name[…]` with any of them. Where a value mattered, move it to an
 attribute that survives - a `title`, or a link if it was a URL.
 
+**A bare `::: figure` container is now a composite figure.** The kind word
+`figure` is reserved (PART 9 section 4c, carve#1122): a bare opener produces a
+`figure_group` - one numbered figure whose captioned children are panels - where
+it used to produce a generic `<div class="figure">`, and the `^ ` line after its
+closing fence attaches as the group caption where it used to stay a literal
+paragraph:
+
+```carve
+{#ep}
+::: figure
+> To be
+:::
+^ Figure #: A pull quote
+```
+
+```html
+<div class="figure" id="ep">                      <!-- before -->
+  <blockquote><p>To be</p></blockquote>
+</div>
+<p>^ Figure #: A pull quote</p>
+
+<figure class="carve-figure-group" id="ep">       <!-- after -->
+  <div class="carve-figure-panels">
+    <blockquote><p>To be</p></blockquote>
+  </div>
+  <figcaption>Figure 1: A pull quote</figcaption>
+</figure>
+```
+
+An opener carrying a quoted title or a `[label]` keeps the old generic-container
+shape. Documents that already hold a bare `::: figure` fence reclassify, and a
+previously dangling caption starts consuming a figure number, which can renumber
+later figures in the same document - `carve lint` reports the affected shapes.
+
 ### Checking documents mechanically
 
 The marker is machine-readable, so this does not have to be done by eye. In

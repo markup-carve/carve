@@ -1,0 +1,291 @@
+Composite figures
+
+```
+{#fig-x .columns-2}
+::: figure
+{#fig-x-a}
+![one](a.png)
+^ (a) One
+
+{#fig-x-b}
+![two](b.png)
+^ (b) Two
+:::
+^ Figure #: Group caption
+.
+<figure class="carve-figure-group columns-2" id="fig-x">
+  <div class="carve-figure-panels">
+    <figure class="carve-figure-panel" id="fig-x-a">
+      <img src="a.png" alt="one">
+      <figcaption>(a) One</figcaption>
+    </figure>
+    <figure class="carve-figure-panel" id="fig-x-b">
+      <img src="b.png" alt="two">
+      <figcaption>(b) Two</figcaption>
+    </figure>
+  </div>
+  <figcaption>Figure 1: Group caption</figcaption>
+</figure>
+```
+
+```
+{#fig-first}
+![lead](lead.png)
+^ Figure #: First
+
+{#fig-x}
+::: figure
+{#fig-x-a}
+![one](a.png)
+^ (a) One
+
+{#fig-x-b}
+![two](b.png)
+^ (b) Two
+:::
+^ Figure #: Second
+
+See </#fig-x> and </#fig-x-a>.
+.
+<figure id="fig-first">
+  <img src="lead.png" alt="lead">
+  <figcaption>Figure 1: First</figcaption>
+</figure>
+<figure class="carve-figure-group" id="fig-x">
+  <div class="carve-figure-panels">
+    <figure class="carve-figure-panel" id="fig-x-a">
+      <img src="a.png" alt="one">
+      <figcaption>(a) One</figcaption>
+    </figure>
+    <figure class="carve-figure-panel" id="fig-x-b">
+      <img src="b.png" alt="two">
+      <figcaption>(b) Two</figcaption>
+    </figure>
+  </div>
+  <figcaption>Figure 2: Second</figcaption>
+</figure>
+<p>See <a href="#fig-x">Figure 2</a> and <a href="#fig-x-a">Figure 2a</a>.</p>
+```
+
+```
+::: figure
+![one](a.png)
+^ (a) One
+
+![two](b.png)
+^ (b) Two
+:::
+.
+<figure class="carve-figure-group">
+  <div class="carve-figure-panels">
+    <figure class="carve-figure-panel">
+      <img src="a.png" alt="one">
+      <figcaption>(a) One</figcaption>
+    </figure>
+    <figure class="carve-figure-panel">
+      <img src="b.png" alt="two">
+      <figcaption>(b) Two</figcaption>
+    </figure>
+  </div>
+</figure>
+```
+
+```
+::: figure
+![lone](l.png)
+^ The only panel
+:::
+^ Figure #: One panel is valid
+.
+<figure class="carve-figure-group">
+  <div class="carve-figure-panels">
+    <figure class="carve-figure-panel">
+      <img src="l.png" alt="lone">
+      <figcaption>The only panel</figcaption>
+    </figure>
+  </div>
+  <figcaption>Figure 1: One panel is valid</figcaption>
+</figure>
+```
+
+```
+::: figure
+Both panels were shot on the same day.
+
+{#fig-s-a}
+![one](a.png)
+^ (a) One
+
+{#fig-s-b}
+![two](b.png)
+^ (b) Two
+:::
+^ Figure #: With a note between the panels
+.
+<figure class="carve-figure-group">
+  <div class="carve-figure-panels">
+    <p>Both panels were shot on the same day.</p>
+    <figure class="carve-figure-panel" id="fig-s-a">
+      <img src="a.png" alt="one">
+      <figcaption>(a) One</figcaption>
+    </figure>
+    <figure class="carve-figure-panel" id="fig-s-b">
+      <img src="b.png" alt="two">
+      <figcaption>(b) Two</figcaption>
+    </figure>
+  </div>
+  <figcaption>Figure 1: With a note between the panels</figcaption>
+</figure>
+```
+
+```
+::: figure
+![one](a.png)
+^ (a) One
+:::
+
+
+^ Figure #: Detached
+.
+<figure class="carve-figure-group">
+  <div class="carve-figure-panels">
+    <figure class="carve-figure-panel">
+      <img src="a.png" alt="one">
+      <figcaption>(a) One</figcaption>
+    </figure>
+  </div>
+</figure>
+<p>^ Figure #: Detached</p>
+```
+
+```
+::: note
+Body text.
+:::
+^ Not a caption
+.
+<aside class="admonition note">
+  <p>Body text.</p>
+</aside>
+<p>^ Not a caption</p>
+```
+
+```
+::: figure "A titled figure div"
+![one](a.png)
+^ (a) One
+:::
+^ Not a group caption
+
+::: figure [g]
+Body.
+:::
+.
+<div class="figure">
+  <p class="admonition-title">A titled figure div</p>
+  <figure>
+    <img src="a.png" alt="one">
+    <figcaption>(a) One</figcaption>
+  </figure>
+</div>
+<p>^ Not a group caption</p>
+<div class="figure">
+  <p class="div-label">g</p>
+  <p>Body.</p>
+</div>
+```
+
+```
+::: figure
+:::: figure
+![one](a.png)
+^ (a) One
+::::
+:::
+^ Figure #: Outer only
+.
+<figure class="carve-figure-group">
+  <div class="carve-figure-panels">
+    <div class="figure">
+      <figure>
+        <img src="a.png" alt="one">
+        <figcaption>(a) One</figcaption>
+      </figure>
+    </div>
+  </div>
+  <figcaption>Figure 1: Outer only</figcaption>
+</figure>
+```
+
+````
+{#fig-m}
+::: figure
+| Kind | N |
+|------|---|
+| a    | 1 |
+
+```js
+const x = 1
+```
+^ A listing panel
+
+$$`E = mc^2`
+^ An equation panel
+
+> Measured twice.
+
+> Brevity.
+^ A quoted panel
+:::
+^ Figure #: Mixed panels
+.
+<figure class="carve-figure-group" id="fig-m">
+  <div class="carve-figure-panels">
+    <figure class="carve-figure-panel">
+      <table>
+        <thead><tr><th scope="col">Kind</th><th scope="col">N</th></tr></thead>
+        <tbody>
+          <tr><td>a</td><td>1</td></tr>
+        </tbody>
+      </table>
+    </figure>
+    <figure class="carve-figure-panel">
+      <pre><code class="language-js">const x = 1
+</code></pre>
+      <figcaption>A listing panel</figcaption>
+    </figure>
+    <figure class="carve-figure-panel">
+      <p><span class="math display">\[E = mc^2\]</span></p>
+      <figcaption>An equation panel</figcaption>
+    </figure>
+    <blockquote><p>Measured twice.</p></blockquote>
+    <figure class="carve-figure-panel">
+      <blockquote><p>Brevity.</p></blockquote>
+      <figcaption>A quoted panel</figcaption>
+    </figure>
+  </div>
+  <figcaption>Figure 1: Mixed panels</figcaption>
+</figure>
+````
+
+```
+:::: figure
+::: note
+![x](x.png)
+^ Figure #: inner
+:::
+::::
+^ Figure #: group
+.
+<figure class="carve-figure-group">
+  <div class="carve-figure-panels">
+    <aside class="admonition note">
+      <figure>
+        <img src="x.png" alt="x">
+        <figcaption>Figure 2: inner</figcaption>
+      </figure>
+    </aside>
+  </div>
+  <figcaption>Figure 1: group</figcaption>
+</figure>
+```

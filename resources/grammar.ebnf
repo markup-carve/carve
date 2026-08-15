@@ -421,6 +421,7 @@ block = heading
       | table
       | line_block
       | local_hard_break_block
+      | figure_group
       | admonition
       | div
       | comment_block
@@ -1109,8 +1110,9 @@ caption_slot = [blank_line], caption ;
    preceding captionable block, with AT MOST ONE blank line between them --
    the optional blank_line in caption_slot is the whole allowance.
 
-   THREE OF THE FIVE HOSTS REFERENCE THIS SLOT: `code_block`, `blockquote` and
-   `table`. §4's other two -- the image paragraph and the standalone
+   FOUR OF THE SIX HOSTS REFERENCE THIS SLOT: `code_block`, `blockquote`,
+   `table` and `figure_group` (whose slot hangs on the CLOSING fence -- §4c).
+   §4's other two -- the image paragraph and the standalone
    display-math block -- attach the same caption under the same allowance, but
    there is no production to hang the slot on, so for them §4 is the whole
    rule. §4 says which, and why. A `^ ` line that follows neither a slot-
@@ -1272,6 +1274,40 @@ quoted_title = '"', {character - '"'}, '"' ;
 (* there is NO escape mechanism inside a quoted title -- a title cannot
    contain a `"`; a line whose title is malformed is an ordinary paragraph
    (deliberate strictness, unlike `quoted_value` which accepts escapes) *)
+
+(* --- Composite figures (PART 9 §4c) --- *)
+(* The kind word `figure` is RESERVED among the `:::` types: a BARE opener --
+   fence, separator, the word `figure`, and NOTHING else -- opens a composite
+   figure rather than an admonition. `figure_group_open` wins over
+   `admonition_open` on exactly that line; an opener that carries a quoted
+   title or a `[label]` (`::: figure "T"`, `::: figure [g]`) does NOT match
+   this production and stays an `admonition` of kind `figure` -- a generic
+   Tier-2 container, metadata preserved losslessly -- which `carve lint`
+   reports (PART 9 §4c). `figure_group` carries no title and no label BY
+   DESIGN: the group's one piece of authored metadata is its caption, and the
+   caption sits after the closer, where §4's rule already lives.
+
+   THE CLOSER CARRIES THE CAPTION SLOT. This is §4's sixth host, and the one
+   whose allowance is STRUCTURAL on a fence: the slot hangs on the CLOSING
+   fence, exactly the `[caption_slot]` that `code_block`, `blockquote` and
+   `table` end in, with the same one-optional-blank-line allowance. Only this
+   container kind takes it -- a `^ ` line after any other `:::` closer is
+   ordinary paragraph content (corpus 318-composite-figures-7). A group left
+   open at END OF INPUT closes there like any container (PART 9 §12) and, its
+   closer line never having been written, has no caption position.
+
+   Body, closer discipline, opaque spans, fence lengths and nesting are the
+   container rules, unchanged (PART 9 §12). What its direct children MEAN --
+   which of them are panels, how the group numbers, how a nested bare
+   `::: figure` degrades -- is PART 9 §4c. *)
+figure_group = figure_group_open, newline,
+               {block - admonition_close},
+               [admonition_close, newline, [caption_slot]] ;
+figure_group_open = colon_fence:open, space, "figure" ;
+(* the optional `caption_slot` begins on the line after the closer, at most
+   one blank line below it -- caption_slot's own optional blank_line IS the
+   allowance (§4). Two blank lines detach, and the `^ ` line is an ordinary
+   paragraph. *)
 
 (* --- Generic Divs (djot generic container; PART 9 §12) --- *)
 (* A BARE `:::` opener with NO type word is a generic div, NOT an
@@ -3233,17 +3269,19 @@ EOF = (* end of file *) ;
         braced-only `^`/`,` are not bare, so `^^x^^` is likewise literal.
 
    4. CAPTION PLACEMENT -- ONE RULE, TWO SPELLINGS (caption_slot in PART 2).
-      A `^ ` caption attaches to exactly five captionable hosts: an image
+      A `^ ` caption attaches to exactly six captionable hosts: an image
       paragraph, a blockquote, a table, a fenced code block
-      (a captioned code block is a numbered LISTING), or a standalone
+      (a captioned code block is a numbered LISTING), a standalone
       display-math block (a numbered EQUATION; the block must be solely the
-      `$$`…`` span). The allowance is the same for all five: adjacent OR exactly
-      one blank line attaches, two blank lines detach and leave the `^ ` line
-      an ordinary paragraph.
+      `$$`…`` span), or the CLOSING fence of a bare `::: figure` container
+      (a composite FIGURE GROUP -- §4c). The allowance is the same for all
+      six: adjacent OR exactly one blank line attaches, two blank lines
+      detach and leave the `^ ` line an ordinary paragraph.
 
       WHERE THAT ALLOWANCE IS WRITTEN DOWN differs, and saying so is the point
-      of this paragraph. For THREE hosts it is STRUCTURAL -- `code_block`,
-      `blockquote` and `table` each end in `[caption_slot]` (PART 2), and
+      of this paragraph. For FOUR hosts it is STRUCTURAL -- `code_block`,
+      `blockquote`, `table` and `figure_group` each end in `[caption_slot]`
+      (PART 2; on `figure_group` the slot hangs on the closing fence), and
       caption_slot's single optional blank_line IS the rule. For the IMAGE
       PARAGRAPH and the STANDALONE DISPLAY-MATH BLOCK it is PROSE: this
       clause is the rule, and PART 3 already says so beside `image` ("there
@@ -3264,10 +3302,10 @@ EOF = (* end of file *) ;
       spelling and undecided in fact.
 
       One rule, two spellings, not two rules. An engine implements this
-      clause; it does not implement three productions and then guess at the
+      clause; it does not implement four productions and then guess at the
       remaining two hosts. This paragraph used to end "structural now, not
-      prose", which was true of three hosts out of five and read as true of
-      all five (carve#991).
+      prose", which was true of three hosts out of the five it then named and
+      read as true of all five (carve#991).
 
    4b. WHAT A CAPTION MAKES OF ITS HOST -- EXPLANATORY. The `figure` node is
       the GENERIC captioned wrapper, not the semantic notion "figure". A
@@ -3297,6 +3335,153 @@ EOF = (* end of file *) ;
       belong inside the `blockquote` itself)". So the withdrawn clause was not
       one valid spelling among two: it put the attribution in the one place the
       HTML Standard names as wrong.
+
+   4c. A COMPOSITE FIGURE GROUPS ITS PANELS UNDER ONE CAPTION -- NORMATIVE
+      (governs `figure_group` in PART 2; carve#1122). A bare `::: figure`
+      container is ONE figure holding ordered sub-figures: its direct
+      captionable children are PANELS, and the `^ ` caption after its closing
+      fence -- §4's sixth host -- is the caption of the WHOLE group. The AST
+      node is `figure_group` (PART 12 §16): `children`, an optional group
+      `caption`, attributes, position -- and deliberately NO `target`, no
+      title, no label. Every existing `figure` carries a `target`, so the
+      group is discriminated by its TYPE rather than by a consumer sniffing
+      for the field that is not there.
+
+      THE OPENER IS BARE OR IT IS NOT THIS PRODUCTION. `figure_group_open` is
+      the fence, its separator, and the kind word `figure` -- nothing else.
+      A bare opener ALWAYS produces a `figure_group`, whatever the body holds:
+      zero panels, one, or many are all valid parses (the degenerate counts
+      are lint findings, below, not errors). An opener carrying a
+      `quoted_title` or a `label` (`::: figure "T"`, `::: figure [g]`)
+      matches `admonition_open` instead and stays a generic Tier-2 container
+      -- `<div class="figure">`, title and label preserved losslessly, the
+      pre-§4c shape -- and `carve lint` reports
+      `figure-group-opener-metadata` (corpus 318-composite-figures-8). The
+      group has no title or label slot BY DESIGN: its one authored metadata
+      channel is the caption, and a second spelling for "the text above the
+      figure" would be claimed from carve#1121's design space.
+
+      PANELS ARE THE DIRECT CHILDREN THE INNER RULES ALREADY MAKE CAPTIONABLE
+      THINGS OF. After the body parses under the UNCHANGED §4 rules, the
+      group's direct children that are `figure` nodes (§4b's generic
+      captioned wrapper: a captioned image paragraph, a captioned code
+      listing, a captioned display-math block, a captioned quote, a promoted
+      reference image) or `table` nodes (captioned or not) are the PANELS, in
+      source order. Everything else -- paragraphs, lists, uncaptioned
+      quotes, nested containers -- is plain group content, PRESERVED IN
+      PLACE between the panels; a strict profile lints it, and no renderer
+      may silently drop or re-attach it (318-composite-figures-5). Two
+      consequences worth naming:
+
+        - AN UNCAPTIONED QUOTE inside the group is plain content, which is
+          how a quotation carries a figure number without a caption of its
+          own: leave the quote bare and caption the GROUP
+          (318-composite-figures-10):
+
+            ::: figure
+            > To be
+            :::
+            ^ Figure #: A pull quote
+
+            <figure class="carve-figure-group">
+              <div class="carve-figure-panels">
+                <blockquote><p>To be</p></blockquote>
+              </div>
+              <figcaption>Figure 1: A pull quote</figcaption>
+            </figure>
+
+          A CAPTIONED quote is a `figure` whose target is the quote (§4b)
+          and panels like any other captionable host -- the quote is not a
+          special host inside the group either.
+        - A TABLE PANEL keeps its own caption as the table's `<caption>`;
+          the panel wrapper adds nothing to it.
+
+      THE GROUP CAPTION ATTACHES AT THE CLOSER, THIS KIND ONLY. A `^ ` line
+      (or multiline caption block, the normal `caption` rules) adjacent to or
+      exactly one blank line below the group's CLOSING fence is the group
+      caption; two blank lines detach it into an ordinary paragraph
+      (318-composite-figures-6). Every other `:::` kind keeps today's
+      behavior -- a `^ ` line after a `::: note` closer is ordinary paragraph
+      content (318-composite-figures-7). Captions INSIDE the fence attach
+      only to their local host, unchanged.
+
+      THE GROUP IS ONE NUMBERING UNIT (PART 9R R5). A `#` placeholder in the
+      GROUP caption draws exactly one number from its label's sequence, like
+      any figure. Panels draw NOTHING from the document sequence: a `#`
+      placeholder in a PANEL caption has nothing to resolve against, stays
+      LITERAL -- the visible failure this language prefers to a silent one
+      -- and lints as
+      `figure-group-panel-number`. Only the group produces a list-of-figures
+      entry. For CROSS-REFERENCES (PART 9R R4), a panel with an id resolves
+      `</#id>` with the group's number plus a letter by panel order among the
+      panels -- "Figure 2a", letters a..z then aa, ab, ... -- and the group's
+      own id resolves as the plain "Figure 2"
+      (318-composite-figures-2). The letters exist in crossref text only:
+      this version generates no visible `(a)` label inside the panel (authors
+      write panel letters in panel captions; the mechanism is reserved).
+      Panel ids register only when the group itself drew a number -- an
+      unnumbered group's panels are anchors but not caption crossref targets,
+      exactly as an id on an uncaptioned figure is today.
+
+      THE GROUP NUMBERS WHERE IT BEGINS, NOT WHERE ITS CAPTION SITS. A
+      captionable host takes its number at the position of the HOST, and a
+      figure group begins at its OPENING fence -- so the group draws before
+      anything inside it does (pre-order). The one construction that can
+      observe the difference is a numbered caption inside NON-panel group
+      content -- a captioned figure inside an admonition inside the group,
+      say -- which draws AFTER the group even though its caption line sits
+      above the group's in the source: the inner figure is "Figure 2" and
+      the group "Figure 1" (corpus 318-composite-figures-11). That
+      construction is already the stray content a strict profile lints.
+      Caption-line order was considered and rejected: under it, editing a
+      group's INTERIOR could renumber the group itself, and a group's number
+      should be stable under edits to what it contains. All four
+      implementations of record -- the oracle, carve-js, carve-php and
+      carve-rs -- agree on the pre-order result, so this clause writes down
+      the answer they already share rather than choosing between them.
+
+      GROUPS DO NOT NEST. A bare `::: figure` opener anywhere inside an open
+      group's body -- any depth -- is a generic Tier-2 container
+      (`<div class="figure">`), not an inner group, and lints as
+      `figure-group-nested` (318-composite-figures-9). Rejected initially
+      rather than specified halfway: nested numbering ("Figure 2a.iii"?) is a
+      design question carve#1122 explicitly defers, and a generic container
+      is the lossless degradation.
+
+      LINT, NOT PARSE. The five findings this clause names are diagnostics
+      over a valid parse: `figure-group-opener-metadata` and
+      `figure-group-nested` (warnings), `figure-group-panel-number`
+      (warning), and `figure-group-empty` / `figure-group-single-panel`
+      (strict-profile findings -- a one-panel or zero-panel group is usually
+      a plain figure or a plain div that grew a fence, but making it an
+      ERROR would turn an edit that deletes the second panel into a parse
+      change).
+
+      HTML SHAPE (PART 10 conventions; the corpus pins the bytes,
+      318-composite-figures):
+
+        <figure class="carve-figure-group [hints]" id="...">
+          <div class="carve-figure-panels">
+            <figure class="carve-figure-panel" id="...">
+              ...panel host...
+              <figcaption>...</figcaption>
+            </figure>
+            ...
+          </div>
+          <figcaption>Label N: group caption</figcaption>
+        </figure>
+
+      The class is FIRST on the group and on each panel, exactly the typed-
+      container convention (`admonition note`): `carve-figure-group` leads,
+      classes from the preceding attribute line -- layout hints such as
+      `columns-2` pass through as classes, profile-sanitized like any class
+      -- merge after it, then the id and remaining attributes in source
+      order. A panel renders as the `<figure>` its host already produces,
+      with `carve-figure-panel` leading its classes the same way. No group
+      caption -> no trailing `<figcaption>`. Zero panels -> the
+      `carve-figure-panels` div still wraps whatever content was preserved;
+      the panels div is unconditional so a consumer styling the shape never
+      branches on child count.
 
    5. TABLE MODEL -- OPERATIONAL SEMANTICS (cell split, row validity,
       header cells, span walk, continuation rows, delimiter row, row
@@ -7020,6 +7205,50 @@ EOF = (* end of file *) ;
       hole §10e came out of. Agreement across implementations is
       evidence about implementations. (carve#1185)
 
+  10g. A COMPOSITE FIGURE SURVIVES EVERY TARGET -- NORMATIVE (PART 9 §4c;
+      carve#1122). The floor is `docs/graceful-degradation.md`'s: panel
+      content, panel captions, preserved stray content and the group caption
+      are all CONTENT, and no target may silently discard any of them. What
+      this clause decides is the canonical writer's spelling and the three
+      non-HTML renderings, so that engines degrade the construct identically
+      instead of each meeting the floor its own way.
+
+      THE CANONICAL WRITER EMITS THE AUTHORED FORM: the attribute line where
+      attributes exist, the bare `::: figure` opener (`figure_group` has no
+      title or label to spell), the children with one blank line between
+      them, the closer at the opener's width (the inward-widening discipline
+      of PART 9 §12 unchanged), and the group caption as a `^ ` line after
+      the closer, its `#` placeholder written back as authored.
+
+      THE CARET AFTER A GROUP CLOSER IS A CAPTION POSITION. §5's
+      unconditional set escapes a leading caret in TEXT; the group caption is
+      NOT text in that position -- it is the caption the closer hosts -- so
+      the writer MUST NOT emit it as `\^ `, which would re-parse as a
+      paragraph and break §1's `parse(fmt(x)) == parse(x)`. The other
+      direction holds too: a PARAGRAPH whose text begins with a caret,
+      sitting where §4's allowance reaches a group closer above it, keeps its
+      `\^ ` escape, because bare it would re-parse as the group caption
+      (corpus 318-composite-figures-6 holds the detached shape).
+
+      T1 MARKDOWN emits the panels in order, each host degraded as it
+         already does, each panel caption as an emphasized `*(...)*`
+         paragraph after its host; preserved stray content in place; the
+         group caption LAST, as a bold `**...**` paragraph, its number
+         resolved. Emphasis and bold rather than invented syntax: Markdown
+         has no figure grouping, and this is the spelling the tabs/label
+         rule already uses for authored text with no native slot.
+
+      T2 PLAIN TEXT AND THE TERMINAL put the group caption FIRST, its number
+         resolved, then a blank line, then each panel: its caption line,
+         then its host's degradation (`[Image: alt]` and the rest,
+         unchanged), a blank line between panels. Caption-first because on a
+         caption-less target the group caption is the only line that says
+         what the following blocks are one of.
+
+      Tabs, `presentation=` hints and PDF layout are renderer/extension
+      business and out of this clause's scope; hint classes reach the HTML
+      target only.
+
   11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE. A resolved
       cross-reference is emitted as a Markdown link to the target heading's id,
       and the target heading gains an explicit `{#id}` suffix. Both halves are
@@ -8390,3 +8619,34 @@ EOF = (* end of file *) ;
       canonical Carve source writer MUST omit the field, MUST NOT invent source
       syntax for it, and MUST NOT drop or reorder rows to suit it. A bridge or
       API which exposes conversion diagnostics SHOULD report the loss.
+
+   16. A COMPOSITE FIGURE IS ITS OWN NODE TYPE -- NORMATIVE (PART 9 §4c;
+      carve#1122). The type is `figure_group`, and the wire shape:
+
+        {"type":"figure_group","children":[...],
+         "caption":[...],"attrs":{...},"pos":{...}}
+
+      `children` are ordinary block nodes IN SOURCE ORDER: the panels are the
+      `figure` and `table` nodes among them, exactly the nodes the inner
+      caption rules built, and non-panel stray content sits between them in
+      place. There is NO `panels` array: repeating the children under a
+      second key would let the two disagree, the same contradiction §15's
+      counts-not-copies rule exists to make unrepresentable, and a consumer
+      derives the panel list the way the renderer does -- by type, in order.
+
+      `caption` is the GROUP caption, an array of inline nodes; absent means
+      the group is uncaptioned (no empty-array placeholder). `type` and
+      `children` are required, `attrs` optional, `pos` per §4.
+
+      DISCRIMINATED BY TYPE, NOT BY SHAPE. Every `figure` node carries a
+      `target`; the group deliberately does not, and a consumer telling the
+      two apart by probing for the missing field would break silently the day
+      either shape grows a field. The type string is the whole test, which is
+      why this is a NEW type rather than a target-less `figure`.
+
+      NO `shortCaption`, NO legends, NO label fields. §14's `shortCaption`
+      stays on `figure` and `table`; whether it ever reaches the group, and
+      whether repeated `^` blocks become legends, is carve#1118's and
+      carve#1121's design space and is not claimed here. The schema
+      (`resources/ast-schema.json`) pins the shape; an unknown property on a
+      `figure_group` is rejected on ingest like any other (§11).

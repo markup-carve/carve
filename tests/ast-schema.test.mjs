@@ -260,6 +260,10 @@ const SCHEMA_ROLLOUT_PENDING = new Map([
   ['306-a-captioned-quote-holds-more-than-one-block-3.crv', 'as 05-lists-20.crv'],
   ['306-a-captioned-quote-holds-more-than-one-block-4.crv', 'as 05-lists-20.crv'],
   ['306-a-captioned-quote-holds-more-than-one-block-5.crv', 'as 05-lists-20.crv'],
+  [
+    '318-composite-figures-10.crv',
+    'as 05-lists-20.crv - the captioned quote panel inside the group hits the same withdrawn attribution shape on the pin',
+  ],
 ])
 
 test('every corpus document serializes to a schema-valid AST', () => {
@@ -309,6 +313,7 @@ test('every node type the reference emits is declared in the schema', () => {
  */
 const NOT_PRODUCIBLE = {
   citation_group: 'citations (Tier-2) - off in a default-profile run, exercised by tests/corpus-optional',
+  figure_group: 'pinned engine predates PART 9 §4c composite figures; produced after the next pin bump',
 }
 
 test('every node type the schema declares is produced by a corpus document, or named as unproducible', () => {

@@ -1,0 +1,9 @@
+::: figure "A titled figure div"
+![one](a.png)
+^ (a) One
+:::
+^ Not a group caption
+
+::: figure [g]
+Body.
+:::

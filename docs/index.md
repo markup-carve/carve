@@ -29,7 +29,7 @@ features:
   - title: Interactive Online, Readable Offline
     details: "Built for the interactive web first — diagrams, math, charts and tabs hydrate into rich output online. With no JavaScript every block degrades to clean semantic HTML: a Mermaid fence still shows its source, <details> stays native, tables stay tables."
   - title: Captions Everywhere
-    details: One ^ prefix captions images, blockquotes, tables, listings and equations — emitting semantic figure / figcaption / caption HTML.
+    details: One ^ prefix captions images, blockquotes, tables, listings, equations and composite figure groups — emitting semantic figure / figcaption / caption HTML.
   - title: Friendly Tables
     details: "|= for headers, ^ for rowspan, < for colspan, + for multi-line cells. No separator row required."
   - title: Built-in Extensions
@@ -94,7 +94,7 @@ pinned to exact HTML in the [examples](./examples).
 
 **Carve 0.1 is specified and shipping.** Tier-1 core and Tier-2 standard
 extensions are normative and stable; Tier-3 app-level extensions ship but evolve
-(see [Versioning](./versioning)). Conformance is pinned by 1006 corpus examples
+(see [Versioning](./versioning)). Conformance is pinned by 1017 corpus examples
 with exact HTML output, and the three reference engines - carve-js (TypeScript),
 carve-php, and carve-rs - all run the same corpus. Where the corpus pins a rule
 ahead of an engine, the window is declared on the

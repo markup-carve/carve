@@ -690,6 +690,34 @@ reasons:
   the same `<dl>`. A structure two producers disagree about, which no output
   depends on, is an internal.
 
+## Composite figures
+
+A bare `::: figure` container (PART 9 section 4c) serializes as its own node type,
+`figure_group` (§16):
+
+```json
+{"type": "figure_group",
+ "children": [ ... ],
+ "caption": [ ... ],
+ "attrs": { ... },
+ "pos": { ... }}
+```
+
+`children` are ordinary block nodes in source order; the panels are the
+`figure` and `table` nodes among them, and non-panel stray content sits
+between them in place. There is **no** `panels` array - repeating the children
+under a second key would let the two disagree, so a consumer derives the panel
+list the way the renderer does: by type, in order. `caption` is the group
+caption (the `^ ` line after the closing fence); absent means uncaptioned, not
+an empty array.
+
+The node is discriminated by its `type`, deliberately: every `figure` carries
+a `target`, the group does not, and a consumer probing for the missing field
+instead of reading the type string would break silently the day either shape
+grows a field. No `title`, no `label`, no `shortCaption`, no legend fields -
+that design space belongs to carve#1118 and carve#1121 and is not claimed
+here.
+
 ## Open question
 
 **Citation items are plain objects**, carrying `key`, `prefix`, `locator` and
