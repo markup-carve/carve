@@ -201,6 +201,7 @@ index: examples/edge-cases/index.md
   superscript-in-a-table-cell
   table-span-marker-in-first-column
   table-cell-attributes
+  cell-attributes-bind-after-the-kind-and-alignment-markers
   table-row-attributes
   table-header-cell-rowspan
   blocked-span-marker-renders-as-empty-cell
