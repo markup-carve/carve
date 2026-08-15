@@ -37,10 +37,26 @@
 #   text.value  declared 1 document, measured 0. carve-php kept the trailing
 #               space on a caption line; fixed under carve#963.
 #
+# EMPTY AGAIN, and re-measured the same way. The two lines added on 2026-08-14
+# by markup-carve/carve#1218 were deleted on the `AST conformance` run
+# 31876260970, over 1006 corpus documents plus 3 synthetic samples, against
+# carve-js de67c1f, carve-rs 810fb80 and carve-php 34f8d9a, each checked out
+# and built from main by that run:
+#
+#   footnote_ref.number     declared 2 documents, measured 0.
+#   inline_footnote.number  declared 1 document, measured 0.
+#
+# Both described one carve-php defect - a number published on a footnote inside
+# an UNRESOLVED reference link, which markup-carve/carve#1198 ruled gets none -
+# and markup-carve/carve-php#1270 dropped the field. The run reported both as
+# `FIXED ... no longer diverges`, which is the direction this file's header
+# promises and the reason it fails until the lines go.
+#
 # WHAT AN EMPTY FILE DOES NOT MEAN. It says the three agree on every scalar in
-# 870 documents, and the corpus is what it can say. A shape the corpus does not
-# hold is a shape this file has never measured - so deleting a line is evidence
-# about the corpus, not a certificate about the engines.
+# the 1009 samples the run above measured, and the corpus is what it can say. A
+# shape the corpus does not hold is a shape this file has never measured - so
+# deleting a line is evidence about the corpus, not a certificate about the
+# engines.
 #
 # Measured off-corpus while emptying it: in a collapsed reference whose label
 # holds `/emphasis/`, a `\_` escape, a `:symbol:` shortcode or a nested link,
@@ -49,7 +65,3 @@
 # and those four shapes change the HTML too - carve-php leaves the reference
 # unresolved, or slugs the heading differently - so they are ordinary corpus
 # conformance, owed a fixture rather than a line (markup-carve/carve#1011).
-
-
-footnote_ref.number     2  carve-php publishes a number on a footnote reference written inside an UNRESOLVED reference link; carve-js and carve-rs publish none. markup-carve/carve#1198 ruled that such a reference does not count as a reference, so it gets no number, no endnote and no backlink. carve-php shipped the render half (markup-carve/carve-php#1257 - the HTML is identical in all three engines, which is why the corpus gate cannot see this) and left the serialized number behind. Tracked at markup-carve/carve-php#1269; delete on the release that drops the field.
-inline_footnote.number  1  Same ruling, same engine, the inline half: carve-php publishes a number on an inline note written inside an unresolved reference link. Delete with the line above.
