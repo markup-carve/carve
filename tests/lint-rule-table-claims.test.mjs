@@ -71,6 +71,11 @@ const TRIGGERS = {
   'fence-delimiter-indentation': '  ```\n  x\n  ```\n',
   'carve-version-unsupported': '---\ncarve-version: 99.0\n---\n\nx\n',
   'unclosed-container-fence': '::: note\nbody\n',
+  'figure-group-nested': ':::: figure\n::: figure\n![a](a.png)\n^ (a) A\n:::\n::::\n^ Figure #: G\n',
+  'figure-group-opener-metadata': '::: figure "Title"\n![a](a.png)\n^ (a) A\n:::\n',
+  'figure-group-panel-number': '::: figure\n![a](a.png)\n^ Figure #: panel\n:::\n^ Figure #: G\n',
+  'figure-group-empty': '::: figure\njust a paragraph\n:::\n^ Figure #: G\n',
+  'figure-group-single-panel': '::: figure\n![a](a.png)\n^ (a) A\n:::\n^ Figure #: G\n',
   'fence-title-syntax': '::: note Some Title\nbody\n:::\n',
   'platform-mention-token': {
     source: 'Use @minutely for that cron alias.\n',
