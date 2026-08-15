@@ -114,6 +114,11 @@ the command-line and editor behavior stay aligned.
 | `semantic-attribute-outside-span` | a reserved semantic name used where PART 9 §9 does not apply - a code span, link, image, block-attribute line or table row - where it stays an ordinary attribute, so `` `c`{kbd} `` is `<code kbd="">` rather than a `<kbd>`; `cite` on a block quote is exempt, see [semantic span attribute rules](#semantic-span-attribute-rules) |
 | `platform-mention-token` | an at-prefixed word in text the document publishes, which a host platform re-linkifies into a user mention; opt-in and off by default, see [platform autolink rules](#platform-autolink-rules) |
 | `platform-issue-reference` | a hash-number in text the document publishes, which a host platform re-linkifies into an issue reference; opt-in and off by default, see [platform autolink rules](#platform-autolink-rules) |
+| `figure-group-nested` | a `::: figure` opener inside a composite figure's body; nesting is rejected (PART 9 §4c), so the inner fence stays a generic container |
+| `figure-group-opener-metadata` | a `::: figure` opener carrying a quoted title or `[label]`; the figure production takes neither, so the fence stays a generic container with both preserved (PART 9 §4c) |
+| `figure-group-panel-number` | a `#` placeholder in a PANEL caption; panels are not sequence units, so the placeholder stays a literal `#` (PART 9 §4c) - number the group caption instead |
+| `figure-group-empty` | a `::: figure` group with no captionable panel; the panels wrapper renders around the preserved content only (PART 9 §4c) |
+| `figure-group-single-panel` | a `::: figure` group holding a single panel; a plain captioned figure renders the same content without the group wrapper (PART 9 §4c) |
 
 ### Declaring a target version
 

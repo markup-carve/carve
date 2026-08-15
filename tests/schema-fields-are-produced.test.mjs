@@ -57,7 +57,6 @@ const repo = resolve(here, '..')
 const OPT_IN_ONLY = {
   'citation.*': 'citations (Tier-2): the citation item shape, including its resolution results',
   'citation_group.*': 'citations (Tier-2): the group wrapper and the integral `+` form',
-  'figure_group.*': 'composite figures (PART 9 §4c): the pinned engine predates the host; produced after the next pin bump',
 }
 
 /** Fields permitted by the schema before the corresponding engine rollout. */
