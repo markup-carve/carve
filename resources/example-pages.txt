@@ -577,6 +577,7 @@ index: examples/edge-cases/index.md
   a-blank-line-holds-spaces-and-tabs-and-nothing-else
   a-link-title-takes-exactly-one-space
   a-code-fence-opener-takes-exactly-one-space
+  the-canonical-writer-glues-a-code-fence-to-its-info-string
   a-frontmatter-opener-takes-exactly-one-space
   a-reference-definition-s-metadata-slots-take-exactly-one-space
   a-definition-marker-s-separator-is-a-space-and-it-is-a-run
