@@ -10,5 +10,9 @@ tests/corpus/**        -text
 # line-ending normalization must not alter them before extraction.
 resources/examples/**  -text
 tests/corpus-optional/** -text
+# A converter case's input is foreign source, and one of them is a Markdown
+# hard break - two trailing spaces that any normalization would remove, taking
+# the construct the case exists to assert with them.
+tests/corpus-convert/** -text
 tests/examples/**      -text
 tests/spec/**          -text
