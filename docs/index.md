@@ -39,142 +39,56 @@ features:
 description: Carve is a post-Markdown markup language with visual mnemonics, a formal grammar, and safe-by-default rendering.
 ---
 
-## Quick Reference
+## What it looks like
 
-### Frontmatter
-
-```carve
----
-title: My Document
-tags: [carve, markup]
----
-```
-
-A leading `---` fenced block holds document metadata. Add a format token to the opening fence for non-YAML metadata (`---toml`, `---json`, or any label); a bare `---` uses the configurable default format (`yaml` unless the host sets `defaultFrontmatterFormat`):
+Emphasis you can read at a glance - slashes lean, asterisks are heavy,
+underscores sit below, tildes run through:
 
 ```carve
----toml
-title = "My Document"
----
+/italic/  *bold*  _underline_  ~strikethrough~  =highlight=
+
+H{,2,}O and E=mc{^2^}
 ```
 
-Carve holds the content **raw** - the verbatim text plus the format label - and does not parse it; your application interprets the declared format. The block is leading-only and never rendered as body content.
-
-### Emphasis
+Tables without a separator row. `|=` marks a header cell, `|=>` aligns it right,
+and one `^` line captions the whole thing:
 
 ```carve
-/italic/   *bold*   /*bold italic*/
-_underline_   ~strikethrough~
-=highlight=   {^super^}   {,sub,}
+|= Fruit  |=> Price |
+| Apple    | $1      |
+| Pear     | $2      |
+^ Table 1: no separator row needed
 ```
 
-### Headings
+The same `^` captions an image or attributes a quote:
 
 ```carve
-# H1
-## H2
-### H3
-#### H4
+![Apollo 11](apollo.jpg)
+^ Figure 1: first moon landing
+
+> Stay hungry, stay foolish.
+^ Steve Jobs
 ```
 
-### Links & images
+Abbreviations expand wherever the word appears, defined once anywhere in the
+document:
 
 ```carve
-[link text](https://url.com)
-[Page Name][]              (wiki-style)
-![alt text](image.jpg)
-```
+The HTML spec is essential reading.
 
-### Captions (images, quotes, tables)
-
-```carve
-![Photo](img.jpg)
-^ Figure 1: Caption text
-```
-
-### Lists
-
-```carve
-- unordered item
-1. ordered item
-- [ ] task
-- [x] done
-```
-
-### Code
-
-````carve
-`inline code`
-
-```language
-code block
-```
-````
-
-### Math
-
-```carve
-Inline: $`e^{i\pi} + 1 = 0`
-Display: $$`\int_0^1 x \, dx`
-```
-
-### Quotes & admonitions
-
-```carve
-> quoted text
-^ Attribution
-
-::: note
-admonition content
-:::
-```
-
-### Tables
-
-```carve
-|= Header |= Header |      (|= for headers)
-| Cell    | Cell    |
-|= Row    | Cell    |      (|= in a body row = row header)
-^ Table caption
-
-| ^       | spanned |      (^ rowspan)
-| Header  | <       |      (< colspan)
-+ continuation cell  |     (+ multiline)
-```
-
-### Abbreviations
-
-```carve
 *[HTML]: HyperText Markup Language
 ```
 
-### Attributes
+Plus the conventions you already type - mentions, tags, and semantic spans:
 
 ```carve
-{#id .class key=value}
+Hey @alice, see #release-1.0.
+
+Press [Tab]{kbd} to indent.
 ```
 
-### Extensions, mentions, tags
-
-```carve
-@username   #tagname
-:youtube[VIDEO_ID]
-```
-
-`:name[content]{attrs}` is the generic inline-extension syntax; a specific embed
-like `:youtube[…]` is produced by a **registered extension** (built-in where
-shipped, otherwise a small custom one). `@mentions` and `#tags` render as inert
-spans until you supply URL templates.
-
-### Comments
-
-```carve
-%% whole-line comment
-text %% trailing comment
-%%%
-block comment
-%%%
-```
+Every construct is on the [cheat sheet](./cheatsheet), and every one of them is
+pinned to exact HTML in the [examples](./examples).
 
 ## Status
 
