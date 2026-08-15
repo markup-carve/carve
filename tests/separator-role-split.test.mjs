@@ -413,7 +413,7 @@ const SITES = [
   {
     role: 'padding',
     site: 'header_cell, the slots around the cell content',
-    required: /header_cell = '=', \[alignment_marker\], \{space\}, cell_content, \{space\} ;/,
+    required: /header_cell = '=', \[alignment_marker\], \[cell_attributes\], \{space\}, cell_content, \{space\} ;/,
     forbidden: /header_cell = [^;]*\{whitespace\}/,
     why: 'the `=` has already decided the cell; the padding sits inline after it',
     fixtures: [
@@ -426,8 +426,10 @@ const SITES = [
   {
     role: 'padding',
     site: 'data_cell, the slots around the cell content',
-    required: /data_cell = \[cell_attributes\], \[alignment_marker\], \{space\}, cell_content, \{space\} ;/,
-    forbidden: /data_cell = [^;]*\{whitespace\}/,
+    // The production is written column-aligned with `header_cell` so the one
+    // shared order is visible, hence `\s+` rather than a single space.
+    required: /data_cell\s+=\s+\[alignment_marker\], \[cell_attributes\], \{space\}, cell_content, \{space\} ;/,
+    forbidden: /data_cell\s+= [^;]*\{whitespace\}/,
     why: 'the opening pipe has already decided the cell; the padding sits inline after it',
     fixtures: [
       { slot: 'the leading slot', tab: '|\ta |\tb |\n', space: '| a | b |\n' },
