@@ -277,6 +277,69 @@ function renderBlock(b, depth, ctx) {
       }
       return `${open}\n${parts.join('\n')}\n${pad2}${closeTag}`
     }
+    case 'figure-group': {
+      // PART 9 SS4c: one figure, its direct captionable children as panels.
+      const pad2 = '  '.repeat(depth)
+      // class-first, the typed-container convention: `carve-figure-group`
+      // leads, attribute-line classes merge after it, id and the rest follow
+      // in source order (renderBlockAttrs already merges classes at the first
+      // class position, so prepending a synthetic class list IS that rule).
+      const attrStr = renderBlockAttrs([[['class', 'carve-figure-group']], ...(b.battrs ?? [])])
+      const groupId = / id="([^"]*)"/.exec(attrStr)?.[1]
+      // panels: direct children the inner SS4 rules made captionable things
+      // of -- a captioned paragraph host (image / display math / promoted
+      // reference image), a captioned code listing, a captioned quote (SS4b:
+      // a caption makes its host a figure, and a quote is not a special host
+      // inside the group either), or any table. An UNCAPTIONED quote is
+      // plain group content.
+      const isPanel = (c) =>
+        c.t === 'table' || ((c.t === 'para' || c.t === 'code' || c.t === 'quote') && c.caption !== undefined)
+      let cap
+      if (b.caption !== undefined) {
+        // the group is ONE numbering unit; its draw also registers the panel
+        // ids with letters (SS4c), so number BEFORE rendering the children.
+        const panelIds = b.children.filter(isPanel).map((c) => {
+          const a = c.battrs ? renderBlockAttrs(c.battrs) : ''
+          return / id="([^"]*)"/.exec(a)?.[1]
+        })
+        cap = numberCaption(b.caption, ctx, groupId, panelIds)
+      }
+      const inner = b.children
+        .map((c) => {
+          if (!isPanel(c)) return renderBlock(c, depth + 2, ctx)
+          const wasInPanel = ctx.inPanel
+          ctx.inPanel = true
+          try {
+            if (c.t === 'table') {
+              // a table does not render as a <figure> on its own, so the
+              // panel wrapper is explicit; the table keeps its own attrs and
+              // its own <caption> (SS4c).
+              const t = renderBlock(c, depth + 3, ctx)
+              return `${pad2}    <figure class="carve-figure-panel">\n${t}\n${pad2}    </figure>`
+            }
+            // a captioned para/code/quote host already renders as <figure>;
+            // lead its classes with the panel marker the way the group's are
+            const prev = c.battrs
+            c.battrs = [[['class', 'carve-figure-panel']], ...(prev ?? [])]
+            try {
+              return renderBlock(c, depth + 2, ctx)
+            } finally {
+              c.battrs = prev
+            }
+          } finally {
+            ctx.inPanel = wasInPanel
+          }
+        })
+        .filter((x) => x !== null)
+        .join('\n')
+      // the panels div is UNCONDITIONAL (SS4c): zero panels still wrap the
+      // preserved content, and an empty group holds an empty div.
+      const parts = [`${pad2}  <div class="carve-figure-panels">`]
+      if (inner !== '') parts.push(inner)
+      parts.push(`${pad2}  </div>`)
+      if (cap !== undefined) parts.push(`${pad2}  <figcaption>${renderInline(cap)}</figcaption>`)
+      return `${pad2}<figure${attrStr}>\n${parts.join('\n')}\n${pad2}</figure>`
+    }
     case 'line-block': {
       const pad2 = '  '.repeat(depth)
       // stanzas split on blank lines; soft breaks harden; leading spaces
@@ -502,13 +565,35 @@ function renderItem(item, list, depth, ctx) {
 // PART 9R R5: the FIRST bare `#` in a caption's top-level text is a number
 // placeholder; each label word draws from its own sequence. An id on the
 // captioned block registers the "Label N" text for crossrefs (R4).
-function numberCaption(text, ctx, id) {
+//
+// PART 9 SS4c: a PANEL of a composite figure is not a sequence unit, so a
+// caption rendered under `ctx.inPanel` keeps its `#` literal and registers
+// nothing; the panel's crossref text comes from the GROUP's draw instead --
+// `panelIds` are the ids of the group's panels in panel order, registered as
+// "Label N" plus a letter (a..z, then aa, ab, ...) when the group numbers.
+function panelLetter(k) {
+  let s = ''
+  k++
+  while (k > 0) {
+    k--
+    s = String.fromCharCode(97 + (k % 26)) + s
+    k = Math.floor(k / 26)
+  }
+  return s
+}
+function numberCaption(text, ctx, id, panelIds) {
+  if (ctx.inPanel) return text
   const m = /^(\S+)([^#]*?)(?<!\\)#(?=[\s:.]|$)/.exec(text)
   if (!m) return text
   const label = m[1]
   const n = (ctx.captionSeq.get(label) ?? 0) + 1
   ctx.captionSeq.set(label, n)
   if (id) ctx.captionIds.set(id.toLowerCase(), `${label} ${n}`)
+  if (panelIds) {
+    panelIds.forEach((pid, k) => {
+      if (pid) ctx.captionIds.set(pid.toLowerCase(), `${label} ${n}${panelLetter(k)}`)
+    })
+  }
   return text.replace(/(?<!\\)#(?=[\s:.]|$)/, String(n))
 }
 

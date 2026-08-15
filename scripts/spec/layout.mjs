@@ -1051,6 +1051,9 @@ export function parse(src) {
   // not leak into the parse-result contract { blocks, linkDefs, footnoteDefs,
   // abbrDefs }. It is back to 0 here, so drop it before spreading state.
   delete state.blockDepth
+  // inFigureGroup is the same kind of transient recursion bookkeeping (the
+  // PART 9 SS4c no-nesting demotion); it is false again here, so drop it too.
+  delete state.inFigureGroup
   // Unwrap a figure whose reference image never resolved (see the
   // `pendingRef` note above). Iterative, because a figure can sit inside
   // any container and the tree is as deep as the document.
@@ -1589,6 +1592,37 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
               push({ t: 'footnotes-placement' })
             } else if (opener.type === 'toc') {
               throw new Refuse('::: toc directive')
+            } else if (
+              opener.type === 'figure' && opener.title === null && opener.label === null &&
+              !state.inFigureGroup
+            ) {
+              // PART 9 SS4c: a BARE `::: figure` opener is a composite figure
+              // group. An opener carrying a quoted title or [label] does not
+              // match figure_group_open and falls to the generic colon-div arm
+              // below; a bare opener anywhere inside an open group's body is
+              // demoted the same way (groups do not nest), which is what the
+              // state flag carries through the recursion.
+              state.inFigureGroup = true
+              let children
+              try {
+                children = parseBlocks(body, state, false)
+              } finally {
+                state.inFigureGroup = false
+              }
+              const node = { t: 'figure-group', children }
+              if (close !== -1) {
+                // caption at the CLOSER (SS4's sixth host; one blank allowed).
+                // A group closed by end of input has no closer line to host
+                // the slot.
+                let j = i
+                if (j < n && isBlank(lines[j] ?? '') && CAPTION.test(lines[j + 1] ?? '')) j++
+                const cap = j < n && lines[j] !== undefined ? CAPTION.exec(lines[j]) : null
+                if (cap) {
+                  node.caption = cap[1]
+                  i = j + 1
+                }
+              }
+              push(node)
             } else {
               push({
                 t: 'colon-div',

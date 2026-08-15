@@ -105,6 +105,15 @@ Header and label together - header first, label second.
 :::
 ```
 
+One container kind is reserved: a **bare `::: figure` opener** (no title, no
+label) is a *composite figure* (PART 9 §4c), not an admonition. Its captioned
+children become panels and a `^ ` caption after the closing fence captions the
+whole group - the one `:::` closer that hosts a caption. Add a quoted title or
+a `[label]` to the opener and the line falls back to a generic
+`<div class="figure">` container (with a `figure-group-opener-metadata` lint
+warning): the group form has no title or label slot, its caption is the
+metadata channel.
+
 Two strictness rules to know:
 
 - The header must use **straight double quotes**. An unquoted trailing word (`::: note Custom Title`) or typographic quotes (`::: note “Custom”`, the kind word processors and CMS text filters substitute) make the line *not a fence at all* - the whole block degrades to a literal paragraph. If you see raw `:::` lines in your output, check the quotes first.

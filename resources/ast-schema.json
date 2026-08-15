@@ -214,6 +214,7 @@
             "definition_term",
             "div",
             "figure",
+            "figure_group",
             "footnote",
             "frontmatter",
             "heading",
@@ -395,6 +396,21 @@
           },
           "then": {
             "$ref": "#/$defs/figure"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "figure_group"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/figure_group"
           }
         },
         {
@@ -1105,6 +1121,40 @@
         "shortCaption": {
           "type": "array",
           "description": "Optional abbreviated navigation caption imported from or destined for a structured publishing format. Carve 0.1 source has no spelling for this field; ordinary renderers ignore it.",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          }
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs"
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
+        }
+      },
+      "additionalProperties": false
+    },
+    "figure_group": {
+      "type": "object",
+      "title": "figure_group (block)",
+      "description": "A composite figure (PART 9 \u00a74c, carve#1122): one figure-numbering unit whose direct captionable children - ordinary `figure` and `table` nodes among `children`, in source order - are its panels. There is no `panels` array: a consumer derives the panel list the way the renderer does, by type, in order, and non-panel stray content is preserved in place between them. Discriminated by `type` rather than by shape: every `figure` carries a `target`, this node deliberately does not, and probing for the missing field instead of the type string would break the day either shape grows a field. No title, no label, no `shortCaption`, no legend fields - the group's one authored metadata channel is `caption`, and the rest is carve#1118/carve#1121 design space, not claimed here.",
+      "required": [
+        "type",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "figure_group"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockNode"
+          }
+        },
+        "caption": {
+          "type": "array",
+          "description": "The GROUP caption (the `^ ` line after the closing fence). Absent means the group is uncaptioned - no empty-array placeholder.",
           "items": {
             "$ref": "#/$defs/inlineNode"
           }

@@ -1,0 +1,11 @@
+{#fig-x .columns-2}
+::: figure
+{#fig-x-a}
+![one](a.png)
+^ (a) One
+
+{#fig-x-b}
+![two](b.png)
+^ (b) Two
+:::
+^ Figure #: Group caption

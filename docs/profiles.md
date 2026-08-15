@@ -31,7 +31,7 @@ spelling.
 `list_item`, `table`, `table_row`, `table_cell`, `thematic_break`, `div`,
 `admonition`, `raw_block`, `footnote`, `frontmatter`, `definition_list`,
 `definition_term`, `definition_description`, `section`, `line_block`,
-`comment`, `figure`, `caption`, `abbreviation_def`,
+`comment`, `figure`, `figure_group`, `caption`, `abbreviation_def`,
 `link_reference_definition`.
 
 **Inline:** `text`, `emphasis`, `strong`, `underline`, `strike`,
@@ -60,11 +60,15 @@ containers has no way to express that if the kind lives in a class string.
 
 Which fences are callouts is the **Tier-1 canonical list** - `note`, `tip`,
 `warning`, `danger`, `info`, `success`, `example`, `quote`. A fence opened with
-any other word (`::: sidebar`, `::: figure-group`, a name your own extension
+any other word (`::: sidebar`, `::: aside-note`, a name your own extension
 claims) is a **generic container**: it renders as `<div class="name">` rather
 than an `<aside class="admonition name">`, and it is classified as **`div`** for
-profiles. So `denyBlock(['admonition'])` removes callouts and leaves those
-containers standing, which is the capability the paragraph above promises:
+profiles. The one reserved word is `figure`: a *bare* `::: figure` opener is a
+composite figure (`figure_group`, PART 9 §4c), not an admonition - though a
+`::: figure` opener carrying a quoted title or a `[label]` still falls back to
+the generic container. So `denyBlock(['admonition'])` removes callouts and
+leaves those containers standing, which is the capability the paragraph above
+promises:
 
 ```js
 const p = Profile.full()

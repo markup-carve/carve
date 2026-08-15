@@ -37,3 +37,17 @@
 306-a-captioned-quote-holds-more-than-one-block-3  A captioned quote renders `<figure><figcaption>`; the pin renders `<blockquote><footer>`.
 306-a-captioned-quote-holds-more-than-one-block-4  A captioned quote renders `<figure><figcaption>`; the pin renders `<blockquote><footer>`.
 306-a-captioned-quote-holds-more-than-one-block-5  A captioned quote renders `<figure><figcaption>`; the pin renders `<blockquote><footer>`.
+
+# PART 9 §4c composite figures (carve#1122): the pinned carve-js predates the
+# `::: figure` captionable host, so it renders these as a generic container
+# with a literal `^ ` paragraph. The engine PRs ship the host; the next pin
+# bump empties these entries.
+318-composite-figures  PART 9 §4c composite figures; pinned carve-js predates the host
+318-composite-figures-2  PART 9 §4c composite figures; pinned carve-js predates the host
+318-composite-figures-3  PART 9 §4c composite figures; pinned carve-js predates the host
+318-composite-figures-4  PART 9 §4c composite figures; pinned carve-js predates the host
+318-composite-figures-5  PART 9 §4c composite figures; pinned carve-js predates the host
+318-composite-figures-6  PART 9 §4c composite figures; pinned carve-js predates the host
+318-composite-figures-9  PART 9 §4c composite figures; pinned carve-js predates the host
+318-composite-figures-10  PART 9 §4c composite figures; pinned carve-js predates the host
+318-composite-figures-11  PART 9 §4c composite figures; pinned carve-js predates the host

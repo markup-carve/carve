@@ -135,7 +135,7 @@ two
 + continuation cell |        (+ = multi-line cell)
 ```
 
-## Captions (images, quotes, tables, code listings, equations)
+## Captions (images, quotes, tables, code listings, equations, figure groups)
 
 ```carve
 ![Photo](img.jpg)
@@ -149,6 +149,21 @@ two
 
 A `^` caption after a fenced code block makes a numbered *listing*; after a
 standalone `$$`-math block, a numbered *equation*.
+
+A bare `::: figure` container is a *composite figure*: its captioned children
+become lettered panels, and a `^` caption after the closing fence captions and
+numbers the whole group (`</#panel-id>` then renders as "Figure 2a"):
+
+```carve
+::: figure
+![one](a.png)
+^ (a) One
+
+![two](b.png)
+^ (b) Two
+:::
+^ Figure #: The pair
+```
 
 A caption spans multiple lines like a paragraph — following lines fold in until
 a blank line or a block that would interrupt a paragraph (a list marker folds

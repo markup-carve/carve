@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Composite figures: a bare `::: figure` container is a captionable host**
+  (carve#1122, PART 9 §4c). One figure holding ordered panels: the direct
+  `figure`/`table` children are the panels, a `^ ` caption after the CLOSING
+  fence - caption placement's sixth host, this kind only - captions and
+  numbers the whole group, and the AST gains a `figure_group` node type
+  (PART 12 §16). The group is one figure-sequence unit; a panel id resolves
+  `</#id>` as the group number plus a letter ("Figure 2a"); a `#` in a panel
+  caption stays literal. An opener carrying a quoted title or `[label]` stays
+  a generic container, as does a nested bare `::: figure`; both lint. HTML
+  renders `carve-figure-group` / `carve-figure-panels` / `carve-figure-panel`,
+  and PART 11 §10g fixes the writer spelling and the non-HTML degradations.
+  This is an observable parsing change inside 0.1.x for documents that already
+  hold a bare `::: figure` fence: the container reclassifies from a generic
+  div, and a previously dangling `^ ` line after its closer starts consuming a
+  figure number, which can renumber later figures.
+
 - **A compact language attribute, `{:TAG}`** (carve#1114). `[Le Bon Usage]{:fr}`
   is exact sugar for `{lang=fr}`, on inline spans and on block attribute lines
   alike. The empty form `{:}` means the language is explicitly UNKNOWN and
