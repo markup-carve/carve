@@ -18,10 +18,26 @@ release goes in dependency order so the engines pin a released spec.
 For each repo, on `main`, with the spec submodule (if any) already advanced and
 CI green:
 
-1. **Bump the version field** to the target:
-   - `carve`, `carve-js`, `tree-sitter-carve`: `package.json` `"version"`
-   - `carve-rs`: `Cargo.toml` `version`
-   - `carve-php`: none - the version is derived from the git tag (Packagist)
+1. **Bump every field that states the version.** Three repos state it TWICE, and
+   this list named only the manifests until `markup-carve/carve-js#1074`: an
+   outside embedder found three published releases whose exported constant still
+   read `0.1.0`, because the constant was not on any checklist.
+
+   - `carve`, `tree-sitter-carve`: `package.json` `"version"`
+   - `carve-js`: `package.json` `"version"` AND `src/version.ts` `LIB_VERSION`
+   - `carve-rs`: `Cargo.toml` `version` (no separate constant; the build reports
+     `CARGO_PKG_VERSION`)
+   - `carve-php`: no manifest field - the version is derived from the git tag
+     (Packagist) - BUT `src/CarveConverter.php` `LIB_VERSION` must be set to the
+     target
+   - `carve-rb`: `lib/carve/version.rb` `VERSION` AND `ext/carve/Cargo.toml`
+     `version`
+   - `carve-py`: `pyproject.toml` `[project] version` AND `Cargo.toml`
+     `[package] version` - the second is what `carve.__version__` reports
+   - `carve-lsp`, `carve-wasm`: `package.json` / `Cargo.toml` `version`
+
+   "No manifest field" is not "nothing to bump": carve-php is the repo where
+   that reading is most tempting and most wrong.
 2. **Reconcile the CHANGELOG.** Make sure `## [Unreleased]` covers everything in
    the `lastTag..main` range (the draft release notes are the source of truth for
    scope), then cut it to `## [X.Y.Z] - YYYY-MM-DD` and open a fresh empty
@@ -109,6 +125,30 @@ The publish step is gated so a mistake cannot ship the wrong version:
 - **tree-sitter-carve**: no automated publish workflow; publish manually and run
   the pre-tag check first.
 
+A second layer guards the constants, which no publish workflow used to read.
+Each of these fails on every push, not only at tag time, so a missed bump
+surfaces in the PR that missed it:
+
+- **carve-js**: `test/the-lib-version-constant-tracks-the-package-version.test.ts`
+  ties `LIB_VERSION` to `package.json`.
+- **carve-php**: `tests/TestCase/ReleaseVersionTest.php` - the only version
+  check this repo has, since Packagist derives the version from the tag and
+  nothing else compares the constant to anything.
+- **carve-rs**: `tests/the_version_a_build_reports_is_the_one_that_shipped.rs`.
+- **carve-rb**: `test/release_version_test.rb`, plus a tag guard in
+  `.github/workflows/release.yml` that refuses to publish a gem whose
+  `Carve::VERSION` is not the tag.
+- **carve-py**: `.github/workflows/release.yml` has a tag guard, and it reads
+  `pyproject.toml` ONLY. `Cargo.toml` carries the version `carve.__version__`
+  actually reports, and no guard compares it to the tag; widening it, and the
+  matching `tests/test_release_version.py`, is open in
+  `markup-carve/carve-py#39`. Until that merges, check the second manifest by
+  hand.
+- **carve-wasm**: NO version guard on its publish workflow. `release.yml`
+  publishes to npm on any `v*` tag with no tag-versus-`Cargo.toml` comparison,
+  which is the one place in the org where a mistyped tag reaches a registry
+  unopposed. Run the pre-tag check by hand before tagging it.
+
 ## Never
 
 - Never tag before `pre-tag-check.sh` passes.
@@ -117,3 +157,10 @@ The publish step is gated so a mistake cannot ship the wrong version:
 - Never publish a version whose field or changelog does not match the tag.
 - Never bump a version field except as part of a release (version numbers are
   release artifacts, not commit counters).
+- Never leave a comment saying a version constant is kept in sync on release.
+  That sentence is what let carve-js publish three releases whose exported
+  constant read `0.1.0` (`markup-carve/carve-js#1074`, found by an outside
+  embedder rather than by CI): the comment described an intention, every reader
+  believed it, and nothing executed it. Point at the check instead - name the
+  test or the workflow step that fails when the two disagree - so a reader can
+  go see whether it still runs.
