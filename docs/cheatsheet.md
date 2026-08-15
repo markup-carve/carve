@@ -65,7 +65,7 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 :  definition
 
 > blockquote
-^ Attribution                (caption / attribution: ^ prefix)
+^ Attribution                (caption: ^ prefix; wraps the quote in a figure)
 
 > quoted                     (+ at col 0 attaches the next flush-left
 +                             block to the quote - no > prefixing)

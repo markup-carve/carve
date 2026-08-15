@@ -3269,59 +3269,34 @@ EOF = (* end of file *) ;
       prose", which was true of three hosts out of five and read as true of
       all five (carve#991).
 
-   4a. A CAPTION ON A QUOTE IS AN ATTRIBUTION -- NORMATIVE. Four of the five
-      hosts take a caption and become a numbered thing: a FIGURE, a TABLE, a
-      LISTING, an EQUATION. The blockquote is the odd one, and it is not a
-      figure. Its caption names the SOURCE of the quotation.
+   4b. WHAT A CAPTION MAKES OF ITS HOST -- EXPLANATORY. The `figure` node is
+      the GENERIC captioned wrapper, not the semantic notion "figure". A
+      captioned code block is a `figure` whose target is the code block, a
+      captioned standalone display-math block is a `figure` whose target is
+      that paragraph, and a captioned quote is a `figure` whose target is the
+      quote. What a captioned thing is CALLED and counted as comes from the
+      caption's own label -- the text before the `#` placeholder, which is the
+      counter bucket key (PART 2, CAPTION NUMBER PLACEHOLDER) -- and never from
+      the host's node type. `^ Listing #: …` on a code block yields "Listing 1"
+      because the author wrote "Listing", not because a code block is a listing.
 
-      So a captioned quote is a `block_quote` carrying an `attribution` (an
-      array of inline nodes), NOT a `figure` whose target is a quote, and the
-      HTML puts the source where a quotation's source belongs:
+      SO A QUOTE IS NOT A SPECIAL HOST. carve#1161 briefly made a caption on a
+      quote an `attribution` rendered as a `<footer>` INSIDE the `<blockquote>`,
+      on the argument that a figure is a numbered thing and `figure` was doing
+      two jobs. Both halves are wrong. `figure` does one job here, as the code
+      block above shows; and a caption with no bare `#` takes no number under
+      either model, so a quote captioned `^ William Shakespeare` never entered a
+      counter. That clause is withdrawn (carve#1213), and PART 11 §10d, which
+      carried the attribution onto the other three targets, goes with it.
 
-        > To be
-        ^ Hamlet
-
-        <blockquote>
-          <p>To be</p>
-          <footer>Hamlet</footer>
-        </blockquote>
-
-      `^` IS UNCHANGED as the spelling. No document migrates, and the canonical
-      writer emits the same source it read.
-
-      THE QUOTE'S BLOCKS ARE NOT COUNTED. A multi-paragraph epigraph is
-      ordinary, and so are a quoted list, a nested quote, a quoted code block
-      and a quoted heading; each takes its attribution the same way, and the
-      `footer` is the LAST child of the `blockquote` whatever precedes it.
-      This sentence was implied rather than written, and the executable spec
-      read the silence the other way: it rendered a single-paragraph quote and
-      refused every other shape. No corpus document held one, so the refusal
-      was unreachable and nothing failed (carve#1181, carve#755). Corpus
-      `306-a-captioned-quote-holds-more-than-one-block` pins the five shapes.
-
-      A QUOTE TAKES NO NUMBER, which is the point rather than a side effect.
-      Numbering keys on the `#` placeholder, so `^ Figure #: Hamlet` on a quote
-      used to produce "Figure 1", consume a number from the document's figure
-      sequence, and be reachable by a numbered cross-reference - an epigraph
-      counted among the figures. Under this clause the placeholder has nothing
-      to resolve against and stays LITERAL, which is the visible failure this
-      language prefers to a silent one; `carve lint` reports it.
-
-      BOTH SPELLINGS ARE VALID HTML and the argument is not a conformance one.
-      A `figure` may wrap a quotation, and `footer` inside `blockquote` is the
-      attribution idiom. The argument is about this language's model: `figure`
-      was doing two jobs, the AST wrapper for ANY captioned block and the
-      semantic notion "figure", and the second one is wrong for a quote.
-      Anything walking the tree for figures found every captioned epigraph.
-
-      THE FIGURE-NESS IS NOW WRITTEN RATHER THAN INFERRED. A document that
-      wants a quotation numbered as a figure says so, once `:::` is a
-      captionable host (carve#1122):
-
-        ::: figure
-        > To be
-        :::
-        ^ Figure #: A pull quote
+      HTML AGREES, AND IN THE OTHER DIRECTION. The HTML Standard's `blockquote`
+      section requires that "attribution for the quotation, if any, must be
+      placed outside the `blockquote` element", and gives a `<figure>` wrapping
+      the quote with a `<figcaption>` as the way "to clearly relate a quote to
+      its attribution (which is not part of the quote and therefore doesn't
+      belong inside the `blockquote` itself)". So the withdrawn clause was not
+      one valid spelling among two: it put the attribution in the one place the
+      HTML Standard names as wrong.
 
    5. TABLE MODEL -- OPERATIONAL SEMANTICS (cell split, row validity,
       header cells, span walk, continuation rows, delimiter row, row
@@ -6828,74 +6803,13 @@ EOF = (* end of file *) ;
        would make a tight item loose and change its rendered structure.
        (carve#1033)
 
-  10d. AN ATTRIBUTION STAYS ATTACHED TO ITS QUOTE ON EVERY TARGET --
-      NORMATIVE. PART 9 §4a makes a caption on a block quote an ATTRIBUTION:
-      it names the source of the quotation, and the HTML puts it inside the
-      `<blockquote>` as a `<footer>`. That clause governs the tree and the
-      HTML only, and the other three targets each emitted the attribution as a
-      SIBLING of the quote, separated by a blank line:
-
-          > quoted        ->  markdown  > quoted
-          ^ Socrates                    (blank)
-                                        Socrates
-
-      The words survived, so §10a's floor was met. What did not survive is
-      what they MEAN: read back, `Socrates` is a paragraph that follows a
-      quotation rather than its source, attached to nothing. A reader cannot
-      recover the relationship, and neither can a parser -- round-tripping
-      that Markdown yields a document whose blockquote has no attribution.
-      §10a's principle is that a target may drop INTERACTION but not CONTENT;
-      an attachment is content, not decoration.
-
-      So each target keeps the attachment, using what that target actually
-      has:
-
-      T1 MARKDOWN emits the attribution as a `<footer>` element inside the
-         quote. Markdown has no attribution syntax but it does admit HTML,
-         and this target already emits `<u>`, `<mark>`, `<sub>`, `<ins>` and
-         `<del>` for the same reason -- a construct with no Markdown spelling
-         is written as the element it means. Measured through a CommonMark
-         reader, `<footer>` opens an HTML block inside the quote and is not
-         wrapped in a paragraph, so the rendered HTML is what the HTML target
-         produced from the same source:
-
-             > quoted        ->  > quoted
-             ^ Socrates          >
-                                 > <footer>Socrates</footer>
-
-         A plain quoted paragraph (`>` then `Socrates`) attaches too, and was
-         considered. It loses the attribution ROLE -- it re-reads as an
-         ordinary second paragraph -- and this clause prefers the spelling
-         that survives the round trip intact.
-
-      T2 THE TERMINAL carries its quote bar onto the attribution line. The
-         target already prefixes quoted lines with `│` and already styles the
-         attribution italic-dim; it simply did not prefix it. The bar IS this
-         target's attachment marker, so nothing new is invented:
-
-             │ quoted
-             │
-             │ Socrates          (italic, dim)
-
-      T3 PLAIN TEXT attaches by ADJACENCY: the blank line between the quote
-         and its attribution goes away. A blank line is what separates blocks
-         on this target, so removing it is exactly the statement that the
-         attribution is not a separate block. No punctuation is invented --
-         a dash prefix was considered and rejected, because a writer
-         reproduces what the author wrote and the author wrote no dash.
-
-      WHY THIS NEEDED SAYING. All three engines agreed on the detached form,
-      and the corpus pinned HTML for the construct and nothing else, so
-      `compare:impls` reported agreement rather than a defect. Agreement
-      across implementations is evidence about implementations (carve#1179).
-
   10e. A PRESENTATION TARGET KEEPS A CAPTION, A FENCE TITLE AND A FENCE
       LABEL -- NORMATIVE. `docs/graceful-degradation.md` states the floor for
       every non-interactive target: a renderer MUST preserve the construct's
       CONTENT and may drop only its INTERACTION, and authored text -- a label
       or a title that distinguishes one block from another -- MUST NOT be
       silently discarded. Three authored tokens were discarded anyway, by all
-      three engines, in the same way §10d's attribution was:
+      three engines:
 
       WHAT THIS CLAUSE DECIDES is where those three tokens go on the targets
       named below, and nothing else. It neither restates the floor nor
@@ -6956,12 +6870,12 @@ EOF = (* end of file *) ;
                                     Table caption
 
       ADJACENCY IS NOT AVAILABLE HERE, AND THAT IS THE GENERAL FORM.
-      §10d attached an attribution to its quote on the plain target by
-      REMOVING the blank line, on the ground that a blank line is what
-      separates blocks there. That move is unavailable to both halves of this
-      clause, and measuring why gives the rule its shape: attachment by
-      adjacency is only available on a target where adjacency does not change
-      what the adjacent block IS.
+      A plain-text target has no delimiter to put around a block, so what it
+      has instead is ADJACENCY: dropping the blank line says that the line
+      below belongs to the block above. That move is unavailable to both
+      halves of this clause, and measuring why gives the rule its shape:
+      attachment by adjacency is only available on a target where adjacency
+      does not change what the adjacent block IS.
 
       A caption written directly after the last row of a Markdown table is
       read by a GFM reader as ANOTHER ROW -- `| a |` then `Table caption`
@@ -6973,14 +6887,14 @@ EOF = (* end of file *) ;
       no delimiter around a code block at all.
 
       So both halves take the separation their target forces and accept that
-      the ATTACHMENT is weaker than §10d's. That is a floor being met, not a
-      relationship being preserved: this clause is about the words surviving.
-      Modeling a caption as something a round trip can recover on the
-      Markdown target is carve#1121's business, not this clause's. The
-      element route §10d used for the attribution is not open here either --
-      a `<caption>` is only valid as the first child of a `<table>`, and the
-      `<table>` a pipe table produces is built by the READER, so there is
-      nowhere to put one.
+      the ATTACHMENT is weaker than adjacency would have given. That is a
+      floor being met, not a relationship being preserved: this clause is
+      about the words surviving. Modeling a caption as something a round trip
+      can recover on the Markdown target is carve#1121's business, not this
+      clause's. Writing the relationship as an ELEMENT is not open here
+      either, though that target does admit HTML -- a `<caption>` is only
+      valid as the first child of a `<table>`, and the `<table>` a pipe table
+      produces is built by the READER, so there is nowhere to put one.
 
       TWO MORE LOSSES OF THE SAME TOKENS ARE RECORDED HERE AND LEFT OPEN,
       both measured on the same build that produced the rows above. Each
@@ -7002,9 +6916,9 @@ EOF = (* end of file *) ;
 
       WHY THIS NEEDED SAYING. All three engines agreed on dropping all three
       tokens, and the corpus pinned HTML for these constructs and nothing
-      else, so `compare:impls` reported agreement rather than a defect --
-      the same hole §10d came out of. Agreement across implementations is
-      evidence about implementations. (carve#1179)
+      else, so `compare:impls` reported agreement rather than a defect.
+      Agreement across implementations is evidence about implementations.
+      (carve#1179)
 
   10f. A REFERENCED ABBREVIATION DEFINITION SPLITS BY TARGET -- NORMATIVE.
       §10a rules the definition NOTHING references: the Markdown, plain-text
@@ -7103,7 +7017,7 @@ EOF = (* end of file *) ;
       nothing else, so `compare:impls` reported cross-engine agreement on the
       Markdown and terminal rows rather than a defect, and reported nothing at
       all about the plain row because no fixture asked for one. That is the
-      hole §10d and §10e came out of. Agreement across implementations is
+      hole §10e came out of. Agreement across implementations is
       evidence about implementations. (carve#1185)
 
   11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE. A resolved

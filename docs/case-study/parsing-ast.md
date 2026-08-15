@@ -64,7 +64,7 @@ Document
     ├── Heading { level, content, id? }
     ├── Paragraph { content }
     ├── CodeBlock { language?, content, attributes }
-    ├── BlockQuote { blocks, attribution? }
+    ├── BlockQuote { blocks }
     ├── List { type, tight, items }
     │   └── ListItem { blocks, checked? }
     ├── Table { headers, rows, alignment[] }   // alignment[] = column defaults

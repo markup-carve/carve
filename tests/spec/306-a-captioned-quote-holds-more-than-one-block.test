@@ -6,11 +6,13 @@ A captioned quote holds more than one block
 > The second of the two arrives rather more often.
 ^ Benjamin Franklin
 .
-<blockquote>
-  <p>Nothing in this world is certain except death and taxes.</p>
-  <p>The second of the two arrives rather more often.</p>
-  <footer>Benjamin Franklin</footer>
-</blockquote>
+<figure>
+  <blockquote>
+    <p>Nothing in this world is certain except death and taxes.</p>
+    <p>The second of the two arrives rather more often.</p>
+  </blockquote>
+  <figcaption>Benjamin Franklin</figcaption>
+</figure>
 ```
 
 ```
@@ -18,23 +20,27 @@ A captioned quote holds more than one block
 > - Be kind.
 ^ House rules
 .
-<blockquote>
-  <ul>
-    <li>Be skeptical.</li>
-    <li>Be kind.</li>
-  </ul>
-  <footer>House rules</footer>
-</blockquote>
+<figure>
+  <blockquote>
+    <ul>
+      <li>Be skeptical.</li>
+      <li>Be kind.</li>
+    </ul>
+  </blockquote>
+  <figcaption>House rules</figcaption>
+</figure>
 ```
 
 ```
 > > I never said that.
 ^ Quoted in the report
 .
-<blockquote>
-  <blockquote><p>I never said that.</p></blockquote>
-  <footer>Quoted in the report</footer>
-</blockquote>
+<figure>
+  <blockquote>
+    <blockquote><p>I never said that.</p></blockquote>
+  </blockquote>
+  <figcaption>Quoted in the report</figcaption>
+</figure>
 ```
 
 ```
@@ -43,11 +49,13 @@ A captioned quote holds more than one block
 > ~~~
 ^ The release runbook
 .
-<blockquote>
-  <pre><code>git bisect run ./check
+<figure>
+  <blockquote>
+    <pre><code>git bisect run ./check
 </code></pre>
-  <footer>The release runbook</footer>
-</blockquote>
+  </blockquote>
+  <figcaption>The release runbook</figcaption>
+</figure>
 ```
 
 ```
@@ -56,9 +64,11 @@ A captioned quote holds more than one block
 > Delivery is at the discretion of the vendor.
 ^ Appendix B
 .
-<blockquote>
-  <h2 id="Terms">Terms</h2>
-  <p>Delivery is at the discretion of the vendor.</p>
-  <footer>Appendix B</footer>
-</blockquote>
+<figure>
+  <blockquote>
+    <h2 id="Terms">Terms</h2>
+    <p>Delivery is at the discretion of the vendor.</p>
+  </blockquote>
+  <figcaption>Appendix B</figcaption>
+</figure>
 ```

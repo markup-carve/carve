@@ -195,42 +195,46 @@ function renderBlock(b, depth, ctx) {
       return `${pad}<pre${title}${ba}><code${cls}>${esc}</code></pre>`
     }
     case 'quote': {
-      // Depth-first and synchronous, so a saved/restored flag is a stack.
+      // PART 9 §4b: a caption makes its host a FIGURE, and a quote is not a
+      // special host. The `figure` node is the generic captioned wrapper, and
+      // what a captioned thing is called and counted as comes from the
+      // caption's own label - so `^ Hamlet` takes no number and `^ Figure #:`
+      // takes the next Figure, exactly as on a code block. carve#1161 briefly
+      // made this an `attribution` rendered as a `<footer>` INSIDE the quote;
+      // the HTML Standard requires the attribution outside the `blockquote`
+      // and names this `<figure>` shape as the way to attach it (carve#1213).
+      //
+      // THE QUOTE'S BLOCKS ARE NOT COUNTED. A multi-paragraph epigraph, a
+      // quoted list, a nested quote, a quoted code block and a quoted heading
+      // each take a caption the same way. This used to render only a
+      // single-paragraph quote and Refuse everything else, which no corpus
+      // document could reach - the refusal was guarded by the absence of a
+      // fixture rather than by a decision (carve#1181, the carve#755 class).
+      const captioned = b.caption !== undefined
+      // A captioned quote sits one level deeper: inside the `<figure>`.
+      const quotePad = captioned ? `${pad}  ` : pad
+      const compact = b.children.length === 1 && b.children[0].t === 'para'
+      // Depth-first and synchronous, so a saved/restored flag is a stack. The
+      // children are rendered ONCE, under `inBlockquote`, which is what keeps a
+      // quoted heading out of the implicit-reference index.
       const wasInBlockquote = ctx.inBlockquote
       ctx.inBlockquote = true
       const inner = (() => {
         try {
-          return b.children.map((c) => renderBlock(c, depth + 1, ctx)).filter((x) => x !== null).join('\n')
+          return compact
+            ? renderBlock(b.children[0], 0, ctx)
+            : b.children.map((c) => renderBlock(c, quotePad.length / 2 + 1, ctx)).filter((x) => x !== null).join('\n')
         } finally {
           ctx.inBlockquote = wasInBlockquote
         }
       })()
-      if (b.caption !== undefined) {
-        // PART 9 §4a: the caption on a quote is its ATTRIBUTION, not a figure
-        // caption. It renders inside the quote, which is where HTML puts the
-        // source of a quotation, and the quote does not become a `figure` -
-        // so it takes no figure number and no consumer counting figures finds
-        // it (carve#1159).
-        //
-        // §4a DOES NOT COUNT THE QUOTE'S BLOCKS, and no other clause does
-        // either: a multi-paragraph epigraph, a quoted list, a nested quote,
-        // a quoted code block and a quoted heading each take an attribution
-        // the same way. This used to render only a single-paragraph quote and
-        // Refuse everything else, which no corpus document could reach - the
-        // refusal was guarded by the absence of a fixture rather than by a
-        // decision, so nothing failed while the oracle alone declined what
-        // every engine renders (carve#1181, the carve#755 class).
-        //
-        // `inner` rather than a re-render of the children: it is the one that
-        // was produced under `inBlockquote`, which is what keeps a quoted
-        // heading out of the implicit-reference index.
-        return `${pad}<blockquote${ba}>\n${inner}\n${pad}  <footer>${renderInline(b.caption)}</footer>\n${pad}</blockquote>`
-      }
-      if (b.children.length === 1 && b.children[0].t === 'para') {
-        const p = renderBlock(b.children[0], 0, ctx)
-        return `${pad}<blockquote${ba}>${p}</blockquote>`
-      }
-      return `${pad}<blockquote${ba}>\n${inner}\n${pad}</blockquote>`
+      const quote = compact
+        ? `${quotePad}<blockquote${captioned ? '' : ba}>${inner}</blockquote>`
+        : `${quotePad}<blockquote${captioned ? '' : ba}>\n${inner}\n${quotePad}</blockquote>`
+      if (!captioned) return quote
+      const id = / id="([^"]*)"/.exec(ba)?.[1]
+      const cap = numberCaption(b.caption, ctx, id)
+      return `${pad}<figure${ba}>\n${quote}\n${pad}  <figcaption>${renderInline(cap)}</figcaption>\n${pad}</figure>`
     }
     case 'list':
       return renderList(b, depth, ctx)
