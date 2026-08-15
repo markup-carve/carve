@@ -1030,9 +1030,13 @@ continuation_row = '+', table_cell, {'|', table_cell}, '|', newline ;
 
 (* Row-level attributes: a `{…}` attribute block GLUED to the row's closing `|`
    (no intervening space) sets the row's `<tr>` attributes -- the row-level twin
-   of a cell's opening-pipe attribute block (cell_attributes). The whole payload
-   must be valid attribute syntax (§15); otherwise the `{` is ordinary content
-   and the line is not a row attribute (see PART 9 §5, ROW ATTRIBUTES). *)
+   of a cell's attribute block (cell_attributes). The two are NOT in the same
+   position: a row's block follows the row's LAST `|`, a cell's follows the
+   cell's marker run (CELL ATTRIBUTES below). Row attributes are unaffected by
+   that rule and are stated here so the pair is not read as one. The whole
+   payload must be valid attribute syntax (§15); otherwise the `{` is ordinary
+   content and the line is not a row attribute (see PART 9 §5, ROW
+   ATTRIBUTES). *)
 row_attributes = attributes ;
 
 (* GFM delimiter row (alternative header syntax to the native `|=` header cell).
@@ -1049,19 +1053,35 @@ delimiter_cell = {space}, [':'], '-', {'-'}, [':'], {space} ;
 
 table_cell = header_cell | data_cell | span_cell ;
 
-header_cell = '=', [alignment_marker], {space}, cell_content, {space} ;
-data_cell = [cell_attributes], [alignment_marker], {space}, cell_content, {space} ;
-(* alignment_marker is glued to the opening '|' (no preceding whitespace),
-   mirroring header_cell; a whitespace-delimited lone '^'/'<' is span_cell *)
-(* CELL ATTRIBUTES (NORMATIVE): an attribute block GLUED to the opening '|'
-   (no preceding whitespace) sets the cell's attributes; the rest of the cell,
-   after optional whitespace, is the content. A space before the brace
-   (`| {.x}`) is ordinary content, NOT attributes. The whole brace payload must
-   be valid attribute syntax (§15); otherwise the '{' is literal content. A
-   cell carrying attributes is never a bare span_cell -- its content is literal
-   even if it is just '^' or '<'. A computed rowspan/colspan/alignment is
+header_cell = '=', [alignment_marker], [cell_attributes], {space}, cell_content, {space} ;
+data_cell   =      [alignment_marker], [cell_attributes], {space}, cell_content, {space} ;
+(* THE MARKER RUN COMES FIRST, IN ONE ORDER, IN BOTH PRODUCTIONS. The kind
+   marker `=` and then the alignment marker are glued to the opening `|` (no
+   preceding whitespace); the attribute block attaches after them. A
+   whitespace-delimited lone '^'/'<' is span_cell. *)
+(* CELL ATTRIBUTES (NORMATIVE): an attribute block sets the cell's attributes.
+   It binds LAST -- after the kind marker and after the alignment marker, in
+   every cell -- and is GLUED to whatever precedes it: to the marker run where
+   the cell has one (`|=<{.x} …`), to the opening `|` where it has none
+   (`|{.x} …`). No whitespace may intervene. The rest of the cell, after
+   optional whitespace, is the content. A space before the brace (`| {.x}`) is
+   ordinary content, NOT attributes. The whole brace payload must be valid
+   attribute syntax (§15); otherwise the '{' is literal content. A cell
+   carrying attributes is never a bare span_cell -- its content is literal even
+   if it is just '^' or '<'. A computed rowspan/colspan/alignment is
    authoritative, so an author copy of those keys is dropped. (corpus
-   99-table-cell-attributes.) *)
+   99-table-cell-attributes, 319-a-cell-s-attributes-bind-after-its-markers.)
+
+   WHY LAST, AND NOT BEFORE THE MARKERS. Binding attributes to the opening `|`
+   ahead of the kind marker leaves an attributed header cell UNSPELLABLE: the
+   only shape available is `|{#x}=R|`, and that is ambiguous by construction --
+   readable either as an attributed header cell, or as a data cell whose
+   content begins with `=`. This grammar reads it the second way, so the shape
+   a canonical writer produced for an attributed header cell came back as
+   `<td id="x">=R</td>` and the PART 11 round-trip invariant failed on it.
+   Once `=` has committed the cell to header, everything after it is
+   unambiguous. Stating one order for both productions is what removes the
+   ambiguity, rather than giving header_cell a second, opposite one. *)
 cell_attributes = attributes ;
 span_cell = rowspan_marker | colspan_marker ;
 
@@ -3560,8 +3580,10 @@ EOF = (* end of file *) ;
          by corpus 09-tables-3.
       T8 ROW ATTRIBUTES -- NORMATIVE. A `{…}` GLUED to a row's closing `|`
          (no intervening space) sets that row's `<tr>` attributes -- the
-         row-level twin of a cell's opening-pipe attribute block, same
-         syntax, same validity rule. The WHOLE payload must be a valid,
+         row-level twin of a cell's attribute block, same syntax, same
+         validity rule, and UNCHANGED by T10: a row's block still follows
+         the row's last `|`, where a cell's follows the cell's marker run.
+         The WHOLE payload must be a valid,
          non-empty attribute block (§15); a space before the brace
          (`| a | {.x}`), an empty `{}`, or an invalid payload is NOT a row
          attribute -- the `{` is ordinary content, so the line (ending in
@@ -3586,7 +3608,9 @@ EOF = (* end of file *) ;
 
          AN AUTHORED `scope` REPLACES THE DEFAULT rather than joining it. A
          cell block naming `scope` suppresses the emitted one, so
-         `|={scope="colgroup"} a |` is `<th scope="colgroup">` and not
+         `|={scope="colgroup"} a |` -- a header cell carrying attributes,
+         which is grammatical because of T10 and was not before it -- is
+         `<th scope="colgroup">` and not
          `<th scope="col" scope="colgroup">`. That is how `colgroup` and
          `rowgroup`, which have no marker spelling here, stay reachable. The
          duplicate was the first thing this rule produced when the default was
@@ -3603,6 +3627,60 @@ EOF = (* end of file *) ;
 
          Otherwise `scope` precedes `rowspan`, `colspan` and the authored
          block in the serialization.
+
+      T10 CELL ATTRIBUTES BIND LAST -- NORMATIVE. A cell's `{…}` block
+         attaches AFTER the kind marker and AFTER the alignment marker, in
+         every cell. One order, both productions (PART 2 `header_cell`,
+         `data_cell`):
+
+             |={.x} h |      header, attributed
+             |=~{.x} h |     header, centered, attributed
+             |>{.x} d |      data, right-aligned, attributed
+             |{.x} d |       data, no marker, attributed
+
+         The block is GLUED: to the marker run where the cell has one, to
+         the opening `|` where it has none. A space anywhere in front of it
+         makes it ordinary content (T4's `{.x} <` is unchanged), and the
+         validity rule is T8's.
+
+         WHAT THIS RULE EXISTS TO FIX. With the block bound to the opening
+         `|` instead, an attributed HEADER cell has no spelling at all. The
+         one shape available, `|{#x}=R|`, is ambiguous by construction: an
+         attributed header cell, or a data cell whose content starts with
+         `=`. §5 T1/T3 resolve it as the second, so a canonical writer that
+         emitted it for an attributed header cell round-tripped
+         `<th id="x">R</th>` into `<td id="x">=R</td>` -- a PART 11 §1
+         failure the corpus could not see, because the only document
+         pinning cell attributes (99-table-cell-attributes) carries no
+         marker, and every order agrees on a cell with no marker. Once `=`
+         has committed the cell to header, everything after it is
+         unambiguous, so binding last is the only placement under which the
+         shape is expressible.
+
+         THE COST, STATED. This CHANGES an already-released spelling on
+         `data_cell`: `|{#x}< content |` was documented as attributes then a
+         left-alignment marker, and under T10 the `<` is no longer in a
+         marker position, so it is literal content and the cell is not
+         aligned. That source REINTERPRETS rather than erroring, which is
+         the outcome to be careful about. It is accepted here for the
+         uniform shape over the preserved special case, on a `0.x` line, and
+         it ships WITH its migration rather than a deprecation window: a
+         canonical writer rewrites the old spelling to the new one. Row
+         attributes (T8) do not move.
+
+         WHAT WAS ACTUALLY MEASURED, so the migration is not sized from the
+         prose. Against this repo's own oracle (scripts/spec) and the
+         `@markup-carve/carve` build package.json pins, `|{#x}< content |`
+         ALREADY renders `<td id="x">&lt; content</td>` -- neither reads the
+         `<` as alignment, so neither ever implemented the order this rule
+         replaces. What they do not yet implement is the other half: an
+         attribute block after a marker. The oracle does; the pinned build
+         renders the braces as text (declared in
+         resources/engine-pin-drift.txt). So the reinterpretation risk falls
+         on documents written to the retired PROSE, and the engine work is
+         to start reading the marker-run position, not to stop reading the
+         old one. Pinned by corpus
+         319-a-cell-s-attributes-bind-after-its-markers.
 
    6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R (rules
       R1-R3; this §-anchor stays for existing references). Summary: link
