@@ -2,7 +2,7 @@
  * A cell's attribute block needs no space after it, and an invalid payload is
  * literal content rather than grounds for refusing the document.
  *
- * §5 says an attribute block glued to the opening `|` sets the cell's attributes
+ * §5 says an attribute block glued to the cell sets the cell's attributes
  * and "the rest of the cell, AFTER OPTIONAL WHITESPACE, is the content". The
  * oracle demanded that whitespace, so `|{.hl}Total |` rendered the braces as
  * text. carve-js, carve-rs and carve-php all applied the attribute - the oracle
@@ -74,4 +74,53 @@ test('an unbraced cell is untouched', () => {
 test('a brace run that never closes stays literal', () => {
   // No closing `}`, so there is no attribute block to test for validity.
   assert.match(html(table('|{.hl Total | 99 |')), /<th scope="col">\{\.hl Total<\/th>/)
+})
+
+/*
+ * §5 T10: the block binds AFTER the kind marker and after the alignment
+ * marker. The cases above all write a cell with NO marker, where every
+ * candidate order agrees - which is exactly why the corpus could not see the
+ * defect (carve#1224). These pin the positions that tell the orders apart.
+ */
+
+test('a header cell may carry attributes', () => {
+  // Unspellable before T10: `header_cell` had no attributes slot at all.
+  assert.match(html('|={#x} R |\n'), /<th scope="col" id="x">R<\/th>/)
+})
+
+test('the block follows the alignment marker on a header cell', () => {
+  const out = html('|=~{#x} R |\n')
+  assert.match(out, /<th scope="col" id="x" style="text-align: center;">R<\/th>/, out)
+})
+
+test('the block follows the alignment marker on a data cell', () => {
+  const out = html('|>{.num} 9 |\n')
+  assert.match(out, /<td class="num" style="text-align: right;">9<\/td>/, out)
+})
+
+test('a marker written AFTER the block is content, not alignment', () => {
+  // The retired order. `<` is no longer in a marker position, so the cell
+  // carries the attributes and is not aligned.
+  const out = html('|{#x}< content |\n')
+  assert.match(out, /<td id="x">&lt; content<\/td>/, out)
+  assert.ok(!out.includes('text-align'), out)
+})
+
+test('the ambiguous shape is still a data cell', () => {
+  // `|{#x}=R|` is what a writer produced for an attributed header cell while
+  // the block bound ahead of the `=`. It reads as a data cell whose content
+  // starts with `=`, which is the round-trip failure T10 removes.
+  assert.match(html('|{#x}=R|\n'), /<td id="x">=R<\/td>/)
+})
+
+test('a space still keeps the block literal after a marker', () => {
+  const out = html('|= {.x} h |\n')
+  assert.match(out, /<th scope="col">\{\.x\} h<\/th>/, out)
+})
+
+test('row attributes did not move', () => {
+  // T8 is unchanged and composes with a cell block in the new position.
+  const out = html('|>{.c} a |{.r}\n')
+  assert.match(out, /<tr class="r">/, out)
+  assert.match(out, /<td class="c" style="text-align: right;">a<\/td>/, out)
 })

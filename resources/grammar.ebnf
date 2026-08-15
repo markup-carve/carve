@@ -1070,7 +1070,7 @@ data_cell   =      [alignment_marker], [cell_attributes], {space}, cell_content,
    carrying attributes is never a bare span_cell -- its content is literal even
    if it is just '^' or '<'. A computed rowspan/colspan/alignment is
    authoritative, so an author copy of those keys is dropped. (corpus
-   99-table-cell-attributes, 319-a-cell-s-attributes-bind-after-its-markers.)
+   99-table-cell-attributes, 319-cell-attributes-bind-after-the-kind-and-alignment-markers.)
 
    WHY LAST, AND NOT BEFORE THE MARKERS. Binding attributes to the opening `|`
    ahead of the kind marker leaves an attributed header cell UNSPELLABLE: the
@@ -3680,7 +3680,7 @@ EOF = (* end of file *) ;
          on documents written to the retired PROSE, and the engine work is
          to start reading the marker-run position, not to stop reading the
          old one. Pinned by corpus
-         319-a-cell-s-attributes-bind-after-its-markers.
+         319-cell-attributes-bind-after-the-kind-and-alignment-markers.
 
    6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R (rules
       R1-R3; this §-anchor stays for existing references). Summary: link
