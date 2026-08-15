@@ -86,6 +86,10 @@ const TRIGGERS = {
     options: { platforms: ['github'] },
   },
   'footnote-labels-differ-only-in-whitespace': 'see [^a b] and [^a  b]\n\n[^a b]: one\n\n[^a  b]: two\n',
+  // A COMPLETE row, because the rule is gated on the parser's row predicate: a
+  // leading `|` with no closing one is a paragraph, and there is no cell for
+  // the block to be misplaced in.
+  'table-cell-attribute-before-marker': '|{#x}< content |\n',
   // `kbd`, not `cite`: PART 9 §10 moved `samp`, `var`, `cite` and `dfn` into the
   // SemanticSpan extension, so in a core lint they are ordinary attributes and
   // provoke nothing. `kbd` is one of the three names core still reserves, which

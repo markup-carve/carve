@@ -24,8 +24,3 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-
-319-cell-attributes-bind-after-the-kind-and-alignment-markers  §5 T10 landed here first: the pin reads an attribute block only where it is glued to the opening `|`, so a block after the kind marker renders as literal text (markup-carve/carve-js#1080).
-319-cell-attributes-bind-after-the-kind-and-alignment-markers-2  Same rule, block after the kind AND alignment markers.
-319-cell-attributes-bind-after-the-kind-and-alignment-markers-3  Same rule, block after a data cell's alignment marker.
-319-cell-attributes-bind-after-the-kind-and-alignment-markers-6  Same rule; the composing row attributes in this document are unaffected and already reproduce.
