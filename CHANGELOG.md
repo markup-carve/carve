@@ -166,6 +166,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   because it is the source; every presentation target strips it. `carve lint`
   reports the source occurrence as `bidi-control-in-source`.
 
+### Fixed
+
+- **The `semantic-span-carve-outs` HTML-import fixture pins the canonical fence
+  opener.** `fenced_code_block` names the no-space form canonical ("The
+  no-space form (```php) is canonical and is what the X->Carve converters
+  emit"), and `docs/html-import.md` says every `expected.crv` under
+  `tests/html-import` is also a fixed point of `carve fmt` in all three
+  engines. This one held ` ``` js `, which the canonical writer rewrites, so it
+  pinned source no writer produces. The writer defect it was written against is
+  fixed in all three engines (markup-carve/carve-js#1072,
+  markup-carve/carve-php#1267, markup-carve/carve-rs#987) and the fixture now
+  matches what they emit. No corpus `.fmt` fixture moves: none of the 29
+  carries an info string, and all 29 were re-measured through all three
+  engines.
+
 ## [0.1.2] - 2026-08-10
 
 ### Changed
