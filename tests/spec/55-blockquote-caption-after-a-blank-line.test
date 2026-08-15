@@ -5,8 +5,8 @@ Blockquote caption after a blank line
 
 ^ Source: Someone
 .
-<blockquote>
-  <p>quote text</p>
-  <footer>Source: Someone</footer>
-</blockquote>
+<figure>
+  <blockquote><p>quote text</p></blockquote>
+  <figcaption>Source: Someone</figcaption>
+</figure>
 ```

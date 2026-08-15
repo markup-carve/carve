@@ -80,9 +80,8 @@ part of Carve syntax; the examples remain as a feature-level reference.
 Output varies by context:
 - Images → `<figure>` + `<figcaption>`
 - Tables → `<caption>` element
-- Blockquotes → `<footer>` inside the `<blockquote>`: the line names the source
-  of the quotation rather than describing it, so it is an attribution and is not
-  numbered as a figure
+- Blockquotes → `<figure>` + `<figcaption>`, which is where the HTML Standard
+  puts a quotation's attribution: outside the `<blockquote>`, never inside it
 
 ### 2. Abbreviations
 

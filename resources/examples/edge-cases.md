@@ -179,10 +179,10 @@ quote becomes a `<figure>` with a `<figcaption>`.
 ```
 
 ```html
-<blockquote>
-  <p>quote text</p>
-  <footer>Source: Someone</footer>
-</blockquote>
+<figure>
+  <blockquote><p>quote text</p></blockquote>
+  <figcaption>Source: Someone</figcaption>
+</figure>
 ```
 
 :::
@@ -15019,10 +15019,10 @@ one-blank-line form since long before this category existed.
 ```
 
 ```html
-<blockquote>
-  <p>the cited line</p>
-  <footer>Source: the cited work</footer>
-</blockquote>
+<figure>
+  <blockquote><p>the cited line</p></blockquote>
+  <figcaption>Source: the cited work</figcaption>
+</figure>
 ```
 
 :::::
@@ -16569,13 +16569,13 @@ The [HTML]{abbr="Custom"} key.
 
 ## A captioned quote holds more than one block
 
-PART 9 §4a makes a caption on a block quote its ATTRIBUTION: the source goes
-inside the `<blockquote>` as a `<footer>`, and the quote takes no figure number.
+A caption makes its host a figure, and PART 9 §4b says a quote is no exception:
+the quote goes inside a `<figure>` and the caption becomes its `<figcaption>`,
+which is where the HTML Standard puts a quotation's attribution.
 
-The clause does not count the quote's blocks, and nothing else does either. A
-multi-paragraph epigraph is ordinary, and so are a quoted list, a nested quote, a
-quoted code block and a quoted heading. Each one takes its attribution the same
-way, in the same place.
+Nothing counts the quote's blocks. A multi-paragraph epigraph is ordinary, and so
+are a quoted list, a nested quote, a quoted code block and a quoted heading. Each
+one takes its caption the same way, in the same place.
 
 This needed pinning because the executable spec refused every shape but a single
 paragraph, and no corpus document held any of the others - so the refusal was
@@ -16593,17 +16593,19 @@ the gap was guarded by the absence of a fixture rather than by a decision
 ```
 
 ```html
-<blockquote>
-  <p>Nothing in this world is certain except death and taxes.</p>
-  <p>The second of the two arrives rather more often.</p>
-  <footer>Benjamin Franklin</footer>
-</blockquote>
+<figure>
+  <blockquote>
+    <p>Nothing in this world is certain except death and taxes.</p>
+    <p>The second of the two arrives rather more often.</p>
+  </blockquote>
+  <figcaption>Benjamin Franklin</figcaption>
+</figure>
 ```
 
 :::
 
-A quoted list. The attribution follows the list inside the quote; it is not a
-sibling of it and not an item of it.
+A quoted list. The caption belongs to the quote as a whole, so the list stays the
+quote's only child and the caption sits outside it.
 
 ::: compare
 
@@ -16614,20 +16616,22 @@ sibling of it and not an item of it.
 ```
 
 ```html
-<blockquote>
-  <ul>
-    <li>Be skeptical.</li>
-    <li>Be kind.</li>
-  </ul>
-  <footer>House rules</footer>
-</blockquote>
+<figure>
+  <blockquote>
+    <ul>
+      <li>Be skeptical.</li>
+      <li>Be kind.</li>
+    </ul>
+  </blockquote>
+  <figcaption>House rules</figcaption>
+</figure>
 ```
 
 :::
 
 A nested quote. The caption attaches to the OUTER quote - the one whose marker
-column the caption line sits against - so the inner quote carries no attribution
-of its own.
+column the caption line sits against - so the inner quote carries no caption of
+its own.
 
 ::: compare
 
@@ -16637,16 +16641,18 @@ of its own.
 ```
 
 ```html
-<blockquote>
-  <blockquote><p>I never said that.</p></blockquote>
-  <footer>Quoted in the report</footer>
-</blockquote>
+<figure>
+  <blockquote>
+    <blockquote><p>I never said that.</p></blockquote>
+  </blockquote>
+  <figcaption>Quoted in the report</figcaption>
+</figure>
 ```
 
 :::
 
-A quoted code block. The `<pre>` is the quote's only child and the attribution
-still lands beside it, which is the case that shows the rule is about the quote
+A quoted code block. The `<pre>` is the quote's only child and the caption still
+lands beside the quote, which is the case that shows the rule is about the quote
 rather than about a paragraph.
 
 ::: compare
@@ -16659,18 +16665,20 @@ rather than about a paragraph.
 ```
 
 ```html
-<blockquote>
-  <pre><code>git bisect run ./check
+<figure>
+  <blockquote>
+    <pre><code>git bisect run ./check
 </code></pre>
-  <footer>The release runbook</footer>
-</blockquote>
+  </blockquote>
+  <figcaption>The release runbook</figcaption>
+</figure>
 ```
 
 :::
 
 A quoted heading. The heading keeps its id, and PART 9R leaves it out of the
-implicit-reference index because it sits inside a quote - the attribution does
-not change that either way.
+implicit-reference index because it sits inside a quote - the caption does not
+change that either way.
 
 ::: compare
 
@@ -16682,11 +16690,13 @@ not change that either way.
 ```
 
 ```html
-<blockquote>
-  <h2 id="Terms">Terms</h2>
-  <p>Delivery is at the discretion of the vendor.</p>
-  <footer>Appendix B</footer>
-</blockquote>
+<figure>
+  <blockquote>
+    <h2 id="Terms">Terms</h2>
+    <p>Delivery is at the discretion of the vendor.</p>
+  </blockquote>
+  <figcaption>Appendix B</figcaption>
+</figure>
 ```
 
 :::

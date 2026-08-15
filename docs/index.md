@@ -29,7 +29,7 @@ features:
   - title: Interactive Online, Readable Offline
     details: "Built for the interactive web first — diagrams, math, charts and tabs hydrate into rich output online. With no JavaScript every block degrades to clean semantic HTML: a Mermaid fence still shows its source, <details> stays native, tables stay tables."
   - title: Captions Everywhere
-    details: One ^ prefix captions images, tables, listings and equations — emitting semantic figure / figcaption / caption HTML. On a blockquote it is an attribution instead, and renders footer.
+    details: One ^ prefix captions images, blockquotes, tables, listings and equations — emitting semantic figure / figcaption / caption HTML.
   - title: Friendly Tables
     details: "|= for headers, ^ for rowspan, < for colspan, + for multi-line cells. No separator row required."
   - title: Built-in Extensions

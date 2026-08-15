@@ -11,11 +11,12 @@
  * That gap is the same shape as PART 10 §10a, which every engine violated
  * identically, and as §3a's resolved half, which the reference implementation
  * did not meet: a rule stated in one place, enforced in none. Here it hid
- * `block_quote.attribution`, described as "the `-- attribution` line" - at the
- * time a syntax the grammar did not define, that no engine emitted, and that
- * two engines carried dead plumbing for (carve#599). PART 9 §4a has since
- * specified the captioned quote and the engines emit the field, which is why it
- * no longer needs an entry below.
+ * `block_quote.attribution`, described as "the `-- attribution` line" - a syntax
+ * the grammar did not define, that no engine emitted, and that two engines
+ * carried dead plumbing for (carve#599). The field is gone from the schema:
+ * carve#1161 briefly gave it a producer by making a caption on a quote an
+ * attribution, and carve#1213 withdrew that, so a captioned quote is a `figure`
+ * again and the field promises nothing.
  *
  * PER TYPE, because per NAME was not enough. This check used to collect every
  * field name appearing anywhere in the produced trees into one set, so a name

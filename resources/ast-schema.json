@@ -611,13 +611,6 @@
             "$ref": "#/$defs/blockNode"
           }
         },
-        "attribution": {
-          "description": "The source of the quotation (PART 9 \u00a74a). Present when a `^` caption attaches to the quote; it is not a figure caption and takes no number.",
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/inlineNode"
-          }
-        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
@@ -1084,10 +1077,13 @@
           "const": "figure"
         },
         "target": {
-          "description": "The captioned block: an image, table, code block or paragraph. A captioned block quote is NOT a figure - it is a quote carrying an `attribution` (PART 9 \u00a74a, carve#1159).",
+          "description": "The captioned block: an image, block quote, table, code block or paragraph. What a captioned host is called and counted as comes from the caption's label, never from the host (PART 9 \u00a74b); for a quote the HTML Standard also requires the attribution outside the `blockquote`.",
           "oneOf": [
             {
               "$ref": "#/$defs/image"
+            },
+            {
+              "$ref": "#/$defs/block_quote"
             },
             {
               "$ref": "#/$defs/table"
