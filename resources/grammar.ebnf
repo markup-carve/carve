@@ -3673,13 +3673,12 @@ EOF = (* end of file *) ;
          `@markup-carve/carve` build package.json pins, `|{#x}< content |`
          ALREADY renders `<td id="x">&lt; content</td>` -- neither reads the
          `<` as alignment, so neither ever implemented the order this rule
-         replaces. What they do not yet implement is the other half: an
-         attribute block after a marker. The oracle does; the pinned build
-         renders the braces as text (declared in
-         resources/engine-pin-drift.txt). So the reinterpretation risk falls
-         on documents written to the retired PROSE, and the engine work is
-         to start reading the marker-run position, not to stop reading the
-         old one. Pinned by corpus
+         replaces. The other half -- an attribute block after a marker --
+         is what was new, and both this repo's oracle and the pinned
+         `@markup-carve/carve` build read it. So the reinterpretation risk
+         falls on documents written to the retired PROSE, and the engine
+         work was to start reading the marker-run position, not to stop
+         reading the old one. Pinned by corpus
          319-cell-attributes-bind-after-the-kind-and-alignment-markers.
 
    6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R (rules
