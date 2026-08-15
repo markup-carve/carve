@@ -88,6 +88,19 @@ else
   skip "no package.json/Cargo.toml version field (tag-derived, e.g. Packagist)"
 fi
 
+# 4a. A native extension's manifest, which the chain above cannot reach.
+#
+# carve-rb has no ROOT manifest of either kind - its crate lives at
+# ext/carve/Cargo.toml - so the chain takes its `else` and skips, and the gem
+# would ship a stale extension version with nothing objecting. Checked outside
+# the chain rather than inside it, so a repo carrying both a root manifest and a
+# nested one gets both.
+if [ -f ext/carve/Cargo.toml ]; then
+  EV="$(grep -m1 -E '^version[[:space:]]*=' ext/carve/Cargo.toml | sed -E 's/.*"([^"]+)".*/\1/')"
+  [ "$EV" = "$VERSION" ] && ok "ext/carve/Cargo.toml version = $VERSION" \
+    || bad "ext/carve/Cargo.toml version is '$EV', expected $VERSION"
+fi
+
 # 4b. Constants that state the version a SECOND time.
 #
 # Step 4 reads the manifest, and three repos also compile the version into a
