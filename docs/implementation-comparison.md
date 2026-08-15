@@ -107,7 +107,8 @@ under the same semantic-span rule,
 `315-an-inline-note-s-content-resolves-after-the-note`,
 `316-an-image-s-alt-text-closes-where-a-link-s-text-closes`,
 `317-an-editorial-comment-s-bracket-is-content-not-the-close`,
-`318-composite-figures`.
+`318-composite-figures`,
+`319-cell-attributes-bind-after-the-kind-and-alignment-markers`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
