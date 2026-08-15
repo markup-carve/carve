@@ -1,0 +1,511 @@
+{
+  "version": 1,
+  "profiles": {
+    "plain": {},
+    "markdown": {
+      "braced": "*_",
+      "bare": "*_~"
+    },
+    "djot": {
+      "braced": "=+-*_^~",
+      "bare": "~*_"
+    }
+  },
+  "cases": [
+    {
+      "name": "comment-opener-at-line-start",
+      "input": "%%hidden%% text",
+      "expected": {
+        "plain": "\\%%hidden%% text",
+        "markdown": "\\%%hidden%% text",
+        "djot": "\\%%hidden%% text"
+      }
+    },
+    {
+      "name": "comment-opener-after-a-space",
+      "input": "a %%c%% b",
+      "expected": {
+        "plain": "a \\%%c%% b",
+        "markdown": "a \\%%c%% b",
+        "djot": "a \\%%c%% b"
+      }
+    },
+    {
+      "name": "comment-opener-after-a-tab",
+      "input": "a\t%%c%%",
+      "expected": {
+        "plain": "a\t\\%%c%%",
+        "markdown": "a\t\\%%c%%",
+        "djot": "a\t\\%%c%%"
+      }
+    },
+    {
+      "name": "tripled-percent-is-not-an-opener",
+      "input": "a %%%c b",
+      "expected": {
+        "plain": "a %%%c b",
+        "markdown": "a %%%c b",
+        "djot": "a %%%c b"
+      }
+    },
+    {
+      "name": "percent-inside-a-word",
+      "input": "100%%x",
+      "expected": {
+        "plain": "100%%x",
+        "markdown": "100%%x",
+        "djot": "100%%x"
+      }
+    },
+    {
+      "name": "a-lone-percent-pair-at-end-of-line",
+      "input": "a %%",
+      "expected": {
+        "plain": "a \\%%",
+        "markdown": "a \\%%",
+        "djot": "a \\%%"
+      }
+    },
+    {
+      "name": "braced-superscript",
+      "input": "a {^x^} b",
+      "expected": {
+        "plain": "a \\{^x^} b",
+        "markdown": "a \\{^x^} b",
+        "djot": "a {^x^} b"
+      }
+    },
+    {
+      "name": "braced-subscript",
+      "input": "a {,x,} b",
+      "expected": {
+        "plain": "a \\{,x,} b",
+        "markdown": "a \\{,x,} b",
+        "djot": "a \\{,x,} b"
+      }
+    },
+    {
+      "name": "braced-highlight",
+      "input": "a {=x=} b",
+      "expected": {
+        "plain": "a \\{\\=x=} b",
+        "markdown": "a \\{\\=x=} b",
+        "djot": "a {=x=} b"
+      }
+    },
+    {
+      "name": "braced-insert",
+      "input": "a {+x+} b",
+      "expected": {
+        "plain": "a \\{+x+} b",
+        "markdown": "a \\{+x+} b",
+        "djot": "a {+x+} b"
+      }
+    },
+    {
+      "name": "braced-delete",
+      "input": "a {-x-} b",
+      "expected": {
+        "plain": "a \\{-x-} b",
+        "markdown": "a \\{-x-} b",
+        "djot": "a {-x-} b"
+      }
+    },
+    {
+      "name": "braced-strike",
+      "input": "a {~x~} b",
+      "expected": {
+        "plain": "a \\{\\~x~} b",
+        "markdown": "a \\{~x~} b",
+        "djot": "a {~x~} b"
+      }
+    },
+    {
+      "name": "braced-emphasis",
+      "input": "a {/x/} b",
+      "expected": {
+        "plain": "a \\{\\/x/} b",
+        "markdown": "a \\{\\/x/} b",
+        "djot": "a \\{\\/x/} b"
+      }
+    },
+    {
+      "name": "braced-comment",
+      "input": "a {#x#} b",
+      "expected": {
+        "plain": "a \\{\\#x#} b",
+        "markdown": "a \\{\\#x#} b",
+        "djot": "a \\{\\#x#} b"
+      }
+    },
+    {
+      "name": "braced-strong",
+      "input": "a {*x*} b",
+      "expected": {
+        "plain": "a \\{\\*x*} b",
+        "markdown": "a {*x*} b",
+        "djot": "a {*x*} b"
+      }
+    },
+    {
+      "name": "braced-underline",
+      "input": "a {_x_} b",
+      "expected": {
+        "plain": "a \\{\\_x_} b",
+        "markdown": "a {_x_} b",
+        "djot": "a {_x_} b"
+      }
+    },
+    {
+      "name": "braced-nested-pairs",
+      "input": "a {^b{,c,}d^} e",
+      "expected": {
+        "plain": "a \\{^b\\{,c,}d^} e",
+        "markdown": "a \\{^b\\{,c,}d^} e",
+        "djot": "a {^b\\{,c,}d^} e"
+      }
+    },
+    {
+      "name": "braced-inner-spaces-do-not-open",
+      "input": "a { ^x^ } b",
+      "expected": {
+        "plain": "a { ^x^ } b",
+        "markdown": "a { ^x^ } b",
+        "djot": "a { ^x^ } b"
+      }
+    },
+    {
+      "name": "braced-unclosed",
+      "input": "a {^x b",
+      "expected": {
+        "plain": "a \\{^x b",
+        "markdown": "a \\{^x b",
+        "djot": "a {^x b"
+      }
+    },
+    {
+      "name": "two-braced-runs-on-one-line",
+      "input": "{,a,} and {^b^}",
+      "expected": {
+        "plain": "\\{,a,} and \\{^b^}",
+        "markdown": "\\{,a,} and \\{^b^}",
+        "djot": "\\{,a,} and {^b^}"
+      }
+    },
+    {
+      "name": "bare-emphasis",
+      "input": "a /x/ b",
+      "expected": {
+        "plain": "a \\/x/ b",
+        "markdown": "a \\/x/ b",
+        "djot": "a \\/x/ b"
+      }
+    },
+    {
+      "name": "bare-highlight",
+      "input": "a =x= b",
+      "expected": {
+        "plain": "a \\=x= b",
+        "markdown": "a \\=x= b",
+        "djot": "a \\=x= b"
+      }
+    },
+    {
+      "name": "bare-strike",
+      "input": "a ~x~ b",
+      "expected": {
+        "plain": "a \\~x~ b",
+        "markdown": "a ~x~ b",
+        "djot": "a ~x~ b"
+      }
+    },
+    {
+      "name": "bare-strong",
+      "input": "a *x* b",
+      "expected": {
+        "plain": "a \\*x* b",
+        "markdown": "a *x* b",
+        "djot": "a *x* b"
+      }
+    },
+    {
+      "name": "bare-underline",
+      "input": "a _x_ b",
+      "expected": {
+        "plain": "a \\_x_ b",
+        "markdown": "a _x_ b",
+        "djot": "a _x_ b"
+      }
+    },
+    {
+      "name": "bare-run-in-parentheses",
+      "input": "(*x*)",
+      "expected": {
+        "plain": "(\\*x*)",
+        "markdown": "(*x*)",
+        "djot": "(*x*)"
+      }
+    },
+    {
+      "name": "bare-run-in-quotes",
+      "input": "say \"=x=\" now",
+      "expected": {
+        "plain": "say \"\\=x=\" now",
+        "markdown": "say \"\\=x=\" now",
+        "djot": "say \"\\=x=\" now"
+      }
+    },
+    {
+      "name": "bare-run-with-unicode-content",
+      "input": "a /grüße/ b",
+      "expected": {
+        "plain": "a \\/grüße/ b",
+        "markdown": "a \\/grüße/ b",
+        "djot": "a \\/grüße/ b"
+      }
+    },
+    {
+      "name": "bare-unclosed",
+      "input": "a *x b",
+      "expected": {
+        "plain": "a *x b",
+        "markdown": "a *x b",
+        "djot": "a *x b"
+      }
+    },
+    {
+      "name": "bare-comma-is-not-a-delimiter",
+      "input": "a ,x, b",
+      "expected": {
+        "plain": "a ,x, b",
+        "markdown": "a ,x, b",
+        "djot": "a ,x, b"
+      }
+    },
+    {
+      "name": "bare-caret-is-not-a-delimiter",
+      "input": "a ^x^ b",
+      "expected": {
+        "plain": "a ^x^ b",
+        "markdown": "a ^x^ b",
+        "djot": "a ^x^ b"
+      }
+    },
+    {
+      "name": "underscores-inside-an-identifier",
+      "input": "feature_flag_company",
+      "expected": {
+        "plain": "feature_flag_company",
+        "markdown": "feature_flag_company",
+        "djot": "feature_flag_company"
+      }
+    },
+    {
+      "name": "stars-as-multiplication",
+      "input": "5 * 4 * 3",
+      "expected": {
+        "plain": "5 * 4 * 3",
+        "markdown": "5 * 4 * 3",
+        "djot": "5 * 4 * 3"
+      }
+    },
+    {
+      "name": "equals-with-spaces",
+      "input": "x = 5",
+      "expected": {
+        "plain": "x = 5",
+        "markdown": "x = 5",
+        "djot": "x = 5"
+      }
+    },
+    {
+      "name": "equals-in-a-key-value",
+      "input": "key=value",
+      "expected": {
+        "plain": "key=value",
+        "markdown": "key=value",
+        "djot": "key=value"
+      }
+    },
+    {
+      "name": "commas-in-a-list",
+      "input": "a,b,c",
+      "expected": {
+        "plain": "a,b,c",
+        "markdown": "a,b,c",
+        "djot": "a,b,c"
+      }
+    },
+    {
+      "name": "caret-as-a-power-operator",
+      "input": "2 ^ 3",
+      "expected": {
+        "plain": "2 ^ 3",
+        "markdown": "2 ^ 3",
+        "djot": "2 ^ 3"
+      }
+    },
+    {
+      "name": "a-star-inside-a-word",
+      "input": "a*b*c",
+      "expected": {
+        "plain": "a*b*c",
+        "markdown": "a*b*c",
+        "djot": "a*b*c"
+      }
+    },
+    {
+      "name": "a-trailing-star",
+      "input": "can_*",
+      "expected": {
+        "plain": "can_*",
+        "markdown": "can_*",
+        "djot": "can_*"
+      }
+    },
+    {
+      "name": "doubled-strong",
+      "input": "**x**",
+      "expected": {
+        "plain": "**x**",
+        "markdown": "**x**",
+        "djot": "**x**"
+      }
+    },
+    {
+      "name": "doubled-underline",
+      "input": "__x__",
+      "expected": {
+        "plain": "__x__",
+        "markdown": "__x__",
+        "djot": "__x__"
+      }
+    },
+    {
+      "name": "doubled-highlight",
+      "input": "==x==",
+      "expected": {
+        "plain": "==x==",
+        "markdown": "==x==",
+        "djot": "==x=="
+      }
+    },
+    {
+      "name": "doubled-strike",
+      "input": "~~x~~",
+      "expected": {
+        "plain": "~~x~~",
+        "markdown": "~~x~~",
+        "djot": "~~x~~"
+      }
+    },
+    {
+      "name": "doubled-emphasis",
+      "input": "//x//",
+      "expected": {
+        "plain": "//x//",
+        "markdown": "//x//",
+        "djot": "//x//"
+      }
+    },
+    {
+      "name": "a-word-after-a-hash-is-a-tag",
+      "input": "a #y b",
+      "expected": {
+        "plain": "a \\#y b",
+        "markdown": "a \\#y b",
+        "djot": "a \\#y b"
+      }
+    },
+    {
+      "name": "a-tag-at-line-start",
+      "input": "#tag rest",
+      "expected": {
+        "plain": "\\#tag rest",
+        "markdown": "\\#tag rest",
+        "djot": "\\#tag rest"
+      }
+    },
+    {
+      "name": "a-tag-after-a-parenthesis",
+      "input": "see (#tag) there",
+      "expected": {
+        "plain": "see (\\#tag) there",
+        "markdown": "see (\\#tag) there",
+        "djot": "see (\\#tag) there"
+      }
+    },
+    {
+      "name": "a-heading-marker-is-not-a-tag",
+      "input": "# heading",
+      "expected": {
+        "plain": "# heading",
+        "markdown": "# heading",
+        "djot": "# heading"
+      }
+    },
+    {
+      "name": "a-hash-inside-a-word",
+      "input": "a#y",
+      "expected": {
+        "plain": "a#y",
+        "markdown": "a#y",
+        "djot": "a#y"
+      }
+    },
+    {
+      "name": "a-numeric-character-reference",
+      "input": "a &#8212; b",
+      "expected": {
+        "plain": "a &#8212; b",
+        "markdown": "a &#8212; b",
+        "djot": "a &#8212; b"
+      }
+    },
+    {
+      "name": "a-hash-before-a-dash",
+      "input": "a #-x b",
+      "expected": {
+        "plain": "a \\#-x b",
+        "markdown": "a \\#-x b",
+        "djot": "a \\#-x b"
+      }
+    },
+    {
+      "name": "an-http-url",
+      "input": "see http://example.com/a/b now",
+      "expected": {
+        "plain": "see http://example.com/a/b now",
+        "markdown": "see http://example.com/a/b now",
+        "djot": "see http://example.com/a/b now"
+      }
+    },
+    {
+      "name": "an-https-url-with-a-trailing-slash",
+      "input": "see https://example.com/a/ now",
+      "expected": {
+        "plain": "see https://example.com/a/ now",
+        "markdown": "see https://example.com/a/ now",
+        "djot": "see https://example.com/a/ now"
+      }
+    },
+    {
+      "name": "a-non-http-scheme",
+      "input": "see ftp://example.com/a/ now",
+      "expected": {
+        "plain": "see ftp://example.com/a/ now",
+        "markdown": "see ftp://example.com/a/ now",
+        "djot": "see ftp://example.com/a/ now"
+      }
+    },
+    {
+      "name": "a-bare-path",
+      "input": "in /usr/local/bin today",
+      "expected": {
+        "plain": "in /usr/local/bin today",
+        "markdown": "in /usr/local/bin today",
+        "djot": "in /usr/local/bin today"
+      }
+    }
+  ]
+}
