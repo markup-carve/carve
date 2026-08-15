@@ -29,6 +29,10 @@ insert_final_newline = false
 trim_trailing_whitespace = false
 insert_final_newline = false
 
+[tests/corpus-convert/**]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
 [tests/examples/**]
 trim_trailing_whitespace = false
 insert_final_newline = false
