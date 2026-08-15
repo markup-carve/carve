@@ -51,5 +51,5 @@
 # conformance, owed a fixture rather than a line (markup-carve/carve#1011).
 
 
-link.href   3  carve-rs publishes "" where carve-js and carve-php publish the resolved destination. Two spec rules landed 2026-08-14 that carve-rs has not shipped: markup-carve/carve#1196 (a reference link's text survives its own resolution frame) and #1203 (an inline note carries a frame its content can nest inside). Delete on the carve-rs release that ships them.
-image.src   2  Same rules, same engine, the image half of them: carve-rs publishes "" for a reference image's resolved source. Delete with the line above.
+footnote_ref.number     2  carve-php publishes a number on a footnote reference written inside an UNRESOLVED reference link; carve-js and carve-rs publish none. markup-carve/carve#1198 ruled that such a reference does not count as a reference, so it gets no number, no endnote and no backlink. carve-php shipped the render half (markup-carve/carve-php#1257 - the HTML is identical in all three engines, which is why the corpus gate cannot see this) and left the serialized number behind. Tracked at markup-carve/carve-php#1269; delete on the release that drops the field.
+inline_footnote.number  1  Same ruling, same engine, the inline half: carve-php publishes a number on an inline note written inside an unresolved reference link. Delete with the line above.
