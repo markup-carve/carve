@@ -93,6 +93,10 @@ lossy decision should be observable. The common diagnostic codes are:
 - `style-unmapped`: CSS had no explicit semantic mapping.
 - `table-degraded`: a table could not be represented structurally.
 - `raw-preserved`: unsupported trusted markup was retained as raw HTML.
+- `structure-unspellable`: the import produced a structure Carve source has
+  no spelling for, so it survives in the AST and not in written Carve. The
+  AST-returning entry point loses nothing and reports nothing; the one that
+  writes source reports this.
 - `diagnostics-truncated`: the diagnostic cap was reached.
 
 Diagnostics have `code`, `message`, `severity` (`info`, `warning`, or `error`),

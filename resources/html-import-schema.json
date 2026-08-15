@@ -15,7 +15,7 @@
         "required": ["code", "message", "severity"],
         "additionalProperties": false,
         "properties": {
-          "code": { "enum": ["element-dropped", "element-unwrapped", "attribute-dropped", "style-unmapped", "table-degraded", "raw-preserved", "diagnostics-truncated"] },
+          "code": { "enum": ["element-dropped", "element-unwrapped", "attribute-dropped", "style-unmapped", "table-degraded", "raw-preserved", "structure-unspellable", "diagnostics-truncated"] },
           "message": { "type": "string" },
           "severity": { "enum": ["info", "warning", "error"] },
           "path": { "type": "string" },
