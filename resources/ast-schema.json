@@ -35,7 +35,7 @@
     "link_reference_definition": {
       "type": "object",
       "title": "link_reference_definition (block)",
-      "description": "The `[label]: /url \"title\" {attrs}` definition line. Renders nothing in HTML itself; it feeds every link or image that resolves the label (PART 9R R1). Hoisted to the document like the other two definition kinds (PART 12 section 7), so a definition authored inside a container is a child of the document and its `pos` still says where it was written.",
+      "description": "The `[label]: /url \"title\" {attrs}` definition line. Renders nothing in HTML itself; it feeds every link or image that resolves the label (PART 9R R1). Hoisted to the document like the footnote definition (PART 12 section 7; an abbreviation definition inside a container is not a definition at all, so nothing is hoisted), so a definition authored inside a container is a child of the document and its `pos` still says where it was written.",
       "required": [
         "type",
         "label",
