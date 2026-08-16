@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **PART 12 §18: a citation definition is a node** (carve#1276). A
+  `[@key]: {author= year=} entry` bibliography line serializes as a
+  `citation_definition` carrying `key`, the entry's inline `children`, the
+  metadata block in `attrs`, and its own `pos`. It is shaped after §10's
+  `link_reference_definition` rather than after the footnote definition: a
+  footnote body holds blocks, an entry holds a metadata run plus one line of
+  rendered text. Of the four definition kinds this was the only one with no
+  node and no clause saying why, and the two engines answered differently -
+  one consumed the line at parse time, so `pos` was gone and an AST round trip
+  deleted it; the other left it a paragraph whose first child is a
+  `citation_group` followed by the literal text `: {author=`, which a
+  ProseMirror bridge hands an editor as prose. No rendered output moves on any
+  target, which is why no HTML fixture could see the difference; the node
+  renders nothing where it sits and the entry's text still renders in the
+  references list. Tier-2, so it appears only where the Citations extension is
+  enabled - with the extension off the line is ordinary paragraph text, since
+  the leading `@` is reserved in core against reading it as a link definition.
+
 - **Delimited inline comments, `{% … %}`** (carve#1239, PART 9 §21a). `%%` runs
   to the end of its inline RUN, so mid-line commenting already worked wherever
   the structure supplied a boundary - a table cell ends at `|`, link text at

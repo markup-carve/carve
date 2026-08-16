@@ -32,7 +32,7 @@ spelling.
 `admonition`, `raw_block`, `footnote`, `frontmatter`, `definition_list`,
 `definition_term`, `definition_description`, `section`, `line_block`,
 `comment`, `figure`, `figure_group`, `caption`, `abbreviation_def`,
-`link_reference_definition`.
+`link_reference_definition`, `citation_definition`.
 
 **Inline:** `text`, `emphasis`, `strong`, `underline`, `strike`,
 `inline_extension`, `mention`, `code`, `link`, `autolink`, `image`,
@@ -103,7 +103,7 @@ happen. So it is neither deniable nor serialized, and a consumer should not
 expect it. Measured: no engine emits it for any of the 655 corpus documents,
 and `resources/ast-schema.json` does not name it.
 
-### A definition line is content, so both definition types are deniable
+### A definition line is content, so the definition types are deniable
 
 `abbreviation_def` and `link_reference_definition` are in the Block vocabulary
 above, and both were kept out of it until carve#771 on the reasoning that a
@@ -143,6 +143,14 @@ because the page has been wrong here once already: **no engine emits the unused
 link definition line yet**, so denying the type withholds nothing on any target
 at the time of writing. Its vocabulary membership follows the clause, not the
 current output.
+
+**`citation_definition` joins them** under PART 12 §18, which gives the fourth
+definition kind a node for the same reason: `[@key]: {author= year=} entry` is
+authored text a host may have a reason to withhold, and it is text a formatter
+has to be able to put back. It is Tier-2, so it appears only where the Citations
+extension is enabled - a profile denying the type on input that never enables
+citations denies something the parse cannot produce, which is true of every
+extension type in this list and not a reason to leave it out.
 
 What a deny takes is the definition LINE, never the EXPANSION it fed. The
 inline `abbreviation`, and the `link` or `image` a reference resolves to, are

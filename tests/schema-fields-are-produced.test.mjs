@@ -57,6 +57,8 @@ const repo = resolve(here, '..')
 const OPT_IN_ONLY = {
   'citation.*': 'citations (Tier-2): the citation item shape, including its resolution results',
   'citation_group.*': 'citations (Tier-2): the group wrapper and the integral `+` form',
+  'citation_definition.*':
+    'citations (Tier-2): the `[@key]: entry` bibliography line, which is ordinary paragraph text with the extension off',
 }
 
 /** Fields permitted by the schema before the corresponding engine rollout. */
