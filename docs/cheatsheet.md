@@ -123,17 +123,24 @@ two
 | Cell    | Cell    |         rows for ROW headers)
 ^ Table caption
 
-|= Name |=> Age |=~ City |   (column alignment glued to |=: < ~ >;
-| Sum    |< 12   | NYC    |   a data-cell marker overrides per cell)
-
-| Name  | Age |              (GFM separator row accepted as a
-|-------|----:|               compatibility alias: marks the header
-| Alice |  30 |               row + column alignment)
-
 | ^      | spanned |         (^ = rowspan)
 | Header | <       |         (< = colspan)
 + continuation cell |        (+ = multi-line cell)
 ```
+
+### Alignment
+
+`<` left, `~` center, `>` right, glued to the pipe. On `|=` it aligns the whole
+column; on a plain `|` it aligns that one cell and overrides the column.
+
+```carve
+|=~ Item |=> Qty |
+| Apple | 12 |
+| Subtotal |< 12 |
+```
+
+Glued is what makes it an alignment: a standalone `| < |` cell is the colspan
+merge, `| ^ |` the rowspan merge.
 
 ## Captions (images, quotes, tables, code listings, equations, figure groups)
 
