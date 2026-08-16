@@ -2398,7 +2398,6 @@ function collectItems(lines, i, list, state, ind, meas) {
             COMMENT_FENCE.test(dedented) ||
             FOOTNOTE_DEF.test(dedented) ||
             isLinkDef(dedented) ||
-            ABBR_DEF.test(dedented) ||
             parseAttrList(dedented) !== null
           ) {
             // An INVISIBLE construct is not a second paragraph, and SS17 L1
@@ -2467,7 +2466,6 @@ function collectItems(lines, i, list, state, ind, meas) {
           !dmeas.rest.startsWith('%%') &&
           !FOOTNOTE_DEF.test(dedented) &&
           !isLinkDef(dedented) &&
-          !ABBR_DEF.test(dedented) &&
           parseAttrList(dedented) === null
         ) {
           // §17 L1b: a second paragraph, still blank-line-separated.
