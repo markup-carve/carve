@@ -1022,6 +1022,37 @@ function opensParagraph(text) {
   return true
 }
 
+/*
+ * DOES A DEFINITION BODY SO FAR LEAVE A PARAGRAPH OPEN? -- PART 1 S4 for a `dd`.
+ *
+ * A flush-left line joins a `dd` only by folding into an open paragraph, so the
+ * body's last block answers, exactly as it does for a list item and a quote. It
+ * used to be asked of nothing at all, which let `:  {.k}` / `tail` fold `tail`
+ * in and hand it an attribute the author wrote against a container that had
+ * already ended (carve#1281).
+ *
+ * The question is asked of the trailing RUN rather than of the last physical
+ * line, because A5 lets one attribute block WRAP: a body ending `{.k` / `#x}`
+ * has a closing brace on its last line and is still one attribute block, and
+ * classifying that line alone reads it as prose.
+ */
+function bodyLeavesParagraphOpen(bodyLines) {
+  let last = -1
+  for (let k = bodyLines.length - 1; k >= 0; k--) {
+    if (bodyLines[k].trim() !== '') { last = k; break }
+  }
+  // An empty body has nothing to fold into and nothing to protect: the
+  // flush-left line IS the body, which is the `:  ` + pulled-block shape.
+  if (last < 0) return true
+  for (let k = last; k >= 0 && bodyLines[k].trim() !== ''; k--) {
+    if (bodyLines[k][0] !== '{') continue
+    const al = tryAttrLine(bodyLines, k)
+    if (al && al.next === last + 1) return false
+  }
+
+  return opensParagraph(bodyLines[last])
+}
+
 // A sub-BLOCK attached to an open list item after a blank line: it nests and
 // leaves the list TIGHT (SS17 L2), unlike a second paragraph, which loosens it
 // (SS17 L1). Colon fences and table rows count -- they are blocks, not prose.
@@ -1608,7 +1639,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               i = end
               continue
             }
-            if (foldablePlain(cur)) { bodyLines.push(stripIndent(cur).replace(/[ \t]+$/, '')); i++; continue }
+            if (foldablePlain(cur) && bodyLeavesParagraphOpen(bodyLines)) {
+              bodyLines.push(stripIndent(cur).replace(/[ \t]+$/, ''))
+              i++
+              continue
+            }
             break
           }
           node.items.push({ ddBlocks: bodyLines.length ? parseBlocks(bodyLines, state, false) : [] })
