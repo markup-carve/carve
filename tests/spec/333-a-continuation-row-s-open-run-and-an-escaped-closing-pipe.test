@@ -1,0 +1,54 @@
+A continuation row's open run, and an escaped closing pipe
+
+```
+| a `b |
++ c` |
+.
+<table>
+  <tbody>
+    <tr><td>a <code>b c</code></td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a b \|
+.
+<table>
+  <tbody>
+    <tr><td>a b |</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a \| b | c |
+.
+<table>
+  <tbody>
+    <tr><td>a | b</td><td>c</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a `b |
++ c | d` |
+.
+<table>
+  <tbody>
+    <tr><td>a <code>b c | d</code></td></tr>
+  </tbody>
+</table>
+```
+
+```
+| x | a `b |
++ y | c` |
+.
+<table>
+  <tbody>
+    <tr><td>x y</td><td>a <code>b c</code></td></tr>
+  </tbody>
+</table>
+```
