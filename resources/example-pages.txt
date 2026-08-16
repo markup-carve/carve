@@ -292,6 +292,7 @@ index: examples/edge-cases/index.md
   a-comment-ends-the-paragraph-it-sits-under
   a-quote-marker-is-plus-a-space-and-a-lazy-line-keeps-its-own-text
   a-block-attribute-line-inside-a-quote-ends-the-paragraph-above-it
+  a-floating-attribute-is-scoped-to-the-container-that-holds-it
   a-comment-fence-at-column-0-ends-the-item-a-line-does-not
   two-backticks-are-not-a-code-fence-opening-or-closing
   a-single-percent-is-not-a-comment

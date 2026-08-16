@@ -110,6 +110,35 @@ const TRIGGERS = {
  */
 const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
 
+/*
+ * A rule the PAGE specifies and the pinned build does not carry yet.
+ *
+ * A lint rule id is spec surface, so it is specified here first and implemented
+ * afterwards - the same window `resources/engine-pin-drift.txt` describes for
+ * corpus documents, and for the same reason: the corpus and this page are
+ * allowed to run ahead of the pin, and what must never happen is not knowing
+ * which window you are in.
+ *
+ * There was no such window before carve#1281, which meant a rule could not be
+ * specified ahead of carve-js at all: the "can actually be emitted" check below
+ * demanded a trigger, and a trigger demanded an implementation. That is a
+ * chicken-and-egg on a page whose whole point is that the id is agreed BEFORE
+ * two engines pick different ones.
+ *
+ * It fails in BOTH directions, which is what keeps it a check rather than an
+ * escape hatch:
+ *
+ *   - listed here and the pin DOES emit it -> the window closed, delete the
+ *     line and add a trigger, in the commit that moves the pin;
+ *   - listed here and absent from the page -> a declaration about nothing.
+ */
+const NOT_IN_THE_PIN_YET = new Map([
+  [
+    'unattached-block-attribute',
+    'specified by markup-carve/carve#1281; no engine implements it yet',
+  ],
+])
+
 /** The rules this map calls with options, i.e. the ones that are not default-on. */
 const OPT_IN = Object.entries(TRIGGERS)
   .filter(([, entry]) => typeof entry !== 'string')
@@ -267,12 +296,36 @@ test('every rule id in the pinned build is on the page', () => {
 })
 
 test('every rule the page lists can actually be emitted', () => {
-  const unproducible = documentedRules().filter((rule) => !(rule in TRIGGERS))
+  const unproducible = documentedRules().filter(
+    (rule) => !(rule in TRIGGERS) && !NOT_IN_THE_PIN_YET.has(rule),
+  )
   assert.deepEqual(
     unproducible,
     [],
     `docs/validation.md lists rule id(s) with no trigger here: ${unproducible.join(', ')}. ` +
       'Add one, or remove the row - a documented rule nothing can produce is a promise ' +
-      'with no producer.',
+      'with no producer. If the rule is specified ahead of the engines, declare it in ' +
+      'NOT_IN_THE_PIN_YET with the ticket that specifies it.',
+  )
+})
+
+test('a rule declared as unimplemented is on the page and is still unimplemented', () => {
+  // The declaration's own two directions. Without the first it can name a rule
+  // the page never mentions; without the second it outlives the engine work and
+  // becomes the thing being tested rather than a note about a window.
+  const documented = documentedRules()
+  const orphaned = [...NOT_IN_THE_PIN_YET.keys()].filter((rule) => !documented.includes(rule))
+  assert.deepEqual(
+    orphaned,
+    [],
+    `NOT_IN_THE_PIN_YET names rule id(s) docs/validation.md does not list: ${orphaned.join(', ')}.`,
+  )
+
+  const arrived = [...NOT_IN_THE_PIN_YET.keys()].filter((rule) => ruleIdsInBuild().includes(rule))
+  assert.deepEqual(
+    arrived,
+    [],
+    `the pinned build now carries ${arrived.join(', ')}. Delete the NOT_IN_THE_PIN_YET line ` +
+      'and add a TRIGGERS entry, in the commit that moves the pin.',
   )
 })

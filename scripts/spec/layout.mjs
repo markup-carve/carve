@@ -1608,7 +1608,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               i = end
               continue
             }
-            if (foldablePlain(cur)) { bodyLines.push(stripIndent(cur).replace(/[ \t]+$/, '')); i++; continue }
+            const lastBody = [...bodyLines].reverse().find((l) => l.trim() !== '')
+            if (foldablePlain(cur) && (lastBody === undefined || opensParagraph(lastBody))) {
+              bodyLines.push(stripIndent(cur).replace(/[ \t]+$/, ''))
+              i++
+              continue
+            }
             break
           }
           node.items.push({ ddBlocks: bodyLines.length ? parseBlocks(bodyLines, state, false) : [] })

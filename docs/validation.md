@@ -121,6 +121,7 @@ the command-line and editor behavior stay aligned.
 | `figure-group-panel-number` | a `#` placeholder in a PANEL caption; panels are not sequence units, so the placeholder stays a literal `#` (PART 9 §4c) - number the group caption instead |
 | `figure-group-empty` | a `::: figure` group with no captionable panel; the group figure holds only the preserved content (PART 9 §4c) |
 | `figure-group-single-panel` | a `::: figure` group holding a single panel; a plain captioned figure renders the same content without the group wrapper (PART 9 §4c) |
+| `unattached-block-attribute` | a floating `{...}` block attribute that never reaches a block, because the document or the container holding it ended first (PART 9 §15 A4). Nothing is emitted for it, so `> {.k}` on a quote's last line renders neither on the quote nor on anything after it |
 
 ### Declaring a target version
 

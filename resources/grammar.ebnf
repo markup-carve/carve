@@ -4423,8 +4423,12 @@ EOF = (* end of file *) ;
 
          is `<p id="i">e</p>`. The attribute is the author's instruction about
          a rendered element; attaching it to a construct that emits nothing
-         silently discards it, and A4 already reserves discarding for the one
-         case where there is genuinely nothing left -- end of document.
+         silently discards it, and A4 reserves discarding for the cases where
+         there is genuinely nothing left -- end of document, and end of the
+         container that holds the attribute (carve#1281). Neither is silent:
+         both are reported as `unattached-block-attribute`. This clause is about
+         floating PAST something invisible, which is a different question from
+         running out of blocks to float to.
 
          Stated because §15 said "the NEXT block element" and left open
          whether an invisible construct is one. Three engines answered three
@@ -4484,8 +4488,45 @@ EOF = (* end of file *) ;
          A repeated class in one HTML `class` attribute is also a no-op for
          every consumer, so nothing downstream wanted the duplicate.
          (carve#615)
-      A4 DROP IF DANGLING. pending with no following block element (end of
-         document) produces no output.
+      A4 DROP IF DANGLING -- NORMATIVE. pending with no following block
+         element produces no output.
+
+         THERE ARE TWO WAYS TO RUN OUT OF FOLLOWING BLOCKS, and this clause
+         named only the first (carve#1281):
+
+           - END OF DOCUMENT; and
+           - END OF THE CONTAINER that holds the attribute.
+
+         A floating attribute is SCOPED to its container. "Applies to the next
+         block" (A2) answers WHICH block, not which container, and containment
+         already bounds everything else in this language -- so a pending
+         attribute written inside a block quote, a list item, a `dd` or a
+         footnote body does not survive that container's end and does not reach
+         a block outside it. `> {.k}` / blank / `tail` leaves `tail` UNCLASSED
+         rather than carrying an authored class out of a quote and over a blank
+         line onto a document-level paragraph; `- {.k}` / `# H` leaves the
+         heading outside the item rather than pulling it in to be attributed.
+
+         The failure mode of the other reading is the argument against it. An
+         attribute reaching content the author did not write it next to is the
+         worst of the answers available, and it is the one carve-php shipped.
+
+         DROPPING SILENTLY IS THE ONE THING THIS MAY NOT DO. Both dangling
+         cases are a lint diagnostic, `unattached-block-attribute`
+         (docs/validation.md), in the same family as the other constructs that
+         render nothing and can be written by mistake. The rule is about OUTPUT:
+         nothing is emitted for the attribute, and the processor says so.
+
+         Which container END is reached is PART 1 S4's question, not this
+         clause's: an attribute line leaves no open paragraph, so a following
+         flush-left line does not join the container (carve#1280). The two
+         clauses meet on `> {.k}` / `tail`, where S4 ends the quote and A4 then
+         has nothing left for the attribute.
+
+         OUT OF SCOPE, and left open deliberately: what a container that ends up
+         EMPTY renders. carve-rs emits an empty `<blockquote>` for `> {.k}` /
+         `tail`; that is a rendering question about empty containers in general
+         and is not settled here.
       A5 MULTI-LINE BLOCK. One block may wrap across lines ({#id\n .foo} is
          one block: id `id`, class `foo`). A BLANK line inside the braces
          ends the attempt -- the text is then literal, not a

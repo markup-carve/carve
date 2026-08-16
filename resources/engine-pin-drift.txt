@@ -48,3 +48,4 @@
 328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-2  same, with a second row below it
 328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-3  same, under a header row
 328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-4  same, with a double-backtick run
+329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-2  the pin predates markup-carve/carve#1280, so the flush-left line still joins the quote and the attribute reaches it
