@@ -74,26 +74,48 @@ test('a malformed declaration line is an error, never a silent zero', () => {
   assert.match(problems[0], /^MALFORMED\s+line 1/)
 })
 
-test('the shipped declaration parses', () => {
-  const problems = reconcileDeclared(
-    new Map(),
-    readFileSync(resolve(root, 'resources/ast-value-divergence.txt'), 'utf8'),
-  )
-  // Every problem must be a FIXED - i.e. a real declared line - and never a
-  // MALFORMED one. The file carried no entries between carve#846 and
-  // 2026-08-07, when `link.ref` and `text.value` were declared (carve#962,
-  // carve#963), so this loop now runs over two problems rather than none - and
-  // that is the point of asserting it this way rather than counting.
+const shippedDeclaration = () =>
+  readFileSync(resolve(root, 'resources/ast-value-divergence.txt'), 'utf8')
+
+test('the shipped declaration parses and currently needs no baseline rows', () => {
+  // Held to EMPTY, the way `tests/ast-spans.test.mjs` holds its own ledger.
   //
-  // NO FLOOR, and that is deliberate rather than an oversight: a declaration of
-  // zero divergences is the state the panel is trying to reach, so a floor
-  // would be the inverse defect, a gate that only works while something is
-  // wrong. What proves the parser discriminates is the six tests above, each of
-  // which feeds it a literal line and reads the verdict.
-  // `tests/ast-spans.test.mjs` floors its declaration, and the difference is
-  // not an inconsistency: that ledger records an open convention across two
-  // dozen node types, so an emptied one there is loss rather than progress.
-  for (const p of problems) assert.match(p, /^FIXED/, p)
+  // This assertion used to be `for (const p of problems) assert.match(p,
+  // /^FIXED/)`, which cannot fail on a declared row: reconciling against an
+  // empty measurement turns EVERY row into a FIXED, so the loop was handed the
+  // exact shape it accepts. Appending `text.value  3  x` to the shipped file
+  // left this suite green at 9 passing (carve#1271) - the same measurement that
+  // opened carve#534 against the script, now reproduced against the test that
+  // replaced it.
+  //
+  // NO FLOOR still, and the old comment was right about that much: a ledger of
+  // zero divergences is the state the panel is trying to reach, so requiring a
+  // minimum row count would be a gate that only works while something is wrong.
+  // The defect was the other end. Refusing to require rows is not the same as
+  // accepting any, and only one of those two was implemented.
+  //
+  // What the empty measurement means here: this suite runs on a host with no
+  // engine checkouts, so it cannot measure divergence itself. `npm run
+  // ast:check` does that, and it has verified the file empty against all three
+  // engines. Between those runs, the honest per-PR statement is "the ledger is
+  // still empty", and that is what this asserts. A row that is genuinely owed
+  // gets established by ast:check and moves this line with it - deliberately,
+  // in the commit that measures it, rather than slipping past unread.
+  assert.deepEqual(reconcileDeclared(new Map(), shippedDeclaration()), [])
+})
+
+test('and a real divergence the shipped file does not declare is caught', () => {
+  // The other direction, against the SHIPPED text rather than a literal. The
+  // test above would still pass if the file somehow declared everything, and
+  // the NEW case two tests up proves the reconciler on a fabricated
+  // declaration; neither one asserts that the file as shipped still lets an
+  // undeclared divergence through.
+  const problems = reconcileDeclared(
+    new Map([['table_cell.align', new Set(['a.crv', 'b.crv'])]]),
+    shippedDeclaration(),
+  )
+  assert.equal(problems.length, 1)
+  assert.match(problems[0], /^NEW\s+table_cell\.align diverges in 2 document\(s\)/)
 })
 
 test('the signature keeps scalars and drops positions', () => {
