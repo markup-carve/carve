@@ -1851,6 +1851,15 @@ Content begins here.
 
 ## Heading IDs
 
+A heading's id is derived from its **text content**. An inline either
+contributes the literal text it carries or contributes nothing, and which of
+the two it does is a property of the CONSTRUCT rather than of what it renders:
+an id is assigned before a cross-reference resolves or a symbol is looked up. A
+code span, a math run, an image's alt text, a link's label and a superscript
+contribute; a footnote reference, a cross-reference and a symbol shortcode do
+not, and a line comment ends the line it sits on. Each of those is pinned in
+the edge cases.
+
 Heading ids are **case-preserving** by default and apply no Unicode
 normalization: a heading keeps its original case and any non-ASCII characters
 verbatim. Cross-references resolve **case-insensitively**, so a lowercase

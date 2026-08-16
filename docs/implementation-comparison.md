@@ -120,7 +120,8 @@ under the same semantic-span rule,
 `328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe`,
 `329-a-floating-attribute-is-scoped-to-the-container-that-holds-it`,
 `330-a-tab-after-a-fence-or-a-frontmatter-opener-depends-on-where-it-sits`,
-`331-an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block`.
+`331-an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block`,
+`332-which-inline-content-a-heading-id-is-derived-from`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
