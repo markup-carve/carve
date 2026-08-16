@@ -133,6 +133,25 @@ const PINNED_UNIMPLEMENTED = {
   djot: 'the pinned @markup-carve/carve exports no djotToCarve; the cross-engine gate covers this format',
 }
 
+/*
+ * Cases whose expectation encodes a ruling the PINNED build has not shipped -
+ * the per-PR twin of resources/converter-drift.txt, and deliberately a
+ * separate list: that file describes the engine CHECKOUTS the scheduled gate
+ * drives, this one describes the build package.json pins, and the two move at
+ * different times (a fix lands on an engine's main first, the pin follows).
+ *
+ * Same discipline as every declared list in this repo: a slug listed here is
+ * excused from the bytes assertion with its reason on record, a listed slug
+ * that starts matching fails as STALE until the entry is deleted in the commit
+ * that moves the pin, and the meaning assertion still runs regardless.
+ */
+const PINNED_DRIFT = {
+  '27-html-a-bare-text-list-item-imports-tight':
+    'carve#1210 ruling: a bare-text <li> imports TIGHT; the pinned build imports it loose',
+  '28-html-a-mixed-list-normalizes-tight':
+    'carve#1210 ruling: expected pins carve-php\'s normalization; the pinned build imports the whole list loose',
+}
+
 /**
  * The visible text of an HTML fragment.
  *
@@ -228,6 +247,13 @@ test('every declared pinned-build gap is still a gap', () => {
       )
     }
   }
+  // A drift entry naming no case excuses nothing while looking like it does -
+  // the renamed-slug failure mode the render corpus's declared lists guard
+  // against too.
+  const slugs = new Set(cases.map(({ slug }) => slug))
+  for (const slug of Object.keys(PINNED_DRIFT)) {
+    assert.ok(slugs.has(slug), `PINNED_DRIFT names "${slug}" but no such case exists - renamed, or a typo`)
+  }
 })
 
 test('convert then render matches the pinned bytes', () => {
@@ -247,7 +273,12 @@ test('convert then render matches the pinned bytes', () => {
     const actual = carveToHtml(FORMATS[format].convert(source))
     const withNewline = actual.endsWith('\n') ? actual : `${actual}\n`
     if (withNewline !== expected) {
+      if (Object.hasOwn(PINNED_DRIFT, slug)) continue // declared: the pin is behind the ruling
       wrong.push(`${slug}\n    expected: ${JSON.stringify(expected)}\n      actual: ${JSON.stringify(withNewline)}`)
+    } else if (Object.hasOwn(PINNED_DRIFT, slug)) {
+      wrong.push(
+        `${slug}: PINNED_DRIFT declares this case (${PINNED_DRIFT[slug]}) but the pinned build now matches - delete the STALE entry in the commit that moves the pin`,
+      )
     }
   }
   assert.deepEqual(wrong, [], `the converted document no longer renders as pinned:\n  ${wrong.join('\n  ')}`)
