@@ -1,0 +1,54 @@
+An attribute line after a continuation marker attributes the attached block
+
+```
+- a
++
+{.x}
+> q
+.
+<ul>
+  <li>a
+    <blockquote class="x"><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- a
++
+> q
+.
+<ul>
+  <li>a
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- a
++
+{.x}
+para
+.
+<ul>
+  <li>a
+    <p class="x">para</p>
+  </li>
+</ul>
+```
+
+```
+- a
++
+{.x}
+> q
+- c
+.
+<ul>
+  <li>a
+    <blockquote class="x"><p>q</p></blockquote>
+  </li>
+  <li>c</li>
+</ul>
+```

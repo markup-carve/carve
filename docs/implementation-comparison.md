@@ -113,7 +113,8 @@ under the same semantic-span rule,
 `321-delimited-comments`,
 `322-an-attribute-block-reaches-the-nested-list-it-precedes`,
 `323-a-block-attached-after-an-invisible-line-leaves-the-item-tight`,
-`324-an-abbreviation-definition-in-an-item-body-is-paragraph-text`.
+`324-an-abbreviation-definition-in-an-item-body-is-paragraph-text`,
+`325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the

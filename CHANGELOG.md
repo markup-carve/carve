@@ -143,6 +143,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **An attribute line after a `+` continuation marker attributes the block the
+  marker attaches** (carve#1238, markup-carve/carve-rs#1020). An attribute block
+  attaches to the block that FOLLOWS it and the target is that block; nothing in
+  that rule exempts the continuation marker, and a continuation is exactly the
+  case where the following block is inside the item. PART 2 has
+  `block = … | block_attributes | …` and PART 11's grammar has
+  `continuation_marker_block = continuation_marker, block`, so the attribute line
+  is itself a block the marker can attach. Reading it as ordinary text loses two
+  things at once, which is why the shape is worth pinning on its own: the
+  attributes, and the containment - the marker's run ends at the text, so the
+  quote or paragraph below it becomes a sibling of the list instead of a child of
+  the item. No corpus document spelled the shape before, so the position was
+  unpinned while the rule that decides it was not.
+
 - **PART 11 §6e: a table cell's content is padded** (carve#1233). The canonical
   writer emits every cell as its PREFIX glued to the opening pipe, then one
   space, then the content, then one space before the closing pipe - the prefix
