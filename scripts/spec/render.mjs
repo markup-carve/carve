@@ -314,10 +314,19 @@ const sem = g.createSemantics().addOperation('h', {
   codeU(_o, _r, content) {
     // unclosed run: verbatim to end of block, trailing whitespace stripped,
     // NO single-space strip
-    return `<code>${escapeHtml(content.sourceString.replace(/\s+$/, ''))}</code>`
+    // The strip is PART 2's `whitespace` - a space or a tab - plus the newlines
+    // the run crossed on its way to the end of the block. `\s` is wider than
+    // the rule: it holds the no-break space, which every other clause calls
+    // CONTENT, so a run ending in one silently lost it. The same narrowing
+    // applies at the math and literal bodies, which share this extraction.
+    return `<code>${escapeHtml(content.sourceString.replace(/[ \t\n]+$/, ''))}</code>`
   },
   nl(_n) {
-    return '\n'
+    // A SOFT BREAK, and the only place one is visible AS a break. A newline
+    // inside a code span, a math run, a literal or a raw passthrough never
+    // reaches here - it is part of that node's own source - which is exactly
+    // the distinction a line block needs (markup-carve/carve#1282).
+    return hardBreaks ? '<br>\n' : '\n'
   },
   codeA(alt) {
     return alt.h()
@@ -504,7 +513,7 @@ const sem = g.createSemantics().addOperation('h', {
     const inner = code.child(0)
     const body = escapeHtml(
       inner.ctorName === 'codeU'
-        ? inner.child(2).sourceString.replace(/\s+$/, '')
+        ? inner.child(2).sourceString.replace(/[ \t\n]+$/, '')
         : codeText(inner.child(1)),
     )
     const a = renderAttrs(attrsOf(attrs))
@@ -937,7 +946,7 @@ function mathSpan(kind, code, attrs) {
   // codeU (unclosed run) carries its content in a different child slot
   const body = escapeHtml(
     inner.ctorName === 'codeU'
-      ? inner.child(2).sourceString.replace(/\s+$/, '')
+      ? inner.child(2).sourceString.replace(/[ \t\n]+$/, '')
       : codeText(inner.child(1))
   )
   // No authored class at all: nothing to place the base class after, so it leads.
@@ -1087,6 +1096,34 @@ let quotePrevCtx = '' // preceding character for recursive inline parses
  * renders its own copy of the heading (markup-carve/carve#1011).
  */
 let omitSymbols = false
+
+/*
+ * HARD BREAKS: a soft break renders as `<br>` (PART 9 SS23).
+ *
+ * A line block and a local hard-break block promise it of every soft break
+ * they hold. The promise is about BREAKS, and a newline swallowed by an
+ * unclosed inline run is not one: the run reaches the end of the block and
+ * everything it spans is its CONTENT, so writing a `<br>` into it would put
+ * markup inside text that is by definition not markup.
+ *
+ * The flag rather than a post-pass over the rendered HTML: which newlines sit
+ * inside a verbatim span is KNOWN here, at the node that matched them, and is
+ * only guessable from the output. Guessing it put a `<br>` inside an
+ * attributed math span (`class` is not the first attribute when the author
+ * wrote an id first) and inside a literal, which has no wrapper element at
+ * all, and it went blind after any raw `{=html}` payload holding a tag
+ * (markup-carve/carve#1282).
+ */
+let hardBreaks = false
+
+export function renderInlineHardBreaks(text, prevCtx = '') {
+  hardBreaks = true
+  try {
+    return renderInline(text, prevCtx)
+  } finally {
+    hardBreaks = false
+  }
+}
 
 /*
  * FOOTNOTE RECOGNITION IS OFF INSIDE A NOTE (grammar.ebnf §16).

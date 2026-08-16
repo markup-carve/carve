@@ -50,3 +50,5 @@
 328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-4  same, with a double-backtick run
 329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-2  the pin predates markup-carve/carve#1280, so the flush-left line still joins the quote and the attribute reaches it
 329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-6  the pin predates markup-carve/carve#1281, so a wrapped attribute block at the end of a definition body still folds the flush-left line in and attributes it
+331-an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block  the pin predates markup-carve/carve-js#1116, so an unclosed run still closes at the line block's line break
+331-an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block-4  same, in the math form of the run
