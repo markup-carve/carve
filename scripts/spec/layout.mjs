@@ -610,6 +610,22 @@ function splitRow(line) {
   let cur = ''
   let i = 1
   let inCode = 0 // backtick run length of an open code span
+  /*
+   * THE CLOSING PIPE CLOSES THE ROW EVEN WITH A VERBATIM RUN STILL OPEN
+   * (carve#1284). An unclosed backtick run inside a cell used to swallow every
+   * `|` after it, including the row's own closer, so `| a ``b | c d |` ended
+   * with content dangling and the line was prose. All three engines read it as
+   * a table whose single cell is `a ``b | c d`, with the run stopping at the
+   * closer - carve-php moved last, and this reader is now the only one left on
+   * the old answer.
+   *
+   * The closer is the last `|` on the line, trailing whitespace aside: the same
+   * position the `cur.trim() !== ''` test below already treats as the end of the
+   * row, so this does not widen what counts as a row - it only stops an open run
+   * from eating the character that ends one.
+   */
+  let closerIdx = s.length - 1
+  while (closerIdx >= 0 && (s[closerIdx] === ' ' || s[closerIdx] === '\t')) closerIdx--
   while (i < s.length) {
     const c = s[i]
     if (c === '\\' && s[i + 1] === '|' && !inCode) {
@@ -626,7 +642,7 @@ function splitRow(line) {
       i += run
       continue
     }
-    if (c === '|' && !inCode) {
+    if (c === '|' && (!inCode || i === closerIdx)) {
       cells.push(cur)
       cur = ''
       i++

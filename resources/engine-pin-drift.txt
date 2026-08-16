@@ -44,3 +44,7 @@
 327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-6  same, in the `- +` first-block form
 327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-7  a different pin defect the case uncovers: after a `- +` first-block attachment the pin does not recognize a second `+`, rendering it as a literal paragraph and leaving the quote at top level
 327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-8  same, in the block-quote form
+328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe  the pin predates markup-carve/carve#1284, so an unclosed verbatim run swallows the row's closing pipe and the line stays prose
+328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-2  same, with a second row below it
+328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-3  same, under a header row
+328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-4  same, with a double-backtick run
