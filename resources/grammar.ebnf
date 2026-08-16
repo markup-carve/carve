@@ -439,6 +439,18 @@ frontmatter = &(frontmatter_open, {content_line - frontmatter_close}, frontmatte
    IN THE LEADING RUN (PART 7). So `---<TAB>yaml` is not a typed opener; it is
    a thematic break followed by ordinary lines. Implementations that read it as frontmatter today diverge
    from this production (carve#901).
+   POSITION DECIDES WHICH CLAUSE GOVERNS, by ruling (carve#1295). Everything
+   in this paragraph is about the slot BEFORE the format token. A whitespace
+   run with NOTHING after it is not that slot: it is trailing whitespace on a
+   content line, PART 2 drops it, and the bare `---` opener it leaves opens
+   frontmatter. So `---<TAB>` and `---<SP><TAB>` are delimiters while
+   `---<TAB>yaml` is not, and the two clauses never overlap - which is why
+   neither needs an exception written into it to protect the other. The run is
+   PART 2's `whitespace`, spaces and tabs; a form feed or a no-break space is
+   content, so `---<FF>` is not an opener. The same split governs the code
+   fence's slot at `fenced_code_block`, which is where it was first ruled
+   (carve#1285) and first ruled too widely: an implementation that refuses
+   BOTH positions has taken the separator half twice.
    CARDINALITY IS EXACTLY ONE, by ruling (carve#912): `---<SP><SP>yaml` is not
    a typed opener either, because the second space reaches
    `frontmatter_format`, which is letters and digits only. What is left is not
@@ -615,7 +627,13 @@ fenced_code_block = code_fence_open, [space], [code_fence_info], newline,
    string only names the language and carries metadata -- but both roles take
    `space`: the slot sits after the fence run, and A TAB IS SYNTAX ONLY IN THE
    LEADING RUN (PART 7). The same holds for the two slots inside
-   code_fence_info below. raw_block (PART 9 §20)
+   code_fence_info below. So ```` ```<TAB>php ```` is not a fence opener; the
+   backtick run is an ordinary inline verbatim run (carve#1285). A TAB WITH
+   NOTHING AFTER IT IS NOT THIS SLOT, by ruling (carve#1295): it is trailing
+   whitespace on a content line, PART 2 drops it, and ```` ```<TAB> ```` opens
+   an ordinary fence with no info string. Position decides which clause
+   governs, here and at `frontmatter_open`, and refusing both positions is the
+   separator rule applied twice. raw_block (PART 9 §20)
    spells its otherwise identical slot the same way, for the additional reason
    that the `=` after it SELECTS a raw block over a code block.
    CARDINALITY DIFFERS BETWEEN THIS SLOT AND THE TWO INSIDE code_fence_info,
