@@ -156,6 +156,58 @@ be in the wrong language entirely, and that is the one signal it could act on.
 Diagnostics have `code`, `message`, `severity` (`info`, `warning`, or `error`),
 and optional `path`, `line`, and `column`. Their order follows document order.
 
+## The `path` of a diagnostic
+
+`path` locates the node a diagnostic is about. It is a HUMAN-READABLE,
+engine-defined locator, and it is NOT an XPath expression. A consumer MUST NOT
+resolve it against the input document; it exists for a person reading a report.
+
+Implementations converge on one spelling. A path is rooted at the fragment's
+body children: there is no `/html[1]/body[1]` prefix, and no step for a wrapper
+element the importer added.
+
+Each step's index counts among ALL of the parent's child nodes, text nodes
+included, not among the same-named siblings.
+
+```html
+<p><abbr class="x" id="z" title="y">A</abbr> <kbd id="k" class="key">Tab</kbd> <abbr title="a b c">S</abbr> <abbr title="">E</abbr> <time datetime="">T</time> <kbd onclick="steal()">Esc</kbd></p>
+```
+
+The last `<kbd>` is the eleventh child of the paragraph, preceded by five
+elements and five whitespace text nodes, so it is reported at
+
+```
+/p[1]/kbd[11]
+```
+
+and not at `kbd[2]`, its position among the `kbd` elements, nor at `kbd[6]`,
+its position among the elements.
+
+A path names the importer's traversal, not the raw DOM. Table sections are
+flattened and rows are renumbered across the whole table, so a `<td>` inside a
+`<tbody>` that follows a `<thead>` carries no `tbody` step.
+
+```html
+<table><thead><tr><th>H</th></tr></thead><tbody><tr><td onclick="x()">B</td></tr></tbody></table>
+```
+
+```
+/table[1]/tr[2]/td[1]
+```
+
+The notation invites the XPath reading, and the reading is false. Every value an
+importer emits is valid XPath SYNTAX that finds nothing. Resolved as XPath
+against the paragraph above, `/p[1]/kbd[11]` selects zero nodes, and it misses
+on two counts at once: the root step, because a parsed fragment puts the
+paragraph under `/html[1]/body[1]`, and the predicate, because XPath counts
+`kbd` among its like-named siblings, where that node is `kbd[2]`. The node an
+XPath engine actually reaches is `/html[1]/body[1]/p[1]/kbd[2]`, which no
+importer writes.
+
+The field is therefore deliberately not machine-checkable. The schema gives it
+no pattern, and an implementation MAY change how it spells a path without that
+being a breaking change to the report format.
+
 ## Required API surface
 
 JavaScript exposes `htmlToAst(html, options)` and `htmlToCarve(html, options)`.
