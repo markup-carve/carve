@@ -12678,6 +12678,53 @@ def</p>
 
 ::::
 
+### A definition term's continuation line
+
+A `dt` written across two physical lines is one logical line assembled from
+two, and the second line's trailing run is dropped exactly like the first
+line's would be (markup-carve/carve#1289). Nothing exempts a term: the run is
+whitespace at the end of a content line, and the verbatim run that spans the
+break carries a newline rather than the dropped space.
+
+::: compare
+
+```carve
+:: `a
+b 
+:  d
+```
+
+```html
+<dl>
+  <dt><code>a
+b</code></dt>
+  <dd>d</dd>
+</dl>
+```
+
+:::
+
+The control belongs to "where the rule does not reach" above rather than to
+this one: spaces INSIDE the run are the construct's content and end at its
+closing delimiter, so a term whose whole content is an all-space verbatim keeps
+them.
+
+::: compare
+
+```carve
+:: `  `
+:  d
+```
+
+```html
+<dl>
+  <dt><code>  </code></dt>
+  <dd>d</dd>
+</dl>
+```
+
+:::
+
 ## A definition body continuation indented past its column is lazy text
 
 `definition_indent` (`resources/grammar.ebnf`, PART 2) is a whitespace run REACHING
