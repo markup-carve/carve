@@ -56,7 +56,7 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | ListTable (§5), Details, Spoiler, Tabs — shipped in all three engines and pinned in `tests/corpus-optional` | <Badge type="info" text="standard" /> | off | — |
 | Mermaid / FencedRender, MathBlock, Glossary, Index, HeadingNumbers, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | Bibliography (§6) — an **option on Citations**, not a separate registration: the host passes a CSL-JSON pool to the Citations extension | <Badge type="warning" text="extension" /> | off | — |
-| TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
+| TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks and HeadingReference (§12), ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
 | Semantic span attributes — `[x]{kbd}`, `[HTML]{abbr="…"}`, `[now]{time="…"}` (three names; PART 9 §9) | <Badge type="tip" text="core" /> | on | no |
 | SemanticSpan — the four names core does not reserve (`samp`, `var`, `cite`, `dfn`), plus the soft-deprecated `:name[…]` spelling for all seven | <Badge type="info" text="standard" /> | off | — |
 | [ImgFence](/svg-images) (sanitized SVG `img` fence — sandboxed by default) | <Badge type="warning" text="extension" /> | off | — |
@@ -1138,3 +1138,111 @@ riding rule; `41-semantic-span-extension-deprecated-spelling` pins the
 compatibility form. Both are declared unreachable until an engine registers the
 extension - see `tests/optional-corpus.test.mjs`, which names the window rather
 than skipping silently.
+
+## 12. Wikilinks and HeadingReference (Tier-2)
+
+The two extensions that spell a link as `[[…]]`. They are documented together
+because they claim the SAME syntax and answer different questions with it, so
+the first thing a host has to decide is which one a render gets.
+
+Core leaves `[[…]]` literal. That is what lets either extension add the form
+without hijacking a core construct, and it is also the fallback both degrade to.
+
+### 12.1 Wikilinks: a link to another page
+
+The same-site link. A page name becomes a URL through a generator the host
+supplies, because the URL a page name maps to depends on the site - the routing,
+the extension, whether pages live in folders - and none of that is visible to a
+parser. That is the taxonomy rule in
+[Native Features](/native-features-analysis) applied literally: a feature whose
+answer depends on the surrounding system is an extension, not syntax.
+
+Four forms:
+
+| Write | Means |
+| --- | --- |
+| `[[Page]]` | the page, linked by its own name |
+| `[[page\|Display]]` | the page, with its own link text |
+| `[[page#anchor]]` | a fragment inside the page |
+| `[[folder/page]]` | a page under a path |
+
+::: compare
+
+```carve
+See [[Tigers]] and [[page|Display]].
+```
+
+```html
+<p>See <a href="tigers" class="wikilink" data-wikilink="Tigers">Tigers</a> and <a href="page" class="wikilink" data-wikilink="page">Display</a>.</p>
+```
+
+:::
+
+`data-wikilink` carries the page name as written, so a host that post-processes
+the HTML can find its own links without re-parsing them out of the `href`.
+
+Three options, identical in meaning across the engines:
+
+| Option | Default | What it does |
+| --- | --- | --- |
+| URL generator | a slugifier: lowercase, spaces to `-`, unsafe characters dropped, runs collapsed | maps the page name (anchor already stripped) to an href; the anchor is appended afterwards |
+| CSS class | `wikilink` | class(es) on the anchor |
+| New window | off | adds `target="_blank" rel="noopener"` |
+
+The registration shape follows each language rather than a shared spelling:
+
+```js
+carveToHtml(src, { extensions: [wikilinks({ urlGenerator: (p) => `/docs/${slug(p)}.html` })] })
+```
+
+```php
+new WikilinksExtension(urlGenerator: fn (string $page): string => '/docs/' . slug($page) . '.html');
+```
+
+```rust
+Wikilinks::new().with_url_generator(Box::new(|page| format!("/docs/{}.html", slug(page))))
+```
+
+### 12.2 HeadingReference: a link to a heading in THIS document
+
+Names a heading by its plain text, so an author never has to know the slug
+rules. `[[Heading Text|click here]]` sets its own display text.
+
+A reference resolves only when exactly one heading matches. A heading that does
+not exist, and text that appears on more than one heading - where no choice
+would be right - both fall back to the literal `[[…]]` source, so nothing is
+silently swallowed:
+
+::: compare
+
+```carve
+See [[Getting Started]] and [[No Such Heading]].
+
+# Getting Started
+```
+
+```html
+<p>See <a href="#Getting-Started" class="heading-ref">Getting Started</a> and [[No Such Heading]].</p>
+```
+
+:::
+
+### 12.3 Enable one or the other, never both
+
+They compete for `[[…]]` on the same render. Pick by what the document means by
+a bare `[[Name]]`: another page in the site, or a heading in this file.
+
+For an intra-document link that does not go through this extension at all, core
+already has two spellings: `</#section-id>` clones the target's text
+(PART 9 §16), and `[Page Name][]` is an ordinary collapsed reference that
+resolves against a matching heading.
+
+### 12.4 An unresolved reference survives for the host to resolve
+
+Where a document links to something this document cannot resolve, the reference
+is not discarded. `[Some Page][]` with nothing to resolve against stays a `link`
+node carrying `href: ""` plus `ref` and `rawRef` (PART 12 §3a), and the core
+render degrades to the literal source text rather than inventing a URL. A site
+layer that knows which pages exist can walk the AST, match `ref` against its own
+index and fill `href` in - which is the same division of labor Wikilinks makes
+explicit through its URL generator.
