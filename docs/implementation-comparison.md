@@ -738,6 +738,39 @@ carve-rs is driven through its binary and exposes no flag for the sections
 switch or the source-line stamp, so `section-wrapper-off` and
 `source-line-after-generated-id` still need a CLI path there (carve#496).
 
+## Converter corpus
+
+`--corpus=convert` runs the arrow the other way: `tests/corpus-convert/` pairs
+a foreign source (`input.md`, `input.html`, `input.bbcode`, `input.djot`) with
+the expected render of the Carve it converts to. Each engine that imports the
+case's format converts the source, carve-js renders every produced document
+with default options, and that render is compared against the case's
+`expected.html` - the semantic gate ruled on
+[carve#1130](https://github.com/markup-carve/carve/issues/1130), which is what
+keeps carve-php's escape-only-the-opener spelling and carve-rs's canonical
+rewriting from reading as divergence when both render the same document.
+
+Absence is declared, never silent, in two files checked in both directions on
+every run:
+
+- **A missing importer** is a capability gap: it lives in
+  `scripts/lib/converter-formats.mjs` with the reason (today: carve-rs has no
+  BBCode importer, carve-js has no Djot importer). A format an engine can
+  neither convert nor explain fails the run; a declared gap the engine has
+  quietly closed is a stale entry and fails too - the runner probes the engine
+  itself rather than trusting the table.
+- **A known-behind conversion** is drift: it lives in
+  `resources/converter-drift.txt` as `engine/case  reason`, the converter
+  corpus's `engine-pin-drift.txt`. An undeclared mismatch fails immediately;
+  a declared one that starts passing fails as stale until the line is deleted
+  in the commit that fixed it.
+
+The per-PR half of the same corpus is `tests/corpus-convert.test.mjs`, which
+gates the pinned build and additionally holds every expectation against the
+SOURCE language's own reader (`marked` for Markdown, `djot.js` for Djot, the
+document itself for HTML), so the expected files answer to something that is
+not Carve.
+
 ## Scope
 
 The tool has two profiles:
@@ -745,6 +778,8 @@ The tool has two profiles:
 - It runs the mandatory Tier-1 corpus in `tests/corpus`.
 - It runs optional Tier-2 adapters in `tests/corpus-optional` with
   `--corpus=optional`.
+- It runs the converter corpus in `tests/corpus-convert` with
+  `--corpus=convert`.
 - It compares byte-identical output after trimming.
 - It reports CLI-level average time per corpus file.
 - It reports extension system surface area.

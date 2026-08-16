@@ -29,7 +29,9 @@ extensions force: an HTML case's SOURCE and any case's expected RENDER would
 both want to be `NN-slug.html`. It is also the shape
 [`../html-import/`](../html-import/) already uses.
 
-Source formats currently driven: `md`, `html`, `bbcode`.
+Source formats currently driven: `md`, `html`, `bbcode`, `djot`. The
+extension-to-format mapping lives in `scripts/lib/converter-formats.mjs`, which
+both runners read, so a new format is added in one place.
 
 ## Why the expected file is HTML and not Carve
 
@@ -75,9 +77,31 @@ The second assertion is what keeps the expectations answerable. A corpus written
 by recording what an engine currently does pins that engine to itself; a second
 reader can say whether the recorded answer was right.
 
-The cross-engine half - the same cases through carve-php and carve-rs - needs
-three provisioned checkouts and cannot run in this repo's per-PR CI. It is still
-open on carve#1130, and this corpus is the input it needs.
+The cross-engine half is `npm run compare:convert`
+(`scripts/compare-impls.mjs --corpus=convert`): every engine that imports the
+case's format converts the source, carve-js renders every produced document,
+and the renders are compared against `expected.html`. It needs the three
+provisioned checkouts, so it runs in the scheduled conformance workflow
+(`.github/workflows/ast-conformance.yml`) rather than per PR.
+
+## How an engine declares a gap
+
+Nothing is skipped silently. Two declaration files carry the two kinds of
+absence, and the runner checks both in both directions on every run:
+
+- **No importer for a format** - a capability gap - is declared per engine in
+  `scripts/lib/converter-formats.mjs` (`UNIMPLEMENTED_IMPORTERS`), with the
+  reason. A format an engine can neither convert nor explain fails the run,
+  and a declared gap the engine has closed fails as STALE: the runner probes
+  the engine itself. The pinned build's own gap (`PINNED_UNIMPLEMENTED` in the
+  test file) follows the same discipline for the per-PR half - a Djot case's
+  bytes assertion skips visibly there while its meaning assertion still runs,
+  because the source reader needs no Carve importer.
+- **A conversion the engine is known to be behind on** is declared per
+  (engine, case) in `resources/converter-drift.txt`, with the reason - the
+  converter corpus's `engine-pin-drift.txt`. An undeclared mismatch is red
+  immediately; a declared one that starts passing is red as stale until the
+  line goes in the commit that fixed it.
 
 ## Adding a case
 

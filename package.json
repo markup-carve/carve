@@ -16,6 +16,7 @@
     "corpus:build": "node scripts/generate-corpus.mjs",
     "docs:pages": "node scripts/generate-example-pages.mjs",
     "compare:impls": "node scripts/compare-impls.mjs",
+    "compare:convert": "node scripts/compare-impls.mjs --corpus=convert --fail-on-diff",
     "compare:counts": "node scripts/compare-impls.mjs --counts-only",
     "compare:report": "node scripts/check-compare-report.mjs",
     "claims:check": "node scripts/engine-claims.mjs",
