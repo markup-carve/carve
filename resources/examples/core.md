@@ -1831,7 +1831,7 @@ Content begins here.
 
 :::
 
-The space between `---` and the format token is optional — `---toml` and `--- toml` are both accepted (the no-space form is canonical), matching code fences: ` ```php ` is canonical, though a space after the fence is accepted for compatibility.
+The space between `---` and the format token is optional — `---toml` and `--- toml` are both accepted (the no-space form is canonical), matching code fences: ` ```php ` is canonical, though a space after the fence is accepted for compatibility. What is accepted there is exactly one literal space: a tab before the format token is not that separator, so the line is not a delimiter at all. A whitespace run with NOTHING after it is a different question: it is trailing whitespace on a content line, it is dropped, and the bare opener it leaves behind opens normally. Both positions are pinned in the edge cases, for the delimiter and for the code fence alike.
 
 ::: compare
 

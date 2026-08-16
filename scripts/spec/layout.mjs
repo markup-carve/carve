@@ -1125,7 +1125,17 @@ export function parse(src) {
   // the slot one character rather than the first character of a run. The
   // second space then reaches `frontmatter_format = (letter | digit)+`, which
   // cannot match it, so the line is not a typed opener.
-  if (lines[0] !== undefined && /^---(?! *[^\S ])( (?! )|[A-Za-z0-9]+\s*$|$)/.test(lines[0])) {
+  //
+  // POSITION DECIDES WHICH RULE GOVERNS (carve#1295). Everything above is
+  // about the slot BEFORE a format token. A run with NOTHING after it is not
+  // that slot at all: it is trailing whitespace on a content line, PART 2
+  // drops it, and what is left is the bare `---` opener. So `---<TAB>` and
+  // `---<SP><TAB>` open frontmatter while `---<TAB>yaml` does not, and the
+  // two clauses never need an exception written into either. `[ \t]*$` is the
+  // whole of that reading, and it is deliberately spelled with the same two
+  // characters PART 2's `whitespace` admits - a form feed or a no-break space
+  // is CONTENT, so `---<FF>` is not an opener and falls through as before.
+  if (lines[0] !== undefined && /^---(?:[ \t]*$|(?! *[^\S ])( (?! )|[A-Za-z0-9]+\s*$))/.test(lines[0])) {
     for (let j = 1; j < lines.length; j++) {
       if (/^---[ \t]*$/.test(lines[j])) {
         lines.splice(0, j + 1)

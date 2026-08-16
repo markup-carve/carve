@@ -591,6 +591,7 @@ index: examples/edge-cases/index.md
   a-reference-definition-s-metadata-slots-take-exactly-one-space
   a-definition-marker-s-separator-is-a-space-and-it-is-a-run
   trailing-whitespace-on-a-content-line-is-dropped
+  a-tab-after-a-fence-or-a-frontmatter-opener-depends-on-where-it-sits
   11-fenced-code-2
   11-fenced-code-16
   11-fenced-code-17
