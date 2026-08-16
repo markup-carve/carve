@@ -64,6 +64,30 @@ test('figures and tables accept an optional structural short caption', () => {
   assert.equal(validate({ type: 'document', children: [{ ...figure, shortCaption: 'label' }], srcByteLength: 1 }), false)
 })
 
+test('a figure targets a table, which no Carve source spells', () => {
+  // PART 12 §17 from both directions. The table branch is the one an HTML
+  // importer produces from `<figure><table>…<figcaption>` and no Carve source
+  // spells; the quote and image branches are the ordinary ones a captioned
+  // document produces. Pinning the set here is what makes a change to it a
+  // decision rather than a drift - carve#1161 removed the quote branch and one
+  // engine kept decoding it, because nothing said the set was closed.
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  const figure = (target) => ({
+    type: 'document',
+    srcByteLength: 1,
+    children: [{ type: 'figure', target, caption: [{ type: 'text', value: 'Cap', pos }], pos }],
+  })
+  const cell = { type: 'table_cell', header: true, children: [{ type: 'text', value: 'A', pos }], pos }
+  const table = { type: 'table', rows: [{ type: 'table_row', cells: [cell], pos }], pos }
+  const quote = { type: 'block_quote', children: [{ type: 'paragraph', children: [], pos }], pos }
+
+  assert.equal(validate(figure(table)), true, firstErrors())
+  assert.equal(validate(figure(quote)), true, firstErrors())
+  assert.equal(validate(figure({ type: 'image', src: '/x.png', alt: 'x', pos })), true, firstErrors())
+  // A heading is not a captionable host, so it is not a target either.
+  assert.equal(validate(figure({ type: 'heading', level: 1, children: [], pos })), false)
+})
+
 test('a table accepts an optional row grouping, and only a complete one', () => {
   const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
   const table = (rowGroups) => ({

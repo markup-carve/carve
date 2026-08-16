@@ -8809,3 +8809,57 @@ EOF = (* end of file *) ;
       carve#1121's design space and is not claimed here. The schema
       (`resources/ast-schema.json`) pins the shape; an unknown property on a
       `figure_group` is rejected on ingest like any other (§11).
+
+   17. A FIGURE MAY WRAP A TABLE, AND NO CARVE SOURCE SPELLS IT -- NORMATIVE.
+      `figure.target` admits a `table`, and a `table` carries its own optional
+      `caption`. Those are two trees, not two spellings of one, and both render:
+
+        figure{ target: table, caption }  ->  <figure>
+                                                <table>...</table>
+                                                <figcaption>...</figcaption>
+                                              </figure>
+
+        table{ caption }                  ->  <table>
+                                                <caption>...</caption>
+                                                ...
+                                              </table>
+
+      PART 9 §4 rules the SOURCE spelling, and it produces only the second: a
+      `^ ` line after a table attaches to the table, so a parser never produces
+      the first. The producer is a format bridge -- an HTML importer reading
+      `<figure><table>…<figcaption>`, a shape HTML itself distinguishes from a
+      table carrying a `<caption>`.
+
+      CARVE 0.1 SOURCE HAS NO SPELLING FOR THE WRAPPER. Like `shortCaption` in
+      §14 and `rowGroups` in §15, it enters a tree through an AST consumer or a
+      format bridge and survives AST encode/decode by §6. Being able to
+      REPRESENT the wrapper is not being able to AUTHOR one.
+
+      A CANONICAL CARVE WRITER EMITS THE TARGET AND ITS CAPTION -- the table
+      followed by the `^ ` line -- and MUST NOT invent source syntax for the
+      wrapper. What it writes re-reads as `table{caption}`, a different tree
+      with different HTML, so the wrapper is LOST rather than preserved. A
+      bridge or API which exposes conversion diagnostics SHOULD report that
+      structural loss. This is the one caption shape whose source round trip
+      changes the rendering, which is why it is written down here rather than
+      left to each writer to discover.
+
+      A FIGURE GROUP'S TABLE PANEL IS NOT THIS WRAPPER. PART 9 §4c has since
+      made `:::` a captionable host (carve#1122), and a reader arriving here
+      will ask whether `::: figure` around a table now spells the shape. It
+      does not. §16 holds a `figure_group`'s panels in `children` as exactly
+      the nodes the inner caption rules built, so a table panel is a plain
+      `table` child of the group -- carrying its own `caption` if it has one --
+      and never a `figure` whose target is a table. The two say different
+      things: a group wraps a SEQUENCE of panels and captions the sequence,
+      while this wrapper wraps ONE table and captions that table. Carve 0.1
+      source still spells no `figure{target: table}`, which is what makes the
+      writer's loss unavoidable rather than a choice.
+
+      THE TABLE IS THE ONLY HOST IN THIS POSITION. PART 9 §4b states what a
+      caption makes of its host: every other captionable host -- an image, a
+      quote, a code block, a display-math paragraph -- becomes a `figure` when
+      a `^ ` line follows it, so its wrapper IS what the source spells and the
+      round trip is exact. A table is the one host whose caption has a slot of
+      its own to go into, so the wrapper around it says something the caption
+      inside it does not, and only that difference is unspellable.
