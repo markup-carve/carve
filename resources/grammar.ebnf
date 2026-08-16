@@ -8844,11 +8844,17 @@ EOF = (* end of file *) ;
       changes the rendering, which is why it is written down here rather than
       left to each writer to discover.
 
-      THE WRAPPER GAINS A SOURCE SPELLING once `:::` is a captionable host
-      (carve#1122): `::: figure` around a table states structurally what
-      `figure{target: table}` states now. Until then the shape has no author
-      spelling, which is what makes the loss below unavoidable rather than a
-      writer's choice.
+      A FIGURE GROUP'S TABLE PANEL IS NOT THIS WRAPPER. PART 9 §4c has since
+      made `:::` a captionable host (carve#1122), and a reader arriving here
+      will ask whether `::: figure` around a table now spells the shape. It
+      does not. §16 holds a `figure_group`'s panels in `children` as exactly
+      the nodes the inner caption rules built, so a table panel is a plain
+      `table` child of the group -- carrying its own `caption` if it has one --
+      and never a `figure` whose target is a table. The two say different
+      things: a group wraps a SEQUENCE of panels and captions the sequence,
+      while this wrapper wraps ONE table and captions that table. Carve 0.1
+      source still spells no `figure{target: table}`, which is what makes the
+      writer's loss unavoidable rather than a choice.
 
       THE TABLE IS THE ONLY HOST IN THIS POSITION. PART 9 §4b states what a
       caption makes of its host: every other captionable host -- an image, a

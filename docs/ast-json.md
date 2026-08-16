@@ -63,7 +63,9 @@ tree through a format bridge - an HTML importer reading
 the table and its caption line. Conversion APIs with diagnostics should report
 that loss. Every other captionable host - an image, a quote, a code block, a
 display-math paragraph - becomes a `figure` from source, so its wrapper is
-written back exactly.
+written back exactly. A composite figure's table panel is not this wrapper
+either: a table inside a `::: figure` group is a plain `table` child of the
+`figure_group` (§16), not a `figure` targeting one.
 
 A `table` may likewise carry an optional `rowGroups` object (§15), which
 partitions its `rows` into a head, any number of body groups and a foot:
