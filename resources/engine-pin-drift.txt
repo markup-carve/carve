@@ -30,3 +30,11 @@
 322-an-attribute-block-reaches-the-nested-list-it-precedes-6  same, with two stacked attribute blocks
 322-an-attribute-block-reaches-the-nested-list-it-precedes-7  same, with the attribute line ending a run that also holds a paragraph
 323-a-block-attached-after-an-invisible-line-leaves-the-item-tight  the pin predates markup-carve/carve-js#1107, so the attribute block before the nested list is dropped; the tightness half it already gets right
+326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open  the pin predates markup-carve/carve#1280, so a column-0 line still folds into an item whose last block is a heading
+326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-3  same, with a table as the item's last block
+326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-4  same, with a thematic break
+326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-5  same, with a line comment
+326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-6  same, with a comment fence
+326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-7  same, with a link reference definition
+326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-8  same, with a footnote definition
+326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-9  same, with an attribute block
