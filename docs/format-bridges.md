@@ -62,10 +62,16 @@ character - so the text has to survive even where the node cannot, and the
 caller still has to be told the node did not.
 
 In practice that means an API surface, not a log line an operator might read:
-carve-php exposes `droppedTypes()` and `degradedTypes()` after a render, so an
+carve-php exposes `droppedTypes()` and `degradedTypes()` after a render and
+carve-grammars returns `preserved` and `degraded` beside the document, so an
 application that stores documents can refuse to save one that lost something;
 pandoc-carve writes `pandoc-carve: degraded ...` to stderr for every lossy
-construct. Neither degrades silently.
+construct. None of them degrades silently.
+
+A bridge that keeps the exact source of what it could not model is still lossy
+in the sense that matters here: the construct is not editable, and an editor
+that hands the document back has to reproduce a blob it does not understand. It
+belongs in the report.
 
 The reverse direction has a stricter rule: a name the bridge does not know is an
 **error**, not a skip. An editor that grew a node type nobody mapped is exactly
@@ -157,6 +163,43 @@ typography is lossy on reparse, a caption number is a resolution artifact rather
 than editor content. A bridge reads its degradation list from there instead of
 inventing one, which is what keeps two bridges to the same model from disagreeing
 about what was lost.
+
+### A name is only half a vocabulary
+
+Naming the node a type becomes leaves the attributes to each implementation, and
+that is where two bridges to the same model actually drifted: one wrote `ref`,
+`rawRef` and `autolink` on the link mark where the other wrote `carveRef`,
+`carveRawRef` and `carveAutolink`; one recorded a list's marker style and the
+other its tightness, neither both. Every one of those names round-trips
+perfectly within its own bridge, so no test either implementation had could see
+it. A document stored by one and read by the other lost its reference spelling,
+its list tightness and its table spans - silently, which is the failure mode this
+whole page exists to rule out.
+
+So the map names the attributes too, under one rule: an attribute carrying a
+CARVE concept on a node the target model already defines is prefixed, and a node
+the map itself owns keeps bare names. `carveRef` on the stock link mark;
+`carveTight` on the stock list; plain `raw` on `carveCitation`, which is ours.
+HTML-native names - `id`, `class`, `href`, `colspan` - keep their spelling
+wherever they appear.
+
+Names in a document and names in a map can still disagree, so the map ships
+FIXTURES beside itself: a set of Carve sources with the exact target document
+each must produce. A bridge in another runtime copies them and asserts against
+them, which turns "we both read the same map" into something a test can fail.
+
+### The preservation node is part of the wire
+
+A bridge that keeps an unmodeled construct as exact source needs somewhere to
+put it, and that node crosses runtimes like any other. carve-grammars writes a
+`carveUnsupported` atom holding the source; carve-php refuses an unknown name by
+design, so every such document was rejected outright on arrival - 179 of 1025 in
+one measurement. Neither behavior is wrong on its own; the pair is, and the fix
+is for the preservation node to be in the map rather than in one bridge's head.
+
+It carries the source verbatim AND the type it stands in for. Without the type
+the caller learns that something was preserved and never what, which is the same
+silence the atom exists to avoid.
 
 Pandoc's side needs no shared map, because it reads the serialized
 [AST exchange format](./ast-json) directly - the shape
