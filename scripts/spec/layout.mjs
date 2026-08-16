@@ -1149,7 +1149,7 @@ function flattenPastCap(lines) {
 // single counter on `state` bounds the nesting uniformly (PART 26). The
 // counter is incremented on entry and decremented on exit (try/finally) so
 // sibling containers never accumulate depth.
-function parseBlocks(lines, state, top, inItem = false, meas = undefined) {
+function parseBlocks(lines, state, top, inItem = false, meas = undefined, stop = undefined) {
   state.blockDepth = (state.blockDepth ?? 0) + 1
   if (state.blockDepth > MAX_NESTING_DEPTH) {
     state.blockDepth--
@@ -1167,13 +1167,13 @@ function parseBlocks(lines, state, top, inItem = false, meas = undefined) {
     return flattenPastCap(lines)
   }
   try {
-    return parseBlocksImpl(lines, state, top, inItem, meas)
+    return parseBlocksImpl(lines, state, top, inItem, meas, stop)
   } finally {
     state.blockDepth--
   }
 }
 
-function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) {
+function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, stop = undefined) {
   const blocks = []
   let i = 0
   const n = lines.length
@@ -1228,6 +1228,16 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
   const push = (node) => blocks.push(flushAttrs(node))
 
   while (i < n) {
+    // SS17 L3 asks this parser where the FIRST block ends (see firstBlockEnd).
+    // A block is pushed only once it is complete, so the top of the loop - the
+    // one place that has consumed nothing of the next line - is where `i` is
+    // exactly that boundary. Asking here costs one parse; the alternative,
+    // re-parsing every prefix until one yields a single block, is quadratic in
+    // the attached block's line count and reachable from ordinary input.
+    if (stop !== undefined && blocks.length > 0) {
+      stop.next = i
+      return blocks
+    }
     const line = lines[i]
     if (ind(i).rest === '') { // isBlank, without re-walking the indent
       i++
@@ -2113,48 +2123,37 @@ function oneBlockEnd(lines, start, endsBlock) {
  * blocks: the extent of `para` / `> q` is both lines, and handing both to the
  * block parser produces TWO blocks (carve#1290).
  *
- * The block boundary is found by ASKING THE BLOCK PARSER rather than by
- * re-deriving block segmentation here, which would be a second spelling of a
- * rule this file already owns - and the way this drifts. The shortest prefix of
- * the region that parses to exactly one block, and to the SAME block the whole
- * region starts with, is that block's extent. The second half of that test is
- * what keeps a multi-line paragraph whole: a one-line prefix of `a` / `b` / `> q`
- * parses to one block too, but not to the same one.
+ * The boundary is found by ASKING THE BLOCK PARSER rather than by re-deriving
+ * block segmentation here, which would be a second spelling of a rule this file
+ * already owns - and the way a rule with two spellings drifts.
  *
- * The probe parses use a THROWAWAY state. `parseBlocks` collects definitions
- * into the symbol table as it goes, and the real parse of these lines happens
- * afterwards; sharing the state would register every definition in the region
- * once per probe.
+ * ONE parse, not one per prefix. `parseBlocks` takes a `stop` object and returns
+ * at the top of its loop as soon as one block is complete, which is the only
+ * point in the walk that has consumed nothing of the next line. Probing prefixes
+ * instead - the shortest that yields a single block - gives the same answer and
+ * is quadratic in the attached block's line count, reachable from ordinary input
+ * on a long wrapped paragraph.
+ *
+ * The parse uses a THROWAWAY state. `parseBlocks` collects definitions into the
+ * symbol table as it goes and the real parse of these lines happens afterwards,
+ * so sharing the state would register every definition in the region twice.
  */
 function firstBlockEnd(lines, start, limit, state) {
   if (limit - start <= 1) return limit
-  const region = lines.slice(start, limit)
-  const probe = () => ({
-    linkDefs: new Map(),
-    footnoteDefs: new Map(),
-    abbrDefs: new Map(),
-    blockDepth: state.blockDepth ?? 0,
-  })
-  let whole
+  const stop = { next: limit - start }
   try {
-    whole = parseBlocks(region, probe(), false, true)
+    parseBlocks(lines.slice(start, limit), {
+      linkDefs: new Map(),
+      footnoteDefs: new Map(),
+      abbrDefs: new Map(),
+      blockDepth: state.blockDepth ?? 0,
+    }, false, true, undefined, stop)
   } catch {
     // Outside the executable subset: the extent is the honest answer, and the
-    // real parse below raises the same refusal where it belongs.
+    // real parse of these lines raises the same refusal where it belongs.
     return limit
   }
-  if (whole.length <= 1) return limit
-  const first = JSON.stringify(whole[0])
-  for (let n = 1; n < region.length; n++) {
-    let prefix
-    try {
-      prefix = parseBlocks(region.slice(0, n), probe(), false, true)
-    } catch {
-      continue
-    }
-    if (prefix.length === 1 && JSON.stringify(prefix[0]) === first) return start + n
-  }
-  return limit
+  return start + stop.next
 }
 
 // Parse ONE following flush-left block (for the `+` continuation marker).
