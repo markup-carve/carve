@@ -23,19 +23,11 @@
 #
 # Format: <engine>/<case-slug><space><space><reason>
 
-# The stays-text escapes ruled on carve#1130 (CommonMark+GFM is the contract;
-# a construct only Carve or another flavour spells is escaped so the migrated
-# document keeps saying what its author wrote). carve-js shipped them in
-# carve-js#1060; carve-php shipped them in carve-php#1311, which is why only
-# the carve-rs line is left here.
-rust/05-markdown-verbatim-sigils-stay-text  ruled stays-text escape not shipped; math/literal sigils convert
-
-# carve#1210 ruling (2026-08-16): "a bare-text <li> imports as a TIGHT list
-# item; <li><p>...</p></li> stays loose. HTML draws the tight/loose distinction
-# the same way Carve does, and import preserves source structure rather than
-# normalizing." Carve spells tight/loose per LIST, so a MIXED list resolves the
-# way CommonMark resolves it - one paragraph item loosens the whole list - and
-# case 28 pins that. carve-php reads the source's own markup; carve-js shipped
-# the mixed-list half in carve-js#1110, which is why only the carve-rs line on
-# case 27 is left here.
-rust/27-html-a-bare-text-list-item-imports-tight  ruled tight-li import not shipped; a bare-text item imports loose
+# NO ENTRIES. Every engine converts every case in its formats to the corpus's
+# expectation, so there is nothing to declare - which is the state this file is
+# meant to be returned to, not an unusual one.
+#
+# An empty ledger and an unwired gate look identical from outside, so read the
+# converter summary rather than this file: `npm run compare:convert` prints a
+# convert_pass count per engine, and it is that count, not this emptiness, that
+# says the cases are being converted and compared.
