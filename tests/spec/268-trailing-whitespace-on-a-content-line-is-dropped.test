@@ -114,3 +114,25 @@ def
 def</p>
 </div>
 ```
+
+```
+:: `a
+b 
+:  d
+.
+<dl>
+  <dt><code>a
+b</code></dt>
+  <dd>d</dd>
+</dl>
+```
+
+```
+:: `  `
+:  d
+.
+<dl>
+  <dt><code>  </code></dt>
+  <dd>d</dd>
+</dl>
+```

@@ -199,6 +199,10 @@ const INVENTORY = [
   // The line block. SS23 converts the two-column run into NBSPs, so the `.crv`
   // carries the run and the `.html` carries the entities rather than a run.
   { base: '268-trailing-whitespace-on-a-content-line-is-dropped-12', crv: ['trailing-WS'], html: [] },
+  // The definition term's continuation line (markup-carve/carve#1289). The
+  // trailing space is the whole case: strip it from the `.crv` and the pair
+  // asserts nothing, because the term already renders that way without it.
+  { base: '268-trailing-whitespace-on-a-content-line-is-dropped-13', crv: ['trailing-WS'], html: [] },
   // carve#844's category. The invisible character IS the assertion in each of
   // these three: it is the one thing keeping the line from being an autolink,
   // so an editor that strips it turns the pair into the plain `<https://e.com/>`
