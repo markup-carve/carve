@@ -195,6 +195,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The U+E000 no-break space sentinel is documented on all four fields that
+  carry it** (carve#1242). `resources/ast-schema.json` and PART 12 §3 named it
+  on `text.value` alone; the engines emit and resolve it on `text.value`,
+  `code.value`, `code_block.content` and `literal_inline.content`, so a
+  consumer written against the schema handled a quarter of what it receives.
+  The normative rule is unchanged - map U+E000 to the target's no-break space,
+  or to an ordinary space where the target has none, and never emit it - it now
+  says where it applies. `raw_block.content` is named as EXCLUDED, since raw
+  content is byte-for-byte passthrough. A line block's preserved indentation is
+  a RUN of the sentinel, one per space, which is the second source the old
+  wording left in a parenthetical.
+
 - **The `semantic-span-carve-outs` HTML-import fixture pins the canonical fence
   opener.** `fenced_code_block` names the no-space form canonical ("The
   no-space form (```php) is canonical and is what the X->Carve converters

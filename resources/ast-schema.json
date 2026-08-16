@@ -760,7 +760,8 @@
           "const": "code"
         },
         "value": {
-          "type": "string"
+          "type": "string",
+          "description": "May contain U+E000, the NO-BREAK SPACE SENTINEL. This content is verbatim, so the sentinel here is a U+E000 the author typed rather than one the parser resolved from an escaped space; on the wire the two are the same character and carry the same rule. A consumer MUST map U+E000 to its target's no-break space, or to an ordinary space where the target has none, and MUST NOT emit it. See `text.value` for the full sentinel rule."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
@@ -783,7 +784,8 @@
           "const": "code_block"
         },
         "content": {
-          "type": "string"
+          "type": "string",
+          "description": "May contain U+E000, the NO-BREAK SPACE SENTINEL. This content is verbatim, so the sentinel here is a U+E000 the author typed rather than one the parser resolved from an escaped space; on the wire the two are the same character and carry the same rule. A consumer MUST map U+E000 to its target's no-break space, or to an ordinary space where the target has none, and MUST NOT emit it. See `text.value` for the full sentinel rule."
         },
         "lang": {
           "type": "string"
@@ -2241,7 +2243,8 @@
           "const": "literal_inline"
         },
         "content": {
-          "type": "string"
+          "type": "string",
+          "description": "May contain U+E000, the NO-BREAK SPACE SENTINEL. This content is verbatim, so the sentinel here is a U+E000 the author typed rather than one the parser resolved from an escaped space; on the wire the two are the same character and carry the same rule. A consumer MUST map U+E000 to its target's no-break space, or to an ordinary space where the target has none, and MUST NOT emit it. See `text.value` for the full sentinel rule."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
@@ -2384,7 +2387,8 @@
           "type": "string"
         },
         "content": {
-          "type": "string"
+          "type": "string",
+          "description": "Byte-for-byte passthrough to the named target. U+E000 here is NOT the no-break space sentinel that `text.value`, `code.value`, `code_block.content` and `literal_inline.content` carry: raw content is handed to its target unexamined, so a U+E000 in it is a byte the author put there and a consumer MUST leave it alone. Mapping it would corrupt the payload this node exists to carry."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
@@ -2861,7 +2865,7 @@
         },
         "value": {
           "type": "string",
-          "description": "May contain U+E000, which stands for a NO-BREAK SPACE the parser resolved from an escaped space (`\\ `) or from preserved line-block indentation (PART 9 section 23). It is distinct from a literal U+00A0 in the source, which is published as itself. A consumer MUST map U+E000 to its target's no-break space, or to an ordinary space where the target has none, and MUST NOT emit it."
+          "description": "May contain U+E000, the NO-BREAK SPACE SENTINEL. Three things put it here: an escaped space (`\\ `), the preserved indentation of a line block (PART 9 section 23), and a U+E000 the author typed. A line block's indentation is a RUN of the sentinel, one per preserved space, so a four-space indent is four U+E000 resolving to four no-break spaces - the source a consumer that has only seen `\\ ` will miss. The sentinel is distinct from a literal U+00A0 in the source, which is published as itself. A consumer MUST map U+E000 to its target's no-break space, or to an ordinary space where the target has none, and MUST NOT emit it. The same sentinel may appear on `code.value`, `code_block.content` and `literal_inline.content`; `raw_block.content` is byte-for-byte passthrough and is deliberately excluded."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
