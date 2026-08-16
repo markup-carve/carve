@@ -1,0 +1,110 @@
+Which inline content a heading id is derived from
+
+```
+# a $`x` b
+.
+<section id="a-x-b">
+  <h1>a <span class="math inline">\(x\)</span> b</h1>
+</section>
+```
+
+```
+# $`x`
+.
+<section id="x">
+  <h1><span class="math inline">\(x\)</span></h1>
+</section>
+```
+
+```
+# a $$`x` b
+.
+<section id="a-x-b">
+  <h1>a <span class="math display">\[x\]</span> b</h1>
+</section>
+```
+
+```
+# a `c` b
+.
+<section id="a-c-b">
+  <h1>a <code>c</code> b</h1>
+</section>
+```
+
+```
+# a ![alt](i.png) b
+.
+<section id="a-alt-b">
+  <h1>a <img src="i.png" alt="alt"> b</h1>
+</section>
+```
+
+```
+# a [link](/u) b
+.
+<section id="a-link-b">
+  <h1>a <a href="/u">link</a> b</h1>
+</section>
+```
+
+```
+# a *[HTML]: x b
+.
+<section id="a-HTML-x-b">
+  <h1>a *[HTML]: x b</h1>
+</section>
+```
+
+```
+# a {^up^} b
+.
+<section id="a-up-b">
+  <h1>a <sup>up</sup> b</h1>
+</section>
+```
+
+```
+# a ^[note] b
+.
+<section id="a-b">
+  <h1>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</h1>
+</section>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+## Target
+
+# a </#Target> b
+.
+<section id="Target">
+  <h2>Target</h2>
+</section>
+<section id="a-b">
+  <h1>a <a href="#Target">Target</a> b</h1>
+</section>
+```
+
+```
+# a :smile: b
+.
+<section id="a-b">
+  <h1>a :smile: b</h1>
+</section>
+```
+
+```
+# a %% c
+.
+<section id="a">
+  <h1>a</h1>
+</section>
+```

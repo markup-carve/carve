@@ -580,8 +580,18 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    as the regression guard for the behavior that replaced them). *)
 
 (* HEADING IDENTIFIERS -- NORMATIVE. A heading without an explicit {#id} gets an
-   automatic identifier from its folded plain text (symbols `:name:` and footnote
-   references excluded), GitHub/SSG-style:
+   automatic identifier from its TEXT CONTENT, GitHub/SSG-style. WHICH INLINES
+   CONTRIBUTE IS PART OF THE RULE, by ruling (carve#1283): an inline contributes
+   the literal text it carries, or it contributes nothing, and which of the two
+   is a property of the CONSTRUCT rather than of what it renders -- an id is
+   assigned before a cross-reference resolves or a symbol is looked up. Code
+   spans, MATH runs, an image's alt text, a link's label and a superscript
+   contribute; footnote references, cross-references and symbols `:name:` do
+   not, and a line comment ends the line it sits on. "Folded plain text" was the
+   older spelling here and is what let one engine drop math while keeping the
+   code span beside it: a plain-text projection that omits math supports that
+   reading, and nothing said the projection was not the rule. Corpus 332 pins
+   one document per inline kind. Then, on that text:
      - reverse smart-typography output to its ASCII source first, so the id does
        not depend on presentation (`Don’t` -> `Don-t`, `Step 1 → 2` -> `Step-1-2`);
      - replace each maximal run of non-alphanumeric ASCII characters with a single
