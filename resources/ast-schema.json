@@ -820,7 +820,11 @@
         },
         "block": {
           "type": "boolean",
-          "description": "True for the fenced `%%%` block form, false for an inline `%%` comment."
+          "description": "True for the fenced `%%%` block form, false for an inline `%%` or `{% … %}` comment."
+        },
+        "delimited": {
+          "type": "boolean",
+          "description": "True for the braced `{% … %}` inline form (PART 9 §21a). Absent means the trailing `%%` form. An author-choice field: the two spell different documents, since `%%` runs to the end of its inline run and the braced form ends at its closer, so a writer has to reproduce the one that was written."
         },
         "content": {
           "type": "string"

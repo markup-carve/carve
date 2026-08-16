@@ -1409,6 +1409,14 @@ comment_block_close = [whitespace], ("%%%", {'%'}):close, {character - newline}
    escaped -- a semantic constraint stated in PART 9, not context-free. *)
 inline_comment = "%%", {character - newline} ;
 
+(* delimited (braced) inline comment: `{%` to the first `%}`, content not
+   rendered. Unlike `inline_comment` it has an explicit CLOSER, so it ends
+   mid-run and may span the soft line breaks inside one paragraph. The same
+   semantic constraints as the `%%` form -- never inside a code span or raw
+   inline, literal when the brace is escaped -- are stated in PART 9 §21a, and
+   so is the rule that an UNTERMINATED opener stays literal text. *)
+braced_comment = "{%", {character - "%}"}, "%}" ;
+
 (* PROVENANCE MARKER (convention, not a distinct production): tooling such as
    `carve fmt --stamp` may write a trailing comment recording the spec version a
    document was last processed under and the engine that wrote it. It is an
@@ -1582,6 +1590,7 @@ inline_element = escaped_char
                | symbol
                | smart_typography
                | inline_comment
+               | braced_comment
                | hard_break
                | soft_break ;
 
@@ -4778,6 +4787,43 @@ EOF = (* end of file *) ;
         literal -- percentages and doubled-percent tokens in prose are safe.
       - The comment does NOT cross a line break; a soft-wrapped continuation on
         the next line of the same paragraph is unaffected (corpus 26-comments-6).
+
+   21a. DELIMITED INLINE COMMENTS -- NORMATIVE (governs `braced_comment` in
+      PART 3). `%%` runs to the end of its inline RUN, so mid-line commenting
+      already works wherever the structure supplies a boundary -- a table cell
+      ends at `|`, link text at `]`. Plain prose supplies none, and this is the
+      form for it: `foo {% bar %} baz` renders `<p>foo  baz</p>`.
+      - SPELLING. `{%` opens, the FIRST `%}` closes. One character per meaning,
+        like the rest of the braced family ({^x^}, {,x,}, {+x+}, {-x-}), and the
+        same spelling Djot uses, so a Djot document's comments keep working.
+      - NO NESTING. A `{%` inside the content is ordinary comment text; the run
+        ends at the first `%}`.
+      - UNTERMINATED STAYS LITERAL. `a {% oops` renders the braces (matching
+        Djot, and the same visible-failure principle as `- {.notattr} Milk`).
+      - VERBATIM CONTEXTS ARE OPAQUE, as for `%%` (§21): a code span or raw
+        inline passes `{%` through.
+      - TRANSPARENT TO INLINE STRUCTURE. A comment inside an emphasis run does
+        not break it: `*bo{% c %}ld*` is one `<strong>`.
+      - MULTI-LINE WITHIN A PARAGRAPH. The run may cross soft line breaks:
+        `a {% one\ntwo %} b` renders `<p>a  b</p>`. It never joins two
+        paragraphs across a blank line -- `%%%` is the block form (§28).
+      - ESCAPING. `\{%` is literal text.
+      - EVERY RENDER TARGET DROPS IT. HTML, Markdown, plain text and ANSI emit
+        nothing for it, as they already do for `%%`. A host that wants comments
+        published does it with a `beforeRender` extension, which keeps the
+        escaping decision where it belongs.
+      - THE SPELLING IS RECORDED. Both forms parse to a `comment` node, and the
+        node says which one produced it (`delimited: true` for this form, PART
+        12). Without that field a writer reading the tree back has one spelling
+        for two constructs, and `foo {% bar %} baz` formats to `foo %% bar` --
+        the trailing form swallowing `baz`. Silent loss through the formatter,
+        on the one construct whose output is invisible.
+      - THIS IS A BEHAVIOR CHANGE. `foo {% bar %} baz` used to render its braces
+        literally. `carve lint` reports a braced comment in a document that also
+        carries template tags (`{% raw %}`, `{% endif %}`), which is the one
+        shape where a Liquid or Nunjucks source reaches the parser as text.
+      (corpus: prose, inside emphasis, table cell, link text, multi-line,
+      unterminated, verbatim span, and an fmt round trip.)
 
    22. FORCED INTRAWORD EMPHASIS -- NORMATIVE (governs the forced_* productions
       in PART 3). The brace-pair family is the escape hatch for emphasis where a

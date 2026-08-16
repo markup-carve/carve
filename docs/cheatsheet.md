@@ -233,6 +233,7 @@ Inline $`e^{i\pi}+1=0`        Display $$`\int_0^1 x\,dx`
 
 %% line comment
 text %% trailing comment
+foo {% hidden %} baz          (ends at its closer, so prose can resume)
 %%%
 block comment
 %%%
@@ -240,7 +241,9 @@ block comment
 {+inserted+}  {-deleted-}  {~old~>new~}  {#a comment#}
 ```
 
-The last line is CriticMarkup: insert, delete, substitute, comment.
+The last line is CriticMarkup: insert, delete, substitute, comment. Its comment
+is the one that RENDERS - `{#` shows a note to the reader, `{%` hides one from
+them.
 
 ## Diagrams & charts
 
