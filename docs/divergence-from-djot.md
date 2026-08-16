@@ -212,10 +212,15 @@ surprise lists.
 
 **Djot:** `{% comment %}`.
 
-**Carve:** `%%` to end of line, `text %% trailing`, or a `%%%` fenced block.
+**Carve:** `%%` to end of line, `text %% trailing`, a `%%%` fenced block, or the
+Djot spelling `{% comment %}` for the delimited case.
 
 **Why.** `%%` is faster to type, reads like a comment in many config formats, and
-needs no closing delimiter for the common single-line case.
+needs no closing delimiter for the common single-line case. It runs to the end
+of its inline run, though, so prose cannot resume after it on the same line -
+and for that Carve takes Djot's `{% … %}` unchanged (PART 9 §21a), including
+its rules: no nesting, opaque in code spans, an unterminated opener stays
+literal. A Djot document's comments therefore keep working as written.
 
 ## 7. Block openers interrupt paragraphs (Markdown-like)
 
@@ -896,7 +901,8 @@ Most Djot source needs only mechanical changes:
    bare sub/sup delimiter); if you used `~` for strikethrough-by-convention,
    it's now native.
 3. Replace `+` bullets with `-` or `*`.
-4. `{% comment %}` → `%%`.
+4. `{% comment %}` keeps working; rewrite to `%%` only where you want the
+   comment to run to the end of the line.
 5. Heading anchors are case-preserving (Djot-shaped), so hand-written
    `</#Anchor>` links work as written - cross-references resolve
    case-insensitively. For lowercase anchors, enable the opt-in

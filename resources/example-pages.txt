@@ -123,6 +123,7 @@ out: examples/core.md
   26-comments-2
   26-comments-5
   26-comments-9
+  delimited-comments
   raw-blocks
   hard-line-breaks
   29-non-breaking-space

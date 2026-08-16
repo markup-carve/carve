@@ -109,7 +109,8 @@ under the same semantic-span rule,
 `317-an-editorial-comment-s-bracket-is-content-not-the-close`,
 `318-composite-figures`,
 `319-cell-attributes-bind-after-the-kind-and-alignment-markers`,
-`320-the-canonical-writer-glues-a-code-fence-to-its-info-string`.
+`320-the-canonical-writer-glues-a-code-fence-to-its-info-string`,
+`321-delimited-comments`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the

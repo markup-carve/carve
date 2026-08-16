@@ -96,6 +96,7 @@ const TRIGGERS = {
   // is the case the page's row names first.
   'semantic-attribute-value-ignored': '[x]{kbd="https://example.org/dune"}\n',
   'semantic-attribute-outside-span': '`c`{kbd}\n',
+  'braced-comment-in-a-template-source': '{% if user %}\n',
 }
 
 /*

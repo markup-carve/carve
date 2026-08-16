@@ -146,8 +146,9 @@ const PINNED_UNIMPLEMENTED = {
  * that moves the pin, and the meaning assertion still runs regardless.
  */
 const PINNED_DRIFT = {
-  '27-html-a-bare-text-list-item-imports-tight':
-    'carve#1210 ruling: a bare-text <li> imports TIGHT; the pinned build imports it loose',
+  '28-html-a-mixed-list-stays-loose':
+    'carve#1260 ruling: a mixed list stays LOOSE; the pinned build imports it tight, ' +
+    'because carve-js#1106 made a bare-text item tight and the rule reaches a mixed list too',
 }
 
 /**
