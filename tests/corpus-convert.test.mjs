@@ -13,8 +13,9 @@
  *
  * This is the per-PR half, against the build this repo pins - the same split
  * `tests/corpus-fmt-roundtrip.test.mjs` has with `scripts/fmt-fixture-claims.mjs`.
- * The cross-engine half needs three provisioned checkouts and cannot run here;
- * see the note at the bottom of this file for what it still owes.
+ * The cross-engine half is `scripts/compare-impls.mjs --corpus=convert`, which
+ * needs the three provisioned checkouts and runs in the scheduled conformance
+ * workflow; this file is what runs on every PR without them.
  *
  * A CASE IS A DIRECTORY, `tests/corpus-convert/NN-slug/`, holding one
  * `input.<ext>` and one `expected.html`. The directory shape is
@@ -55,17 +56,22 @@
  *
  * WHAT THIS FILE DOES NOT GATE. It runs ONE engine, so it cannot see a defect
  * that spares carve-js - which is most of carve#1130's six rows, since each was
- * a defect in some other engine. Nothing here is a substitute for the
- * cross-engine gate the ticket proposes; what it does is give that gate a
- * corpus to consume, and stop this engine from drifting in the meantime.
+ * a defect in some other engine. That half is the cross-engine runner
+ * (`npm run compare:convert`), which walks this same corpus through every
+ * engine that imports each format; this file gives it the corpus and stops
+ * the pinned engine from drifting between its scheduled runs.
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { bbcodeToCarve, carveToHtml, htmlToCarve, markdownToCarve } from '@markup-carve/carve'
+import * as pinned from '@markup-carve/carve'
 import { marked } from 'marked'
+import { parse as djotParse, renderHTML as djotRenderHTML } from '@djot/djot'
+import { FORMAT_EXTENSIONS } from '../scripts/lib/converter-formats.mjs'
+
+const { bbcodeToCarve, carveToHtml, htmlToCarve, markdownToCarve } = pinned
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus-convert')
@@ -99,6 +105,32 @@ const FORMATS = {
      */
     oracle: (source) => source,
   },
+  djot: {
+    /*
+     * The pinned build has NO Djot importer - carve#1130's coverage table, and
+     * the declared gap in scripts/lib/converter-formats.mjs. The BYTES
+     * assertion therefore skips these cases here (visibly - see the skip test
+     * below); the cross-engine runner (`compare:impls -- --corpus=convert`)
+     * drives them through carve-php and carve-rs, which both import Djot.
+     *
+     * The MEANING assertion still runs: it reads expected.html against the
+     * SOURCE language's own reader, and needs no Carve importer at all. That
+     * keeps a Djot expectation answerable on every PR even though nothing here
+     * can regenerate it.
+     */
+    convert: null,
+    oracle: (source) => djotRenderHTML(djotParse(source)),
+  },
+}
+
+/*
+ * Formats whose BYTES assertion cannot run against the pinned build, each with
+ * the reason. Kept next to FORMATS rather than inferred from `convert: null`
+ * so the skip is a DECLARED state with prose attached - and asserted in both
+ * directions below, so the entry cannot outlive the gap.
+ */
+const PINNED_UNIMPLEMENTED = {
+  djot: 'the pinned @markup-carve/carve exports no djotToCarve; the cross-engine gate covers this format',
 }
 
 /**
@@ -157,18 +189,59 @@ test('every case holds exactly one input and one expected render', () => {
   assert.deepEqual(wrong, [], `malformed converter case(s):\n  ${wrong.join('\n  ')}`)
 })
 
-test('every source format in the corpus is one this repo can drive', () => {
-  // Naming a format the pinned build cannot import would make its cases silently
-  // unreachable rather than failing, so the set is asserted rather than filtered.
+test('every source format in the corpus is a known one', () => {
+  // Naming a format nothing knows would make its cases silently unreachable
+  // rather than failing, so the set is asserted rather than filtered - against
+  // FORMATS here and against the shared table both runners read.
   const used = new Set(cases.map(({ inputs }) => inputs[0].slice('input.'.length)))
-  for (const format of used) assert.ok(FORMATS[format], `no importer wired for "${format}"`)
+  const shared = new Set(Object.values(FORMAT_EXTENSIONS))
+  for (const format of used) {
+    assert.ok(FORMATS[format], `no importer or declared gap wired for "${format}"`)
+    assert.ok(shared.has(format), `"${format}" is not in scripts/lib/converter-formats.mjs, so the cross-engine runner cannot see its cases`)
+  }
   assert.ok(used.size >= 2, `the corpus exercises ${used.size} source format(s)`)
+})
+
+test('every declared pinned-build gap is still a gap', () => {
+  // Both directions, like every declared list in this repo: the entry excuses
+  // the bytes assertion below, so the day the pinned build gains the importer
+  // this fails until the entry is deleted and the cases run.
+  for (const [format, reason] of Object.entries(PINNED_UNIMPLEMENTED)) {
+    assert.ok(FORMATS[format], `PINNED_UNIMPLEMENTED names "${format}" but FORMATS does not carry it`)
+    assert.equal(
+      FORMATS[format].convert,
+      null,
+      `PINNED_UNIMPLEMENTED declares "${format}" (${reason}) but FORMATS wires a converter - delete the stale entry`,
+    )
+    const exportName = `${format}ToCarve`
+    assert.equal(
+      pinned[exportName],
+      undefined,
+      `PINNED_UNIMPLEMENTED declares "${format}" but the pinned build exports ${exportName} - delete the stale entry and run the cases`,
+    )
+  }
+  for (const [format, spec] of Object.entries(FORMATS)) {
+    if (spec.convert === null) {
+      assert.ok(
+        PINNED_UNIMPLEMENTED[format],
+        `FORMATS["${format}"] has no converter and no PINNED_UNIMPLEMENTED entry - a silent skip is the failure mode this corpus exists to prevent`,
+      )
+    }
+  }
 })
 
 test('convert then render matches the pinned bytes', () => {
   const wrong = []
+  let ran = 0
+  let skipped = 0
   for (const { slug, dir, inputs } of cases) {
     const format = inputs[0].slice('input.'.length)
+    if (FORMATS[format].convert === null) {
+      // Declared above; the cross-engine runner covers these cases.
+      skipped++
+      continue
+    }
+    ran++
     const source = readFileSync(resolve(dir, inputs[0]), 'utf8')
     const expected = readFileSync(resolve(dir, 'expected.html'), 'utf8')
     const actual = carveToHtml(FORMATS[format].convert(source))
@@ -178,6 +251,13 @@ test('convert then render matches the pinned bytes', () => {
     }
   }
   assert.deepEqual(wrong, [], `the converted document no longer renders as pinned:\n  ${wrong.join('\n  ')}`)
+  // The skip is bounded by the declaration: exactly the cases of the declared
+  // formats sat out, and something actually ran.
+  const declaredCases = cases.filter(({ inputs }) =>
+    Object.hasOwn(PINNED_UNIMPLEMENTED, inputs[0].slice('input.'.length)),
+  ).length
+  assert.equal(skipped, declaredCases, `${skipped} case(s) skipped but ${declaredCases} belong to declared-gap formats`)
+  assert.ok(ran >= 10, `only ${ran} converter case(s) actually ran against the pinned build`)
 })
 
 test('the migrated document says what the source language says', () => {

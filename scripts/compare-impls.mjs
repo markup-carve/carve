@@ -78,10 +78,26 @@ const corpusName = corpusArg ? corpusArg.slice('--corpus='.length) : 'core'
 const corpusDirs = {
   core: 'tests/corpus',
   optional: 'tests/corpus-optional',
+  convert: 'tests/corpus-convert',
 }
 
 if (!Object.hasOwn(corpusDirs, corpusName)) {
-  console.error(`Unknown corpus "${corpusName}". Use --corpus=core or --corpus=optional.`)
+  console.error(`Unknown corpus "${corpusName}". Use --corpus=core, --corpus=optional or --corpus=convert.`)
+  process.exit(2)
+}
+
+// The converter corpus runs the engines the OTHER direction, so the render
+// machinery's modes do not apply to it: there is no formatter round trip over
+// a foreign source, no per-target sweep, and its counts are its own summary.
+// Rejecting the combination beats silently ignoring a flag the caller asked
+// for - the same argument the --counts-only/--targets guard makes below.
+// (`--targets` is checked on argv directly: its parsed const lives further
+// down, past this guard.)
+if (
+  corpusName === 'convert' &&
+  (roundtrip || countsOnly || process.argv.some((a) => a.startsWith('--targets=')))
+) {
+  console.error('--corpus=convert cannot be combined with --roundtrip, --counts-only or --targets.')
   process.exit(2)
 }
 
@@ -275,6 +291,17 @@ const impls = [
     cwd: rustDir(),
     prepare: null,
     defaultCommand: (target = 'html') => [...rustBaseCommand, ...CLI_FLAGS[target]],
+    // Foreign source -> Carve, for the converter corpus. Formats per the
+    // declared table in lib/converter-formats.mjs; a format missing here MUST
+    // be declared there, and the runner checks both directions.
+    convertCommand: (format) =>
+      ['markdown', 'djot', 'html'].includes(format)
+        ? [...rustBaseCommand, 'migrate', '--from', format]
+        : null,
+    // Exit 0 = the importer exists after all (a DECLARED gap has gone stale).
+    probeImporter(format) {
+      return [...rustBaseCommand, 'migrate', '--from', format]
+    },
     optionalCommand(feature, target = DEFAULT_TARGET) {
       // DEFAULT typography is the engine's ordinary rendering on whichever
       // target the case names - no option at all, which is the whole point of
@@ -333,6 +360,40 @@ const impls = [
         process.stdout.write(${JS_ENTRY[target]}(source));
       `,
     ],
+    // Foreign source -> Carve, through the API like the render commands. The
+    // HTML importer returns a document plus a diagnostic report; the corpus
+    // pairs on the document (tests/corpus-convert/README.md).
+    convertCommand: (format) => {
+      const entries = {
+        markdown: 'process.stdout.write(markdownToCarve(source));',
+        html: 'process.stdout.write(htmlToCarve(source).value);',
+        bbcode: 'process.stdout.write(bbcodeToCarve(source));',
+      }
+      if (!entries[format]) return null
+      return [
+        'node',
+        '--input-type=module',
+        '-e',
+        `
+          import { readFileSync } from 'node:fs';
+          import { markdownToCarve, htmlToCarve, bbcodeToCarve } from './dist/index.js';
+          const source = readFileSync(process.argv[1], 'utf8');
+          ${entries[format]}
+        `,
+      ]
+    },
+    // Exit 0 = the build exports an importer for the format, so a DECLARED gap
+    // has gone stale. An export-existence check rather than a conversion
+    // attempt, because there is no entry point to attempt.
+    probeImporter(format) {
+      const exportName = { djot: 'djotToCarve', bbcode: 'bbcodeToCarve', markdown: 'markdownToCarve', html: 'htmlToCarve' }[format]
+      return [
+        'node',
+        '--input-type=module',
+        '-e',
+        `import('./dist/index.js').then((m) => process.exit(m['${exportName}'] ? 0 : 3));`,
+      ]
+    },
     optionalCommand(feature, target = DEFAULT_TARGET) {
       // DEFAULT typography is the engine's ordinary rendering on whichever
       // target the case names - no option at all, which is the whole point of
@@ -426,6 +487,12 @@ const impls = [
     cwd: phpDir(),
     prepare: null,
     defaultCommand: (target = 'html') => ['php', 'bin/carve', ...CLI_FLAGS[target]],
+    // Foreign source -> Carve. `bin/carve migrate` drives all four importers;
+    // HTML runs in its default `safe` mode, matching the corpus expectations.
+    convertCommand: (format) => ['php', 'bin/carve', 'migrate', '--from', format],
+    probeImporter(format) {
+      return this.convertCommand(format)
+    },
     optionalCommand(feature, target = DEFAULT_TARGET) {
       // DEFAULT typography is the engine's ordinary rendering on whichever
       // target the case names - no option at all, which is the whole point of
@@ -656,6 +723,280 @@ function loadPairs() {
       file: join(corpusDir, `${slug}.crv`),
     }
   })
+}
+
+/*
+ * CONVERTER CORPUS MODE (--corpus=convert).
+ *
+ * The cross-engine half of carve#1130: tests/corpus-convert.test.mjs gates the
+ * PINNED build on every PR, and this drives the three checkouts the same way
+ * the render comparison does - which is the half that found four of the five
+ * defects in the ticket's throwaway sweep, and the half a per-PR job cannot
+ * run.
+ *
+ * THE GATE IS SEMANTIC, AS RULED: each engine converts the case's foreign
+ * source to Carve, then ONE engine - carve-js, the reference - renders every
+ * produced document to HTML with its default options, and the HTML is
+ * compared. One renderer is what isolates a converter difference from a
+ * renderer difference; the throwaway harness measured 4.1% of cases producing
+ * byte-different Carve that renders identically (all of them carve-php's
+ * escape-the-opening-delimiter-only style), which is why the produced `.crv`
+ * is never compared directly.
+ *
+ * `expected.html` IS AUTHORITATIVE, so cross-engine divergence needs no
+ * separate gate: two engines that both match the fixture cannot differ, and an
+ * engine that differs from the others has necessarily missed the fixture. The
+ * DIFF lines are still printed - they are what a reader acts on.
+ *
+ * TWO DECLARATION FILES keep the run honest without blocking on engine work:
+ *   - lib/converter-formats.mjs names the importers an engine does not have; a
+ *     format that is neither convertible nor declared is an error, and a
+ *     declared gap the engine has closed (probed per run) is a STALE entry.
+ *   - resources/converter-drift.txt names the (engine, case) pairs known to
+ *     mismatch, with reasons - the converter corpus's engine-pin-drift.txt.
+ *     An undeclared mismatch fails; a declared one that now passes is STALE
+ *     and fails until the line is deleted in the commit that fixed it.
+ */
+if (corpusName === 'convert') {
+  await runConvertMode()
+}
+
+async function runConvertMode() {
+  const { FORMAT_EXTENSIONS, formatOfExtension, UNIMPLEMENTED_IMPORTERS } = await import(
+    './lib/converter-formats.mjs'
+  )
+
+  const { statSync } = await import('node:fs')
+  const cases = readdirSync(corpusDir)
+    .filter((entry) => statSync(join(corpusDir, entry)).isDirectory())
+    .sort()
+    .slice(0, limit)
+    .map((slug) => {
+      const dir = join(corpusDir, slug)
+      const input = readdirSync(dir).find((f) => f.startsWith('input.'))
+      if (!input) {
+        console.error(`convert case ${slug} has no input.<ext> file.`)
+        process.exit(2)
+      }
+      const format = formatOfExtension(input.slice('input.'.length))
+      if (!format) {
+        console.error(`convert case ${slug}: no source format maps to "${input}" (lib/converter-formats.mjs).`)
+        process.exit(2)
+      }
+      const expectedPath = join(dir, 'expected.html')
+      if (!existsSync(expectedPath)) {
+        console.error(`convert case ${slug} has no expected.html.`)
+        process.exit(2)
+      }
+      return {
+        slug,
+        format,
+        file: join(dir, input),
+        expected: readFileSync(expectedPath, 'utf8').trim(),
+      }
+    })
+
+  const population = shortfall({
+    label: 'CASES',
+    actual: cases.length,
+    atLeast: 1,
+    of: 'converter case(s)',
+    hint: 'tests/corpus-convert/ holds one directory per case.',
+  })
+  if (population !== null) {
+    console.error(population)
+    process.exit(2)
+  }
+
+  const active = []
+  for (const impl of impls) {
+    const status = available(impl)
+    if (status.ok) active.push(impl)
+    else console.log(`SKIP ${impl.name}: ${status.reason}`)
+  }
+
+  // The render step is ONE engine by design, so unlike the render comparison
+  // this mode has a hard dependency: without carve-js nothing can be scored,
+  // not even single-engine fixture checks.
+  const renderImpl = active.find((impl) => impl.name === 'js')
+  if (!renderImpl) {
+    console.error('The converter gate renders every produced document through carve-js; its checkout is unavailable.')
+    process.exit(1)
+  }
+  const renderCommand = renderImpl.defaultCommand('html')
+
+  const enginePopulation = shortfall({
+    label: 'CROSS-ENGINE',
+    actual: active.length,
+    atLeast: 2,
+    of: 'engine(s)',
+    hint: 'Fixture scoring below is still valid; every cross-engine claim in this run is not.',
+  })
+  if (enginePopulation !== null) {
+    console.log(enginePopulation)
+    if (failOnDiff) {
+      console.error('--fail-on-diff and fewer than two engines: nothing cross-engine was compared.')
+      process.exit(1)
+    }
+  }
+
+  const formatsInCorpus = [...new Set(cases.map((c) => c.format))].sort()
+  const failures = []
+
+  // Direction one: a format an engine can neither convert nor explain.
+  // Direction two: a declared gap the engine has quietly closed. The probe
+  // asks the ENGINE rather than trusting the adapter table, so the two cannot
+  // drift apart silently.
+  const probeTmp = mkdtempSync(join(tmpdir(), 'carve-convert-probe-'))
+  try {
+    for (const impl of active) {
+      const declared = UNIMPLEMENTED_IMPORTERS[impl.name] ?? {}
+      for (const format of formatsInCorpus) {
+        const command = impl.convertCommand(format)
+        if (!command && !declared[format]) {
+          failures.push(
+            `${impl.name} has no adapter for ${format} and lib/converter-formats.mjs declares no gap - a silent skip is the failure mode this table exists to prevent.`,
+          )
+        }
+        if (command && declared[format]) {
+          failures.push(
+            `${impl.name} declares ${format} unimplemented but an adapter exists - delete the stale entry in lib/converter-formats.mjs.`,
+          )
+        }
+      }
+      for (const format of Object.keys(declared)) {
+        if (!impl.probeImporter) continue
+        const sample = join(probeTmp, `probe.${FORMAT_EXTENSIONS[format] ?? format}`)
+        writeFileSync(sample, 'x\n')
+        const probe = run(impl.probeImporter(format), impl.cwd, [sample])
+        if (probe.ok) {
+          failures.push(
+            `${impl.name} declares ${format} unimplemented but the engine now imports it - the declared gap is STALE (lib/converter-formats.mjs).`,
+          )
+        }
+      }
+    }
+  } finally {
+    rmSync(probeTmp, { recursive: true, force: true })
+  }
+
+  // resources/converter-drift.txt: `<engine>/<slug>  <reason>` per line.
+  const driftPath = join(root, 'resources/converter-drift.txt')
+  const drift = new Map()
+  if (existsSync(driftPath)) {
+    for (const line of readFileSync(driftPath, 'utf8').split('\n')) {
+      if (line.trim() === '' || line.startsWith('#')) continue
+      const m = /^(\S+)\/(\S+) {2}(.+)$/.exec(line)
+      if (!m) {
+        failures.push(`converter-drift.txt line unparseable: ${JSON.stringify(line)} (format: engine/slug  reason)`)
+        continue
+      }
+      drift.set(`${m[1]}/${m[2]}`, { reason: m[3], used: false })
+    }
+  }
+
+  const convertStats = Object.fromEntries(
+    active.map((impl) => [
+      impl.name,
+      { ok: 0, declared: 0, mismatch: 0, error: 0, skipped: 0, mismatched: [] },
+    ]),
+  )
+  let crossConvertDiffs = 0
+  let comparedCases = 0
+
+  const tmp = mkdtempSync(join(tmpdir(), 'carve-convert-'))
+  try {
+    for (const kase of cases) {
+      const rendered = []
+      for (const impl of active) {
+        const command = impl.convertCommand(kase.format)
+        if (!command) {
+          convertStats[impl.name].skipped++
+          continue
+        }
+        const converted = run(command, impl.cwd, [kase.file])
+        if (!converted.ok) {
+          convertStats[impl.name].error++
+          failures.push(`${impl.name} failed to convert ${kase.slug}: ${converted.stderr || converted.error || converted.status}`)
+          continue
+        }
+        // The produced Carve goes back out as a real file so the render engine
+        // reads it exactly as it would any input - untrimmed, for the same
+        // no-break-space reason the roundtrip pass records.
+        const crv = join(tmp, `${impl.name}-${kase.slug}.crv`)
+        const raw = converted.rawStdout
+        writeFileSync(crv, raw.endsWith('\n') ? raw : `${raw}\n`)
+        const render = run(renderCommand, renderImpl.cwd, [crv])
+        if (!render.ok) {
+          convertStats[impl.name].error++
+          failures.push(`carve-js failed to render ${impl.name}'s conversion of ${kase.slug}: ${render.stderr || render.error || render.status}`)
+          continue
+        }
+        rendered.push([impl.name, render.stdout])
+        if (render.stdout === kase.expected) {
+          convertStats[impl.name].ok++
+          continue
+        }
+        const key = `${impl.name}/${kase.slug}`
+        const entry = drift.get(key)
+        if (entry) {
+          entry.used = true
+          convertStats[impl.name].declared++
+        } else {
+          convertStats[impl.name].mismatch++
+          convertStats[impl.name].mismatched.push(kase.slug)
+          failures.push(`${impl.name} diverges on ${kase.slug} and resources/converter-drift.txt does not declare it.`)
+        }
+      }
+      if (rendered.length >= 2) {
+        comparedCases++
+        if (new Set(rendered.map(([, out]) => out)).size > 1) {
+          crossConvertDiffs++
+          console.log(`DIFF [convert:${kase.format}] ${kase.slug}: ${rendered.map(([name]) => name).join(', ')}`)
+        }
+      }
+    }
+  } finally {
+    rmSync(tmp, { recursive: true, force: true })
+  }
+
+  for (const [key, entry] of drift) {
+    if (!entry.used) {
+      failures.push(
+        `converter-drift.txt declares ${key} and the engine now matches (or the case is gone) - delete the STALE line in the commit that fixed it.`,
+      )
+    }
+  }
+
+  console.log('\nConverter summary')
+  console.log(
+    `corpus=convert cases=${cases.length} formats=${formatsInCorpus.join(',')} render_engine=js compared_cases=${comparedCases}`,
+  )
+  for (const impl of active) {
+    const s = convertStats[impl.name]
+    const scored = s.ok + s.declared + s.mismatch
+    console.log(
+      `${impl.name}: convert_pass=${s.ok}/${scored} declared_drift=${s.declared} mismatch=${s.mismatch} error=${s.error} skipped=${s.skipped}`,
+    )
+    for (const slug of s.mismatched) console.log(`  mismatch: ${slug}`)
+  }
+  console.log(`cross_convert_diffs=${crossConvertDiffs}`)
+
+  console.log('\nImporter coverage (an absent engine is declared, never silent)')
+  for (const format of formatsInCorpus) {
+    const have = active.filter((impl) => impl.convertCommand(format)).map((impl) => impl.name)
+    const gaps = active
+      .filter((impl) => !impl.convertCommand(format))
+      .map((impl) => `${impl.name}: ${(UNIMPLEMENTED_IMPORTERS[impl.name] ?? {})[format] ?? 'UNDECLARED'}`)
+    console.log(`${format}: ${have.join(', ') || 'none'}${gaps.length ? ` | skipped ${gaps.join(' | ')}` : ''}`)
+  }
+
+  if (failures.length) {
+    console.error(`\n${failures.length} converter gate failure(s):`)
+    for (const failure of failures) console.error(`  - ${failure}`)
+    process.exit(failOnDiff ? 1 : 0)
+  }
+  process.exit(0)
 }
 
 const pairs = loadPairs()

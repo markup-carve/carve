@@ -234,6 +234,33 @@ jobs:
         if: always()
         run: npm run compare:report -- /tmp/compare-impls.json
 
+      # The converters run the OTHER direction - foreign source to Carve - and
+      # sat outside every gate: carve#1130 lists six converter fixes in one
+      # stretch of work that reached one engine and not the others, each found
+      # by a different engine's suite or by throwaway scaffolding. The per-PR
+      # half (tests/corpus-convert.test.mjs) pins the build this repo pins;
+      # THIS is the cross-engine half, which needs the checkouts this job
+      # provisions and which found four of the five defects in the ticket's
+      # own measurement sweep.
+      #
+      # Each engine converts every case whose source format it imports, then
+      # carve-js renders every produced document, and the render is compared
+      # against the case's expected.html. An engine with no importer for a
+      # format is a DECLARED skip (scripts/lib/converter-formats.mjs); an
+      # engine known to be behind a ruled conversion is DECLARED drift
+      # (resources/converter-drift.txt). Both declarations are checked in both
+      # directions, so neither can outlive what it describes.
+      #
+      # `if: always()`, like every gate in this job: a converter divergence
+      # must not go unmeasured because an unrelated AST finding failed first.
+      - name: Cross-engine converter comparison
+        if: always()
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run compare:convert
+
 
       # The grammar names engines and says what they do - "all impls support
       # it", "carve-rs is the reference here", "carve-php additionally accepts

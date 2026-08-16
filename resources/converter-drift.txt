@@ -1,0 +1,41 @@
+# Converter-corpus cases an ENGINE is known to diverge on.
+#
+# `npm run compare:impls -- --corpus=convert` converts every case in
+# tests/corpus-convert/ with each engine that implements the source format,
+# renders every produced document through carve-js, and compares that render
+# against the case's expected.html. A mismatch is not automatically wrong:
+# when a converter rule is pinned here before an engine ships it, the corpus
+# is ahead of that engine until its fix lands. That window is normal, and -
+# exactly as with resources/engine-pin-drift.txt - it is DECLARED rather than
+# tolerated.
+#
+# The runner fails (under --fail-on-diff) when the real set differs in EITHER
+# direction:
+#
+#   - an (engine, case) pair mismatches and is not listed  -> new converter
+#     drift, or a wrong expectation. Red immediately, which is the point.
+#   - a pair is listed and now matches  -> the engine fix landed. Delete the
+#     line in the same commit that proves it.
+#
+# Engine names are the runner's: rust, js, php. An engine with NO importer for
+# a format does not belong here - that is a declared capability gap, and it
+# lives in scripts/lib/converter-formats.mjs instead.
+#
+# Format: <engine>/<case-slug><space><space><reason>
+
+# The stays-text escapes ruled on carve#1130 (CommonMark+GFM is the contract;
+# a construct only Carve or another flavour spells is escaped so the migrated
+# document keeps saying what its author wrote). carve-js shipped them in
+# carve-js#1060; the engine PRs below are what these lines wait for.
+php/01-markdown-an-inline-footnote-stays-text  ruled stays-text escape not shipped; `a ^[note] b` converts to an inline footnote
+php/02-markdown-an-abbreviation-definition-stays-text  ruled stays-text escape not shipped; the definition line leaves the document
+php/03-markdown-a-fenced-div-stays-text  ruled stays-text escape not shipped; both `:::` fence lines disappear
+php/04-markdown-attribute-forms-stay-text  ruled stays-text escape not shipped; `[t]{.c}` becomes an attributed span
+php/05-markdown-verbatim-sigils-stay-text  ruled stays-text escape not shipped; math/literal sigils convert
+php/06-markdown-an-extension-call-stays-text  ruled stays-text escape not shipped; `:term[x]` becomes an extension call
+rust/05-markdown-verbatim-sigils-stay-text  ruled stays-text escape not shipped; math/literal sigils convert
+
+# HTML import fidelity: a LOOSE source list (each item an explicit <p>)
+# flattens to a tight Carve list, so the paragraph-ness of the source is lost.
+# carve-js and carve-rs both preserve it.
+php/23-html-ordinary-blocks-survive  a loose HTML list imports tight; item paragraphs are dropped
