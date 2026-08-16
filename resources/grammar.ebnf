@@ -6563,6 +6563,50 @@ EOF = (* end of file *) ;
       round trip holds for either spelling, and `compare:impls` had no
       expected bytes to adjudicate between them. A corpus case pins it now.
 
+   6e. A TABLE CELL'S CONTENT IS PADDED -- NORMATIVE.
+      The canonical writer emits every cell as its PREFIX glued to the opening
+      pipe, then ONE space, then the content, then one space before the closing
+      pipe. The prefix is the kind marker `=`, the alignment marker and the
+      attribute block, in the order PART 9 §5 T10 fixes:
+
+          |= Heading |
+          |={.total} Total |= 99 |
+          |=<{.h} Name |=>{.c} Score |{.head}
+
+      An EMPTY cell takes a single space (`|= |`, `| |`), not one from each end,
+      so a column does not grow a space each time the document is formatted.
+
+      THE PREFIX IS GLUED BECAUSE THE READER REQUIRES IT. A space in front of
+      `=` or of an attribute block makes it literal cell content (PART 9 §5
+      T10, corpus `table cell attributes`), so only the CONTENT side is the
+      writer's to choose. An UNPREFIXED cell was always padded (`| a | b |`);
+      this makes one rule of what was two, and the padded side is the one a
+      reader can scan.
+
+      IT ALSO RETIRES TWO GUARDS. The alignment sigil and the attribute slot
+      are both read GLUED off the UNTRIMMED cell, so a glued content character
+      was handed to one of them: `| ~x~ |` came back as `|=~x~|`, which
+      re-reads as a CENTERED column holding `x~` -- the strikethrough gone and
+      every cell in the column aligned by a marker nobody wrote (carve-js#903,
+      carve-rs#819, carve-php#1069 cause 5). Each writer answered with a
+      special case that inserted a space for content beginning with `<`, `>`,
+      `~` or `{`, and each enumerated a slightly different set. One space on
+      every cell covers the class without a list, and the reader trims it.
+
+      THE TREE RECORDS NO SLOT, the same reason §6d gives: `table_cell` records
+      its padding no more than `code_block` records the space before its info
+      string (PART 12 §3), so the writer has nothing to reproduce and must
+      CHOOSE. Left unchosen it was chosen twice -- carve-js and carve-rs glued
+      a prefixed cell, carve-php glued it except when the cell carried
+      attributes, and carve-php padded those.
+
+      THE FIXTURES MOVE IN TWO STEPS, as §6d's did. `284-a-ragged-table-keeps-
+      each-row-s-cell-count-2`, `-3` and `285-adjacent-block-openers-in-an-
+      attached-run-stay-separate-2` spell the old form; they are WITHDRAWN with
+      this clause and come back with the engine pin bump, because a fixture
+      carrying the new bytes fails in every engine that has not shipped the
+      clause yet and one carrying the old bytes fails in every engine that has.
+
    7. NO WHITESPACE-ONLY LINE -- NORMATIVE. `fmt` never emits a line whose only
       content is ASCII spaces or tabs. Such a line is emitted EMPTY.
 
