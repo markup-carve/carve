@@ -483,6 +483,7 @@ index: examples/edge-cases/index.md
   a-div-does-not-define-an-abbreviation-either
   a-definition-below-every-content-column-folds-as-text
   an-abbreviation-at-a-list-item-s-content-column-is-still-not-a-definition
+  an-abbreviation-definition-in-an-item-body-is-paragraph-text
   a-description-line-needs-a-term-above-it
   a-tab-as-the-first-character-of-a-definition-term
   an-abbreviation-term-is-one-ascii-alphanumeric-word
