@@ -1149,7 +1149,7 @@ function flattenPastCap(lines) {
 // single counter on `state` bounds the nesting uniformly (PART 26). The
 // counter is incremented on entry and decremented on exit (try/finally) so
 // sibling containers never accumulate depth.
-function parseBlocks(lines, state, top, inItem = false, meas = undefined) {
+function parseBlocks(lines, state, top, inItem = false, meas = undefined, stop = undefined) {
   state.blockDepth = (state.blockDepth ?? 0) + 1
   if (state.blockDepth > MAX_NESTING_DEPTH) {
     state.blockDepth--
@@ -1167,13 +1167,13 @@ function parseBlocks(lines, state, top, inItem = false, meas = undefined) {
     return flattenPastCap(lines)
   }
   try {
-    return parseBlocksImpl(lines, state, top, inItem, meas)
+    return parseBlocksImpl(lines, state, top, inItem, meas, stop)
   } finally {
     state.blockDepth--
   }
 }
 
-function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) {
+function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, stop = undefined) {
   const blocks = []
   let i = 0
   const n = lines.length
@@ -1228,6 +1228,16 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
   const push = (node) => blocks.push(flushAttrs(node))
 
   while (i < n) {
+    // SS17 L3 asks this parser where the FIRST block ends (see firstBlockEnd).
+    // A block is pushed only once it is complete, so the top of the loop - the
+    // one place that has consumed nothing of the next line - is where `i` is
+    // exactly that boundary. Asking here costs one parse; the alternative,
+    // re-parsing every prefix until one yields a single block, is quadratic in
+    // the attached block's line count and reachable from ordinary input.
+    if (stop !== undefined && blocks.length > 0) {
+      stop.next = i
+      return blocks
+    }
     const line = lines[i]
     if (ind(i).rest === '') { // isBlank, without re-walking the indent
       i++
@@ -2104,11 +2114,54 @@ function oneBlockEnd(lines, start, endsBlock) {
   return end
 }
 
+/*
+ * WHERE THE FIRST BLOCK OF A REGION ENDS -- SS17 L3's ONE BLOCK.
+ *
+ * `oneBlockEnd` computes the marker's EXTENT: the furthest the attachment may
+ * reach, bounded by a blank line, a sibling marker or a further `+`. That is not
+ * a count, and reading it as one is what made a single `+` attach a whole run of
+ * blocks: the extent of `para` / `> q` is both lines, and handing both to the
+ * block parser produces TWO blocks (carve#1290).
+ *
+ * The boundary is found by ASKING THE BLOCK PARSER rather than by re-deriving
+ * block segmentation here, which would be a second spelling of a rule this file
+ * already owns - and the way a rule with two spellings drifts.
+ *
+ * ONE parse, not one per prefix. `parseBlocks` takes a `stop` object and returns
+ * at the top of its loop as soon as one block is complete, which is the only
+ * point in the walk that has consumed nothing of the next line. Probing prefixes
+ * instead - the shortest that yields a single block - gives the same answer and
+ * is quadratic in the attached block's line count, reachable from ordinary input
+ * on a long wrapped paragraph.
+ *
+ * The parse uses a THROWAWAY state. `parseBlocks` collects definitions into the
+ * symbol table as it goes and the real parse of these lines happens afterwards,
+ * so sharing the state would register every definition in the region twice.
+ */
+function firstBlockEnd(lines, start, limit, state) {
+  if (limit - start <= 1) return limit
+  const stop = { next: limit - start }
+  try {
+    parseBlocks(lines.slice(start, limit), {
+      linkDefs: new Map(),
+      footnoteDefs: new Map(),
+      abbrDefs: new Map(),
+      blockDepth: state.blockDepth ?? 0,
+    }, false, true, undefined, stop)
+  } catch {
+    // Outside the executable subset: the extent is the honest answer, and the
+    // real parse of these lines raises the same refusal where it belongs.
+    return limit
+  }
+  return start + stop.next
+}
+
 // Parse ONE following flush-left block (for the `+` continuation marker).
-function takeOneBlock(lines, start) {
+function takeOneBlock(lines, start, state) {
   const end = oneBlockEnd(lines, start, (idx) =>
     isBlank(lines[idx]) || CONT_MARKER.test(lines[idx]) || QUOTE.test(lines[idx]))
-  return { rawMarker: lines.slice(start, end), next: end }
+  const one = firstBlockEnd(lines, start, end, state)
+  return { rawMarker: lines.slice(start, one), next: one }
 }
 
 // The same extent for the block a `+` marker pulls into a footnote/<dd> (SS17
@@ -2359,9 +2412,14 @@ function collectItems(lines, i, list, state, ind, meas) {
       // spelling - it stopped at the first blank with no fence state consulted,
       // which severed a `+`-attached fence here while a footnote body one
       // container over kept it whole.
-      const end = oneBlockEnd(lines, i, (idx) =>
+      const extent = oneBlockEnd(lines, i, (idx) =>
         ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
         matchMarkerAt(ind(idx))?.indent === baseIndent)
+      // ONE BLOCK, and the extent above is the marker's REACH rather than its
+      // count (SS17 L3, carve#1290). `- a` / `+` / `para` / `> q` has both lines
+      // inside the extent and they are two blocks; the `+` takes the first, and
+      // the second needs a `+` of its own.
+      const end = firstBlockEnd(lines, i, extent, state)
       for (; i < end; i++) {
         // attached VERBATIM, so the line keeps the measurement it has here
         pushLine(lines[i], ind(i))

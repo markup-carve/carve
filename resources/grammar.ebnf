@@ -901,10 +901,12 @@ continuation_marker = '+', newline ;
 continuation_marker_block = continuation_marker, block ;
 (* First-block item (Carve addition; see PART 9 §17): a lone `+` as the sole
    content right after the marker (`- +`) opens an item whose body is the
-   flush-left block(s) that follow, with no inline lead and no indentation.
+   ONE flush-left block that follows, with no inline lead and no indentation.
    `- + text` keeps `+ text` as literal inline content -- only a bare `+`
    triggers this. *)
-first_block_content = continuation_marker, {block} ;
+(* One block, exactly as `continuation_marker_block` above: the two forms
+   differ in WHERE the marker sits, never in how much it takes (carve#1290). *)
+first_block_content = continuation_marker, block ;
 
 (* Task lists are unordered lists with special markers *)
 task_marker = '[', task_state, ']', space ;
@@ -4682,13 +4684,48 @@ EOF = (* end of file *) ;
          The marker only ATTACHES, never separates: a blank line is the
          sole way to END a container, so a `+` can never break the
          following block OUT of its container -- it adds it IN.
+
+         ONE IS A COUNT AND THE BOUNDARY IS NOT -- NORMATIVE (carve#1290).
+         The blank line, sibling marker or further `+` above is the EXTENT of
+         that single block, which may be many lines long -- a list, a quote,
+         a fenced block. It is not a run boundary, and the marker does not
+         attach everything up to it. So
+
+             - a
+             +
+             para
+             > q
+
+         attaches `para` and leaves the quote OUTSIDE the item, and a second
+         attached block takes a second marker:
+
+             - a
+             +
+             para
+             +
+             > q
+
+         The measured sibling case settles the reading on its own: `- a` /
+         `+` / `- x` / `- y` is three flat items in every engine, so a sibling
+         marker ENDS the attachment rather than being swallowed into a run. The
+         two-marker spelling already agrees byte for byte across carve-js,
+         carve-php and carve-rs, so the narrow reading costs one marker line
+         and no expressiveness at all.
+
+         This is a BREAK against released carve-js 0.1.3, which attached to the
+         boundary, and it is deliberate: the boundary reading is the same
+         absorb-flush-left-blocks-until-something-stops-you behavior that PART 1
+         S4 refuses one clause over, and taking it here would reject that shape
+         in the layout section and reinstate it in this one. carve-rs already
+         attaches one.
       L4 CONTAINERS THAT TAKE THE MARKER:
          - LIST ITEM (pinned by corpus list-continuation-marker): `+` at
            the item's marker column attaches the block to the item (for
            code/tables one would rather not indent). FIRST-BLOCK form: the
            marker may sit on the marker line itself (`- +`, a bare `+`) to
-           open an item whose body is the following flush-left block(s)
-           with no inline lead; `- + text` keeps `+ text` as literal text.
+           open an item whose body is the following flush-left BLOCK, one
+           of them as everywhere else in L3, with no inline lead;
+           `- + text` keeps `+ text` as literal text.
          - BLOCK QUOTE: `+` at column 0 immediately after a blockquote line
            attaches the following flush-left block to the quote -- the
            un-prefixed alternative to repeating `>`. "> quoted \n + \n

@@ -1,0 +1,128 @@
+A continuation marker attaches one block, and the boundary is that block's extent
+
+```
+- a
++
+para
+> q
+.
+<ul>
+  <li>a
+    para
+  </li>
+</ul>
+<blockquote><p>q</p></blockquote>
+```
+
+```
+- a
++
+para
++
+> q
+.
+<ul>
+  <li>a
+    para
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- a
++
+p1
+p2
+> q
+.
+<ul>
+  <li>a
+    p1
+p2
+  </li>
+</ul>
+<blockquote><p>q</p></blockquote>
+```
+
+```
+- a
++
+> x
+> y
+- next
+.
+<ul>
+  <li>a
+    <blockquote><p>x
+y</p></blockquote>
+  </li>
+  <li>next</li>
+</ul>
+```
+
+```
+- a
++
+- x
+- y
+.
+<ul>
+  <li>a</li>
+  <li>x</li>
+  <li>y</li>
+</ul>
+```
+
+```
+- +
+para
+> q
+.
+<ul>
+  <li>para</li>
+</ul>
+<blockquote><p>q</p></blockquote>
+```
+
+```
+- +
+para
++
+> q
+.
+<ul>
+  <li>para
+    <blockquote><p>q</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+> quoted
++
+para
+# H
+.
+<blockquote>
+  <p>quoted</p>
+  <p>para</p>
+</blockquote>
+<section id="H">
+  <h1>H</h1>
+</section>
+```
+
+```
+> quoted
++
+para
++
+# H
+.
+<blockquote>
+  <p>quoted</p>
+  <p>para</p>
+  <h1 id="H">H</h1>
+</blockquote>
+```
