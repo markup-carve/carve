@@ -8851,6 +8851,18 @@ EOF = (* end of file *) ;
       changes the rendering, which is why it is written down here rather than
       left to each writer to discover.
 
+      THE TARGET'S OWN CAPTION SLOT MAY ALREADY BE FULL. A `table` carries an
+      optional `caption`, so `figure{ target: table{ caption }, caption }` is a
+      schema-valid tree with TWO captions and only one `^ ` slot to write them
+      into. The wrapper's caption takes that slot only when the target has none;
+      where the target has its own, the figure's caption is LOST WITH THE
+      WRAPPER, exactly as the rest of the wrapper is, and the diagnostic above
+      covers it. A WRITER MUST NOT EMIT A SECOND `^ ` LINE for the figure's
+      caption. There is no second slot for it to land in: a `^ ` line after a
+      caption line is not a caption at all, it is an ordinary paragraph, so the
+      output would carry the caption text as literal body prose instead of
+      losing it cleanly, and the loss would stop being observable as a loss.
+
       A FIGURE GROUP'S TABLE PANEL IS NOT THIS WRAPPER. PART 9 §4c has since
       made `:::` a captionable host (carve#1122), and a reader arriving here
       will ask whether `::: figure` around a table now spells the shape. It
