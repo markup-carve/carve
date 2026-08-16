@@ -24,7 +24,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join, resolve } from 'node:path'
+import { isAbsolute, join, relative, resolve } from 'node:path'
 import { rustBinary, rustBinaryCandidates } from '../scripts/lib/engine-locations.mjs'
 
 /** Lay down an executable-shaped file at `dir/rel`, creating the parents. */
@@ -120,6 +120,28 @@ test('an unbuilt checkout still resolves to null', () => {
 
   assert.equal(withTargetDir(undefined, () => rustBinary(checkout)), null)
   assert.equal(withTargetDir(join(root, 'nowhere'), () => rustBinary(checkout)), null)
+  rmSync(root, { recursive: true, force: true })
+})
+
+test('a relative CARVE_RS_DIR still resolves to an absolute binary', () => {
+  // `compare:impls` spawns this binary with `cwd` set to the carve-rs checkout,
+  // and `CARVE_RS_DIR` may be relative - docs/implementation-comparison.md
+  // spells it `../carve-rs`. A candidate relative to THIS repo is re-resolved
+  // against the checkout by the child, so `vendor/carve-rs/target/release/carve`
+  // is looked for under `vendor/carve-rs/vendor/carve-rs/...`, the spawn fails
+  // ENOENT and the runner drops carve-rs. The six runners that spawn with no
+  // `cwd` never saw it, so nothing else in the suite would catch this.
+  const root = sandbox()
+  const checkout = join(root, 'vendor', 'carve-rs')
+  const built = plant(checkout, 'target/release/carve')
+  const asRelative = relative(process.cwd(), checkout)
+
+  const found = withTargetDir(undefined, () => rustBinary(asRelative))
+  assert.equal(found, built)
+  assert.ok(isAbsolute(found), `not absolute: ${found}`)
+  // The property that actually matters: re-resolving from the CHILD's cwd is
+  // a no-op, so the path the check found is the path the spawn runs.
+  assert.equal(resolve(checkout, found), built)
   rmSync(root, { recursive: true, force: true })
 })
 
