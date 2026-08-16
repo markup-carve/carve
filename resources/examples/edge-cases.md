@@ -19771,6 +19771,30 @@ tail
 
 :::
 
+An attribute block may WRAP across lines (§15 A5), and one block is one block
+however many lines it takes — a body ending `{.k` / `#x}` closes the same way as
+a body ending `{.k}`:
+
+::: compare
+
+```carve
+:: t
+:  d
+   {.k
+   #x}
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>tail</p>
+```
+
+:::
+
 ### Scoped, not disabled
 
 The controls are what keep "scoped" from reading as "dropped". Inside its own
