@@ -39,3 +39,11 @@ rust/05-markdown-verbatim-sigils-stay-text  ruled stays-text escape not shipped;
 # flattens to a tight Carve list, so the paragraph-ness of the source is lost.
 # carve-js and carve-rs both preserve it.
 php/23-html-ordinary-blocks-survive  a loose HTML list imports tight; item paragraphs are dropped
+
+# carve#1210 ruling (2026-08-16): a bare-text <li> imports as a TIGHT list
+# item, and a mixed list pins carve-php's normalization. carve-php conforms;
+# carve-js and carve-rs import both shapes loose and owe the fix.
+js/27-html-a-bare-text-list-item-imports-tight  ruled tight-li import not shipped; a bare-text item imports loose
+js/28-html-a-mixed-list-normalizes-tight  ruled tight-li import not shipped; the whole mixed list imports loose
+rust/27-html-a-bare-text-list-item-imports-tight  ruled tight-li import not shipped; a bare-text item imports loose
+rust/28-html-a-mixed-list-normalizes-tight  ruled tight-li import not shipped; the whole mixed list imports loose
