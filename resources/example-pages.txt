@@ -68,6 +68,8 @@ out: examples/core.md
   09-tables-7
   09-tables-8
   table-column-alignment
+  table-per-cell-alignment-override
+  headerless-table-alignment
   table-multi-line-cell-continuation
   tables-with-rowspan-and-colspan
   11-fenced-code
@@ -189,8 +191,6 @@ source: examples-tier3.md
 > Alignment, spans, multi-line cells, ragged rows and the pipe rules that decide whether a table exists at all.
 out: examples/edge-cases/tables.md
 index: examples/edge-cases/index.md
-  table-per-cell-alignment-override
-  headerless-table-alignment
   table-without-alignment
   table-alignment-with-colspan
   table-doubled-alignment-marker
