@@ -529,6 +529,7 @@ index: examples/edge-cases/index.md
   two-attributes-need-a-separator-between-them
   a-derived-title-yields-to-an-authored-one
   an-attribute-block-reaches-the-nested-list-it-precedes
+  an-attribute-line-after-a-continuation-marker-attributes-the-attached-block
   13-attributes-4
   39-inline-span-2
   39-inline-span-3
