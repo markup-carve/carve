@@ -52,3 +52,6 @@
 329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-6  the pin predates markup-carve/carve#1281, so a wrapped attribute block at the end of a definition body still folds the flush-left line in and attributes it
 331-an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block  the pin predates markup-carve/carve-js#1116, so an unclosed run still closes at the line block's line break
 331-an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block-4  same, in the math form of the run
+333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe  the pin predates markup-carve/carve#1284, so the open run still swallows the row's closing pipe and the continuation row's leftover `|` rides out as text
+333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-4  same, with a pipe inside the run on the continuation row
+333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5  same, with the run opening in the second column of a two-column row

@@ -590,7 +590,17 @@ function classifyOrdered(token) {
 // --- tables (PART 9 SS5) ----------------------------------------------------
 // T1: split a row into raw cell segments; an unescaped `|` outside a code
 // span separates cells. Returns null when the line is not a row.
-function splitRow(line) {
+/*
+ * `openRun` seeds the scanner with a verbatim run left OPEN by the row this
+ * line continues (carve#1293). A `+` continuation extends the cell, so the
+ * block the run reaches the end of is that whole cell - the pipes it spans on
+ * the continuation row are its content, exactly as they are on the row that
+ * opened it. Splitting the continuation with a fresh scanner cut the line at a
+ * pipe that is inside the run, and every segment past the first was then
+ * dropped for want of a column to join, which is content loss rather than a
+ * different answer.
+ */
+function splitRow(line, openRun = 0, openRunAt = 0) {
   let s = line
   let rowAttrs = null
   const ra = new RegExp(`\\|\\{(${ATTR_PAYLOAD})\\}[ \\t]*$`).exec(s)
@@ -609,7 +619,14 @@ function splitRow(line) {
   const cells = []
   let cur = ''
   let i = 1
-  let inCode = 0 // backtick run length of an open code span
+  // The seed belongs to ONE column: a run left open by the row above was open
+  // in that row's LAST cell, and a continuation joins per column, so the
+  // columns before it are scanned normally and the pipe that ends them still
+  // separates. Seeding the whole line instead swallowed those separators and
+  // pushed the continuation into the wrong cell, leaving the run's own cell
+  // with an empty `<code></code>` - the artifact the ruling on carve#1293
+  // names as a mechanism showing through rather than an answer.
+  let inCode = openRunAt === 0 ? openRun : 0 // backtick run length of an open code span
   /*
    * THE CLOSING PIPE CLOSES THE ROW EVEN WITH A VERBATIM RUN STILL OPEN
    * (carve#1284). An unclosed backtick run inside a cell used to swallow every
@@ -645,11 +662,31 @@ function splitRow(line) {
     if (c === '|' && (!inCode || i === closerIdx)) {
       cells.push(cur)
       cur = ''
+      if (cells.length === openRunAt) inCode = openRun
       i++
       continue
     }
     cur += c
     i++
+  }
+  /*
+   * AN ESCAPED CLOSING PIPE IS STILL AN ESCAPE (carve#1293). `| a b \|` ends
+   * in a pipe, so the row closes there; the escape decides what the CELL holds,
+   * which is a literal pipe rather than an orphaned backslash. Taking the
+   * escape as the terminator instead is what produced `a b <br>` in two
+   * engines, and it is a POSITION EXCEPTION with nothing behind it: every
+   * reader already honors `\|` in every other position of the same row, as the
+   * mid-cell control beside this case shows. The one authoring consequence
+   * decides it - `\|` is the only way to write a literal pipe in a cell, and
+   * under the terminator reading it stops working in the position an author
+   * reaches for most.
+   *
+   * This does not widen what counts as a row: the leftover must be the escaped
+   * closer itself, so `| a | b` is prose exactly as before.
+   */
+  if (cur.trimEnd().endsWith('\\|')) {
+    cells.push(cur)
+    cur = ''
   }
   // T2: a row CLOSES with a pipe (`standard_row` ends in `'|'`). A line-initial
   // `|` with content dangling after the last pipe is prose, at a block start as
@@ -657,7 +694,13 @@ function splitRow(line) {
   if (cur.trim() !== '') return null
   if (cells.length === 0) return null // T2: `||` has no cell
   if (cells.length === 1 && cells[0].trim() === '') return null // `||`
-  return { cells, rowAttrs }
+  // `inCode` here is the run the row's closing pipe did NOT close: a
+  // continuation row is scanned with it, and nothing else reads it.
+  // `inCode` here is the run the row's closing pipe did NOT close, and it sits
+  // in the LAST cell by construction: once open, a run swallows every `|` but
+  // the closer. A continuation row is scanned with both, and nothing else
+  // reads either.
+  return { cells, rowAttrs, openRun: inCode, openRunAt: cells.length - 1 }
 }
 
 // T2: is this line a table row? One test, used both for the §10 I1 paragraph
@@ -1754,13 +1797,19 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // --- tables (PART 9 SS5) ---
     if (isTableRow(line)) {
       const node = { t: 'table', rows: [], caption: undefined }
+      // the verbatim run the last row left open, and the column it is open in,
+      // for the continuation rows below
+      let openRun = 0
+      let openRunAt = 0
       while (i < n) {
         const l = lines[i]
         if (l === undefined || isBlank(l)) break
         if (CONT_ROW.test(l)) {
           // T6: continuation row - joins per column onto the row above
-          const sr = splitRow('|' + l.slice(1))
+          const sr = splitRow('|' + l.slice(1), openRun, openRunAt)
           if (!sr) break
+          openRun = sr.openRun
+          openRunAt = sr.openRunAt
           if (node.rows.length === 0) throw new Refuse('table begins with a continuation row')
           const prev = node.rows[node.rows.length - 1]
           if (prev.cells.every((c) => c.header)) break // needs a BODY row (corpus 113)
@@ -1784,6 +1833,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
         const sr = splitRow(l)
         if (!sr) break
+        openRun = sr.openRun
+        openRunAt = sr.openRunAt
         // T7: the GFM delimiter row (second line only; a delimiter-shaped
         // FIRST row disqualifies promotion - the second row is then data)
         if (

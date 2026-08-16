@@ -1101,6 +1101,33 @@ standard_row = '|', table_cell, {'|', table_cell}, '|', [row_attributes], newlin
 
 continuation_row = '+', table_cell, {'|', table_cell}, '|', newline ;
 
+(* THE ROW TERMINATOR AND AN OPEN RUN -- NORMATIVE (carve#1284, carve#1293).
+   Cells are cut from the line BEFORE any inline parsing, so what an inline run
+   does can never decide where a row ends.
+
+   1. AN UNCLOSED VERBATIM RUN STOPS AT THE ROW'S CLOSING `|`. The closer is the
+      last `|` on the line, trailing whitespace aside. The run swallows every
+      earlier `|` -- so `| a `b | c d |` is ONE cell -- and does not swallow the
+      one that ends the row.
+
+   2. A `+` CONTINUATION EXTENDS THE CELL, so a run left open by the row above
+      is still open when the continuation is cut into cells: the pipes it spans
+      there are its content too, and the block it reaches the end of is the
+      whole cell. Splitting a continuation row with a fresh scanner cuts inside
+      the run and drops what follows for want of a column to join it to, which
+      is content loss rather than a second answer.
+
+   3. AN ESCAPED CLOSING PIPE IS STILL AN ESCAPE. `| a b \|` ends in a pipe, so
+      the row closes there; the escape decides what the CELL holds, which is a
+      literal pipe rather than an orphaned backslash. Every reader already
+      honors `\|` in every other position of the same row, so reading it
+      everywhere EXCEPT the last position is a position exception with nothing
+      behind it -- and `\|` is the only way to write a literal pipe in a cell.
+      This does not widen what a row is: `| a | b`, with content dangling after
+      the last pipe, is prose exactly as before.
+
+   Pinned by corpus 328 and 332. *)
+
 (* Row-level attributes: a `{…}` attribute block GLUED to the row's closing `|`
    (no intervening space) sets the row's `<tr>` attributes -- the row-level twin
    of a cell's attribute block (cell_attributes). The two are NOT in the same
