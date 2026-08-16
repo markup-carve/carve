@@ -12,6 +12,14 @@ implementation — except rows marked **✦**, which are opt-in extensions
 (Tier-2/3) you enable in your processor. Look any feature up in the
 [feature → tier table](/extensions#feature-tiers-quick-reference).
 
+Two kinds of block appear below. A block tagged `carve` is a **document**: paste
+it into the [Playground](/playground) and you get what the text around it says.
+A block tagged `text` is **notation** - several constructs packed onto a line
+each, with the explanation in a right-hand column. That is how a reference card
+fits on one page, and it is not a document: pasted anywhere, the annotations
+make every line prose. For the working version of a notation block, see
+[Blocks & Attributes](/blocks-and-attributes) and [Examples](/examples).
+
 ## Inline
 
 | Write | Get | Mnemonic |
@@ -46,7 +54,7 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 
 ## Blocks
 
-````carve
+````text
 # H1   ## H2   ### H3        (ATX headings 1-6; put attributes on the
                               line above: {#id .class})
 
@@ -118,14 +126,25 @@ two
 
 ## Tables
 
-```carve
-|= Header |= Header |        (|= marks a header cell; also works in body
-| Cell    | Cell    |         rows for ROW headers)
-^ Table caption
+`|=` marks a header cell: in the first row it heads a column, in a body row it
+heads that row. A `^` line after the table is its caption.
 
-| ^      | spanned |         (^ = rowspan)
-| Header | <       |         (< = colspan)
-+ continuation cell |        (+ = multi-line cell)
+```carve
+|= Item |= Qty |
+|= Apple | 12 |
+| Pear   |  3 |
+^ Stock on hand
+```
+
+A cell holding only `^` merges upward (rowspan) and one holding only `<` merges
+leftward (colspan); a `+` row continues the row above it, cell by cell, joined
+with a space.
+
+```carve
+|= Item |= Qty |= Note |
+| Apple | 12 | fresh |
++       |    | picked today |
+| ^     |  3 | <     |
 ```
 
 ### Alignment
@@ -144,14 +163,22 @@ merge, `| ^ |` the rowspan merge.
 
 ## Captions (images, quotes, tables, code listings, equations, figure groups)
 
+One `^` line after the block adds a semantic `<figcaption>`:
+
 ```carve
 ![Photo](img.jpg)
-^ Figure 1: Caption text      (one ^ adds a semantic <figcaption>)
+^ Caption text
+```
 
+A `#` in the caption is the auto number, so a cross-reference to the element's
+id renders as "Figure 1" rather than repeating the caption:
+
+```carve
 {#fig-sun}
 ![A sunset](sun.jpg)
-^ Figure #: A sunset          (# = auto number; </#fig-sun> then renders
-                               as "Figure 1")
+^ Figure #: A sunset
+
+See </#fig-sun> for the view.
 ```
 
 A `^` caption after a fenced code block makes a numbered *listing*; after a
@@ -184,7 +211,7 @@ continues on the next line.
 
 ## Attributes & metadata
 
-```carve
+```text
 {#id .class key=value}        (attach to the preceding/following element)
 {:fr}  {:de-CH}  {:}          (language: short for lang="fr"; {:} = unknown)
 [Tab]{kbd}                    (semantic span: <kbd>Tab</kbd>; core names are
@@ -210,8 +237,10 @@ text %% trailing comment
 block comment
 %%%
 
-{+inserted+}  {-deleted-}  {~old~>new~}  {#a comment#}   (CriticMarkup)
+{+inserted+}  {-deleted-}  {~old~>new~}  {#a comment#}
 ```
+
+The last line is CriticMarkup: insert, delete, substitute, comment.
 
 ## Diagrams & charts
 

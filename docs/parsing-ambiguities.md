@@ -135,7 +135,7 @@ braced `| {^2^} |`.
 4. **Literal:** Everything else
 
 **Examples:**
-```carve
+```text
 | Header | <       |           # Colspan
 
 <https://example.com>          # Autolink
@@ -463,7 +463,7 @@ Inside code spans, backslash is literal:
 
 ## 16. Empty/Whitespace-Only Elements
 
-```carve
+```text
 **               # Not bold (no content)
 //               # Not italic (no content between //)
 {^^}             # Not superscript (no content)
