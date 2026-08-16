@@ -26,24 +26,16 @@
 # The stays-text escapes ruled on carve#1130 (CommonMark+GFM is the contract;
 # a construct only Carve or another flavour spells is escaped so the migrated
 # document keeps saying what its author wrote). carve-js shipped them in
-# carve-js#1060; the engine PRs below are what these lines wait for.
-php/01-markdown-an-inline-footnote-stays-text  ruled stays-text escape not shipped; `a ^[note] b` converts to an inline footnote
-php/02-markdown-an-abbreviation-definition-stays-text  ruled stays-text escape not shipped; the definition line leaves the document
-php/03-markdown-a-fenced-div-stays-text  ruled stays-text escape not shipped; both `:::` fence lines disappear
-php/04-markdown-attribute-forms-stay-text  ruled stays-text escape not shipped; `[t]{.c}` becomes an attributed span
-php/05-markdown-verbatim-sigils-stay-text  ruled stays-text escape not shipped; math/literal sigils convert
-php/06-markdown-an-extension-call-stays-text  ruled stays-text escape not shipped; `:term[x]` becomes an extension call
+# carve-js#1060; carve-php shipped them in carve-php#1311, which is why only
+# the carve-rs line is left here.
 rust/05-markdown-verbatim-sigils-stay-text  ruled stays-text escape not shipped; math/literal sigils convert
 
-# HTML import fidelity: a LOOSE source list (each item an explicit <p>)
-# flattens to a tight Carve list, so the paragraph-ness of the source is lost.
-# carve-js and carve-rs both preserve it.
-php/23-html-ordinary-blocks-survive  a loose HTML list imports tight; item paragraphs are dropped
-
-# carve#1210 ruling (2026-08-16): a bare-text <li> imports as a TIGHT list
-# item, and a mixed list pins carve-php's normalization. carve-php conforms;
-# carve-js and carve-rs import both shapes loose and owe the fix.
-js/27-html-a-bare-text-list-item-imports-tight  ruled tight-li import not shipped; a bare-text item imports loose
-js/28-html-a-mixed-list-normalizes-tight  ruled tight-li import not shipped; the whole mixed list imports loose
+# carve#1210 ruling (2026-08-16): "a bare-text <li> imports as a TIGHT list
+# item; <li><p>...</p></li> stays loose. HTML draws the tight/loose distinction
+# the same way Carve does, and import preserves source structure rather than
+# normalizing." Carve spells tight/loose per LIST, so a MIXED list resolves the
+# way CommonMark resolves it - one paragraph item loosens the whole list - and
+# case 28 pins that. carve-php and carve-rs read the source's own markup;
+# carve-js normalizes both shapes to tight and owes the fix on 28.
+js/28-html-a-mixed-list-stays-loose  a mixed list imports tight, dropping the paragraph the source spelled
 rust/27-html-a-bare-text-list-item-imports-tight  ruled tight-li import not shipped; a bare-text item imports loose
-rust/28-html-a-mixed-list-normalizes-tight  ruled tight-li import not shipped; the whole mixed list imports loose

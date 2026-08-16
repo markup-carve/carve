@@ -67,6 +67,48 @@ needs a mode branch. An event handler on one of them is still stripped and
 still diagnosed: the mapping renames the element, it does not exempt it from
 hardening.
 
+## Lists keep the source's tightness
+
+A bare-text `<li>` imports as a TIGHT list item; `<li><p>...</p></li>` stays
+loose. HTML draws the tight/loose distinction the same way Carve does, and
+import preserves what the source spelled rather than normalizing it.
+
+```html
+<ul><li>one</li><li>two</li></ul>
+```
+
+```
+- one
+- two
+```
+
+```html
+<ul><li><p>one</p></li><li><p>two</p></li></ul>
+```
+
+```
+- one
+
+- two
+```
+
+Carve spells tightness per LIST, not per item, so a MIXED list has to resolve
+one way. It resolves the way CommonMark resolves it: one paragraph item
+loosens the whole list. Normalizing the other direction would drop the
+paragraph that item spelled, which is the loss this rule exists to prevent.
+
+```html
+<ul><li>one</li><li><p>two</p></li></ul>
+```
+
+```
+- one
+
+- two
+```
+
+The three shapes are pinned as converter-corpus cases 27, 28 and 23.
+
 ## Modes
 
 - `safe` is the default for arbitrary input. It removes active content and
