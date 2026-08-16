@@ -82,6 +82,30 @@ Render Carve documents to formats beyond HTML.
 | [carve-hexapdf](https://github.com/markup-carve/carve-hexapdf) | PDF | Carve to PDF via the pure-Ruby HexaPDF engine (over carve-lang / carve-rb). |
 | [pandoc-carve](https://github.com/markup-carve/pandoc-carve) | LaTeX, Typst, DOCX, PDF, ... | Carve AST to Pandoc JSON bridge; reaches every pandoc writer and makes `{=latex}`-style raw spans fire. |
 
+## Format bridges
+
+Conversions between the Carve AST and another document model, in both
+directions. These are keyed by bridge rather than by repository, because one of
+them lives inside an engine rather than in a package of its own. Why the
+boundary sits at the AST, and what a bridge owes its caller:
+[Format bridges](./format-bridges).
+
+| Bridge | Model | Runtime | Carve to it | It to Carve |
+|---|---|---|---|---|
+| [pandoc-carve](https://github.com/markup-carve/pandoc-carve) | Pandoc AST | Node + `pandoc` | ✅ every pandoc writer | ✅ everything pandoc reads |
+| [carve-grammars](https://github.com/markup-carve/carve-grammars) | ProseMirror / Tiptap | Node | ✅ `carveToProseMirror` | ✅ `serializeToCarve` |
+| [carve-php](https://github.com/markup-carve/carve-php/blob/main/docs/prosemirror.md) | ProseMirror / Tiptap | PHP | ✅ `ProseMirrorRenderer` | ✅ `ProseMirrorToCarve` |
+
+The same editor model is reached from two runtimes on purpose: an editor needs
+the model in whatever runtime the application already has. The carve-php pair is
+what lets a Tiptap editor in the browser and PHP rendering in a queue worker
+share one stored document with no Node runtime anywhere in the pipeline.
+carve-grammars owns the shared `CarveKit` schema and the name map both sides
+read.
+
+carve-js and carve-rs have no bridge of their own; their `prosemirror` HTML
+import adapter is a different job at a different stage.
+
 ## Extensions
 
 Opt-in extensions that add non-core syntax.
