@@ -7556,22 +7556,8 @@ EOF = (* end of file *) ;
         link       `href`, `children`, and `ref` when the author wrote a
                    reference link
         image      `src`, `alt`, `title`
-        code       `value`
-        text       `value`. It may contain U+E000, which STANDS FOR a
-                   no-break space the parser resolved from an escaped space
-                   (`\ `) or from preserved line-block indentation (§23).
-                   That is not the same node content as a literal U+00A0 the
-                   author typed, which is published as itself, and the
-                   renderers already treat the two differently. A consumer
-                   MUST map U+E000 to its target's no-break space, or to an
-                   ordinary space where the target has none, and MUST NOT
-                   emit it. Stated because all three engines publish it and
-                   nothing said so: two consumers in this org passed it
-                   straight through, one into Pandoc JSON and one back into
-                   Carve source in place of the `\ ` it came from
-                   (carve#721). Private-use codepoints ABOVE U+E000 are
-                   writer-internal staging and never reach a published value
-                   (carve-rs#404)
+        code       `value`. May carry the U+E000 SENTINEL, below
+        text       `value`. May carry the U+E000 SENTINEL, below
         heading    `level`, `children`
         list       `ordered`, `tight`, `start`, `items`, and the AUTHOR-CHOICE
                    fields `bulletChar`, `delim` and `bareMarker` (PART 11 §6)
@@ -7593,6 +7579,41 @@ EOF = (* end of file *) ;
       An implementation MUST NOT invent a synonym, and MUST NOT expose an
       internal field the reference does not have. A consumer reading `href`
       must not have to know which engine produced the document.
+
+      THE U+E000 SENTINEL -- NORMATIVE, AND IT IS ON FOUR FIELDS. U+E000
+      STANDS FOR a no-break space. It is not the same node content as a
+      literal U+00A0 the author typed, which is published as itself, and the
+      renderers already treat the two differently. A consumer MUST map U+E000
+      to its target's no-break space, or to an ordinary space where the target
+      has none, and MUST NOT emit it.
+
+      The fields that may carry it are:
+
+        text.value              the escaped space `\ `, the preserved
+                                indentation of a line block (PART 9 §23), and
+                                an authored U+E000
+        code.value              an authored U+E000
+        code_block.content      an authored U+E000
+        literal_inline.content  an authored U+E000
+
+      A LINE BLOCK'S INDENTATION IS A RUN OF THE SENTINEL, one per preserved
+      space, so a four-space indent is four U+E000 in the leading `text.value`
+      and resolves to four no-break spaces. That second source is the one a
+      reader who has only seen `\ ` will miss, and it is the common one: an
+      escaped space is rare, indented verse is not.
+
+      `raw_block.content` IS DELIBERATELY NOT ON THE LIST. Raw content is
+      passed to its target byte for byte, so a U+E000 in it is a byte the
+      author put there and a consumer MUST leave it alone. Mapping it would
+      corrupt the payload the raw block exists to carry unexamined.
+
+      Stated because all three engines publish it on all four fields and only
+      one was written down: two consumers in this org passed it straight
+      through, one into Pandoc JSON and one back into Carve source in place of
+      the `\ ` it came from (carve#721), and carve-sile handed it to SILE,
+      which drew the font's `.notdef` glyph - a visible box, no warning
+      (carve#1242). Private-use codepoints ABOVE U+E000 are writer-internal
+      staging and never reach a published value (carve-rs#404).
 
    3a. THE SERIALIZED TREE IS PRE-RESOLVE -- NORMATIVE. It records what the
       AUTHOR WROTE, not what the document resolves to. Reference resolution,
