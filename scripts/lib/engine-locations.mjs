@@ -45,7 +45,16 @@ export function rustBinaryCandidates(dir = rustDir()) {
     const base = isAbsolute(targetDir) ? targetDir : resolve(dir ?? root, targetDir)
     candidates.push(join(base, 'release/carve'), join(base, 'debug/carve'))
   }
-  if (dir) candidates.push(join(dir, 'target/release/carve'), join(dir, 'target/debug/carve'))
+  // ABSOLUTE, always. `CARVE_RS_DIR` may be relative - docs/implementation-
+  // comparison.md spells it `../carve-rs` - and compare-impls spawns this
+  // binary with `cwd` set to the checkout. A path relative to THIS repo is
+  // then re-resolved against the checkout and lands where nothing built:
+  // `vendor/carve-rs` becomes `vendor/carve-rs/vendor/carve-rs/...` and the
+  // spawn fails ENOENT, so the runner drops carve-rs and exits 2. The runners
+  // that spawn WITHOUT a cwd never saw it, which is why only one of the seven
+  // was affected. `resolve` anchors against this process's cwd, the same base
+  // `existsSync` above uses, so the check and the spawn cannot disagree.
+  if (dir) candidates.push(resolve(dir, 'target/release/carve'), resolve(dir, 'target/debug/carve'))
   return candidates
 }
 
