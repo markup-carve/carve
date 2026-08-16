@@ -29,7 +29,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { phpDir, rustDir } from './lib/engine-locations.mjs'
+import { phpDir, rustBinary } from './lib/engine-locations.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -132,12 +132,9 @@ const CLAIMS = [
 
 const engines = []
 if (existsSync(join(jsDir, 'dist/index.js'))) engines.push({ name: 'js', kind: 'js', dir: jsDir })
-for (const candidate of ['target/release/carve', 'target/debug/carve']) {
-  const dir = rustDir()
-  if (dir && existsSync(join(dir, candidate))) {
-    engines.push({ name: 'rs', kind: 'cli', bin: join(dir, candidate) })
-    break
-  }
+{
+  const bin = rustBinary()
+  if (bin) engines.push({ name: 'rs', kind: 'cli', bin })
 }
 if (phpDir() && existsSync(join(phpDir(), 'bin/carve'))) {
   engines.push({ name: 'php', kind: 'cli', bin: join(phpDir(), 'bin/carve') })

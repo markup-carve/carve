@@ -61,6 +61,7 @@ import {
 } from './spec/unknown-property-probe.mjs'
 import { refusableRootShapes, rootShapeVerdict } from './spec/root-shape-probe.mjs'
 import { miscount, shortfall } from './spec/participants.mjs'
+import { rustBinary } from './lib/engine-locations.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -987,9 +988,7 @@ report('carve-js', `carve-js (reference) [${jsProv.text}]`, jsFindings)
 //
 // Uses an already-built binary rather than `cargo run`, so a checkout that has
 // not been built says so instead of silently compiling for two minutes.
-const rsBinary = ['target/release/carve', 'target/debug/carve']
-  .map((p) => resolve(rsDir, p))
-  .find((p) => existsSync(p))
+const rsBinary = rustBinary(rsDir)
 if (rsBinary) {
   const rsFindings = []
 let rsProbed = 0
