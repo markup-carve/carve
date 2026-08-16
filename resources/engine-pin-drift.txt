@@ -39,3 +39,8 @@
 326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-8  same, with a footnote definition
 326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-9  same, with an attribute block
 326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-11  same, with a block quote whose own last block is a heading
+327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent  the pin predates markup-carve/carve#1290, so one `+` still attaches every block up to the boundary
+327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-3  same, with the attached paragraph wrapped over two lines
+327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-6  same, in the `- +` first-block form
+327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-7  a different pin defect the case uncovers: after a `- +` first-block attachment the pin does not recognize a second `+`, rendering it as a literal paragraph and leaving the quote at top level
+327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-8  same, in the block-quote form

@@ -2104,11 +2104,65 @@ function oneBlockEnd(lines, start, endsBlock) {
   return end
 }
 
+/*
+ * WHERE THE FIRST BLOCK OF A REGION ENDS -- SS17 L3's ONE BLOCK.
+ *
+ * `oneBlockEnd` computes the marker's EXTENT: the furthest the attachment may
+ * reach, bounded by a blank line, a sibling marker or a further `+`. That is not
+ * a count, and reading it as one is what made a single `+` attach a whole run of
+ * blocks: the extent of `para` / `> q` is both lines, and handing both to the
+ * block parser produces TWO blocks (carve#1290).
+ *
+ * The block boundary is found by ASKING THE BLOCK PARSER rather than by
+ * re-deriving block segmentation here, which would be a second spelling of a
+ * rule this file already owns - and the way this drifts. The shortest prefix of
+ * the region that parses to exactly one block, and to the SAME block the whole
+ * region starts with, is that block's extent. The second half of that test is
+ * what keeps a multi-line paragraph whole: a one-line prefix of `a` / `b` / `> q`
+ * parses to one block too, but not to the same one.
+ *
+ * The probe parses use a THROWAWAY state. `parseBlocks` collects definitions
+ * into the symbol table as it goes, and the real parse of these lines happens
+ * afterwards; sharing the state would register every definition in the region
+ * once per probe.
+ */
+function firstBlockEnd(lines, start, limit, state) {
+  if (limit - start <= 1) return limit
+  const region = lines.slice(start, limit)
+  const probe = () => ({
+    linkDefs: new Map(),
+    footnoteDefs: new Map(),
+    abbrDefs: new Map(),
+    blockDepth: state.blockDepth ?? 0,
+  })
+  let whole
+  try {
+    whole = parseBlocks(region, probe(), false, true)
+  } catch {
+    // Outside the executable subset: the extent is the honest answer, and the
+    // real parse below raises the same refusal where it belongs.
+    return limit
+  }
+  if (whole.length <= 1) return limit
+  const first = JSON.stringify(whole[0])
+  for (let n = 1; n < region.length; n++) {
+    let prefix
+    try {
+      prefix = parseBlocks(region.slice(0, n), probe(), false, true)
+    } catch {
+      continue
+    }
+    if (prefix.length === 1 && JSON.stringify(prefix[0]) === first) return start + n
+  }
+  return limit
+}
+
 // Parse ONE following flush-left block (for the `+` continuation marker).
-function takeOneBlock(lines, start) {
+function takeOneBlock(lines, start, state) {
   const end = oneBlockEnd(lines, start, (idx) =>
     isBlank(lines[idx]) || CONT_MARKER.test(lines[idx]) || QUOTE.test(lines[idx]))
-  return { rawMarker: lines.slice(start, end), next: end }
+  const one = firstBlockEnd(lines, start, end, state)
+  return { rawMarker: lines.slice(start, one), next: one }
 }
 
 // The same extent for the block a `+` marker pulls into a footnote/<dd> (SS17
@@ -2359,9 +2413,14 @@ function collectItems(lines, i, list, state, ind, meas) {
       // spelling - it stopped at the first blank with no fence state consulted,
       // which severed a `+`-attached fence here while a footnote body one
       // container over kept it whole.
-      const end = oneBlockEnd(lines, i, (idx) =>
+      const extent = oneBlockEnd(lines, i, (idx) =>
         ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
         matchMarkerAt(ind(idx))?.indent === baseIndent)
+      // ONE BLOCK, and the extent above is the marker's REACH rather than its
+      // count (SS17 L3, carve#1290). `- a` / `+` / `para` / `> q` has both lines
+      // inside the extent and they are two blocks; the `+` takes the first, and
+      // the second needs a `+` of its own.
+      const end = firstBlockEnd(lines, i, extent, state)
       for (; i < end; i++) {
         // attached VERBATIM, so the line keeps the measurement it has here
         pushLine(lines[i], ind(i))

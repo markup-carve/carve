@@ -257,6 +257,7 @@ index: examples/edge-cases/index.md
   sibling-markers-that-reach-one-column-are-one-list
   the-continuation-marker-at-an-item-s-own-column-and-what-follows-it
   a-continuation-marker-after-a-blank-line-in-the-item
+  a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent
   a-continuation-marker-after-a-blank-line-in-a-loose-item
   a-fence-opened-on-a-list-marker-line-body-below-the-content-column
   a-below-column-marker-after-a-comment-where-no-paragraph-is-open
