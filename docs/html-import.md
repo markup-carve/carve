@@ -67,6 +67,69 @@ needs a mode branch. An event handler on one of them is still stripped and
 still diagnosed: the mapping renames the element, it does not exempt it from
 hardening.
 
+## Block structure Carve can spell
+
+Two block-level shapes carry structure an unwrapping importer throws away, and
+Carve has a spelling for each, so each is KEPT (markup-carve/carve#1286).
+
+| HTML | Carve | what would otherwise be lost |
+| --- | --- | --- |
+| `<figure>` + `<figcaption>` | the target block, then a `^ caption` line | the figure itself: unwrapping both elements glues the caption text onto the image, and re-reading that gives a paragraph |
+| `<blockquote cite="U">` | `{cite=U}` on the line above the quote | the attribution URL, which no other channel carries |
+
+A `<figure>` holding an image and a caption is exactly the source Carve's
+caption line produces, so the import is a round trip rather than a rescue:
+
+```html
+<figure><img src="i.png" alt="a"><figcaption>cap</figcaption></figure>
+```
+
+```
+![a](i.png)
+^ cap
+```
+
+The `cite` attribute rides the block-attribute line, which is the ordinary
+channel for an attribute on a block:
+
+```html
+<blockquote cite="u"><p>q</p></blockquote>
+```
+
+```
+{cite=u}
+> q
+```
+
+Both rows go the lossless way for the same reason, and it is not a preference
+for richer output. Dropping either one is an option only WITH a diagnostic
+attached, because the loss report exists so that nothing leaves quietly - and
+keeping them costs less than the diagnostic would. Neither of the two imports
+above emits a diagnostic, because neither loses anything.
+
+The caption line is the target's, not the document's: a `<figcaption>` that
+sits before its target in the source still imports as the line AFTER it, since
+that is where Carve spells a caption for the block above.
+
+**One target is the exception, and it is the one Carve has no source for.** A
+figure wrapping a TABLE is an AST shape no Carve document spells (PART 12
+§17): the caption line on a table is the table's own `<caption>`, so the
+`<figure>` element itself has nowhere to go. That import is still the best
+available source, and it is diagnosed rather than silent:
+
+```html
+<figure><table><tr><td>x</td></tr></table><figcaption>cap</figcaption></figure>
+```
+
+```
+| x |
+^ cap
+```
+
+with `structure-unspellable` on the `<figure>`. Every other captionable target
+- an image, a quote, a code block, a paragraph - keeps its figure and reports
+nothing.
+
 ## Lists keep the source's tightness
 
 A bare-text `<li>` imports as a TIGHT list item; `<li><p>...</p></li>` stays
@@ -239,6 +302,8 @@ The shared set is deliberately small and each directory has one subject:
 | `semantic-spans-extension` | `samp`, `var`, `cite` and `dfn`, which need the extension to render as elements |
 | `semantic-span-attributes` | a consumed value beside a leftover `id`/`class`, a value that needs quotes, an empty value, and an event handler still stripped |
 | `semantic-span-carve-outs` | `<mark>`, inline `<code>` and `<pre><code>`, none of which take the compact form |
+| `figure-caption` | a `<figure>` with a `<figcaption>`, which imports as the image and a caption line |
+| `blockquote-cite` | a `<blockquote cite>`, whose attribute is kept on a block-attribute line |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
