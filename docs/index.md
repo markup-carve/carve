@@ -50,13 +50,15 @@ underscores sit below, tildes run through:
 H{,2,}O and E=mc{^2^}
 ```
 
-Tables without a separator row. `|=` marks a header cell, `|=>` aligns it right,
-and one `^` line captions the whole thing:
+Tables without a separator row. `|=` marks a header cell, `|=>` aligns that
+column right, a bare `|>` aligns a single body cell, and one `^` line captions
+the whole thing:
 
 ```carve
 |= Fruit  |=> Price |
 | Apple    | $1      |
 | Pear     | $2      |
+|~ Total  |< $3     |
 ^ Table 1: no separator row needed
 ```
 
