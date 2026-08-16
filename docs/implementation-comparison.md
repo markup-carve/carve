@@ -116,7 +116,8 @@ under the same semantic-span rule,
 `324-an-abbreviation-definition-in-an-item-body-is-paragraph-text`,
 `325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block`,
 `326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open`,
-`327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent`.
+`327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent`,
+`328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
