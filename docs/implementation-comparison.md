@@ -657,18 +657,10 @@ rather than a parser one.
 
 Optional raw output:
 
-Optional corpus added since this run: `34-plain-typography-source`,
-`35-ansi-typography-source`, `36-crossref-label-typography-source`,
-`37-crossref-label-typography-source-markdown`,
-`38-crossref-label-typography-source-ansi`,
-`39-crossref-label-typography-glyphs`.
-
-The first two pin `smartTypography` on the plain-text and ANSI targets; the
-other four pin a RESOLVED CROSSREF's label under the same switch, on three
-targets plus a default-mode control. All six landed on a host with no engine
-checkouts, so the run below predates them. The
-declaration is the same device the core block uses: it names the cases and
-carries no count, so there is nothing in it to fabricate, and
+This run covers the whole optional corpus, so it carries no
+added-since-this-run declaration. When the corpus next grows ahead of a run,
+that declaration comes back: it names the cases and carries no count, so there
+is nothing in it to fabricate, and
 `tests/implementation-comparison-counts.test.mjs` fails both when a named case
 stops existing and when the run is retaken without deleting the line.
 
@@ -679,39 +671,41 @@ came to say 4 when the corpus held 33.
 
 ```text
 Implementation summary
-profile=optional/opt-in corpus=optional corpus_pairs=35 targets=html,markdown
-rust: pass=5/5 mismatch=0 error=0 skipped=28 runs=5 avg_ms=22.17
-js: pass=32/32 mismatch=0 error=0 skipped=1 runs=32 avg_ms=64.69
-php: pass=31/31 mismatch=0 error=0 skipped=2 runs=31 avg_ms=54.55
+profile=optional/opt-in corpus=optional corpus_pairs=41 targets=html,markdown,plain,ansi
+rust: pass=12/12 mismatch=0 error=0 skipped=29 runs=12 avg_ms=5.21
+js: pass=41/41 mismatch=0 error=0 skipped=0 runs=41 avg_ms=157.43
+php: pass=39/39 mismatch=0 error=0 skipped=2 runs=39 avg_ms=103.44
 cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=30 diffs=0 errors=0 fixtures=yes
-markdown: compared=2 diffs=0 errors=0 fixtures=yes
+html: compared=33 diffs=0 errors=0 fixtures=yes
+markdown: compared=3 diffs=0 errors=0 fixtures=yes
+plain: compared=3 diffs=0 errors=0 fixtures=yes
+ansi: compared=2 diffs=0 errors=0 fixtures=yes
 
 Optional feature coverage
 social-link-templates (html): rust, js, php
 symbol-map (html): rust, js
-smart-quotes-locale-de (html): php
+smart-quotes-locale-de (html): rust, js, php
 bare-url-autolink (html): js, php
 citations-numbered (html): js, php
 code-callouts (html): js, php
 ...
 
-NOT COMPARED: 1 of 33 optional cases reached fewer than two engines, so they
-contribute no agreement evidence. This is not a pass.
+All optional cases reached at least two engines.
 ```
 
-**Read the last block, not the `cross_impl_diffs=10` above it.** One of the 33
-optional cases still reaches fewer than two engines and contributes no
-evidence.
+**Every optional case now reaches at least two engines.** That line at the
+bottom of the block is the one to read: for the first time the optional corpus
+carries agreement evidence for all of it, with no case left contributing
+nothing.
 
-That was 30 until carve#521. The features were implemented everywhere all
-along; what was missing was a way for this tool to switch them on. carve-js and
-carve-php are driven through an inline script here, so a shared table of
-feature to extension name reached both without either engine changing - taking
-the compared count from 2 to 27, and covering citations, which is 16 of the 33
-on its own.
+It was 30 of 33 uncompared until carve#521, and exactly one after that until
+carve-js gained locale-aware smart quotes (carve-js#996). The features were implemented
+everywhere all along; what was missing was a way for this tool to switch them
+on. carve-js and carve-php are driven through an inline script here, so a
+shared table of feature to extension name reached both without either engine
+changing - covering citations, which is 16 of the 41 on its own.
 
 The rest need a renderer or parser OPTION rather than an extension, and an
 option is per-engine API, so there is no shared table for them.
@@ -722,17 +716,15 @@ carve-php: carve-php#537 added the `HtmlRenderer::setSectionWrapping()`
 opt-out those two adapters drive, and carve-php#679 fixed the id/stamp
 ordering the second case pins (carve#535).
 
-Reaching an engine is not the same as being compared. One case remains
-single-engine, and the run says why rather than reporting a uniform "no CLI
-path":
+Reaching an engine is not the same as being compared, and when a case was
+single-engine this page named why rather than reporting a uniform "no CLI
+path". The last such case was `smart-quotes-locale-de`, held there because
+carve-js had no quote-locale option; carve-js#996 added one, the adapter drives
+it, and the case now reaches all three engines.
 
-| case | why |
-| --- | --- |
-| `smart-quotes-locale-de` | carve-js has no quote-locale option (carve#560) |
-
-That distinction is the point. A missing adapter is this repo's backlog; a
-missing option is the engine's, and the difference decides who fixes it. This
-one is a capability gap, which is why no amount of harness work would move it.
+That distinction is still the point for whatever lands next. A missing adapter
+is this repo's backlog; a missing option is the engine's, and the difference
+decides who fixes it - no amount of harness work moves a capability gap.
 
 carve-rs is driven through its binary and exposes no flag for the sections
 switch or the source-line stamp, so `section-wrapper-off` and
