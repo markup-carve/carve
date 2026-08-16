@@ -1,0 +1,45 @@
+An unclosed inline run in a line block reaches the end of the block
+
+```
+::: |
+a `b
+c d
+:::
+.
+<div class="line-block">
+  <p>a <code>b
+c d</code></p>
+</div>
+```
+
+```
+a `b
+c d
+.
+<p>a <code>b
+c d</code></p>
+```
+
+```
+::: |
+a `b`
+c d
+:::
+.
+<div class="line-block">
+  <p>a <code>b</code><br>
+c d</p>
+</div>
+```
+
+```
+::: |
+a $`x
+c d
+:::
+.
+<div class="line-block">
+  <p>a <span class="math inline">\(x
+c d\)</span></p>
+</div>
+```

@@ -313,6 +313,7 @@ index: examples/edge-cases/index.md
   26-comments-3
   26-comments-4
   26-comments-6
+  an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block
   41-line-blocks-8
   12-inline-code-5
   24-generic-divs-2

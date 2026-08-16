@@ -12,7 +12,7 @@
  */
 
 import { Refuse, TIER1, bracketRunEnd } from './layout.mjs'
-import { renderInline, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, NOTE_FRAME } from './render.mjs'
+import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, NOTE_FRAME } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -95,28 +95,33 @@ export function renderDoc(doc) {
 }
 
 /**
- * One line of a line block (PART 9 SS23).
+ * One line of a line block, as INLINE SOURCE (PART 9 SS23).
  *
  * Leading whitespace is preserved down to a single column; an inner or trailing
  * run of TWO OR MORE columns is a medial gap and is preserved too. A lone inner
  * space stays an ordinary collapsible space so a long line can still wrap
- * between words. Preserved columns serialize as `&nbsp;`; a tab advances to the
- * next multiple of four, counted from the column its run starts at (SS24 C1).
+ * between words. Preserved columns become NO-BREAK SPACE CHARACTERS, which
+ * `renderInline` serializes as `&nbsp;`; a tab advances to the next multiple of
+ * four, counted from the column its run starts at (SS24 C1).
+ *
+ * WHY SOURCE AND NOT HTML (carve#1282). This used to render each whitespace
+ * segment separately and concatenate the results, which made every gap - and
+ * every line break above it - a boundary the inline parser could not see
+ * across. An unclosed inline run then stopped at the line break, while the
+ * clause says a run with no closer reaches the end of the BLOCK, and a line
+ * block is one block. Emitting source lets the stanza be parsed once, so the
+ * rule needs no line-block exception. The transform itself is unchanged: it is
+ * the same columns, expressed as the character rather than as its entity.
  */
 function renderLineBlockLine(line) {
   let out = ''
-  let text = ''
   let i = 0
   let column = 0
   let seenContent = false
-  const flush = () => {
-    if (text !== '') out += renderInline(text)
-    text = ''
-  }
   while (i < line.length) {
     const ch = line[i]
     if (ch !== ' ' && ch !== '\t') {
-      text += ch
+      out += ch
       seenContent = true
       column++
       i++
@@ -129,10 +134,9 @@ function renderLineBlockLine(line) {
     }
     column += width
     if (!seenContent || width >= 2) {
-      flush()
-      out += '&nbsp;'.repeat(width)
+      out += '\u00a0'.repeat(width)
     } else if (i < line.length) {
-      text += ' '
+      out += ' '
     }
     // A LONE run at the END of the line is TRAILING WHITESPACE and is dropped
     // (PART 2, NO TRAILING WHITESPACE; carve#926). The order is what makes
@@ -143,7 +147,6 @@ function renderLineBlockLine(line) {
     // and which cannot serve the purpose SS23 gives it (letting a long line
     // wrap between words) at the end of a line.
   }
-  flush()
   return out
 }
 
@@ -358,8 +361,12 @@ function renderBlock(b, depth, ctx) {
       }
       if (cur.length) stanzas.push(cur)
       const ps = stanzas.map((st) => {
-        const rendered = st.map((l) => renderLineBlockLine(l))
-        return `${pad2}  <p>${rendered.join('<br>\n')}</p>`
+        // ONE inline parse for the whole stanza, so a run with no closer
+        // reaches the end of the block instead of stopping at a line break
+        // (markup-carve/carve#1282). The breaks harden afterwards, and the ones
+        // the run swallowed are content by then.
+        const source = st.map((l) => renderLineBlockLine(l)).join('\n')
+        return `${pad2}  <p>${renderInlineHardBreaks(source)}</p>`
       })
       return `${pad2}<div class="line-block">\n${ps.join('\n')}\n${pad2}</div>`
     }
@@ -369,7 +376,7 @@ function renderBlock(b, depth, ctx) {
       // keep normal behavior (PART 9 SS23)
       const parts = b.children.map((c) => {
         if (c.t === 'para') {
-          const html = renderInline(c.lines.join('\n')).replaceAll('\n', '<br>\n')
+          const html = renderInlineHardBreaks(c.lines.join('\n'))
           return `${'  '.repeat(depth + 1)}<p>${html}</p>`
         }
         return renderBlock(c, depth + 1, ctx)
