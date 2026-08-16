@@ -148,8 +148,6 @@ const PINNED_UNIMPLEMENTED = {
 const PINNED_DRIFT = {
   '27-html-a-bare-text-list-item-imports-tight':
     'carve#1210 ruling: a bare-text <li> imports TIGHT; the pinned build imports it loose',
-  '28-html-a-mixed-list-normalizes-tight':
-    'carve#1210 ruling: expected pins carve-php\'s normalization; the pinned build imports the whole list loose',
 }
 
 /**
