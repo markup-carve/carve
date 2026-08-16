@@ -297,6 +297,7 @@ index: examples/edge-cases/index.md
   an-absorbed-colon-fence-leaves-a-block-quote-s-paragraph-open
   a-real-div-in-a-container-and-the-flush-left-line-after-it
   the-flush-left-line-after-a-container-a-quoted-line-opened
+  a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open
   a-list-marker-at-the-content-column-inside-an-open-fence
   a-boundary-line-inside-an-open-fence-does-not-end-the-container
   a-container-a-lazy-line-folded-into-is-still-open
