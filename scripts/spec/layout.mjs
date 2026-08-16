@@ -991,7 +991,12 @@ function startsVisibleBlock(line) {
  */
 function opensParagraph(text) {
   if (text.trim() === '') return false
-  if (QUOTE.test(text)) return (QUOTE.exec(text)[1] ?? '').trim() !== ''
+  // A quote is asked the SAME question about what it carries, recursively. An
+  // empty quote opens nothing, and neither does `> # H` - the answer is the
+  // quote's own last block, not merely whether the quote had any content. This
+  // used to test non-emptiness alone, so `- > # H` / `tail` folded the tail into
+  // the ITEM with no paragraph open anywhere in the stack.
+  if (QUOTE.test(text)) return opensParagraph((QUOTE.exec(text)[1] ?? ''))
   if (HEADING.test(text) || HR.test(text)) return false
   if (COMMENT_LINE.test(text) || COMMENT_FENCE_BODY.test(text)) return false
   if (isTableRow(text) || CONT_ROW.test(text)) return false
@@ -2266,6 +2271,15 @@ function collectItems(lines, i, list, state, ind, meas) {
       // `- [r]: u`, `- [^f]: t` and `- {.k}` recording an open paragraph they do
       // not have -- and a column-0 line then folded into an item with nothing to
       // fold into (carve#1280).
+      //
+      // A WRAPPED attribute block (`- {.a` / `  .b}`) is deliberately not
+      // reached here. Its opener leaves no paragraph open either, but its
+      // continuation line arrives at the item's CONTENT COLUMN, where the
+      // classifier below reopens the paragraph on any non-empty residue - so
+      // deciding it needs the content-column half of this rule, which carve#1280
+      // leaves open. Handing this seed a multi-line window alone changes no
+      // output, and a predicate that looks right while deciding nothing is worse
+      // than one that plainly does not reach the case.
       if (!opensParagraph(head.text.trim())) closePara()
     }
     // Content column of the FIRST sub-list opened in this item (-1 = none). A

@@ -19263,6 +19263,29 @@ control for "the item ended" rather than "the item swallowed something":
 
 :::
 
+The question is asked of a quote RECURSIVELY, so a quote is not automatically an
+open paragraph either - what decides is the block the quote itself ends on:
+
+::: compare
+
+```carve
+- > # H
+tail
+```
+
+```html
+<ul>
+  <li>
+    <blockquote>
+      <h1 id="H">H</h1>
+    </blockquote>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
 ### The two that still fold, because a paragraph IS open
 
 The rule has one parameter, so the controls are the documents where that

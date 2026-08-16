@@ -38,3 +38,4 @@
 326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-7  same, with a link reference definition
 326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-8  same, with a footnote definition
 326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-9  same, with an attribute block
+326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-11  same, with a block quote whose own last block is a heading

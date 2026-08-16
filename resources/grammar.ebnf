@@ -225,6 +225,11 @@
         A definition still gets collected from where it was written (SS17 L6);
         ending the item disposes of the FOLLOWING line, not of the definition.
 
+        The question is asked of a QUOTE recursively. `- > q` / `tail` folds
+        because the quote ends on an open paragraph; `- > # H` / `tail` does
+        not, because it ends on a heading. Non-emptiness is not the test - a
+        quote is a container like any other and its own last block answers.
+
         Every engine folded the eight shapes above in a list item while ending
         all of them in a block quote, on a rule that names neither container,
         and the executable spec in scripts/spec did the same - so this repo's
@@ -232,7 +237,10 @@
         COLUMN too (`- a` / blank / `  # H` / `tail`), but no engine was
         measured there and corpus 75-list-nesting-and-looseness-4 pins the
         folding answer for a nested spelling of it, so that half is deliberately
-        NOT decided here and stays open. (carve#1280)
+        NOT decided here and stays open. A WRAPPED attribute block (`- {.a` /
+        `  .b}` / `tail`) belongs to that same open half: its opener leaves no
+        paragraph open, but its continuation line arrives at the content column
+        and is what reopens one. (carve#1280)
 
         A FENCED BODY IS NOT A PARAGRAPH -- NORMATIVE (carve#646). The same
         rule, with the unmatched container's last block a CODE FENCE opened on
