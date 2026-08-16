@@ -888,7 +888,7 @@
     "definition_list": {
       "type": "object",
       "title": "definition_list (block)",
-      "description": "Its items are the `<dt>` / `<dd>` sequence, in document order: a run of `definition_term` nodes followed by the `definition_description` nodes they share. The grouping is not published because it is not a shared fact - two engines that published it grouped the same document differently while rendering the same list - and because a plain object can carry no `pos`, which left a term the only content in a serialized document an editor could not navigate to (PART 12 \u00a74).",
+      "description": "Its items are the `<dt>` / `<dd>` sequence, in document order: a run of `definition_term` nodes followed by the `definition_description` nodes they share. The grouping is not published because it is not a shared fact - two engines that published it grouped the same document differently while rendering the same list - and because a plain object can carry no `pos`, which left a term the only content in a serialized document an editor could not navigate to (PART 12 §4).",
       "required": [
         "type",
         "items"
@@ -1093,7 +1093,7 @@
           "const": "figure"
         },
         "target": {
-          "description": "The captioned block: an image, block quote, table, code block or paragraph. What a captioned host is called and counted as comes from the caption's label, never from the host (PART 9 \u00a74b); for a quote the HTML Standard also requires the attribution outside the `blockquote`.",
+          "description": "The captioned block: an image, block quote, table, code block or paragraph. What a captioned host is called and counted as comes from the caption's label, never from the host (PART 9 §4b); for a quote the HTML Standard also requires the attribution outside the `blockquote`.",
           "oneOf": [
             {
               "$ref": "#/$defs/image"
@@ -1137,7 +1137,7 @@
     "figure_group": {
       "type": "object",
       "title": "figure_group (block)",
-      "description": "A composite figure (PART 9 \u00a74c, carve#1122): one figure-numbering unit whose direct captionable children - ordinary `figure` and `table` nodes among `children`, in source order - are its panels. There is no `panels` array: a consumer derives the panel list the way the renderer does, by type, in order, and non-panel stray content is preserved in place between them. Discriminated by `type` rather than by shape: every `figure` carries a `target`, this node deliberately does not, and probing for the missing field instead of the type string would break the day either shape grows a field. No title, no label, no `shortCaption`, no legend fields - the group's one authored metadata channel is `caption`, and the rest is carve#1118/carve#1121 design space, not claimed here.",
+      "description": "A composite figure (PART 9 §4c, carve#1122): one figure-numbering unit whose direct captionable children - ordinary `figure` and `table` nodes among `children`, in source order - are its panels. There is no `panels` array: a consumer derives the panel list the way the renderer does, by type, in order, and non-panel stray content is preserved in place between them. Discriminated by `type` rather than by shape: every `figure` carries a `target`, this node deliberately does not, and probing for the missing field instead of the type string would break the day either shape grows a field. No title, no label, no `shortCaption`, no legend fields - the group's one authored metadata channel is `caption`, and the rest is carve#1118/carve#1121 design space, not claimed here.",
       "required": [
         "type",
         "children"
@@ -1299,7 +1299,7 @@
         },
         "attrs": {
           "$ref": "#/$defs/attrs",
-          "description": "`id` holds the heading's id whether the author wrote `{#id}` or it was slugged from the heading text. A GENERATED id is assigned during resolution and is a resolution result under PART 12 \u00a75, serialized because recomputing it means replaying every earlier heading and the dedup suffix rule (`Notes`, then `Notes-2`) - a consumer holding only the tree cannot derive it."
+          "description": "`id` holds the heading's id whether the author wrote `{#id}` or it was slugged from the heading text. A GENERATED id is assigned during resolution and is a resolution result under PART 12 §5, serialized because recomputing it means replaying every earlier heading and the dedup suffix rule (`Notes`, then `Notes-2`) - a consumer holding only the tree cannot derive it."
         },
         "pos": {
           "$ref": "#/$defs/pos"
@@ -1324,7 +1324,7 @@
         },
         "href": {
           "type": "string",
-          "description": "The resolved destination (`#` + the heading's id), present only where the crossref resolved. PART 12 \u00a73a: the resolution is published beside the authored construct, not in place of it."
+          "description": "The resolved destination (`#` + the heading's id), present only where the crossref resolved. PART 12 §3a: the resolution is published beside the authored construct, not in place of it."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"
