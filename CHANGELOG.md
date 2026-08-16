@@ -153,14 +153,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   carrying both kinds. An authored `scope` REPLACES the default rather than
   joining it.
 
-- **A caption on a block quote is an attribution** (carve#1161). Four of the
-  five captionable hosts become a numbered thing - figure, table, listing,
-  equation. The quote is the odd one out: `^ Socrates` under a `>` block is who
-  said it, not what it depicts, so it renders `<footer>` inside the
-  `<blockquote>` rather than wrapping the quote in `<figure>` /
-  `<figcaption>`. A captioned quote is therefore not numbered and not a figure
-  cross-reference target.
-
 - **The Markdown target escapes an angle bracket only where it opens markup**
   (carve#1172). PART 11 §8 defines that target's escaping as exactly M1-M3 and
   none of them mentions an entity, yet every engine rewrote `<` and `>` to
