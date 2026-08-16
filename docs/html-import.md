@@ -97,7 +97,19 @@ lossy decision should be observable. The common diagnostic codes are:
   no spelling for, so it survives in the AST and not in written Carve. The
   AST-returning entry point loses nothing and reports nothing; the one that
   writes source reports this.
+- `encoding-assumed`: the source did not declare how to read a value, and the
+  importer assumed an encoding to map it. An importer MUST emit this whenever
+  the node it produced is only correct if that assumption holds. The motivating
+  case is `<math alttext="...">` with no `<annotation encoding="...">`: MathML
+  never says what `alttext` contains, so reading it as TeX is a guess, and the
+  math node may hold something that is not TeX at all.
 - `diagnostics-truncated`: the diagnostic cap was reached.
+
+`encoding-assumed` is deliberately not filed under `element-unwrapped`.
+Unwrapping is a note about the input's structure and loses no meaning;
+an assumed encoding is a warning about the output. A consumer told only that an
+element is gone cannot tell a harmless structural event from content that may
+be in the wrong language entirely, and that is the one signal it could act on.
 
 Diagnostics have `code`, `message`, `severity` (`info`, `warning`, or `error`),
 and optional `path`, `line`, and `column`. Their order follows document order.
