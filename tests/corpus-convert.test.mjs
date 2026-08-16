@@ -145,10 +145,7 @@ const PINNED_UNIMPLEMENTED = {
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {
-  '27-html-a-bare-text-list-item-imports-tight':
-    'carve#1210 ruling: a bare-text <li> imports TIGHT; the pinned build imports it loose',
-}
+const PINNED_DRIFT = {}
 
 /**
  * The visible text of an HTML fragment.

@@ -540,6 +540,9 @@ const sem = g.createSemantics().addOperation('h', {
   spComment(_sp, _pp, _rest) {
     return ''
   },
+  bracedComment(_open, _content, _close) {
+    return ''
+  },
   arrow(tok) {
     return { '<->': '\u2194', '->': '\u2192', '<-': '\u2190', '=>': '\u21d2', '!=': '\u2260', '<=': '\u2264', '>=': '\u2265', '+-': '\u00b1' }[tok.sourceString]
   },

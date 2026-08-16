@@ -145,7 +145,7 @@ CarveCore {
   // match in one attempt. `litDelim` stays after `arrow` and `span` (they claim
   // `=>` and `/*` first). This keeps the tokenizer's per-character work
   // near-constant, so the inline pass (with the SS9 delimiter stack) is O(n).
-  inline     = word | spComment | inlineSpace
+  inline     = word | spComment | bracedComment | inlineSpace
              | arrow | span | inlineNote | litDelim
              | symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
              | editorial | forcedSpan
@@ -278,7 +278,7 @@ CarveCore {
   // `looseAttrs` is admitted so a nested bare span's trailing `{...}` attribute
   // block is consumed here (the removed bare-span rules used to grab it via
   // their `attrs?`); the SS9 stack over these tokens then re-attaches it.
-  fInner<d>  = ~(d "}") (rich | span | word | spComment | inlineSpace | litDelim
+  fInner<d>  = ~(d "}") (rich | span | word | spComment | bracedComment | inlineSpace | litDelim
              | looseAttrs | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
              | lt | gt | dquote | squote | hash | other)
 
@@ -603,6 +603,9 @@ CarveCore {
   // a whitespace-preceded %% consumes the rest of the LINE (SS21); the
   // space itself is consumed too
   spComment  = " " "%%" (~newline any)*
+  // {% ... %} consumes through the FIRST closer, including soft line breaks.
+  // It has no leading-space requirement or consumption (SS21a).
+  bracedComment = "{%" (~"%}" any)* "%}"
   inlineSpace = " "
 
   // A bare delimiter that opened nothing is literal text.
