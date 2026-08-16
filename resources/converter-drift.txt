@@ -35,7 +35,7 @@ rust/05-markdown-verbatim-sigils-stay-text  ruled stays-text escape not shipped;
 # the same way Carve does, and import preserves source structure rather than
 # normalizing." Carve spells tight/loose per LIST, so a MIXED list resolves the
 # way CommonMark resolves it - one paragraph item loosens the whole list - and
-# case 28 pins that. carve-php and carve-rs read the source's own markup;
-# carve-js normalizes both shapes to tight and owes the fix on 28.
-js/28-html-a-mixed-list-stays-loose  a mixed list imports tight, dropping the paragraph the source spelled
+# case 28 pins that. carve-php reads the source's own markup; carve-js shipped
+# the mixed-list half in carve-js#1110, which is why only the carve-rs line on
+# case 27 is left here.
 rust/27-html-a-bare-text-list-item-imports-tight  ruled tight-li import not shipped; a bare-text item imports loose
