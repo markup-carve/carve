@@ -526,6 +526,7 @@ index: examples/edge-cases/index.md
   the-semantic-registry-holds-no-element-carve-already-spells
   two-attributes-need-a-separator-between-them
   a-derived-title-yields-to-an-authored-one
+  an-attribute-block-reaches-the-nested-list-it-precedes
   13-attributes-4
   39-inline-span-2
   39-inline-span-3

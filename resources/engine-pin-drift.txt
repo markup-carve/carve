@@ -24,3 +24,8 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+322-an-attribute-block-reaches-the-nested-list-it-precedes  the pin predates markup-carve/carve-js#1107, so an attribute block before a nested list is dropped
+322-an-attribute-block-reaches-the-nested-list-it-precedes-2  same, without the blank line before the attribute block
+322-an-attribute-block-reaches-the-nested-list-it-precedes-5  same, with an ordered nested list
+322-an-attribute-block-reaches-the-nested-list-it-precedes-6  same, with two stacked attribute blocks
+322-an-attribute-block-reaches-the-nested-list-it-precedes-7  same, with the attribute line ending a run that also holds a paragraph
