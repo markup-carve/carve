@@ -9,6 +9,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Delimited inline comments, `{% … %}`** (carve#1239, PART 9 §21a). `%%` runs
+  to the end of its inline RUN, so mid-line commenting already worked wherever
+  the structure supplied a boundary - a table cell ends at `|`, link text at
+  `]` - and plain prose supplies none. `{%` opens and the FIRST `%}` closes,
+  which is Djot's spelling and one character per meaning like the rest of the
+  braced family, so a Djot document's comments carry over unchanged. There is
+  no nesting, an unterminated opener stays literal, a code span or raw inline
+  passes `{%` through, a comment inside an emphasis run does not break it, and
+  the run may cross the soft line breaks inside one paragraph but never a blank
+  line. Every render target drops it. Both forms parse to a `comment` node and
+  the node records which one produced it (`delimited: true`, PART 12), so a
+  writer reading the tree back does not collapse `foo {% bar %} baz` into the
+  trailing form and swallow `baz`. This is an observable parsing change inside
+  0.1.x - that line rendered its braces before - and `carve lint` gains
+  `braced-comment-in-a-template-source` for the one exposed shape, a Liquid or
+  Nunjucks page whose `{% raw %}` block reaches the parser as text, at one
+  warning per tag-shaped comment.
+
+- **PART 12 §17: a figure may wrap a table, and no Carve source spells it**
+  (carve#1211, carve#1236). `figure.target` admits a `table` and a `table`
+  carries its own optional `caption`, so `figure{target: table}` and
+  `table{caption}` are two trees with two renderings. PART 9 §4 rules the
+  source spelling and produces only the second - a `^ ` line after a table
+  attaches to the table - so a parser never builds the wrapper; it enters
+  through an AST consumer or a format bridge, an HTML importer reading
+  `<figure><table>…<figcaption>` being the case that motivates it. A canonical
+  writer emits the target and its caption and MUST NOT invent syntax for the
+  wrapper, so what it writes re-reads as `table{caption}` and the wrapper is
+  LOST rather than preserved; a bridge exposing conversion diagnostics SHOULD
+  report that structural loss. Where the target already carries a caption of
+  its own, the figure's caption is lost with the wrapper too, and a writer MUST
+  NOT emit a second `^ ` line for it: a `^ ` line after a caption line is an
+  ordinary paragraph, so the output would carry the caption text as literal
+  body prose and hide the loss instead of leaving it observable. A figure
+  group's table panel (PART 9 §4c) is a plain `table` child of the group and
+  never this wrapper.
+
+- **Two import diagnostic codes: `structure-unspellable` and
+  `encoding-assumed`** (carve#1216, carve#1235). The html-import contract
+  closed `diagnostics[].code` at eight values, so an importer meeting a case
+  none of them named had to file it under a code that describes something else.
+  `structure-unspellable` is the code PART 12 §14, §15 and §17 each call for: a
+  tree holds a shape - `shortCaption`, `rowGroups`, a figure wrapping a table -
+  that no Carve source spells, so `htmlToAst` keeps it and reports nothing
+  while `htmlToCarve` writes source and loses it. It is not `table-degraded`,
+  which says the table itself could not be represented. `encoding-assumed`
+  names a value read under an encoding the source never declared: a correctness
+  warning about the OUTPUT, where `element-unwrapped` is a structural note
+  about the input, and a consumer cannot tell the two apart under one code.
+
+- **An import diagnostic's `path` is defined** (carve#1257). The field was
+  declared as a bare string with no pattern and no description, so each engine
+  invented a convention and the one shared fixture carrying a `path` pinned
+  whichever engine wrote the file. It is a human-readable, engine-defined
+  locator rooted at the fragment's body children: no `/html[1]/body[1]` prefix
+  and no step for a wrapper the importer added, each index counting among ALL
+  of the parent's child nodes rather than among the same-named siblings, and
+  naming the importer's traversal rather than the raw DOM - so a `<td>` in a
+  `<tbody>` that follows a `<thead>` carries no `tbody` step, because table
+  sections are flattened and rows renumbered across the table. It LOOKS like an
+  XPath expression and explicitly is not one: a consumer MUST NOT resolve it
+  against the input document, and it deliberately carries no pattern, because
+  the value is for a person reading a report rather than for a machine.
+
+- **HTML import keeps the source's list tightness** (carve#1210). A bare-text
+  `<li>` imports as a TIGHT list item and `<li><p>…</p></li>` stays loose,
+  because HTML draws that distinction the same way Carve does and import
+  preserves what the source spelled rather than normalizing it. Carve spells
+  tightness per LIST rather than per item, so a mixed list has to resolve one
+  way and resolves the way CommonMark does: one paragraph item loosens the
+  whole list. Normalizing the other direction would drop the paragraph that
+  item spelled, which is the loss the rule exists to prevent.
+
 - **Composite figures: a bare `::: figure` container is a captionable host**
   (carve#1122, PART 9 §4c). One figure holding ordered panels: the direct
   `figure`/`table` children are the panels, a `^ ` caption after the CLOSING
@@ -69,6 +142,105 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   it and keep flattening the table; the canonical writer MUST omit it.
 
 ### Changed
+
+- **PART 11 §6e: a table cell's content is padded** (carve#1233). The canonical
+  writer emits every cell as its PREFIX glued to the opening pipe, then one
+  space, then the content, then one space before the closing pipe - the prefix
+  being the kind marker, the alignment marker and the attribute block, in the
+  order PART 9 §5 T10 fixes. An EMPTY cell takes a single space, not one from
+  each end, so a column does not grow a space each time the document is
+  formatted. The reader requires the glued prefix, since a space in front of
+  `=` or of an attribute block makes it literal content, so only the content
+  side was ever the writer's to choose and nothing chose it: carve-js and
+  carve-rs glued a prefixed cell, carve-php glued it except when the cell
+  carried attributes. The rule also retires two guards. The alignment sigil and
+  the attribute slot are both read glued off the UNTRIMMED cell, so `| ~x~ |`
+  came back as `|=~x~|`, a centered column holding `x~`; each writer answered
+  that with its own list of characters to protect, and one space on every cell
+  covers the class without a list.
+
+- **A cell's attributes bind after its kind and alignment markers**
+  (carve#1224, PART 9 §5 T10). `header_cell` had no attributes slot, so an
+  attributed header cell had no spelling: the only shape available, `|{#x}=R|`,
+  is a data cell whose content starts with `=`, and a canonical writer emitting
+  it turned `<th id="x">R</th>` into `<td id="x">=R</td>`. Both productions take
+  one order instead - the kind marker, then the alignment marker, then the
+  attribute block - which is what makes the header shape expressible at all:
+  once `=` has committed the cell to header, everything after it is
+  unambiguous. This retires a released `data_cell` spelling. `|{#x}< content |`
+  was documented as attributes followed by a left-alignment marker; the `<` is
+  not in a marker position under the new order, so it is literal content. Row
+  attributes do not move - a row's block still glues to the row's closing `|`.
+
+- **An abbreviation line in a list item body is the paragraph it renders**
+  (carve#1267). PART 12 §7 recognizes `*[TERM]: expansion` as a definition only
+  as a direct child of the document; written inside a block quote, a list item
+  or a div the line is ordinary paragraph text, it defines nothing, and it is
+  preserved as the author typed it. So it is a second paragraph for PART 9 §17
+  L1 and a blank line before it makes the item LOOSE: it is not one of the
+  invisible constructs - comments, link reference definitions, footnote
+  definitions, attribute lines - that render nothing and leave the item tight.
+  A link reference definition at the same content column does stay collected
+  and does leave the item tight, which is what makes the difference a rule
+  rather than an inconsistency.
+
+- **An abbreviation expands inside an inline container** (carve#1151). PART 9R
+  R3 matches a defined term in RENDERED TEXT at word boundaries, and the
+  container that text sits in does not change that: an ordinary span
+  (`[HTML]{.x}`), a semantic span (`[HTML]{kbd}`) and the `:name[…]` extension
+  form all expand, as emphasis and link text already did. The corpus pinned
+  only the row carrying an explicit `abbr` attribute, which every engine agreed
+  on, so the rows around it were unpinned and two engines carried opposite
+  defects - one dropping the expansion inside spans, the other inside the
+  `:name[…]` form. An authored `abbr` attribute stays the exception PART 9 §9
+  makes it.
+
+- **A note inside an unresolved reference is not a reference** (carve#1198,
+  PART 9R R1). An unresolved reference degrades to its literal SOURCE, so the
+  link text rendered for it is discarded rather than written into the document,
+  and a `[^label]` use or an `^[content]` note sitting in that text references
+  nothing: it draws no number from the footnote sequence, a definition it was
+  the only use of stays unreferenced and is dropped, and no endnotes section is
+  written on its account. An implementation that numbers footnotes before it
+  knows whether the reference resolved says so in its output - the note a
+  reader can see is numbered as a repeat of a reference the document does not
+  contain, and a lone one leaves an endnote whose backlink names an id no
+  element carries. What is counted is what the output holds, which decides the
+  cases either side the same way: a note in a reference that DOES resolve is an
+  ordinary reference, and so is a note in a bracketed run that never carried a
+  tail.
+
+- **PART 11 §10e: a presentation target keeps a caption, a fence title and a
+  fence label** (carve#1179). Three authored tokens were discarded by all three
+  engines: a table's `^ ` caption on the Markdown target, and a code fence's
+  quoted title and its `[label]` on plain text and the terminal. A fenced div
+  already surfaces both fence tokens on every target, and a code fence carries
+  the same two tokens in the same two slots of its info string, so it renders
+  them the same way - above the block, the title always before the label -
+  while the language tag keeps whatever slot the target already gives it. The
+  clause decides where those tokens go on the targets it names and nothing
+  else: a construct/target pair it leaves open is open, not allowed.
+
+- **PART 11 §10f: a referenced abbreviation definition splits by target**
+  (carve#1185). §10a rules the definition nothing references and says nothing
+  about the one that IS referenced, and each of the three non-HTML targets got
+  that case wrong in its own way - Markdown and the terminal emitted the same
+  words twice, and plain text put a line of Carve source in the document while
+  the expansion the author defined appeared nowhere. Markdown keeps the
+  definition line, because `*[TERM]: expansion` is the spelling PHP Markdown
+  Extra uses, so there the line is content rather than leaked source and
+  keeping it is what lets the export round-trip. Plain text and the terminal
+  drop the line and emit the expansion at every occurrence, in the
+  `TERM (expansion)` shape.
+
+- **Two adjacent attributes need a separator** (carve#1157). `attribute_list`
+  is `attribute, {space+, attribute}` (PART 7) and no corpus document carried
+  an adjacent pair, so the rule had nothing behind it: all three engines read
+  `{.a.b}`, `{.a#i}` and `{#i.c}` as two attributes while every suite stayed
+  green. The spec is what stands - an adjacent pair is not an attribute list,
+  so the payload is not valid attribute syntax and the block is literal text.
+  An unquoted value runs to the next whitespace, so `{k=a:b}` remains one valid
+  attribute and the colon inside it is not a separator question.
 
 - **Semantic spans split by tier** (carve#1146). Core reserves three span
   attributes - `abbr`, `time`, `kbd` - because the first two carry data the
@@ -180,7 +352,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   grandchild into siblings erases structure the reader has no other way to
   recover - indentation is what plain text has.
 
-- **Bidi controls are stripped by presentation target** (carve#1082, #1083).
+- **Bidi controls are stripped by presentation target** (carve#1082,
+  carve#1083).
   Canonical Carve preserves a Trojan-Source bidi override or isolate control
   because it is the source; every presentation target strips it. `carve lint`
   reports the source occurrence as `bidi-control-in-source`.
@@ -198,6 +371,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   content is byte-for-byte passthrough. A line block's preserved indentation is
   a RUN of the sentinel, one per space, which is the second source the old
   wording left in a parenthetical.
+
+- **An image's alt text closes where a link's text closes** (carve#1197). The
+  grammar states, four lines above the production that contradicted it, that an
+  image has the same three forms as a link and that only the leading `!` and
+  the `<img src>` output differ - and then wrote `alt_text = {character - ']'}`,
+  which makes `![t[z]][r]` not an image at all. The bracketed run is not one of
+  the two things that differ, so alt text ends at the MATCHING `]`, closed by
+  the same balanced-bracket, escape- and literal-span-aware scan `link_text`
+  states. Every engine already read it that way; the production was the half
+  that was spelled wrong.
 
 - **The `semantic-span-carve-outs` HTML-import fixture pins the canonical fence
   opener.** `fenced_code_block` names the no-space form canonical ("The
