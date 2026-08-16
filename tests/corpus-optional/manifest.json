@@ -74,7 +74,7 @@
     {
       "slug": "15-citations-locator-labels",
       "feature": "citations-numbered",
-      "description": "Multiple locator labels (chap., §) parse to their canonical citeproc names."
+      "description": "Multiple locator labels (chap., \u00a7) parse to their canonical citeproc names."
     },
     {
       "slug": "16-citations-locator-default-page",
@@ -207,12 +207,17 @@
     {
       "slug": "40-semantic-span-extension",
       "feature": "semantic-span",
-      "description": "The four names core does not reserve - samp, var, cite, dfn - render as their elements when the SemanticSpan extension is enabled, under the same attribute spelling, nesting order and value mapping core uses for its three (PART 9 §10)."
+      "description": "The four names core does not reserve - samp, var, cite, dfn - render as their elements when the SemanticSpan extension is enabled, under the same attribute spelling, nesting order and value mapping core uses for its three (PART 9 \u00a710)."
     },
     {
       "slug": "41-semantic-span-extension-deprecated-spelling",
       "feature": "semantic-span",
       "description": "The extension also accepts the SOFT-DEPRECATED `:name[...]` spelling for all seven names, because it was released behavior in carve-js and carve-rs. Scheduled for removal in 0.2; the compact attribute is the form to write."
+    },
+    {
+      "slug": "42-list-table-header-rows-cols",
+      "feature": "list-table",
+      "description": "header-rows and header-cols promote the first N rows to <thead> and the first N cells of every row to row headers."
     }
   ]
 }
