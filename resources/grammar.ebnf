@@ -7791,7 +7791,7 @@ EOF = (* end of file *) ;
       which is worse and which §6 does not measure. (carve#524)
 
       §10 HAS SINCE ANSWERED IT: a link reference definition IS a node, hoisted
-      to the document like the other two definition kinds, and it carries the
+      to the document like the footnote definition, and it carries the
       destination. Both documents above now publish one - measured across all
       three engines, the definition-only document has a single
       `link_reference_definition` child holding `/u`, and the resolved one a
@@ -7905,7 +7905,7 @@ EOF = (* end of file *) ;
 
       WHAT WOULD MAKE `href: ""` DEFENSIBLE, and is not proposed here: a
       `link_reference_definition` node in the vocabulary, hoisted to the
-      document like the other two definition kinds. Then the destination
+      document like the footnote definition. Then the destination
       survives serialization and a consumer can resolve for itself. It is a
       bigger change than this clause is worth -- a new node type, a new hoisting
       rule, three engines to move, and every consumer obliged to run a
@@ -8539,12 +8539,20 @@ EOF = (* end of file *) ;
         title   the quoted title, unescaped, when the definition carries one
         attrs   a trailing attribute block on the definition line (§15 A2b)
 
-      IT HOISTS TO THE DOCUMENT, exactly as §7 requires of the other two
-      definition kinds: a definition authored inside a block quote or a list
-      item is a child of the DOCUMENT, and its `pos` still says where it was
-      written. The container is left as the author's remaining content, which is
-      what corpus 117-footnote-definition-inside-a-container-is-collected
-      already pins for the footnote case.
+      IT HOISTS TO THE DOCUMENT, exactly as §7 requires of the FOOTNOTE
+      definition: a definition authored inside a block quote or a list item is
+      a child of the DOCUMENT, and its `pos` still says where it was written.
+      The container is left as the author's remaining content, which is what
+      corpus 117-footnote-definition-inside-a-container-is-collected already
+      pins for the footnote case.
+
+      THE ABBREVIATION DEFINITION IS NOT THE THIRD KIND HERE. §7's clause AN
+      ABBREVIATION DEFINITION IS RECOGNIZED ONLY AT DOCUMENT LEVEL says the
+      opposite for that one: inside a container the line is not a definition
+      at all, it is paragraph text, and nothing is hoisted because nothing was
+      collected. Reading this section first, "the other two definition kinds"
+      said the reverse and made the abbreviation look like an unimplemented
+      hoist rather than a ruled-out one (carve#1267).
 
       WHY A NODE AND NOT A ROOT MAP. §7 fixes the root at three fields, and its
       reason is the one that decides this: §4 requires every node except the
