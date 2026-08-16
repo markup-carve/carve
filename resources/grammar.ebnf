@@ -3404,9 +3404,7 @@ EOF = (* end of file *) ;
             ^ Figure #: A pull quote
 
             <figure class="carve-figure-group">
-              <div class="carve-figure-panels">
-                <blockquote><p>To be</p></blockquote>
-              </div>
+              <blockquote><p>To be</p></blockquote>
               <figcaption>Figure 1: A pull quote</figcaption>
             </figure>
 
@@ -3481,15 +3479,24 @@ EOF = (* end of file *) ;
       318-composite-figures):
 
         <figure class="carve-figure-group [hints]" id="...">
-          <div class="carve-figure-panels">
-            <figure class="carve-figure-panel" id="...">
-              ...panel host...
-              <figcaption>...</figcaption>
-            </figure>
-            ...
-          </div>
+          <figure class="carve-figure-panel" id="...">
+            ...panel host...
+            <figcaption>...</figcaption>
+          </figure>
+          ...
           <figcaption>Label N: group caption</figcaption>
         </figure>
+
+      PANELS NEST DIRECTLY, WITH NO WRAPPER ELEMENT BETWEEN. HTML's `figure`
+      content model is a `figcaption` first or last plus FLOW CONTENT, and
+      `figure` is itself flow content, so nested panel figures are exactly
+      what the element admits -- no intermediate `div` is needed to make the
+      shape valid, and none is emitted. This is also the shape Pandoc's
+      writers produce for its native subfigures, which keeps HTML
+      import/export symmetric with the Pandoc bridge. The initial draft of
+      this clause wrapped the panels in a `<div class="carve-figure-panels">`;
+      that form was revised to the flat one before any release, so no
+      shipped document ever carried the wrapper.
 
       The class is FIRST on the group and on each panel, exactly the typed-
       container convention (`admonition note`): `carve-figure-group` leads,
@@ -3498,10 +3505,10 @@ EOF = (* end of file *) ;
       -- merge after it, then the id and remaining attributes in source
       order. A panel renders as the `<figure>` its host already produces,
       with `carve-figure-panel` leading its classes the same way. No group
-      caption -> no trailing `<figcaption>`. Zero panels -> the
-      `carve-figure-panels` div still wraps whatever content was preserved;
-      the panels div is unconditional so a consumer styling the shape never
-      branches on child count.
+      caption -> no trailing `<figcaption>`. Zero panels -> the group
+      `<figure>` holds the preserved content directly; a consumer selects
+      panels by the `carve-figure-panel` class, never by position, so the
+      shape needs no branch on child count.
 
    5. TABLE MODEL -- OPERATIONAL SEMANTICS (cell split, row validity,
       header cells, span walk, continuation rows, delimiter row, row

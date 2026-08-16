@@ -17696,8 +17696,10 @@ A bare `::: figure` container is ONE figure holding ordered panels (PART 9
 `figure` and `table` nodes the unchanged inner caption rules build - are the
 panels, and the `^ ` line after the closing fence is the caption of the whole
 group. That closer is caption placement's sixth host (PART 9 §4), and the only
-`:::` kind that takes one. The group renders class-first, the panels wrapped in
-an unconditional `carve-figure-panels` div.
+`:::` kind that takes one. The group renders class-first, the panels nested
+directly in the group `figure` - HTML's figure content model admits flow
+content beside a first-or-last `figcaption`, so no wrapper element sits
+between them.
 
 :::: compare
 
@@ -17717,16 +17719,14 @@ an unconditional `carve-figure-panels` div.
 
 ```html
 <figure class="carve-figure-group columns-2" id="fig-x">
-  <div class="carve-figure-panels">
-    <figure class="carve-figure-panel" id="fig-x-a">
-      <img src="a.png" alt="one">
-      <figcaption>(a) One</figcaption>
-    </figure>
-    <figure class="carve-figure-panel" id="fig-x-b">
-      <img src="b.png" alt="two">
-      <figcaption>(b) Two</figcaption>
-    </figure>
-  </div>
+  <figure class="carve-figure-panel" id="fig-x-a">
+    <img src="a.png" alt="one">
+    <figcaption>(a) One</figcaption>
+  </figure>
+  <figure class="carve-figure-panel" id="fig-x-b">
+    <img src="b.png" alt="two">
+    <figcaption>(b) Two</figcaption>
+  </figure>
   <figcaption>Figure 1: Group caption</figcaption>
 </figure>
 ```
@@ -17766,16 +17766,14 @@ See </#fig-x> and </#fig-x-a>.
   <figcaption>Figure 1: First</figcaption>
 </figure>
 <figure class="carve-figure-group" id="fig-x">
-  <div class="carve-figure-panels">
-    <figure class="carve-figure-panel" id="fig-x-a">
-      <img src="a.png" alt="one">
-      <figcaption>(a) One</figcaption>
-    </figure>
-    <figure class="carve-figure-panel" id="fig-x-b">
-      <img src="b.png" alt="two">
-      <figcaption>(b) Two</figcaption>
-    </figure>
-  </div>
+  <figure class="carve-figure-panel" id="fig-x-a">
+    <img src="a.png" alt="one">
+    <figcaption>(a) One</figcaption>
+  </figure>
+  <figure class="carve-figure-panel" id="fig-x-b">
+    <img src="b.png" alt="two">
+    <figcaption>(b) Two</figcaption>
+  </figure>
   <figcaption>Figure 2: Second</figcaption>
 </figure>
 <p>See <a href="#fig-x">Figure 2</a> and <a href="#fig-x-a">Figure 2a</a>.</p>
@@ -17800,16 +17798,14 @@ A group without a caption is a valid, unnumbered group - no trailing
 
 ```html
 <figure class="carve-figure-group">
-  <div class="carve-figure-panels">
-    <figure class="carve-figure-panel">
-      <img src="a.png" alt="one">
-      <figcaption>(a) One</figcaption>
-    </figure>
-    <figure class="carve-figure-panel">
-      <img src="b.png" alt="two">
-      <figcaption>(b) Two</figcaption>
-    </figure>
-  </div>
+  <figure class="carve-figure-panel">
+    <img src="a.png" alt="one">
+    <figcaption>(a) One</figcaption>
+  </figure>
+  <figure class="carve-figure-panel">
+    <img src="b.png" alt="two">
+    <figcaption>(b) Two</figcaption>
+  </figure>
 </figure>
 ```
 
@@ -17830,12 +17826,10 @@ strict profiles as `figure-group-single-panel`).
 
 ```html
 <figure class="carve-figure-group">
-  <div class="carve-figure-panels">
-    <figure class="carve-figure-panel">
-      <img src="l.png" alt="lone">
-      <figcaption>The only panel</figcaption>
-    </figure>
-  </div>
+  <figure class="carve-figure-panel">
+    <img src="l.png" alt="lone">
+    <figcaption>The only panel</figcaption>
+  </figure>
   <figcaption>Figure 1: One panel is valid</figcaption>
 </figure>
 ```
@@ -17865,17 +17859,15 @@ Both panels were shot on the same day.
 
 ```html
 <figure class="carve-figure-group">
-  <div class="carve-figure-panels">
-    <p>Both panels were shot on the same day.</p>
-    <figure class="carve-figure-panel" id="fig-s-a">
-      <img src="a.png" alt="one">
-      <figcaption>(a) One</figcaption>
-    </figure>
-    <figure class="carve-figure-panel" id="fig-s-b">
-      <img src="b.png" alt="two">
-      <figcaption>(b) Two</figcaption>
-    </figure>
-  </div>
+  <p>Both panels were shot on the same day.</p>
+  <figure class="carve-figure-panel" id="fig-s-a">
+    <img src="a.png" alt="one">
+    <figcaption>(a) One</figcaption>
+  </figure>
+  <figure class="carve-figure-panel" id="fig-s-b">
+    <img src="b.png" alt="two">
+    <figcaption>(b) Two</figcaption>
+  </figure>
   <figcaption>Figure 1: With a note between the panels</figcaption>
 </figure>
 ```
@@ -17900,12 +17892,10 @@ line an ordinary paragraph.
 
 ```html
 <figure class="carve-figure-group">
-  <div class="carve-figure-panels">
-    <figure class="carve-figure-panel">
-      <img src="a.png" alt="one">
-      <figcaption>(a) One</figcaption>
-    </figure>
-  </div>
+  <figure class="carve-figure-panel">
+    <img src="a.png" alt="one">
+    <figcaption>(a) One</figcaption>
+  </figure>
 </figure>
 <p>^ Figure #: Detached</p>
 ```
@@ -17988,13 +17978,11 @@ outer group numbers.
 
 ```html
 <figure class="carve-figure-group">
-  <div class="carve-figure-panels">
-    <div class="figure">
-      <figure>
-        <img src="a.png" alt="one">
-        <figcaption>(a) One</figcaption>
-      </figure>
-    </div>
+  <div class="figure">
+    <figure>
+      <img src="a.png" alt="one">
+      <figcaption>(a) One</figcaption>
+    </figure>
   </div>
   <figcaption>Figure 1: Outer only</figcaption>
 </figure>
@@ -18036,30 +18024,28 @@ $$`E = mc^2`
 
 ````html
 <figure class="carve-figure-group" id="fig-m">
-  <div class="carve-figure-panels">
-    <figure class="carve-figure-panel">
-      <table>
-        <thead><tr><th scope="col">Kind</th><th scope="col">N</th></tr></thead>
-        <tbody>
-          <tr><td>a</td><td>1</td></tr>
-        </tbody>
-      </table>
-    </figure>
-    <figure class="carve-figure-panel">
-      <pre><code class="language-js">const x = 1
+  <figure class="carve-figure-panel">
+    <table>
+      <thead><tr><th scope="col">Kind</th><th scope="col">N</th></tr></thead>
+      <tbody>
+        <tr><td>a</td><td>1</td></tr>
+      </tbody>
+    </table>
+  </figure>
+  <figure class="carve-figure-panel">
+    <pre><code class="language-js">const x = 1
 </code></pre>
-      <figcaption>A listing panel</figcaption>
-    </figure>
-    <figure class="carve-figure-panel">
-      <p><span class="math display">\[E = mc^2\]</span></p>
-      <figcaption>An equation panel</figcaption>
-    </figure>
-    <blockquote><p>Measured twice.</p></blockquote>
-    <figure class="carve-figure-panel">
-      <blockquote><p>Brevity.</p></blockquote>
-      <figcaption>A quoted panel</figcaption>
-    </figure>
-  </div>
+    <figcaption>A listing panel</figcaption>
+  </figure>
+  <figure class="carve-figure-panel">
+    <p><span class="math display">\[E = mc^2\]</span></p>
+    <figcaption>An equation panel</figcaption>
+  </figure>
+  <blockquote><p>Measured twice.</p></blockquote>
+  <figure class="carve-figure-panel">
+    <blockquote><p>Brevity.</p></blockquote>
+    <figcaption>A quoted panel</figcaption>
+  </figure>
   <figcaption>Figure 1: Mixed panels</figcaption>
 </figure>
 ````
@@ -18087,14 +18073,12 @@ source.
 
 ```html
 <figure class="carve-figure-group">
-  <div class="carve-figure-panels">
-    <aside class="admonition note">
-      <figure>
-        <img src="x.png" alt="x">
-        <figcaption>Figure 2: inner</figcaption>
-      </figure>
-    </aside>
-  </div>
+  <aside class="admonition note">
+    <figure>
+      <img src="x.png" alt="x">
+      <figcaption>Figure 2: inner</figcaption>
+    </figure>
+  </aside>
   <figcaption>Figure 1: group</figcaption>
 </figure>
 ```

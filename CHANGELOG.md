@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `</#id>` as the group number plus a letter ("Figure 2a"); a `#` in a panel
   caption stays literal. An opener carrying a quoted title or `[label]` stays
   a generic container, as does a nested bare `::: figure`; both lint. HTML
-  renders `carve-figure-group` / `carve-figure-panels` / `carve-figure-panel`,
+  renders `carve-figure-group` / `carve-figure-panel` figures nested directly,
   and PART 11 §10g fixes the writer spelling and the non-HTML degradations.
   This is an observable parsing change inside 0.1.x for documents that already
   hold a bare `::: figure` fence: the container reclassifies from a generic

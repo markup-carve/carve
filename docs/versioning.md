@@ -164,9 +164,7 @@ paragraph:
 <p>^ Figure #: A pull quote</p>
 
 <figure class="carve-figure-group" id="ep">       <!-- after -->
-  <div class="carve-figure-panels">
-    <blockquote><p>To be</p></blockquote>
-  </div>
+  <blockquote><p>To be</p></blockquote>
   <figcaption>Figure 1: A pull quote</figcaption>
 </figure>
 ```
