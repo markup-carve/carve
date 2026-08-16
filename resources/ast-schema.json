@@ -207,6 +207,7 @@
             "abbreviation_def",
             "admonition",
             "block_quote",
+            "citation_definition",
             "code_block",
             "comment",
             "definition_description",
@@ -291,6 +292,21 @@
           },
           "then": {
             "$ref": "#/$defs/block_quote"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "citation_definition"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "$ref": "#/$defs/citation_definition"
           }
         },
         {
@@ -709,6 +725,40 @@
         "useIndex": {
           "type": "integer",
           "description": "Per-key, document-wide use-site index (1-based); drives back-link anchors."
+        }
+      },
+      "additionalProperties": false
+    },
+    "citation_definition": {
+      "type": "object",
+      "title": "citation_definition (block)",
+      "description": "The `[@key]: {author= year=} entry` bibliography line (PART 12 section 18). Shaped after `link_reference_definition` rather than after the footnote: a footnote body holds blocks, while a citation definition holds a metadata run plus one line of rendered text. Renders nothing where it sits; the entry's text renders in the references list the Citations extension builds. Tier-2, so a default-profile parse never produces it.",
+      "required": [
+        "type",
+        "key",
+        "children"
+      ],
+      "properties": {
+        "type": {
+          "const": "citation_definition"
+        },
+        "key": {
+          "type": "string",
+          "description": "The citation key as the author wrote it, without the `@`. The same string `citation.key` carries at the use site."
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inlineNode"
+          },
+          "description": "The entry's inline content: what follows the `]: ` separator and the optional metadata block. Required as a field, but may be an empty array: which source lines carry no entry is a separate question PART 12 section 18 does not settle."
+        },
+        "attrs": {
+          "$ref": "#/$defs/attrs",
+          "description": "The leading `{author= year=}` metadata block, when the definition carries one. `author` and `year` feed author-date mode."
+        },
+        "pos": {
+          "$ref": "#/$defs/pos"
         }
       },
       "additionalProperties": false

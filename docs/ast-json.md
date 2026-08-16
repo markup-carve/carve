@@ -791,6 +791,50 @@ grows a field. No `title`, no `label`, no `shortCaption`, no legend fields -
 that design space belongs to carve#1118 and carve#1121 and is not claimed
 here.
 
+## Bibliography definitions
+
+A `[@key]: entry` line is its own node (§18), not a paragraph and not consumed
+state:
+
+```json
+{"type": "citation_definition",
+ "key": "smith2020",
+ "attrs": {"keyValues": {"author": "Smith", "year": "2020"}},
+ "children": [ ... ],
+ "pos": { ... }}
+```
+
+`key` is the citation key without the `@`, the same string `citation.key`
+carries at the use site. `children` is the entry's INLINE content - what
+follows the `]: ` separator and the optional metadata block - which is why the
+node is shaped after §10's `link_reference_definition` rather than after the
+footnote definition: a footnote body holds blocks, an entry holds one line of
+rendered text. `attrs` is the leading `{author= year=}` block, feeding
+author-date mode. `children` is required as a FIELD but may be an empty array -
+which source lines carry no entry is a separate question §18 does not settle,
+and the two answers on record disagree: the production requires a space after
+`]:` while the reference build accepts a line without one.
+
+It is Tier-2, so it appears only where the Citations extension is enabled. With
+the extension off the line is ordinary paragraph text - it is not a link
+reference definition either, since a leading `@` is reserved against that in
+core.
+
+**No rendered output moves.** The node renders nothing where it sits and the
+entry's text renders in the references list, exactly as before, which is why the
+divergence this closes survived so long: carve-php consumed the line at parse
+time and carve-js left it as a paragraph whose first child is a `citation_group`
+followed by the literal text `: {author=`, and both produced byte-identical
+HTML. Anything reading the tree saw two different documents - a ProseMirror
+bridge on one engine received three paragraphs of citation-shaped prose and
+round-tripped them as prose ([carve#1276](https://github.com/markup-carve/carve/issues/1276)).
+
+**No engine emits it yet**, at the time of writing; the clause landed first and
+the engines follow. `tests/citation-definition-is-a-node.test.mjs` pins the wire
+shape against the schema and carries a tripwire that fails on the pinned build
+the day it does, so this paragraph cannot go stale the way the rows above have
+twice.
+
 ## Open question
 
 **Citation items are plain objects**, carrying `key`, `prefix`, `locator` and

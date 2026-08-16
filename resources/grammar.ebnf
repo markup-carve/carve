@@ -2500,6 +2500,12 @@ citation_key = (letter | digit | '_'), {citation_key_char} ;
 citation_key_char = letter | digit | '_' | ':' | '.' | '#' | '$' | '%' | '&'
                   | '+' | '?' | '<' | '>' | '~' | '/' | '-' ;
 citation_definition = '[@', citation_key, "]:", space, [attributes], inline_content, newline ;
+(* The line is a NODE in the serialized tree -- `citation_definition`, carrying
+   the key, the entry's inline content and the metadata block (PART 12 §18).
+   Like the other definition kinds it renders nothing where it sits, which is
+   exactly why it is a node: it was written somewhere, and neither consuming it
+   at parse time nor leaving it a paragraph of citation-shaped literal text can
+   put it back (carve#1276). *)
 
 (* --- Extensions --- *)
 extension_inline = ':', extension_name, '[', extension_content, ']', [attributes] ;
@@ -8957,3 +8963,68 @@ EOF = (* end of file *) ;
       round trip is exact. A table is the one host whose caption has a slot of
       its own to go into, so the wrapper around it says something the caption
       inside it does not, and only that difference is unspellable.
+
+   18. A CITATION DEFINITION IS A NODE -- NORMATIVE.
+      `type: "citation_definition"`, carrying:
+        key       the citation key as the author wrote it, without the `@`
+        children  the entry's inline content: what follows the `]: ` separator
+                  and the optional metadata block, parsed as inline
+        attrs     the leading `{author= year=}` metadata block, when the
+                  definition carries one
+      and its `pos` under §4, like every other node.
+
+      SHAPED AFTER §10's LINK REFERENCE DEFINITION, NOT AFTER THE FOOTNOTE.
+      That is the closer of the two analogues: a `footnote` holds BLOCKS,
+      while `[@key]: {author= year=} entry` holds a metadata run plus one line
+      of rendered text. So the entry is `children` of INLINE nodes, and the
+      metadata lands in `attrs` -- the same two slots §10 spends on a
+      definition line's tail, with `key` where that clause has `label`. `key`
+      rather than `label` because `citation.key` already names the same string
+      at the use site, and §3 makes field names spec surface: one construct
+      identified two ways in one document is the collision §1 exists to stop.
+
+      NEITHER CURRENT BEHAVIOR STANDS, and the two lose different halves of
+      what §10 keeps (carve#1276):
+
+        consuming the line at parse time    discards `pos` entirely, so the
+                                            line cannot be reproduced and an
+                                            AST round trip deletes it
+        leaving the line a paragraph        publishes the parser's failure to
+                                            recognize it: a `citation_group`
+                                            followed by the literal text
+                                            `: {author=` and the rest of the
+                                            entry, which a ProseMirror bridge
+                                            hands an editor as prose and round
+                                            trips as prose
+
+      WHY IT IS A NODE is §10's own argument, and it applies here unchanged
+      because nothing distinguishes this definition kind from the other three.
+      A definition renders nothing where it sits -- that is the reason the
+      footnote and link-reference kinds are document-level nodes rather than
+      inline content, not a reason to leave one of them out of the tree. It was
+      written somewhere: an editor jumps to it, a formatter reproduces it, a
+      language server renames its key. Of the four kinds this was the only one
+      with no node, and no clause said why.
+
+      NO RENDERED OUTPUT MOVES ON ANY TARGET. The node renders nothing where it
+      sits; the entry's text renders in the references list the extension
+      builds, exactly as it did before. That is why the divergence survived so
+      long: HTML is identical whichever way an engine behaves, so no corpus
+      fixture could see it, and the pin has to be an AST-level assertion.
+
+      TIER-2, SO THE NODE EXISTS ONLY WHERE CITATIONS ARE ENABLED. With the
+      extension off, `[@key]: entry` is not a citation definition and it is not
+      a reference definition either -- the leading `@` is reserved against that
+      in core -- so the line is ordinary paragraph text. A default-profile parse
+      therefore never produces this type, which is why the schema declares it
+      and the core corpus cannot reach it.
+
+      WHERE A DEFINITION IS RECOGNIZED IS NOT DECIDED HERE. §10 hoists a link
+      reference definition out of a container while §7 rules that an
+      abbreviation definition inside one is not a definition at all, and this
+      clause is about the node's SHAPE rather than about which lines produce
+      one. Measured on carve-js `620def4`, a `[@key]: entry` line inside a
+      block quote or a list item is paragraph text and defines nothing, which
+      is §7's answer rather than §10's; that is a measurement of one engine and
+      not a ruling. An implementation emitting the node for a definition it
+      recognizes satisfies this clause whichever way that question lands.

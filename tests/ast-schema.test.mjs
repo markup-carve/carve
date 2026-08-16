@@ -320,6 +320,8 @@ test('every node type the reference emits is declared in the schema', () => {
  */
 const NOT_PRODUCIBLE = {
   citation_group: 'citations (Tier-2) - off in a default-profile run, exercised by tests/corpus-optional',
+  citation_definition:
+    'citations (Tier-2) - off in a default-profile run, and with the extension off `[@key]: entry` is ordinary paragraph text (PART 12 section 18)',
 }
 
 test('every node type the schema declares is produced by a corpus document, or named as unproducible', () => {
