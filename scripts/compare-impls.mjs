@@ -11,7 +11,7 @@ import {
   expectedFileFor,
   targetOf,
 } from './lib/corpus-targets.mjs'
-import { phpDir, rustDir } from './lib/engine-locations.mjs'
+import { phpDir, rustBinary, rustDir } from './lib/engine-locations.mjs'
 import { miscount, shortfall } from './spec/participants.mjs'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
@@ -187,14 +187,7 @@ const JS_ENTRY = {
  * a stale one. This brings the two checkers into line, and makes a CI run use
  * the release build the workflow just produced instead of recompiling in debug.
  */
-const rustCarveBinary = (() => {
-  const dir = rustDir()
-  if (!dir) return null
-  for (const candidate of ['target/release/carve', 'target/debug/carve']) {
-    if (existsSync(join(dir, candidate))) return `./${candidate}`
-  }
-  return null
-})()
+const rustCarveBinary = rustBinary()
 
 const rustBaseCommand = rustCarveBinary
   ? [rustCarveBinary]

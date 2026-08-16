@@ -61,7 +61,7 @@ import { existsSync, mkdtempSync, rmSync, writeFileSync, statSync } from 'node:f
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { phpDir, rustDir } from './lib/engine-locations.mjs'
+import { phpDir, rustBinary } from './lib/engine-locations.mjs'
 import { shortfall } from './spec/participants.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -144,18 +144,11 @@ const generate = () => {
   )
 }
 
-const rustBinary = (() => {
-  const dir = rustDir()
-  if (!dir) return null
-  for (const c of ['target/release/carve', 'target/debug/carve']) {
-    if (existsSync(join(dir, c))) return join(dir, c)
-  }
-  return null
-})()
+const rustCarveBinary = rustBinary()
 const phpBinary = phpDir() && existsSync(join(phpDir(), 'bin/carve')) ? join(phpDir(), 'bin/carve') : null
 const jsEntry = existsSync(join(jsDir, 'dist/index.js')) ? join(jsDir, 'dist/index.js') : null
 
-const missing = [!jsEntry && 'carve-js', !rustBinary && 'carve-rs', !phpBinary && 'carve-php'].filter(Boolean)
+const missing = [!jsEntry && 'carve-js', !rustCarveBinary && 'carve-rs', !phpBinary && 'carve-php'].filter(Boolean)
 if (missing.length) {
   console.error(`fuzz-impls: need all three engines built, missing ${missing.join(', ')}.`)
   console.error('A fuzzer that reports success having rendered nothing is worse than no fuzzer.')
@@ -189,7 +182,7 @@ const provenance = (label, file) => {
 
 console.log('fuzz-impls: comparing these builds')
 console.log(provenance('carve-js', jsEntry))
-console.log(provenance('carve-rs', rustBinary))
+console.log(provenance('carve-rs', rustCarveBinary))
 console.log(provenance('carve-php', phpBinary))
 console.log('')
 
@@ -229,7 +222,7 @@ function render(source) {
   } catch (error) {
     js = `ERROR: ${String(error.message).slice(0, 90)}`
   }
-  return { js, rs: cli(rustBinary), php: cli(phpBinary) }
+  return { js, rs: cli(rustCarveBinary), php: cli(phpBinary) }
 }
 
 /*
