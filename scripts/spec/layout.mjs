@@ -2474,6 +2474,37 @@ function collectItems(lines, i, list, state, ind, meas) {
           list.tight = false
           pendingSeparation = false
         }
+        // AN ATTACHED BLOCK CONSUMES THE SEPARATION, WHICHEVER LINE FILLED THE GAP.
+        //
+        // `blankBeforeInvisible` remembers "a blank line, then something that
+        // renders nothing" so the sibling-marker branch below can apply §17 L1's
+        // first clause. That is right while the invisible line is the LAST thing
+        // in the item - `188-a-floating-attribute-stops-at-the-item-boundary` is
+        // exactly that document, and the item really did end at the blank.
+        //
+        // It stopped being right the moment a visible BLOCK attached after it.
+        // §17 L2 says an attached sub-block leaves the item tight, and the
+        // attachment consumes the blank the same way it does when no invisible
+        // line is there at all: `- a` / blank / `- b` / `- c` is tight
+        // (`87-compact-list-blocks-2`), and inserting a comment, a definition or
+        // an attribute line into the gap cannot make the item loose - the line
+        // produces no output, and a line that outputs nothing must not make a
+        // visible difference (the rule carve#625 already applies one branch up).
+        //
+        // The flag was set and never cleared, so it survived to the sibling and
+        // loosened. Every document `323-a-block-attached-after-an-invisible-line-leaves-the-item-tight`
+        // pins renders tight in all three engines; the oracle was the lone
+        // dissenter (carve#1265). Both spellings of "a block attached here" are
+        // cleared: a sub-LIST is a marker at or past the content column,
+        // everything else is `opensSubBlock`.
+        //
+        // A PARAGRAPH is deliberately not in this list. It does not attach - it
+        // is §17 L1b's second paragraph, and the branch above has just loosened
+        // the item for it.
+        if (dmeas.rest !== '' && (opensSubBlock(dedented) || matchMarkerAt(dmeas))) {
+          blankBeforeInvisible = false
+          pendingSeparation = false
+        }
         // A bare `+` is left ALONE here, tagged neither as text nor as a
         // marker. Which one it is cannot be decided at push time: after the
         // dedent, column 0 of this body is BOTH the outer item's content

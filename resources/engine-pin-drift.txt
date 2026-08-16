@@ -29,3 +29,4 @@
 322-an-attribute-block-reaches-the-nested-list-it-precedes-5  same, with an ordered nested list
 322-an-attribute-block-reaches-the-nested-list-it-precedes-6  same, with two stacked attribute blocks
 322-an-attribute-block-reaches-the-nested-list-it-precedes-7  same, with the attribute line ending a run that also holds a paragraph
+323-a-block-attached-after-an-invisible-line-leaves-the-item-tight  the pin predates markup-carve/carve-js#1107, so the attribute block before the nested list is dropped; the tightness half it already gets right

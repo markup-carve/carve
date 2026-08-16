@@ -111,7 +111,8 @@ under the same semantic-span rule,
 `319-cell-attributes-bind-after-the-kind-and-alignment-markers`,
 `320-the-canonical-writer-glues-a-code-fence-to-its-info-string`,
 `321-delimited-comments`,
-`322-an-attribute-block-reaches-the-nested-list-it-precedes`.
+`322-an-attribute-block-reaches-the-nested-list-it-precedes`,
+`323-a-block-attached-after-an-invisible-line-leaves-the-item-tight`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the

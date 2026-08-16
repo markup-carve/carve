@@ -1,0 +1,85 @@
+A block attached after an invisible line leaves the item tight
+
+```
+- a
+
+  {.x}
+  - b
+- c
+.
+<ul>
+  <li>a
+    <ul class="x">
+      <li>b</li>
+    </ul>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+```
+- a
+
+  %% note
+  - b
+- c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+```
+- a
+
+  [r]: /u
+  - b
+- c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+```
+- a
+
+  {.x}
+  > q
+- c
+.
+<ul>
+  <li>a
+    <blockquote class="x"><p>q</p></blockquote>
+  </li>
+  <li>c</li>
+</ul>
+```
+
+````
+- a
+
+  {.x}
+  ```
+  code
+  ```
+- c
+.
+<ul>
+  <li>a
+    <pre class="x"><code>code
+</code></pre>
+  </li>
+  <li>c</li>
+</ul>
+````
