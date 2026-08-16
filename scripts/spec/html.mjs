@@ -304,9 +304,13 @@ function renderBlock(b, depth, ctx) {
         })
         cap = numberCaption(b.caption, ctx, groupId, panelIds)
       }
+      // PANELS NEST DIRECTLY (SS4c): HTML's figure content model is a
+      // figcaption first or last plus flow content, and figure is itself
+      // flow content, so no wrapper element sits between the group and its
+      // panels -- the shape Pandoc's writers produce for subfigures too.
       const inner = b.children
         .map((c) => {
-          if (!isPanel(c)) return renderBlock(c, depth + 2, ctx)
+          if (!isPanel(c)) return renderBlock(c, depth + 1, ctx)
           const wasInPanel = ctx.inPanel
           ctx.inPanel = true
           try {
@@ -314,15 +318,15 @@ function renderBlock(b, depth, ctx) {
               // a table does not render as a <figure> on its own, so the
               // panel wrapper is explicit; the table keeps its own attrs and
               // its own <caption> (SS4c).
-              const t = renderBlock(c, depth + 3, ctx)
-              return `${pad2}    <figure class="carve-figure-panel">\n${t}\n${pad2}    </figure>`
+              const t = renderBlock(c, depth + 2, ctx)
+              return `${pad2}  <figure class="carve-figure-panel">\n${t}\n${pad2}  </figure>`
             }
             // a captioned para/code/quote host already renders as <figure>;
             // lead its classes with the panel marker the way the group's are
             const prev = c.battrs
             c.battrs = [[['class', 'carve-figure-panel']], ...(prev ?? [])]
             try {
-              return renderBlock(c, depth + 2, ctx)
+              return renderBlock(c, depth + 1, ctx)
             } finally {
               c.battrs = prev
             }
@@ -332,12 +336,12 @@ function renderBlock(b, depth, ctx) {
         })
         .filter((x) => x !== null)
         .join('\n')
-      // the panels div is UNCONDITIONAL (SS4c): zero panels still wrap the
-      // preserved content, and an empty group holds an empty div.
-      const parts = [`${pad2}  <div class="carve-figure-panels">`]
+      const parts = []
       if (inner !== '') parts.push(inner)
-      parts.push(`${pad2}  </div>`)
       if (cap !== undefined) parts.push(`${pad2}  <figcaption>${renderInline(cap)}</figcaption>`)
+      // an EMPTY uncaptioned group keeps the bare-container empty-body line
+      // (the PART 10 SS4 exception the generic div takes).
+      if (parts.length === 0) return `${pad2}<figure${attrStr}>\n${pad2}</figure>`
       return `${pad2}<figure${attrStr}>\n${parts.join('\n')}\n${pad2}</figure>`
     }
     case 'line-block': {

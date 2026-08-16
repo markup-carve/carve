@@ -118,7 +118,7 @@ the command-line and editor behavior stay aligned.
 | `figure-group-nested` | a `::: figure` opener inside a composite figure's body; nesting is rejected (PART 9 §4c), so the inner fence stays a generic container |
 | `figure-group-opener-metadata` | a `::: figure` opener carrying a quoted title or `[label]`; the figure production takes neither, so the fence stays a generic container with both preserved (PART 9 §4c) |
 | `figure-group-panel-number` | a `#` placeholder in a PANEL caption; panels are not sequence units, so the placeholder stays a literal `#` (PART 9 §4c) - number the group caption instead |
-| `figure-group-empty` | a `::: figure` group with no captionable panel; the panels wrapper renders around the preserved content only (PART 9 §4c) |
+| `figure-group-empty` | a `::: figure` group with no captionable panel; the group figure holds only the preserved content (PART 9 §4c) |
 | `figure-group-single-panel` | a `::: figure` group holding a single panel; a plain captioned figure renders the same content without the group wrapper (PART 9 §4c) |
 
 ### Declaring a target version

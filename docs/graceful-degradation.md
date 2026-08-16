@@ -48,7 +48,7 @@ The table reflects the reference engines' renderer behavior.
 | Footnotes | jump links | print-native footnotes; `[^id]` preserved in Markdown | degrades natively |
 | Links / autolinks | clickable | clickable in PDF; URL preserved in plain text | degrades natively |
 | Cross-references / TOC | anchor links | internal PDF links; anchors preserved in Markdown | degrades natively |
-| Composite figure (`::: figure`) | one `<figure>` with a panels `<div>` and a group `<figcaption>`; layout hints (`columns-2`) pass through as classes | Markdown: panels in order, panel captions as `*(...)*`, group caption last as `**...**`; plain/terminal: group caption first, then each panel's caption + host degradation | normative - PART 9 §4c + the writer/degradation clause in PART 11 |
+| Composite figure (`::: figure`) | one `<figure>` holding the panel figures directly plus a group `<figcaption>`; layout hints (`columns-2`) pass through as classes | Markdown: panels in order, panel captions as `*(...)*`, group caption last as `**...**`; plain/terminal: group caption first, then each panel's caption + host degradation | normative - PART 9 §4c + the writer/degradation clause in PART 11 |
 
 The composite figure's contract is the floor applied with no exceptions: every
 panel, every panel caption, any stray content between the panels, and the group

@@ -24,3 +24,17 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+
+# PART 9 §4c wrapper removal (carve#1122): panels nest directly in the group
+# figure; the pinned carve-js still wraps them in the withdrawn
+# `<div class="carve-figure-panels">`. Clears with the engine updates and a
+# pin bump.
+318-composite-figures  §4c wrapper removal; the pin still emits the panels div
+318-composite-figures-2  §4c wrapper removal; the pin still emits the panels div
+318-composite-figures-3  §4c wrapper removal; the pin still emits the panels div
+318-composite-figures-4  §4c wrapper removal; the pin still emits the panels div
+318-composite-figures-5  §4c wrapper removal; the pin still emits the panels div
+318-composite-figures-6  §4c wrapper removal; the pin still emits the panels div
+318-composite-figures-9  §4c wrapper removal; the pin still emits the panels div
+318-composite-figures-10  §4c wrapper removal; the pin still emits the panels div
+318-composite-figures-11  §4c wrapper removal; the pin still emits the panels div
