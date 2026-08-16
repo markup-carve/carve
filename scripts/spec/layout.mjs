@@ -966,6 +966,46 @@ function startsVisibleBlock(line) {
   return HEADING.test(line) || HR.test(line) || QUOTE.test(line) || DEFLIST_TERM.test(line)
 }
 
+/*
+ * DOES THIS LINE LEAVE A PARAGRAPH OPEN? -- PART 1 S4, NO OPEN PARAGRAPH, NO
+ * LAZY LINE.
+ *
+ * S4's lazy branch asks one question and only one: does ANY container in the
+ * open stack hold an OPEN PARAGRAPH. Everything else about the unmatched
+ * container is irrelevant, which S4 says outright ("the fence kind is not a
+ * parameter"). So the item collector needs the same predicate a paragraph
+ * tracker anywhere else needs, and it needs it for the MARKER LINE too - the
+ * marker line's content is the item's first block, and a heading, a table, a
+ * break or a definition is not a paragraph however it got there.
+ *
+ * This existed only as a QUOTE special case, so `- # H` recorded an open
+ * paragraph and a following column-0 line folded into an item that had none.
+ * That was the whole of carve#1280: eight of eleven last-child kinds folded in
+ * a list item and ended in a block quote, on a rule that names neither
+ * container.
+ *
+ * A colon fence is deliberately absent: its BODY can hold a paragraph, so the
+ * answer depends on what is inside it rather than on the opener, and S4 works
+ * that case separately. A code fence is absent for the opposite reason - the
+ * collector breaks on an open opaque body before it ever asks.
+ */
+function opensParagraph(text) {
+  if (text.trim() === '') return false
+  // A quote is asked the SAME question about what it carries, recursively. An
+  // empty quote opens nothing, and neither does `> # H` - the answer is the
+  // quote's own last block, not merely whether the quote had any content. This
+  // used to test non-emptiness alone, so `- > # H` / `tail` folded the tail into
+  // the ITEM with no paragraph open anywhere in the stack.
+  if (QUOTE.test(text)) return opensParagraph((QUOTE.exec(text)[1] ?? ''))
+  if (HEADING.test(text) || HR.test(text)) return false
+  if (COMMENT_LINE.test(text) || COMMENT_FENCE_BODY.test(text)) return false
+  if (isTableRow(text) || CONT_ROW.test(text)) return false
+  if (FOOTNOTE_DEF.test(text) || isLinkDef(text)) return false
+  if (tryAttrLine([text], 0)) return false
+
+  return true
+}
+
 // A sub-BLOCK attached to an open list item after a blank line: it nests and
 // leaves the list TIGHT (SS17 L2), unlike a second paragraph, which loosens it
 // (SS17 L1). Colon fences and table rows count -- they are blocks, not prose.
@@ -2225,8 +2265,22 @@ function collectItems(lines, i, list, state, ind, meas) {
     // (§17 L1b). The next PARAGRAPH closes the separation and loosens.
     let pendingSeparation = false
     {
-      const headText = head.text.trim()
-      if (QUOTE.test(headText)) { if ((QUOTE.exec(headText)[1] ?? '').trim() !== '') startPara(); else closePara() }
+      // The marker line's content is the item's FIRST BLOCK, so it answers S4's
+      // question exactly as any other line does. Only the quote spelling was
+      // asked before, which left `- # H`, `- | a | b |`, `- ---`, `- %% c`,
+      // `- [r]: u`, `- [^f]: t` and `- {.k}` recording an open paragraph they do
+      // not have -- and a column-0 line then folded into an item with nothing to
+      // fold into (carve#1280).
+      //
+      // A WRAPPED attribute block (`- {.a` / `  .b}`) is deliberately not
+      // reached here. Its opener leaves no paragraph open either, but its
+      // continuation line arrives at the item's CONTENT COLUMN, where the
+      // classifier below reopens the paragraph on any non-empty residue - so
+      // deciding it needs the content-column half of this rule, which carve#1280
+      // leaves open. Handing this seed a multi-line window alone changes no
+      // output, and a predicate that looks right while deciding nothing is worse
+      // than one that plainly does not reach the case.
+      if (!opensParagraph(head.text.trim())) closePara()
     }
     // Content column of the FIRST sub-list opened in this item (-1 = none). A
     // blank followed by content at or past this column belongs to the sub-list,

@@ -1,0 +1,166 @@
+A column-0 line after a container's last block, when that block left no paragraph open
+
+```
+- # H
+tail
+.
+<ul>
+  <li>
+    <h1 id="H">H</h1>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+> # H
+tail
+.
+<blockquote>
+  <h1 id="H">H</h1>
+</blockquote>
+<p>tail</p>
+```
+
+```
+- | a | b |
+tail
+.
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a</td><td>b</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- ---
+tail
+.
+<ul>
+  <li>
+    <hr>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- %% c
+tail
+.
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+```
+
+```
+- %%%
+c
+%%%
+tail
+.
+<ul>
+  <li></li>
+</ul>
+<p>c</p>
+<p>tail</p>
+```
+
+```
+- [r]: /u
+tail
+
+[r][]
+.
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+<p><a href="/u">r</a></p>
+```
+
+```
+- [^f]: t
+tail
+
+see[^f]
+.
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>t<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- {.k}
+tail
+.
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+```
+
+```
+- # H
+- next
+.
+<ul>
+  <li>
+    <h1 id="H">H</h1>
+  </li>
+  <li>next</li>
+</ul>
+```
+
+```
+- > # H
+tail
+.
+<ul>
+  <li>
+    <blockquote>
+      <h1 id="H">H</h1>
+    </blockquote>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- > q
+tail
+.
+<ul>
+  <li>
+    <blockquote><p>q
+tail</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- a
+tail
+.
+<ul>
+  <li>a
+tail</li>
+</ul>
+```

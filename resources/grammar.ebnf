@@ -199,6 +199,49 @@
         implementation does not follow it is worth flagging when it lands, not
         when someone next reads it. (carve#561, carve#572)
 
+        THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST BLOCK -- NORMATIVE
+        (carve#1280). The clause above is spelled with an empty quote, which
+        reads as though EMPTINESS were the property doing the work. It is not,
+        any more than verbatimness is two clauses down. The parameter is the
+        one S4 names: does any container in the open stack hold an OPEN
+        PARAGRAPH. A block that leaves none leaves none wherever it was
+        written, and `- # H` writes a HEADING as the item's first block exactly
+        as `- ` plus an indented `# H` would. So each of
+
+            - # H          - | a | b |          - ---
+            tail           tail                 tail
+
+            - %% c         - [r]: /u            - [^f]: t
+            tail           tail                 tail
+
+            - {.k}
+            tail
+
+        ends its item and leaves `tail` a top-level paragraph, and each is the
+        SAME derivation the block-quote spelling already gets: `> # H` / `tail`
+        ends the quote in every engine today. Only `- > q` / `tail` and `- a` /
+        `tail` fold, because those two are the ones with a paragraph open.
+
+        A definition still gets collected from where it was written (SS17 L6);
+        ending the item disposes of the FOLLOWING line, not of the definition.
+
+        The question is asked of a QUOTE recursively. `- > q` / `tail` folds
+        because the quote ends on an open paragraph; `- > # H` / `tail` does
+        not, because it ends on a heading. Non-emptiness is not the test - a
+        quote is a container like any other and its own last block answers.
+
+        Every engine folded the eight shapes above in a list item while ending
+        all of them in a block quote, on a rule that names neither container,
+        and the executable spec in scripts/spec did the same - so this repo's
+        implementation moves with them. The rule reaches the item's CONTENT
+        COLUMN too (`- a` / blank / `  # H` / `tail`), but no engine was
+        measured there and corpus 75-list-nesting-and-looseness-4 pins the
+        folding answer for a nested spelling of it, so that half is deliberately
+        NOT decided here and stays open. A WRAPPED attribute block (`- {.a` /
+        `  .b}` / `tail`) belongs to that same open half: its opener leaves no
+        paragraph open, but its continuation line arrives at the content column
+        and is what reopens one. (carve#1280)
+
         A FENCED BODY IS NOT A PARAGRAPH -- NORMATIVE (carve#646). The same
         rule, with the unmatched container's last block a CODE FENCE opened on
         the marker line itself:

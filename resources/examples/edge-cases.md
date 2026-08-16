@@ -19034,3 +19034,296 @@ attribute line produced:
 ```
 
 :::
+
+## A column-0 line after a container's last block, when that block left no paragraph open
+
+PART 1 S4's *NO OPEN PARAGRAPH, NO LAZY LINE* is pinned above for an empty
+quote, which reads as though EMPTINESS were the property doing the work. It is
+not. The parameter S4 names is whether any container in the open stack holds an
+**open paragraph**, and a block that leaves none leaves none wherever it was
+written: `- # H` puts a heading in the item exactly as an indented `# H` would.
+
+So a flush-left line after a heading, a table, a break, a comment, a definition
+or an attribute block ends the item, and each of these is the same derivation a
+block quote already got in every engine (markup-carve/carve#1280).
+
+A heading is a bounded title. Nothing is open after it:
+
+::: compare
+
+```carve
+- # H
+tail
+```
+
+```html
+<ul>
+  <li>
+    <h1 id="H">H</h1>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+The block quote spelling of the same document, which every engine already read
+this way. The two containers are one rule, and this is the pair that says so:
+
+::: compare
+
+```carve
+> # H
+tail
+```
+
+```html
+<blockquote>
+  <h1 id="H">H</h1>
+</blockquote>
+<p>tail</p>
+```
+
+:::
+
+A table ends at its last row:
+
+::: compare
+
+```carve
+- | a | b |
+tail
+```
+
+```html
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a</td><td>b</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+A thematic break holds nothing at all:
+
+::: compare
+
+```carve
+- ---
+tail
+```
+
+```html
+<ul>
+  <li>
+    <hr>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+A comment is invisible, and invisible is not open. The item renders empty rather
+than absorbing the line below it:
+
+::: compare
+
+```carve
+- %% c
+tail
+```
+
+```html
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+The fence spelling of a comment answers the same way. Its closer travels with
+its opener, and what follows the closer is outside the item:
+
+::: compare
+
+````carve
+- %%%
+c
+%%%
+tail
+````
+
+```html
+<ul>
+  <li></li>
+</ul>
+<p>c</p>
+<p>tail</p>
+```
+
+:::
+
+A link reference definition is metadata. Ending the item disposes of the line
+BELOW it, never of the definition itself - §17 L6 collects that from wherever it
+was written, and the use below still resolves:
+
+::: compare
+
+```carve
+- [r]: /u
+tail
+
+[r][]
+```
+
+```html
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+<p><a href="/u">r</a></p>
+```
+
+:::
+
+A footnote definition, the same both ways:
+
+::: compare
+
+```carve
+- [^f]: t
+tail
+
+see[^f]
+```
+
+```html
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>t<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+An attribute block opens no paragraph either, so it never reaches the line below
+- the item ends first, and the attribute is left unconsumed:
+
+::: compare
+
+```carve
+- {.k}
+tail
+```
+
+```html
+<ul>
+  <li></li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+A sibling marker after the same shape still opens a sibling, which is the
+control for "the item ended" rather than "the item swallowed something":
+
+::: compare
+
+```carve
+- # H
+- next
+```
+
+```html
+<ul>
+  <li>
+    <h1 id="H">H</h1>
+  </li>
+  <li>next</li>
+</ul>
+```
+
+:::
+
+The question is asked of a quote RECURSIVELY, so a quote is not automatically an
+open paragraph either - what decides is the block the quote itself ends on:
+
+::: compare
+
+```carve
+- > # H
+tail
+```
+
+```html
+<ul>
+  <li>
+    <blockquote>
+      <h1 id="H">H</h1>
+    </blockquote>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+### The two that still fold, because a paragraph IS open
+
+The rule has one parameter, so the controls are the documents where that
+parameter has the other value. A nested quote's trailing paragraph is open, and
+the line folds into it:
+
+::: compare
+
+```carve
+- > q
+tail
+```
+
+```html
+<ul>
+  <li>
+    <blockquote><p>q
+tail</p></blockquote>
+  </li>
+</ul>
+```
+
+:::
+
+And plain lead text is the ordinary lazy continuation, untouched by any of this:
+
+::: compare
+
+```carve
+- a
+tail
+```
+
+```html
+<ul>
+  <li>a
+tail</li>
+</ul>
+```
+
+:::
