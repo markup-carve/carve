@@ -657,10 +657,12 @@ rather than a parser one.
 
 Optional raw output:
 
-This run covers the whole optional corpus, so it carries no
-added-since-this-run declaration. When the corpus next grows ahead of a run,
-that declaration comes back: it names the cases and carries no count, so there
-is nothing in it to fabricate, and
+Optional corpus added since this run: `42-list-table-header-rows-cols`.
+
+It pins `{header-rows}` / `{header-cols}` on a list table and landed after the
+run above was taken, so the corpus is one case ahead of it again. The
+declaration is the same device the core block uses: it names the cases and
+carries no count, so there is nothing in it to fabricate, and
 `tests/implementation-comparison-counts.test.mjs` fails both when a named case
 stops existing and when the run is retaken without deleting the line.
 
