@@ -1047,49 +1047,62 @@ function startsVisibleBlock(line) {
  * answer depends on what is inside it rather than on the opener, and S4 works
  * that case separately. A code fence is absent for the opposite reason - the
  * collector breaks on an open opaque body before it ever asks.
+ *
+ * `atBlockPosition` says the caller knows this text sits where a BLOCK OPENER
+ * is recognized, so a marker on it really opens a nested item. It is off by
+ * default because one caller cannot promise that: a `dd` body's last line may
+ * be marker-SHAPED text that folded into the body's open paragraph (§10 I2 -
+ * list markers never interrupt), and reading `:  a` / `   - # H` as a nested
+ * list there moved a `tail` out of the `<dd>`.
+ *
+ * The peel is a LOOP rather than a self-call. §26 refuses pathological nesting
+ * and this predicate runs before the parser can apply that budget, so a single
+ * line of ~10k stacked markers overflowed the JS stack instead of being
+ * refused - a crash where the module's own contract promises a Refuse.
  */
-function opensParagraph(text) {
-  if (text.trim() === '') return false
-  // A quote is asked the SAME question about what it carries, recursively. An
-  // empty quote opens nothing, and neither does `> # H` - the answer is the
-  // quote's own last block, not merely whether the quote had any content. This
-  // used to test non-emptiness alone, so `- > # H` / `tail` folded the tail into
-  // the ITEM with no paragraph open anywhere in the stack.
-  if (QUOTE.test(text)) return opensParagraph((QUOTE.exec(text)[1] ?? ''))
-  if (HEADING.test(text) || HR.test(text)) return false
-  // A LIST MARKER is asked the SAME question about what it carries, for the
-  // same reason a quote is, and S4's clause names this case outright: the rule
-  // "binds even where the unmatched container is a LIST ITEM whose last block
-  // is a container". A nested item is that container, so `- # H` opens no
-  // paragraph and neither does the `- - # H` that carries it.
-  //
-  // Asked of the marker LINE instead of its content, the answer was prose
-  // every time, which is why depth 1 was already right and depth 2 was not:
-  // `- # H` reached this predicate as `# H` and closed, `- - # H` reached it as
-  // `- # H` and did not. `- - - # H` folded exactly one level in, the tell that
-  // one turn of the recursion was missing rather than the whole rule.
-  //
-  // Asked only of text that is already AT its block position. The quote
-  // recursion and the `dd` body hand over lines that may still carry
-  // indentation, and an indented marker is a different question - whether a
-  // list opens there at all is the column rule, not this one. So a
-  // whitespace-led line keeps the answer it has always had here rather than
-  // borrowing this branch's. (`matchMarkerAt` would refuse it outright: it
-  // requires the indentation to be measured rather than re-matched.)
-  //
-  // HR is tested first and stays first: `---` is a break, not a bullet with no
-  // content. BULLET cannot match it anyway - it wants a space after the marker
-  // character - so the order is belt and braces.
-  if (text[0] !== ' ' && text[0] !== '\t') {
-    const nm = matchMarkerAt({ col: 0, rest: text })
-    if (nm) return opensParagraph(nm.text.trim())
-  }
-  if (COMMENT_LINE.test(text) || COMMENT_FENCE_BODY.test(text)) return false
-  if (isTableRow(text) || CONT_ROW.test(text)) return false
-  if (FOOTNOTE_DEF.test(text) || isLinkDef(text)) return false
-  if (tryAttrLine([text], 0)) return false
+function opensParagraph(text, atBlockPosition = false) {
+  for (;;) {
+    if (text.trim() === '') return false
+    // A quote is asked the SAME question about what it carries. An empty quote
+    // opens nothing, and neither does `> # H` - the answer is the quote's own
+    // last block, not merely whether the quote had any content. This used to
+    // test non-emptiness alone, so `- > # H` / `tail` folded the tail into the
+    // ITEM with no paragraph open anywhere in the stack. A quote's content is
+    // at a block position exactly when the quote itself is, so the flag rides
+    // along unchanged.
+    if (QUOTE.test(text)) { text = QUOTE.exec(text)[1] ?? ''; continue }
+    if (HEADING.test(text) || HR.test(text)) return false
+    // A LIST MARKER is asked the SAME question about what it carries, for the
+    // same reason a quote is, and S4's clause names this case outright: the
+    // rule "binds even where the unmatched container is a LIST ITEM whose last
+    // block is a container". A nested item is that container, so `- # H` opens
+    // no paragraph and neither does the `- - # H` that carries it.
+    //
+    // Asked of the marker LINE instead of its content, the answer was prose
+    // every time, which is why depth 1 was already right and depth 2 was not:
+    // `- # H` reached this predicate as `# H` and closed, `- - # H` reached it
+    // as `- # H` and did not. `- - - # H` folded exactly one level in, the tell
+    // that one turn of the peel was missing rather than the whole rule.
+    //
+    // The leading-whitespace guard is `matchMarkerAt`'s own precondition: it
+    // requires the indentation to be measured rather than re-matched, and an
+    // indented marker is a different question anyway - whether a list opens
+    // there at all is the column rule, not this one.
+    //
+    // HR is tested first and stays first: `---` is a break, not a bullet with
+    // no content. BULLET cannot match it anyway - it wants a space after the
+    // marker character - so the order is belt and braces.
+    if (atBlockPosition && text[0] !== ' ' && text[0] !== '\t') {
+      const nm = matchMarkerAt({ col: 0, rest: text })
+      if (nm) { text = nm.text.trim(); continue }
+    }
+    if (COMMENT_LINE.test(text) || COMMENT_FENCE_BODY.test(text)) return false
+    if (isTableRow(text) || CONT_ROW.test(text)) return false
+    if (FOOTNOTE_DEF.test(text) || isLinkDef(text)) return false
+    if (tryAttrLine([text], 0)) return false
 
-  return true
+    return true
+  }
 }
 
 /*
@@ -2472,7 +2485,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // leaves open. Handing this seed a multi-line window alone changes no
       // output, and a predicate that looks right while deciding nothing is worse
       // than one that plainly does not reach the case.
-      if (!opensParagraph(head.text.trim())) closePara()
+      if (!opensParagraph(head.text.trim(), true)) closePara()
     }
     // Content column of the FIRST sub-list opened in this item (-1 = none). A
     // blank followed by content at or past this column belongs to the sub-list,
@@ -2809,7 +2822,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         // the marker-line seed carve#1280 fixed, and it survived because that
         // fix reached only the marker line.
         else if (matchMarkerAt(dmeas)) {
-          if (opensParagraph(dmeas.rest)) startPara()
+          if (opensParagraph(dmeas.rest, true)) startPara()
           else closePara()
         }
         // A quote opens a paragraph only if it CARRIES one. A bare `>` is an
