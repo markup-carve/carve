@@ -1,0 +1,14 @@
+A comment fence opened on an item's marker line hides its body too
+
+```
+- %%%
+  [r]: /url
+  %%%
+
+[r][]
+.
+<ul>
+  <li></li>
+</ul>
+<p>[r][]</p>
+```

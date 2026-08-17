@@ -288,6 +288,13 @@ index: examples/edge-cases/index.md
   a-comment-fence-is-a-comment-at-any-column-too
   a-comment-under-a-nested-item-does-not-close-it
   a-definition-inside-a-comment-registers-nothing
+  a-comment-fence-at-an-item-s-content-column-registers-nothing-either
+  a-footnote-definition-inside-an-item-s-comment-registers-nothing
+  a-comment-fence-opened-on-an-item-s-marker-line-hides-its-body-too
+  a-comment-fence-one-item-deeper-registers-nothing-either
+  a-wider-comment-fence-inside-an-item-hides-its-body-the-same-way
+  an-abbreviation-inside-a-comment-defines-nothing
+  a-comment-fence-inside-a-colon-container-registers-nothing
   a-blank-after-a-comment-still-ends-the-item
   a-comment-fence-under-a-nested-item-does-not-close-it-either
   a-comment-ends-the-paragraph-it-sits-under

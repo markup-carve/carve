@@ -123,7 +123,23 @@ under the same semantic-span rule,
 `331-an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block`,
 `332-which-inline-content-a-heading-id-is-derived-from`,
 `333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe`,
-`334-a-label-beginning-with-an-at-sign-is-not-a-reference-label`.
+`334-a-label-beginning-with-an-at-sign-is-not-a-reference-label`,
+`335-a-comment-fence-at-an-item-s-content-column-registers-nothing-either`,
+`336-a-footnote-definition-inside-an-item-s-comment-registers-nothing`,
+`337-a-comment-fence-opened-on-an-item-s-marker-line-hides-its-body-too`,
+`338-a-comment-fence-one-item-deeper-registers-nothing-either`,
+`339-a-wider-comment-fence-inside-an-item-hides-its-body-the-same-way`,
+`340-an-abbreviation-inside-a-comment-defines-nothing`,
+`341-a-comment-fence-inside-a-colon-container-registers-nothing`.
+
+The last seven are a different kind of lag and are declared rather than
+measured in for a different reason: the host that added them HAD all three
+checkouts, and two of the engines fail six of the seven on purpose. They pin a
+rule carve-rs and carve-php had drifted from (carve#1309,
+markup-carve/carve-rs#1047, markup-carve/carve-php#1349), so retaking the run
+here would publish a snapshot whose mismatch counts describe a window two open
+fixes are closing, and it would go stale the day either lands. The window is
+named instead, which is what the declaration is for.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
