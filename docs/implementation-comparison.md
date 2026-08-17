@@ -132,24 +132,25 @@ under the same semantic-span rule,
 `340-an-abbreviation-inside-a-comment-defines-nothing`,
 `341-a-comment-fence-inside-a-colon-container-registers-nothing`.
 
-The last seven are a different kind of lag and are declared rather than
-measured in for a different reason: the host that added them HAD all three
-checkouts, and two of the engines fail six of the seven on purpose. They pin a
-rule carve-rs and carve-php had drifted from (carve#1309,
-markup-carve/carve-rs#1047, markup-carve/carve-php#1349), so retaking the run
-here would publish a snapshot whose mismatch counts describe a window two open
-fixes are closing, and it would go stale the day either lands. The window is
-named instead, which is what the declaration is for.
-
-Those categories landed on hosts that could not retake the run above, so its
-numbers describe the corpus WITHOUT them. The alternative was to edit the
-denominators by hand, which would have published a three-engine measurement
-nobody took - and one that is knowably wrong: all three engines still accept a
+Every category up to and including `334` landed on a host that could not retake
+the run above, so its numbers describe the corpus WITHOUT them. The alternative
+was to edit the denominators by hand, which would have published a
+three-engine measurement nobody took - and one that is knowably wrong: all three engines still accept a
 tab in every table-cell padding slot (measured on carve-js, carve-php and
 carve-rs main under carve#904 - every tab form renders byte-identical to its
 space form), and carve-js and carve-php still read a title after a tab at every
 form of the `link_title` slot (measured under carve#907 on carve-js `3d95e94`
 and carve-php `876e312`).
+
+`335` THROUGH `341` ARE A SECOND KIND OF LAG, and they are declared for a
+different reason than every category before them. The host that added them HAD
+all three checkouts and could have retaken the run. It did not, because two of
+the engines fail six of the seven ON PURPOSE: those documents pin a rule
+carve-rs and carve-php had drifted from (carve#1309, markup-carve/carve-rs#1047,
+markup-carve/carve-php#1349), so a retaken snapshot's mismatch counts would
+describe a window two open fixes are closing, and would go stale the day either
+one lands. Naming the window is what the declaration is for, and here it is the
+honest line where a fresh measurement would be the misleading one.
 
 A CATEGORY THAT ALREADY EXISTED CAN GO STALE TOO, and the declaration above
 cannot say so - it names categories ADDED since the run, and its count is
