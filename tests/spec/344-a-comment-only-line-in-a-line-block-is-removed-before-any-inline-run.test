@@ -1,0 +1,55 @@
+A comment-only line in a line block is removed before any inline run
+
+```
+::: |
+a `b
+%% secret
+c
+:::
+.
+<div class="line-block">
+  <p>a <code>b
+
+c</code></p>
+</div>
+```
+
+```
+::: |
+a
+%% secret
+c
+:::
+.
+<div class="line-block">
+  <p>a<br>
+<br>
+c</p>
+</div>
+```
+
+```
+::: |
+a `b
+x %% secret
+c
+:::
+.
+<div class="line-block">
+  <p>a <code>b
+x %% secret
+c</code></p>
+</div>
+```
+
+```
+::: |
+a
+%% c
+:::
+.
+<div class="line-block">
+  <p>a<br>
+</p>
+</div>
+```

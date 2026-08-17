@@ -132,7 +132,9 @@ under the same semantic-span rule,
 `340-an-abbreviation-inside-a-comment-defines-nothing`,
 `341-a-comment-fence-inside-a-colon-container-registers-nothing`,
 `342-url-list-attributes-are-probed-token-wise`,
-`343-an-escaped-hash-keeps-its-escape-at-a-container-s-content-position`.
+`343-an-escaped-hash-keeps-its-escape-at-a-container-s-content-position`,
+`344-a-comment-only-line-in-a-line-block-is-removed-before-any-inline-run`,
+`345-a-line-block-s-hard-break-keeps-its-backslash`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative

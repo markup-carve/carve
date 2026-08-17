@@ -8,3 +8,7 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+344-a-comment-only-line-in-a-line-block-is-removed-before-any-inline-run-2  carve#1333: a verse comment is already a `comment` node in the pin, so the canonical form is the source itself; the pin instead re-emits the marker with a LEADING SPACE, which PART 9 section 23 makes ordinary verse text, so the comment comes back visible.
+344-a-comment-only-line-in-a-line-block-is-removed-before-any-inline-run-4  carve#1333: the same leading space, on the shape where the comment ends the stanza.
+345-a-line-block-s-hard-break-keeps-its-backslash  carve#1334: the pin spells every line-block hard break as a bare newline, so it drops the backslash and PART 2 then strips the space the backslash was holding interior. PART 11 section 7c is the fix.
+345-a-line-block-s-hard-break-keeps-its-backslash-2  carve#1334: the same writer rule, with a worse loss - the backslash-only line comes back as a BLANK line, which ends the stanza, so one stanza is returned as two.
