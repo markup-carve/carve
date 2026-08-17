@@ -19635,6 +19635,124 @@ scoped to the container that holds it* below, and every engine already read it
 that way. That the two containers disagreed is what makes the item spelling a
 defect rather than a second reading.
 
+### A continuation-row SHAPE is prose until a table is above it
+
+Every construct above answers S4 by its shape, and one construct cannot. §5 T6
+says a table "cannot BEGIN with a continuation row", so a `+ ...|` line reached
+where no table is open is not a row at all - it is ordinary paragraph text.
+*A continuation row needs a body row* pins that already at the document level,
+where the row that cannot attach renders as a paragraph.
+
+A marker line is its container's FIRST block, so nothing is ever above it, and
+the line is prose there by construction. The item below publishes it as prose -
+and then, read by shape alone, told S4 it was a table row, so the item held no
+open paragraph and `tail` left it. Prose where it renders, a row where it is
+asked about (markup-carve/carve#1345):
+
+::: compare
+
+```carve
+- + a |
+tail
+```
+
+```html
+<ul>
+  <li>+ a |
+tail</li>
+</ul>
+```
+
+:::
+
+The nested spelling reaches the same first block by the same peel the heading
+above uses, and answers the same way:
+
+::: compare
+
+```carve
+- - + a |
+tail
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>+ a |
+tail</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+At the item's CONTENT COLUMN there is a line above, so the question is real
+rather than settled by position - and a paragraph is not a table. The line joins
+that paragraph, and `tail` joins it too:
+
+::: compare
+
+```carve
+- a
+  + b |
+tail
+```
+
+```html
+<ul>
+  <li>a
++ b |
+tail</li>
+</ul>
+```
+
+:::
+
+A definition body is the third container that asks, and it asks about its last
+line. As that body's only line, the shape is prose for the marker line's reason:
+
+::: compare
+
+```carve
+:: t
+:  + a |
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>+ a |
+tail</dd>
+</dl>
+```
+
+:::
+
+And a line above it is not enough - what the rule wants above it is a TABLE:
+
+::: compare
+
+```carve
+:: t
+:  a
+   + b |
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>a
++ b |
+tail</dd>
+</dl>
+```
+
+:::
+
 ## A continuation marker attaches one block, and the boundary is that block's extent
 
 §17 L3 says it in capitals: a `+` attaches "the FOLLOWING flush-left block to

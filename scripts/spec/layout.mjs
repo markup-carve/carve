@@ -884,6 +884,44 @@ const COMMENT_FENCE_BODY = /^(%{3,})(.*)$/
 const CONT_ROW = /^\+.*\|[ \t]*$/ // `+` replaces the leading pipe; must close with one
 const DELIM_CELL = /^ *:?-+:? *$/
 
+/*
+ * IS THIS LINE A CONTINUATION ROW? -- PART 9 SS5 T6, and PART 2 `table`.
+ *
+ * The SHAPE does not answer on its own. A continuation row exists only relative
+ * to a table ABOVE it: T6 says a table "cannot BEGIN with a continuation row",
+ * and the block reader says the same thing operationally - it enters a table
+ * run on `isTableRow` alone, so a `+ ...|` line reached anywhere else falls
+ * through to the paragraph collector and is published as ordinary prose.
+ *
+ * `isTableRow` needs no such parameter, and that asymmetry is what hid this: a
+ * `|`-delimited row OPENS a table by itself, so for a standard row the shape IS
+ * the context.
+ *
+ * The other `+` - SS17 L3's continuation MARKER - disambiguates by being alone
+ * on its line. T6 cannot borrow that rule, because a continuation row REQUIRES
+ * cells after the `+`, so it leans entirely on what is above it.
+ *
+ * Classified by shape, the oracle contradicted itself inside one document.
+ * `- + a |` / `tail` published the marker line as paragraph text and then told
+ * PART 1 S4 the same line was a table row, so S4 found no open paragraph and
+ * `tail` left the item, where every engine folds it in (carve#1345). Both
+ * answers come from here now.
+ */
+const isContinuationRow = (text, tableOpen) => tableOpen && CONT_ROW.test(text)
+
+/*
+ * ONE STEP OF A TABLE RUN. A row opens it, a continuation row extends it, and
+ * any other line - a blank included - ends it, which is the run the block
+ * reader's own table loop walks.
+ *
+ * `tableOpenAfter` folds it over a whole body. The list-item collector folds
+ * the same step one pushed line at a time instead, because it sees its body
+ * incrementally and re-walking that body per line is quadratic over a long
+ * continuation run.
+ */
+const tableRunStep = (open, line) => isTableRow(line) || isContinuationRow(line, open)
+const tableOpenAfter = (lines) => lines.reduce(tableRunStep, false)
+
 // A table cell's padding slots are `space` runs, not whitespace runs
 // (grammar.ebnf `delimiter_cell`, `header_cell`, `data_cell`, `rowspan_marker`,
 // `colspan_marker`). They sit after the row's opening `|`, so they are INLINE,
@@ -1063,8 +1101,14 @@ function startsVisibleBlock(line) {
  * MAX_NESTING_DEPTH an opener DEGRADES to literal paragraph text, so a peel
  * that reaches the cap is looking at prose and says so.
  */
-function opensParagraph(text, atBlockPosition = false) {
+function opensParagraph(text, atBlockPosition = false, tableOpen = false) {
   let budget = MAX_NESTING_DEPTH
+  // Whether a table is open ABOVE this line, which is the one thing the shape of
+  // a continuation row cannot tell (see `isContinuationRow`). It does not
+  // survive a peel: what a quote or a marker carries is that container's FIRST
+  // block, and a table written above the container is not written above the
+  // container's first line.
+  let openTable = tableOpen
   for (;;) {
     if (text.trim() === '') return false
     // A quote is asked the SAME question about what it carries. An empty quote
@@ -1075,7 +1119,7 @@ function opensParagraph(text, atBlockPosition = false) {
     // at a block position exactly when the quote itself is, so the flag rides
     // along unchanged.
     if (budget-- <= 0) return true
-    if (QUOTE.test(text)) { text = QUOTE.exec(text)[1] ?? ''; continue }
+    if (QUOTE.test(text)) { text = QUOTE.exec(text)[1] ?? ''; openTable = false; continue }
     if (HEADING.test(text) || HR.test(text)) return false
     // A LIST MARKER is asked the SAME question about what it carries, for the
     // same reason a quote is, and S4's clause names this case outright: the
@@ -1099,10 +1143,10 @@ function opensParagraph(text, atBlockPosition = false) {
     // marker character - so the order is belt and braces.
     if (atBlockPosition && text[0] !== ' ' && text[0] !== '\t') {
       const nm = matchMarkerAt({ col: 0, rest: text })
-      if (nm) { text = nm.text.trim(); continue }
+      if (nm) { text = nm.text.trim(); openTable = false; continue }
     }
     if (COMMENT_LINE.test(text) || COMMENT_FENCE_BODY.test(text)) return false
-    if (isTableRow(text) || CONT_ROW.test(text)) return false
+    if (isTableRow(text) || isContinuationRow(text, openTable)) return false
     if (FOOTNOTE_DEF.test(text) || isLinkDef(text)) return false
     if (tryAttrLine([text], 0)) return false
 
@@ -1123,6 +1167,10 @@ function opensParagraph(text, atBlockPosition = false) {
  * line, because A5 lets one attribute block WRAP: a body ending `{.k` / `#x}`
  * has a closing brace on its last line and is still one attribute block, and
  * classifying that line alone reads it as prose.
+ *
+ * The body is also where the CONTINUATION-ROW context comes from. `+ a |` as a
+ * body's only line is prose and holds an open paragraph; the same line under a
+ * table row is that table's last row and holds none.
  */
 function bodyLeavesParagraphOpen(bodyLines) {
   let last = -1
@@ -1138,7 +1186,7 @@ function bodyLeavesParagraphOpen(bodyLines) {
     if (al && al.next === last + 1) return false
   }
 
-  return opensParagraph(bodyLines[last])
+  return opensParagraph(bodyLines[last], false, tableOpenAfter(bodyLines.slice(0, last)))
 }
 
 // A sub-BLOCK attached to an open list item after a blank line: it nests and
@@ -2445,7 +2493,17 @@ function collectItems(lines, i, list, state, ind, meas) {
     // synthesized, or one whose run held a tab - and the inner parse walks it
     // once. Every push goes through `pushLine` so the two arrays cannot drift.
     const itemMeas = []
-    const pushLine = (text, m = null) => { itemLines.push(text); itemMeas.push(m) }
+    // Is a TABLE open at the end of the body collected so far? The context a
+    // `+ ...|` line needs before it can be a continuation row (§5 T6, see
+    // `isContinuationRow`), advanced by `tableRunStep` on every line that joins
+    // the body - the MARKER line included, since that line is the item's first
+    // block, and the blank a blank-line branch pushes, which ends the run.
+    let tableOpen = false
+    const pushLine = (text, m = null) => {
+      itemLines.push(text)
+      itemMeas.push(m)
+      tableOpen = tableRunStep(tableOpen, text)
+    }
     pushLine(head.text)
     const item = { }
     if (head.attrs && head.attrs.replace(/[{} ]/g, '') !== '') item.attrs = head.attrs
@@ -2781,6 +2839,10 @@ function collectItems(lines, i, list, state, ind, meas) {
         // parse - `parseListRun` consumes it for a sub-list whose marker
         // column it sits at, and the block reader below leaves every other one
         // as text (carve#863).
+        //
+        // Read BEFORE the push, because the push advances the table run past
+        // this very line: `isContinuationRow` is asked what was open ABOVE it.
+        const contRow = isContinuationRow(dedented, tableOpen)
         pushLine(dedented, dmeas)
         // Advance the incremental three-kind tracker so the blank-line branch
         // above knows whether an interior blank is fence content.
@@ -2818,7 +2880,15 @@ function collectItems(lines, i, list, state, ind, meas) {
           if (colonFenceInterrupts(dedented, hasFollowingBody(lines, i), para)) closePara()
           else openParaWith(dedented)
         }
-        else if (dedented[0] === '|' || CONT_ROW.test(dedented)) closePara()
+        // A TABLE ROW closes the paragraph, and so does the continuation row
+        // that extends the table it opened. A `+ ...|` line with no table above
+        // it is neither: §5 T6 refuses to let a table BEGIN with one, so the
+        // line is prose and the paragraph it belongs to stays open. Tested by
+        // shape here, `- a` / `  + b |` / `tail` ended the item on a line every
+        // engine renders as the second line of the item's paragraph, and `tail`
+        // became a document sibling (carve#1345). Same clause, same spelling, as
+        // the marker-line seed above.
+        else if (dedented[0] === '|' || contRow) closePara()
         // A SUB-LIST MARKER opens a paragraph only if the item it opens
         // CARRIES one, which is the quote branch's rule one construct over and
         // the same clause. `- a` / `  - # H` / `p` records an open paragraph
