@@ -295,6 +295,7 @@ index: examples/edge-cases/index.md
   a-wider-comment-fence-inside-an-item-hides-its-body-the-same-way
   an-abbreviation-inside-a-comment-defines-nothing
   a-comment-fence-inside-a-colon-container-registers-nothing
+  a-comment-fence-reached-through-a-quote-registers-nothing-either
   a-blank-after-a-comment-still-ends-the-item
   a-comment-fence-under-a-nested-item-does-not-close-it-either
   a-comment-ends-the-paragraph-it-sits-under
