@@ -5161,6 +5161,63 @@ EOF = (* end of file *) ;
         spelling that would end the stanza instead. Both are observable in the
         tree and in the HTML, which is why the canonical writer may not drop
         either (PART 11 §7c).
+
+        AN INLINE CONSTRUCT IS NOT A DEPTH THE RULE STOPS AT -- NORMATIVE.
+        The subject is the SOFT break, so the only question at a boundary is
+        whether a `soft_break` NODE is there. Nothing conditions the rule on
+        what ENCLOSES that node, and an emphasis run, a link label or a
+        semantic span spanning a boundary encloses one: the newline is a node
+        BESIDE the construct's text, not part of it. So
+
+          ::: |
+          *a
+          b*
+          :::
+
+        holds `<strong>a<br>` over `b</strong>`, the same break the same two
+        lines get with no emphasis around them.
+
+        THE CONVERSION IS IN THE TREE, NOT ONLY IN THE HTML. A stanza's bare
+        newline is a `hard_break` NODE (PART 12), which is what lets PART 11
+        §7c spell one as a bare newline at all - "re-reading that newline
+        yields the SAME TREE" is a statement about nodes. So the conversion
+        runs at every depth for the same reason the render does, and an
+        engine's own AST is where the other reading is easiest to see: all
+        three yield `hard_break` between two body lines and `soft_break`
+        between the same two lines inside a `strong`, one document answered
+        two ways by an enclosure no clause names.
+
+        THE TWO EXEMPTIONS ABOVE ARE DIFFERENT IN KIND, NOT IN DEPTH, which
+        is why neither ever needed a depth stated. A backslash is exempt
+        because `hard_break` consumes its own newline. A verbatim run is
+        exempt because it carries the newline as its own CONTENT (carve#1282;
+        BUT IT DOES NOT SURVIVE A RUN THAT ATE ITS LINE below draws the
+        consequence in these words: "there is no boundary left in the tree").
+        Both leave NO NODE. A run that closes on a LATER line is exempt for
+        that same reason and not for closing, the newline being inside its
+        value either way:
+
+          ::: |
+          a `b
+          c` d
+          :::
+
+        keeps the newline as content while the emphasis above hardens. The
+        two documents differ only in WHICH CONSTRUCT spans the boundary, and
+        that is the difference the rule turns on.
+
+        WHAT THE OTHER READING COST. It made the block answer by the SPELLING
+        of a boundary, which the clause above forbids outright: all three
+        engines emit the `<br>` inside the `<strong>` for `*a\` over `b*` and
+        nothing for `*a` over `b*` - one boundary, one container, two
+        answers. It made a single stanza harden one boundary and not the next,
+        `*a` over `b*` over `c` giving a bare newline and then a `<br>`. And
+        it let any emphasized couplet lose the per-line layout this block
+        exists to preserve. Ruled at carve#1351, superseding four rows pinned
+        on carve-js#1127 whose argument was that the reference engine is
+        unambiguous (PART 0, THE EXECUTABLE ARTIFACTS DECIDE NOTHING) and
+        whose premise - that an inline construct CONSUMED the newline - the
+        `soft_break` node that same parser emits contradicts.
       - STANZAS. A blank line ends a stanza; each stanza is its own `<p>` inside
         the single `<div class="line-block">`.
       - LEADING WHITESPACE. Each body line's leading whitespace is PRESERVED
@@ -7332,10 +7389,15 @@ EOF = (* end of file *) ;
 
    7c. A LINE BLOCK'S HARD BREAK IS WRITTEN BARE ONLY WHERE THE BARE NEWLINE
       RE-DERIVES IT -- NORMATIVE. A line block hardens every line boundary of
-      its own accord (PART 9 §23), which is the whole of why the writer may
+      its own accord, AT EVERY DEPTH (PART 9 §23, AN INLINE CONSTRUCT IS NOT A
+      DEPTH THE RULE STOPS AT), which is the whole of why the writer may
       spell a `hard_break` there as a BARE NEWLINE rather than as the PART 3
-      form. The permission is not general, and it is stated as the PROPERTY it
-      rests on rather than as a list of the places it runs out:
+      form. The depth half is load-bearing and not decoration: a reading under
+      which a boundary inside an emphasis run stays soft takes the permission's
+      own premise away, and this writer rule then LOSES the break on `*a\` over
+      `b*` while claiming §1 preservation - which is what the pinned build does
+      today (carve#1351). The permission is not general, and it is stated as
+      the PROPERTY it rests on rather than as a list of the places it runs out:
 
         THE WRITER SPELLS A `hard_break` INSIDE A LINE BLOCK AS A BARE
         NEWLINE WHERE, AND ONLY WHERE, RE-READING THAT NEWLINE YIELDS THE
