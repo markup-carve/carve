@@ -1923,6 +1923,27 @@ reference_label = (character - ']' - '@'), {character - ']'} ;
    is the existing fallback reaching one more shape, which is why the ruling
    needed no new mechanism (carve#1302).
 
+   THE FALLBACK IS THE VERBATIM SOURCE RUN, NOT A RESCAN -- NORMATIVE. Which
+   one it is decides the rendering, so it cannot be left to inference. The
+   declining run is emitted as the characters the author typed; the parser does
+   NOT hand the interior back to the inline scanner. That is already the rule
+   for every other declining reference: `[t][*a*]` keeps its asterisks rather
+   than emphasizing `a`, and TRAILING ATTRIBUTES ON A DEFINITION's neighbor
+   case -- `[text][missing]{.wide}` -- keeps its braces as text rather than
+   parsing them as `attributes`, which is what carve#679 fixed by carrying the
+   SOURCE STRING through the reference sentinel instead of re-printing a parsed
+   list.
+
+   The distinction bites hardest here, because the interior is `@`-initial by
+   construction and `@a` is exactly what a rescan would claim. A rescan would
+   read `[t][@a]` as a `[t][` run, a MENTION, and a `]` -- and with the Tier-2
+   extension on it would read the now tail-less `[@a]` as a CITATION, since a
+   citation is a `[...]` holding a `@key` with no link/ref/span tail. Both
+   readings are wrong: the bracket run declined as ONE construct and is
+   restored as one, so the `@a` inside it is text and nothing else. That is
+   what the corpus rows and the optional control pin, on both sides of the
+   extension switch.
+
    THE CONTROL CARRIES THE RULE. `[@a]` on its own IS a citation with the
    extension on, and that is the REASON the label slot rejects it rather than a
    side effect of rejecting it: `@` at the first position already means
@@ -1933,23 +1954,29 @@ reference_label = (character - ']' - '@'), {character - ']'} ;
    tests/corpus-optional (`43-citations-at-label-in-reference-position`), where
    the same two lines are still literal text with citations enabled.
 
-   WHAT THE CORPUS PINS, AND WHAT IS STILL OWED. The corpus rows are HTML, and
-   at that layer this rule is INDISTINGUISHABLE from "the label is undefined":
-   `@` at the first position is the one spelling `reference_label` rejects, and
+   WHAT THE CORPUS PINS, AND WHAT IT CANNOT. The rows are HTML, and at that
+   layer this rule is INDISTINGUISHABLE from "the label is undefined": `@` at
+   the first position is the one spelling `reference_label` rejects, and
    `[@a]: /u` is reserved for the citation definition, so a `@`-first label can
-   never be defined and an unresolved reference already renders as its literal
-   source, attribute block included. The rows are still the right rows -- they
-   state the outcome -- but they do not by themselves separate the two readings.
+   never be defined, and a declining reference renders as its verbatim source
+   either way. The rows state the outcome, which is what a corpus is for; they
+   do not separate the two readings, and nothing else does.
 
-   PART 12 §3a is where the two separate, and all three engines diverge from
-   this clause there today. Measured on `[t][@a]` and `![t][@a]`, carve-js,
-   carve-php and carve-rs each publish an UNRESOLVED REFERENCE node --
-   `{"type":"link","href":"","ref":"@a","rawRef":"[t][@a]"}` and its `image`
-   counterpart -- and §3a admits `ref` "because the author wrote a reference
-   link". Under this clause the author wrote no reference link, so the tree
-   owes TEXT. The engines agree with each other and not with the rule, which is
-   why it is recorded rather than left to be discovered: nothing in an HTML
-   corpus can fail on it.
+   THE TREE SHAPE IS THE ONE PLACE THEY WOULD SEPARATE, and it is left open
+   here rather than settled in passing. Measured on fresh main builds --
+   carve-js 99af44b, carve-php 035dfcd, carve-rs 564a3b8 -- all three publish
+   an UNRESOLVED REFERENCE node for both spellings:
+
+       {"type":"link","href":"","ref":"@a","rawRef":"[t][@a]"}
+
+   and its `image` counterpart. PART 12 §3a admits `ref` "because the author
+   wrote a reference link", and under this clause no reference link was
+   written, which points at a `text` node carrying the run. Against that, an
+   `href`-less node plus `rawRef` is the vehicle §3a already gives a declining
+   reference for restoring its source, so an engine reaching for it here is not
+   obviously wrong either. Both readings render the corpus rows correctly, no
+   HTML fixture can fail on the difference, and the ruling this clause states
+   did not reach it -- so it is recorded, not decided (carve#1302).
 
    THE READING NOT TAKEN. "Link text `t` pointing at citation `a`" is coherent
    authoring intent and has no spelling today, but adopting it here would
