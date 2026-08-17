@@ -1,0 +1,49 @@
+A line block's last body line keeps its backslash
+
+```
+::: |
+a\
+:::
+.
+<div class="line-block">
+  <p>a<br>
+</p>
+</div>
+```
+
+```
+::: |
+a  \
+:::
+.
+<div class="line-block">
+  <p>a&nbsp;&nbsp;<br>
+</p>
+</div>
+```
+
+```
+::: |
+a
+%%
+b
+:::
+.
+<div class="line-block">
+  <p>a<br>
+<br>
+b</p>
+</div>
+```
+
+```
+::: |
+a \
+%% c
+:::
+.
+<div class="line-block">
+  <p>a <br>
+</p>
+</div>
+```

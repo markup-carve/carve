@@ -479,13 +479,22 @@ const sem = g.createSemantics().addOperation('h', {
   nbspEsc(_bs, _sp) {
     return '&nbsp;'
   },
-  hardBreak(_bs, tail) {
+  hardBreak(_bs, _tail) {
     // The rule CONSUMES the newline (PART 3), so this emits it: one line
     // boundary, one break, whether the boundary was spelled with a backslash
     // or not. In a line block that is the whole of PART 9 SS23's A BACKSLASH
     // BREAK IS NOT ADDITIVE - there is no soft break left for the container
     // to harden, so nothing synthesizes a second `<br>`.
-    return tail.sourceString === '' ? '<br>' : '<br>\n'
+    //
+    // The newline is emitted even where the rule matched `&end` and there was
+    // no newline to consume. PART 10 SS3 states the serialization without a
+    // condition on it - "a hard break serializes as `<br>` + newline" - and all
+    // three engines write it that way, on a document-final `a\` as much as on
+    // one inside a stanza. Making it conditional on the SOURCE made the only
+    // shape where the two readings differ - a hard break with nothing after it
+    // - the one shape the oracle got wrong, which is where the last body line
+    // of a line block lives (PART 11 SS7c).
+    return '<br>\n'
   },
   shortcode(_c1, name, _c2) {
     // No symbol map in Core: the literal `:name:` fallback. Consuming it as one
