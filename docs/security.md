@@ -111,13 +111,17 @@ Specifically, on every rendered element:
   `expression(...)`, `url(...)`, `@import`, `behavior:`, or `-moz-binding` - is
   blanked (whitespace collapsed first to defeat evasion);
 - `srcset`, `imagesrcset`, `ping` and `attributionsrc` hold a **list** of URLs
-  rather than one, so they are probed at **every** token instead of at the
+  rather than one, so they are probed at **every** token **as well as** at the
   value's head, and any hit blanks the whole value. Reading only the leading
   scheme meant
   `srcset="safe.png 1x, javascript:alert(1) 2x"` rendered verbatim while the
-  same two candidates in the other order were blanked. Prose attributes -
-  `title`, `alt`, `aria-label` - are deliberately **not** tokenized, so an
-  ordinary colon in text is never mistaken for a scheme.
+  same two candidates in the other order were blanked. The token pass is
+  additive rather than a replacement: the value-wide probe strips the ASCII
+  whitespace the split breaks on, so `ping="java script:alert(1)"` is two
+  harmless tokens and one denied value, and an engine that ran only the token
+  pass would deny **less** than it did before the rule existed. Prose
+  attributes - `title`, `alt`, `aria-label` - are deliberately **not**
+  tokenized, so an ordinary colon in text is never mistaken for a scheme.
 
 All other attributes pass through with their values HTML-escaped (quotes
 included, so a value cannot break out of its attribute). This baseline is

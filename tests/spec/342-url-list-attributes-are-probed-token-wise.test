@@ -59,3 +59,15 @@ URL-list attributes are probed token-wise
 .
 <p><a href="safe.html" title="See: RFC 3986, http://example.com">z</a></p>
 ```
+
+```
+[y](safe.html){ping="java script:alert(1)"}
+.
+<p><a href="safe.html" ping="">y</a></p>
+```
+
+```
+![a](safe.png){srcset="java script:alert(1) 1x, safe.png 2x"}
+.
+<img src="safe.png" alt="a" srcset="">
+```
