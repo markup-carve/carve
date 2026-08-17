@@ -1105,9 +1105,22 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false) {
   let budget = MAX_NESTING_DEPTH
   // Whether a table is open ABOVE this line, which is the one thing the shape of
   // a continuation row cannot tell (see `isContinuationRow`). It does not
-  // survive a peel: what a quote or a marker carries is that container's FIRST
-  // block, and a table written above the container is not written above the
-  // container's first line.
+  // survive a peel, and each peel has its own reason.
+  //
+  // A MARKER carries its item's FIRST block, and nothing is above a first
+  // block - a table written above the marker is above the ITEM, not above the
+  // item's first line, and cannot reach into it.
+  //
+  // A QUOTE spans lines, so its content is not always its first block, and the
+  // peel does not carry the quote's own line history: this predicate is handed
+  // ONE line. The answer that produces is the CONSISTENT one. `> | a |` /
+  // `> + b |` / `tail` renders `tail` inside the quote in all three engines and
+  // here, so a quote that ends on a continuation row does not end the lazy run;
+  // reading the same quote through a `dd` used to say the opposite (`tail` left
+  // the definition), which made one document's answer depend on what was
+  // wrapped around it. carve-js and carve-php agree with the wrapped answer
+  // this now gives; carve-rs is the one that answers the two spellings
+  // differently.
   let openTable = tableOpen
   for (;;) {
     if (text.trim() === '') return false

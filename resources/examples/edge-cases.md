@@ -19753,6 +19753,32 @@ tail</dd>
 
 :::
 
+Through a QUOTE the body's last line is asked the same question one container
+in, and the quote holds a paragraph rather than a table - so the shape is prose
+there too, and the lazy line reaches all the way down:
+
+::: compare
+
+```carve
+:: t
+:  > a
+   > + b |
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote><p>a
++ b |
+tail</p></blockquote>
+  </dd>
+</dl>
+```
+
+:::
+
 ## A continuation marker attaches one block, and the boundary is that block's extent
 
 §17 L3 says it in capitals: a `+` attaches "the FOLLOWING flush-left block to

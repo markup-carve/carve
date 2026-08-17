@@ -20,6 +20,9 @@
  * alone. A corpus document would gate the cross-engine job on that open
  * divergence; these assertions gate the rule here in the meantime, and the
  * documents move to the corpus when the engines land it.
+ *
+ * The quote case below is here for the mirror-image reason: the answer is
+ * carve-js's and carve-php's, and carve-rs is the engine that has to move.
  */
 
 import { test } from 'node:test'
@@ -47,6 +50,18 @@ test('the SAME shape with no table above it holds an open paragraph', () => {
   const out = html('- a\n  + b |\ntail\n')
   assert.ok(!out.includes('<table>'), `no table may open here: ${out}`)
   assert.ok(/\+ b \|\s*tail/.test(out), `tail must fold into the paragraph: ${out}`)
+})
+
+test('a quote answers the same wrapped as it does bare', () => {
+  // The predicate is handed ONE line, so peeling a quote off it cannot carry
+  // the quote's own line history. What that costs is decided by the bare
+  // spelling, which every implementation already answers: a quote ending on a
+  // continuation row does NOT end the lazy run, and `tail` stays inside it.
+  // Wrapping that quote in a definition must not flip the answer.
+  const bare = html('> | a |\n> + b |\ntail\n')
+  assert.ok(/<\/table>\s*<p>tail<\/p>\s*<\/blockquote>/.test(bare), `bare: ${bare}`)
+  const wrapped = html(':: t\n:  > | a |\n   > + b |\ntail\n')
+  assert.ok(/<\/table>\s*<p>tail<\/p>\s*<\/blockquote>/.test(wrapped), `wrapped: ${wrapped}`)
 })
 
 test('a table row is a row by its shape alone, and needs no such context', () => {

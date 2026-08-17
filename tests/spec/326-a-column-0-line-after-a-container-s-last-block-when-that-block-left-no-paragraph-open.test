@@ -373,3 +373,19 @@ tail
 tail</dd>
 </dl>
 ```
+
+```
+:: t
+:  > a
+   > + b |
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote><p>a
++ b |
+tail</p></blockquote>
+  </dd>
+</dl>
+```
