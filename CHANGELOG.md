@@ -140,6 +140,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   document. Shared fixtures under `tests/html-import` define the portable
   minimum.
 
+  The contract takes the lossless way wherever both are available: a
+  `<figure>` with a `<figcaption>` imports as the target block followed by a
+  caption line, and a `blockquote` `cite` attribute is kept on an ordinary
+  block-attribute line (carve#1286). Dropping either was available only with a
+  diagnostic attached, and keeping it costs the reader less than the diagnostic
+  would.
+
 - **PART 12 §14: a caption may carry a structured short caption** (carve#1117).
   A `figure` or `table` MAY carry `shortCaption`, an array of inline nodes, for
   a target's list of figures or tables. Carve 0.1 source has no spelling for it,
@@ -209,13 +216,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   carries or contributes nothing, and which of the two it does is a property of
   the CONSTRUCT and not of what it renders, because the id is assigned before a
   cross-reference resolves or a symbol is looked up.
-
-- **HTML import keeps a figure's caption and a blockquote's `cite`**
-  (carve#1286). A `<figure>` with a `<figcaption>` imports as the target block
-  followed by a caption line, and a `blockquote` `cite` attribute is kept on an
-  ordinary block-attribute line. Both go the lossless way: dropping either was
-  available only with a diagnostic attached, and keeping it costs the reader
-  less than the diagnostic would.
 
 - **An unclosed inline run in a line block reaches the end of the block**
   (carve#1282). A line block is ONE block, so its line breaks are a rendering
@@ -512,19 +512,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the same balanced-bracket, escape- and literal-span-aware scan `link_text`
   states. Every engine already read it that way; the production was the half
   that was spelled wrong.
-
-- **The `semantic-span-carve-outs` HTML-import fixture pins the canonical fence
-  opener.** `fenced_code_block` names the no-space form canonical ("The
-  no-space form (```php) is canonical and is what the X->Carve converters
-  emit"), and `docs/html-import.md` says every `expected.crv` under
-  `tests/html-import` is also a fixed point of `carve fmt` in all three
-  engines. This one held ` ``` js `, which the canonical writer rewrites, so it
-  pinned source no writer produces. The writer defect it was written against is
-  fixed in all three engines (markup-carve/carve-js#1072,
-  markup-carve/carve-php#1267, markup-carve/carve-rs#987) and the fixture now
-  matches what they emit. No corpus `.fmt` fixture moves: none of the 29
-  carries an info string, and all 29 were re-measured through all three
-  engines.
 
 ## [0.1.2] - 2026-08-10
 
