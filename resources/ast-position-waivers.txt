@@ -40,6 +40,17 @@
 # nothing outstanding in the first two. Findings, not lines: the count column is
 # what the run reconciles against, and a line may carry more than one.
 #
+# AND AGAIN LATER THAT DAY at carve-js 80537c8, carve-rs 71318e9 and carve-php
+# 84c422b, over 1131 documents - across carve-php shipping four container
+# rulings, seven new corpus documents and a carve-js comment-fence fix. NOTHING
+# IN THIS FILE MOVED EITHER TIME. Same four owed findings under the same open
+# issue, and the same permitted totals: 38, 35 and 32.
+#
+# WHICH IS WORTH RECORDING RATHER THAN SKIPPING. The span ledger beside this one
+# moved twice on those same engine builds - nine rows to five - so "the engines
+# moved, therefore this moved too" is exactly the inference a re-measurement is
+# here to refuse. A file that does not move still has to be run to say so.
+#
 # The measurement this replaces ran the same 1124 documents at carve-js
 # e2e8460, carve-rs b6ff319 and carve-php b6d49a7, and reported both halves the
 # same way. Between the two, carve-js closed the five engine gaps

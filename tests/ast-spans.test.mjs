@@ -215,22 +215,22 @@ test('a malformed declaration line is an error, never a silent skip', () => {
  * shipped file against an EMPTY measurement only stays falsifiable while the
  * ledger is empty - every declared row becomes an AGREED.
  *
- * Measured 2026-08-17 over 1124 corpus documents plus 3 synthetic samples, at
- * carve-js 02c4d80, carve-rs 1ad93f0 and carve-php 4610ef8. Eight rows are
- * carve-php alone on the 326/327/329/333 container rulings
- * (markup-carve/carve-php#1354); `code (extent)` is carve-js alone, spanning a
- * verbatim run past the trailing space the content line drops
- * (markup-carve/carve-js#1145).
+ * Measured 2026-08-17 over 1131 corpus documents plus 3 synthetic samples, at
+ * carve-js 80537c8, carve-rs 71318e9 and carve-php 84c422b, each built from a
+ * fresh clone of main. Five rows across 9 documents, of 22,775 spans compared.
+ *
+ * It read nine rows across 21 documents earlier the same day. carve-php shipped
+ * the 326/327/329/333 container rulings, ast:check reported four rows AGREED and
+ * three moved count, and this map moved with the run rather than with the merge
+ * notifications. Each surviving row names its own tracker in
+ * resources/ast-span-divergence.txt: carve-php#1351, #1361, #1362 and #1363, and
+ * carve-js#1145 and #1153.
  */
 const LAST_MEASURED = new Map([
-  ['list (extent)', 12],
-  ['list_item (extent)', 12],
-  ['text (presence)', 5],
-  ['block_quote (extent)', 2],
-  ['code (presence)', 2],
+  ['text (presence)', 6],
+  ['code (presence)', 3],
+  ['definition_list (extent)', 2],
   ['paragraph (extent)', 1],
-  ['definition_list (extent)', 1],
-  ['definition_description (extent)', 1],
   ['code (extent)', 1],
 ])
 
