@@ -208,8 +208,55 @@ test('a malformed declaration line is an error, never a silent skip', () => {
   assert.match(problems[0], /^MALFORMED\s+line 1/)
 })
 
-test('the shipped span declaration parses and currently needs no baseline rows', () => {
-  const text = readFileSync(resolve(root, 'resources/ast-span-divergence.txt'), 'utf8')
-  const problems = reconcileSpans(new Map(), text)
-  assert.deepEqual(problems, [])
+/*
+ * WHAT `npm run ast:check` LAST MEASURED. Same contract, and same reason, as
+ * `LAST_MEASURED` in tests/ast-values.test.mjs: this suite runs on a host with
+ * no engine checkouts, so it cannot measure spans itself, and reconciling the
+ * shipped file against an EMPTY measurement only stays falsifiable while the
+ * ledger is empty - every declared row becomes an AGREED.
+ *
+ * Measured 2026-08-17 over 1124 corpus documents plus 3 synthetic samples, at
+ * carve-js 02c4d80, carve-rs 1ad93f0 and carve-php 4610ef8. Eight rows are
+ * carve-php alone on the 326/327/329/333 container rulings
+ * (markup-carve/carve-php#1354); `code (extent)` is carve-js alone, spanning a
+ * verbatim run past the trailing space the content line drops
+ * (markup-carve/carve-js#1145).
+ */
+const LAST_MEASURED = new Map([
+  ['list (extent)', 12],
+  ['list_item (extent)', 12],
+  ['text (presence)', 5],
+  ['block_quote (extent)', 2],
+  ['code (presence)', 2],
+  ['paragraph (extent)', 1],
+  ['definition_list (extent)', 1],
+  ['definition_description (extent)', 1],
+  ['code (extent)', 1],
+])
+
+const asMeasured = (counts) =>
+  new Map(
+    [...counts].map(([key, count]) => [
+      key,
+      new Set(Array.from({ length: count }, (_, i) => `measured-${i}.crv`)),
+    ]),
+  )
+
+const shippedSpanDeclaration = () =>
+  readFileSync(resolve(root, 'resources/ast-span-divergence.txt'), 'utf8')
+
+test('the shipped span declaration is exactly what ast:check last measured', () => {
+  // All three directions stay live without engines: a row in the file with no
+  // measurement is AGREED, a measured row the file omits is NEW, and a count
+  // edited on either side is COUNT. An empty ledger against an empty
+  // `LAST_MEASURED` still reconciles to nothing, so there is no floor.
+  assert.deepEqual(reconcileSpans(asMeasured(LAST_MEASURED), shippedSpanDeclaration()), [])
+})
+
+test('and a disagreement the shipped file does not declare is caught', () => {
+  const measured = asMeasured(LAST_MEASURED)
+  measured.set('table_cell (presence)', new Set(['a.crv', 'b.crv']))
+  const problems = reconcileSpans(measured, shippedSpanDeclaration())
+  assert.equal(problems.length, 1)
+  assert.match(problems[0], /^NEW\s+table_cell \(presence\) disagrees in 2 document\(s\)/)
 })

@@ -31,17 +31,27 @@
 # all 28 owed findings were gone: carve-js#813 and carve-js#814, carve-rs#716,
 # #736 and #737, and carve-php#965 had all landed.
 #
-# RE-MEASURED 2026-08-17 at carve-js e2e8460, carve-rs b6ff319 and carve-php
-# b6d49a7 over 1124 documents, the owed half holds four findings again, all in
-# carve-php and all one defect (markup-carve/carve-php#1351). Twenty-four new
-# PERMITTED findings arrived in the same window - 11 in carve-js, 8 in carve-rs
-# and 5 in carve-php, over 20 declaration lines - from the `333`
-# continuation-row fixtures. Findings, not lines: the count column is what the
-# run reconciles against, and a line may carry more than one.
+# RE-MEASURED 2026-08-17 at carve-js 02c4d80, carve-rs 1ad93f0 and carve-php
+# 4610ef8 - the three mains at the moment the pin moved to 02c4d80 - over the
+# same 1124 documents. NOTHING IN THIS FILE MOVED. The owed half still holds
+# four findings, all in carve-php and all one defect
+# (markup-carve/carve-php#1351, still open). Every permitted line still
+# reconciles: 38 findings in carve-js, 35 in carve-rs and 32 in carve-php, with
+# nothing outstanding in the first two. Findings, not lines: the count column is
+# what the run reconciles against, and a line may carry more than one.
+#
+# The measurement this replaces ran the same 1124 documents at carve-js
+# e2e8460, carve-rs b6ff319 and carve-php b6d49a7, and reported both halves the
+# same way. Between the two, carve-js closed the five engine gaps
+# `resources/engine-pin-drift.txt` declared - so five merged engine fixes moved
+# the HTML that file is about and moved no position at all. The permitted half
+# it recorded growing by 24 findings over 20 declaration lines, from the `333`
+# continuation-row fixtures, is the state measured above.
 #
 # WHICH IS THE POINT OF DATING THE CLAIM. The corpus grew 291 documents between
-# those two measurements, and the header's own note that the permitted half
-# "grew with the fixtures added over the preceding week" says fixtures produce
+# the 2026-08-07 measurement and the two above, and the header's own note that
+# the permitted half "grew with the fixtures added over the preceding week"
+# says fixtures produce
 # position findings. An emptiness claim measured over a corpus a quarter smaller
 # than today's is not evidence the half is still empty - it is evidence of what
 # was true on the day, which is why the day is written down. Whoever re-measures
