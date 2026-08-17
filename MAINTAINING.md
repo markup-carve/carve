@@ -168,7 +168,15 @@ Decided canonical behavior, pinned in the corpus, where at least one
 implementation still diverges (lockstep order: carve-js first, then the carve
 pin; the corpus has no xfail). A row moves to *Resolved* once all impls agree.
 
-_None currently._
+| Input | Canonical, and who still diverges |
+|-------|-----------------------------------|
+| `- item`<br>`  %%%`<br>`  [r]: /url`<br>`  %%%` plus a `[r][]` below it - a definition inside a comment fence that is NOT at column 0 | The label is not registered and the reference stays literal, at every column a fence can sit at: PART 9 §24 S1 places a line by the column it reaches, S2 makes it verbatim under a fenced body, and §28 scopes neither to column 0. carve-js and the executable spec already do this. **carve-php** fails `335`, `336`, `337`, `338`, `339` and `340` (markup-carve/carve-php#1349); **carve-rs** fails `335`, `336`, `337`, `338` and `339` (markup-carve/carve-rs#1047, fix in flight at markup-carve/carve-rs#1052). Filed as carve#1309. |
+
+The quoted spelling of the same shape (`> %%%` over a definition) is NOT in that
+row and is deliberately unpinned: all three engines register there and only the
+executable spec leaves it literal, so it is a three-engine disagreement about
+the rule rather than an engine lagging a decided one, and it wants a ruling
+before a corpus document takes a side.
 
 ### Extension API surface (parity beyond corpus output)
 

@@ -20490,3 +20490,180 @@ The control is what makes this a rule rather than a breakage: `@` at the first p
 The run declines as ONE construct and is restored as one, so the `@a` inside it is text and nothing else. A rescan would read `[t][@a]` as a `[t][` run, a mention and a `]`, and with the extension on it would read the now tail-less `[@a]` as a citation - which is why the optional control renders both spellings literally on the far side of the switch.
 
 At the HTML layer these rows cannot separate "not a reference label" from "a label nothing defines": a `@`-first label can never be defined, and a declining reference renders as its verbatim source either way. PART 12 §3a is where the readings would differ, all three engines publish an unresolved-reference node there, and the grammar clause records that without settling it.
+
+## A comment fence at an item's content column registers nothing either
+
+`%%%` at a list item's content column is the same construct as `%%%` at column 0. PART 9 §24 S1 places a line by the column it REACHES and never by its first character, S2 makes a line verbatim as soon as the innermost matched container is a fenced body, and §28 makes a comment fence's body verbatim and invisible. Not one of the three is scoped to column 0, so what "A definition inside a comment registers nothing" states above holds wherever the fence sits: the label is not registered, and the reference to it stays literal.
+
+::: compare
+
+```carve
+- item
+  %%%
+  [r]: /url
+  %%%
+
+[r][]
+```
+
+```html
+<ul>
+  <li>item</li>
+</ul>
+<p>[r][]</p>
+```
+
+:::
+
+The corpus stated the rule and pinned only the column-0 spelling, which is the gap two engines drifted through while staying green: carve-rs and carve-php collected the label here and resolved the reference, where carve-js and the executable spec leave it literal (carve#1309, markup-carve/carve-rs#1047, markup-carve/carve-php#1349). Nothing about the item's own rendering was ever in question - all three render the comment as nothing and the item as `item`. The disagreement is entirely in the link table, which is why the document has to be read past the list to see it at all.
+
+## A footnote definition inside an item's comment registers nothing
+
+The footnote collector is a separate pass from the link-reference one in every implementation, so it is a separate place to drift and needs its own document. The rule is the same rule, and the symptom is worse: a collected footnote definition does not merely resolve a reference, it emits an endnotes section the author commented out.
+
+::: compare
+
+```carve
+- item
+  %%%
+  [^f]: note body
+  %%%
+
+text[^f]
+```
+
+```html
+<ul>
+  <li>item</li>
+</ul>
+<p>text[^f]</p>
+```
+
+:::
+
+## A comment fence opened on an item's marker line hides its body too
+
+The fence may open on the marker line itself. `- %%%` is a bullet whose content begins with a comment fence, the closer sits at the content column, and the item is empty of everything between them. This is the spelling a container-aware reader is most likely to miss, because the fence's own line carries the marker rather than the indentation.
+
+::: compare
+
+```carve
+- %%%
+  [r]: /url
+  %%%
+
+[r][]
+```
+
+```html
+<ul>
+  <li></li>
+</ul>
+<p>[r][]</p>
+```
+
+:::
+
+## A comment fence one item deeper registers nothing either
+
+Nothing in §24 S2 counts containers, so a second level of nesting is not a second rule. The fence sits at the inner item's content column and hides its body exactly as it does at the outer one.
+
+::: compare
+
+```carve
+- a
+  - b
+    %%%
+    [r]: /url
+    %%%
+
+[r][]
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+<p>[r][]</p>
+```
+
+:::
+
+## A wider comment fence inside an item hides its body the same way
+
+Fence WIDTH decides which line closes the fence (§28's exact-length closer), not whether the body is opaque. A four-percent fence at an item's content column is as invisible to the definition collector as a three-percent one, so the two axes stay independent.
+
+::: compare
+
+```carve
+- item
+  %%%%
+  [r]: /url
+  %%%%
+
+[r][]
+```
+
+```html
+<ul>
+  <li>item</li>
+</ul>
+<p>[r][]</p>
+```
+
+:::
+
+## An abbreviation inside a comment defines nothing
+
+The abbreviation collector is a third pass again, and this is the one document in the group that has to sit at column 0: PART 12 §7 recognizes an abbreviation definition only as a direct child of the DOCUMENT, so an abbreviation written inside an item's comment is already not a definition for a reason that has nothing to do with the comment, and a document written that way could not tell the two reasons apart. At column 0 both reasons are live and only the comment is doing the work.
+
+::: compare
+
+```carve
+%%%
+*[HTML]: HyperText Markup Language
+%%%
+
+HTML here
+```
+
+```html
+<p>HTML here</p>
+```
+
+:::
+
+Its position makes it look like the link-reference case above, and the collector it exercises makes it a different document: carve-php reads the link-reference form of this shape correctly and defines the abbreviation anyway (markup-carve/carve-php#1349). An abbreviation is the worst of the three to leak, because the use site carries no bracket to give it away - the term is rewritten in running prose that never asked for it.
+
+## A comment fence inside a colon container registers nothing
+
+A colon container's body is parsed as blocks, so a comment fence inside one is a comment fence and its body is opaque for the same reason it is anywhere else.
+
+:::: compare
+
+```carve
+::: note
+Body.
+
+%%%
+[r]: /url
+%%%
+:::
+
+[r][]
+```
+
+```html
+<aside class="admonition note">
+  <p>Body.</p>
+</aside>
+<p>[r][]</p>
+```
+
+::::
+
+The quoted spelling is deliberately NOT here. `> %%%` over a definition is collected by carve-js, carve-php and carve-rs alike and left literal by the executable spec alone, so it is a three-engine disagreement about the rule rather than a gap in the corpus's coverage of it, and it wants a ruling before a document pins either side (carve#1309).

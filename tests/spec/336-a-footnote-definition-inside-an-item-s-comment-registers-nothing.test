@@ -1,0 +1,15 @@
+A footnote definition inside an item's comment registers nothing
+
+```
+- item
+  %%%
+  [^f]: note body
+  %%%
+
+text[^f]
+.
+<ul>
+  <li>item</li>
+</ul>
+<p>text[^f]</p>
+```
