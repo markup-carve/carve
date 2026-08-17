@@ -1057,6 +1057,33 @@ function opensParagraph(text) {
   // the ITEM with no paragraph open anywhere in the stack.
   if (QUOTE.test(text)) return opensParagraph((QUOTE.exec(text)[1] ?? ''))
   if (HEADING.test(text) || HR.test(text)) return false
+  // A LIST MARKER is asked the SAME question about what it carries, for the
+  // same reason a quote is, and S4's clause names this case outright: the rule
+  // "binds even where the unmatched container is a LIST ITEM whose last block
+  // is a container". A nested item is that container, so `- # H` opens no
+  // paragraph and neither does the `- - # H` that carries it.
+  //
+  // Asked of the marker LINE instead of its content, the answer was prose
+  // every time, which is why depth 1 was already right and depth 2 was not:
+  // `- # H` reached this predicate as `# H` and closed, `- - # H` reached it as
+  // `- # H` and did not. `- - - # H` folded exactly one level in, the tell that
+  // one turn of the recursion was missing rather than the whole rule.
+  //
+  // Asked only of text that is already AT its block position. The quote
+  // recursion and the `dd` body hand over lines that may still carry
+  // indentation, and an indented marker is a different question - whether a
+  // list opens there at all is the column rule, not this one. So a
+  // whitespace-led line keeps the answer it has always had here rather than
+  // borrowing this branch's. (`matchMarkerAt` would refuse it outright: it
+  // requires the indentation to be measured rather than re-matched.)
+  //
+  // HR is tested first and stays first: `---` is a break, not a bullet with no
+  // content. BULLET cannot match it anyway - it wants a space after the marker
+  // character - so the order is belt and braces.
+  if (text[0] !== ' ' && text[0] !== '\t') {
+    const nm = matchMarkerAt({ col: 0, rest: text })
+    if (nm) return opensParagraph(nm.text.trim())
+  }
   if (COMMENT_LINE.test(text) || COMMENT_FENCE_BODY.test(text)) return false
   if (isTableRow(text) || CONT_ROW.test(text)) return false
   if (FOOTNOTE_DEF.test(text) || isLinkDef(text)) return false
@@ -2774,7 +2801,17 @@ function collectItems(lines, i, list, state, ind, meas) {
           else openParaWith(dedented)
         }
         else if (dedented[0] === '|' || CONT_ROW.test(dedented)) closePara()
-        else if (matchMarkerAt(dmeas)) startPara()
+        // A SUB-LIST MARKER opens a paragraph only if the item it opens
+        // CARRIES one, which is the quote branch's rule one construct over and
+        // the same clause. `- a` / `  - # H` / `p` records an open paragraph
+        // this way and folds `p` into the OUTER item; carve-js and carve-rs
+        // close it. Unconditional `startPara()` was the content-column twin of
+        // the marker-line seed carve#1280 fixed, and it survived because that
+        // fix reached only the marker line.
+        else if (matchMarkerAt(dmeas)) {
+          if (opensParagraph(dmeas.rest)) startPara()
+          else closePara()
+        }
         // A quote opens a paragraph only if it CARRIES one. A bare `>` is an
         // empty quote, so there is nothing for a later flush-left line to fold
         // into, and the item closes instead -- PART 1 S4's NO OPEN PARAGRAPH,
@@ -2785,6 +2822,30 @@ function collectItems(lines, i, list, state, ind, meas) {
           if ((QUOTE.exec(dedented)[1] ?? '').trim() !== '') startPara()
           else closePara()
         }
+        // AN ATTRIBUTE LINE IS AN INTERRUPTER, SO IT LEAVES NO PARAGRAPH OPEN.
+        // §10 I5 makes a block-attribute line one of the constructs that
+        // interrupt a paragraph, and the marker-line seed above already reads
+        // it that way through `opensParagraph`. At the CONTENT COLUMN the
+        // classifier had no branch for it, so the line fell to the catch-all
+        // below and REOPENED a paragraph the interrupter had just closed.
+        // A column-0 line then folded into an item holding nothing open, and
+        // the floating attribute reached the folded line: `- a` / `  {.x}` /
+        // `p` rendered `p` INSIDE the item and gave it `class="x"`, where all
+        // three engines close the item and leave `p` a plain top-level
+        // paragraph.
+        //
+        // The blank-separated spelling (`- a` / blank / `  {.x}` / `p`) took
+        // the same wrong turn by a longer route: the blank branch above
+        // classifies the attribute line as invisible and closes the paragraph,
+        // then hands the line back to this loop, which reopened it here. One
+        // branch settles both.
+        //
+        // A WRAPPED attribute block is out of reach here for the reason the
+        // marker-line seed records: its opener has no closing brace, so it is
+        // not an attribute line by itself, and its continuation arrives as
+        // ordinary residue. That case is carve#1280's open content-column half
+        // and is deliberately not decided by a one-line window.
+        else if (tryAttrLine([dedented], 0)) closePara()
         else if (dmeas.rest !== '') openParaWith(dedented)
         i++
         continue
