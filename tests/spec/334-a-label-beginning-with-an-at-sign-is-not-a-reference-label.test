@@ -1,0 +1,13 @@
+A label beginning with an at sign is not a reference label
+
+```
+[t][@a]
+.
+<p>[t][@a]</p>
+```
+
+```
+![t][@a]
+.
+<p>![t][@a]</p>
+```

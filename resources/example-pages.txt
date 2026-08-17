@@ -417,6 +417,7 @@ index: examples/edge-cases/index.md
   a-reference-image-takes-a-caption
   an-unresolved-reference-image-takes-no-caption
   an-at-sign-is-a-reference-label-character-everywhere-but-the-first-position
+  a-label-beginning-with-an-at-sign-is-not-a-reference-label
   a-link-definition-written-before-a-footnote-stays-before-it
   a-zero-width-character-in-a-reference-definition-destination
   a-block-image-is-separated-from-the-block-after-it-on-every-target
