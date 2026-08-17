@@ -145,12 +145,23 @@ and carve-php `876e312`).
 `335` THROUGH `341` ARE A SECOND KIND OF LAG, and they are declared for a
 different reason than every category before them. The host that added them HAD
 all three checkouts and could have retaken the run. It did not, because two of
-the engines fail six of the seven ON PURPOSE: those documents pin a rule
+the engines failed six of the seven ON PURPOSE: those documents pin a rule
 carve-rs and carve-php had drifted from (carve#1309, markup-carve/carve-rs#1047,
 markup-carve/carve-php#1349), so a retaken snapshot's mismatch counts would
-describe a window two open fixes are closing, and would go stale the day either
-one lands. Naming the window is what the declaration is for, and here it is the
+describe a window two open fixes were closing, and would go stale the day either
+one landed. Naming the window is what the declaration is for, and here it is the
 honest line where a fresh measurement would be the misleading one.
+
+ONE OF THOSE TWO FIXES HAS SINCE LANDED, so the window is now narrower than the
+paragraph above described it. markup-carve/carve-rs#1052 merged, and carve-rs
+main renders all seven byte-exact - re-measured here on `71318e91`, whose parent
+still failed `335` through `339`, which is what makes the seven documents
+load-bearing rather than trivially green. **carve-php is the only engine still
+behind**, on `335` through `340` (markup-carve/carve-php#1349); `341` never
+failed on any engine. The declaration is kept rather than deleted because the
+run above still predates all seven, but it now names one engine, not two: a
+declared lag that keeps naming an engine somebody has since fixed reads as
+verified while being false, which is the failure this device exists to prevent.
 
 A CATEGORY THAT ALREADY EXISTED CAN GO STALE TOO, and the declaration above
 cannot say so - it names categories ADDED since the run, and its count is

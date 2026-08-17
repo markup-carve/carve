@@ -170,7 +170,7 @@ pin; the corpus has no xfail). A row moves to *Resolved* once all impls agree.
 
 | Input | Canonical, and who still diverges |
 |-------|-----------------------------------|
-| `- item`<br>`  %%%`<br>`  [r]: /url`<br>`  %%%` plus a `[r][]` below it - a definition inside a comment fence that is NOT at column 0 | The label is not registered and the reference stays literal, at every column a fence can sit at: PART 9 §24 S1 places a line by the column it reaches, S2 makes it verbatim under a fenced body, and §28 scopes neither to column 0. carve-js and the executable spec already do this. **carve-php** fails `335`, `336`, `337`, `338`, `339` and `340` (markup-carve/carve-php#1349); **carve-rs** fails `335`, `336`, `337`, `338` and `339` (markup-carve/carve-rs#1047, fix in flight at markup-carve/carve-rs#1052). Filed as carve#1309. |
+| `- item`<br>`  %%%`<br>`  [r]: /url`<br>`  %%%` plus a `[r][]` below it - a definition inside a comment fence that is NOT at column 0 | The label is not registered and the reference stays literal, at every column a fence can sit at: PART 9 §24 S1 places a line by the column it reaches, S2 makes it verbatim under a fenced body, and §28 scopes neither to column 0. carve-js, carve-rs and the executable spec already do this - carve-rs since markup-carve/carve-rs#1052 landed, which is why it no longer appears here. **carve-php** is the only engine still diverging: it fails `335`, `336`, `337`, `338`, `339` and `340` (markup-carve/carve-php#1349). Filed as carve#1309. |
 
 The quoted spelling of the same shape (`> %%%` over a definition) is NOT in that
 row and is deliberately unpinned: all three engines register there and only the
