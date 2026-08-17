@@ -619,6 +619,7 @@ index: examples/edge-cases/index.md
   trojan-source-heading-ids-are-nfc-normalized-and-strip-invisible-controls
   trojan-source-rendered-text-and-code-strip-bidi-override-controls
   scheme-probe-strips-unicode-whitespace
+  url-list-attributes-are-probed-token-wise
   openers-past-the-nesting-cap-are-one-paragraph
   a-format-character-before-a-scheme-is-not-stripped-and-is-inert
   45-inline-extensions-9

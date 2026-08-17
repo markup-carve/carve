@@ -24,3 +24,11 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+
+342-url-list-attributes-are-probed-token-wise-2  §25 now probes a URL-list attribute at every candidate; the pin reads the leading scheme only and emits the second srcset candidate verbatim (carve#1320).
+342-url-list-attributes-are-probed-token-wise-3  Same rule on `imagesrcset`, which the pin treats as an ordinary attribute.
+342-url-list-attributes-are-probed-token-wise-4  Same rule with no space after the comma, where a whitespace-only split would also miss the candidate.
+342-url-list-attributes-are-probed-token-wise-5  Same rule on `ping`, whose non-leading URL the pin emits verbatim.
+342-url-list-attributes-are-probed-token-wise-6  Same rule on `attributionsrc`, the fourth member of the named set.
+342-url-list-attributes-are-probed-token-wise-8  The srcset comma split deliberately over-blanks a URL that itself holds a comma; the pin keeps it, having no split at all.
+342-url-list-attributes-are-probed-token-wise-9  Same rule with the name spelled in upper case, which the pin does not lower-case for this probe.

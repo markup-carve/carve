@@ -1,0 +1,61 @@
+URL-list attributes are probed token-wise
+
+```
+![a](safe.png){srcset="javascript:alert(1) 1x, safe.png 2x"}
+.
+<img src="safe.png" alt="a" srcset="">
+```
+
+```
+![a](safe.png){srcset="safe.png 1x, javascript:alert(1) 2x"}
+.
+<img src="safe.png" alt="a" srcset="">
+```
+
+```
+![a](safe.png){imagesrcset="safe.png 1x, javascript:alert(1) 2x"}
+.
+<img src="safe.png" alt="a" imagesrcset="">
+```
+
+```
+![a](safe.png){srcset="safe.png 1x,javascript:alert(1) 2x"}
+.
+<img src="safe.png" alt="a" srcset="">
+```
+
+```
+[y](safe.html){ping="safe.html javascript:alert(1)"}
+.
+<p><a href="safe.html" ping="">y</a></p>
+```
+
+```
+[y](safe.html){attributionsrc="https://example.com/s javascript:alert(1)"}
+.
+<p><a href="safe.html" attributionsrc="">y</a></p>
+```
+
+```
+[y](safe.html){ping="https://example.com/a,data:x"}
+.
+<p><a href="safe.html" ping="https://example.com/a,data:x">y</a></p>
+```
+
+```
+![a](safe.png){srcset="https://example.com/a,data:x 1x"}
+.
+<img src="safe.png" alt="a" srcset="">
+```
+
+```
+![a](safe.png){SRCSET="safe.png 1x, javascript:alert(1) 2x"}
+.
+<img src="safe.png" alt="a" SRCSET="">
+```
+
+```
+[z](safe.html){title="See: RFC 3986, http://example.com"}
+.
+<p><a href="safe.html" title="See: RFC 3986, http://example.com">z</a></p>
+```

@@ -5457,6 +5457,109 @@ EOF = (* end of file *) ;
         attributes an extension copies onto its wrapper element: an extension
         MUST route authored attributes through the same hardening and MUST NOT
         emit them raw.
+
+        A URL-LIST ATTRIBUTE IS PROBED TOKEN-WISE, NOT AT ITS HEAD --
+        NORMATIVE. The probe above reads the value's LEADING scheme, which
+        vouches for the whole value only where the whole value is ONE URL.
+        Four attributes carry a LIST of URLs: `srcset`, `imagesrcset`, `ping`
+        and `attributionsrc`. So a dangerous scheme in any position but the
+        first went unread. The first two -- on `img`/`source` and on `link`
+        -- are comma-separated image candidate strings, each a URL plus an
+        optional `w`/`x` descriptor; `ping`, on `a` and `area`, is a
+        space-separated set of URLs the user agent POSTs to on activation;
+        `attributionsrc`, on `a`, `img` and `script`, is a space-separated
+        set the user agent sends an attribution request to. For THOSE FOUR
+        NAMES a renderer MUST split the value into tokens, apply to every
+        non-empty token THE SAME PROBE this clause already applies to the
+        value as a whole, and blank the ENTIRE value when ANY token matches.
+        This rule changes WHERE the probe runs, not WHAT it denies. Every
+        other attribute keeps the leading-scheme rule exactly as stated above.
+        THE NAME MATCH IS CASE-INSENSITIVE, like the `on` prefix above: an
+        attribute block may spell the name in any case and the element still
+        carries the author's spelling, so matching on the exact bytes would
+        leave `SRCSET` unprobed.
+
+        THE SEPARATORS ARE THE ONES THE ATTRIBUTE'S OWN GRAMMAR USES, and the
+        set splits in two on this. `ping` and `attributionsrc` split on ASCII
+        WHITESPACE ONLY: neither grammar has a comma in it, so treating one as
+        a separator would blank a single legitimate URL that merely contains a
+        comma in its path. `srcset` and `imagesrcset` split on COMMAS AND
+        ASCII WHITESPACE both, because there the comma really does end a
+        candidate, and a whitespace-only split misses
+        `safe.png 1x,javascript:alert(1) 2x` entirely -- one absent space
+        after the comma and the second candidate hides inside the first one's
+        descriptor.
+
+        THE COMMA SPLIT OVER-BLANKS ONE SHAPE AND THAT IS THE CHOSEN SIDE. A
+        srcset URL may itself contain a comma, so
+        `srcset="https://example.com/a,data:x 1x"` is ONE candidate to a
+        consumer and is blanked here anyway. Reading it exactly would mean
+        requiring the HTML candidate-list algorithm, descriptor scan and
+        paren-awareness included, from three engines that have to agree byte
+        for byte -- a large ask to buy back a URL that embeds a comma
+        immediately followed by a denylisted scheme. Erring toward blanking is
+        also the safe direction HERE specifically, because it can only reach a
+        URL-list attribute and never prose. Both shapes are pinned, so the
+        engines cannot each pick a different tokenization.
+
+        THE STRIP IS PER TOKEN, NOT ONCE AT THE FRONT of the value, so the
+        preceding paragraphs' reasoning composes rather than being bypassed:
+        each token is control-stripped and Unicode-whitespace-stripped on its
+        own before its scheme is read, and a `<U+202F>javascript:` candidate
+        blanks wherever it sits. The `Cf` decision composes unchanged too --
+        a token beginning `<U+200B>javascript:` is left alone at EVERY
+        position, for the reason already given: it fails WHATWG URL parsing
+        and lands inert. Note that the whitespace the STRIP removes is wider
+        than the whitespace the SPLIT breaks on, and deliberately so:
+        `a<U+202F>javascript:x` is ONE token to a consumer, because both
+        grammars put their boundaries at ASCII whitespace, and it resolves as
+        a relative URL rather than a navigation. Same measured basis as the
+        rest of this clause.
+
+        WHAT IS BLANKED IS THE WHOLE VALUE, NOT THE OFFENDING CANDIDATE.
+        Excising one candidate would make the rendered attribute differ from
+        the author's bytes, which this clause already declined to do for the
+        `Cf` case (carve#782), and it would give one value a THIRD outcome --
+        kept, blanked, or silently rewritten -- when the defect being fixed
+        is that one value already had two. Measured before this was written,
+        on all three engines and identical byte for byte in each:
+        `srcset="javascript:alert(1) 1x, safe.png 2x"` blanked while
+        `srcset="safe.png 1x, javascript:alert(1) 2x"` rendered verbatim, and
+        `ping` split the same way (carve#1320). The point is that the SAME
+        VALUE got two answers depending on where the scheme sat. A browser
+        navigates neither -- it does not run `javascript:` in an image
+        context and it pings http(s) only -- so what this fixes is a defense
+        that was positionally inconsistent and a guarantee this clause states
+        but did not keep, for the consumers of Carve's HTML that are not
+        browsers and have no image-context protection of their own.
+
+        THE SET IS CLOSED BY A CRITERION rather than by taste: an attribute
+        whose value grammar is a LIST of URLs that a consumer RESOLVES OR
+        FETCHES. THE CRITERION GOVERNS, NOT THE DOCUMENT AN ATTRIBUTE HAPPENS
+        TO LIVE IN -- three of the four come from the HTML Standard's
+        attribute index, and `attributionsrc` from the Attribution Reporting
+        API, which browsers ship and which sends a request to every URL in
+        the list. An attribute admitted to the language and fetched by a
+        consumer is in scope wherever it was specified.
+
+        The exclusions are named so the set is not widened by
+        pattern-match. `itemtype` and `itemprop` are space-separated
+        absolute-URL token lists, but the standard forbids dereferencing
+        them, so they are identifiers and not sinks; `itemid` is a single URL
+        and the leading rule already reaches it; `archive` on `object` is
+        non-conforming and no longer carries a URL-list value type; `for` on
+        `output` and `headers` on `td`/`th` list IDs, not URLs. A single URL
+        embedded at a NON-LEADING position inside a structured value is a
+        neighboring class and not this one: `style` is that class and
+        already has its own named rule above, and a `meta` refresh `content`
+        is that class but no renderer emits `meta` from document content.
+        PROSE ATTRIBUTES ARE NOT IN THE SET AND MUST NOT BE TOKENIZED --
+        `title`, `alt` and `aria-label` legitimately contain colons, and a
+        blanket "any token that looks like a scheme" test would refuse
+        ordinary text. The corpus pins BOTH directions: a dangerous scheme in
+        a non-leading candidate is blanked, and a prose value carrying a
+        colon is not (resources/examples/edge-cases.md "URL-list attributes are
+        probed token-wise").
       - RAW PASSTHROUGH OPT-OUT. Raw blocks (```=FORMAT, PART 2) and raw
         inline (`{=format}`, §20) emit verbatim UNESCAPED content. An
         implementation MUST provide a mode in which raw passthrough is NOT

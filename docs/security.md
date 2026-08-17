@@ -109,11 +109,22 @@ Specifically, on every rendered element:
   browser discards, so `java<TAB>script:` does not slip through;
 - a `style` value containing a script-bearing or fetching CSS construct -
   `expression(...)`, `url(...)`, `@import`, `behavior:`, or `-moz-binding` - is
-  blanked (whitespace collapsed first to defeat evasion).
+  blanked (whitespace collapsed first to defeat evasion);
+- `srcset`, `imagesrcset`, `ping` and `attributionsrc` hold a **list** of URLs
+  rather than one, so they are probed at **every** token instead of at the
+  value's head, and any hit blanks the whole value. Reading only the leading
+  scheme meant
+  `srcset="safe.png 1x, javascript:alert(1) 2x"` rendered verbatim while the
+  same two candidates in the other order were blanked. Prose attributes -
+  `title`, `alt`, `aria-label` - are deliberately **not** tokenized, so an
+  ordinary colon in text is never mistaken for a scheme.
 
 All other attributes pass through with their values HTML-escaped (quotes
 included, so a value cannot break out of its attribute). This baseline is
-identical across carve-php, carve-js and carve-rs.
+identical across carve-php, carve-js and carve-rs, except for the URL-list rule
+above: the corpus pins it and the three engines are implementing it, so check
+the [implementation comparison](./implementation-comparison) page for the
+current window.
 
 ## Invisible Unicode and Trojan Source (always on)
 
