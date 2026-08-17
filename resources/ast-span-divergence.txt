@@ -112,8 +112,37 @@
 # 2026-08-14 before it. It was the row worth watching when the other eight went,
 # and it is still here.
 
-text (presence) 6
+# AND AGAIN NINETY MINUTES LATER, at carve-js c8c8dc3, carve-rs 71318e9 and
+# carve-php 6bd856f over the same 1131 corpus documents plus 3 synthetic
+# samples. Of 22,769 comparable spans, FOUR rows disagree across 8 documents.
+# The block above is already the previous state.
+#
+# Both carve-js rows went, in the two PRs that answered them:
+#
+#   code (extent)    1 -> 0   markup-carve/carve-js#1145, closed by
+#                             markup-carve/carve-js#1152. Reported AGREED.
+#   text (presence)  6 -> 3   markup-carve/carve-js#1153, the issue this
+#                             ledger's previous block filed, closed by
+#                             markup-carve/carve-js#1154. Reported COUNT; the
+#                             three carve-php documents are what is left.
+#
+# So `text (presence)` is now ONE defect rather than two, and the row that the
+# previous block called "the row worth watching when the other eight go" was
+# gone within two hours of being written. Both were removed on the run
+# reporting them, not on the merge notification.
+#
+# markup-carve/carve-js#1154 also moved resources/ast-position-waivers.txt, which
+# had not moved all day: giving a continuation row's carried text its own span
+# retires two permitted omissions and halves a third.
+#
+# WHAT REMAINS IS carve-php ALONE, on four rows and three open issues:
+# markup-carve/carve-php#1351 (text presence), #1361 (code presence), #1362
+# (definition_list extent) and #1363 (paragraph extent). That is the first time
+# today this panel has had a single engine on every row, and it is worth saying
+# only because the previous two blocks each said something like it and were
+# wrong - which is the argument for the count column rather than the prose.
+
+text (presence) 3
 code (presence) 3
 definition_list (extent) 2
 paragraph (extent) 1
-code (extent) 1

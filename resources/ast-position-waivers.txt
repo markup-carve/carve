@@ -46,10 +46,19 @@
 # IN THIS FILE MOVED EITHER TIME. Same four owed findings under the same open
 # issue, and the same permitted totals: 38, 35 and 32.
 #
-# WHICH IS WORTH RECORDING RATHER THAN SKIPPING. The span ledger beside this one
-# moved twice on those same engine builds - nine rows to five - so "the engines
-# moved, therefore this moved too" is exactly the inference a re-measurement is
-# here to refuse. A file that does not move still has to be run to say so.
+# THEN IT MOVED, an hour later, at carve-js c8c8dc3 over the same 1131
+# documents. markup-carve/carve-js#1154 gave a continuation row's carried text
+# its own span, so three PERMITTED lines stopped describing anything: the `333`
+# and `333-4` text omissions are gone entirely and `333-5` went from two to one.
+# carve-js's permitted total is 35, not 38. carve-rs and carve-php did not move
+# and still read 35 and 32, and the OWED half is untouched - the same four
+# findings under the same open markup-carve/carve-php#1351.
+#
+# WHICH IS WHY THE "NOTHING MOVED" NOTE ABOVE IS KEPT RATHER THAN OVERWRITTEN.
+# It was true when it was measured and false ninety minutes later, and the two
+# together are the actual claim this file can support: a permitted line is a
+# statement about one build, and the engines land fixes faster than a paragraph
+# describing them stays accurate. The run is what says which state you are in.
 #
 # The measurement this replaces ran the same 1124 documents at carve-js
 # e2e8460, carve-rs b6ff319 and carve-php b6d49a7, and reported both halves the
@@ -152,9 +161,7 @@ carve-php  64-table-rowspan-with-multi-line-content.crv           text  1  permi
 # (resources/engine-pin-drift.txt declares the carve-js half), not because the
 # clause reaches them differently.
 
-carve-js   333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe.crv    text  1  permitted
-carve-js   333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-4.crv  text  1  permitted
-carve-js   333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  text  2  permitted
+carve-js   333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  text  1  permitted
 carve-rs   333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  text  1  permitted
 carve-php  333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  text  1  permitted
 
