@@ -5234,6 +5234,25 @@ EOF = (* end of file *) ;
         is CONTENT (below) and an indented `%%` line is ordinary text. That is
         a PART 11 §1 failure, and it is what the pinned build does today.
 
+        THE NODE'S SURVIVAL DOES NOT DEPEND ON HOW THE BOUNDARY ABOVE IT WAS
+        SPELLED -- NORMATIVE. `a` over `%% c` and `a \` over `%% c` are the
+        same document but for a backslash on the line above, and the comment
+        is a node in both. An engine that asks the question of the SOFT-break
+        conversion asks it where a `\` never arrives -- A BACKSLASH BREAK IS
+        NOT ADDITIVE consumed the newline before the conversion ran -- so the
+        note is kept under one spelling and dropped under the other. The
+        boundary that OPENS the comment's line is there either way, which is
+        the only thing the line needs to exist.
+
+        BUT IT DOES NOT SURVIVE A RUN THAT ATE ITS LINE. What an unclosed
+        verbatim run carries across an emptied line is the NEWLINE, the same
+        thing it carries across every boundary it swallows, so there is no
+        boundary left in the tree for a `comment` node to sit on and the run's
+        value holds an EMPTY LINE instead. Appending the node anyway puts its
+        span before the run that contains it and after the node that follows
+        it, which PART 12 containment refuses. The writer's answer for that
+        empty line is PART 11 §7c.
+
         A TRAILING COMMENT IS A DIFFERENT CONSTRUCT and this clause does not
         reach it. `x %% secret` is `inline_comment` (PART 3, §21), not
         `comment_line`, and §21's third bullet governs it: inside a verbatim
@@ -7311,32 +7330,105 @@ EOF = (* end of file *) ;
       `{empty}` in formatted source now has this clause to look it up in,
       which is the objection carve#999 opened with.
 
-   7c. A LINE BLOCK'S HARD BREAK KEEPS ITS BACKSLASH WHERE THE BARE NEWLINE
-      WOULD BE RE-READ -- NORMATIVE. A line block hardens every line boundary
-      of its own accord (PART 9 §23), so the writer spells a `hard_break`
-      there as a BARE NEWLINE. That is right for most lines and wrong for
-      two, and the two are where §7's own precondition fails.
+   7c. A LINE BLOCK'S HARD BREAK IS WRITTEN BARE ONLY WHERE THE BARE NEWLINE
+      RE-DERIVES IT -- NORMATIVE. A line block hardens every line boundary of
+      its own accord (PART 9 §23), which is the whole of why the writer may
+      spell a `hard_break` there as a BARE NEWLINE rather than as the PART 3
+      form. The permission is not general, and it is stated as the PROPERTY it
+      rests on rather than as a list of the places it runs out:
+
+        THE WRITER SPELLS A `hard_break` INSIDE A LINE BLOCK AS A BARE
+        NEWLINE WHERE, AND ONLY WHERE, RE-READING THAT NEWLINE YIELDS THE
+        SAME TREE. EVERYWHERE ELSE IT WRITES THE PART 3 FORM, `\` BEFORE THE
+        NEWLINE.
 
       §7 permits stripping a line's trailing whitespace on the ground that
       "where the PARSER discards trailing whitespace the writer may too". The
       parser does NOT discard it when a backslash follows: PART 7 makes the
       run before a line-break backslash INTERIOR, and PART 9 §23 gives that
-      the visible consequence. So the exception is not a new principle, it is
-      §7 applied where its condition does not hold.
+      the visible consequence. So none of this is a new principle, it is §7
+      applied where its condition does not hold.
 
-      THE WRITER EMITS `\` BEFORE THE NEWLINE IN EXACTLY TWO CASES:
+      A BARE NEWLINE RE-DERIVES A `hard_break` AT A BOUNDARY BETWEEN TWO BODY
+      LINES, and nowhere else. §23 hardens the boundary BETWEEN lines, so a
+      newline written between two lines comes back as the break it replaced,
+      with the lines around it unchanged. That is the ordinary case and most
+      of every stanza.
 
-        - the line's content is EMPTY. A bare newline would be a BLANK LINE,
-          which ends the stanza, so one stanza is written back as two.
-        - the line's content ends in a LONE space. A bare newline makes that
-          space line-trailing, where PART 2's NO TRAILING WHITESPACE clause
-          drops it. A run of TWO OR MORE columns is already NBSP CONTENT
-          (§23 MEDIAL GAPS) and needs no backslash; nor does a line with no
-          trailing whitespace at all, whose tree is identical either way.
+      WHAT THE PROPERTY EXCLUDES -- CONSEQUENCES, NOT THE RULE. A case that is
+      not in this list is decided by the property above, not by the absence of
+      a bullet. This clause was first written as a list of the two unsafe
+      cases, and the first entry below is the one it did not reach:
 
-      Both conditions are visible in the tree with NO new field, so this costs
-      no AST change: the first is two adjacent `hard_break` nodes with no text
-      between them, the second is a text node whose value ends in one space.
+        - THE LAST BODY LINE, WHATEVER IT ENDS IN. §23 hardens the boundary
+          BETWEEN lines, and the body's end is not one. So a `hard_break`
+          there is the AUTHOR'S OWN (PART 3) and nothing else can produce it:
+          the newline after it belongs to the closing fence, or to the blank
+          line before the next stanza. `a\` and `a  \` on a last body line
+          lose the break OUTRIGHT, with no space involved in either -- which
+          is why neither of the two cases below, one about an emptiness and
+          one about a space, reaches this one.
+        - AN EMPTY LINE. A bare newline there is a BLANK LINE, which ends the
+          stanza, so one stanza is written back as two.
+        - CONTENT ENDING IN A LONE SPACE. The boundary comes back and the
+          space does not: PART 2's NO TRAILING WHITESPACE clause takes it. A
+          run of TWO OR MORE columns is already NBSP CONTENT (§23 MEDIAL
+          GAPS) and survives on its own, so it needs no backslash INSIDE a
+          stanza -- at the stanza's end the entry above governs it instead.
+
+      Every condition is visible in the tree with NO new field, so this costs
+      no AST change: the first is a `hard_break` that is the last node of the
+      stanza's own inline sequence, the second is two adjacent `hard_break`
+      nodes with no text between them, the third is a text node whose value
+      ends in one space.
+
+      A LINE WHOSE LAST NODE IS A COMMENT IS EXEMPT -- NORMATIVE. `%%` runs to
+      the END OF ITS LINE, so a trailing space there is INSIDE the note and
+      not content PART 2 is about to take: stripping it leaves the same node,
+      and CONTENT ENDING IN A LONE SPACE therefore does not reach the line.
+      Protecting it with a backslash does not leave the same node either --
+      the block layer claims the whole line before the inline parser sees it,
+      so the `\` lands in the comment's own CONTENT and `%%` comes back as
+      `%% \`. An EMPTY comment line is where this bites, because the writer
+      spells one as the marker plus a separator space and that space is the
+      one the case would have protected.
+
+      THE RULE IS KEYED ON THE NODE, NOT ON THE LINE'S POSITION, which is the
+      same exemption reaching the first consequence. A body line whose content
+      ends in an `inline_comment` carries NO `hard_break` at the body's end,
+      so THE LAST BODY LINE has nothing to spell there and nothing is written.
+      A writer that instead appends `\` to whatever it emitted last on the
+      final line writes it inside the note by the same mechanism, on a line
+      where there was no break to protect in the first place.
+
+      WHICH LINE IS LAST IS DECIDED BY THE BREAKS, HOWEVER THEY WERE SPELLED.
+      A `hard_break` ENDS the body line it stands at the end of, and what
+      follows it is the NEXT body line -- including a line that renders
+      nothing. In
+
+        ::: |
+        a \
+        %% c
+        :::
+
+      the last body line is the COMMENT, not `a `, so the backslash on `a ` is
+      there under CONTENT ENDING IN A LONE SPACE and not under THE LAST BODY
+      LINE, and the comment is written back as its own line below it. A writer
+      that treats a boundary the AUTHOR spelled as the end of the body answers
+      one document two ways depending on which spelling reached it: the same
+      note is kept under `a` and dropped under `a \`.
+
+      AN EMPTY LINE INSIDE A VERBATIM RUN IS SPELLED `%%`, because there the
+      backslash is not a break but content. A run left unclosed on an earlier
+      line swallows an emptied verse line as a NEWLINE in its value (§23), so
+      the tree holds no `hard_break` for this clause to spell and no `comment`
+      node to put back -- what the writer has is a value containing an empty
+      line, and a blank line would end the stanza. An empty verse line has
+      exactly ONE spelling that does not: a comment line, which the block
+      layer removes before the run exists, so `%%` re-reads to the empty line
+      it was written for and to nothing else. The author's own comment TEXT is
+      not recoverable here and is not required to be: the run consumed it, and
+      §1 is about the tree.
 
       THIS IS §1a, NOT AN EXEMPTION FROM IT. The per-construct spelling emits
       bytes that do not re-parse to the tree they were written from, so §1
@@ -7347,6 +7439,16 @@ EOF = (* end of file *) ;
       line, with the three engines settling on three different canonical
       byte strings for the first of them (carve#1334). The sibling writers
       already do this: a paragraph and a `::: \` block both emit the backslash.
+
+      THE LAST BODY LINE WAS FOUND BY AN ENGINE IMPLEMENTING THE OLD LIST
+      (markup-carve/carve-js#1172), from a whole-corpus
+      `to_html(fmt(x)) == to_html(x)` gate and a sweep over every three-line
+      line block drawn from a 24-shape alphabet. The list's own justification
+      is what let it through: it excused a line with no trailing whitespace
+      because "the tree is identical either way", which holds INSIDE a stanza
+      and fails at its end. A list of the cases where a rule is unsafe goes
+      stale the first time an unlisted case turns up, which is why what is
+      normative here is the property and not the bullets under it.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
       the canonical writer and does not follow §2. It has a different
