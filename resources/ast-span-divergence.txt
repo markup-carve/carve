@@ -74,8 +74,9 @@
 # WHAT SURVIVED, per document, and every one now names its own tracker. The
 # morning's block attributed eight rows to one carve-php issue; that was too
 # coarse, and the four rows that did NOT clear when that issue's work shipped are
-# the proof. There are five distinct defects here, in four engines' worth of
-# directions:
+# the proof. FIVE rows, SIX defects, TWO engines - the counts differ because
+# `text (presence)` carries two of the six, and reading the row count as a defect
+# count is the same conflation the morning's block made:
 #
 #   text (presence)              6 doc(s)   TWO defects under one row key:
 #                                           268-...-12, 41-line-blocks-2 and -3
