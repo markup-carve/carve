@@ -619,7 +619,7 @@ A row may name an issue only where one of those still declares the debt.
 |---|---|---|
 | carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together | every block and inline placed, except the categories §4 exempts: a coalesced `text` run, a table cell continued on a `+` line, and a verbatim run continued on a `+` line |
 | carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` | every block and inline placed, except the categories §4 exempts: a coalesced `text` run, a reassembled table cell, and a verbatim run continued on a `+` line |
-| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish on every corpus document | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the two categories §4 exempts - a coalesced `text` run and a reassembled table cell - and a line block's spaced content, which the other two place and markup-carve/carve-php#1351 tracks |
+| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish on every corpus document | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the categories §4 exempts - a coalesced `text` run, a reassembled table cell, and a verbatim run continued on a `+` line - plus two gaps the other two engines do not have: a line block's spaced content (markup-carve/carve-php#1351) and a fenced code block's extent, dropped along with the reassembled run's span (markup-carve/carve-php#1369) |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
@@ -734,6 +734,22 @@ up" and names it the one worth watching; it cleared within two hours, in the
 other engine, for an unrelated reason. Every remaining span row is carve-php
 alone - the first time that day the panel had one engine on every row, and the
 third consecutive block to claim something like it.
+
+One more measurement that day, at carve-php `30cc587`, is the one worth keeping
+for what it says about the ledgers rather than about the engines. The span
+declaration read four rows across eight documents again, with all four counts
+identical to the measurement before it - and `code (presence)` had swapped both
+its three documents and which engine stood alone. carve-php stopped publishing a
+position for a node assembled from discontiguous source, which is right for a
+verbatim run carried across a `+` row and wrong for a fenced code block, whose
+position is an extent over one contiguous region
+([carve-php#1369](https://github.com/markup-carve/carve-php/issues/1369)).
+
+A row that changes its documents and its direction while holding its count is
+invisible to a count-based declaration - and the run still failed, because the
+six carve-php position findings arrived undeclared in
+`resources/ast-position-waivers.txt`. The two ledgers cover each other's blind
+spot, which is worth knowing before anyone proposes folding them into one.
 
 An empty declaration is a statement about the corpus, which is the only thing
 the run measures. Four collapsed-reference labels the corpus does not hold - one

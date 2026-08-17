@@ -225,6 +225,9 @@ carve-js   333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  
 carve-rs   333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe.crv    code  1  permitted
 carve-rs   333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-4.crv  code  1  permitted
 carve-rs   333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  code  1  permitted
+carve-php  333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe.crv    code  1  permitted
+carve-php  333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-4.crv  code  1  permitted
+carve-php  333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  code  1  permitted
 
 # ---- OWED --------------------------------------------------------------------
 #
@@ -242,10 +245,30 @@ carve-rs   333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  
 # and all three engines omit. Per-engine symmetry is the tell - when the cause
 # is the construct every engine omits, and when one engine is alone the finding
 # is owed.
+#
+# A SECOND OWED DEFECT ARRIVED THE SAME DAY, and it arrived as the over-reach of
+# a fix. markup-carve/carve-php#1365 stopped publishing a position for a node
+# assembled from discontiguous source, which is correct for the inline verbatim
+# run markup-carve/carve-php#1361 was about - carve-php's three `333` `code`
+# omissions are now PERMITTED above, matching carve-js and carve-rs, and that
+# row is a genuine fix.
+#
+# It also reached fenced code BLOCKS, whose position is an EXTENT rather than a
+# slice of the value. A fence is one contiguous region, carve-js and carve-rs
+# both place it, and §4 exempts what CANNOT be placed - so these three are owed
+# (markup-carve/carve-php#1369).
+#
+# WHICH IS THE SAME SHAPE AS THE PARAGRAPH ABOVE, in the other direction: one
+# engine alone is the tell either way. Here the engine standing alone had just
+# stopped standing alone somewhere else, in one commit, which is why a run
+# rather than a diff is what this file reconciles against.
 
 carve-php  268-trailing-whitespace-on-a-content-line-is-dropped-12.crv  text  1  markup-carve/carve-php#1351
 carve-php  41-line-blocks-2.crv                                         text  1  markup-carve/carve-php#1351
 carve-php  41-line-blocks-3.crv                                         text  2  markup-carve/carve-php#1351
+carve-php  11-fenced-code-16.crv                                        code  1  markup-carve/carve-php#1369
+carve-php  149-fence-folds-as-lazy-inline-code-above-the-content-column.crv  code  1  markup-carve/carve-php#1369
+carve-php  276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-7.crv  code  1  markup-carve/carve-php#1369
 
 # WHAT USED TO BE HERE, and was deliberately kept as a section while empty.
 #

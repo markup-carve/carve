@@ -216,8 +216,15 @@ test('a malformed declaration line is an error, never a silent skip', () => {
  * ledger is empty - every declared row becomes an AGREED.
  *
  * Measured 2026-08-17 over 1131 corpus documents plus 3 synthetic samples, at
- * carve-js c8c8dc3, carve-rs 71318e9 and carve-php 6bd856f, each built from a
- * fresh clone of main. Four rows across 8 documents, of 22,769 spans compared.
+ * carve-js c8c8dc3, carve-rs 71318e9 and carve-php 30cc587, each built from a
+ * fresh clone of main. Four rows across 8 documents, of 22,763 spans compared.
+ *
+ * The counts below are UNCHANGED from the measurement before this one and one
+ * of the rows is not: `code (presence)` swapped its three documents and its
+ * engine direction under a steady count of 3, which this map cannot see and
+ * resources/ast-position-waivers.txt did - see the note in
+ * resources/ast-span-divergence.txt. A stable number here is not evidence the
+ * panel stood still.
  *
  * It read nine rows across 21 documents that morning and five across 9 an hour
  * later. carve-php shipped the 326/327/329/333 container rulings, then carve-js
