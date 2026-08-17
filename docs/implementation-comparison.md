@@ -131,7 +131,8 @@ under the same semantic-span rule,
 `339-a-wider-comment-fence-inside-an-item-hides-its-body-the-same-way`,
 `340-an-abbreviation-inside-a-comment-defines-nothing`,
 `341-a-comment-fence-inside-a-colon-container-registers-nothing`,
-`342-url-list-attributes-are-probed-token-wise`.
+`342-url-list-attributes-are-probed-token-wise`,
+`343-an-escaped-hash-keeps-its-escape-at-a-container-s-content-position`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative
