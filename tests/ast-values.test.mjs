@@ -81,19 +81,23 @@ const shippedDeclaration = () =>
  * WHAT `npm run ast:check` LAST MEASURED, written down so a host with no engine
  * checkouts can still say something falsifiable about the shipped file.
  *
- * Measured 2026-08-17 over 1124 corpus documents plus 3 synthetic samples, at
- * carve-js 02c4d80, carve-rs 1ad93f0 and carve-php 4610ef8. Both rows are
- * carve-php alone on the 326/329 container rulings
- * (markup-carve/carve-php#1354).
+ * Measured 2026-08-17 over 1131 corpus documents plus 3 synthetic samples, at
+ * carve-js 80537c8, carve-rs 71318e9 and carve-php 84c422b, each built from a
+ * fresh clone of main. `npm run ast:check` prints "the engines publish the same
+ * values everywhere", so the map is EMPTY.
  *
- * This is the "moves with the measurement" the note below describes: when that
- * issue lands, ast:check reports both rows FIXED, and the same commit that
- * deletes them from the ledger empties this map.
+ * It held two rows earlier the same day - carve-php alone on the 326/329
+ * container rulings, markup-carve/carve-php#1354 - and this is the "moves with
+ * the measurement" that note described: carve-php shipped them, ast:check
+ * reported both FIXED, and the commit that deleted them from the ledger emptied
+ * this map. Nothing was removed on the strength of the merge notification; the
+ * run is what says so.
+ *
+ * NO FLOOR either way. An empty map against an empty ledger reconciles to
+ * nothing, which is the state the panel is trying to reach, and a row that
+ * appears in either place alone still fails.
  */
-const LAST_MEASURED = new Map([
-  ['paragraph.attrs.classes', 4],
-  ['paragraph.attrs.order', 4],
-])
+const LAST_MEASURED = new Map([])
 
 /** A measurement of `count` distinct documents - the reconciler counts them. */
 const documents = (count) =>

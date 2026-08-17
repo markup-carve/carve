@@ -58,12 +58,61 @@
 # to hold rather than a disagreement it is built to hide: a new type, a moved
 # count and a row that stops disagreeing each fail the run from here.
 
-list (extent) 12
-list_item (extent) 12
-text (presence) 5
-block_quote (extent) 2
-code (presence) 2
+# RE-MEASURED AGAIN 2026-08-17, later the same day, over 1131 corpus documents
+# plus 3 synthetic samples, at carve-js 80537c8, carve-rs 71318e9 and carve-php
+# 84c422b, each built from a fresh clone of main. Of 22,775 comparable spans,
+# FIVE rows disagree across 9 documents. The block above is the morning's state
+# and no longer holds.
+#
+# Four rows went, and NOT on the strength of a merge notification. carve-php
+# shipped the container rulings in markup-carve/carve-php#1355, #1357, #1359 and
+# #1360; `npm run ast:check` then reported `list`, `list_item`, `block_quote` and
+# `definition_description` AGREED - "no longer disagrees, delete its line" - and
+# it kept failing until the lines went, which is this file's second direction
+# doing its job. Three of the surviving rows moved count in the same run.
+#
+# WHAT SURVIVED, per document, and every one now names its own tracker. The
+# morning's block attributed eight rows to one carve-php issue; that was too
+# coarse, and the four rows that did NOT clear when that issue's work shipped are
+# the proof. There are five distinct defects here, in four engines' worth of
+# directions:
+#
+#   text (presence)              6 doc(s)   TWO defects under one row key:
+#                                           268-...-12, 41-line-blocks-2 and -3
+#                                           are php absent / js and rs placed
+#                                           (markup-carve/carve-php#1351), and
+#                                           333, 333-4 and 333-5 are js absent /
+#                                           rs and php placed
+#                                           (markup-carve/carve-js#1153).
+#   code (presence)              3 doc(s)   333, 333-4, 333-5: php places a span
+#                                           over a run reassembled from two
+#                                           segments, covering the `|` and `+ `
+#                                           between them; js and rs omit it
+#                                           (markup-carve/carve-php#1361).
+#   definition_list (extent)     2 doc(s)   329-...-5 and -6: php ends the list
+#                                           one line short of the floating
+#                                           attribute it now scopes
+#                                           (markup-carve/carve-php#1362).
+#   paragraph (extent)           1 doc(s)   268-...-12: php spans the trailing
+#                                           space the content line drops
+#                                           (markup-carve/carve-php#1363).
+#   code (extent)                1 doc(s)   268-...-13: js spans that same
+#                                           trailing space, in the other engine
+#                                           and on the other node
+#                                           (markup-carve/carve-js#1145).
+#
+# THE ROW KEY IS A TYPE, NOT A DEFECT, which `text (presence)` is now the
+# standing example of: six documents, one key, two engines each standing alone on
+# three of them, in opposite directions. A count that moves says the panel moved;
+# it does not say which half. Both halves are named above so that when one clears
+# the count drops by three and the remaining prose still describes what is left.
+#
+# `code (extent)` is unchanged from the morning's measurement and from
+# 2026-08-14 before it. It was the row worth watching when the other eight went,
+# and it is still here.
+
+text (presence) 6
+code (presence) 3
+definition_list (extent) 2
 paragraph (extent) 1
-definition_list (extent) 1
-definition_description (extent) 1
 code (extent) 1
