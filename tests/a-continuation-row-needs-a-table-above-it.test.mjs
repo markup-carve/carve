@@ -14,7 +14,7 @@
  *
  * IT IS NOT IN THE CORPUS because carve-js and carve-php currently fold `tail`
  * into the container in both documents below, while carve-rs and this
- * implementation end it (markup-carve/carve#1349). They close it when the
+ * implementation end it (markup-carve/carve#1348). They close it when the
  * container's table ends on a STANDARD row - `- | a |` / `  | b |` / `tail`
  * leaves the item in all four - so the divergence is the continuation row
  * alone. A corpus document would gate the cross-engine job on that open
