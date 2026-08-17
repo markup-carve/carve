@@ -65,3 +65,54 @@
 # and those four shapes change the HTML too - carve-php leaves the reference
 # unresolved, or slugs the heading differently - so they are ordinary corpus
 # conformance, owed a fixture rather than a line (markup-carve/carve#1011).
+#
+# NOT EMPTY IN FACT, AS OF 2026-08-17. Measured over 1124 corpus documents plus
+# 3 synthetic samples, at carve-js 02c4d80, carve-rs 1ad93f0 and carve-php
+# 4610ef8 - each built from a fresh clone of main - `npm run ast:check` reports
+# TWO fields disagreeing across four documents, both declared at the bottom of
+# this file:
+#
+#   paragraph.attrs.classes  4 doc(s)  js and rs absent, php ["k"]
+#   paragraph.attrs.order    4 doc(s)  js and rs absent, php [".class"]
+#
+# One cause, measured rather than inferred. The documents are the `326` and
+# `329` fixtures. On `329-...-2`:
+#
+#     > q
+#     > {.k}
+#     tail
+#
+# carve-js and carve-rs close the quote at the flush-left line, so the attribute
+# reaches nothing and `tail` is a bare top-level paragraph:
+#
+#     <blockquote><p>q</p></blockquote>
+#     <p>tail</p>
+#
+# carve-php folds `tail` into the quote and applies the attribute to it, which
+# is where the class the other two publish nowhere comes from:
+#
+#     <blockquote>
+#       <p>q</p>
+#       <p class="k">tail</p>
+#     </blockquote>
+#
+# markup-carve/carve#1280 and markup-carve/carve#1281 ruled that; carve-rs
+# already implemented it and carve-js did in markup-carve/carve-js#1140 and
+# markup-carve/carve-js#1142, so carve-php is the engine that has not caught up.
+#
+# DECLARED RATHER THAN LEFT RED, which is the whole reason this file exists -
+# "a gate would have failed on day one for reasons already tracked, so the debt
+# is DECLARED instead". The previous pass measured the same panel and left it
+# undeclared, reasoning that the counts would flip as each engine landed fixes.
+# They did not: carve-js shipped five fixes in between and the row count did not
+# move, because these rows wait on carve-php and nothing else. A panel that is
+# red for a known reason cannot report the next reason.
+#
+# The missing piece was this file's own third column - a row names where it is
+# TRACKED, and no carve-php issue existed for the rulings. One does now, and
+# both rows cite it. Both clear together in whichever carve-php PR ships them,
+# and the run fails until the lines go, which is the reminder rather than the
+# waste.
+
+paragraph.attrs.classes  4  carve-php alone: the 326/329 container rulings are unimplemented (markup-carve/carve-php#1354)
+paragraph.attrs.order    4  the same defect over the same four documents (markup-carve/carve-php#1354)

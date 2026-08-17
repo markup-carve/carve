@@ -638,13 +638,15 @@ documents on 2026-08-07, the OWED half of `resources/ast-position-waivers.txt`
 was EMPTY.
 
 It did not stay empty. Re-measured on 2026-08-17 over 1124 documents, at
-carve-js e2e8460, carve-rs b6ff319 and carve-php b6d49a7, that half holds one
+carve-js 02c4d80, carve-rs 1ad93f0 and carve-php 4610ef8, that half holds one
 defect again: carve-php drops the position of a line block's content where the
 source's spaces became indentation sentinels, and carve-rs publishes the same
 value WITH a span, so a true span exists. The corpus grew 291 documents between
-the two measurements, which is the whole reason an undated "the gap is closed"
-sentence is worth nothing here - a re-measurement is what says so, and only for
-the corpus it ran over.
+that measurement and the 833-document one above, which is the whole reason an
+undated "the gap is closed" sentence is worth nothing here - a re-measurement is
+what says so, and only for the corpus it ran over. The same 1124 documents at
+carve-js e2e8460, carve-rs b6ff319 and carve-php b6d49a7 read the same way
+earlier that day, across the five carve-js fixes in between.
 
 Every other position finding is `permitted` under §4.
 
@@ -682,6 +684,20 @@ declaration is now EMPTY: no field the three publish differs anywhere in the
 corpus, so both lines were deleted rather than reworded. The caption line that
 sat beside it went the same way, fixed under
 [carve#963](https://github.com/markup-carve/carve/issues/963).
+
+It did not stay empty either. Re-measured on 2026-08-17 over 1124 documents plus
+3 synthetic samples, at carve-js `02c4d80`, carve-rs `1ad93f0` and carve-php
+`4610ef8`, two fields disagree across four documents
+(`paragraph.attrs.classes` and `paragraph.attrs.order`) and nine node types are
+spanned differently across twenty-one. Eight of those nine are carve-php alone
+on the `326`, `327`, `329` and `333` fixtures, where it has not yet implemented
+the container rulings the other two ship
+([carve-php#1354](https://github.com/markup-carve/carve-php/issues/1354)); the
+ninth is carve-js alone, spanning a verbatim run one codepoint past the trailing
+space the content line drops
+([carve-js#1145](https://github.com/markup-carve/carve-js/issues/1145)). All
+eleven are declared in the two files rather than left to fail the run, which is
+what those files are for.
 
 An empty declaration is a statement about the corpus, which is the only thing
 the run measures. Four collapsed-reference labels the corpus does not hold - one
