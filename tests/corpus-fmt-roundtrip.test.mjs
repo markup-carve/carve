@@ -55,6 +55,8 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToCarve, carveToHtml } from '@markup-carve/carve'
+import { parse as parseSpec } from '../scripts/spec/layout.mjs'
+import { renderDoc } from '../scripts/spec/html.mjs'
 import { loadDeclaredFmtDrift, loadWriterOnlyDrift } from './fmt-drift.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -169,11 +171,41 @@ test('a .fmt fixture is read, so it can fail', () => {
   assert.ok(pinned.length >= 5, `found ${pinned.length} .fmt fixtures`)
 })
 
+// THE DECLARED-DRIFT EXCUSE REACHES HERE TOO, and this sweep was the last of
+// the four in this file that did not consult it. The gap made the `.fmt`
+// fixtures unusable for the one job they are best at: naming the canonical form
+// BEFORE the engines reach it. A spec PR that rules on the writer could pin the
+// bytes only by leaving the suite red, so it did not pin them at all, and three
+// engines went on emitting three different strings with nothing saying which was
+// right (carve#1334, where they emitted `a \`, `a ` and `a` for one document).
+//
+// A slug here is excused for the SAME reason as above and under the SAME
+// ratchet: the staleness check below already fails the moment the pin stops
+// drifting on it, so an excuse cannot outlive its cause.
 test('fmt(x) matches every .fmt fixture (PART 11 §2)', () => {
   const wrong = []
   for (const { slug, source, expected } of pinned) {
+    if (declaredDrift.has(slug)) continue
     const actual = carveToCarve(source)
     if (actual !== expected) wrong.push(`${slug}\n    expected: ${JSON.stringify(expected)}\n      actual: ${JSON.stringify(actual)}`)
   }
   assert.deepEqual(wrong, [], `the writer disagrees with its pinned canonical form:\n  ${wrong.join('\n  ')}`)
+})
+
+// A .fmt fixture the pin cannot produce still has to be a FAITHFUL
+// serialization, or the drift line above pins a corruption as the target. The
+// oracle is what checks it, because the engine is by definition the thing that
+// cannot write these bytes yet: it re-reads the fixture and the case input and
+// requires the same rendering out of both.
+test('every drifting .fmt fixture still says what its case input says', () => {
+  const wrong = []
+  for (const { slug, source, expected } of pinned) {
+    if (!declaredDrift.has(slug)) continue
+    if (renderDoc(parseSpec(expected)).trim() !== renderDoc(parseSpec(source)).trim()) wrong.push(slug)
+  }
+  assert.deepEqual(
+    wrong,
+    [],
+    `these .fmt fixtures are not faithful serializations of their case input:\n  ${wrong.join('\n  ')}`,
+  )
 })

@@ -5134,9 +5134,33 @@ EOF = (* end of file *) ;
       - WRAPPER. Renders as `<div class="line-block">` (a generic div, never an
         `<aside>`); extra classes / id attach via a PRECEDING block-attribute
         line, which floats onto the div (§15).
-      - LINE BREAKS. Each soft line break inside a stanza becomes a HARD break
+      - LINE BREAKS. Each SOFT line break inside a stanza becomes a HARD break
         (`<br>`). So consecutive non-blank body lines render as one paragraph
         with `<br>` between them.
+
+        A BACKSLASH BREAK IS NOT ADDITIVE -- NORMATIVE. The rule above has a
+        subject, and it is the SOFT break. `hard_break = '\', newline` (PART 3)
+        consumes its own newline, so no soft break survives a backslash and
+        there is nothing left to convert: ONE line boundary produces ONE
+        `<br>`, however the boundary is spelled. The additive reading would
+        have to SYNTHESIZE a break node no production yields, and it would
+        make the container ADD a line to the layout this block exists to
+        preserve. It also reaches the markdown, plain and ansi targets, where
+        nothing rules on a second break. Ruled at carve#1334, superseding a
+        note on carve-rs#1026 that counted engines rather than citing a clause
+        (PART 0, THE EXECUTABLE ARTIFACTS DECIDE NOTHING) and whose two
+        witnesses have since changed.
+
+        THE BACKSLASH STILL HAS A JOB HERE, so it is not redundant syntax the
+        writer may drop. PART 7 makes the whitespace run before it INTERIOR,
+        which is what lets a verse line keep a LONE trailing space that would
+        otherwise be stripped from a content line; a run of TWO OR MORE
+        trailing columns needs no backslash, because MEDIAL GAPS below has
+        already turned it into NBSP CONTENT. And a `\` ALONE on a body line is
+        how a stanza carries an EMPTY verse line, the blank line being the one
+        spelling that would end the stanza instead. Both are observable in the
+        tree and in the HTML, which is why the canonical writer may not drop
+        either (PART 11 §7c).
       - STANZAS. A blank line ends a stanza; each stanza is its own `<p>` inside
         the single `<div class="line-block">`.
       - LEADING WHITESPACE. Each body line's leading whitespace is PRESERVED
@@ -5171,11 +5195,75 @@ EOF = (* end of file *) ;
         and none of them is REGISTERED. The stanza is the only structure a
         line block has.
 
-        A COMMENT IS NOT AN EXCEPTION TO THIS, because a comment is not a
-        block construct: `%%` runs to end of line wherever it appears (§28),
-        including inside verse, and a comment-only body line leaves an EMPTY
-        verse line rather than disappearing - the line was written, so the
-        stanza keeps its shape.
+        A COMMENT IS THE ONE EXCEPTION, and the exception is about TIMING
+        rather than about what a comment is. This clause used to say "a
+        comment is not a block construct", which is false: `comment_line` IS
+        a block, listed in PART 1 among the INVISIBLE blocks and ruled by §10
+        I5 to interrupt an open paragraph and be consumed. The real reason it
+        survives the suppression above is that it is the only construct on
+        that list whose recognition PRESERVES the verse instead of rewriting
+        it. A definition or a fence opener CLAIMS the line and changes what
+        renders; a comment-only body line leaves an EMPTY verse line - the
+        line was written, so the stanza keeps its shape.
+
+        IT IS REMOVED AT THE BLOCK LAYER -- NORMATIVE. The line is decided
+        with the other block-layer decisions, BEFORE any inline content
+        exists. No inline run can reach it, so whether an EARLIER line left a
+        verbatim run open cannot change whether a line is a comment. Leaving
+        this unsaid let §21's verbatim exclusion claim the line and PUBLISH
+        the comment's own text, which is the one outcome a comment may never
+        have, on a document whose only defect is a stray backtick somewhere
+        above it (carve#1333):
+
+          ::: |
+          a `b
+          %% secret
+          c
+          :::
+
+        All three engines and the executable spec rendered `%% secret` inside
+        the code span. Under this clause the comment is gone before the run
+        exists, and the run carries the empty verse line as a NEWLINE, like
+        every other break it swallows (carve#1282).
+
+        REMOVED FROM THE RENDER, NOT FROM THE TREE. The line is a `comment`
+        node like any other comment (§21a, PART 12), so the canonical writer
+        emits it back UNCHANGED and at the SAME column. A writer that indents
+        it by a space to stop the line re-reading as a comment publishes the
+        very text the removal exists to hide, because in verse a leading run
+        is CONTENT (below) and an indented `%%` line is ordinary text. That is
+        a PART 11 §1 failure, and it is what the pinned build does today.
+
+        A TRAILING COMMENT IS A DIFFERENT CONSTRUCT and this clause does not
+        reach it. `x %% secret` is `inline_comment` (PART 3, §21), not
+        `comment_line`, and §21's third bullet governs it: inside a verbatim
+        run there is no comment there at all, only two percent characters in
+        content -- exactly what PART 3's UNCLOSED RUN clause already rules for
+        an emphasis delimiter or a link tail after the same opener. That holds
+        in a line block for the same reason it holds in a paragraph, where
+        the one line
+
+          a `b %% secret
+
+        publishes the same text with no container involved.
+        The asymmetry is deliberate: an engine may leave a `%%` standing
+        inside a verbatim run, and may never delete author bytes out of one.
+
+        LEADING WHITESPACE IS CONTENT HERE, so `comment_line`'s optional
+        `[whitespace]` prefix has nothing to consume in verse: ONLY a body
+        line whose FIRST character is `%` is a comment line. An indented `%%`
+        line is ordinary verse text and its leading run serializes as NBSPs
+        like any other.
+
+        AN EMPTY VERSE LINE IS A LINE, NOT A BREAK. It contributes a `<br>`
+        only through the BOUNDARY above it, exactly as a line with content
+        does, so a comment-only line at the END of a stanza adds nothing after
+        the break that already separates it from the line before: `a` over
+        `%% c` is `a<br>` and a stanza that is nothing but a comment is an
+        EMPTY paragraph. Anything else would put two breaks on one boundary,
+        which is what A BACKSLASH BREAK IS NOT ADDITIVE refuses above. Written
+        down because "leaves an EMPTY verse line" reads, at a stanza's end,
+        as though the line owed a break of its own.
 
         This is the block-layer half of the line above, and leaving it unsaid
         cost three engines three different answers on the same two lines
@@ -7222,6 +7310,43 @@ EOF = (* end of file *) ;
       pinning it costs no writer a second change -- and a reader meeting
       `{empty}` in formatted source now has this clause to look it up in,
       which is the objection carve#999 opened with.
+
+   7c. A LINE BLOCK'S HARD BREAK KEEPS ITS BACKSLASH WHERE THE BARE NEWLINE
+      WOULD BE RE-READ -- NORMATIVE. A line block hardens every line boundary
+      of its own accord (PART 9 §23), so the writer spells a `hard_break`
+      there as a BARE NEWLINE. That is right for most lines and wrong for
+      two, and the two are where §7's own precondition fails.
+
+      §7 permits stripping a line's trailing whitespace on the ground that
+      "where the PARSER discards trailing whitespace the writer may too". The
+      parser does NOT discard it when a backslash follows: PART 7 makes the
+      run before a line-break backslash INTERIOR, and PART 9 §23 gives that
+      the visible consequence. So the exception is not a new principle, it is
+      §7 applied where its condition does not hold.
+
+      THE WRITER EMITS `\` BEFORE THE NEWLINE IN EXACTLY TWO CASES:
+
+        - the line's content is EMPTY. A bare newline would be a BLANK LINE,
+          which ends the stanza, so one stanza is written back as two.
+        - the line's content ends in a LONE space. A bare newline makes that
+          space line-trailing, where PART 2's NO TRAILING WHITESPACE clause
+          drops it. A run of TWO OR MORE columns is already NBSP CONTENT
+          (§23 MEDIAL GAPS) and needs no backslash; nor does a line with no
+          trailing whitespace at all, whose tree is identical either way.
+
+      Both conditions are visible in the tree with NO new field, so this costs
+      no AST change: the first is two adjacent `hard_break` nodes with no text
+      between them, the second is a text node whose value ends in one space.
+
+      THIS IS §1a, NOT AN EXEMPTION FROM IT. The per-construct spelling emits
+      bytes that do not re-parse to the tree they were written from, so §1
+      wins and the spelling yields to "another spelling of the SAME
+      construct", which for a `hard_break` is its own PART 3 form. Measured on
+      all three engines, the bare newline destroyed a rendered space, split
+      one stanza into two, and dropped a trailing `<br>` from a block's last
+      line, with the three engines settling on three different canonical
+      byte strings for the first of them (carve#1334). The sibling writers
+      already do this: a paragraph and a `::: \` block both emit the backslash.
 
    8. THE MARKDOWN TARGET'S ESCAPING -- NORMATIVE. The Markdown renderer is not
       the canonical writer and does not follow §2. It has a different

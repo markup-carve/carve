@@ -479,8 +479,13 @@ const sem = g.createSemantics().addOperation('h', {
   nbspEsc(_bs, _sp) {
     return '&nbsp;'
   },
-  hardBreak(_bs, _la) {
-    return '<br>'
+  hardBreak(_bs, tail) {
+    // The rule CONSUMES the newline (PART 3), so this emits it: one line
+    // boundary, one break, whether the boundary was spelled with a backslash
+    // or not. In a line block that is the whole of PART 9 SS23's A BACKSLASH
+    // BREAK IS NOT ADDITIVE - there is no soft break left for the container
+    // to harden, so nothing synthesizes a second `<br>`.
+    return tail.sourceString === '' ? '<br>' : '<br>\n'
   },
   shortcode(_c1, name, _c2) {
     // No symbol map in Core: the literal `:name:` fallback. Consuming it as one

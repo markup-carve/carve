@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+344-a-comment-only-line-in-a-line-block-is-removed-before-any-inline-run  carve#1333: the pin removes a comment-only verse line at the INLINE layer, so an unclosed verbatim run opened on an earlier line claims it first and the comment text is published inside the code span. PART 9 section 23 now says the removal is a block-layer step. The no-run control beside this case (-2) already reproduces, which is what makes the pair discriminating.

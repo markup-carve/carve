@@ -361,11 +361,29 @@ function renderBlock(b, depth, ctx) {
       }
       if (cur.length) stanzas.push(cur)
       const ps = stanzas.map((st) => {
+        // A COMMENT-ONLY BODY LINE IS REMOVED AT THE BLOCK LAYER (PART 9
+        // SS23), which is to say HERE - before the stanza is handed to the
+        // inline parser below. Doing it after would let an unclosed verbatim
+        // run opened on an earlier line claim the line under SS21's verbatim
+        // exclusion and PUBLISH the comment, which is what all three engines
+        // and this checker did (markup-carve/carve#1333).
+        //
+        // It leaves an EMPTY VERSE LINE, not a blank line: the stanza split
+        // above has already happened, so emptying the line keeps the stanza's
+        // shape instead of ending it.
+        //
+        // Only a line whose FIRST character is `%` qualifies. In verse the
+        // leading run is CONTENT, so `comment_line`'s optional `[whitespace]`
+        // prefix has nothing to consume and an indented `%%` line is ordinary
+        // text. `%%%` is included: SS28 degrades a fence opener with no closer
+        // to a comment line, and SS23 makes a fence opener ordinary text here
+        // anyway, so it can never be anything else.
+        const body = st.map((l) => (l.startsWith('%%') ? '' : l))
         // ONE inline parse for the whole stanza, so a run with no closer
         // reaches the end of the block instead of stopping at a line break
         // (markup-carve/carve#1282). The breaks harden afterwards, and the ones
         // the run swallowed are content by then.
-        const source = st.map((l) => renderLineBlockLine(l)).join('\n')
+        const source = body.map((l) => renderLineBlockLine(l)).join('\n')
         return `${pad2}  <p>${renderInlineHardBreaks(source)}</p>`
       })
       return `${pad2}<div class="line-block">\n${ps.join('\n')}\n${pad2}</div>`

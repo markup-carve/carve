@@ -213,7 +213,11 @@ CarveCore {
   // escaped SPACE is a non-breaking space; a backslash at END OF LINE is a
   // hard break (PART 3)
   nbspEsc    = "\\" " "
-  hardBreak  = "\\" &(newline | end)
+  // The newline is CONSUMED, as PART 3's `hard_break = '\', newline` spells
+  // it. It used to be a lookahead, which left the newline for `nl` and made a
+  // line block emit TWO breaks for one line boundary - the additive reading
+  // PART 9 SS23 rejects (carve#1334).
+  hardBreak  = "\\" (newline | &end)
 
   // --- Mentions and tags (PART 9 SS7): name = letters/digits/_/- with
   // INTERIOR dots; a trailing dot is punctuation. Word boundary on the
