@@ -751,6 +751,23 @@ six carve-php position findings arrived undeclared in
 `resources/ast-position-waivers.txt`. The two ledgers cover each other's blind
 spot, which is worth knowing before anyone proposes folding them into one.
 
+It happened a second time within the hour, which is what makes it a pattern
+rather than an anecdote. At carve-php `1f60342` the span declaration is three
+rows across seven documents: `paragraph (extent)` came `AGREED` and
+`definition_list (extent)` dropped from two documents to one - but the surviving
+document is not either of the two the closed issue named. Both `329` fixtures
+agree now; what is left is `266-a-reference-definition-is-anchored-at-end-of-line-12`,
+where the list's extent runs one line PAST a reference definition it does not
+consume, the mirror of the gap that was fixed
+([carve-php#1371](https://github.com/markup-carve/carve-php/issues/1371)).
+
+So twice in an hour a fix landed correctly on the documents its issue named and
+over-reached onto one it did not. The count moved just enough to read as
+progress. A row here is a NODE TYPE, and the documents behind a type turn over
+faster than the row does - which is why the ledger records document names in
+prose beside each count, and why "the number went down" is not an answer to
+"did that gap close".
+
 An empty declaration is a statement about the corpus, which is the only thing
 the run measures. Four collapsed-reference labels the corpus does not hold - one
 carrying `/emphasis/`, one an escape, one a nested link, one a symbol shortcode

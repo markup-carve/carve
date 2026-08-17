@@ -170,7 +170,41 @@
 # ledgers cover each other, and neither is sufficient alone. Worth knowing
 # before anyone proposes dropping one.
 
+# AND ONCE MORE, at carve-js c8c8dc3, carve-rs 71318e9 and carve-php 1f60342
+# over the same 1131 corpus documents plus 3 synthetic samples. Of 22,763
+# comparable spans, THREE rows across 7 documents:
+#
+#   paragraph (extent)        1 -> 0   markup-carve/carve-php#1363, closed by
+#                                      markup-carve/carve-php#1367. AGREED.
+#   definition_list (extent)  2 -> 1   markup-carve/carve-php#1362, closed by
+#                                      markup-carve/carve-php#1366. COUNT - and
+#                                      the ONE that is left is not one of the
+#                                      two it declared.
+#
+# THE SURVIVING DOCUMENT IS A DIFFERENT ONE, AND THE DIRECTION IS REVERSED.
+# #1362 was carve-php ending a list one line SHORT of the floating attribute it
+# scopes, on `329-...-5` and `-6`; both now agree. The row's remaining document
+# is `266-a-reference-definition-is-anchored-at-end-of-line-12`, where carve-php
+# ends one line LONG, covering a reference definition the list does not consume
+# (markup-carve/carve-php#1371).
+#
+# THAT IS THE SECOND TIME IN AN HOUR a carve-php span fix landed correctly on
+# the documents its issue named and over-reached onto one the issue did not -
+# #1365 for `code (presence)` and #1366 here. Both times the count changed just
+# enough to look like progress and the row described something new. The lesson
+# is not about carve-php: it is that a row is a TYPE, and the documents behind a
+# type turn over faster than the row does. Anyone reading a count here to decide
+# whether a gap closed should re-run the check and read the document names.
+#
+# WHAT REMAINS, all carve-php, all against carve-js and carve-rs agreeing:
+#
+#   text (presence)           3 doc(s)  268-...-12, 41-line-blocks-2 and -3;
+#                                       php absent (markup-carve/carve-php#1351)
+#   code (presence)           3 doc(s)  11-fenced-code-16, 149-..., 276-...-7;
+#                                       php absent (markup-carve/carve-php#1369)
+#   definition_list (extent)  1 doc(s)  266-...-12; php one line long
+#                                       (markup-carve/carve-php#1371)
+
 text (presence) 3
 code (presence) 3
-definition_list (extent) 2
-paragraph (extent) 1
+definition_list (extent) 1
