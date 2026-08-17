@@ -266,9 +266,6 @@ carve-php  333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  
 carve-php  268-trailing-whitespace-on-a-content-line-is-dropped-12.crv  text  1  markup-carve/carve-php#1351
 carve-php  41-line-blocks-2.crv                                         text  1  markup-carve/carve-php#1351
 carve-php  41-line-blocks-3.crv                                         text  2  markup-carve/carve-php#1351
-carve-php  11-fenced-code-16.crv                                        code  1  markup-carve/carve-php#1369
-carve-php  149-fence-folds-as-lazy-inline-code-above-the-content-column.crv  code  1  markup-carve/carve-php#1369
-carve-php  276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-7.crv  code  1  markup-carve/carve-php#1369
 
 # WHAT USED TO BE HERE, and was deliberately kept as a section while empty.
 #

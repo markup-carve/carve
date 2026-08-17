@@ -216,8 +216,12 @@ test('a malformed declaration line is an error, never a silent skip', () => {
  * ledger is empty - every declared row becomes an AGREED.
  *
  * Measured 2026-08-17 over 1131 corpus documents plus 3 synthetic samples, at
- * carve-js c8c8dc3, carve-rs 71318e9 and carve-php 1f60342, each built from a
- * fresh clone of main. Three rows across 7 documents, of 22,763 spans compared.
+ * carve-js c8c8dc3, carve-rs d981df8 and carve-php d2e2fd6, each built from a
+ * clone made for this run. ONE row across 3 documents, of 22,766 spans compared:
+ * carve-php dropping a line block's spaced content position
+ * (markup-carve/carve-php#1351). The same one row, three documents and 22,766
+ * spans read again at carve-rs ff54c44 and carve-php 5e6ab9a, two engine mains
+ * later, with nothing edited in between.
  *
  * A NUMBER HERE IS NOT A GAP. Twice in the hour before this measurement a
  * carve-php fix closed the documents its issue named and over-reached onto one
@@ -229,19 +233,14 @@ test('a malformed declaration line is an error, never a silent skip', () => {
  * that says which gap a row currently describes.
  *
  * It read nine rows across 21 documents that morning, five across 9 an hour
- * later, and four across 8 twice after that. carve-php shipped the
- * 326/327/329/333 container rulings, carve-js shipped #1152 and #1154, and
- * carve-php then shipped #1365, #1366 and #1367 - and each time ast:check
- * reported the rows AGREED or COUNT and this map moved with the run rather than
- * with the merge notifications. Every remaining row is carve-php alone, each
- * naming its own tracker in resources/ast-span-divergence.txt: carve-php#1351,
- * #1369 and #1371.
+ * later, four across 8 twice after that, three, and now one. carve-php shipped
+ * the 326/327/329/333 container rulings, carve-js shipped #1152 and #1154, and
+ * carve-php then shipped #1365, #1366, #1367, #1370 and #1372 - and each time
+ * ast:check reported the rows AGREED or COUNT and this map moved with the run
+ * rather than with the merge notifications. Six measurements in one day, each
+ * one taken because the previous one had stopped being true.
  */
-const LAST_MEASURED = new Map([
-  ['text (presence)', 3],
-  ['code (presence)', 3],
-  ['definition_list (extent)', 1],
-])
+const LAST_MEASURED = new Map([['text (presence)', 3]])
 
 const asMeasured = (counts) =>
   new Map(

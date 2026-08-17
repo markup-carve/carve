@@ -619,7 +619,7 @@ A row may name an issue only where one of those still declares the debt.
 |---|---|---|
 | carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together | every block and inline placed, except the categories §4 exempts: a coalesced `text` run, a table cell continued on a `+` line, and a verbatim run continued on a `+` line |
 | carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` | every block and inline placed, except the categories §4 exempts: a coalesced `text` run, a reassembled table cell, and a verbatim run continued on a `+` line |
-| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish on every corpus document | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the categories §4 exempts - a coalesced `text` run, a reassembled table cell, and a verbatim run continued on a `+` line - plus two gaps the other two engines do not have: a line block's spaced content (markup-carve/carve-php#1351) and a fenced code block's extent, dropped along with the reassembled run's span (markup-carve/carve-php#1369) |
+| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish on every corpus document | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the categories §4 exempts - a coalesced `text` run, a reassembled table cell, and a verbatim run continued on a `+` line - and one gap the other two engines do not have: a line block's spaced content, which they place and markup-carve/carve-php#1351 tracks |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
@@ -638,7 +638,7 @@ documents on 2026-08-07, the OWED half of `resources/ast-position-waivers.txt`
 was EMPTY.
 
 It did not stay empty. Re-measured on 2026-08-17 over 1131 documents, at
-carve-js c8c8dc3, carve-rs 71318e9 and carve-php 6bd856f, that half holds one
+carve-js c8c8dc3, carve-rs d981df8 and carve-php d2e2fd6, that half holds one
 defect again: carve-php drops the position of a line block's content where the
 source's spaces became indentation sentinels, and carve-rs publishes the same
 value WITH a span, so a true span exists
@@ -647,9 +647,13 @@ findings over three documents, with nothing outstanding in carve-js or carve-rs.
 The corpus grew 298 documents between that measurement and the 833-document one
 above, which is the whole reason an undated "the gap is closed" sentence is worth
 nothing here - a re-measurement is what says so, and only for the corpus it ran
-over. Three earlier reads that day, at 1124 documents and across three separate
-sets of engine mains, said the same thing: nothing in that file moved while the
-span and value ledgers moved twice.
+over.
+
+That one defect is the ONLY thing either ledger still declares, and it survived
+a day in which the span ledger was re-measured six times and rewritten five. It
+is the constant because nobody has started it, not because it is small - which
+is a useful thing to know about a ledger: what stays in it is what nobody is
+working on.
 
 Every other position finding is `permitted` under §4.
 
@@ -767,6 +771,23 @@ progress. A row here is a NODE TYPE, and the documents behind a type turn over
 faster than the row does - which is why the ledger records document names in
 prose beside each count, and why "the number went down" is not an answer to
 "did that gap close".
+
+Both over-reaches were then fixed, and the day's last measurement - taken from a
+clone made for it, at carve-js `c8c8dc3`, carve-rs `d981df8` and carve-php
+`d2e2fd6` - reads ONE span row across three documents, of 22,766 spans:
+carve-php dropping the position of a line block's spaced content
+([carve-php#1351](https://github.com/markup-carve/carve-php/issues/1351)). The
+same three documents are the owed half of
+`resources/ast-position-waivers.txt`, so for the first time that day the two
+ledgers describe one gap rather than covering for each other. The value
+declaration is empty and carve-rb's tree matches carve-rs on all 1134 shared
+documents.
+
+Six measurements in one day, each taken because the one before it had stopped
+being true. That is the number worth carrying forward from this section: not
+which rows are declared, but how quickly a declared row stops describing
+anything, and therefore that the run - not the ledger, and not a merged pull
+request - is what answers a question about the engines.
 
 An empty declaration is a statement about the corpus, which is the only thing
 the run measures. Four collapsed-reference labels the corpus does not hold - one

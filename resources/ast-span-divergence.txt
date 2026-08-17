@@ -205,6 +205,46 @@
 #   definition_list (extent)  1 doc(s)  266-...-12; php one line long
 #                                       (markup-carve/carve-php#1371)
 
+# AND THE LAST MEASUREMENT OF THE DAY, from a FRESH clone of every engine, at
+# carve-js c8c8dc3, carve-rs d981df8 and carve-php d2e2fd6 over the same 1131
+# corpus documents plus 3 synthetic samples. Of 22,766 comparable spans, ONE row
+# disagrees, across 3 documents.
+#
+#   code (presence)           3 -> 0   markup-carve/carve-php#1369, closed by
+#                                      markup-carve/carve-php#1370. AGREED.
+#   definition_list (extent)  1 -> 0   markup-carve/carve-php#1371, closed by
+#                                      markup-carve/carve-php#1372. AGREED.
+#
+# Both over-reaches described two blocks up are gone, and this time the row went
+# to zero rather than to a different document - which is the thing the previous
+# two blocks could not say and the reason they said so much.
+#
+# FRESH CLONE, DELIBERATELY. The earlier measurements ran against a carve-php
+# checkout shared with other work, and a mutant lived in that checkout for a
+# couple of seconds while a run was in flight. Nothing in this file was removed
+# on the strength of one of those runs: every deletion above and here is
+# reproduced by this one, taken against a clone made for it. A ledger row is
+# exactly the kind of claim that reads as verified a week later, so the
+# provenance of the run that removed it is part of the record.
+#
+# WHAT REMAINS is one row, one engine, one issue:
+#
+#   text (presence)  3 doc(s)  268-...-12, 41-line-blocks-2 and -3: carve-php
+#                              drops the position of a line block's spaced
+#                              content, where the source's spaces became
+#                              indentation sentinels and carve-js and carve-rs
+#                              both place it (markup-carve/carve-php#1351,
+#                              analysed and not started).
+#
+# The same three documents are the OWED half of
+# resources/ast-position-waivers.txt, which is what it looks like when the two
+# ledgers agree about one gap instead of covering for each other.
+#
+# CONFIRMED AT A SECOND SET OF MAINS, forty minutes later and without editing a
+# line: carve-js c8c8dc3, carve-rs ff54c44 and carve-php 5e6ab9a read the same
+# one row over the same three documents and the same 22,766 spans. carve-rs
+# moved twice and carve-php once in between. That is the first time all day a
+# re-measurement did NOT move this file, and it is the only reason the state
+# above is worth writing down rather than superseding again.
+
 text (presence) 3
-code (presence) 3
-definition_list (extent) 1
