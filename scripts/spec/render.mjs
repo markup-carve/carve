@@ -140,10 +140,15 @@ const attrSem = g.createSemantics().addOperation('parseAttrs', {
 })
 
 /*
- * PART 9 SS25: the three attributes whose value is a LIST of URLs a consumer
- * resolves or fetches. The probe runs on every token rather than on the
- * value's head, and any hit blanks the WHOLE value, so the same value cannot
- * get one answer in position one and another in position two (carve#1320).
+ * PART 9 SS25: the four attributes whose value is a LIST of URLs a consumer
+ * resolves or fetches. The probe runs on every token AS WELL AS on the whole
+ * value, and any hit blanks the WHOLE value, so the same value cannot get one
+ * answer in position one and another in position two (carve#1320).
+ *
+ * THE TOKEN PASS IS ADDITIVE. Dropping the value-wide probe for these four
+ * would deny LESS than the leading-scheme rule already denied, because that
+ * probe strips the ASCII whitespace the SPLIT breaks on: `java script:alert(1)`
+ * is two harmless tokens and one denied value (carve#1329).
  *
  * THE SEPARATORS ARE THE ONES THE ATTRIBUTE'S OWN GRAMMAR USES. `ping` and
  * `attributionsrc` are space-separated sets and hold no commas at all, so
@@ -167,14 +172,15 @@ const urlListIsClean = (separator, value) =>
   value.split(separator).every((token) => token === '' || checkUrl(token) !== '')
 
 // PART 9 SS25 ATTRIBUTE HARDENING: drop on*/srcdoc/formaction; drop an
-// href/src override whose scheme is denylisted; blank a URL-list value with a
-// denylisted scheme in ANY candidate; blank a style value with a CSS execution
-// vector.
+// href/src override whose scheme is denylisted; blank any value whose own
+// leading scheme is denylisted, and a URL-list value with a denylisted scheme
+// in ANY candidate as well; blank a style value with a CSS execution vector.
 const STYLE_VECTOR = /expression\(|url\(|@import|behavior:|-moz-binding/i
 function hardenAttr(name, value) {
   const n = name.toLowerCase()
   if (n.startsWith('on') || n === 'srcdoc' || n === 'formaction') return null
   if ((n === 'href' || n === 'src') && checkUrl(value) === '') return null
+  if (value !== '' && checkUrl(value) === '') return { name, value: '' }
   const separator = Object.hasOwn(URL_LIST_SEPARATORS, n) ? URL_LIST_SEPARATORS[n] : null
   if (separator && !urlListIsClean(separator, value)) return { name, value: '' }
   if (n === 'style' && STYLE_VECTOR.test(value.replace(/\s+/g, ''))) return { name, value: '' }

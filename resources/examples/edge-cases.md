@@ -20670,7 +20670,7 @@ The quoted spelling is deliberately NOT here. `> %%%` over a definition is colle
 
 ## URL-list attributes are probed token-wise
 
-`srcset`, `imagesrcset` and `ping` carry a LIST of URLs rather than one, so the scheme probe runs on every token of the value instead of on its head, and any hit blanks the WHOLE value (PART 9 §25). The point is that a dangerous scheme gets the SAME answer wherever in the list it sits: reading position one and vouching for the rest is not a defense, it is a coincidence.
+`srcset`, `imagesrcset` and `ping` carry a LIST of URLs rather than one, so the scheme probe runs on every token of the value as well as on its head, and any hit blanks the WHOLE value (PART 9 §25). The point is that a dangerous scheme gets the SAME answer wherever in the list it sits: reading position one and vouching for the rest is not a defense, it is a coincidence.
 
 A `javascript:` candidate in the FIRST `srcset` position blanks the attribute:
 
@@ -20808,6 +20808,34 @@ PROSE ATTRIBUTES ARE NOT TOKENIZED, and this pair is the reason the rule names a
 
 ```html
 <p><a href="safe.html" title="See: RFC 3986, http://example.com">z</a></p>
+```
+
+:::
+
+THE TOKEN PASS IS ADDITIVE, and this pair is what says so out loud. The four names keep the leading-scheme probe on the WHOLE value too, so a value is blanked when EITHER the whole value probes dangerous OR any token does. Every case above blanks under both readings, which is why this one exists: the value-wide probe strips the ASCII whitespace the SPLIT breaks on, so `java script:alert(1)` is two harmless tokens -- `java` carries no scheme and `script` is not denylisted -- and one denied value. An implementation that ran the token pass INSTEAD of the value-wide probe would deny less here than the leading rule denied before this rule existed, and every other document in this section would still pass:
+
+::: compare no-render
+
+```carve
+[y](safe.html){ping="java script:alert(1)"}
+```
+
+```html
+<p><a href="safe.html" ping="">y</a></p>
+```
+
+:::
+
+The comma-separated half of the set is pinned separately, because its split is the one an implementation spells on its own: an additive value-wide probe wired into the `ping` branch and forgotten in the `srcset` branch is a reachable state, and it renders this verbatim:
+
+::: compare no-render
+
+```carve
+![a](safe.png){srcset="java script:alert(1) 1x, safe.png 2x"}
+```
+
+```html
+<img src="safe.png" alt="a" srcset="">
 ```
 
 :::

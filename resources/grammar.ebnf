@@ -5474,6 +5474,18 @@ EOF = (* end of file *) ;
         value as a whole, and blank the ENTIRE value when ANY token matches.
         This rule changes WHERE the probe runs, not WHAT it denies. Every
         other attribute keeps the leading-scheme rule exactly as stated above.
+
+        THE TOKEN PASS IS IN ADDITION TO THE VALUE-WIDE PROBE, NOT INSTEAD OF
+        IT. These four names keep the leading-scheme probe on the WHOLE value
+        as well, and the value is blanked when EITHER the whole value probes
+        dangerous OR any token does. Reading the token pass as a replacement
+        would make these four names deny LESS than the leading rule already
+        denied, which is the opposite of what this paragraph is for: the
+        value-wide probe strips the ASCII whitespace the SPLIT breaks on, so
+        `ping="java script:alert(1)"` is two harmless tokens -- `java` carries
+        no scheme and `script` is not denylisted -- and one denied value. That
+        shape is pinned, in both separator sets (resources/examples/edge-cases.md
+        "URL-list attributes are probed token-wise").
         THE NAME MATCH IS CASE-INSENSITIVE, like the `on` prefix above: an
         attribute block may spell the name in any case and the element still
         carries the author's spelling, so matching on the exact bytes would
