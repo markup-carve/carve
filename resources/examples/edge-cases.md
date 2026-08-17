@@ -20454,3 +20454,37 @@ direction:
 ```
 
 :::
+
+## A label beginning with an at sign is not a reference label
+
+`reference_label = (character - ']' - '@'), {character - ']'}` subtracts `@` from the first position, and that exclusion is what keeps `[@key]` free for citations. So a bracket pair whose content starts with `@` was never spelling a label, and the label slot of a reference link is no exception to it: the slot does not match, the production does not match, and the construct is not a reference link. The bracket run stays literal text, exactly as any other malformed reference does (carve#1302).
+
+::: compare
+
+```carve
+[t][@a]
+```
+
+```html
+<p>[t][@a]</p>
+```
+
+:::
+
+The image spelling reads the same `reference_label` at the same slot, so it gets the same answer rather than a parallel rule.
+
+::: compare
+
+```carve
+![t][@a]
+```
+
+```html
+<p>![t][@a]</p>
+```
+
+:::
+
+The control is what makes this a rule rather than a breakage: `@` at the first position ALREADY means citation, so it cannot also mean label, and an implementation that made the slot accept `@` would have to take that spelling away from citations to do it. A citation's rendering cannot be stated here - the construct is Tier-2 and the executable spec refuses it (carve#798) - so `43-citations-at-label-in-reference-position` in tests/corpus-optional carries the other half: with the Citations extension on, both spellings above are still literal text while a `[@a]` beside them resolves to a citation.
+
+At the HTML layer these rows cannot separate "not a reference label" from "a label nothing defines" - a `@`-first label can never be defined, and an unresolved reference already renders as its literal source. PART 12 §3a is where the readings differ, and all three engines currently publish an unresolved-reference node there rather than text; the grammar clause records what they owe.

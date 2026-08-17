@@ -218,6 +218,11 @@
       "slug": "42-list-table-header-rows-cols",
       "feature": "list-table",
       "description": "header-rows and header-cols promote the first N rows to <thead> and the first N cells of every row to row headers."
+    },
+    {
+      "slug": "43-citations-at-label-in-reference-position",
+      "feature": "citations-numbered",
+      "description": "CONTROL for the core rule that a label beginning with @ is not a reference label. With citations ON, [t][@a] and ![t][@a] are still literal text - the label slot rejects @ because the first position already means citation - while the [@a] beside them resolves. Without this case the core rows read as '@ breaks a reference' rather than '@ already means citation, so it cannot also mean label' (carve#1302)."
     }
   ]
 }

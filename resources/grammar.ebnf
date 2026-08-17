@@ -1903,6 +1903,66 @@ link_title = space, ('"', {('\', '"') | (character - '"')}, '"')
            | space, ("'", {('\', "'") | (character - "'")}, "'") ;
 
 reference_label = (character - ']' - '@'), {character - ']'} ;
+(* A LABEL THAT BEGINS WITH AN AT SIGN IS NOT A REFERENCE LABEL -- NORMATIVE.
+   The production above SUBTRACTS `@` FROM THE FIRST POSITION, and that exclusion
+   is what keeps `[@key]` free for the Tier-2 Citations extension. So a bracket
+   pair whose content starts with `@` was never spelling a `reference_label`,
+   and the label slot is no exception to it: the slot does not match, so
+   `reference_link` and `reference_image` do not match either, and the
+   construct is NOT a reference link and NOT a reference image.
+
+   What is left is the ORDINARY fallback -- the bracket run stays LITERAL TEXT,
+   exactly as an unresolvable or otherwise malformed reference already does:
+
+       [t][@a]
+       ![t][@a]
+
+   both render as the text the author typed. The image spelling is stated here
+   rather than beside `reference_image` because it is the same slot reading the
+   same production, not a parallel rule. Nothing in this is special to `@`; it
+   is the existing fallback reaching one more shape, which is why the ruling
+   needed no new mechanism (carve#1302).
+
+   THE CONTROL CARRIES THE RULE. `[@a]` on its own IS a citation with the
+   extension on, and that is the REASON the label slot rejects it rather than a
+   side effect of rejecting it: `@` at the first position already means
+   citation, so it cannot also mean label, and an implementation that made the
+   slot accept `@` would be taking the spelling away from citations to do it.
+   Corpus 334-a-label-beginning-with-an-at-sign-is-not-a-reference-label
+   carries both spellings; the citation half is Tier-2, so it is pinned in
+   tests/corpus-optional (`43-citations-at-label-in-reference-position`), where
+   the same two lines are still literal text with citations enabled.
+
+   WHAT THE CORPUS PINS, AND WHAT IS STILL OWED. The corpus rows are HTML, and
+   at that layer this rule is INDISTINGUISHABLE from "the label is undefined":
+   `@` at the first position is the one spelling `reference_label` rejects, and
+   `[@a]: /u` is reserved for the citation definition, so a `@`-first label can
+   never be defined and an unresolved reference already renders as its literal
+   source, attribute block included. The rows are still the right rows -- they
+   state the outcome -- but they do not by themselves separate the two readings.
+
+   PART 12 §3a is where the two separate, and all three engines diverge from
+   this clause there today. Measured on `[t][@a]` and `![t][@a]`, carve-js,
+   carve-php and carve-rs each publish an UNRESOLVED REFERENCE node --
+   `{"type":"link","href":"","ref":"@a","rawRef":"[t][@a]"}` and its `image`
+   counterpart -- and §3a admits `ref` "because the author wrote a reference
+   link". Under this clause the author wrote no reference link, so the tree
+   owes TEXT. The engines agree with each other and not with the rule, which is
+   why it is recorded rather than left to be discovered: nothing in an HTML
+   corpus can fail on it.
+
+   THE READING NOT TAKEN. "Link text `t` pointing at citation `a`" is coherent
+   authoring intent and has no spelling today, but adopting it here would
+   INVENT A CONSTRUCT on the strength of one bracket pair -- its own AST node
+   or field, renderer behavior on every target, a canonical writer spelling --
+   and nothing else in the language pairs link text with a citation target.
+   That is a feature proposal against a later roadmap, not a reading of this
+   production.
+
+   The EMPTY-TEXT spelling `[][@a]` was settled separately and narrowly in
+   markup-carve/carve-js#1119, deliberately scoped so that `[t][@a]` was not
+   decided as a side effect of an unrelated fix. This clause is what that
+   scoping was waiting on, and it leaves it standing. *)
 (* Both roles appear on this one line (PART 7), and both take `space`. The
    `']' ':'` separator is a MARKER SEPARATOR -- settled in the note below and
    rejected by all four implementations for a tab -- while the slot before the

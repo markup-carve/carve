@@ -122,7 +122,8 @@ under the same semantic-span rule,
 `330-a-tab-after-a-fence-or-a-frontmatter-opener-depends-on-where-it-sits`,
 `331-an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block`,
 `332-which-inline-content-a-heading-id-is-derived-from`,
-`333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe`.
+`333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe`,
+`334-a-label-beginning-with-an-at-sign-is-not-a-reference-label`.
 
 Those categories landed on hosts that could not retake the run above, so its
 numbers describe the corpus WITHOUT them. The alternative was to edit the
@@ -670,7 +671,8 @@ rather than a parser one.
 
 Optional raw output:
 
-Optional corpus added since this run: `42-list-table-header-rows-cols`.
+Optional corpus added since this run: `42-list-table-header-rows-cols`,
+`43-citations-at-label-in-reference-position`.
 
 It pins `{header-rows}` / `{header-cols}` on a list table and landed after the
 run above was taken, so the corpus is one case ahead of it again. The
