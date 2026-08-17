@@ -21679,3 +21679,136 @@ See [r][] [^f].
 :::
 
 The abbreviation kind is deliberately absent, for the reason *An abbreviation inside a comment defines nothing* gives above: PART 12 §7 recognizes an abbreviation definition only as a direct child of the DOCUMENT, so `> *[ab]: abbrev` defines nothing whether a comment fence wraps it or not - all four implementations leave the use literal either way. A document written that way could not tell the two reasons apart, and it is pinned at column 0 instead, where only the comment is doing the work.
+## A closed inline construct spanning a verse boundary
+
+A line block hardens SOFT BREAKS, and §23's subject is the node: the only
+question at a boundary is whether a `soft_break` is there, never what encloses
+it. An emphasis run, a link label or a semantic span that spans a boundary
+encloses one - the newline is a node BESIDE the construct's text - so the break
+hardens exactly as it does with no construct around it
+(markup-carve/carve#1351).
+
+:::: compare
+
+```carve
+::: |
+*Roses are red,
+Violets are blue.*
+:::
+```
+
+```html
+<div class="line-block">
+  <p><strong>Roses are red,<br>
+Violets are blue.</strong></p>
+</div>
+```
+
+::::
+
+The control is DIFFERENT IN KIND rather than in depth, which is the whole of
+the rule. A verbatim run that closes on a LATER line spans the same boundary
+and does NOT harden it, because the newline is inside the run's own value and
+there is no node for the clause to convert. That completes the set above, and
+CLOSING is not what any of it turns on: a run that closes on the SAME line
+leaves the break outside itself and hardens, a run that closes on a later line
+and a run that never closes both hold the break in their value and do not.
+These two documents differ only in which construct spans the boundary and they
+answer differently:
+
+:::: compare
+
+```carve
+::: |
+a `b
+c` d
+:::
+```
+
+```html
+<div class="line-block">
+  <p>a <code>b
+c</code> d</p>
+</div>
+```
+
+::::
+
+No depth is a threshold either, so one stanza answers its boundaries the same
+way whether or not a construct is open across them. The pinned reading gave
+this document a bare newline and then a `<br>`:
+
+:::: compare
+
+```carve
+::: |
+*Roses are red,
+Violets are blue.*
+And so are you.
+:::
+```
+
+```html
+<div class="line-block">
+  <p><strong>Roses are red,<br>
+Violets are blue.</strong><br>
+And so are you.</p>
+</div>
+```
+
+::::
+
+A BACKSLASH BREAK IS NOT ADDITIVE holds at depth for the same reason it holds
+at the top: the backslash consumed the newline, so no soft break survives
+inside the construct either and ONE boundary still produces ONE break. An
+implementation that hardens by LINE BOUNDARY rather than by node writes two
+here:
+
+:::: compare
+
+```carve
+::: |
+*Roses are red,\
+Violets are blue.*
+:::
+```
+
+```html
+<div class="line-block">
+  <p><strong>Roses are red,<br>
+Violets are blue.</strong></p>
+</div>
+```
+
+::::
+
+A LINK LABEL AND A SEMANTIC SPAN HOLD THE SAME NODE and the rule reaches them
+for the same reason - every engine's tree puts a `soft_break` inside the `link`
+and inside the `span` - but they are NOT pinned here, and the omission is
+deliberate rather than an oversight. The executable spec's `brContent` admits
+no newline, so it parses no bracketed construct across a line boundary
+ANYWHERE, in a line block or in an ordinary paragraph. A fixture for
+`[a` over `b](/u)` would therefore pin that limitation and not this rule.
+Tracked at markup-carve/carve#1352; the emphasis shapes below carry the rule.
+
+And LEADING WHITESPACE is still content inside the construct, so the two rules
+compose. An implementation that answers this by re-reading the construct's raw
+text loses the gap:
+
+:::: compare
+
+```carve
+::: |
+*Roses are red,
+  Violets are blue.*
+:::
+```
+
+```html
+<div class="line-block">
+  <p><strong>Roses are red,<br>
+&nbsp;&nbsp;Violets are blue.</strong></p>
+</div>
+```
+
+::::

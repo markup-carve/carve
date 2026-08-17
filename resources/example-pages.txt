@@ -326,6 +326,7 @@ index: examples/edge-cases/index.md
   a-comment-only-line-in-a-line-block-is-removed-before-any-inline-run
   a-line-block-s-hard-break-keeps-its-backslash
   a-line-block-s-last-body-line-keeps-its-backslash
+  a-closed-inline-construct-spanning-a-verse-boundary
   41-line-blocks-8
   12-inline-code-5
   24-generic-divs-2
