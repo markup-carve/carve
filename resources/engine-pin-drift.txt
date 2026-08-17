@@ -24,13 +24,7 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-322-an-attribute-block-reaches-the-nested-list-it-precedes  the pin predates markup-carve/carve-js#1107, so an attribute block before a nested list is dropped
-322-an-attribute-block-reaches-the-nested-list-it-precedes-2  same, without the blank line before the attribute block
-322-an-attribute-block-reaches-the-nested-list-it-precedes-5  same, with an ordered nested list
-322-an-attribute-block-reaches-the-nested-list-it-precedes-6  same, with two stacked attribute blocks
-322-an-attribute-block-reaches-the-nested-list-it-precedes-7  same, with the attribute line ending a run that also holds a paragraph
-323-a-block-attached-after-an-invisible-line-leaves-the-item-tight  the pin predates markup-carve/carve-js#1107, so the attribute block before the nested list is dropped; the tightness half it already gets right
-326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open  the pin predates markup-carve/carve#1280, so a column-0 line still folds into an item whose last block is a heading
+326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open  the pin now postdates markup-carve/carve#1280 but carve-js has not implemented the ruling, so a column-0 line still folds into an item whose last block is a heading
 326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-3  same, with a table as the item's last block
 326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-4  same, with a thematic break
 326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-5  same, with a line comment
@@ -39,19 +33,12 @@
 326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-8  same, with a footnote definition
 326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-9  same, with an attribute block
 326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-11  same, with a block quote whose own last block is a heading
-327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent  the pin predates markup-carve/carve#1290, so one `+` still attaches every block up to the boundary
+327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent  the pin now postdates markup-carve/carve#1290 but carve-js has not implemented the ruling, so one `+` still attaches every block up to the boundary
 327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-3  same, with the attached paragraph wrapped over two lines
 327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-6  same, in the `- +` first-block form
 327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-7  a different pin defect the case uncovers: after a `- +` first-block attachment the pin does not recognize a second `+`, rendering it as a literal paragraph and leaving the quote at top level
 327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-8  same, in the block-quote form
-328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe  the pin predates markup-carve/carve#1284, so an unclosed verbatim run swallows the row's closing pipe and the line stays prose
-328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-2  same, with a second row below it
-328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-3  same, under a header row
-328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-4  same, with a double-backtick run
-329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-2  the pin predates markup-carve/carve#1280, so the flush-left line still joins the quote and the attribute reaches it
-329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-6  the pin predates markup-carve/carve#1281, so a wrapped attribute block at the end of a definition body still folds the flush-left line in and attributes it
-331-an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block  the pin predates markup-carve/carve-js#1116, so an unclosed run still closes at the line block's line break
-331-an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block-4  same, in the math form of the run
-333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe  the pin predates markup-carve/carve#1284, so the open run still swallows the row's closing pipe and the continuation row's leftover `|` rides out as text
-333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-4  same, with a pipe inside the run on the continuation row
-333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5  same, with the run opening in the second column of a two-column row
+328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-4  markup-carve/carve-js#1126 shipped markup-carve/carve#1284 for the single-backtick run only, so a double-backtick run still closes at the row's first pipe and the row splits into two cells
+329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-2  the pin now postdates markup-carve/carve#1280 but carve-js has not implemented the ruling, so the flush-left line still joins the quote and the attribute reaches it
+329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-6  the pin now postdates markup-carve/carve#1281 but carve-js has not implemented the ruling, so a wrapped attribute block at the end of a definition body still folds the flush-left line in and attributes it
+333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-4  markup-carve/carve-js#1126 shipped markup-carve/carve#1284 for the row's closing pipe only, so a pipe inside the run on the continuation row still ends the run and the rest of the row is dropped

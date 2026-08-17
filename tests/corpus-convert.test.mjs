@@ -146,9 +146,10 @@ const PINNED_UNIMPLEMENTED = {
  * that moves the pin, and the meaning assertion still runs regardless.
  */
 const PINNED_DRIFT = {
-  '28-html-a-mixed-list-stays-loose':
-    'carve#1260 ruling: a mixed list stays LOOSE; the pinned build imports it tight, ' +
-    'because carve-js#1106 made a bare-text item tight and the rule reaches a mixed list too',
+  // NO ENTRIES. The pin reproduces every converter case's expectation, which is
+  // the state this list is meant to return to rather than an unusual one. The
+  // last entry, 28-html-a-mixed-list-stays-loose, cleared when the pin moved
+  // past markup-carve/carve-js#1110.
 }
 
 /**

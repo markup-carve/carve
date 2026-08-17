@@ -617,9 +617,9 @@ A row may name an issue only where one of those still declares the debt.
 
 | engine | shape | positions |
 |---|---|---|
-| carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together | every block and inline placed, except the two categories §4 exempts: a coalesced `text` run, and a table cell continued on a `+` line |
-| carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` | every block and inline placed, except the two categories §4 exempts: a coalesced `text` run, and a reassembled table cell |
-| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish on every corpus document | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the two categories §4 exempts: a coalesced `text` run, and a reassembled table cell |
+| carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together | every block and inline placed, except the categories §4 exempts: a coalesced `text` run, a table cell continued on a `+` line, and a verbatim run continued on a `+` line |
+| carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` | every block and inline placed, except the categories §4 exempts: a coalesced `text` run, a reassembled table cell, and a verbatim run continued on a `+` line |
+| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish on every corpus document | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the two categories §4 exempts - a coalesced `text` run and a reassembled table cell - and a line block's spaced content, which the other two place and markup-carve/carve-php#1351 tracks |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
@@ -633,11 +633,20 @@ written down.
 
 The definition-list entry this paragraph used to name is fixed: carve-rs places
 `definition_term` and `definition_description` today, checked over every corpus
-document that contains one. So is the gap that replaced it. Re-measured over 833
+document that contains one. So is the gap that replaced it - re-measured over 833
 documents on 2026-08-07, the OWED half of `resources/ast-position-waivers.txt`
-is EMPTY: the paragraphs a capped container degrades to are placed in all three
-engines now, and so is everything else that stood in that column a day earlier.
-Every position finding left is `permitted` under §4.
+was EMPTY.
+
+It did not stay empty. Re-measured on 2026-08-17 over 1124 documents, at
+carve-js e2e8460, carve-rs b6ff319 and carve-php b6d49a7, that half holds one
+defect again: carve-php drops the position of a line block's content where the
+source's spaces became indentation sentinels, and carve-rs publishes the same
+value WITH a span, so a true span exists. The corpus grew 291 documents between
+the two measurements, which is the whole reason an undated "the gap is closed"
+sentence is worth nothing here - a re-measurement is what says so, and only for
+the corpus it ran over.
+
+Every other position finding is `permitted` under §4.
 
 That is also how the carve-rs row went wrong. It named the capped-container gap
 for two days after the gap closed and the declaration behind it was deleted,

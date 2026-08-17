@@ -76,11 +76,9 @@ test('every expected.crv is a fixed point of the canonical writer', async () => 
  * red too, so the line goes out with the pin bump that fixed it.
  */
 const PIN_LAG = new Map([
-  [
-    'blockquote-cite',
-    'the pin predates markup-carve/carve-js#1125, so the cite attribute is still dropped with an ' +
-      'attribute-dropped diagnostic instead of kept as {cite=u}',
-  ],
+  // NO ENTRIES. The pin imports every fixture the way the fixture says. The
+  // last entry, blockquote-cite, cleared when the pin moved past
+  // markup-carve/carve-js#1125.
 ])
 
 /*
