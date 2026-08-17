@@ -1055,12 +1055,16 @@ function startsVisibleBlock(line) {
  * list markers never interrupt), and reading `:  a` / `   - # H` as a nested
  * list there moved a `tail` out of the `<dd>`.
  *
- * The peel is a LOOP rather than a self-call. §26 refuses pathological nesting
- * and this predicate runs before the parser can apply that budget, so a single
- * line of ~10k stacked markers overflowed the JS stack instead of being
- * refused - a crash where the module's own contract promises a Refuse.
+ * The peel is a LOOP rather than a self-call, and it carries the SAME nesting
+ * budget the parse does. A self-call overflowed the JS stack on one line of
+ * ~10k stacked markers, and an unbounded loop replaced that with a quadratic
+ * walk - each turn re-matches the whole remaining suffix, so 8k markers cost
+ * 6s where the base parse costs 21ms. §25 settles both: past
+ * MAX_NESTING_DEPTH an opener DEGRADES to literal paragraph text, so a peel
+ * that reaches the cap is looking at prose and says so.
  */
 function opensParagraph(text, atBlockPosition = false) {
+  let budget = MAX_NESTING_DEPTH
   for (;;) {
     if (text.trim() === '') return false
     // A quote is asked the SAME question about what it carries. An empty quote
@@ -1070,6 +1074,7 @@ function opensParagraph(text, atBlockPosition = false) {
     // ITEM with no paragraph open anywhere in the stack. A quote's content is
     // at a block position exactly when the quote itself is, so the flag rides
     // along unchanged.
+    if (budget-- <= 0) return true
     if (QUOTE.test(text)) { text = QUOTE.exec(text)[1] ?? ''; continue }
     if (HEADING.test(text) || HR.test(text)) return false
     // A LIST MARKER is asked the SAME question about what it carries, for the
