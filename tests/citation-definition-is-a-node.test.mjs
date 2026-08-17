@@ -22,14 +22,23 @@
  *      the layer that can fail today: edit any part of the schema entry and
  *      one of these flips.
  *
- *   2. A ROLLOUT TRIPWIRE on the pinned reference build. No engine emits the
- *      node yet, so the positive assertion - parse the corpus-optional
- *      citation document and find a `citation_definition` in it - cannot be
- *      written without turning this repo red on a defect that lives elsewhere.
- *      What is written instead is what the pin ACTUALLY produces today, so the
- *      day carve-js emits the node this test fails and the pin flips to the
- *      positive form. A spec claim with no expiry is how the AST page has gone
- *      stale twice; this one has one.
+ *   2. WHAT THE PINNED REFERENCE BUILD PRODUCES. This began as a rollout
+ *      tripwire: no engine emitted the node, so the assertion recorded what
+ *      the pin ACTUALLY produced - a paragraph holding the citation group and
+ *      the literal `: ` separator - and was written to FAIL the day carve-js
+ *      emitted the node. It fired when the pin moved past
+ *      markup-carve/carve-js#1122, and the assertion is now the positive one:
+ *      parse the corpus-optional citation document and find the three
+ *      `citation_definition` nodes in it, schema-valid, with no paragraph left
+ *      behind. A spec claim with no expiry is how the AST page has gone stale
+ *      twice; this one had one, and it paid.
+ *
+ *      What does NOT follow from the rollout is the two exemptions that name
+ *      this type: `NOT_PRODUCIBLE` in tests/ast-schema.test.mjs and
+ *      `OPT_IN_ONLY` in tests/schema-fields-are-produced.test.mjs. Both are
+ *      claims about the DEFAULT-profile corpus, where citations is off and
+ *      `[@key]: entry` is ordinary paragraph text. An engine shipping §18 does
+ *      not change that, so both entries stay.
  */
 
 import { test } from 'node:test'
@@ -145,34 +154,51 @@ test('§18: the schema declares exactly the fields the clause names', () => {
 })
 
 /*
- * The tripwire. Everything above is about the shape; this is about where the
- * fleet is against it.
+ * Everything above is about the shape; this is about where the fleet is
+ * against it. It was a tripwire while the shape had no producer; it is a
+ * conformance assertion now that the pin has one.
  */
 const SOURCE = readFileSync(resolve(root, 'tests/corpus-optional/05-citations-numbered.crv'), 'utf8')
 
-test('the pinned reference build does not emit the node yet', () => {
+test('the pinned reference build emits the node', () => {
   // `parse` is the stage that matters: it is what `toAstJson` serializes, and
   // §3a makes the serialized tree the PRE-RESOLVE one. carve-js's own collect
   // pass runs in the citations extension's `afterParse` hook, which `parse`
-  // does not call - so the definition line survives into the published tree as
-  // the paragraph below, and an engine implementing §18 has to build the node
-  // here rather than in the hook.
+  // does not call - so an engine implementing §18 has to build the node here
+  // rather than in the hook, and markup-carve/carve-js#1122 is where it did.
   const tree = parse(SOURCE, { extensions: [citations()] })
-  const types = tree.children.map((node) => node.type)
-  assert.ok(
-    !types.includes('citation_definition'),
-    'carve-js now emits citation_definition: PART 12 §18 has shipped in the pin, so replace this ' +
-      'test with the positive assertion - the definition lines are citation_definition nodes with ' +
-      'their key, entry and metadata - and drop citation_definition from NOT_PRODUCIBLE in ' +
-      'tests/ast-schema.test.mjs and from OPT_IN_ONLY in tests/schema-fields-are-produced.test.mjs.',
-  )
+  const defs = tree.children.filter((node) => node.type === 'citation_definition')
+  assert.equal(defs.length, 3, 'the document has three bibliography lines, so it has three nodes')
 
-  // What it emits instead, recorded so the gap is a measurement rather than a
-  // sentence: the definition lines survive as one paragraph whose first child
-  // is the citation group and whose next child is the literal `: ` separator.
-  const last = tree.children[tree.children.length - 1]
-  assert.equal(last.type, 'paragraph')
-  assert.equal(last.children[0].type, 'citation_group')
-  assert.equal(last.children[0].items[0].key, 'smith2020')
-  assert.match(last.children[1].value, /^: /)
+  // The keys, in source order, and the metadata each line carries.
+  assert.deepEqual(defs.map((node) => node.key), ['smith2020', 'jones2019', 'doe2021'])
+  assert.deepEqual(defs.map((node) => node.attrs?.keyValues?.year), ['2020', '2019', '2021'])
+
+  // The entry is INLINE content in `children`, not a field and not a block: the
+  // emphasis in `*A Study*` has to survive as a node, or the entry is a string
+  // a consumer would have to re-parse to render.
+  const [smith] = defs
+  assert.deepEqual(smith.children.map((node) => node.type), ['text', 'strong', 'text'])
+  assert.equal(smith.children[1].children[0].value, 'A Study')
+
+  // And every node the engine builds is a node the schema declares. This is the
+  // join between the two layers: layer 1 proved the schema accepts the ruled
+  // shape, this proves the pin produces that shape and not a near-miss.
+  //
+  // ALL THREE, not just the first. A pin that kept `smith` valid while emitting
+  // a malformed `entry` for one of the others would still satisfy the key and
+  // year assertions above, and this is the only layer that would have caught it.
+  for (const node of defs) {
+    assert.equal(validate(doc(node)), true, `the pinned build's ${node.key} node failed the schema: ${errors()}`)
+  }
+
+  // The definition renders nothing where it sits, so no paragraph is left
+  // behind holding a citation group and the literal `: ` separator - the shape
+  // this test recorded for as long as the node was unimplemented. Only the
+  // prose paragraph cites.
+  const citing = tree.children.filter(
+    (node) => node.type === 'paragraph' && node.children.some((c) => c.type === 'citation_group'),
+  )
+  assert.equal(citing.length, 1)
+  assert.ok(!citing[0].children.some((c) => c.type === 'text' && c.value.startsWith(': ')))
 })
