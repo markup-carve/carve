@@ -20515,7 +20515,7 @@ At the HTML layer these rows cannot separate "not a reference label" from "a lab
 
 :::
 
-The corpus stated the rule and pinned only the column-0 spelling, which is the gap two engines drifted through while staying green: carve-rs and carve-php collected the label here and resolved the reference, where carve-js and the executable spec leave it literal (carve#1309, markup-carve/carve-rs#1047, markup-carve/carve-php#1349). Nothing about the item's own rendering was ever in question - all three render the comment as nothing and the item as `item`. The disagreement is entirely in the link table, which is why the document has to be read past the list to see it at all.
+The corpus stated the rule and pinned only the column-0 spelling, which is the gap two engines drifted through while staying green: carve-rs and carve-php both collected the label here and resolved the reference, where carve-js and the executable spec leave it literal (carve#1309, markup-carve/carve-rs#1047, markup-carve/carve-php#1349). carve-rs has since been fixed and reproduces this document (markup-carve/carve-rs#1052); carve-php still collects the label. Nothing about the item's own rendering was ever in question - all three render the comment as nothing and the item as `item`. The disagreement is entirely in the link table, which is why the document has to be read past the list to see it at all.
 
 ## A footnote definition inside an item's comment registers nothing
 
