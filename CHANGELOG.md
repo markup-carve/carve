@@ -161,6 +161,105 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **PART 11 §8b: the Markdown target's authored escape narrows too**
+  (carve#1321). §8a had already narrowed M1 so that the writer escapes a
+  character only where it could be read as markup, and left M2 - the rule for
+  an `escaped_text` node the author wrote - emitting an escape whatever the
+  character and wherever it stood. M2 is now stated over the EMITTED line, on
+  the same test: an authored escape survives where its character could open
+  markup at the position the writer has reached, and where it is one of the
+  smart-punctuation triggers; anywhere else the character is emitted bare. A
+  hash is read as markup only at a line's content position, so `a \# b` writes
+  `a # b` rather than carrying a backslash into the middle of a sentence.
+
+- **A comment fence hides its body at every column, not only at column 0**
+  (carve#1309). PART 9 §24 S1 places a line by the column it REACHES, S2 makes
+  a line verbatim as soon as the innermost matched container is a fenced body,
+  and §28 makes a comment fence's body verbatim and invisible. None of the
+  three was ever scoped to column 0, but every document that pinned the
+  consequence spelled the fence there, so an indented comment fence was
+  unconstrained in practice and two engines drifted through the gap: a link
+  reference definition, a footnote definition, an abbreviation, a list marker
+  or a heading inside an indented comment could still register. The rule is
+  now stated at every column and pinned by seven documents, one per spelling
+  an engine can get wrong on its own.
+
+- **A label that begins with an at sign is not a reference label**
+  (carve#1302). The `reference_label` production already subtracts `@` from the
+  first position - that exclusion is what keeps the bracket form free for the
+  Tier-2 Citations extension - but nothing said what happens when an author
+  puts one in the label slot anyway. It is now normative for both spellings: a
+  bracket pair whose content starts with an at sign is not a reference, it
+  resolves to nothing, and the source text stands.
+
+- **An unclosed verbatim run in a table row stops at the row's closing pipe**
+  (carve#1284, carve#1293). A backtick run with no closer used to swallow every
+  pipe after it, including the row terminator, so the line ended with content
+  dangling past its last pipe and the row failed to split. The run now ends at
+  the closing pipe, and the two shapes either side of the terminator are ruled
+  with it: a `+` continuation extends the cell, so an open run reaches the end
+  of the continued cell rather than the end of the first line, and an escaped
+  closing pipe is an escape - the row still closes on the line's final pipe.
+
+- **A heading id is derived from the heading's text content** (carve#1283). The
+  Heading IDs rules said what happens to case, to non-ASCII characters, to
+  typography and to a leading digit, and never said which content they applied
+  to, which is how an engine could leave a math run out of an id while keeping
+  the code span beside it. An inline either contributes the literal text it
+  carries or contributes nothing, and which of the two it does is a property of
+  the CONSTRUCT and not of what it renders, because the id is assigned before a
+  cross-reference resolves or a symbol is looked up.
+
+- **HTML import keeps a figure's caption and a blockquote's `cite`**
+  (carve#1286). A `<figure>` with a `<figcaption>` imports as the target block
+  followed by a caption line, and a `blockquote` `cite` attribute is kept on an
+  ordinary block-attribute line. Both go the lossless way: dropping either was
+  available only with a diagnostic attached, and keeping it costs the reader
+  less than the diagnostic would.
+
+- **An unclosed inline run in a line block reaches the end of the block**
+  (carve#1282). A line block is ONE block, so its line breaks are a rendering
+  instruction rather than a boundary the inline parser can see, and the
+  already-normative rule that an unclosed run renders to the end of its block
+  applies unchanged. What the run carries across the break is a newline rather
+  than a space, because the break is inside the run and is therefore the run's
+  content. Every line-block document in the corpus had used closed inline
+  markup, so the question had never been asked of one.
+
+- **A tab after a fence or frontmatter opener is decided by its position**
+  (carve#1295, carve#1285). Two clauses meet on an opener line and POSITION
+  decides which governs. A tab BEFORE content is the marker-to-content
+  separator, that slot is the `space` terminal and nothing else, so the
+  construct does not open. A tab at END OF LINE with nothing after it was never
+  that slot: it is trailing whitespace on a content line, PART 2 drops it, and
+  the bare opener it leaves opens normally.
+
+- **A floating attribute is scoped to the container that holds it**
+  (carve#1281). §15 A4 named exactly one way for a pending attribute block to
+  run out of following blocks - end of document - and A2a's rationale leaned on
+  that being the only one. There is a second: the end of the container holding
+  the attribute line. A floating attribute never escapes its container to
+  attach to the block after the closer; an unconsumed one is dropped, and
+  `carve lint` reports it.
+
+- **A continuation marker attaches one block** (carve#1290). §17 L3 already
+  said so in capitals, and the trailing "up to the next blank line, sibling
+  marker, or a further `+`" is the EXTENT of that one block rather than a
+  count. The only text supporting the other reading was L4's parenthetical
+  "block(s)", inside a clause about the first-block form. L4 now says BLOCK,
+  and the EBNF spells the same claim a second way with
+  `first_block_content = continuation_marker, block`.
+
+- **Lazy continuation extends an open paragraph and nothing else**
+  (carve#1280). PART 1 S4's *NO OPEN PARAGRAPH, NO LAZY LINE* was already
+  normative but nothing followed it, so a column-0 line after a container's
+  last block folded into a list item and ended a block quote - in all three
+  engines and in this repo's own executable spec, which is why no gate could
+  see it. The parameter S4 names is whether any container in the open stack
+  holds an OPEN PARAGRAPH; a block that leaves none leaves none wherever it was
+  written, so `- # H` writes a heading as the item's first block exactly as an
+  indented `# H` would.
+
 - **An attribute line after a `+` continuation marker attributes the block the
   marker attaches** (carve#1238, markup-carve/carve-rs#1020). An attribute block
   attaches to the block that FOLLOWS it and the target is that block; nothing in
