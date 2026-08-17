@@ -7429,7 +7429,14 @@ EOF = (* end of file *) ;
           BARE.
       M2b `#` IS READ AS MARKUP ONLY AT A LINE'S CONTENT POSITION, where it
           opens an ATX heading. An `escaped_text` hash anywhere else on the
-          line is emitted bare.
+          line is emitted bare. A LINE'S CONTENT POSITION IS AFTER ITS
+          CONTAINER PREFIX: the position is measured on the EMITTED LINE, so
+          every prefix the writer put in front of the content is passed over
+          before the test is decided -- a block quote marker, a list or task
+          marker, a definition marker, the alignment §10 gives a continuation
+          line -- in whatever combination and to whatever depth the writer
+          emitted them. Column 0 is the content position of a line NO
+          container encloses, and of no other line.
       M2c NOTHING ELSE NARROWS. M1, M3 and §8a are untouched, and a character
           Markdown reads as markup at that position keeps M2 as written.
 
@@ -7477,6 +7484,96 @@ EOF = (* end of file *) ;
       any position on a line, so M2a keeps its escape everywhere and that
       argument stands unchanged. `#` is the character that differs, because
       its reading is positional and every position but one is inert.
+
+      A CONTAINER PREFIX IS PART OF THE LINE, WHICH IS WHY M2b MEASURES ON IT.
+      M2b's position is the ONLY narrowing in this clause -- M2a keeps the
+      escape by default and M2c closes the set -- so the whole of §8b turns on
+      where that position is. Read as an offset into the BLOCK'S CONTENT it
+      answers a question no reader asks: the string a reader parses is the
+      emitted line, and the two differ by exactly the prefix the writer put in
+      front. Measured on all three engines, which agreed:
+
+        > \# heading
+
+      emitted as
+
+        > # heading
+
+      and read back, through this project's own importer, as a heading:
+
+        before:  <blockquote><p># heading</p></blockquote>
+        after:   <blockquote><h1 id="heading">heading</h1></blockquote>
+
+      The author escaped the hash so it would stay text, and a round trip
+      returned it as structure. That is content corruption rather than a
+      rendering difference, and it is the case M2 exists to remove: §8a's
+      closing argument rests on M2 taking "out of the question every case
+      where the author said which reading they meant" (carve#1330).
+
+      §10 ALREADY DECIDED THIS, ONE CHARACTER OVER. A list item's continuation
+      line is aligned to the marker's width and kept literal by ESCAPING it:
+
+        1. outer
+           1\. inner
+
+      The inner line's text is `1. inner`, which is a list marker nowhere in
+      isolation. It is one only because three spaces of item alignment stand
+      in front of it, and §10 escapes it for that reason -- "§2 governs
+      whether a character is escaped GIVEN the line the writer emits; §10
+      fixes the line." So this project has already ruled that the escape test
+      is answered against the line as the reader receives it, and has already
+      rejected the alternative that reasons about the content alone: §10
+      refuses to indent less "because its correctness depends on the WIDTH of
+      the marker above it". The reading that produced this defect carries the
+      same dependency and does not notice it.
+
+      STATED OVER THE LINE, NOT AS A LIST OF CONTAINERS THAT COUNT. Two
+      consequences, both measured on all three engines:
+
+      - A container this target FLATTENS contributes no prefix and needs no
+        exemption. A colon fence emits no marker and a definition-list body
+        emits no indent, so a hash in either lands at column 0 and its escape
+        was already kept.
+      - A container this target DOES prefix is covered whatever its kind,
+        depth or mixture -- `> > `, `- > `, `- [ ] `, `[^a]: `, `   1. ` --
+        without naming any of them.
+
+      An enumeration would have to be revisited every time the writer gains a
+      prefix. The line does not.
+
+      THE LAZY CASE IS NOT A CASE. Lazy continuation is a PARSER concept: a
+      line belonging to a container without carrying its marker. This writer
+      emits no such line, because it re-prefixes every line of the container.
+      Measured, all three:
+
+        > a
+        \# heading
+
+      is emitted as
+
+        > a
+        > # heading
+
+      so the emitted line carries `> ` and M2b sees it. A rule for the
+      source's laziness would describe a line this target never writes.
+
+      NARROWING BY POSITION IS UNCHANGED, WHICH IS THE HALF THAT IS EASY TO
+      LOSE. Moving the position does not widen M2b into "an escape behind a
+      prefix is kept". The two documents carve#970 opened with keep their
+      narrowing inside a container exactly as they had it outside one, because
+      the hash is not at the content position there either:
+
+        > C\# is a language      ->  > C# is a language
+        - issue \#123 fixed      ->  - issue #123 fixed
+
+      and so does a hash that stands AT the content position but opens no
+      heading, since M2b's reading is CommonMark's and a run closed by a
+      letter is not one:
+
+        > \#tag rest             ->  > #tag rest
+
+      Both directions are pinned in the corpus. The first is what the clause
+      is for; the second is what stops the correction being taken too far.
 
       WHAT IS LOST IS BOUNDED BY §1. Carve source through this target and back
       stops recording which hash was text. §1 already defines the round-trip
