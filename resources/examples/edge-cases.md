@@ -19375,6 +19375,266 @@ tail</li>
 
 :::
 
+### The unmatched item's last block may itself be a list
+
+The clause binds "even where the unmatched container is a LIST ITEM whose last
+block is a container", and a nested list is that container. So the question is
+asked of the nested item's own last block, recursively, exactly as it is asked
+of a quote's - and it is asked however deep the nesting runs.
+
+Read as prose instead, the marker line answers "paragraph" every time, and the
+tell is that depth 1 comes out right while depth 2 does not
+(markup-carve/carve#1342). The outer item's last block here is a list whose
+item ends on a heading, so nothing is open and `tail` is a document paragraph:
+
+::: compare
+
+```carve
+- - # H
+tail
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <h1 id="H">H</h1>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+A comment as the nested item's only block reaches the same answer by the same
+route, which is how one knows the depth and not the construct is what was
+missing:
+
+::: compare
+
+```carve
+- - %% c
+tail
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+Depth 3 is the document that locates it. An implementation that unwraps one
+level and then stops folds `tail` into the MIDDLE item rather than closing all
+three, so this pair distinguishes "the rule recurses" from "the rule was applied
+once":
+
+::: compare
+
+```carve
+- - - # H
+tail
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <h1 id="H">H</h1>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+The nested list need not be written on the marker line. A sub-list opened at the
+item's content column is the same last block, and leaves the same nothing open:
+
+::: compare
+
+```carve
+- a
+  - # H
+tail
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <h1 id="H">H</h1>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+The controls are the same three documents with a paragraph restored at the
+bottom of the stack. A nested item holding plain text folds, at any depth:
+
+::: compare
+
+```carve
+- - a
+tail
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>a
+tail</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+So does a nested item ending on a quote that CARRIES a paragraph - the
+recursion has to pass through both containers to reach it:
+
+::: compare
+
+```carve
+- - > q
+tail
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>
+        <blockquote><p>q
+tail</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+And the content-column spelling folds too when its sub-item is prose:
+
+::: compare
+
+```carve
+- a
+  - b
+tail
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+tail</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+### An attribute line at the item's content column closes the paragraph too
+
+§10 I5 makes a block-attribute line an interrupter, so an item whose last
+content line is one holds no open paragraph and the same clause ends it. The
+attribute was written against a container that ends before the flush-left line
+arrives, so it reaches nothing and is dropped - it does not travel down to the
+line below (markup-carve/carve#1342):
+
+::: compare
+
+```carve
+- a
+  {.x}
+tail
+```
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+Separating the attribute line with a blank changes nothing. The blank does not
+loosen the item either, because an attribute block renders nothing and §17 L1
+asks for a second PARAGRAPH:
+
+::: compare
+
+```carve
+- a
+
+  {.x}
+tail
+```
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+The control is what the attribute does reach: a line at the content column is
+inside the item, the container has not ended, and the attribute attaches to the
+paragraph it introduces:
+
+::: compare
+
+```carve
+- a
+  {.x}
+  more
+```
+
+```html
+<ul>
+  <li>a
+    <p class="x">more</p>
+  </li>
+</ul>
+```
+
+:::
+
+The quote spelling of the same shape is pinned under *A floating attribute is
+scoped to the container that holds it* below, and every engine already read it
+that way. That the two containers disagreed is what makes the item spelling a
+defect rather than a second reading.
+
 ## A continuation marker attaches one block, and the boundary is that block's extent
 
 §17 L3 says it in capitals: a `+` attaches "the FOLLOWING flush-left block to

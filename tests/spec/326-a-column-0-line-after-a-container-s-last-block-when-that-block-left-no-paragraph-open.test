@@ -164,3 +164,150 @@ tail
 tail</li>
 </ul>
 ```
+
+```
+- - # H
+tail
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <h1 id="H">H</h1>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- - %% c
+tail
+.
+<ul>
+  <li>
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- - - # H
+tail
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <h1 id="H">H</h1>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- a
+  - # H
+tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <h1 id="H">H</h1>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- - a
+tail
+.
+<ul>
+  <li>
+    <ul>
+      <li>a
+tail</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- - > q
+tail
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <blockquote><p>q
+tail</p></blockquote>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - b
+tail
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+tail</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  {.x}
+tail
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+```
+
+```
+- a
+
+  {.x}
+tail
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+```
+
+```
+- a
+  {.x}
+  more
+.
+<ul>
+  <li>a
+    <p class="x">more</p>
+  </li>
+</ul>
+```

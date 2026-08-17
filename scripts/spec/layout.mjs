@@ -1047,22 +1047,67 @@ function startsVisibleBlock(line) {
  * answer depends on what is inside it rather than on the opener, and S4 works
  * that case separately. A code fence is absent for the opposite reason - the
  * collector breaks on an open opaque body before it ever asks.
+ *
+ * `atBlockPosition` says the caller knows this text sits where a BLOCK OPENER
+ * is recognized, so a marker on it really opens a nested item. It is off by
+ * default because one caller cannot promise that: a `dd` body's last line may
+ * be marker-SHAPED text that folded into the body's open paragraph (§10 I2 -
+ * list markers never interrupt), and reading `:  a` / `   - # H` as a nested
+ * list there moved a `tail` out of the `<dd>`.
+ *
+ * The peel is a LOOP rather than a self-call, and it carries the SAME nesting
+ * budget the parse does. A self-call overflowed the JS stack on one line of
+ * ~10k stacked markers, and an unbounded loop replaced that with a quadratic
+ * walk - each turn re-matches the whole remaining suffix, so 8k markers cost
+ * 6s where the base parse costs 21ms. §25 settles both: past
+ * MAX_NESTING_DEPTH an opener DEGRADES to literal paragraph text, so a peel
+ * that reaches the cap is looking at prose and says so.
  */
-function opensParagraph(text) {
-  if (text.trim() === '') return false
-  // A quote is asked the SAME question about what it carries, recursively. An
-  // empty quote opens nothing, and neither does `> # H` - the answer is the
-  // quote's own last block, not merely whether the quote had any content. This
-  // used to test non-emptiness alone, so `- > # H` / `tail` folded the tail into
-  // the ITEM with no paragraph open anywhere in the stack.
-  if (QUOTE.test(text)) return opensParagraph((QUOTE.exec(text)[1] ?? ''))
-  if (HEADING.test(text) || HR.test(text)) return false
-  if (COMMENT_LINE.test(text) || COMMENT_FENCE_BODY.test(text)) return false
-  if (isTableRow(text) || CONT_ROW.test(text)) return false
-  if (FOOTNOTE_DEF.test(text) || isLinkDef(text)) return false
-  if (tryAttrLine([text], 0)) return false
+function opensParagraph(text, atBlockPosition = false) {
+  let budget = MAX_NESTING_DEPTH
+  for (;;) {
+    if (text.trim() === '') return false
+    // A quote is asked the SAME question about what it carries. An empty quote
+    // opens nothing, and neither does `> # H` - the answer is the quote's own
+    // last block, not merely whether the quote had any content. This used to
+    // test non-emptiness alone, so `- > # H` / `tail` folded the tail into the
+    // ITEM with no paragraph open anywhere in the stack. A quote's content is
+    // at a block position exactly when the quote itself is, so the flag rides
+    // along unchanged.
+    if (budget-- <= 0) return true
+    if (QUOTE.test(text)) { text = QUOTE.exec(text)[1] ?? ''; continue }
+    if (HEADING.test(text) || HR.test(text)) return false
+    // A LIST MARKER is asked the SAME question about what it carries, for the
+    // same reason a quote is, and S4's clause names this case outright: the
+    // rule "binds even where the unmatched container is a LIST ITEM whose last
+    // block is a container". A nested item is that container, so `- # H` opens
+    // no paragraph and neither does the `- - # H` that carries it.
+    //
+    // Asked of the marker LINE instead of its content, the answer was prose
+    // every time, which is why depth 1 was already right and depth 2 was not:
+    // `- # H` reached this predicate as `# H` and closed, `- - # H` reached it
+    // as `- # H` and did not. `- - - # H` folded exactly one level in, the tell
+    // that one turn of the peel was missing rather than the whole rule.
+    //
+    // The leading-whitespace guard is `matchMarkerAt`'s own precondition: it
+    // requires the indentation to be measured rather than re-matched, and an
+    // indented marker is a different question anyway - whether a list opens
+    // there at all is the column rule, not this one.
+    //
+    // HR is tested first and stays first: `---` is a break, not a bullet with
+    // no content. BULLET cannot match it anyway - it wants a space after the
+    // marker character - so the order is belt and braces.
+    if (atBlockPosition && text[0] !== ' ' && text[0] !== '\t') {
+      const nm = matchMarkerAt({ col: 0, rest: text })
+      if (nm) { text = nm.text.trim(); continue }
+    }
+    if (COMMENT_LINE.test(text) || COMMENT_FENCE_BODY.test(text)) return false
+    if (isTableRow(text) || CONT_ROW.test(text)) return false
+    if (FOOTNOTE_DEF.test(text) || isLinkDef(text)) return false
+    if (tryAttrLine([text], 0)) return false
 
-  return true
+    return true
+  }
 }
 
 /*
@@ -2445,7 +2490,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // leaves open. Handing this seed a multi-line window alone changes no
       // output, and a predicate that looks right while deciding nothing is worse
       // than one that plainly does not reach the case.
-      if (!opensParagraph(head.text.trim())) closePara()
+      if (!opensParagraph(head.text.trim(), true)) closePara()
     }
     // Content column of the FIRST sub-list opened in this item (-1 = none). A
     // blank followed by content at or past this column belongs to the sub-list,
@@ -2774,7 +2819,17 @@ function collectItems(lines, i, list, state, ind, meas) {
           else openParaWith(dedented)
         }
         else if (dedented[0] === '|' || CONT_ROW.test(dedented)) closePara()
-        else if (matchMarkerAt(dmeas)) startPara()
+        // A SUB-LIST MARKER opens a paragraph only if the item it opens
+        // CARRIES one, which is the quote branch's rule one construct over and
+        // the same clause. `- a` / `  - # H` / `p` records an open paragraph
+        // this way and folds `p` into the OUTER item; carve-js and carve-rs
+        // close it. Unconditional `startPara()` was the content-column twin of
+        // the marker-line seed carve#1280 fixed, and it survived because that
+        // fix reached only the marker line.
+        else if (matchMarkerAt(dmeas)) {
+          if (opensParagraph(dmeas.rest, true)) startPara()
+          else closePara()
+        }
         // A quote opens a paragraph only if it CARRIES one. A bare `>` is an
         // empty quote, so there is nothing for a later flush-left line to fold
         // into, and the item closes instead -- PART 1 S4's NO OPEN PARAGRAPH,
@@ -2785,6 +2840,30 @@ function collectItems(lines, i, list, state, ind, meas) {
           if ((QUOTE.exec(dedented)[1] ?? '').trim() !== '') startPara()
           else closePara()
         }
+        // AN ATTRIBUTE LINE IS AN INTERRUPTER, SO IT LEAVES NO PARAGRAPH OPEN.
+        // §10 I5 makes a block-attribute line one of the constructs that
+        // interrupt a paragraph, and the marker-line seed above already reads
+        // it that way through `opensParagraph`. At the CONTENT COLUMN the
+        // classifier had no branch for it, so the line fell to the catch-all
+        // below and REOPENED a paragraph the interrupter had just closed.
+        // A column-0 line then folded into an item holding nothing open, and
+        // the floating attribute reached the folded line: `- a` / `  {.x}` /
+        // `p` rendered `p` INSIDE the item and gave it `class="x"`, where all
+        // three engines close the item and leave `p` a plain top-level
+        // paragraph.
+        //
+        // The blank-separated spelling (`- a` / blank / `  {.x}` / `p`) took
+        // the same wrong turn by a longer route: the blank branch above
+        // classifies the attribute line as invisible and closes the paragraph,
+        // then hands the line back to this loop, which reopened it here. One
+        // branch settles both.
+        //
+        // A WRAPPED attribute block is out of reach here for the reason the
+        // marker-line seed records: its opener has no closing brace, so it is
+        // not an attribute line by itself, and its continuation arrives as
+        // ordinary residue. That case is carve#1280's open content-column half
+        // and is deliberately not decided by a one-line window.
+        else if (tryAttrLine([dedented], 0)) closePara()
         else if (dmeas.rest !== '') openParaWith(dedented)
         i++
         continue
