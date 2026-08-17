@@ -7303,6 +7303,98 @@ EOF = (* end of file *) ;
       28 corpus documents into disagreement inside four hours, which is what
       raised the question (carve#961, carve#970).
 
+   8b. THE MARKDOWN TARGET'S AUTHORED ESCAPE NARROWS TOO -- NORMATIVE. §8a
+      narrowed M1 and left M2 as written. M2 narrows on the same finding, and
+      on a test of the same shape:
+
+      M2a AN `escaped_text` NODE IS EMITTED AS AN ESCAPE WHEN ITS CHARACTER
+          COULD BE READ AS MARKUP AT THE POSITION THE WRITER HAS REACHED ON
+          THE EMITTED LINE, or when it is one of the smart-punctuation
+          triggers `"`, `'`, `-` and `.`. Otherwise the character is emitted
+          BARE.
+      M2b `#` IS READ AS MARKUP ONLY AT A LINE'S CONTENT POSITION, where it
+          opens an ATX heading. An `escaped_text` hash anywhere else on the
+          line is emitted bare.
+      M2c NOTHING ELSE NARROWS. M1, M3 and §8a are untouched, and a character
+          Markdown reads as markup at that position keeps M2 as written.
+
+      WHAT M2 IS FOR SURVIVES INTACT. §8 states M2 for smart punctuation, and
+      that part is load-bearing at every position. Measured through a reader
+      with substitution on:
+
+        a -- b        ->  a – b
+        a \-\- b      ->  a -- b
+
+      `"`, `'`, `-` and `.` are not Markdown metacharacters, so M1 never
+      reached them and M1's narrowing cannot either. M2a names them so the
+      clause that narrows M2 cannot be read as dropping the reason M2 exists.
+
+      THE COST IS ON IDENTIFIERS, AND IT IS THE COST §8a WAS RAISED OVER.
+      carve#970 opened with two examples:
+
+        C\# is a language
+        issue \#123 fixed
+
+      Both are `escaped_text`. In Carve a bare `#` before a word opens a tag,
+      so text holding one can only be spelled as an escape, so neither example
+      was ever an M1 case and §8a's narrowing did not reach the documents that
+      raised it. A backslash inside an identifier breaks exact-match search on
+      the published document, which is the objection §2 calls decisive for the
+      canonical writer: "Escaping MORE than that is a defect, not a safe
+      default."
+
+      THE TARGET ALREADY DISCARDS THE DISTINCTION THE ESCAPE WAS PRESERVING.
+      Markdown has no construct for a tag or a mention, so this target emits
+      the characters and drops the node:
+
+        #tag rest        ->  #tag rest
+        hi @name ok      ->  hi @name ok
+
+      So under M2 as written this target emits a bare `#` for the construct
+      and a backslashed one for text that merely resembles it. No reader acts
+      on that difference, and the document carrying the backslash is the one
+      that never asked for markup.
+
+      THE `[` CASE §8a LEANS ON IS UNTOUCHED, and M2a is written positionally
+      so that it is. §8a's account of the link grammars ends by resting on M2:
+      an author who meant `[a](b)` as text carries escapes in the tree and
+      gets them back here, so M1b never has to guess. A `[` can open a link at
+      any position on a line, so M2a keeps its escape everywhere and that
+      argument stands unchanged. `#` is the character that differs, because
+      its reading is positional and every position but one is inert.
+
+      WHAT IS LOST IS BOUNDED BY §1. Carve source through this target and back
+      stops recording which hash was text. §1 already defines the round-trip
+      invariant MODULO ESCAPING (carve#370) -- `escaped_text` and `text`
+      compare equal -- and the invariants that admit no latitude,
+      `to_html(fmt(x)) == to_html(x)` and idempotence, are inside the Carve
+      target, which this clause does not touch.
+
+      The importers re-derive what they need, which is why the backslash in
+      the Markdown was not what carried it:
+
+        md-in: Bau #64748b       ->  carve: Bau \#64748b
+        md-in: C# is a language  ->  carve: C# is a language
+
+      The escape comes back where a construct would form and stays absent
+      where none would. The loss is also already taken in the other direction:
+      a tag node does not survive a round trip through this target today,
+      since the writer flattens it and an importer escapes it back to text.
+      This clause makes the two directions agree rather than adding an
+      asymmetry.
+
+      A KNOWN LIMIT, STATED RATHER THAN SOLVED. GFM as deployed on one host
+      autolinks a bare `#` before digits to an issue, and a bare `@` before a
+      name to a user. That exposure is not created here: this target emits
+      both bare today whenever the document holds the construct, and M2's
+      escape covered only the half of the traffic that was text. If it matters
+      it wants a host-aware profile covering both halves, not an
+      unconditional escape covering one.
+
+      ALL THREE ENGINES LAND IT IN ONE RELEASE, on §8a's condition and for its
+      reason: the clause is what the engines implement, and it moves the bytes
+      of every document carrying an authored escape.
+
    9. THE MARKDOWN TARGET'S HARD BREAK -- NORMATIVE. A `hard_break` is emitted
       as a BACKSLASH before the newline, never as two trailing spaces.
 
