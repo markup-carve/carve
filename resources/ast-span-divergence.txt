@@ -142,6 +142,34 @@
 # only because the previous two blocks each said something like it and were
 # wrong - which is the argument for the count column rather than the prose.
 
+# AND ONE MORE TIME, at carve-js c8c8dc3, carve-rs 71318e9 and carve-php
+# 30cc587 over the same 1131 corpus documents plus 3 synthetic samples. Of
+# 22,763 comparable spans, FOUR rows across 8 documents - the same four keys and
+# the same four counts as the block above.
+#
+# THE COUNTS DID NOT MOVE AND THE ROW DID. `code (presence)` still reads 3, and
+# it is now a different three documents with the engines the other way round:
+#
+#   before  333, 333-4, 333-5              php PLACED, js and rs absent
+#   after   11-fenced-code-16, 149-...,    php ABSENT, js and rs placed
+#           276-...-7
+#
+# markup-carve/carve-php#1365 closed markup-carve/carve-php#1361 by dropping the
+# position on a node assembled from discontiguous source. On the `333` documents
+# that is the fix, and those three omissions are now `permitted` in
+# resources/ast-position-waivers.txt beside carve-js's and carve-rs's. It also
+# reached fenced code BLOCKS, where the position is an extent over one
+# contiguous region and both other engines place it, so three honest spans went
+# with it (markup-carve/carve-php#1369).
+#
+# A COUNT ALONE WOULD HAVE CALLED THAT NO CHANGE. This is the one case the
+# file's own header does not catch: "a listed field's DOCUMENT COUNT moves"
+# fails, and a row that swaps its documents and its direction while holding its
+# count does not. What caught it was the sibling file - the six carve-php
+# position findings arrived UNDECLARED there and failed the run - so the two
+# ledgers cover each other, and neither is sufficient alone. Worth knowing
+# before anyone proposes dropping one.
+
 text (presence) 3
 code (presence) 3
 definition_list (extent) 2
