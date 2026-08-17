@@ -638,7 +638,7 @@ documents on 2026-08-07, the OWED half of `resources/ast-position-waivers.txt`
 was EMPTY.
 
 It did not stay empty. Re-measured on 2026-08-17 over 1131 documents, at
-carve-js 80537c8, carve-rs 71318e9 and carve-php 84c422b, that half holds one
+carve-js c8c8dc3, carve-rs 71318e9 and carve-php 6bd856f, that half holds one
 defect again: carve-php drops the position of a line block's content where the
 source's spaces became indentation sentinels, and carve-rs publishes the same
 value WITH a span, so a true span exists
@@ -710,15 +710,30 @@ corpus documents plus 3 synthetic samples, `npm run ast:check` reports:
 
 The morning's block attributed eight span rows to a single carve-php issue. That
 was too coarse, and the rows that survived their own issue's work are how it
-shows: each surviving row now names its own tracker, in carve-php
+shows: each surviving row was given its own tracker, in carve-php
 ([#1351](https://github.com/markup-carve/carve-php/issues/1351),
 [#1361](https://github.com/markup-carve/carve-php/issues/1361),
 [#1362](https://github.com/markup-carve/carve-php/issues/1362),
 [#1363](https://github.com/markup-carve/carve-php/issues/1363)) and in carve-js
 ([#1145](https://github.com/markup-carve/carve-js/issues/1145),
-[#1153](https://github.com/markup-carve/carve-js/issues/1153)). Two of those are
+[#1153](https://github.com/markup-carve/carve-js/issues/1153)). Two of those were
 carve-js standing alone, so "one engine is behind" was never the whole shape
 either.
+
+Ninety minutes later it was four rows across eight documents, of 22,769 spans, at
+carve-js `c8c8dc3`, carve-rs `71318e9` and carve-php `6bd856f`. Both carve-js
+rows went in the two PRs that answered them - `code (extent)` came `AGREED` and
+`text (presence)` dropped from six documents to three - and that second fix also
+moved `resources/ast-position-waivers.txt`, which had not moved all day: a
+continuation row's carried text now has its own span, so two permitted omissions
+retire and a third halves.
+
+Which is the point of dating these paragraphs rather than writing them in the
+present tense. The block above says a row "will not clear when carve-php catches
+up" and names it the one worth watching; it cleared within two hours, in the
+other engine, for an unrelated reason. Every remaining span row is carve-php
+alone - the first time that day the panel had one engine on every row, and the
+third consecutive block to claim something like it.
 
 An empty declaration is a statement about the corpus, which is the only thing
 the run measures. Four collapsed-reference labels the corpus does not hold - one
