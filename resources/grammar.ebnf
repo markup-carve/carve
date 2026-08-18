@@ -10446,3 +10446,34 @@ EOF = (* end of file *) ;
       is §7's answer rather than §10's; that is a measurement of one engine and
       not a ruling. An implementation emitting the node for a definition it
       recognizes satisfies this clause whichever way that question lands.
+
+   19. A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA -- NORMATIVE. A
+      `table` MAY carry `columns`, an array whose entry at index N describes
+      column N. An entry MAY carry:
+
+        align   one of `left`, `right` or `center`
+        width   a number greater than zero and at most one: the column's
+                FRACTION of the table width
+
+      Either field may be absent, meaning unset. The array MAY be empty or
+      shorter than the widest row; a missing entry means both fields are unset
+      for that column. Widths need not sum to one. A sum above one is a
+      diagnostic concern for a source spelling or format bridge, not an invalid
+      exchange tree.
+
+      RESOLUTION IS PER FIELD. A cell's own value wins, then the corresponding
+      column value, then unset. One explicit cell field does not suppress a
+      different field inherited from the column. This keeps the rule usable
+      when a later version adds another alignment axis.
+
+      EXISTING SOURCE TREES DO NOT MOVE. A header-cell marker and a GFM
+      delimiter colon continue to put `align` on the header cell, and renderers
+      continue to propagate that value down the column as they do today.
+      `columns` carries facts supplied by an AST consumer or a richer format;
+      it does not reinterpret an existing `table_cell.align`.
+
+      CARVE 0.1 SOURCE HAS NO SPELLING FOR THIS FIELD. A source parser therefore
+      never synthesizes it. A canonical Carve source writer MUST omit it and a
+      bridge or API which exposes conversion diagnostics SHOULD report the
+      structural loss. This representational field does not reserve a source
+      attribute spelling; that is a separate language decision.

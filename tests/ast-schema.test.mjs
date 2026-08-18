@@ -165,6 +165,27 @@ test('§15 does NOT make the schema the check that the counts sum', () => {
   assert.equal(validate(doc), true, `the schema is not the sum check: ${firstErrors()}`)
 })
 
+test('a table accepts positional column metadata, with closed bounded entries', () => {
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  const table = (columns) => ({
+    type: 'document',
+    srcByteLength: 1,
+    children: [{ type: 'table', rows: [], columns, pos }],
+  })
+
+  assert.equal(
+    validate(table([{ align: 'right' }, {}, { align: 'center', width: 0.25 }])),
+    true,
+    firstErrors(),
+  )
+  assert.equal(validate(table([])), true, firstErrors())
+  assert.equal(validate(table([{ align: 'justify' }])), false, 'alignment is a closed vocabulary')
+  assert.equal(validate(table([{ width: 0 }])), false, 'zero is not a positive width fraction')
+  assert.equal(validate(table([{ width: 1.01 }])), false, 'a width fraction cannot exceed one')
+  assert.equal(validate(table([{ width: '0.25' }])), false, 'a width fraction is numeric')
+  assert.equal(validate(table([{ valign: 'top' }])), false, 'future axes are not silently admitted')
+})
+
 test('shared source-layout fixtures validate', () => {
   const layoutSchema = JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-schema.json'), 'utf8'))
   const validateLayout = new Ajv2020({ strict: true }).compile(layoutSchema)
