@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+373-a-vertical-table-marker-needs-a-horizontal-partner  the pinned carve-js build still accepts reverse-order vertical-horizontal table alignment pairs

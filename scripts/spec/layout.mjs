@@ -989,12 +989,12 @@ function parseCell(seg) {
     const marks = [...run[1]]
     let horizontal = null
     let vertical = null
-    for (let mi = 0; mi < marks.length; mi++) {
-      const mark = marks[mi]
-      const verticalFirstMiddle = mark === '~' && mi === 0 &&
-        (marks[1] === '<' || marks[1] === '>')
-      const useHorizontal = !verticalFirstMiddle && (mark === '<' || mark === '>' ||
-        (mark === '~' && (marks.length === 1 || horizontal === null)))
+    const reverseOrder = marks.length === 2 &&
+      (marks[0] === '^' || marks[0] === 'v' ||
+        (marks[0] === '~' && (marks[1] === '<' || marks[1] === '>')))
+    for (const mark of reverseOrder ? [] : marks) {
+      const useHorizontal = mark === '<' || mark === '>' ||
+        (mark === '~' && (marks.length === 1 || horizontal === null))
       if (useHorizontal) {
         if (horizontal !== null) { horizontal = null; vertical = null; break }
         horizontal = mark === '<' ? 'left' : mark === '>' ? 'right' : 'center'

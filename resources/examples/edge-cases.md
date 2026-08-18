@@ -24318,8 +24318,8 @@ markers remain more specific than these defaults.
 
 ## A table alignment run carries two independent axes
 
-The horizontal and vertical markers may be authored in either order. The
-canonical order is horizontal then vertical, and rendered CSS always writes
+The horizontal marker comes first and the optional vertical marker follows it.
+Rendered CSS likewise writes
 `text-align` before `vertical-align`. A header-cell run supplies column defaults;
 a body-cell run overrides only that cell.
 
@@ -24382,9 +24382,9 @@ silently changing layout. The order of a valid pair remains author-independent.
 
 ```html
 <table>
-  <thead><tr><th scope="col">^ Top</th><th scope="col">v Bottom</th><th scope="col" style="text-align: left; vertical-align: top;">Paired</th><th scope="col" style="text-align: right; vertical-align: bottom;">Reverse</th><th scope="col" style="text-align: right; vertical-align: middle;">Middle</th></tr></thead>
+  <thead><tr><th scope="col">^ Top</th><th scope="col">v Bottom</th><th scope="col" style="text-align: left; vertical-align: top;">Paired</th><th scope="col">v&gt; Reverse</th><th scope="col">~&gt; Middle</th></tr></thead>
   <tbody>
-    <tr><td>a</td><td>b</td><td style="text-align: left; vertical-align: top;">c</td><td style="text-align: right; vertical-align: bottom;">d</td><td style="text-align: right; vertical-align: middle;">e</td></tr>
+    <tr><td>a</td><td>b</td><td style="text-align: left; vertical-align: top;">c</td><td>d</td><td>e</td></tr>
   </tbody>
 </table>
 ```

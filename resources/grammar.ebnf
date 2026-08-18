@@ -1553,17 +1553,16 @@ colspan_marker = {space}, '<', {space} ;
    (carve#904, applying carve#901). What counts as an EMPTY cell is a
    separate question and is unchanged here. *)
 
-alignment_run = horizontal_alignment, [vertical_alignment]
-              | vertical_alignment, horizontal_alignment ;
+alignment_run = horizontal_alignment, [vertical_alignment] ;
 horizontal_alignment = '<' | '>' | '~' ;  (* left, right, center *)
 vertical_alignment = '^' | '~' | 'v' ;    (* top, middle, bottom *)
 cell_padding = space | (* empty only when no alignment_run is present *) ;
-(* An alignment run is a horizontal marker, optionally paired with a vertical
-   marker in either authored order, and MUST be followed by one space after an
+(* An alignment run is a horizontal marker, optionally followed by a vertical
+   marker, and MUST be followed by one space after an
    optional attached attribute block. A vertical marker therefore never stands
    alone: `|^ x` and `|v x` keep `^`/`v` as visible content.
-   Duplicate axes are invalid, except `~~`, whose first marker is horizontal
-   center and second is vertical middle. `fmt` writes horizontal then vertical.
+   Reverse-order pairs are invalid. Duplicate axes are invalid, except `~~`,
+   whose first marker is horizontal center and second is vertical middle.
    A lone `~` is horizontal center; no vertical value has a one-marker spelling.
    With no alignment run the old unpadded cell spelling remains valid. *)
 
