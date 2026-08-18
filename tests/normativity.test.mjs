@@ -172,17 +172,29 @@ const scanGroups = (text, lead, onHit) => {
   }
 }
 
+// The PART NUMBER is read from the citation, never iterated over the parts the
+// grammar happens to have. Building one pattern per known part would skip a
+// citation into a part number that does not exist at all, and one into a part
+// that exists but has no sections - PART 8, whose numbered lists are precedence
+// orders - which is the same hole one size up from the one this closes.
+const QUALIFIED_CITATION = new RegExp(
+  `PART (\\d+) (?:§|section )(${CLAUSE})((?:\\s*(?:,|&|and|or|to|–|-)\\s*§?${CLAUSE})*)`,
+  'g',
+)
+
 test('every "PART N §M" citation resolves to a real section', () => {
   const dangling = []
   for (const file of citationSources) {
     if (!existsSync(file)) continue
     const text = readFileSync(file, 'utf8')
-    for (const part of partSections.keys()) {
+    for (const m of text.matchAll(QUALIFIED_CITATION)) {
+      const part = Number(m[1])
       const valid = sectionSet(part)
-      if (valid.size === 0) continue
-      scanGroups(text, `PART ${part} (?:§|section )`, (id) => {
+      const check = (id) => {
         if (!valid.has(id)) dangling.push(`${file}: PART ${part} §${id}`)
-      })
+      }
+      check(m[2])
+      for (const t of m[3].matchAll(new RegExp(`§?(${CLAUSE})`, 'g'))) check(t[1])
     }
   }
   assert.deepEqual(
