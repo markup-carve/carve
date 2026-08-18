@@ -153,7 +153,8 @@ under the same semantic-span rule,
 `361-a-paragraph-opened-after-a-block-in-an-item-is-still-open-for-a-lazy-line`,
 `362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line`,
 `363-a-task-item-s-checkbox-is-not-decided-by-its-first-block`,
-`364-only-lazy-folding-demotes-a-marker-line-colon-opener`.
+`364-only-lazy-folding-demotes-a-marker-line-colon-opener`,
+`365-a-blank-line-before-a-sibling-marker-separates-the-items-whatever-consumed-it`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative
@@ -299,6 +300,16 @@ odd reader, demoting a marker-line `:::` opener to literal text when a blank
 line followed it (carve#1382). There is no engine window here to close; the
 declaration exists only because the quoted denominator above predates the
 category.
+
+Category 365 is declared with an OPEN engine window, like 363. Its three
+documents were rendered through the oracle, carve-js `7cd66e0`, carve-php
+`8a28c20` and carve-rs `16a1b83` while they were written. carve-js and carve-rs
+reproduce all three byte for byte. carve-php reproduces the `:::` div document
+and the different-axis control and misses the code-fence one, where it keeps the
+list tight: it already loosens the same shape under a div, an admonition, a raw
+block and a comment fence, and a code or tilde fence is the only place it does
+not (markup-carve/carve-php#1445). This category will not match carve-php until
+that lands.
 
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS
