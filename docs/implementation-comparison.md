@@ -149,7 +149,8 @@ under the same semantic-span rule,
 `357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders`,
 `358-what-a-content-column-block-does-not-reach`,
 `359-a-footnote-definition-s-block-runs-to-the-end-of-its-body`,
-`360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column`.
+`360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column`,
+`361-a-paragraph-opened-after-a-block-in-an-item-is-still-open-for-a-lazy-line`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative
