@@ -1553,9 +1553,11 @@ colspan_marker = {space}, '<', {space} ;
    (carve#904, applying carve#901). What counts as an EMPTY cell is a
    separate question and is unchanged here. *)
 
-alignment_run = horizontal_alignment, [vertical_alignment] ;
+alignment_run = horizontal_alignment, [vertical_alignment]
+              | inherited_horizontal_alignment, vertical_alignment ;
 horizontal_alignment = '<' | '>' | '~' ;  (* left, right, center *)
 vertical_alignment = '^' | '~' | 'v' ;    (* top, middle, bottom *)
+inherited_horizontal_alignment = '?' ;
 cell_padding = space | (* empty only when no alignment_run is present *) ;
 (* An alignment run is a horizontal marker, optionally followed by a vertical
    marker, and MUST be followed by one space after an
@@ -1563,7 +1565,10 @@ cell_padding = space | (* empty only when no alignment_run is present *) ;
    alone: `|^ x` and `|v x` keep `^`/`v` as visible content.
    Reverse-order pairs are invalid. Duplicate axes are invalid, except `~~`,
    whose first marker is horizontal center and second is vertical middle.
-   A lone `~` is horizontal center; no vertical value has a one-marker spelling.
+   `?` contributes no cell-level horizontal value: `?^`, `?~` and `?v` set
+   only vertical alignment and inherit horizontal alignment from the column.
+   It is valid only in that leading two-marker form. A lone `~` is horizontal
+   center; no vertical value has a one-marker spelling.
    With no alignment run the old unpadded cell spelling remains valid. *)
 
 cell_content = inline_content ;
@@ -10645,13 +10650,18 @@ EOF = (* end of file *) ;
       marker, and is terminated by exactly one space after an optional glued
       attribute block. Horizontal markers are `<`, `~`, `>`; vertical markers
       are `^`, `~`, `v` for top, middle and bottom. A horizontal marker may
-      stand alone; a vertical marker MUST be paired with a horizontal marker,
-      in either order. `~~` means center plus middle. Any other
+      stand alone; a vertical marker MUST follow a horizontal marker or the
+      `?` inheritance placeholder. Vertical-then-horizontal order is invalid.
+      `~~` means center plus middle. Any other
       duplicate axis is invalid and falls back visibly rather than consuming
-      a prefix. `fmt` normalizes both axes to horizontal then vertical.
+      a prefix. The only valid order is horizontal (`x`) then vertical (`y`).
 
-      A lone `~` is horizontal center. Every vertical value spells its chosen
-      horizontal value too. A header-cell run supplies
+      A lone `~` is horizontal center. `?` is the horizontal-inheritance
+      placeholder and is valid only before a vertical marker: `?^`, `?~` and
+      `?v` contribute no cell-level `align`, so that field resolves from the
+      column while the run contributes `top`, `middle` or `bottom` as the
+      cell-level `valign`. A lone `?`, a reversed vertical-plus-`?` pair and
+      every other `?` run are ordinary visible content. A header-cell run supplies
       column defaults; a body-cell run supplies only that cell. A run with no
       following space is not alignment: this deliberately changes the glued
       `|>text` family so marker runs have an unambiguous terminator. `lint`

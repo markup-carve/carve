@@ -1,0 +1,19 @@
+A table cell can inherit horizontal alignment
+
+```
+|=>^ Name |= Value |
+|?v Bottom |?~ Middle |
+|?^ Top | plain |
+|? lone |v? reversed |
+|?< wrong |^< axes |
+.
+<table>
+  <thead><tr><th scope="col" style="text-align: right; vertical-align: top;">Name</th><th scope="col">Value</th></tr></thead>
+  <tbody>
+    <tr><td style="text-align: right; vertical-align: bottom;">Bottom</td><td style="vertical-align: middle;">Middle</td></tr>
+    <tr><td style="text-align: right; vertical-align: top;">Top</td><td>plain</td></tr>
+    <tr><td style="text-align: right; vertical-align: top;">? lone</td><td>v? reversed</td></tr>
+    <tr><td style="text-align: right; vertical-align: top;">?&lt; wrong</td><td>^&lt; axes</td></tr>
+  </tbody>
+</table>
+```

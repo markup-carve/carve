@@ -24,3 +24,4 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+375-a-table-cell-can-inherit-horizontal-alignment  the pinned carve-js build predates the horizontal-inheritance placeholder
