@@ -984,26 +984,19 @@ function parseCell(seg) {
   // A horizontal-only or paired run is committed only when its optional
   // attribute block is followed by the required space. A lone vertical marker
   // and invalid duplicate axes consume nothing.
-  const run = new RegExp(`^([<>~^v]{1,2})(?=(?:\\{${ATTR_PAYLOAD}\\})? )`).exec(s)
+  const run = new RegExp(`^([<>~^v?]{1,2})(?=(?:\\{${ATTR_PAYLOAD}\\})? )`).exec(s)
   if (run) {
     const marks = [...run[1]]
-    let horizontal = null
-    let vertical = null
-    for (let mi = 0; mi < marks.length; mi++) {
-      const mark = marks[mi]
-      const verticalFirstMiddle = mark === '~' && mi === 0 &&
-        (marks[1] === '<' || marks[1] === '>')
-      const useHorizontal = !verticalFirstMiddle && (mark === '<' || mark === '>' ||
-        (mark === '~' && (marks.length === 1 || horizontal === null)))
-      if (useHorizontal) {
-        if (horizontal !== null) { horizontal = null; vertical = null; break }
-        horizontal = mark === '<' ? 'left' : mark === '>' ? 'right' : 'center'
-      } else {
-        if (vertical !== null) { horizontal = null; vertical = null; break }
-        vertical = mark === '^' ? 'top' : mark === 'v' ? 'bottom' : 'middle'
-      }
-    }
-    if (horizontal !== null && (vertical !== null || run[1].length === 1)) {
+    const horizontalMark = marks[0]
+    const verticalMark = marks[1]
+    const inheritedHorizontal = horizontalMark === '?' && marks.length === 2 && '^~v'.includes(verticalMark)
+    const horizontal = '<>~'.includes(horizontalMark)
+      ? (horizontalMark === '<' ? 'left' : horizontalMark === '>' ? 'right' : 'center')
+      : null
+    const vertical = verticalMark !== undefined && '^~v'.includes(verticalMark)
+      ? (verticalMark === '^' ? 'top' : verticalMark === 'v' ? 'bottom' : 'middle')
+      : null
+    if ((horizontal !== null && (marks.length === 1 || vertical !== null)) || inheritedHorizontal) {
       cell.align = horizontal
       cell.valign = vertical
       s = s.slice(run[1].length)

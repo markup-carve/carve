@@ -1,0 +1,5 @@
+|=>^ Name |= Value |
+| ?v Bottom | ?~ Middle |
+| ?^ Top | plain |
+| ? lone | v? reversed |
+| ?< wrong | ^< axes |
