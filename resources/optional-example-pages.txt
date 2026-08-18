@@ -13,6 +13,7 @@ order: 1
   details
   list-table
   list-table-columns-1344
+  list-table-local-headers-1248
   spoiler
   tabs
   semantic-span

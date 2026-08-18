@@ -123,6 +123,7 @@ const DECLARED_UNREACHABLE = {
   'rust:code-callouts': 'no CLI flag for the code-callouts extension',
   'rust:details': 'no CLI flag for the details extension',
   'rust:list-table': 'no CLI flag for the list-table extension',
+  'rust:list-table-local-headers-1248': 'no CLI flag for the list-table extension',
   'rust:semantic-span': 'no CLI flag for the semantic-span extension',
   'rust:spoiler': 'no CLI flag for the spoiler extension',
   'rust:tabs': 'no CLI flag for the tabs extension',
