@@ -117,10 +117,11 @@ The corner cases: precise boundary rules, table alignment variants, lazy continu
 
 ## Table doubled alignment marker
 
-An alignment run is a set of at most one marker per axis and ends at a required
-space. `|=<<` repeats the horizontal axis, so the run is invalid and falls back
-visibly: the cell remains a header and the doubled marker is content. A reader
-must not consume the first marker and silently reinterpret the second.
+Per the disambiguation rule, a `<`/`>`/`~` immediately after `|` or
+`|=` is an alignment marker, and exactly one is recognized — so in
+`|=<<` the first `<` aligns the column left and the *repeated* second
+`<` is ordinary content. The marker is never doubled and never escapes
+the header `=`.
 
 ::: compare
 
@@ -131,9 +132,9 @@ must not consume the first marker and silently reinterpret the second.
 
 ```html
 <table>
-  <thead><tr><th scope="col">&lt;&lt; Note</th><th scope="col">Plain</th></tr></thead>
+  <thead><tr><th scope="col" style="text-align: left;">&lt; Note</th><th scope="col">Plain</th></tr></thead>
   <tbody>
-    <tr><td>a</td><td>b</td></tr>
+    <tr><td style="text-align: left;">a</td><td>b</td></tr>
   </tbody>
 </table>
 ```
@@ -1303,12 +1304,11 @@ under the marker.
 
 :::
 
-A flush-left line after a heading stays inside the item the heading belongs to,
-at any nesting depth — even when the heading opens on a deeper sub-list item's
-marker line. What it does *not* do is fold into the heading: a heading ends at
-the newline (§18), so the line is the item's own content, which a tight list
-renders unwrapped. Ownership is the rule here; the heading's id is built from
-the heading line alone.
+A flush-left line after a heading cannot stay in the item that ends on that
+heading: the heading leaves no paragraph open. At a nested depth it may still
+resume an enclosing item's open paragraph. What it does *not* do is fold into
+the heading: a heading ends at the newline (§18), and its id is built from the
+heading line alone.
 
 ::: compare
 
@@ -1325,9 +1325,9 @@ lazy
     <ul>
       <li>b
         <h1 id="N">N</h1>
-        lazy
       </li>
     </ul>
+    lazy
   </li>
 </ul>
 ```
@@ -23888,6 +23888,298 @@ is what separates the two: a sibling after such a fence "stays tight because no
 blank line actually separates the two items". Content follows an interior blank
 before the marker, so nothing stands between the items, and the case above in
 this file stays tight in all four readers.
+
+## A raw block keeps the blank line at the end of its payload too
+
+The property is the one the fence section above states: a blank line inside a
+fence is content, and the last one is content too, wherever the fence ends. A
+raw block is a fence whose interior is a verbatim PAYLOAD rather than content
+lines, and the payload is every line between the delimiters. Which container the
+block sits in is not a parameter, and neither is whether the closer was written.
+
+The shape that made this look unsettled is a raw block written LAST in the
+document. Its payload's trailing newlines then land at the very end of the
+output, where the trailing-whitespace trim every reader applies removes them, so
+all four readers print the same bytes and the document cannot tell the readings
+apart. Put a block after it and the payload becomes visible again (carve#1389).
+
+::: compare
+
+````carve
+```=html
+b
+
+```
+
+after
+````
+
+````html
+b
+
+<p>after</p>
+````
+
+:::
+
+The same payload, inside a list item and with the fence left open. The item is
+loose because a blank line stands before the sibling marker, whatever consumed
+it; the blank is the payload's last line all the same.
+
+::: compare
+
+````carve
+- ```=html
+  b
+
+- s
+````
+
+````html
+<ul>
+  <li>
+    b
+
+  </li>
+  <li><p>s</p></li>
+</ul>
+````
+
+:::
+
+CONTROL. A payload with no blank line at the end of it gains none. This document
+renders the same bytes under either reading of the case above, so it pins
+nothing about the blank - it is here to catch the over-correction, a reader that
+emits a separator of its own after the payload.
+
+::: compare
+
+````carve
+```=html
+b
+```
+
+after
+````
+
+````html
+b
+<p>after</p>
+````
+
+:::
+
+## An unterminated fence at a content column opens no block, so the paragraph stays open
+
+Section 10 I4 decides whether a code fence interrupts an open paragraph, and it
+is a question about the CLOSER: without one the fence line is ordinary paragraph
+text. That is what every reader already does at document level, where `q` over a
+bare fence run over `b` is one paragraph holding an unclosed inline verbatim run
+rather than a code block.
+
+At a container's content column the same line does the same thing, so PART 1 S4
+finds an open paragraph and a flush-left line below folds into it. The container
+does not end, because nothing closed the paragraph (carve#1387).
+
+::: compare
+
+````carve
+- q
+  ```
+tail
+````
+
+````html
+<ul>
+  <li>q
+<code>
+tail</code></li>
+</ul>
+````
+
+:::
+
+The container is not a parameter. A definition body's content column answers the
+same way, and so does a block quote's - the quote spelling is the one every
+reader already folded, which is what made the list spelling a contradiction
+inside each of them rather than a disagreement between them.
+
+::: compare
+
+````carve
+:: t
+:  a
+   ```
+tail
+````
+
+````html
+<dl>
+  <dt>t</dt>
+  <dd>a
+<code>
+tail</code></dd>
+</dl>
+````
+
+:::
+
+::: compare
+
+````carve
+> q
+> ```
+tail
+````
+
+````html
+<blockquote><p>q
+<code>
+tail</code></p></blockquote>
+````
+
+:::
+
+CONTROL. A blank line closes the paragraph, so S4's other half governs and the
+item ends whatever container is still waiting for its closer. This is the
+document the reading above must not swallow.
+
+::: compare
+
+````carve
+- q
+  ```
+
+tail
+````
+
+````html
+<ul>
+  <li>q
+<code></code></li>
+</ul>
+<p>tail</p>
+````
+
+:::
+
+CONTROL. AT BLOCK START a fence opens a body whether or not it is terminated -
+there is no paragraph for section 10 I4 to protect, and the body runs to the end
+of the container. The flush-left line then has nothing to fold into and the item
+ends, which is the fenced-body clause with its premise intact. Nothing in the
+corpus pinned this shape before, and a reading that made every unterminated
+fence at a content column absorb its container's following lines passed all 1267
+documents without it.
+
+::: compare
+
+````carve
+- a
+
+  ```
+  b
+tail
+````
+
+````html
+<ul>
+  <li>a
+    <pre><code>b
+</code></pre>
+  </li>
+</ul>
+<p>tail</p>
+````
+
+:::
+
+CONTROL. A fence WITH its closer is a block, and a block leaves no paragraph
+open, so the item ends on the flush-left line for the ordinary reason. The
+premise the clause turns on is the closer, and this is the shape where it holds.
+
+::: compare
+
+````carve
+- q
+  ```
+  y
+  ```
+tail
+````
+
+````html
+<ul>
+  <li>q
+    <pre><code>y
+</code></pre>
+  </li>
+</ul>
+<p>tail</p>
+````
+
+:::
+
+## A heading at an item's content column leaves no paragraph open
+
+The content column is the item body's column zero, so a heading written there is
+the item's own heading block. It is not simultaneously a paragraph for the
+purpose of deciding whether a flush-left line may fold. No paragraph is open,
+and PART 1 S4 therefore ends the item before `tail`, exactly as it does when the
+same heading is written on the marker line or inside a quote. All four readers
+used to classify the heading correctly and then keep a phantom paragraph open
+behind it (carve#1377).
+
+::: compare
+
+```carve
+- | a |
+  # h
+tail
+```
+
+```html
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+    <h1 id="h">h</h1>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+CONTROL. Prose at that same column really does open a paragraph, so the
+flush-left line lazily continues it. The earlier table does not matter once
+prose becomes the item's last block.
+
+::: compare
+
+```carve
+- | a |
+  prose
+tail
+```
+
+```html
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+    prose
+tail
+  </li>
+</ul>
+```
+
+:::
 
 ## Table columns carry alignment, vertical alignment and widths
 

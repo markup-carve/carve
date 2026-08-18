@@ -45,14 +45,16 @@
 # empty block is not a side, so the emitted caption carries one separator and
 # not two. Each remaining line goes in the commit that lands the fix for that
 # engine.
-js/29-html-a-flattened-paragraph-boundary-survives  emits `onetwo`; PART 11 s1b not implemented
-js/30-html-flattened-emphasis-runs-do-not-merge  emits `*a**b*`; PART 11 s1b not implemented
-js/31-html-flattened-code-spans-do-not-merge  joins the two code spans; PART 11 s1b not implemented
-js/32-html-an-empty-flattened-block-is-not-a-side  emits `ab`; PART 11 s1b not implemented
-php/29-html-a-flattened-paragraph-boundary-survives  emits `onetwo`; PART 11 s1b not implemented
-php/30-html-flattened-emphasis-runs-do-not-merge  emits `*a**b*`; PART 11 s1b not implemented
-php/31-html-flattened-code-spans-do-not-merge  joins the two code spans; PART 11 s1b not implemented
-php/32-html-an-empty-flattened-block-is-not-a-side  emits `ab`; PART 11 s1b not implemented
+#
+# AND ALL THREE LANDED. Measured 2026-08-18 at the release freeze: carve-rs
+# first (markup-carve/carve-rs#1094), then carve-js and carve-php, so every
+# js/ and php/ line for cases 29 through 32 reported STALE and is deleted here.
+#
+# THIS FILE IS NOW EMPTY OF DECLARATIONS, and that is the intended end state
+# rather than a missing section: no engine is known to diverge on any
+# converter case. The window PART 11 s1b opened - corpus ahead of every engine
+# - is closed. A new declaration goes below, one line per (engine, case), and
+# is deleted by the commit that proves the engine matches.
 #
 # A ledger and an unwired gate look identical from outside, so read the
 # converter summary rather than this file: `npm run compare:convert` prints a

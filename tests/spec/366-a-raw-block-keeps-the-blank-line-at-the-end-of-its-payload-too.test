@@ -1,0 +1,40 @@
+A raw block keeps the blank line at the end of its payload too
+
+````
+```=html
+b
+
+```
+
+after
+.
+b
+
+<p>after</p>
+````
+
+````
+- ```=html
+  b
+
+- s
+.
+<ul>
+  <li>
+    b
+
+  </li>
+  <li><p>s</p></li>
+</ul>
+````
+
+````
+```=html
+b
+```
+
+after
+.
+b
+<p>after</p>
+````
