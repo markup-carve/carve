@@ -24,8 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
-53-table-doubled-alignment-marker  carve#1344: doubled markers other than `~~` now fall back visibly instead of consuming a valid prefix; the pinned reader implements the retired single-marker rule.
-370-table-columns-carry-alignment-vertical-alignment-and-widths  carve#1344: the pinned reader does not yet consume positional table attributes or emit vertical alignment and column widths.
-371-a-table-alignment-run-carries-two-independent-axes  carve#1344: the pinned reader does not yet recognize two-axis table alignment runs or vertical cell alignment.
 369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one  carve#1384: the pin DROPS the definition-shaped line written at a block quote's content column with no quote marker on it, so it renders nothing and defines nothing - the outcome carve#624 forbids. PART 1 S4's A QUOTE IS REACHED BY ITS MARKER, AND A COLUMN NEVER REACHES INTO ONE is the fix: the line reaches the quote only through S4's lazy fold, so it continues the deepest open paragraph and renders where it was written. carve-rs already answers it. The paragraph-body control (-3) and the marker control (-4) both reproduce, which is what makes the set discriminating: the pin gets both shapes where the answer never depended on the quote's body right, and only the two where it did wrong.
 369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one-2  carve#1384: the same shape one container deeper, which is the spelling the ticket reported and the one that shows the outer item does not change the answer either.

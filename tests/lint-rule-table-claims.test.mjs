@@ -90,6 +90,10 @@ const TRIGGERS = {
   // leading `|` with no closing one is a paragraph, and there is no cell for
   // the block to be misplaced in.
   'table-cell-attribute-before-marker': '|{#x}< content |\n',
+  'table-alignment-run-padding': '|>text |\n',
+  'table-column-arity': '{aligns="left"}\n| a | b |\n',
+  'table-column-overlap': '{aligns="left"}\n|=> H |\n',
+  'table-width-total': '{widths="60,50"}\n| a | b |\n',
   // `kbd`, not `cite`: PART 9 §10 moved `samp`, `var`, `cite` and `dfn` into the
   // SemanticSpan extension, so in a core lint they are ordinary attributes and
   // provoke nothing. `kbd` is one of the three names core still reserves, which
@@ -133,10 +137,6 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  *   - listed here and absent from the page -> a declaration about nothing.
  */
 const NOT_IN_THE_PIN_YET = new Map([
-  ['table-alignment-run-padding', 'specified by markup-carve/carve#1344; no engine implements it yet'],
-  ['table-column-arity', 'specified by markup-carve/carve#1344; no engine implements it yet'],
-  ['table-column-overlap', 'specified by markup-carve/carve#1344; no engine implements it yet'],
-  ['table-width-total', 'specified by markup-carve/carve#1344; no engine implements it yet'],
   [
     'unattached-block-attribute',
     'specified by markup-carve/carve#1281; no engine implements it yet',

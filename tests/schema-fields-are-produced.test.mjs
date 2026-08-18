@@ -65,10 +65,6 @@ const OPT_IN_ONLY = {
 const ENGINE_ROLLOUT_PENDING = {
   'figure.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
-  'table.columns':
-    'table-column feature rollout (PART 12 §19): declared for the coordinated engine implementation; removed when the conformance corpus produces it',
-  'table_cell.valign':
-    'vertical-alignment rollout (PART 12 §20): declared for the coordinated engine implementation; removed when the conformance corpus produces it',
   'table.rowGroups':
     'structural exchange field (PART 12 §15): Carve 0.1 source has no spelling for a head/body/foot partition, and absent already means the implicit one, so a parser never synthesizes it; produced only by AST/format-bridge consumers',
 }
