@@ -1563,9 +1563,8 @@ cell_padding = space | (* empty only when no alignment_run is present *) ;
    marker, and MUST be followed by one space after an
    optional attached attribute block. A vertical marker therefore never stands
    alone: `|^ x` and `|v x` keep `^`/`v` as visible content.
-   Vertical-then-horizontal order is invalid. Duplicate axes are invalid,
-   except `~~`, whose first marker is horizontal
-   center and second is vertical middle. `fmt` writes horizontal then vertical.
+   Reverse-order pairs are invalid. Duplicate axes are invalid, except `~~`,
+   whose first marker is horizontal center and second is vertical middle.
    `?` contributes no cell-level horizontal value: `?^`, `?~` and `?v` set
    only vertical alignment and inherit horizontal alignment from the column.
    It is valid only in that leading two-marker form. A lone `~` is horizontal

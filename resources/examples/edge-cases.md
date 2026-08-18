@@ -24318,8 +24318,8 @@ markers remain more specific than these defaults.
 
 ## A table alignment run carries two independent axes
 
-The horizontal and vertical markers may be authored in either order. The
-canonical order is horizontal then vertical, and rendered CSS always writes
+The horizontal marker comes first and the optional vertical marker follows it.
+Rendered CSS likewise writes
 `text-align` before `vertical-align`. A header-cell run supplies column defaults;
 a body-cell run overrides only that cell.
 
