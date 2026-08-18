@@ -329,6 +329,9 @@ index: examples/edge-cases/index.md
   a-closed-inline-construct-spanning-a-verse-boundary
   a-container-whose-table-ends-on-a-continuation-row
   a-definition-at-a-container-s-content-column
+  a-bracketed-construct-spanning-a-line-boundary
+  a-bracketed-construct-s-identifiers-stay-on-one-line
+  a-bracketed-construct-spanning-a-verse-boundary
   41-line-blocks-8
   12-inline-code-5
   24-generic-divs-2
