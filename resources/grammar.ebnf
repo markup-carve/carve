@@ -5245,6 +5245,51 @@ EOF = (* end of file *) ;
          thing may not have a visible effect. carve-js was the one that did
          not flip. (carve#625, carve-js#625, carve-rs#564)
 
+      L1c THE BLANK IS READ AT THE LIST'S LEVEL, NOT THE ITEM'S. L1's first
+         disjunct asks what stands BETWEEN one item and the next sibling
+         marker. A blank line with nothing of the item after it stands between
+         them however the item's interior accounted for the line -- including
+         where an unterminated container carries it as content and the output
+         shows it doing so, as an unterminated code fence's empty payload line
+         does. So
+
+             - ```           - ::: d
+               b               b
+
+             - s             - s
+
+         are both LOOSE, and so are the same documents with the closer
+         written. The state of the container above the blank does not enter
+         this question either, which is the same property PART 1 S4 already
+         states for where the item ENDS (carve#1379).
+
+         WHAT THIS DOES NOT TOUCH is the INTERIOR blank of carve#326 C, and
+         that clause's own reason is the discriminator: a sibling after such a
+         fence "stays tight because no blank line actually separates the two
+         items". Content follows an interior blank before the marker, so
+         nothing stands between the items and the list stays tight --
+
+             - ```
+               a
+
+               b
+               ```
+             - c
+
+         is tight in every reader. Reading the PAYLOAD instead of the position
+         was the alternative, and it fails on its own terms: it would make a
+         structural answer depend on a detail readers already spell
+         differently, since carve-php drops the trailing blank from a raw
+         block and keeps it in a code block.
+
+         The executable spec answered by the item's interior and kept all six
+         container kinds tight. carve-js and carve-rs loosen all six; carve-php
+         loosens a `:::` div, an admonition, a raw block and a comment fence
+         and stays tight for a code or tilde fence alone
+         (markup-carve/carve-php#1445). Corpus 365 pins a div and a code fence
+         loose, with a different-bullet-axis control that stays tight because
+         the marker after the blank belongs to another list. (carve#1383)
+
       L2 COMPACT LIST BLOCKS -- Carve deviation from djot/CommonMark. A
          blank line before an item's sub-BLOCK (sub-list, block quote,
          fenced code, fenced div, heading, table) does NOT loosen: the item

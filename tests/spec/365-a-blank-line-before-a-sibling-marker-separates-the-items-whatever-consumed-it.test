@@ -1,0 +1,53 @@
+A blank line before a sibling marker separates the items, whatever consumed it
+
+```
+- ::: d
+  b
+
+- s
+.
+<ul>
+  <li>
+    <div class="d">
+      <p>b</p>
+    </div>
+  </li>
+  <li><p>s</p></li>
+</ul>
+```
+
+````
+- ```
+  b
+
+- s
+.
+<ul>
+  <li>
+    <pre><code>b
+
+</code></pre>
+  </li>
+  <li><p>s</p></li>
+</ul>
+````
+
+````
+- a
+- ```
+  b
+
+* s
+.
+<ul>
+  <li>a</li>
+  <li>
+    <pre><code>b
+
+</code></pre>
+  </li>
+</ul>
+<ul>
+  <li>s</li>
+</ul>
+````

@@ -2908,6 +2908,43 @@ function collectItems(lines, i, list, state, ind, meas) {
           // identically and the gate would only be a claim that decides
           // nothing.
           closePara()
+          // AND IT STILL SEPARATES THE ITEMS, if nothing of the item follows
+          // it. SS17 L1 asks whether the item is FOLLOWED BY a blank line
+          // before the next sibling marker, and that question is asked at the
+          // LIST's level: what stands between one item and the next. This
+          // branch answered it by what the line was doing INSIDE the item -
+          // fence content, so no separator - so an unterminated fence whose
+          // last line is a blank before a sibling marker kept the list tight.
+          //
+          // carve#326 C is the clause that made an interior blank content, and
+          // its own stated reason is the discriminator: a sibling after such a
+          // fence "stays tight because no blank line actually separates the two
+          // items". Here one does. The blank is the last line before the
+          // marker, with nothing of the item after it, which is exactly the
+          // separation L1 reads - and the TERMINATED spelling of the same
+          // document loosens in all four readers, so keeping this one tight
+          // makes the closer decide a rule that is not about closers
+          // (carve#1379's property, applied to L1). The interior blank
+          // carve#326 C pinned is untouched: content follows it before the
+          // marker, so the lookahead finds that content and not a marker.
+          //
+          // carve-js and carve-rs loosen for every fence kind. carve-php
+          // loosens for a `:::` div, an admonition, a raw block and a comment
+          // fence and stays tight for a code or tilde fence alone
+          // (markup-carve/carve-php#1445).
+          //
+          // ONLY THE LAST BLANK OF A RUN LOOKS AHEAD. Scanning forward over the
+          // remaining blanks from EVERY blank is quadratic in the length of the
+          // run, and a fence with a large blank payload is ordinary input. The
+          // last blank is the one whose next line is content, so testing that
+          // line directly reaches the same marker in constant work per line.
+          {
+            const next = i + 1 < n ? ind(i + 1) : null
+            if (next && next.rest !== '') {
+              const km = matchMarkerAt(next)
+              if (km && km.indent === baseIndent && sameAxes(list, km)) list.tight = false
+            }
+          }
           i++
           continue
         }
