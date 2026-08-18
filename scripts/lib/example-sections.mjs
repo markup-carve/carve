@@ -26,13 +26,15 @@ export const scanExampleSource = (lines, { validateModifiers = () => {} } = {}) 
   let currentLang = null
   let fenceMarker = null
   let compareMarker = null
+  let compareOpenText = null
+  let pairsInBlock = 0
   let compareModifiers = new Set()
   let blockLines = []
   let comparesOpened = 0
   let compareOpenLine = 0
   let segmentStartLine = 0
 
-  const finalizePair = (endLine) => {
+  const finalizePair = (endLine, atCloser = false) => {
     if (currentSection && pendingBlocks.carve && pendingBlocks.html) {
       const example = {
         section: currentSection.title,
@@ -40,19 +42,33 @@ export const scanExampleSource = (lines, { validateModifiers = () => {} } = {}) 
         html: pendingBlocks.html,
         modifiers: compareModifiers,
         modifierLine: compareOpenLine,
+        compareLine: compareOpenLine,
       }
       examples.push(example)
+      /*
+       * A segment is emitted ON ITS OWN when a page routes one fixture, so it
+       * has to be a complete `::: compare` container. Splitting a multi-pair
+       * block at a fence cuts the container in half: the pair before the split
+       * keeps the opener and loses the closer, the pair after keeps the closer
+       * and loses the opener. Record which half is missing; the wrapper is
+       * synthesized where bodyLines are cut, below.
+       */
       currentSection.segments.push({
         startLine: segmentStartLine,
         endLine,
         example,
+        needsOpener: pairsInBlock > 0,
+        needsCloser: !atCloser,
+        compareOpenText,
+        compareCloseText: compareMarker,
       })
+      pairsInBlock++
       segmentStartLine = endLine
     } else if (currentSection) {
       const miss = [!pendingBlocks.carve && 'carve', !pendingBlocks.html && 'html']
         .filter(Boolean)
         .join(' + ')
-      dropped.push(`line ${compareOpenLine} (section "${currentSection}"): missing ${miss} fence`)
+      dropped.push(`line ${compareOpenLine} (section "${currentSection.title}"): missing ${miss} fence`)
     }
     pendingBlocks = { carve: null, html: null }
   }
@@ -85,6 +101,8 @@ export const scanExampleSource = (lines, { validateModifiers = () => {} } = {}) 
     const compareOpen = mode === 'scanning' && /^:{3,}\s+compare(\s+\S.*)?$/.test(line.trim())
     if (compareOpen) {
       compareMarker = line.trim().match(/^(:{3,})/)[1]
+      compareOpenText = line
+      pairsInBlock = 0
       compareModifiers = new Set(line.trim().split(/\s+/).slice(2))
       validateModifiers(compareModifiers, li + 1)
       comparesOpened++
@@ -94,13 +112,27 @@ export const scanExampleSource = (lines, { validateModifiers = () => {} } = {}) 
     }
     if (mode === 'in_compare') {
       if (line.trim() === compareMarker) {
-        finalizePair(li + 1)
+        finalizePair(li + 1, true)
         mode = 'scanning'
         compareMarker = null
         continue
       }
       const fenceOpen = line.match(/^(`{3,})(carve|html)\s*$/)
       if (fenceOpen) {
+        /*
+         * A block may hold several pairs. The fence that would OVERWRITE a
+         * still-pending block closes the pair before it instead: four fences in
+         * one `::: compare` are two documents, not one document written twice.
+         * Before carve#1373 the assignment below simply clobbered, so every
+         * pair after the first vanished before anything reached disk, and both
+         * reconcile checks - being counts of the extraction, compared against
+         * the extraction - reported a clean run.
+         *
+         * Finalizing here rather than at each html fence keeps the single-pair
+         * case byte-identical: one pair still ends at the block's closer, so no
+         * existing segment boundary moves.
+         */
+        if (pendingBlocks[fenceOpen[2]] !== null) finalizePair(li)
         fenceMarker = fenceOpen[1]
         currentLang = fenceOpen[2]
         blockLines = []
@@ -125,7 +157,16 @@ export const scanExampleSource = (lines, { validateModifiers = () => {} } = {}) 
   for (const section of sections) {
     section.bodyLines = lines.slice(section.startLine, section.endLine)
     for (const segment of section.segments) {
-      segment.bodyLines = lines.slice(segment.startLine, segment.endLine)
+      const body = lines.slice(segment.startLine, segment.endLine)
+      if (segment.needsCloser) {
+        while (body.length > 0 && body.at(-1).trim() === '') body.pop()
+        body.push('', segment.compareCloseText, '')
+      }
+      if (segment.needsOpener) {
+        while (body.length > 0 && body[0].trim() === '') body.shift()
+        body.unshift(segment.compareOpenText, '')
+      }
+      segment.bodyLines = body
     }
   }
   return { sections, examples, comparesOpened, dropped }
