@@ -556,6 +556,56 @@
         property governs leaves the wrong derivation available to the next
         reader, which is how it was reached once already (carve#980).
 
+        AND A FENCE THAT OPENED NO BODY IS NOT ONE EITHER (carve#1387). The
+        first bullet presumes a code fence body EXISTS. §10 I4 decides that, and
+        it is a question about the CLOSER: a fence interrupts an open paragraph
+        only when one follows it. Without a closer the line is ordinary
+        paragraph text, which is the answer every reader already gives at
+        document level for
+
+            q
+            ```
+            b
+
+        -- one paragraph holding an unclosed inline verbatim run, not a code
+        block. So at a container's content column
+
+            - q                 > q                 :  a
+              ```               > ```                  ```
+            tail                tail                tail
+
+        all three fold `tail` into the paragraph that is still open, and no
+        container ends. The LIST spelling is the one that diverged: the
+        executable spec, carve-php and carve-rs ended the item while rendering
+        the same fence line as paragraph text, which is one line answered two
+        ways inside a single parse -- the shape PROSE REOPENS THE PARAGRAPH
+        already names. All three of them fold the quote spelling, and this
+        implementation folded the `dd` spelling too, so the contradiction was
+        inside each reader rather than between them. The fence CHARACTER is not
+        a parameter either: the tilde spelling is the same clause.
+
+        THE CLOSER LOOKAHEAD DOES NOT STOP AT A BELOW-COLUMN LINE. §24 C3 folds
+        such a line as lazy text while a paragraph is open, so a closer written
+        below it is still written inside the container. Stopping there makes the
+        question circular -- the fence opens only if the line folds, and the
+        line folds only if the fence did not open -- and it answers
+
+            - a
+              ```
+              b
+             y
+              ```
+
+        differently from every engine, which ends the item at ` y` because this
+        fence does have its closer and a real body is open (corpus
+        276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column).
+
+        A BLANK LINE and a TERMINATED fence are the controls, and both are
+        unchanged: a blank closes the paragraph so S4's otherwise governs
+        (carve#1379), and a fence with a closer is a BLOCK whose body leaves no
+        paragraph open, which is the first bullet with its premise intact.
+        Corpus 367.
+
         AND NOTHING CLOSES MEANS THE CONTAINER GOES ON COLLECTING -- NORMATIVE
         (carve#980). S4's lazy branch says NOTHING closes, and that binds the
         lines AFTER the folded one as much as the folded one itself. A line

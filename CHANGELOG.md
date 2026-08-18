@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **An unterminated fence at a container's content column opens no block** (carve#1387). Section 10 I4 asks for a closer; without one the line is paragraph text, the paragraph stays open, and a flush-left line below folds into it. Corpus 367.
 - **A raw block keeps the blank line at the end of its payload** (carve#1389). The payload is every line between the delimiters; the container and whether the closer was written are not parameters. Corpus 366.
 
 ## [0.1.3] - 2026-08-18

@@ -23969,3 +23969,123 @@ b
 ````
 
 :::
+
+## An unterminated fence at a content column opens no block, so the paragraph stays open
+
+Section 10 I4 decides whether a code fence interrupts an open paragraph, and it
+is a question about the CLOSER: without one the fence line is ordinary paragraph
+text. That is what every reader already does at document level, where `q` over a
+bare fence run over `b` is one paragraph holding an unclosed inline verbatim run
+rather than a code block.
+
+At a container's content column the same line does the same thing, so PART 1 S4
+finds an open paragraph and a flush-left line below folds into it. The container
+does not end, because nothing closed the paragraph (carve#1387).
+
+::: compare
+
+````carve
+- q
+  ```
+tail
+````
+
+````html
+<ul>
+  <li>q
+<code>
+tail</code></li>
+</ul>
+````
+
+:::
+
+The container is not a parameter. A definition body's content column answers the
+same way, and so does a block quote's - the quote spelling is the one every
+reader already folded, which is what made the list spelling a contradiction
+inside each of them rather than a disagreement between them.
+
+::: compare
+
+````carve
+:: t
+:  a
+   ```
+tail
+````
+
+````html
+<dl>
+  <dt>t</dt>
+  <dd>a
+<code>
+tail</code></dd>
+</dl>
+````
+
+:::
+
+::: compare
+
+````carve
+> q
+> ```
+tail
+````
+
+````html
+<blockquote><p>q
+<code>
+tail</code></p></blockquote>
+````
+
+:::
+
+CONTROL. A blank line closes the paragraph, so S4's other half governs and the
+item ends whatever container is still waiting for its closer. This is the
+document the reading above must not swallow.
+
+::: compare
+
+````carve
+- q
+  ```
+
+tail
+````
+
+````html
+<ul>
+  <li>q
+<code></code></li>
+</ul>
+<p>tail</p>
+````
+
+:::
+
+CONTROL. A fence WITH its closer is a block, and a block leaves no paragraph
+open, so the item ends on the flush-left line for the ordinary reason. The
+premise the clause turns on is the closer, and this is the shape where it holds.
+
+::: compare
+
+````carve
+- q
+  ```
+  y
+  ```
+tail
+````
+
+````html
+<ul>
+  <li>q
+    <pre><code>y
+</code></pre>
+  </li>
+</ul>
+<p>tail</p>
+````
+
+:::
