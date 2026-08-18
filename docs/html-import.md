@@ -130,6 +130,43 @@ with `structure-unspellable` on the `<figure>`. Every other captionable target
 - an image, a quote, a code block, a paragraph - keeps its figure and reports
 nothing.
 
+## A flattened boundary keeps a separator
+
+A caption line holds inline content only, so a `<figcaption>` carrying two
+paragraphs is FLATTENED - and the boundary between them has to survive the
+flatten as bytes, because the slot has nowhere to put a node for it. PART 11
+§1b requires a separator at every such boundary, and the canonical one is a
+single space:
+
+```html
+<figure><img src="/i" alt="x"><figcaption><p>one</p><p>two</p></figcaption></figure>
+```
+
+```
+![x](/i)
+^ one two
+```
+
+Without it the two blocks are joined instead of separated, and the join is read
+back as one thing rather than two: `onetwo` is one word, `*a**b*` is one strong
+run holding a literal asterisk, and two adjacent code spans become one span
+holding the delimiters that used to end and begin them. Nothing is dropped in
+any of those, so no diagnostic fires - the `element-unwrapped` note says a
+`<p>` was unwrapped and says nothing about what the unwrapping joined.
+
+A block that contributes NO token is not a side, so it takes no separator of
+its own: `<p>a</p><p></p><p>b</p>` in a caption is `a b`, never `a  b`.
+
+The rule is not confined to a caption. Every inline-only slot an importer can
+reach takes the same separator, and the test is the same one: re-reading the
+emitted slot must draw no token - no word, no delimiter run - from both sides
+of the join.
+
+A character that was TEXT and turns into a live delimiter once its neighbour
+arrives beside it is a different question, already answered by the writer's
+escaping rule: `<p>a *b</p><p>c* d</p>` flattens to `a \*b c\* d`, with the
+asterisks escaped because the writer reads its own output.
+
 ## Lists keep the source's tightness
 
 A bare-text `<li>` imports as a TIGHT list item; `<li><p>...</p></li>` stays
