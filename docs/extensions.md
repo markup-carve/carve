@@ -568,6 +568,10 @@ and carve-rs; off by default, enable per processor.
 - A foot renders as `<tfoot>` and maps to `rowGroups.footRows` in the exchange
   AST. Column alignment resolves into cell styles and
   widths render through `<colgroup>`/`<col>` before the row groups.
+- Multiple body groups remain exchange-AST metadata. ListTable has one body
+  list, so a canonical source writer flattens `rowGroups.bodies` into that body
+  and reports the lost boundaries; `footer-rows` does not imply body-group
+  syntax.
 
 ### 5.3 Degradation
 
