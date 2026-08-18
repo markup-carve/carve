@@ -23584,3 +23584,95 @@ tail
 ```
 
 :::
+
+## An unterminated container does not extend the item past a blank line
+
+A blank line ends the open paragraph, whatever container stands above it. PART 1
+S4 then has nothing to continue, so a following line BELOW the item's content
+column is not the item's: it stands at the enclosing document's own opener
+column, and the item ends there. The state of the container above the blank does
+not enter the question - an unterminated `:::` div reaches no further past a
+blank than a terminated one, an opaque body, a quote, or no container at all.
+
+The executable spec answered the unterminated spelling alone. It carried the
+blank as container content and left the item's paragraph open across it, so a
+flush-left line folded into the div as a second paragraph, while the terminated
+div, the code fence, the quote and the bare item all ended the item on the same
+input. One rule was being answered two ways by whether a closer had been
+written. carve-js, carve-php and carve-rs end the item in every spelling
+(carve#1379).
+
+::: compare
+
+```carve
+- ::: d
+  b
+
+tail
+```
+
+```html
+<ul>
+  <li>
+    <div class="d">
+      <p>b</p>
+    </div>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+CONTROL. Without the blank the paragraph `b` opened is still open, so the same
+flush-left line folds into it under S4's lazy branch and nothing closes. The
+blank is what decides, not the unterminated container - a reader that ended the
+item whenever a `:::` was left open would answer this one wrong.
+
+::: compare
+
+```carve
+- ::: d
+  b
+tail
+```
+
+```html
+<ul>
+  <li>
+    <div class="d">
+      <p>b
+tail</p>
+    </div>
+  </li>
+</ul>
+```
+
+:::
+
+CONTROL. The blank ends the paragraph, not the ITEM. Content that returns at the
+item's content column is still inside the div, as its second block - so a reader
+that closed the item on any blank line inside an open container would answer this
+one wrong in the other direction.
+
+::: compare
+
+```carve
+- ::: d
+  b
+
+  tail
+```
+
+```html
+<ul>
+  <li>
+    <div class="d">
+      <p>b</p>
+      <p>tail</p>
+    </div>
+  </li>
+</ul>
+```
+
+:::

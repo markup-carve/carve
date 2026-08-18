@@ -150,7 +150,8 @@ under the same semantic-span rule,
 `358-what-a-content-column-block-does-not-reach`,
 `359-a-footnote-definition-s-block-runs-to-the-end-of-its-body`,
 `360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column`,
-`361-a-paragraph-opened-after-a-block-in-an-item-is-still-open-for-a-lazy-line`.
+`361-a-paragraph-opened-after-a-block-in-an-item-is-still-open-for-a-lazy-line`,
+`362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative
@@ -266,6 +267,17 @@ content line, not only a paragraph's last - and all three engines keep the run
 before a soft break, measured on carve-js `6647523`, carve-php `3de1184` and
 carve-rs `fcb879d`. It closes with markup-carve/carve-js#829,
 markup-carve/carve-php#980 and markup-carve/carve-rs#751.
+
+Category 362 is declared for the narrowest reason on this page: the snapshot was
+not retaken, and nothing else. Its three documents were rendered through the
+oracle, carve-js `7cd66e0`, carve-php `8a28c20` and carve-rs `16a1b83` while
+they were written, and all four agree byte for byte on all three - the engines
+were already right and the ORACLE was the odd reader, folding a flush-left line
+into an unterminated `:::` div across a blank line where every engine ends the
+item (carve#1379). So there is no engine window here to close and no pin bump
+that changes anything; the declaration exists only because the quoted
+denominator above predates the category, and it should be deleted by whoever
+next runs `npm run compare:impls`.
 
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS
