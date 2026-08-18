@@ -230,6 +230,29 @@
         not, because it ends on a heading. Non-emptiness is not the test - a
         quote is a container like any other and its own last block answers.
 
+        AND THE QUOTE IT IS ASKED OF MAY ITSELF BE A QUOTE -- NORMATIVE
+        (carve#1355). "Recursively" has no depth in it, and neither does "a
+        container like any other". An OUTER quote whose last block is an inner
+        quote is answered by what the INNER quote ends on:
+
+            > > # H          > > | a |          > > ---
+            tail             > > | b |          tail
+                             tail
+
+        all end BOTH quotes and leave `tail` a top-level paragraph, for the
+        reason `> # H` / `tail` ends one. The reading that stopped at the outer
+        quote gave `tail` a paragraph in the outer quote CONTINUING NOTHING -
+        the outer quote's last block is the inner quote, and the inner quote's
+        is a heading, so there was no open paragraph anywhere in the stack for
+        S4's fold to carry out.
+
+        The one-level spelling already answered this way in every engine and
+        the two-level one did not in three of them, which makes it a
+        contradiction inside each of those readers rather than a gap in this
+        clause. `> > a` / `tail` still folds into the INNER quote, and
+        `> > # H` / `> > a` / `tail` folds too: those are the shapes with a
+        paragraph open, and depth was never the parameter.
+
         Every engine folded the eight shapes above in a list item while ending
         all of them in a block quote, on a rule that names neither container,
         and the executable spec in scripts/spec did the same - so this repo's
@@ -3905,12 +3928,11 @@ EOF = (* end of file *) ;
          defect carve-rs shows today, in the direction opposite to the other
          two engines.
 
-         ITS REACH STOPS AT A QUOTE INSIDE A QUOTE, which is not decided here.
-         An outer quote is not asked what an INNER one ends on, for a heading
-         as much as for a table, so `> > # H` over `tail` divides carve-rs from
-         the other two engines already. That is the same question S4 answers
-         one level up and it wants its own ruling, not a side effect of this
-         one: carve#1355.
+         A QUOTE INSIDE A QUOTE IS ASKED THE SAME QUESTION, ruled at carve#1355
+         and stated in PART 1 S4 rather than here, since it is not about a
+         continuation row: an outer quote's last block may be an inner quote,
+         and then the INNER quote's own last block answers. `> > # H` over
+         `tail` ends both quotes for the reason `> # H` over `tail` ends one.
       T7 GFM DELIMITER ROW -- NORMATIVE. delimiter_row(R) := R is EXACTLY
          the SECOND row of the table AND every cell matches delimiter_cell
          (optional ws, optional `:`, one or more `-`, optional `:`,

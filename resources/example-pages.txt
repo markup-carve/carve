@@ -334,6 +334,7 @@ index: examples/edge-cases/index.md
   a-bracketed-construct-spanning-a-verse-boundary
   a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold
   a-container-whose-table-ends-on-a-joined-header-row
+  a-quote-inside-a-quote-is-asked-what-it-ends-on
   41-line-blocks-8
   12-inline-code-5
   24-generic-divs-2
