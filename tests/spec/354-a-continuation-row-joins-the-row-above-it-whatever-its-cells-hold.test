@@ -1,0 +1,67 @@
+A continuation row joins the row above it, whatever its cells hold
+
+```
+|=a |=b |
++ cont |
+.
+<table>
+  <thead><tr><th scope="col">a cont</th><th scope="col">b</th></tr></thead>
+</table>
+```
+
+```
+| a |
+|=b |
++ c |
+.
+<table>
+  <tbody>
+    <tr><td>a</td></tr>
+    <tr><th scope="row">b c</th></tr>
+  </tbody>
+</table>
+```
+
+```
+|=a |
+| - |
++ cont |
+.
+<table>
+  <thead><tr><th scope="col">a</th></tr></thead>
+</table>
+<p>+ cont |</p>
+```
+
+```
+| a |
++ |
+.
+<table>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
++ | |
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
+| - | - |
++ |
+.
+<table>
+  <thead><tr><th scope="col">a</th><th scope="col">b</th></tr></thead>
+</table>
+<p>+ |</p>
+```

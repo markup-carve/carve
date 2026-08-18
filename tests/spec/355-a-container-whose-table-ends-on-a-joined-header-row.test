@@ -1,0 +1,46 @@
+A container whose table ends on a joined header row
+
+```
+- |=a |
+  + b |
+tail
+.
+<ul>
+  <li>
+    <table>
+      <thead><tr><th scope="col">a b</th></tr></thead>
+    </table>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- | a |
+  + |
+tail
+.
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+> |=a |
+> + b |
+tail
+.
+<blockquote>
+  <table>
+    <thead><tr><th scope="col">a b</th></tr></thead>
+  </table>
+</blockquote>
+<p>tail</p>
+```
