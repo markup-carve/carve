@@ -215,13 +215,21 @@ test('a malformed declaration line is an error, never a silent skip', () => {
  * shipped file against an EMPTY measurement only stays falsifiable while the
  * ledger is empty - every declared row becomes an AGREED.
  *
- * Measured 2026-08-17 over 1131 corpus documents plus 3 synthetic samples, at
- * carve-js c8c8dc3, carve-rs d981df8 and carve-php d2e2fd6, each built from a
- * clone made for this run. ONE row across 3 documents, of 22,766 spans compared:
- * carve-php dropping a line block's spaced content position
- * (markup-carve/carve-php#1351). The same one row, three documents and 22,766
- * spans read again at carve-rs ff54c44 and carve-php 5e6ab9a, two engine mains
- * later, with nothing edited in between.
+ * Measured 2026-08-18 over 1259 corpus documents plus 3 synthetic samples, at
+ * carve-js 020c73e8, carve-rs a33c42ad and carve-php f30ebd1, each built from a
+ * worktree of that engine's main made for this run. ONE row across 1 document,
+ * of 25,563 spans compared: carve-php ending a hard break on the line the break
+ * is on rather than at column 1 of the following line, where the following line
+ * is a comment-only line the block layer removes
+ * (markup-carve/carve-php#1457).
+ *
+ * THE ROW BEFORE IT WAS A DIFFERENT KIND OF DISAGREEMENT ENTIRELY. The
+ * 2026-08-17 measurement this replaces read `text (presence)` across 3
+ * documents, carve-php dropping a line block's spaced content position
+ * (markup-carve/carve-php#1351, since closed). That row was about a span being
+ * ABSENT; this one is about a present span's line and column, with all three
+ * engines agreeing on both offsets. A key here says which type moved and
+ * nothing about which half of §4 it turned on.
  *
  * A NUMBER HERE IS NOT A GAP. Twice in the hour before this measurement a
  * carve-php fix closed the documents its issue named and over-reached onto one
@@ -232,15 +240,16 @@ test('a malformed declaration line is an error, never a silent skip', () => {
  * resources/ast-span-divergence.txt, and re-running the check is the only thing
  * that says which gap a row currently describes.
  *
- * It read nine rows across 21 documents that morning, five across 9 an hour
- * later, four across 8 twice after that, three, and now one. carve-php shipped
+ * It read nine rows across 21 documents on 2026-08-17, five across 9 an hour
+ * later, four across 8 twice after that, three, then one. carve-php shipped
  * the 326/327/329/333 container rulings, carve-js shipped #1152 and #1154, and
  * carve-php then shipped #1365, #1366, #1367, #1370 and #1372 - and each time
  * ast:check reported the rows AGREED or COUNT and this map moved with the run
  * rather than with the merge notifications. Six measurements in one day, each
- * one taken because the previous one had stopped being true.
+ * one taken because the previous one had stopped being true, and a seventh the
+ * next day that replaced the surviving row with a different one.
  */
-const LAST_MEASURED = new Map([['text (presence)', 3]])
+const LAST_MEASURED = new Map([['hard_break (extent)', 1]])
 
 const asMeasured = (counts) =>
   new Map(
