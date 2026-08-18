@@ -2746,6 +2746,47 @@ function collectItems(lines, i, list, state, ind, meas) {
     const closePara = () => { openPara = false; para = []; defBodyIndent = null }
     const startPara = () => { openPara = true; para = []; defBodyIndent = null }
     const openParaWith = (line) => { if (!openPara) para = []; openPara = true; para.push(line); defBodyIndent = null }
+    /*
+     * §10 I4 FOR A BODY LINE: a code fence interrupts an OPEN paragraph only
+     * when a closer follows it. Without one it opens nothing and stays
+     * paragraph text, which is what the block reader below already does with
+     * the same predicate (`hasCloser`).
+     *
+     * The closer is searched over the item's own body, dedented to the content
+     * column, because that is where this fence's closer has to be written. A
+     * blank run is committed only when a later line reaches the content column
+     * again: under carve#1379 an unterminated container does not extend the
+     * item past a blank followed by a line below the column, so lines after
+     * such a blank are not the item's and cannot close its fence.
+     */
+    const bodyFenceOpens = (idx, dedented) => {
+      const m = FENCE.exec(dedented)
+      if (!m || parseFenceInfo(m[2]) === null) return false // INVALID-FENCE FALLBACK
+      if (!openPara) return true // at block start it runs to the end of the container
+      const body = [dedented]
+      let pendingBlanks = 0
+      for (let j = idx + 1; j < lines.length; j++) {
+        const raw = lines[j] ?? ''
+        if (isBlank(raw)) { pendingBlanks++; continue }
+        const lm2 = indentCols(raw)
+        // A sibling or outer marker ends the item, so nothing from there on is
+        // this fence's to close.
+        const nm2 = matchMarkerAt(lm2)
+        if (nm2 && nm2.indent <= baseIndent) break
+        // A blank followed by a line below the content column ends the item too
+        // (carve#1379), and the fence does not reach past it.
+        if (pendingBlanks > 0 && lm2.col < contentCol) break
+        for (; pendingBlanks > 0; pendingBlanks--) body.push('')
+        // A line BELOW the column is not outside the search: §24 C3 folds it as
+        // lazy text while a paragraph is open, so a closer written after it is
+        // still written inside this item. Stopping here instead made the answer
+        // circular - the fence opened only if the below-column line folded, and
+        // the line folded only if the fence had not opened - and it moved
+        // corpus 276-7, which every engine answers the other way.
+        body.push(lm2.col >= contentCol ? dedentMeasured(lm2, raw, contentCol).text : lm2.rest)
+      }
+      return hasCloser(body, 0)
+    }
     // A blank line was seen, and what followed it attached INVISIBLY (a comment,
     // a definition). §17 L1's second clause - an item followed by a blank line
     // before the next sibling marker - still applies when that sibling arrives,
@@ -2788,7 +2829,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     // until that innermost span closes.
     const fence = { opaque: null, colon: [] }
     const insideFence = () => fence.opaque !== null || fence.colon.length !== 0
-    const trackFence = (line) => {
+    const trackFence = (line, opens = true) => {
       if (fence.opaque) {
         if (fence.opaque.kind === 'code') {
           const c = PURE_FENCE.exec(line)
@@ -2804,7 +2845,12 @@ function collectItems(lines, i, list, state, ind, meas) {
 
       const code = FENCE.exec(line)
       if (code && parseFenceInfo(code[2]) !== null) {
-        fence.opaque = { kind: 'code', run: code[1] }
+        // `opens` is §10 I4's answer for this line. The SPAN is tracked either
+        // way, because the interior-blank rule (carve#1383) reads it and a
+        // fence-shaped line the paragraph absorbed still runs to the same
+        // place; what the flag records is whether a verbatim BODY exists for
+        // §24 S2 to want.
+        fence.opaque = { kind: 'code', run: code[1], opens }
         return
       }
       const comment = COMMENT_FENCE_BODY.exec(line)
@@ -3160,7 +3206,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         pushLine(dedented, dmeas)
         // Advance the incremental three-kind tracker so the blank-line branch
         // above knows whether an interior blank is fence content.
-        trackFence(dedented)
+        trackFence(dedented, bodyFenceOpens(i, dedented))
         // A COMMENT IS INVISIBLE, SO IT LEAVES NO PARAGRAPH OPEN. §24 C3 says a
         // comment "does end the open PARAGRAPH" (carve#677), of BOTH spellings
         // - the `%%` line and the `%%%` fence, "whose body and closer travel
@@ -3179,7 +3225,16 @@ function collectItems(lines, i, list, state, ind, meas) {
         // text may fold into? markers open a sub-item paragraph; quotes an
         // open quoted paragraph; fences/breaks close everything (SS10 I2/I6)
         if (COMMENT_LINE.test(dedented)) closePara()
-        else if (FENCE.test(dedented) || HR.test(dedented)) closePara()
+        else if (HR.test(dedented)) closePara()
+        // A CODE FENCE CLOSES THE PARAGRAPH ONLY IF IT INTERRUPTED IT -- §10 I4,
+        // and the same correction carve#891 already made one construct over for
+        // the colon fence. This branch tested the line's SHAPE, so an
+        // unterminated fence the paragraph had ABSORBED closed it anyway.
+        else if (FENCE.test(dedented)) {
+          if (fence.opaque && fence.opaque.kind === 'code' && fence.opaque.opens === false) {
+            openParaWith(dedented)
+          } else closePara()
+        }
         // A COLON FENCE CLOSES THE PARAGRAPH ONLY IF IT INTERRUPTED IT. SS12's
         // opener test rejects `:::note` (a type word wants a separator), which
         // makes the line ordinary paragraph text and makes the paragraph absorb
@@ -3324,7 +3379,13 @@ function collectItems(lines, i, list, state, ind, meas) {
       // This below-column guard retains its narrower role: only an innermost
       // opaque (code or comment) body is verbatim for S2. A colon container is
       // tracked for interior blanks above, but is not itself opaque.
-      if (fence.opaque) break
+      // ... and only a body that actually OPENED is one S2 can want. A fence
+      // §10 I4 refused to let interrupt opened none, so the item's own parse
+      // reads the line as paragraph text - and breaking here read it as a
+      // verbatim body in the same parse, which is one line answered two ways
+      // (carve#1387). The quote and the `dd` spellings of this shape already
+      // fold in every reader.
+      if (fence.opaque && fence.opaque.opens !== false) break
       if (nm && nm.indent <= baseIndent) {
         // §17 L1, first clause: the item WAS followed by a blank line before
         // this sibling marker - an invisible attachment in between does not

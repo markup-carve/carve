@@ -155,7 +155,8 @@ under the same semantic-span rule,
 `363-a-task-item-s-checkbox-is-not-decided-by-its-first-block`,
 `364-only-lazy-folding-demotes-a-marker-line-colon-opener`,
 `365-a-blank-line-before-a-sibling-marker-separates-the-items-whatever-consumed-it`,
-`366-a-raw-block-keeps-the-blank-line-at-the-end-of-its-payload-too`.
+`366-a-raw-block-keeps-the-blank-line-at-the-end-of-its-payload-too`,
+`367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative
@@ -321,6 +322,15 @@ from the payload, at document level and inside an item alike, while keeping the
 same blank in a code fence - which is what category 291 pins, and which it
 reproduces. This category will not match carve-php until that lands.
 
+Category 367 is declared with an OPEN engine window on two engines. Its six
+documents were rendered through the oracle, carve-js `020c73e`, carve-php
+`f30ebd1` and carve-rs `a33c42a` while they were written. carve-js reproduces
+all six byte for byte. carve-php and carve-rs reproduce the block quote
+document and all three controls, and miss the list-item and definition-body ones:
+each ends the container on an unterminated fence at its content column while
+rendering that fence line as paragraph text, and each already folds the same
+shape under a block quote. This category will not match those two until that
+lands.
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS
 build (`52da7be`) reproducing 671 of the 672 documents, missing exactly that
