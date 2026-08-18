@@ -14,6 +14,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { extractNormativeClauses, readInventory } from '../scripts/normative-clauses.mjs'
@@ -86,31 +87,66 @@ const docFiles = [
 // This scan reads its own source too, so a citation written here as an EXAMPLE
 // would be reported as a defect. Name a bad citation in prose, never spell it.
 const CITABLE = /\.(md|mjs|js|json|txt|ebnf)$/
-const SKIP_DIRS = new Set(['node_modules', '.git'])
-const citationSources = (() => {
-  const out = []
-  const walk = (dir, rel) => {
-    for (const entry of readdirSync(dir, { withFileTypes: true })) {
-      const child = resolve(dir, entry.name)
-      const childRel = rel ? `${rel}/${entry.name}` : entry.name
-      if (entry.isDirectory()) {
-        if (SKIP_DIRS.has(entry.name)) continue
-        // The corpus holds ~1200 documents whose .md/.txt/.json bodies are
-        // rendered CONTENT, not prose about the grammar. Its README is prose.
-        if (childRel === 'tests/corpus') {
-          out.push(resolve(child, 'README.md'))
-          continue
-        }
-        walk(child, childRel)
-        continue
-      }
-      if (childRel === 'package-lock.json') continue
-      if (CITABLE.test(entry.name)) out.push(child)
-    }
+
+/*
+ * The files the repository actually owns, from git rather than from a directory
+ * walk with a skip list.
+ *
+ * A walk has to name what to leave out, and this one left in the BUILD OUTPUT.
+ * `docs/.vitepress/dist` is gitignored and holds every page's prose re-emitted
+ * into JS chunks, 464 of them citable by the pattern below, so a local
+ * `npm run docs:build` followed by `npm test` scans a second, derived copy of
+ * the docs - and a dist left over from an older tree reports labels that page
+ * no longer carries. CI has no dist, so it stays green there and nobody sees
+ * it. A gate that fails for a reason unrelated to the tree under test teaches a
+ * developer to skip it (carve#1373).
+ *
+ * Tracked-or-not is the line that was wanted, git already knows it, and
+ * `tests/json-holds-utf8.test.mjs` reached the same answer for the same reason.
+ * It also keeps the local run and CI looking at exactly the same set, which a
+ * skip list cannot promise: `docs/examples/`, `docs/public/ast-schema.json` and
+ * `docs/.vitepress/generated-examples.json` are generated too, and each is a
+ * copy of prose that is already scanned at its source.
+ *
+ * The breadth carve#1365 asked for is unaffected: a citation in a test, a
+ * script, the corpus README or the changelog is tracked. The test below pins
+ * that this list still reaches all four.
+ */
+const citationSources = execFileSync('git', ['ls-files', '-z'], { cwd: repo, encoding: 'utf8' })
+  .split('\0')
+  .filter(Boolean)
+  .filter((rel) => CITABLE.test(rel) && rel !== 'package-lock.json')
+  // The corpus holds ~1200 documents whose .md/.txt/.json bodies are rendered
+  // CONTENT, not prose about the grammar. Its README is prose.
+  .filter((rel) => !rel.startsWith('tests/corpus/') || rel === 'tests/corpus/README.md')
+  .map((rel) => resolve(repo, rel))
+
+test('the citation scan reaches every kind of file that can carry one', () => {
+  const rels = new Set(citationSources.map((file) => file.slice(repo.length + 1)))
+  // One mistyped PART number sat in a test, a script, the corpus README and the
+  // changelog for weeks - five copies of the same wrong citation - because the
+  // gate looked at docs/ only (carve#1365). Narrowing the list to tracked files
+  // must not quietly narrow it back to that.
+  for (const rel of [
+    'docs/security.md',
+    'resources/grammar.ebnf',
+    'tests/normativity.test.mjs',
+    'scripts/normative-clauses.mjs',
+    'tests/corpus/README.md',
+    'CHANGELOG.md',
+  ]) {
+    assert.ok(rels.has(rel), `${rel} is not in the citation scan`)
   }
-  walk(repo, '')
-  return out
-})()
+  assert.ok(rels.size >= 200, `the citation scan reaches only ${rels.size} files`)
+  // And nothing generated: build output re-emits prose that is already scanned
+  // at its source, and reports its own staleness as a defect in the tree.
+  for (const rel of rels) {
+    assert.ok(
+      !rel.startsWith('docs/.vitepress/dist/') && !rel.startsWith('docs/examples/'),
+      `${rel} is build output, not the tree under test`,
+    )
+  }
+})
 
 test('grammar.ebnf declares the normativity policy', () => {
   assert.match(grammar, /\bNORMATIVITY\b/)
