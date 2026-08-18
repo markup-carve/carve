@@ -477,7 +477,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   document-level `*[HTML]: …` definition no longer overrides
   `[HTML]{abbr="Custom"}`.
 
-- **PART 10 §8b: the plain-text target preserves list depth** (carve#1084). A
+- **PART 11 §10h: the plain-text target preserves list depth** (carve#1084). A
   nested item is indented two spaces per list ancestor. The target may discard
   marker style and tight/loose layout, but flattening parent, child and
   grandchild into siblings erases structure the reader has no other way to

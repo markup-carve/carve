@@ -21,7 +21,7 @@ says which: `markdown: compared=548 diffs=0 fixtures=3`.
 
 This exists because engine-against-engine agreement is a **necessary** invariant
 and not a sufficient one - it cannot tell "all three are right" from "all three
-are wrong". PART 10 §10a is normative, is about the Markdown, plain and terminal
+are wrong". PART 11 §10a is normative, is about the Markdown, plain and terminal
 targets, and every engine currently violates it identically, so nothing failed
 (carve#589). A Tier-1 rule about those targets needs a file to be written down
 in, and this is it.

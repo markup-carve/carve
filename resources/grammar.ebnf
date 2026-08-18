@@ -3683,8 +3683,9 @@ EOF = (* end of file *) ;
       two jobs. Both halves are wrong. `figure` does one job here, as the code
       block above shows; and a caption with no bare `#` takes no number under
       either model, so a quote captioned `^ William Shakespeare` never entered a
-      counter. That clause is withdrawn (carve#1213), and PART 11 §10d, which
-      carried the attribution onto the other three targets, goes with it.
+      counter. That clause is withdrawn (carve#1213), and the PART 11 clause
+      that carried the attribution onto the other three targets goes with it.
+      Its number is retired, not reused, which is why PART 11 runs 10c, 10e.
 
       HTML AGREES, AND IN THE OTHER DIRECTION. The HTML Standard's `blockquote`
       section requires that "attribution for the quotation, if any, must be
@@ -8011,14 +8012,6 @@ EOF = (* end of file *) ;
       M1b keeps exactly those escapes, and that is why the minimum is stated
       at this width and not another.
 
-   8b. THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH -- NORMATIVE. A nested list
-      item is indented by TWO ASCII SPACES for each list ancestor. The target
-      may discard marker style and tight/loose layout, but it MUST NOT flatten
-      parent, child, and grandchild items into siblings: indentation is the
-      plain-text representation of that structure. ANSI and canonical Carve
-      use the same two-space depth step; plain text differs only by omitting
-      presentation styling, not by erasing hierarchy.
-
       THE BOUNDARY IS THE CLAUSE, NOT A FLOOR. M1b is written as an
       if-and-only-if on purpose. An escape it drops is dropped and an escape
       it keeps is kept; it is not a minimum an implementation may build a
@@ -8667,6 +8660,14 @@ EOF = (* end of file *) ;
       Tabs, `presentation=` hints and PDF layout are renderer/extension
       business and out of this clause's scope; hint classes reach the HTML
       target only.
+
+  10h. THE PLAIN-TEXT TARGET PRESERVES LIST DEPTH -- NORMATIVE. A nested list
+      item is indented by TWO ASCII SPACES for each list ancestor. The target
+      may discard marker style and tight/loose layout, but it MUST NOT flatten
+      parent, child, and grandchild items into siblings: indentation is the
+      plain-text representation of that structure. ANSI and canonical Carve
+      use the same two-space depth step; plain text differs only by omitting
+      presentation styling, not by erasing hierarchy.
 
   11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE. A resolved
       cross-reference is emitted as a Markdown link to the target heading's id,

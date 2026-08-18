@@ -1068,7 +1068,7 @@ const activeTargets = ALL_TARGETS.filter((target) =>
  * engines-agree check. This is what gives a Tier-1 rule about the Markdown,
  * plain or terminal output somewhere to live: engine-against-engine agreement
  * is a necessary invariant, not a sufficient one, and it cannot tell "all three
- * are right" from "all three are wrong" - which is the state PART 10 §10a is in
+ * are right" from "all three are wrong" - which is the state PART 11 §10a is in
  * (carve#589).
  *
  * A fixture that should exist and does not is a hard error: continuing without

@@ -23,28 +23,47 @@ const repo = resolve(here, '..')
 const grammarPath = resolve(repo, 'resources/grammar.ebnf')
 const grammar = readFileSync(grammarPath, 'utf8')
 
-// Collect PART 9's section numbers from the "   N. TITLE" headings between its
-// banner and the next PART banner. Bounding the slice matters: PART 10 and
-// PART 11 have their own numbered items, and letting those leak in would make a
-// dangling "PART 9 §N" reference resolve against a section that lives
-// somewhere else entirely.
-const part9Start = grammar.indexOf('PART 9: SEMANTIC CONSTRAINTS')
-const part10Start = grammar.indexOf('PART 10: HTML SERIALIZATION', part9Start)
-const part9 = grammar.slice(part9Start, part10Start === -1 ? undefined : part10Start)
-const part9Sections = new Set(
-  [...part9.matchAll(/^ {3}(\d+)\. {1,3}[A-Z]/gm)].map((m) => Number(m[1])),
-)
+// Every PART's section labels, keyed by PART number, read from the
+// "  N. TITLE" headings that follow each PART banner.
+//
+// A heading qualifies only when its TITLE OPENS IN CAPS, and that is a
+// discriminator rather than decoration: PART 8 carries two numbered lists that
+// are PRECEDENCE ORDERS, not sections - "1. Frontmatter (--- delimited at
+// document start)", "1. Escaped characters (\x)" - written in sentence case,
+// numbered 1..11 and 1..13 in the same PART, and never cited as "PART 8 §N".
+// Counting those as sections would make the uniqueness check below fail on a
+// document that is correct.
+const opensInCaps = (title) => {
+  const words = title.match(/[A-Za-z]+/g) ?? []
+  if (words.length === 0) return false
+  const upper = (w) => w === w.toUpperCase()
+  // "TIGHT vs LOOSE LISTS" qualifies on its first word; "A `+` CONTINUATION
+  // EXTENDS" has a one-letter first word, so the second word carries the caps.
+  return upper(words[0]) && (words[0].length >= 2 || (words[1] !== undefined && upper(words[1])))
+}
 
-// PART 12's sections are cited the same way and can dangle the same way, with
-// one wrinkle: it has lettered sections (§1a, §3a), so the numbers alone are
-// not the valid set. The docs cite them both as "PART 12 §3a" and, once the
-// part is established on the page, as a bare "(§3a)" - so the bare form has to
-// be checked too, which is only safe on the pages that are ABOUT PART 12.
-const part12Start = grammar.indexOf('PART 12: AST SERIALIZATION')
-const part12 = grammar.slice(part12Start)
-const part12Sections = new Set(
-  [...part12.matchAll(/^ {3}(\d+[a-z]?)\. {1,3}[A-Z]/gm)].map((m) => m[1]),
-)
+const sectionsByPart = () => {
+  const parts = new Map()
+  let part = null
+  for (const line of grammar.split('\n')) {
+    const banner = /^\s*PART (\d+):/.exec(line)
+    if (banner) {
+      part = Number(banner[1])
+      if (!parts.has(part)) parts.set(part, [])
+      continue
+    }
+    if (part === null) continue
+    // The label field is right-aligned, so "   8." and "  10h." both occur.
+    const m = /^ {1,4}(\d+[a-z]?)\. {1,3}(\S.*)$/.exec(line)
+    if (m && opensInCaps(m[2])) parts.get(part).push(m[1])
+  }
+  return parts
+}
+
+const partSections = sectionsByPart()
+const sectionSet = (n) => new Set(partSections.get(n) ?? [])
+const part9Sections = sectionSet(9)
+const part12Sections = sectionSet(12)
 
 // Pages whose bare "§N" citations mean PART 12.
 const part12Pages = ['docs/ast-json.md']
@@ -58,34 +77,133 @@ const docFiles = [
     .map((f) => resolve(repo, 'docs/case-study', f)),
 ]
 
+// Everything that can carry a normative citation. The docs are not the only
+// place one lands: one mistyped PART number sat in a test, a script, the
+// corpus README and the changelog for weeks - five copies of the same wrong
+// citation - because the gate looked at docs/ only (carve#1365). A walk rather
+// than a list, so a new page is covered the day it is written.
+//
+// This scan reads its own source too, so a citation written here as an EXAMPLE
+// would be reported as a defect. Name a bad citation in prose, never spell it.
+const CITABLE = /\.(md|mjs|js|json|txt|ebnf)$/
+const SKIP_DIRS = new Set(['node_modules', '.git'])
+const citationSources = (() => {
+  const out = []
+  const walk = (dir, rel) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const child = resolve(dir, entry.name)
+      const childRel = rel ? `${rel}/${entry.name}` : entry.name
+      if (entry.isDirectory()) {
+        if (SKIP_DIRS.has(entry.name)) continue
+        // The corpus holds ~1200 documents whose .md/.txt/.json bodies are
+        // rendered CONTENT, not prose about the grammar. Its README is prose.
+        if (childRel === 'tests/corpus') {
+          out.push(resolve(child, 'README.md'))
+          continue
+        }
+        walk(child, childRel)
+        continue
+      }
+      if (childRel === 'package-lock.json') continue
+      if (CITABLE.test(entry.name)) out.push(child)
+    }
+  }
+  walk(repo, '')
+  return out
+})()
+
 test('grammar.ebnf declares the normativity policy', () => {
   assert.match(grammar, /\bNORMATIVITY\b/)
   assert.match(grammar, /NORMATIVE specification of\s+Carve/)
 })
 
-test('PART 9 has at least the known semantic-constraint sections', () => {
-  // Sanity: parsing worked and found a plausible set.
-  assert.ok(part9Sections.size >= 8, `found sections: ${[...part9Sections]}`)
+test('the section index finds a plausible set for every sectioned PART', () => {
+  // Sanity: parsing worked. A floor per PART, so a regex that silently stopped
+  // matching shows up here rather than as a citation test that passes because
+  // it has nothing left to check.
+  for (const [part, floor] of [
+    [2, 3],
+    [9, 8],
+    [10, 8],
+    [11, 20],
+    [12, 6],
+  ]) {
+    assert.ok(
+      sectionSet(part).size >= floor,
+      `PART ${part} scan found only: ${[...sectionSet(part)]}`,
+    )
+  }
+  // PART 8's numbered lists are precedence orders, not sections. If this ever
+  // trips, opensInCaps has stopped discriminating and the uniqueness check
+  // below is about to report a collision that is not one.
+  assert.deepEqual([...sectionSet(8)], [], 'PART 8 has no cited sections')
 })
 
-test('every "PART 9 §N" reference resolves to a real section', () => {
-  // Match a whole citation group so multi-section shorthand like
-  // "PART 9 §1, §9 and §10" is fully validated, not just the first.
-  const citation = /PART 9 §\d+(?:\s*(?:,|&|and|or|to|–|-)?\s*§\d+)*/g
+test("every PART's section labels are unique", () => {
+  // PART 11 carried two sections labelled §8b for a week: a citation to
+  // "PART 11 §8b" named either of them and nothing failed, because the only
+  // citation gates looked at PART 9 and PART 12 (carve#1365).
+  const collisions = []
+  for (const [part, labels] of partSections) {
+    const seen = new Set()
+    for (const label of labels) {
+      if (seen.has(label)) collisions.push(`PART ${part} §${label}`)
+      seen.add(label)
+    }
+  }
+  assert.deepEqual(
+    collisions,
+    [],
+    `duplicate section labels - a citation to one of these resolves to either clause:\n${collisions.join('\n')}`,
+  )
+})
+
+// Both spellings are in use: "PART 12 §3a" and "PART 12 section 3a". A citation
+// GROUP is matched whole, so multi-section shorthand reaches every clause it
+// names and not only the first: "PART 9 §1, §9 and §10", "PART 12 §1-2".
+const CLAUSE = String.raw`\d+[a-z]?`
+const citationGroup = (lead) =>
+  new RegExp(`${lead}(${CLAUSE})((?:\\s*(?:,|&|and|or|to|–|-)\\s*§?${CLAUSE})*)`, 'g')
+
+const scanGroups = (text, lead, onHit) => {
+  for (const m of text.matchAll(citationGroup(lead))) {
+    onHit(m[1])
+    for (const t of m[2].matchAll(new RegExp(`§?(${CLAUSE})`, 'g'))) onHit(t[1])
+  }
+}
+
+// The PART NUMBER is read from the citation, never iterated over the parts the
+// grammar happens to have. Building one pattern per known part would skip a
+// citation into a part number that does not exist at all, and one into a part
+// that exists but has no sections - PART 8, whose numbered lists are precedence
+// orders - which is the same hole one size up from the one this closes.
+const QUALIFIED_CITATION = new RegExp(
+  `PART (\\d+) (?:§|section )(${CLAUSE})((?:\\s*(?:,|&|and|or|to|–|-)\\s*§?${CLAUSE})*)`,
+  'g',
+)
+
+test('every "PART N §M" citation resolves to a real section', () => {
   const dangling = []
-  for (const file of docFiles) {
+  for (const file of citationSources) {
+    if (!existsSync(file)) continue
     const text = readFileSync(file, 'utf8')
-    for (const group of text.match(citation) ?? []) {
-      for (const sm of group.matchAll(/§(\d+)/g)) {
-        const n = Number(sm[1])
-        if (!part9Sections.has(n)) dangling.push(`${file}: PART 9 §${n}`)
+    for (const m of text.matchAll(QUALIFIED_CITATION)) {
+      const part = Number(m[1])
+      const valid = sectionSet(part)
+      const check = (id) => {
+        if (!valid.has(id)) dangling.push(`${file}: PART ${part} §${id}`)
       }
+      check(m[2])
+      for (const t of m[3].matchAll(new RegExp(`§?(${CLAUSE})`, 'g'))) check(t[1])
     }
   }
   assert.deepEqual(
     dangling,
     [],
-    `dangling normative references (valid: §${[...part9Sections].sort((a, b) => a - b).join(', §')}):\n${dangling.join('\n')}`,
+    `citations that name no clause. A label that was RETIRED rather than\n` +
+      `mistyped - PART 11's withdrawn 10d, carve#1213 - is not written as a\n` +
+      `citation at all: describe the clause instead, so this stays a list of\n` +
+      `defects:\n${dangling.join('\n')}`,
   )
 })
 
@@ -141,47 +259,17 @@ test('the normative inventory names every clause in the grammar', () => {
 
 // The §3a case: eight references across the docs, the AST schema and the
 // changelog went on pointing at a clause that was no longer in the file. The
-// inventory above would now catch the deletion; this catches the other
-// direction - a clause renamed or renumbered while its citations stay put.
-test('every PART 12 section reference resolves to a real clause', () => {
-  assert.ok(
-    part12Sections.size >= 6,
-    `PART 12 clause scan found only: ${[...part12Sections]}`,
-  )
+// qualified spelling is covered by the generic citation test above; this is the
+// BARE "(§3a)" form, which is only unambiguous on the pages that are ABOUT
+// PART 12 - elsewhere a bare §N means PART 9.
+test('every bare PART 12 clause reference resolves to a real clause', () => {
   const dangling = []
-  const check = (file, id) => {
-    if (!part12Sections.has(id)) dangling.push(`${file}: §${id}`)
-  }
-  // A citation GROUP, so shorthand reaches every clause it names and not only
-  // the first: "§1-2", "§3a and §4", "PART 12 §1, §1a, §6". Without this a
-  // renumbering that orphaned the far end of a range would leave this green,
-  // which is the same shape of dead check the deletion slipped past.
-  const CLAUSE = String.raw`\d+[a-z]?`
-  const group = (lead) =>
-    new RegExp(
-      `${lead}(${CLAUSE})((?:\\s*(?:,|&|and|or|to|–|-)\\s*§?${CLAUSE})*)`,
-      'g',
-    )
-  const scan = (file, text, lead) => {
-    for (const m of text.matchAll(group(lead))) {
-      check(file, m[1])
-      for (const t of m[2].matchAll(new RegExp(`§?(${CLAUSE})`, 'g'))) check(file, t[1])
-    }
-  }
-  // Both spellings are in use: "PART 12 §3a" and "PART 12 section 3a".
-  const QUALIFIED = String.raw`PART 12 (?:§|section )`
-  const sources = [
-    ...docFiles,
-    resolve(repo, 'resources/ast-schema.json'),
-    resolve(repo, 'CHANGELOG.md'),
-  ]
-  for (const file of sources) {
-    if (!existsSync(file)) continue
+  for (const file of citationSources) {
+    if (!part12Pages.some((page) => file.endsWith(page))) continue
     const text = readFileSync(file, 'utf8')
-    scan(file, text, QUALIFIED)
-    // Bare "(§3a)" only where the page is ABOUT PART 12; elsewhere a bare §N
-    // means PART 9 and is checked by the test above.
-    if (part12Pages.some((page) => file.endsWith(page))) scan(file, text, '§')
+    scanGroups(text, '§', (id) => {
+      if (!part12Sections.has(id)) dangling.push(`${file}: §${id}`)
+    })
   }
   assert.deepEqual(
     dangling,

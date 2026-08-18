@@ -32,7 +32,7 @@ const manifest = JSON.parse(readFileSync(resolve(corpusDir, 'manifest.json'), 'u
 test('a core case may pin a non-HTML target by adding the file', () => {
   // Engine-against-engine agreement is a NECESSARY invariant, not a sufficient
   // one: it cannot tell "all three are right" from "all three are wrong", which
-  // is the state PART 10 §10a is in (carve#589). A Tier-1 rule about the
+  // is the state PART 11 §10a is in (carve#589). A Tier-1 rule about the
   // Markdown, plain or terminal output needs somewhere to be written down, and
   // that somewhere is a file beside the case, named by the same pairing rule
   // the optional corpus uses.
