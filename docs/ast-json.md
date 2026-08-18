@@ -789,6 +789,19 @@ which rows are declared, but how quickly a declared row stops describing
 anything, and therefore that the run - not the ledger, and not a merged pull
 request - is what answers a question about the engines.
 
+The seventh, on 2026-08-18 at carve-js `020c73e8`, carve-rs `a33c42ad` and
+carve-php `f30ebd1` over 1259 corpus documents, made that point again and
+changed the kind of row it makes it with. `text (presence)` came `AGREED` and
+carve-php's owed position findings emptied; what replaced it is
+`hard_break (extent)` on one document, where all three engines publish the same
+two offsets and disagree about the line and column the end offset names
+([carve-php#1457](https://github.com/markup-carve/carve-php/issues/1457)). The
+clause deciding it is not the markup-inclusive rule the other rows turn on but
+the sentence beside it: a break owns its line terminator and ends at column 1 of
+the following line. Three `permitted` position waivers went in the same run, two
+of them lines that had described a node carve-js and carve-rs were placing all
+along.
+
 An empty declaration is a statement about the corpus, which is the only thing
 the run measures. Four collapsed-reference labels the corpus does not hold - one
 carrying `/emphasis/`, one an escape, one a nested link, one a symbol shortcode

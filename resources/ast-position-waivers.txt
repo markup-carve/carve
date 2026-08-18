@@ -75,6 +75,39 @@
 # three-way comparison reporting 1262 of 1262 documents unanimous - not from a
 # build of their release commits. The scheduled run is what confirms it.
 #
+# AND THE MEASUREMENT ARRIVED, later the same day, and corrected three of the
+# 62. Taken from fresh worktrees of every engine's main - carve-js 020c73e8,
+# carve-rs a33c42ad, carve-php f30ebd1 - over the same 1259 corpus documents
+# plus 3 synthetic samples, with each engine reporting 55 findings and 0
+# outstanding. The paragraph above is what the inference produced; this is what
+# a build of those mains says, and where the two differ the build wins:
+#
+#   carve-php  344 `code`    FIXED, deleted. All three engines place this span
+#                            and carve-js and carve-rs always did, which is the
+#                            tell the inference missed: a clause about the
+#                            CONSTRUCT cannot reach one engine only. The run's
+#                            value drops the comment line, but the region it owns
+#                            is contiguous from the opening backtick to its last
+#                            codepoint, so an honest extent exists. §4 exempts a
+#                            value no offset slices; it does not exempt a node
+#                            whose value is shorter than its extent.
+#   carve-php  355-2 `text`  FIXED, deleted. The continuation row here is `+ |`
+#                            and carries nothing, so the cell's text is the
+#                            contiguous `a` on the header row above it. Nothing
+#                            is reassembled and all three engines place it.
+#   carve-php  354 `text`    COUNT, 2 -> 1. The joined cell's `a cont` is still
+#                            unplaceable in every engine and its line stays; the
+#                            second cell's `b` is contiguous and carve-php now
+#                            places it, the same retirement
+#                            markup-carve/carve-js#1154 made for carve-js.
+#
+# NONE OF THE THREE WAS WIDENED and none went because the run wanted it gone:
+# each was probed directly against carve-rs and carve-php on the document named,
+# and the construct is what decided. Two of them were `permitted` lines
+# describing a node the other two engines had been placing all along - a waiver
+# sized to one engine's gap rather than to the clause, which is
+# markup-carve/carve#755's hole in its quietest form.
+#
 # WHICH IS WHY THE "NOTHING MOVED" NOTE ABOVE IS KEPT RATHER THAN OVERWRITTEN.
 # It was true when it was measured and false ninety minutes later, and the two
 # together are the actual claim this file can support: a permitted line is a
@@ -321,7 +354,6 @@ carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv            
 carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                text        1  permitted
 carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                table_cell  1  permitted
 carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                text        1  permitted
-carve-php  344-a-comment-only-line-in-a-line-block-is-removed-before-any-inline-run.crv code        1  permitted
 carve-php  349-a-container-whose-table-ends-on-a-continuation-row-3.crv             table_cell  1  permitted
 carve-php  349-a-container-whose-table-ends-on-a-continuation-row-3.crv             text        1  permitted
 carve-php  349-a-container-whose-table-ends-on-a-continuation-row-5.crv             table_cell  1  permitted
@@ -333,8 +365,7 @@ carve-php  349-a-container-whose-table-ends-on-a-continuation-row.crv           
 carve-php  354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-2.crv table_cell  1  permitted
 carve-php  354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-2.crv text        1  permitted
 carve-php  354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold.crv table_cell  1  permitted
-carve-php  354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold.crv text        2  permitted
-carve-php  355-a-container-whose-table-ends-on-a-joined-header-row-2.crv            text        1  permitted
+carve-php  354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold.crv text        1  permitted
 carve-php  355-a-container-whose-table-ends-on-a-joined-header-row-3.crv            table_cell  1  permitted
 carve-php  355-a-container-whose-table-ends-on-a-joined-header-row-3.crv            text        1  permitted
 carve-php  355-a-container-whose-table-ends-on-a-joined-header-row.crv              table_cell  1  permitted
