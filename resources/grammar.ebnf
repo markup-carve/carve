@@ -7070,9 +7070,11 @@ EOF = (* end of file *) ;
       side exists at all, not what characters happen to sit on one.
 
       THE FAILURES ARE ONE FAILURE, and only some of them have a visible face.
-      Measured 2026-08-18 against carve-js `79b3b3b`, carve-php `c15ceeb` and
-      carve-rs `6976b60f`, each flattening a `<figcaption>` holding two
-      paragraphs, all three agreeing on every row:
+      Re-measured 2026-08-18 against carve-js `099db2cc`, carve-php `925f7dcf`
+      and carve-rs `3f8bde7b`, each built from a clone made for the run and each
+      flattening a `<figcaption>` holding two paragraphs. carve-rs emits the
+      separator on every row since markup-carve/carve-rs#1094; carve-js and
+      carve-php agree with each other on every row and lose the boundary:
 
         <p>one</p><p>two</p>                    ->  onetwo
         <p><strong>a</strong></p>
