@@ -18,6 +18,7 @@ import { execFileSync } from 'node:child_process'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { extractNormativeClauses, readInventory } from '../scripts/normative-clauses.mjs'
+import { bareCitation, eachClause, qualifiedCitation } from '../scripts/lib/citations.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const repo = resolve(here, '..')
@@ -197,40 +198,27 @@ test("every PART's section labels are unique", () => {
 // Both spellings are in use: "PART 12 §3a" and "PART 12 section 3a". A citation
 // GROUP is matched whole, so multi-section shorthand reaches every clause it
 // names and not only the first: "PART 9 §1, §9 and §10", "PART 12 §1-2".
-const CLAUSE = String.raw`\d+[a-z]?`
-const citationGroup = (lead) =>
-  new RegExp(`${lead}(${CLAUSE})((?:\\s*(?:,|&|and|or|to|–|-)\\s*§?${CLAUSE})*)`, 'g')
-
+//
+// The patterns themselves are in scripts/lib/citations.mjs, with the reasoning
+// for the gap they allow between a part number and its clause. They are exported
+// so tests/a-citation-may-cross-a-soft-wrap.test.mjs can drive them over
+// synthetic prose: this scan can only report that the tree is clean, which is
+// the answer a pattern matching nothing also gives.
 const scanGroups = (text, lead, onHit) => {
-  for (const m of text.matchAll(citationGroup(lead))) {
-    onHit(m[1])
-    for (const t of m[2].matchAll(new RegExp(`§?(${CLAUSE})`, 'g'))) onHit(t[1])
-  }
+  for (const m of text.matchAll(bareCitation(lead))) eachClause(m[1], m[2], onHit)
 }
-
-// The PART NUMBER is read from the citation, never iterated over the parts the
-// grammar happens to have. Building one pattern per known part would skip a
-// citation into a part number that does not exist at all, and one into a part
-// that exists but has no sections - PART 8, whose numbered lists are precedence
-// orders - which is the same hole one size up from the one this closes.
-const QUALIFIED_CITATION = new RegExp(
-  `PART (\\d+) (?:§|section )(${CLAUSE})((?:\\s*(?:,|&|and|or|to|–|-)\\s*§?${CLAUSE})*)`,
-  'g',
-)
 
 test('every "PART N §M" citation resolves to a real section', () => {
   const dangling = []
   for (const file of citationSources) {
     if (!existsSync(file)) continue
     const text = readFileSync(file, 'utf8')
-    for (const m of text.matchAll(QUALIFIED_CITATION)) {
+    for (const m of text.matchAll(qualifiedCitation())) {
       const part = Number(m[1])
       const valid = sectionSet(part)
-      const check = (id) => {
+      eachClause(m[2], m[3], (id) => {
         if (!valid.has(id)) dangling.push(`${file}: PART ${part} §${id}`)
-      }
-      check(m[2])
-      for (const t of m[3].matchAll(new RegExp(`§?(${CLAUSE})`, 'g'))) check(t[1])
+      })
     }
   }
   assert.deepEqual(
