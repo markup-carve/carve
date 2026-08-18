@@ -7,511 +7,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-08-18
+
 ### Added
 
-- **PART 12 §18: a citation definition is a node** (carve#1276). A
-  `[@key]: {author= year=} entry` bibliography line serializes as a
-  `citation_definition` carrying `key`, the entry's inline `children`, the
-  metadata block in `attrs`, and its own `pos`. It is shaped after §10's
-  `link_reference_definition` rather than after the footnote definition: a
-  footnote body holds blocks, an entry holds a metadata run plus one line of
-  rendered text. Of the four definition kinds this was the only one with no
-  node and no clause saying why, and the two engines answered differently -
-  one consumed the line at parse time, so `pos` was gone and an AST round trip
-  deleted it; the other left it a paragraph whose first child is a
-  `citation_group` followed by the literal text `: {author=`, which a
-  ProseMirror bridge hands an editor as prose. No rendered output moves on any
-  target, which is why no HTML fixture could see the difference; the node
-  renders nothing where it sits and the entry's text still renders in the
-  references list. Tier-2, so it appears only where the Citations extension is
-  enabled - with the extension off the line is ordinary paragraph text, since
-  the leading `@` is reserved in core against reading it as a link definition.
-
-- **Delimited inline comments, `{% … %}`** (carve#1239, PART 9 §21a). `%%` runs
-  to the end of its inline RUN, so mid-line commenting already worked wherever
-  the structure supplied a boundary - a table cell ends at `|`, link text at
-  `]` - and plain prose supplies none. `{%` opens and the FIRST `%}` closes,
-  which is Djot's spelling and one character per meaning like the rest of the
-  braced family, so a Djot document's comments carry over unchanged. There is
-  no nesting, an unterminated opener stays literal, a code span or raw inline
-  passes `{%` through, a comment inside an emphasis run does not break it, and
-  the run may cross the soft line breaks inside one paragraph but never a blank
-  line. Every render target drops it. Both forms parse to a `comment` node and
-  the node records which one produced it (`delimited: true`, PART 12), so a
-  writer reading the tree back does not collapse `foo {% bar %} baz` into the
-  trailing form and swallow `baz`. This is an observable parsing change inside
-  0.1.x - that line rendered its braces before - and `carve lint` gains
-  `braced-comment-in-a-template-source` for the one exposed shape, a Liquid or
-  Nunjucks page whose `{% raw %}` block reaches the parser as text, at one
-  warning per tag-shaped comment.
-
-- **PART 12 §17: a figure may wrap a table, and no Carve source spells it**
-  (carve#1211, carve#1236). `figure.target` admits a `table` and a `table`
-  carries its own optional `caption`, so `figure{target: table}` and
-  `table{caption}` are two trees with two renderings. PART 9 §4 rules the
-  source spelling and produces only the second - a `^ ` line after a table
-  attaches to the table - so a parser never builds the wrapper; it enters
-  through an AST consumer or a format bridge, an HTML importer reading
-  `<figure><table>…<figcaption>` being the case that motivates it. A canonical
-  writer emits the target and its caption and MUST NOT invent syntax for the
-  wrapper, so what it writes re-reads as `table{caption}` and the wrapper is
-  LOST rather than preserved; a bridge exposing conversion diagnostics SHOULD
-  report that structural loss. Where the target already carries a caption of
-  its own, the figure's caption is lost with the wrapper too, and a writer MUST
-  NOT emit a second `^ ` line for it: a `^ ` line after a caption line is an
-  ordinary paragraph, so the output would carry the caption text as literal
-  body prose and hide the loss instead of leaving it observable. A figure
-  group's table panel (PART 9 §4c) is a plain `table` child of the group and
-  never this wrapper.
-
-- **Two import diagnostic codes: `structure-unspellable` and
-  `encoding-assumed`** (carve#1216, carve#1235). The html-import contract
-  closed `diagnostics[].code` at eight values, so an importer meeting a case
-  none of them named had to file it under a code that describes something else.
-  `structure-unspellable` is the code PART 12 §14, §15 and §17 each call for: a
-  tree holds a shape - `shortCaption`, `rowGroups`, a figure wrapping a table -
-  that no Carve source spells, so `htmlToAst` keeps it and reports nothing
-  while `htmlToCarve` writes source and loses it. It is not `table-degraded`,
-  which says the table itself could not be represented. `encoding-assumed`
-  names a value read under an encoding the source never declared: a correctness
-  warning about the OUTPUT, where `element-unwrapped` is a structural note
-  about the input, and a consumer cannot tell the two apart under one code.
-
-- **An import diagnostic's `path` is defined** (carve#1257). The field was
-  declared as a bare string with no pattern and no description, so each engine
-  invented a convention and the one shared fixture carrying a `path` pinned
-  whichever engine wrote the file. It is a human-readable, engine-defined
-  locator rooted at the fragment's body children: no `/html[1]/body[1]` prefix
-  and no step for a wrapper the importer added, each index counting among ALL
-  of the parent's child nodes rather than among the same-named siblings, and
-  naming the importer's traversal rather than the raw DOM - so a `<td>` in a
-  `<tbody>` that follows a `<thead>` carries no `tbody` step, because table
-  sections are flattened and rows renumbered across the table. It LOOKS like an
-  XPath expression and explicitly is not one: a consumer MUST NOT resolve it
-  against the input document, and it deliberately carries no pattern, because
-  the value is for a person reading a report rather than for a machine.
-
-- **HTML import keeps the source's list tightness** (carve#1210). A bare-text
-  `<li>` imports as a TIGHT list item and `<li><p>…</p></li>` stays loose,
-  because HTML draws that distinction the same way Carve does and import
-  preserves what the source spelled rather than normalizing it. Carve spells
-  tightness per LIST rather than per item, so a mixed list has to resolve one
-  way and resolves the way CommonMark does: one paragraph item loosens the
-  whole list. Normalizing the other direction would drop the paragraph that
-  item spelled, which is the loss the rule exists to prevent.
-
-- **Composite figures: a bare `::: figure` container is a captionable host**
-  (carve#1122, PART 9 §4c). One figure holding ordered panels: the direct
-  `figure`/`table` children are the panels, a `^ ` caption after the CLOSING
-  fence - caption placement's sixth host, this kind only - captions and
-  numbers the whole group, and the AST gains a `figure_group` node type
-  (PART 12 §16). The group is one figure-sequence unit; a panel id resolves
-  `</#id>` as the group number plus a letter ("Figure 2a"); a `#` in a panel
-  caption stays literal. An opener carrying a quoted title or `[label]` stays
-  a generic container, as does a nested bare `::: figure`; both lint. HTML
-  renders `carve-figure-group` / `carve-figure-panel` figures nested directly,
-  and PART 11 §10g fixes the writer spelling and the non-HTML degradations.
-  This is an observable parsing change inside 0.1.x for documents that already
-  hold a bare `::: figure` fence: the container reclassifies from a generic
-  div, and a previously dangling `^ ` line after its closer starts consuming a
-  figure number, which can renumber later figures.
-
-- **A compact language attribute, `{:TAG}`** (carve#1114). `[Le Bon Usage]{:fr}`
-  is exact sugar for `{lang=fr}`, on inline spans and on block attribute lines
-  alike. The empty form `{:}` means the language is explicitly UNKNOWN and
-  desugars to `lang=""`, which stops inheritance where omitting the attribute
-  would keep it; it is distinct from the BCP 47 `und` and `zxx` tags. A tag is
-  ASCII-alphanumeric subtags of at most eight characters, hyphen-separated; a
-  malformed candidate leaves the whole block literal rather than half-parsing
-  it, and the sigil takes no padding, so `{: fr}` is the empty attribute plus a
-  separate boolean. `:tag` and `lang=tag` are ONE key: the last value wins at
-  the first position. This is an observable parsing change inside 0.1.x -
-  `[x]{:fr}` was literal before - accepted because the slot was unclaimed and
-  unassigned, after an audit of the organization and public `.crv` code search
-  found no literal use.
-
-- **The HTML import contract is specified** (carve#1098). Import is a migration
-  boundary, not an HTML serializer: an HTML5 parse, a documented policy, the
-  Carve AST, then the ordinary writer. Three modes (`safe`, `semantic`,
-  `roundtrip`), an ordered diagnostic list with portable codes for every lossy
-  decision, the required API surface per language plus `carve migrate --from
-  html`, the adapter names, a CSS policy that maps only explicit declarations,
-  and resource limits that fail with a typed error rather than a partial
-  document. Shared fixtures under `tests/html-import` define the portable
-  minimum.
-
-  The contract takes the lossless way wherever both are available: a
-  `<figure>` with a `<figcaption>` imports as the target block followed by a
-  caption line, and a `blockquote` `cite` attribute is kept on an ordinary
-  block-attribute line (carve#1286). Dropping either was available only with a
-  diagnostic attached, and keeping it costs the reader less than the diagnostic
-  would.
-
-- **PART 12 §14: a caption may carry a structured short caption** (carve#1117).
-  A `figure` or `table` MAY carry `shortCaption`, an array of inline nodes, for
-  a target's list of figures or tables. Carve 0.1 source has no spelling for it,
-  so a parser never synthesizes one - it enters through an AST consumer or a
-  format bridge and survives encode/decode. HTML, plain and ANSI ignore it, the
-  canonical writer MUST omit it, and no processor may derive one by truncating
-  the full caption.
-
-- **PART 12 §15: a table may carry a row grouping** (carve#1117). A `table` MAY
-  carry `rowGroups`, an object partitioning its `rows` into a head, any number
-  of body groups and a foot, with a per-group count of intermediate header rows
-  and of leading row-header columns. It holds COUNTS, never rows: they consume `rows`
-  in order and must account for every row exactly once, so a grouping can never
-  contradict the table's content. Absent means the implicit structure renderers
-  already derive, so no existing tree changes shape and a parser never
-  synthesizes one - Carve 0.1 source has no spelling for it, and core pipe
-  tables do not grow a second separator language. HTML, plain and ANSI ignore
-  it and keep flattening the table; the canonical writer MUST omit it.
+- **PART 11 §1b: a flatten preserves the boundary it dissolves** (carve#1325). Where a producer flattens block content into an inline-only slot, a separator is required between two former siblings that each contribute a token, and one space is sufficient iff re-reading the slot draws no token from both sides of the join.
+- **PART 12 §18: a citation definition is a node** (carve#1276). A `[@key]: entry` bibliography line serializes as `citation_definition` with `key`, `children`, `attrs` and `pos`. Tier-2.
+- **PART 12 §17: a figure may wrap a table, and no Carve source spells it** (carve#1211, carve#1236). An interchange-only shape an importer can produce.
+- **PART 12 §15: a table may carry a row grouping**, and **PART 12 §14: a caption may carry a structured short caption** (carve#1117).
+- **PART 9 §21a: delimited inline comments, `{% … %}`** (carve#1239).
+- **PART 9 §4c: composite figures** (carve#1122). A bare `::: figure` container is a captionable host whose captionable children are its panels, with target rules at PART 11 §10g and the node shape at PART 12 §16.
+- **A compact language attribute, `{:TAG}`** (carve#1114).
+- **The HTML import contract is specified** (carve#1098, carve#1286), with two new diagnostic codes, `structure-unspellable` and `encoding-assumed` (carve#1216, carve#1235), a defined `path` on every diagnostic (carve#1257), and the source's list tightness preserved (carve#1210).
 
 ### Changed
 
-- **PART 11 §8b: the Markdown target's authored escape narrows too**
-  (carve#1321). §8a had already narrowed M1 so that the writer escapes a
-  character only where it could be read as markup, and left M2 - the rule for
-  an `escaped_text` node the author wrote - emitting an escape whatever the
-  character and wherever it stood. M2 is now stated over the EMITTED line, on
-  the same test: an authored escape survives where its character could open
-  markup at the position the writer has reached, and where it is one of the
-  smart-punctuation triggers; anywhere else the character is emitted bare. A
-  hash is read as markup only at a line's content position, so `a \# b` writes
-  `a # b` rather than carrying a backslash into the middle of a sentence.
+Container boundaries, and what a line at a content column does. These are one family and an implementer building any of them should read them together:
 
-- **A comment fence hides its body at every column, not only at column 0**
-  (carve#1309). PART 9 §24 S1 places a line by the column it REACHES, S2 makes
-  a line verbatim as soon as the innermost matched container is a fenced body,
-  and §28 makes a comment fence's body verbatim and invisible. None of the
-  three was ever scoped to column 0, but every document that pinned the
-  consequence spelled the fence there, so an indented comment fence was
-  unconstrained in practice and two engines drifted through the gap: a link
-  reference definition, a footnote definition, an abbreviation, a list marker
-  or a heading inside an indented comment could still register. The rule is
-  now stated at every column and pinned by seven documents, one per spelling
-  an engine can get wrong on its own.
+- **At a container's content column, a block ends the paragraph it sits under** (carve#1357, also settling the `dd` sub-question on carve#1350). What the block RENDERS is not a parameter; PART 1 S4 carries the property instead of an enumeration of constructs. The rule is over the BLOCK, not over its first line.
+- **A definition at a container's content column ends the paragraph, not the container** (carve#1350). §10 I5 makes it an interrupter; the container ends because the next line arrives at column 0.
+- **A footnote definition's block runs to the end of its body** (carve#1363), blank lines and all, so one definition does not answer differently by how its body is laid out.
+- **A definition's column is reached by composing the strips, not by walking the prefix** (carve#1368, PART 9 §24 C5). Each strip is taken against the column the one before it hands out.
+- **A blank line ends the open paragraph, whatever container stands above it** (carve#1379). An unterminated `:::` div reaches no further past a blank than a terminated one.
+- **A blank line before a sibling marker separates the items, whatever consumed it** (carve#1383, §17 L1). carve#326 C's interior blank is untouched.
+- **Prose reopens an item's paragraph, and a continuation row joins the row above it in its OWN container** (carve#1370). S4 does not ask whether the open paragraph is the container's first block.
+- **A quote inside a quote is asked what it ends on** (carve#1355). S4's recursive question was never put to a nested quote.
+- **A table is a table however its last row is spelled** (carve#1348), and **a continuation row joins the row above it whatever that row's cells hold** (carve#1354). A continuation row is a row only where a table is above it (carve#1349), and the delimiter row is what makes the one case that declines.
+- **No open paragraph, no lazy line, at every depth and after an interrupter** (carve#1346). The clause binds even where the unmatched container is a list, so `- - # H` answers as `- # H` does.
+- **Lazy continuation extends an open paragraph and nothing else** (carve#1280), and **a continuation marker attaches one block** (carve#1290, §17 L3).
+- **A floating attribute is scoped to the container that holds it** (carve#1281, §15 A4); an unconsumed one is dropped and reported.
+- **An attribute line after a `+` continuation marker attributes the block the marker attaches** (carve#1238).
+- **A tab after a fence or frontmatter opener is decided by its position** (carve#1295, carve#1285). Before content it is the marker separator and the construct does not open; at end of line it is trailing whitespace and the opener opens.
+- **A comment fence hides its body at every column, not only at column 0** (carve#1309, §28). Seven documents pin it, one per spelling an engine can get wrong on its own.
 
-- **A label that begins with an at sign is not a reference label**
-  (carve#1302). The `reference_label` production already subtracts `@` from the
-  first position - that exclusion is what keeps the bracket form free for the
-  Tier-2 Citations extension - but nothing said what happens when an author
-  puts one in the label slot anyway. It is now normative for both spellings: a
-  bracket pair whose content starts with an at sign is not a reference, it
-  resolves to nothing, and the source text stands.
+Inline content and line blocks:
 
-- **An unclosed verbatim run in a table row stops at the row's closing pipe**
-  (carve#1284, carve#1293). A backtick run with no closer used to swallow every
-  pipe after it, including the row terminator, so the line ended with content
-  dangling past its last pipe and the row failed to split. The run now ends at
-  the closing pipe, and the two shapes either side of the terminator are ruled
-  with it: a `+` continuation extends the cell, so an open run reaches the end
-  of the continued cell rather than the end of the first line, and an escaped
-  closing pipe is an escape - the row still closes on the line's final pipe.
+- **A line block hardens a soft break at every depth** (carve#1351, PART 9 §23). §23 hardens by NODE KIND, not by depth; PART 11 §7c is amended alongside, since its bare-newline permission rests on this reading.
+- **A line block's last body line keeps its backslash** (carve#1340, PART 11 §7c). At a stanza's end there is no boundary to harden, so the bare newline is not equivalent.
+- **A comment line is removed at the block layer** (carve#1339, carve#1333). `comment_line` is a block and a trailing `%%` after content is `inline_comment`; §23's "wherever it appears" means in whichever container, never in whichever inline context.
+- **An unclosed inline run in a line block reaches the end of the block** (carve#1282), carrying a newline rather than a space.
+- **An unclosed verbatim run in a table row stops at the row's closing pipe** (carve#1284, carve#1293), with the `+` continuation and the escaped pipe ruled alongside.
+- **A label that begins with an at sign is not a reference label** (carve#1302). It resolves to nothing and the source text stands.
+- **A note inside an unresolved reference is not a reference** (carve#1198, PART 9R R2).
+- **Footnote labels are matched exactly, and never cross a line** (carve#1112).
+- **A heading id is derived from the heading's text content** (carve#1283). An inline either contributes its literal text or contributes nothing, decided by the CONSTRUCT rather than by what it renders.
+- **An abbreviation expands inside an inline container** (carve#1151), **an abbreviation line in a list item body is the paragraph it renders** (carve#1267), and **an explicit `abbr` semantic attribute outranks automatic expansion** (carve#1127).
+- **Semantic spans split by tier, leftover attributes ride the outermost element** (carve#1146), and **compact semantic span attributes are portable core syntax** (carve#1124).
 
-- **A heading id is derived from the heading's text content** (carve#1283). The
-  Heading IDs rules said what happens to case, to non-ASCII characters, to
-  typography and to a leading digit, and never said which content they applied
-  to, which is how an engine could leave a math run out of an id while keeping
-  the code span beside it. An inline either contributes the literal text it
-  carries or contributes nothing, and which of the two it does is a property of
-  the CONSTRUCT and not of what it renders, because the id is assigned before a
-  cross-reference resolves or a symbol is looked up.
+Attributes and tables:
 
-- **An unclosed inline run in a line block reaches the end of the block**
-  (carve#1282). A line block is ONE block, so its line breaks are a rendering
-  instruction rather than a boundary the inline parser can see, and the
-  already-normative rule that an unclosed run renders to the end of its block
-  applies unchanged. What the run carries across the break is a newline rather
-  than a space, because the break is inside the run and is therefore the run's
-  content. Every line-block document in the corpus had used closed inline
-  markup, so the question had never been asked of one.
+- **A cell's attributes bind after its kind and alignment markers** (carve#1224, PART 9 §5).
+- **A table header cell states what it heads** (carve#1149).
+- **Two adjacent attributes need a separator** (carve#1157), **a boolean and a key/value of the same name are one attribute** (carve#1125), **a structural attribute leads the author's own** (carve#1090), and **a mandatory base class keeps the author's class slot in place** (carve#1168, carve#1170).
 
-- **A tab after a fence or frontmatter opener is decided by its position**
-  (carve#1295, carve#1285). Two clauses meet on an opener line and POSITION
-  decides which governs. A tab BEFORE content is the marker-to-content
-  separator, that slot is the `space` terminal and nothing else, so the
-  construct does not open. A tab at END OF LINE with nothing after it was never
-  that slot: it is trailing whitespace on a content line, PART 2 drops it, and
-  the bare opener it leaves opens normally.
+Canonical form and the non-HTML targets:
 
-- **A floating attribute is scoped to the container that holds it**
-  (carve#1281). §15 A4 named exactly one way for a pending attribute block to
-  run out of following blocks - end of document - and A2a's rationale leaned on
-  that being the only one. There is a second: the end of the container holding
-  the attribute line. A floating attribute never escapes its container to
-  attach to the block after the closer; an unconsumed one is dropped, and
-  `carve lint` reports it.
+- **PART 11 §6e: a table cell's content is padded** (carve#1233), **PART 11 §6d: a code fence opener is written glued to its info string** (carve#1219), and **PART 11 §6c: a value-less attribute is written as a boolean** (carve#1137).
+- **PART 11 §8b: the Markdown target's authored escape narrows too** (carve#1321), and **a line's content position is after its container prefix** (carve#1332). The position is read on the emitted line past every container prefix, so `> \# heading` does not come back as a heading.
+- **The Markdown target escapes an angle bracket only where it opens markup** (carve#1172, carve#1148).
+- **PART 11 §10h: the plain-text target preserves list depth** (carve#1084). The clause now carries its own number rather than sitting inside §8a's body (carve#1365); the `10d` slot of that same run is retired, since carve#1213 withdrew the clause it named, so the run reads `10c`, `10e`.
+- **PART 11 §10e: a presentation target keeps a caption, a fence title and a fence label** (carve#1179), and **PART 11 §10f: a referenced abbreviation definition splits by target** (carve#1185).
+- **Bidi controls are stripped by presentation target** (carve#1082, carve#1083).
 
-- **A continuation marker attaches one block** (carve#1290). §17 L3 already
-  said so in capitals, and the trailing "up to the next blank line, sibling
-  marker, or a further `+`" is the EXTENT of that one block rather than a
-  count. The only text supporting the other reading was L4's parenthetical
-  "block(s)", inside a clause about the first-block form. L4 now says BLOCK,
-  and the EBNF spells the same claim a second way with
-  `first_block_content = continuation_marker, block`.
+### Security
 
-- **Lazy continuation extends an open paragraph and nothing else**
-  (carve#1280). PART 1 S4's *NO OPEN PARAGRAPH, NO LAZY LINE* was already
-  normative but nothing followed it, so a column-0 line after a container's
-  last block folded into a list item and ended a block quote - in all three
-  engines and in this repo's own executable spec, which is why no gate could
-  see it. The parameter S4 names is whether any container in the open stack
-  holds an OPEN PARAGRAPH; a block that leaves none leaves none wherever it was
-  written, so `- # H` writes a heading as the item's first block exactly as an
-  indented `# H` would.
-
-- **An attribute line after a `+` continuation marker attributes the block the
-  marker attaches** (carve#1238, markup-carve/carve-rs#1020). An attribute block
-  attaches to the block that FOLLOWS it and the target is that block; nothing in
-  that rule exempts the continuation marker, and a continuation is exactly the
-  case where the following block is inside the item. PART 2 has
-  `block = … | block_attributes | …` and PART 11's grammar has
-  `continuation_marker_block = continuation_marker, block`, so the attribute line
-  is itself a block the marker can attach. Reading it as ordinary text loses two
-  things at once, which is why the shape is worth pinning on its own: the
-  attributes, and the containment - the marker's run ends at the text, so the
-  quote or paragraph below it becomes a sibling of the list instead of a child of
-  the item. No corpus document spelled the shape before, so the position was
-  unpinned while the rule that decides it was not.
-
-- **PART 11 §6e: a table cell's content is padded** (carve#1233). The canonical
-  writer emits every cell as its PREFIX glued to the opening pipe, then one
-  space, then the content, then one space before the closing pipe - the prefix
-  being the kind marker, the alignment marker and the attribute block, in the
-  order PART 9 §5 T10 fixes. An EMPTY cell takes a single space, not one from
-  each end, so a column does not grow a space each time the document is
-  formatted. The reader requires the glued prefix, since a space in front of
-  `=` or of an attribute block makes it literal content, so only the content
-  side was ever the writer's to choose and nothing chose it: carve-js and
-  carve-rs glued a prefixed cell, carve-php glued it except when the cell
-  carried attributes. The rule also retires two guards. The alignment sigil and
-  the attribute slot are both read glued off the UNTRIMMED cell, so `| ~x~ |`
-  came back as `|=~x~|`, a centered column holding `x~`; each writer answered
-  that with its own list of characters to protect, and one space on every cell
-  covers the class without a list.
-
-- **A cell's attributes bind after its kind and alignment markers**
-  (carve#1224, PART 9 §5 T10). `header_cell` had no attributes slot, so an
-  attributed header cell had no spelling: the only shape available, `|{#x}=R|`,
-  is a data cell whose content starts with `=`, and a canonical writer emitting
-  it turned `<th id="x">R</th>` into `<td id="x">=R</td>`. Both productions take
-  one order instead - the kind marker, then the alignment marker, then the
-  attribute block - which is what makes the header shape expressible at all:
-  once `=` has committed the cell to header, everything after it is
-  unambiguous. This retires a released `data_cell` spelling. `|{#x}< content |`
-  was documented as attributes followed by a left-alignment marker; the `<` is
-  not in a marker position under the new order, so it is literal content. Row
-  attributes do not move - a row's block still glues to the row's closing `|`.
-
-- **An abbreviation line in a list item body is the paragraph it renders**
-  (carve#1267). PART 12 §7 recognizes `*[TERM]: expansion` as a definition only
-  as a direct child of the document; written inside a block quote, a list item
-  or a div the line is ordinary paragraph text, it defines nothing, and it is
-  preserved as the author typed it. So it is a second paragraph for PART 9 §17
-  L1 and a blank line before it makes the item LOOSE: it is not one of the
-  invisible constructs - comments, link reference definitions, footnote
-  definitions, attribute lines - that render nothing and leave the item tight.
-  A link reference definition at the same content column does stay collected
-  and does leave the item tight, which is what makes the difference a rule
-  rather than an inconsistency.
-
-- **An abbreviation expands inside an inline container** (carve#1151). PART 9R
-  R3 matches a defined term in RENDERED TEXT at word boundaries, and the
-  container that text sits in does not change that: an ordinary span
-  (`[HTML]{.x}`), a semantic span (`[HTML]{kbd}`) and the `:name[…]` extension
-  form all expand, as emphasis and link text already did. The corpus pinned
-  only the row carrying an explicit `abbr` attribute, which every engine agreed
-  on, so the rows around it were unpinned and two engines carried opposite
-  defects - one dropping the expansion inside spans, the other inside the
-  `:name[…]` form. An authored `abbr` attribute stays the exception PART 9 §9
-  makes it.
-
-- **A note inside an unresolved reference is not a reference** (carve#1198,
-  PART 9R R1). An unresolved reference degrades to its literal SOURCE, so the
-  link text rendered for it is discarded rather than written into the document,
-  and a `[^label]` use or an `^[content]` note sitting in that text references
-  nothing: it draws no number from the footnote sequence, a definition it was
-  the only use of stays unreferenced and is dropped, and no endnotes section is
-  written on its account. An implementation that numbers footnotes before it
-  knows whether the reference resolved says so in its output - the note a
-  reader can see is numbered as a repeat of a reference the document does not
-  contain, and a lone one leaves an endnote whose backlink names an id no
-  element carries. What is counted is what the output holds, which decides the
-  cases either side the same way: a note in a reference that DOES resolve is an
-  ordinary reference, and so is a note in a bracketed run that never carried a
-  tail.
-
-- **PART 11 §10e: a presentation target keeps a caption, a fence title and a
-  fence label** (carve#1179). Three authored tokens were discarded by all three
-  engines: a table's `^ ` caption on the Markdown target, and a code fence's
-  quoted title and its `[label]` on plain text and the terminal. A fenced div
-  already surfaces both fence tokens on every target, and a code fence carries
-  the same two tokens in the same two slots of its info string, so it renders
-  them the same way - above the block, the title always before the label -
-  while the language tag keeps whatever slot the target already gives it. The
-  clause decides where those tokens go on the targets it names and nothing
-  else: a construct/target pair it leaves open is open, not allowed.
-
-- **PART 11 §10f: a referenced abbreviation definition splits by target**
-  (carve#1185). §10a rules the definition nothing references and says nothing
-  about the one that IS referenced, and each of the three non-HTML targets got
-  that case wrong in its own way - Markdown and the terminal emitted the same
-  words twice, and plain text put a line of Carve source in the document while
-  the expansion the author defined appeared nowhere. Markdown keeps the
-  definition line, because `*[TERM]: expansion` is the spelling PHP Markdown
-  Extra uses, so there the line is content rather than leaked source and
-  keeping it is what lets the export round-trip. Plain text and the terminal
-  drop the line and emit the expansion at every occurrence, in the
-  `TERM (expansion)` shape.
-
-- **Two adjacent attributes need a separator** (carve#1157). `attribute_list`
-  is `attribute, {space+, attribute}` (PART 7) and no corpus document carried
-  an adjacent pair, so the rule had nothing behind it: all three engines read
-  `{.a.b}`, `{.a#i}` and `{#i.c}` as two attributes while every suite stayed
-  green. The spec is what stands - an adjacent pair is not an attribute list,
-  so the payload is not valid attribute syntax and the block is literal text.
-  An unquoted value runs to the next whitespace, so `{k=a:b}` remains one valid
-  attribute and the colon inside it is not a separator question.
-
-- **Semantic spans split by tier** (carve#1146). Core reserves three span
-  attributes - `abbr`, `time`, `kbd` - because the first two carry data the
-  author would otherwise lose and the third is what every comparable system
-  ships. `samp`, `var`, `cite` and `dfn` are the new Tier-2 `SemanticSpan`
-  extension's, off by default. The `:name[…]` spelling has no core handler at
-  all: it falls back to `<span class="ext-NAME">`, and the extension accepts it
-  as a SOFT-DEPRECATED form for the seven names, scheduled for removal in 0.2 -
-  it was released behavior in carve-js and carve-rs, and it cannot express a
-  combination (`:dfn[:abbr[CSS]]` does not nest, where `[CSS]{dfn abbr="…"}`
-  does).
-
-- **Leftover attributes ride the outermost semantic element** (carve#1146). A
-  consumed name RENAMES the span rather than wrapping it, so `[Tab]{#k .key kbd}`
-  is `<kbd id="k" class="key">Tab</kbd>` rather than a `<span>` around a `<kbd>`,
-  and `[x]{kbd onclick="…"}` is a bare `<kbd>`. A span with no semantic name is
-  unchanged: hardening removes attributes, never the element the author wrote.
-
-
-- **Compact semantic span attributes are portable core syntax** (carve#1124).
-  `[Ctrl]{kbd}`, `[HTML]{abbr="…"}`, and combinations such as
-  `[CSS]{dfn abbr="…"}` now share one normative HTML mapping across PHP,
-  JavaScript, and Rust. The registry is seven names - `abbr`, `time`, `samp`,
-  `var`, `kbd`, `cite`, `dfn` - and is the same list for the `:name[content]`
-  spelling; non-semantic attributes remain on a hardened outer span. A name
-  belongs in it only where Carve has no other INLINE spelling for that
-  element, so `code` and `mark` are not in it: `` `x` `` writes `<code>` and
-  `=x=` writes `<mark>`. An abbreviation definition also emits `<abbr>` and is
-  a different mechanism rather than a second spelling - it expands every
-  occurrence document-wide, where `[HTML]{abbr="…"}` marks one. This is an observable HTML change for JS/Rust and for
-  PHP without its former opt-in extension. AST, plain/ANSI, and canonical
-  source behavior remain ordinary span behavior.
-
-- **PART 11 §6c: a value-less attribute is written as a boolean** (carve#1137).
-  The canonical writer contradicted itself over one construct: a boolean whose
-  key is `lang` contracted to the shortest dedicated form (`{:}`) while every
-  other boolean expanded to the longest (`{kbd=""}`). PART 11 §1 permitted both
-  and no clause chose. The writer now uses the DEDICATED production - the
-  language attribute for a `lang` key, the boolean attribute for a value-less
-  one - so `[Tab]{kbd}` formats back to `[Tab]{kbd}` rather than to a spelling
-  that says the value is an empty string where the tree says there is no value.
-
-- **PART 11 §6d: a code fence opener is written glued to its info string**
-  (carve#1219). The reader takes both ` ```php ` and ` ``` php `, and PART 2
-  already calls the glued form canonical, but nothing said which one the
-  canonical WRITER emits - so carve-js and carve-php normalized to the glued
-  form and carve-rs to the spaced one. The writer now emits no padding space
-  before the info string and exactly one space before each metadata token
-  inside it, so a fence carrying a header and a label comes back as
-  ` ```php "src/Auth.php" [Composer] ` whatever run of spaces the author wrote.
-  The rule covers every info string, a header or a label with no language ahead
-  of it and the raw passthrough selector included.
-
-- **A boolean and a key/value of the same name are one attribute**
-  (carve#1125). A boolean IS a key/value with an empty value, so it takes that
-  name's slot and the repeated key keeps the LAST value at the FIRST position,
-  like any repeated key. Emitting both would produce two HTML attributes with
-  one name.
-
-- **A structural attribute leads the author's own** (carve#1090). An attribute
-  an element derives from its own marker or destination - `<ol>`'s `type` and
-  `start`, a link's `href`, an image's `src` and `alt` - is part of the
-  element's shape rather than something added on top, so it is emitted BEFORE
-  the authored attributes, which then follow in source order; engine-minted
-  attributes come last. A structural CLASS still merges at the front of the
-  class slot. This matches reference djot on every shape measured.
-
-- **A mandatory base class keeps the author's class slot in place**
-  (carve#1168, carve#1170). A base class merges INTO the class slot at the
-  position a class first appears in what the author wrote, rather than being
-  emitted ahead of everything. Writing it first silently reordered the rest:
-  `:widget[x]{#i .c k=v}` produced `class="ext-widget c" id="i" k="v"` and
-  `` $`E=mc^2`{#i .c k=v} `` produced `class="math inline c" id="i"`, both
-  moving an id the author had put first. With no class slot to merge into
-  there is no authored position to respect, so the base class leads.
-
-- **A table header cell states what it heads** (carve#1149). Every `<th>`
-  carries a `scope`: `col` in the run of header rows, `row` for a `|=` cell in
-  a body row. The language already distinguished those two positions, so this
-  states an association the table had rather than adding a concept - without
-  it assistive technology infers from position and infers wrong on any table
-  carrying both kinds. An authored `scope` REPLACES the default rather than
-  joining it.
-
-- **The Markdown target escapes an angle bracket only where it opens markup**
-  (carve#1172). PART 11 §8 defines that target's escaping as exactly M1-M3 and
-  none of them mentions an entity, yet every engine rewrote `<` and `>` to
-  `&lt;` / `&gt;` in ordinary text - three engines agreeing on behavior the
-  document did not describe, which the corpus then scored as conformance
-  (carve#1148). Measured through a CommonMark reader, `a <b> c` round-trips
-  unchanged, so the escape is now applied where a bracket would open a tag and
-  nowhere else.
-
-- **Footnote labels are matched exactly, and never cross a line**
-  (carve#1112). A label is a physical-line identifier: it may contain spaces
-  and tabs but not a source newline, and matching does not normalize
-  whitespace. A reference that spanned a newline used to resolve against a
-  definition it could not have been written as.
-
-- **An explicit `abbr` semantic attribute outranks automatic expansion**
-  (carve#1127). Inside such a span a resolved abbreviation contributes only its
-  visible text and renderers MUST NOT emit a nested `<abbr>`, so a
-  document-level `*[HTML]: …` definition no longer overrides
-  `[HTML]{abbr="Custom"}`.
-
-- **PART 11 §10h: the plain-text target preserves list depth** (carve#1084). A
-  nested item is indented two spaces per list ancestor. The target may discard
-  marker style and tight/loose layout, but flattening parent, child and
-  grandchild into siblings erases structure the reader has no other way to
-  recover - indentation is what plain text has.
-
-- **Bidi controls are stripped by presentation target** (carve#1082,
-  carve#1083).
-  Canonical Carve preserves a Trojan-Source bidi override or isolate control
-  because it is the source; every presentation target strips it. `carve lint`
-  reports the source occurrence as `bidi-control-in-source`.
+- **A list-valued attribute is probed at every candidate, not at its head** (carve#1326, §25). The probe read the value's leading scheme, which vouches for the whole value only where the whole value is one URL, so `srcset="safe.png 1x, javascript:alert(1) 2x"` passed on all three engines.
+- **The token pass runs in addition to the value-wide probe, not instead of it** (carve#1328, §25). The paragraph read as an exchange, and one engine shipped token-only; the value-wide probe strips ASCII whitespace before reading a scheme and the split does not, so dropping it is a regression rather than a neutral variant.
 
 ### Fixed
 
-- **The U+E000 no-break space sentinel is documented on all four fields that
-  carry it** (carve#1242). `resources/ast-schema.json` and PART 12 §3 named it
-  on `text.value` alone; the engines emit and resolve it on `text.value`,
-  `code.value`, `code_block.content` and `literal_inline.content`, so a
-  consumer written against the schema handled a quarter of what it receives.
-  The normative rule is unchanged - map U+E000 to the target's no-break space,
-  or to an ordinary space where the target has none, and never emit it - it now
-  says where it applies. `raw_block.content` is named as EXCLUDED, since raw
-  content is byte-for-byte passthrough. A line block's preserved indentation is
-  a RUN of the sentinel, one per space, which is the second source the old
-  wording left in a parenthetical.
+Defects in the executable spec and its corpus, where the engines already answered correctly:
 
-- **An image's alt text closes where a link's text closes** (carve#1197). The
-  grammar states, four lines above the production that contradicted it, that an
-  image has the same three forms as a link and that only the leading `!` and
-  the `<img src>` output differ - and then wrote `alt_text = {character - ']'}`,
-  which makes `![t[z]][r]` not an image at all. The bracketed run is not one of
-  the two things that differ, so alt text ends at the MATCHING `]`, closed by
-  the same balanced-bracket, escape- and literal-span-aware scan `link_text`
-  states. Every engine already read it that way; the production was the half
-  that was spelled wrong.
+- **Only lazy folding demotes a marker-line colon opener** (carve#1382). A `:::` opener alone on a marker line with a blank after it was read as literal text; the demotion guard asked whether the body was non-empty rather than whether any folding happened.
+- **A task item's checkbox is not decided by its first block** (carve#1381). `- [ ] > q` dropped the checkbox the author wrote; the `<li>` opener was built in two branches and only the inline one consulted it.
+- **A bracketed construct spans a line boundary like any other inline content** (carve#1352). Every bracketed content run carried a newline guard, so a link, a semantic span, an alt text, an inline note, `:name[...]`, the edit family and the forced family all read as literal text across a boundary. The physical-line identifiers deliberately keep the guard.
+
+Defects in the specification text:
+
+- **The U+E000 no-break space sentinel is documented on all four fields that carry it** (carve#1242, PART 12 §3). It was named on `text.value` alone; `raw_block.content` is named as excluded.
+- **An image's alt text closes where a link's text closes** (carve#1197). The production wrote `alt_text = {character - ']'}` four lines under the statement that an image differs from a link only in its leading `!` and its output, so `![t[z]][r]` was not an image at all.
 
 ## [0.1.2] - 2026-08-10
 
