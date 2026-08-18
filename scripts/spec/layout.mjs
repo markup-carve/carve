@@ -323,12 +323,30 @@ export function bracketRunEnd(line, open) {
 const CAPTIONABLE_IMAGE_TAIL = /^(?:\([^)]*\)|\[[^\]]*\])(?:\{[^}]*\})?$/
 const CAPTIONABLE_MATH = /^\$\$`.*`$/
 function isCaptionableParagraph(para) {
-  if (para.length !== 1) return false
-  const line = para[0]
+  // The whole paragraph, not its first line. An image's ALT is `brContent*`,
+  // which admits a line boundary like any other inline content, so
+  // `![a` / `b](/i)` is one image and one paragraph - and a paragraph whose
+  // whole content is one image is exactly what §4 makes captionable. This read
+  // `para[0]` behind a `para.length !== 1` guard, so the two-line spelling of
+  // the same image was never captionable and never a standalone image either;
+  // all three engines answer both the same as the one-line spelling
+  // (carve#1352).
+  //
+  // THE ALT SPANS LINES, THE TAIL DOES NOT. Only `brContent` gained the
+  // boundary: `link_destination` and `reference_label` are one-line
+  // productions and stayed that way, so a tail carrying a newline is not an
+  // image tail and the paragraph is ordinary text. Reading the join without
+  // that half made `![a][r` / `x]` / `^ cap` a figure wrapping a paragraph of
+  // literal text, where all three engines leave both lines as prose - the
+  // tail patterns admit a newline inside `[...]` and `(...)` because they
+  // never had to exclude one.
+  const line = para.join('\n')
   if (CAPTIONABLE_MATH.test(line)) return true
   if (!line.startsWith('![')) return false
   const altEnd = bracketRunEnd(line, 1)
-  return altEnd !== -1 && CAPTIONABLE_IMAGE_TAIL.test(line.slice(altEnd))
+  if (altEnd === -1) return false
+  const tail = line.slice(altEnd)
+  return !tail.includes('\n') && CAPTIONABLE_IMAGE_TAIL.test(tail)
 }
 // The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
 // engine, so a tab here must not open a list (PART 9 SS11). Its width is the

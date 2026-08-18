@@ -1,0 +1,52 @@
+A bracketed construct's identifiers stay on one line
+
+```
+[t][r
+x]
+
+[r x]: /u
+.
+<p>[t][r
+x]</p>
+```
+
+```
+x[^f
+g]
+
+[^f g]: n
+.
+<p>x[^f
+g]</p>
+```
+
+```
+![a][r
+x]
+^ cap
+.
+<p>![a][r
+x]
+^ cap</p>
+```
+
+```
+![a](/i
+q)
+^ cap
+.
+<p>![a](/i
+q)
+^ cap</p>
+```
+
+```
+x [a
+y
+
+z
+.
+<p>x [a
+y</p>
+<p>z</p>
+```
