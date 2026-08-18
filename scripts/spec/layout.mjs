@@ -3406,11 +3406,16 @@ function collectItems(lines, i, list, state, ind, meas) {
          * ended the item and `- a` / `  [^f]: t` / `    more` / `tail` folded.
          * carve-rs answers both the same; carve-js and carve-php answer neither.
          *
-         * `defBodyIndent` is the definition line's own column, so a line at or
-         * below it is a sibling of the definition rather than its body and
-         * takes the branches above instead.
+         * `defBodyIndent` is the definition line's own column. The footnote
+         * body's column is two columns beyond it, so a line in the intervening
+         * band is the item's prose rather than definition content
+         * (markup-carve/carve#1376).
          */
-        else if (defBody !== null && dmeas.col > defBody && dmeas.rest !== '') {
+        else if (
+          defBody !== null &&
+          dmeas.col >= defBody + FOOTNOTE_BODY_COLUMN &&
+          dmeas.rest !== ''
+        ) {
           closePara()
           defBodyIndent = defBody
         }

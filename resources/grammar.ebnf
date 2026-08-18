@@ -4683,6 +4683,16 @@ EOF = (* end of file *) ;
          exception in §24 C3: their invisibility is accepted independently of
          column and they do not by themselves close the item. Pinned by corpus
          287-a-column-zero-definition-ends-an-open-list-item (carve#1045).
+
+         A DEFINITION COLLECTED AT content_column ENDS THE ITEM'S OPEN
+         PARAGRAPH. The next nonblank line therefore stays in the item only if
+         it reaches content_column and opens item prose, except that a footnote
+         line reaching content_column + 2 belongs to the definition body and
+         leaves no item paragraph open. A line one column short of that body is
+         item prose. The comment exception above does not extend to definitions.
+         The bare decimal-dot marker `. ` claims one marker column and one
+         separator column, so its content_column is the same as `- `. Pinned
+         by corpus 374 (carve#1376).
       I6 SCOPE + THE HEADING EXCEPTION. The relation applies to EVERY open
          paragraph, including a blockquote's lazy continuation: "> quoted
          \n - item" folds into ONE quote whose paragraph is
