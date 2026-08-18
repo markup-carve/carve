@@ -147,7 +147,8 @@ under the same semantic-span rule,
 `355-a-container-whose-table-ends-on-a-joined-header-row`,
 `356-a-quote-inside-a-quote-is-asked-what-it-ends-on`,
 `357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders`,
-`358-what-a-content-column-block-does-not-reach`.
+`358-what-a-content-column-block-does-not-reach`,
+`359-a-footnote-definition-s-block-runs-to-the-end-of-its-body`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative

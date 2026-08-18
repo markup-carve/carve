@@ -2921,6 +2921,37 @@ function collectItems(lines, i, list, state, ind, meas) {
             continue
           }
           const dedented = dedent(lines[j], contentCol)
+          /*
+           * A BLANK INTERIOR TO A FOOTNOTE DEFINITION'S BODY IS THE
+           * DEFINITION'S, NOT THE ITEM'S -- carve#1363.
+           *
+           * The rule is over the BLOCK, and a footnote definition's block is
+           * whatever the footnote parser consumes: it may carry more than one
+           * body block, so the blank between them and the indented block after
+           * it are interior to the definition. Neither is the item's second
+           * paragraph, neither loosens the list, and nothing of the item's
+           * reopens across them - the flush-left line below still arrives with
+           * nothing to fold into.
+           *
+           * Without this the blank handed the lines after it back to the item,
+           * so ONE definition answered by how its own body was laid out:
+           * `- a` / `  [^f]: t` / `    more` / `tail` ended the item and the
+           * same definition with a blank before `more` folded `tail` in.
+           * carve-rs answers both alike; nothing else did.
+           *
+           * A LINK reference definition never reaches here: it has no body, so
+           * `defBodyIndent` is null for it and the indented line after the
+           * blank is the ITEM's own second paragraph, exactly as before. The
+           * difference is the body, not the indentation.
+           */
+          if (defBodyIndent !== null && indentCols(dedented).col > defBodyIndent) {
+            const defBody = defBodyIndent
+            pushLine('', BLANK_MEAS)
+            closePara()
+            defBodyIndent = defBody
+            i = j
+            continue
+          }
           if (opensSubBlock(dedented)) {
             // sub-BLOCK after a blank: attaches, stays tight (SS17 L2)
             pushLine('', BLANK_MEAS)

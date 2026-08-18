@@ -355,11 +355,12 @@
         AT the content column after the block is the container's own second
         paragraph, which it was before.
 
-        A BLANK-SEPARATED footnote body is also not reached. A footnote
-        definition may carry more than one block, and the item's reach here is
-        the CONTIGUOUS indented run: a blank line ends it, so the indented line
-        after the blank reopens the item's paragraph. That shape divides FOUR
-        ways today -
+        THE BLOCK'S EXTENT IS THE DEFINITION'S, BLANK LINES AND ALL
+        (carve#1363). A footnote definition may carry more than one block, and
+        the container's reach over it is the DEFINITION'S extent rather than a
+        CONTIGUOUS indented run. The blank between the note's blocks is
+        INTERIOR to the block the container is looking at, so it hands nothing
+        back:
 
             - a
               [^f]: t
@@ -367,13 +368,28 @@
                 more
             tail
 
-        carve-js gives the note two blocks and folds `tail`, carve-php gives it
-        one and folds `more` into the item as well, carve-rs gives it two and
-        ends the item, and this implementation gives it two and folds `tail`.
-        A rule stated over the block's extent implies carve-rs's answer, but
-        reaching it means the container reader modelling the footnote parser's
-        own multi-block extent, which is a ruling of its own rather than a
-        consequence of this one: carve#1363.
+        ends the item exactly as the contiguous and the one-line spellings do.
+        `tail` is a document-level paragraph and the note holds two blocks.
+
+        AN INTERNAL CONTRADICTION DECIDES IT, NOT A COUNT. This shape divided
+        four ways, and three of those answers contradict the answer the SAME
+        reader gives one blank line away: carve-php and this implementation end
+        the item on `  [^f]: t` / `    more` and on the one-line spelling, then
+        fold `tail` in as soon as a blank sits between the note's blocks. That
+        is one definition answering by how its own body is laid out, and
+        nothing above is stated over a body's layout - the rule is over the
+        BLOCK, and the blank is inside it. carve-rs is the only reader already
+        consistent across the three spellings, which is a consequence of the
+        property and not a vote for it.
+
+        THE LINK REFERENCE DEFINITION IS THE CONTROL, and it does not move. It
+        has no body, so its block IS the one line: the blank after it falls
+        OUTSIDE the block, the indented line below is the container's own
+        second paragraph, and the flush-left line folds into that. `- a` /
+        `  [r]: /u` / blank / `    more` / `tail` keeps both lines in the item,
+        which every implementation already does. So this turns on the block's
+        extent, the same thing the contiguous spelling turned on, and not on
+        indentation and not on blank lines.
 
         The NESTED spelling (`- outer` / `  - inner` / `    [r]: /u` / `tail`)
         is unanimous and belongs to the nested half this clause leaves open

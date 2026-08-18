@@ -337,6 +337,7 @@ index: examples/edge-cases/index.md
   a-quote-inside-a-quote-is-asked-what-it-ends-on
   a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders
   what-a-content-column-block-does-not-reach
+  a-footnote-definition-s-block-runs-to-the-end-of-its-body
   41-line-blocks-8
   12-inline-code-5
   24-generic-divs-2

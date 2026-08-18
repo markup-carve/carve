@@ -1,0 +1,44 @@
+A footnote definition's block runs to the end of its body
+
+```
+- a
+  [^f]: t
+
+    more
+tail
+
+x[^f]
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>t</p>
+      <p>more<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- a
+  [r]: /u
+
+    more
+tail
+
+[r][]
+.
+<ul>
+  <li><p>a</p>
+    <p>more
+tail</p>
+  </li>
+</ul>
+<p><a href="/u">r</a></p>
+```
