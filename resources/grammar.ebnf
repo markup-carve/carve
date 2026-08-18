@@ -299,6 +299,38 @@
         document level only, so inside a container the line is ordinary
         paragraph text and reopens the paragraph like any other prose.
 
+        A QUOTE IS REACHED BY ITS MARKER, AND A COLUMN NEVER REACHES INTO ONE
+        (carve#1384). I5's columns are read against the container a line is IN,
+        and a line that writes no `>` is in no quote whatever column it lands
+        on -- §24 C5 composes the strips and the quote's strip IS the marker
+        (carve#1368). Such a line reaches the quote only through S4's lazy fold,
+        so it is paragraph text: it renders where it was written and registers
+        nothing.
+
+        The tell was that one line answered differently by what the quote HELD:
+
+            > x                > - x
+              [r]: /u            [r]: /u
+
+            See [r][].         See [r][].
+
+        Both second lines are identical and sit at the quote's content column,
+        and neither writes the marker. The left one folds into the quote's
+        paragraph as text in every reader. The right one was read as the INNER
+        ITEM's content column, where I5 makes a definition the item's, so this
+        implementation registered it and rendered it NOWHERE, and carve-js and
+        carve-php dropped it entirely -- render nothing and define nothing,
+        which is the one outcome carve#624 forbids. carve-rs folds both, and the
+        fold is what S4 already prescribes: the deepest open paragraph in the
+        stack is the inner item's, and the line continues it.
+
+        WITH THE MARKER WRITTEN nothing about I5 changes: `> - x` over
+        `>   [r]: /u` registers at the inner item's content column in all four
+        readers, which is corpus
+        360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column's
+        space. The marker is the parameter, and the quote's body is not.
+        Corpus 369.
+
         PROSE REOPENS THE PARAGRAPH WHEREVER IT SITS AMONG THE ITEM'S BLOCKS,
         which is the general shape of that last sentence rather than a property
         of abbreviations. S4 asks whether any container in the open stack holds

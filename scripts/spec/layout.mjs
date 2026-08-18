@@ -2285,7 +2285,22 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // strict column-0 rule decides it instead: a flush-left fence-shaped
           // line interrupts, the quote closes, and the line is re-classified at
           // top level. All three engines already answer it that way.
-          inner.push(lines[i])
+          //
+          // AND IT ARRIVES LAZY-FRAMED. The line supplies no `>` prefix, so it
+          // is not the quote's own content and its COLUMN inside the quote body
+          // means nothing - it reached the paragraph by S4's fold and is
+          // paragraph text wherever it landed. Pushed raw, the quote's own parse
+          // read it by column instead, and a definition that happened to line up
+          // with an inner list item's content column REGISTERED there and
+          // rendered nowhere: `> - x` over `  [r]: /url` defined `r` while
+          // `> x` over the same line folded it as text. One line, two answers,
+          // decided by what the quote's body happened to be (carve#1384).
+          //
+          // Same framing the item collector uses for the same reason at §24 C3.
+          // A line that reached HERE already framed came from an outer
+          // collector's own fold; framing it twice leaks the sentinel into the
+          // rendered text, which the paragraph collector strips only once.
+          inner.push(lines[i].startsWith(LAZY) ? lines[i] : LAZY + ind(i).rest)
           i++
           continue
         }

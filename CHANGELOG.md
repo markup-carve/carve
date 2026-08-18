@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **A quote is reached by its marker, and a column never reaches into one** (carve#1384). A line writing no `>` is in no quote whatever column it lands on; it folds into the deepest open paragraph, renders where it was written, and registers nothing. Corpus 369.
 - **An unterminated fence at a container's content column opens no block** (carve#1387). Section 10 I4 asks for a closer; without one the line is paragraph text, the paragraph stays open, and a flush-left line below folds into it. Corpus 367.
 - **A raw block keeps the blank line at the end of its payload** (carve#1389). The payload is every line between the delimiters; the container and whether the closer was written are not parameters. Corpus 366.
 
