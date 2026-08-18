@@ -25,20 +25,33 @@
 
 # PART 11 section 1b, ruled at carve#1325: a producer that flattens block
 # content into an inline slot emits a separator at every boundary between two
-# former sibling blocks. Measured 2026-08-18, no engine does: all three join the
-# blocks with nothing, so all three lead the corpus on all three cases. Each
-# line goes in the commit that lands the fix for that engine.
-rust/29-html-a-flattened-paragraph-boundary-survives  emits `onetwo`; PART 11 s1b not implemented
-rust/30-html-flattened-emphasis-runs-do-not-merge  emits `*a**b*`; PART 11 s1b not implemented
-rust/31-html-flattened-code-spans-do-not-merge  joins the two code spans; PART 11 s1b not implemented
+# former sibling blocks.
+#
+# Re-measured 2026-08-18 by converting all four inputs with each engine, built
+# from a clone made for this run: carve-rs `3f8bde7b`, carve-js `099db2cc`,
+# carve-php `925f7dcf`. carve-rs emits the separator on every row since
+# markup-carve/carve-rs#1094, so its four lines are gone; carve-js and carve-php
+# still join the blocks with nothing.
+#
+#     figcaption content                          rs        js and php
+#     <p>one</p><p>two</p>                        one two   onetwo
+#     <p><strong>a</strong></p>
+#     <p><strong>b</strong></p>                   *a* *b*   *a**b*
+#     <p><code>a</code></p>
+#     <p><code>b</code></p>                       `a` `b`   `a``b`
+#     <p>a</p><p></p><p>b</p>                     a b       ab
+#
+# The last row is the one that says the rule is over CONTRIBUTED TOKENS: the
+# empty block is not a side, so the emitted caption carries one separator and
+# not two. Each remaining line goes in the commit that lands the fix for that
+# engine.
 js/29-html-a-flattened-paragraph-boundary-survives  emits `onetwo`; PART 11 s1b not implemented
 js/30-html-flattened-emphasis-runs-do-not-merge  emits `*a**b*`; PART 11 s1b not implemented
 js/31-html-flattened-code-spans-do-not-merge  joins the two code spans; PART 11 s1b not implemented
+js/32-html-an-empty-flattened-block-is-not-a-side  emits `ab`; PART 11 s1b not implemented
 php/29-html-a-flattened-paragraph-boundary-survives  emits `onetwo`; PART 11 s1b not implemented
 php/30-html-flattened-emphasis-runs-do-not-merge  emits `*a**b*`; PART 11 s1b not implemented
 php/31-html-flattened-code-spans-do-not-merge  joins the two code spans; PART 11 s1b not implemented
-rust/32-html-an-empty-flattened-block-is-not-a-side  emits `ab`; PART 11 s1b not implemented
-js/32-html-an-empty-flattened-block-is-not-a-side  emits `ab`; PART 11 s1b not implemented
 php/32-html-an-empty-flattened-block-is-not-a-side  emits `ab`; PART 11 s1b not implemented
 #
 # A ledger and an unwired gate look identical from outside, so read the
