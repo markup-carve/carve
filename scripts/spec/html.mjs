@@ -586,7 +586,7 @@ function renderItem(item, list, depth, ctx) {
   if (first.inlineable) {
     out = `${pad}<li${liAttrs}>${prefix}${first.html}`
   } else {
-    out = `${pad}<li${liAttrs}>\n${first.html}`
+    out = `${pad}<li${liAttrs}>${prefix}\n${first.html}`
   }
   for (let i = 1; i < parts.length; i++) {
     const p = parts[i]

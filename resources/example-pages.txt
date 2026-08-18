@@ -250,6 +250,7 @@ index: examples/edge-cases/index.md
   table-as-a-block-opener-in-a-list-item
   a-paragraph-opened-after-a-block-in-an-item-is-still-open-for-a-lazy-line
   an-unterminated-container-does-not-extend-the-item-past-a-blank-line
+  a-task-item-s-checkbox-is-not-decided-by-its-first-block
   colon-fence-as-a-block-opener-in-a-list-item
   fence-folds-as-lazy-inline-code-above-the-content-column
   indented-ordered-marker-content-column-includes-the-marker-indent

@@ -1191,6 +1191,20 @@ task_marker = '[', task_state, ']', space ;
 (* `x`/`X` render a CHECKED checkbox; every other state (` `, `-`, `_`,
    `>`, `?`) renders an UNCHECKED checkbox. Matches djot-php. *)
 task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
+(* THE CHECKBOX IS A PROPERTY OF THE ITEM, NOT OF ITS FIRST BLOCK. It is
+   written directly after the `<li>` opener whatever the marker line goes on to
+   open, and nothing about that block reaches it. Only the CONTENT moves: it
+   sits beside the checkbox when the first block renders inline, and on its own
+   indented line below it when it does not.
+     `- [ ] a`        -> `<li><input ...> a</li>`
+     `- [ ] > q`      -> `<li><input ...> ` newline `  <blockquote>...`
+   The executable spec emitted the checkbox only where the first block was a
+   PARAGRAPH, so a quote, a code fence, a `:::` div, a table row, a heading and
+   a thematic break each rendered a plain `<li>` and the state the author wrote
+   was gone from the output while the item parsed correctly. One serializer
+   branch built the opener without it, and it was the branch every
+   non-paragraph lead takes. carve-js and carve-php write it in all of them.
+   Corpus 363 pins three leads and both states. (carve#1381) *)
 
 (* --- Definition Lists --- *)
 definition_list = definition_entry+ ;
