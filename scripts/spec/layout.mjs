@@ -3009,6 +3009,28 @@ function collectItems(lines, i, list, state, ind, meas) {
         // ordinary residue. That case is carve#1280's open content-column half
         // and is deliberately not decided by a one-line window.
         else if (tryAttrLine([dedented], 0)) closePara()
+        // A REFERENCE OR FOOTNOTE DEFINITION ENDS THE PARAGRAPH TOO, and for
+        // the same reason the attribute line above does: §10 I5 makes it an
+        // interrupter, and the marker-line seed already reads it that way
+        // through `opensParagraph`. At the CONTENT COLUMN the classifier had no
+        // branch for it, so it fell to the catch-all below and REOPENED the
+        // paragraph the interrupter had just closed - and `- a` / `  [r]: /u` /
+        // `tail` folded `tail` into an item holding nothing open.
+        //
+        // I5 DECIDES BOTH HALVES AT ONCE, which is what makes closing the item
+        // the right answer rather than a lucky one: "A link or footnote
+        // definition belongs to an open list item only at that item's
+        // `content_column`", so the definition here BELONGS to the item and
+        // REGISTERS, and it ends the item's paragraph. An implementation that
+        // ends the item while DROPPING the definition gets `tail` right by
+        // accident and breaks the moment the column moves. carve-php and
+        // carve-rs register it (carve#1350).
+        //
+        // ABBR_DEF is deliberately absent: §10 I5's list is a link or footnote
+        // definition, and an abbreviation definition is recognized at document
+        // level only (line 1453), so inside an item the line is paragraph text
+        // and reopening the paragraph is the correct answer for it.
+        else if (isLinkDef(dedented) || FOOTNOTE_DEF.test(dedented)) closePara()
         else if (dmeas.rest !== '') openParaWith(dedented)
         i++
         continue

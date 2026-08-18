@@ -22002,3 +22002,158 @@ tail</li>
 ```
 
 :::
+
+## A definition at a container's content column
+
+§10 I5 makes a link or footnote definition an INTERRUPTER, so one written at a
+list item's content column ends the paragraph it sits under. Nothing about it
+closes the container: the container ends because the next line arrives at column
+0 with no open paragraph left to fold into, which is PART 1 S4's own "otherwise"
+(markup-carve/carve#1350). And the definition BELONGS to the item at that column,
+so it registers.
+
+::: compare
+
+```carve
+- a
+  [r]: /u
+tail
+
+[r][]
+```
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+<p><a href="/u">r</a></p>
+```
+
+:::
+
+The footnote kind is the same construct and answers the same way:
+
+::: compare
+
+```carve
+- a
+  [^f]: t
+tail
+
+x[^f]
+```
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>t<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+The control is I5's third column, and it is what makes the rule COLUMN-SCOPED
+rather than shape-scoped. One space to the left the same line is below the
+content column, where it is lazy paragraph text: it registers nothing, it leaves
+the paragraph open, and the flush-left line folds. These two documents differ by
+a single space and answer differently:
+
+::: compare
+
+```carve
+- a
+ [r]: /u
+tail
+
+[r][]
+```
+
+```html
+<ul>
+  <li>a
+[r]: /u
+tail</li>
+</ul>
+<p>[r][]</p>
+```
+
+:::
+
+An ABBREVIATION definition is not on I5's list and is recognized at document
+level only, so at the same content column it is ordinary paragraph text and the
+flush-left line folds:
+
+::: compare
+
+```carve
+- a
+  *[A]: x
+tail
+```
+
+```html
+<ul>
+  <li>a
+*[A]: x
+tail</li>
+</ul>
+```
+
+:::
+
+A DEFINITION BODY answers exactly as the list item does, which is what keeps S4
+doing the work rather than two container-specific rules:
+
+::: compare
+
+```carve
+:: t
+:  a
+   [r]: /u
+tail
+
+[r][]
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+</dl>
+<p>tail</p>
+<p><a href="/u">r</a></p>
+```
+
+:::
+
+A COMMENT at a definition body's content column is on I5's list too and ends the
+paragraph the same way:
+
+::: compare
+
+```carve
+:: t
+:  a
+   %% c
+tail
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+</dl>
+<p>tail</p>
+```
+
+:::

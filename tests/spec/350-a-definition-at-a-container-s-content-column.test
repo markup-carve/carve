@@ -1,0 +1,93 @@
+A definition at a container's content column
+
+```
+- a
+  [r]: /u
+tail
+
+[r][]
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+<p><a href="/u">r</a></p>
+```
+
+```
+- a
+  [^f]: t
+tail
+
+x[^f]
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>t<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- a
+ [r]: /u
+tail
+
+[r][]
+.
+<ul>
+  <li>a
+[r]: /u
+tail</li>
+</ul>
+<p>[r][]</p>
+```
+
+```
+- a
+  *[A]: x
+tail
+.
+<ul>
+  <li>a
+*[A]: x
+tail</li>
+</ul>
+```
+
+```
+:: t
+:  a
+   [r]: /u
+tail
+
+[r][]
+.
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+</dl>
+<p>tail</p>
+<p><a href="/u">r</a></p>
+```
+
+```
+:: t
+:  a
+   %% c
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+</dl>
+<p>tail</p>
+```
