@@ -40,6 +40,7 @@ export const scanExampleSource = (lines, { validateModifiers = () => {} } = {}) 
         html: pendingBlocks.html,
         modifiers: compareModifiers,
         modifierLine: compareOpenLine,
+        compareLine: compareOpenLine,
       }
       examples.push(example)
       currentSection.segments.push({
@@ -52,7 +53,7 @@ export const scanExampleSource = (lines, { validateModifiers = () => {} } = {}) 
       const miss = [!pendingBlocks.carve && 'carve', !pendingBlocks.html && 'html']
         .filter(Boolean)
         .join(' + ')
-      dropped.push(`line ${compareOpenLine} (section "${currentSection}"): missing ${miss} fence`)
+      dropped.push(`line ${compareOpenLine} (section "${currentSection.title}"): missing ${miss} fence`)
     }
     pendingBlocks = { carve: null, html: null }
   }
@@ -101,6 +102,20 @@ export const scanExampleSource = (lines, { validateModifiers = () => {} } = {}) 
       }
       const fenceOpen = line.match(/^(`{3,})(carve|html)\s*$/)
       if (fenceOpen) {
+        /*
+         * A block may hold several pairs. The fence that would OVERWRITE a
+         * still-pending block closes the pair before it instead: four fences in
+         * one `::: compare` are two documents, not one document written twice.
+         * Before carve#1373 the assignment below simply clobbered, so every
+         * pair after the first vanished before anything reached disk, and both
+         * reconcile checks - being counts of the extraction, compared against
+         * the extraction - reported a clean run.
+         *
+         * Finalizing here rather than at each html fence keeps the single-pair
+         * case byte-identical: one pair still ends at the block's closer, so no
+         * existing segment boundary moves.
+         */
+        if (pendingBlocks[fenceOpen[2]] !== null) finalizePair(li)
         fenceMarker = fenceOpen[1]
         currentLang = fenceOpen[2]
         blockLines = []

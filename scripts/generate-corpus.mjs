@@ -5,6 +5,7 @@ import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { shortfall } from './spec/participants.mjs'
 import { numberExamples, readExampleFiles, scanExampleSource } from './lib/example-sections.mjs'
+import { censusComparePairs } from './lib/example-pair-census.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..')
@@ -71,18 +72,68 @@ if (dropped.length) {
   for (const d of dropped) console.error(`  - ${d}`)
   process.exit(1)
 }
-if (comparesOpened !== examples.length) {
-  console.error(
-    `generate-corpus: ${comparesOpened} compare blocks opened but ${examples.length} pairs written (unclosed block?).`,
+/*
+ * RECONCILE AGAINST THE SOURCE, NOT AGAINST THE EXTRACTION.
+ *
+ * The check that used to stand here compared `comparesOpened` with
+ * `examples.length`, and both are produced by the same scan: one `::: compare`
+ * opened, one pair written, `1 === 1`, green - however many pairs the author
+ * actually wrote inside that block. A block holding four pairs kept one and
+ * exited 0 (carve#1373).
+ *
+ * `censusComparePairs` counts the same source through a separate
+ * implementation that shares no code with the scanner, so the two numbers can
+ * disagree. Per block, so a shortfall names the block that lost the document
+ * rather than reporting a total that is one too low.
+ */
+const census = censusComparePairs(lines)
+const extractedByBlock = new Map()
+for (const ex of examples) {
+  extractedByBlock.set(ex.compareLine, (extractedByBlock.get(ex.compareLine) ?? 0) + 1)
+}
+
+const censusProblems = []
+let declaredPairs = 0
+for (const block of census) {
+  if (block.unclosed) {
+    censusProblems.push(`line ${block.line}: \`${block.marker} compare\` is never closed.`)
+    continue
+  }
+  if (block.carve !== block.html) {
+    censusProblems.push(
+      `line ${block.line}: ${block.carve} carve fence(s) but ${block.html} html fence(s) - a pair needs both.`,
+    )
+    continue
+  }
+  declaredPairs += block.carve
+  const extracted = extractedByBlock.get(block.line) ?? 0
+  if (extracted !== block.carve) {
+    censusProblems.push(
+      `line ${block.line}: the source declares ${block.carve} pair(s), the extraction produced ${extracted}.`,
+    )
+  }
+}
+if (census.length !== comparesOpened) {
+  censusProblems.push(
+    `${census.length} compare block(s) in the source, ${comparesOpened} seen by the extractor.`,
   )
+}
+if (censusProblems.length) {
+  console.error('generate-corpus: the extraction does not match the example source:')
+  for (const p of censusProblems) console.error(`  - ${p}`)
+  console.error('')
+  console.error('  A pair the source declares and the corpus does not hold is a document no')
+  console.error('  engine is ever held to. Fix the source, or the extraction, before writing.')
   process.exit(1)
 }
 
 /*
- * Both checks above compare the extraction against ITSELF, so both are 0 === 0
- * on an empty read and report a clean run having produced nothing. Measured
- * rather than reasoned: with the three example files emptied AND tests/corpus
- * cleared, this script printed "Wrote 0 pairs" and exited 0 (carve#755).
+ * The `dropped` check above still compares the extraction against ITSELF, so it
+ * is 0 === 0 on an empty read and reports a clean run having produced nothing.
+ * Measured rather than reasoned: with the three example files emptied AND
+ * tests/corpus cleared, this script printed "Wrote 0 pairs" and exited 0
+ * (carve#755). The census does not close that either - an empty source declares
+ * nothing, and nothing is what it gets.
  *
  * The renumber guard below does catch a partial loss - but only while
  * tests/corpus still holds the previous generation to compare against, which is
@@ -244,6 +295,28 @@ for (const ex of examples) {
 }
 console.log(`\nWrote ${examples.length} pairs to ${outDir}`)
 for (const moved of renamedSidecars) console.log(`  moved with its case: ${moved}`)
+
+/*
+ * AND RECONCILE THE DISK AGAINST THE SOURCE.
+ *
+ * The check above compares the extraction with the census. This one compares
+ * what is actually on disk with the census, which is the only place a loss
+ * BETWEEN extraction and file - a name two examples collide on, a write that
+ * did not happen - can be seen at all. It is also the check the author of
+ * category 360 performed by hand, which is how carve#1373 was found: counting
+ * generated files against cases written.
+ */
+const written = readdirSync(outDir)
+const crvCount = written.filter((f) => f.endsWith('.crv')).length
+const htmlCount = written.filter((f) => f.endsWith('.html')).length
+if (crvCount !== declaredPairs || htmlCount !== declaredPairs) {
+  console.error(
+    `generate-corpus: the source declares ${declaredPairs} pair(s) but tests/corpus holds ` +
+      `${crvCount} .crv and ${htmlCount} .html.`,
+  )
+  console.error('  Two cases sharing a generated name would read as one, and the other is gone.')
+  process.exit(1)
+}
 
 /*
  * A SIDECAR HAS TO BE RE-DERIVED WHEN ITS CASE'S CONTENT MOVES.
