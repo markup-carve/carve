@@ -9,6 +9,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **PART 11 §1b: a flatten preserves the boundary it dissolves** (carve#1325).
+  §1a settles what a producer owes where §1's round-trip invariant CAN hold;
+  §1b settles what it owes where the invariant cannot hold at all. A slot that
+  takes INLINE content only - a caption line, a fence title, a table cell, an
+  image's alternative text, a definition term - cannot carry blocks, so a
+  producer handed block content for one FLATTENS it, and that flatten is lossy
+  by construction. What the producer still owes is the BOUNDARY: where two
+  former sibling blocks each contribute at least one TOKEN, a separator is
+  required, and it is sufficient if and only if re-reading the emitted slot
+  draws no token from both sides of the join. One space, at every boundary,
+  conditioned on nothing. The unit is the token rather than the node, because a
+  node test passes `onetwo` and `one two` alike - both are one text node - and
+  the difference between them is the whole defect. That is PART 9 §23's test
+  read backwards: a line boundary survives because it leaves a node, and a
+  block boundary in an inline slot leaves none, so it survives only in the
+  bytes. All three engines emitted nothing at the join, and two of the four
+  shapes CORRUPT rather than merely merge:
+
+  ```html
+  <figcaption><p>one</p><p>two</p></figcaption>
+  <figcaption><p><strong>a</strong></p><p><strong>b</strong></p></figcaption>
+  <figcaption><p><code>a</code></p><p><code>b</code></p></figcaption>
+  ```
+
+  came back as
+
+  ```
+  one two   was   onetwo
+  *a* *b*   was   *a**b*
+  `a` `b`   was   `a``b`
+  ```
+
+  one word, then one strong run holding a literal asterisk, then one code span
+  holding the delimiters that used to end and begin the two. Nothing is dropped
+  in any of them, so no diagnostic fired for any of them. A block that
+  contributes no token is not a side, so an empty block between two others takes
+  no separator of its own and the caption is `a b` rather than `a  b`. A
+  character that was text and turns into a live delimiter once its neighbor
+  arrives beside it stays the writer's job. Pinned by
+  `tests/corpus-convert/29` through `32`.
+
 - **PART 12 §18: a citation definition is a node** (carve#1276). A
   `[@key]: {author= year=} entry` bibliography line serializes as a
   `citation_definition` carrying `key`, the entry's inline `children`, the
@@ -167,6 +208,263 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   it and keep flattening the table; the canonical writer MUST omit it.
 
 ### Changed
+
+- **A blank line before a sibling marker separates the items, whatever consumed
+  it** (carve#1383). §17 L1's first disjunct asks what stands BETWEEN one item
+  and the next sibling marker. That question belongs to the LIST, so a blank
+  line with nothing of the item after it separates the two items however the
+  item's interior accounted for the line - an unterminated `:::` div, an
+  admonition, a code or tilde fence, a raw block or a comment fence all
+  loosen the list exactly as the terminated spelling does:
+
+  ````
+  - ```
+    b
+
+  - s
+  ````
+
+  The clause the tight answer came from is carve#326 C, "a blank line inside a
+  fenced code block is verbatim content, not an interior separator", and its
+  own stated reason is the discriminator: a sibling after such a fence stays
+  tight *because no blank line actually separates the two items*. Here one
+  does. carve#326 C's interior blank is untouched, since content follows it
+  before the marker. The alternative reading - decide by whether the blank is
+  visible in the rendered payload - was rejected: it makes a structural answer
+  depend on a detail readers already spell differently, and it cannot answer
+  the `:::` div at all, where consumption is not observable.
+
+- **A blank line ends the open paragraph, whatever container stands above it**
+  (carve#1379). PART 1 S4 then has nothing to continue, so a line BELOW the
+  item's content column leaves the item. The state of the container above the
+  blank does not enter the question: an unterminated `:::` div reaches no
+  further past a blank than a terminated one, an opaque body, a quote, or no
+  container at all.
+
+  ```
+  - ::: d
+    b
+
+  tail
+  ```
+
+  `tail` is a document-level paragraph. What decided it is an internal
+  contradiction rather than a count: one rule was being answered two ways by
+  whether a closer had been written, while every neighboring container already
+  answered the way this ruling adopts. The no-blank spelling is the other half
+  and is unchanged - `- ::: d` / `  b` / `tail` folds, because there the
+  paragraph `b` opened is still open. So the blank is what decides, never the
+  missing closer.
+
+- **Prose reopens an item's paragraph, and a continuation row joins the row
+  above it in its OWN container** (carve#1370). Two clarifying passages, both
+  following from clauses already ruled. PART 1 S4 asks whether any container in
+  the open stack holds an OPEN paragraph; it does not ask whether that
+  paragraph is the container's first block. An item whose first block is a
+  table, a fence or a quote and whose next line is prose holds an open
+  paragraph exactly as an item that began with prose does - the blocks before
+  it are spent, having answered S4 while they were the item's last block and
+  stopped answering it when prose reopened one. And PART 9 §5 T6's "the row
+  above it in the SOURCE" means the container the `+` line is written in, not
+  anywhere earlier on the page: a line at a list item's content column carries
+  no quote prefix, so a table written inside a quote on the marker line is not
+  above it. T6 declines, the line is prose, and prose reopens the paragraph.
+  Both readers that get one of these wrong render the prose line AS prose and
+  then decline to treat its paragraph as open, which answers one line two ways
+  inside a single parse.
+
+- **A definition's column is reached by composing the strips, not by walking
+  the prefix** (carve#1368). PART 9 §24 C5 hands a body down one container at a
+  time, each strip taken against the column the one before it HANDS OUT, so a
+  definition written at the innermost container's content column registers
+  there however the prefix alternates quotes and list markers:
+
+  ```
+  - > - - x
+    >     [r]: /url
+  ```
+
+  Peeling the outermost container is what settles it. In every cell where a
+  reader declined, removing the outermost container leaves precisely the body
+  §24 C5 says that container hands down, and the same reader registers in it -
+  so those are two answers to one question rather than a different rule about
+  the column. The heading control says the same from the other side: at all 62
+  quote/list prefixes to depth five, a `# h` at that column is a heading INSIDE
+  the innermost container in all three engines, so every reader already places
+  the line at the content column. §24 C3 then makes a block opener there
+  exactly what it is at column 0 at the top level, and §10 I5 says the
+  definition belongs to the item at that column. A clarifying passage; no new
+  normative clause.
+
+- **PART 11 §10h: the plain-text target's list-depth clause has its own
+  number, and §10d is retired** (carve#1365). PART 11 carried TWO sections
+  labelled §8b, so a citation to `PART 11 §8b` named either of them: THE
+  PLAIN-TEXT TARGET PRESERVES LIST DEPTH had arrived (carve#1084) inside §8a's
+  body, between §8a's opening prose and its own continuation. It moves to
+  **`PART 11 §10h`**, beside the other non-HTML target rules (§10a through
+  §10g); the Markdown §8b keeps its number, so the citations that resolve today
+  are untouched, and §8a's body is contiguous again. Nothing about what either
+  clause requires changes, and the corpus is untouched. Separately, the `10d`
+  slot of that same run is **retired** rather than moved or mistyped:
+  carve#1213 withdrew the clause that carried a quote attribution onto the
+  non-HTML targets, and its number went with it, so the run reads `10c`,
+  `10e` with nothing between them and nothing to repoint the old number at.
+  An implementer citing either number needs both facts.
+
+- **A footnote definition's block runs to the end of its body** (carve#1363).
+  PART 1 S4 already rules that at a container's content column a line is read
+  as a BLOCK and that the rule is over the block rather than over its first
+  line. The container's reach over a footnote definition is the definition's
+  EXTENT, not a contiguous indented run, so a blank line between the note's own
+  blocks is interior to the block the container is looking at and hands nothing
+  back:
+
+  ```
+  - a
+    [^f]: t
+
+      more
+  tail
+  ```
+
+  The item ends, `tail` is a document-level paragraph, and the note holds two
+  blocks. The control is a LINK reference definition, which has no body: its
+  block is the one line, the blank falls outside it, and the indented line
+  below is the container's own second paragraph. What decided it is an internal
+  contradiction rather than a count - three of the four readers answered the
+  same definition differently one blank line away. A clarifying sentence on the
+  existing property; no new normative clause.
+
+- **At a container's content column, a block ends the paragraph it sits under**
+  (carve#1357, also settling the `dd` sub-question recorded on carve#1350).
+  Read construct by construct, a container's content column was answering three
+  ways at once with no clause saying why: an attribute block ended the item in
+  every implementation, a link or footnote definition in most, a comment in
+  none - and the same comment at a `dd`'s content column ended it. PART 1 S4
+  now carries the property instead of an enumeration: §24 C3 says the content
+  column IS the container body's column 0, so a line there is read as a BLOCK,
+  and a block ends the paragraph above it. WHAT THE BLOCK RENDERS IS NOT A
+  PARAMETER. None of them closes the container; the container ends because the
+  FOLLOWING line is at DOCUMENT column 0 with no open paragraph anywhere in the
+  stack to continue.
+
+  ```
+  - a
+    %% c
+  tail
+  ```
+
+  The §17 L1a objection, that an invisible construct must not have a visible
+  effect, is settled by the attribute block: it is invisible, it ends the item,
+  and every implementation already agrees that it does. Whether a line IS a
+  paragraph and whether it ENDS one are different questions. The rule is over
+  the BLOCK and not over its first line, so a footnote definition's continuation
+  ends the item exactly as the one-line spelling does, while a link reference
+  definition has no body and an indented line under it is ordinary item text.
+
+- **A quote inside a quote is asked what it ends on** (carve#1355). PART 1 S4
+  puts the question to a quote RECURSIVELY and says "its own last block
+  answers", but a quote nested inside another was never asked: the outer
+  quote's reader saw a line still beginning with `>` and recorded an open
+  paragraph whatever the inner quote actually ended on. The flush-left line
+  then folded into a paragraph in the OUTER quote continuing nothing.
+
+  ```
+  > > # H
+  tail
+  ```
+
+  ends BOTH quotes, as do the table, thematic-break and definition spellings,
+  the three-deep `> > > # H`, and `> a` / `> > # H` - an earlier paragraph in
+  the outer quote does not change what its LAST block is. What makes this a
+  contradiction rather than a gap is that the ONE-LEVEL spelling already
+  answered correctly everywhere: the same construct, the same clause, two
+  answers by depth, and the clause names no depth. The question is asked with
+  the inner quote's own line history rather than of its last line alone, so
+  `> > | a |` / `> > + b |` / `tail` finishes the table; and a later quote at
+  the same depth is a NEW quote that inherits nothing from the one before it.
+
+- **A continuation row joins the row above it, whatever that row's cells hold**
+  (carve#1354). Two reader rejections turned out to be defects rather than
+  rules. What a continuation joins is the row above it in the SOURCE, and §5 T7
+  CONSUMES the delimiter row, so a `+` line directly under one has nothing to
+  join and is prose - that is the only case that declines. Testing "the row
+  above is ALL-HEADER" instead gets that one right for the wrong reason and
+  answers its neighbors backwards, and §5 T9 already says a `^` rowspan MAY
+  reach a header cell, so a header cell is an ordinary cell in every other
+  table mechanism. And §5 T2's "at least one cell lies between" is written of
+  `valid_row`, the predicate that decides what OPENS a table and what
+  interrupts a paragraph; a continuation row opens nothing and produces no
+  `<tr>`, so an all-empty one appends nothing, which T6 already provides for.
+  Sharing the standard row's guard made one clause answer twice by COLUMN
+  COUNT: `| a | b |` / `+ | |` absorbed while `| a |` / `+ |` published as a
+  paragraph.
+
+- **A definition at a container's content column ends the paragraph, not the
+  container** (carve#1350). §10 I5 makes a link or footnote definition an
+  INTERRUPTER, so one written at a list item's content column, or at a
+  definition body's, ends the paragraph it sits under. Nothing about it closes
+  the container: the container ends because the NEXT line arrives at column 0
+  with no open paragraph left anywhere in the stack, which is PART 1 S4's own
+  "otherwise". Stated as the property rather than as a list of cases, because
+  the list item and the definition body have to answer alike or S4 is not doing
+  the work. The registration half holds with it - the definition BELONGS to the
+  item at that column, so `- a` / `  [r]: /u` / `tail` registers `[r]` and
+  resolves `[r][]` below.
+
+- **A table is a table however its last row is spelled** (carve#1348). §5 T6
+  gives a continuation row `table_cell`s and joins them onto the row above, so
+  it is as much part of the table as the row it appends to, and PART 1 S4 asks
+  what a container's last BLOCK is rather than how its last line is spelled. A
+  container whose table ended on a CONTINUATION row was recording an open
+  paragraph, so the flush-left line below folded in, while the same table
+  ending on a standard row closed the container:
+
+  ```
+  > | a |
+  > + b |
+  tail
+  ```
+
+  `tail` now leaves the quote, as it already did for `> | a |` / `> | b |` /
+  `tail`. In a quote all three engines AND the executable spec were unanimous
+  and wrong together, which is why this needed a ruling rather than a count.
+  One consequence reverses: carve#1349's document `a quote answers the same
+  wrapped as it does bare` is re-pointed rather than deleted - its PRINCIPLE,
+  that one document's answer must not depend on what is wrapped around it,
+  holds at the other value, since both spellings now send `tail` out.
+
+- **A line block hardens a soft break at every depth** (carve#1351). PART 9 §23
+  hardens a line boundary by NODE KIND, not by depth, and its neighboring
+  clause A BACKSLASH BREAK IS NOT ADDITIVE makes the two exemptions a question
+  of node PRESENCE: a backslash consumes its own newline and a verbatim run
+  carries the newline as content, so neither leaves a break node to convert. An
+  emphasis run consumes nothing, so the boundary is a node beside its text and
+  hardens like any other. These two documents differ by one character and used
+  to differ by a whole break:
+
+  ```
+  ::: |
+  *a
+  b*
+  :::
+  ```
+
+  ```
+  ::: |
+  *a\
+  b*
+  :::
+  ```
+
+  Every engine already yielded a `hard_break` node between two body lines and a
+  `soft_break` between the same two lines inside a `strong`, applying the
+  conversion at depth 0 and nowhere below - the same boundary answered by its
+  spelling, which §23 forbids outright. §23 gains no exception, because the
+  clause an exception would attach to already carries the test that excludes
+  it. PART 11 §7c is amended alongside: its permission to spell a `hard_break`
+  as a bare newline is conditioned on re-reading that newline yielding the SAME
+  tree, and that premise only holds under this reading.
 
 - **PART 11 §8b: the Markdown target's authored escape narrows too**
   (carve#1321). §8a had already narrowed M1 so that the writer escapes a
@@ -490,6 +788,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reports the source occurrence as `bidi-control-in-source`.
 
 ### Fixed
+
+- **Only lazy folding demotes a marker-line colon opener** (carve#1382). A
+  `:::` opener written as the sole content of a list item's marker line, with a
+  BLANK LINE after it, was read by the executable spec as literal item text,
+  where all three engines open an empty div. The guard that demotes a
+  marker-line opener exists for LAZY FOLDING - a body assembled entirely from
+  lines that sat below the item's content column and folded into the paragraph
+  the opener line left open never belonged to the container - and it asked only
+  whether the body was non-empty, which a lone blank satisfies. It now asks
+  whether any folding happened. Stated as a property: only lazy folding takes
+  the opener back, and a blank line is the container's own content, so an
+  opener a blank follows has opened an EMPTY container exactly as one at end of
+  input has. The same opener was already answered correctly at end of input,
+  with its closer at the content column, with a body line, and inside a quote
+  instead of an item, so one blank line was content in the item collector and
+  absence-of-content in the block parser inside a single parse.
+
+- **A task item's checkbox is not decided by its first block** (carve#1381).
+  The executable spec emitted a task item's `<input type="checkbox">` only
+  where the item's first block was a PARAGRAPH, so `- [ ] > q` and every other
+  marker-line opener - a code fence, a `:::` div, a table row, a heading, a
+  thematic break - dropped the `[ ]` or `[x]` the author wrote while the item
+  itself parsed correctly. `renderItem` built the `<li>` opener in two branches
+  and only the inline one consulted the checkbox, so one item property was
+  answered two ways by what its first block turned out to be. The checkbox
+  belongs to the ITEM and nothing about that block reaches it; only the CONTENT
+  moves, beside the checkbox when the first block renders inline and on its own
+  indented line below it when it does not. `- [ ]` with nothing after it is not
+  a task item in any reader, since the marker needs its trailing space, and is
+  untouched.
+
+- **A bracketed construct spans a line boundary like any other inline content**
+  (carve#1352). `link_text` is `inline_content`, and inline content folds
+  across lines exactly as a paragraph does, but the executable spec spelled
+  every bracketed content run with a `~newline` guard and so read all of them
+  as literal text where all three engines parse the construct:
+
+  ```
+  [a
+  b](/u)
+  ```
+
+  came out as the literal `[a`, a break, then `b](/u)`, in an ordinary
+  paragraph as much as anywhere else. The guard is removed from the CLASS
+  rather than from the reported shape: `brContent` feeds a link, a semantic
+  span, a reference link's label text, an image's alt and an inline note, and
+  probing the class turned up four more members with the same guard -
+  `extContent` (`:name[...]`), `edChar` (`{+ +}`, `{- -}`, `{~ ~}`, `{# #}`),
+  `fInner` (`{/ /}` and the forced family), and a two-line image paragraph,
+  which was wrapped in `<p>` and not captionable where the engines emit a bare
+  `<img>` and caption it. `boldItalic` already carried this exact repair with a
+  comment explaining it. The physical-line IDENTIFIERS deliberately keep the
+  guard, and that is now measured rather than assumed: a reference label, a
+  footnote label and a crossref target are the one-line spellings of the
+  definition marker they resolve against, so an alt spans lines where the
+  destination and the reference label do not.
 
 - **The U+E000 no-break space sentinel is documented on all four fields that
   carry it** (carve#1242). `resources/ast-schema.json` and PART 12 §3 named it
