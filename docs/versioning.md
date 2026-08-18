@@ -223,6 +223,16 @@ carve-js pins carve-php's exact bytes as test fixtures.
 
 ## Changelog
 
+### 0.2
+
+- [behavior] A table alignment marker run now ends at a required space; glued
+  marker-shaped content must be separated or escaped. Migration: run
+  `carve fmt --migrate` to insert the terminator.
+- [addition] Tables gain independent horizontal and vertical cell/column
+  alignment, positional `aligns`/`valigns`/`widths` attributes, and an exchange
+  AST `columns` model. ListTable gains the same column attributes plus
+  `footer-rows`.
+
 ### 0.1
 
 Initial released version. Establishes the grammar, the PART 9 semantic

@@ -2762,6 +2762,14 @@
                 ],
                 "description": "Horizontal alignment inherited by cells in this column when they carry no explicit alignment."
               },
+              "valign": {
+                "enum": [
+                  "top",
+                  "middle",
+                  "bottom"
+                ],
+                "description": "Vertical alignment inherited by cells in this column when they carry no explicit vertical alignment."
+              },
               "width": {
                 "type": "number",
                 "exclusiveMinimum": 0,
@@ -2870,6 +2878,14 @@
             "center"
           ],
           "description": "Explicit per-cell alignment; absent means the cell inherits its column's."
+        },
+        "valign": {
+          "enum": [
+            "top",
+            "middle",
+            "bottom"
+          ],
+          "description": "Explicit per-cell vertical alignment; absent means the cell inherits its column's."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"

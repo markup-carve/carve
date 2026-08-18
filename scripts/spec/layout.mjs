@@ -973,7 +973,7 @@ const padTrim = (s) => s.replace(/^ +/, '').replace(/ +$/, '')
 
 // classify one raw cell segment
 function parseCell(seg) {
-  const cell = { header: false, align: null, attrs: null, content: '' }
+  const cell = { header: false, align: null, valign: null, attrs: null, content: '' }
   let s = seg
   if (s.startsWith('=')) {
     cell.header = true
@@ -981,12 +981,30 @@ function parseCell(seg) {
   } else if (s.startsWith('\\=')) {
     s = '\\=' + s.slice(2) // literal `=` data cell; unescaped by inline pass
   }
-  // glued alignment marker (per-column on a header cell, per-cell on a body
-  // cell); a DOUBLED marker aligns and keeps one literal char (corpus 25)
-  const am = /^([<>~])/.exec(s)
-  if (am) {
-    cell.align = am[1] === '<' ? 'left' : am[1] === '>' ? 'right' : 'center'
-    s = s.slice(1)
+  // A one/two-axis run is committed only when its optional attribute block is
+  // followed by the required space. Invalid duplicate axes consume nothing.
+  const run = new RegExp(`^([<>~^v]{1,2})(?=(?:\\{${ATTR_PAYLOAD}\\})? )`).exec(s)
+  if (run) {
+    const marks = [...run[1]]
+    let horizontal = null
+    let vertical = null
+    for (let mi = 0; mi < marks.length; mi++) {
+      const mark = marks[mi]
+      const useHorizontal = mark === '<' || mark === '>' ||
+        (mark === '~' && (marks.length === 1 || horizontal === null))
+      if (useHorizontal) {
+        if (horizontal !== null) { horizontal = null; vertical = null; break }
+        horizontal = mark === '<' ? 'left' : mark === '>' ? 'right' : 'center'
+      } else {
+        if (vertical !== null) { horizontal = null; vertical = null; break }
+        vertical = mark === '^' ? 'top' : mark === 'v' ? 'bottom' : 'middle'
+      }
+    }
+    if (horizontal !== null || vertical !== null) {
+      cell.align = horizontal
+      cell.valign = vertical
+      s = s.slice(run[1].length)
+    }
   }
   // A glued attribute block; "the rest of the cell, AFTER OPTIONAL WHITESPACE, is
   // the content" (§5), so no space is required after the closing brace - this

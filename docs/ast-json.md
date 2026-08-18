@@ -95,12 +95,13 @@ flattening the table on the way out.
 
 A `table` may also carry an optional positional `columns` array (§19). Each
 entry describes the corresponding column and may hold `align` (`left`, `right`
-or `center`) and `width`, a numeric fraction in `(0, 1]`. The array may be
+or `center`), `valign` (`top`, `middle` or `bottom`), and `width`, a numeric fraction in `(0, 1]`. The array may be
 shorter than the widest row; an omitted entry or field is unset. A cell's own
 value wins over its column's value. Carve 0.1 source has no spelling for this
 metadata, so parsers do not synthesize it and canonical source writers omit it;
 it exists so AST consumers and format bridges can exchange a table model that
-does not smear column facts onto individual cells.
+does not smear column facts onto individual cells. A `table_cell` may likewise
+carry `valign`; horizontal and vertical inheritance resolve independently.
 
 **The root carries exactly three fields** - `type`, `children`, `srcByteLength`
 (PART 12 §7). Frontmatter and definitions are **block nodes in the tree**, not

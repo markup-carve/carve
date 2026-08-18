@@ -12,6 +12,7 @@ order: 1
   code-callouts
   details
   list-table
+  list-table-columns-1344
   spoiler
   tabs
   semantic-span

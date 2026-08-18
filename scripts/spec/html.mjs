@@ -634,8 +634,26 @@ function numberCaption(text, ctx, id, panelIds) {
 // --- tables: PART 9 SS5 T5 span walk + serialization -------------------------
 function renderTable(node, depth, ctx) {
   const pad = '  '.repeat(depth)
-  const ba = node.battrs ? renderBlockAttrs(node.battrs) : ''
+  const tableKeys = new Map()
+  const ordinaryAttrs = []
+  for (const list of node.battrs ?? []) {
+    const keep = []
+    for (const attr of list) {
+      if (attr[0] === 'kv' && ['aligns', 'valigns', 'widths'].includes(attr[1])) tableKeys.set(attr[1], attr[2])
+      else keep.push(attr)
+    }
+    if (keep.length) ordinaryAttrs.push(keep)
+  }
+  const ba = ordinaryAttrs.length ? renderBlockAttrs(ordinaryAttrs) : ''
   const rows = node.rows
+  const widest = rows.reduce((n, row) => Math.max(n, row.cells.length), 0)
+  const positional = (key) => tableKeys.has(key) ? String(tableKeys.get(key)).split(',').map((v) => v.trim()) : []
+  const attrAlign = positional('aligns').map((v) => ['left', 'right', 'center'].includes(v) ? v : null)
+  const attrValign = positional('valigns').map((v) => ['top', 'middle', 'bottom'].includes(v) ? v : null)
+  const attrWidths = positional('widths').map((v) => v === '' ? null : Number(v))
+  if ([attrAlign, attrValign, attrWidths].some((values) => values.length > widest)) {
+    throw new Refuse('table column attribute has more entries than columns')
+  }
   // resolve span markers (T5): row-major; consumed positions are skipped in
   // the output; a marker with no reachable origin renders as an EMPTY cell
   const consumed = new Set()
@@ -673,9 +691,13 @@ function renderTable(node, depth, ctx) {
     }
   }
   // column alignment: from the thead row's cells (native marker or GFM)
-  const colAlign = []
+  const colAlign = [...attrAlign]
+  const colValign = [...attrValign]
   if (rows[0]?.isHead) {
-    rows[0].cells.forEach((c, ci) => (colAlign[ci] = c.align ?? null))
+    rows[0].cells.forEach((c, ci) => {
+      colAlign[ci] = c.align ?? colAlign[ci] ?? null
+      colValign[ci] = c.valign ?? colValign[ci] ?? null
+    })
   }
   let headCount = 0
   while (headCount < rows.length && rows[headCount].isHead) headCount++
@@ -706,7 +728,13 @@ function renderTable(node, depth, ctx) {
     if (cell.colspan) a += ` colspan="${cell.colspan}"`
     a += parsed
     const align = cell.empty ? null : (cell.align ?? colAlign[c] ?? null)
-    if (align) a += ` style="text-align: ${align};"`
+    const valign = cell.empty ? null : (cell.valign ?? colValign[c] ?? null)
+    if (align || valign) {
+      const declarations = []
+      if (align) declarations.push(`text-align: ${align};`)
+      if (valign) declarations.push(`vertical-align: ${valign};`)
+      a += ` style="${declarations.join(' ')}"`
+    }
     const content = cell.empty || cell.content === '' ? '' : renderInline(cell.content)
     return `<${tag}${a}>${content}</${tag}>`
   }
@@ -727,6 +755,16 @@ function renderTable(node, depth, ctx) {
   if (node.caption !== undefined) {
     const id = / id="([^"]*)"/.exec(ba)?.[1]
     out.push(`${pad}  <caption>${renderInline(numberCaption(node.caption, ctx, id))}</caption>`)
+  }
+  if (attrWidths.some((width) => Number.isFinite(width) && width > 0)) {
+    out.push(`${pad}  <colgroup>`)
+    for (let c = 0; c < widest; c++) {
+      const width = attrWidths[c]
+      out.push(Number.isFinite(width) && width > 0
+        ? `${pad}    <col style="width: ${width}%;">`
+        : `${pad}    <col>`)
+    }
+    out.push(`${pad}  </colgroup>`)
   }
   const bodyStart = headCount
   if (headCount > 0) {

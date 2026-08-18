@@ -272,6 +272,7 @@ const optionalTitle = new Map([
   ['code-callouts', 'CodeCallouts'],
   ['details', 'Details'],
   ['list-table', 'ListTable'],
+  ['list-table-columns-1344', 'ListTable column metadata and footer rows'],
   ['spoiler', 'Spoiler'],
   ['tabs', 'Tabs'],
   ['semantic-span', 'SemanticSpan'],
