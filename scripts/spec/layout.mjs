@@ -1912,9 +1912,23 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const close = findColonCloser(lines, i, cf[1].length)
           const end = close === -1 ? n : close
           const body = lines.slice(i + 1, end)
-          if (close === -1 && body.length > 0 && body.every((l) => isBlank(l) || l.startsWith(LAZY))) {
+          if (close === -1 && body.some((l) => l.startsWith(LAZY)) && body.every((l) => isBlank(l) || l.startsWith(LAZY))) {
             // A marker-line opener whose only "body" came from below-content
             // lazy folding did not actually acquire container body lines.
+            //
+            // LAZY FOLDING IS THE SUBJECT, so the guard asks whether any
+            // happened. It used to fire on `body.length > 0` alone, which a
+            // BLANK line satisfies - and the item collector pushes exactly one
+            // blank into the body while a colon fence is open, so `- ::: d`
+            // followed by a blank came in here with a one-blank body and was
+            // demoted to literal text. The same blank is the container's own
+            // content two functions over; reading it here as evidence that no
+            // body was acquired gives one line two contradictory roles inside
+            // a single parse. The neighbouring spellings were all already
+            // right - the opener at end of input, with its closer, with a body
+            // line, and the same opener inside a quote - so only the blank
+            // differed (carve#1382). A blank may still ride ALONGSIDE lazy
+            // lines, which is what `isBlank` keeps covering.
           } else {
             i = close === -1 ? n : close + 1
             if (opener.mode === 'line-block') {

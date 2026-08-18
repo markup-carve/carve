@@ -152,7 +152,8 @@ under the same semantic-span rule,
 `360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column`,
 `361-a-paragraph-opened-after-a-block-in-an-item-is-still-open-for-a-lazy-line`,
 `362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line`,
-`363-a-task-item-s-checkbox-is-not-decided-by-its-first-block`.
+`363-a-task-item-s-checkbox-is-not-decided-by-its-first-block`,
+`364-only-lazy-folding-demotes-a-marker-line-colon-opener`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative
@@ -289,6 +290,15 @@ line. That is a placement difference and not the dropped-checkbox defect the
 document is about (markup-carve/carve-rs#1102), so this category will not match
 carve-rs until that lands. The declaration exists to name that window as well as
 the stale denominator.
+
+Category 364 is declared for the narrowest reason, like 362 and unlike 363. Both
+its documents were rendered through the oracle, carve-js `7cd66e0`, carve-php
+`8a28c20` and carve-rs `16a1b83` while they were written, and all four agree
+byte for byte on both - the engines were already right and the ORACLE was the
+odd reader, demoting a marker-line `:::` opener to literal text when a blank
+line followed it (carve#1382). There is no engine window here to close; the
+declaration exists only because the quoted denominator above predates the
+category.
 
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS
