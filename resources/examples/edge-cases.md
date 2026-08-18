@@ -23223,3 +23223,74 @@ more<a href="#fnref1" role="doc-backlink">↩</a></p>
 ```
 
 :::
+
+## A footnote definition's block runs to the end of its body
+
+The rule is over the BLOCK, and a footnote definition's block is whatever the
+footnote parser consumes - which may be more than one block of body. A blank
+between the note's blocks is INTERIOR to that block, so it hands nothing back
+to the container: the item ends here exactly as it does on the contiguous and
+the one-line spellings of the same definition, and the flush-left line is a
+document-level paragraph (markup-carve/carve#1363).
+
+::: compare
+
+```carve
+- a
+  [^f]: t
+
+    more
+tail
+
+x[^f]
+```
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>t</p>
+      <p>more<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+A LINK reference definition is the control, and it does not move. It has no
+body, so its block is the one line: the blank falls OUTSIDE it, the indented
+line below is the item's own second paragraph, and the flush-left line folds
+into that. Every implementation already answers this way, which is what makes
+it the control - the difference is the body, not the indentation and not the
+blank:
+
+::: compare
+
+```carve
+- a
+  [r]: /u
+
+    more
+tail
+
+[r][]
+```
+
+```html
+<ul>
+  <li><p>a</p>
+    <p>more
+tail</p>
+  </li>
+</ul>
+<p><a href="/u">r</a></p>
+```
+
+:::
