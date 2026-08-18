@@ -21,15 +21,15 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>707 / 707</strong>
+    <strong>709 / 709</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>707 / 707</strong>
+    <strong>709 / 709</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>707 / 707</strong>
+    <strong>709 / 709</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -40,9 +40,9 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `5b03787` | `707 / 707` | `0` | `0` | `3.01` |
-| JS | `8105210` | `707 / 707` | `0` | `0` | `76.02` |
-| PHP | `a5f18fb` | `707 / 707` | `0` | `0` | `68.54` |
+| Rust | `5b03787` | `709 / 709` | `0` | `0` | `3.01` |
+| JS | `8105210` | `709 / 709` | `0` | `0` | `76.02` |
+| PHP | `a5f18fb` | `709 / 709` | `0` | `0` | `68.54` |
 
 Spec commit: `2cde4a1`, plus the three corpus cases this change adds
 
@@ -751,7 +751,7 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=707 targets=html,markdown,plain,carve,ansi
+profile=default/no-opt-in corpus=core corpus_pairs=709 targets=html,markdown,plain,carve,ansi
 rust: pass=690/690 mismatch=0 error=0 skipped=0 runs=3375 avg_ms=3.01
   mismatching documents: 0
 js: pass=690/690 mismatch=0 error=0 skipped=0 runs=3375 avg_ms=76.02
@@ -812,9 +812,9 @@ came to say 4 when the corpus held 33.
 
 ```text
 Implementation summary
-profile=optional/opt-in corpus=optional corpus_pairs=41 targets=html,markdown,plain,ansi
+profile=optional/opt-in corpus=optional corpus_pairs=42 targets=html,markdown,plain,ansi
 rust: pass=12/12 mismatch=0 error=0 skipped=29 runs=12 avg_ms=5.21
-js: pass=41/41 mismatch=0 error=0 skipped=0 runs=41 avg_ms=157.43
+js: pass=42/42 mismatch=0 error=0 skipped=0 runs=42 avg_ms=157.43
 php: pass=39/39 mismatch=0 error=0 skipped=2 runs=39 avg_ms=103.44
 cross_impl_diffs=0
 

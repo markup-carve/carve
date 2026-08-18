@@ -540,6 +540,14 @@ and carve-rs; off by default, enable per processor.
 - `{header-rows=N}` / `{header-cols=N}` on the preceding attribute line promote
   the first N rows to `<thead>`/`<th>` and the first N cells of every row to
   row-header `<th>` (default 0).
+- `{footer-rows=N}` makes the final N rows a table foot. Header and footer
+  counts together may not exceed the row count.
+- `{aligns="left,right"}`, `{valigns="top,bottom"}`, and `{widths="30,70"}`
+  use the same positional,
+  comma-separated column lists as core pipe tables. Empty entries are unset;
+  too many entries is an error, while a short list renders with an unset tail
+  and produces a lint diagnostic. Widths are percentages in source and
+  fractional values in the exchange AST.
 - Spans reuse the pipe-table span markers: a cell whose sole content is a lone
   `^` merges with the cell above (rowspan); a lone `<` merges with the cell to
   the left (colspan); continuation-style (`colspan=3` is two `<`, `rowspan=N` is
@@ -552,10 +560,18 @@ and carve-rs; off by default, enable per processor.
   multi-block cell keeps its `<p>`/`<ul>`/... wrappers.
 - Ragged rows pad with empty `<td>` to the widest effective row (spans counted).
 - A rowspan is clamped at the `<thead>`/`<tbody>` boundary - a header-row span
-  does not reach into the body (HTML cannot reliably span across row groups).
+  does not reach into the body; the same clamp applies at the `<tbody>`/`<tfoot>`
+  boundary (HTML cannot reliably span across row groups).
 - A cell's own list-item attributes carry onto its `<td>`/`<th>`; a computed
   `rowspan`/`colspan` wins over an author-written one.
 - The `<table>` output matches the equivalent pipe table's span markup.
+- A foot renders as `<tfoot>` and maps to `rowGroups.footRows` in the exchange
+  AST. Column alignment resolves into cell styles and
+  widths render through `<colgroup>`/`<col>` before the row groups.
+- Multiple body groups remain exchange-AST metadata. ListTable has one body
+  list, so a canonical source writer flattens `rowGroups.bodies` into that body
+  and reports the lost boundaries; `footer-rows` does not imply body-group
+  syntax.
 
 ### 5.3 Degradation
 
@@ -576,8 +592,8 @@ no-cell-row defer, and the thead/tbody rowspan clamp).
 
 ### 5.5 Out of scope (impls MAY differ)
 
-- Per-column alignment (an `aligns=`-style attribute) is a future follow-up;
-  there is no alignment marker today.
+- Multiple independently authored body groups remain exchange-AST-only; no
+  ListTable source spelling is defined for them.
 - Deeply ambiguous overlapping-span soup (a marker glued to another, or a `^`
   inside the interior of an existing merged rectangle) resolves however the
   native pipe-table grid walk resolves it; not pinned.

@@ -256,7 +256,10 @@ const PLAIN_EXTENSION_FEATURES = {
  * stamp ordering the second case turns on, so both are wired below instead
  * (carve#535).
  */
-const UNREACHABLE_REASONS = {}
+const UNREACHABLE_REASONS = {
+  'list-table-columns-1344':
+    'carve#1344 column metadata and footer rows are specified ahead of all three engine implementations',
+}
 
 // Cases that ask an engine for the author's source runs instead of the glyph.
 // One per target, because a manifest entry names one feature and one target -

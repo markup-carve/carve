@@ -1,0 +1,9 @@
+{header-rows=1 footer-rows=1 aligns="left,right" valigns="top,bottom" widths="30,70"}
+::: list-table
+- - Region
+  - Total
+- - North
+  - 11
+- - All
+  - 33
+:::

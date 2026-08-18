@@ -2748,6 +2748,38 @@
             "$ref": "#/$defs/inlineNode"
           }
         },
+        "columns": {
+          "type": "array",
+          "description": "Optional positional column metadata imported from or destined for a richer table model. Entry N describes column N; the array MAY be shorter than the widest row. A cell's explicit value wins over the corresponding column value. Carve 0.1 source has no spelling for this field, so source parsers do not synthesize it.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "align": {
+                "enum": [
+                  "left",
+                  "right",
+                  "center"
+                ],
+                "description": "Horizontal alignment inherited by cells in this column when they carry no explicit alignment."
+              },
+              "valign": {
+                "enum": [
+                  "top",
+                  "middle",
+                  "bottom"
+                ],
+                "description": "Vertical alignment inherited by cells in this column when they carry no explicit vertical alignment."
+              },
+              "width": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 1,
+                "description": "The column's fraction of the table width, in the interval (0, 1]. Widths need not sum to 1."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
         "rowGroups": {
           "type": "object",
           "description": "Optional explicit head/body/foot partition of `rows`, imported from or destined for a format whose table model has one. It PARTITIONS `rows` and never repeats them: the counts consume `rows` in order, head first, then each body, then the foot, and they MUST account for every row exactly once. Carve 0.1 source has no spelling for this field; absent means the implicit structure every renderer already derives - the leading run of header rows as the head, everything after it as one body, no foot, no row-head columns. HTML, plain and ANSI output ignore it.",
@@ -2846,6 +2878,14 @@
             "center"
           ],
           "description": "Explicit per-cell alignment; absent means the cell inherits its column's."
+        },
+        "valign": {
+          "enum": [
+            "top",
+            "middle",
+            "bottom"
+          ],
+          "description": "Explicit per-cell vertical alignment; absent means the cell inherits its column's."
         },
         "attrs": {
           "$ref": "#/$defs/attrs"

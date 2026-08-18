@@ -133,6 +133,10 @@ const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
  *   - listed here and absent from the page -> a declaration about nothing.
  */
 const NOT_IN_THE_PIN_YET = new Map([
+  ['table-alignment-run-padding', 'specified by markup-carve/carve#1344; no engine implements it yet'],
+  ['table-column-arity', 'specified by markup-carve/carve#1344; no engine implements it yet'],
+  ['table-column-overlap', 'specified by markup-carve/carve#1344; no engine implements it yet'],
+  ['table-width-total', 'specified by markup-carve/carve#1344; no engine implements it yet'],
   [
     'unattached-block-attribute',
     'specified by markup-carve/carve#1281; no engine implements it yet',

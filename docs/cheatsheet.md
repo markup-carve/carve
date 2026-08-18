@@ -149,17 +149,19 @@ with a space.
 
 ### Alignment
 
-`<` left, `~` center, `>` right, glued to the pipe. On `|=` it aligns the whole
-column; on a plain `|` it aligns that one cell and overrides the column.
+`<` left, `~` center, `>` right; `^` top, `~` middle, `v` bottom. A one- or
+two-axis run is glued to the pipe and terminated by a space. On `|=` it sets
+column defaults; on a plain `|` it overrides that cell. Table attributes can
+set headerless defaults: `{aligns="right,center" valigns="top," widths="30,70"}`.
 
 ```carve
-|=~ Item |=> Qty |
+|=~ Item |=>^ Qty |
 | Apple | 12 |
-| Subtotal |< 12 |
+| Subtotal |<v 12 |
 ```
 
-Glued is what makes it an alignment: a standalone `| < |` cell is the colspan
-merge, `| ^ |` the rowspan merge.
+Glued is what makes it alignment; the terminating space ends the run. A
+standalone `| < |` cell is the colspan merge, `| ^ |` the rowspan merge.
 
 ## Captions (images, quotes, tables, code listings, equations, figure groups)
 

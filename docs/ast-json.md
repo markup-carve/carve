@@ -93,6 +93,17 @@ intermediate header rows, a foot, a count of leading row-header columns)
 survives a format bridge; HTML, plain and ANSI output ignore it and keep
 flattening the table on the way out.
 
+A `table` may also carry an optional positional `columns` array (§19). Each
+entry describes the corresponding column and may hold `align` (`left`, `right`
+or `center`), `valign` (`top`, `middle` or `bottom`), and `width`, a numeric fraction in `(0, 1]`. The array may be
+shorter than the widest row; an omitted entry or field is unset. A cell's own
+value wins over its column's value. Carve source spells the positional metadata
+with a table's preceding `aligns`, `valigns`, and `widths` attributes; parsers
+synthesize `columns` from those lists and canonical source writers retain the
+most local available spelling. The column record keeps format bridges from
+smearing column facts onto individual cells. A `table_cell` may likewise carry
+`valign`; horizontal and vertical inheritance resolve independently.
+
 **The root carries exactly three fields** - `type`, `children`, `srcByteLength`
 (PART 12 §7). Frontmatter and definitions are **block nodes in the tree**, not
 root fields, because a root field cannot carry a position and both are source an

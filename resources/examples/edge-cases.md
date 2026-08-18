@@ -117,11 +117,9 @@ The corner cases: precise boundary rules, table alignment variants, lazy continu
 
 ## Table doubled alignment marker
 
-Per the disambiguation rule, a `<`/`>`/`~` immediately after `|` or
-`|=` is an alignment marker, and exactly one is recognized — so in
-`|=<<` the first `<` aligns the column left and the *repeated* second
-`<` is ordinary content. The marker is never doubled and never escapes
-the header `=`.
+An alignment run is accepted as a unit. A duplicate horizontal axis makes the
+whole run invalid, so `|=<<` keeps both `<` characters as visible content rather
+than consuming a valid prefix. The header `=` remains independent.
 
 ::: compare
 
@@ -132,9 +130,9 @@ the header `=`.
 
 ```html
 <table>
-  <thead><tr><th scope="col" style="text-align: left;">&lt; Note</th><th scope="col">Plain</th></tr></thead>
+  <thead><tr><th scope="col">&lt;&lt; Note</th><th scope="col">Plain</th></tr></thead>
   <tbody>
-    <tr><td style="text-align: left;">a</td><td>b</td></tr>
+    <tr><td>a</td><td>b</td></tr>
   </tbody>
 </table>
 ```
@@ -24283,6 +24281,64 @@ See [r][].
   </ul>
 </blockquote>
 <p>See <a href="/url">r</a>.</p>
+```
+
+:::
+
+## Table columns carry alignment, vertical alignment and widths
+
+A preceding table attribute line supplies positional column defaults even when
+the table has no header row. Empty entries are unset. Source widths are
+percentages; the exchange AST stores the corresponding fractions. Cell-local
+markers remain more specific than these defaults.
+
+::: compare
+
+```carve
+{aligns="right,,center" valigns="top,middle,bottom" widths="25,50,25"}
+| A | B | C |
+| D | E | F |
+```
+
+```html
+<table>
+  <colgroup>
+    <col style="width: 25%;">
+    <col style="width: 50%;">
+    <col style="width: 25%;">
+  </colgroup>
+  <tbody>
+    <tr><td style="text-align: right; vertical-align: top;">A</td><td style="vertical-align: middle;">B</td><td style="text-align: center; vertical-align: bottom;">C</td></tr>
+    <tr><td style="text-align: right; vertical-align: top;">D</td><td style="vertical-align: middle;">E</td><td style="text-align: center; vertical-align: bottom;">F</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+## A table alignment run carries two independent axes
+
+The horizontal and vertical markers may be authored in either order. The
+canonical order is horizontal then vertical, and rendered CSS always writes
+`text-align` before `vertical-align`. A header-cell run supplies column defaults;
+a body-cell run overrides only that cell.
+
+::: compare
+
+```carve
+|=~ Item |=>^ Qty |
+| Apple | 12 |
+| Subtotal |<v 12 |
+```
+
+```html
+<table>
+  <thead><tr><th scope="col" style="text-align: center;">Item</th><th scope="col" style="text-align: right; vertical-align: top;">Qty</th></tr></thead>
+  <tbody>
+    <tr><td style="text-align: center;">Apple</td><td style="text-align: right; vertical-align: top;">12</td></tr>
+    <tr><td style="text-align: center;">Subtotal</td><td style="text-align: left; vertical-align: bottom;">12</td></tr>
+  </tbody>
+</table>
 ```
 
 :::

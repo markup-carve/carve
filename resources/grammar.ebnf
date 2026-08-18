@@ -1507,8 +1507,8 @@ delimiter_cell = {space}, [':'], '-', {'-'}, [':'], {space} ;
 
 table_cell = header_cell | data_cell | span_cell ;
 
-header_cell = '=', [alignment_marker], [cell_attributes], {space}, cell_content, {space} ;
-data_cell   =      [alignment_marker], [cell_attributes], {space}, cell_content, {space} ;
+header_cell = '=', [alignment_run], [cell_attributes], {space}, cell_content, {space} ;
+data_cell   =      [alignment_run], [cell_attributes], {space}, cell_content, {space} ;
 (* THE MARKER RUN COMES FIRST, IN ONE ORDER, IN BOTH PRODUCTIONS. The kind
    marker `=` and then the alignment marker are glued to the opening `|` (no
    preceding whitespace); the attribute block attaches after them. A
@@ -1553,7 +1553,17 @@ colspan_marker = {space}, '<', {space} ;
    (carve#904, applying carve#901). What counts as an EMPTY cell is a
    separate question and is unchanged here. *)
 
-alignment_marker = '<' | '>' | '~' ;  (* left, right, center *)
+alignment_run = horizontal_alignment, [vertical_alignment]
+              | vertical_alignment, [horizontal_alignment] ;
+horizontal_alignment = '<' | '>' | '~' ;  (* left, right, center *)
+vertical_alignment = '^' | '~' | 'v' ;    (* top, middle, bottom *)
+cell_padding = space | (* empty only when no alignment_run is present *) ;
+(* An alignment run is a one- or two-marker SET, in either authored order, and
+   MUST be followed by one space after an optional attached attribute block.
+   Duplicate axes are invalid, except `~~`, whose first marker is horizontal
+   center and second is vertical middle. `fmt` writes horizontal then vertical.
+   A lone `~` is horizontal center; middle-only has no one-marker spelling.
+   With no alignment run the old unpadded cell spelling remains valid. *)
 
 cell_content = inline_content ;
 (* SEMANTIC CONSTRAINT (PART 9 §5): cell content may not contain an
@@ -10565,3 +10575,68 @@ EOF = (* end of file *) ;
       is §7's answer rather than §10's; that is a measurement of one engine and
       not a ruling. An implementation emitting the node for a definition it
       recognizes satisfies this clause whichever way that question lands.
+
+   19. A TABLE MAY CARRY OPTIONAL POSITIONAL COLUMN METADATA -- NORMATIVE. A
+      `table` MAY carry `columns`, an array whose entry at index N describes
+      column N. An entry MAY carry:
+
+        align   one of `left`, `right` or `center`
+        valign  one of `top`, `middle` or `bottom`
+        width   a number greater than zero and at most one: the column's
+                FRACTION of the table width
+
+      Either field may be absent, meaning unset. The array MAY be empty or
+      shorter than the widest row; a missing entry means both fields are unset
+      for that column. Widths need not sum to one. A sum above one is a
+      diagnostic concern for a source spelling or format bridge, not an invalid
+      exchange tree.
+
+      RESOLUTION IS PER FIELD. A cell's own value wins, then the corresponding
+      column value, then unset. One explicit cell field does not suppress a
+      different field inherited from the column. This keeps the rule usable
+      when a later version adds another alignment axis.
+
+      SOURCE SPELLING. A table's preceding block-attribute line MAY carry
+      `aligns`, `valigns` and `widths`. Each value is a comma-separated
+      positional list; an empty entry means unset. Alignment names are the
+      vocabularies above. Widths are numbers greater than zero and at most 100
+      in source, and divide by 100 on the way into the fractional AST field;
+      any other width is an error. More entries than columns is
+      an error. Fewer is valid, leaves the tail unset, and produces a lint
+      diagnostic. Widths need not total 100; a total above it lints.
+
+      PRECEDENCE IS LOCALITY, PER FIELD: a cell marker wins, then an in-table
+      column marker (native header or GFM delimiter), then the table attribute,
+      then unset. Supplying two column-level spellings for one field lints and
+      the in-table spelling wins. Existing header markers and delimiter colons
+      keep their tree and output; attributes fill only facts they do not state.
+
+      THE WRITER RETAINS THE MOST LOCAL AVAILABLE SPELLING. A headed table
+      keeps native column markers. A headerless aligned table emits `aligns`.
+      Widths emit percentages with trailing zeroes removed. Metadata a target
+      cannot spell is omitted and reported by conversion diagnostics.
+
+      HTML applies resolved horizontal and vertical alignment to each cell,
+      with `text-align` before `vertical-align`; widths emit a `colgroup` and
+      one `col` per entry. Markdown keeps only column horizontal alignment where
+      it can emit a delimiter row. Plain and ANSI ignore all three fields.
+
+   20. TABLE ALIGNMENT RUNS CARRY TWO INDEPENDENT AXES -- NORMATIVE. A cell
+      alignment run is glued to its opening pipe, after an optional `=` kind
+      marker, and is terminated by exactly one space after an optional glued
+      attribute block. Horizontal markers are `<`, `~`, `>`; vertical markers
+      are `^`, `~`, `v` for top, middle and bottom. A run may carry either axis
+      or both, in either order. `~~` means center plus middle. Any other
+      duplicate axis is invalid and falls back visibly rather than consuming
+      a prefix. `fmt` normalizes both axes to horizontal then vertical.
+
+      A lone `~` is horizontal center. To request middle while preserving a
+      chosen horizontal value, spell that value too. A header-cell run supplies
+      column defaults; a body-cell run supplies only that cell. A run with no
+      following space is not alignment: this deliberately changes the glued
+      `|>text` family so marker runs have an unambiguous terminator. `lint`
+      reports the old glued form and `fmt --migrate` inserts the space.
+
+      `table_cell` carries optional `valign` beside `align`, with the same
+      inheritance rule. A whitespace-delimited cell containing only `^` or `<`
+      remains a rowspan/colspan marker; gluing is what distinguishes alignment.
