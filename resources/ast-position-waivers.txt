@@ -54,6 +54,27 @@
 # and still read 35 and 32, and the OWED half is untouched - the same four
 # findings under the same open markup-carve/carve-php#1351.
 #
+# AND AGAIN 2026-08-18, at the release freeze. The owed half is EMPTY: the three
+# markup-carve/carve-php#1351 lines reported FIXED and that issue is closed, so
+# they moved to the graveyard below. The permitted half grew by 62 findings over
+# 62 lines, entirely from the corpus growing 1124 -> 1259 across the freeze: the
+# `344` line block and eleven table documents in `349`, `354`, `355` and `356`.
+#
+# EVERY ONE OF THOSE 62 WAS CHECKED AGAINST THE CONSTRUCT, not against the run.
+# The eleven table documents each hold a `+` continuation row - five of them
+# behind a quote prefix (`> + b |`, `> > + b |`), which is why a naive scan for
+# a flush-left `+` misses them - and `docs/ast-json.md` names that case verbatim.
+# `344` is a code span opened on one line and continued past a comment-only line
+# the block layer removes, so its value is reassembled from two non-adjacent
+# regions and no honest span exists. None of the 62 is a node nobody has placed.
+#
+# MEASUREMENT BASIS, stated because it is weaker than the paragraphs above and a
+# reader should not have to guess: carve-js was measured at its main 2dc3232e.
+# carve-rs and carve-php were measured at LOCAL CHECKOUTS BEHIND THEIR MAINS,
+# so their document lists are inferred from the construct and from the run's own
+# three-way comparison reporting 1262 of 1262 documents unanimous - not from a
+# build of their release commits. The scheduled run is what confirms it.
+#
 # WHICH IS WHY THE "NOTHING MOVED" NOTE ABOVE IS KEPT RATHER THAN OVERWRITTEN.
 # It was true when it was measured and false ninety minutes later, and the two
 # together are the actual claim this file can support: a permitted line is a
@@ -263,9 +284,6 @@ carve-php  333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe-5.crv  
 # stopped standing alone somewhere else, in one commit, which is why a run
 # rather than a diff is what this file reconciles against.
 
-carve-php  268-trailing-whitespace-on-a-content-line-is-dropped-12.crv  text  1  markup-carve/carve-php#1351
-carve-php  41-line-blocks-2.crv                                         text  1  markup-carve/carve-php#1351
-carve-php  41-line-blocks-3.crv                                         text  2  markup-carve/carve-php#1351
 
 # WHAT USED TO BE HERE, and was deliberately kept as a section while empty.
 #
@@ -278,6 +296,70 @@ carve-php  41-line-blocks-3.crv                                         text  2 
 #   carve-rs   207 x1 (figure)                      markup-carve/carve-rs#737
 #   carve-rs   224 x8 (over three fixtures)         markup-carve/carve-rs#736
 #   carve-php  182 x1 (text)                        markup-carve/carve-php#965
+#   carve-php  268 x1, 41-line-blocks-2 x1, -3 x2 (text)  markup-carve/carve-php#1351
 #
 # All six issues are closed. A new gap goes here, one line per engine, document
 # and type, with the issue that tracks it - never `permitted`.
+
+carve-js   349-a-container-whose-table-ends-on-a-continuation-row-3.crv             table_cell  1  permitted
+carve-js   349-a-container-whose-table-ends-on-a-continuation-row-3.crv             text        1  permitted
+carve-js   349-a-container-whose-table-ends-on-a-continuation-row-5.crv             table_cell  1  permitted
+carve-js   349-a-container-whose-table-ends-on-a-continuation-row-5.crv             text        1  permitted
+carve-js   349-a-container-whose-table-ends-on-a-continuation-row-6.crv             table_cell  1  permitted
+carve-js   349-a-container-whose-table-ends-on-a-continuation-row-6.crv             text        1  permitted
+carve-js   349-a-container-whose-table-ends-on-a-continuation-row.crv               table_cell  1  permitted
+carve-js   349-a-container-whose-table-ends-on-a-continuation-row.crv               text        1  permitted
+carve-js   354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-2.crv table_cell  1  permitted
+carve-js   354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-2.crv text        1  permitted
+carve-js   354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold.crv table_cell  1  permitted
+carve-js   354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold.crv text        1  permitted
+carve-js   355-a-container-whose-table-ends-on-a-joined-header-row-3.crv            table_cell  1  permitted
+carve-js   355-a-container-whose-table-ends-on-a-joined-header-row-3.crv            text        1  permitted
+carve-js   355-a-container-whose-table-ends-on-a-joined-header-row.crv              table_cell  1  permitted
+carve-js   355-a-container-whose-table-ends-on-a-joined-header-row.crv              text        1  permitted
+carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                table_cell  1  permitted
+carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                text        1  permitted
+carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                table_cell  1  permitted
+carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                text        1  permitted
+carve-php  344-a-comment-only-line-in-a-line-block-is-removed-before-any-inline-run.crv code        1  permitted
+carve-php  349-a-container-whose-table-ends-on-a-continuation-row-3.crv             table_cell  1  permitted
+carve-php  349-a-container-whose-table-ends-on-a-continuation-row-3.crv             text        1  permitted
+carve-php  349-a-container-whose-table-ends-on-a-continuation-row-5.crv             table_cell  1  permitted
+carve-php  349-a-container-whose-table-ends-on-a-continuation-row-5.crv             text        1  permitted
+carve-php  349-a-container-whose-table-ends-on-a-continuation-row-6.crv             table_cell  1  permitted
+carve-php  349-a-container-whose-table-ends-on-a-continuation-row-6.crv             text        1  permitted
+carve-php  349-a-container-whose-table-ends-on-a-continuation-row.crv               table_cell  1  permitted
+carve-php  349-a-container-whose-table-ends-on-a-continuation-row.crv               text        1  permitted
+carve-php  354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-2.crv table_cell  1  permitted
+carve-php  354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-2.crv text        1  permitted
+carve-php  354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold.crv table_cell  1  permitted
+carve-php  354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold.crv text        2  permitted
+carve-php  355-a-container-whose-table-ends-on-a-joined-header-row-2.crv            text        1  permitted
+carve-php  355-a-container-whose-table-ends-on-a-joined-header-row-3.crv            table_cell  1  permitted
+carve-php  355-a-container-whose-table-ends-on-a-joined-header-row-3.crv            text        1  permitted
+carve-php  355-a-container-whose-table-ends-on-a-joined-header-row.crv              table_cell  1  permitted
+carve-php  355-a-container-whose-table-ends-on-a-joined-header-row.crv              text        1  permitted
+carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                table_cell  1  permitted
+carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                text        1  permitted
+carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                table_cell  1  permitted
+carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                text        1  permitted
+carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-3.crv             table_cell  1  permitted
+carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-3.crv             text        1  permitted
+carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-5.crv             table_cell  1  permitted
+carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-5.crv             text        1  permitted
+carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-6.crv             table_cell  1  permitted
+carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-6.crv             text        1  permitted
+carve-rs   349-a-container-whose-table-ends-on-a-continuation-row.crv               table_cell  1  permitted
+carve-rs   349-a-container-whose-table-ends-on-a-continuation-row.crv               text        1  permitted
+carve-rs   354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-2.crv table_cell  1  permitted
+carve-rs   354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold-2.crv text        1  permitted
+carve-rs   354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold.crv table_cell  1  permitted
+carve-rs   354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold.crv text        1  permitted
+carve-rs   355-a-container-whose-table-ends-on-a-joined-header-row-3.crv            table_cell  1  permitted
+carve-rs   355-a-container-whose-table-ends-on-a-joined-header-row-3.crv            text        1  permitted
+carve-rs   355-a-container-whose-table-ends-on-a-joined-header-row.crv              table_cell  1  permitted
+carve-rs   355-a-container-whose-table-ends-on-a-joined-header-row.crv              text        1  permitted
+carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                table_cell  1  permitted
+carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                text        1  permitted
+carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                table_cell  1  permitted
+carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                text        1  permitted
