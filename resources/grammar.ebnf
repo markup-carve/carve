@@ -299,6 +299,37 @@
         document level only, so inside a container the line is ordinary
         paragraph text and reopens the paragraph like any other prose.
 
+        PROSE REOPENS THE PARAGRAPH WHEREVER IT SITS AMONG THE ITEM'S BLOCKS,
+        which is the general shape of that last sentence rather than a property
+        of abbreviations. S4 asks whether any container in the open stack holds
+        an OPEN paragraph. It does not ask whether that paragraph is the
+        container's first block, and an item whose first block is a table, a
+        fence or a quote and whose next line is prose holds one exactly as an
+        item that began with prose does. So
+
+            - | a |          - ```            - > | a |
+              b                c                + b |
+            tail               ```            tail
+                               b
+                               tail
+
+        all fold `tail` into the paragraph the prose line opened, for the reason
+        `- a` / `tail` folds. The blocks before that paragraph are spent: they
+        answered S4 while they were the item's last block and stopped answering
+        it when prose reopened one.
+
+        Measured across four container heads, eight inner blocks and three
+        following lines - 96 shapes - carve-rs ends the item in the fifteen
+        where the inner block sits directly in the item, and carve-php in the
+        four where a quote holds a table and the following line is a `+` row;
+        carve-js and the executable spec fold in all nineteen. Each of those
+        readers renders the prose line AS prose and then declines to treat its
+        paragraph as open, so each is answering one line two ways inside a
+        single parse. Corpus 361 pins three of the nineteen with two controls: a
+        blank line before `tail`, which closes the paragraph so the item does
+        end, and a second table row at the item's own column, which extends the
+        table and opens no paragraph at all. (carve#1370)
+
         THE COLUMN IS REACHED BY COMPOSING THE STRIPS, NOT BY WALKING THE
         PREFIX (carve#1368). Which container's `content_column` a line reaches
         is decided by §24 C5 and by nothing else: every container strips its
@@ -3967,6 +3998,25 @@ EOF = (* end of file *) ;
          table - so a `+` line directly under one has no row above it to join
          and is ordinary prose. That is the ONLY case that declines, and
          corpus 115 pins it.
+
+         AND THE ROW ABOVE IS A LINE OF THE SAME CONTAINER. "In the source"
+         is not "anywhere earlier on the page": it is the container the `+`
+         line is written in. A line at a list item's `content_column` carries
+         no quote prefix, so a table written inside a quote on the marker line
+         is not above it -
+
+             - > | a |
+               + b |
+
+         - and the block above `+ b |` at the item's own column is a
+         blockquote. T6 declines, the line is ordinary prose, and prose reopens
+         the item's paragraph (PART 1 S4's clause on that). No reader joins the
+         cell, so a reader that consults the quote's table anyway declines the
+         join and still ends the paragraph, which reads one line as prose and
+         as a table row in the same parse. Corpus 361 pins it, with the
+         same-column spelling `- | a |` / `  | b |` as its control: there the
+         row above IS the item's own, it joins, and no paragraph opens.
+         (carve#1370)
 
          HEADER-NESS IS NOT THE DISCRIMINATOR, and reading it as one gets 115
          right for the wrong reason. The executable spec declined whenever the
