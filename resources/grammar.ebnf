@@ -299,6 +299,45 @@
         document level only, so inside a container the line is ordinary
         paragraph text and reopens the paragraph like any other prose.
 
+        THE COLUMN IS REACHED BY COMPOSING THE STRIPS, NOT BY WALKING THE
+        PREFIX (carve#1368). Which container's `content_column` a line reaches
+        is decided by §24 C5 and by nothing else: every container strips its
+        own prefix and hands the residue down, so the question is asked of the
+        INNERMOST container in the coordinates IT was handed. The shape of the
+        prefix above it -- how many quotes and list items it alternates, in
+        what order, and how deep -- is not a parameter. Stated as a property
+        rather than as the list of prefixes that have been measured: two
+        container kinds already spell 62 of them by depth five, and the list
+        goes stale at depth six.
+
+        THE HEADING AT THAT COLUMN IS THE CONTROL, and it is what says the
+        question is about the column and not about the line. Measured
+        2026-08-18 over all 62 quote/list prefixes to depth five, against
+        carve-js `099db2cc`, carve-php `925f7dcf` and carve-rs `3f8bde7b`,
+        each built from a clone made for the run: at every one of them a `# h`
+        written at that column is a heading INSIDE the innermost container, in
+        all three. So every reader already places the line at the column. A
+        reader that then declines the DEFINITION there is deciding by the
+        line's SPELLING, which C3 refuses -- the content column IS the body's
+        column 0, and a block opener is recognized there exactly as at the top
+        level.
+
+        A READER THAT DECLINES CONTRADICTS ITSELF, which is what settles this
+        without counting readers. Peel the OUTERMOST container off any document
+        where one declines, and the residue is precisely the body C5 says that
+        container hands down -- and the same reader registers in it, at once or
+        after a further peel. `- > - - x` over `  >     [r]: /url` is `> - - x`
+        over `>     [r]: /url` with one list item wrapped around it: carve-rs
+        registers in the second and reads the first as lazy text, carve-php
+        registers in the second and DROPS the first, publishing neither the
+        definition nor the author's line. An outer container cannot change what
+        an inner body's column 0 is, so those are two answers to one question.
+
+        The DROP is the disappearance §24 C3 already forbids under AN INVISIBLE
+        LINE FOLDS LIKE ANY OTHER (carve-php#721): a definition may register, or
+        it may stay text, and half-folding it -- gone from the page, absent from
+        the tables -- is not an option the rule offers.
+
         AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS
         UNDER -- NORMATIVE (carve#1350, carve#1357). The clause above names a
         definition and a comment; this is the rule both are instances of, and
