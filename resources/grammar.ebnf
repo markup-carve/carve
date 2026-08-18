@@ -3767,6 +3767,57 @@ EOF = (* end of file *) ;
          cells append nothing; no `<tr>` is produced. Under rowspan the
          joined content belongs to the SPANNING cell (corpus 40, 41). A
          table cannot BEGIN with a continuation row (PART 2 `table`).
+
+         IT LEAVES NO PARAGRAPH OPEN, LIKE THE ROW IT APPENDS TO -- NORMATIVE.
+         PART 1 S4 asks what a container's last BLOCK is, and the answer here
+         is a table however its last row is spelled: this clause gives a
+         continuation row `table_cell`s and joins them onto the row above, so
+         nothing about it reopens a paragraph. A container ending on one
+         therefore ends at a flush-left line, exactly as one ending on a
+         standard row does:
+
+             - | a |            > | a |            :: t
+               + b |            > + b |            :  | a |
+             tail               tail                  + b |
+                                                   tail
+
+         all end their container and leave `tail` a document paragraph, the
+         same derivation S4's THE MARKER LINE'S CONTENT IS THE ITEM'S FIRST
+         BLOCK already gives `- | a | b |` over `tail`.
+
+         Written down because the two spellings were told apart, and only
+         inside a container. At the TOP LEVEL every implementation already
+         ends the table and starts a sibling paragraph under both spellings,
+         so nothing distinguishes them there; one container in, carve-js and
+         carve-php folded `tail` into the ITEM under `+ b |` while closing it
+         under `| b |`, and ALL THREE engines plus the executable spec did the
+         same in a QUOTE. One question answered by how a line is written is a
+         contradiction rather than a second reading, and on the quote half
+         there was no majority to consult: they were unanimous and wrong
+         together. Ruled at carve#1348.
+
+         THE OPPOSITE DIRECTION IS UNCHANGED. With NO table above it a
+         `+ ...|` line is not a row at all but ordinary prose, so it leaves a
+         paragraph open and the flush-left line folds (carve#1345, corpus
+         326-...-26 and -28). The rule has a parameter, and this clause fixes
+         its other value; a reading that answers "row" or "prose" everywhere
+         gets one of the two halves wrong.
+
+         A QUOTE IS ASKED ITS OWN BODY. S4 already says the question is put to
+         a quote recursively and that "its own last block answers", so a quote
+         ending on a continuation row is decided by the run inside the quote
+         and not by the line that carries it. An implementation that peels the
+         `>` off ONE line loses that run, and the same quote then answers
+         differently bare and wrapped in a definition body - which is the
+         defect carve-rs shows today, in the direction opposite to the other
+         two engines.
+
+         ITS REACH STOPS AT A QUOTE INSIDE A QUOTE, which is not decided here.
+         An outer quote is not asked what an INNER one ends on, for a heading
+         as much as for a table, so `> > # H` over `tail` divides carve-rs from
+         the other two engines already. That is the same question S4 answers
+         one level up and it wants its own ruling, not a side effect of this
+         one: carve#1355.
       T7 GFM DELIMITER ROW -- NORMATIVE. delimiter_row(R) := R is EXACTLY
          the SECOND row of the table AND every cell matches delimiter_cell
          (optional ws, optional `:`, one or more `-`, optional `:`,
