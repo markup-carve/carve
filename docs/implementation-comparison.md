@@ -154,7 +154,8 @@ under the same semantic-span rule,
 `362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line`,
 `363-a-task-item-s-checkbox-is-not-decided-by-its-first-block`,
 `364-only-lazy-folding-demotes-a-marker-line-colon-opener`,
-`365-a-blank-line-before-a-sibling-marker-separates-the-items-whatever-consumed-it`.
+`365-a-blank-line-before-a-sibling-marker-separates-the-items-whatever-consumed-it`,
+`366-a-raw-block-keeps-the-blank-line-at-the-end-of-its-payload-too`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative

@@ -253,6 +253,7 @@ index: examples/edge-cases/index.md
   a-task-item-s-checkbox-is-not-decided-by-its-first-block
   only-lazy-folding-demotes-a-marker-line-colon-opener
   a-blank-line-before-a-sibling-marker-separates-the-items-whatever-consumed-it
+  a-raw-block-keeps-the-blank-line-at-the-end-of-its-payload-too
   colon-fence-as-a-block-opener-in-a-list-item
   fence-folds-as-lazy-inline-code-above-the-content-column
   indented-ordered-marker-content-column-includes-the-marker-indent
