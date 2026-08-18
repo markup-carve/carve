@@ -312,6 +312,15 @@ block and a comment fence, and a code or tilde fence is the only place it does
 not (markup-carve/carve-php#1445). This category will not match carve-php until
 that lands.
 
+Category 366 is declared with an OPEN engine window for the same reason. Its
+three documents were rendered through the oracle, carve-js `020c73e`, carve-php
+`f30ebd1` and carve-rs `a33c42a` while they were written. carve-js and carve-rs
+reproduce all three byte for byte. carve-php reproduces the no-blank control and
+misses the two that carry a blank: it drops a raw block's trailing blank line
+from the payload, at document level and inside an item alike, while keeping the
+same blank in a code fence - which is what category 291 pins, and which it
+reproduces. This category will not match carve-php until that lands.
+
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS
 build (`52da7be`) reproducing 671 of the 672 documents, missing exactly that
