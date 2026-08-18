@@ -330,6 +330,33 @@
         end, and a second table row at the item's own column, which extends the
         table and opens no paragraph at all. (carve#1370)
 
+        AN UNTERMINATED CONTAINER DOES NOT EXTEND THE ITEM PAST THAT BLANK.
+        The control above says the blank closes the paragraph so the item ends,
+        and that holds whatever container stands above the blank. S4 asks
+        whether an OPEN PARAGRAPH exists, not whether a container is still
+        waiting for its closer, so a line BELOW the item's content column after
+        a blank has nothing to continue and leaves the item -- under a
+        terminated `:::` div, an opaque body, a quote, or no container at all,
+        and under an unterminated `:::` div identically. So
+
+            - ::: d          - ::: d          - ::: d
+              b                b                b
+                               :::
+            tail                              (no blank)
+                             tail             tail
+
+        end the item in the first two spellings and fold in the third, and the
+        difference between them is the blank, never the missing closer. A
+        reader that made the closer decide answers one rule two ways inside a
+        single parse, which is what the executable spec did: it carried the
+        blank as container content and left the item's paragraph open across
+        it, so the flush-left line arrived at a div that should already have
+        been out of reach. carve-js, carve-php and carve-rs all end the item.
+        Corpus 362 pins it with two controls: the same input without the blank,
+        which still folds, and a following line at the item's content column,
+        which is the div's second block rather than the end of the item.
+        (carve#1379)
+
         THE COLUMN IS REACHED BY COMPOSING THE STRIPS, NOT BY WALKING THE
         PREFIX (carve#1368). Which container's `content_column` a line reaches
         is decided by §24 C5 and by nothing else: every container strips its

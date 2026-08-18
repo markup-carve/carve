@@ -2874,6 +2874,26 @@ function collectItems(lines, i, list, state, ind, meas) {
         // item body and stay tight (no looseness decision).
         if (insideFence()) {
           pushLine('', BLANK_MEAS)
+          // AND IT ENDS THE OPEN PARAGRAPH, whatever container is holding the
+          // blank. This branch used to leave `openPara` set across it, so a
+          // following line BELOW the content column found a paragraph to fold
+          // into and an unterminated `:::` div took a flush-left line as its
+          // second block. PART 1 S4 asks for an OPEN PARAGRAPH, not for a
+          // container still waiting on its closer, and this collector already
+          // answers the same input the other way for a TERMINATED div (the
+          // fence stack is empty, so the branch below decides by column), for
+          // an opaque body (`if (fence.opaque) break`), for a quote and for a
+          // bare item. Only the unterminated spelling differed - one rule
+          // answered two ways by whether a closer had been written, which is
+          // the tell that the reader and not the rule was wrong. carve-js,
+          // carve-php and carve-rs all end the item (carve#1379).
+          //
+          // Unconditional rather than gated on `!fence.opaque`: under an
+          // opaque body the collector breaks before it ever consults the
+          // paragraph, so the two spellings render 5760 generated shapes
+          // identically and the gate would only be a claim that decides
+          // nothing.
+          closePara()
           i++
           continue
         }
