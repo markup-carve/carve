@@ -3820,6 +3820,47 @@ EOF = (* end of file *) ;
          joined content belongs to the SPANNING cell (corpus 40, 41). A
          table cannot BEGIN with a continuation row (PART 2 `table`).
 
+         THE ROW ABOVE IS A LINE, NOT A `<tr>` -- NORMATIVE (carve#1354). What
+         a continuation joins is the row above it in the SOURCE. T7 CONSUMES
+         the delimiter row - it produces no `<tr>` and is not a row of the
+         table - so a `+` line directly under one has no row above it to join
+         and is ordinary prose. That is the ONLY case that declines, and
+         corpus 115 pins it.
+
+         HEADER-NESS IS NOT THE DISCRIMINATOR, and reading it as one gets 115
+         right for the wrong reason. The executable spec declined whenever the
+         row above was ALL-HEADER, which answers three neighbouring documents
+         wrongly and all three engines agree it does:
+
+             |=a |=b |          | a |            |=a |
+             + cont |           |=b |            | - |
+                                + c |            + cont |
+
+         The first two JOIN in every reader - onto a native header row, and
+         onto an all-header row that is not the table's first - and the third
+         DECLINES in every reader, on a NATIVE header row, because a delimiter
+         row sits between the two lines. Header-ness answers all three
+         backwards; the delimiter row answers all three. T9 already says the
+         rest outright: a `^` rowspan MAY reach a header cell, so a header
+         cell is an ordinary cell in every other table mechanism, and nothing
+         here makes it less of a row.
+
+         AN ALL-EMPTY CONTINUATION ROW IS A CONTINUATION ROW. T2's "at least
+         one cell lies between" is written of `valid_row`, the predicate that
+         decides whether a line OPENS a table and whether it interrupts a
+         paragraph, and T2 says so: "this matches the `standard_row`
+         production". A continuation row opens nothing and produces no `<tr>`,
+         so a row whose every cell is empty appends nothing - which is what
+         this clause already provides for. Applying the standard row's guard
+         to it made ONE clause answer twice by COLUMN COUNT, since only the
+         one-column shape reaches a one-cell test:
+
+             | a | b |          | a |
+             + | |              + |
+
+         the first absorbed and the second published as a paragraph. All three
+         engines absorb both.
+
          IT LEAVES NO PARAGRAPH OPEN, LIKE THE ROW IT APPENDS TO -- NORMATIVE.
          PART 1 S4 asks what a container's last BLOCK is, and the answer here
          is a table however its last row is spelled: this clause gives a

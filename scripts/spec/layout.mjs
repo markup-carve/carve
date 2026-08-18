@@ -618,7 +618,7 @@ function classifyOrdered(token) {
  * dropped for want of a column to join, which is content loss rather than a
  * different answer.
  */
-function splitRow(line, openRun = 0, openRunAt = 0) {
+function splitRow(line, openRun = 0, openRunAt = 0, kind = 'standard') {
   let s = line
   let rowAttrs = null
   const ra = new RegExp(`\\|\\{(${ATTR_PAYLOAD})\\}[ \\t]*$`).exec(s)
@@ -711,7 +711,21 @@ function splitRow(line, openRun = 0, openRunAt = 0) {
   // much as mid-paragraph -- there is no lenient open form.
   if (cur.trim() !== '') return null
   if (cells.length === 0) return null // T2: `||` has no cell
-  if (cells.length === 1 && cells[0].trim() === '') return null // `||`
+  /*
+   * T2's MINIMUM-CELL GUARD IS THE STANDARD ROW'S (carve#1354). "At least one
+   * cell lies between" is written of `valid_row`, the predicate that decides
+   * whether a line OPENS a table and whether it interrupts a paragraph, and T2
+   * says so in as many words: "this matches the `standard_row` production".
+   * A continuation row opens nothing - it appends to a table already open and
+   * produces no `<tr>` - so a row whose every cell is empty appends nothing,
+   * which is exactly what T6 provides for ("empty cells append nothing").
+   *
+   * Applying the standard row's guard here made ONE clause answer twice by
+   * column count: `| a | b |` over `+ | |` was absorbed and `| a |` over
+   * `+ |` was published as a paragraph, because only the one-column shape
+   * reaches a `cells.length === 1` test. All three engines absorb both.
+   */
+  if (kind === 'standard' && cells.length === 1 && cells[0].trim() === '') return null // `||`
   // `inCode` here is the run the row's closing pipe did NOT close: a
   // continuation row is scanned with it, and nothing else reads it.
   // `inCode` here is the run the row's closing pipe did NOT close, and it sits
@@ -1965,18 +1979,41 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // for the continuation rows below
       let openRun = 0
       let openRunAt = 0
+      // T7 consumes the delimiter row, so the LINE above a `+` may be a line
+      // that is not a row of this table at all. See the continuation branch.
+      let afterDelimiterRow = false
       while (i < n) {
         const l = lines[i]
         if (l === undefined || isBlank(l)) break
         if (CONT_ROW.test(l)) {
           // T6: continuation row - joins per column onto the row above
-          const sr = splitRow('|' + l.slice(1), openRun, openRunAt)
+          const sr = splitRow('|' + l.slice(1), openRun, openRunAt, 'continuation')
           if (!sr) break
           openRun = sr.openRun
           openRunAt = sr.openRunAt
           if (node.rows.length === 0) throw new Refuse('table begins with a continuation row')
           const prev = node.rows[node.rows.length - 1]
-          if (prev.cells.every((c) => c.header)) break // needs a BODY row (corpus 113)
+          /*
+           * THE ROW ABOVE IS A LINE, NOT A `<tr>` (carve#1354). T6 joins a
+           * continuation onto "the row ABOVE", and T7 CONSUMES the delimiter
+           * row - it produces no `<tr>` and is not a row of the table - so a
+           * `+` line directly under one has no row above it to join and is
+           * ordinary prose. That is corpus 115, and it is the only case that
+           * declines.
+           *
+           * This tested `prev.cells.every((c) => c.header)` instead, which
+           * gets 115 right for the wrong reason and gets the NATIVE header
+           * spelling wrong: `|=a |` over `+ b |` was published as a PARAGRAPH
+           * where all three engines join it onto the header cell, and
+           * `| a |` over `|=b |` over `+ c |` joins onto an all-header row in
+           * every reader including this one. Header-ness was never the
+           * discriminator - a delimiter row between the two lines is, and it
+           * declines a NATIVE header row just the same (`|=a |` / `| - |` /
+           * `+ cont |` is prose in all three). T9 says the rest outright: a
+           * `^` rowspan may reach a header cell, so a header cell is an
+           * ordinary cell in every other table mechanism.
+           */
+          if (afterDelimiterRow) break
           sr.cells.forEach((seg, ci) => {
             // A continuation row's cells ARE `table_cell`s (grammar.ebnf
             // `continuation_row`), so they carry the same space-only padding
@@ -2020,11 +2057,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             else if (left) col.align = 'left'
             else if (right) col.align = 'right'
           })
+          afterDelimiterRow = true
           i++
           continue
         }
         const row = { cells: sr.cells.map(parseCell), rawCells: sr.cells, rowAttrs: sr.rowAttrs }
         node.rows.push(row)
+        afterDelimiterRow = false
         i++
       }
       // native header section: the leading run of all-header rows
