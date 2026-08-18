@@ -981,8 +981,9 @@ function parseCell(seg) {
   } else if (s.startsWith('\\=')) {
     s = '\\=' + s.slice(2) // literal `=` data cell; unescaped by inline pass
   }
-  // A one/two-axis run is committed only when its optional attribute block is
-  // followed by the required space. Invalid duplicate axes consume nothing.
+  // A horizontal-only or paired run is committed only when its optional
+  // attribute block is followed by the required space. A lone vertical marker
+  // and invalid duplicate axes consume nothing.
   const run = new RegExp(`^([<>~^v]{1,2})(?=(?:\\{${ATTR_PAYLOAD}\\})? )`).exec(s)
   if (run) {
     const marks = [...run[1]]
@@ -990,8 +991,10 @@ function parseCell(seg) {
     let vertical = null
     for (let mi = 0; mi < marks.length; mi++) {
       const mark = marks[mi]
-      const useHorizontal = mark === '<' || mark === '>' ||
-        (mark === '~' && (marks.length === 1 || horizontal === null))
+      const verticalFirstMiddle = mark === '~' && mi === 0 &&
+        (marks[1] === '<' || marks[1] === '>')
+      const useHorizontal = !verticalFirstMiddle && (mark === '<' || mark === '>' ||
+        (mark === '~' && (marks.length === 1 || horizontal === null)))
       if (useHorizontal) {
         if (horizontal !== null) { horizontal = null; vertical = null; break }
         horizontal = mark === '<' ? 'left' : mark === '>' ? 'right' : 'center'
@@ -1000,7 +1003,7 @@ function parseCell(seg) {
         vertical = mark === '^' ? 'top' : mark === 'v' ? 'bottom' : 'middle'
       }
     }
-    if (horizontal !== null || vertical !== null) {
+    if (horizontal !== null && (vertical !== null || run[1].length === 1)) {
       cell.align = horizontal
       cell.valign = vertical
       s = s.slice(run[1].length)

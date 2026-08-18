@@ -1554,15 +1554,17 @@ colspan_marker = {space}, '<', {space} ;
    separate question and is unchanged here. *)
 
 alignment_run = horizontal_alignment, [vertical_alignment]
-              | vertical_alignment, [horizontal_alignment] ;
+              | vertical_alignment, horizontal_alignment ;
 horizontal_alignment = '<' | '>' | '~' ;  (* left, right, center *)
 vertical_alignment = '^' | '~' | 'v' ;    (* top, middle, bottom *)
 cell_padding = space | (* empty only when no alignment_run is present *) ;
-(* An alignment run is a one- or two-marker SET, in either authored order, and
-   MUST be followed by one space after an optional attached attribute block.
+(* An alignment run is a horizontal marker, optionally paired with a vertical
+   marker in either authored order, and MUST be followed by one space after an
+   optional attached attribute block. A vertical marker therefore never stands
+   alone: `|^ x` and `|v x` keep `^`/`v` as visible content.
    Duplicate axes are invalid, except `~~`, whose first marker is horizontal
    center and second is vertical middle. `fmt` writes horizontal then vertical.
-   A lone `~` is horizontal center; middle-only has no one-marker spelling.
+   A lone `~` is horizontal center; no vertical value has a one-marker spelling.
    With no alignment run the old unpadded cell spelling remains valid. *)
 
 cell_content = inline_content ;
@@ -10633,13 +10635,14 @@ EOF = (* end of file *) ;
       alignment run is glued to its opening pipe, after an optional `=` kind
       marker, and is terminated by exactly one space after an optional glued
       attribute block. Horizontal markers are `<`, `~`, `>`; vertical markers
-      are `^`, `~`, `v` for top, middle and bottom. A run may carry either axis
-      or both, in either order. `~~` means center plus middle. Any other
+      are `^`, `~`, `v` for top, middle and bottom. A horizontal marker may
+      stand alone; a vertical marker MUST be paired with a horizontal marker,
+      in either order. `~~` means center plus middle. Any other
       duplicate axis is invalid and falls back visibly rather than consuming
       a prefix. `fmt` normalizes both axes to horizontal then vertical.
 
-      A lone `~` is horizontal center. To request middle while preserving a
-      chosen horizontal value, spell that value too. A header-cell run supplies
+      A lone `~` is horizontal center. Every vertical value spells its chosen
+      horizontal value too. A header-cell run supplies
       column defaults; a body-cell run supplies only that cell. A run with no
       following space is not alignment: this deliberately changes the glued
       `|>text` family so marker runs have an unambiguous terminator. `lint`
