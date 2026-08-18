@@ -53,15 +53,28 @@ test('the SAME shape with no table above it holds an open paragraph', () => {
 })
 
 test('a quote answers the same wrapped as it does bare', () => {
-  // The predicate is handed ONE line, so peeling a quote off it cannot carry
-  // the quote's own line history. What that costs is decided by the bare
-  // spelling, which every implementation already answers: a quote ending on a
-  // continuation row does NOT end the lazy run, and `tail` stays inside it.
-  // Wrapping that quote in a definition must not flip the answer.
+  // The PRINCIPLE this was landed for is untouched: one document's answer must
+  // not depend on what is wrapped around it. The VALUE it was anchored to has
+  // moved (carve#1348).
+  //
+  // It was anchored to the bare spelling on the ground that "every
+  // implementation already answers" it that way, which is the reasoning PART 0
+  // disclaims - and the same quote ending on a STANDARD row contradicted it in
+  // those same implementations, which is the check that was not run. A quote
+  // ending on a continuation row ends on a TABLE, so it holds no open paragraph
+  // and `tail` leaves it, bare and wrapped alike.
   const bare = html('> | a |\n> + b |\ntail\n')
-  assert.ok(/<\/table>\s*<p>tail<\/p>\s*<\/blockquote>/.test(bare), `bare: ${bare}`)
+  assert.ok(/<\/blockquote>\s*<p>tail<\/p>/.test(bare), `bare: ${bare}`)
   const wrapped = html(':: t\n:  > | a |\n   > + b |\ntail\n')
-  assert.ok(/<\/table>\s*<p>tail<\/p>\s*<\/blockquote>/.test(wrapped), `wrapped: ${wrapped}`)
+  assert.ok(/<\/dl>\s*<p>tail<\/p>/.test(wrapped), `wrapped: ${wrapped}`)
+})
+
+test('the quote answers the two row spellings the same way', () => {
+  // The contradiction that decided carve#1348, and the reason the assertion
+  // above moved rather than being defended: the standard-row spelling of the
+  // same quote already sent `tail` out in every implementation.
+  const standard = html('> | a |\n> | b |\ntail\n')
+  assert.ok(/<\/blockquote>\s*<p>tail<\/p>/.test(standard), `standard: ${standard}`)
 })
 
 test('a table row is a row by its shape alone, and needs no such context', () => {
@@ -71,4 +84,43 @@ test('a table row is a row by its shape alone, and needs no such context', () =>
   const out = html('- | a | b |\ntail\n')
   assert.ok(out.includes('<td>a</td><td>b</td>'), `the row must open a table: ${out}`)
   assert.ok(/<\/ul>\s*<p>tail<\/p>/.test(out), `tail must leave the item: ${out}`)
+})
+
+/*
+ * A ROW THE TABLE READER REJECTS is a separate defect and is NOT decided here:
+ * the predicate matches on shape plus "a table is open above", while the reader
+ * also breaks on an all-header previous row and on a `splitRow` failure, so
+ * `- |=a |` / `  + b |` / `tail` publishes the line as prose and still sends
+ * `tail` out. It predates this rule, reaches the item and the definition body
+ * as well as the quote, and is filed as markup-carve/carve#1354.
+ *
+ * The quote peel's own edges. Neither is visible to the corpus: both shapes
+ * stayed green across all 1187 documents while the peel got them wrong.
+ */
+
+test('an empty quote at the end of a definition body holds nothing open', () => {
+  // S4 states this emptiness directly for a list item - `- >` / `X` closes it
+  // because "there is no open paragraph anywhere in the stack" - and a `dd` is
+  // the same question one construct over. The peel must not borrow the EMPTY
+  // BODY answer, which is `true` for the opposite reason: an empty definition
+  // body has nothing to protect, an empty quote has nothing to fold into.
+  const out = html(':: t\n:  >\ntail\n')
+  assert.ok(/<\/dl>\s*<p>tail<\/p>/.test(out), `tail must leave the definition: ${out}`)
+})
+
+test('the peel degrades at the nesting cap instead of overflowing', () => {
+  // MAX_NESTING_DEPTH promises a DEGRADATION on deeply nested input. A peel
+  // that turns once per marker with no budget throws a RangeError out of the
+  // layout automaton instead, which is the outcome the cap exists to prevent.
+  assert.doesNotThrow(() => html(':: t\n:  ' + '> '.repeat(12000) + 'x\ntail\n'))
+})
+
+test('an explicit blank quoted line closes the quote paragraph through the peel', () => {
+  // The trailing-blank skip is written for a definition body, where trailing
+  // blanks separate the body from what follows. Inside a quote a `>` line IS
+  // the quote's own blank and closes the paragraph above it, so the peel must
+  // not skip past it. The corpus does not see this: the shape stayed green
+  // across every document while the peel got it wrong.
+  const out = html(':: t\n:  > a\n   >\ntail\n')
+  assert.ok(/<\/dl>\s*<p>tail<\/p>/.test(out), `tail must leave the definition: ${out}`)
 })

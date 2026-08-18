@@ -1185,18 +1185,58 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false) {
  * body's only line is prose and holds an open paragraph; the same line under a
  * table row is that table's last row and holds none.
  */
-function bodyLeavesParagraphOpen(bodyLines) {
+function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
   let last = -1
   for (let k = bodyLines.length - 1; k >= 0; k--) {
     if (bodyLines[k].trim() !== '') { last = k; break }
   }
   // An empty body has nothing to fold into and nothing to protect: the
   // flush-left line IS the body, which is the `:  ` + pulled-block shape.
-  if (last < 0) return true
+  //
+  // An empty QUOTE is the opposite answer to the same emptiness, and S4 states
+  // it outright: `- >` / `X` closes the item because "there is no open
+  // paragraph anywhere in the stack". So the peel below cannot borrow this
+  // return, and `:: t` / `:  >` / `tail` must leave the definition.
+  if (last < 0) return !quoted
   for (let k = last; k >= 0 && bodyLines[k].trim() !== ''; k--) {
     if (bodyLines[k][0] !== '{') continue
     const al = tryAttrLine(bodyLines, k)
     if (al && al.next === last + 1) return false
+  }
+
+  /*
+   * A QUOTE'S OWN BODY ANSWERS, AND THE PEEL HAPPENS HERE -- PART 1 S4
+   * (carve#1348). S4 already says the question "is asked of a QUOTE
+   * recursively" and that "its own last block answers". `opensParagraph` peels
+   * a quote too, but it is handed ONE line, so a quote whose last block spans
+   * lines reaches it with no history: `> | a |` over `> + b |` arrived as
+   * `+ b |` with no table above it, which is prose, and the flush-left line
+   * folded into a definition whose body ends in a TABLE.
+   *
+   * Recursing on the quote's trailing run gives the peel the history it needs
+   * and needs no new rule: the body of a quote is a body like any other, so it
+   * is asked the same question by the same predicate.
+   *
+   * ON THE SAME BUDGET `opensParagraph` PEELS WITH, and for the same reason:
+   * one turn per marker on a line of ten thousand of them is a stack overflow
+   * where the cap promises a DEGRADATION, and a `RangeError` out of the layout
+   * automaton is exactly the outcome MAX_NESTING_DEPTH exists to prevent. Past
+   * the cap an opener is literal paragraph text, so the answer there is the
+   * one `opensParagraph` gives: prose, and a paragraph open.
+   */
+  if (QUOTE.test(bodyLines[last])) {
+    if (depth >= MAX_NESTING_DEPTH) return true
+    let first = last
+    while (first > 0 && QUOTE.test(bodyLines[first - 1])) first--
+    const inner = bodyLines.slice(first, last + 1).map((l) => QUOTE.exec(l)[1] ?? '')
+    // AN EXPLICIT `>` BLANK LINE IS THE QUOTE'S OWN BLANK, and it CLOSES the
+    // paragraph above it. The trailing-blank skip at the top of this function
+    // is written for a definition body, where trailing blanks are the
+    // separator between the body and what follows and carry no such meaning -
+    // so it must not run on a peeled quote, or `:  > a` over `   >` reports
+    // the paragraph `>` just ended as open and pulls the flush-left line in.
+    if (inner.length > 0 && inner[inner.length - 1].trim() === '') return false
+    return bodyLeavesParagraphOpen(inner, true, depth + 1)
   }
 
   return opensParagraph(bodyLines[last], false, tableOpenAfter(bodyLines.slice(0, last)))
@@ -1996,11 +2036,28 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let prevBlank = true // fences open only at BLOCK START (I4 otherwise)
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qPara = [] // its lines, for SS12's absorption test below
+      /*
+       * IS A TABLE OPEN INSIDE THE QUOTE? -- PART 9 SS5 T6 (carve#1348).
+       *
+       * `l[0] === '|'` below clears the open paragraph because a table row is a
+       * block, and a CONTINUATION ROW is one too: T6 gives it `table_cell`s and
+       * appends them onto the row above. It was missing here, so a quote ending
+       * on one recorded an open paragraph and the flush-left line below folded
+       * in - while the SAME quote ending on a standard row closed. One
+       * question, answered by how the last row was spelled.
+       *
+       * It needs the run because the shape alone does not answer: with no table
+       * above it a `+ ...|` line IS prose (carve#1345). This loop already walks
+       * the quote's own lines in order, so it can carry the run one line at a
+       * time and needs no lookahead.
+       */
+      let qTableOpen = false
       const trackFence = (l, idx) => {
         if (openFence) {
           const c = PURE_FENCE.exec(l)
           if (c && c[1][0] === openFence[0] && c[1].length >= openFence.length) openFence = null
           qOpenPara = false
+          qTableOpen = false
           qPara = []
           return
         }
@@ -2033,10 +2090,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // spelling it a second way here is how the two answers would drift.
         const absorbedColon = qOpenPara && COLON_CLOSER.test(l) &&
           !colonFenceInterrupts(l, hasFollowingBody(lines, idx), qPara)
+        // Asked with the run as it stood BEFORE this line, then advanced: a
+        // continuation row is a row relative to what is above it, never to
+        // itself.
+        const contRow = isContinuationRow(l, qTableOpen)
+        qTableOpen = tableRunStep(qTableOpen, l)
         if (!absorbedColon &&
             (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
-             l[0] === '|' || l[0] === '{' ||
+             l[0] === '|' || l[0] === '{' || contRow ||
              DEFLIST_TERM.test(l) || isLinkDef(l) ||
              FOOTNOTE_DEF.test(l))) {
           qOpenPara = false

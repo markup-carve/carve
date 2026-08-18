@@ -327,6 +327,7 @@ index: examples/edge-cases/index.md
   a-line-block-s-hard-break-keeps-its-backslash
   a-line-block-s-last-body-line-keeps-its-backslash
   a-closed-inline-construct-spanning-a-verse-boundary
+  a-container-whose-table-ends-on-a-continuation-row
   41-line-blocks-8
   12-inline-code-5
   24-generic-divs-2
