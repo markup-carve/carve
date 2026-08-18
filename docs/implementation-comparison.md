@@ -157,7 +157,8 @@ under the same semantic-span rule,
 `365-a-blank-line-before-a-sibling-marker-separates-the-items-whatever-consumed-it`,
 `366-a-raw-block-keeps-the-blank-line-at-the-end-of-its-payload-too`,
 `367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open`,
-`369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one`.
+`369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one`,
+`372-an-all-blank-raw-payload-still-emits-its-line`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative
