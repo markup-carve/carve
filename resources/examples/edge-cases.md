@@ -24402,10 +24402,10 @@ marker of `?^`, `?~`, or `?v`; every other use stays visible content.
 
 ```carve
 |=>^ Name |= Value |
-| ?v Bottom | ?~ Middle |
-| ?^ Top | plain |
-| ? lone | v? reversed |
-| ?< wrong | ^< axes |
+|?v Bottom |?~ Middle |
+|?^ Top | plain |
+|? lone |v? reversed |
+|?< wrong |^< axes |
 ```
 
 ```html

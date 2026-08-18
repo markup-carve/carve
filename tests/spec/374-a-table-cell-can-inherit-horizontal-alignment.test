@@ -2,10 +2,10 @@ A table cell can inherit horizontal alignment
 
 ```
 |=>^ Name |= Value |
-| ?v Bottom | ?~ Middle |
-| ?^ Top | plain |
-| ? lone | v? reversed |
-| ?< wrong | ^< axes |
+|?v Bottom |?~ Middle |
+|?^ Top | plain |
+|? lone |v? reversed |
+|?< wrong |^< axes |
 .
 <table>
   <thead><tr><th scope="col" style="text-align: right; vertical-align: top;">Name</th><th scope="col">Value</th></tr></thead>
