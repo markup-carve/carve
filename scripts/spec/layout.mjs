@@ -2732,6 +2732,12 @@ function collectItems(lines, i, list, state, ind, meas) {
     // Seeded from the MARKER LINE's own text, which is the paragraph's first
     // line and may itself be the malformed fence (`- :::note`).
     let para = [head.text]
+    // The collector also watches a nested list so a flush-left lazy line can
+    // resume this item's paragraph when the nested item ends on a closed block.
+    // Keep the outer state separate: the nested marker/heading must not turn
+    // the heading into a paragraph, nor erase a paragraph that remains open in
+    // the enclosing item (carve#1377).
+    let paraBeforeSublist = null
     /*
      * THE COLUMN OF A DEFINITION WHOSE BODY MAY STILL FOLLOW, or null.
      *
@@ -3220,7 +3226,10 @@ function collectItems(lines, i, list, state, ind, meas) {
         if (COMMENT_LINE.test(dedented)) afterComment = true
         else if (dmeas.rest !== '') afterComment = false
         // record the first sub-list's content column (carve#322)
-        if (subCol < 0 && nm && nm.indent >= contentCol) subCol = nm.indent + nm.markerWidth
+        if (subCol < 0 && nm && nm.indent >= contentCol) {
+          subCol = nm.indent + nm.markerWidth
+          paraBeforeSublist = openPara ? [...para] : []
+        }
         // does the deepest structure now hold an OPEN paragraph that lazy
         // text may fold into? markers open a sub-item paragraph; quotes an
         // open quoted paragraph; fences/breaks close everything (SS10 I2/I6)
@@ -3258,6 +3267,18 @@ function collectItems(lines, i, list, state, ind, meas) {
         // became a document sibling (carve#1345). Same clause, same spelling, as
         // the marker-line seed above.
         else if (dedented[0] === '|' || contRow) closePara()
+        // A HEADING AT THE CONTENT COLUMN is a block, not prose. PART 1 S4
+        // asks whether the item holds an OPEN paragraph and PART 9 §24 C3
+        // says this column is the item body's column 0. Falling through to
+        // `openParaWith` below classified the heading correctly in the nested
+        // parse but simultaneously recorded a paragraph for the collector, so
+        // a later flush-left line folded into an item that held none.
+        else if (HEADING.test(dedented)) closePara()
+        else if (subCol >= 0 && dmeas.col >= subCol && HEADING.test(dmeas.rest)) {
+          openPara = paraBeforeSublist !== null && paraBeforeSublist.length > 0
+          para = openPara ? [...paraBeforeSublist] : []
+          defBodyIndent = null
+        }
         // A SUB-LIST MARKER opens a paragraph only if the item it opens
         // CARRIES one, which is the quote branch's rule one construct over and
         // the same clause. `- a` / `  - # H` / `p` records an open paragraph

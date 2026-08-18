@@ -423,6 +423,14 @@
         control that says this is about the block's extent and not about
         indentation.
 
+        A HEADING IS THE VISIBLE CONTROL -- NORMATIVE (carve#1377). At the
+        content column it is the item's own heading block, and it leaves no
+        paragraph open. A following line at document column 0 therefore ends
+        the item under S4; it cannot lazily continue the heading or a paragraph
+        that does not exist. This is the same answer as a heading on the item
+        marker line and a heading inside a quote. The line's position changes
+        which container owns the heading, not whether the heading is a block.
+
         WHY THE ENUMERATION HAD TO GO. Read construct by construct, the same
         column answered three ways at once and no clause said why: an
         ATTRIBUTE BLOCK at a list item's content column ends the item in every

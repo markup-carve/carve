@@ -145,24 +145,7 @@ const PINNED_UNIMPLEMENTED = {
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {
-  // PART 11 §1b, ruled at markup-carve/carve#1325: a producer that flattens
-  // block content into an inline slot emits a separator at every boundary
-  // between two former sibling blocks. No engine ships it yet - all three
-  // joined the blocks with nothing - so these three expectations lead every
-  // build, the pinned one included. The MEANING assertion below still runs on
-  // each, and it is the half that says the expectation is right: it reads the
-  // expected render against the source document's own text, so the joined form
-  // fails it and the separated form passes.
-  '29-html-a-flattened-paragraph-boundary-survives':
-    'PART 11 §1b (carve#1325): the pin emits `onetwo`, joining two paragraphs into one word',
-  '30-html-flattened-emphasis-runs-do-not-merge':
-    'PART 11 §1b (carve#1325): the pin emits `*a**b*`, which re-reads as one strong run holding a literal asterisk',
-  '31-html-flattened-code-spans-do-not-merge':
-    'PART 11 §1b (carve#1325): the pin emits `` `a``b` ``, which re-reads as one code span holding the joined delimiters',
-  '32-html-an-empty-flattened-block-is-not-a-side':
-    'PART 11 §1b (carve#1325): the pin emits `ab`. The expectation also pins the half the meaning assertion cannot see - the empty block gets no separator of its own, so it is `a b` and not `a  b`',
-}
+const PINNED_DRIFT = {}
 
 /**
  * The visible text of an HTML fragment.
