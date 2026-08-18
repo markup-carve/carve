@@ -284,7 +284,7 @@ CarveCore {
   // their `attrs?`); the SS9 stack over these tokens then re-attaches it.
   fInner<d>  = ~(d "}") (rich | span | word | spComment | bracedComment | inlineSpace | litDelim
              | looseAttrs | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
-             | lt | gt | dquote | squote | hash | other)
+             | lt | gt | dquote | squote | hash | nl | other)
 
   // editorial: {+ins+} {-del-} {~old~>new~} {# comment #} (+ the doubled
   // {++...++} / {--...--} forms whose extra marker chars stay literal)
@@ -295,7 +295,7 @@ CarveCore {
   edComment  = edCommentBody attrs?
   // The body, without the attribute block - see `litInlineBody`.
   edCommentBody = "{#" (~"#}" edChar)* "#}"
-  edChar     = ~newline any
+  edChar     = any
 
   // raw inline passthrough: a code span whose trailing block is EXACTLY
   // {=format} (PART 9 SS20)
@@ -305,7 +305,7 @@ CarveCore {
   // content ends at the FIRST unescaped "]" (corpus 16-5)
   extension  = ":" extName "[" extContent "]" attrs?
   extName    = identStart identRest*
-  extContent = (escape | (~"]" ~newline any))*
+  extContent = (escape | (~"]" any))*
 
   // An attributed symbol shortcode `:name:{...}` wraps in a <span> carrying
   // the attribute block. Core has no symbol map, so an UNMAPPED symbol resolves
@@ -348,7 +348,7 @@ CarveCore {
   // `{+ +}`, `{- -}` and `{~ ~> ~}` take inline content and are deliberately
   // absent: an escape inside them IS an escape, so `[{+a\]b+}](u)` already has
   // a spelling.
-  brContent  = escape | litInlineBody | code | edCommentBody | nested | (~"]" ~newline any)
+  brContent  = escape | litInlineBody | code | edCommentBody | nested | (~"]" any)
   nested     = "[" brContent* "]"
   brTail     = linkTail | refTail | attrs | emptyAttrs
   linkTail   = "(" dest destTitle? ")" attrs?

@@ -155,9 +155,7 @@ function renderBlock(b, depth, ctx) {
   const ba = b.battrs ? renderBlockAttrs(b.battrs) : ''
   switch (b.t) {
     case 'para': {
-      const image = b.lines.length === 1
-        ? renderStandaloneImage(b.lines[0], b.caption === undefined ? ba : '', ctx)
-        : null
+      const image = renderStandaloneImage(b.lines.join('\n'), b.caption === undefined ? ba : '', ctx)
       if (image !== null) {
         // a standalone image paragraph renders as a bare <img> (PART 10)
         if (b.caption !== undefined) {
@@ -462,6 +460,13 @@ function renderStandaloneImage(line, attrs, ctx) {
   // `![t[z]][r]` on a line of its own missed this branch and fell through to
   // the inline pass (carve#1197). The LABEL half stays a pattern - a
   // `reference_label` really does stop at the first `]`.
+  // The ALT may hold a line boundary and the TAIL may not (carve#1352), and
+  // this pattern is deliberately NOT tightened for it: `[^\]]` does match a
+  // newline, but a label carrying one resolves against no definition - a
+  // definition marker is one line - so the branch declines and the paragraph
+  // falls through to the inline pass either way. Tightening it here changed no
+  // document and would have read as a guard doing work it never does. The
+  // reachable half of the same rule IS guarded, in `isCaptionableParagraph`.
   const altEnd = line.startsWith('![') ? bracketRunEnd(line, 1) : -1
   const ref = altEnd === -1 ? null : /^\[([^\]]*)\](\{[^}]*\})?$/.exec(line.slice(altEnd))
   if (ref) {
