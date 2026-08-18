@@ -24342,3 +24342,27 @@ a body-cell run overrides only that cell.
 ```
 
 :::
+
+## An all-blank raw payload still emits its line
+
+The payload is every line between the delimiters, so a sole blank line is not
+an absent block. For a matching raw format it contributes its newline exactly
+as a trailing blank does beside other content. The following paragraph keeps
+that newline away from the document end, where output trimming would hide it.
+
+::: compare
+
+````carve
+```=html
+
+```
+
+after
+````
+
+````html
+
+<p>after</p>
+````
+
+:::

@@ -1,0 +1,12 @@
+An all-blank raw payload still emits its line
+
+````
+```=html
+
+```
+
+after
+.
+
+<p>after</p>
+````
