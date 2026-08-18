@@ -1,0 +1,82 @@
+An unterminated fence at a content column opens no block, so the paragraph stays open
+
+````
+- q
+  ```
+tail
+.
+<ul>
+  <li>q
+<code>
+tail</code></li>
+</ul>
+````
+
+````
+:: t
+:  a
+   ```
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>a
+<code>
+tail</code></dd>
+</dl>
+````
+
+````
+> q
+> ```
+tail
+.
+<blockquote><p>q
+<code>
+tail</code></p></blockquote>
+````
+
+````
+- q
+  ```
+
+tail
+.
+<ul>
+  <li>q
+<code></code></li>
+</ul>
+<p>tail</p>
+````
+
+````
+- a
+
+  ```
+  b
+tail
+.
+<ul>
+  <li>a
+    <pre><code>b
+</code></pre>
+  </li>
+</ul>
+<p>tail</p>
+````
+
+````
+- q
+  ```
+  y
+  ```
+tail
+.
+<ul>
+  <li>q
+    <pre><code>y
+</code></pre>
+  </li>
+</ul>
+<p>tail</p>
+````

@@ -247,4 +247,38 @@
 # re-measurement did NOT move this file, and it is the only reason the state
 # above is worth writing down rather than superseding again.
 
-text (presence) 3
+# AND THE RELEASE-FREEZE MEASUREMENT, 2026-08-18, from fresh worktrees of every
+# engine's main: carve-js 020c73e8, carve-rs a33c42ad and carve-php f30ebd1,
+# over 1259 corpus documents plus 3 synthetic samples. Of 25,563 comparable
+# spans, ONE row disagrees across ONE document - and it is a different row.
+#
+#   text (presence)      3 -> 0   markup-carve/carve-php#1351, closed. AGREED,
+#                                 and the same fix emptied the OWED half of
+#                                 resources/ast-position-waivers.txt.
+#   hard_break (extent)  0 -> 1   NEW, and declared below.
+#
+# THE NEW ROW IS NOT A DISPUTE ABOUT OFFSETS. On
+# `346-a-line-block-s-last-body-line-keeps-its-backslash-4` all three engines
+# publish startOffset 8 and endOffset 10 - the backslash and the newline it
+# precedes - so all three span the markup and the §4 rule this panel usually
+# turns on does not separate them. They disagree about the LINE AND COLUMN that
+# offset 10 names: carve-js and carve-rs say line 3 column 1, carve-php says line
+# 2 column 5.
+#
+# WHICH `checkOpeningMarkup` CANNOT SETTLE, because it carries no `hard_break`
+# pattern and so names no side here. docs/ast-json.md settles it in one sentence
+# instead: "Break nodes own their line terminator and therefore end at column 1
+# of the following line." carve-php is the engine that moves.
+#
+# NARROW, AND CHECKED RATHER THAN ASSUMED. Thirty corpus documents produce a
+# `hard_break` and carve-php agrees with carve-rs on twenty-nine. The one it does
+# not is the one whose following line is a comment-only line the block layer
+# removes before any inline run; replace that line with ordinary content and
+# carve-php agrees, and with two breaks in one block only the one followed by the
+# removed line moves. Filed as markup-carve/carve-php#1457.
+#
+# DECLARED rather than tolerated, on the same terms as every block above: the row
+# fails this run the moment carve-php agrees, which is what makes deleting it the
+# closing step of that issue rather than a chore nobody is holding.
+
+hard_break (extent) 1

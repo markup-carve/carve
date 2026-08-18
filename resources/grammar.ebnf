@@ -564,6 +564,56 @@
         property governs leaves the wrong derivation available to the next
         reader, which is how it was reached once already (carve#980).
 
+        AND A FENCE THAT OPENED NO BODY IS NOT ONE EITHER (carve#1387). The
+        first bullet presumes a code fence body EXISTS. §10 I4 decides that, and
+        it is a question about the CLOSER: a fence interrupts an open paragraph
+        only when one follows it. Without a closer the line is ordinary
+        paragraph text, which is the answer every reader already gives at
+        document level for
+
+            q
+            ```
+            b
+
+        -- one paragraph holding an unclosed inline verbatim run, not a code
+        block. So at a container's content column
+
+            - q                 > q                 :  a
+              ```               > ```                  ```
+            tail                tail                tail
+
+        all three fold `tail` into the paragraph that is still open, and no
+        container ends. The LIST spelling is the one that diverged: the
+        executable spec, carve-php and carve-rs ended the item while rendering
+        the same fence line as paragraph text, which is one line answered two
+        ways inside a single parse -- the shape PROSE REOPENS THE PARAGRAPH
+        already names. All three of them fold the quote spelling, and this
+        implementation folded the `dd` spelling too, so the contradiction was
+        inside each reader rather than between them. The fence CHARACTER is not
+        a parameter either: the tilde spelling is the same clause.
+
+        THE CLOSER LOOKAHEAD DOES NOT STOP AT A BELOW-COLUMN LINE. §24 C3 folds
+        such a line as lazy text while a paragraph is open, so a closer written
+        below it is still written inside the container. Stopping there makes the
+        question circular -- the fence opens only if the line folds, and the
+        line folds only if the fence did not open -- and it answers
+
+            - a
+              ```
+              b
+             y
+              ```
+
+        differently from every engine, which ends the item at ` y` because this
+        fence does have its closer and a real body is open (corpus
+        276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column).
+
+        A BLANK LINE and a TERMINATED fence are the controls, and both are
+        unchanged: a blank closes the paragraph so S4's otherwise governs
+        (carve#1379), and a fence with a closer is a BLOCK whose body leaves no
+        paragraph open, which is the first bullet with its premise intact.
+        Corpus 367.
+
         AND NOTHING CLOSES MEANS THE CONTAINER GOES ON COLLECTING -- NORMATIVE
         (carve#980). S4's lazy branch says NOTHING closes, and that binds the
         lines AFTER the folded one as much as the folded one itself. A line
@@ -1875,7 +1925,36 @@ raw_block = code_fence_open, [space], "=", format_name, newline,
    an engine that re-indents only its non-`<pre>` interior lines passes that
    pair, so it cannot stand in for the other. Three engines gave three answers
    when carve#800 was filed; by the time the rule landed carve-js had moved and
-   it was one engine against two. *)
+   it was one engine against two.
+
+   THE PAYLOAD IS EVERY LINE BETWEEN THE DELIMITERS, blank lines included. A
+   blank line is a line, and the last one is payload exactly as an interior one
+   is. This is the property corpus 291 already states for a fence -- a blank
+   line inside a fence is content, and the last one is content too, wherever
+   the fence ends -- and a raw block's verbatim body follows it for the same
+   reason a code block's does. Neither the container the block sits in nor
+   whether the closer was written is a parameter: an unterminated raw block
+   runs to the end of whatever encloses it, and its payload still ends on the
+   line before that end.
+
+   A RAW BLOCK WRITTEN LAST IN THE DOCUMENT CANNOT SHOW THIS, and that is a
+   property of the output's end rather than of the block. The payload's
+   trailing newlines land where the trailing-whitespace trim removes them, so
+   every reader prints the same bytes there whatever it does with the payload.
+   A fixture for this rule therefore needs a block AFTER the raw block, or a
+   container closing around it.
+
+   That shape is why the case looked unsettled. carve#1389 measured the
+   document-final spelling, read four readers agreeing there against three of
+   four inside a list item, and concluded the odd reader was the consistent
+   one. Measured with a paragraph after the block instead, the split is not
+   between the two contexts at all: the reader that drops the blank inside an
+   item drops it at document level too, and the other three keep it in both.
+   What decides it is not the count either way but a contradiction inside that
+   reader, which keeps the same trailing blank as content in a CODE fence --
+   corpus 291's four documents, which it reproduces -- and drops it from a raw
+   block. Corpus 366 pins the document-level and in-item shapes plus a
+   no-blank control. *)
 
 format_name = "html" | "latex" | identifier ;
 raw_content = (* any content until closing fence *) ;

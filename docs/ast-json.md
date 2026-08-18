@@ -619,7 +619,7 @@ A row may name an issue only where one of those still declares the debt.
 |---|---|---|
 | carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together | every block and inline placed, except the categories §4 exempts: a coalesced `text` run, a table cell continued on a `+` line, and a verbatim run continued on a `+` line |
 | carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` | every block and inline placed, except the categories §4 exempts: a coalesced `text` run, a reassembled table cell, and a verbatim run continued on a `+` line |
-| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish on every corpus document | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the categories §4 exempts - a coalesced `text` run, a reassembled table cell, and a verbatim run continued on a `+` line - and one gap the other two engines do not have: a line block's spaced content, which they place and markup-carve/carve-php#1351 tracks |
+| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish on every corpus document | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the categories §4 exempts - a coalesced `text` run, a reassembled table cell, and a verbatim run continued on a `+` line |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
@@ -788,6 +788,19 @@ being true. That is the number worth carrying forward from this section: not
 which rows are declared, but how quickly a declared row stops describing
 anything, and therefore that the run - not the ledger, and not a merged pull
 request - is what answers a question about the engines.
+
+The seventh, on 2026-08-18 at carve-js `020c73e8`, carve-rs `a33c42ad` and
+carve-php `f30ebd1` over 1259 corpus documents, made that point again and
+changed the kind of row it makes it with. `text (presence)` came `AGREED` and
+carve-php's owed position findings emptied; what replaced it is
+`hard_break (extent)` on one document, where all three engines publish the same
+two offsets and disagree about the line and column the end offset names
+([carve-php#1457](https://github.com/markup-carve/carve-php/issues/1457)). The
+clause deciding it is not the markup-inclusive rule the other rows turn on but
+the sentence beside it: a break owns its line terminator and ends at column 1 of
+the following line. Three `permitted` position waivers went in the same run, two
+of them lines that had described a node carve-js and carve-rs were placing all
+along.
 
 An empty declaration is a statement about the corpus, which is the only thing
 the run measures. Four collapsed-reference labels the corpus does not hold - one
