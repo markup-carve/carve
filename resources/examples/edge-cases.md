@@ -24366,3 +24366,27 @@ after
 ````
 
 :::
+
+## A vertical table marker needs a horizontal partner
+
+Horizontal alignment may stand alone. Vertical alignment is meaningful only as
+the second axis of a paired run, so a lone `^` or `v` stays visible instead of
+silently changing layout. The order of a valid pair remains author-independent.
+
+::: compare
+
+```carve
+|=^ Top |=v Bottom |=<^ Paired |=v> Reverse |=~> Middle |
+| a | b | c | d | e |
+```
+
+```html
+<table>
+  <thead><tr><th scope="col">^ Top</th><th scope="col">v Bottom</th><th scope="col" style="text-align: left; vertical-align: top;">Paired</th><th scope="col" style="text-align: right; vertical-align: bottom;">Reverse</th><th scope="col" style="text-align: right; vertical-align: middle;">Middle</th></tr></thead>
+  <tbody>
+    <tr><td>a</td><td>b</td><td style="text-align: left; vertical-align: top;">c</td><td style="text-align: right; vertical-align: bottom;">d</td><td style="text-align: right; vertical-align: middle;">e</td></tr>
+  </tbody>
+</table>
+```
+
+:::
