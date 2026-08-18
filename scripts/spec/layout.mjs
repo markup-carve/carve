@@ -1144,15 +1144,18 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false) {
   // item's first line, and cannot reach into it.
   //
   // A QUOTE spans lines, so its content is not always its first block, and the
-  // peel does not carry the quote's own line history: this predicate is handed
-  // ONE line. The answer that produces is the CONSISTENT one. `> | a |` /
-  // `> + b |` / `tail` renders `tail` inside the quote in all three engines and
-  // here, so a quote that ends on a continuation row does not end the lazy run;
-  // reading the same quote through a `dd` used to say the opposite (`tail` left
-  // the definition), which made one document's answer depend on what was
-  // wrapped around it. carve-js and carve-php agree with the wrapped answer
-  // this now gives; carve-rs is the one that answers the two spellings
-  // differently.
+  // peel does not carry the quote's own line history. That history is the
+  // CALLER's to supply, which is what `tableOpen` is for: a caller walking a
+  // quote's lines in order knows the run and hands it in, and the quote reader
+  // does exactly that per depth (`nestedQuoteOpensParagraph`). A caller with
+  // only one line gets the one-line answer, and a `+ ...|` with no table it can
+  // see is prose - which is carve#1345's rule rather than a shortcut.
+  //
+  // This comment used to record the opposite as settled, on the ground that
+  // `> | a |` / `> + b |` / `tail` kept `tail` inside the quote everywhere.
+  // carve#1348 moved that: the quote's own tracker carries the run now, so the
+  // quote ends and `tail` is a document paragraph here and in carve-rs.
+  // carve-js and carve-php have not landed it yet (carve#1355).
   let openTable = tableOpen
   for (;;) {
     if (text.trim() === '') return false
@@ -2109,6 +2112,45 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
        * time and needs no lookahead.
        */
       let qTableOpen = false
+      /*
+       * The same run, one level down and per depth: a nested quote's own table
+       * state. `opensParagraph` is handed ONE line and cannot see it, so the
+       * outer tracker carries it here and hands it back in - which is what
+       * lets `> > | a |` / `> > + b |` be read as the table it is rather than
+       * as prose.
+       */
+      const qNestedTable = []
+      /*
+       * DOES THE NESTED QUOTE ON THIS LINE LEAVE A PARAGRAPH OPEN?
+       *
+       * Peels one marker per level, advancing that level's table run as it
+       * goes, and asks `opensParagraph` about the innermost text with the run
+       * as it stood BEFORE that text - a continuation row is a row relative to
+       * what is above it, never to itself, which is the same order the outer
+       * loop uses for its own rows.
+       */
+      const nestedQuoteOpensParagraph = (line) => {
+        let text = line
+        let depth = 0
+        while (QUOTE.test(text)) {
+          text = QUOTE.exec(text)[1] ?? ''
+          const before = qNestedTable[depth] ?? false
+          qNestedTable[depth] = tableRunStep(before, text)
+          depth++
+          // A run this line does not reach has ENDED, so its state is not a
+          // run any more. Keeping it let a later quote at the same depth
+          // inherit a table that closed before it: `> > | a |` / `> # H` /
+          // `> > + b |` opens a NEW inner quote whose first line is prose, and
+          // the stale run read it as a continuation row and ended the quote.
+          if (!QUOTE.test(text)) {
+            qNestedTable.length = depth
+            return opensParagraph(text, false, before)
+          }
+        }
+        qNestedTable.length = depth
+
+        return opensParagraph(text)
+      }
       const trackFence = (l, idx) => {
         if (openFence) {
           const c = PURE_FENCE.exec(l)
@@ -2152,10 +2194,33 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // itself.
         const contRow = isContinuationRow(l, qTableOpen)
         qTableOpen = tableRunStep(qTableOpen, l)
+        /*
+         * A QUOTE INSIDE A QUOTE IS ASKED WHAT IT ENDS ON -- PART 1 S4
+         * (carve#1355). S4 puts the question to a quote RECURSIVELY and says
+         * "its own last block answers"; this loop reads the OUTER quote's
+         * stripped lines, so a line still beginning with `>` is an inner
+         * quote's line and fell into the prose branch below whatever that
+         * quote ends on.
+         *
+         * The one-level spelling already answers correctly here, which is what
+         * makes this a contradiction rather than a gap: `> # H` over `tail`
+         * ends the quote in all four implementations, and `> > # H` over
+         * `tail` kept `tail` in the OUTER quote in three of them - as a
+         * paragraph continuing nothing, since the outer quote's last block is
+         * the inner quote and the inner quote's is a heading.
+         *
+         * `opensParagraph` is the same predicate the item collector uses and
+         * it already recurses through the marker, so the two containers cannot
+         * drift apart on the nested spelling the way they did on the bare one.
+         */
+        // Every depth ends when a line stops supplying its marker, so a line
+        // that is not a nested quote at all clears the whole ladder.
+        if (!QUOTE.test(l)) qNestedTable.length = 0
+        const nestedQuoteEnds = QUOTE.test(l) && !nestedQuoteOpensParagraph(l)
         if (!absorbedColon &&
             (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
-             l[0] === '|' || l[0] === '{' || contRow ||
+             l[0] === '|' || l[0] === '{' || contRow || nestedQuoteEnds ||
              DEFLIST_TERM.test(l) || isLinkDef(l) ||
              FOOTNOTE_DEF.test(l))) {
           qOpenPara = false

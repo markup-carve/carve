@@ -1,0 +1,176 @@
+A quote inside a quote is asked what it ends on
+
+```
+> > # H
+tail
+.
+<blockquote>
+  <blockquote>
+    <h1 id="H">H</h1>
+  </blockquote>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> # H
+tail
+.
+<blockquote>
+  <h1 id="H">H</h1>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> > | a |
+> > | b |
+tail
+.
+<blockquote>
+  <blockquote>
+    <table>
+      <tbody>
+        <tr><td>a</td></tr>
+        <tr><td>b</td></tr>
+      </tbody>
+    </table>
+  </blockquote>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> > ---
+tail
+.
+<blockquote>
+  <blockquote>
+    <hr>
+  </blockquote>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> > [r]: /u
+tail
+
+[r][]
+.
+<blockquote>
+  <blockquote>
+
+  </blockquote>
+</blockquote>
+<p>tail</p>
+<p><a href="/u">r</a></p>
+```
+
+```
+> > > # H
+tail
+.
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <h1 id="H">H</h1>
+    </blockquote>
+  </blockquote>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> a
+> > # H
+tail
+.
+<blockquote>
+  <p>a</p>
+  <blockquote>
+    <h1 id="H">H</h1>
+  </blockquote>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> > | a |
+> > + b |
+tail
+.
+<blockquote>
+  <blockquote>
+    <table>
+      <tbody>
+        <tr><td>a b</td></tr>
+      </tbody>
+    </table>
+  </blockquote>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> > > | a |
+> > > + b |
+tail
+.
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <table>
+        <tbody>
+          <tr><td>a b</td></tr>
+        </tbody>
+      </table>
+    </blockquote>
+  </blockquote>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> > a
+tail
+.
+<blockquote>
+  <blockquote><p>a
+tail</p></blockquote>
+</blockquote>
+```
+
+```
+> > # H
+> > a
+tail
+.
+<blockquote>
+  <blockquote>
+    <h1 id="H">H</h1>
+    <p>a
+tail</p>
+  </blockquote>
+</blockquote>
+```
+
+```
+> > | a |
+> # H
+> > + b |
+tail
+.
+<blockquote>
+  <blockquote>
+    <table>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+  </blockquote>
+  <h1 id="H">H</h1>
+  <blockquote><p>+ b |
+tail</p></blockquote>
+</blockquote>
+```

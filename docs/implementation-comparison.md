@@ -144,7 +144,8 @@ under the same semantic-span rule,
 `352-a-bracketed-construct-s-identifiers-stay-on-one-line`,
 `353-a-bracketed-construct-spanning-a-verse-boundary`,
 `354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold`,
-`355-a-container-whose-table-ends-on-a-joined-header-row`.
+`355-a-container-whose-table-ends-on-a-joined-header-row`,
+`356-a-quote-inside-a-quote-is-asked-what-it-ends-on`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative
