@@ -1577,6 +1577,29 @@ admonition = admonition_open, newline,
    opener with no exact closer ahead opens nothing: a comment block is
    invisible either way, so failing closed costs nothing there.
 
+   ONLY LAZY FOLDING TAKES THE OPENER BACK. "An opener always opens" has one
+   exception and it is not a blank line. A `:::` opener written as the sole
+   content of a list item's MARKER LINE opens nothing when its whole body
+   arrived by LAZY FOLDING -- lines that sat below the item's content column
+   and folded into the paragraph the opener line left open, which never
+   belonged to the container in the first place:
+
+       - ::: d          - ::: d
+       tail
+                        tail
+
+   is literal item text on the left and an EMPTY div on the right. A blank
+   line is the container's own content, not a folded line, so an opener a
+   blank follows has opened an empty container exactly as one at end of input
+   has. The executable spec asked only whether the body was non-empty, which a
+   lone blank satisfies, and demoted the right-hand spelling to literal text
+   while answering the same opener correctly at end of input, with its closer,
+   with a body line, and inside a quote. That reads one blank line as content
+   in the collector and as absence of content in the block parser. carve-js,
+   carve-php and carve-rs open the div. Corpus 364 pins both sides, the second
+   as the control a fix that stopped asking about folding would flip.
+   (carve#1382)
+
    OPAQUE SPANS (PART 9 §12). `{block - admonition_close}` is a BLOCK
    sequence, so a fenced code block, a raw block and a comment block inside
    the body are single blocks and their lines are never examined for a

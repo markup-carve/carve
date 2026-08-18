@@ -23715,3 +23715,69 @@ carve-php write it in all of them (carve#1381).
 ```
 
 :::
+
+## Only lazy folding demotes a marker-line colon opener
+
+A `:::` opener written as the sole content of a list item's marker line opens a
+container. What takes that away is LAZY FOLDING and nothing else: an opener whose
+whole body arrived from lines that folded in from below the item's content column
+never acquired container content at all, so it stays literal text. A blank line is
+not one of those lines. It is the container's own content - the item collector
+keeps it in the item body precisely because a colon fence is open above it - so an
+opener a blank follows has opened an EMPTY container, not no container.
+
+The executable spec demoted it. Its guard asked only whether the body was
+non-empty, and a lone blank line satisfied that, so `- ::: d` before a blank read
+as literal item text while every neighbouring spelling of the same opener was
+right: at end of input, with its closer at the content column, with a body line,
+and inside a quote instead of an item. Four correct neighbours against one wrong
+one, and the difference was a line the collector had already decided was content.
+carve-js, carve-php and carve-rs open the div (carve#1382).
+
+::: compare
+
+```carve
+- ::: d
+
+tail
+```
+
+```html
+<ul>
+  <li>
+    <div class="d">
+
+    </div>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+:::
+
+CONTROL, and the shape the guard exists for. Here the body really is lazy: `tail`
+sits below the item's content column and folds into the open paragraph the opener
+line left, so the opener never acquired a body of its own and the whole item is
+literal text. The blank that follows rides alongside that folded line and does not
+rescue the opener - a reader that stopped asking whether folding happened, and
+asked only whether the body was free of blanks, would answer this one wrong in the
+other direction.
+
+::: compare
+
+```carve
+- ::: d
+tail
+
+after
+```
+
+```html
+<ul>
+  <li>::: d
+tail</li>
+</ul>
+<p>after</p>
+```
+
+:::
