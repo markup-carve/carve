@@ -299,23 +299,85 @@
         document level only, so inside a container the line is ordinary
         paragraph text and reopens the paragraph like any other prose.
 
-        THE DEFINITION LINE IS WHAT THIS REACHES. A footnote definition's own
-        indented BODY continuation is not a definition line, and what paragraph
-        state the item is left in after one divides carve-rs from carve-php and
-        this implementation today: carve#1357. The NESTED spelling
-        (`- outer` / `  - inner` / `    [r]: /u` / `tail`) is unanimous and
-        belongs to the nested half this clause already leaves open above.
+        AT A CONTAINER'S CONTENT COLUMN, A BLOCK ENDS THE PARAGRAPH IT SITS
+        UNDER -- NORMATIVE (carve#1350, carve#1357). The clause above names a
+        definition and a comment; this is the rule both are instances of, and
+        it is stated as a property because the instances are not enumerable.
 
-        THE COMMENT'S LIST-ITEM SPELLING IS NOT DECIDED HERE. `- a` /
-        `  %% c` / `tail` folds in all three engines and in the executable
-        spec, while the `dd` spelling one construct over does not, so the two
-        containers still answer a comment differently. The argument runs both
-        ways and neither side is free: §17 L1a refuses to let an invisible
-        construct have a visible effect (carve#625), and ending the item would
-        give it one -- but that is equally true of the `dd` above, where
-        ending the paragraph is held to be a different question from being
-        one. Recorded rather than glossed, because the shape is one line of
-        implementation away from either answer.
+        §24 C3 says the content column IS the container body's column 0: "a
+        block opener is recognized there exactly as a block opener is
+        recognized only at column 0 at the top level". So a line there is read
+        as a BLOCK, and a block ends the paragraph above it. WHAT THE BLOCK
+        RENDERS IS NOT A PARAMETER. A comment, a link or footnote definition
+        and an attribute block all render nothing and all three end the
+        paragraph; none of them closes the container. The container ends
+        because the FOLLOWING line is at DOCUMENT column 0 with no open
+        paragraph anywhere in the stack to continue -- S4's own "otherwise".
+
+        THE RULE IS OVER THE BLOCK, NOT OVER ITS FIRST LINE. A footnote
+        definition's indented BODY continuation is part of that block: the
+        footnote parser consumes it and permits no lazy continuation into it,
+        so nothing of the container's is open across any of it. `- a` /
+        `  [^f]: t` / `    more` / `tail` therefore ends the item exactly as
+        `- a` / `  [^f]: t` / `tail` does, and the two spellings of one
+        definition stop answering differently (carve#1357). A LINK reference
+        definition has no such body - it is one line in Carve, and an indented
+        line under it is ordinary container text in every reader, which is the
+        control that says this is about the block's extent and not about
+        indentation.
+
+        WHY THE ENUMERATION HAD TO GO. Read construct by construct, the same
+        column answered three ways at once and no clause said why: an
+        ATTRIBUTE BLOCK at a list item's content column ends the item in every
+        implementation, a DEFINITION there ends it in most, and a COMMENT
+        there ended it in none - while the same comment one container over, at
+        a definition body's content column, does end it. Two of those splits
+        are by construct and one is by container, and §10 I5 makes all of them
+        interrupters. So `- a` / `  %% c` / `tail` ends the item, and so does
+        the `%%%` fence spelling of it, which travels with its opener (§24 C3).
+
+        THE §17 L1a OBJECTION DOES NOT REACH THIS. carve#621 and carve#625
+        ruled that an invisible line is NOT A PARAGRAPH for looseness. Whether
+        a line IS a paragraph and whether it ENDS one are different questions,
+        which is what the `dd` half of carve#1350 already turned on - and the
+        attribute block settles it by measurement rather than by argument,
+        since it is invisible, it ends the item, and every implementation
+        already agrees it does. An objection that would forbid that is an
+        objection to something nobody does.
+
+        WHAT THIS DOES NOT REACH, and both are unchanged. BELOW the content
+        column at a NONZERO column, the following line reaches the container
+        only through S4's lazy fold, and §24 C3's comment exception keeps that
+        path open: `- a` / `  %% c` / ` b` keeps `b` in the item, and corpus
+        189 and 192 pin the nested spelling of it. A line at DOCUMENT column 0
+        is not below a column - it is AT the enclosing context's own block
+        position, the distinction C3 already draws for a definition. And a line
+        AT the content column after the block is the container's own second
+        paragraph, which it was before.
+
+        A BLANK-SEPARATED footnote body is also not reached. A footnote
+        definition may carry more than one block, and the item's reach here is
+        the CONTIGUOUS indented run: a blank line ends it, so the indented line
+        after the blank reopens the item's paragraph. That shape divides FOUR
+        ways today -
+
+            - a
+              [^f]: t
+
+                more
+            tail
+
+        carve-js gives the note two blocks and folds `tail`, carve-php gives it
+        one and folds `more` into the item as well, carve-rs gives it two and
+        ends the item, and this implementation gives it two and folds `tail`.
+        A rule stated over the block's extent implies carve-rs's answer, but
+        reaching it means the container reader modelling the footnote parser's
+        own multi-block extent, which is a ruling of its own rather than a
+        consequence of this one: carve#1363.
+
+        The NESTED spelling (`- outer` / `  - inner` / `    [r]: /u` / `tail`)
+        is unanimous and belongs to the nested half this clause leaves open
+        above; it is not decided here.
 
         A FENCED BODY IS NOT A PARAGRAPH -- NORMATIVE (carve#646). The same
         rule, with the unmatched container's last block a CODE FENCE opened on

@@ -2718,9 +2718,20 @@ function collectItems(lines, i, list, state, ind, meas) {
     // Seeded from the MARKER LINE's own text, which is the paragraph's first
     // line and may itself be the malformed fence (`- :::note`).
     let para = [head.text]
-    const closePara = () => { openPara = false; para = [] }
-    const startPara = () => { openPara = true; para = [] }
-    const openParaWith = (line) => { if (!openPara) para = []; openPara = true; para.push(line) }
+    /*
+     * THE COLUMN OF A DEFINITION WHOSE BODY MAY STILL FOLLOW, or null.
+     *
+     * A definition is ONE BLOCK, and its indented continuation lines are that
+     * block's own content rather than the item's prose. Every path that ends a
+     * paragraph ends the definition's reach too, which is why this is cleared
+     * in `closePara` and `startPara` rather than at each branch: a blank line
+     * or any other block between the definition and an indented line means the
+     * indented line is not that definition's body.
+     */
+    let defBodyIndent = null
+    const closePara = () => { openPara = false; para = []; defBodyIndent = null }
+    const startPara = () => { openPara = true; para = []; defBodyIndent = null }
+    const openParaWith = (line) => { if (!openPara) para = []; openPara = true; para.push(line); defBodyIndent = null }
     // A blank line was seen, and what followed it attached INVISIBLY (a comment,
     // a definition). §17 L1's second clause - an item followed by a blank line
     // before the next sibling marker - still applies when that sibling arrives,
@@ -3040,6 +3051,10 @@ function collectItems(lines, i, list, state, ind, meas) {
         // Read BEFORE the push, because the push advances the table run past
         // this very line: `isContinuationRow` is asked what was open ABOVE it.
         const contRow = isContinuationRow(dedented, tableOpen)
+        // The definition whose body may still be running, as it stood BEFORE
+        // this line: the classifier below clears the flag through `closePara`
+        // and `startPara`, so the value has to be read first.
+        const defBody = defBodyIndent
         pushLine(dedented, dmeas)
         // Advance the incremental three-kind tracker so the blank-line branch
         // above knows whether an interior blank is fence content.
@@ -3152,7 +3167,39 @@ function collectItems(lines, i, list, state, ind, meas) {
         // definition, and an abbreviation definition is recognized at document
         // level only (line 1453), so inside an item the line is paragraph text
         // and reopening the paragraph is the correct answer for it.
-        else if (isLinkDef(dedented) || FOOTNOTE_DEF.test(dedented)) closePara()
+        else if (isLinkDef(dedented) || FOOTNOTE_DEF.test(dedented)) {
+          closePara()
+          // ONLY A FOOTNOTE DEFINITION HAS A BODY. A link reference definition
+          // is ONE LINE in Carve: an indented line under it is not its title
+          // but ordinary item text, and all three engines render it so
+          // (`- a` / `  [r]: /u` / `    "T"` publishes the quoted string). So
+          // only the footnote kind opens a body run below.
+          if (FOOTNOTE_DEF.test(dedented)) defBodyIndent = dmeas.col
+        }
+        /*
+         * A FOOTNOTE DEFINITION'S OWN BODY LEAVES THE PARAGRAPH CLOSED -- carve#1357.
+         *
+         * The interrupter above is a BLOCK, and a definition's indented
+         * continuation is part of that block: the footnote parser consumes it
+         * and permits no lazy continuation into it. So nothing of the item's is
+         * open across any of it, and the flush-left line below arrives with
+         * nothing to fold into - the same derivation the one-line spelling
+         * already gets.
+         *
+         * Read as ordinary residue it fell to the catch-all below and REOPENED
+         * the paragraph the definition had just closed, so the two spellings of
+         * one definition answered differently: `- a` / `  [^f]: t` / `tail`
+         * ended the item and `- a` / `  [^f]: t` / `    more` / `tail` folded.
+         * carve-rs answers both the same; carve-js and carve-php answer neither.
+         *
+         * `defBodyIndent` is the definition line's own column, so a line at or
+         * below it is a sibling of the definition rather than its body and
+         * takes the branches above instead.
+         */
+        else if (defBody !== null && dmeas.col > defBody && dmeas.rest !== '') {
+          closePara()
+          defBodyIndent = defBody
+        }
         else if (dmeas.rest !== '') openParaWith(dedented)
         i++
         continue
@@ -3296,7 +3343,25 @@ function collectItems(lines, i, list, state, ind, meas) {
       // All three engines fold ` # h`, ` > q`, ` ::: d` and ` | a |` after a
       // closed comment fence as item text, and only the two MARKER shapes take
       // the branch above (carve#682).
-      if (!nm && (openPara || afterComment) && itemLines.length > 0 && !startsVisibleBlock(line) && !isTableRow(line) && !COLON_FENCE.test(line) && !(FENCE.test(line) && hasCloser(lines, i))) {
+      // `afterComment` STOPS AT DOCUMENT COLUMN 0 -- carve#1350's fourth shape.
+      // §24 C3's comment exception keeps the item open, and a line BELOW the
+      // content column reaches the item only through this fold, so taking the
+      // path away would leave it nowhere: that is the case the clause is
+      // written about and all three engines answer it that way. A line at
+      // DOCUMENT column 0 is not below a column - it is AT the enclosing
+      // context's own block position, which is the distinction C3 already
+      // draws for a definition ("column 0 is the surrounding document's own
+      // opener column"). With no paragraph open there is nothing for it to
+      // continue, so PART 1 S4 leaves it to the enclosing parse and the item
+      // ends because the line is at column 0.
+      //
+      // Without the column test the item and the `dd` answered the SAME
+      // construct differently - the `dd` ends on a content-column comment
+      // (carve#1350 part 1) and the item folded - and the item answered the
+      // comment and the definition differently at one column, though §10 I5
+      // makes both interrupters and an ATTRIBUTE BLOCK there already ends the
+      // item in every implementation. Two enumerations, one rule.
+      if (!nm && (openPara || (afterComment && lm.col > 0)) && itemLines.length > 0 && !startsVisibleBlock(line) && !isTableRow(line) && !COLON_FENCE.test(line) && !(FENCE.test(line) && hasCloser(lines, i))) {
         // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
         // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/
         // heading does via startsVisibleBlock -- FENCE only matches at column 0,
