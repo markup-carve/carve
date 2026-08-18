@@ -8,7 +8,7 @@
  * schema alone cannot tell the two apart - `additionalProperties: false` checks
  * that no engine invents a field, and nothing checked the other direction.
  *
- * That gap is the same shape as PART 10 §10a, which every engine violated
+ * That gap is the same shape as PART 11 §10a, which every engine violated
  * identically, and as §3a's resolved half, which the reference implementation
  * did not meet: a rule stated in one place, enforced in none. Here it hid
  * `block_quote.attribution`, described as "the `-- attribution` line" - a syntax

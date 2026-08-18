@@ -134,7 +134,7 @@ authored text it may have a reason to withhold, so it must be able to name the
 type. "Renders nothing" described one target out of four.
 
 **`link_reference_definition` moves with it**, which is what this page has always
-said - the two are one case. The reason is now PART 10 §10a rather than a
+said - the two are one case. The reason is now PART 11 §10a rather than a
 measurement: that clause is normative, and since PART 12 §10 gave the link
 definition a node it covers all three definition kinds, requiring an unused
 definition of any kind to survive the Markdown, plain-text and terminal
