@@ -542,6 +542,14 @@ and carve-rs; off by default, enable per processor.
   row-header `<th>` (default 0).
 - `{footer-rows=N}` makes the final N rows a table foot. Header and footer
   counts together may not exceed the row count.
+- A boolean `{header-row}` attribute abutting the first inner cell marker
+  (`- -{header-row} Cell`) starts a body group whose leading marked rows are column
+  headers. The marker travels with the row, so inserting rows cannot silently
+  retarget it. Consecutive marked rows form one group's header; a later marked
+  row starts the next `<tbody>`.
+- A boolean `{header}` on an inner cell marker (`  -{header} Cell`)
+  promotes that individual cell to `<th>`. A body-row header defaults to
+  `scope="row"`; a cell in a header row defaults to `scope="col"`.
 - `{aligns="left,right"}`, `{valigns="top,bottom"}`, and `{widths="30,70"}`
   use the same positional,
   comma-separated column lists as core pipe tables. Empty entries are unset;
@@ -566,7 +574,8 @@ and carve-rs; off by default, enable per processor.
   `rowspan`/`colspan` wins over an author-written one.
 - The `<table>` output matches the equivalent pipe table's span markup.
 - A foot renders as `<tfoot>` and maps to `rowGroups.footRows` in the exchange
-  AST. Column alignment resolves into cell styles and
+  AST. Intermediate marked headers map to `rowGroups.bodies[].headRows`, and
+  explicitly marked cells map to `table_cell.header`. Column alignment resolves into cell styles and
   widths render through `<colgroup>`/`<col>` before the row groups.
 - Multiple body groups remain exchange-AST metadata. ListTable has one body
   list, so a canonical source writer flattens `rowGroups.bodies` into that body
@@ -582,18 +591,17 @@ byte-identical to the plain div.
 
 ### 5.4 Conformance (`tests/corpus-optional`)
 
-Tier-2, so not in the mandatory corpus: case `26-list-table-caption-inline` pins
-the caption's inline markup in `tests/corpus-optional`, run per §3 whenever the
-feature is enabled. The rest of the contract is cross-impl parity: for a
-given input the three implementations produce the same `<table>`, and spans match
-the equivalent pipe table. Each implementation pins that in its own test suite
-(block cells, caption, header rows/cols, spans, escape, ragged padding, the
-no-cell-row defer, and the thead/tbody rowspan clamp).
+Tier-2, so not in the mandatory corpus. The shared optional corpus pins the
+caption (case 26), leading header rows/columns (42), column metadata and the
+foot (44), and local row/cell headers (45); run it per §3 whenever the feature
+is enabled. The three implementations additionally pin malformed degradation,
+spans, ragged padding, and row-group boundary clamping in their own suites.
 
 ### 5.5 Out of scope (impls MAY differ)
 
-- Multiple independently authored body groups remain exchange-AST-only; no
-  ListTable source spelling is defined for them.
+- Empty body-group boundaries with no header row remain exchange-AST-only;
+  `{header-row}` spells the useful independently authored groups that begin with
+  one or more intermediate header rows.
 - Deeply ambiguous overlapping-span soup (a marker glued to another, or a `^`
   inside the interior of an existing merged rectangle) resolves however the
   native pipe-table grid walk resolves it; not pinned.

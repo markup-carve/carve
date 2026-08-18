@@ -86,8 +86,10 @@ It holds **counts, never rows**: the counts consume `rows` in order and have to
 account for every row exactly once, so the grouping can never contradict the
 table's content. `rows` stays the one sequence every consumer reads. Absent
 means the implicit structure renderers already derive - a leading run of header
-rows as the head, everything after it as one body, no foot - so a parser never
-synthesizes the field and no existing tree changes shape. Like `shortCaption`,
+rows as the head, everything after it as one body, no foot. Core pipe-table
+parsers do not synthesize the field; ListTable-aware converters may synthesize
+the head, header-led body groups, foot and row-header columns its attributes
+spell. Partitions without those landmarks remain interchange-only. Like `shortCaption`,
 it exists so a richer table model (several `tbody` groups, a group's own
 intermediate header rows, a foot, a count of leading row-header columns)
 survives a format bridge; HTML, plain and ANSI output ignore it and keep

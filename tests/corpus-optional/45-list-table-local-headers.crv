@@ -1,0 +1,10 @@
+::: list-table
+- -{header-row} Name
+  - Value
+- - Alpha
+  - 1
+- -{header-row} Name again
+  - Value again
+- - Beta
+  -{header} Total
+:::

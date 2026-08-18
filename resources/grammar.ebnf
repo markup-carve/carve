@@ -10384,9 +10384,10 @@ EOF = (* end of file *) ;
       a table whose rows are all head and foot is a partition like any other,
       and refusing it would make a head-only table the one shape the field
       cannot describe. It is the representation of a
-      table model richer than the one Carve source can spell: several body
+      table model richer than a core pipe table can spell: several body
       groups, a group's own intermediate header rows, a foot, and a count of
-      leading row-header columns per group.
+      leading row-header columns per group. The standard ListTable extension
+      spells the useful header-led groups, foot and leading row headers.
 
       IT PARTITIONS `rows`; IT DOES NOT REPEAT THEM. `rowGroups` holds counts,
       never row nodes. The counts consume `rows` in order -- `headRows` first,
@@ -10418,16 +10419,15 @@ EOF = (* end of file *) ;
       ABSENT MEANS TODAY'S STRUCTURE, and this is why the field breaks nothing:
       a table without `rowGroups` has the implicit partition every renderer
       already derives -- the leading run of header rows as the head, everything
-      after it as one body, no foot, no row-head columns. A parser therefore
-      never synthesizes the field, since Carve 0.1 source has no spelling that
-      would distinguish those cases, and it need not: the implicit reading is
-      already correct for every table a source document can produce.
+      after it as one body, no foot, no row-head columns. A CORE PIPE-TABLE
+      parser therefore never synthesizes the field; a ListTable-aware converter
+      MAY synthesize the explicit partition its extension attributes spell.
 
-      CARVE 0.1 SOURCE HAS NO SPELLING FOR THIS FIELD. Like `shortCaption` in
-      §14, it enters a tree through an AST consumer or a format bridge and
-      survives AST encode/decode by §6. Being able to REPRESENT a grouping is
-      not being able to AUTHOR one: core pipe tables do not grow a second
-      separator language for it.
+      CORE PIPE-TABLE SOURCE HAS NO SPELLING FOR THIS FIELD. Like
+      `shortCaption` in §14, richer partitions may enter through an AST consumer
+      or format bridge and survive AST encode/decode by §6. The ListTable
+      extension authors a leading head, header-led body groups, a foot and
+      leading row-header columns; empty group boundaries remain interchange-only.
 
       ORDINARY HTML, PLAIN AND ANSI OUTPUT IGNORE `rowGroups`. They keep
       rendering the flat `rows` exactly as they do now, which flattens the
