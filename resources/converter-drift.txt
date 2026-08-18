@@ -23,11 +23,25 @@
 #
 # Format: <engine>/<case-slug><space><space><reason>
 
-# NO ENTRIES. Every engine converts every case in its formats to the corpus's
-# expectation, so there is nothing to declare - which is the state this file is
-# meant to be returned to, not an unusual one.
+# PART 11 section 1b, ruled at carve#1325: a producer that flattens block
+# content into an inline slot emits a separator at every boundary between two
+# former sibling blocks. Measured 2026-08-18, no engine does: all three join the
+# blocks with nothing, so all three lead the corpus on all three cases. Each
+# line goes in the commit that lands the fix for that engine.
+rust/29-html-a-flattened-paragraph-boundary-survives  emits `onetwo`; PART 11 s1b not implemented
+rust/30-html-flattened-emphasis-runs-do-not-merge  emits `*a**b*`; PART 11 s1b not implemented
+rust/31-html-flattened-code-spans-do-not-merge  joins the two code spans; PART 11 s1b not implemented
+js/29-html-a-flattened-paragraph-boundary-survives  emits `onetwo`; PART 11 s1b not implemented
+js/30-html-flattened-emphasis-runs-do-not-merge  emits `*a**b*`; PART 11 s1b not implemented
+js/31-html-flattened-code-spans-do-not-merge  joins the two code spans; PART 11 s1b not implemented
+php/29-html-a-flattened-paragraph-boundary-survives  emits `onetwo`; PART 11 s1b not implemented
+php/30-html-flattened-emphasis-runs-do-not-merge  emits `*a**b*`; PART 11 s1b not implemented
+php/31-html-flattened-code-spans-do-not-merge  joins the two code spans; PART 11 s1b not implemented
+rust/32-html-an-empty-flattened-block-is-not-a-side  emits `ab`; PART 11 s1b not implemented
+js/32-html-an-empty-flattened-block-is-not-a-side  emits `ab`; PART 11 s1b not implemented
+php/32-html-an-empty-flattened-block-is-not-a-side  emits `ab`; PART 11 s1b not implemented
 #
-# An empty ledger and an unwired gate look identical from outside, so read the
+# A ledger and an unwired gate look identical from outside, so read the
 # converter summary rather than this file: `npm run compare:convert` prints a
-# convert_pass count per engine, and it is that count, not this emptiness, that
-# says the cases are being converted and compared.
+# convert_pass count per engine, and it is that count, not the contents here,
+# that says the cases are being converted and compared.

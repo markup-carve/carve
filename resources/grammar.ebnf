@@ -6856,6 +6856,123 @@ EOF = (* end of file *) ;
       frontmatter closer from a later break, which is the shape §6a's
       normalization only made more common.
 
+   1b. A FLATTEN PRESERVES THE BOUNDARY IT DISSOLVES -- NORMATIVE. §1a settles
+      what a producer owes where §1's invariant CAN hold. This settles what it
+      owes where the invariant cannot hold at all.
+
+      A slot that takes INLINE content only -- a caption line, a fence title, a
+      table cell, an image's alternative text, a definition term -- cannot
+      carry blocks. A producer handed block content for such a slot therefore
+      FLATTENS it, and the flatten is lossy by construction: the emitted
+      document holds fewer blocks than the tree it was written from, so
+      `parse(fmt(x)) == parse(x)` is unattainable here and §1 is not the rule
+      that applies. What the producer still owes is the BOUNDARY.
+
+      THE RULE. Where two former sibling blocks each contribute at least one
+      TOKEN to the slot, the producer MUST emit a separator between them, and a
+      separator is sufficient IF AND ONLY IF re-reading the emitted slot draws
+      no token from both sides of the join: no word, no delimiter run, no
+      construct delimiter. Stated as a property and not as a list of the pairs
+      that collide, because the pairs are not enumerable -- every inline
+      construct Carve has, and every one it gains, can end one block and begin
+      the next.
+
+      A BLOCK THAT CONTRIBUTES NOTHING IS NOT A SIDE, which is why the rule is
+      written over contributed tokens rather than over sibling positions.
+
+        <figcaption><p>a</p><p></p><p>b</p></figcaption>
+
+      holds three blocks and one join: the empty one puts no token in the slot,
+      so there is no boundary to protect beside it and a separator there would
+      be whitespace no author wrote. The emitted caption is `a b` and not
+      `a  b`. This is not the conditioning refused below -- it asks whether a
+      side exists at all, not what characters happen to sit on one.
+
+      THE FAILURES ARE ONE FAILURE, and only some of them have a visible face.
+      Measured 2026-08-18 against carve-js `79b3b3b`, carve-php `c15ceeb` and
+      carve-rs `6976b60f`, each flattening a `<figcaption>` holding two
+      paragraphs, all three agreeing on every row:
+
+        <p>one</p><p>two</p>                    ->  onetwo
+        <p><strong>a</strong></p>
+        <p><strong>b</strong></p>               ->  *a**b*
+        <p><code>a</code></p>
+        <p><code>b</code></p>                   ->  `a``b`
+
+      The first loses the boundary as CONTENT: `onetwo` re-reads as one word
+      and the reader sees a misspelling. The second and third lose it as
+      STRUCTURE: `*a**b*` re-reads as one strong run holding a literal
+      asterisk, and the third as one code span holding the joined
+      delimiters. Nothing is DROPPED in any of them, which is why no diagnostic
+      fires for any of them -- an importer's unwrap note reports that a `<p>`
+      was unwrapped and says nothing about what the unwrapping joined.
+
+      The third row was not among the two reported at carve#1325. It is the
+      reason the rule is a property: a ruling written to the two shapes in hand
+      would have left the code span for the next release, and the caption slot
+      is not the only inline-only slot either.
+
+      THE UNIT IS THE TOKEN, NOT THE NODE, and that difference is the whole
+      rule. A node test passes `onetwo` and `one two` alike -- both are a
+      single `text` node -- while the boundary a reader recovers from one and
+      cannot recover from the other is a token boundary. So the test is stated
+      where the loss is.
+
+      IT IS §23's TEST READ BACKWARDS. PART 9 §23 states the forward half for a
+      LINE boundary: ONE boundary produces ONE node, "however the boundary is
+      spelled", and a backslash break and a verbatim run are exempt for one
+      reason -- both leave NO NODE, so there is no boundary left in the tree to
+      convert. A flatten is that situation arriving from the other side. The
+      block boundary leaves no node either, because the slot has nowhere to put
+      one, so it survives only in the BYTES -- and the bytes are read by a
+      tokenizer.
+
+      THE CANONICAL SEPARATOR IS ONE SPACE (U+0020), emitted at every such
+      boundary and conditioned on nothing further. A space ends a word and ends
+      a delimiter run, and it is neither punctuation nor alphanumeric, so it
+      cannot combine with the characters on either side of it into a construct
+      neither block wrote. The emitted forms of the three documents above are
+      `one two`, then `*a* *b*`, then the two code spans separated the same
+      way. Conditioning it on the neighbouring CHARACTERS -- emitting it only
+      where a collision looks likely -- is the source-pattern test §1a already
+      refuses: the question is about the bytes the producer is about to emit,
+      and a producer able to answer it is equally able to just emit the space.
+
+      WHAT THIS CLAUSE DOES NOT REACH, so that the division is not rediscovered
+      per report: a character that was TEXT in one of the blocks and becomes a
+      live delimiter once its neighbour is beside it is an ESCAPING question,
+      and §2 read through §1a already answers it -- the writer reads its own
+      OUTPUT, and escapes what would otherwise change the document. That is
+      already the behavior: `<p>a *b</p><p>c* d</p>` flattens to `a \*bc\* d`
+      in all three engines, with the asterisks correctly escaped and only the
+      word boundary lost. This clause supplies the space and nothing else;
+      §1b and §2 are answering two halves of the same join.
+
+      REFUSING TO FLATTEN IS NOT AN ANSWER. The slot cannot hold blocks, so a
+      producer that refuses emits nothing where the author's document has
+      content. That is a strictly larger loss than the one this clause closes,
+      and silent in exactly the same way.
+
+      NEITHER IS ESCAPING THE COLLISION. `*a*\*b*` writes a character the
+      author did not, against §2's if-and-only-if: nothing in either block's
+      own content needs protecting, and the collision exists only at the join.
+      An escape is also per-character where the defect is per-boundary, so it
+      would be re-derived for every delimiter pair two blocks might meet on,
+      where the separator is derived once.
+
+      WHAT IS NOT REQUIRED. The flatten need not be REVERSIBLE. Two paragraphs
+      written into a caption come back as one paragraph and no spelling of the
+      slot restores them, because the slot forbids the structure. A producer
+      exposing conversion diagnostics SHOULD report that structural loss, as
+      PART 12 §14 requires for a dropped short caption. The requirement here is
+      bounded at the boundary: the words and the constructs on either side of
+      it survive as themselves.
+
+      (Ruled at carve#1325. All three engines emit the joined form, so this is
+      a change in each of them rather than a divergence between them --
+      tests/corpus-convert cases 29, 30 and 31 pin the three shapes, declared
+      in resources/converter-drift.txt until each engine lands it.)
+
    2. THE ESCAPING RULE -- NORMATIVE. A character is escaped IF AND ONLY IF
       omitting the escape would change the re-parsed AST.
 
