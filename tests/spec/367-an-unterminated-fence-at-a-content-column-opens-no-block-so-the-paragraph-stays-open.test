@@ -50,6 +50,22 @@ tail
 ````
 
 ````
+- a
+
+  ```
+  b
+tail
+.
+<ul>
+  <li>a
+    <pre><code>b
+</code></pre>
+  </li>
+</ul>
+<p>tail</p>
+````
+
+````
 - q
   ```
   y

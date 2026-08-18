@@ -322,11 +322,11 @@ from the payload, at document level and inside an item alike, while keeping the
 same blank in a code fence - which is what category 291 pins, and which it
 reproduces. This category will not match carve-php until that lands.
 
-Category 367 is declared with an OPEN engine window on two engines. Its five
+Category 367 is declared with an OPEN engine window on two engines. Its six
 documents were rendered through the oracle, carve-js `020c73e`, carve-php
 `f30ebd1` and carve-rs `a33c42a` while they were written. carve-js reproduces
-all five byte for byte. carve-php and carve-rs reproduce the block quote
-document and both controls, and miss the list-item and definition-body ones:
+all six byte for byte. carve-php and carve-rs reproduce the block quote
+document and all three controls, and miss the list-item and definition-body ones:
 each ends the container on an unterminated fence at its content column while
 rendering that fence line as paragraph text, and each already folds the same
 shape under a block quote. This category will not match those two until that

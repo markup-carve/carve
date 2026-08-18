@@ -24064,6 +24064,36 @@ tail
 
 :::
 
+CONTROL. AT BLOCK START a fence opens a body whether or not it is terminated -
+there is no paragraph for section 10 I4 to protect, and the body runs to the end
+of the container. The flush-left line then has nothing to fold into and the item
+ends, which is the fenced-body clause with its premise intact. Nothing in the
+corpus pinned this shape before, and a reading that made every unterminated
+fence at a content column absorb its container's following lines passed all 1267
+documents without it.
+
+::: compare
+
+````carve
+- a
+
+  ```
+  b
+tail
+````
+
+````html
+<ul>
+  <li>a
+    <pre><code>b
+</code></pre>
+  </li>
+</ul>
+<p>tail</p>
+````
+
+:::
+
 CONTROL. A fence WITH its closer is a block, and a block leaves no paragraph
 open, so the item ends on the flush-left line for the ordinary reason. The
 premise the clause turns on is the closer, and this is the shape where it holds.
