@@ -242,6 +242,58 @@
         paragraph open, but its continuation line arrives at the content column
         and is what reopens one. (carve#1280)
 
+        A DEFINITION AT THE CONTENT COLUMN ENDS THE PARAGRAPH, NOT THE
+        CONTAINER -- NORMATIVE (carve#1350). One part of the open half above
+        is settled, and by §10 I5 rather than by analogy. A link or footnote
+        definition written at a list item's `content_column`, or at a
+        definition body's, is an INTERRUPTER: it ends the paragraph it sits
+        under. Nothing about it closes the container. The container ends
+        because the NEXT line arrives at column 0 with no open paragraph left
+        anywhere in the stack, which is S4's own "otherwise" and nothing new:
+
+            - a                :: t
+              [r]: /u          :  a
+            tail                  [r]: /u
+                               tail
+
+        both end their container and publish `tail` at document level. A
+        COMMENT at a definition body's content column ends the paragraph the
+        same way and for the same reason (§10 I5 lists it too), so
+        `:  a` over `   %% c` over `tail` ends the `dd`.
+
+        AND THE DEFINITION REGISTERS, which is half of what I5 says and the
+        half an implementation can pass this rule without: "A link or footnote
+        definition belongs to an open list item only at that item's
+        `content_column`". Ending the container while DROPPING the definition
+        gets `tail` right by accident and fails the moment the column moves.
+        I5's other two columns are the controls and are UNCHANGED: at DOCUMENT
+        column 0 the definition is a document-level interrupter, and at a
+        nonzero column BELOW `content_column` it is lazy paragraph text that
+        does not register at all -- `- a` / ` [r]: /u` / `tail` folds, with the
+        definition line published as text.
+
+        An ABBREVIATION definition is not on I5's list and is recognized at
+        document level only, so inside a container the line is ordinary
+        paragraph text and reopens the paragraph like any other prose.
+
+        THE DEFINITION LINE IS WHAT THIS REACHES. A footnote definition's own
+        indented BODY continuation is not a definition line, and what paragraph
+        state the item is left in after one divides carve-rs from carve-php and
+        this implementation today: carve#1357. The NESTED spelling
+        (`- outer` / `  - inner` / `    [r]: /u` / `tail`) is unanimous and
+        belongs to the nested half this clause already leaves open above.
+
+        THE COMMENT'S LIST-ITEM SPELLING IS NOT DECIDED HERE. `- a` /
+        `  %% c` / `tail` folds in all three engines and in the executable
+        spec, while the `dd` spelling one construct over does not, so the two
+        containers still answer a comment differently. The argument runs both
+        ways and neither side is free: §17 L1a refuses to let an invisible
+        construct have a visible effect (carve#625), and ending the item would
+        give it one -- but that is equally true of the `dd` above, where
+        ending the paragraph is held to be a different question from being
+        one. Recorded rather than glossed, because the shape is one line of
+        implementation away from either answer.
+
         A FENCED BODY IS NOT A PARAGRAPH -- NORMATIVE (carve#646). The same
         rule, with the unmatched container's last block a CODE FENCE opened on
         the marker line itself:

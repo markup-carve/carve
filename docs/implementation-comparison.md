@@ -138,7 +138,8 @@ under the same semantic-span rule,
 `346-a-line-block-s-last-body-line-keeps-its-backslash`,
 `347-a-comment-fence-reached-through-a-quote-registers-nothing-either`,
 `348-a-closed-inline-construct-spanning-a-verse-boundary`,
-`349-a-container-whose-table-ends-on-a-continuation-row`.
+`349-a-container-whose-table-ends-on-a-continuation-row`,
+`350-a-definition-at-a-container-s-content-column`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative
