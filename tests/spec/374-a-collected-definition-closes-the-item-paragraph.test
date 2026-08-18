@@ -1,0 +1,65 @@
+A collected definition closes the item paragraph
+
+```
+- a
+  [r]: /u
+ more
+tail
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>more
+tail</p>
+```
+
+```
+. a
+  [r]: /u
+ more
+tail
+.
+<ol>
+  <li>a</li>
+</ol>
+<p>more
+tail</p>
+```
+
+```
+1. a
+   [^f]: note
+    more
+tail
+.
+<ol>
+  <li>a
+    more
+tail
+  </li>
+</ol>
+```
+
+```
+- a
+  [^f]: note
+    more
+tail
+
+see[^f]
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note
+more<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
