@@ -1,0 +1,98 @@
+A block at a container's content column ends the paragraph, whatever it renders
+
+```
+- a
+  {.k}
+tail
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+```
+
+```
+- a
+  %% c
+tail
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+```
+
+```
+- a
+  %%% c
+  %%%
+tail
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+```
+
+```
+- a
+  [^f]: t
+    more
+tail
+
+x[^f]
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>t
+more<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- a
+  [^f]: t
+tail
+
+x[^f]
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>t<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- a
+  [r]: /u
+    "T"
+tail
+
+[r][]
+.
+<ul>
+  <li>a
+    “T”
+tail
+  </li>
+</ul>
+<p><a href="/u">r</a></p>
+```

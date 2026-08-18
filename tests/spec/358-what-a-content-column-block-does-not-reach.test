@@ -1,0 +1,38 @@
+What a content-column block does not reach
+
+```
+- a
+  %% c
+ b
+.
+<ul>
+  <li>a
+    b
+  </li>
+</ul>
+```
+
+```
+- a
+  [^f]: t
+    more
+  b
+
+x[^f]
+.
+<ul>
+  <li>a
+    b
+  </li>
+</ul>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>t
+more<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
