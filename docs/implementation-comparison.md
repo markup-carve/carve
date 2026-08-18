@@ -331,7 +331,6 @@ each ends the container on an unterminated fence at its content column while
 rendering that fence line as paragraph text, and each already folds the same
 shape under a block quote. This category will not match those two until that
 lands.
-
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS
 build (`52da7be`) reproducing 671 of the 672 documents, missing exactly that
