@@ -221,6 +221,7 @@ const PLAIN_EXTENSION_FEATURES = {
   spoiler: { js: 'spoiler', php: 'SpoilerExtension' },
   tabs: { js: 'tabs', php: 'TabsExtension' },
   'list-table': { js: 'listTable', php: 'ListTableExtension' },
+  'list-table-local-headers-1248': { js: 'listTable', php: 'ListTableExtension' },
   // PART 9 §10. Registered by name here so the adapter check can see it; the
   // engines do not ship it yet, so the run reports it unreached rather than
   // silently skipping a feature nobody declared.

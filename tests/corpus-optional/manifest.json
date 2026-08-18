@@ -228,6 +228,11 @@
       "slug": "44-list-table-columns-and-foot",
       "feature": "list-table-columns-1344",
       "description": "ListTable shares the core positional column attributes and adds footer-rows; alignment, widths and the head/body/foot partition survive together."
+    },
+    {
+      "slug": "45-list-table-local-headers",
+      "feature": "list-table-local-headers-1248",
+      "description": "A header-row attribute on a row's first cell starts a body group with an intermediate column-header row; a header attribute promotes only its own cell."
     }
   ]
 }

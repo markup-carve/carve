@@ -2750,7 +2750,7 @@
         },
         "columns": {
           "type": "array",
-          "description": "Optional positional column metadata imported from or destined for a richer table model. Entry N describes column N; the array MAY be shorter than the widest row. A cell's explicit value wins over the corresponding column value. Carve 0.1 source has no spelling for this field, so source parsers do not synthesize it.",
+          "description": "Optional positional column metadata imported from, authored through table-level aligns/valigns/widths attributes, or destined for a richer table model. Entry N describes column N; the array MAY be shorter than the widest row. A cell's explicit value wins over the corresponding column value.",
           "items": {
             "type": "object",
             "properties": {
@@ -2782,7 +2782,7 @@
         },
         "rowGroups": {
           "type": "object",
-          "description": "Optional explicit head/body/foot partition of `rows`, imported from or destined for a format whose table model has one. It PARTITIONS `rows` and never repeats them: the counts consume `rows` in order, head first, then each body, then the foot, and they MUST account for every row exactly once. Carve 0.1 source has no spelling for this field; absent means the implicit structure every renderer already derives - the leading run of header rows as the head, everything after it as one body, no foot, no row-head columns. HTML, plain and ANSI output ignore it.",
+          "description": "Optional explicit head/body/foot partition of `rows`, imported from or destined for a format whose table model has one. It PARTITIONS `rows` and never repeats them: the counts consume `rows` in order, head first, then each body, then the foot, and they MUST account for every row exactly once. ListTable can author a leading head, header-led body groups, a foot, and leading row-header columns; partitions without those source landmarks remain interchange-only. Absent means the implicit structure every renderer already derives.",
           "required": [
             "headRows",
             "bodies",

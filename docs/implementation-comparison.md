@@ -814,7 +814,7 @@ came to say 4 when the corpus held 33.
 
 ```text
 Implementation summary
-profile=optional/opt-in corpus=optional corpus_pairs=42 targets=html,markdown,plain,ansi
+profile=optional/opt-in corpus=optional corpus_pairs=43 targets=html,markdown,plain,ansi
 rust: pass=12/12 mismatch=0 error=0 skipped=29 runs=12 avg_ms=5.21
 js: pass=42/42 mismatch=0 error=0 skipped=0 runs=42 avg_ms=157.43
 php: pass=39/39 mismatch=0 error=0 skipped=2 runs=39 avg_ms=103.44

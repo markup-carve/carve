@@ -273,6 +273,7 @@ const optionalTitle = new Map([
   ['details', 'Details'],
   ['list-table', 'ListTable'],
   ['list-table-columns-1344', 'ListTable column metadata and footer rows'],
+  ['list-table-local-headers-1248', 'ListTable local headers and body groups'],
   ['spoiler', 'Spoiler'],
   ['tabs', 'Tabs'],
   ['semantic-span', 'SemanticSpan'],

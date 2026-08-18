@@ -122,6 +122,7 @@ const featureRunners = {
   'code-callouts': (source, render) => render(source, { extensions: [codeCallouts()] }),
   details: (source, render) => render(source, { extensions: [details()] }),
   'list-table': (source, render) => render(source, { extensions: [listTable()] }),
+  'list-table-local-headers-1248': (source, render) => render(source, { extensions: [listTable()] }),
   'semantic-span': (source, render) => render(source, { extensions: [semanticSpan()] }),
   spoiler: (source, render) => render(source, { extensions: [spoiler()] }),
   tabs: (source, render) => render(source, { extensions: [tabs()] }),
