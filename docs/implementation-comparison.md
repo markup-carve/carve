@@ -156,7 +156,8 @@ under the same semantic-span rule,
 `364-only-lazy-folding-demotes-a-marker-line-colon-opener`,
 `365-a-blank-line-before-a-sibling-marker-separates-the-items-whatever-consumed-it`,
 `366-a-raw-block-keeps-the-blank-line-at-the-end-of-its-payload-too`,
-`367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open`.
+`367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open`,
+`369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative
@@ -330,6 +331,15 @@ document and all three controls, and miss the list-item and definition-body ones
 each ends the container on an unterminated fence at its content column while
 rendering that fence line as paragraph text, and each already folds the same
 shape under a block quote. This category will not match those two until that
+lands.
+
+Category 369 is declared with an OPEN engine window on two engines. Its four
+documents were rendered through the oracle, carve-js `020c73e`, carve-php
+`f30ebd1` and carve-rs `a33c42a` while they were written. carve-rs reproduces
+all four byte for byte. carve-js and carve-php reproduce both controls and miss
+the two that carry the rule: each DROPS the definition-shaped line at the
+quote's content column, rendering nothing and defining nothing, which is the
+outcome carve#624 forbids. This category will not match those two until that
 lands.
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS
