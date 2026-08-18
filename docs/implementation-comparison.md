@@ -154,7 +154,8 @@ under the same semantic-span rule,
 `362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line`,
 `363-a-task-item-s-checkbox-is-not-decided-by-its-first-block`,
 `364-only-lazy-folding-demotes-a-marker-line-colon-opener`,
-`365-a-blank-line-before-a-sibling-marker-separates-the-items-whatever-consumed-it`.
+`365-a-blank-line-before-a-sibling-marker-separates-the-items-whatever-consumed-it`,
+`366-a-raw-block-keeps-the-blank-line-at-the-end-of-its-payload-too`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative
@@ -310,6 +311,15 @@ list tight: it already loosens the same shape under a div, an admonition, a raw
 block and a comment fence, and a code or tilde fence is the only place it does
 not (markup-carve/carve-php#1445). This category will not match carve-php until
 that lands.
+
+Category 366 is declared with an OPEN engine window for the same reason. Its
+three documents were rendered through the oracle, carve-js `020c73e`, carve-php
+`f30ebd1` and carve-rs `a33c42a` while they were written. carve-js and carve-rs
+reproduce all three byte for byte. carve-php reproduces the no-blank control and
+misses the two that carry a blank: it drops a raw block's trailing blank line
+from the payload, at document level and inside an item alike, while keeping the
+same blank in a code fence - which is what category 291 pins, and which it
+reproduces. This category will not match carve-php until that lands.
 
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS
