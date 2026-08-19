@@ -1,0 +1,16 @@
+A hyphen run opening a word after whitespace is a flag
+
+```
+git log --oneline and --force-with-lease stay literal.
+
+But pages 1--10, the Mon--Fri window, a---- b----- and a -- b all convert.
+.
+<p>git log --oneline and --force-with-lease stay literal.</p>
+<p>But pages 1–10, the Mon–Fri window, a–– b—– and a – b all convert.</p>
+```
+
+```
+<!-- a comment -->
+.
+<p>&lt;!– a comment --&gt;</p>
+```
