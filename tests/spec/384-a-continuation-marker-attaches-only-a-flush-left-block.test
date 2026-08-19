@@ -1,0 +1,76 @@
+A continuation marker attaches only a flush-left block
+
+```
+* * +
+x
+.
+<ul>
+  <li>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+* * +
+  x
+.
+<ul>
+  <li>
+    <ul>
+      <li></li>
+    </ul>
+    x
+  </li>
+</ul>
+```
+
+```
+* * +
+ x
+.
+<ul>
+  <li>
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>x</p>
+```
+
+```
+- +
+x
+.
+<ul>
+  <li>x</li>
+</ul>
+```
+
+```
+- +
+  x
+.
+<ul>
+  <li>x</li>
+</ul>
+```
+
+```
+- a
+  - b
+  +
+  c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+c</li>
+    </ul>
+  </li>
+</ul>
+```

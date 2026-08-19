@@ -284,6 +284,7 @@ index: examples/edge-cases/index.md
   a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item
   a-marker-line-link-definition-is-collected-where-no-paragraph-is-open
   a-lazy-marker-line-s-definition-defines-nothing-in-any-container
+  a-continuation-marker-attaches-only-a-flush-left-block
 
 [edge-containers] Containers, quotes and fences
 > Divs, block quotes, code and comment fences: nesting, lazy continuation, absorption and what closes what.

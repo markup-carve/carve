@@ -60,17 +60,12 @@ docker build -t app .
 
 ```
 - a
-  - b
-  +
-  c
++
+c
 .
 <ul>
   <li>a
-    <ul>
-      <li>b
-        c
-      </li>
-    </ul>
+    c
   </li>
 </ul>
 ```
