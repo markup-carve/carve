@@ -199,6 +199,130 @@ test('a table cell carries an optional vertical alignment', () => {
   assert.equal(validate(cell('baseline')), false)
 })
 
+/*
+ * The sidecar's OPTIONAL facts, and why a declared one needs a definition.
+ *
+ * `nodeLayout` requires three properties and declares thirteen more. Those
+ * thirteen are the source spellings the canonical AST deliberately drops, so
+ * they are the only thing a formatter or an editor can rebuild an authored
+ * document from - and until carve#1431 not one of them was defined anywhere.
+ * The schema named them, PART 12 §13 described their CATEGORIES in prose, and
+ * no clause said what any single field measures. A producer had nothing to
+ * implement against, and "Absent means unknown" makes emitting none of them
+ * conformant, so the gap could not surface as a failure either.
+ *
+ * This is the guard the node-type tests above apply, one layer up, and the
+ * proxy for "defined" is the same kind of proxy: the field's name appears in
+ * the text of §13. That cannot tell a definition from a mention, which is why
+ * the clause carries F-numbered entries rather than a list of names.
+ *
+ * A fact that genuinely has no answer yet goes in UNDEFINED_FACT with the
+ * question, rather than being named in the clause with nothing behind it.
+ * Emptying this map is the intended end state.
+ */
+const UNDEFINED_FACT = {
+  paddingRaw:
+    "one string cannot hold both of a table cell's whitespace runs, and which run it names is unruled (carve#1431)",
+}
+
+/** The text of PART 12 §13, the clause that defines the sidecar. */
+function sidecarClause() {
+  const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
+  const start = grammar.indexOf('   13. SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR')
+  assert.notEqual(start, -1, 'PART 12 §13 is not where this test looks for it')
+  const end = grammar.indexOf('\n   14. ', start)
+  assert.notEqual(end, -1, 'PART 12 §13 has no §14 after it')
+  return grammar.slice(start, end)
+}
+
+/** The sidecar schema, read fresh so a test cannot mutate another's copy. */
+function layoutSchema() {
+  return JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-schema.json'), 'utf8'))
+}
+
+/** Every `nodeLayout` property that is not one of the three required ones. */
+function optionalFacts(schemaDoc = layoutSchema()) {
+  const node = schemaDoc.$defs.nodeLayout
+  const required = new Set(node.required)
+  return Object.keys(node.properties).filter((name) => !required.has(name))
+}
+
+/** §13 names a fact in backticks, the way it names every other field. */
+const namedInClause = (clause, name) => clause.includes('`' + name + '`')
+
+test('every optional sidecar fact is defined in PART 12 §13, or named as undefined', () => {
+  const clause = sidecarClause()
+  const undefinedHere = optionalFacts()
+    .filter((name) => !namedInClause(clause, name) && !(name in UNDEFINED_FACT))
+    .sort()
+  assert.deepEqual(
+    undefinedHere,
+    [],
+    `the sidecar schema declares optional fact(s) PART 12 §13 does not define: ${undefinedHere.join(', ')}. ` +
+      'A declared fact with no definition cannot be implemented and cannot be measured. ' +
+      'Define it in §13, or name it in UNDEFINED_FACT with the open question.',
+  )
+})
+
+test('every optional sidecar fact carries a schema description', () => {
+  const properties = layoutSchema().$defs.nodeLayout.properties
+  const bare = optionalFacts()
+    .filter((name) => !(name in UNDEFINED_FACT) && typeof properties[name].description !== 'string')
+    .sort()
+  assert.deepEqual(
+    bare,
+    [],
+    `optional sidecar fact(s) carry no description: ${bare.join(', ')}. ` +
+      'The schema is published on its own, so a consumer reading only the schema needs the pointer to §13.',
+  )
+})
+
+test('the sidecar schema rejects a half-measured fence pair', () => {
+  const validateLayout = new Ajv2020({ strict: true }).compile(layoutSchema())
+  const sidecar = (node) => ({
+    version: 1,
+    encoding: 'utf-8',
+    source: '```\nx\n```\n',
+    lineEndings: 'lf',
+    bom: false,
+    nodes: [{ path: '/children/0', startByte: 0, endByte: 10, ...node }],
+  })
+  // §13 F6 spells an unterminated block as an EMPTY closer, so a producer that
+  // measures fences always has both fields. Omitting one is not "unterminated"
+  // and not "unknown" - it is a producer that measured half a pair, and the
+  // schema has to say so on its own, because a consumer may hold nothing else.
+  assert.equal(validateLayout(sidecar({ openerRaw: '```' })), false, 'an opener with no closer validated')
+  assert.equal(validateLayout(sidecar({ closerRaw: '```' })), false, 'a closer with no opener validated')
+  assert.equal(validateLayout(sidecar({ openerRaw: '```', closerRaw: '```' })), true, 'a measured pair was rejected')
+  assert.equal(validateLayout(sidecar({ openerRaw: '```', closerRaw: '' })), true, 'an unterminated block was rejected')
+  assert.equal(validateLayout(sidecar({})), true, 'an unmeasured node was rejected')
+})
+
+test('every UNDEFINED_FACT entry is still needed', () => {
+  const clause = sidecarClause()
+  const stale = Object.keys(UNDEFINED_FACT)
+    .filter((name) => namedInClause(clause, name))
+    .sort()
+  assert.deepEqual(
+    stale,
+    [],
+    `UNDEFINED_FACT names fact(s) PART 12 §13 now defines: ${stale.join(', ')}. ` +
+      'Delete the entry so the fact is gated like every other one.',
+  )
+})
+
+test('every UNDEFINED_FACT entry names a fact the schema still declares', () => {
+  const declared = new Set(optionalFacts())
+  const unknown = Object.keys(UNDEFINED_FACT)
+    .filter((name) => !declared.has(name))
+    .sort()
+  assert.deepEqual(
+    unknown,
+    [],
+    `UNDEFINED_FACT names fact(s) the sidecar schema no longer declares: ${unknown.join(', ')}.`,
+  )
+})
+
 test('shared source-layout fixtures validate', () => {
   const layoutSchema = JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-schema.json'), 'utf8'))
   const validateLayout = new Ajv2020({ strict: true }).compile(layoutSchema)
