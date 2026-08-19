@@ -1,0 +1,13 @@
+The doubled run is the canonical arrow, in both families
+
+```
+Canonical: <-- --> <--> and <== ==> <=>
+
+Deprecated but still rendered: <- -> <->
+
+Not an arrow: key => value stays literal, and p <= q is a comparison.
+.
+<p>Canonical: ← → ↔ and ⇐ ⇒ ⇔</p>
+<p>Deprecated but still rendered: ← → ↔</p>
+<p>Not an arrow: key =&gt; value stays literal, and p ≤ q is a comparison.</p>
+```
