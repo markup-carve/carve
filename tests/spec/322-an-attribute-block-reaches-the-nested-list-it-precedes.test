@@ -22,7 +22,8 @@ An attribute block reaches the nested list it precedes
 .
 <ul>
   <li>a
-    <ul class="x">
+{.x}
+    <ul>
       <li>b</li>
     </ul>
   </li>
@@ -36,8 +37,8 @@ An attribute block reaches the nested list it precedes
 .
 <ul>
   <li>a
-    <p class="x">para</p>
-  </li>
+{.x}
+para</li>
 </ul>
 ```
 
@@ -46,10 +47,9 @@ para
 {.x}
 - b
 .
-<p>para</p>
-<ul class="x">
-  <li>b</li>
-</ul>
+<p>para
+{.x}
+- b</p>
 ```
 
 ```
@@ -92,8 +92,9 @@ para
 .
 <ul>
   <li><p>a</p>
-    <p>para</p>
-    <ul class="x">
+    <p>para
+{.x}</p>
+    <ul>
       <li>b</li>
     </ul>
   </li>
