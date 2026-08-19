@@ -159,7 +159,8 @@ under the same semantic-span rule,
 `367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open`,
 `369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one`,
 `372-an-all-blank-raw-payload-still-emits-its-line`,
-`374-a-collected-definition-closes-the-item-paragraph`.
+`374-a-collected-definition-closes-the-item-paragraph`,
+`382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative
