@@ -324,20 +324,7 @@ const FAMILIES = [
 // keep the weekly job permanently red while its focused issue is being fixed.
 // The declaration is exact by document id. Remove entries with the fix: a
 // declaration that no longer reproduces is stale and is rejected below.
-const DECLARED_DIVERGENCES = new Map([
-  ...UNCLOSED_CONTAINERS.map((container) => [
-    `unclosed-inline/literal-inline/${container.name}`,
-    'https://github.com/markup-carve/carve/issues/1418',
-  ]),
-  [
-    'terminal-child/line-comment/blockquote',
-    'https://github.com/markup-carve/carve/issues/1419',
-  ],
-  [
-    'terminal-child/comment-block/blockquote',
-    'https://github.com/markup-carve/carve/issues/1419',
-  ],
-])
+const DECLARED_DIVERGENCES = new Map()
 
 function* documents() {
   for (const family of FAMILIES) {

@@ -35,9 +35,10 @@
  *   2026-08-03  seed=101  200 documents  43 divergences  (~21%)
  *   2026-08-05  seed=101  200 documents  16 divergences  (~8%)
  *   2026-08-19  seed=101  200 documents   2 divergences  (carve#1420, #1421)
+ *   2026-08-19  seed=101  200 documents   1 divergence   (carve#1424, after those fixes)
  *
  * Same seed, same count, so the runs are comparable. The latest is against
- * carve-js 1cc13366, carve-rs e341e60 and carve-php 4b9e611. Anyone quoting a
+ * carve-js 84aaab60, carve-rs fb933c81 and carve-php 05d0177f. Anyone quoting a
  * rate should re-run it, because a stale one here would be exactly the kind of
  * unmeasured claim the rest of this repo gates against.
  *

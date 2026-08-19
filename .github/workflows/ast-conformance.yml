@@ -343,12 +343,11 @@ jobs:
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run combinatorial:check
 
-      # Deterministic but exploratory: exit 1 means it found a question, not
-      # that one engine is known wrong. Keep that result visible in the run and
-      # summary without making every weekly conformance verdict permanently
-      # red; the two current seed-101 reductions are tracked as carve#1420 and
-      # carve#1421. Exit 2 (an engine missing or unable to run) remains a hard
-      # failure.
+      # Deterministic but exploratory: every minimized class becomes a focused
+      # issue and corpus candidate. The current nested-list lazy-resume finding
+      # is tracked as carve#1424. Exit 2 (an engine missing or unable to run)
+      # remains a hard failure; exit 1 stays visible without making the whole
+      # weekly conformance verdict permanently red while adjudication proceeds.
       - name: Differential fuzz sweep
         if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 4 * * 0'
         env:
@@ -372,7 +371,7 @@ jobs:
             exit 2
           fi
           if [ "$status" -eq 1 ]; then
-            echo '::warning::The differential fuzzer found questions; inspect the job summary.'
+            echo '::warning::The differential fuzzer found tracked or new questions; inspect the job summary and carve#1424.'
           fi
 
       # The same generated sweep the per-PR job runs, ten times larger.

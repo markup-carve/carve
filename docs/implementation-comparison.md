@@ -597,12 +597,12 @@ checkouts that job already builds. `--inventory` lists each family's population
 without running an engine; per-family population guards prevent an emptied or
 partially walked product from reporting a false clean result.
 
-A finding with a focused issue may be declared by exact document id in the
-runner. It remains in every report but does not fail the weekly job; an
+All 304 generated documents currently agree across the four participants. A
+future finding with a focused issue may be declared by exact document id in the
+runner: it remains in every report but does not fail the weekly job, while an
 undeclared finding does. With all four participants present, a declaration that
-no longer reproduces also fails, forcing the debt entry to be removed when its
-fix lands. This trades a small, reviewable allowlist for a schedule that can
-defend the other 295 documents while #1418 and #1419 are resolved.
+no longer reproduces also fails, forcing the debt entry to be removed with its
+fix.
 
 Render options (`sections`, `sourceLine`) are not an axis yet: neither the
 carve-rs nor the carve-php CLI exposes them and the executable spec implements
