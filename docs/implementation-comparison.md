@@ -21,15 +21,15 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>709 / 711</strong>
+    <strong>710 / 712</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>709 / 711</strong>
+    <strong>710 / 712</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>709 / 711</strong>
+    <strong>710 / 712</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -40,9 +40,9 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `5b03787` | `709 / 711` | `0` | `0` | `3.01` |
-| JS | `8105210` | `709 / 711` | `0` | `0` | `76.02` |
-| PHP | `a5f18fb` | `709 / 711` | `0` | `0` | `68.54` |
+| Rust | `5b03787` | `710 / 712` | `0` | `0` | `3.01` |
+| JS | `8105210` | `710 / 712` | `0` | `0` | `76.02` |
+| PHP | `a5f18fb` | `710 / 712` | `0` | `0` | `68.54` |
 
 Spec commit: `2cde4a1`, plus the three corpus cases this change adds
 
@@ -753,7 +753,7 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=711 targets=html,markdown,plain,carve,ansi
+profile=default/no-opt-in corpus=core corpus_pairs=712 targets=html,markdown,plain,carve,ansi
 rust: pass=690/690 mismatch=0 error=0 skipped=0 runs=3375 avg_ms=3.01
   mismatching documents: 0
 js: pass=690/690 mismatch=0 error=0 skipped=0 runs=3375 avg_ms=76.02
