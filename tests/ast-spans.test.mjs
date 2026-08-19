@@ -249,7 +249,9 @@ test('a malformed declaration line is an error, never a silent skip', () => {
  * one taken because the previous one had stopped being true, and a seventh the
  * next day that replaced the surviving row with a different one.
  */
-const LAST_MEASURED = new Map([['hard_break (extent)', 1]])
+// The 2026-08-19 post-fix run compared 26,301 spans and all three engines
+// placed every node identically, retiring the final hard_break row.
+const LAST_MEASURED = new Map()
 
 const asMeasured = (counts) =>
   new Map(

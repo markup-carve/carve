@@ -280,5 +280,3 @@
 # DECLARED rather than tolerated, on the same terms as every block above: the row
 # fails this run the moment carve-php agrees, which is what makes deleting it the
 # closing step of that issue rather than a chore nobody is holding.
-
-hard_break (extent) 1
