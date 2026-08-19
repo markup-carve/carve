@@ -21,21 +21,22 @@
         "path": { "type": "string", "pattern": "^(?:|(?:/(?:[^~/]|~[01])*)+)$" },
         "startByte": { "type": "integer", "minimum": 0 },
         "endByte": { "type": "integer", "minimum": 0 },
-        "markerRaw": { "type": "string" },
-        "markerColumn": { "type": "integer", "minimum": 1 },
-        "contentColumn": { "type": "integer", "minimum": 1 },
-        "continuationStyle": { "enum": ["none", "indent", "explicit", "lazy", "marker_line"] },
-        "blankLinesBefore": { "type": "integer", "minimum": 0 },
-        "blankLinesAfter": { "type": "integer", "minimum": 0 },
-        "openerRaw": { "type": "string" },
-        "closerRaw": { "type": "string" },
-        "metadataSeparatorRaw": { "type": "string" },
-        "leadingPipe": { "type": "boolean" },
-        "trailingPipe": { "type": "boolean" },
+        "markerRaw": { "type": "string", "description": "PART 12 §13 F1: the marker that opened the node, as authored, separator excluded." },
+        "markerColumn": { "type": "integer", "minimum": 0, "description": "PART 12 §13 F2: zero-based visual column of the marker, in PART 9 §24 C1 arithmetic - not pos.startColumn, which is 1-based." },
+        "contentColumn": { "type": "integer", "minimum": 0, "description": "PART 12 §13 F3: content_column(node) per PART 9 §24 C3, same zero-based arithmetic as markerColumn." },
+        "continuationStyle": { "enum": ["none", "indent", "explicit", "lazy", "marker_line"], "description": "PART 12 §13 F4: how the node's later lines reached it, one value by precedence explicit > lazy > indent > marker_line > none." },
+        "blankLinesBefore": { "type": "integer", "minimum": 0, "description": "PART 12 §13 F5: authored count of whitespace-only lines immediately before the node, within its container." },
+        "blankLinesAfter": { "type": "integer", "minimum": 0, "description": "PART 12 §13 F5: authored count of whitespace-only lines immediately after the node, within its container." },
+        "openerRaw": { "type": "string", "minLength": 1, "description": "PART 12 §13 F6: the opening delimiter run as authored, info string excluded. Never empty." },
+        "closerRaw": { "type": "string", "description": "PART 12 §13 F6: the closing delimiter run as authored, EMPTY where the block was unterminated. Absent means unmeasured, as for every other fact." },
+        "metadataSeparatorRaw": { "type": "string", "description": "PART 12 §13 F7: the separator run between a label or term and its body, whitespace included." },
+        "leadingPipe": { "type": "boolean", "description": "PART 12 §13 F8: whether the row was authored with the optional leading pipe." },
+        "trailingPipe": { "type": "boolean", "description": "PART 12 §13 F8: whether the row was authored with the optional trailing pipe." },
         "paddingRaw": { "type": "string" },
-        "attachment": { "enum": ["none", "preceding", "continuation", "detached"] }
+        "attachment": { "enum": ["none", "preceding", "continuation", "detached"], "description": "PART 12 §13 F9: how the node reached its host. detached records an attachable position the spelling separated (PART 9 §4)." }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "dependentRequired": { "openerRaw": ["closerRaw"], "closerRaw": ["openerRaw"] }
     }
   }
 }

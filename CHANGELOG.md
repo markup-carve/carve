@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The source-layout sidecar defines every optional fact it declares** (carve#1431,
+  PART 12 §13 F1-F9). Twelve of the thirteen optional `nodeLayout` properties now say
+  what they measure and in which unit; `paddingRaw` stays declared and undefined with
+  its open question recorded. The columns are zero-based per PART 9 §24, so the schema
+  minimum moves from 1 to 0, an unterminated fence is an EMPTY `closerRaw` rather than
+  an omitted one, and the fence pair is `dependentRequired`. Version stays 1: all three
+  engines emit only `path`, `startByte` and `endByte`, so no sidecar in existence
+  carries a field whose meaning moved.
 - **A vertical table-cell marker requires a horizontal partner.** `|^ x` and `|v x` remain visible content; paired runs such as `|<^`, `|~~`, and `|v>` carry both axes. Corpus 373.
 - **A collected definition closes the item paragraph, and only a comment keeps
   the below-column path open** (carve#1376). Item prose reopens at the content

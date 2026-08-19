@@ -10345,9 +10345,64 @@ EOF = (* end of file *) ;
       exclusive in the ORIGINAL input, including BOM and CRLF bytes. Entries
       are sorted by path; a producer MUST NOT invent an unplaceable range.
 
-      Original source and byte ranges are the portable minimum. Optional
-      measured facts carry markers and columns, continuation style, blank
-      lines, fences, attachment and table spelling. Absent means unknown.
+      Original source and byte ranges are the portable minimum. Every OTHER
+      property the schema declares is an optional MEASURED FACT, and each one
+      is defined below. ABSENT MEANS UNKNOWN, per field: a producer that did
+      not measure a fact omits it, a producer MUST NOT emit a fact it did not
+      measure, and a consumer MUST NOT read an omission as a default value.
+
+      F1 `markerRaw` -- the exact source text of the marker that opened the
+         node, WITHOUT the separator that follows it (PART 9 §24 C2). `-`,
+         `*`, `1.`, `1)`, `iv.` for a list item; the `::` of a definition
+         term.
+      F2 `markerColumn` -- the visual column the marker's first character
+         sits at, in PART 9 §24 C1's arithmetic and therefore ZERO-BASED: a
+         marker at the left margin is 0, and a marker after one leading tab is
+         4. It is NOT `pos.startColumn`, which is 1-based and counts
+         codepoints; the two disagree on every node.
+      F3 `contentColumn` -- content_column(node) exactly as PART 9 §24 C3
+         defines it, in the same zero-based arithmetic as F2, so `- ` is 2 and
+         `10. ` is 4.
+      F4 `continuationStyle` -- how the node's later lines reached it. One
+         value, chosen by PRECEDENCE, because a node may be written in more
+         than one of these ways at once: `explicit` if any line was reached
+         through the `+` continuation marker (PART 9 §17 L3/L4), else `lazy`
+         if any paragraph line sits BELOW the content column, else `indent` if
+         any later line REACHES the content column -- at it or past it, since
+         PART 9 §24 C3 asks a child to reach the column, not to land on it --
+         else `marker_line` if all
+         content is on the marker line, else `none` where the node takes no
+         continuation. The order is the order a writer must respect: the
+         spellings that cannot be re-derived from the tree win over the ones
+         that can.
+      F5 `blankLinesBefore`, `blankLinesAfter` -- how many lines holding
+         nothing but PART 2 `whitespace` sit immediately before and after the
+         node's range within its own container. The count is the AUTHORED one,
+         which is what makes it a fact rather than a re-derivation: the parse
+         reads a longer run and a single blank the same way in most positions.
+      F6 `openerRaw`, `closerRaw` -- the exact source text of the delimiter
+         run that opened and closed a fenced node, its info string excluded.
+         ABSENCE STILL MEANS UNKNOWN here, so an unterminated block is not
+         spelled by omitting `closerRaw`: it is `closerRaw` present and EMPTY.
+         A producer that measures fences at all emits both, and `openerRaw` is
+         never empty because a fence cannot open without a delimiter.
+      F7 `metadataSeparatorRaw` -- the exact separator run between a label or
+         term and its body, its whitespace included, for the definition-style
+         openers that take one.
+      F8 `leadingPipe`, `trailingPipe` -- whether the row was AUTHORED with
+         the optional leading and trailing `|`.
+      F9 `attachment` -- how the node reached the host it belongs to.
+         `preceding` for the host immediately above it (a caption slot under
+         its host, PART 9 §4), `continuation` for a `+`-attached block,
+         `detached` where an attachable position was written but the spelling
+         detached it (§4's two blank lines), `none` where the node has no
+         host.
+
+      A DECLARED FACT WITH NO DEFINITION IS A DEFECT, not a reserved slot.
+      `tests/ast-schema.test.mjs` fails when the schema declares an optional
+      property this clause does not define, unless the gap is named there with
+      its open question. That is what stops the sidecar from growing fields no
+      producer can implement (carve#1431).
 
       DEFAULT OUTPUT DOES NOT MOVE. Ordinary parse, AST encoding, CLI JSON and
       rendering retain their existing APIs and shapes. An AST decoder does not
