@@ -196,6 +196,14 @@ An extension is a named unit contributing any subset of four things, run as:
   tried only where core does not consume (extensions add syntax, never hijack
   core). Extension matchers run in registration order; optional integer priority
   is the escape hatch.
+- **A matcher MUST be pure** (normative, grammar PART 9R R1a): no observable side
+  effects, and the same answer for the same `(lines, position, ctx)`. A processor
+  MAY call it speculatively, more than once at one position, and discard the
+  result - core parsing already does when a matcher reports a consumption the
+  parser rejects, and the definition pre-passes ask the block reader (which runs
+  matchers) before they may cut a definition out of a line. Allocate ids, count
+  occurrences or record state in `afterParse` / `beforeRender`, which run once
+  over the finished document - never in a matcher.
 
 ### 2.2 Transforms
 
