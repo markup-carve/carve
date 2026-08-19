@@ -388,6 +388,7 @@ index: examples/edge-cases/index.md
   mention-ignores-email-addresses
   tag-requires-a-word-boundary
   smart-typography-escapes-and-code
+  the-doubled-run-is-the-canonical-arrow-in-both-families
   empty-delimiters
   escape-coverage
   emphasis-edge-cases
