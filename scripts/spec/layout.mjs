@@ -2121,6 +2121,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     if (QUOTE.test(line)) {
       const inner = []
       let openFence = null // run string of a fence opened inside the quote
+      let openComment = null // exact-width comment fence opened inside the quote
       let prevBlank = true // fences open only at BLOCK START (I4 otherwise)
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qPara = [] // its lines, for SS12's absorption test below
@@ -2180,6 +2181,14 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         return opensParagraph(text)
       }
       const trackFence = (l, idx) => {
+        if (openComment !== null) {
+          const c = COMMENT_FENCE_BODY.exec(l)
+          if (c && c[1].length === openComment) openComment = null
+          qOpenPara = false
+          qTableOpen = false
+          qPara = []
+          return
+        }
         if (openFence) {
           const c = PURE_FENCE.exec(l)
           if (c && c[1][0] === openFence[0] && c[1].length >= openFence.length) openFence = null
@@ -2187,6 +2196,18 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           qTableOpen = false
           qPara = []
           return
+        }
+        const comment = COMMENT_FENCE_BODY.exec(l)
+        if (comment) {
+          for (let j = idx + 1; j < n; j++) {
+            const quoted = QUOTE.exec(lines[j] ?? '')
+            if (!quoted) break
+            const close = COMMENT_FENCE_BODY.exec(quoted[1] ?? '')
+            if (close && close[1].length === comment[1].length) {
+              openComment = comment[1].length
+              break
+            }
+          }
         }
         const f = FENCE.exec(l)
         const isOpener = !!(f && prevBlank && parseFenceInfo(f[2]))
@@ -2249,7 +2270,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
              l[0] === '|' || l[0] === '{' || contRow || nestedQuoteEnds ||
-             DEFLIST_TERM.test(l) || isLinkDef(l) ||
+             DEFLIST_TERM.test(l) || isLinkDef(l) || COMMENT_LINE.test(l) ||
              FOOTNOTE_DEF.test(l))) {
           qOpenPara = false
           qPara = []
@@ -2275,7 +2296,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           i++
           continue
         }
-        if (openFence) break // the innermost open block is verbatim (S2)
+        if (openFence || openComment !== null) break // the innermost open block is verbatim (S2)
         if (lines[i] !== undefined && CONT_MARKER.test(lines[i])) {
           // PART 9 SS17 L4: `+` at column 0 attaches ONE following block
           i++

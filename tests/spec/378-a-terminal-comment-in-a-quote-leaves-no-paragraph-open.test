@@ -1,0 +1,23 @@
+A terminal comment in a quote leaves no paragraph open
+
+```
+> %% hidden
+tail
+.
+<blockquote>
+
+</blockquote>
+<p>tail</p>
+```
+
+```
+> %%%
+> hidden
+> %%%
+tail
+.
+<blockquote>
+
+</blockquote>
+<p>tail</p>
+```

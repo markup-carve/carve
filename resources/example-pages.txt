@@ -339,6 +339,8 @@ index: examples/edge-cases/index.md
   26-comments-6
   an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block
   a-comment-only-line-in-a-line-block-is-removed-before-any-inline-run
+  a-terminal-comment-in-a-quote-leaves-no-paragraph-open
+  a-terminal-comment-line-still-leaves-an-empty-verse-line
   a-line-block-s-hard-break-keeps-its-backslash
   a-line-block-s-last-body-line-keeps-its-backslash
   a-closed-inline-construct-spanning-a-verse-boundary
@@ -405,6 +407,7 @@ index: examples/edge-cases/index.md
   a-marker-glued-to-a-name-opens-nothing
   an-angle-bracket-is-escaped-only-where-it-opens-markup
   an-escaped-hash-keeps-its-escape-at-a-container-s-content-position
+  an-unclosed-inline-literal-reaches-the-end-of-its-block
   01-emphasis-2
   01-emphasis-3
   01-emphasis-6
@@ -445,6 +448,7 @@ index: examples/edge-cases/index.md
   a-backslash-in-a-link-destination-is-a-literal-character
   autolink-display-keeps-the-raw-content
   link-reference-definition-separator-must-be-a-space
+  a-reference-definition-cannot-take-its-destination-from-the-next-line
   indented-image-and-caption-stay-literal
   indented-reference-and-footnote-definitions-stay-literal
   a-repeated-definition-which-one-wins
