@@ -1181,7 +1181,16 @@ function opensParagraph(text, atBlockPosition = false, tableOpen = false) {
     // marker character - so the order is belt and braces.
     if (atBlockPosition && text[0] !== ' ' && text[0] !== '\t') {
       const nm = matchMarkerAt({ col: 0, rest: text })
-      if (nm) { text = nm.text.trim(); openTable = false; continue }
+      if (nm) {
+        text = nm.text.trim()
+        openTable = false
+        // A bare continuation marker is an empty FIRST-BLOCK item until a
+        // following document-column-0 block is attached. It does not leave a
+        // paragraph open for an enclosing collector to lazy-fold an indented
+        // line into (markup-carve/carve#1436).
+        if (text === '+') return false
+        continue
+      }
     }
     if (COMMENT_LINE.test(text) || COMMENT_FENCE_BODY.test(text)) return false
     if (isTableRow(text) || isContinuationRow(text, openTable)) return false
@@ -2667,6 +2676,21 @@ function collectItems(lines, i, list, state, ind, meas) {
       tableOpen = tableRunStep(tableOpen, text)
     }
     pushLine(head.text)
+    // Whether the marker line opens nested items whose innermost item is the
+    // FIRST-BLOCK `+` form. An enclosing collector must carry a following
+    // flush-left block down to that item even though the empty `+` leaves no
+    // paragraph open at the enclosing levels.
+    let carried = head.text.trim()
+    let carriesBareContinuation = false
+    for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
+      if (carried === '+') { carriesBareContinuation = true; break }
+      const nested = carried[0] !== ' ' && carried[0] !== '\t'
+        ? matchMarkerAt({ col: 0, rest: carried })
+        : null
+      if (!nested) break
+      carried = nested.text.trim()
+    }
+    let nestedAttachmentEnd = -1
     const item = { }
     if (head.attrs && head.attrs.replace(/[{} ]/g, '') !== '') item.attrs = head.attrs
     if (list.task) item.checked = /^[xX]$/.test(head.task)
@@ -2848,6 +2872,12 @@ function collectItems(lines, i, list, state, ind, meas) {
       closePara()
     }
     const attachFlushLeft = () => {
+      // The marker names a FLUSH-LEFT block, not merely the next block. Its
+      // first line must therefore begin at document column 0. In particular,
+      // do not feed an indented line into this item's body: its own column is
+      // what selects the enclosing container (markup-carve/carve#1436).
+      const first = i < n ? ind(i) : null
+      if (!first || (first.L ? first.L.col : first.col) !== 0) return false
       pushLine('', BLANK_MEAS)
       // ONE block, with the SAME extent rule every other container uses: a
       // fence runs through its closer, so a boundary line written inside one is
@@ -2870,8 +2900,12 @@ function collectItems(lines, i, list, state, ind, meas) {
       }
       pushLine('', BLANK_MEAS)
       closePara()
+      return true
     }
-    if (attachNext) attachFlushLeft()
+    // ONE block (SS17 L3, carve#1290). When the first-block form has taken its
+    // block here, the carry below must not take a SECOND one: `- +` / `para` /
+    // `> q` attaches the paragraph and leaves the quote outside the item.
+    if (attachNext && attachFlushLeft()) carriesBareContinuation = false
     while (i < n) {
       const line = lines[i]
       // `+` at the item's MARKER column attaches ONE following flush-left
@@ -3384,6 +3418,20 @@ function collectItems(lines, i, list, state, ind, meas) {
       // verbatim body in the same parse, which is one line answered two ways
       // (carve#1387). The quote and the `dd` spellings of this shape already
       // fold in every reader.
+      if (carriesBareContinuation) {
+        const sourceCol = lm.L ? lm.L.col : lm.col
+        if (nestedAttachmentEnd < 0 && sourceCol === 0) {
+          const extent = oneBlockEnd(lines, i, (idx) =>
+            ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
+            matchMarkerAt(ind(idx))?.indent === baseIndent)
+          nestedAttachmentEnd = firstBlockEnd(lines, i, extent, state)
+        }
+        if (i < nestedAttachmentEnd) {
+          pushLine(line, lm)
+          i++
+          continue
+        }
+      }
       if (fence.opaque && fence.opaque.opens !== false) break
       const enclosingColonCloser = COLON_CLOSER.exec(lm.rest)
       if (

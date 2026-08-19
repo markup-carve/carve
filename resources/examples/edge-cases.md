@@ -2807,25 +2807,23 @@ Since `+` is not a Carve bullet (use `-` or `*`), the lines below are a single p
 
 ### A sub-list's marker column takes the marker too
 
-"The current container" in §17 L3 is whichever container the marker's column belongs to, and inside an item that can be a sub-list. A `+` at the sub-list's marker column attaches the block to the sub-list's item, not to the outer one:
+"The current container" in §17 L3 is whichever container the marker's column belongs to, and inside an item that can be a sub-list: a `+` at the sub-list's marker column attaches to the sub-list's item, not to the outer one. What it attaches is the flush-left block, and both spellings are pinned in "A continuation marker attaches only a flush-left block" below.
+
+The plainest form of the rule, at a single level: the attached block is written
+flush left, and the item holds it without a blank line.
 
 ::: compare
 
 ```carve
 - a
-  - b
-  +
-  c
++
+c
 ```
 
 ```html
 <ul>
   <li>a
-    <ul>
-      <li>b
-        c
-      </li>
-    </ul>
+    c
   </li>
 </ul>
 ```
@@ -24849,6 +24847,7 @@ structurally present and renders empty.
 
 :::
 
+
 Only an OPEN paragraph makes the marker line lazy text. A list does not
 interrupt one (PART 9 section 10), so here both lines are one paragraph, the
 definition is part of its text, and nothing is defined.
@@ -24957,6 +24956,7 @@ metadata: it renders nothing where it was written and the reference resolves.
 
 :::
 
+
 A blank quoted line closes the paragraph, so the marker below it opens an item
 too.
 
@@ -24978,6 +24978,140 @@ too.
   </ul>
 </blockquote>
 <p><a href="u">go</a></p>
+```
+
+:::
+
+## A continuation marker attaches only a flush-left block
+
+PART 9 §17 L3 means FLUSH-LEFT literally: a `+` attaches the following block
+only when that block begins at document column 0. Under nested markers, every
+other column is interpreted by the ordinary content-column machinery instead
+of being pulled into the innermost item (markup-carve/carve#1436).
+
+At column 0, the nested marker attaches the paragraph to the inner item.
+
+:::: compare
+
+```carve
+* * +
+x
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li>x</li>
+    </ul>
+  </li>
+</ul>
+```
+
+::::
+
+At the outer item's content column, the paragraph belongs to the outer item;
+the inner item stays empty.
+
+:::: compare
+
+```carve
+* * +
+  x
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li></li>
+    </ul>
+    x
+  </li>
+</ul>
+```
+
+::::
+
+A column below every open container ends both items and leaves the paragraph at
+document level.
+
+:::: compare
+
+```carve
+* * +
+ x
+```
+
+```html
+<ul>
+  <li>
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>x</p>
+```
+
+::::
+
+The single-level controls are unchanged: column 0 attaches, while the item's
+own content column reaches the item through the ordinary column rule.
+
+:::: compare
+
+```carve
+- +
+x
+```
+
+```html
+<ul>
+  <li>x</li>
+</ul>
+```
+
+::::
+
+:::: compare
+
+```carve
+- +
+  x
+```
+
+```html
+<ul>
+  <li>x</li>
+</ul>
+```
+
+::::
+
+An INDENTED line under the marker is not attached at all. It is read by the
+ordinary column rules, which here fold it into the paragraph the sub-list's item
+left open - so `b` and `c` are one paragraph rather than the two blocks the
+marker would have produced.
+
+::: compare
+
+```carve
+- a
+  - b
+  +
+  c
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+c</li>
+    </ul>
+  </li>
+</ul>
 ```
 
 :::

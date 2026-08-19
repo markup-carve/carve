@@ -5348,6 +5348,28 @@ EOF = (* end of file *) ;
          sole way to END a container, so a `+` can never break the
          following block OUT of its container -- it adds it IN.
 
+         AND FLUSH-LEFT MEANS COLUMN 0 -- NORMATIVE (carve#1436). "flush-left"
+         above is the reach, not a description of the usual case: the marker
+         attaches a block that begins at column 0 and NOTHING else. A line at
+         any other column is not attached at all - it falls through to the
+         ordinary column rules, which give it to whichever container its own
+         column names, exactly as if the `+` line had been a comment.
+
+         This is stated because the word alone did not carry it. All FOUR
+         readers - the executable spec, carve-js, carve-php and carve-rs -
+         attached whatever line came next at any indentation, and the corpus
+         pinned no column, so the clause and every implementation of it
+         disagreed silently. Under a NESTED marker the cost was visible: `* * +`
+         swallowed a line written at the OUTER item's content column, so outer
+         content could not be written after a nested marker at all, and a writer
+         that spelled an emptied inner item `* * +` changed the document on
+         re-read (carve-js#1228 and its two siblings).
+
+         The single-level spelling is unaffected in practice, which is why this
+         went unnoticed: under `- +` a line at column 2 is the item's OWN
+         content column, so the ordinary rules put it in the item whether the
+         marker reached it or not.
+
          ONE IS A COUNT AND THE BOUNDARY IS NOT -- NORMATIVE (carve#1290).
          The blank line, sibling marker or further `+` above is the EXTENT of
          that single block, which may be many lines long -- a list, a quote,
@@ -6701,7 +6723,9 @@ EOF = (* end of file *) ;
       last-child chains -- a line that folds adds no node at any level, while a
       line that opens anything changes a count. An implementation MAY instead
       derive the answer any other way; what is normative is the answer, not the
-      method.
+      method. For that probe, an implementation MAY hand a matcher a fragment
+      beginning at the last blank line, and a matcher whose answer depends on
+      its absolute position or on lines outside that fragment is not conforming.
 
       A MATCHER IS A PURE PREDICATE, and this is what makes the probe legitimate
       (carve#1432). An extension's block or inline matcher MUST be a pure
@@ -6722,6 +6746,37 @@ EOF = (* end of file *) ;
       deletes the author's line from the page. Every implementation of this rule
       chose the first direction for that reason, and a budget exists precisely so
       the pre-pass stays linear without ever choosing the second.
+
+   R1b A MATCHER'S COORDINATES ARE LOCAL, NOT ABSOLUTE -- NORMATIVE
+      (carve#1437). The `lines` array handed to a block matcher MAY begin at a
+      CONTAINER'S CONTENT rather than at the document, re-based so that index 0
+      is that first line, and `position` indexes the array given rather than the
+      document. A matcher whose answer depends on where it sits in the whole
+      document, or on lines the array does not contain, is NOT CONFORMING.
+
+      THIS IS NOT A PROPERTY OF THE PROBE. R1a's pre-pass parses the run back to
+      the last blank line, and that run is re-based -- but so is every container
+      body, with no definition anywhere in the document. Measured on all three
+      engines: a four-line document whose list item holds two lines invokes the
+      matcher with a TWO-LINE array at index 0, then with the whole document at
+      index 3; a block quote and a `:::` container do the same. Scoping the rule
+      to the probe would leave the identical hazard unstated for every container,
+      which is where an extension author meets it first.
+
+      WHY IT HAS TO BE SAID, given R1a already requires purity. Purity fixes the
+      answer for a given (lines, position, context); it does not say what those
+      arguments mean. The SAME PAIR CAN OCCUR TWICE FOR DIFFERENT LINES: a
+      footnote definition invokes the matcher at position 0 against the whole
+      document and again at position 0 against a two-line fragment. A matcher
+      reading `position == 0` as "start of document" is answering a question the
+      parser never asked, and does so while satisfying purity exactly.
+
+      WHAT AN IMPLEMENTATION OWES. Nothing new -- all three engines already pass
+      re-based arrays, and this clause describes them rather than changing them.
+      What it adds is the contract an extension may rely on, and the reason a
+      conformance document cannot pin it: a corpus document cannot register an
+      extension, so this is tested by an engine's own suite asserting that a
+      matcher inside a container body receives a re-based array.
 
    R2 FOOTNOTES (rendering in PART 9 §16). A [^label] use with a matching
       footnoteDefs entry is numbered by FIRST-REFERENCE order from
