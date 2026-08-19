@@ -613,6 +613,25 @@ const sem = g.createSemantics().addOperation('h', {
     return '\u2026'
   },
   dashRun(_a, _b) {
+    // PART 9 SS8, carve#1443: a run PRECEDED by whitespace (or nothing) and
+    // FOLLOWED by a non-whitespace character is a flag, not a dash, and stays
+    // literal. `git log --oneline` rendered `git log –oneline` before this.
+    //
+    // Only that one shape is excluded, and the narrowness is load-bearing:
+    // `a---- b` is word-then-space and DOES convert (corpus
+    // 19-smart-typography-dashes-and-quotes-7 pins it), as does a trailing
+    // dash on an interrupted clause. Requiring matching sides would have
+    // broken both.
+    {
+      const src = this.source.sourceString
+      const at = this.source.startIdx
+      const end = this.source.endIdx
+      const prev = at > 0 ? src[at - 1] : ''
+      const next = src[end] ?? ''
+      const prevIsSpace = prev === '' || /\s/.test(prev)
+      const nextIsSpace = next === '' || /\s/.test(next)
+      if (prevIsSpace && !nextIsSpace) return escapeHtml(this.sourceString)
+    }
     // PART 9 SS8: a run of n hyphens -> em/en dash mix (djot allocateDashes):
     // n%3==0 all em; n%2==0 all en; else maximize em-dashes with the remainder
     // as en, where a remainder of 1 trades one em-dash for two en-dashes. Must

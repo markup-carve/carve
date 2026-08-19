@@ -3283,6 +3283,46 @@ smart_typography = em_dash | en_dash | ellipsis | smart_quote
 em_dash = "---" ;     (* → — *)
 en_dash = "--" ;      (* → – *)
 ellipsis = "..." ;    (* → … *)
+(* A HYPHEN RUN OPENING A WORD AFTER WHITESPACE IS A FLAG, NOT A DASH --
+   NORMATIVE (carve#1443). A run of hyphens PRECEDED by whitespace (or the
+   start of the inline content) and FOLLOWED by a non-whitespace character
+   does not convert. It is literal text. Every other position converts as
+   before.
+
+   The case is a long CLI flag, which is ordinary technical prose.
+   `git log --oneline` rendered `git log –oneline`, silently and in the output
+   only: the author saw their flag, the reader got a command that does not run,
+   and nothing warned. `--force-with-lease` failed the same way.
+
+   THE RULE IS DELIBERATELY NARROW, and the two obvious wider ones are both
+   wrong:
+
+   Requiring whitespace on BOTH sides removes the damage and the feature
+   together, because every canonical dash use is unspaced -- `pages 1--10`,
+   `the Mon--Fri window`, a tight `thought---interrupted---resumes`. A numeric
+   range is the reason en dashes exist.
+
+   Requiring the two SIDES TO MATCH in kind also fails, on a case the corpus
+   already pins: `a---- b----- c------` (19-smart-typography-dashes-and-quotes-7)
+   is alphanumeric on the left and whitespace on the right, and it converts. So
+   is a trailing dash on an interrupted clause. Only the LEFT-FLANKING-ONLY
+   shape -- whitespace before, word after -- is the one no dash wants and every
+   flag has.
+
+   ELLIPSIS IS NOT COVERED. `wait... really` is the ordinary use and it is
+   word-then-whitespace; an ellipsis terminates a clause where a dash joins two
+   things, so their natural positions differ and the rule follows the construct.
+
+   NOT FIXED BY THIS, and stated so it is a known limit rather than a
+   discovery: an HTML comment is HALF repaired. `<!-- c -->` renders
+   `&lt;!– c --&gt;` - the CLOSING run is preceded by whitespace and followed by
+   `>`, so it is flag-shaped and now stays literal, while the OPENING run is
+   preceded by `!` rather than whitespace and still converts. Recognising the
+   whole construct is what the opening half wants; a wider dash rule would cost
+   the numeric range.
+
+   Composes with the run decomposition below rather than replacing it: this
+   decides WHETHER a run converts, the length decides INTO WHAT. *)
 (* HYPHEN RUNS -- a run of 2+ hyphens between non-hyphen characters
    decomposes djot-style: length divisible by 3 -> all em dashes;
    else divisible by 2 -> all en dashes; else one em dash (3) and the

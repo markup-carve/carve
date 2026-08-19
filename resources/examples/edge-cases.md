@@ -25212,3 +25212,48 @@ c</li>
 ```
 
 :::
+
+## A hyphen run opening a word after whitespace is a flag
+
+PART 9 §8 does not convert a hyphen run that is PRECEDED by whitespace (or the
+start of the content) and FOLLOWED by a non-whitespace character. That shape is
+a long CLI flag, and converting it mangled ordinary technical prose silently and
+in the rendered output only - the author saw `git log --oneline` in the source
+and the reader got a command that does not run (markup-carve/carve#1443).
+
+The rule is deliberately narrow. Every canonical dash use is unspaced on at
+least the left, so requiring whitespace on both sides would have removed the
+feature along with the damage, and requiring the two sides to match in kind
+would have broken `a---- b----- c------`, which the corpus already pins.
+
+::: compare
+
+```carve
+git log --oneline and --force-with-lease stay literal.
+
+But pages 1--10, the Mon--Fri window, a---- b----- and a -- b all convert.
+```
+
+```html
+<p>git log --oneline and --force-with-lease stay literal.</p>
+<p>But pages 1–10, the Mon–Fri window, a–– b—– and a – b all convert.</p>
+```
+
+:::
+
+An HTML comment is half repaired by the same rule, which is worth pinning rather
+than leaving to be discovered: the closing `-->` is preceded by whitespace and
+followed by `>`, so it is flag-shaped and stays literal, while the opening `<!--`
+is preceded by `!` and still converts.
+
+::: compare
+
+```carve
+<!-- a comment -->
+```
+
+```html
+<p>&lt;!– a comment --&gt;</p>
+```
+
+:::
