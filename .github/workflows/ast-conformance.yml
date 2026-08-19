@@ -17,7 +17,10 @@ name: AST conformance
 on:
   schedule:
     # 04:00 UTC daily, after the downstream bump workflow has had a night to run.
-    - cron: '0 4 * * *'
+    # Sunday has its own spelling so the generated differential sweeps below
+    # can run weekly while reusing this job's already-built engine checkouts.
+    - cron: '0 4 * * 1-6'
+    - cron: '0 4 * * 0'
   workflow_dispatch:
 
 permissions:
@@ -326,6 +329,50 @@ jobs:
           CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
           CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
         run: npm run fmt:check
+
+      # Curated interaction products rather than another corpus walk. The
+      # original 120-document heading family reached none of the seams found by
+      # the 2026-08-16 differential sweep; the expanded families defend those
+      # seams and the two clean control sweeps. Weekly rather than per PR because
+      # this needs all three engine mains built. A dispatch runs it too, so a
+      # finding can be re-measured immediately.
+      - name: Curated combinatorial seam families
+        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 4 * * 0'
+        env:
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: npm run combinatorial:check
+
+      # Deterministic but exploratory: every minimized class becomes a focused
+      # issue and corpus candidate. The current nested-list lazy-resume finding
+      # is tracked as carve#1424. Exit 2 (an engine missing or unable to run)
+      # remains a hard failure; exit 1 stays visible without making the whole
+      # weekly conformance verdict permanently red while adjudication proceeds.
+      - name: Differential fuzz sweep
+        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 4 * * 0'
+        env:
+          CARVE_JS_DIR: ${{ github.workspace }}/carve-js
+          CARVE_RS_DIR: ${{ github.workspace }}/carve-rs
+          CARVE_PHP_DIR: ${{ github.workspace }}/carve-php
+        run: |
+          set +e
+          npm run fuzz:impls -- --seed=101 --count=200 --max-findings=16 2>&1 | tee /tmp/fuzz-impls.txt
+          status=${PIPESTATUS[0]}
+          set -e
+          {
+            echo '## Weekly differential fuzz sweep'
+            echo
+            echo '```text'
+            tail -n 40 /tmp/fuzz-impls.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$status" -eq 2 ]; then
+            echo '::error::The differential fuzzer could not run all three engines.'
+            exit 2
+          fi
+          if [ "$status" -eq 1 ]; then
+            echo '::warning::The differential fuzzer found tracked or new questions; inspect the job summary and carve#1424.'
+          fi
 
       # The same generated sweep the per-PR job runs, ten times larger.
       #
