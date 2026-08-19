@@ -556,6 +556,11 @@ and carve-rs; off by default, enable per processor.
   too many entries is an error, while a short list renders with an unset tail
   and produces a lint diagnostic. Widths are percentages in source and
   fractional values in the exchange AST.
+- A cell marker may carry `align=left|right|center` and/or
+  `valign=top|middle|bottom` (for example,
+  `-{align=center valign=middle} Cell`). Each cell value overrides the matching
+  positional column value independently and is consumed rather than emitted as
+  a legacy HTML attribute.
 - Spans reuse the pipe-table span markers: a cell whose sole content is a lone
   `^` merges with the cell above (rowspan); a lone `<` merges with the cell to
   the left (colspan); continuation-style (`colspan=3` is two `<`, `rowspan=N` is

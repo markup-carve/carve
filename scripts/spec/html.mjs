@@ -639,7 +639,7 @@ function renderTable(node, depth, ctx) {
   for (const list of node.battrs ?? []) {
     const keep = []
     for (const attr of list) {
-      if (attr[0] === 'kv' && ['aligns', 'valigns', 'widths'].includes(attr[1])) tableKeys.set(attr[1], attr[2])
+      if (attr[0] === 'kv' && ['aligns', 'valigns', 'widths', 'header-rows', 'footer-rows'].includes(attr[1])) tableKeys.set(attr[1], attr[2])
       else keep.push(attr)
     }
     if (keep.length) ordinaryAttrs.push(keep)
@@ -699,10 +699,24 @@ function renderTable(node, depth, ctx) {
       colValign[ci] = c.valign ?? colValign[ci] ?? null
     })
   }
-  let headCount = 0
-  while (headCount < rows.length && rows[headCount].isHead) headCount++
+  const rowCount = (key) => {
+    if (!tableKeys.has(key)) return 0
+    const value = String(tableKeys.get(key)).trim()
+    if (value === '') return 1
+    if (!/^\d+$/.test(value)) throw new Refuse(`invalid ${key} table attribute`)
+    return Number(value)
+  }
+  const explicitPartition = tableKeys.has('header-rows') || tableKeys.has('footer-rows')
+  let headCount = rowCount('header-rows')
+  const footCount = rowCount('footer-rows')
+  if (headCount + footCount > rows.length) throw new Refuse('table header and footer rows overlap')
+  if (!explicitPartition) {
+    while (headCount < rows.length && rows[headCount].isHead) headCount++
+  }
+  const footStart = rows.length - footCount
   const renderCell = (cell, r, c) => {
-    const tag = cell.header ? 'th' : 'td'
+    const isHeader = cell.header || r < headCount
+    const tag = isHeader ? 'th' : 'td'
     let a = ''
     // The cell's own block is parsed FIRST, only to see whether it names
     // `scope`. Emitting the default unconditionally and letting the authored
@@ -721,7 +735,7 @@ function renderTable(node, depth, ctx) {
     // attribute names are not, so emitting the default beside it produces two
     // `scope`s as far as any consumer is concerned. The test is about avoiding
     // that collision, not about folding the author's name.
-    if (cell.header && !/ scope="/i.test(parsed)) {
+    if (isHeader && !/ scope="/i.test(parsed)) {
       a += r < headCount ? ' scope="col"' : ' scope="row"'
     }
     if (cell.rowspan) a += ` rowspan="${cell.rowspan}"`
@@ -771,10 +785,14 @@ function renderTable(node, depth, ctx) {
     const headRows = rows.slice(0, headCount).map((row, r) => renderRow(row, r)).join('')
     out.push(`${pad}  <thead>${headRows}</thead>`)
   }
-  if (rows.length > bodyStart) {
+  if (footStart > bodyStart) {
     out.push(`${pad}  <tbody>`)
-    for (let r = bodyStart; r < rows.length; r++) out.push(`${pad}    ${renderRow(rows[r], r)}`)
+    for (let r = bodyStart; r < footStart; r++) out.push(`${pad}    ${renderRow(rows[r], r)}`)
     out.push(`${pad}  </tbody>`)
+  }
+  if (footStart < rows.length) {
+    const footRows = rows.slice(footStart).map((row, offset) => renderRow(row, footStart + offset)).join('')
+    out.push(`${pad}  <tfoot>${footRows}</tfoot>`)
   }
   out.push(`${pad}</table>`)
   return out.join('\n')

@@ -122,6 +122,7 @@ const featureRunners = {
   'code-callouts': (source, render) => render(source, { extensions: [codeCallouts()] }),
   details: (source, render) => render(source, { extensions: [details()] }),
   'list-table': (source, render) => render(source, { extensions: [listTable()] }),
+  'list-table-columns-1344': (source, render) => render(source, { extensions: [listTable()] }),
   'list-table-local-headers-1248': (source, render) => render(source, { extensions: [listTable()] }),
   'semantic-span': (source, render) => render(source, { extensions: [semanticSpan()] }),
   spoiler: (source, render) => render(source, { extensions: [spoiler()] }),
@@ -134,8 +135,6 @@ const featureRunners = {
  * here is a statement about this file, and fails.
  */
 const DECLARED_UNIMPLEMENTED = {
-  'list-table-columns-1344':
-    'markup-carve/carve#1344 column metadata and footer rows have not reached the pinned reference engine yet',
   'smart-quotes-locale-de':
     'locale quote selection is an implementation extension/configuration, not canonical Djot syntax',
 }

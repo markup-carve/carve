@@ -227,7 +227,7 @@
     {
       "slug": "44-list-table-columns-and-foot",
       "feature": "list-table-columns-1344",
-      "description": "ListTable shares the core positional column attributes and adds footer-rows; alignment, widths and the head/body/foot partition survive together."
+      "description": "ListTable shares positional column attributes and adds per-cell align/valign overrides; widths and the head/body/foot partition survive together."
     },
     {
       "slug": "45-list-table-local-headers",

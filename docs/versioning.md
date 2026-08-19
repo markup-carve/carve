@@ -231,7 +231,8 @@ carve-js pins carve-php's exact bytes as test fixtures.
 - [addition] Tables gain independent horizontal and vertical cell/column
   alignment, positional `aligns`/`valigns`/`widths` attributes, and an exchange
   AST `columns` model. ListTable gains the same column attributes plus
-  `footer-rows`.
+  per-cell `align`/`valign` and `footer-rows`; pipe tables gain explicit
+  `header-rows` / `footer-rows` partitioning.
 
 ### 0.1
 

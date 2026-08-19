@@ -154,6 +154,8 @@ horizontal marker may stand alone; a vertical marker always needs a horizontal
 partner. The run is glued to the pipe and terminated by a space. On `|=` it sets
 column defaults; on a plain `|` it overrides that cell. Table attributes can
 set headerless defaults: `{aligns="right,center" valigns="top," widths="30,70"}`.
+Use `{header-rows=N footer-rows=N}` before a pipe table for explicit
+`thead`/`tfoot` ranges; `|=` header cells still work in the body.
 
 ```carve
 |=~ Item |=>^ Qty |
