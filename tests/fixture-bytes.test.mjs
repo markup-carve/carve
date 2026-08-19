@@ -257,6 +257,16 @@ const INVENTORY = [
     crv: ['trailing-WS', 'trailing-TAB'],
     html: [],
   },
+  {
+    base: '379-a-reference-definition-cannot-take-its-destination-from-the-next-line',
+    crv: ['trailing-WS'],
+    html: [],
+  },
+  {
+    base: '379-a-reference-definition-cannot-take-its-destination-from-the-next-line-2',
+    crv: ['trailing-WS'],
+    html: [],
+  },
 ]
 
 function scan(text) {

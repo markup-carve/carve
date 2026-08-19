@@ -1,0 +1,29 @@
+An unclosed inline literal reaches the end of its block
+
+```
+!`unclosed
+.
+<p>unclosed</p>
+```
+
+```
+::: |
+a !`b
+c d
+:::
+.
+<div class="line-block">
+  <p>a b
+c d</p>
+</div>
+```
+
+```
+| a !`b | c d |
+.
+<table>
+  <tbody>
+    <tr><td>a b | c d</td></tr>
+  </tbody>
+</table>
+```

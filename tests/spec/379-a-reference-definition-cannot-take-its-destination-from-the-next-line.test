@@ -1,0 +1,31 @@
+A reference definition cannot take its destination from the next line
+
+```
+* [d]: 
+ :::
+.
+<ul>
+  <li>[d]:
+:::</li>
+</ul>
+```
+
+```
+* [d]: 
+ text
+.
+<ul>
+  <li>[d]:
+text</li>
+</ul>
+```
+
+```
+* [d]: /u
+ :::
+.
+<ul>
+  <li></li>
+</ul>
+<p>:::</p>
+```

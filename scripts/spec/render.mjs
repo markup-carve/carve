@@ -355,7 +355,8 @@ const sem = g.createSemantics().addOperation('h', {
     // the rule: it holds the no-break space, which every other clause calls
     // CONTENT, so a run ending in one silently lost it. The same narrowing
     // applies at the math and literal bodies, which share this extraction.
-    return `<code>${escapeHtml(content.sourceString.replace(/[ \t\n]+$/, ''))}</code>`
+    const trim = hardBreaks ? /[ \t]+$/ : /[ \t\n]+$/
+    return `<code>${escapeHtml(content.sourceString.replace(trim, ''))}</code>`
   },
   nl(_n) {
     // A SOFT BREAK, and the only place one is visible AS a break. A newline
@@ -563,7 +564,7 @@ const sem = g.createSemantics().addOperation('h', {
     const inner = code.child(0)
     const body = escapeHtml(
       inner.ctorName === 'codeU'
-        ? inner.child(2).sourceString.replace(/[ \t\n]+$/, '')
+        ? inner.child(2).sourceString.replace(hardBreaks ? /[ \t]+$/ : /[ \t\n]+$/, '')
         : codeText(inner.child(1)),
     )
     const a = renderAttrs(attrsOf(attrs))
