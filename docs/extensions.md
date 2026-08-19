@@ -204,9 +204,27 @@ An extension is a named unit contributing any subset of four things, run as:
   matchers) before they may cut a definition out of a line. Allocate ids, count
   occurrences or record state in `afterParse` / `beforeRender`, which run once
   over the finished document - never in a matcher.
-- A definition pre-pass probe MAY hand a matcher a fragment beginning at the
-  last blank line; a matcher whose answer depends on its absolute position or
-  on lines outside that fragment is not conforming.
+- **A matcher's coordinates are LOCAL, not absolute** (normative, grammar
+  PART 9R R1b). The `lines` array a matcher receives MAY begin at a container's
+  content rather than at the document, re-based so index 0 is that first line,
+  and `position` is an index into the array given. A matcher whose answer
+  depends on where it sits in the whole document, or on lines outside the array
+  it was handed, is not conforming.
+
+  This is not a probe caveat. Every container that recurses passes its body
+  down re-based, so a matcher inside a list item, a block quote or a `:::`
+  container already sees a fragment; the definition pre-pass is one caller of
+  that path, not the origin of it. Measured on all three engines, a five-line
+  document whose list item holds two lines calls the matcher with a two-line
+  array at index 0, then with the whole document at index 3.
+
+  The consequence worth naming: **the same `(lines, position)` pair can occur
+  twice for different lines.** A footnote definition produces `position = 0`
+  against the whole document and `position = 0` again against a two-line
+  fragment. A matcher keying on `position == 0` to mean "start of document" is
+  answering a question the parser never asked it - purity above says the same
+  arguments give the same answer, and this clause says which arguments those
+  are.
 
 ### 2.2 Transforms
 
