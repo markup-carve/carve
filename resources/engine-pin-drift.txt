@@ -24,3 +24,7 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+
+384-a-continuation-marker-attaches-only-a-flush-left-block-2  pinned carve-js predates the flush-left-only continuation ruling (markup-carve/carve#1436)
+384-a-continuation-marker-attaches-only-a-flush-left-block-3  pinned carve-js predates the flush-left-only continuation ruling (markup-carve/carve#1436)
+384-a-continuation-marker-attaches-only-a-flush-left-block-6  carve#1436, the indented contrast: the pin attaches the line instead of folding it

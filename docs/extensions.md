@@ -204,6 +204,9 @@ An extension is a named unit contributing any subset of four things, run as:
   matchers) before they may cut a definition out of a line. Allocate ids, count
   occurrences or record state in `afterParse` / `beforeRender`, which run once
   over the finished document - never in a matcher.
+- A definition pre-pass probe MAY hand a matcher a fragment beginning at the
+  last blank line; a matcher whose answer depends on its absolute position or
+  on lines outside that fragment is not conforming.
 
 ### 2.2 Transforms
 
