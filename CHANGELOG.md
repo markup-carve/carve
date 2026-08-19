@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The AST span-divergence ledger now records the current zero-difference
+  baseline.** The last `hard_break` extent disagreement cleared across all
+  three engines and its regression test now pins an empty ledger (carve#1414).
+
 ### Changed
 
 - **A vertical table-cell marker requires a horizontal partner.** `|^ x` and `|v x` remain visible content; paired runs such as `|<^`, `|~~`, and `|v>` carry both axes. Corpus 373.
