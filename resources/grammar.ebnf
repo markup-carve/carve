@@ -6885,6 +6885,16 @@ EOF = (* end of file *) ;
       quote and a div are one rule, because S4 asks only whether a paragraph is
       open and which container holds it.
 
+      THE ABBREVIATION KIND IS DECIDED BEFORE THIS CLAUSE REACHES IT, and it is
+      named above for completeness rather than as a case that discriminates.
+      PART 12 section 7 already makes `*[TERM]: expansion` a definition ONLY as a
+      direct child of the document, so every marker-line and in-container
+      spelling is ordinary text by that rule; and at the document level an
+      abbreviation definition INTERRUPTS an open paragraph (PART 9 section 10,
+      invisible constructs interrupt), so it is never a lazy line there. No
+      document distinguishes this clause's answer from section 7's for that kind.
+      The link and footnote kinds are the ones this clause governs on its own.
+
       This is a consequence of NO OPEN PARAGRAPH, NO LAZY LINE, stated here
       because collection runs BEFORE block structure in every implementation and
       three engines each got a different answer without it: one deleted the
