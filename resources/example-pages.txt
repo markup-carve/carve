@@ -281,6 +281,7 @@ index: examples/edge-cases/index.md
   adjacent-sibling-lists-survive-the-round-trip
   a-multi-letter-ordered-marker-opens-no-list
   a-block-attached-after-an-invisible-line-leaves-the-item-tight
+  a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item
 
 [edge-containers] Containers, quotes and fences
 > Divs, block quotes, code and comment fences: nesting, lazy continuation, absorption and what closes what.
