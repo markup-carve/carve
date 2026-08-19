@@ -27,8 +27,8 @@ title: x
 body
 .
 <p>—	yaml
-title: x</p>
-<hr>
+title: x
+—</p>
 <p>body</p>
 ```
 

@@ -6,7 +6,8 @@ A floating attribute is scoped to the container that holds it
 
 tail
 .
-<blockquote><p>q</p></blockquote>
+<blockquote><p>q
+{.k}</p></blockquote>
 <p>tail</p>
 ```
 
@@ -15,8 +16,9 @@ tail
 > {.k}
 tail
 .
-<blockquote><p>q</p></blockquote>
-<p>tail</p>
+<blockquote><p>q
+{.k}
+tail</p></blockquote>
 ```
 
 ```
@@ -26,7 +28,8 @@ tail
 tail
 .
 <ul>
-  <li>a</li>
+  <li>a
+{.k}</li>
 </ul>
 <p>tail</p>
 ```
@@ -37,11 +40,10 @@ tail
 # H
 .
 <ul>
-  <li>a</li>
+  <li>a
+{.k}
+# H</li>
 </ul>
-<section id="H">
-  <h1>H</h1>
-</section>
 ```
 
 ```
@@ -52,7 +54,8 @@ tail
 .
 <dl>
   <dt>t</dt>
-  <dd>d</dd>
+  <dd>d
+{.k}</dd>
 </dl>
 <p>tail</p>
 ```
@@ -66,7 +69,9 @@ tail
 .
 <dl>
   <dt>t</dt>
-  <dd>d</dd>
+  <dd>d
+{.k
+<span class="tag"><strong>#x</strong></span>}</dd>
 </dl>
 <p>tail</p>
 ```
@@ -86,8 +91,8 @@ tail
 .
 <ul>
   <li>a
-    <h1 class="k" id="H">H</h1>
-  </li>
+{.k}
+# H</li>
 </ul>
 ```
 
@@ -99,10 +104,9 @@ tail
 .
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>d</p>
-    <h1 class="k" id="H">H</h1>
-  </dd>
+  <dd>d
+{.k}
+# H</dd>
 </dl>
 ```
 

@@ -12,7 +12,10 @@ A comment fence one item deeper registers nothing either
 <ul>
   <li>a
     <ul>
-      <li>b</li>
+      <li>b
+%%%
+[r]: /url
+%%%</li>
     </ul>
   </li>
 </ul>

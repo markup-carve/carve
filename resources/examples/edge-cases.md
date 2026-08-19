@@ -1327,7 +1327,6 @@ lazy
 # N
 lazy</li>
     </ul>
-    lazy
   </li>
 </ul>
 ```
@@ -18427,7 +18426,8 @@ sub-block attached after a blank leaves the item tight):
 ```html
 <ul>
   <li>a
-    <ul class="x">
+{.x}
+    <ul>
       <li>b</li>
     </ul>
   </li>
@@ -18451,8 +18451,8 @@ same position with the same spacing:
 ```html
 <ul>
   <li>a
-    <p class="x">para</p>
-  </li>
+{.x}
+para</li>
 </ul>
 ```
 
@@ -18471,10 +18471,9 @@ para
 ```
 
 ```html
-<p>para</p>
-<ul class="x">
-  <li>b</li>
-</ul>
+<p>para
+{.x}
+- b</p>
 ```
 
 :::
@@ -18546,8 +18545,9 @@ fails this one:
 ```html
 <ul>
   <li><p>a</p>
-    <p>para</p>
-    <ul class="x">
+    <p>para
+{.x}</p>
+    <ul>
       <li>b</li>
     </ul>
   </li>
@@ -19143,8 +19143,9 @@ tail
 <ul>
   <li></li>
 </ul>
-<p>c</p>
-<p>tail</p>
+<p>c
+%%%
+tail</p>
 ```
 
 :::
@@ -19510,9 +19511,10 @@ tail
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+{.x}
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
@@ -19554,8 +19556,8 @@ paragraph it introduces:
 ```html
 <ul>
   <li>a
-    <p class="x">more</p>
-  </li>
+{.x}
+more</li>
 </ul>
 ```
 
@@ -19733,9 +19735,9 @@ para
 <ul>
   <li>a
     para
+&gt; q
   </li>
 </ul>
-<blockquote><p>q</p></blockquote>
 ```
 
 :::
@@ -19783,9 +19785,9 @@ p2
   <li>a
     p1
 p2
+&gt; q
   </li>
 </ul>
-<blockquote><p>q</p></blockquote>
 ```
 
 :::
@@ -19851,9 +19853,9 @@ para
 
 ```html
 <ul>
-  <li>para</li>
+  <li>para
+&gt; q</li>
 </ul>
-<blockquote><p>q</p></blockquote>
 ```
 
 :::
@@ -19892,11 +19894,9 @@ para
 ```html
 <blockquote>
   <p>quoted</p>
-  <p>para</p>
+  <p>para
+# H</p>
 </blockquote>
-<section id="H">
-  <h1>H</h1>
-</section>
 ```
 
 :::
@@ -20065,7 +20065,8 @@ tail
 ```
 
 ```html
-<blockquote><p>q</p></blockquote>
+<blockquote><p>q
+{.k}</p></blockquote>
 <p>tail</p>
 ```
 
@@ -20084,8 +20085,9 @@ tail
 ```
 
 ```html
-<blockquote><p>q</p></blockquote>
-<p>tail</p>
+<blockquote><p>q
+{.k}
+tail</p></blockquote>
 ```
 
 :::
@@ -20103,7 +20105,8 @@ tail
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+{.k}</li>
 </ul>
 <p>tail</p>
 ```
@@ -20123,11 +20126,10 @@ either. The heading stays outside and stays unclassed:
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+{.k}
+# H</li>
 </ul>
-<section id="H">
-  <h1>H</h1>
-</section>
 ```
 
 :::
@@ -20146,7 +20148,8 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d</dd>
+  <dd>d
+{.k}</dd>
 </dl>
 <p>tail</p>
 ```
@@ -20170,7 +20173,9 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>d</dd>
+  <dd>d
+{.k
+<span class="tag"><strong>#x</strong></span>}</dd>
 </dl>
 <p>tail</p>
 ```
@@ -20209,8 +20214,8 @@ in a list item:
 ```html
 <ul>
   <li>a
-    <h1 class="k" id="H">H</h1>
-  </li>
+{.k}
+# H</li>
 </ul>
 ```
 
@@ -20230,10 +20235,9 @@ in a definition body:
 ```html
 <dl>
   <dt>t</dt>
-  <dd>
-    <p>d</p>
-    <h1 class="k" id="H">H</h1>
-  </dd>
+  <dd>d
+{.k}
+# H</dd>
 </dl>
 ```
 
@@ -20324,8 +20328,8 @@ body
 
 ```html
 <p>—	yaml
-title: x</p>
-<hr>
+title: x
+—</p>
 <p>body</p>
 ```
 
@@ -20843,7 +20847,10 @@ At the HTML layer these rows cannot separate "not a reference label" from "a lab
 
 ```html
 <ul>
-  <li>item</li>
+  <li>item
+%%%
+[r]: /url
+%%%</li>
 </ul>
 <p>[r][]</p>
 ```
@@ -20869,7 +20876,10 @@ text[^f]
 
 ```html
 <ul>
-  <li>item</li>
+  <li>item
+%%%
+[^f]: note body
+%%%</li>
 </ul>
 <p>text[^f]</p>
 ```
@@ -20919,7 +20929,10 @@ Nothing in §24 S2 counts containers, so a second level of nesting is not a seco
 <ul>
   <li>a
     <ul>
-      <li>b</li>
+      <li>b
+%%%
+[r]: /url
+%%%</li>
     </ul>
   </li>
 </ul>
@@ -20945,7 +20958,10 @@ Fence WIDTH decides which line closes the fence (§28's exact-length closer), no
 
 ```html
 <ul>
-  <li>item</li>
+  <li>item
+%%%%
+[r]: /url
+%%%%</li>
 </ul>
 <p>[r][]</p>
 ```
@@ -21955,10 +21971,11 @@ tail
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+[r]: /u
+tail</li>
 </ul>
-<p>tail</p>
-<p><a href="/u">r</a></p>
+<p>[r][]</p>
 ```
 
 :::
@@ -21977,18 +21994,11 @@ x[^f]
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+[^f]: t
+tail</li>
 </ul>
-<p>tail</p>
-<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>t<a href="#fnref1" role="doc-backlink">↩</a></p>
-    </li>
-  </ol>
-</section>
+<p>x[^f]</p>
 ```
 
 :::
@@ -22059,10 +22069,11 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a</dd>
+  <dd>a
+[r]: /u</dd>
 </dl>
 <p>tail</p>
-<p><a href="/u">r</a></p>
+<p>[r][]</p>
 ```
 
 :::
@@ -22082,7 +22093,8 @@ tail
 ```html
 <dl>
   <dt>t</dt>
-  <dd>a</dd>
+  <dd>a
+%% c</dd>
 </dl>
 <p>tail</p>
 ```
@@ -22787,13 +22799,9 @@ tail
 ```
 
 ```html
-<blockquote>
-  <p>a</p>
-  <blockquote>
-    <h1 id="H">H</h1>
-  </blockquote>
-</blockquote>
-<p>tail</p>
+<blockquote><p>a
+&gt; # H
+tail</p></blockquote>
 ```
 
 :::
@@ -22950,9 +22958,10 @@ tail
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+{.k}
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
@@ -22970,9 +22979,10 @@ tail
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+%% c
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
@@ -22990,9 +23000,11 @@ tail
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+%%% c
+%%%
+tail</li>
 </ul>
-<p>tail</p>
 ```
 
 :::
@@ -23015,19 +23027,12 @@ x[^f]
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+[^f]: t
+more
+tail</li>
 </ul>
-<p>tail</p>
-<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>t
-more<a href="#fnref1" role="doc-backlink">↩</a></p>
-    </li>
-  </ol>
-</section>
+<p>x[^f]</p>
 ```
 
 :::
@@ -23048,18 +23053,11 @@ x[^f]
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+[^f]: t
+tail</li>
 </ul>
-<p>tail</p>
-<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>t<a href="#fnref1" role="doc-backlink">↩</a></p>
-    </li>
-  </ol>
-</section>
+<p>x[^f]</p>
 ```
 
 :::
@@ -23083,11 +23081,11 @@ tail
 ```html
 <ul>
   <li>a
-    “T”
-tail
-  </li>
+[r]: /u
+”T”
+tail</li>
 </ul>
-<p><a href="/u">r</a></p>
+<p>[r][]</p>
 ```
 
 :::
@@ -23109,8 +23107,8 @@ and §24 C3's comment exception keeps that path open:
 ```html
 <ul>
   <li>a
-    b
-  </li>
+%% c
+b</li>
 </ul>
 ```
 
@@ -23133,19 +23131,11 @@ x[^f]
 ```html
 <ul>
   <li>a
-    b
-  </li>
+[^f]: t
+more
+b</li>
 </ul>
-<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>t
-more<a href="#fnref1" role="doc-backlink">↩</a></p>
-    </li>
-  </ol>
-</section>
+<p>x[^f]</p>
 ```
 
 :::
@@ -23173,19 +23163,13 @@ x[^f]
 
 ```html
 <ul>
-  <li>a</li>
+  <li><p>a
+[^f]: t</p>
+    <p>more
+tail</p>
+  </li>
 </ul>
-<p>tail</p>
-<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>t</p>
-      <p>more<a href="#fnref1" role="doc-backlink">↩</a></p>
-    </li>
-  </ol>
-</section>
+<p>x[^f]</p>
 ```
 
 :::
@@ -23211,12 +23195,13 @@ tail
 
 ```html
 <ul>
-  <li><p>a</p>
+  <li><p>a
+[r]: /u</p>
     <p>more
 tail</p>
   </li>
 </ul>
-<p><a href="/u">r</a></p>
+<p>[r][]</p>
 ```
 
 :::
@@ -23246,14 +23231,15 @@ See [r][].
       <ul>
         <li>
           <ul>
-            <li>x</li>
+            <li>x
+[r]: /url</li>
           </ul>
         </li>
       </ul>
     </blockquote>
   </li>
 </ul>
-<p>See <a href="/url">r</a>.</p>
+<p>See [r][].</p>
 ```
 
 :::
@@ -23277,22 +23263,15 @@ See [^f].
       <ul>
         <li>
           <ul>
-            <li>x</li>
+            <li>x
+[^f]: note</li>
           </ul>
         </li>
       </ul>
     </blockquote>
   </li>
 </ul>
-<p>See <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
-<section role="doc-endnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
-    </li>
-  </ol>
-</section>
+<p>See [^f].</p>
 ```
 
 :::
@@ -23317,8 +23296,7 @@ its column - which §24 C3 refuses.
         <li>
           <ul>
             <li>x
-              <h1 id="h">h</h1>
-            </li>
+# h</li>
           </ul>
         </li>
       </ul>
@@ -23347,12 +23325,13 @@ See [r][].
   <ul>
     <li>
       <ul>
-        <li>x</li>
+        <li>x
+[r]: /url</li>
       </ul>
     </li>
   </ul>
 </blockquote>
-<p>See <a href="/url">r</a>.</p>
+<p>See [r][].</p>
 ```
 
 :::
@@ -23446,9 +23425,9 @@ tail
     <pre><code>c
 </code></pre>
     b
-tail
   </li>
 </ul>
+<p>tail</p>
 ```
 
 :::
@@ -24037,11 +24016,11 @@ tail
 ````html
 <ul>
   <li>q
-    <pre><code>y
-</code></pre>
-  </li>
+<code>
+y
+</code>
+tail</li>
 </ul>
-<p>tail</p>
 ````
 
 :::
@@ -24206,10 +24185,11 @@ See [r][].
 ```html
 <blockquote>
   <ul>
-    <li>x</li>
+    <li>x
+[r]: /url</li>
   </ul>
 </blockquote>
-<p>See <a href="/url">r</a>.</p>
+<p>See [r][].</p>
 ```
 
 :::
@@ -24339,10 +24319,11 @@ tail
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+[r]: /u
+more
+tail</li>
 </ul>
-<p>more
-tail</p>
 ```
 
 :::
@@ -24361,10 +24342,11 @@ tail
 
 ```html
 <ol>
-  <li>a</li>
+  <li>a
+[r]: /u
+more
+tail</li>
 </ol>
-<p>more
-tail</p>
 ```
 
 :::
@@ -24385,9 +24367,9 @@ tail
 ```html
 <ol>
   <li>a
-    more
-tail
-  </li>
+[^f]: note
+more
+tail</li>
 </ol>
 ```
 
@@ -24409,19 +24391,12 @@ see[^f]
 
 ```html
 <ul>
-  <li>a</li>
+  <li>a
+[^f]: note
+more
+tail</li>
 </ul>
-<p>tail</p>
-<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>note
-more<a href="#fnref1" role="doc-backlink">↩</a></p>
-    </li>
-  </ol>
-</section>
+<p>see[^f]</p>
 ```
 
 :::
@@ -24753,8 +24728,8 @@ paragraph.
   <li>
     <ul>
       <li>u
-        :
-      </li>
+%%
+:</li>
     </ul>
   </li>
 </ul>

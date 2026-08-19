@@ -9,9 +9,9 @@ para
 <ul>
   <li>a
     para
+&gt; q
   </li>
 </ul>
-<blockquote><p>q</p></blockquote>
 ```
 
 ```
@@ -40,9 +40,9 @@ p2
   <li>a
     p1
 p2
+&gt; q
   </li>
 </ul>
-<blockquote><p>q</p></blockquote>
 ```
 
 ```
@@ -80,9 +80,9 @@ para
 > q
 .
 <ul>
-  <li>para</li>
+  <li>para
+&gt; q</li>
 </ul>
-<blockquote><p>q</p></blockquote>
 ```
 
 ```
@@ -106,11 +106,9 @@ para
 .
 <blockquote>
   <p>quoted</p>
-  <p>para</p>
+  <p>para
+# H</p>
 </blockquote>
-<section id="H">
-  <h1>H</h1>
-</section>
 ```
 
 ```
