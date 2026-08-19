@@ -24,3 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container  carve-js#1229 still registers a lazy marker line's definition, so the reference resolves
+383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-2  carve-js#1229, the div spelling of the same defect

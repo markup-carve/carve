@@ -1,0 +1,67 @@
+A lazy marker line's definition defines nothing, in any container
+
+```
+> r
+> - [d]: u
+
+[go][d]
+.
+<blockquote><p>r
+- [d]: u</p></blockquote>
+<p>[go][d]</p>
+```
+
+```
+::: n
+r
+- [d]: u
+:::
+
+[go][d]
+.
+<div class="n">
+  <p>r
+- [d]: u</p>
+</div>
+<p>[go][d]</p>
+```
+
+```
+> r
+> - [^f]: t
+
+see[^f]
+.
+<blockquote><p>r
+- [^f]: t</p></blockquote>
+<p>see[^f]</p>
+```
+
+```
+> - [d]: u
+
+[go][d]
+.
+<blockquote>
+  <ul>
+    <li></li>
+  </ul>
+</blockquote>
+<p><a href="u">go</a></p>
+```
+
+```
+> r
+>
+> - [d]: u
+
+[go][d]
+.
+<blockquote>
+  <p>r</p>
+  <ul>
+    <li></li>
+  </ul>
+</blockquote>
+<p><a href="u">go</a></p>
+```
