@@ -53,9 +53,8 @@ See [r][].
 .
 <blockquote>
   <ul>
-    <li>x
-[r]: /url</li>
+    <li>x</li>
   </ul>
 </blockquote>
-<p>See [r][].</p>
+<p>See <a href="/url">r</a>.</p>
 ```

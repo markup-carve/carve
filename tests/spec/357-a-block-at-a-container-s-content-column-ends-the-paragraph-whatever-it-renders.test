@@ -6,10 +6,9 @@ A block at a container's content column ends the paragraph, whatever it renders
 tail
 .
 <ul>
-  <li>a
-{.k}
-tail</li>
+  <li>a</li>
 </ul>
+<p>tail</p>
 ```
 
 ```
@@ -18,10 +17,9 @@ tail</li>
 tail
 .
 <ul>
-  <li>a
-%% c
-tail</li>
+  <li>a</li>
 </ul>
+<p>tail</p>
 ```
 
 ```
@@ -31,11 +29,9 @@ tail</li>
 tail
 .
 <ul>
-  <li>a
-%%% c
-%%%
-tail</li>
+  <li>a</li>
 </ul>
+<p>tail</p>
 ```
 
 ```
@@ -47,12 +43,19 @@ tail
 x[^f]
 .
 <ul>
-  <li>a
-[^f]: t
-more
-tail</li>
+  <li>a</li>
 </ul>
-<p>x[^f]</p>
+<p>tail</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>t
+more<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 ```
@@ -63,11 +66,18 @@ tail
 x[^f]
 .
 <ul>
-  <li>a
-[^f]: t
-tail</li>
+  <li>a</li>
 </ul>
-<p>x[^f]</p>
+<p>tail</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>t<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 ```
@@ -80,9 +90,9 @@ tail
 .
 <ul>
   <li>a
-[r]: /u
-”T”
-tail</li>
+    “T”
+tail
+  </li>
 </ul>
-<p>[r][]</p>
+<p><a href="/u">r</a></p>
 ```

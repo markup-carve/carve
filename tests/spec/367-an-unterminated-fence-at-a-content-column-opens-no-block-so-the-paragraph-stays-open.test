@@ -74,9 +74,9 @@ tail
 .
 <ul>
   <li>q
-<code>
-y
-</code>
-tail</li>
+    <pre><code>y
+</code></pre>
+  </li>
 </ul>
+<p>tail</p>
 ````

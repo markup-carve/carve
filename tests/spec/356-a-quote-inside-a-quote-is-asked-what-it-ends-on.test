@@ -86,9 +86,13 @@ tail
 > > # H
 tail
 .
-<blockquote><p>a
-&gt; # H
-tail</p></blockquote>
+<blockquote>
+  <p>a</p>
+  <blockquote>
+    <h1 id="H">H</h1>
+  </blockquote>
+</blockquote>
+<p>tail</p>
 ```
 
 ```

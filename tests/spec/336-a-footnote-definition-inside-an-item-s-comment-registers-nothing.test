@@ -9,10 +9,7 @@ A footnote definition inside an item's comment registers nothing
 text[^f]
 .
 <ul>
-  <li>item
-%%%
-[^f]: note body
-%%%</li>
+  <li>item</li>
 </ul>
 <p>text[^f]</p>
 ```

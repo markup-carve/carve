@@ -7,11 +7,10 @@ A collected definition closes the item paragraph
 tail
 .
 <ul>
-  <li>a
-[r]: /u
-more
-tail</li>
+  <li>a</li>
 </ul>
+<p>more
+tail</p>
 ```
 
 ```
@@ -21,11 +20,10 @@ tail</li>
 tail
 .
 <ol>
-  <li>a
-[r]: /u
-more
-tail</li>
+  <li>a</li>
 </ol>
+<p>more
+tail</p>
 ```
 
 ```
@@ -36,9 +34,9 @@ tail
 .
 <ol>
   <li>a
-[^f]: note
-more
-tail</li>
+    more
+tail
+  </li>
 </ol>
 ```
 
@@ -51,10 +49,17 @@ tail
 see[^f]
 .
 <ul>
-  <li>a
-[^f]: note
-more
-tail</li>
+  <li>a</li>
 </ul>
-<p>see[^f]</p>
+<p>tail</p>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note
+more<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```

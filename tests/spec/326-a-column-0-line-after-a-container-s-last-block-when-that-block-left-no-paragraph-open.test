@@ -69,9 +69,8 @@ tail
 <ul>
   <li></li>
 </ul>
-<p>c
-%%%
-tail</p>
+<p>c</p>
+<p>tail</p>
 ```
 
 ```
@@ -284,10 +283,9 @@ tail</li>
 tail
 .
 <ul>
-  <li>a
-{.x}
-tail</li>
+  <li>a</li>
 </ul>
+<p>tail</p>
 ```
 
 ```
@@ -309,8 +307,8 @@ tail
 .
 <ul>
   <li>a
-{.x}
-more</li>
+    <p class="x">more</p>
+  </li>
 </ul>
 ```
 
