@@ -10419,24 +10419,30 @@ EOF = (* end of file *) ;
       ABSENT MEANS TODAY'S STRUCTURE, and this is why the field breaks nothing:
       a table without `rowGroups` has the implicit partition every renderer
       already derives -- the leading run of header rows as the head, everything
-      after it as one body, no foot, no row-head columns. A CORE PIPE-TABLE
-      parser therefore never synthesizes the field; a ListTable-aware converter
-      MAY synthesize the explicit partition its extension attributes spell.
+      after it as one body, no foot, no row-head columns.
 
-      CORE PIPE-TABLE SOURCE HAS NO SPELLING FOR THIS FIELD. Like
-      `shortCaption` in §14, richer partitions may enter through an AST consumer
-      or format bridge and survive AST encode/decode by §6. The ListTable
+      A pipe table's preceding block-attribute line MAY carry
+      `header-rows=N` and/or `footer-rows=N`. An empty boolean value means one;
+      otherwise N MUST be a non-negative decimal integer, and the two counts
+      MUST NOT exceed the number of rows. The parser synthesizes one body group
+      holding all rows between them. Explicit header rows promote every cell in
+      those rows to a column-header cell; native `|=` cells outside that head
+      remain header cells and default to row scope. The attributes are consumed
+      in HTML, where the three ranges render as `thead`, `tbody`, and `tfoot`.
+
+      CORE PIPE-TABLE SOURCE CANNOT SPELL multiple bodies, intermediate body
+      headers, or per-group row-head counts. Those richer partitions may enter
+      through an AST consumer or format bridge and survive AST encode/decode by
+      §6. The ListTable
       extension authors a leading head, header-led body groups, a foot and
       leading row-header columns; empty group boundaries remain interchange-only.
 
-      ORDINARY HTML, PLAIN AND ANSI OUTPUT IGNORE `rowGroups`. They keep
-      rendering the flat `rows` exactly as they do now, which flattens the
-      grouping on the way out; that degradation is deliberate and is the point
-      of holding the structure in the model rather than in the output. A
-      structured exporter MAY map the partition to its target's equivalent. A
-      canonical Carve source writer MUST omit the field, MUST NOT invent source
-      syntax for it, and MUST NOT drop or reorder rows to suit it. A bridge or
-      API which exposes conversion diagnostics SHOULD report the loss.
+      HTML maps a source-spelled head and foot to their native row-group
+      elements. Plain and ANSI keep rendering the flat rows. A structured
+      exporter MAY map the full partition to its target's equivalent. A
+      canonical Carve source writer retains `header-rows` / `footer-rows` when
+      they are present in table attributes; it MUST NOT invent a spelling for
+      richer grouping or drop/reorder rows to suit it.
 
    16. A COMPOSITE FIGURE IS ITS OWN NODE TYPE -- NORMATIVE (PART 9 §4c;
       carve#1122). The type is `figure_group`, and the wire shape:
@@ -10634,6 +10640,13 @@ EOF = (* end of file *) ;
       then unset. Supplying two column-level spellings for one field lints and
       the in-table spelling wins. Existing header markers and delimiter colons
       keep their tree and output; attributes fill only facts they do not state.
+
+      LISTTABLE CELL SPELLING. Because a ListTable cell is a list item, its
+      marker attribute MAY carry `align=left|right|center` and/or
+      `valign=top|middle|bottom`. These values populate the corresponding
+      `table_cell` fields and override the positional column value independently.
+      They are consumed as semantics and MUST NOT also appear as literal HTML
+      `align` or `valign` attributes.
 
       THE WRITER RETAINS THE MOST LOCAL AVAILABLE SPELLING. A headed table
       keeps native column markers. A headerless aligned table emits `aligns`.

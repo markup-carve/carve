@@ -221,6 +221,7 @@ const PLAIN_EXTENSION_FEATURES = {
   spoiler: { js: 'spoiler', php: 'SpoilerExtension' },
   tabs: { js: 'tabs', php: 'TabsExtension' },
   'list-table': { js: 'listTable', php: 'ListTableExtension' },
+  'list-table-columns-1344': { js: 'listTable', php: 'ListTableExtension' },
   'list-table-local-headers-1248': { js: 'listTable', php: 'ListTableExtension' },
   // PART 9 §10. Registered by name here so the adapter check can see it; the
   // engines do not ship it yet, so the run reports it unreached rather than
@@ -258,8 +259,6 @@ const PLAIN_EXTENSION_FEATURES = {
  * (carve#535).
  */
 const UNREACHABLE_REASONS = {
-  'list-table-columns-1344':
-    'carve#1344 column metadata and footer rows are specified ahead of all three engine implementations',
 }
 
 // Cases that ask an engine for the author's source runs instead of the glyph.

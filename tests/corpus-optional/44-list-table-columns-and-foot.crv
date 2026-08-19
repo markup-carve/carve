@@ -2,7 +2,7 @@
 ::: list-table
 - - Region
   - Total
-- - North
+- -{align=center valign=middle} North
   - 11
 - - All
   - 33
