@@ -556,8 +556,12 @@ page claims to have checked.
 
 `npm run combinatorial:check` is a second differential runner over a different
 input set. `compare:impls` renders the CORPUS through every engine; the
-combinatorial check renders a generated product of AXES - heading level,
-attribute provenance, container nesting, trailing body - and diffs the same way.
+combinatorial check renders several curated products of AXES and diffs the same
+way. The original family crosses heading level, attribute provenance, container
+nesting and trailing body. Six additional families cross the seams that a
+2026-08-16 hand sweep found outside that product: unclosed inline runs,
+container-scoped floating attributes, terminal container children, ordered
+marker spellings, caption positions and `+`-attached block positions.
 
 The distinction is the point. The corpus pins constructs; nothing in it pins
 what happens when two constructs meet, and a pair space is larger than a
@@ -579,6 +583,7 @@ is pinned from then on.
 ```bash
 npm run combinatorial:check
 CARVE_RS_DIR=/path/to/carve-rs CARVE_PHP_DIR=/path/to/carve-php npm run combinatorial:check
+npm run combinatorial:check -- --inventory
 ```
 
 The output names each engine's revision, branch and dirty state. That is not
@@ -587,8 +592,17 @@ the first run of this script reported two divergence classes that were nothing
 but an out-of-date working copy. Check those lines before investigating a
 finding.
 
-It is deliberately NOT wired into CI yet - it currently reports real
-divergences, so it would land red. Wire it once those are resolved.
+The scheduled conformance workflow runs it weekly, reusing the three engine
+checkouts that job already builds. `--inventory` lists each family's population
+without running an engine; per-family population guards prevent an emptied or
+partially walked product from reporting a false clean result.
+
+A finding with a focused issue may be declared by exact document id in the
+runner. It remains in every report but does not fail the weekly job; an
+undeclared finding does. With all four participants present, a declaration that
+no longer reproduces also fails, forcing the debt entry to be removed when its
+fix lands. This trades a small, reviewable allowlist for a schedule that can
+defend the other 295 documents while #1418 and #1419 are resolved.
 
 Render options (`sections`, `sourceLine`) are not an axis yet: neither the
 carve-rs nor the carve-php CLI exposes them and the executable spec implements

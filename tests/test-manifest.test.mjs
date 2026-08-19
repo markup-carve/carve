@@ -12,6 +12,7 @@
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { execFileSync } from 'node:child_process'
 import { readFileSync, readdirSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -34,4 +35,38 @@ test('every test file in tests/ is in the npm test list', () => {
 
   const missing = [...listed].filter((name) => !present.includes(name))
   assert.deepEqual(missing, [], `npm test names file(s) that do not exist: ${missing.join(', ')}`)
+})
+
+test('the combinatorial inventory names and counts every curated family', () => {
+  const output = execFileSync(
+    process.execPath,
+    [resolve(repo, 'scripts/combinatorial-check.mjs'), '--inventory'],
+    { cwd: repo, encoding: 'utf8' },
+  )
+
+  assert.equal(
+    output,
+    [
+      'heading-attributes   120',
+      'unclosed-inline      126',
+      'floating-attribute   12',
+      'terminal-child       22',
+      'ordered-marker       8',
+      'caption-position     10',
+      'attached-block       6',
+      'total                304',
+      '',
+    ].join('\n'),
+  )
+})
+
+test('the expensive differential sweeps run weekly against provisioned engines', () => {
+  const workflow = readFileSync(resolve(repo, '.github/workflows/ast-conformance.yml'), 'utf8')
+
+  assert.match(workflow, /cron: '0 4 \* \* 1-6'/)
+  assert.match(workflow, /cron: '0 4 \* \* 0'/)
+  assert.match(workflow, /npm run combinatorial:check/)
+  assert.match(workflow, /npm run fuzz:impls -- --seed=101 --count=200 --max-findings=16/)
+  assert.match(workflow, /github\.event\.schedule == '0 4 \* \* 0'/)
+  assert.match(workflow, /if \[ "\$status" -eq 2 \]; then/)
 })

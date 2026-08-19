@@ -29,6 +29,7 @@
  * Usage:
  *   node scripts/combinatorial-check.mjs
  *   node scripts/combinatorial-check.mjs --verbose   # print every document
+ *   node scripts/combinatorial-check.mjs --inventory # list families, no engines
  */
 
 import { spawnSync } from 'node:child_process'
@@ -42,6 +43,7 @@ import { miscount, shortfall } from './spec/participants.mjs'
 import { phpDir, rustDir } from './lib/engine-locations.mjs'
 
 const verbose = process.argv.includes('--verbose')
+const inventoryOnly = process.argv.includes('--inventory')
 
 /*
  * ============================================================================
@@ -99,7 +101,7 @@ const prefixLines = (s, prefix) =>
 
 const indentContinuation = (s, indent) => s.split('\n').join(`\n${indent}`)
 
-function* documents() {
+function* headingDocuments() {
   for (const heading of HEADINGS) {
     for (const attrs of ATTRS) {
       for (const container of CONTAINERS) {
@@ -107,13 +109,255 @@ function* documents() {
           const head = attrs.line ? `${attrs.line}\n${heading}` : heading
           const inner = body.text ? `${head}\n\n${body.text}` : head
           yield {
-            id: `${heading.length}h/${attrs.name}/${container.name}/${body.name}`,
+            id: `heading/${heading.length}h/${attrs.name}/${container.name}/${body.name}`,
             source: `${container.wrap(inner)}\n`,
           }
         }
       }
     }
   }
+}
+
+/*
+ * Each family below is its OWN small product. Combining all dimensions into
+ * one product would turn 304 useful probes into millions of mostly meaningless
+ * documents. These are the seams found by the 2026-08-16 differential sweep
+ * (carve#1288), plus the two clean control sweeps recorded there.
+ */
+
+// An opener without its closer. Some entries are deliberately literal
+// controls: the family records all 18 inline spellings that were swept, not
+// only the six verbatim/bracket runs that originally diverged.
+const UNCLOSED_INLINE_RUNS = [
+  { name: 'code-1', open: '`' },
+  { name: 'code-2', open: '``' },
+  { name: 'math-inline', open: '$`' },
+  { name: 'math-display', open: '$$`' },
+  { name: 'literal-inline', open: '!`' },
+  { name: 'inline-footnote', open: '^[' },
+  { name: 'link-label', open: '[' },
+  { name: 'image-alt', open: '![' },
+  { name: 'extension', open: ':name[' },
+  { name: 'emphasis', open: '/' },
+  { name: 'strong', open: '*' },
+  { name: 'bold-italic', open: '/*' },
+  { name: 'underline', open: '_' },
+  { name: 'strike', open: '~' },
+  { name: 'highlight', open: '=' },
+  { name: 'forced-strong', open: '{*' },
+  { name: 'forced-super', open: '{^' },
+  { name: 'editorial-addition', open: '{+' },
+]
+
+const UNCLOSED_CONTAINERS = [
+  { name: 'top-level', wrap: (open) => `a ${open}b\nc d` },
+  { name: 'blockquote', wrap: (open) => prefixLines(`a ${open}b\nc d`, '> ') },
+  { name: 'div', wrap: (open) => `:::\na ${open}b\nc d\n:::` },
+  { name: 'list-item', wrap: (open) => `- ${indentContinuation(`a ${open}b\nc d`, '  ')}` },
+  { name: 'quoted-div', wrap: (open) => prefixLines(`:::\na ${open}b\nc d\n:::`, '> ') },
+  { name: 'line-block', wrap: (open) => `::: |\na ${open}b\nc d\n:::` },
+  // A cell is already a block boundary. Keeping this probe on one physical
+  // line tests whether its closing pipe remains block syntax, not run content.
+  { name: 'table-cell', wrap: (open) => `| a ${open}b | c d |` },
+]
+
+function* unclosedInlineDocuments() {
+  for (const run of UNCLOSED_INLINE_RUNS) {
+    for (const container of UNCLOSED_CONTAINERS) {
+      yield {
+        id: `unclosed-inline/${run.name}/${container.name}`,
+        source: `${container.wrap(run.open)}\n`,
+      }
+    }
+  }
+}
+
+const FLOATING_ATTRIBUTE_CONTAINERS = [
+  { name: 'blockquote', prefix: '> q\n> {.k}\n' },
+  { name: 'list-item', prefix: '- a\n  {.k}\n' },
+  { name: 'definition-body', prefix: ':: t\n:  d\n   {.k}\n' },
+]
+
+const FLOATING_ATTRIBUTE_FOLLOWERS = [
+  { name: 'column-zero-line', source: 'tail' },
+  { name: 'blank-then-line', source: '\ntail' },
+  { name: 'heading', source: '# H' },
+  { name: 'table', source: '| a | b |' },
+]
+
+function* floatingAttributeDocuments() {
+  for (const container of FLOATING_ATTRIBUTE_CONTAINERS) {
+    for (const follower of FLOATING_ATTRIBUTE_FOLLOWERS) {
+      yield {
+        id: `floating-attribute/${container.name}/${follower.name}`,
+        source: `${container.prefix}${follower.source}\n`,
+      }
+    }
+  }
+}
+
+const TERMINAL_CHILDREN = [
+  { name: 'heading', source: '# H' },
+  { name: 'line-comment', source: '%% hidden' },
+  { name: 'comment-block', source: '%%%\nhidden\n%%%' },
+  { name: 'table', source: '| a | b |' },
+  { name: 'thematic-break', source: '***' },
+  { name: 'link-definition', source: '[r]: /u' },
+  { name: 'footnote-definition', source: '[^f]: note' },
+  { name: 'attribute-block', source: '{.k}' },
+  { name: 'closed-fence', source: '```\nx\n```' },
+  { name: 'bare-div', source: ':::\n:::' },
+  { name: 'nested-quote', source: '> p' },
+]
+
+const TERMINAL_CHILD_CONTAINERS = [
+  { name: 'list-item', wrap: (child) => `- ${indentContinuation(child, '  ')}` },
+  { name: 'blockquote', wrap: (child) => prefixLines(child, '> ') },
+]
+
+function* terminalChildDocuments() {
+  for (const child of TERMINAL_CHILDREN) {
+    for (const container of TERMINAL_CHILD_CONTAINERS) {
+      yield {
+        id: `terminal-child/${child.name}/${container.name}`,
+        source: `${container.wrap(child.source)}\ntail\n`,
+      }
+    }
+  }
+}
+
+const ORDERED_MARKERS = [
+  { name: 'bare-dot', marker: '. ' },
+  { name: 'numbered-dot', marker: '1. ' },
+]
+
+const ORDERED_DEFINITIONS = [
+  { name: 'link', source: '[r]: /u', use: 'see [x][r]' },
+  { name: 'footnote', source: '[^f]: note', use: 'see[^f]' },
+  { name: 'abbreviation', source: '*[HTML]: Hypertext', use: 'HTML' },
+  { name: 'citation', source: '[@r]: Entry', use: 'see [@r]' },
+]
+
+function* orderedMarkerDocuments() {
+  for (const marker of ORDERED_MARKERS) {
+    for (const definition of ORDERED_DEFINITIONS) {
+      yield {
+        id: `ordered-marker/${marker.name}/${definition.name}`,
+        source: `${marker.marker}x\n${definition.source}\n\n${definition.use}\n`,
+      }
+    }
+  }
+}
+
+// The two hand sweeps that found no divergence are executable controls now.
+// Their value is negative knowledge: the next sweep does not spend an hour
+// rediscovering that these positions were already crossed.
+const CAPTION_POSITIONS = [
+  { name: 'image-adjacent', source: '![a](/u)\n^ cap' },
+  { name: 'image-one-blank', source: '![a](/u)\n\n^ cap' },
+  { name: 'image-two-blanks', source: '![a](/u)\n\n\n^ cap' },
+  { name: 'table-adjacent', source: '| a | b |\n^ cap' },
+  { name: 'table-one-blank', source: '| a | b |\n\n^ cap' },
+  { name: 'quote-adjacent', source: '> q\n^ cap' },
+  { name: 'quote-one-blank', source: '> q\n\n^ cap' },
+  { name: 'code-adjacent', source: '```\nx\n```\n^ cap' },
+  { name: 'math-adjacent', source: '$$`x`\n^ cap' },
+  { name: 'figure-group-adjacent', source: '::: figure\n![a](/u)\n:::\n^ cap' },
+]
+
+function* captionDocuments() {
+  for (const position of CAPTION_POSITIONS) {
+    yield { id: `caption-position/${position.name}`, source: `${position.source}\n` }
+  }
+}
+
+const ATTACHED_BLOCK_POSITIONS = [
+  { name: 'top-level', source: 'a\n+ b' },
+  { name: 'blockquote', source: '> a\n> + b' },
+  { name: 'list-item', source: '- a\n  + b' },
+  { name: 'div', source: ':::\na\n+ b\n:::' },
+  { name: 'definition-body', source: ':: t\n:  a\n   + b' },
+  { name: 'footnote-body', source: '[^f]: a\n      + b\n\nsee[^f]' },
+]
+
+function* attachedBlockDocuments() {
+  for (const position of ATTACHED_BLOCK_POSITIONS) {
+    yield { id: `attached-block/${position.name}`, source: `${position.source}\n` }
+  }
+}
+
+const FAMILIES = [
+  {
+    name: 'heading-attributes',
+    expected: HEADINGS.length * ATTRS.length * CONTAINERS.length * BODIES.length,
+    generate: headingDocuments,
+  },
+  {
+    name: 'unclosed-inline',
+    expected: UNCLOSED_INLINE_RUNS.length * UNCLOSED_CONTAINERS.length,
+    generate: unclosedInlineDocuments,
+  },
+  {
+    name: 'floating-attribute',
+    expected: FLOATING_ATTRIBUTE_CONTAINERS.length * FLOATING_ATTRIBUTE_FOLLOWERS.length,
+    generate: floatingAttributeDocuments,
+  },
+  {
+    name: 'terminal-child',
+    expected: TERMINAL_CHILDREN.length * TERMINAL_CHILD_CONTAINERS.length,
+    generate: terminalChildDocuments,
+  },
+  {
+    name: 'ordered-marker',
+    expected: ORDERED_MARKERS.length * ORDERED_DEFINITIONS.length,
+    generate: orderedMarkerDocuments,
+  },
+  { name: 'caption-position', expected: CAPTION_POSITIONS.length, generate: captionDocuments },
+  {
+    name: 'attached-block',
+    expected: ATTACHED_BLOCK_POSITIONS.length,
+    generate: attachedBlockDocuments,
+  },
+]
+
+// A declared finding is still printed, counted and linked; it simply does not
+// keep the weekly job permanently red while its focused issue is being fixed.
+// The declaration is exact by document id. Remove entries with the fix: a
+// declaration that no longer reproduces is stale and is rejected below.
+const DECLARED_DIVERGENCES = new Map([
+  ...UNCLOSED_CONTAINERS.map((container) => [
+    `unclosed-inline/literal-inline/${container.name}`,
+    'https://github.com/markup-carve/carve/issues/1418',
+  ]),
+  [
+    'terminal-child/line-comment/blockquote',
+    'https://github.com/markup-carve/carve/issues/1419',
+  ],
+  [
+    'terminal-child/comment-block/blockquote',
+    'https://github.com/markup-carve/carve/issues/1419',
+  ],
+])
+
+function* documents() {
+  for (const family of FAMILIES) {
+    for (const doc of family.generate()) yield { ...doc, family: family.name }
+  }
+}
+
+if (inventoryOnly) {
+  let total = 0
+  for (const family of FAMILIES) {
+    const actual = [...family.generate()].length
+    console.log(`${family.name.padEnd(20)} ${actual}`)
+    if (actual !== family.expected) {
+      console.error(`inventory mismatch: ${family.name} generated ${actual}, expected ${family.expected}`)
+      process.exit(2)
+    }
+    total += actual
+  }
+  console.log(`${'total'.padEnd(20)} ${total}`)
+  process.exit(0)
 }
 
 /*
@@ -288,9 +532,11 @@ try {
   const violations = []
   const refusals = []
   let count = 0
+  const familyCounts = new Map(FAMILIES.map((family) => [family.name, 0]))
 
   for (const doc of documents()) {
     count++
+    familyCounts.set(doc.family, familyCounts.get(doc.family) + 1)
     const file = join(tmpDir, 'case.crv')
     writeFileSync(file, doc.source)
 
@@ -341,32 +587,41 @@ try {
    * Two different failures, so two checks. The floor catches a dimension that
    * emptied; the exact count catches a `continue` in the loop above dropping
    * cases the generator did produce. The expected value is the matrix's own
-   * dimensions, which is why it has to be read off the four lists rather than
-   * off `documents()` - a count compared against itself cannot fail.
+   * dimensions, which is why each family records its product independently
+   * rather than deriving the expectation from `documents()` - a count compared
+   * against itself cannot fail.
    */
-  const dimensions = HEADINGS.length * ATTRS.length * CONTAINERS.length * BODIES.length
-  const population =
-    shortfall({
-      label: 'MATRIX',
-      actual: count,
-      atLeast: 1,
-      of: 'document(s)',
-      hint: 'One of HEADINGS / ATTRS / CONTAINERS / BODIES is empty.',
-    }) ?? miscount({ label: 'MATRIX', actual: count, expected: dimensions, of: 'document(s)' })
-  if (population !== null) {
-    console.error(`\n${population}`)
-    console.error('No cross-engine claim below describes the matrix this script defines.')
-    process.exit(2)
+  for (const family of FAMILIES) {
+    const actual = familyCounts.get(family.name)
+    const population =
+      shortfall({
+        label: `FAMILY ${family.name}`,
+        actual,
+        atLeast: 1,
+        of: 'document(s)',
+        hint: 'One of this family\'s axes is empty.',
+      }) ??
+      miscount({
+        label: `FAMILY ${family.name}`,
+        actual,
+        expected: family.expected,
+        of: 'document(s)',
+      })
+    if (population !== null) {
+      console.error(`\n${population}`)
+      console.error('No cross-engine claim below describes the matrix this script defines.')
+      process.exit(2)
+    }
   }
 
-  const report = (title, rows, format) => {
+  const report = (title, rows, format, { fail = true } = {}) => {
     if (!rows.length) return
     console.log(`\n${title} (${rows.length})\n${'='.repeat(60)}`)
     for (const row of rows) console.log(format(row))
-    exitCode = 1
+    if (fail) exitCode = 1
   }
 
-  report('DIVERGENCES', divergences, ({ doc, rendered }) => {
+  const formatDivergence = ({ doc, rendered }) => {
     const counts = new Map()
     for (const [, html] of rendered) counts.set(html, (counts.get(html) ?? 0) + 1)
     const majority = Math.max(...counts.values())
@@ -374,8 +629,28 @@ try {
       const flag = counts.get(html) < majority ? '  <-- differs' : ''
       return `    ${name.padEnd(10)} ${JSON.stringify(html)}${flag}`
     })
-    return `\n  ${doc.id}\n  ${JSON.stringify(doc.source)}\n${lines.join('\n')}`
-  })
+    const issue = DECLARED_DIVERGENCES.get(doc.id)
+    const declaration = issue ? `\n    declared: ${issue}` : ''
+    return `\n  ${doc.id}${declaration}\n  ${JSON.stringify(doc.source)}\n${lines.join('\n')}`
+  }
+
+  const declared = divergences.filter(({ doc }) => DECLARED_DIVERGENCES.has(doc.id))
+  const unexpected = divergences.filter(({ doc }) => !DECLARED_DIVERGENCES.has(doc.id))
+  const reproduced = new Set(declared.map(({ doc }) => doc.id))
+  // A missing dissenting engine can make a declaration look stale locally.
+  // CI provisions all four; only a complete population may retire debt.
+  const staleDeclarations =
+    available.length === engines.length
+      ? [...DECLARED_DIVERGENCES].filter(([id]) => !reproduced.has(id))
+      : []
+
+  report('DECLARED DIVERGENCES', declared, formatDivergence, { fail: false })
+  report('UNDECLARED DIVERGENCES', unexpected, formatDivergence)
+  report(
+    'STALE DIVERGENCE DECLARATIONS',
+    staleDeclarations,
+    ([id, issue]) => `\n  ${id}\n    no longer reproduces; remove declaration for ${issue}`,
+  )
 
   report(
     'INVARIANT VIOLATIONS',
@@ -386,13 +661,17 @@ try {
 
   console.log(
     `\n${count} documents x ${available.length} engines` +
-      `\ndivergences: ${divergences.length}` +
+      `\ndivergences: ${divergences.length} (${declared.length} declared, ${unexpected.length} undeclared)` +
       `\ninvariant violations: ${violations.length}` +
       // Not a failure: the executable spec models a narrower subset than the
       // language. Counted anyway, because a refusal silently dropped is a
       // document nobody compared.
       `\nrefused (not compared): ${refusals.length}`,
   )
+  console.log('\nfamilies:')
+  for (const family of FAMILIES) {
+    console.log(`  ${family.name.padEnd(20)} ${familyCounts.get(family.name)}`)
+  }
 
   // Render OPTIONS are a axis this cannot walk yet, and saying so beats a
   // silently narrower run: neither the carve-rs nor the carve-php CLI exposes
@@ -404,7 +683,7 @@ try {
       'carve-rs / carve-php, unimplemented in the executable spec',
   )
 
-  if (exitCode === 0) console.log('\nno divergences')
+  if (exitCode === 0) console.log('\nno undeclared divergences')
 } finally {
   rmSync(tmpDir, { recursive: true, force: true })
 }
