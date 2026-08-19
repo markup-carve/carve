@@ -1,0 +1,61 @@
+A quote is reached by its marker, and a column never reaches into one
+
+```
+> - x
+  [r]: /url
+
+See [r][].
+.
+<blockquote>
+  <ul>
+    <li>x
+[r]: /url</li>
+  </ul>
+</blockquote>
+<p>See [r][].</p>
+```
+
+```
+- > - x
+    [r]: /url
+
+See [r][].
+.
+<ul>
+  <li>
+    <blockquote>
+      <ul>
+        <li>x
+[r]: /url</li>
+      </ul>
+    </blockquote>
+  </li>
+</ul>
+<p>See [r][].</p>
+```
+
+```
+> x
+  [r]: /url
+
+See [r][].
+.
+<blockquote><p>x
+[r]: /url</p></blockquote>
+<p>See [r][].</p>
+```
+
+```
+> - x
+>   [r]: /url
+
+See [r][].
+.
+<blockquote>
+  <ul>
+    <li>x
+[r]: /url</li>
+  </ul>
+</blockquote>
+<p>See [r][].</p>
+```

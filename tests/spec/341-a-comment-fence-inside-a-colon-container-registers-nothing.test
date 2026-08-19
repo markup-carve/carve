@@ -1,0 +1,18 @@
+A comment fence inside a colon container registers nothing
+
+```
+::: note
+Body.
+
+%%%
+[r]: /url
+%%%
+:::
+
+[r][]
+.
+<aside class="admonition note">
+  <p>Body.</p>
+</aside>
+<p>[r][]</p>
+```

@@ -1,0 +1,50 @@
+A fence keeps the blank line at the end of its content
+
+````
+```
+x
+
+```
+.
+<pre><code>x
+
+</code></pre>
+````
+
+````
+```
+x
+
+.
+<pre><code>x
+
+</code></pre>
+````
+
+````
+::: note
+```
+x
+
+:::
+.
+<aside class="admonition note">
+  <pre><code>x
+
+</code></pre>
+</aside>
+````
+
+````
+- ```
+  x
+
+.
+<ul>
+  <li>
+    <pre><code>x
+
+</code></pre>
+  </li>
+</ul>
+````

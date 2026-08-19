@@ -1,0 +1,37 @@
+A bracketed construct spanning a verse boundary
+
+```
+::: |
+See [Roses are red,
+Violets are blue.](/u)
+:::
+.
+<div class="line-block">
+  <p>See <a href="/u">Roses are red,<br>
+Violets are blue.</a></p>
+</div>
+```
+
+```
+::: |
+[Roses are red,
+Violets are blue.]{.verse}
+:::
+.
+<div class="line-block">
+  <p><span class="verse">Roses are red,<br>
+Violets are blue.</span></p>
+</div>
+```
+
+```
+::: |
+{+Roses are red,
+Violets are blue.+}
+:::
+.
+<div class="line-block">
+  <p><ins>Roses are red,<br>
+Violets are blue.</ins></p>
+</div>
+```

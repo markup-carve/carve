@@ -107,6 +107,15 @@ const attrSem = g.createSemantics().addOperation('parseAttrs', {
   boolAttr(name) {
     return ['bool', name.sourceString]
   },
+  // `{:TAG}` DESUGARS HERE and nowhere else: it leaves this action as the
+  // ordinary `['kv', 'lang', TAG]` tuple every other `lang=` attribute
+  // produces, so the merge below cannot tell the two spellings apart. The
+  // empty form `{:}` carries an empty tag and becomes `lang=""`, which is a
+  // declaration that the language is unknown rather than an omission - the
+  // content stops inheriting a surrounding language.
+  langAttr(_c, tag) {
+    return ['kv', 'lang', tag.sourceString]
+  },
   attrVal(v) {
     return v.parseAttrs()
   },
@@ -130,14 +139,50 @@ const attrSem = g.createSemantics().addOperation('parseAttrs', {
   },
 })
 
+/*
+ * PART 9 SS25: the four attributes whose value is a LIST of URLs a consumer
+ * resolves or fetches. The probe runs on every token AS WELL AS on the whole
+ * value, and any hit blanks the WHOLE value, so the same value cannot get one
+ * answer in position one and another in position two (carve#1320).
+ *
+ * THE TOKEN PASS IS ADDITIVE. Dropping the value-wide probe for these four
+ * would deny LESS than the leading-scheme rule already denied, because that
+ * probe strips the ASCII whitespace the SPLIT breaks on: `java script:alert(1)`
+ * is two harmless tokens and one denied value (carve#1329).
+ *
+ * THE SEPARATORS ARE THE ONES THE ATTRIBUTE'S OWN GRAMMAR USES. `ping` and
+ * `attributionsrc` are space-separated sets and hold no commas at all, so
+ * splitting them on commas would blank a lone URL that merely contains one.
+ * `srcset`/`imagesrcset` are comma-separated candidates, and the comma must
+ * count: without it `safe.png 1x,javascript:alert(1) 2x` reads as one token
+ * per whitespace run and the second candidate is missed for want of a space.
+ *
+ * ASCII whitespace and not `\s`, because that is where the grammars put
+ * their boundaries: `a<U+202F>javascript:x` is ONE token to the consumer and
+ * resolves as a relative URL.
+ */
+const ASCII_WS = '\\t\\n\\f\\r '
+const URL_LIST_SEPARATORS = {
+  srcset: new RegExp(`[,${ASCII_WS}]+`),
+  imagesrcset: new RegExp(`[,${ASCII_WS}]+`),
+  ping: new RegExp(`[${ASCII_WS}]+`),
+  attributionsrc: new RegExp(`[${ASCII_WS}]+`),
+}
+const urlListIsClean = (separator, value) =>
+  value.split(separator).every((token) => token === '' || checkUrl(token) !== '')
+
 // PART 9 SS25 ATTRIBUTE HARDENING: drop on*/srcdoc/formaction; drop an
-// href/src override whose scheme is denylisted; blank a style value with a
-// CSS execution vector.
+// href/src override whose scheme is denylisted; blank any value whose own
+// leading scheme is denylisted, and a URL-list value with a denylisted scheme
+// in ANY candidate as well; blank a style value with a CSS execution vector.
 const STYLE_VECTOR = /expression\(|url\(|@import|behavior:|-moz-binding/i
 function hardenAttr(name, value) {
   const n = name.toLowerCase()
   if (n.startsWith('on') || n === 'srcdoc' || n === 'formaction') return null
   if ((n === 'href' || n === 'src') && checkUrl(value) === '') return null
+  if (value !== '' && checkUrl(value) === '') return { name, value: '' }
+  const separator = Object.hasOwn(URL_LIST_SEPARATORS, n) ? URL_LIST_SEPARATORS[n] : null
+  if (separator && !urlListIsClean(separator, value)) return { name, value: '' }
   if (n === 'style' && STYLE_VECTOR.test(value.replace(/\s+/g, ''))) return { name, value: '' }
   return { name, value }
 }
@@ -145,6 +190,61 @@ function hardenAttr(name, value) {
 // Exported for PART 9R R1: a reference link with no definition attributes takes
 // this inline path, where a repeated class inside ONE block deduplicates. Only
 // the cross-list merge (renderBlockAttrs) accumulates (carve#604).
+/*
+ * The PART 9R reference frame: `U+E000 ref: <json> U+E001`.
+ *
+ * The payload must not carry the frame characters RAW. The resolution pass
+ * ends a frame at the first `}` that a U+E001 follows, and link text can put
+ * one inside the payload - a crossref whose id ends in `}`, an inline note, a
+ * nested image reference. The scan then ended the frame early and the raw
+ * JSON reached the reader (markup-carve/carve#1195). JSON's own \uXXXX escapes
+ * survive JSON.parse unchanged, so spelling those two characters that way
+ * costs the consumer nothing and makes the frame unambiguous.
+ *
+ * U+0002 needs no help here: JSON.stringify already escapes it as a control
+ * character. That is exactly why the footnote pass could not see a noteref
+ * sitting in a payload, and why PART 9R resolves references FIRST - see the
+ * pass order in html.mjs.
+ */
+export const REF_FRAME = /\uE000ref:(\{[^\uE000\uE001]*?\})\uE001/g
+
+export function refFrame(payload) {
+  const json = JSON.stringify(payload).replace(
+    /[\uE000\uE001]/g,
+    (c) => '\\u' + c.charCodeAt(0).toString(16),
+  )
+  return `\uE000ref:${json}\uE001`
+}
+
+/*
+ * The PART 9R note frame: `U+E000 note: <json> U+E001`.
+ *
+ * An inline note used to carry a RAW frame - the rendered content, then U+0002,
+ * then the rendered attributes - so nothing that renders as a frame of its own
+ * could sit inside one. The pass reading the note frame would have ended it at
+ * the inner frame's terminator, so this file refused the whole class rather
+ * than emit a mis-framed note (markup-carve/carve#1199).
+ *
+ * The payload is a JSON object for the same reason the reference frame's is,
+ * and that is a CHOICE rather than a reuse: the reference frame already had a
+ * JSON payload and needed only its escapes fixed, while a note frame has to be
+ * given an encoding. Keeping it raw means a second, bespoke escape vocabulary
+ * for U+E000, U+E001 and U+0002, with its own unescape at every consumer. JSON
+ * escapes U+0002 as a control character on its own, spelling the other two as
+ * `\uXXXX` costs the consumer nothing because `JSON.parse` decodes them, and
+ * the separator field disappears rather than needing to be protected. One
+ * encoding in the pipeline instead of two.
+ */
+export const NOTE_FRAME = /\uE000note:(\{[^\uE000\uE001]*?\})\uE001/g
+
+export function noteFrame(payload) {
+  const json = JSON.stringify(payload).replace(
+    /[\uE000\uE001]/g,
+    (c) => '\\u' + c.charCodeAt(0).toString(16),
+  )
+  return `\uE000note:${json}\uE001`
+}
+
 export function renderAttrs(list) {
   // serialization: SOURCE order; all classes merge (deduplicated, corpus
   // 121) into one class attribute at the position of the FIRST class;
@@ -175,12 +275,62 @@ export function renderAttrs(list) {
         parts.push(` ${a[1]}="${escapeAttr(h.value)}"`)
       }
     } else {
+      // A BOOLEAN IS A KEY/VALUE WHOSE VALUE IS EMPTY, so it takes the same
+      // slot as `kv` of the same name rather than emitting a second attribute.
+      // PART 4 defines `{disabled}` as `disabled=""`, and RENDER ORDER says a
+      // repeated key keeps the LAST value at its FIRST position - pushing here
+      // unconditionally produced `a="1" a=""`, which is not valid HTML and is
+      // not what any engine writes (carve#1123).
       if (!hardenAttr(a[1], '')) continue
-      parts.push(` ${a[1]}=""`)
+      if (seen.has(a[1])) parts[seen.get(a[1])] = ` ${a[1]}=""`
+      else {
+        seen.set(a[1], parts.length)
+        parts.push(` ${a[1]}=""`)
+      }
     }
   }
   if (classAt !== -1) parts[classAt] = ` class="${escapeAttr(classes.join(' '))}"`
   return parts.join('')
+}
+
+// PART 10 §10: compact semantic-span attributes are an HTML rendering sugar
+// over the ordinary `span` node.  Keep PHP's established relative order and
+// outer span for non-semantic attributes; the authored attribute list remains
+// untouched in the AST and source targets.
+// PART 9 §9: three names are core - the two that carry data plus `kbd`. The
+// other four are the Tier-2 SemanticSpan extension's (§10), and the oracle
+// renders the CORE, so they stay ordinary attributes here.
+const SEMANTIC_SPAN_ORDER = ['abbr', 'time', 'kbd']
+function renderSemanticSpan(text, list) {
+  const semantic = new Map()
+  const rest = []
+  for (const attr of list) {
+    const name = attr[0] === 'bool' || attr[0] === 'kv' ? attr[1] : null
+    if (name && SEMANTIC_SPAN_ORDER.includes(name)) semantic.set(name, attr[0] === 'kv' ? attr[2] : '')
+    else rest.push(attr)
+  }
+  if (semantic.size === 0) return `<span${renderAttrs(list)}>${text}</span>`
+
+  let html = text
+  const outermost = [...SEMANTIC_SPAN_ORDER].reverse().find((name) => semantic.has(name))
+  const MAPS_TO = { abbr: 'title', time: 'datetime' }
+  for (const name of SEMANTIC_SPAN_ORDER) {
+    if (!semantic.has(name)) continue
+    const value = semantic.get(name)
+    // The mapped attribute is an ordinary key/value in the SAME SLOT an author
+    // could have written, so it goes through renderAttrs with the rest rather
+    // than being concatenated beside it. Emitting both produced
+    // `<abbr title="x" title="y">` for `[x]{abbr="x" title="y"}`; as one list
+    // the repeated-key rule decides it - last value, first position - which is
+    // what a repeated key does everywhere else in the language.
+    const mapped = value !== '' && MAPS_TO[name] ? [['kv', MAPS_TO[name], value]] : []
+    // PART 9 §9: leftovers RIDE the outermost semantic element. The span is
+    // renamed rather than wrapped, so an authored id or class lands on the
+    // element the author wrote it on.
+    const own = name === outermost ? [...mapped, ...rest] : mapped
+    html = `<${name}${renderAttrs(own)}>${html}</${name}>`
+  }
+  return html
 }
 
 const sem = g.createSemantics().addOperation('h', {
@@ -200,10 +350,20 @@ const sem = g.createSemantics().addOperation('h', {
   codeU(_o, _r, content) {
     // unclosed run: verbatim to end of block, trailing whitespace stripped,
     // NO single-space strip
-    return `<code>${escapeHtml(content.sourceString.replace(/\s+$/, ''))}</code>`
+    // The strip is PART 2's `whitespace` - a space or a tab - plus the newlines
+    // the run crossed on its way to the end of the block. `\s` is wider than
+    // the rule: it holds the no-break space, which every other clause calls
+    // CONTENT, so a run ending in one silently lost it. The same narrowing
+    // applies at the math and literal bodies, which share this extraction.
+    const trim = hardBreaks ? /[ \t]+$/ : /[ \t\n]+$/
+    return `<code>${escapeHtml(content.sourceString.replace(trim, ''))}</code>`
   },
   nl(_n) {
-    return '\n'
+    // A SOFT BREAK, and the only place one is visible AS a break. A newline
+    // inside a code span, a math run, a literal or a raw passthrough never
+    // reaches here - it is part of that node's own source - which is exactly
+    // the distinction a line block needs (markup-carve/carve#1282).
+    return hardBreaks ? '<br>\n' : '\n'
   },
   codeA(alt) {
     return alt.h()
@@ -224,18 +384,48 @@ const sem = g.createSemantics().addOperation('h', {
     return `xref:${id.sourceString}`
   },
   footnoteRef(_o, label, _c, attrs) {
+    if (noFootnotes) {
+      // SS16: recognition is DISABLED inside a note, EITHER DIRECTION - so
+      // `[^1]` there is not a reference. What is left is an ordinary bracketed
+      // run over the content `^1`, which is literal with no tail and a
+      // semantic span with an attribute one. Rebuilt here rather than
+      // re-parsed: the source spells `[^`, so re-parsing would match this rule
+      // again and never terminate.
+      const literal = renderInline('^' + label.sourceString, '[')
+      if (attrs.numChildren === 0) return `[${literal}]`
+      return renderSemanticSpan(literal, attrsOf(attrs))
+    }
     const a = renderAttrs(attrsOf(attrs))
     return `fn:${label.sourceString}\u0002${a}`
   },
   inlineNote(_o, content, _c, attrs) {
+    if (noFootnotes) {
+      // Same clause, the other direction: `^[` inside a note opens nothing, so
+      // the `^` is text and the rest is an ordinary bracketed run. Dropping the
+      // `^` from the source is what makes the re-parse terminate.
+      return '^' + renderInline(this.sourceString.slice(1), '^')
+    }
     // anonymous note: content renders now; numbering happens in PART 9R.
-    // Footnote/crossref recognition is DISABLED inside a note (SS16); a
-    // nested sentinel would also break the sentinel framing, so refuse.
-    const inner = renderInline(content.sourceString, '[')
-    if (inner.includes('\uE000')) throw new Refuse('nested construct in an inline note')
-    if (content.sourceString.trim() === '') throw new Refuse('empty inline note')
+    // SS16 DISABLES footnote recognition inside the content, in both
+    // directions, so a nested `^[...]` or `[^ref]` renders as its own literal
+    // spelling rather than a note - the flag carries that down the whole
+    // subtree, since re-enabling it one level in would make `^[a ^[b ^[c] d] e]`
+    // find a note at depth two (markup-carve/carve#1188).
+    const saved = noFootnotes
+    noFootnotes = true
+    let inner
+    try {
+      inner = renderInline(content.sourceString, '[')
+    } finally {
+      noFootnotes = saved
+    }
+    // A crossref, a reference link or a reference image renders as a frame of
+    // its own and reaches here unresolved, because PART 9R resolves them in a
+    // later pass. `noteFrame` spells the frame characters as JSON escapes, so
+    // an inner frame cannot end this one early, and the content survives to
+    // the pass that resolves it (markup-carve/carve#1199).
     const a = renderAttrs(attrsOf(attrs))
-    return `\uE000note:${inner}\u0002${a}\uE001`
+    return noteFrame({ content: inner, attrs: a })
   },
   bracketed(_o, content, _c, tail) {
     // link text is FULL inline content; parse the raw source recursively
@@ -249,6 +439,21 @@ const sem = g.createSemantics().addOperation('h', {
     // own text content; an inner crossref flattens to its resolved TEXT
     inner = inner.replace(/<a [^>]*>([\s\S]*?)<\/a>/g, '$1')
     inner = inner.replaceAll('\uE000xref:', '\uE000xreftext:')
+    // A REFERENCE link is still a frame at this point, not an `<a>`, so the
+    // unwrap above cannot see it: it has to be flattened by reading the
+    // payload's own text. Without this the inner reference resolved after the
+    // outer one and nested an `<a>` inside an `<a>`, which no engine emits
+    // (markup-carve/carve#1195). An image reference is not a link, so it
+    // stays - `<a><img></a>` is what the engines render for that one.
+    inner = inner.replace(REF_FRAME, (m, json) => {
+      let parsed
+      try {
+        parsed = JSON.parse(json)
+      } catch {
+        return m
+      }
+      return parsed.img ? m : parsed.text
+    })
     return tail.child(0).applyTail(inner, raw)
   },
   image(_b, _o, alt, _c, _p, dest, title, _cp, attrs) {
@@ -261,7 +466,7 @@ const sem = g.createSemantics().addOperation('h', {
     // <img>. The label resolves against the same linkDefs entry and takes
     // url, title and attrs from it (PART 9R R1).
     const lbl = label.numChildren ? label.child(0).sourceString : null
-    return `ref:${JSON.stringify({ label: lbl, alt: alt.sourceString, img: true, attrList: attrsOf(attrs), attrSrc: attrs.sourceString })}`
+    return refFrame({ label: lbl, alt: alt.sourceString, img: true, attrList: attrsOf(attrs), attrSrc: attrs.sourceString })
   },
   autolink(_o, body, _c, attrs) {
     const raw = body.sourceString
@@ -275,8 +480,22 @@ const sem = g.createSemantics().addOperation('h', {
   nbspEsc(_bs, _sp) {
     return '&nbsp;'
   },
-  hardBreak(_bs, _la) {
-    return '<br>'
+  hardBreak(_bs, _tail) {
+    // The rule CONSUMES the newline (PART 3), so this emits it: one line
+    // boundary, one break, whether the boundary was spelled with a backslash
+    // or not. In a line block that is the whole of PART 9 SS23's A BACKSLASH
+    // BREAK IS NOT ADDITIVE - there is no soft break left for the container
+    // to harden, so nothing synthesizes a second `<br>`.
+    //
+    // The newline is emitted even where the rule matched `&end` and there was
+    // no newline to consume. PART 10 SS3 states the serialization without a
+    // condition on it - "a hard break serializes as `<br>` + newline" - and all
+    // three engines write it that way, on a document-final `a\` as much as on
+    // one inside a stanza. Making it conditional on the SOURCE made the only
+    // shape where the two readings differ - a hard break with nothing after it
+    // - the one shape the oracle got wrong, which is where the last body line
+    // of a line block lives (PART 11 SS7c).
+    return '<br>\n'
   },
   shortcode(_c1, name, _c2) {
     // No symbol map in Core: the literal `:name:` fallback. Consuming it as one
@@ -291,11 +510,17 @@ const sem = g.createSemantics().addOperation('h', {
     if (omitSymbols) return ''
     return `<span${renderAttrs(attrs.parseAttrs())}>:${escapeHtml(name.sourceString)}:</span>`
   },
-  mention(_a, name) {
-    return `<span class="mention"><strong>@${escapeHtml(name.sourceString)}</strong></span>`
+  mention(_a, name, glued) {
+    return (
+      `<span class="mention"><strong>@${escapeHtml(name.sourceString)}</strong></span>` +
+      escapeHtml(glued.sourceString)
+    )
   },
-  tag(_h, name) {
-    return `<span class="tag"><strong>#${escapeHtml(name.sourceString)}</strong></span>`
+  tag(_h, name, glued) {
+    return (
+      `<span class="tag"><strong>#${escapeHtml(name.sourceString)}</strong></span>` +
+      escapeHtml(glued.sourceString)
+    )
   },
   forcedSpan(f) {
     return f.h()
@@ -320,16 +545,17 @@ const sem = g.createSemantics().addOperation('h', {
     const a = renderAttrs(attrsOf(attrs))
     return `<del${a}>${renderInline(oldC.sourceString, '{')}</del><ins${a}>${renderInline(newC.sourceString, '{')}</ins>`
   },
-  edComment(_o, content, _c, attrs) {
+  edComment(body, attrs) {
     // comment content is verbatim (spaces preserved)
-    return `<span class="critic-comment"${renderAttrs(attrsOf(attrs))}>${escapeHtml(content.sourceString)}</span>`
+    return `<span class="critic-comment"${renderAttrs(attrsOf(attrs))}>${escapeHtml(body.child(1).sourceString)}</span>`
   },
   rawInline(code, _ob, fmt, _cb) {
     // PART 9 SS20: emitted UNESCAPED for the html format, dropped otherwise
     const text = codeText(code.child(0).child(1))
     return fmt.sourceString === 'html' ? text : ''
   },
-  litInline(_bang, code, attrs) {
+  litInline(span, attrs) {
+    const code = span.child(1)
     // PART 9 §27: "!" prefix on a verbatim code span. Content is HTML-ESCAPED,
     // emitted by every renderer and never dropped, with the <code> wrapper
     // removed. Bare text when no attribute block is present; a <span> carrying
@@ -338,7 +564,7 @@ const sem = g.createSemantics().addOperation('h', {
     const inner = code.child(0)
     const body = escapeHtml(
       inner.ctorName === 'codeU'
-        ? inner.child(2).sourceString.replace(/\s+$/, '')
+        ? inner.child(2).sourceString.replace(hardBreaks ? /[ \t]+$/ : /[ \t\n]+$/, '')
         : codeText(inner.child(1)),
     )
     const a = renderAttrs(attrsOf(attrs))
@@ -347,18 +573,34 @@ const sem = g.createSemantics().addOperation('h', {
   extension(_c, name, _o, content, _cl, attrs) {
     const n = name.sourceString
     const inner = renderInline(content.sourceString, '[')
-    const extra = attrsOf(attrs).filter((a) => a[0] === 'class').map((a) => a[1])
-    const rest = attrsOf(attrs).filter((a) => a[0] !== 'class')
-    // the kbd extension renders its own element (attrs apply to it);
-    // everything else is the generic ext-<name> span
-    if (n === 'kbd') {
-      const cls = extra.length ? ` class="${escapeAttr(extra.join(' '))}"` : ''
-      return `<kbd${cls}${renderAttrs(rest)}>${inner}</kbd>`
+    // PART 10 §9: the fixed semantic registry renders its own element (attrs
+    // apply to it); everything else is the generic ext-<name> span.
+    // PART 9 §10: the `:name[…]` spelling has NO core handler at all. It is a
+    // soft-deprecated compatibility form the SemanticSpan extension accepts,
+    // so the core - which is what this oracle renders - gives every name the
+    // generic fallback.
+    const semantic = new Set()
+    if (semantic.has(n)) {
+      return `<${n}${renderAttrs(attrsOf(attrs))}>${inner}</${n}>`
     }
-    const cls = [`ext-${n}`, ...extra].join(' ')
-    return `<span class="${cls}"${renderAttrs(rest)}>${inner}</span>`
+    // The base class is a CLASS, not a prefix: it joins the author's class
+    // slot rather than being written ahead of everything. Splitting it out and
+    // emitting `class="..."` first reordered the author's attributes, so
+    // `:widget[x]{#i .c}` lost the id-before-class order PART 10 §1 requires
+    // (carve#1164). renderAttrs already merges every class into the FIRST
+    // class position, so inserting the base beside the author's first class
+    // puts it exactly there; with no class of their own it leads.
+    const list = attrsOf(attrs)
+    const firstClass = list.findIndex((a) => a[0] === 'class')
+    const merged = firstClass === -1
+      ? [['class', `ext-${n}`], ...list]
+      : [...list.slice(0, firstClass), ['class', `ext-${n}`], ...list.slice(firstClass)]
+    return `<span${renderAttrs(merged)}>${inner}</span>`
   },
   spComment(_sp, _pp, _rest) {
+    return ''
+  },
+  bracedComment(_open, _content, _close) {
     return ''
   },
   arrow(tok) {
@@ -422,14 +664,23 @@ const sem = g.createSemantics().addOperation('h', {
 sem.addOperation('applyTail(text, source)', {
   linkTail(_o, dest, title, _c, attrs) {
     const { text } = this.args
-    if (text.includes('\uE000fn:')) throw new Refuse('footnote inside link text')
+    // A footnote in link text is a §16 LIMITATION, not an unrenderable
+    // document: the clause states the outcome ("nests an <a> in an <a>") and
+    // advises against writing it. The noteref sentinel travels inside the link
+    // text and PART 9R resolves it in place, which is what the reference
+    // engines do - and what this pipeline already did for the INLINE note form,
+    // whose sentinel this check never named (markup-carve/carve#1188).
     const t = title.numChildren ? ` title="${escapeAttr(title.child(0).titleText())}"` : ''
     const a = renderAttrs(attrsOf(attrs))
     return `<a href="${escapeAttr(checkUrl(destValue(dest)))}"${t}${a}>${text}</a>`
   },
   refTail(_o, label, _c, attrs) {
     const { text, source } = this.args
-    if (text.includes('\uE000fn:')) throw new Refuse('footnote inside link text')
+    // A footnote in reference link text is the SAME §16 limitation linkTail
+    // renders: it nests an `<a>` in an `<a>`, which is what every engine
+    // emits for it. It used to be refused here because the frame hid the
+    // noteref from the footnote pass; the frame now carries it through
+    // (markup-carve/carve#1195).
     const lbl = label.numChildren ? label.child(0).sourceString : null
     // The RAW list travels, not the rendered string: a definition may carry
     // attributes too, and PART 9R R1 merges the two per SS15 A3 - which needs
@@ -439,11 +690,11 @@ sem.addOperation('applyTail(text, source)', {
     // decorated key, and keying on the rendered form both missed that
     // definition and matched a plain one the author never referenced.
     // carve-js and carve-rs key on the written label (carve#648).
-    return `ref:${JSON.stringify({ label: lbl, text, source, attrList: attrsOf(attrs), attrSrc: attrs.sourceString })}`
+    return refFrame({ label: lbl, text, source, attrList: attrsOf(attrs), attrSrc: attrs.sourceString })
   },
   attrs(_o, _s1, _first, _s2, _rest, _s3, _c) {
     const { text } = this.args
-    return `<span${renderAttrs(this.parseAttrs())}>${text}</span>`
+    return renderSemanticSpan(text, this.parseAttrs())
   },
   emptyAttrs(_o, _sp, _c) {
     const { text } = this.args
@@ -480,6 +731,12 @@ sem.addOperation('parseAttrs', {
   },
   boolAttr(name) {
     return ['bool', name.sourceString]
+  },
+  // The same desugaring as the `attrSem` copy above. Both operations walk the
+  // same `attrItem` rule, so a shorthand handled in one and missing from the
+  // other throws `missingSemanticAction` on whichever path reaches it second.
+  langAttr(_c, tag) {
+    return ['kv', 'lang', tag.sourceString]
   },
   attrVal(v) {
     return v.parseAttrs()
@@ -713,9 +970,22 @@ function mathSpan(kind, code, attrs) {
   const wrap = kind === 'inline' ? ['\\(', '\\)'] : ['\\[', '\\]']
   const list = attrsOf(attrs)
   const classes = ['math', kind, ...list.filter((a) => a[0] === 'class').map((a) => a[1])]
+  // PART 10 SS1: the base class is prepended INSIDE the class slot, and the slot
+  // stays at the FIRST-APPEARANCE position of a class in the author's order.
+  // Writing `class` unconditionally first moves it ahead of an id the author
+  // wrote before any class. carve#1168 fixed exactly this in the `ext-NAME`
+  // fallback; the math span carries a base class the same way and was missed,
+  // because no corpus case put an id before a class on it (carve#1164).
   let rest = ''
+  let emittedClasses = false
+  const classAttr = () => ` class="${classes.join(' ')}"`
   for (const a of list) {
-    if (a[0] === 'id') rest += ` id="${escapeAttr(a[1])}"`
+    if (a[0] === 'class') {
+      if (!emittedClasses) {
+        rest += classAttr()
+        emittedClasses = true
+      }
+    } else if (a[0] === 'id') rest += ` id="${escapeAttr(a[1])}"`
     else if (a[0] === 'kv') {
       const h = hardenAttr(a[1], a[2])
       if (h) rest += ` ${a[1]}="${escapeAttr(h.value)}"`
@@ -727,10 +997,12 @@ function mathSpan(kind, code, attrs) {
   // codeU (unclosed run) carries its content in a different child slot
   const body = escapeHtml(
     inner.ctorName === 'codeU'
-      ? inner.child(2).sourceString.replace(/\s+$/, '')
+      ? inner.child(2).sourceString.replace(/[ \t\n]+$/, '')
       : codeText(inner.child(1))
   )
-  return `<span class="${classes.join(' ')}"${rest}>${wrap[0]}${body}${wrap[1]}</span>`
+  // No authored class at all: nothing to place the base class after, so it leads.
+  if (!emittedClasses) rest = classAttr() + rest
+  return `<span${rest}>${wrap[0]}${body}${wrap[1]}</span>`
 }
 
 // parse a standalone `{...}` attribute block (table row/cell attrs);
@@ -794,8 +1066,14 @@ export function renderBlockAttrs(lists) {
           parts.push(` ${a[1]}="${escapeAttr(h.value)}"`)
         }
       } else {
+        // Same rule as the inline merge above: a boolean is a key/value with an
+        // empty value and shares that name's slot (carve#1123).
         if (!hardenAttr(a[1], '')) continue
-        parts.push(` ${a[1]}=""`)
+        if (seen.has(a[1])) parts[seen.get(a[1])] = ` ${a[1]}=""`
+        else {
+          seen.set(a[1], parts.length)
+          parts.push(` ${a[1]}=""`)
+        }
       }
     }
   }
@@ -869,6 +1147,50 @@ let quotePrevCtx = '' // preceding character for recursive inline parses
  * renders its own copy of the heading (markup-carve/carve#1011).
  */
 let omitSymbols = false
+
+/*
+ * HARD BREAKS: a soft break renders as `<br>` (PART 9 SS23).
+ *
+ * A line block and a local hard-break block promise it of every soft break
+ * they hold. The promise is about BREAKS, and a newline swallowed by an
+ * unclosed inline run is not one: the run reaches the end of the block and
+ * everything it spans is its CONTENT, so writing a `<br>` into it would put
+ * markup inside text that is by definition not markup.
+ *
+ * The flag rather than a post-pass over the rendered HTML: which newlines sit
+ * inside a verbatim span is KNOWN here, at the node that matched them, and is
+ * only guessable from the output. Guessing it put a `<br>` inside an
+ * attributed math span (`class` is not the first attribute when the author
+ * wrote an id first) and inside a literal, which has no wrapper element at
+ * all, and it went blind after any raw `{=html}` payload holding a tag
+ * (markup-carve/carve#1282).
+ */
+let hardBreaks = false
+
+export function renderInlineHardBreaks(text, prevCtx = '') {
+  hardBreaks = true
+  try {
+    return renderInline(text, prevCtx)
+  } finally {
+    hardBreaks = false
+  }
+}
+
+/*
+ * FOOTNOTE RECOGNITION IS OFF INSIDE A NOTE (grammar.ebnf §16).
+ *
+ * "Content is INLINE-only, parsed recursively with footnote recognition
+ * DISABLED inside it (no `^[…]` or `[^ref]` nested in a note, either
+ * direction)." Disabled recognition makes the inner spelling ordinary text -
+ * `^` plus a bracketed run, or a bracketed run over `^label` - not an
+ * unrenderable document, which is how the executable spec used to read it
+ * (markup-carve/carve#1188).
+ *
+ * A flag rather than a second grammar: the two rules that must stop matching
+ * are reached from every inline position, and the state has to survive the
+ * recursive renderInline calls the note's own content makes, at any depth.
+ */
+let noFootnotes = false
 
 export function renderInlineWithoutSymbols(text, prevCtx = '') {
   omitSymbols = true

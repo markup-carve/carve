@@ -1,0 +1,87 @@
+A bracketed construct spanning a line boundary
+
+```
+See [a
+b](/u) here.
+.
+<p>See <a href="/u">a
+b</a> here.</p>
+```
+
+```
+An [a
+b]{.k} span.
+.
+<p>An <span class="k">a
+b</span> span.</p>
+```
+
+```
+[a
+b][r] resolves.
+
+[r]: /u
+.
+<p><a href="/u">a
+b</a> resolves.</p>
+```
+
+```
+![a
+b](/i)
+.
+<img src="/i" alt="a
+b">
+```
+
+```
+![a
+b](/i)
+^ A caption.
+.
+<figure>
+  <img src="/i" alt="a
+b">
+  <figcaption>A caption.</figcaption>
+</figure>
+```
+
+```
+A note ^[a
+b] here.
+.
+<p>A note <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> here.</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a
+b<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+:span[a
+b] here.
+.
+<p><span class="ext-span">a
+b</span> here.</p>
+```
+
+```
+An {+a
+b+} insertion.
+.
+<p>An <ins>a
+b</ins> insertion.</p>
+```
+
+```
+A {/a
+b/} run.
+.
+<p>A <em>a
+b</em> run.</p>
+```

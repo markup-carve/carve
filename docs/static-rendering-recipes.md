@@ -1,3 +1,7 @@
+---
+description: Concrete recipes for shipping Carve output that stays readable with no JavaScript at all.
+---
+
 # Static Rendering Recipes
 
 [Static render mode](/graceful-degradation) flattens interaction for free, but the

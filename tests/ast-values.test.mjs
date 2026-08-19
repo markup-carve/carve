@@ -74,26 +74,99 @@ test('a malformed declaration line is an error, never a silent zero', () => {
   assert.match(problems[0], /^MALFORMED\s+line 1/)
 })
 
-test('the shipped declaration parses', () => {
-  const problems = reconcileDeclared(
-    new Map(),
-    readFileSync(resolve(root, 'resources/ast-value-divergence.txt'), 'utf8'),
-  )
-  // Every problem must be a FIXED - i.e. a real declared line - and never a
-  // MALFORMED one. The file carried no entries between carve#846 and
-  // 2026-08-07, when `link.ref` and `text.value` were declared (carve#962,
-  // carve#963), so this loop now runs over two problems rather than none - and
-  // that is the point of asserting it this way rather than counting.
+const shippedDeclaration = () =>
+  readFileSync(resolve(root, 'resources/ast-value-divergence.txt'), 'utf8')
+
+/*
+ * WHAT `npm run ast:check` LAST MEASURED, written down so a host with no engine
+ * checkouts can still say something falsifiable about the shipped file.
+ *
+ * Measured 2026-08-17 over 1131 corpus documents plus 3 synthetic samples, at
+ * carve-js 80537c8, carve-rs 71318e9 and carve-php 84c422b, each built from a
+ * fresh clone of main. `npm run ast:check` prints "the engines publish the same
+ * values everywhere", so the map is EMPTY.
+ *
+ * It held two rows earlier the same day - carve-php alone on the 326/329
+ * container rulings, markup-carve/carve-php#1354 - and this is the "moves with
+ * the measurement" that note described: carve-php shipped them, ast:check
+ * reported both FIXED, and the commit that deleted them from the ledger emptied
+ * this map. Nothing was removed on the strength of the merge notification; the
+ * run is what says so.
+ *
+ * NO FLOOR either way. An empty map against an empty ledger reconciles to
+ * nothing, which is the state the panel is trying to reach, and a row that
+ * appears in either place alone still fails.
+ */
+const LAST_MEASURED = new Map([])
+
+/** A measurement of `count` distinct documents - the reconciler counts them. */
+const documents = (count) =>
+  new Set(Array.from({ length: count }, (_, i) => `measured-${i}.crv`))
+
+const asMeasured = (counts) =>
+  new Map([...counts].map(([key, count]) => [key, documents(count)]))
+
+test('the shipped declaration is exactly what ast:check last measured', () => {
+  // NOT `reconcileDeclared(new Map(), ...)` any more, and the reason is the
+  // trap this test already fell into once.
   //
-  // NO FLOOR, and that is deliberate rather than an oversight: a declaration of
-  // zero divergences is the state the panel is trying to reach, so a floor
-  // would be the inverse defect, a gate that only works while something is
-  // wrong. What proves the parser discriminates is the six tests above, each of
-  // which feeds it a literal line and reads the verdict.
-  // `tests/ast-spans.test.mjs` floors its declaration, and the difference is
-  // not an inconsistency: that ledger records an open convention across two
-  // dozen node types, so an emptied one there is loss rather than progress.
-  for (const p of problems) assert.match(p, /^FIXED/, p)
+  // This assertion used to be `for (const p of problems) assert.match(p,
+  // /^FIXED/)`, which cannot fail on a declared row: reconciling against an
+  // empty measurement turns EVERY row into a FIXED, so the loop was handed the
+  // exact shape it accepts. Appending `text.value  3  x` to the shipped file
+  // left this suite green at 9 passing (carve#1271) - the same measurement that
+  // opened carve#534 against the script, now reproduced against the test that
+  // replaced it.
+  //
+  // It then became `deepEqual(reconcileDeclared(new Map(), ...), [])`, which is
+  // falsifiable but only while the ledger is EMPTY: an empty measurement makes
+  // every declared row a FIXED, so the day a row is genuinely owed the
+  // assertion stops being about the file and starts being about the emptiness.
+  // Its own note said so - "a row that is genuinely owed gets established by
+  // ast:check and moves this line with it, deliberately, in the commit that
+  // measures it" - and this is that commit.
+  //
+  // Reconciling against the recorded measurement keeps all three directions
+  // live on a host with no engines: a row added to the file without a
+  // measurement is FIXED, a row deleted from it is NEW, and a count edited on
+  // either side is COUNT. NO FLOOR, still: an empty `LAST_MEASURED` and an
+  // empty ledger reconcile to nothing, which is the state the panel is trying
+  // to reach.
+  assert.deepEqual(reconcileDeclared(asMeasured(LAST_MEASURED), shippedDeclaration()), [])
+})
+
+test('and a real divergence the shipped file does not declare is caught', () => {
+  // The other direction, against the SHIPPED text rather than a literal. The
+  // test above would still pass if the file somehow declared everything, and
+  // the NEW case two tests up proves the reconciler on a fabricated
+  // declaration; neither one asserts that the file as shipped still lets an
+  // undeclared divergence through.
+  const measured = asMeasured(LAST_MEASURED)
+  measured.set('table_cell.align', new Set(['a.crv', 'b.crv']))
+  const problems = reconcileDeclared(measured, shippedDeclaration())
+  assert.equal(problems.length, 1)
+  assert.match(problems[0], /^NEW\s+table_cell\.align diverges in 2 document\(s\)/)
+})
+
+test('every declared row names a fully qualified engine issue', () => {
+  // The third column is the file's own format - "who diverges and where it is
+  // tracked" - and nothing enforced it, which is how a row could be added with
+  // a reason that names no ticket. A bare `#1354` in this repo resolves to
+  // carve#1354, not to the engine issue it means, so the qualification is the
+  // part that matters.
+  const rows = shippedDeclaration()
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line !== '' && !line.startsWith('#'))
+
+  assert.equal(rows.length, LAST_MEASURED.size, 'the ledger and the measurement disagree on row count')
+  for (const row of rows) {
+    assert.match(
+      row,
+      /[\w.-]+\/[\w.-]+#\d+/,
+      `declared row names no fully qualified engine issue: ${row}`,
+    )
+  }
 })
 
 test('the signature keeps scalars and drops positions', () => {

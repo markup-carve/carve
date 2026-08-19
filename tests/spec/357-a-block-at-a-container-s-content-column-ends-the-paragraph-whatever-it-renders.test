@@ -1,0 +1,88 @@
+A block at a container's content column ends the paragraph, whatever it renders
+
+```
+- a
+  {.k}
+tail
+.
+<ul>
+  <li>a
+{.k}
+tail</li>
+</ul>
+```
+
+```
+- a
+  %% c
+tail
+.
+<ul>
+  <li>a
+%% c
+tail</li>
+</ul>
+```
+
+```
+- a
+  %%% c
+  %%%
+tail
+.
+<ul>
+  <li>a
+%%% c
+%%%
+tail</li>
+</ul>
+```
+
+```
+- a
+  [^f]: t
+    more
+tail
+
+x[^f]
+.
+<ul>
+  <li>a
+[^f]: t
+more
+tail</li>
+</ul>
+<p>x[^f]</p>
+```
+
+```
+- a
+  [^f]: t
+tail
+
+x[^f]
+.
+<ul>
+  <li>a
+[^f]: t
+tail</li>
+</ul>
+<p>x[^f]</p>
+```
+
+```
+- a
+  [r]: /u
+    "T"
+tail
+
+[r][]
+.
+<ul>
+  <li>a
+[r]: /u
+”T”
+tail</li>
+</ul>
+<p>[r][]</p>
+```

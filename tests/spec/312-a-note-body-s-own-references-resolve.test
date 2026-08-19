@@ -1,0 +1,63 @@
+A note body's own references resolve
+
+```
+a [^1] b
+
+[^1]: see [x][r]
+
+[r]: /u
+.
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <a href="/u">x</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+a [^1] b
+
+[^1]: see [^2]
+
+[^2]: two
+.
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>two<a href="#fnref2" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+a [^1] b
+
+[^1]: see [t[^2]][r]
+
+[r]: /u
+
+[^2]: two
+.
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <a href="/u">t<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></a><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>two<a href="#fnref2" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```

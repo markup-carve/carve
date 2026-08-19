@@ -1,0 +1,33 @@
+A language attribute is exact sugar for lang
+
+```
+The title is [Le Bon Usage]{:fr}.
+.
+<p>The title is <span lang="fr">Le Bon Usage</span>.</p>
+```
+
+```
+[a]{:de-CH} [b]{:sr-Latn-RS} [c]{:x-acme} [d]{:i-klingon}
+.
+<p><span lang="de-CH">a</span> <span lang="sr-Latn-RS">b</span> <span lang="x-acme">c</span> <span lang="i-klingon">d</span></p>
+```
+
+```
+{:de}
+> Der Titel ist [unbekannt]{:}.
+.
+<blockquote lang="de"><p>Der Titel ist <span lang="">unbekannt</span>.</p></blockquote>
+```
+
+```
+[x]{#quote :fr .formal title=bonjour}
+.
+<p><span id="quote" lang="fr" class="formal" title="bonjour">x</span></p>
+```
+
+```
+{:grc}
+Μῆνιν ἄειδε θεά
+.
+<p lang="grc">Μῆνιν ἄειδε θεά</p>
+```

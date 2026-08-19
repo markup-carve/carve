@@ -1,3 +1,7 @@
+---
+description: How Carve relates to Markdown and Djot documents, and the design questions left open.
+---
+
 # Compatibility, Comparison & Open Questions
 
 ## Part 7: Compatibility and Migration

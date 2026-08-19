@@ -1,0 +1,30 @@
+What a content-column block does not reach
+
+```
+- a
+  %% c
+ b
+.
+<ul>
+  <li>a
+%% c
+b</li>
+</ul>
+```
+
+```
+- a
+  [^f]: t
+    more
+  b
+
+x[^f]
+.
+<ul>
+  <li>a
+[^f]: t
+more
+b</li>
+</ul>
+<p>x[^f]</p>
+```

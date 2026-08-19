@@ -1,3 +1,7 @@
+---
+description: How the Carve specification is versioned, and the record of every change to it.
+---
+
 # Versioning & Changelog
 
 This page defines how the **Carve specification** is versioned and records every
@@ -14,7 +18,7 @@ bump.
 
 Implementations declare which spec version they conform to. The `carve fmt
 --stamp` tool records it inside a document as a trailing
-[provenance marker](/edge-cases):
+[provenance marker](/parsing-ambiguities):
 
 ```
 %% carve-version: 0.1; generated-by: carve-js 0.1.0
@@ -58,6 +62,117 @@ silent degradation: the constructs the author relied on parse as something else
 and nothing says so. The two fields do not compete - the frontmatter key is the
 author's intent, the trailing marker is what last processed the file - and a
 document carrying only the marker is still checked.
+
+### Behavior changes inside 0.1.x
+
+A `0.1.x` release may still change what an existing document renders to, and
+the semantic-span work did it more than once. The end state is three reserved
+span attributes in core - `abbr`, `time`, `kbd` - and here is what moved.
+
+**1. Three names gained a meaning as span attributes.** On an ordinary
+`[content]{attrs}` span each is now consumed into its HTML element instead of
+reaching the output as an attribute
+([PART 9 §9](./blocks-and-attributes#semantic-spans-kbd-abbr-time)):
+
+```carve
+[x]{time="2026-01-01"}
+```
+
+```html
+<span time="2026-01-01">x</span>         <!-- before -->
+<time datetime="2026-01-01">x</time>     <!-- after -->
+```
+
+A document that used `abbr`, `time` or `kbd` as a plain marker attribute on a
+span renders differently after upgrading.
+
+**2. Leftover attributes moved onto the semantic element.** A consumed name
+renames the span rather than wrapping it, so an id or class lands on the element:
+
+```carve
+[Tab]{#k .key kbd}
+```
+
+```html
+<span id="k" class="key"><kbd>Tab</kbd></span>   <!-- before -->
+<kbd id="k" class="key">Tab</kbd>                <!-- after -->
+```
+
+A stylesheet or script written against the wrapper needs a look.
+
+**3. Four names left core for an extension.** `samp`, `var`, `cite` and `dfn`
+briefly selected elements too; they are now the opt-in
+[SemanticSpan extension](./extensions)'s, so a core processor leaves them as
+ordinary attributes. **`cite` is the one to check** - it is a real HTML
+attribute on `blockquote` and `q`, so `{cite="…"}` on a span was a reasonable
+thing to write, and while the extension is enabled its value reaches no output
+at all.
+
+**4. The `:name[…]` spelling lost its handlers.** `:kbd[Tab]` renders
+`<span class="ext-kbd">Tab</span>` in a core processor; the SemanticSpan
+extension accepts it as a soft-deprecated form, scheduled for removal in 0.2.
+This is the one break in RELEASED behavior rather than in a development window:
+`:kbd[x]` has rendered `<kbd>` in carve-js since its first release. The rewrite
+is mechanical - `:kbd[Tab]` becomes `[Tab]{kbd}`.
+
+**5. The language attribute claimed the `{:…}` slot**, which was unassigned and
+therefore literal:
+
+```carve
+[Le Bon Usage]{:fr}
+```
+
+```html
+<p>[Le Bon Usage]{:fr}</p>                        <!-- before -->
+<p><span lang="fr">Le Bon Usage</span></p>        <!-- after -->
+```
+
+The exception was taken deliberately and on evidence: attribute names cannot
+start with `:`, so nothing could collide, and an audit of the organization plus
+a public `.crv` code search found no literal use to break. A malformed tag
+(`{:en_US}`, `{:français}`) still leaves the block literal, so a typo looks like
+a typo rather than half-parsing.
+
+**6. The plain-text target stopped flattening nested lists.** Before, depth was
+erased and every item came out a sibling; now each list ancestor indents its
+item by two spaces (PART 11 §10h). A pipeline that parsed the plain output by
+column will see different columns.
+
+To find affected documents, search for the seven names used as attributes on a
+span, and for `:name[…]` with any of them. Where a value mattered, move it to an
+attribute that survives - a `title`, or a link if it was a URL.
+
+**A bare `::: figure` container is now a composite figure.** The kind word
+`figure` is reserved (PART 9 section 4c, carve#1122): a bare opener produces a
+`figure_group` - one numbered figure whose captioned children are panels - where
+it used to produce a generic `<div class="figure">`, and the `^ ` line after its
+closing fence attaches as the group caption where it used to stay a literal
+paragraph:
+
+```carve
+{#ep}
+::: figure
+> To be
+:::
+^ Figure #: A pull quote
+```
+
+```html
+<div class="figure" id="ep">                      <!-- before -->
+  <blockquote><p>To be</p></blockquote>
+</div>
+<p>^ Figure #: A pull quote</p>
+
+<figure class="carve-figure-group" id="ep">       <!-- after -->
+  <blockquote><p>To be</p></blockquote>
+  <figcaption>Figure 1: A pull quote</figcaption>
+</figure>
+```
+
+An opener carrying a quoted title or a `[label]` keeps the old generic-container
+shape. Documents that already hold a bare `::: figure` fence reclassify, and a
+previously dangling caption starts consuming a figure number, which can renumber
+later figures in the same document - `carve lint` reports the affected shapes.
 
 ### Checking documents mechanically
 
@@ -107,6 +222,17 @@ engine reads the markers the others write, in both the line and block forms, and
 carve-js pins carve-php's exact bytes as test fixtures.
 
 ## Changelog
+
+### 0.2
+
+- [behavior] A table alignment marker run now ends at a required space; glued
+  marker-shaped content must be separated or escaped. Migration: run
+  `carve fmt --migrate` to insert the terminator.
+- [addition] Tables gain independent horizontal and vertical cell/column
+  alignment, positional `aligns`/`valigns`/`widths` attributes, and an exchange
+  AST `columns` model. ListTable gains the same column attributes plus
+  per-cell `align`/`valign` and `footer-rows`; pipe tables gain explicit
+  `header-rows` / `footer-rows` partitioning.
 
 ### 0.1
 

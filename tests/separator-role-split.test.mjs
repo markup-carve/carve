@@ -413,7 +413,7 @@ const SITES = [
   {
     role: 'padding',
     site: 'header_cell, the slots around the cell content',
-    required: /header_cell = '=', \[alignment_marker\], \{space\}, cell_content, \{space\} ;/,
+    required: /header_cell = '=', \[alignment_run\], \[cell_attributes\], \{space\}, cell_content, \{space\} ;/,
     forbidden: /header_cell = [^;]*\{whitespace\}/,
     why: 'the `=` has already decided the cell; the padding sits inline after it',
     fixtures: [
@@ -426,8 +426,10 @@ const SITES = [
   {
     role: 'padding',
     site: 'data_cell, the slots around the cell content',
-    required: /data_cell = \[cell_attributes\], \[alignment_marker\], \{space\}, cell_content, \{space\} ;/,
-    forbidden: /data_cell = [^;]*\{whitespace\}/,
+    // The production is written column-aligned with `header_cell` so the one
+    // shared order is visible, hence `\s+` rather than a single space.
+    required: /data_cell\s+=\s+\[alignment_run\], \[cell_attributes\], \{space\}, cell_content, \{space\} ;/,
+    forbidden: /data_cell\s+= [^;]*\{whitespace\}/,
     why: 'the opening pipe has already decided the cell; the padding sits inline after it',
     fixtures: [
       { slot: 'the leading slot', tab: '|\ta |\tb |\n', space: '| a | b |\n' },
@@ -1037,7 +1039,7 @@ for (const { site, two, one } of RUN_SITES) {
 // failure is visible.
 //
 // What this block adds is the LINE ENDING, which corpus 266 deliberately does
-// not carry: a trailing whitespace run in docs/examples/*.md is one editor
+// not carry: a trailing whitespace run in resources/examples/*.md is one editor
 // save from vanishing, and it would be invisible in review. Here the bytes are
 // in a string literal.
 const LINE_ENDING = [
@@ -1361,7 +1363,7 @@ for (const [production, required, forbidden] of [
 // separator stands between the marker and the content it introduces. Corpus
 // 267 carries the ruling. What lives here is the one shape the corpus cannot
 // hold - a marker followed by SPACES and nothing else - because trailing
-// whitespace in docs/examples/*.md is one editor save from vanishing and
+// whitespace in resources/examples/*.md is one editor save from vanishing and
 // invisible in review either way.
 //
 // It is not decoration. MARKER REQUIRES CONTENT is what separates the rule

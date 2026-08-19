@@ -1,3 +1,7 @@
+---
+description: "The profiles contract: restricting which node types a document may contain, so a host can accept untrusted input."
+---
+
 # Profiles Contract
 
 A **profile** restricts which node types a document may contain, so a host can
@@ -27,8 +31,8 @@ spelling.
 `list_item`, `table`, `table_row`, `table_cell`, `thematic_break`, `div`,
 `admonition`, `raw_block`, `footnote`, `frontmatter`, `definition_list`,
 `definition_term`, `definition_description`, `section`, `line_block`,
-`comment`, `figure`, `caption`, `abbreviation_def`,
-`link_reference_definition`.
+`comment`, `figure`, `figure_group`, `caption`, `abbreviation_def`,
+`link_reference_definition`, `citation_definition`.
 
 **Inline:** `text`, `emphasis`, `strong`, `underline`, `strike`,
 `inline_extension`, `mention`, `code`, `link`, `autolink`, `image`,
@@ -56,11 +60,15 @@ containers has no way to express that if the kind lives in a class string.
 
 Which fences are callouts is the **Tier-1 canonical list** - `note`, `tip`,
 `warning`, `danger`, `info`, `success`, `example`, `quote`. A fence opened with
-any other word (`::: sidebar`, `::: figure-group`, a name your own extension
+any other word (`::: sidebar`, `::: aside-note`, a name your own extension
 claims) is a **generic container**: it renders as `<div class="name">` rather
 than an `<aside class="admonition name">`, and it is classified as **`div`** for
-profiles. So `denyBlock(['admonition'])` removes callouts and leaves those
-containers standing, which is the capability the paragraph above promises:
+profiles. The one reserved word is `figure`: a *bare* `::: figure` opener is a
+composite figure (`figure_group`, PART 9 §4c), not an admonition - though a
+`::: figure` opener carrying a quoted title or a `[label]` still falls back to
+the generic container. So `denyBlock(['admonition'])` removes callouts and
+leaves those containers standing, which is the capability the paragraph above
+promises:
 
 ```js
 const p = Profile.full()
@@ -95,7 +103,7 @@ happen. So it is neither deniable nor serialized, and a consumer should not
 expect it. Measured: no engine emits it for any of the 655 corpus documents,
 and `resources/ast-schema.json` does not name it.
 
-### A definition line is content, so both definition types are deniable
+### A definition line is content, so the definition types are deniable
 
 `abbreviation_def` and `link_reference_definition` are in the Block vocabulary
 above, and both were kept out of it until carve#771 on the reasoning that a
@@ -126,7 +134,7 @@ authored text it may have a reason to withhold, so it must be able to name the
 type. "Renders nothing" described one target out of four.
 
 **`link_reference_definition` moves with it**, which is what this page has always
-said - the two are one case. The reason is now PART 10 §10a rather than a
+said - the two are one case. The reason is now PART 11 §10a rather than a
 measurement: that clause is normative, and since PART 12 §10 gave the link
 definition a node it covers all three definition kinds, requiring an unused
 definition of any kind to survive the Markdown, plain-text and terminal
@@ -135,6 +143,14 @@ because the page has been wrong here once already: **no engine emits the unused
 link definition line yet**, so denying the type withholds nothing on any target
 at the time of writing. Its vocabulary membership follows the clause, not the
 current output.
+
+**`citation_definition` joins them** under PART 12 §18, which gives the fourth
+definition kind a node for the same reason: `[@key]: {author= year=} entry` is
+authored text a host may have a reason to withhold, and it is text a formatter
+has to be able to put back. It is Tier-2, so it appears only where the Citations
+extension is enabled - a profile denying the type on input that never enables
+citations denies something the parse cannot produce, which is true of every
+extension type in this list and not a reason to leave it out.
 
 What a deny takes is the definition LINE, never the EXPANSION it fed. The
 inline `abbreviation`, and the `link` or `image` a reference resolves to, are

@@ -1,4 +1,12 @@
+---
+description: A feature-by-feature comparison against Markdown, Djot and MDX, for choosing between them.
+---
+
 # Carve vs Markdown, Djot & MDX
+
+::: info Who this is for
+**Evaluators choosing a markup language.** Feature-by-feature against Markdown, Djot and MDX. Already decided and just need to write? See [Coming from Markdown](/migrate-from-markdown). Porting a parser? See [Divergence from Djot](/divergence-from-djot).
+:::
 
 How Carve compares to the markup languages you already know. The short version:
 Markdown's reach, Djot's consistency, web-native features by default - without

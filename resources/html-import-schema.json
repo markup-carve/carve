@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/html-import-schema.json",
+  "title": "Carve HTML import report",
+  "type": "object",
+  "required": ["mode", "adapter", "diagnostics"],
+  "additionalProperties": false,
+  "properties": {
+    "mode": { "enum": ["safe", "semantic", "roundtrip"] },
+    "adapter": { "enum": ["generic", "tiptap", "prosemirror", "ckeditor", "tinymce", "word", "google-docs"] },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "message", "severity"],
+        "additionalProperties": false,
+        "properties": {
+          "code": { "enum": ["element-dropped", "element-unwrapped", "attribute-dropped", "style-unmapped", "table-degraded", "raw-preserved", "structure-unspellable", "encoding-assumed", "diagnostics-truncated"] },
+          "message": { "type": "string" },
+          "severity": { "enum": ["info", "warning", "error"] },
+          "path": {
+            "type": "string",
+            "description": "A human-readable, engine-defined locator for the node this diagnostic is about, rooted at the fragment's body children. It looks like an XPath expression and is NOT one: each index counts among all of the parent's child nodes rather than the same-named siblings, and it names the importer's traversal rather than the raw DOM. A consumer MUST NOT resolve it against the input document. Deliberately carries no pattern: the value is for a person reading a report, not for a machine."
+          },
+          "line": { "type": "integer", "minimum": 1 },
+          "column": { "type": "integer", "minimum": 1 }
+        }
+      }
+    }
+  }
+}

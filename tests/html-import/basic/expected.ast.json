@@ -1,0 +1,1 @@
+{"type":"document","children":[{"type":"heading","level":1,"children":[{"type":"text","value":"Hello "},{"type":"emphasis","children":[{"type":"text","value":"world"}]}]},{"type":"paragraph","children":[{"type":"text","value":"A "},{"type":"link","href":"https://example.com","children":[{"type":"text","value":"link"}]},{"type":"text","value":"."}]}]}

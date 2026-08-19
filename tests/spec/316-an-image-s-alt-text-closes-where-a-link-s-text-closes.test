@@ -1,0 +1,63 @@
+An image's alt text closes where a link's text closes
+
+```
+a ![t[z]][r] b
+
+[r]: /i.png
+.
+<p>a <img src="/i.png" alt="t[z]"> b</p>
+```
+
+```
+a ![t[z]](/i.png) b
+.
+<p>a <img src="/i.png" alt="t[z]"> b</p>
+```
+
+```
+a ![t[z[q]]][r]{.c} b
+
+[r]: /i.png
+.
+<p>a <img src="/i.png" alt="t[z[q]]" class="c"> b</p>
+```
+
+```
+a ![t\]z](/i.png) b
+.
+<p>a <img src="/i.png" alt="t\]z"> b</p>
+```
+
+```
+a ![t`]`z](/i.png) b
+.
+<p>a <img src="/i.png" alt="t`]`z"> b</p>
+```
+
+```
+a ![t]z][r] b
+
+[r]: /i.png
+.
+<p>a ![t]z][r] b</p>
+```
+
+```
+![t[z]][r]
+^ cap
+
+[r]: /i.png
+.
+<figure>
+  <img src="/i.png" alt="t[z]">
+  <figcaption>cap</figcaption>
+</figure>
+```
+
+```
+a [x ![t[z]][r] y](/u) b
+
+[r]: /i.png
+.
+<p>a <a href="/u">x <img src="/i.png" alt="t[z]"> y</a> b</p>
+```

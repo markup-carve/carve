@@ -1,3 +1,7 @@
+---
+description: "The normative extension contract: the feature tiers, what each guarantees, and how a processor registers a handler."
+---
+
 # Carve extensions contract (NORMATIVE)
 
 This document is normative. The conformance corpus (`tests/corpus`) remains the
@@ -52,8 +56,9 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | ListTable (§5), Details, Spoiler, Tabs — shipped in all three engines and pinned in `tests/corpus-optional` | <Badge type="info" text="standard" /> | off | — |
 | Mermaid / FencedRender, MathBlock, Glossary, Index, HeadingNumbers, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | Bibliography (§6) — an **option on Citations**, not a separate registration: the host passes a CSL-JSON pool to the Citations extension | <Badge type="warning" text="extension" /> | off | — |
-| TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks, ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
-| SemanticSpan — **carve-php only** today; carve-js and carve-rs ship no such extension | <Badge type="warning" text="extension" /> | off | — |
+| TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks and HeadingReference (§12), ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
+| Semantic span attributes — `[x]{kbd}`, `[HTML]{abbr="…"}`, `[now]{time="…"}` (three names; PART 9 §9) | <Badge type="tip" text="core" /> | on | no |
+| SemanticSpan — the four names core does not reserve (`samp`, `var`, `cite`, `dfn`), plus the soft-deprecated `:name[…]` spelling for all seven | <Badge type="info" text="standard" /> | off | — |
 | [ImgFence](/svg-images) (sanitized SVG `img` fence — sandboxed by default) | <Badge type="warning" text="extension" /> | off | — |
 
 A `:name[…]` / `::: name` whose word has no registered handler renders via the
@@ -68,8 +73,10 @@ differs by processor. The narrative below details each tier.
   typography and `@mention` / `#tag` / `:symbol:` parsing are also default-on and
   corpus-pinned, but per grammar PART 9 §19 a processor MAY disable them.
 - Tier 2: configuration over Tier-1 syntax — mention/tag→URL, symbol map (e.g. emoji glyphs),
-  locale smart-quote sets, bare-URL autolinking, citations (§4), and code
-  callouts (`<n>` markers inside fenced code + a bound explanation list; §10) —
+  locale smart-quote sets, bare-URL autolinking, citations (§4), code
+  callouts (`<n>` markers inside fenced code + a bound explanation list; §10),
+  and SemanticSpan (§11: the four names core does not reserve, plus the
+  soft-deprecated `:name[…]` spelling for all seven) —
   plus four block features that ship in carve-js, carve-php and carve-rs and
   carry pinned cases in `tests/corpus-optional`: ListTable (a `::: list-table`
   div whose nested list renders as a real HTML `<table>`, so cells can hold
@@ -117,7 +124,6 @@ differs by processor. The narrative below details each tier.
   on each heading - and rewrite auto-filled `</#id>` cross-references to
   "Section 1.2 - Title"; opt-in, no new syntax; §9),
   HeadingLevelShift, ExternalLinks, DefaultAttributes, Wikilinks,
-  SemanticSpan (carve-php only),
   ColorSwatch (inline `:color[value]` -> a validated color chip; carve-php,
   carve-js and carve-rs — see the [extension tutorial](./extension-tutorial)),
   and the opt-in heading-id transforms (LowercaseHeadingIds, AsciiHeadingIds).
@@ -190,6 +196,14 @@ An extension is a named unit contributing any subset of four things, run as:
   tried only where core does not consume (extensions add syntax, never hijack
   core). Extension matchers run in registration order; optional integer priority
   is the escape hatch.
+- **A matcher MUST be pure** (normative, grammar PART 9R R1a): no observable side
+  effects, and the same answer for the same `(lines, position, ctx)`. A processor
+  MAY call it speculatively, more than once at one position, and discard the
+  result - core parsing already does when a matcher reports a consumption the
+  parser rejects, and the definition pre-passes ask the block reader (which runs
+  matchers) before they may cut a definition out of a line. Allocate ids, count
+  occurrences or record state in `afterParse` / `beforeRender`, which run once
+  over the finished document - never in a matcher.
 
 ### 2.2 Transforms
 
@@ -534,6 +548,27 @@ and carve-rs; off by default, enable per processor.
 - `{header-rows=N}` / `{header-cols=N}` on the preceding attribute line promote
   the first N rows to `<thead>`/`<th>` and the first N cells of every row to
   row-header `<th>` (default 0).
+- `{footer-rows=N}` makes the final N rows a table foot. Header and footer
+  counts together may not exceed the row count.
+- A boolean `{header-row}` attribute abutting the first inner cell marker
+  (`- -{header-row} Cell`) starts a body group whose leading marked rows are column
+  headers. The marker travels with the row, so inserting rows cannot silently
+  retarget it. Consecutive marked rows form one group's header; a later marked
+  row starts the next `<tbody>`.
+- A boolean `{header}` on an inner cell marker (`  -{header} Cell`)
+  promotes that individual cell to `<th>`. A body-row header defaults to
+  `scope="row"`; a cell in a header row defaults to `scope="col"`.
+- `{aligns="left,right"}`, `{valigns="top,bottom"}`, and `{widths="30,70"}`
+  use the same positional,
+  comma-separated column lists as core pipe tables. Empty entries are unset;
+  too many entries is an error, while a short list renders with an unset tail
+  and produces a lint diagnostic. Widths are percentages in source and
+  fractional values in the exchange AST.
+- A cell marker may carry `align=left|right|center` and/or
+  `valign=top|middle|bottom` (for example,
+  `-{align=center valign=middle} Cell`). Each cell value overrides the matching
+  positional column value independently and is consumed rather than emitted as
+  a legacy HTML attribute.
 - Spans reuse the pipe-table span markers: a cell whose sole content is a lone
   `^` merges with the cell above (rowspan); a lone `<` merges with the cell to
   the left (colspan); continuation-style (`colspan=3` is two `<`, `rowspan=N` is
@@ -546,10 +581,19 @@ and carve-rs; off by default, enable per processor.
   multi-block cell keeps its `<p>`/`<ul>`/... wrappers.
 - Ragged rows pad with empty `<td>` to the widest effective row (spans counted).
 - A rowspan is clamped at the `<thead>`/`<tbody>` boundary - a header-row span
-  does not reach into the body (HTML cannot reliably span across row groups).
+  does not reach into the body; the same clamp applies at the `<tbody>`/`<tfoot>`
+  boundary (HTML cannot reliably span across row groups).
 - A cell's own list-item attributes carry onto its `<td>`/`<th>`; a computed
   `rowspan`/`colspan` wins over an author-written one.
 - The `<table>` output matches the equivalent pipe table's span markup.
+- A foot renders as `<tfoot>` and maps to `rowGroups.footRows` in the exchange
+  AST. Intermediate marked headers map to `rowGroups.bodies[].headRows`, and
+  explicitly marked cells map to `table_cell.header`. Column alignment resolves into cell styles and
+  widths render through `<colgroup>`/`<col>` before the row groups.
+- Multiple body groups remain exchange-AST metadata. ListTable has one body
+  list, so a canonical source writer flattens `rowGroups.bodies` into that body
+  and reports the lost boundaries; `footer-rows` does not imply body-group
+  syntax.
 
 ### 5.3 Degradation
 
@@ -560,18 +604,17 @@ byte-identical to the plain div.
 
 ### 5.4 Conformance (`tests/corpus-optional`)
 
-Tier-2, so not in the mandatory corpus: case `26-list-table-caption-inline` pins
-the caption's inline markup in `tests/corpus-optional`, run per §3 whenever the
-feature is enabled. The rest of the contract is cross-impl parity: for a
-given input the three implementations produce the same `<table>`, and spans match
-the equivalent pipe table. Each implementation pins that in its own test suite
-(block cells, caption, header rows/cols, spans, escape, ragged padding, the
-no-cell-row defer, and the thead/tbody rowspan clamp).
+Tier-2, so not in the mandatory corpus. The shared optional corpus pins the
+caption (case 26), leading header rows/columns (42), column metadata and the
+foot (44), and local row/cell headers (45); run it per §3 whenever the feature
+is enabled. The three implementations additionally pin malformed degradation,
+spans, ragged padding, and row-group boundary clamping in their own suites.
 
 ### 5.5 Out of scope (impls MAY differ)
 
-- Per-column alignment (an `aligns=`-style attribute) is a future follow-up;
-  there is no alignment marker today.
+- Empty body-group boundaries with no header row remain exchange-AST-only;
+  `{header-row}` spells the useful independently authored groups that begin with
+  one or more intermediate header rows.
 - Deeply ambiguous overlapping-span soup (a marker glued to another, or a `^`
   inside the interior of an existing merged rectangle) resolves however the
   native pipe-table grid walk resolves it; not pinned.
@@ -1062,3 +1105,180 @@ line, both leave the `<n>` literal).
 - Comment-anchored markers (`// <1>`) - bare `<n>` only for v1.
 - Linking a marker to its list item (anchor/back-ref) - the marker is a
   styleable bubble, not a link, in v1.
+
+## 11. SemanticSpan (Tier-2)
+
+The four semantic span names core does not reserve, plus the compatibility
+spelling for all seven. Tier-2: spec-defined, identical across implementations,
+**off by default**, pinned in `tests/corpus-optional` when enabled.
+
+Core reserves `abbr`, `time` and `kbd` as span attributes (PART 9 §9) because
+the first two carry data and the third is ubiquitous. `samp`, `var`, `cite` and
+`dfn` carry no data and collide with no core clause, so a conformant core leaves
+them as ordinary attributes. This extension gives them the same meaning core
+gives its three.
+
+### 11.1 Syntax
+
+- On an ordinary `[content]{attrs}` span, `samp`, `var`, `cite` and `dfn` are
+  consumed and wrap the rendered content in their same-named element.
+- A non-empty `dfn` value becomes `title`. Values on `samp`, `var` and `cite`
+  only select the wrapper - the value reaches no output, which `carve lint`
+  reports as `semantic-attribute-value-ignored`.
+- The nesting order extends core's, inner to outer: `abbr`, `time`, `samp`,
+  `var`, `kbd`, `cite`, `dfn`.
+- Leftover attributes ride the outermost semantic element, exactly as PART 9 §9
+  states for core.
+
+::: compare
+
+```carve
+[x]{samp} [y]{var} [Dune]{cite} [CSS]{dfn="Cascading Style Sheets"}
+```
+
+```html
+<p><samp>x</samp> <var>y</var> <cite>Dune</cite> <dfn title="Cascading Style Sheets">CSS</dfn></p>
+```
+
+:::
+
+### 11.2 The `:name[…]` spelling is soft-deprecated
+
+The extension also accepts `:abbr[…]`, `:time[…]`, `:kbd[…]`, `:samp[…]`,
+`:var[…]`, `:cite[…]` and `:dfn[…]`, rendering the same elements with authored
+attributes on the element.
+
+It is accepted for compatibility, not because two spellings are wanted: it was
+released behavior in carve-js and carve-rs, so removing it outright would break
+documents that shipped. **Write the span attribute.** The form is scheduled for
+removal in 0.2, and it cannot express a combination - `:dfn[:abbr[CSS]]` does
+not nest, where `[CSS]{dfn abbr="…"}` does.
+
+Core registers no `:name[…]` handler at all, so with the extension off every one
+of the seven takes the ordinary `<span class="ext-NAME">` fallback.
+
+### 11.3 What is NOT here
+
+- `code` and `mark`. Carve already spells both inline - `` `x` `` and `=x=` -
+  and `code` would additionally give one tag two content models, since a code
+  span is verbatim while an extension body is parsed.
+- `ruby`. Accessible ruby needs structured base and annotation children rather
+  than a single inline container.
+- Any name outside the seven. An implementation MUST NOT turn an arbitrary
+  extension name into an HTML tag.
+
+### 11.4 Conformance (`tests/corpus-optional`)
+
+`40-semantic-span-extension` pins the four names, their value mapping and the
+riding rule; `41-semantic-span-extension-deprecated-spelling` pins the
+compatibility form. Both are declared unreachable until an engine registers the
+extension - see `tests/optional-corpus.test.mjs`, which names the window rather
+than skipping silently.
+
+## 12. Wikilinks and HeadingReference (Tier-2)
+
+The two extensions that spell a link as `[[…]]`. They are documented together
+because they claim the SAME syntax and answer different questions with it, so
+the first thing a host has to decide is which one a render gets.
+
+Core leaves `[[…]]` literal. That is what lets either extension add the form
+without hijacking a core construct, and it is also the fallback both degrade to.
+
+### 12.1 Wikilinks: a link to another page
+
+The same-site link. A page name becomes a URL through a generator the host
+supplies, because the URL a page name maps to depends on the site - the routing,
+the extension, whether pages live in folders - and none of that is visible to a
+parser. That is the taxonomy rule in
+[Native Features](/native-features-analysis) applied literally: a feature whose
+answer depends on the surrounding system is an extension, not syntax.
+
+Four forms:
+
+| Write | Means |
+| --- | --- |
+| `[[Page]]` | the page, linked by its own name |
+| `[[page\|Display]]` | the page, with its own link text |
+| `[[page#anchor]]` | a fragment inside the page |
+| `[[folder/page]]` | a page under a path |
+
+::: compare
+
+```carve
+See [[Tigers]] and [[page|Display]].
+```
+
+```html
+<p>See <a href="tigers" class="wikilink" data-wikilink="Tigers">Tigers</a> and <a href="page" class="wikilink" data-wikilink="page">Display</a>.</p>
+```
+
+:::
+
+`data-wikilink` carries the page name as written, so a host that post-processes
+the HTML can find its own links without re-parsing them out of the `href`.
+
+Three options, identical in meaning across the engines:
+
+| Option | Default | What it does |
+| --- | --- | --- |
+| URL generator | a slugifier: lowercase, spaces to `-`, unsafe characters dropped, runs collapsed | maps the page name (anchor already stripped) to an href; the anchor is appended afterwards |
+| CSS class | `wikilink` | class(es) on the anchor |
+| New window | off | adds `target="_blank" rel="noopener"` |
+
+The registration shape follows each language rather than a shared spelling:
+
+```js
+carveToHtml(src, { extensions: [wikilinks({ urlGenerator: (p) => `/docs/${slug(p)}.html` })] })
+```
+
+```php
+new WikilinksExtension(urlGenerator: fn (string $page): string => '/docs/' . slug($page) . '.html');
+```
+
+```rust
+Wikilinks::new().with_url_generator(Box::new(|page| format!("/docs/{}.html", slug(page))))
+```
+
+### 12.2 HeadingReference: a link to a heading in THIS document
+
+Names a heading by its plain text, so an author never has to know the slug
+rules. `[[Heading Text|click here]]` sets its own display text.
+
+A reference resolves only when exactly one heading matches. A heading that does
+not exist, and text that appears on more than one heading - where no choice
+would be right - both fall back to the literal `[[…]]` source, so nothing is
+silently swallowed:
+
+::: compare
+
+```carve
+See [[Getting Started]] and [[No Such Heading]].
+
+# Getting Started
+```
+
+```html
+<p>See <a href="#Getting-Started" class="heading-ref">Getting Started</a> and [[No Such Heading]].</p>
+```
+
+:::
+
+### 12.3 Enable one or the other, never both
+
+They compete for `[[…]]` on the same render. Pick by what the document means by
+a bare `[[Name]]`: another page in the site, or a heading in this file.
+
+For an intra-document link that does not go through this extension at all, core
+already has two spellings: `</#section-id>` clones the target's text
+(PART 9 §16), and `[Page Name][]` is an ordinary collapsed reference that
+resolves against a matching heading.
+
+### 12.4 An unresolved reference survives for the host to resolve
+
+Where a document links to something this document cannot resolve, the reference
+is not discarded. `[Some Page][]` with nothing to resolve against stays a `link`
+node carrying `href: ""` plus `ref` and `rawRef` (PART 12 §3a), and the core
+render degrades to the literal source text rather than inventing a URL. A site
+layer that knows which pages exist can walk the AST, match `ref` against its own
+index and fill `href` in - which is the same division of labor Wikilinks makes
+explicit through its URL generator.

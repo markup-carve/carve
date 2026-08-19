@@ -11,8 +11,8 @@
  * disagreement before (carve#646).
  */
 
-import { Refuse, TIER1 } from './layout.mjs'
-import { renderInline, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs } from './render.mjs'
+import { Refuse, TIER1, bracketRunEnd } from './layout.mjs'
+import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, NOTE_FRAME } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -77,36 +77,51 @@ export function renderDoc(doc) {
   }
 
   let html = out.join('\n')
-  html = resolveFootnotes(html, ctx) // first: bodies may add ref/xref sentinels
+  // REFERENCES FIRST. A reference tail carries its link text through a JSON
+  // payload, and JSON.stringify escapes U+0002 as a control character - so a
+  // noteref sitting in that payload was invisible to the footnote pass and
+  // rode out as the bare text `fn:1` (markup-carve/carve#1195). Unwrapping
+  // the frame first hands the footnote pass a live sentinel again.
+  //
+  // What the old order bought is paid for inside resolveFootnotes instead: a
+  // note BODY is rendered there, after this line, and can introduce both
+  // reference frames and further notes, so that pass runs both over each body
+  // as it appears.
   html = resolveRefs(html, ctx)
+  html = resolveFootnotes(html, ctx)
   html = resolveCrossrefs(html, ctx)
   html = applyAbbreviations(html, ctx)
   return html
 }
 
 /**
- * One line of a line block (PART 9 SS23).
+ * One line of a line block, as INLINE SOURCE (PART 9 SS23).
  *
  * Leading whitespace is preserved down to a single column; an inner or trailing
  * run of TWO OR MORE columns is a medial gap and is preserved too. A lone inner
  * space stays an ordinary collapsible space so a long line can still wrap
- * between words. Preserved columns serialize as `&nbsp;`; a tab advances to the
- * next multiple of four, counted from the column its run starts at (SS24 C1).
+ * between words. Preserved columns become NO-BREAK SPACE CHARACTERS, which
+ * `renderInline` serializes as `&nbsp;`; a tab advances to the next multiple of
+ * four, counted from the column its run starts at (SS24 C1).
+ *
+ * WHY SOURCE AND NOT HTML (carve#1282). This used to render each whitespace
+ * segment separately and concatenate the results, which made every gap - and
+ * every line break above it - a boundary the inline parser could not see
+ * across. An unclosed inline run then stopped at the line break, while the
+ * clause says a run with no closer reaches the end of the BLOCK, and a line
+ * block is one block. Emitting source lets the stanza be parsed once, so the
+ * rule needs no line-block exception. The transform itself is unchanged: it is
+ * the same columns, expressed as the character rather than as its entity.
  */
 function renderLineBlockLine(line) {
   let out = ''
-  let text = ''
   let i = 0
   let column = 0
   let seenContent = false
-  const flush = () => {
-    if (text !== '') out += renderInline(text)
-    text = ''
-  }
   while (i < line.length) {
     const ch = line[i]
     if (ch !== ' ' && ch !== '\t') {
-      text += ch
+      out += ch
       seenContent = true
       column++
       i++
@@ -119,10 +134,9 @@ function renderLineBlockLine(line) {
     }
     column += width
     if (!seenContent || width >= 2) {
-      flush()
-      out += '&nbsp;'.repeat(width)
+      out += '\u00a0'.repeat(width)
     } else if (i < line.length) {
-      text += ' '
+      out += ' '
     }
     // A LONE run at the END of the line is TRAILING WHITESPACE and is dropped
     // (PART 2, NO TRAILING WHITESPACE; carve#926). The order is what makes
@@ -133,7 +147,6 @@ function renderLineBlockLine(line) {
     // and which cannot serve the purpose SS23 gives it (letting a long line
     // wrap between words) at the end of a line.
   }
-  flush()
   return out
 }
 
@@ -142,9 +155,7 @@ function renderBlock(b, depth, ctx) {
   const ba = b.battrs ? renderBlockAttrs(b.battrs) : ''
   switch (b.t) {
     case 'para': {
-      const image = b.lines.length === 1
-        ? renderStandaloneImage(b.lines[0], b.caption === undefined ? ba : '', ctx)
-        : null
+      const image = renderStandaloneImage(b.lines.join('\n'), b.caption === undefined ? ba : '', ctx)
       if (image !== null) {
         // a standalone image paragraph renders as a bare <img> (PART 10)
         if (b.caption !== undefined) {
@@ -185,29 +196,46 @@ function renderBlock(b, depth, ctx) {
       return `${pad}<pre${title}${ba}><code${cls}>${esc}</code></pre>`
     }
     case 'quote': {
-      // Depth-first and synchronous, so a saved/restored flag is a stack.
+      // PART 9 §4b: a caption makes its host a FIGURE, and a quote is not a
+      // special host. The `figure` node is the generic captioned wrapper, and
+      // what a captioned thing is called and counted as comes from the
+      // caption's own label - so `^ Hamlet` takes no number and `^ Figure #:`
+      // takes the next Figure, exactly as on a code block. carve#1161 briefly
+      // made this an `attribution` rendered as a `<footer>` INSIDE the quote;
+      // the HTML Standard requires the attribution outside the `blockquote`
+      // and names this `<figure>` shape as the way to attach it (carve#1213).
+      //
+      // THE QUOTE'S BLOCKS ARE NOT COUNTED. A multi-paragraph epigraph, a
+      // quoted list, a nested quote, a quoted code block and a quoted heading
+      // each take a caption the same way. This used to render only a
+      // single-paragraph quote and Refuse everything else, which no corpus
+      // document could reach - the refusal was guarded by the absence of a
+      // fixture rather than by a decision (carve#1181, the carve#755 class).
+      const captioned = b.caption !== undefined
+      // A captioned quote sits one level deeper: inside the `<figure>`.
+      const quotePad = captioned ? `${pad}  ` : pad
+      const compact = b.children.length === 1 && b.children[0].t === 'para'
+      // Depth-first and synchronous, so a saved/restored flag is a stack. The
+      // children are rendered ONCE, under `inBlockquote`, which is what keeps a
+      // quoted heading out of the implicit-reference index.
       const wasInBlockquote = ctx.inBlockquote
       ctx.inBlockquote = true
       const inner = (() => {
         try {
-          return b.children.map((c) => renderBlock(c, depth + 1, ctx)).filter((x) => x !== null).join('\n')
+          return compact
+            ? renderBlock(b.children[0], 0, ctx)
+            : b.children.map((c) => renderBlock(c, quotePad.length / 2 + 1, ctx)).filter((x) => x !== null).join('\n')
         } finally {
           ctx.inBlockquote = wasInBlockquote
         }
       })()
-      if (b.caption !== undefined) {
-        // single-paragraph attribution form pins the compact figure layout
-        if (b.children.length === 1 && b.children[0].t === 'para') {
-          const p = renderBlock(b.children[0], 0, ctx)
-          return `${pad}<figure${ba}>\n${pad}  <blockquote>${p}</blockquote>\n${pad}  <figcaption>${renderInline(b.caption)}</figcaption>\n${pad}</figure>`
-        }
-        throw new Refuse('captioned multi-block quote')
-      }
-      if (b.children.length === 1 && b.children[0].t === 'para') {
-        const p = renderBlock(b.children[0], 0, ctx)
-        return `${pad}<blockquote${ba}>${p}</blockquote>`
-      }
-      return `${pad}<blockquote${ba}>\n${inner}\n${pad}</blockquote>`
+      const quote = compact
+        ? `${quotePad}<blockquote${captioned ? '' : ba}>${inner}</blockquote>`
+        : `${quotePad}<blockquote${captioned ? '' : ba}>\n${inner}\n${quotePad}</blockquote>`
+      if (!captioned) return quote
+      const id = / id="([^"]*)"/.exec(ba)?.[1]
+      const cap = numberCaption(b.caption, ctx, id)
+      return `${pad}<figure${ba}>\n${quote}\n${pad}  <figcaption>${renderInline(cap)}</figcaption>\n${pad}</figure>`
     }
     case 'list':
       return renderList(b, depth, ctx)
@@ -250,6 +278,73 @@ function renderBlock(b, depth, ctx) {
       }
       return `${open}\n${parts.join('\n')}\n${pad2}${closeTag}`
     }
+    case 'figure-group': {
+      // PART 9 SS4c: one figure, its direct captionable children as panels.
+      const pad2 = '  '.repeat(depth)
+      // class-first, the typed-container convention: `carve-figure-group`
+      // leads, attribute-line classes merge after it, id and the rest follow
+      // in source order (renderBlockAttrs already merges classes at the first
+      // class position, so prepending a synthetic class list IS that rule).
+      const attrStr = renderBlockAttrs([[['class', 'carve-figure-group']], ...(b.battrs ?? [])])
+      const groupId = / id="([^"]*)"/.exec(attrStr)?.[1]
+      // panels: direct children the inner SS4 rules made captionable things
+      // of -- a captioned paragraph host (image / display math / promoted
+      // reference image), a captioned code listing, a captioned quote (SS4b:
+      // a caption makes its host a figure, and a quote is not a special host
+      // inside the group either), or any table. An UNCAPTIONED quote is
+      // plain group content.
+      const isPanel = (c) =>
+        c.t === 'table' || ((c.t === 'para' || c.t === 'code' || c.t === 'quote') && c.caption !== undefined)
+      let cap
+      if (b.caption !== undefined) {
+        // the group is ONE numbering unit; its draw also registers the panel
+        // ids with letters (SS4c), so number BEFORE rendering the children.
+        const panelIds = b.children.filter(isPanel).map((c) => {
+          const a = c.battrs ? renderBlockAttrs(c.battrs) : ''
+          return / id="([^"]*)"/.exec(a)?.[1]
+        })
+        cap = numberCaption(b.caption, ctx, groupId, panelIds)
+      }
+      // PANELS NEST DIRECTLY (SS4c): HTML's figure content model is a
+      // figcaption first or last plus flow content, and figure is itself
+      // flow content, so no wrapper element sits between the group and its
+      // panels -- the shape Pandoc's writers produce for subfigures too.
+      const inner = b.children
+        .map((c) => {
+          if (!isPanel(c)) return renderBlock(c, depth + 1, ctx)
+          const wasInPanel = ctx.inPanel
+          ctx.inPanel = true
+          try {
+            if (c.t === 'table') {
+              // a table does not render as a <figure> on its own, so the
+              // panel wrapper is explicit; the table keeps its own attrs and
+              // its own <caption> (SS4c).
+              const t = renderBlock(c, depth + 2, ctx)
+              return `${pad2}  <figure class="carve-figure-panel">\n${t}\n${pad2}  </figure>`
+            }
+            // a captioned para/code/quote host already renders as <figure>;
+            // lead its classes with the panel marker the way the group's are
+            const prev = c.battrs
+            c.battrs = [[['class', 'carve-figure-panel']], ...(prev ?? [])]
+            try {
+              return renderBlock(c, depth + 1, ctx)
+            } finally {
+              c.battrs = prev
+            }
+          } finally {
+            ctx.inPanel = wasInPanel
+          }
+        })
+        .filter((x) => x !== null)
+        .join('\n')
+      const parts = []
+      if (inner !== '') parts.push(inner)
+      if (cap !== undefined) parts.push(`${pad2}  <figcaption>${renderInline(cap)}</figcaption>`)
+      // an EMPTY uncaptioned group keeps the bare-container empty-body line
+      // (the PART 10 SS4 exception the generic div takes).
+      if (parts.length === 0) return `${pad2}<figure${attrStr}>\n${pad2}</figure>`
+      return `${pad2}<figure${attrStr}>\n${parts.join('\n')}\n${pad2}</figure>`
+    }
     case 'line-block': {
       const pad2 = '  '.repeat(depth)
       // stanzas split on blank lines; soft breaks harden; leading spaces
@@ -264,8 +359,30 @@ function renderBlock(b, depth, ctx) {
       }
       if (cur.length) stanzas.push(cur)
       const ps = stanzas.map((st) => {
-        const rendered = st.map((l) => renderLineBlockLine(l))
-        return `${pad2}  <p>${rendered.join('<br>\n')}</p>`
+        // A COMMENT-ONLY BODY LINE IS REMOVED AT THE BLOCK LAYER (PART 9
+        // SS23), which is to say HERE - before the stanza is handed to the
+        // inline parser below. Doing it after would let an unclosed verbatim
+        // run opened on an earlier line claim the line under SS21's verbatim
+        // exclusion and PUBLISH the comment, which is what all three engines
+        // and this checker did (markup-carve/carve#1333).
+        //
+        // It leaves an EMPTY VERSE LINE, not a blank line: the stanza split
+        // above has already happened, so emptying the line keeps the stanza's
+        // shape instead of ending it.
+        //
+        // Only a line whose FIRST character is `%` qualifies. In verse the
+        // leading run is CONTENT, so `comment_line`'s optional `[whitespace]`
+        // prefix has nothing to consume and an indented `%%` line is ordinary
+        // text. `%%%` is included: SS28 degrades a fence opener with no closer
+        // to a comment line, and SS23 makes a fence opener ordinary text here
+        // anyway, so it can never be anything else.
+        const body = st.map((l) => (l.startsWith('%%') ? '' : l))
+        // ONE inline parse for the whole stanza, so a run with no closer
+        // reaches the end of the block instead of stopping at a line break
+        // (markup-carve/carve#1282). The breaks harden afterwards, and the ones
+        // the run swallowed are content by then.
+        const source = body.map((l) => renderLineBlockLine(l)).join('\n')
+        return `${pad2}  <p>${renderInlineHardBreaks(source)}</p>`
       })
       return `${pad2}<div class="line-block">\n${ps.join('\n')}\n${pad2}</div>`
     }
@@ -275,7 +392,7 @@ function renderBlock(b, depth, ctx) {
       // keep normal behavior (PART 9 SS23)
       const parts = b.children.map((c) => {
         if (c.t === 'para') {
-          const html = renderInline(c.lines.join('\n')).replaceAll('\n', '<br>\n')
+          const html = renderInlineHardBreaks(c.lines.join('\n'))
           return `${'  '.repeat(depth + 1)}<p>${html}</p>`
         }
         return renderBlock(c, depth + 1, ctx)
@@ -338,14 +455,27 @@ function renderBlock(b, depth, ctx) {
 function renderStandaloneImage(line, attrs, ctx) {
   // Resolve reference images before paragraph serialization, so PART 10's
   // standalone-image shape is a block decision rather than a final HTML rewrite.
-  const ref = /^!\[([^\]]*)\]\[([^\]]*)\](\{[^}]*\})?$/.exec(line)
+  // The alt run is scanned, not matched: the close is balanced and a
+  // `[^\]]*` spelling of it stops at the first `]` at any depth, so
+  // `![t[z]][r]` on a line of its own missed this branch and fell through to
+  // the inline pass (carve#1197). The LABEL half stays a pattern - a
+  // `reference_label` really does stop at the first `]`.
+  // The ALT may hold a line boundary and the TAIL may not (carve#1352), and
+  // this pattern is deliberately NOT tightened for it: `[^\]]` does match a
+  // newline, but a label carrying one resolves against no definition - a
+  // definition marker is one line - so the branch declines and the paragraph
+  // falls through to the inline pass either way. Tightening it here changed no
+  // document and would have read as a guard doing work it never does. The
+  // reachable half of the same rule IS guarded, in `isCaptionableParagraph`.
+  const altEnd = line.startsWith('![') ? bracketRunEnd(line, 1) : -1
+  const ref = altEnd === -1 ? null : /^\[([^\]]*)\](\{[^}]*\})?$/.exec(line.slice(altEnd))
   if (ref) {
-    const attrSrc = ref[3] ?? ''
+    const attrSrc = ref[2] ?? ''
     const attrList = attrSrc === '' ? [] : parseAttrList(attrSrc)
     if (attrList === null) return null
     const image = resolveImageRef({
-      alt: ref[1],
-      label: ref[2] === '' ? null : ref[2],
+      alt: line.slice(2, altEnd - 1),
+      label: ref[1] === '' ? null : ref[1],
       attrList,
       attrSrc,
     }, ctx, '')
@@ -363,12 +493,21 @@ function withBlockImageAttrs(image, attrs) {
 function renderList(list, depth, ctx) {
   const pad = '  '.repeat(depth)
   let tag = 'ul'
-  let attrs = list.battrs ? renderBlockAttrs(list.battrs) : ''
+  const authored = list.battrs ? renderBlockAttrs(list.battrs) : ''
+  // A STRUCTURAL ATTRIBUTE LEADS (PART 11 §5.1). `type` and `start` are fixed
+  // by the first item's marker, so they are the element's own shape rather than
+  // something added on top of what the author wrote, and they are emitted
+  // BEFORE the authored attributes. This appended them instead, which read the
+  // "generated attribute joins at the end" rule as covering them -- the reading
+  // carve-rs also took, against carve-js, carve-php and reference djot
+  // (carve#1090). Pinned by corpus 289.
+  let structural = ''
   if (list.ord) {
     tag = 'ol'
-    if (list.ord.type) attrs += ` type="${list.ord.type}"`
-    if (list.ord.start) attrs += ` start="${list.ord.start}"`
+    if (list.ord.type) structural += ` type="${list.ord.type}"`
+    if (list.ord.start) structural += ` start="${list.ord.start}"`
   }
+  const attrs = structural + authored
   const items = list.items.map((item) => renderItem(item, list, depth + 1, ctx))
   return `${pad}<${tag}${attrs}>\n${items.join('\n')}\n${pad}</${tag}>`
 }
@@ -447,7 +586,7 @@ function renderItem(item, list, depth, ctx) {
   if (first.inlineable) {
     out = `${pad}<li${liAttrs}>${prefix}${first.html}`
   } else {
-    out = `${pad}<li${liAttrs}>\n${first.html}`
+    out = `${pad}<li${liAttrs}>${prefix}\n${first.html}`
   }
   for (let i = 1; i < parts.length; i++) {
     const p = parts[i]
@@ -460,21 +599,61 @@ function renderItem(item, list, depth, ctx) {
 // PART 9R R5: the FIRST bare `#` in a caption's top-level text is a number
 // placeholder; each label word draws from its own sequence. An id on the
 // captioned block registers the "Label N" text for crossrefs (R4).
-function numberCaption(text, ctx, id) {
+//
+// PART 9 SS4c: a PANEL of a composite figure is not a sequence unit, so a
+// caption rendered under `ctx.inPanel` keeps its `#` literal and registers
+// nothing; the panel's crossref text comes from the GROUP's draw instead --
+// `panelIds` are the ids of the group's panels in panel order, registered as
+// "Label N" plus a letter (a..z, then aa, ab, ...) when the group numbers.
+function panelLetter(k) {
+  let s = ''
+  k++
+  while (k > 0) {
+    k--
+    s = String.fromCharCode(97 + (k % 26)) + s
+    k = Math.floor(k / 26)
+  }
+  return s
+}
+function numberCaption(text, ctx, id, panelIds) {
+  if (ctx.inPanel) return text
   const m = /^(\S+)([^#]*?)(?<!\\)#(?=[\s:.]|$)/.exec(text)
   if (!m) return text
   const label = m[1]
   const n = (ctx.captionSeq.get(label) ?? 0) + 1
   ctx.captionSeq.set(label, n)
   if (id) ctx.captionIds.set(id.toLowerCase(), `${label} ${n}`)
+  if (panelIds) {
+    panelIds.forEach((pid, k) => {
+      if (pid) ctx.captionIds.set(pid.toLowerCase(), `${label} ${n}${panelLetter(k)}`)
+    })
+  }
   return text.replace(/(?<!\\)#(?=[\s:.]|$)/, String(n))
 }
 
 // --- tables: PART 9 SS5 T5 span walk + serialization -------------------------
 function renderTable(node, depth, ctx) {
   const pad = '  '.repeat(depth)
-  const ba = node.battrs ? renderBlockAttrs(node.battrs) : ''
+  const tableKeys = new Map()
+  const ordinaryAttrs = []
+  for (const list of node.battrs ?? []) {
+    const keep = []
+    for (const attr of list) {
+      if (attr[0] === 'kv' && ['aligns', 'valigns', 'widths', 'header-rows', 'footer-rows'].includes(attr[1])) tableKeys.set(attr[1], attr[2])
+      else keep.push(attr)
+    }
+    if (keep.length) ordinaryAttrs.push(keep)
+  }
+  const ba = ordinaryAttrs.length ? renderBlockAttrs(ordinaryAttrs) : ''
   const rows = node.rows
+  const widest = rows.reduce((n, row) => Math.max(n, row.cells.length), 0)
+  const positional = (key) => tableKeys.has(key) ? String(tableKeys.get(key)).split(',').map((v) => v.trim()) : []
+  const attrAlign = positional('aligns').map((v) => ['left', 'right', 'center'].includes(v) ? v : null)
+  const attrValign = positional('valigns').map((v) => ['top', 'middle', 'bottom'].includes(v) ? v : null)
+  const attrWidths = positional('widths').map((v) => v === '' ? null : Number(v))
+  if ([attrAlign, attrValign, attrWidths].some((values) => values.length > widest)) {
+    throw new Refuse('table column attribute has more entries than columns')
+  }
   // resolve span markers (T5): row-major; consumed positions are skipped in
   // the output; a marker with no reachable origin renders as an EMPTY cell
   const consumed = new Set()
@@ -512,24 +691,64 @@ function renderTable(node, depth, ctx) {
     }
   }
   // column alignment: from the thead row's cells (native marker or GFM)
-  const colAlign = []
+  const colAlign = [...attrAlign]
+  const colValign = [...attrValign]
   if (rows[0]?.isHead) {
-    rows[0].cells.forEach((c, ci) => (colAlign[ci] = c.align ?? null))
+    rows[0].cells.forEach((c, ci) => {
+      colAlign[ci] = c.align ?? colAlign[ci] ?? null
+      colValign[ci] = c.valign ?? colValign[ci] ?? null
+    })
   }
-  let headCount = 0
-  while (headCount < rows.length && rows[headCount].isHead) headCount++
+  const rowCount = (key) => {
+    if (!tableKeys.has(key)) return 0
+    const value = String(tableKeys.get(key)).trim()
+    if (value === '') return 1
+    if (!/^\d+$/.test(value)) throw new Refuse(`invalid ${key} table attribute`)
+    return Number(value)
+  }
+  const explicitPartition = tableKeys.has('header-rows') || tableKeys.has('footer-rows')
+  let headCount = rowCount('header-rows')
+  const footCount = rowCount('footer-rows')
+  if (headCount + footCount > rows.length) throw new Refuse('table header and footer rows overlap')
+  if (!explicitPartition) {
+    while (headCount < rows.length && rows[headCount].isHead) headCount++
+  }
+  const footStart = rows.length - footCount
   const renderCell = (cell, r, c) => {
-    const tag = cell.header ? 'th' : 'td'
+    const isHeader = cell.header || r < headCount
+    const tag = isHeader ? 'th' : 'td'
     let a = ''
+    // The cell's own block is parsed FIRST, only to see whether it names
+    // `scope`. Emitting the default unconditionally and letting the authored
+    // one follow produced `<th scope="col" scope="colgroup">` - two attributes
+    // of one name, which is not valid HTML and is not an override.
+    let parsed = ''
+    if (cell.attrs) {
+      parsed = parseAttrBlock(cell.attrs)
+      if (parsed === null) throw new Refuse('invalid cell attribute block')
+    }
+    // PART 10 §T9: a header cell states what it heads. A `th` in the head row
+    // run heads its COLUMN, one below heads its ROW - the association a screen
+    // reader has no other way to make, and the one WCAG 1.3.1 is about.
+    // CASE-INSENSITIVE on the way in, deliberately. Carve attribute NAMES are
+    // case-sensitive, so `{Scope=…}` is a different Carve attribute - but HTML
+    // attribute names are not, so emitting the default beside it produces two
+    // `scope`s as far as any consumer is concerned. The test is about avoiding
+    // that collision, not about folding the author's name.
+    if (isHeader && !/ scope="/i.test(parsed)) {
+      a += r < headCount ? ' scope="col"' : ' scope="row"'
+    }
     if (cell.rowspan) a += ` rowspan="${cell.rowspan}"`
     if (cell.colspan) a += ` colspan="${cell.colspan}"`
-    if (cell.attrs) {
-      const parsed = parseAttrBlock(cell.attrs)
-      if (parsed === null) throw new Refuse('invalid cell attribute block')
-      a += parsed
-    }
+    a += parsed
     const align = cell.empty ? null : (cell.align ?? colAlign[c] ?? null)
-    if (align) a += ` style="text-align: ${align};"`
+    const valign = cell.empty ? null : (cell.valign ?? colValign[c] ?? null)
+    if (align || valign) {
+      const declarations = []
+      if (align) declarations.push(`text-align: ${align};`)
+      if (valign) declarations.push(`vertical-align: ${valign};`)
+      a += ` style="${declarations.join(' ')}"`
+    }
     const content = cell.empty || cell.content === '' ? '' : renderInline(cell.content)
     return `<${tag}${a}>${content}</${tag}>`
   }
@@ -551,15 +770,29 @@ function renderTable(node, depth, ctx) {
     const id = / id="([^"]*)"/.exec(ba)?.[1]
     out.push(`${pad}  <caption>${renderInline(numberCaption(node.caption, ctx, id))}</caption>`)
   }
+  if (attrWidths.some((width) => Number.isFinite(width) && width > 0)) {
+    out.push(`${pad}  <colgroup>`)
+    for (let c = 0; c < widest; c++) {
+      const width = attrWidths[c]
+      out.push(Number.isFinite(width) && width > 0
+        ? `${pad}    <col style="width: ${width}%;">`
+        : `${pad}    <col>`)
+    }
+    out.push(`${pad}  </colgroup>`)
+  }
   const bodyStart = headCount
   if (headCount > 0) {
     const headRows = rows.slice(0, headCount).map((row, r) => renderRow(row, r)).join('')
     out.push(`${pad}  <thead>${headRows}</thead>`)
   }
-  if (rows.length > bodyStart) {
+  if (footStart > bodyStart) {
     out.push(`${pad}  <tbody>`)
-    for (let r = bodyStart; r < rows.length; r++) out.push(`${pad}    ${renderRow(rows[r], r)}`)
+    for (let r = bodyStart; r < footStart; r++) out.push(`${pad}    ${renderRow(rows[r], r)}`)
     out.push(`${pad}  </tbody>`)
+  }
+  if (footStart < rows.length) {
+    const footRows = rows.slice(footStart).map((row, offset) => renderRow(row, footStart + offset)).join('')
+    out.push(`${pad}  <tfoot>${footRows}</tfoot>`)
   }
   out.push(`${pad}</table>`)
   return out.join('\n')
@@ -598,7 +831,20 @@ function resolveImageRef(parsed, ctx, literal) {
 
 // --- PART 9R R1: reference links --------------------------------------------
 function resolveRefs(html, ctx) {
-  return html.replace(/ref:(\{.*?\})/g, (_, json) => {
+  // A payload can hold another frame - an image reference inside link text -
+  // and `String.replace` never rescans what it substituted. Each pass consumes
+  // the outermost frame of every chain, and a nested payload is strictly
+  // shorter than the one holding it, so this settles at the nesting depth.
+  let prev
+  do {
+    prev = html
+    html = resolveRefsOnce(html, ctx)
+  } while (html !== prev)
+  return html
+}
+
+function resolveRefsOnce(html, ctx) {
+  return html.replace(REF_FRAME, (_, json) => {
     // Belt-and-suspenders: a genuine ref sentinel always carries well-formed
     // JSON. Anything else is spoofed/garbage (sentinel chars are stripped from
     // document text upstream) -- degrade to the literal match, never throw.
@@ -736,14 +982,26 @@ function resolveFootnotes(html, ctx) {
   const order = [] // labels by first reference
   const counts = new Map()
   const inlineNotes = [] // rendered content per anonymous note, by number
-  html = html.replace(/(fn|note):([\s\S]*?)\u0002(.*?)/g, (_, kind, payload, attrs) => {
-    if (kind === 'note') {
-      // an inline note draws a fresh number from the SAME sequence (R2)
-      order.push({ inline: inlineNotes.length })
-      inlineNotes.push(payload)
-      const n = order.length
-      return `<a id="fnref${n}" href="#fn${n}" role="doc-noteref"${attrs}><sup>${n}</sup></a>`
+  // TWO FRAMES, TWO SCANS. A footnote REFERENCE frame stays raw - its payload
+  // is a label, which cannot hold a frame - while an inline NOTE frame carries
+  // a JSON payload so that a reference or a crossref inside the note cannot end
+  // the note's own frame early (render.mjs `noteFrame`, carve#1199). One
+  // alternation cannot read both, and the note is consumed first because its
+  // content is re-scanned below once the payload is decoded.
+  const substituteNotes = (s) => s.replace(NOTE_FRAME, (m, json) => {
+    let parsed
+    try {
+      parsed = JSON.parse(json)
+    } catch {
+      return m
     }
+    // an inline note draws a fresh number from the SAME sequence (R2)
+    order.push({ inline: inlineNotes.length })
+    inlineNotes.push(parsed.content)
+    const n = order.length
+    return `<a id="fnref${n}" href="#fn${n}" role="doc-noteref"${parsed.attrs}><sup>${n}</sup></a>`
+  })
+  const substitute = (s) => substituteNotes(s).replace(/fn:([\s\S]*?)\u0002(.*?)/g, (_, payload, attrs) => {
     const label = payload
     if (!ctx.footnoteDefs.has(label)) return `[^${label}]` // unresolved -> literal
     let n = order.indexOf(label) + 1
@@ -756,26 +1014,44 @@ function resolveFootnotes(html, ctx) {
     const refId = k === 1 ? `fnref${n}` : `fnref${n}-${k}`
     return `<a id="${refId}" href="#fn${n}" role="doc-noteref"${attrs}><sup>${n}</sup></a>`
   })
+  html = substitute(html)
   if (order.length === 0) return html.replace(/\uE000fnplacement\uE001\n?/g, '')
+
+  // BODIES ARE RENDERED HERE, after the pass over the document text, and a
+  // body can introduce both reference frames and further notes. So each body
+  // gets both passes as it appears, and the walk is by INDEX because
+  // substituting a body appends to `order`. Rendering is separated from the
+  // `<li>` build because a late body can add a repeat reference to an EARLIER
+  // note, whose backlink list has to count it (markup-carve/carve#1195).
+  const bodies = []
+  for (let i = 0; i < order.length; i++) {
+    const label = order[i]
+    if (typeof label === 'object') {
+      // An inline note's content was rendered inline, but a reference or an
+      // image reference inside it is STILL A FRAME here: the note frame carried
+      // it across the document pass unresolved, so this is the first point at
+      // which it can be resolved. Both passes run, exactly as they do for a
+      // labelled body below. A crossref inside the content needs no pass here -
+      // resolveCrossrefs runs over the whole document after this function
+      // returns, and the endnotes section is part of what it returns.
+      bodies.push({
+        rendered: `      <p>${substitute(resolveRefs(inlineNotes[label.inline], ctx))}</p>`,
+        noBlocks: false,
+      })
+      continue
+    }
+    const body = ctx.footnoteDefs.get(label)
+    // `holdsAnInvisibleBlock` is set by the layout pass for a body whose only
+    // content was a comment -- see its note there for why a block count
+    // cannot answer this on its own.
+    const noBlocks = body.length === 0 && !body.holdsAnInvisibleBlock
+    const out = body.map((b) => renderBlock(b, 3, ctx)).join('\n')
+    bodies.push({ rendered: substitute(resolveRefs(out, ctx)), noBlocks })
+  }
 
   const notes = order.map((label, idx) => {
     const n = idx + 1
-    let rendered
-    // A body holding NO BLOCKS is not the same as a body whose blocks render
-    // to nothing, and the two answer differently below.
-    let noBlocks = false
-    if (typeof label === 'object') {
-      rendered = `      <p>${inlineNotes[label.inline]}</p>`
-    } else {
-      const body = ctx.footnoteDefs.get(label)
-      // `holdsAnInvisibleBlock` is set by the layout pass for a body whose only
-      // content was a comment -- see its note there for why a block count
-      // cannot answer this on its own.
-      noBlocks = body.length === 0 && !body.holdsAnInvisibleBlock
-      rendered = body
-        .map((b) => renderBlock(b, 3, ctx))
-        .join('\n')
-    }
+    let { rendered, noBlocks } = bodies[idx]
     // backlink into the LAST paragraph (PART 9 SS16); a k-th repeat
     // reference adds an indexed backlink `↩<sup>k</sup>`
     const total = counts.get(label) ?? 1
@@ -820,9 +1096,19 @@ function resolveCrossrefs(html, ctx) {
       const esc = id.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
       return `&lt;/#${esc}&gt;`
     }
-    // one-level resolution: nested sentinels in the cloned text flatten to
-    // their literal source (PART 9R R4)
-    const text = hit.html.replace(/xref(?:text)?:(.*?)/g, '')
+    // ONE LEVEL (R4): the cloned text is not re-expanded, so every PART 9R
+    // frame in it is dropped rather than resolved a second time.
+    //
+    // ALL THREE FRAMES, not the crossref alone. A heading is stored here as
+    // rendered HTML before any resolution pass runs, so it can still hold a
+    // footnote reference or an inline note, and only the crossref frame was
+    // being removed - the other two rode into the reader's HTML as the framing
+    // text `fn:1` and `note:...`, which is the one thing this pipeline must
+    // never emit. The heading's own derived text already excludes exactly
+    // these three (see `derivedText`), and R4 binds every consumer that derives
+    // display text from a heading to the same clone, so the two derivations
+    // agree rather than differing by which frame each remembered to strip.
+    const text = hit.html.replace(/\uE000[\s\S]*?\uE001/g, '')
     return textOnly ? text : `<a href="#${hit.id}">${text}</a>`
   })
 }
@@ -833,14 +1119,17 @@ function applyAbbreviations(html, ctx) {
   // transform only text segments outside tags and outside code/pre
   const parts = html.split(/(<[^>]*>)/)
   let inCode = 0
+  let inAbbr = 0
   for (let i = 0; i < parts.length; i++) {
     const p = parts[i]
     if (p.startsWith('<')) {
       if (/^<(code|pre)[\s>]/.test(p)) inCode++
       else if (/^<\/(code|pre)>/.test(p)) inCode--
+      if (/^<abbr[\s>]/.test(p)) inAbbr++
+      else if (/^<\/abbr>/.test(p)) inAbbr--
       continue
     }
-    if (inCode > 0 || p === '') continue
+    if (inCode > 0 || inAbbr > 0 || p === '') continue
     let s = p
     for (const [term, expansion] of ctx.abbrDefs) {
       const re = new RegExp(`(^|[^\\p{L}\\p{N}])(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?![\\p{L}\\p{N}])`, 'gu')

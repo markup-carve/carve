@@ -1,0 +1,23 @@
+A comment fence one item deeper registers nothing either
+
+```
+- a
+  - b
+    %%%
+    [r]: /url
+    %%%
+
+[r][]
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+%%%
+[r]: /url
+%%%</li>
+    </ul>
+  </li>
+</ul>
+<p>[r][]</p>
+```

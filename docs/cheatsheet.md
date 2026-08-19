@@ -12,6 +12,14 @@ implementation — except rows marked **✦**, which are opt-in extensions
 (Tier-2/3) you enable in your processor. Look any feature up in the
 [feature → tier table](/extensions#feature-tiers-quick-reference).
 
+Two kinds of block appear below. A block tagged `carve` is a **document**: paste
+it into the [Playground](/playground) and you get what the text around it says.
+A block tagged `text` is **notation** - several constructs packed onto a line
+each, with the explanation in a right-hand column. That is how a reference card
+fits on one page, and it is not a document: pasted anywhere, the annotations
+make every line prose. For the working version of a notation block, see
+[Blocks & Attributes](/blocks-and-attributes) and [Examples](/examples).
+
 ## Inline
 
 | Write | Get | Mnemonic |
@@ -27,8 +35,9 @@ implementation — except rows marked **✦**, which are opt-in extensions
 | `` `code` `` | `code` | backticks |
 | `` !`/kaet/` `` | /kaet/ | inline literal — verbatim prose, no `code` styling; `!` mirrors `$`-math |
 | `[text](url)` | link | |
+| `[text][ref]` | reference link | `[ref]: https://url` on its own line, anywhere |
 | `[Page Name][]` | wiki-style link | resolves to a heading |
-| `<https://url>` | autolink | |
+| `<https://url>` | autolink | bare URLs stay literal (autolinking them is Tier-2 opt-in) |
 | `</#section-id>` | cross-reference | link text cloned from the target |
 | `![alt](img.jpg)` | image | |
 | `[^1]` / `^[inline note]` | footnote | reference / inline form |
@@ -45,7 +54,7 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 
 ## Blocks
 
-````carve
+````text
 # H1   ## H2   ### H3        (ATX headings 1-6; put attributes on the
                               line above: {#id .class})
 
@@ -64,7 +73,7 @@ Bare delimiters work only at word boundaries; force one intraword with the brace
 :  definition
 
 > blockquote
-^ Attribution                (caption / attribution: ^ prefix)
+^ Attribution                (caption: ^ prefix; wraps the quote in a figure)
 
 > quoted                     (+ at col 0 attaches the next flush-left
 +                             block to the quote - no > prefixing)
@@ -117,37 +126,83 @@ two
 
 ## Tables
 
+`|=` marks a header cell: in the first row it heads a column, in a body row it
+heads that row. A `^` line after the table is its caption.
+
 ```carve
-|= Header |= Header |        (|= marks a header cell; also works in body
-| Cell    | Cell    |         rows for ROW headers)
-^ Table caption
-
-|= Name |=> Age |=~ City |   (column alignment glued to |=: < ~ >;
-| Sum    |< 12   | NYC    |   a data-cell marker overrides per cell)
-
-| Name  | Age |              (GFM separator row accepted as a
-|-------|----:|               compatibility alias: marks the header
-| Alice |  30 |               row + column alignment)
-
-| ^      | spanned |         (^ = rowspan)
-| Header | <       |         (< = colspan)
-+ continuation cell |        (+ = multi-line cell)
+|= Item |= Qty |
+|= Apple | 12 |
+| Pear   |  3 |
+^ Stock on hand
 ```
 
-## Captions (images, quotes, tables, code listings, equations)
+A cell holding only `^` merges upward (rowspan) and one holding only `<` merges
+leftward (colspan); a `+` row continues the row above it, cell by cell, joined
+with a space.
+
+```carve
+|= Item |= Qty |= Note |
+| Apple | 12 | fresh |
++       |    | picked today |
+| ^     |  3 | <     |
+```
+
+### Alignment
+
+`<` left, `~` center, `>` right; paired `^` top, `~` middle, `v` bottom. A
+horizontal marker may stand alone; a vertical marker always needs a horizontal
+partner. The run is glued to the pipe and terminated by a space. On `|=` it sets
+column defaults; on a plain `|` it overrides that cell. Table attributes can
+set headerless defaults: `{aligns="right,center" valigns="top," widths="30,70"}`.
+Use `{header-rows=N footer-rows=N}` before a pipe table for explicit
+`thead`/`tfoot` ranges; `|=` header cells still work in the body.
+
+```carve
+|=~ Item |=>^ Qty |
+| Apple | 12 |
+| Subtotal |<v 12 |
+```
+
+Glued is what makes it alignment; the terminating space ends the run. A
+standalone `| < |` cell is the colspan merge, `| ^ |` the rowspan merge.
+
+## Captions (images, quotes, tables, code listings, equations, figure groups)
+
+One `^` line after the block adds a semantic `<figcaption>`:
 
 ```carve
 ![Photo](img.jpg)
-^ Figure 1: Caption text      (one ^ adds a semantic <figcaption>)
+^ Caption text
+```
 
+A `#` in the caption is the auto number, so a cross-reference to the element's
+id renders as "Figure 1" rather than repeating the caption:
+
+```carve
 {#fig-sun}
 ![A sunset](sun.jpg)
-^ Figure #: A sunset          (# = auto number; </#fig-sun> then renders
-                               as "Figure 1")
+^ Figure #: A sunset
+
+See </#fig-sun> for the view.
 ```
 
 A `^` caption after a fenced code block makes a numbered *listing*; after a
 standalone `$$`-math block, a numbered *equation*.
+
+A bare `::: figure` container is a *composite figure*: its captioned children
+become lettered panels, and a `^` caption after the closing fence captions and
+numbers the whole group (`</#panel-id>` then renders as "Figure 2a"):
+
+```carve
+::: figure
+![one](a.png)
+^ (a) One
+
+![two](b.png)
+^ (b) Two
+:::
+^ Figure #: The pair
+```
 
 A caption spans multiple lines under its own bounded rule: following lines fold
 in until a blank line or a recognized non-list block opener. A list marker folds
@@ -161,8 +216,12 @@ continues on the next line.
 
 ## Attributes & metadata
 
-```carve
+```text
 {#id .class key=value}        (attach to the preceding/following element)
+{:fr}  {:de-CH}  {:}          (language: short for lang="fr"; {:} = unknown)
+[Tab]{kbd}                    (semantic span: <kbd>Tab</kbd>; core names are
+[HTML]{abbr="HyperText …"}     kbd, abbr, time — samp/var/cite/dfn need the
+[now]{time="2026-01-01"}       SemanticSpan extension)
 
 *[HTML]: HyperText Markup Language   (abbreviation definition)
 
@@ -179,12 +238,17 @@ Inline $`e^{i\pi}+1=0`        Display $$`\int_0^1 x\,dx`
 
 %% line comment
 text %% trailing comment
+foo {% hidden %} baz          (ends at its closer, so prose can resume)
 %%%
 block comment
 %%%
 
-{+inserted+}  {-deleted-}  {~old~>new~}  {#a comment#}   (CriticMarkup)
+{+inserted+}  {-deleted-}  {~old~>new~}  {#a comment#}
 ```
+
+The last line is CriticMarkup: insert, delete, substitute, comment. Its comment
+is the one that RENDERS - `{#` shows a note to the reader, `{%` hides one from
+them.
 
 ## Diagrams & charts
 

@@ -33,3 +33,26 @@ export function loadDeclaredFmtDrift(testsDir) {
     ...parseDriftFile(resolve(resourcesDir, 'engine-fmt-drift.txt')),
   ])
 }
+
+/**
+ * The WRITER-ONLY file on its own, for the staleness ratchet.
+ *
+ * `npm run engine:report -- --check` fails in either direction on
+ * `engine-pin-drift.txt`, so a line there cannot outlive the drift it names.
+ * Nothing did that for `engine-fmt-drift.txt`: it was read only through the
+ * union above, where a slug's only effect is to EXCUSE a failure. A line that
+ * stopped being true would have gone on excusing nothing, silently, forever -
+ * the shape carve#755 catalogs. That went unnoticed because the file was empty
+ * from the day it was added until carve#1197, so the missing ratchet had
+ * nothing to be wrong about yet.
+ *
+ * The union is deliberately not reused here: a slug in the PIN file names a
+ * render divergence and need not drift on the writer side at all, so asserting
+ * it does would fail for the wrong reason.
+ *
+ * @param {string} testsDir see `loadDeclaredFmtDrift`.
+ * @returns {Set<string>} slugs declared in `engine-fmt-drift.txt` only.
+ */
+export function loadWriterOnlyDrift(testsDir) {
+  return new Set(parseDriftFile(resolve(testsDir, '..', 'resources', 'engine-fmt-drift.txt')))
+}

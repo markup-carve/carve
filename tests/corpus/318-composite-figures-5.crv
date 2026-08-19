@@ -1,0 +1,12 @@
+::: figure
+Both panels were shot on the same day.
+
+{#fig-s-a}
+![one](a.png)
+^ (a) One
+
+{#fig-s-b}
+![two](b.png)
+^ (b) Two
+:::
+^ Figure #: With a note between the panels

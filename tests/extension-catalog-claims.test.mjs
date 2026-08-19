@@ -6,10 +6,9 @@
  * register, and nothing measured it. Two entries were wrong when this was
  * written, in different ways:
  *
- *   - `SemanticSpan` sat in the Tier-3 row with no qualifier. It exists in
- *     carve-php alone - carve-js and carve-rs have no mention of it in `src` at
- *     all - and the very same row annotates ColorSwatch with all three engine
- *     names, so the omission read as "available everywhere".
+ *   - `SemanticSpan` once sat in the Tier-3 row with no qualifier while it was
+ *     PHP-only. It has since become core syntax and correctly left the opt-in
+ *     rows, so it needs no export exception here.
  *   - `Bibliography` sat in the same row as though it were a registration. It is
  *     an OPTION on the Citations extension (`bibliography?: CslEntry[]`), so a
  *     reader looking for a `bibliography` export finds nothing.
@@ -36,7 +35,6 @@ const page = readFileSync(resolve(root, 'docs/extensions.md'), 'utf8')
  * the export, the entry has to go, so this cannot quietly outlive its reason.
  */
 const NOT_A_REFERENCE_EXPORT = {
-  SemanticSpan: 'carve-php only',
   Bibliography: 'option on Citations',
 }
 
@@ -102,7 +100,12 @@ test('each exception says on the page what it says here', () => {
   for (const [name, reason] of Object.entries(NOT_A_REFERENCE_EXPORT)) {
     const row = page.split('\n').find((line) => line.includes(name) && /Badge/.test(line))
     assert.ok(row, `${name} is no longer on a tier row; drop it from NOT_A_REFERENCE_EXPORT`)
-    const qualified = /carve-php only/.test(row) || /option on Citations/i.test(row)
+    // Three shapes of qualifier, all of which say "not simply available":
+    // one engine has it, it is an option on another extension, or the spec
+    // reached it before any engine did.
+    const qualified = /carve-php only/.test(row)
+      || /option on Citations/i.test(row)
+      || /specified ahead of the engines/i.test(row)
     assert.ok(
       qualified,
       `the row naming ${name} does not say it is ${reason}: ${row}`,

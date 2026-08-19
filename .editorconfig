@@ -29,6 +29,10 @@ insert_final_newline = false
 trim_trailing_whitespace = false
 insert_final_newline = false
 
+[tests/corpus-convert/**]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
 [tests/examples/**]
 trim_trailing_whitespace = false
 insert_final_newline = false
@@ -39,5 +43,14 @@ insert_final_newline = false
 
 ; The corpus is GENERATED from the fenced blocks in these files, so trailing
 ; whitespace and invisible characters inside them are load-bearing test input.
+; `resources/examples/**` is the generator's INPUT (`.gitattributes` already
+; marks it `-text` for the same reason); `docs/examples/**` is its generated
+; reading surface. Naming only the second left the source of every corpus pair
+; unprotected -- an expected `<li><input type="checkbox" disabled> ` line ends
+; in the separator space that follows the checkbox, and stripping it on save
+; turns a corpus pair red with no visible change in the diff.
+[resources/examples/**]
+trim_trailing_whitespace = false
+
 [docs/examples/**]
 trim_trailing_whitespace = false

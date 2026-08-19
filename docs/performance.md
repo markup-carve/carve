@@ -1,3 +1,7 @@
+---
+description: Where the three reference engines stand on render speed, and how the benchmark is measured.
+---
+
 # Performance
 
 Where the three engine implementations stand on raw HTML-rendering

@@ -37,10 +37,26 @@
 #   text.value  declared 1 document, measured 0. carve-php kept the trailing
 #               space on a caption line; fixed under carve#963.
 #
+# EMPTY AGAIN, and re-measured the same way. The two lines added on 2026-08-14
+# by markup-carve/carve#1218 were deleted on the `AST conformance` run
+# 31876260970, over 1006 corpus documents plus 3 synthetic samples, against
+# carve-js de67c1f, carve-rs 810fb80 and carve-php 34f8d9a, each checked out
+# and built from main by that run:
+#
+#   footnote_ref.number     declared 2 documents, measured 0.
+#   inline_footnote.number  declared 1 document, measured 0.
+#
+# Both described one carve-php defect - a number published on a footnote inside
+# an UNRESOLVED reference link, which markup-carve/carve#1198 ruled gets none -
+# and markup-carve/carve-php#1270 dropped the field. The run reported both as
+# `FIXED ... no longer diverges`, which is the direction this file's header
+# promises and the reason it fails until the lines go.
+#
 # WHAT AN EMPTY FILE DOES NOT MEAN. It says the three agree on every scalar in
-# 870 documents, and the corpus is what it can say. A shape the corpus does not
-# hold is a shape this file has never measured - so deleting a line is evidence
-# about the corpus, not a certificate about the engines.
+# the 1009 samples the run above measured, and the corpus is what it can say. A
+# shape the corpus does not hold is a shape this file has never measured - so
+# deleting a line is evidence about the corpus, not a certificate about the
+# engines.
 #
 # Measured off-corpus while emptying it: in a collapsed reference whose label
 # holds `/emphasis/`, a `\_` escape, a `:symbol:` shortcode or a nested link,
@@ -49,4 +65,71 @@
 # and those four shapes change the HTML too - carve-php leaves the reference
 # unresolved, or slugs the heading differently - so they are ordinary corpus
 # conformance, owed a fixture rather than a line (markup-carve/carve#1011).
-
+#
+# NOT EMPTY FOR ONE MORNING, on 2026-08-17. Measured over 1124 corpus documents
+# plus 3 synthetic samples, at carve-js 02c4d80, carve-rs 1ad93f0 and carve-php
+# 4610ef8 - each built from a fresh clone of main - `npm run ast:check` reported
+# TWO fields disagreeing across four documents, and both were declared at the
+# bottom of this file:
+#
+#   paragraph.attrs.classes  4 doc(s)  js and rs absent, php ["k"]
+#   paragraph.attrs.order    4 doc(s)  js and rs absent, php [".class"]
+#
+# One cause, measured rather than inferred. The documents are the `326` and
+# `329` fixtures. On `329-...-2`:
+#
+#     > q
+#     > {.k}
+#     tail
+#
+# carve-js and carve-rs close the quote at the flush-left line, so the attribute
+# reaches nothing and `tail` is a bare top-level paragraph:
+#
+#     <blockquote><p>q</p></blockquote>
+#     <p>tail</p>
+#
+# carve-php folds `tail` into the quote and applies the attribute to it, which
+# is where the class the other two publish nowhere comes from:
+#
+#     <blockquote>
+#       <p>q</p>
+#       <p class="k">tail</p>
+#     </blockquote>
+#
+# markup-carve/carve#1280 and markup-carve/carve#1281 ruled that; carve-rs
+# already implemented it and carve-js did in markup-carve/carve-js#1140 and
+# markup-carve/carve-js#1142, so carve-php is the engine that has not caught up.
+#
+# DECLARED RATHER THAN LEFT RED, which is the whole reason this file exists -
+# "a gate would have failed on day one for reasons already tracked, so the debt
+# is DECLARED instead". The previous pass measured the same panel and left it
+# undeclared, reasoning that the counts would flip as each engine landed fixes.
+# They did not: carve-js shipped five fixes in between and the row count did not
+# move, because these rows wait on carve-php and nothing else. A panel that is
+# red for a known reason cannot report the next reason.
+#
+# The missing piece was this file's own third column - a row names where it is
+# TRACKED, and no carve-php issue existed for the rulings. One does now, and
+# both rows cite it. Both clear together in whichever carve-php PR ships them,
+# and the run fails until the lines go, which is the reminder rather than the
+# waste.
+#
+# EMPTY AGAIN, later the same day, and by measurement rather than by reading a
+# merge notification. Both rows named one carve-php gap, and carve-php closed it
+# in markup-carve/carve-php#1355, #1357, #1359 and #1360 - but a merged PR is not
+# evidence about a tree. What is: `npm run ast:check` over 1131 corpus documents
+# plus 3 synthetic samples, at carve-js 80537c8, carve-rs 71318e9 and carve-php
+# 84c422b, each built from a fresh clone of main, reports
+#
+#   THREE-WAY VALUE COMPARISON: the engines publish the same values everywhere.
+#
+# and reported both rows FIXED until they were deleted, which is the direction
+# this file's header promises and the reason it fails until the lines go.
+#
+# The corpus grew from 1124 to 1131 between the two measurements
+# (markup-carve/carve#1311's seven comment-fence documents). Those seven DO
+# separate the engines - carve-php parses them into a different shape, tracked
+# at markup-carve/carve-php#1349 - but a shape difference is what the shape
+# panel reports, not this one: a node that is not in the tree publishes no
+# scalar to disagree about. So the emptiness here is about scalars across 1134
+# samples, and says nothing about that gap.

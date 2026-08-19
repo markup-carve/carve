@@ -203,6 +203,36 @@
       "feature": "smart-typography-default",
       "target": "plain",
       "description": "CONTROL. The same document at DEFAULT typography: the crossref label takes the glyphs, exactly as the heading does. Without it the three cases above would also pass an engine that never applies typography to a crossref label at all."
+    },
+    {
+      "slug": "40-semantic-span-extension",
+      "feature": "semantic-span",
+      "description": "The four names core does not reserve - samp, var, cite, dfn - render as their elements when the SemanticSpan extension is enabled, under the same attribute spelling, nesting order and value mapping core uses for its three (PART 9 §10)."
+    },
+    {
+      "slug": "41-semantic-span-extension-deprecated-spelling",
+      "feature": "semantic-span",
+      "description": "The extension also accepts the SOFT-DEPRECATED `:name[...]` spelling for all seven names, because it was released behavior in carve-js and carve-rs. Scheduled for removal in 0.2; the compact attribute is the form to write."
+    },
+    {
+      "slug": "42-list-table-header-rows-cols",
+      "feature": "list-table",
+      "description": "header-rows and header-cols promote the first N rows to <thead> and the first N cells of every row to row headers."
+    },
+    {
+      "slug": "43-citations-at-label-in-reference-position",
+      "feature": "citations-numbered",
+      "description": "CONTROL for the core rule that a label beginning with @ is not a reference label. With citations ON, [t][@a] and ![t][@a] are still literal text - the label slot rejects @ because the first position already means citation - while the [@a] beside them resolves. Without this case the core rows read as '@ breaks a reference' rather than '@ already means citation, so it cannot also mean label' (carve#1302)."
+    },
+    {
+      "slug": "44-list-table-columns-and-foot",
+      "feature": "list-table-columns-1344",
+      "description": "ListTable shares positional column attributes and adds per-cell align/valign overrides; widths and the head/body/foot partition survive together."
+    },
+    {
+      "slug": "45-list-table-local-headers",
+      "feature": "list-table-local-headers-1248",
+      "description": "A header-row attribute on a row's first cell starts a body group with an intermediate column-header row; a header attribute promotes only its own cell."
     }
   ]
 }

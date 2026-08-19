@@ -1,0 +1,69 @@
+Cell attributes bind after the kind and alignment markers
+
+```
+|={.total} Total |= 99 |
+| a | b |
+.
+<table>
+  <thead><tr><th scope="col" class="total">Total</th><th scope="col">99</th></tr></thead>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|=~{#score} Score |
+| 9 |
+.
+<table>
+  <thead><tr><th scope="col" id="score" style="text-align: center;">Score</th></tr></thead>
+  <tbody>
+    <tr><td style="text-align: center;">9</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|= Item |= Cost |
+| Pen |>{.num} 9 |
+.
+<table>
+  <thead><tr><th scope="col">Item</th><th scope="col">Cost</th></tr></thead>
+  <tbody>
+    <tr><td>Pen</td><td class="num" style="text-align: right;">9</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|{#x}< content |
+.
+<table>
+  <tbody>
+    <tr><td id="x">&lt; content</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|{#x}=R|
+.
+<table>
+  <tbody>
+    <tr><td id="x">=R</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|=<{.h} Name |=>{.c} Score |{.head}
+| Ann |>{.num} 9 |{.win}
+.
+<table>
+  <thead><tr class="head"><th scope="col" class="h" style="text-align: left;">Name</th><th scope="col" class="c" style="text-align: right;">Score</th></tr></thead>
+  <tbody>
+    <tr class="win"><td style="text-align: left;">Ann</td><td class="num" style="text-align: right;">9</td></tr>
+  </tbody>
+</table>
+```

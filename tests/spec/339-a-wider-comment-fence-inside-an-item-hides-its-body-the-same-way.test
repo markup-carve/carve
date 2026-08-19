@@ -1,0 +1,18 @@
+A wider comment fence inside an item hides its body the same way
+
+```
+- item
+  %%%%
+  [r]: /url
+  %%%%
+
+[r][]
+.
+<ul>
+  <li>item
+%%%%
+[r]: /url
+%%%%</li>
+</ul>
+<p>[r][]</p>
+```

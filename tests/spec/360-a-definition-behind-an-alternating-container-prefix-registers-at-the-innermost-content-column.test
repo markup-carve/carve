@@ -1,0 +1,86 @@
+A definition behind an alternating container prefix registers at the innermost content column
+
+```
+- > - - x
+  >     [r]: /url
+
+See [r][].
+.
+<ul>
+  <li>
+    <blockquote>
+      <ul>
+        <li>
+          <ul>
+            <li>x
+[r]: /url</li>
+          </ul>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+</ul>
+<p>See [r][].</p>
+```
+
+```
+- > - - x
+  >     [^f]: note
+
+See [^f].
+.
+<ul>
+  <li>
+    <blockquote>
+      <ul>
+        <li>
+          <ul>
+            <li>x
+[^f]: note</li>
+          </ul>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+</ul>
+<p>See [^f].</p>
+```
+
+```
+- > - - x
+  >     # h
+.
+<ul>
+  <li>
+    <blockquote>
+      <ul>
+        <li>
+          <ul>
+            <li>x
+# h</li>
+          </ul>
+        </li>
+      </ul>
+    </blockquote>
+  </li>
+</ul>
+```
+
+```
+> - - x
+>     [r]: /url
+
+See [r][].
+.
+<blockquote>
+  <ul>
+    <li>
+      <ul>
+        <li>x
+[r]: /url</li>
+      </ul>
+    </li>
+  </ul>
+</blockquote>
+<p>See [r][].</p>
+```

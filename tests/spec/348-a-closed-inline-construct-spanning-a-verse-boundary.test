@@ -1,0 +1,63 @@
+A closed inline construct spanning a verse boundary
+
+```
+::: |
+*Roses are red,
+Violets are blue.*
+:::
+.
+<div class="line-block">
+  <p><strong>Roses are red,<br>
+Violets are blue.</strong></p>
+</div>
+```
+
+```
+::: |
+a `b
+c` d
+:::
+.
+<div class="line-block">
+  <p>a <code>b
+c</code> d</p>
+</div>
+```
+
+```
+::: |
+*Roses are red,
+Violets are blue.*
+And so are you.
+:::
+.
+<div class="line-block">
+  <p><strong>Roses are red,<br>
+Violets are blue.</strong><br>
+And so are you.</p>
+</div>
+```
+
+```
+::: |
+*Roses are red,\
+Violets are blue.*
+:::
+.
+<div class="line-block">
+  <p><strong>Roses are red,<br>
+Violets are blue.</strong></p>
+</div>
+```
+
+```
+::: |
+*Roses are red,
+  Violets are blue.*
+:::
+.
+<div class="line-block">
+  <p><strong>Roses are red,<br>
+&nbsp;&nbsp;Violets are blue.</strong></p>
+</div>
+```

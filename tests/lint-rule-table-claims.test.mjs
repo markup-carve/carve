@@ -71,6 +71,11 @@ const TRIGGERS = {
   'fence-delimiter-indentation': '  ```\n  x\n  ```\n',
   'carve-version-unsupported': '---\ncarve-version: 99.0\n---\n\nx\n',
   'unclosed-container-fence': '::: note\nbody\n',
+  'figure-group-nested': ':::: figure\n::: figure\n![a](a.png)\n^ (a) A\n:::\n::::\n^ Figure #: G\n',
+  'figure-group-opener-metadata': '::: figure "Title"\n![a](a.png)\n^ (a) A\n:::\n',
+  'figure-group-panel-number': '::: figure\n![a](a.png)\n^ Figure #: panel\n:::\n^ Figure #: G\n',
+  'figure-group-empty': '::: figure\njust a paragraph\n:::\n^ Figure #: G\n',
+  'figure-group-single-panel': '::: figure\n![a](a.png)\n^ (a) A\n:::\n^ Figure #: G\n',
   'fence-title-syntax': '::: note Some Title\nbody\n:::\n',
   'platform-mention-token': {
     source: 'Use @minutely for that cron alias.\n',
@@ -80,7 +85,63 @@ const TRIGGERS = {
     source: 'See #123 for the discussion.\n',
     options: { platforms: ['github'] },
   },
+  'footnote-labels-differ-only-in-whitespace': 'see [^a b] and [^a  b]\n\n[^a b]: one\n\n[^a  b]: two\n',
+  // A COMPLETE row, because the rule is gated on the parser's row predicate: a
+  // leading `|` with no closing one is a paragraph, and there is no cell for
+  // the block to be misplaced in.
+  'table-cell-attribute-before-marker': '|{#x}< content |\n',
+  'table-alignment-run-padding': '|>text |\n',
+  'table-column-arity': '{aligns="left"}\n| a | b |\n',
+  'table-column-overlap': '{aligns="left"}\n|=> H |\n',
+  'table-width-total': '{widths="60,50"}\n| a | b |\n',
+  // `kbd`, not `cite`: PART 9 §10 moved `samp`, `var`, `cite` and `dfn` into the
+  // SemanticSpan extension, so in a core lint they are ordinary attributes and
+  // provoke nothing. `kbd` is one of the three names core still reserves, which
+  // is the case the page's row names first.
+  'semantic-attribute-value-ignored': '[x]{kbd="https://example.org/dune"}\n',
+  'semantic-attribute-outside-span': '`c`{kbd}\n',
+  'braced-comment-in-a-template-source': '{% if user %}\n',
 }
+
+/*
+ * A rule id the build carries but no trigger names.
+ *
+ * `collectPortableWhitespace` is retained behind an explicit `void` reference
+ * in carve-js and called from nowhere, so `portable-quote-marker-space` cannot
+ * be emitted by any input or option. It is listed here rather than silently
+ * skipped: the scan below would otherwise report it forever, and a reader has
+ * to be able to tell "no producer, known" from "no producer, nobody noticed".
+ */
+const UNPRODUCIBLE_IN_BUILD = new Set(['portable-quote-marker-space'])
+
+/*
+ * A rule the PAGE specifies and the pinned build does not carry yet.
+ *
+ * A lint rule id is spec surface, so it is specified here first and implemented
+ * afterwards - the same window `resources/engine-pin-drift.txt` describes for
+ * corpus documents, and for the same reason: the corpus and this page are
+ * allowed to run ahead of the pin, and what must never happen is not knowing
+ * which window you are in.
+ *
+ * There was no such window before carve#1281, which meant a rule could not be
+ * specified ahead of carve-js at all: the "can actually be emitted" check below
+ * demanded a trigger, and a trigger demanded an implementation. That is a
+ * chicken-and-egg on a page whose whole point is that the id is agreed BEFORE
+ * two engines pick different ones.
+ *
+ * It fails in BOTH directions, which is what keeps it a check rather than an
+ * escape hatch:
+ *
+ *   - listed here and the pin DOES emit it -> the window closed, delete the
+ *     line and add a trigger, in the commit that moves the pin;
+ *   - listed here and absent from the page -> a declaration about nothing.
+ */
+const NOT_IN_THE_PIN_YET = new Map([
+  [
+    'unattached-block-attribute',
+    'specified by markup-carve/carve#1281; no engine implements it yet',
+  ],
+])
 
 /** The rules this map calls with options, i.e. the ones that are not default-on. */
 const OPT_IN = Object.entries(TRIGGERS)
@@ -176,13 +237,99 @@ test('an opt-in rule reports nothing until it is asked for', () => {
   )
 })
 
+/*
+ * THE SCAN, because the comparison above cannot see a rule it was never told
+ * about.
+ *
+ * `emittedRules()` runs the TRIGGERS documents, so the set it produces is
+ * bounded by the rules already documented. A rule the engine gained with a
+ * condition no trigger document meets contributes nothing to it, and "every
+ * rule the engine emits is on the page" passes while the page is short. That
+ * is not hypothetical: at the pin this test was extended on, carve-js emitted
+ * `footnote-labels-differ-only-in-whitespace`,
+ * `semantic-attribute-value-ignored` and `semantic-attribute-outside-span`,
+ * the page listed none of the three, and every assertion above was green.
+ *
+ * So the ids are read out of the pinned build itself instead of being inferred
+ * from what this file already knows to ask for. That reads a build artifact,
+ * which is brittle by nature - the floor is what makes the brittleness loud: a
+ * bundler change that stops matching the pattern fails here rather than
+ * quietly turning the check into a statement about an empty list.
+ *
+ * THE PATTERN IS DELIBERATELY BROAD - every kebab-case string literal in the
+ * file, not the ids in one emission form. carve-js spells a rule id three ways
+ * today: `rule: 'x'` in a warning object, a positional `push(…, 'x', …)`, and
+ * an entry in a rule tuple. A pattern per form is a pattern per form somebody
+ * has to remember to add, which is the same blindness one level down; matching
+ * every kebab literal costs a `NOT_A_RULE` line the first time a non-rule
+ * kebab string appears, and that entry is visible where an unmatched form is
+ * not. Measured at the pin: 21 literals, all 21 of them rule ids, no noise.
+ */
+const NOT_A_RULE = new Set()
+
+function ruleIdsInBuild() {
+  const lintSource = readFileSync(
+    new URL('../node_modules/@markup-carve/carve/dist/lint.js', import.meta.url),
+    'utf8',
+  )
+  const literals = [...lintSource.matchAll(/['"]([a-z][a-z0-9]*(?:-[a-z0-9]+)+)['"]/g)].map((m) => m[1])
+
+  return [...new Set(literals)].filter((id) => !NOT_A_RULE.has(id)).sort()
+}
+
+test('the build was actually scanned', () => {
+  const found = ruleIdsInBuild()
+  assert.ok(
+    found.length >= 18,
+    `only ${found.length} rule id(s) found in the pinned build; the scan pattern no longer matches ` +
+      'how carve-js spells a rule id, so the check below is about an empty list.',
+  )
+})
+
+test('every rule id in the pinned build is on the page', () => {
+  const documented = documentedRules()
+  const missing = ruleIdsInBuild().filter(
+    (rule) => !documented.includes(rule) && !UNPRODUCIBLE_IN_BUILD.has(rule),
+  )
+  assert.deepEqual(
+    missing,
+    [],
+    `the pinned carve-js build carries rule id(s) docs/validation.md does not list: ${missing.join(', ')}. ` +
+      'A warning a user can read in their terminal and nowhere else is the contract this page exists to keep.',
+  )
+})
+
 test('every rule the page lists can actually be emitted', () => {
-  const unproducible = documentedRules().filter((rule) => !(rule in TRIGGERS))
+  const unproducible = documentedRules().filter(
+    (rule) => !(rule in TRIGGERS) && !NOT_IN_THE_PIN_YET.has(rule),
+  )
   assert.deepEqual(
     unproducible,
     [],
     `docs/validation.md lists rule id(s) with no trigger here: ${unproducible.join(', ')}. ` +
       'Add one, or remove the row - a documented rule nothing can produce is a promise ' +
-      'with no producer.',
+      'with no producer. If the rule is specified ahead of the engines, declare it in ' +
+      'NOT_IN_THE_PIN_YET with the ticket that specifies it.',
+  )
+})
+
+test('a rule declared as unimplemented is on the page and is still unimplemented', () => {
+  // The declaration's own two directions. Without the first it can name a rule
+  // the page never mentions; without the second it outlives the engine work and
+  // becomes the thing being tested rather than a note about a window.
+  const documented = documentedRules()
+  const orphaned = [...NOT_IN_THE_PIN_YET.keys()].filter((rule) => !documented.includes(rule))
+  assert.deepEqual(
+    orphaned,
+    [],
+    `NOT_IN_THE_PIN_YET names rule id(s) docs/validation.md does not list: ${orphaned.join(', ')}.`,
+  )
+
+  const arrived = [...NOT_IN_THE_PIN_YET.keys()].filter((rule) => ruleIdsInBuild().includes(rule))
+  assert.deepEqual(
+    arrived,
+    [],
+    `the pinned build now carries ${arrived.join(', ')}. Delete the NOT_IN_THE_PIN_YET line ` +
+      'and add a TRIGGERS entry, in the commit that moves the pin.',
   )
 })

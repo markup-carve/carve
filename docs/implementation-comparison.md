@@ -1,3 +1,7 @@
+---
+description: How the reference engines compare on conformance, and how the cross-implementation sweep is run.
+---
+
 # Implementation Comparison
 
 The shared comparison runner lives in `scripts/compare-impls.mjs` because this
@@ -17,15 +21,15 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>694 / 694</strong>
+    <strong>727 / 729</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>694 / 694</strong>
+    <strong>727 / 729</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>694 / 694</strong>
+    <strong>727 / 729</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -36,9 +40,9 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `5b03787` | `694 / 694` | `0` | `0` | `3.01` |
-| JS | `8105210` | `694 / 694` | `0` | `0` | `76.02` |
-| PHP | `a5f18fb` | `694 / 694` | `0` | `0` | `68.54` |
+| Rust | `5b03787` | `727 / 729` | `0` | `0` | `3.01` |
+| JS | `8105210` | `727 / 729` | `0` | `0` | `76.02` |
+| PHP | `a5f18fb` | `727 / 729` | `0` | `0` | `68.54` |
 
 Spec commit: `2cde4a1`, plus the three corpus cases this change adds
 
@@ -71,17 +75,124 @@ Corpus added since this run: `254-colon-fence-separator-must-be-a-space`,
 `280-a-container-a-lazy-line-folded-into-is-still-open`,
 `281-a-caption-attaches-across-one-blank-line`,
 `282-two-blank-lines-detach-a-caption`,
-`283-an-empty-footnote-body-is-written-with-the-empty-sentinel`.
+`283-an-empty-footnote-body-is-written-with-the-empty-sentinel`,
+`289-a-structural-attribute-leads-the-author-s-own`,
+`290-adjacent-sibling-lists-survive-the-round-trip`,
+`291-a-fence-keeps-the-blank-line-at-the-end-of-its-content`,
+`292-a-boolean-and-a-key-value-of-the-same-name-are-one-attribute`,
+`293-a-semantic-name-renames-the-span-and-the-leftovers-ride-the-element`,
+`294-a-language-attribute-is-exact-sugar-for-lang`,
+`295-a-malformed-language-tag-leaves-the-whole-block-literal`,
+`296-a-language-attribute-and-lang-are-one-key`,
+`297-the-language-sigil-takes-no-padding`,
+`298-a-boolean-lang-is-the-third-spelling-of-the-same-key`,
+`299-the-semantic-registry-holds-no-element-carve-already-spells`,
+`45-inline-extensions-7`,
+`45-inline-extensions-8`,
+`45-inline-extensions-9`,
+`45-inline-extensions-10`; `97-boolean-attributes` changed its expected HTML
+under the same semantic-span rule,
+`302-a-math-span-s-base-class-keeps-the-class-slot-in-place`,
+`304-an-angle-bracket-is-escaped-only-where-it-opens-markup`,
+`305-an-abbreviation-expands-inside-an-inline-container`,
+`306-a-captioned-quote-holds-more-than-one-block`,
+`307-an-empty-inline-note-is-literal`,
+`308-a-multi-letter-ordered-marker-opens-no-list`,
+`309-a-note-s-content-recognizes-no-note`,
+`310-a-footnote-in-link-text-nests-the-anchors`,
+`311-a-footnote-in-reference-link-text-nests-the-anchors-too`,
+`312-a-note-body-s-own-references-resolve`,
+`313-a-reference-link-s-text-survives-its-own-frame`,
+`314-a-footnote-in-an-unresolved-reference-is-not-a-reference`,
+`315-an-inline-note-s-content-resolves-after-the-note`,
+`316-an-image-s-alt-text-closes-where-a-link-s-text-closes`,
+`317-an-editorial-comment-s-bracket-is-content-not-the-close`,
+`318-composite-figures`,
+`319-cell-attributes-bind-after-the-kind-and-alignment-markers`,
+`320-the-canonical-writer-glues-a-code-fence-to-its-info-string`,
+`321-delimited-comments`,
+`322-an-attribute-block-reaches-the-nested-list-it-precedes`,
+`323-a-block-attached-after-an-invisible-line-leaves-the-item-tight`,
+`324-an-abbreviation-definition-in-an-item-body-is-paragraph-text`,
+`325-an-attribute-line-after-a-continuation-marker-attributes-the-attached-block`,
+`326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open`,
+`327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent`,
+`328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe`,
+`329-a-floating-attribute-is-scoped-to-the-container-that-holds-it`,
+`330-a-tab-after-a-fence-or-a-frontmatter-opener-depends-on-where-it-sits`,
+`331-an-unclosed-inline-run-in-a-line-block-reaches-the-end-of-the-block`,
+`332-which-inline-content-a-heading-id-is-derived-from`,
+`333-a-continuation-row-s-open-run-and-an-escaped-closing-pipe`,
+`334-a-label-beginning-with-an-at-sign-is-not-a-reference-label`,
+`335-a-comment-fence-at-an-item-s-content-column-registers-nothing-either`,
+`336-a-footnote-definition-inside-an-item-s-comment-registers-nothing`,
+`337-a-comment-fence-opened-on-an-item-s-marker-line-hides-its-body-too`,
+`338-a-comment-fence-one-item-deeper-registers-nothing-either`,
+`339-a-wider-comment-fence-inside-an-item-hides-its-body-the-same-way`,
+`340-an-abbreviation-inside-a-comment-defines-nothing`,
+`341-a-comment-fence-inside-a-colon-container-registers-nothing`,
+`342-url-list-attributes-are-probed-token-wise`,
+`343-an-escaped-hash-keeps-its-escape-at-a-container-s-content-position`,
+`344-a-comment-only-line-in-a-line-block-is-removed-before-any-inline-run`,
+`345-a-line-block-s-hard-break-keeps-its-backslash`,
+`346-a-line-block-s-last-body-line-keeps-its-backslash`,
+`347-a-comment-fence-reached-through-a-quote-registers-nothing-either`,
+`348-a-closed-inline-construct-spanning-a-verse-boundary`,
+`349-a-container-whose-table-ends-on-a-continuation-row`,
+`350-a-definition-at-a-container-s-content-column`,
+`351-a-bracketed-construct-spanning-a-line-boundary`,
+`352-a-bracketed-construct-s-identifiers-stay-on-one-line`,
+`353-a-bracketed-construct-spanning-a-verse-boundary`,
+`354-a-continuation-row-joins-the-row-above-it-whatever-its-cells-hold`,
+`355-a-container-whose-table-ends-on-a-joined-header-row`,
+`356-a-quote-inside-a-quote-is-asked-what-it-ends-on`,
+`357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders`,
+`358-what-a-content-column-block-does-not-reach`,
+`359-a-footnote-definition-s-block-runs-to-the-end-of-its-body`,
+`360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column`,
+`361-a-paragraph-opened-after-a-block-in-an-item-is-still-open-for-a-lazy-line`,
+`362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line`,
+`363-a-task-item-s-checkbox-is-not-decided-by-its-first-block`,
+`364-only-lazy-folding-demotes-a-marker-line-colon-opener`,
+`365-a-blank-line-before-a-sibling-marker-separates-the-items-whatever-consumed-it`,
+`366-a-raw-block-keeps-the-blank-line-at-the-end-of-its-payload-too`,
+`367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open`,
+`369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one`,
+`372-an-all-blank-raw-payload-still-emits-its-line`,
+`374-a-collected-definition-closes-the-item-paragraph`,
+`382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open`,
+`383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container`.
 
-Those categories landed on hosts that could not retake the run above, so its
-numbers describe the corpus WITHOUT them. The alternative was to edit the
-denominators by hand, which would have published a three-engine measurement
-nobody took - and one that is knowably wrong: all three engines still accept a
+Every category up to and including `334` landed on a host that could not retake
+the run above, so its numbers describe the corpus WITHOUT them. The alternative
+was to edit the denominators by hand, which would have published a
+three-engine measurement nobody took - and one that is knowably wrong: all three engines still accept a
 tab in every table-cell padding slot (measured on carve-js, carve-php and
 carve-rs main under carve#904 - every tab form renders byte-identical to its
 space form), and carve-js and carve-php still read a title after a tab at every
 form of the `link_title` slot (measured under carve#907 on carve-js `3d95e94`
 and carve-php `876e312`).
+
+`335` THROUGH `341` ARE A SECOND KIND OF LAG, and they are declared for a
+different reason than every category before them. The host that added them HAD
+all three checkouts and could have retaken the run. It did not, because two of
+the engines failed six of the seven ON PURPOSE: those documents pin a rule
+carve-rs and carve-php had drifted from (carve#1309, markup-carve/carve-rs#1047,
+markup-carve/carve-php#1349), so a retaken snapshot's mismatch counts would
+describe a window two open fixes were closing, and would go stale the day either
+one landed. Naming the window is what the declaration is for, and here it is the
+honest line where a fresh measurement would be the misleading one.
+
+ONE OF THOSE TWO FIXES HAS SINCE LANDED, so the window is now narrower than the
+paragraph above described it. markup-carve/carve-rs#1052 merged, and carve-rs
+main renders all seven byte-exact - re-measured here on `71318e91`, whose parent
+still failed `335` through `339`, which is what makes the seven documents
+load-bearing rather than trivially green. **carve-php is the only engine still
+behind**, on `335` through `340` (markup-carve/carve-php#1349); `341` never
+failed on any engine. The declaration is kept rather than deleted because the
+run above still predates all seven, but it now names one engine, not two: a
+declared lag that keeps naming an engine somebody has since fixed reads as
+verified while being false, which is the failure this device exists to prevent.
 
 A CATEGORY THAT ALREADY EXISTED CAN GO STALE TOO, and the declaration above
 cannot say so - it names categories ADDED since the run, and its count is
@@ -167,6 +278,73 @@ before a soft break, measured on carve-js `6647523`, carve-php `3de1184` and
 carve-rs `fcb879d`. It closes with markup-carve/carve-js#829,
 markup-carve/carve-php#980 and markup-carve/carve-rs#751.
 
+Category 362 is declared for the narrowest reason on this page: the snapshot was
+not retaken, and nothing else. Its three documents were rendered through the
+oracle, carve-js `7cd66e0`, carve-php `8a28c20` and carve-rs `16a1b83` while
+they were written, and all four agree byte for byte on all three - the engines
+were already right and the ORACLE was the odd reader, folding a flush-left line
+into an unterminated `:::` div across a blank line where every engine ends the
+item (carve#1379). So there is no engine window here to close and no pin bump
+that changes anything; the declaration exists only because the quoted
+denominator above predates the category, and it should be deleted by whoever
+next runs `npm run compare:impls`.
+
+Category 363 is declared with an OPEN engine window, unlike 362 above. Its one
+document was rendered through the oracle, carve-js `7cd66e0`, carve-php
+`8a28c20` and carve-rs `16a1b83` while it was written. carve-js and carve-php
+reproduce it byte for byte; carve-rs emits the same checkbox but writes it BELOW
+the `<li>` opener, on a line of its own at column 0, rather than on the opener
+line. That is a placement difference and not the dropped-checkbox defect the
+document is about (markup-carve/carve-rs#1102), so this category will not match
+carve-rs until that lands. The declaration exists to name that window as well as
+the stale denominator.
+
+Category 364 is declared for the narrowest reason, like 362 and unlike 363. Both
+its documents were rendered through the oracle, carve-js `7cd66e0`, carve-php
+`8a28c20` and carve-rs `16a1b83` while they were written, and all four agree
+byte for byte on both - the engines were already right and the ORACLE was the
+odd reader, demoting a marker-line `:::` opener to literal text when a blank
+line followed it (carve#1382). There is no engine window here to close; the
+declaration exists only because the quoted denominator above predates the
+category.
+
+Category 365 is declared with an OPEN engine window, like 363. Its three
+documents were rendered through the oracle, carve-js `7cd66e0`, carve-php
+`8a28c20` and carve-rs `16a1b83` while they were written. carve-js and carve-rs
+reproduce all three byte for byte. carve-php reproduces the `:::` div document
+and the different-axis control and misses the code-fence one, where it keeps the
+list tight: it already loosens the same shape under a div, an admonition, a raw
+block and a comment fence, and a code or tilde fence is the only place it does
+not (markup-carve/carve-php#1445). This category will not match carve-php until
+that lands.
+
+Category 366 is declared with an OPEN engine window for the same reason. Its
+three documents were rendered through the oracle, carve-js `020c73e`, carve-php
+`f30ebd1` and carve-rs `a33c42a` while they were written. carve-js and carve-rs
+reproduce all three byte for byte. carve-php reproduces the no-blank control and
+misses the two that carry a blank: it drops a raw block's trailing blank line
+from the payload, at document level and inside an item alike, while keeping the
+same blank in a code fence - which is what category 291 pins, and which it
+reproduces. This category will not match carve-php until that lands.
+
+Category 367 is declared with an OPEN engine window on two engines. Its six
+documents were rendered through the oracle, carve-js `020c73e`, carve-php
+`f30ebd1` and carve-rs `a33c42a` while they were written. carve-js reproduces
+all six byte for byte. carve-php and carve-rs reproduce the block quote
+document and all three controls, and miss the list-item and definition-body ones:
+each ends the container on an unterminated fence at its content column while
+rendering that fence line as paragraph text, and each already folds the same
+shape under a block quote. This category will not match those two until that
+lands.
+
+Category 369 is declared with an OPEN engine window on two engines. Its four
+documents were rendered through the oracle, carve-js `020c73e`, carve-php
+`f30ebd1` and carve-rs `a33c42a` while they were written. carve-rs reproduces
+all four byte for byte. carve-js and carve-php reproduce both controls and miss
+the two that carry the rule: each DROPS the definition-shaped line at the
+quote's content column, rendering nothing and defining nothing, which is the
+outcome carve#624 forbids. This category will not match those two until that
+lands.
 The run above predates carve#891, which rewrote `86-list-lazy-continuation-9`
 to the answer PART 1 S4 gives. `npm run engine:report` measures the pinned JS
 build (`52da7be`) reproducing 671 of the 672 documents, missing exactly that
@@ -380,8 +558,12 @@ page claims to have checked.
 
 `npm run combinatorial:check` is a second differential runner over a different
 input set. `compare:impls` renders the CORPUS through every engine; the
-combinatorial check renders a generated product of AXES - heading level,
-attribute provenance, container nesting, trailing body - and diffs the same way.
+combinatorial check renders several curated products of AXES and diffs the same
+way. The original family crosses heading level, attribute provenance, container
+nesting and trailing body. Six additional families cross the seams that a
+2026-08-16 hand sweep found outside that product: unclosed inline runs,
+container-scoped floating attributes, terminal container children, ordered
+marker spellings, caption positions and `+`-attached block positions.
 
 The distinction is the point. The corpus pins constructs; nothing in it pins
 what happens when two constructs meet, and a pair space is larger than a
@@ -397,12 +579,13 @@ those fire even when every engine agrees and all of them are wrong, which has
 happened here before.
 
 A divergence it reports is a QUESTION, not a verdict. Decide the canonical
-answer, then promote it to a corpus case in `docs/examples/edge-cases.md` so it
+answer, then promote it to a corpus case in `resources/examples/edge-cases.md` so it
 is pinned from then on.
 
 ```bash
 npm run combinatorial:check
 CARVE_RS_DIR=/path/to/carve-rs CARVE_PHP_DIR=/path/to/carve-php npm run combinatorial:check
+npm run combinatorial:check -- --inventory
 ```
 
 The output names each engine's revision, branch and dirty state. That is not
@@ -411,8 +594,17 @@ the first run of this script reported two divergence classes that were nothing
 but an out-of-date working copy. Check those lines before investigating a
 finding.
 
-It is deliberately NOT wired into CI yet - it currently reports real
-divergences, so it would land red. Wire it once those are resolved.
+The scheduled conformance workflow runs it weekly, reusing the three engine
+checkouts that job already builds. `--inventory` lists each family's population
+without running an engine; per-family population guards prevent an emptied or
+partially walked product from reporting a false clean result.
+
+All 304 generated documents currently agree across the four participants. A
+future finding with a focused issue may be declared by exact document id in the
+runner: it remains in every report but does not fail the weekly job, while an
+undeclared finding does. With all four participants present, a declaration that
+no longer reproduces also fails, forcing the debt entry to be removed with its
+fix.
 
 Render options (`sections`, `sourceLine`) are not an axis yet: neither the
 carve-rs nor the carve-php CLI exposes them and the executable spec implements
@@ -577,7 +769,7 @@ Default raw output:
 
 ```text
 Implementation summary
-profile=default/no-opt-in corpus=core corpus_pairs=694 targets=html,markdown,plain,carve,ansi
+profile=default/no-opt-in corpus=core corpus_pairs=729 targets=html,markdown,plain,carve,ansi
 rust: pass=690/690 mismatch=0 error=0 skipped=0 runs=3375 avg_ms=3.01
   mismatching documents: 0
 js: pass=690/690 mismatch=0 error=0 skipped=0 runs=3375 avg_ms=76.02
@@ -619,16 +811,13 @@ rather than a parser one.
 
 Optional raw output:
 
-Optional corpus added since this run: `34-plain-typography-source`,
-`35-ansi-typography-source`, `36-crossref-label-typography-source`,
-`37-crossref-label-typography-source-markdown`,
-`38-crossref-label-typography-source-ansi`,
-`39-crossref-label-typography-glyphs`.
+Optional corpus added since this run: `42-list-table-header-rows-cols`,
+`43-citations-at-label-in-reference-position`.
 
-The first two pin `smartTypography` on the plain-text and ANSI targets; the
-other four pin a RESOLVED CROSSREF's label under the same switch, on three
-targets plus a default-mode control. All six landed on a host with no engine
-checkouts, so the run below predates them. The
+The first pins `{header-rows}` / `{header-cols}` on a list table; the second is
+the citations-side control for the core rule that a label beginning with an at
+sign is not a reference label. Both landed after the run above was taken, so
+the corpus is two cases ahead of it. The
 declaration is the same device the core block uses: it names the cases and
 carries no count, so there is nothing in it to fabricate, and
 `tests/implementation-comparison-counts.test.mjs` fails both when a named case
@@ -641,39 +830,41 @@ came to say 4 when the corpus held 33.
 
 ```text
 Implementation summary
-profile=optional/opt-in corpus=optional corpus_pairs=33 targets=html,markdown
-rust: pass=5/5 mismatch=0 error=0 skipped=28 runs=5 avg_ms=22.17
-js: pass=32/32 mismatch=0 error=0 skipped=1 runs=32 avg_ms=64.69
-php: pass=31/31 mismatch=0 error=0 skipped=2 runs=31 avg_ms=54.55
+profile=optional/opt-in corpus=optional corpus_pairs=43 targets=html,markdown,plain,ansi
+rust: pass=12/12 mismatch=0 error=0 skipped=29 runs=12 avg_ms=5.21
+js: pass=42/42 mismatch=0 error=0 skipped=0 runs=42 avg_ms=157.43
+php: pass=39/39 mismatch=0 error=0 skipped=2 runs=39 avg_ms=103.44
 cross_impl_diffs=0
 
 Target agreement (implementations compared against each other)
-html: compared=30 diffs=0 errors=0 fixtures=yes
-markdown: compared=2 diffs=0 errors=0 fixtures=yes
+html: compared=33 diffs=0 errors=0 fixtures=yes
+markdown: compared=3 diffs=0 errors=0 fixtures=yes
+plain: compared=3 diffs=0 errors=0 fixtures=yes
+ansi: compared=2 diffs=0 errors=0 fixtures=yes
 
 Optional feature coverage
 social-link-templates (html): rust, js, php
 symbol-map (html): rust, js
-smart-quotes-locale-de (html): php
+smart-quotes-locale-de (html): rust, js, php
 bare-url-autolink (html): js, php
 citations-numbered (html): js, php
 code-callouts (html): js, php
 ...
 
-NOT COMPARED: 1 of 33 optional cases reached fewer than two engines, so they
-contribute no agreement evidence. This is not a pass.
+All optional cases reached at least two engines.
 ```
 
-**Read the last block, not the `cross_impl_diffs=10` above it.** One of the 33
-optional cases still reaches fewer than two engines and contributes no
-evidence.
+**Every optional case now reaches at least two engines.** That line at the
+bottom of the block is the one to read: for the first time the optional corpus
+carries agreement evidence for all of it, with no case left contributing
+nothing.
 
-That was 30 until carve#521. The features were implemented everywhere all
-along; what was missing was a way for this tool to switch them on. carve-js and
-carve-php are driven through an inline script here, so a shared table of
-feature to extension name reached both without either engine changing - taking
-the compared count from 2 to 27, and covering citations, which is 16 of the 33
-on its own.
+It was 30 of 33 uncompared until carve#521, and exactly one after that until
+carve-js gained locale-aware smart quotes (carve-js#996). The features were implemented
+everywhere all along; what was missing was a way for this tool to switch them
+on. carve-js and carve-php are driven through an inline script here, so a
+shared table of feature to extension name reached both without either engine
+changing - covering citations, which is 16 of the 41 on its own.
 
 The rest need a renderer or parser OPTION rather than an extension, and an
 option is per-engine API, so there is no shared table for them.
@@ -684,21 +875,52 @@ carve-php: carve-php#537 added the `HtmlRenderer::setSectionWrapping()`
 opt-out those two adapters drive, and carve-php#679 fixed the id/stamp
 ordering the second case pins (carve#535).
 
-Reaching an engine is not the same as being compared. One case remains
-single-engine, and the run says why rather than reporting a uniform "no CLI
-path":
+Reaching an engine is not the same as being compared, and when a case was
+single-engine this page named why rather than reporting a uniform "no CLI
+path". The last such case was `smart-quotes-locale-de`, held there because
+carve-js had no quote-locale option; carve-js#996 added one, the adapter drives
+it, and the case now reaches all three engines.
 
-| case | why |
-| --- | --- |
-| `smart-quotes-locale-de` | carve-js has no quote-locale option (carve#560) |
-
-That distinction is the point. A missing adapter is this repo's backlog; a
-missing option is the engine's, and the difference decides who fixes it. This
-one is a capability gap, which is why no amount of harness work would move it.
+That distinction is still the point for whatever lands next. A missing adapter
+is this repo's backlog; a missing option is the engine's, and the difference
+decides who fixes it - no amount of harness work moves a capability gap.
 
 carve-rs is driven through its binary and exposes no flag for the sections
 switch or the source-line stamp, so `section-wrapper-off` and
 `source-line-after-generated-id` still need a CLI path there (carve#496).
+
+## Converter corpus
+
+`--corpus=convert` runs the arrow the other way: `tests/corpus-convert/` pairs
+a foreign source (`input.md`, `input.html`, `input.bbcode`, `input.djot`) with
+the expected render of the Carve it converts to. Each engine that imports the
+case's format converts the source, carve-js renders every produced document
+with default options, and that render is compared against the case's
+`expected.html` - the semantic gate ruled on
+[carve#1130](https://github.com/markup-carve/carve/issues/1130), which is what
+keeps carve-php's escape-only-the-opener spelling and carve-rs's canonical
+rewriting from reading as divergence when both render the same document.
+
+Absence is declared, never silent, in two files checked in both directions on
+every run:
+
+- **A missing importer** is a capability gap: it lives in
+  `scripts/lib/converter-formats.mjs` with the reason (today: carve-rs has no
+  BBCode importer, carve-js has no Djot importer). A format an engine can
+  neither convert nor explain fails the run; a declared gap the engine has
+  quietly closed is a stale entry and fails too - the runner probes the engine
+  itself rather than trusting the table.
+- **A known-behind conversion** is drift: it lives in
+  `resources/converter-drift.txt` as `engine/case  reason`, the converter
+  corpus's `engine-pin-drift.txt`. An undeclared mismatch fails immediately;
+  a declared one that starts passing fails as stale until the line is deleted
+  in the commit that fixed it.
+
+The per-PR half of the same corpus is `tests/corpus-convert.test.mjs`, which
+gates the pinned build and additionally holds every expectation against the
+SOURCE language's own reader (`marked` for Markdown, `djot.js` for Djot, the
+document itself for HTML), so the expected files answer to something that is
+not Carve.
 
 ## Scope
 
@@ -707,6 +929,8 @@ The tool has two profiles:
 - It runs the mandatory Tier-1 corpus in `tests/corpus`.
 - It runs optional Tier-2 adapters in `tests/corpus-optional` with
   `--corpus=optional`.
+- It runs the converter corpus in `tests/corpus-convert` with
+  `--corpus=convert`.
 - It compares byte-identical output after trimming.
 - It reports CLI-level average time per corpus file.
 - It reports extension system surface area.

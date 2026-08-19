@@ -1,3 +1,7 @@
+---
+description: Which features earn a place in core syntax and which belong in an extension, with the MUST/SHOULD/MAY reasoning.
+---
+
 # Native Features Analysis
 
 Comparing djot-php extensions with Carve's design to determine what should be native syntax vs. implementation extensions.
@@ -45,7 +49,7 @@ Grammar references point at `resources/grammar.ebnf`.
 |---------|-----------------|-------------|--------|
 | **Captions** | `^ caption` after block | `^ caption` | ✅ In grammar (caption rule; image/blockquote/table placement). |
 | **Abbreviations** | `*[ABBR]: expansion` | `*[ABBR]: expansion` | ✅ In grammar (PART 5: Abbreviations). |
-| **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `:kbd[text]` | ✅ Via `:type[content]` extension syntax (4.20). |
+| **Semantic spans** | `[text]{.kbd}` → `<kbd>` | `[text]{kbd}` | ✅ Core reserves three span attributes - `abbr`, `time`, `kbd` (PART 9 §9). `samp`, `var`, `cite`, `dfn` are the Tier-2 SemanticSpan extension's; `code` and `mark` are nobody's, since `` `x` `` and `=x=` already write those elements. The `:name[…]` spelling is soft-deprecated in the extension. |
 | **Autolinks** | `<url>` / `<email>` | Angle-bracket autolinks only | ✅ In spec (4.3). Bare URLs are *not* auto-linked (djot-aligned). |
 | **Inline footnotes** | `[content]{.fn}` | `^[content]` | ✅ Tier-1 core, in grammar (§16). A carve addition (not in djot); pandoc-style `^[content]`, numbered into the shared endnotes. |
 | **Table alignment** | `:--`, `--:`, `:--:` | `\|=<` / `\|=>` / `\|=~` markers | ✅ In spec (4.8). |
@@ -74,8 +78,10 @@ part of Carve syntax; the examples remain as a feature-level reference.
 ```
 
 Output varies by context:
-- Images/blockquotes → `<figure>` + `<figcaption>`
+- Images → `<figure>` + `<figcaption>`
 - Tables → `<caption>` element
+- Blockquotes → `<figure>` + `<figcaption>`, which is where the HTML Standard
+  puts a quotation's attribution: outside the `<blockquote>`, never inside it
 
 ### 2. Abbreviations
 
@@ -92,15 +98,21 @@ The HTML spec defines WWW standards.
 
 ### 3. Semantic Inline Elements
 
-Use the extension syntax for semantic elements:
+The attribute form names the element:
 
 ```carve
-Press :kbd[Ctrl+C] to copy.
-The term :dfn[markup] means...
-:abbr[HTML]{title="HyperText Markup Language"} is a standard.
+Press [Ctrl+C]{kbd} to copy.
+The term [markup]{dfn} means...
+[HTML]{abbr="HyperText Markup Language"} is a standard.
 ```
 
-This fits the `:type[content]{attrs}` pattern already in the spec.
+`abbr`, `time` and `kbd` are core; `dfn` (with `samp`, `var` and `cite`) needs
+the SemanticSpan extension and is an ordinary attribute until it is enabled.
+
+This shipped as an attribute rather than as the `:type[content]{attrs}` pattern
+this document originally proposed: a consumed name renames the span, so the id
+and classes an author wrote land on the produced element, and several names
+combine on one span where the `:type[…]` form cannot nest.
 
 ### 4. Table Enhancements (from proposals)
 

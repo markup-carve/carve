@@ -1,0 +1,11 @@
+An abbreviation inside a comment defines nothing
+
+```
+%%%
+*[HTML]: HyperText Markup Language
+%%%
+
+HTML here
+.
+<p>HTML here</p>
+```

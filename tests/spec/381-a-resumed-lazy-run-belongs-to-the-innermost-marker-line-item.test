@@ -1,0 +1,121 @@
+A resumed lazy run belongs to the innermost marker-line item
+
+```
+* * u
+%
+ :
+.
+<ul>
+  <li>
+    <ul>
+      <li>u
+%
+:</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+* * u
+%
+  :
+.
+<ul>
+  <li>
+    <ul>
+      <li>u
+%
+:</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+* * u
+%
+    :
+.
+<ul>
+  <li>
+    <ul>
+      <li>u
+%
+:</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+* * u
+%%
+ :
+.
+<ul>
+  <li>
+    <ul>
+      <li>u
+%%
+:</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+* * [d]: u
+ :
+.
+<ul>
+  <li>
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>:</p>
+```
+
+```
+* * [d]: u
+  :
+.
+<ul>
+  <li>
+    <ul>
+      <li></li>
+    </ul>
+    :
+  </li>
+</ul>
+```
+
+```
+* * [d]: u
+    :
+.
+<ul>
+  <li>
+    <ul>
+      <li>:</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+* * [d]: u
+%%
+:
+.
+<ul>
+  <li>
+    <ul>
+      <li></li>
+    </ul>
+  </li>
+</ul>
+<p>:</p>
+```

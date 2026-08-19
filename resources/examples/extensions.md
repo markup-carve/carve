@@ -1,0 +1,815 @@
+---
+title: "Examples: Extensions"
+description: Admonitions, abbreviations, mentions, symbols, cross-references and the extension syntax, side by side with the HTML they produce.
+---
+
+# Extensions examples
+
+Admonitions, abbreviations, mentions and tags, the extension syntax, symbols, and
+numbered cross-references, plus one genuine extension: diagrams.
+
+**Most of what is on this page is core, not an extension.** Everything down to
+and including [Numbered cross-references](#numbered-cross-references) is
+default-on core syntax per the
+[feature-tier table](/extensions#feature-tiers-quick-reference). `@mention`,
+`#tag` and `:symbol:` parsing are core too, and are the only ones on this page a
+processor may turn off (grammar PART 9 §19). The nine semantic names under
+[Inline extensions](#inline-extensions) are renderer behavior rather than an
+opt-in extension, and so is the compact `[x]{kbd}` spelling. Only
+[Diagrams and charts](#diagrams-and-charts) is an extension in the tier sense.
+
+The page keeps its name because a corpus category's number is its position among
+these example sections, so moving one renumbers every category after it and
+invalidates the per-implementation lists that cite them.
+
+## Admonitions
+
+:::: compare
+
+```carve
+::: note
+Heads up — this is important.
+:::
+```
+
+```html
+<aside class="admonition note">
+  <p>Heads up — this is important.</p>
+</aside>
+```
+
+::::
+
+Carve renders `:::` blocks by a two-tier rule (PART 9 §12). The eight canonical types — `note`, `tip`, `warning`, `danger`, `info`, `success`, `example`, `quote` — render as `<aside class="admonition {type}">`. Any other identifier (`hint`, `tabs`, `mermaid`, `details`, …) renders as a generic `<div class="{type}">`, the fenced-div primitive the block-extension mechanism builds on. A quoted title after the type becomes a `<p class="admonition-title">` in either tier; the quotes are stripped and never folded into the class.
+
+### Recognized `:::` type words
+
+A `::: name` opener's behavior keys off the **type word** (not a class). Only these words are recognized by core; every other word is an ordinary generic `<div class="{word}">` that an extension may give meaning to.
+
+| Type word | Renders as | Special behavior |
+|-----------|-----------|------------------|
+| `note` `tip` `warning` `danger` `info` `success` `example` `quote` | `<aside class="admonition {type}">` | Admonition (PART 9 §12); optional quoted title → `<p class="admonition-title">` |
+| `\|` (pipe) | `<div class="line-block">` | Line block - preserves the author's per-line layout / soft breaks (PART 9 §23). The token is the pipe, not a word; an inline `::: {.line-block}` is not a fence at all (strict djot) but an ordinary paragraph. |
+| *(any other word)* | `<div class="{word}">` | None in core, a generic fenced div; meaning supplied by a Tier-2 or Tier-3 extension (e.g. `tabs`, `code-group`, `mermaid`). |
+
+Because the behavior keys to the bare type word, give a purely presentational container a class on an **attribute line before the opener** (`{.mybox}` then `:::`) so you never collide with a recognized type word. The `:::` fence takes no inline attributes (strict djot), so an inline `::: {.mybox}` is a paragraph, not a div.
+
+A quoted title on a canonical type renders inside the `<aside>`:
+
+:::: compare
+
+```carve
+::: tip "Pro Tip"
+Save early, save often.
+:::
+```
+
+```html
+<aside class="admonition tip">
+  <p class="admonition-title">Pro Tip</p>
+  <p>Save early, save often.</p>
+</aside>
+```
+
+::::
+
+A custom type renders as a generic `<div>` with the literal type as its class.
+
+:::: compare
+
+```carve
+::: hint "Heads up"
+Custom call-out.
+:::
+```
+
+```html
+<div class="hint">
+  <p class="admonition-title">Heads up</p>
+  <p>Custom call-out.</p>
+</div>
+```
+
+::::
+
+A `[label]` after the type (and after any quoted header) is a grouping identifier — the same `[label]` token a code fence takes. Core ignores it on a standalone block; a group extension (e.g. tabs) uses it as the tab name. It is the canonical replacement for the older tabs `{label="…"}` / inner-heading convention (both stay supported, deprecated). The `selected` default-tab marker is not a label — it stays a boolean attribute on the preceding `{…}` line. Title and label never trade places: under a group extension the quoted header stays inside the panel as its `admonition-title` line while the `[label]` moves out to the tab button (and the standalone `div-label` caption disappears); a header is never used as the tab name.
+
+:::: compare
+
+```carve
+::: tip "Pro Tip" [Build]
+Save early, save often.
+:::
+```
+
+```html
+<aside class="admonition tip">
+  <p class="admonition-title">Pro Tip</p>
+  <p class="div-label">Build</p>
+  <p>Save early, save often.</p>
+</aside>
+```
+
+::::
+
+The quoted opener header is the only source of the visible `admonition-title` paragraph. A `title="…"` key on the preceding attribute line is an ordinary HTML `title` attribute on the wrapper (a hover tooltip) — a separate channel, not a fallback spelling, and it never collides with the opener header:
+
+:::: compare
+
+```carve
+{title="attr title"}
+::: note "opener title"
+Body.
+:::
+```
+
+```html
+<aside class="admonition note" title="attr title">
+  <p class="admonition-title">opener title</p>
+  <p>Body.</p>
+</aside>
+```
+
+::::
+
+The title is ordinary inline content - emphasis, code, and the other inline forms work inside it (unlike a code-fence header, which targets an HTML attribute and stays literal):
+
+:::: compare
+
+```carve
+::: note "Install *now* via `npm`"
+Body.
+:::
+```
+
+```html
+<aside class="admonition note">
+  <p class="admonition-title">Install <strong>now</strong> via <code>npm</code></p>
+  <p>Body.</p>
+</aside>
+```
+
+::::
+
+A typeless generic div may carry a label too (a tab member with no semantic type); core still renders a plain `<div>`.
+
+:::: compare
+
+```carve
+::: [First]
+First panel.
+:::
+```
+
+```html
+<div>
+  <p class="div-label">First</p>
+  <p>First panel.</p>
+</div>
+```
+
+::::
+
+As the first token after the fence, the bare `[label]` may sit directly against it (`:::[First]`), the same allowance a code fence makes for `` ```[NPM] ``.
+
+:::: compare
+
+```carve
+:::[First]
+First panel.
+:::
+```
+
+```html
+<div>
+  <p class="div-label">First</p>
+  <p>First panel.</p>
+</div>
+```
+
+::::
+
+:::: compare
+
+```carve
+::: warning
+Mind the gap.
+:::
+```
+
+```html
+<aside class="admonition warning">
+  <p>Mind the gap.</p>
+</aside>
+```
+
+::::
+
+An admonition may contain multiple block-level children, including lists and code blocks.
+
+:::: compare
+
+````carve
+::: tip
+Quick steps:
+
+- read the docs
+- run the demo
+:::
+````
+
+```html
+<aside class="admonition tip">
+  <p>Quick steps:</p>
+  <ul>
+    <li>read the docs</li>
+    <li>run the demo</li>
+  </ul>
+</aside>
+```
+
+::::
+
+## Abbreviations
+
+::: compare
+
+```carve
+The HTML spec is essential reading.
+
+*[HTML]: HyperText Markup Language
+```
+
+```html
+<p>The <abbr title="HyperText Markup Language">HTML</abbr> spec is essential reading.</p>
+```
+
+:::
+
+## Mentions and tags
+
+::: compare
+
+```carve
+Hey @alice, see #release-1.0.
+```
+
+```html
+<p>Hey <span class="mention"><strong>@alice</strong></span>, see <span class="tag"><strong>#release-1.0</strong></span>.</p>
+```
+
+:::
+
+## Inline extensions
+
+The `:name[…]` syntax is core; the HANDLERS are not. Core registers none of
+them, so every name — including the semantic ones — falls back to a generic
+`<span class="ext-NAME">` until an extension claims it. The seven semantic
+names are the [SemanticSpan extension](/extensions)'s, and the `:name[…]`
+spelling for them is soft-deprecated there: write the span attribute instead
+(PART 9 §9, §10).
+
+::: compare
+
+```carve
+Press :kbd[Ctrl+C] to copy.
+```
+
+```html
+<p>Press <span class="ext-kbd">Ctrl+C</span> to copy.</p>
+```
+
+:::
+
+The same keystroke as core writes it — a semantic span attribute, which needs
+no extension:
+
+::: compare
+
+```carve
+Press [Ctrl+C]{kbd} to copy.
+```
+
+```html
+<p>Press <kbd>Ctrl+C</kbd> to copy.</p>
+```
+
+:::
+
+An unrecognized extension name falls back to the same generic span.
+
+::: compare
+
+```carve
+:foo[bar]
+```
+
+```html
+<p><span class="ext-foo">bar</span></p>
+```
+
+:::
+
+The extension name is an `identifier`, which permits a leading `_`, so `_` is a
+valid extension name (grammar `extension_name`).
+
+::: compare
+
+```carve
+:_[x]
+```
+
+```html
+<p><span class="ext-_">x</span></p>
+```
+
+:::
+
+An `identifier` must start with a letter or `_`, so a digit-first name is not a valid extension. `:1[x]` stays literal text; `:a1[x]` (a digit after the first letter) is a valid extension and renders as a generic span.
+
+::: compare
+
+```carve
+:1[x]
+:a1[x]
+```
+
+```html
+<p>:1[x]
+<span class="ext-a1">x</span></p>
+```
+
+:::
+
+The `extension_content` runs up to the **first** `]` (`extension_content = {character - ']'}`); a nested `]` therefore closes the extension early and the remainder is literal text.
+
+::: compare
+
+```carve
+:foo[a [b] c]
+```
+
+```html
+<p><span class="ext-foo">a [b</span> c]</p>
+```
+
+:::
+
+An authored `{.class}` on a generic inline extension merges into the single `class` attribute — the structural `ext-NAME` class comes first, then the authored classes. There is never a second `class` attribute.
+
+::: compare
+
+```carve
+:foo[a]{.cls}
+```
+
+```html
+<p><span class="ext-foo cls">a</span></p>
+```
+
+:::
+
+Core reserves three of the seven names as SPAN ATTRIBUTES - `abbr` and `time`,
+which carry data, and `kbd`, which every comparable system ships. A value on
+`abbr` becomes `title` and a value on `time` becomes `datetime`; several names
+nest in the fixed order `abbr`, `time`, `kbd`.
+
+::: compare
+
+```carve
+[HTML]{abbr="HyperText Markup Language"} [Noon]{time="12:00"} [Tab]{kbd}
+```
+
+```html
+<p><abbr title="HyperText Markup Language">HTML</abbr> <time datetime="12:00">Noon</time> <kbd>Tab</kbd></p>
+```
+
+:::
+
+Leftover attributes RIDE the outermost semantic element: a consumed name
+renames the span rather than wrapping it, so an id or class lands on the
+element the author wrote it on, and hardening applies there.
+
+::: compare
+
+```carve
+[*Ctrl*+C]{#copy .shortcut kbd data-key="copy" onclick="alert(1)"}
+[x]{kbd onclick="alert(1)"}
+```
+
+```html
+<p><kbd id="copy" class="shortcut" data-key="copy"><strong>Ctrl</strong>+C</kbd>
+<kbd>x</kbd></p>
+```
+
+:::
+
+The four names core does not reserve - `samp`, `var`, `cite`, `dfn` - are the
+SemanticSpan extension's, so a core processor leaves them as ordinary
+attributes.
+
+::: compare
+
+```carve
+[x]{samp} [y]{dfn="a term"}
+```
+
+```html
+<p><span samp="">x</span> <span dfn="a term">y</span></p>
+```
+
+:::
+
+An explicit `abbr` value takes precedence over automatic abbreviation
+definitions, avoiding invalid nested `<abbr>` markup.
+
+::: compare
+
+```carve
+*[HTML]: Hyper Text Markup Language
+
+[HTML]{abbr="Custom"}
+```
+
+```html
+<p><abbr title="Custom">HTML</abbr></p>
+```
+
+:::
+
+`:cite[text]` is a work title or source, not a bibliographic `[@key]`
+citation. `:abbr[text]{title="…"}` is independent of automatic abbreviation
+definitions. Names outside the fixed registry retain the readable generic
+fallback.
+
+On that fallback the structural `ext-NAME` class is not written ahead of
+everything: authored attributes keep their SOURCE order (PART 10 §1), and the
+base class merges into the class slot at the position the author put their own
+class. An id written before a class therefore stays before it.
+
+::: compare
+
+```carve
+:widget[x]{#i .c k=v}
+```
+
+```html
+<p><span id="i" class="ext-widget c" k="v">x</span></p>
+```
+
+:::
+
+With no class of their own there is no authored position to respect, so the
+base class leads.
+
+::: compare
+
+```carve
+:widget[x]{#i k=v}
+```
+
+```html
+<p><span class="ext-widget" id="i" k="v">x</span></p>
+```
+
+:::
+
+## Symbols
+
+`:name:` is a symbol: a generic named inline placeholder with no built-in
+semantics. The parser records only the name; resolution is processor
+configuration, in precedence order: a registered inline-renderer extension
+handler for symbol nodes, else the renderer `symbols` map (name →
+replacement, emitted raw in the target format — processor configuration is
+trusted, the same class as the `renderers` map), else the literal text
+`:name:`. Emoji substitution is the common use, not a language feature.
+`:type[…]` is still an extension and is tried first.
+
+The name starts with a letter, a digit, `+` or `-` and continues with word
+characters, `+` or `-`, so the reaction shortcodes `:+1:` and `:-1:` parse.
+It may *not* start with `_`: `:_x_:` would otherwise steal from underline,
+so `:_x:` stays literal text. Like mentions and tags, a symbol only opens at
+the start of content or after a non-word character: `a:b:c` and `10:30:` stay
+literal text, while `(:tada:)` is a symbol. (Djot's symbols open intraword;
+Carve's boundary rule deliberately does not — see the djot divergence notes.)
+
+::: compare
+
+```carve
+Great :rocket: and :widget[Ctrl] is an extension.
+```
+
+```html
+<p>Great :rocket: and <span class="ext-widget">Ctrl</span> is an extension.</p>
+```
+
+:::
+
+Boundary and name-shape cases — all of these stay plain text. The colon is
+glued to a word character in the first two, and `_` cannot open a name in the
+third:
+
+::: compare
+
+```carve
+a:b:c and 10:30: meeting, :_x: too.
+```
+
+```html
+<p>a:b:c and 10:30: meeting, :_x: too.</p>
+```
+
+:::
+
+A symbol is recognized *before* smart typography, so a name made of
+typographic punctuation is a symbol rather than a substitution: `:+-:` is the
+symbol `+-`, not a `±` between colons. The typographic forms still apply
+wherever no symbol opens — `a +- b` is `a ± b`, and `word:+-:` has no
+boundary, so its `+-` is substituted:
+
+::: compare
+
+```carve
+Vote :+1: or :-1:. Tolerance :+-: is a symbol, but a +- b and word:+-: are not.
+```
+
+```html
+<p>Vote :+1: or :-1:. Tolerance :+-: is a symbol, but a ± b and word:±: are not.</p>
+```
+
+:::
+
+A trailing attribute block attaches to the symbol; in HTML output attributes
+force a `<span>` wrapper around the resolved (or literal) output so they
+have an element to land on. Without attributes no wrapper is emitted.
+
+::: compare
+
+```carve
+Launch :rocket:{.big} now.
+```
+
+```html
+<p>Launch <span class="big">:rocket:</span> now.</p>
+```
+
+:::
+
+## Numbered cross-references
+
+A `#` in a caption is a number placeholder: the label is the text before it,
+the number is injected in its place, and `</#id>` to the element resolves to
+"label + number".
+
+::: compare
+
+```carve
+{#fig-sun}
+![A sunset](sun.jpg)
+^ Figure #: A sunset
+```
+
+```html
+<figure id="fig-sun">
+  <img src="sun.jpg" alt="A sunset">
+  <figcaption>Figure 1: A sunset</figcaption>
+</figure>
+```
+
+:::
+
+Numbers run per label, in document order.
+
+::: compare
+
+```carve
+![one](a.jpg)
+^ Figure #: one
+
+![two](b.jpg)
+^ Figure #: two
+```
+
+```html
+<figure>
+  <img src="a.jpg" alt="one">
+  <figcaption>Figure 1: one</figcaption>
+</figure>
+<figure>
+  <img src="b.jpg" alt="two">
+  <figcaption>Figure 2: two</figcaption>
+</figure>
+```
+
+:::
+
+A `</#id>` to a numbered caption fills its text with the label and number.
+
+::: compare
+
+```carve
+{#fig-sun}
+![A sunset](sun.jpg)
+^ Figure #: A sunset
+
+See </#fig-sun> for the colors.
+```
+
+```html
+<figure id="fig-sun">
+  <img src="sun.jpg" alt="A sunset">
+  <figcaption>Figure 1: A sunset</figcaption>
+</figure>
+<p>See <a href="#fig-sun">Figure 1</a> for the colors.</p>
+```
+
+:::
+
+Tables use the same placeholder; the number lands in the `<caption>`.
+
+::: compare
+
+```carve
+{#tbl-r}
+|= Item |= Qty |
+| Apple | 3 |
+^ Table #: Stock
+
+See </#tbl-r>.
+```
+
+```html
+<table id="tbl-r">
+  <caption>Table 1: Stock</caption>
+  <thead><tr><th scope="col">Item</th><th scope="col">Qty</th></tr></thead>
+  <tbody>
+    <tr><td>Apple</td><td>3</td></tr>
+  </tbody>
+</table>
+<p>See <a href="#tbl-r">Table 1</a>.</p>
+```
+
+:::
+
+Labels bucket independently, so other languages number on their own.
+
+::: compare
+
+```carve
+![a](a.jpg)
+^ Abbildung #: erstes
+
+![b](b.jpg)
+^ Figure #: first
+```
+
+```html
+<figure>
+  <img src="a.jpg" alt="a">
+  <figcaption>Abbildung 1: erstes</figcaption>
+</figure>
+<figure>
+  <img src="b.jpg" alt="b">
+  <figcaption>Figure 1: first</figcaption>
+</figure>
+```
+
+:::
+
+A `#word` stays a tag, never a number placeholder.
+
+::: compare
+
+```carve
+![chart](c.jpg)
+^ See #data for details
+```
+
+```html
+<figure>
+  <img src="c.jpg" alt="chart">
+  <figcaption>See <span class="tag"><strong>#data</strong></span> for details</figcaption>
+</figure>
+```
+
+:::
+
+An escaped `\#` is a literal number sign, never a placeholder.
+
+::: compare
+
+```carve
+![price](p.jpg)
+^ Costs \# units
+```
+
+```html
+<figure>
+  <img src="p.jpg" alt="price">
+  <figcaption>Costs # units</figcaption>
+</figure>
+```
+
+:::
+
+A caption after a fenced code block makes it a numbered **listing**: the block
+is wrapped in a `<figure>`, and `</#id>` resolves to "Listing N" on the same
+per-label counter as figures and tables.
+
+::: compare
+
+````carve
+{#lst-greet}
+```python
+def greet():
+    return 1
+```
+^ Listing #: a greeting
+
+See </#lst-greet>.
+````
+
+```html
+<figure id="lst-greet">
+  <pre><code class="language-python">def greet():
+    return 1
+</code></pre>
+  <figcaption>Listing 1: a greeting</figcaption>
+</figure>
+<p>See <a href="#lst-greet">Listing 1</a>.</p>
+```
+
+:::
+
+A caption after a standalone display-math block makes it a numbered
+**equation**: the math is wrapped in a `<figure>`, and `</#id>` resolves to
+"Equation N" on its own per-label counter. Only a block whose sole content is
+the display-math span qualifies; inline math, or display math with trailing
+prose, is untouched.
+
+::: compare
+
+```carve
+{#eq-emc}
+$$`E = mc^2`
+^ Equation #: mass-energy
+
+See </#eq-emc>.
+```
+
+```html
+<figure id="eq-emc">
+  <p><span class="math display">\[E = mc^2\]</span></p>
+  <figcaption>Equation 1: mass-energy</figcaption>
+</figure>
+<p>See <a href="#eq-emc">Equation 1</a>.</p>
+```
+
+:::
+
+## Diagrams and charts
+
+`FencedRender` claims a fenced code block by its language word and emits a single
+hydration element for a client library to draw. Eight presets ship: `mermaid`,
+`d2`, `graphviz`, `wavedrom`, `abc` and `plantuml` (text mode; `plantuml` also
+claims `puml`), plus `vega-lite` and `chart` (json mode).
+
+Mermaid covers most of UML - `classDiagram`, `sequenceDiagram`, `stateDiagram-v2`
+and `erDiagram` - and `plantuml` / `puml` is the dedicated PlantUML preset for
+the full UML set:
+
+````carve
+``` mermaid
+classDiagram
+  class Parser {
+    +parse(source) Document
+    -blockPass()
+  }
+  Parser --> Document : produces
+  Document <|-- Section
+```
+````
+
+Text mode escapes the body inside a `<pre>`, escaping `&` and `<` but preserving
+`>` so arrow syntax survives:
+
+```html
+<pre class="mermaid">graph LR; A --&gt; B</pre>
+```
+
+A `chart` fence carries a Chart.js config, emitted verbatim in json mode:
+
+````carve
+``` chart
+{"type":"bar","data":{"labels":["V60","Aeropress"],"datasets":[{"data":[12,7]}]}}
+```
+````
+
+```html
+<div class="chart"><script type="application/json">{"type":"bar","data":{"labels":["V60","Aeropress"],"datasets":[{"data":[12,7]}]}}</script></div>
+```
+
+These pairs are shown as plain fences rather than `::: compare` blocks: the
+presets are Tier-3, and Tier-3 output is deliberately never pinned in the
+conformance corpus. See [Diagrams & Charts](/diagrams) for the full preset table,
+static rendering, and degradation behavior.

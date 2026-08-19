@@ -126,3 +126,17 @@ body
 tail</li>
 </ul>
 ```
+
+```
+1. item
+
+   spaced
+flush
+.
+<ol>
+  <li><p>item</p>
+    <p>spaced
+flush</p>
+  </li>
+</ol>
+```

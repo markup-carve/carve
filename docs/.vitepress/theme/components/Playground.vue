@@ -152,24 +152,84 @@ watch(engine, (e) => {
 const outputEl = ref<HTMLElement | null>(null)
 const sourceEl = ref<HTMLTextAreaElement | null>(null)
 
-// Proportional scroll sync between the source and rendered panes. A guard
-// flag stops the programmatic scroll from echoing back into a feedback loop.
-let isSyncing = false
+// Proportional scroll sync between the source and rendered panes.
+//
+// The guard cannot be a flag released one animation frame later: engines that
+// dispatch `scroll` asynchronously, or that keep fractional scroll offsets, find
+// it already released when the echo of our own write arrives, and the two panes
+// then push each other indefinitely instead of settling. So remember the offset
+// we wrote and ignore the event matching it, whichever frame it arrives in, and
+// let only the pane the user is actually driving push the other one.
+const expectedScroll = new WeakMap<HTMLElement, number>()
+let scrollOwner: HTMLElement | null = null
+
+function claimScroll(el: HTMLElement | null): void {
+  if (el) scrollOwner = el
+}
+
+function setScrollTop(el: HTMLElement, top: number): void {
+  const next = Math.max(0, Math.min(top, el.scrollHeight - el.clientHeight))
+  if (Math.abs(el.scrollTop - next) < 1) {
+    // A sub-pixel write still fires `scroll` in some engines, which is enough to
+    // keep an echo loop alive on its own.
+    return
+  }
+  expectedScroll.set(el, next)
+  el.scrollTop = next
+}
+
+function isEcho(el: HTMLElement): boolean {
+  const expected = expectedScroll.get(el)
+  if (expected === undefined) return false
+  // Consumed either way: a write whose echo never arrived (the engine coalesced
+  // it, or a re-render clamped the offset) must not swallow a later real gesture
+  // that happens to land on the same offset.
+  expectedScroll.delete(el)
+
+  return Math.abs(el.scrollTop - expected) < 1
+}
+
+function shouldSync(from: HTMLElement): boolean {
+  if (isEcho(from)) return false
+
+  return !scrollOwner || scrollOwner === from
+}
+
 function syncScroll(from: HTMLElement, to: HTMLElement): void {
-  if (isSyncing) return
-  isSyncing = true
   const range = from.scrollHeight - from.clientHeight
   const ratio = range > 0 ? from.scrollTop / range : 0
-  to.scrollTop = ratio * (to.scrollHeight - to.clientHeight)
-  requestAnimationFrame(() => {
-    isSyncing = false
-  })
+  setScrollTop(to, ratio * (to.scrollHeight - to.clientHeight))
 }
 function onSourceScroll(): void {
-  if (sourceEl.value && outputEl.value) syncScroll(sourceEl.value, outputEl.value)
+  const source = sourceEl.value
+  const output = outputEl.value
+  if (!source || !output || !shouldSync(source)) return
+  syncScroll(source, output)
 }
 function onOutputScroll(): void {
-  if (sourceEl.value && outputEl.value) syncScroll(outputEl.value, sourceEl.value)
+  const source = sourceEl.value
+  const output = outputEl.value
+  if (!source || !output || !shouldSync(output)) return
+  // A gesture in the preview supersedes a restore still pending from the last
+  // re-render, so the reader is not pulled back to where they were before it.
+  outputScrollRestorePending = false
+  syncScroll(output, source)
+}
+
+// `v-html` replaces the preview's children whenever the document changes, which
+// resets its scroll offset to the top on every keystroke. Capture the offset
+// before Vue patches the DOM and put it back after, and again after the
+// post-processing steps that change the pane's height.
+let outputScrollBeforeRender = 0
+let outputScrollRestorePending = false
+// Post-processing is asynchronous, so a pass can still be awaiting Mermaid or math
+// when the next render starts. Only the pass belonging to the current render may
+// restore, or clear the pending state it did not set.
+let renderGeneration = 0
+
+function restoreOutputScroll(): void {
+  if (!outputScrollRestorePending || !outputEl.value) return
+  setScrollTop(outputEl.value, outputScrollBeforeRender)
 }
 
 // Render result plus the wall-clock time the parse+render took, so the UI can
@@ -467,12 +527,17 @@ function decorateCodeBlocks(): void {
 
 // Mermaid first (it replaces blocks), then highlight code, then render math.
 async function postProcessOutput(): Promise<void> {
+  const generation = renderGeneration
   await renderMermaid()
   await renderCharts()
   wireSpoilers()
   await highlightCode()
   decorateCodeBlocks()
   await renderMathIn(outputEl.value)
+  if (generation !== renderGeneration) return
+  // Last, because every step above changes the pane's height.
+  restoreOutputScroll()
+  outputScrollRestorePending = false
 }
 
 let debounce: ReturnType<typeof setTimeout> | undefined
@@ -484,6 +549,13 @@ function schedulePostProcess(): void {
   }, 200)
 }
 
+// Runs before Vue patches the DOM, so it reads the offset the reader is at.
+watch(html, () => {
+  renderGeneration++
+  outputScrollBeforeRender = outputEl.value?.scrollTop ?? 0
+  outputScrollRestorePending = true
+  void nextTick(restoreOutputScroll)
+})
 watch(html, schedulePostProcess)
 onMounted(() => {
   mounted.value = true
@@ -613,6 +685,11 @@ void mermaidInit
           v-model="source"
           spellcheck="false"
           wrap="off"
+          @pointerenter="claimScroll(sourceEl)"
+          @wheel.passive="claimScroll(sourceEl)"
+          @touchstart.passive="claimScroll(sourceEl)"
+          @focus="claimScroll(sourceEl)"
+          @keydown="claimScroll(sourceEl)"
           @scroll="onSourceScroll"
         />
       </div>
@@ -632,6 +709,9 @@ void mermaidInit
           ref="outputEl"
           class="output vp-doc carve-render"
           v-html="html"
+          @pointerenter="claimScroll(outputEl)"
+          @wheel.passive="claimScroll(outputEl)"
+          @touchstart.passive="claimScroll(outputEl)"
           @scroll="onOutputScroll"
         />
       </div>
@@ -872,6 +952,13 @@ void mermaidInit
   color: var(--vp-c-text-2);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+/* Scroll sync writes offsets directly. Smooth scrolling would turn every write
+   into a multi-frame animation whose intermediate offsets echo back as if the
+   reader had scrolled. */
+textarea,
+.output {
+  scroll-behavior: auto;
 }
 textarea {
   flex: 1;

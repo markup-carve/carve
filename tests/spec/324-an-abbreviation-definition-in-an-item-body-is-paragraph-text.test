@@ -1,0 +1,68 @@
+An abbreviation definition in an item body is paragraph text
+
+```
+- a
+
+  *[A]: a
+.
+<ul>
+  <li><p>a</p>
+    <p>*[A]: a</p>
+  </li>
+</ul>
+```
+
+```
+- a
+
+  *[A]: a
+  - b
+.
+<ul>
+  <li><p>a</p>
+    <p>*[A]: a</p>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+
+  *[A]: a
+  - b
+- c
+.
+<ul>
+  <li><p>a</p>
+    <p>*[A]: a</p>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+  <li><p>c</p></li>
+</ul>
+```
+
+```
+- a
+
+  [r]: /u
+
+See [x][r].
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>See <a href="/u">x</a>.</p>
+```
+
+```
+*[A]: alpha
+
+A here
+.
+<p><abbr title="alpha">A</abbr> here</p>
+```

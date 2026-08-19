@@ -1,0 +1,29 @@
+Only lazy folding demotes a marker-line colon opener
+
+```
+- ::: d
+
+tail
+.
+<ul>
+  <li>
+    <div class="d">
+
+    </div>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- ::: d
+tail
+
+after
+.
+<ul>
+  <li>::: d
+tail</li>
+</ul>
+<p>after</p>
+```

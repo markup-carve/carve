@@ -1,0 +1,74 @@
+A captioned quote holds more than one block
+
+```
+> Nothing in this world is certain except death and taxes.
+>
+> The second of the two arrives rather more often.
+^ Benjamin Franklin
+.
+<figure>
+  <blockquote>
+    <p>Nothing in this world is certain except death and taxes.</p>
+    <p>The second of the two arrives rather more often.</p>
+  </blockquote>
+  <figcaption>Benjamin Franklin</figcaption>
+</figure>
+```
+
+```
+> - Be skeptical.
+> - Be kind.
+^ House rules
+.
+<figure>
+  <blockquote>
+    <ul>
+      <li>Be skeptical.</li>
+      <li>Be kind.</li>
+    </ul>
+  </blockquote>
+  <figcaption>House rules</figcaption>
+</figure>
+```
+
+```
+> > I never said that.
+^ Quoted in the report
+.
+<figure>
+  <blockquote>
+    <blockquote><p>I never said that.</p></blockquote>
+  </blockquote>
+  <figcaption>Quoted in the report</figcaption>
+</figure>
+```
+
+```
+> ~~~
+> git bisect run ./check
+> ~~~
+^ The release runbook
+.
+<figure>
+  <blockquote>
+    <pre><code>git bisect run ./check
+</code></pre>
+  </blockquote>
+  <figcaption>The release runbook</figcaption>
+</figure>
+```
+
+```
+> ## Terms
+>
+> Delivery is at the discretion of the vendor.
+^ Appendix B
+.
+<figure>
+  <blockquote>
+    <h2 id="Terms">Terms</h2>
+    <p>Delivery is at the discretion of the vendor.</p>
+  </blockquote>
+  <figcaption>Appendix B</figcaption>
+</figure>
+```

@@ -1,0 +1,25 @@
+Two attributes need a separator between them
+
+```
+[x]{.a.b}
+.
+<p>[x]{.a.b}</p>
+```
+
+```
+[x]{.a#i}
+.
+<p>[x]{.a#i}</p>
+```
+
+```
+[x]{#i.c}
+.
+<p>[x]{<span class="tag"><strong>#i.c</strong></span>}</p>
+```
+
+```
+[x]{k=a:b}
+.
+<p><span k="a:b">x</span></p>
+```

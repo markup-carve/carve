@@ -55,7 +55,9 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToCarve, carveToHtml } from '@markup-carve/carve'
-import { loadDeclaredFmtDrift } from './fmt-drift.mjs'
+import { parse as parseSpec } from '../scripts/spec/layout.mjs'
+import { renderDoc } from '../scripts/spec/html.mjs'
+import { loadDeclaredFmtDrift, loadWriterOnlyDrift } from './fmt-drift.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus')
@@ -86,17 +88,54 @@ test('formatting never changes what a corpus document says', () => {
   )
 })
 
+// The declared-drift excuse applies here for the same reason it applies to the
+// sweep above: a writer that changes what a document SAYS has no reason to
+// settle on the next pass either, so the two failures are one defect reported
+// twice. This sweep was the only one of the three that did not consult the
+// files, which nothing noticed while `engine-fmt-drift.txt` was empty.
 test('formatting a corpus document settles on the first pass', () => {
   const unsettled = []
   for (const { slug, source } of documents) {
     const once = carveToCarve(source)
     if (carveToCarve(once) !== once) unsettled.push(slug)
   }
+  const undeclared = unsettled.filter((slug) => !declaredDrift.has(slug))
   assert.deepEqual(
-    unsettled,
+    undeclared,
     [],
     `formatting these twice differs from formatting once, so every run produces a diff:\n  ` +
-      unsettled.join('\n  '),
+      undeclared.join('\n  '),
+  )
+})
+
+// THE RATCHET ON THE EXCUSE ITSELF. Every other declared-drift file in this
+// repo is checked in both directions; this one was checked in neither, because
+// a slug in it can only ever turn a failure into a pass. So a line that the
+// next pin bump makes untrue would keep excusing a document that no longer
+// needs excusing, and the first person to notice would be whoever eventually
+// removed it by hand.
+test('every writer-drift line still names a document the pin writes wrongly', () => {
+  const declared = loadWriterOnlyDrift(here)
+  const byslug = new Map(documents.map((d) => [d.slug, d.source]))
+  const stale = []
+  for (const slug of declared) {
+    const source = byslug.get(slug)
+    // A slug naming no corpus document is stale in the strongest sense: the
+    // fixture was renamed or removed and the line outlived it.
+    if (source === undefined) {
+      stale.push(`${slug} (no such corpus document)`)
+      continue
+    }
+    const once = carveToCarve(source)
+    const changesMeaning = carveToHtml(once).trim() !== carveToHtml(source).trim()
+    const unsettled = carveToCarve(once) !== once
+    if (!changesMeaning && !unsettled) stale.push(`${slug} (round-trips clean)`)
+  }
+  assert.deepEqual(
+    stale,
+    [],
+    'resources/engine-fmt-drift.txt declares drift that no longer happens - ' +
+      `delete the line in the commit that moves the pin past it:\n  ${stale.join('\n  ')}`,
   )
 })
 
@@ -132,11 +171,41 @@ test('a .fmt fixture is read, so it can fail', () => {
   assert.ok(pinned.length >= 5, `found ${pinned.length} .fmt fixtures`)
 })
 
+// THE DECLARED-DRIFT EXCUSE REACHES HERE TOO, and this sweep was the last of
+// the four in this file that did not consult it. The gap made the `.fmt`
+// fixtures unusable for the one job they are best at: naming the canonical form
+// BEFORE the engines reach it. A spec PR that rules on the writer could pin the
+// bytes only by leaving the suite red, so it did not pin them at all, and three
+// engines went on emitting three different strings with nothing saying which was
+// right (carve#1334, where they emitted `a \`, `a ` and `a` for one document).
+//
+// A slug here is excused for the SAME reason as above and under the SAME
+// ratchet: the staleness check below already fails the moment the pin stops
+// drifting on it, so an excuse cannot outlive its cause.
 test('fmt(x) matches every .fmt fixture (PART 11 §2)', () => {
   const wrong = []
   for (const { slug, source, expected } of pinned) {
+    if (declaredDrift.has(slug)) continue
     const actual = carveToCarve(source)
     if (actual !== expected) wrong.push(`${slug}\n    expected: ${JSON.stringify(expected)}\n      actual: ${JSON.stringify(actual)}`)
   }
   assert.deepEqual(wrong, [], `the writer disagrees with its pinned canonical form:\n  ${wrong.join('\n  ')}`)
+})
+
+// A .fmt fixture the pin cannot produce still has to be a FAITHFUL
+// serialization, or the drift line above pins a corruption as the target. The
+// oracle is what checks it, because the engine is by definition the thing that
+// cannot write these bytes yet: it re-reads the fixture and the case input and
+// requires the same rendering out of both.
+test('every drifting .fmt fixture still says what its case input says', () => {
+  const wrong = []
+  for (const { slug, source, expected } of pinned) {
+    if (!declaredDrift.has(slug)) continue
+    if (renderDoc(parseSpec(expected)).trim() !== renderDoc(parseSpec(source)).trim()) wrong.push(slug)
+  }
+  assert.deepEqual(
+    wrong,
+    [],
+    `these .fmt fixtures are not faithful serializations of their case input:\n  ${wrong.join('\n  ')}`,
+  )
 })

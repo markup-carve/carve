@@ -136,7 +136,7 @@ CarveCore {
   // match in one attempt. `litDelim` stays after `arrow` and `span` (they claim
   // `=>` and `/*` first). This keeps the tokenizer's per-character work
   // near-constant, so the inline pass (with the SS9 delimiter stack) is O(n).
-  inline     = word | spComment | inlineSpace
+  inline     = word | spComment | bracedComment | inlineSpace
              | arrow | span | inlineNote | litDelim
              | symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
              | editorial | forcedSpan
@@ -204,13 +204,25 @@ CarveCore {
   // escaped SPACE is a non-breaking space; a backslash at END OF LINE is a
   // hard break (PART 3)
   nbspEsc    = "\\" " "
-  hardBreak  = "\\" &(newline | end)
+  // The newline is CONSUMED, as PART 3's `hard_break = '\', newline` spells
+  // it. It used to be a lookahead, which left the newline for `nl` and made a
+  // line block emit TWO breaks for one line boundary - the additive reading
+  // PART 9 SS23 rejects (carve#1334).
+  hardBreak  = "\\" (newline | &end)
 
   // --- Mentions and tags (PART 9 SS7): name = letters/digits/_/- with
   // INTERIOR dots; a trailing dot is punctuation. Word boundary on the
   // left is enforced by the word rule's atGlue/hashGlue absorption.
-  mention    = "@" tagName
-  tag        = "#" tagName
+  // The glued TAIL is the right half of the same boundary rule. A second
+  // marker written directly against a name (`#i#j`, `@a@b`) is preceded by a
+  // word character - the last character of the first name - so it cannot open
+  // a second mention or tag. `word`'s atGlue/hashGlue absorption cannot see
+  // that case, because the run starts with the marker and never enters `word`
+  // at all, so the tail is absorbed here and rendered as literal text
+  // (carve#1156).
+  mention    = "@" tagName gluedMarker*
+  tag        = "#" tagName gluedMarker*
+  gluedMarker = ("@" | "#") tagName
   tagName    = tagChar+ (tagDot tagChar+)*
   tagChar    = letter | digit | "_" | "-"
   tagDot     = "." &tagChar
@@ -225,7 +237,15 @@ CarveCore {
   // ORDINARY code-span attribute block -- with attributes a <span> carries
   // them, with none bare escaped text is emitted. Tried before `image` and
   // `bang` in the inline alternation so `!` binds to a following backtick run.
-  litInline  = "!" code attrs?
+  // Split so the BODY has a name. A construct is skipped in `brContent` for
+  // its extent, and a trailing attribute block is NOT part of what is
+  // skipped: `[t{# c #}{title="]"}x](/u)` closes at the `]` inside the
+  // attribute value, in every engine. The clause skips a span because its
+  // CONTENT is literal, and an attribute value is not that span's content -
+  // `code` already stopped short of `attrs?` there for the same reason. One
+  // spelling of the body, read from both places, so the two cannot drift.
+  litInline  = litInlineBody attrs?
+  litInlineBody = "!" code
 
   // --- Cross-reference with auto text (PART 3 auto_text_link) -------------
   crossref   = "</#" xrefId ">"
@@ -236,7 +256,13 @@ CarveCore {
   // A physical-line identifier: spaces and tabs are data, newlines are not.
   // This mirrors the one-line definition marker and grammar.ebnf §16.
   fnLabel    = (~"]" ~newline any)+
-  inlineNote = "^[" brContent* "]" attrs?
+  // An EMPTY or WHITESPACE-ONLY note is literal (grammar.ebnf §16: "Empty or
+  // whitespace-only (`^[]`, `^[ ]`) is literal"), so `^[` does not open one -
+  // the `^` falls through to text and the `[...]` is an ordinary bracketed run,
+  // which is why `^[]{.c}` renders `^<span class="c"></span>` rather than a
+  // note. Stated here rather than in the semantics: the rendering of the
+  // literal fallback is the bracketed rule's, not this one's.
+  inlineNote = "^[" ~((" " | "\t")* "]") brContent* "]" attrs?
 
   // --- Forced intraword spans {X...X} (PART 9 SS22) and editorial markup.
   // A same-type delimiter inside a forced span is literal until the `X}`
@@ -247,9 +273,9 @@ CarveCore {
   // `looseAttrs` is admitted so a nested bare span's trailing `{...}` attribute
   // block is consumed here (the removed bare-span rules used to grab it via
   // their `attrs?`); the SS9 stack over these tokens then re-attaches it.
-  fInner<d>  = ~(d "}") (rich | span | word | spComment | inlineSpace | litDelim
+  fInner<d>  = ~(d "}") (rich | span | word | spComment | bracedComment | inlineSpace | litDelim
              | looseAttrs | bang | dollar | ellipsis | dashRun | dot | dash | plus | pct
-             | lt | gt | dquote | squote | hash | other)
+             | lt | gt | dquote | squote | hash | nl | other)
 
   // editorial: {+ins+} {-del-} {~old~>new~} {# comment #} (+ the doubled
   // {++...++} / {--...--} forms whose extra marker chars stay literal)
@@ -257,8 +283,10 @@ CarveCore {
   edIns      = "{+" (~"+}" edChar)* "+}" attrs?
   edDel      = "{-" (~"-}" edChar)* "-}" attrs?
   edSub      = "{~" (~"~>" ~"~}" edChar)* "~>" (~"~}" edChar)* "~}" attrs?
-  edComment  = "{#" (~"#}" edChar)* "#}" attrs?
-  edChar     = ~newline any
+  edComment  = edCommentBody attrs?
+  // The body, without the attribute block - see `litInlineBody`.
+  edCommentBody = "{#" (~"#}" edChar)* "#}"
+  edChar     = any
 
   // raw inline passthrough: a code span whose trailing block is EXACTLY
   // {=format} (PART 9 SS20)
@@ -268,7 +296,7 @@ CarveCore {
   // content ends at the FIRST unescaped "]" (corpus 16-5)
   extension  = ":" extName "[" extContent "]" attrs?
   extName    = identStart identRest*
-  extContent = (escape | (~"]" ~newline any))*
+  extContent = (escape | (~"]" any))*
 
   // An attributed symbol shortcode `:name:{...}` wraps in a <span> carrying
   // the attribute block. Core has no symbol map, so an UNMAPPED symbol resolves
@@ -289,7 +317,29 @@ CarveCore {
   // a bare bracketed run with no tail is LITERAL text (rendered with its
   // content inline-parsed).
   bracketed  = "[" brContent* "]" brTail?
-  brContent  = escape | code | nested | (~"]" ~newline any)
+  // THE THREE LITERAL SPANS THE CLOSE SCAN SKIPS, ENUMERATED (grammar.ebnf,
+  // `link_text`'s "WHICH SPANS THE SCAN SKIPS -- NORMATIVE"). The clause names
+  // exactly the spans whose content is LITERAL -- inline code, the `!`-prefixed
+  // inline literal, and an editorial comment -- because a `]` inside them
+  // cannot be escaped, so ending the run there leaves the author no spelling
+  // that keeps both the construct and the text (carve#403).
+  //
+  // Only `code` was listed here. The inline literal shares `code`'s extent
+  // (`!` fell through to the last alternative and the backtick run matched
+  // `code`), so that span was already covered by accident; the comment was
+  // NOT, and `[t{# ] #}z](/u)` stayed literal text in the oracle while every
+  // engine linked it. All three are named now, so a reader auditing this rule
+  // against the clause finds three spans and not one (carve#1197).
+  //
+  // The BODY rules, not the full spans: what is skipped is the span's content,
+  // and a trailing attribute block is not that. `[t{# c #}{title="]"}x](/u)`
+  // closes at the `]` inside the attribute value in every engine, and `code`
+  // already stopped short of `codeAttrd` here for the same reason.
+  //
+  // `{+ +}`, `{- -}` and `{~ ~> ~}` take inline content and are deliberately
+  // absent: an escape inside them IS an escape, so `[{+a\]b+}](u)` already has
+  // a spelling.
+  brContent  = escape | litInlineBody | code | edCommentBody | nested | (~"]" any)
   nested     = "[" brContent* "]"
   brTail     = linkTail | refTail | attrs | emptyAttrs
   linkTail   = "(" dest destTitle? ")" attrs?
@@ -349,7 +399,25 @@ CarveCore {
   // follow-up). Tried BEFORE `image` in the inline alternation so the
   // bracket form wins over the paren form for the same prefix.
   imageRef   = "!" "[" altText "]" "[" refLabel? "]" attrs?
-  altText    = (~"]" ~newline any)*
+  // AN IMAGE IS A LINK WITH A `!` (grammar.ebnf, PART 3 Images: "An image has
+  // the same three forms as a link ...; only the leading `!` and the `<img
+  // src>` output differ"). The bracketed run is therefore the SAME run, closed
+  // by the same scan as `link_text` -- balanced, escape-aware, and skipping
+  // the three literal spans -- so this reuses `brContent` rather than
+  // respelling it.
+  //
+  // It was `(~"]" ~newline any)*`, a flat run stopping at the first `]`, which
+  // made `![t[z]][r]` fail `imageRef`: the `!` fell through to `bang` and the
+  // rest matched `bracketed`, so the oracle rendered a literal "!" plus an <a>
+  // where every engine renders an <img>. Same defect on the paren form
+  // (`![t[z]](/u)`) and on every host that re-parses the run -- caption,
+  // heading, table cell, list item, block quote (carve#1197).
+  //
+  // The VALUE stays the raw source between the brackets. `alt` is an HTML
+  // attribute, so nothing inside it is inline-parsed: `![x /b/ y](/u)` gives
+  // `alt="x /b/ y"` and `![x \] y](/u)` keeps the backslash. Only the CLOSE
+  // changed; `image` / `imageRef` still read `alt.sourceString`.
+  altText    = brContent*
 
   // --- Autolinks (PART 3): URL or email in angle brackets ------------------
   autolink   = "<" (urlBody | emailBody) ">" attrs?
@@ -450,11 +518,40 @@ CarveCore {
   battrSep   = (battrSp | battrCont) battrSp*
   battrCont  = "\n" battrSp*
   battrSp    = " " | "\t"
-  attrItem   = idAttr | classAttr | kvAttr | boolAttr
+  attrItem   = langAttr | idAttr | classAttr | kvAttr | boolAttr
   idAttr     = "#" ident
   classAttr  = "." ident
   kvAttr     = ident "=" attrVal
   boolAttr   = ident
+  // `{:TAG}` is EXACT SUGAR for `lang=TAG`, and `{:}` for `lang=""`
+  // (`language_attribute` in grammar.ebnf). The desugaring happens in the
+  // `parseAttrs` action, not here, so every downstream rule - merge order,
+  // last-wins, hardening, the HTML serializer - reaches it as an ordinary
+  // key/value and needs no case of its own. That is the claim the shorthand
+  // makes, and routing it through one action is what makes the claim testable
+  // rather than restated.
+  //
+  // ASCII ONLY. Ohm's `alnum` follows Unicode, so it accepts `ç` and `é` and
+  // would have made `{:français}` a language attribute reading `français` -
+  // one of the shapes grammar.ebnf names as staying literal. `asciiLetter`
+  // and `digit` are both ASCII-bounded, which is what `language_subtag`
+  // means by "ASCII alphanumeric".
+  //
+  // EIGHT OPTIONAL CHARACTERS rather than `alnum+`, because BCP 47 caps a
+  // subtag at eight and Ohm has no counted repetition. A ninth character then
+  // has no rule to match, `attrs` fails at the `}`, and the whole block stays
+  // literal source - which is what PART 9 §14 already promises for a malformed
+  // attribute block. Writing `alnum+` here would have moved the cap into a
+  // semantic action, where a violation cannot fail the match and would have to
+  // be smuggled out as a wrong answer.
+  langAttr   = ":" langTag?
+  langTag    = langSubtag ("-" langSubtag)*
+  // `langSubChar`, not `langChar`: that name is taken by the code-fence
+  // language token above, which is a different alphabet on purpose (it admits
+  // `+`, `#`, `.` and `/` for `c++`, `f#` and `objective-c`).
+  langSubtag = langSubChar langSubChar? langSubChar? langSubChar? langSubChar?
+               langSubChar? langSubChar? langSubChar?
+  langSubChar = asciiLetter | digit
   attrVal    = quoted | squoted | bareVal
   // NO TAB EITHER. `unquoted_value` in grammar.ebnf is letters, digits, `-`,
   // `_`, `.` and `:` - a tab is not among them - so a tab after a bare value
@@ -501,6 +598,9 @@ CarveCore {
   // a whitespace-preceded %% consumes the rest of the LINE (SS21); the
   // space itself is consumed too
   spComment  = " " "%%" (~newline any)*
+  // {% ... %} consumes through the FIRST closer, including soft line breaks.
+  // It has no leading-space requirement or consumption (SS21a).
+  bracedComment = "{%" (~"%}" any)* "%}"
   inlineSpace = " "
 
   // A bare delimiter that opened nothing is literal text.

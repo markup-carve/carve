@@ -1,0 +1,13 @@
+A terminal comment line still leaves an empty verse line
+
+```
+::: |
+`
+%%
+:::
+.
+<div class="line-block">
+  <p><code>
+</code></p>
+</div>
+```

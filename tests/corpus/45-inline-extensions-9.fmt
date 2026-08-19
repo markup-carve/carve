@@ -1,0 +1,2 @@
+[*Ctrl*+C]{#copy .shortcut kbd data-key=copy onclick=alert(1)}
+[x]{kbd onclick=alert(1)}

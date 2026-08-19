@@ -13,7 +13,7 @@ tested against, and the design rationale behind each decision.
 | | |
 |---|---|
 | **Specification** | 0.1. Tier-1 core and Tier-2 standard extensions are normative and stable; Tier-3 app-level extensions ship but evolve. See [VERSIONING.md](VERSIONING.md). |
-| **Conformance** | 492 corpus examples pinning exact HTML output, plus 28 optional-corpus examples for host-dependent extensions. |
+| **Conformance** | Over 1,250 corpus examples pinning exact HTML output, plus 45 optional-corpus examples for host-dependent extensions. |
 | **Engines** | [carve-js](https://github.com/markup-carve/carve-js) (TypeScript, reference), [carve-php](https://github.com/markup-carve/carve-php), [carve-rs](https://github.com/markup-carve/carve-rs) - all three run the same corpus, with no open or intentional divergences ([tracker](MAINTAINING.md#known-cross-impl-divergences)). |
 | **Bindings** | Python, Ruby, Go, and WebAssembly, all over carve-rs. |
 | **Tooling** | Language server, tree-sitter grammar, formatter and linter (`carve fmt` / `carve lint`), converters from Markdown, HTML, Djot, and BBCode. |

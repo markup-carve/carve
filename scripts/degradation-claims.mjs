@@ -47,7 +47,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'no
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { phpDir, rustDir } from './lib/engine-locations.mjs'
+import { phpDir, rustBinary } from './lib/engine-locations.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -186,14 +186,11 @@ const CLAIMS = [
 
 const engines = []
 if (existsSync(join(jsDir, 'dist/index.js'))) engines.push({ name: 'js', kind: 'js', dir: jsDir })
-for (const candidate of ['target/release/carve', 'target/debug/carve']) {
-  const dir = rustDir()
-  if (dir && existsSync(join(dir, candidate))) {
-    // carve-rs bundles its interactive extensions behind `--extensions`, which
-    // is what makes `--static` able to flatten or degrade them at all.
-    engines.push({ name: 'rs', kind: 'cli', bin: join(dir, candidate), flags: ['--extensions'] })
-    break
-  }
+{
+  const bin = rustBinary()
+  // carve-rs bundles its interactive extensions behind `--extensions`, which
+  // is what makes `--static` able to flatten or degrade them at all.
+  if (bin) engines.push({ name: 'rs', kind: 'cli', bin, flags: ['--extensions'] })
 }
 if (phpDir() && existsSync(join(phpDir(), 'bin/carve'))) {
   // carve-php's CLI registers its bundled interactive extensions for the HTML

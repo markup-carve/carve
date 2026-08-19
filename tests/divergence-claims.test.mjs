@@ -37,6 +37,15 @@ const normalize = (html) => html.replace(/\s+/g, ' ').trim()
  * nest it, which is the claim, but they pretty-print the nesting differently
  * (`<blockquote><p>` against `<blockquote> <p>`), and this file compares
  * whitespace-squashed HTML.
+ *
+ * Section 21 (footnote labels) is absent for the same kind of reason, and it is
+ * worth spelling out because the entry LOOKS testable here. Any input carrying
+ * a resolved footnote already differs between the two engines: the backlink
+ * glyph is `↩` in Carve and `↩︎` (with a variation selector) in Djot. So
+ * `differs: true` passes for every footnote input whether or not the label
+ * matched, which is a check that cannot fail - the exact shape this file
+ * exists to avoid. The binding behavior is pinned by the corpus instead
+ * (22-footnotes-6 for the wrapped reference).
  */
 const CLAIMS = [
   { section: '1', input: '# Getting Started\n', differs: false, note: 'the emitted id is deliberately Djot-shaped - the divergence is in RESOLUTION, not the slug' },
@@ -76,6 +85,8 @@ const CLAIMS = [
   { section: '18', input: '-{.c} x\n', differs: true, note: 'Carve provides an explicit list-item attribute channel' },
   { section: '19', input: '::: note\nx\n:::\n', differs: true, note: 'Carve renders a recognized type as a native admonition' },
   { section: '20', input: '```\nx\n', differs: false, note: 'an unterminated top-level code fence closes at EOF in both' },
+  { section: '21', input: '[^a b]\n\n[^a b]: foo\n', differs: false, note: 'the exactly matching footnote label binds in both' },
+  { section: '21', input: '[^a  b]\n\n[^a b]: foo\n', differs: true, note: 'Djot folds label whitespace; Carve matches it exactly' },
 ]
 
 for (const { section, input, differs, note } of CLAIMS) {

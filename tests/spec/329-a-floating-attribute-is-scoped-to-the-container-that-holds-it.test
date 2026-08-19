@@ -1,0 +1,119 @@
+A floating attribute is scoped to the container that holds it
+
+```
+> q
+> {.k}
+
+tail
+.
+<blockquote><p>q
+{.k}</p></blockquote>
+<p>tail</p>
+```
+
+```
+> q
+> {.k}
+tail
+.
+<blockquote><p>q
+{.k}
+tail</p></blockquote>
+```
+
+```
+- a
+  {.k}
+
+tail
+.
+<ul>
+  <li>a
+{.k}</li>
+</ul>
+<p>tail</p>
+```
+
+```
+- a
+  {.k}
+# H
+.
+<ul>
+  <li>a
+{.k}
+# H</li>
+</ul>
+```
+
+```
+:: t
+:  d
+   {.k}
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+{.k}</dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: t
+:  d
+   {.k
+   #x}
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+{.k
+<span class="tag"><strong>#x</strong></span>}</dd>
+</dl>
+<p>tail</p>
+```
+
+```
+> {.k}
+>
+> tail
+.
+<blockquote><p class="k">tail</p></blockquote>
+```
+
+```
+- a
+  {.k}
+  # H
+.
+<ul>
+  <li>a
+{.k}
+# H</li>
+</ul>
+```
+
+```
+:: t
+:  d
+   {.k}
+   # H
+.
+<dl>
+  <dt>t</dt>
+  <dd>d
+{.k}
+# H</dd>
+</dl>
+```
+
+```
+{.k}
+
+tail
+.
+<p class="k">tail</p>
+```

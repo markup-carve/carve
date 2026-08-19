@@ -247,9 +247,106 @@ const CAPTION = /^\^ (.*?)[ \t]*$/
 // and the wrapper below it, which decides whether the caption attaches. Two
 // copies would let those two answers drift apart, and the collector's copy would
 // be the one nothing tested.
-const CAPTIONABLE_PARAGRAPH = /^(?:!\[[^\]]*\](?:\([^)]*\)|\[[^\]]*\])(?:\{[^}]*\})?|\$\$`.*`)$/
+// THE §16 BRACKETED-RUN CLOSE, SCANNED RATHER THAN MATCHED (carve#1197).
+//
+// `line[open]` is a `[`; the return value is the index just past the `]` that
+// closes it, or -1 if the line holds no close. grammar.ebnf states the rule
+// beside `link_text` ("SEMANTIC CONSTRAINT: the link text ends at the matching
+// `]` -- the close is balanced-bracket, escape- and LITERAL-SPAN-aware ...
+// Not expressible context-free"), and PART 3's Images note binds an image to
+// the same run: "only the leading `!` and the `<img src>` output differ".
+//
+// A REGEX CANNOT STATE THIS, which is why it kept being written as one. The
+// close is BALANCED, so `[^\]]*` answers a different question - it stops at the
+// first `]` at any depth - and it is right on exactly the inputs that have no
+// nesting, which is every image in the corpus. Three copies of that spelling
+// were live in this pipeline and all three agreed with each other and with
+// nothing else. So this is a scanner: the depth counter is the part a pattern
+// cannot carry.
+//
+// The three literal spans (inline code, the `!`-prefixed literal, an editorial
+// comment) are skipped whole, because a `]` inside them is content and cannot
+// be escaped. An UNCLOSED backtick run opens a verbatim span to the end of the
+// block (PART 3 code_span), so the run has no close on this line: -1.
+export function bracketRunEnd(line, open) {
+  if (line[open] !== '[') return -1
+  let depth = 0
+  let i = open
+  while (i < line.length) {
+    const c = line[i]
+    if (c === '\\') {
+      i += 2
+      continue
+    }
+    if (c === '`') {
+      const run = /^`+/.exec(line.slice(i))[0]
+      // THE 1..3 TIER, because that is what the inline layer this feeds
+      // accepts. resources/carve-core.ohm reads `code = code3 | code2 | code1 |
+      // codeU` and says of the last one that longer runs are out of Core: a run
+      // of four or more matches `codeU` and opens a verbatim span to the end of
+      // the block whether or not an equal run follows. A scanner that paired
+      // them anyway would hand this pass a close the inline pass does not
+      // believe in, and the two answers meeting produced a `<figure>` wrapped
+      // around a paragraph - a shape neither layer would have emitted alone.
+      if (run.length > 3) return -1
+      const closer = new RegExp('(?<!`)`{' + run.length + '}(?!`)', 'g')
+      closer.lastIndex = i + run.length
+      const hit = closer.exec(line)
+      if (hit === null) return -1
+      i = hit.index + run.length
+      continue
+    }
+    if (c === '{' && line[i + 1] === '#') {
+      const close = line.indexOf('#}', i + 2)
+      if (close !== -1) {
+        i = close + 2
+        continue
+      }
+    }
+    if (c === '[') depth++
+    if (c === ']') {
+      depth--
+      if (depth === 0) return i + 1
+    }
+    i++
+  }
+  return -1
+}
+// SS4's two PROSE-spelled captionable hosts: a paragraph whose WHOLE content is
+// one image (inline or reference form, trailing attribute block allowed), and
+// one whose whole content is a display-math span. The other three hosts have a
+// `[caption_slot]` production of their own. ONE spelling, read from two places -
+// the paragraph collector, which decides whether a `^ ` line ends the paragraph,
+// and the wrapper below it, which decides whether the caption attaches. Two
+// copies would let those two answers drift apart, and the collector's copy would
+// be the one nothing tested.
+const CAPTIONABLE_IMAGE_TAIL = /^(?:\([^)]*\)|\[[^\]]*\])(?:\{[^}]*\})?$/
+const CAPTIONABLE_MATH = /^\$\$`.*`$/
 function isCaptionableParagraph(para) {
-  return para.length === 1 && CAPTIONABLE_PARAGRAPH.test(para[0])
+  // The whole paragraph, not its first line. An image's ALT is `brContent*`,
+  // which admits a line boundary like any other inline content, so
+  // `![a` / `b](/i)` is one image and one paragraph - and a paragraph whose
+  // whole content is one image is exactly what §4 makes captionable. This read
+  // `para[0]` behind a `para.length !== 1` guard, so the two-line spelling of
+  // the same image was never captionable and never a standalone image either;
+  // all three engines answer both the same as the one-line spelling
+  // (carve#1352).
+  //
+  // THE ALT SPANS LINES, THE TAIL DOES NOT. Only `brContent` gained the
+  // boundary: `link_destination` and `reference_label` are one-line
+  // productions and stayed that way, so a tail carrying a newline is not an
+  // image tail and the paragraph is ordinary text. Reading the join without
+  // that half made `![a][r` / `x]` / `^ cap` a figure wrapping a paragraph of
+  // literal text, where all three engines leave both lines as prose - the
+  // tail patterns admit a newline inside `[...]` and `(...)` because they
+  // never had to exclude one.
+  const line = para.join('\n')
+  if (CAPTIONABLE_MATH.test(line)) return true
+  if (!line.startsWith('![')) return false
+  const altEnd = bracketRunEnd(line, 1)
+  if (altEnd === -1) return false
+  const tail = line.slice(altEnd)
+  return !tail.includes('\n') && CAPTIONABLE_IMAGE_TAIL.test(tail)
 }
 // The run after the marker is SPACES ONLY: `-\titem` is a paragraph in every
 // engine, so a tab here must not open a list (PART 9 SS11). Its width is the
@@ -500,16 +597,28 @@ function classifyOrdered(token) {
   if (/^[a-z]$/i.test(token) && (lower || upper)) {
     out.push({ dialect: lower ? 'alpha' : 'Alpha', value: alphaToInt(token) })
   }
-  if (token.length > 1 && /^[a-z]+$/i.test(token) && !ROMAN_CHARS.test(token.toLowerCase())) {
-    throw new Refuse(`multi-letter non-roman ordered marker: ${token}`)
-  }
+  // No dialect claims the token, so it is NOT an ordered marker: PART 2's
+  // `ordered_marker` admits `digit+`, a single `letter` or a `roman_numeral`
+  // and nothing else, and `abc.` is none of the three. The caller reads the
+  // empty list as "not a marker" and the line stays a paragraph, which is what
+  // the production already says (markup-carve/carve#1188).
   return out
 }
 
 // --- tables (PART 9 SS5) ----------------------------------------------------
 // T1: split a row into raw cell segments; an unescaped `|` outside a code
 // span separates cells. Returns null when the line is not a row.
-function splitRow(line) {
+/*
+ * `openRun` seeds the scanner with a verbatim run left OPEN by the row this
+ * line continues (carve#1293). A `+` continuation extends the cell, so the
+ * block the run reaches the end of is that whole cell - the pipes it spans on
+ * the continuation row are its content, exactly as they are on the row that
+ * opened it. Splitting the continuation with a fresh scanner cut the line at a
+ * pipe that is inside the run, and every segment past the first was then
+ * dropped for want of a column to join, which is content loss rather than a
+ * different answer.
+ */
+function splitRow(line, openRun = 0, openRunAt = 0, kind = 'standard') {
   let s = line
   let rowAttrs = null
   const ra = new RegExp(`\\|\\{(${ATTR_PAYLOAD})\\}[ \\t]*$`).exec(s)
@@ -528,7 +637,30 @@ function splitRow(line) {
   const cells = []
   let cur = ''
   let i = 1
-  let inCode = 0 // backtick run length of an open code span
+  // The seed belongs to ONE column: a run left open by the row above was open
+  // in that row's LAST cell, and a continuation joins per column, so the
+  // columns before it are scanned normally and the pipe that ends them still
+  // separates. Seeding the whole line instead swallowed those separators and
+  // pushed the continuation into the wrong cell, leaving the run's own cell
+  // with an empty `<code></code>` - the artifact the ruling on carve#1293
+  // names as a mechanism showing through rather than an answer.
+  let inCode = openRunAt === 0 ? openRun : 0 // backtick run length of an open code span
+  /*
+   * THE CLOSING PIPE CLOSES THE ROW EVEN WITH A VERBATIM RUN STILL OPEN
+   * (carve#1284). An unclosed backtick run inside a cell used to swallow every
+   * `|` after it, including the row's own closer, so `| a ``b | c d |` ended
+   * with content dangling and the line was prose. All three engines read it as
+   * a table whose single cell is `a ``b | c d`, with the run stopping at the
+   * closer - carve-php moved last, and this reader is now the only one left on
+   * the old answer.
+   *
+   * The closer is the last `|` on the line, trailing whitespace aside: the same
+   * position the `cur.trim() !== ''` test below already treats as the end of the
+   * row, so this does not widen what counts as a row - it only stops an open run
+   * from eating the character that ends one.
+   */
+  let closerIdx = s.length - 1
+  while (closerIdx >= 0 && (s[closerIdx] === ' ' || s[closerIdx] === '\t')) closerIdx--
   while (i < s.length) {
     const c = s[i]
     if (c === '\\' && s[i + 1] === '|' && !inCode) {
@@ -545,22 +677,62 @@ function splitRow(line) {
       i += run
       continue
     }
-    if (c === '|' && !inCode) {
+    if (c === '|' && (!inCode || i === closerIdx)) {
       cells.push(cur)
       cur = ''
+      if (cells.length === openRunAt) inCode = openRun
       i++
       continue
     }
     cur += c
     i++
   }
+  /*
+   * AN ESCAPED CLOSING PIPE IS STILL AN ESCAPE (carve#1293). `| a b \|` ends
+   * in a pipe, so the row closes there; the escape decides what the CELL holds,
+   * which is a literal pipe rather than an orphaned backslash. Taking the
+   * escape as the terminator instead is what produced `a b <br>` in two
+   * engines, and it is a POSITION EXCEPTION with nothing behind it: every
+   * reader already honors `\|` in every other position of the same row, as the
+   * mid-cell control beside this case shows. The one authoring consequence
+   * decides it - `\|` is the only way to write a literal pipe in a cell, and
+   * under the terminator reading it stops working in the position an author
+   * reaches for most.
+   *
+   * This does not widen what counts as a row: the leftover must be the escaped
+   * closer itself, so `| a | b` is prose exactly as before.
+   */
+  if (cur.trimEnd().endsWith('\\|')) {
+    cells.push(cur)
+    cur = ''
+  }
   // T2: a row CLOSES with a pipe (`standard_row` ends in `'|'`). A line-initial
   // `|` with content dangling after the last pipe is prose, at a block start as
   // much as mid-paragraph -- there is no lenient open form.
   if (cur.trim() !== '') return null
   if (cells.length === 0) return null // T2: `||` has no cell
-  if (cells.length === 1 && cells[0].trim() === '') return null // `||`
-  return { cells, rowAttrs }
+  /*
+   * T2's MINIMUM-CELL GUARD IS THE STANDARD ROW'S (carve#1354). "At least one
+   * cell lies between" is written of `valid_row`, the predicate that decides
+   * whether a line OPENS a table and whether it interrupts a paragraph, and T2
+   * says so in as many words: "this matches the `standard_row` production".
+   * A continuation row opens nothing - it appends to a table already open and
+   * produces no `<tr>` - so a row whose every cell is empty appends nothing,
+   * which is exactly what T6 provides for ("empty cells append nothing").
+   *
+   * Applying the standard row's guard here made ONE clause answer twice by
+   * column count: `| a | b |` over `+ | |` was absorbed and `| a |` over
+   * `+ |` was published as a paragraph, because only the one-column shape
+   * reaches a `cells.length === 1` test. All three engines absorb both.
+   */
+  if (kind === 'standard' && cells.length === 1 && cells[0].trim() === '') return null // `||`
+  // `inCode` here is the run the row's closing pipe did NOT close: a
+  // continuation row is scanned with it, and nothing else reads it.
+  // `inCode` here is the run the row's closing pipe did NOT close, and it sits
+  // in the LAST cell by construction: once open, a run swallows every `|` but
+  // the closer. A continuation row is scanned with both, and nothing else
+  // reads either.
+  return { cells, rowAttrs, openRun: inCode, openRunAt: cells.length - 1 }
 }
 
 // T2: is this line a table row? The block parser and container sub-block
@@ -721,6 +893,44 @@ const COMMENT_FENCE_BODY = /^(%{3,})(.*)$/
 const CONT_ROW = /^\+.*\|[ \t]*$/ // `+` replaces the leading pipe; must close with one
 const DELIM_CELL = /^ *:?-+:? *$/
 
+/*
+ * IS THIS LINE A CONTINUATION ROW? -- PART 9 SS5 T6, and PART 2 `table`.
+ *
+ * The SHAPE does not answer on its own. A continuation row exists only relative
+ * to a table ABOVE it: T6 says a table "cannot BEGIN with a continuation row",
+ * and the block reader says the same thing operationally - it enters a table
+ * run on `isTableRow` alone, so a `+ ...|` line reached anywhere else falls
+ * through to the paragraph collector and is published as ordinary prose.
+ *
+ * `isTableRow` needs no such parameter, and that asymmetry is what hid this: a
+ * `|`-delimited row OPENS a table by itself, so for a standard row the shape IS
+ * the context.
+ *
+ * The other `+` - SS17 L3's continuation MARKER - disambiguates by being alone
+ * on its line. T6 cannot borrow that rule, because a continuation row REQUIRES
+ * cells after the `+`, so it leans entirely on what is above it.
+ *
+ * Classified by shape, the oracle contradicted itself inside one document.
+ * `- + a |` / `tail` published the marker line as paragraph text and then told
+ * PART 1 S4 the same line was a table row, so S4 found no open paragraph and
+ * `tail` left the item, where every engine folds it in (carve#1345). Both
+ * answers come from here now.
+ */
+const isContinuationRow = (text, tableOpen) => tableOpen && CONT_ROW.test(text)
+
+/*
+ * ONE STEP OF A TABLE RUN. A row opens it, a continuation row extends it, and
+ * any other line - a blank included - ends it, which is the run the block
+ * reader's own table loop walks.
+ *
+ * `tableOpenAfter` folds it over a whole body. The list-item collector folds
+ * the same step one pushed line at a time instead, because it sees its body
+ * incrementally and re-walking that body per line is quadratic over a long
+ * continuation run.
+ */
+const tableRunStep = (open, line) => isTableRow(line) || isContinuationRow(line, open)
+const tableOpenAfter = (lines) => lines.reduce(tableRunStep, false)
+
 // A table cell's padding slots are `space` runs, not whitespace runs
 // (grammar.ebnf `delimiter_cell`, `header_cell`, `data_cell`, `rowspan_marker`,
 // `colspan_marker`). They sit after the row's opening `|`, so they are INLINE,
@@ -740,7 +950,7 @@ const padTrim = (s) => s.replace(/^ +/, '').replace(/ +$/, '')
 
 // classify one raw cell segment
 function parseCell(seg) {
-  const cell = { header: false, align: null, attrs: null, content: '' }
+  const cell = { header: false, align: null, valign: null, attrs: null, content: '' }
   let s = seg
   if (s.startsWith('=')) {
     cell.header = true
@@ -748,12 +958,26 @@ function parseCell(seg) {
   } else if (s.startsWith('\\=')) {
     s = '\\=' + s.slice(2) // literal `=` data cell; unescaped by inline pass
   }
-  // glued alignment marker (per-column on a header cell, per-cell on a body
-  // cell); a DOUBLED marker aligns and keeps one literal char (corpus 25)
-  const am = /^([<>~])/.exec(s)
-  if (am) {
-    cell.align = am[1] === '<' ? 'left' : am[1] === '>' ? 'right' : 'center'
-    s = s.slice(1)
+  // A horizontal-only or paired run is committed only when its optional
+  // attribute block is followed by the required space. A lone vertical marker
+  // and invalid duplicate axes consume nothing.
+  const run = new RegExp(`^([<>~^v?]{1,2})(?=(?:\\{${ATTR_PAYLOAD}\\})? )`).exec(s)
+  if (run) {
+    const marks = [...run[1]]
+    const horizontalMark = marks[0]
+    const verticalMark = marks[1]
+    const inheritedHorizontal = horizontalMark === '?' && marks.length === 2 && '^~v'.includes(verticalMark)
+    const horizontal = '<>~'.includes(horizontalMark)
+      ? (horizontalMark === '<' ? 'left' : horizontalMark === '>' ? 'right' : 'center')
+      : null
+    const vertical = verticalMark !== undefined && '^~v'.includes(verticalMark)
+      ? (verticalMark === '^' ? 'top' : verticalMark === 'v' ? 'bottom' : 'middle')
+      : null
+    if ((horizontal !== null && (marks.length === 1 || vertical !== null)) || inheritedHorizontal) {
+      cell.align = horizontal
+      cell.valign = vertical
+      s = s.slice(run[1].length)
+    }
   }
   // A glued attribute block; "the rest of the cell, AFTER OPTIONAL WHITESPACE, is
   // the content" (§5), so no space is required after the closing brace - this
@@ -861,6 +1085,188 @@ function startsVisibleBlock(line) {
   return HEADING.test(line) || HR.test(line) || QUOTE.test(line) || DEFLIST_TERM.test(line)
 }
 
+/*
+ * DOES THIS LINE LEAVE A PARAGRAPH OPEN? -- PART 1 S4, NO OPEN PARAGRAPH, NO
+ * LAZY LINE.
+ *
+ * S4's lazy branch asks one question and only one: does ANY container in the
+ * open stack hold an OPEN PARAGRAPH. Everything else about the unmatched
+ * container is irrelevant, which S4 says outright ("the fence kind is not a
+ * parameter"). So the item collector needs the same predicate a paragraph
+ * tracker anywhere else needs, and it needs it for the MARKER LINE too - the
+ * marker line's content is the item's first block, and a heading, a table, a
+ * break or a definition is not a paragraph however it got there.
+ *
+ * This existed only as a QUOTE special case, so `- # H` recorded an open
+ * paragraph and a following column-0 line folded into an item that had none.
+ * That was the whole of carve#1280: eight of eleven last-child kinds folded in
+ * a list item and ended in a block quote, on a rule that names neither
+ * container.
+ *
+ * A colon fence is deliberately absent: its BODY can hold a paragraph, so the
+ * answer depends on what is inside it rather than on the opener, and S4 works
+ * that case separately. A code fence is absent for the opposite reason - the
+ * collector breaks on an open opaque body before it ever asks.
+ *
+ * `atBlockPosition` says the caller knows this text sits where a BLOCK OPENER
+ * is recognized, so a marker on it really opens a nested item. It is off by
+ * default because one caller cannot promise that: a `dd` body's last line may
+ * be marker-SHAPED text that folded into the body's open paragraph (§10 I2 -
+ * list markers never interrupt), and reading `:  a` / `   - # H` as a nested
+ * list there moved a `tail` out of the `<dd>`.
+ *
+ * The peel is a LOOP rather than a self-call, and it carries the SAME nesting
+ * budget the parse does. A self-call overflowed the JS stack on one line of
+ * ~10k stacked markers, and an unbounded loop replaced that with a quadratic
+ * walk - each turn re-matches the whole remaining suffix, so 8k markers cost
+ * 6s where the base parse costs 21ms. §25 settles both: past
+ * MAX_NESTING_DEPTH an opener DEGRADES to literal paragraph text, so a peel
+ * that reaches the cap is looking at prose and says so.
+ */
+function opensParagraph(text, atBlockPosition = false, tableOpen = false) {
+  let budget = MAX_NESTING_DEPTH
+  // Whether a table is open ABOVE this line, which is the one thing the shape of
+  // a continuation row cannot tell (see `isContinuationRow`). It does not
+  // survive a peel, and each peel has its own reason.
+  //
+  // A MARKER carries its item's FIRST block, and nothing is above a first
+  // block - a table written above the marker is above the ITEM, not above the
+  // item's first line, and cannot reach into it.
+  //
+  // A QUOTE spans lines, so its content is not always its first block, and the
+  // peel does not carry the quote's own line history. That history is the
+  // CALLER's to supply, which is what `tableOpen` is for: a caller walking a
+  // quote's lines in order knows the run and hands it in, and the quote reader
+  // does exactly that per depth (`nestedQuoteOpensParagraph`). A caller with
+  // only one line gets the one-line answer, and a `+ ...|` with no table it can
+  // see is prose - which is carve#1345's rule rather than a shortcut.
+  //
+  // This comment used to record the opposite as settled, on the ground that
+  // `> | a |` / `> + b |` / `tail` kept `tail` inside the quote everywhere.
+  // carve#1348 moved that: the quote's own tracker carries the run now, so the
+  // quote ends and `tail` is a document paragraph here and in carve-rs.
+  // carve-js and carve-php have not landed it yet (carve#1355).
+  let openTable = tableOpen
+  for (;;) {
+    if (text.trim() === '') return false
+    // A quote is asked the SAME question about what it carries. An empty quote
+    // opens nothing, and neither does `> # H` - the answer is the quote's own
+    // last block, not merely whether the quote had any content. This used to
+    // test non-emptiness alone, so `- > # H` / `tail` folded the tail into the
+    // ITEM with no paragraph open anywhere in the stack. A quote's content is
+    // at a block position exactly when the quote itself is, so the flag rides
+    // along unchanged.
+    if (budget-- <= 0) return true
+    if (QUOTE.test(text)) { text = QUOTE.exec(text)[1] ?? ''; openTable = false; continue }
+    if (HEADING.test(text) || HR.test(text)) return false
+    // A LIST MARKER is asked the SAME question about what it carries, for the
+    // same reason a quote is, and S4's clause names this case outright: the
+    // rule "binds even where the unmatched container is a LIST ITEM whose last
+    // block is a container". A nested item is that container, so `- # H` opens
+    // no paragraph and neither does the `- - # H` that carries it.
+    //
+    // Asked of the marker LINE instead of its content, the answer was prose
+    // every time, which is why depth 1 was already right and depth 2 was not:
+    // `- # H` reached this predicate as `# H` and closed, `- - # H` reached it
+    // as `- # H` and did not. `- - - # H` folded exactly one level in, the tell
+    // that one turn of the peel was missing rather than the whole rule.
+    //
+    // The leading-whitespace guard is `matchMarkerAt`'s own precondition: it
+    // requires the indentation to be measured rather than re-matched, and an
+    // indented marker is a different question anyway - whether a list opens
+    // there at all is the column rule, not this one.
+    //
+    // HR is tested first and stays first: `---` is a break, not a bullet with
+    // no content. BULLET cannot match it anyway - it wants a space after the
+    // marker character - so the order is belt and braces.
+    if (atBlockPosition && text[0] !== ' ' && text[0] !== '\t') {
+      const nm = matchMarkerAt({ col: 0, rest: text })
+      if (nm) { text = nm.text.trim(); openTable = false; continue }
+    }
+    if (COMMENT_LINE.test(text) || COMMENT_FENCE_BODY.test(text)) return false
+    if (isTableRow(text) || isContinuationRow(text, openTable)) return false
+    if (FOOTNOTE_DEF.test(text) || isLinkDef(text)) return false
+    if (tryAttrLine([text], 0)) return false
+
+    return true
+  }
+}
+
+/*
+ * DOES A DEFINITION BODY SO FAR LEAVE A PARAGRAPH OPEN? -- PART 1 S4 for a `dd`.
+ *
+ * A flush-left line joins a `dd` only by folding into an open paragraph, so the
+ * body's last block answers, exactly as it does for a list item and a quote. It
+ * used to be asked of nothing at all, which let `:  {.k}` / `tail` fold `tail`
+ * in and hand it an attribute the author wrote against a container that had
+ * already ended (carve#1281).
+ *
+ * The question is asked of the trailing RUN rather than of the last physical
+ * line, because A5 lets one attribute block WRAP: a body ending `{.k` / `#x}`
+ * has a closing brace on its last line and is still one attribute block, and
+ * classifying that line alone reads it as prose.
+ *
+ * The body is also where the CONTINUATION-ROW context comes from. `+ a |` as a
+ * body's only line is prose and holds an open paragraph; the same line under a
+ * table row is that table's last row and holds none.
+ */
+function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0) {
+  let last = -1
+  for (let k = bodyLines.length - 1; k >= 0; k--) {
+    if (bodyLines[k].trim() !== '') { last = k; break }
+  }
+  // An empty body has nothing to fold into and nothing to protect: the
+  // flush-left line IS the body, which is the `:  ` + pulled-block shape.
+  //
+  // An empty QUOTE is the opposite answer to the same emptiness, and S4 states
+  // it outright: `- >` / `X` closes the item because "there is no open
+  // paragraph anywhere in the stack". So the peel below cannot borrow this
+  // return, and `:: t` / `:  >` / `tail` must leave the definition.
+  if (last < 0) return !quoted
+  for (let k = last; k >= 0 && bodyLines[k].trim() !== ''; k--) {
+    if (bodyLines[k][0] !== '{') continue
+    const al = tryAttrLine(bodyLines, k)
+    if (al && al.next === last + 1) return false
+  }
+
+  /*
+   * A QUOTE'S OWN BODY ANSWERS, AND THE PEEL HAPPENS HERE -- PART 1 S4
+   * (carve#1348). S4 already says the question "is asked of a QUOTE
+   * recursively" and that "its own last block answers". `opensParagraph` peels
+   * a quote too, but it is handed ONE line, so a quote whose last block spans
+   * lines reaches it with no history: `> | a |` over `> + b |` arrived as
+   * `+ b |` with no table above it, which is prose, and the flush-left line
+   * folded into a definition whose body ends in a TABLE.
+   *
+   * Recursing on the quote's trailing run gives the peel the history it needs
+   * and needs no new rule: the body of a quote is a body like any other, so it
+   * is asked the same question by the same predicate.
+   *
+   * ON THE SAME BUDGET `opensParagraph` PEELS WITH, and for the same reason:
+   * one turn per marker on a line of ten thousand of them is a stack overflow
+   * where the cap promises a DEGRADATION, and a `RangeError` out of the layout
+   * automaton is exactly the outcome MAX_NESTING_DEPTH exists to prevent. Past
+   * the cap an opener is literal paragraph text, so the answer there is the
+   * one `opensParagraph` gives: prose, and a paragraph open.
+   */
+  if (QUOTE.test(bodyLines[last])) {
+    if (depth >= MAX_NESTING_DEPTH) return true
+    let first = last
+    while (first > 0 && QUOTE.test(bodyLines[first - 1])) first--
+    const inner = bodyLines.slice(first, last + 1).map((l) => QUOTE.exec(l)[1] ?? '')
+    // AN EXPLICIT `>` BLANK LINE IS THE QUOTE'S OWN BLANK, and it CLOSES the
+    // paragraph above it. The trailing-blank skip at the top of this function
+    // is written for a definition body, where trailing blanks are the
+    // separator between the body and what follows and carry no such meaning -
+    // so it must not run on a peeled quote, or `:  > a` over `   >` reports
+    // the paragraph `>` just ended as open and pulls the flush-left line in.
+    if (inner.length > 0 && inner[inner.length - 1].trim() === '') return false
+    return bodyLeavesParagraphOpen(inner, true, depth + 1)
+  }
+
+  return opensParagraph(bodyLines[last], false, tableOpenAfter(bodyLines.slice(0, last)))
+}
+
 // A sub-BLOCK attached to an open list item after a blank line: it nests and
 // leaves the list TIGHT (SS17 L2), unlike a second paragraph, which loosens it
 // (SS17 L1). Colon fences and table rows count -- they are blocks, not prose.
@@ -933,7 +1339,17 @@ export function parse(src) {
   // the slot one character rather than the first character of a run. The
   // second space then reaches `frontmatter_format = (letter | digit)+`, which
   // cannot match it, so the line is not a typed opener.
-  if (lines[0] !== undefined && /^---(?! *[^\S ])( (?! )|[A-Za-z0-9]+\s*$|$)/.test(lines[0])) {
+  //
+  // POSITION DECIDES WHICH RULE GOVERNS (carve#1295). Everything above is
+  // about the slot BEFORE a format token. A run with NOTHING after it is not
+  // that slot at all: it is trailing whitespace on a content line, PART 2
+  // drops it, and what is left is the bare `---` opener. So `---<TAB>` and
+  // `---<SP><TAB>` open frontmatter while `---<TAB>yaml` does not, and the
+  // two clauses never need an exception written into either. `[ \t]*$` is the
+  // whole of that reading, and it is deliberately spelled with the same two
+  // characters PART 2's `whitespace` admits - a form feed or a no-break space
+  // is CONTENT, so `---<FF>` is not an opener and falls through as before.
+  if (lines[0] !== undefined && /^---(?:[ \t]*$|(?! *[^\S ])( (?! )|[A-Za-z0-9]+\s*$))/.test(lines[0])) {
     for (let j = 1; j < lines.length; j++) {
       if (/^---[ \t]*$/.test(lines[j])) {
         lines.splice(0, j + 1)
@@ -946,6 +1362,9 @@ export function parse(src) {
   // not leak into the parse-result contract { blocks, linkDefs, footnoteDefs,
   // abbrDefs }. It is back to 0 here, so drop it before spreading state.
   delete state.blockDepth
+  // inFigureGroup is the same kind of transient recursion bookkeeping (the
+  // PART 9 SS4c no-nesting demotion); it is false again here, so drop it too.
+  delete state.inFigureGroup
   // Unwrap a figure whose reference image never resolved (see the
   // `pendingRef` note above). Iterative, because a figure can sit inside
   // any container and the tree is as deep as the document.
@@ -1001,7 +1420,7 @@ function flattenPastCap(lines) {
 // single counter on `state` bounds the nesting uniformly (PART 26). The
 // counter is incremented on entry and decremented on exit (try/finally) so
 // sibling containers never accumulate depth.
-function parseBlocks(lines, state, top, inItem = false, meas = undefined) {
+function parseBlocks(lines, state, top, inItem = false, meas = undefined, stop = undefined) {
   state.blockDepth = (state.blockDepth ?? 0) + 1
   if (state.blockDepth > MAX_NESTING_DEPTH) {
     state.blockDepth--
@@ -1019,13 +1438,13 @@ function parseBlocks(lines, state, top, inItem = false, meas = undefined) {
     return flattenPastCap(lines)
   }
   try {
-    return parseBlocksImpl(lines, state, top, inItem, meas)
+    return parseBlocksImpl(lines, state, top, inItem, meas, stop)
   } finally {
     state.blockDepth--
   }
 }
 
-function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) {
+function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, stop = undefined) {
   const blocks = []
   let i = 0
   const n = lines.length
@@ -1057,6 +1476,16 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
   const push = (node) => blocks.push(flushAttrs(node))
 
   while (i < n) {
+    // SS17 L3 asks this parser where the FIRST block ends (see firstBlockEnd).
+    // A block is pushed only once it is complete, so the top of the loop - the
+    // one place that has consumed nothing of the next line - is where `i` is
+    // exactly that boundary. Asking here costs one parse; the alternative,
+    // re-parsing every prefix until one yields a single block, is quadratic in
+    // the attached block's line count and reachable from ordinary input.
+    if (stop !== undefined && blocks.length > 0) {
+      stop.next = i
+      return blocks
+    }
     const line = lines[i]
     if (ind(i).rest === '') { // isBlank, without re-walking the indent
       i++
@@ -1259,6 +1688,22 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
       if (info) {
         // valid opener, no closer: at BLOCK START the code runs to the end
         // of the container (oracle-verified; corpus 80)
+        //
+        // A `=FORMAT` opener is a RAW block whether or not it is terminated.
+        // Only the terminated branch above tested the prefix, so an
+        // unterminated one fell through to here and rendered as code with the
+        // marker still in the info string - `class="language-=html"`, which is
+        // not a class any renderer emits, with the raw bytes escaped into it.
+        // All three engines pass the content through in both cases (carve#1104).
+        if (info.lang.startsWith('=')) {
+          push({
+            t: 'raw',
+            format: info.lang.slice(1),
+            text: lines.slice(i + 1).map(stripLazy).join('\n'),
+          })
+          i = n
+          continue
+        }
         push({
           t: 'code',
           lang: info.lang,
@@ -1395,7 +1840,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
               i = end
               continue
             }
-            if (foldablePlain(cur)) { bodyLines.push(stripIndent(cur).replace(/[ \t]+$/, '')); i++; continue }
+            if (foldablePlain(cur) && bodyLeavesParagraphOpen(bodyLines)) {
+              bodyLines.push(stripIndent(cur).replace(/[ \t]+$/, ''))
+              i++
+              continue
+            }
             break
           }
           node.items.push({ ddBlocks: bodyLines.length ? parseBlocks(bodyLines, state, false) : [] })
@@ -1430,9 +1879,23 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
           const close = findColonCloser(lines, i, cf[1].length)
           const end = close === -1 ? n : close
           const body = lines.slice(i + 1, end)
-          if (close === -1 && body.length > 0 && body.every((l) => isBlank(l) || l.startsWith(LAZY))) {
+          if (close === -1 && body.some((l) => l.startsWith(LAZY)) && body.every((l) => isBlank(l) || l.startsWith(LAZY))) {
             // A marker-line opener whose only "body" came from below-content
             // lazy folding did not actually acquire container body lines.
+            //
+            // LAZY FOLDING IS THE SUBJECT, so the guard asks whether any
+            // happened. It used to fire on `body.length > 0` alone, which a
+            // BLANK line satisfies - and the item collector pushes exactly one
+            // blank into the body while a colon fence is open, so `- ::: d`
+            // followed by a blank came in here with a one-blank body and was
+            // demoted to literal text. The same blank is the container's own
+            // content two functions over; reading it here as evidence that no
+            // body was acquired gives one line two contradictory roles inside
+            // a single parse. The neighbouring spellings were all already
+            // right - the opener at end of input, with its closer, with a body
+            // line, and the same opener inside a quote - so only the blank
+            // differed (carve#1382). A blank may still ride ALONGSIDE lazy
+            // lines, which is what `isBlank` keeps covering.
           } else {
             i = close === -1 ? n : close + 1
             if (opener.mode === 'line-block') {
@@ -1445,6 +1908,37 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
               push({ t: 'footnotes-placement' })
             } else if (opener.type === 'toc') {
               throw new Refuse('::: toc directive')
+            } else if (
+              opener.type === 'figure' && opener.title === null && opener.label === null &&
+              !state.inFigureGroup
+            ) {
+              // PART 9 SS4c: a BARE `::: figure` opener is a composite figure
+              // group. An opener carrying a quoted title or [label] does not
+              // match figure_group_open and falls to the generic colon-div arm
+              // below; a bare opener anywhere inside an open group's body is
+              // demoted the same way (groups do not nest), which is what the
+              // state flag carries through the recursion.
+              state.inFigureGroup = true
+              let children
+              try {
+                children = parseBlocks(body, state, false)
+              } finally {
+                state.inFigureGroup = false
+              }
+              const node = { t: 'figure-group', children }
+              if (close !== -1) {
+                // caption at the CLOSER (SS4's sixth host; one blank allowed).
+                // A group closed by end of input has no closer line to host
+                // the slot.
+                let j = i
+                if (j < n && isBlank(lines[j] ?? '') && CAPTION.test(lines[j + 1] ?? '')) j++
+                const cap = j < n && lines[j] !== undefined ? CAPTION.exec(lines[j]) : null
+                if (cap) {
+                  node.caption = cap[1]
+                  i = j + 1
+                }
+              }
+              push(node)
             } else {
               push({
                 t: 'colon-div',
@@ -1465,16 +1959,45 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
     // --- tables (PART 9 SS5) ---
     if (isTableRow(line)) {
       const node = { t: 'table', rows: [], caption: undefined }
+      // the verbatim run the last row left open, and the column it is open in,
+      // for the continuation rows below
+      let openRun = 0
+      let openRunAt = 0
+      // T7 consumes the delimiter row, so the LINE above a `+` may be a line
+      // that is not a row of this table at all. See the continuation branch.
+      let afterDelimiterRow = false
       while (i < n) {
         const l = lines[i]
         if (l === undefined || isBlank(l)) break
         if (CONT_ROW.test(l)) {
           // T6: continuation row - joins per column onto the row above
-          const sr = splitRow('|' + l.slice(1))
+          const sr = splitRow('|' + l.slice(1), openRun, openRunAt, 'continuation')
           if (!sr) break
+          openRun = sr.openRun
+          openRunAt = sr.openRunAt
           if (node.rows.length === 0) throw new Refuse('table begins with a continuation row')
           const prev = node.rows[node.rows.length - 1]
-          if (prev.cells.every((c) => c.header)) break // needs a BODY row (corpus 113)
+          /*
+           * THE ROW ABOVE IS A LINE, NOT A `<tr>` (carve#1354). T6 joins a
+           * continuation onto "the row ABOVE", and T7 CONSUMES the delimiter
+           * row - it produces no `<tr>` and is not a row of the table - so a
+           * `+` line directly under one has no row above it to join and is
+           * ordinary prose. That is corpus 115, and it is the only case that
+           * declines.
+           *
+           * This tested `prev.cells.every((c) => c.header)` instead, which
+           * gets 115 right for the wrong reason and gets the NATIVE header
+           * spelling wrong: `|=a |` over `+ b |` was published as a PARAGRAPH
+           * where all three engines join it onto the header cell, and
+           * `| a |` over `|=b |` over `+ c |` joins onto an all-header row in
+           * every reader including this one. Header-ness was never the
+           * discriminator - a delimiter row between the two lines is, and it
+           * declines a NATIVE header row just the same (`|=a |` / `| - |` /
+           * `+ cont |` is prose in all three). T9 says the rest outright: a
+           * `^` rowspan may reach a header cell, so a header cell is an
+           * ordinary cell in every other table mechanism.
+           */
+          if (afterDelimiterRow) break
           sr.cells.forEach((seg, ci) => {
             // A continuation row's cells ARE `table_cell`s (grammar.ebnf
             // `continuation_row`), so they carry the same space-only padding
@@ -1495,6 +2018,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
         }
         const sr = splitRow(l)
         if (!sr) break
+        openRun = sr.openRun
+        openRunAt = sr.openRunAt
         // T7: the GFM delimiter row (second line only; a delimiter-shaped
         // FIRST row disqualifies promotion - the second row is then data)
         if (
@@ -1516,11 +2041,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
             else if (left) col.align = 'left'
             else if (right) col.align = 'right'
           })
+          afterDelimiterRow = true
           i++
           continue
         }
         const row = { cells: sr.cells.map(parseCell), rawCells: sr.cells, rowAttrs: sr.rowAttrs }
         node.rows.push(row)
+        afterDelimiterRow = false
         i++
       }
       // native header section: the leading run of all-header rows
@@ -1547,14 +2074,79 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
     if (QUOTE.test(line)) {
       const inner = []
       let openFence = null // run string of a fence opened inside the quote
+      let openComment = null // exact-width comment fence opened inside the quote
       let prevBlank = true // fences open only at BLOCK START (I4 otherwise)
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qPara = [] // its lines, for SS12's absorption test below
+      /*
+       * IS A TABLE OPEN INSIDE THE QUOTE? -- PART 9 SS5 T6 (carve#1348).
+       *
+       * `l[0] === '|'` below clears the open paragraph because a table row is a
+       * block, and a CONTINUATION ROW is one too: T6 gives it `table_cell`s and
+       * appends them onto the row above. It was missing here, so a quote ending
+       * on one recorded an open paragraph and the flush-left line below folded
+       * in - while the SAME quote ending on a standard row closed. One
+       * question, answered by how the last row was spelled.
+       *
+       * It needs the run because the shape alone does not answer: with no table
+       * above it a `+ ...|` line IS prose (carve#1345). This loop already walks
+       * the quote's own lines in order, so it can carry the run one line at a
+       * time and needs no lookahead.
+       */
+      let qTableOpen = false
+      /*
+       * The same run, one level down and per depth: a nested quote's own table
+       * state. `opensParagraph` is handed ONE line and cannot see it, so the
+       * outer tracker carries it here and hands it back in - which is what
+       * lets `> > | a |` / `> > + b |` be read as the table it is rather than
+       * as prose.
+       */
+      const qNestedTable = []
+      /*
+       * DOES THE NESTED QUOTE ON THIS LINE LEAVE A PARAGRAPH OPEN?
+       *
+       * Peels one marker per level, advancing that level's table run as it
+       * goes, and asks `opensParagraph` about the innermost text with the run
+       * as it stood BEFORE that text - a continuation row is a row relative to
+       * what is above it, never to itself, which is the same order the outer
+       * loop uses for its own rows.
+       */
+      const nestedQuoteOpensParagraph = (line) => {
+        let text = line
+        let depth = 0
+        while (QUOTE.test(text)) {
+          text = QUOTE.exec(text)[1] ?? ''
+          const before = qNestedTable[depth] ?? false
+          qNestedTable[depth] = tableRunStep(before, text)
+          depth++
+          // A run this line does not reach has ENDED, so its state is not a
+          // run any more. Keeping it let a later quote at the same depth
+          // inherit a table that closed before it: `> > | a |` / `> # H` /
+          // `> > + b |` opens a NEW inner quote whose first line is prose, and
+          // the stale run read it as a continuation row and ended the quote.
+          if (!QUOTE.test(text)) {
+            qNestedTable.length = depth
+            return opensParagraph(text, false, before)
+          }
+        }
+        qNestedTable.length = depth
+
+        return opensParagraph(text)
+      }
       const trackFence = (l, idx) => {
+        if (openComment !== null) {
+          const c = COMMENT_FENCE_BODY.exec(l)
+          if (c && c[1].length === openComment) openComment = null
+          qOpenPara = false
+          qTableOpen = false
+          qPara = []
+          return
+        }
         if (openFence) {
           const c = PURE_FENCE.exec(l)
           if (c && c[1][0] === openFence[0] && c[1].length >= openFence.length) openFence = null
           qOpenPara = false
+          qTableOpen = false
           qPara = []
           return
         }
@@ -1568,18 +2160,34 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
           qPara.push(l)
           return
         }
+        const comment = COMMENT_FENCE_BODY.exec(l)
+        if (comment) {
+          for (let j = idx + 1; j < n; j++) {
+            const quoted = QUOTE.exec(lines[j] ?? '')
+            if (!quoted) break
+            const close = COMMENT_FENCE_BODY.exec(quoted[1] ?? '')
+            if (close && close[1].length === comment[1].length) {
+              openComment = comment[1].length
+              break
+            }
+          }
+        }
         const f = FENCE.exec(l)
         const isOpener = !!(f && prevBlank && parseFenceInfo(f[2]))
         if (isOpener) openFence = f[1]
         prevBlank = isBlank(l)
         // Reaching here proves there is no open quoted paragraph. Classify the
-        // line structurally; bounded or invisible blocks leave no paragraph
+        // line structurally; bounded and invisible blocks leave no paragraph
         // available for a later lazy continuation.
+        const contRow = isContinuationRow(l, qTableOpen)
+        qTableOpen = tableRunStep(qTableOpen, l)
+        if (!QUOTE.test(l)) qNestedTable.length = 0
+        const nestedQuoteEnds = QUOTE.test(l) && !nestedQuoteOpensParagraph(l)
         if (isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener ||
-             isColonBlockOpener(l) || COLON_CLOSER.test(l) ||
-             l[0] === '|' || l[0] === '{' ||
-             DEFLIST_TERM.test(l) || isLinkDef(l) ||
-             FOOTNOTE_DEF.test(l)) {
+            isColonBlockOpener(l) || COLON_CLOSER.test(l) ||
+            l[0] === '|' || l[0] === '{' || contRow || nestedQuoteEnds ||
+            DEFLIST_TERM.test(l) || isLinkDef(l) || COMMENT_LINE.test(l) ||
+            FOOTNOTE_DEF.test(l)) {
           qOpenPara = false
           qPara = []
         } else {
@@ -1604,7 +2212,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
           i++
           continue
         }
-        if (openFence) break // the innermost open block is verbatim (S2)
+        if (openFence || openComment !== null) break // the innermost open block is verbatim (S2)
         if (lines[i] !== undefined && CONT_MARKER.test(lines[i])) {
           // PART 9 SS17 L4: `+` at column 0 attaches ONE following block
           i++
@@ -1616,9 +2224,33 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
           continue
         }
         if (lines[i] !== undefined && qOpenPara && !isBlank(lines[i]) && !CAPTION.test(lines[i])) {
-          // PART 1 S4: any nonblank line lazily continues the innermost open
-          // paragraph, irrespective of marker shape or a missing quote prefix.
-          inner.push(lines[i])
+          // lazy continuation folds into the open quoted paragraph (SS10 I6)
+          //
+          // A FLUSH-LEFT COLON FENCE NEVER FOLDS (carve#920 shape B).
+          // `peekInterrupts` answers SS12 for a line the paragraph already
+          // owns: a bare `:::` with no body after it is ABSORBED rather than an
+          // interruption. That rule is written about a paragraph's OWN lines,
+          // and this line is not one of the quote's - it supplies no `>`
+          // prefix, so it reaches the paragraph only by S4's lazy fold. The
+          // strict column-0 rule decides it instead: a flush-left fence-shaped
+          // line interrupts, the quote closes, and the line is re-classified at
+          // top level. All three engines already answer it that way.
+          //
+          // AND IT ARRIVES LAZY-FRAMED. The line supplies no `>` prefix, so it
+          // is not the quote's own content and its COLUMN inside the quote body
+          // means nothing - it reached the paragraph by S4's fold and is
+          // paragraph text wherever it landed. Pushed raw, the quote's own parse
+          // read it by column instead, and a definition that happened to line up
+          // with an inner list item's content column REGISTERED there and
+          // rendered nowhere: `> - x` over `  [r]: /url` defined `r` while
+          // `> x` over the same line folded it as text. One line, two answers,
+          // decided by what the quote's body happened to be (carve#1384).
+          //
+          // Same framing the item collector uses for the same reason at §24 C3.
+          // A line that reached HERE already framed came from an outer
+          // collector's own fold; framing it twice leaks the sentinel into the
+          // rendered text, which the paragraph collector strips only once.
+          inner.push(lines[i].startsWith(LAZY) ? lines[i] : LAZY + ind(i).rest)
           i++
           continue
         }
@@ -1711,7 +2343,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
         // known. Without that, an unresolved reference produced a figure
         // wrapped around literal text, where all three engines produce one
         // paragraph holding both lines.
-        const refImage = /^!\[[^\]]*\]\[([^\]]*)\]/.exec(para[0])
+        // The alt run is scanned, not matched: see `bracketRunEnd`. The label
+        // that follows is a `reference_label`, which really does stop at the
+        // first `]` (grammar.ebnf: `{character - ']'}`), so that half stays a
+        // pattern.
+        const altEnd = para[0].startsWith('![') ? bracketRunEnd(para[0], 1) : -1
+        const refImage = altEnd === -1 ? null : /^\[([^\]]*)\]/.exec(para[0].slice(altEnd))
         if (refImage) {
           // KEYED THE WAY RESOLUTION KEYS IT (html.mjs, carve#648): the
           // label as written with whitespace collapsed, and the alt text
@@ -1725,10 +2362,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined) 
           // text, trimmed and collapsed. Using one rule for both directions
           // put a figure around literal text in one case and dropped a caption
           // from a resolving image in the other.
-          pnode.pendingRef =
-            refImage[1] === ''
-              ? para[0].slice(2, para[0].indexOf(']'))
-              : refImage[1]
+          pnode.pendingRef = refImage[1] === '' ? para[0].slice(2, altEnd - 1) : refImage[1]
           pnode.captionSrc = stripIndent(lines[j]).replace(/[ \t]+$/, '')
         }
         i = j + 1
@@ -1847,11 +2481,54 @@ function oneBlockEnd(lines, start, endsBlock) {
   return end
 }
 
+/*
+ * WHERE THE FIRST BLOCK OF A REGION ENDS -- SS17 L3's ONE BLOCK.
+ *
+ * `oneBlockEnd` computes the marker's EXTENT: the furthest the attachment may
+ * reach, bounded by a blank line, a sibling marker or a further `+`. That is not
+ * a count, and reading it as one is what made a single `+` attach a whole run of
+ * blocks: the extent of `para` / `> q` is both lines, and handing both to the
+ * block parser produces TWO blocks (carve#1290).
+ *
+ * The boundary is found by ASKING THE BLOCK PARSER rather than by re-deriving
+ * block segmentation here, which would be a second spelling of a rule this file
+ * already owns - and the way a rule with two spellings drifts.
+ *
+ * ONE parse, not one per prefix. `parseBlocks` takes a `stop` object and returns
+ * at the top of its loop as soon as one block is complete, which is the only
+ * point in the walk that has consumed nothing of the next line. Probing prefixes
+ * instead - the shortest that yields a single block - gives the same answer and
+ * is quadratic in the attached block's line count, reachable from ordinary input
+ * on a long wrapped paragraph.
+ *
+ * The parse uses a THROWAWAY state. `parseBlocks` collects definitions into the
+ * symbol table as it goes and the real parse of these lines happens afterwards,
+ * so sharing the state would register every definition in the region twice.
+ */
+function firstBlockEnd(lines, start, limit, state) {
+  if (limit - start <= 1) return limit
+  const stop = { next: limit - start }
+  try {
+    parseBlocks(lines.slice(start, limit), {
+      linkDefs: new Map(),
+      footnoteDefs: new Map(),
+      abbrDefs: new Map(),
+      blockDepth: state.blockDepth ?? 0,
+    }, false, true, undefined, stop)
+  } catch {
+    // Outside the executable subset: the extent is the honest answer, and the
+    // real parse of these lines raises the same refusal where it belongs.
+    return limit
+  }
+  return start + stop.next
+}
+
 // Parse ONE following flush-left block (for the `+` continuation marker).
-function takeOneBlock(lines, start) {
+function takeOneBlock(lines, start, state) {
   const end = oneBlockEnd(lines, start, (idx) =>
     isBlank(lines[idx]) || CONT_MARKER.test(lines[idx]) || QUOTE.test(lines[idx]))
-  return { rawMarker: lines.slice(start, end), next: end }
+  const one = firstBlockEnd(lines, start, end, state)
+  return { rawMarker: lines.slice(start, one), next: one }
 }
 
 // The same extent for the block a `+` marker pulls into a footnote/<dd> (SS17
@@ -1978,7 +2655,17 @@ function collectItems(lines, i, list, state, ind, meas) {
     // synthesized, or one whose run held a tab - and the inner parse walks it
     // once. Every push goes through `pushLine` so the two arrays cannot drift.
     const itemMeas = []
-    const pushLine = (text, m = null) => { itemLines.push(text); itemMeas.push(m) }
+    // Is a TABLE open at the end of the body collected so far? The context a
+    // `+ ...|` line needs before it can be a continuation row (§5 T6, see
+    // `isContinuationRow`), advanced by `tableRunStep` on every line that joins
+    // the body - the MARKER line included, since that line is the item's first
+    // block, and the blank a blank-line branch pushes, which ends the run.
+    let tableOpen = false
+    const pushLine = (text, m = null) => {
+      itemLines.push(text)
+      itemMeas.push(m)
+      tableOpen = tableRunStep(tableOpen, text)
+    }
     pushLine(head.text)
     const item = { }
     if (head.attrs && head.attrs.replace(/[{} ]/g, '') !== '') item.attrs = head.attrs
@@ -1996,9 +2683,67 @@ function collectItems(lines, i, list, state, ind, meas) {
     // Seeded from the MARKER LINE's own text, which is the paragraph's first
     // line and may itself be the malformed fence (`- :::note`).
     let para = [head.text]
-    const closePara = () => { openPara = false; para = [] }
-    const startPara = () => { openPara = true; para = [] }
-    const openParaWith = (line) => { if (!openPara) para = []; openPara = true; para.push(line) }
+    // The collector also watches a nested list so a flush-left lazy line can
+    // resume this item's paragraph when the nested item ends on a closed block.
+    // Keep the outer state separate: the nested marker/heading must not turn
+    // the heading into a paragraph, nor erase a paragraph that remains open in
+    // the enclosing item (carve#1377).
+    let paraBeforeSublist = null
+    /*
+     * THE COLUMN OF A DEFINITION WHOSE BODY MAY STILL FOLLOW, or null.
+     *
+     * A definition is ONE BLOCK, and its indented continuation lines are that
+     * block's own content rather than the item's prose. Every path that ends a
+     * paragraph ends the definition's reach too, which is why this is cleared
+     * in `closePara` and `startPara` rather than at each branch: a blank line
+     * or any other block between the definition and an indented line means the
+     * indented line is not that definition's body.
+     */
+    let defBodyIndent = null
+    const closePara = () => { openPara = false; para = []; defBodyIndent = null }
+    const startPara = () => { openPara = true; para = []; defBodyIndent = null }
+    const openParaWith = (line) => { if (!openPara) para = []; openPara = true; para.push(line); defBodyIndent = null }
+    /*
+     * §10 I4 FOR A BODY LINE: a code fence interrupts an OPEN paragraph only
+     * when a closer follows it. Without one it opens nothing and stays
+     * paragraph text, which is what the block reader below already does with
+     * the same predicate (`hasCloser`).
+     *
+     * The closer is searched over the item's own body, dedented to the content
+     * column, because that is where this fence's closer has to be written. A
+     * blank run is committed only when a later line reaches the content column
+     * again: under carve#1379 an unterminated container does not extend the
+     * item past a blank followed by a line below the column, so lines after
+     * such a blank are not the item's and cannot close its fence.
+     */
+    const bodyFenceOpens = (idx, dedented) => {
+      const m = FENCE.exec(dedented)
+      if (!m || parseFenceInfo(m[2]) === null) return false // INVALID-FENCE FALLBACK
+      if (!openPara) return true // at block start it runs to the end of the container
+      const body = [dedented]
+      let pendingBlanks = 0
+      for (let j = idx + 1; j < lines.length; j++) {
+        const raw = lines[j] ?? ''
+        if (isBlank(raw)) { pendingBlanks++; continue }
+        const lm2 = indentCols(raw)
+        // A sibling or outer marker ends the item, so nothing from there on is
+        // this fence's to close.
+        const nm2 = matchMarkerAt(lm2)
+        if (nm2 && nm2.indent <= baseIndent) break
+        // A blank followed by a line below the content column ends the item too
+        // (carve#1379), and the fence does not reach past it.
+        if (pendingBlanks > 0 && lm2.col < contentCol) break
+        for (; pendingBlanks > 0; pendingBlanks--) body.push('')
+        // A line BELOW the column is not outside the search: §24 C3 folds it as
+        // lazy text while a paragraph is open, so a closer written after it is
+        // still written inside this item. Stopping here instead made the answer
+        // circular - the fence opened only if the below-column line folded, and
+        // the line folded only if the fence had not opened - and it moved
+        // corpus 276-7, which every engine answers the other way.
+        body.push(lm2.col >= contentCol ? dedentMeasured(lm2, raw, contentCol).text : lm2.rest)
+      }
+      return hasCloser(body, 0)
+    }
     // A blank line was seen, and what followed it attached INVISIBLY (a comment,
     // a definition). §17 L1's second clause - an item followed by a blank line
     // before the next sibling marker - still applies when that sibling arrives,
@@ -2009,8 +2754,22 @@ function collectItems(lines, i, list, state, ind, meas) {
     let pendingSeparation = false
     let hardListBoundary = false
     {
-      const headText = head.text.trim()
-      if (QUOTE.test(headText)) { if ((QUOTE.exec(headText)[1] ?? '').trim() !== '') startPara(); else closePara() }
+      // The marker line's content is the item's FIRST BLOCK, so it answers S4's
+      // question exactly as any other line does. Only the quote spelling was
+      // asked before, which left `- # H`, `- | a | b |`, `- ---`, `- %% c`,
+      // `- [r]: u`, `- [^f]: t` and `- {.k}` recording an open paragraph they do
+      // not have -- and a column-0 line then folded into an item with nothing to
+      // fold into (carve#1280).
+      //
+      // A WRAPPED attribute block (`- {.a` / `  .b}`) is deliberately not
+      // reached here. Its opener leaves no paragraph open either, but its
+      // continuation line arrives at the item's CONTENT COLUMN, where the
+      // classifier below reopens the paragraph on any non-empty residue - so
+      // deciding it needs the content-column half of this rule, which carve#1280
+      // leaves open. Handing this seed a multi-line window alone changes no
+      // output, and a predicate that looks right while deciding nothing is worse
+      // than one that plainly does not reach the case.
+      if (!opensParagraph(head.text.trim(), true)) closePara()
     }
     // Content column of the FIRST sub-list opened in this item (-1 = none). A
     // blank followed by content at or past this column belongs to the sub-list,
@@ -2028,7 +2787,7 @@ function collectItems(lines, i, list, state, ind, meas) {
     // until that innermost span closes.
     const fence = { opaque: null, colon: [] }
     const insideFence = () => fence.opaque !== null || fence.colon.length !== 0
-    const trackFence = (line) => {
+    const trackFence = (line, opens = true) => {
       if (fence.opaque) {
         if (fence.opaque.kind === 'code') {
           const c = PURE_FENCE.exec(line)
@@ -2044,7 +2803,12 @@ function collectItems(lines, i, list, state, ind, meas) {
 
       const code = FENCE.exec(line)
       if (code && parseFenceInfo(code[2]) !== null) {
-        fence.opaque = { kind: 'code', run: code[1] }
+        // `opens` is §10 I4's answer for this line. The SPAN is tracked either
+        // way, because the interior-blank rule (carve#1383) reads it and a
+        // fence-shaped line the paragraph absorbed still runs to the same
+        // place; what the flag records is whether a verbatim BODY exists for
+        // §24 S2 to want.
+        fence.opaque = { kind: 'code', run: code[1], opens }
         return
       }
       const comment = COMMENT_FENCE_BODY.exec(line)
@@ -2091,9 +2855,14 @@ function collectItems(lines, i, list, state, ind, meas) {
       // spelling - it stopped at the first blank with no fence state consulted,
       // which severed a `+`-attached fence here while a footnote body one
       // container over kept it whole.
-      const end = oneBlockEnd(lines, i, (idx) =>
-        ind(idx).rest === '' || CONT_MARKER.test(ind(idx).rest) ||
+      const extent = oneBlockEnd(lines, i, (idx) =>
+        ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
         matchMarkerAt(ind(idx))?.indent === baseIndent)
+      // ONE BLOCK, and the extent above is the marker's REACH rather than its
+      // count (SS17 L3, carve#1290). `- a` / `+` / `para` / `> q` has both lines
+      // inside the extent and they are two blocks; the `+` takes the first, and
+      // the second needs a `+` of its own.
+      const end = firstBlockEnd(lines, i, extent, state)
       for (; i < end; i++) {
         // attached VERBATIM, so the line keeps the measurement it has here
         const attached = ind(i)
@@ -2127,6 +2896,63 @@ function collectItems(lines, i, list, state, ind, meas) {
         // item body and stay tight (no looseness decision).
         if (insideFence()) {
           pushLine('', BLANK_MEAS)
+          // AND IT ENDS THE OPEN PARAGRAPH, whatever container is holding the
+          // blank. This branch used to leave `openPara` set across it, so a
+          // following line BELOW the content column found a paragraph to fold
+          // into and an unterminated `:::` div took a flush-left line as its
+          // second block. PART 1 S4 asks for an OPEN PARAGRAPH, not for a
+          // container still waiting on its closer, and this collector already
+          // answers the same input the other way for a TERMINATED div (the
+          // fence stack is empty, so the branch below decides by column), for
+          // an opaque body (`if (fence.opaque) break`), for a quote and for a
+          // bare item. Only the unterminated spelling differed - one rule
+          // answered two ways by whether a closer had been written, which is
+          // the tell that the reader and not the rule was wrong. carve-js,
+          // carve-php and carve-rs all end the item (carve#1379).
+          //
+          // Unconditional rather than gated on `!fence.opaque`: under an
+          // opaque body the collector breaks before it ever consults the
+          // paragraph, so the two spellings render 5760 generated shapes
+          // identically and the gate would only be a claim that decides
+          // nothing.
+          closePara()
+          // AND IT STILL SEPARATES THE ITEMS, if nothing of the item follows
+          // it. SS17 L1 asks whether the item is FOLLOWED BY a blank line
+          // before the next sibling marker, and that question is asked at the
+          // LIST's level: what stands between one item and the next. This
+          // branch answered it by what the line was doing INSIDE the item -
+          // fence content, so no separator - so an unterminated fence whose
+          // last line is a blank before a sibling marker kept the list tight.
+          //
+          // carve#326 C is the clause that made an interior blank content, and
+          // its own stated reason is the discriminator: a sibling after such a
+          // fence "stays tight because no blank line actually separates the two
+          // items". Here one does. The blank is the last line before the
+          // marker, with nothing of the item after it, which is exactly the
+          // separation L1 reads - and the TERMINATED spelling of the same
+          // document loosens in all four readers, so keeping this one tight
+          // makes the closer decide a rule that is not about closers
+          // (carve#1379's property, applied to L1). The interior blank
+          // carve#326 C pinned is untouched: content follows it before the
+          // marker, so the lookahead finds that content and not a marker.
+          //
+          // carve-js and carve-rs loosen for every fence kind. carve-php
+          // loosens for a `:::` div, an admonition, a raw block and a comment
+          // fence and stays tight for a code or tilde fence alone
+          // (markup-carve/carve-php#1445).
+          //
+          // ONLY THE LAST BLANK OF A RUN LOOKS AHEAD. Scanning forward over the
+          // remaining blanks from EVERY blank is quadratic in the length of the
+          // run, and a fence with a large blank payload is ordinary input. The
+          // last blank is the one whose next line is content, so testing that
+          // line directly reaches the same marker in constant work per line.
+          {
+            const next = i + 1 < n ? ind(i + 1) : null
+            if (next && next.rest !== '') {
+              const km = matchMarkerAt(next)
+              if (km && km.indent === baseIndent && sameAxes(list, km)) list.tight = false
+            }
+          }
           i++
           continue
         }
@@ -2183,6 +3009,37 @@ function collectItems(lines, i, list, state, ind, meas) {
             continue
           }
           const dedented = dedent(lines[j], contentCol)
+          /*
+           * A BLANK INTERIOR TO A FOOTNOTE DEFINITION'S BODY IS THE
+           * DEFINITION'S, NOT THE ITEM'S -- carve#1363.
+           *
+           * The rule is over the BLOCK, and a footnote definition's block is
+           * whatever the footnote parser consumes: it may carry more than one
+           * body block, so the blank between them and the indented block after
+           * it are interior to the definition. Neither is the item's second
+           * paragraph, neither loosens the list, and nothing of the item's
+           * reopens across them - the flush-left line below still arrives with
+           * nothing to fold into.
+           *
+           * Without this the blank handed the lines after it back to the item,
+           * so ONE definition answered by how its own body was laid out:
+           * `- a` / `  [^f]: t` / `    more` / `tail` ended the item and the
+           * same definition with a blank before `more` folded `tail` in.
+           * carve-rs answers both alike; nothing else did.
+           *
+           * A LINK reference definition never reaches here: it has no body, so
+           * `defBodyIndent` is null for it and the indented line after the
+           * blank is the ITEM's own second paragraph, exactly as before. The
+           * difference is the body, not the indentation.
+           */
+          if (defBodyIndent !== null && indentCols(dedented).col > defBodyIndent) {
+            const defBody = defBodyIndent
+            pushLine('', BLANK_MEAS)
+            closePara()
+            defBodyIndent = defBody
+            i = j
+            continue
+          }
           if (opensSubBlock(dedented)) {
             // sub-BLOCK after a blank: attaches, stays tight (SS17 L2)
             pushLine('', BLANK_MEAS)
@@ -2195,7 +3052,6 @@ function collectItems(lines, i, list, state, ind, meas) {
             COMMENT_FENCE.test(dedented) ||
             FOOTNOTE_DEF.test(dedented) ||
             isLinkDef(dedented) ||
-            ABBR_DEF.test(dedented) ||
             parseAttrList(dedented) !== null
           ) {
             // An INVISIBLE construct is not a second paragraph, and SS17 L1
@@ -2264,11 +3120,41 @@ function collectItems(lines, i, list, state, ind, meas) {
           !dmeas.rest.startsWith('%%') &&
           !FOOTNOTE_DEF.test(dedented) &&
           !isLinkDef(dedented) &&
-          !ABBR_DEF.test(dedented) &&
           parseAttrList(dedented) === null
         ) {
           // §17 L1b: a second paragraph, still blank-line-separated.
           list.tight = false
+          pendingSeparation = false
+        }
+        // AN ATTACHED BLOCK CONSUMES THE SEPARATION, WHICHEVER LINE FILLED THE GAP.
+        //
+        // `blankBeforeInvisible` remembers "a blank line, then something that
+        // renders nothing" so the sibling-marker branch below can apply §17 L1's
+        // first clause. That is right while the invisible line is the LAST thing
+        // in the item - `188-a-floating-attribute-stops-at-the-item-boundary` is
+        // exactly that document, and the item really did end at the blank.
+        //
+        // It stopped being right the moment a visible BLOCK attached after it.
+        // §17 L2 says an attached sub-block leaves the item tight, and the
+        // attachment consumes the blank the same way it does when no invisible
+        // line is there at all: `- a` / blank / `- b` / `- c` is tight
+        // (`87-compact-list-blocks-2`), and inserting a comment, a definition or
+        // an attribute line into the gap cannot make the item loose - the line
+        // produces no output, and a line that outputs nothing must not make a
+        // visible difference (the rule carve#625 already applies one branch up).
+        //
+        // The flag was set and never cleared, so it survived to the sibling and
+        // loosened. Every document `323-a-block-attached-after-an-invisible-line-leaves-the-item-tight`
+        // pins renders tight in all three engines; the oracle was the lone
+        // dissenter (carve#1265). Both spellings of "a block attached here" are
+        // cleared: a sub-LIST is a marker at or past the content column,
+        // everything else is `opensSubBlock`.
+        //
+        // A PARAGRAPH is deliberately not in this list. It does not attach - it
+        // is §17 L1b's second paragraph, and the branch above has just loosened
+        // the item for it.
+        if (dmeas.rest !== '' && (opensSubBlock(dedented) || matchMarkerAt(dmeas))) {
+          blankBeforeInvisible = false
           pendingSeparation = false
         }
         // A bare `+` is left ALONE here, tagged neither as text nor as a
@@ -2280,6 +3166,14 @@ function collectItems(lines, i, list, state, ind, meas) {
         // parse - `parseListRun` consumes it for a sub-list whose marker
         // column it sits at, and the block reader below leaves every other one
         // as text (carve#863).
+        //
+        // Read BEFORE the push, because the push advances the table run past
+        // this very line: `isContinuationRow` is asked what was open ABOVE it.
+        const contRow = isContinuationRow(dedented, tableOpen)
+        // The definition whose body may still be running, as it stood BEFORE
+        // this line: the classifier below clears the flag through `closePara`
+        // and `startPara`, so the value has to be read first.
+        const defBody = defBodyIndent
         pushLine(dedented, dmeas)
         // Once the item holds an open paragraph, every non-marker nonblank line
         // remains prose. Marker classification resumes after a blank; a nested
@@ -2291,7 +3185,7 @@ function collectItems(lines, i, list, state, ind, meas) {
         }
         // Advance the incremental three-kind tracker so the blank-line branch
         // above knows whether an interior blank is fence content.
-        trackFence(dedented)
+        trackFence(dedented, bodyFenceOpens(i, dedented))
         // A COMMENT IS INVISIBLE, SO IT LEAVES NO PARAGRAPH OPEN. §24 C3 says a
         // comment "does end the open PARAGRAPH" (carve#677), of BOTH spellings
         // - the `%%` line and the `%%%` fence, "whose body and closer travel
@@ -2305,20 +3199,70 @@ function collectItems(lines, i, list, state, ind, meas) {
         if (COMMENT_LINE.test(dedented)) afterComment = true
         else if (dmeas.rest !== '') afterComment = false
         // record the first sub-list's content column (carve#322)
-        if (subCol < 0 && nm && nm.indent >= contentCol) subCol = nm.indent + nm.markerWidth
-        // Reaching here proves no paragraph was open (the early branch above
-        // consumed every non-marker nonblank continuation). Classify the new
-        // body line to decide whether it opens a paragraph or a bounded block.
+        if (subCol < 0 && nm && nm.indent >= contentCol) {
+          subCol = nm.indent + nm.markerWidth
+          paraBeforeSublist = openPara ? [...para] : []
+        }
+        // does the deepest structure now hold an OPEN paragraph that lazy
+        // text may fold into? markers open a sub-item paragraph; quotes an
+        // open quoted paragraph; fences/breaks close everything (SS10 I2/I6)
         if (COMMENT_LINE.test(dedented)) closePara()
-        else if (FENCE.test(dedented) || HR.test(dedented)) closePara()
-        // A valid colon fence opens structurally here; a malformed one begins
-        // an ordinary paragraph.
+        else if (HR.test(dedented)) closePara()
+        // A CODE FENCE CLOSES THE PARAGRAPH ONLY IF IT INTERRUPTED IT -- §10 I4,
+        // and the same correction carve#891 already made one construct over for
+        // the colon fence. This branch tested the line's SHAPE, so an
+        // unterminated fence the paragraph had ABSORBED closed it anyway.
+        else if (FENCE.test(dedented)) {
+          if (fence.opaque && fence.opaque.kind === 'code' && fence.opaque.opens === false) {
+            openParaWith(dedented)
+          } else closePara()
+        }
+        // A COLON FENCE CLOSES THE PARAGRAPH ONLY IF IT INTERRUPTED IT. SS12's
+        // opener test rejects `:::note` (a type word wants a separator), which
+        // makes the line ordinary paragraph text and makes the paragraph absorb
+        // the next fence-shaped line as text too. An absorbed fence opened no
+        // block and interrupted nothing, so the paragraph is still OPEN and PART
+        // 1 S4 folds a later under-indented line into it. This branch tested the
+        // line's SHAPE instead, so the item ended on a fence that was prose, and
+        // corpus 86-list-lazy-continuation-9 pinned that answer against S4
+        // (carve#891). Same rule, same spelling, as the block reader's
+        // colonInterruptsParagraph.
         else if (COLON_FENCE.test(dedented)) {
           if (colonFenceOpensBlock(dedented, hasFollowingBody(lines, i))) closePara()
           else openParaWith(dedented)
         }
-        else if (dedented[0] === '|' || CONT_ROW.test(dedented)) closePara()
-        else if (matchMarkerAt(dmeas)) startPara()
+        // A TABLE ROW closes the paragraph, and so does the continuation row
+        // that extends the table it opened. A `+ ...|` line with no table above
+        // it is neither: §5 T6 refuses to let a table BEGIN with one, so the
+        // line is prose and the paragraph it belongs to stays open. Tested by
+        // shape here, `- a` / `  + b |` / `tail` ended the item on a line every
+        // engine renders as the second line of the item's paragraph, and `tail`
+        // became a document sibling (carve#1345). Same clause, same spelling, as
+        // the marker-line seed above.
+        else if (dedented[0] === '|' || contRow) closePara()
+        // A HEADING AT THE CONTENT COLUMN is a block, not prose. PART 1 S4
+        // asks whether the item holds an OPEN paragraph and PART 9 §24 C3
+        // says this column is the item body's column 0. Falling through to
+        // `openParaWith` below classified the heading correctly in the nested
+        // parse but simultaneously recorded a paragraph for the collector, so
+        // a later flush-left line folded into an item that held none.
+        else if (HEADING.test(dedented)) closePara()
+        else if (subCol >= 0 && dmeas.col >= subCol && HEADING.test(dmeas.rest)) {
+          openPara = paraBeforeSublist !== null && paraBeforeSublist.length > 0
+          para = openPara ? [...paraBeforeSublist] : []
+          defBodyIndent = null
+        }
+        // A SUB-LIST MARKER opens a paragraph only if the item it opens
+        // CARRIES one, which is the quote branch's rule one construct over and
+        // the same clause. `- a` / `  - # H` / `p` records an open paragraph
+        // this way and folds `p` into the OUTER item; carve-js and carve-rs
+        // close it. Unconditional `startPara()` was the content-column twin of
+        // the marker-line seed carve#1280 fixed, and it survived because that
+        // fix reached only the marker line.
+        else if (matchMarkerAt(dmeas)) {
+          if (opensParagraph(dmeas.rest, true)) startPara()
+          else closePara()
+        }
         // A quote opens a paragraph only if it CARRIES one. A bare `>` is an
         // empty quote, so there is nothing for a later flush-left line to fold
         // into, and the item closes instead -- PART 1 S4's NO OPEN PARAGRAPH,
@@ -2328,6 +3272,89 @@ function collectItems(lines, i, list, state, ind, meas) {
         else if (QUOTE.test(dedented)) {
           if ((QUOTE.exec(dedented)[1] ?? '').trim() !== '') startPara()
           else closePara()
+        }
+        // AN ATTRIBUTE LINE IS AN INTERRUPTER, SO IT LEAVES NO PARAGRAPH OPEN.
+        // §10 I5 makes a block-attribute line one of the constructs that
+        // interrupt a paragraph, and the marker-line seed above already reads
+        // it that way through `opensParagraph`. At the CONTENT COLUMN the
+        // classifier had no branch for it, so the line fell to the catch-all
+        // below and REOPENED a paragraph the interrupter had just closed.
+        // A column-0 line then folded into an item holding nothing open, and
+        // the floating attribute reached the folded line: `- a` / `  {.x}` /
+        // `p` rendered `p` INSIDE the item and gave it `class="x"`, where all
+        // three engines close the item and leave `p` a plain top-level
+        // paragraph.
+        //
+        // The blank-separated spelling (`- a` / blank / `  {.x}` / `p`) took
+        // the same wrong turn by a longer route: the blank branch above
+        // classifies the attribute line as invisible and closes the paragraph,
+        // then hands the line back to this loop, which reopened it here. One
+        // branch settles both.
+        //
+        // A WRAPPED attribute block is out of reach here for the reason the
+        // marker-line seed records: its opener has no closing brace, so it is
+        // not an attribute line by itself, and its continuation arrives as
+        // ordinary residue. That case is carve#1280's open content-column half
+        // and is deliberately not decided by a one-line window.
+        else if (tryAttrLine([dedented], 0)) closePara()
+        // A REFERENCE OR FOOTNOTE DEFINITION ENDS THE PARAGRAPH TOO, and for
+        // the same reason the attribute line above does: §10 I5 makes it an
+        // interrupter, and the marker-line seed already reads it that way
+        // through `opensParagraph`. At the CONTENT COLUMN the classifier had no
+        // branch for it, so it fell to the catch-all below and REOPENED the
+        // paragraph the interrupter had just closed - and `- a` / `  [r]: /u` /
+        // `tail` folded `tail` into an item holding nothing open.
+        //
+        // I5 DECIDES BOTH HALVES AT ONCE, which is what makes closing the item
+        // the right answer rather than a lucky one: "A link or footnote
+        // definition belongs to an open list item only at that item's
+        // `content_column`", so the definition here BELONGS to the item and
+        // REGISTERS, and it ends the item's paragraph. An implementation that
+        // ends the item while DROPPING the definition gets `tail` right by
+        // accident and breaks the moment the column moves. carve-php and
+        // carve-rs register it (carve#1350).
+        //
+        // ABBR_DEF is deliberately absent: §10 I5's list is a link or footnote
+        // definition, and an abbreviation definition is recognized at document
+        // level only (line 1453), so inside an item the line is paragraph text
+        // and reopening the paragraph is the correct answer for it.
+        else if (isLinkDef(dedented) || FOOTNOTE_DEF.test(dedented)) {
+          closePara()
+          // ONLY A FOOTNOTE DEFINITION HAS A BODY. A link reference definition
+          // is ONE LINE in Carve: an indented line under it is not its title
+          // but ordinary item text, and all three engines render it so
+          // (`- a` / `  [r]: /u` / `    "T"` publishes the quoted string). So
+          // only the footnote kind opens a body run below.
+          if (FOOTNOTE_DEF.test(dedented)) defBodyIndent = dmeas.col
+        }
+        /*
+         * A FOOTNOTE DEFINITION'S OWN BODY LEAVES THE PARAGRAPH CLOSED -- carve#1357.
+         *
+         * The interrupter above is a BLOCK, and a definition's indented
+         * continuation is part of that block: the footnote parser consumes it
+         * and permits no lazy continuation into it. So nothing of the item's is
+         * open across any of it, and the flush-left line below arrives with
+         * nothing to fold into - the same derivation the one-line spelling
+         * already gets.
+         *
+         * Read as ordinary residue it fell to the catch-all below and REOPENED
+         * the paragraph the definition had just closed, so the two spellings of
+         * one definition answered differently: `- a` / `  [^f]: t` / `tail`
+         * ended the item and `- a` / `  [^f]: t` / `    more` / `tail` folded.
+         * carve-rs answers both the same; carve-js and carve-php answer neither.
+         *
+         * `defBodyIndent` is the definition line's own column. The footnote
+         * body's column is two columns beyond it, so a line in the intervening
+         * band is the item's prose rather than definition content
+         * (markup-carve/carve#1376).
+         */
+        else if (
+          defBody !== null &&
+          dmeas.col >= defBody + FOOTNOTE_BODY_COLUMN &&
+          dmeas.rest !== ''
+        ) {
+          closePara()
+          defBodyIndent = defBody
         }
         else if (dmeas.rest !== '') openParaWith(dedented)
         i++
@@ -2351,7 +3378,13 @@ function collectItems(lines, i, list, state, ind, meas) {
       // This below-column guard retains its narrower role: only an innermost
       // opaque (code or comment) body is verbatim for S2. A colon container is
       // tracked for interior blanks above, but is not itself opaque.
-      if (fence.opaque) break
+      // ... and only a body that actually OPENED is one S2 can want. A fence
+      // §10 I4 refused to let interrupt opened none, so the item's own parse
+      // reads the line as paragraph text - and breaking here read it as a
+      // verbatim body in the same parse, which is one line answered two ways
+      // (carve#1387). The quote and the `dd` spellings of this shape already
+      // fold in every reader.
+      if (fence.opaque && fence.opaque.opens !== false) break
       const enclosingColonCloser = COLON_CLOSER.exec(lm.rest)
       if (
         enclosingColonCloser && lm.col <= baseIndent && fence.colon.length !== 0 &&
@@ -2486,6 +3519,33 @@ function collectItems(lines, i, list, state, ind, meas) {
       // All three engines fold ` # h`, ` > q`, ` ::: d` and ` | a |` after a
       // closed comment fence as item text, and only the two MARKER shapes take
       // the branch above (carve#682).
+      // `afterComment` STOPS AT DOCUMENT COLUMN 0 -- carve#1350's fourth shape.
+      // §24 C3's comment exception keeps the item open, and a line BELOW the
+      // content column reaches the item only through this fold, so taking the
+      // path away would leave it nowhere: that is the case the clause is
+      // written about and all three engines answer it that way. A line at
+      // DOCUMENT column 0 is not below a column - it is AT the enclosing
+      // context's own block position, which is the distinction C3 already
+      // draws for a definition ("column 0 is the surrounding document's own
+      // opener column"). With no paragraph open there is nothing for it to
+      // continue, so PART 1 S4 leaves it to the enclosing parse and the item
+      // ends because the line is at column 0.
+      //
+      // Without the column test the item and the `dd` answered the SAME
+      // construct differently - the `dd` ends on a content-column comment
+      // (carve#1350 part 1) and the item folded - and the item answered the
+      // comment and the definition differently at one column, though §10 I5
+      // makes both interrupters and an ATTRIBUTE BLOCK there already ends the
+      // item in every implementation. Two enumerations, one rule.
+      if (!nm && (openPara || (afterComment && lm.col > 0)) && itemLines.length > 0) {
+        // lazy fold into the open item paragraph (SS10 I2 / SS24 C3). A column-0
+        // fence with a closer INTERRUPTS (I4), exactly as a column-0 quote/
+        // heading does via startsVisibleBlock -- FENCE only matches at column 0,
+        // so an indented (below-content) fence still folds as lazy text.
+        pushLine(LAZY + lm.rest, LAZY_MEAS(lm.rest))
+        i++
+        continue
+      }
       break
     }
     item.blocks = parseBlocks(itemLines, state, false, true, itemMeas)

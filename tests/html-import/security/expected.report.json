@@ -1,0 +1,1 @@
+{"mode":"safe","adapter":"generic","diagnostics":[{"code":"attribute-dropped","message":"Dropped event-handler attribute onclick on <p>","severity":"warning"},{"code":"element-dropped","message":"Dropped active <script> element","severity":"warning"}]}

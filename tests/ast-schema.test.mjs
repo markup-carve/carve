@@ -54,6 +54,275 @@ test('source layout is a separate closed versioned sidecar', () => {
   assert.equal(validate({ type: 'document', children: [], srcByteLength: 0, sourceLayout: {} }), false)
 })
 
+test('figures and tables accept an optional structural short caption', () => {
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  const shortCaption = [{ type: 'text', value: 'Navigation label', pos }]
+  const image = { type: 'image', src: '/x.png', alt: 'x', pos }
+  const figure = { type: 'figure', target: image, caption: [], shortCaption, pos }
+  const table = { type: 'table', rows: [], shortCaption, pos }
+  assert.equal(validate({ type: 'document', children: [figure, table], srcByteLength: 1 }), true, firstErrors())
+  assert.equal(validate({ type: 'document', children: [{ ...figure, shortCaption: 'label' }], srcByteLength: 1 }), false)
+})
+
+test('a figure targets a table, which no Carve source spells', () => {
+  // PART 12 §17 from both directions. The table branch is the one an HTML
+  // importer produces from `<figure><table>…<figcaption>` and no Carve source
+  // spells; the quote and image branches are the ordinary ones a captioned
+  // document produces. Pinning the set here is what makes a change to it a
+  // decision rather than a drift - carve#1161 removed the quote branch and one
+  // engine kept decoding it, because nothing said the set was closed.
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  const figure = (target) => ({
+    type: 'document',
+    srcByteLength: 1,
+    children: [{ type: 'figure', target, caption: [{ type: 'text', value: 'Cap', pos }], pos }],
+  })
+  const cell = { type: 'table_cell', header: true, children: [{ type: 'text', value: 'A', pos }], pos }
+  const table = { type: 'table', rows: [{ type: 'table_row', cells: [cell], pos }], pos }
+  const quote = { type: 'block_quote', children: [{ type: 'paragraph', children: [], pos }], pos }
+
+  assert.equal(validate(figure(table)), true, firstErrors())
+  assert.equal(validate(figure(quote)), true, firstErrors())
+  assert.equal(validate(figure({ type: 'image', src: '/x.png', alt: 'x', pos })), true, firstErrors())
+  // A heading is not a captionable host, so it is not a target either.
+  assert.equal(validate(figure({ type: 'heading', level: 1, children: [], pos })), false)
+})
+
+test('a table accepts an optional row grouping, and only a complete one', () => {
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  const table = (rowGroups) => ({
+    type: 'document',
+    srcByteLength: 1,
+    children: [{ type: 'table', rows: [], rowGroups, pos }],
+  })
+  const grouping = {
+    headRows: 1,
+    bodies: [
+      { headRows: 1, bodyRows: 3, rowHeadColumns: 1 },
+      { headRows: 0, bodyRows: 2 },
+    ],
+    footRows: 1,
+  }
+  assert.equal(validate(table(grouping)), true, firstErrors())
+  // A table with no grouping at all is the ordinary case and stays valid: the
+  // field is optional, which is what lets an engine that has never heard of it
+  // keep producing valid trees.
+  assert.equal(
+    validate({ type: 'document', srcByteLength: 1, children: [{ type: 'table', rows: [], pos }] }),
+    true,
+    firstErrors(),
+  )
+  // PART 12 §15: the three parts are required TOGETHER. A partition missing one
+  // of them would have to be read as a zero, and a zero head is a claim.
+  for (const missing of ['headRows', 'bodies', 'footRows']) {
+    const partial = { ...grouping }
+    delete partial[missing]
+    assert.equal(validate(table(partial)), false, `a grouping without ${missing} must be refused`)
+  }
+  assert.equal(validate(table({ ...grouping, footRows: -1 })), false, 'a negative row count')
+  assert.equal(validate(table({ ...grouping, headRows: 1.5 })), false, 'a fractional row count')
+  assert.equal(validate(table({ ...grouping, rows: [] })), false, 'an unknown key in the grouping')
+  assert.equal(
+    validate(table({ ...grouping, bodies: [{ bodyRows: 2 }] })),
+    false,
+    'a body group without its intermediate-header count',
+  )
+  assert.equal(
+    validate(table({ ...grouping, bodies: [{ headRows: 0, bodyRows: 2, span: 1 }] })),
+    false,
+    'an unknown key in a body group',
+  )
+  // `rowHeadColumns` is the one part that IS optional - it partitions nothing.
+  assert.equal(
+    validate(table({ headRows: 0, bodies: [{ headRows: 0, bodyRows: 1 }], footRows: 0 })),
+    true,
+    firstErrors(),
+  )
+  // An EMPTY `bodies` is a partition like any other, and deliberately so: a
+  // head-only table would otherwise be the one shape the field cannot describe.
+  assert.equal(validate(table({ headRows: 1, bodies: [], footRows: 0 })), true, firstErrors())
+})
+
+test('§15 does NOT make the schema the check that the counts sum', () => {
+  // The clause says the counts MUST account for every row exactly once. JSON
+  // Schema cannot express a sum across sibling fields, so validation is not
+  // that check and must not be mistaken for it - same reason the srcByteLength
+  // row below is pinned. A consumer enforces §15 itself.
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  const row = { type: 'table_row', cells: [{ type: 'table_cell', header: false, children: [] }] }
+  const doc = {
+    type: 'document',
+    srcByteLength: 1,
+    children: [
+      {
+        type: 'table',
+        rows: [row],
+        rowGroups: { headRows: 9, bodies: [{ headRows: 0, bodyRows: 9 }], footRows: 9 },
+        pos,
+      },
+    ],
+  }
+  assert.equal(validate(doc), true, `the schema is not the sum check: ${firstErrors()}`)
+})
+
+test('a table accepts positional column metadata, with closed bounded entries', () => {
+  const pos = { startLine: 1, endLine: 1, startColumn: 1, endColumn: 2, startOffset: 0, endOffset: 1 }
+  const table = (columns) => ({
+    type: 'document',
+    srcByteLength: 1,
+    children: [{ type: 'table', rows: [], columns, pos }],
+  })
+
+  assert.equal(
+    validate(table([{ align: 'right' }, {}, { align: 'center', valign: 'middle', width: 0.25 }])),
+    true,
+    firstErrors(),
+  )
+  assert.equal(validate(table([])), true, firstErrors())
+  assert.equal(validate(table([{ align: 'justify' }])), false, 'alignment is a closed vocabulary')
+  assert.equal(validate(table([{ width: 0 }])), false, 'zero is not a positive width fraction')
+  assert.equal(validate(table([{ width: 1.01 }])), false, 'a width fraction cannot exceed one')
+  assert.equal(validate(table([{ width: '0.25' }])), false, 'a width fraction is numeric')
+  assert.equal(validate(table([{ valign: 'baseline' }])), false, 'vertical alignment is a closed vocabulary')
+})
+
+test('a table cell carries an optional vertical alignment', () => {
+  const cell = (valign) => ({
+    type: 'document', srcByteLength: 1,
+    children: [{ type: 'table', rows: [{ type: 'table_row', cells: [
+      { type: 'table_cell', header: false, children: [], ...(valign === undefined ? {} : { valign }) },
+    ] }] }],
+  })
+  for (const value of [undefined, 'top', 'middle', 'bottom']) {
+    assert.equal(validate(cell(value)), true, `${value}: ${firstErrors()}`)
+  }
+  assert.equal(validate(cell('baseline')), false)
+})
+
+/*
+ * The sidecar's OPTIONAL facts, and why a declared one needs a definition.
+ *
+ * `nodeLayout` requires three properties and declares thirteen more. Those
+ * thirteen are the source spellings the canonical AST deliberately drops, so
+ * they are the only thing a formatter or an editor can rebuild an authored
+ * document from - and until carve#1431 not one of them was defined anywhere.
+ * The schema named them, PART 12 §13 described their CATEGORIES in prose, and
+ * no clause said what any single field measures. A producer had nothing to
+ * implement against, and "Absent means unknown" makes emitting none of them
+ * conformant, so the gap could not surface as a failure either.
+ *
+ * This is the guard the node-type tests above apply, one layer up, and the
+ * proxy for "defined" is the same kind of proxy: the field's name appears in
+ * the text of §13. That cannot tell a definition from a mention, which is why
+ * the clause carries F-numbered entries rather than a list of names.
+ *
+ * A fact that genuinely has no answer yet goes in UNDEFINED_FACT with the
+ * question, rather than being named in the clause with nothing behind it.
+ * Emptying this map is the intended end state.
+ */
+const UNDEFINED_FACT = {
+  paddingRaw:
+    "one string cannot hold both of a table cell's whitespace runs, and which run it names is unruled (carve#1431)",
+}
+
+/** The text of PART 12 §13, the clause that defines the sidecar. */
+function sidecarClause() {
+  const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
+  const start = grammar.indexOf('   13. SOURCE LAYOUT IS A SEPARATE OPT-IN SIDECAR')
+  assert.notEqual(start, -1, 'PART 12 §13 is not where this test looks for it')
+  const end = grammar.indexOf('\n   14. ', start)
+  assert.notEqual(end, -1, 'PART 12 §13 has no §14 after it')
+  return grammar.slice(start, end)
+}
+
+/** The sidecar schema, read fresh so a test cannot mutate another's copy. */
+function layoutSchema() {
+  return JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-schema.json'), 'utf8'))
+}
+
+/** Every `nodeLayout` property that is not one of the three required ones. */
+function optionalFacts(schemaDoc = layoutSchema()) {
+  const node = schemaDoc.$defs.nodeLayout
+  const required = new Set(node.required)
+  return Object.keys(node.properties).filter((name) => !required.has(name))
+}
+
+/** §13 names a fact in backticks, the way it names every other field. */
+const namedInClause = (clause, name) => clause.includes('`' + name + '`')
+
+test('every optional sidecar fact is defined in PART 12 §13, or named as undefined', () => {
+  const clause = sidecarClause()
+  const undefinedHere = optionalFacts()
+    .filter((name) => !namedInClause(clause, name) && !(name in UNDEFINED_FACT))
+    .sort()
+  assert.deepEqual(
+    undefinedHere,
+    [],
+    `the sidecar schema declares optional fact(s) PART 12 §13 does not define: ${undefinedHere.join(', ')}. ` +
+      'A declared fact with no definition cannot be implemented and cannot be measured. ' +
+      'Define it in §13, or name it in UNDEFINED_FACT with the open question.',
+  )
+})
+
+test('every optional sidecar fact carries a schema description', () => {
+  const properties = layoutSchema().$defs.nodeLayout.properties
+  const bare = optionalFacts()
+    .filter((name) => !(name in UNDEFINED_FACT) && typeof properties[name].description !== 'string')
+    .sort()
+  assert.deepEqual(
+    bare,
+    [],
+    `optional sidecar fact(s) carry no description: ${bare.join(', ')}. ` +
+      'The schema is published on its own, so a consumer reading only the schema needs the pointer to §13.',
+  )
+})
+
+test('the sidecar schema rejects a half-measured fence pair', () => {
+  const validateLayout = new Ajv2020({ strict: true }).compile(layoutSchema())
+  const sidecar = (node) => ({
+    version: 1,
+    encoding: 'utf-8',
+    source: '```\nx\n```\n',
+    lineEndings: 'lf',
+    bom: false,
+    nodes: [{ path: '/children/0', startByte: 0, endByte: 10, ...node }],
+  })
+  // §13 F6 spells an unterminated block as an EMPTY closer, so a producer that
+  // measures fences always has both fields. Omitting one is not "unterminated"
+  // and not "unknown" - it is a producer that measured half a pair, and the
+  // schema has to say so on its own, because a consumer may hold nothing else.
+  assert.equal(validateLayout(sidecar({ openerRaw: '```' })), false, 'an opener with no closer validated')
+  assert.equal(validateLayout(sidecar({ closerRaw: '```' })), false, 'a closer with no opener validated')
+  assert.equal(validateLayout(sidecar({ openerRaw: '```', closerRaw: '```' })), true, 'a measured pair was rejected')
+  assert.equal(validateLayout(sidecar({ openerRaw: '```', closerRaw: '' })), true, 'an unterminated block was rejected')
+  assert.equal(validateLayout(sidecar({})), true, 'an unmeasured node was rejected')
+})
+
+test('every UNDEFINED_FACT entry is still needed', () => {
+  const clause = sidecarClause()
+  const stale = Object.keys(UNDEFINED_FACT)
+    .filter((name) => namedInClause(clause, name))
+    .sort()
+  assert.deepEqual(
+    stale,
+    [],
+    `UNDEFINED_FACT names fact(s) PART 12 §13 now defines: ${stale.join(', ')}. ` +
+      'Delete the entry so the fact is gated like every other one.',
+  )
+})
+
+test('every UNDEFINED_FACT entry names a fact the schema still declares', () => {
+  const declared = new Set(optionalFacts())
+  const unknown = Object.keys(UNDEFINED_FACT)
+    .filter((name) => !declared.has(name))
+    .sort()
+  assert.deepEqual(
+    unknown,
+    [],
+    `UNDEFINED_FACT names fact(s) the sidecar schema no longer declares: ${unknown.join(', ')}.`,
+  )
+})
+
 test('shared source-layout fixtures validate', () => {
   const layoutSchema = JSON.parse(readFileSync(resolve(root, 'resources/ast-source-layout-schema.json'), 'utf8'))
   const validateLayout = new Ajv2020({ strict: true }).compile(layoutSchema)
@@ -150,13 +419,37 @@ test('the corpus is non-trivial', () => {
   assert.ok(corpus.length > 400, `corpus looks truncated: ${corpus.length} documents`)
 })
 
+/**
+ * Documents the schema describes and the PINNED build does not yet produce.
+ *
+ * The schema is the spec's, so a rule may land here before the engines ship it -
+ * the same window `resources/engine-pin-drift.txt` declares for rendered HTML,
+ * which this test cannot use because it validates the AST rather than the bytes.
+ * DECLARED rather than tolerated, and checked in BOTH directions below: a slug
+ * that starts validating again has to leave this list in the commit that bumps
+ * the pin, or the list becomes a blanket excuse with no expiry.
+ */
+const SCHEMA_ROLLOUT_PENDING = new Map([])
+
 test('every corpus document serializes to a schema-valid AST', () => {
   const failures = []
+  const cleared = []
   for (const { name, source } of corpus) {
+    const ok =
+      validate(serialize(source)) ? validate(serializeResolved(source)) ? true : false : false
+    if (SCHEMA_ROLLOUT_PENDING.has(name)) {
+      if (ok) cleared.push(name)
+      continue
+    }
     if (!validate(serialize(source))) failures.push(`${name} (parse): ${firstErrors()}`)
     if (!validate(serializeResolved(source))) failures.push(`${name} (resolved): ${firstErrors()}`)
   }
   assert.deepEqual(failures.slice(0, 8), [], `${failures.length} documents fail the schema`)
+  assert.deepEqual(
+    cleared,
+    [],
+    `these documents validate now and are still listed in SCHEMA_ROLLOUT_PENDING - delete the entry in the commit that bumps the pin: ${cleared.join(', ')}`,
+  )
 })
 
 test('every node type the reference emits is declared in the schema', () => {
@@ -185,6 +478,8 @@ test('every node type the reference emits is declared in the schema', () => {
  */
 const NOT_PRODUCIBLE = {
   citation_group: 'citations (Tier-2) - off in a default-profile run, exercised by tests/corpus-optional',
+  citation_definition:
+    'citations (Tier-2) - off in a default-profile run, and with the extension off `[@key]: entry` is ordinary paragraph text (PART 12 section 18)',
 }
 
 test('every node type the schema declares is produced by a corpus document, or named as unproducible', () => {

@@ -1,0 +1,13 @@
+A boolean lang is the third spelling of the same key
+
+```
+[a]{:fr lang} [b]{lang :fr}
+.
+<p><span lang="">a</span> <span lang="fr">b</span></p>
+```
+
+```
+[x]{lang}
+.
+<p><span lang="">x</span></p>
+```

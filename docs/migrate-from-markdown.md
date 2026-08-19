@@ -5,6 +5,10 @@ description: A task-oriented guide for Markdown and GFM authors switching to Car
 
 # Coming from Markdown
 
+::: info Who this is for
+**Authors who already write CommonMark or GFM** and want to move documents across. Task-oriented: what to change, not why it differs.
+:::
+
 This guide is for authors who already know CommonMark or GitHub-Flavored Markdown (GFM) and want to rewrite documents in Carve. It focuses on what to change, not on why Carve differs from Markdown - for the design rationale see [Carve vs Markdown/Djot/MDX](/comparison).
 
 ::: tip Automated conversion
@@ -44,6 +48,7 @@ The table below covers the constructs you use most often. Items marked **same** 
 | Tables | GFM pipe tables with a `\|---\|` row | `\|=` header cells | **Changed** - see below (GFM delimiter row also accepted) |
 | Footnotes | `[^label]` + `[^label]: text` (GFM ext.) | same | Plus inline `^[...]` |
 | Raw HTML | Inline and block, on by default | Bare tags are literal; explicit `=html` passthrough only | See below |
+| Keys, abbreviations, dates | raw `<kbd>`, `<abbr title="…">`, `<time datetime="…">` | `[Tab]{kbd}`, `[HTML]{abbr="…"}`, `[today]{time="…"}` | Carve adds this - raw HTML is off, so a span attribute is how you reach those elements. Three are core (`abbr`, `time`, `kbd`); `samp`, `var`, `cite` and `dfn` need the SemanticSpan extension |
 
 ## Emphasis: the most important change
 

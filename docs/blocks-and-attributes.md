@@ -1,3 +1,7 @@
+---
+description: Where an attribute attaches on a block versus an inline element, and why the two differ.
+---
+
 # Block & inline elements (and attributes)
 
 Carve has two kinds of element, and **attributes attach to each kind in a different place**. Getting this one rule right removes almost all attribute confusion.
@@ -101,6 +105,15 @@ Header and label together - header first, label second.
 :::
 ```
 
+One container kind is reserved: a **bare `::: figure` opener** (no title, no
+label) is a *composite figure* (PART 9 §4c), not an admonition. Its captioned
+children become panels and a `^ ` caption after the closing fence captions the
+whole group - the one `:::` closer that hosts a caption. Add a quoted title or
+a `[label]` to the opener and the line falls back to a generic
+`<div class="figure">` container (with a `figure-group-opener-metadata` lint
+warning): the group form has no title or label slot, its caption is the
+metadata channel.
+
 Two strictness rules to know:
 
 - The header must use **straight double quotes**. An unquoted trailing word (`::: note Custom Title`) or typographic quotes (`::: note “Custom”`, the kind word processors and CMS text filters substitute) make the line *not a fence at all* - the whole block degrades to a literal paragraph. If you see raw `:::` lines in your output, check the quotes first.
@@ -151,7 +164,98 @@ The same `{…}` block is used in both positions:
 - `#id` - element id (one per element)
 - `.class` - add a class (repeatable)
 - `key=value` / `key="value"` - arbitrary attribute; quote when the value has spaces
-- `boolean` - a bare word (no `#`/`.`/`=`) becomes a value-less attribute, rendered `name=""` (e.g. `[Tab]{kbd}` → `<span kbd="">Tab</span>`)
+- `boolean` - a bare word (no `#`/`.`/`=`) becomes a value-less attribute, rendered `name=""` (e.g. `{.note open}` adds `open=""`). Three reserved names on inline spans instead select their HTML element (e.g. `[Tab]{kbd}` → `<kbd>Tab</kbd>`).
+- `:tag` - the natural language of the content, short for `lang=tag` (see below)
+
+### Language: `{:fr}`
+
+`{:tag}` sets the language of what it attaches to. It is exact sugar for `lang=tag`, so it works anywhere an attribute block does and needs no extension:
+
+```carve
+The title is [Le Bon Usage]{:fr}.
+
+{:de}
+> Das ist ein deutschsprachiger Absatz.
+```
+
+```html
+<p>The title is <span lang="fr">Le Bon Usage</span>.</p>
+<blockquote lang="de"><p>Das ist ein deutschsprachiger Absatz.</p></blockquote>
+```
+
+Any BCP 47 tag works, including script, region and private-use subtags: `{:de-CH}`, `{:sr-Latn-RS}`, `{:x-acme}`. The tag is stored exactly as written, so its case is preserved.
+
+The empty form `{:}` says the language is explicitly **unknown**, which is different from leaving the attribute off. Omitting it lets the content inherit the surrounding language; `{:}` stops that inheritance:
+
+```carve
+{:de}
+> Der Titel ist [unbekannt]{:}.
+```
+
+::: tip Direction is separate
+A language tag never sets writing direction. Direction follows the script, and a tag need not name one, so set it explicitly where it matters: `[…]{:ar dir=rtl}`. HTML's `dir="auto"` is available too.
+:::
+
+`:tag` and `lang=tag` are the same attribute, so writing both is just a repeated key - the last value wins:
+
+```carve
+[a]{:fr lang=de}   →   lang="de"
+[b]{lang=de :fr}   →   lang="fr"
+```
+
+`carve fmt` writes the short spelling, so `{lang=fr}` is formatted to `{:fr}` and `{lang=""}` to `{:}`.
+
+A tag that is not structurally well formed leaves the whole block as literal text rather than half-parsing it - `{:en_US}`, `{:-en}` and `{:français}` all stay visible in the output. And the sigil takes no padding: `{: fr}` (with a space) is the empty language attribute plus a separate boolean `fr`, not a language tag.
+
+### Semantic spans: `{kbd}`, `{abbr="…"}`, `{time="…"}`
+
+On an **inline span**, three attribute names are consumed and become the HTML element of the same name: `abbr`, `time`, `kbd`.
+
+```carve
+Press [Tab]{kbd} to indent.
+```
+
+```html
+<p>Press <kbd>Tab</kbd> to indent.</p>
+```
+
+Two of them keep what you wrote: an `abbr` value becomes `title`, a `time` value becomes `datetime`. A value on `kbd` only picks the wrapper.
+
+```carve
+[HTML]{abbr="HyperText Markup Language"} shipped in [1993]{time="1993"}.
+```
+
+```html
+<p><abbr title="HyperText Markup Language">HTML</abbr> shipped in <time datetime="1993">1993</time>.</p>
+```
+
+Several at once nest in a **fixed** order - `abbr`, `time`, `kbd`, innermost first - regardless of the order you typed them, so no document can come to depend on the spelling.
+
+**Anything left over rides the outermost element.** A consumed name *renames* the span rather than wrapping it, so an id or class lands on the element you wrote it on:
+
+```carve
+[Tab]{#k .key kbd}
+```
+
+```html
+<p><kbd id="k" class="key">Tab</kbd></p>
+```
+
+Three things worth knowing:
+
+- **The span survives only when no name was consumed.** `[x]{onclick="…"}` is still `<span>x</span>` - hardening removes attributes, never the element you wrote. A semantic name is not a removed attribute; it never reaches the output as one.
+- **The scope is exactly an ordinary span.** The same names on a code span, link, image or block-attribute line are ordinary attributes, so `` `c`{kbd} `` is `<code kbd="">c</code>`, not a `<kbd>`.
+- **Only HTML changes.** The AST keeps an ordinary span carrying the authored attributes, plain-text and terminal output render the content, and `carve fmt` writes the span back out with its attributes - a value-less one bare, so `[Tab]{kbd}` formats to itself.
+
+#### Why only three
+
+A name is reserved only where Carve has no other **inline** spelling for that element, and only where it earns core: it carries data the author would otherwise lose (`abbr`, `time`), or it is ubiquitous enough that needing an opt-in would be absurd (`kbd`).
+
+- `code` and `mark` are **nobody's**: `` `x` `` writes `<code>` and `=x=` writes `<mark>`.
+- `samp`, `var`, `cite` and `dfn` are the [SemanticSpan extension](/extensions)'s - same spelling, same rules, off until a host enables it. Until then they stay ordinary attributes.
+- An abbreviation definition (`*[HTML]: HyperText Markup Language`) also emits `<abbr>`, and that is a different mechanism rather than a second spelling: it expands every occurrence document-wide, where `[HTML]{abbr="…"}` marks one, with its own title, and can mark a term no definition declares.
+
+The `:name[content]{attrs}` form has no core handler at all - `:kbd[Tab]` is `<span class="ext-kbd">Tab</span>` unless the extension is enabled, where it is accepted as a **soft-deprecated** spelling and slated for removal in 0.2.
 
 ## The one outlier: list items
 
@@ -180,6 +284,10 @@ This is a Carve addition (djot cannot attribute list items at all) and is the **
 # Heading
 
 text [span]{.c}       ← inline: directly AFTER, no space
+
+[phrase]{:fr}         ← language: short for lang="fr"
+
+[Tab]{kbd}            ← semantic span: <kbd>Tab</kbd>
 
 -{#item} list item    ← list item: abuts the marker (no space!)
 

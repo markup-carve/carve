@@ -1,0 +1,57 @@
+Delimited comments
+
+```
+foo {% bar %} baz
+.
+<p>foo  baz</p>
+```
+
+```
+*bo{% c %}ld* text
+.
+<p><strong>bold</strong> text</p>
+```
+
+```
+a {% one
+two %} b
+.
+<p>a  b</p>
+```
+
+```
+a {% oops
+.
+<p>a {% oops</p>
+```
+
+```
+a {% one {% two %} b
+.
+<p>a  b</p>
+```
+
+```
+Run `a {% x %} b` then done.
+.
+<p>Run <code>a {% x %} b</code> then done.</p>
+```
+
+```
+a \{% not a comment %} b
+.
+<p>a {% not a comment %} b</p>
+```
+
+```
+| a {% hidden %} b | c |
+|---|---|
+| d %% tail | e |
+.
+<table>
+  <thead><tr><th scope="col">a  b</th><th scope="col">c</th></tr></thead>
+  <tbody>
+    <tr><td>d</td><td>e</td></tr>
+  </tbody>
+</table>
+```

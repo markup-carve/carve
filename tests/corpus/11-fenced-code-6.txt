@@ -1,0 +1,3 @@
+src/Auth.php
+
+$ok = true;

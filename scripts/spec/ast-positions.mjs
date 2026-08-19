@@ -184,7 +184,9 @@ export const OPENING_MARKUP = new Map(
 export function checkOpeningMarkup(doc, codepoints, findings) {
   let examined = 0
   for (const [node, path] of walkNodes(doc)) {
-    const pattern = OPENING_MARKUP.get(node.type)
+    const pattern = node.type === 'comment' && node.delimited === true
+      ? /^\{%/
+      : OPENING_MARKUP.get(node.type)
     if (!pattern) continue
     const pos = node.pos
     if (!pos || !Number.isInteger(pos.startOffset) || !Number.isInteger(pos.endOffset)) continue

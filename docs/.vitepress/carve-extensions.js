@@ -80,6 +80,9 @@ const EXCLUDED = {
   headingNumbers: 'needs section-numbering config / overlaps core heading numbering',
   codeCallouts: 'needs <n> markers inside a fenced code block plus a bound list, nothing to show zero-config',
   imgFence: 'needs an ```img``` fence with an SVG body to show anything zero-config; js-first extension (spec/docs deferred)',
+  // Classified AHEAD of the pin: carve-js main exports semanticSpan, 0.1.3
+  // does not. Without this entry the guard fires the moment the pin moves.
+  semanticSpan: 'DENY: consumes samp/var/cite/dfn, so the live render of the core semantic-name example would contradict its corpus-pinned HTML (PART 9 sections 9 and 10)',
 
   // 3. FencedRender presets with no client library loaded in the docs.
   d2: 'needs the D2 client library, not loaded in the docs',

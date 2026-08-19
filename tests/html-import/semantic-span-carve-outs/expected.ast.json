@@ -1,0 +1,1 @@
+{"type":"document","children":[{"type":"paragraph","children":[{"type":"highlight","children":[{"type":"text","value":"m"}]},{"type":"text","value":" and "},{"type":"code","value":"c"}]},{"type":"code_block","content":"x()","lang":"js"}]}

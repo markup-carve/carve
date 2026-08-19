@@ -1,0 +1,149 @@
+An attribute block reaches the nested list it precedes
+
+```
+- a
+
+  {.x}
+  - b
+.
+<ul>
+  <li>a
+    <ul class="x">
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  {.x}
+  - b
+.
+<ul>
+  <li>a
+{.x}
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  {.x}
+  para
+.
+<ul>
+  <li>a
+{.x}
+para</li>
+</ul>
+```
+
+```
+para
+{.x}
+- b
+.
+<p>para
+{.x}
+- b</p>
+```
+
+```
+- a
+
+  {.x}
+  1. b
+.
+<ul>
+  <li>a
+    <ol class="x">
+      <li>b</li>
+    </ol>
+  </li>
+</ul>
+```
+
+```
+- a
+
+  {.x}
+  {#i}
+  - b
+.
+<ul>
+  <li>a
+    <ul class="x" id="i">
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+
+  para
+  {.x}
+  - b
+.
+<ul>
+  <li><p>a</p>
+    <p>para
+{.x}</p>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+
+  {.x}
+  more text}
+  - b
+.
+<ul>
+  <li><p>a</p>
+    <p class="x">more text}</p>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+
+   {.c}
+   - b
+.
+<ul>
+  <li><p>a</p>
+    <p>{.c}</p>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+
+  -{.x} b
+.
+<ul>
+  <li>a
+    <ul>
+      <li class="x">b</li>
+    </ul>
+  </li>
+</ul>
+```

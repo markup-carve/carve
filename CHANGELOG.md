@@ -7,6 +7,111 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The AST span-divergence ledger now records the current zero-difference
+  baseline.** The last `hard_break` extent disagreement cleared across all
+  three engines and its regression test now pins an empty ledger (carve#1414).
+
+### Changed
+
+- **The source-layout sidecar defines every optional fact it declares** (carve#1431,
+  PART 12 §13 F1-F9). Twelve of the thirteen optional `nodeLayout` properties now say
+  what they measure and in which unit; `paddingRaw` stays declared and undefined with
+  its open question recorded. The columns are zero-based per PART 9 §24, so the schema
+  minimum moves from 1 to 0, an unterminated fence is an EMPTY `closerRaw` rather than
+  an omitted one, and the fence pair is `dependentRequired`. Version stays 1: all three
+  engines emit only `path`, `startByte` and `endByte`, so no sidecar in existence
+  carries a field whose meaning moved.
+- **A vertical table-cell marker requires a horizontal partner.** `|^ x` and `|v x` remain visible content; paired runs such as `|<^`, `|~~`, and `|v>` carry both axes. Corpus 373.
+- **A collected definition closes the item paragraph, and only a comment keeps
+  the below-column path open** (carve#1376). Item prose reopens at the content
+  column; a footnote body starts two columns beyond its definition; bare `. `
+  and `- ` have the same content column. Corpus 374.
+- **A quote is reached by its marker, and a column never reaches into one** (carve#1384). A line writing no `>` is in no quote whatever column it lands on; it folds into the deepest open paragraph, renders where it was written, and registers nothing. Corpus 369.
+- **An unterminated fence at a container's content column opens no block** (carve#1387). Section 10 I4 asks for a closer; without one the line is paragraph text, the paragraph stays open, and a flush-left line below folds into it. Corpus 367.
+- **A raw block keeps the blank line at the end of its payload** (carve#1389). The payload is every line between the delimiters; the container and whether the closer was written are not parameters. Corpus 366.
+
+## [0.1.3] - 2026-08-18
+
+### Added
+
+- **PART 11 §1b: a flatten preserves the boundary it dissolves** (carve#1325). Where a producer flattens block content into an inline-only slot, a separator is required between two former siblings that each contribute a token, and one space is sufficient iff re-reading the slot draws no token from both sides of the join.
+- **PART 12 §18: a citation definition is a node** (carve#1276). A `[@key]: entry` bibliography line serializes as `citation_definition` with `key`, `children`, `attrs` and `pos`. Tier-2.
+- **PART 12 §17: a figure may wrap a table, and no Carve source spells it** (carve#1211, carve#1236). An interchange-only shape an importer can produce.
+- **PART 12 §15: a table may carry a row grouping**, and **PART 12 §14: a caption may carry a structured short caption** (carve#1117).
+- **PART 9 §21a: delimited inline comments, `{% … %}`** (carve#1239).
+- **PART 9 §4c: composite figures** (carve#1122). A bare `::: figure` container is a captionable host whose captionable children are its panels, with target rules at PART 11 §10g and the node shape at PART 12 §16.
+- **A compact language attribute, `{:TAG}`** (carve#1114).
+- **The HTML import contract is specified** (carve#1098, carve#1286), with two new diagnostic codes, `structure-unspellable` and `encoding-assumed` (carve#1216, carve#1235), a defined `path` on every diagnostic (carve#1257), and the source's list tightness preserved (carve#1210).
+
+### Changed
+
+Container boundaries, and what a line at a content column does. These are one family and an implementer building any of them should read them together:
+
+- **At a container's content column, a block ends the paragraph it sits under** (carve#1357, also settling the `dd` sub-question on carve#1350). What the block RENDERS is not a parameter; PART 1 S4 carries the property instead of an enumeration of constructs. The rule is over the BLOCK, not over its first line.
+- **A definition at a container's content column ends the paragraph, not the container** (carve#1350). §10 I5 makes it an interrupter; the container ends because the next line arrives at column 0.
+- **A footnote definition's block runs to the end of its body** (carve#1363), blank lines and all, so one definition does not answer differently by how its body is laid out.
+- **A definition's column is reached by composing the strips, not by walking the prefix** (carve#1368, PART 9 §24 C5). Each strip is taken against the column the one before it hands out.
+- **A blank line ends the open paragraph, whatever container stands above it** (carve#1379). An unterminated `:::` div reaches no further past a blank than a terminated one.
+- **A blank line before a sibling marker separates the items, whatever consumed it** (carve#1383, §17 L1). carve#326 C's interior blank is untouched.
+- **Prose reopens an item's paragraph, and a continuation row joins the row above it in its OWN container** (carve#1370). S4 does not ask whether the open paragraph is the container's first block.
+- **A quote inside a quote is asked what it ends on** (carve#1355). S4's recursive question was never put to a nested quote.
+- **A table is a table however its last row is spelled** (carve#1348), and **a continuation row joins the row above it whatever that row's cells hold** (carve#1354). A continuation row is a row only where a table is above it (carve#1349), and the delimiter row is what makes the one case that declines.
+- **No open paragraph, no lazy line, at every depth and after an interrupter** (carve#1346). The clause binds even where the unmatched container is a list, so `- - # H` answers as `- # H` does.
+- **Lazy continuation extends an open paragraph and nothing else** (carve#1280), and **a continuation marker attaches one block** (carve#1290, §17 L3).
+- **A floating attribute is scoped to the container that holds it** (carve#1281, §15 A4); an unconsumed one is dropped and reported.
+- **An attribute line after a `+` continuation marker attributes the block the marker attaches** (carve#1238).
+- **A tab after a fence or frontmatter opener is decided by its position** (carve#1295, carve#1285). Before content it is the marker separator and the construct does not open; at end of line it is trailing whitespace and the opener opens.
+- **A comment fence hides its body at every column, not only at column 0** (carve#1309, §28). Seven documents pin it, one per spelling an engine can get wrong on its own.
+
+Inline content and line blocks:
+
+- **A line block hardens a soft break at every depth** (carve#1351, PART 9 §23). §23 hardens by NODE KIND, not by depth; PART 11 §7c is amended alongside, since its bare-newline permission rests on this reading.
+- **A line block's last body line keeps its backslash** (carve#1340, PART 11 §7c). At a stanza's end there is no boundary to harden, so the bare newline is not equivalent.
+- **A comment line is removed at the block layer** (carve#1339, carve#1333). `comment_line` is a block and a trailing `%%` after content is `inline_comment`; §23's "wherever it appears" means in whichever container, never in whichever inline context.
+- **An unclosed inline run in a line block reaches the end of the block** (carve#1282), carrying a newline rather than a space.
+- **An unclosed verbatim run in a table row stops at the row's closing pipe** (carve#1284, carve#1293), with the `+` continuation and the escaped pipe ruled alongside.
+- **A label that begins with an at sign is not a reference label** (carve#1302). It resolves to nothing and the source text stands.
+- **A note inside an unresolved reference is not a reference** (carve#1198, PART 9R R2).
+- **Footnote labels are matched exactly, and never cross a line** (carve#1112).
+- **A heading id is derived from the heading's text content** (carve#1283). An inline either contributes its literal text or contributes nothing, decided by the CONSTRUCT rather than by what it renders.
+- **An abbreviation expands inside an inline container** (carve#1151), **an abbreviation line in a list item body is the paragraph it renders** (carve#1267), and **an explicit `abbr` semantic attribute outranks automatic expansion** (carve#1127).
+- **Semantic spans split by tier, leftover attributes ride the outermost element** (carve#1146), and **compact semantic span attributes are portable core syntax** (carve#1124).
+
+Attributes and tables:
+
+- **A cell's attributes bind after its kind and alignment markers** (carve#1224, PART 9 §5).
+- **A table header cell states what it heads** (carve#1149).
+- **Two adjacent attributes need a separator** (carve#1157), **a boolean and a key/value of the same name are one attribute** (carve#1125), **a structural attribute leads the author's own** (carve#1090), and **a mandatory base class keeps the author's class slot in place** (carve#1168, carve#1170).
+
+Canonical form and the non-HTML targets:
+
+- **PART 11 §6e: a table cell's content is padded** (carve#1233), **PART 11 §6d: a code fence opener is written glued to its info string** (carve#1219), and **PART 11 §6c: a value-less attribute is written as a boolean** (carve#1137).
+- **PART 11 §8b: the Markdown target's authored escape narrows too** (carve#1321), and **a line's content position is after its container prefix** (carve#1332). The position is read on the emitted line past every container prefix, so `> \# heading` does not come back as a heading.
+- **The Markdown target escapes an angle bracket only where it opens markup** (carve#1172, carve#1148).
+- **PART 11 §10h: the plain-text target preserves list depth** (carve#1084). The clause now carries its own number rather than sitting inside §8a's body (carve#1365); the `10d` slot of that same run is retired, since carve#1213 withdrew the clause it named, so the run reads `10c`, `10e`.
+- **PART 11 §10e: a presentation target keeps a caption, a fence title and a fence label** (carve#1179), and **PART 11 §10f: a referenced abbreviation definition splits by target** (carve#1185).
+- **Bidi controls are stripped by presentation target** (carve#1082, carve#1083).
+
+### Security
+
+- **A list-valued attribute is probed at every candidate, not at its head** (carve#1326, §25). The probe read the value's leading scheme, which vouches for the whole value only where the whole value is one URL, so `srcset="safe.png 1x, javascript:alert(1) 2x"` passed on all three engines.
+- **The token pass runs in addition to the value-wide probe, not instead of it** (carve#1328, §25). The paragraph read as an exchange, and one engine shipped token-only; the value-wide probe strips ASCII whitespace before reading a scheme and the split does not, so dropping it is a regression rather than a neutral variant.
+
+### Fixed
+
+Defects in the executable spec and its corpus, where the engines already answered correctly:
+
+- **Only lazy folding demotes a marker-line colon opener** (carve#1382). A `:::` opener alone on a marker line with a blank after it was read as literal text; the demotion guard asked whether the body was non-empty rather than whether any folding happened.
+- **A task item's checkbox is not decided by its first block** (carve#1381). `- [ ] > q` dropped the checkbox the author wrote; the `<li>` opener was built in two branches and only the inline one consulted it.
+- **A bracketed construct spans a line boundary like any other inline content** (carve#1352). Every bracketed content run carried a newline guard, so a link, a semantic span, an alt text, an inline note, `:name[...]`, the edit family and the forced family all read as literal text across a boundary. The physical-line identifiers deliberately keep the guard.
+
+Defects in the specification text:
+
+- **The U+E000 no-break space sentinel is documented on all four fields that carry it** (carve#1242, PART 12 §3). It was named on `text.value` alone; `raw_block.content` is named as excluded.
+- **An image's alt text closes where a link's text closes** (carve#1197). The production wrote `alt_text = {character - ']'}` four lines under the statement that an image differs from a link only in its leading `!` and its output, so `![t[z]][r]` was not an image at all.
+
 ## [0.1.2] - 2026-08-10
 
 ### Changed

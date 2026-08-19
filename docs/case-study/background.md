@@ -1,3 +1,7 @@
+---
+description: The markup landscape Carve was designed against, and what each existing language got wrong.
+---
+
 # Background
 
 ## Part 1: The Landscape of Lightweight Markup
@@ -21,11 +25,13 @@ Before designing something new, we must understand what exists and why.
 ### 1.2 What Each Teaches Us
 
 #### Markdown
-**Strengths**: Ubiquitous, feels natural for basic text
-**Weaknesses**: Ambiguous, fragmented (CommonMark, GFM, etc.)
-**Lesson**: Simplicity wins adoption, but ambiguity creates chaos.
+
+- **Strengths**: Ubiquitous, feels natural for basic text
+- **Weaknesses**: Ambiguous, fragmented (CommonMark, GFM, etc.)
+- **Lesson**: Simplicity wins adoption, but ambiguity creates chaos.
 
 #### reStructuredText
+
 ```rst
 This is *emphasis* and **strong emphasis**.
 
@@ -34,11 +40,13 @@ This is *emphasis* and **strong emphasis**.
 
 `Link text <https://example.com>`_
 ```
-**Strengths**: Explicit directives, extensible, great for documentation
-**Weaknesses**: Verbose, underscore suffix for links is bizarre
-**Lesson**: Explicitness is good, but syntax should feel natural.
+
+- **Strengths**: Explicit directives, extensible, great for documentation
+- **Weaknesses**: Verbose, underscore suffix for links is bizarre
+- **Lesson**: Explicitness is good, but syntax should feel natural.
 
 #### AsciiDoc
+
 ```asciidoc
 = Document Title
 :author: John Doe
@@ -56,11 +64,14 @@ def hello():
     print("Hello")
 ----
 ```
-**Strengths**: Document attributes, admonitions, includes, powerful tables
-**Weaknesses**: Learning curve, multiple syntaxes for same thing
-**Lesson**: Metadata and document structure matter. Built-in admonitions are valuable.
+
+- **Strengths**: Document attributes, admonitions, includes, powerful tables
+- **Weaknesses**: Learning curve, multiple syntaxes for same thing
+- **Lesson**: Metadata and document structure matter.
+  Built-in admonitions are valuable.
 
 #### Org-mode
+
 ```org
 * Heading 1
 ** Heading 2
@@ -80,12 +91,15 @@ def hello():
     print("hello")
 #+END_SRC
 ```
-**Strengths**: Incredibly powerful, outlining, TODO states, time tracking
-**Weaknesses**: Emacs-centric, `#+` syntax is ugly, steep learning curve
-**Lesson**: Plain text can be a complete productivity system. Checkboxes and TODO
-states are genuinely useful. The `/italic/` convention works!
+
+- **Strengths**: Incredibly powerful, outlining, TODO states, time tracking
+- **Weaknesses**: Emacs-centric, `#+` syntax is ugly, steep learning curve
+- **Lesson**: Plain text can be a complete productivity system.
+  Checkboxes and TODO states are genuinely useful.
+  The `/italic/` convention works!
 
 #### Textile
+
 ```textile
 This is *strong* and _emphasis_ and -deleted- and +inserted+.
 
@@ -96,12 +110,14 @@ This is *strong* and _emphasis_ and -deleted- and +inserted+.
 |_. Header |_. Header |
 | Cell     | Cell     |
 ```
-**Strengths**: Intuitive emphasis, simple links, readable
-**Weaknesses**: Largely abandoned, some ambiguous cases
-**Lesson**: `"text":url` for links is genuinely more readable. The `|_.` for
-headers is clever.
+
+- **Strengths**: Intuitive emphasis, simple links, readable
+- **Weaknesses**: Largely abandoned, some ambiguous cases
+- **Lesson**: `"text":url` for links is genuinely more readable.
+  The `|_.` for headers is clever.
 
 #### Creole
+
 ```
 This is **bold** and //italic//.
 
@@ -112,11 +128,13 @@ This is **bold** and //italic//.
 |= Header |= Header |
 | Cell    | Cell    |
 ```
-**Strengths**: Designed for wiki interoperability, clear delimiters
-**Weaknesses**: Never achieved widespread adoption
-**Lesson**: `//italic//` is visually perfect. `|=` for table headers is elegant.
+
+- **Strengths**: Designed for wiki interoperability, clear delimiters
+- **Weaknesses**: Never achieved widespread adoption
+- **Lesson**: `//italic//` is visually perfect. `|=` for table headers is elegant.
 
 #### Gemtext (Gemini Protocol)
+
 ```
 # Heading
 ## Subheading
@@ -135,12 +153,14 @@ Regular text is just text.
 code here
 ```​
 ```
-**Strengths**: Radically simple, one link per line, unambiguous
-**Weaknesses**: No inline formatting whatsoever, too minimal for rich documents
-**Lesson**: Forcing links onto their own lines eliminates ALL link syntax
-ambiguity. Sometimes constraints are features.
+
+- **Strengths**: Radically simple, one link per line, unambiguous
+- **Weaknesses**: No inline formatting whatsoever, too minimal for rich documents
+- **Lesson**: Forcing links onto their own lines eliminates ALL link syntax ambiguity.
+  Sometimes constraints are features.
 
 #### Typst
+
 ```typst
 = Heading
 
@@ -157,23 +177,27 @@ Hello, #name!
   [Cell 1], [Cell 2],
 )
 ```
-**Strengths**: Programmable, clean syntax, fast, modern
-**Weaknesses**: More like a programming language than markup
-**Lesson**: Programmability is powerful. The `#` prefix for commands is clean.
-Content in `[]` brackets is intuitive.
+
+- **Strengths**: Programmable, clean syntax, fast, modern
+- **Weaknesses**: More like a programming language than markup
+- **Lesson**: Programmability is powerful. The `#` prefix for commands is clean.
+  Content in `[]` brackets is intuitive.
 
 ### 1.3 Other Notable Ideas
 
 #### CriticMarkup (Editorial Annotations)
+
 ```
 {++addition++}
 {--deletion--}
 {~~old~>new~~}
 {==highlight==}{>>comment<<}
 ```
-**Lesson**: Track changes in plain text is valuable for collaboration.
+
+- **Lesson**: Track changes in plain text is valuable for collaboration.
 
 #### Fountain (Screenwriting)
+
 ```
 INT. COFFEE SHOP - DAY
 
@@ -181,10 +205,12 @@ JOHN
 (nervous)
 I have something to tell you.
 ```
-**Lesson**: Context can be inferred from position and conventions. Minimal markup
-for domain-specific formats.
+
+- **Lesson**: Context can be inferred from position and conventions.
+  Minimal markup for domain-specific formats.
 
 #### YAML Frontmatter (Metadata)
+
 ```yaml
 ---
 title: My Document
@@ -193,7 +219,8 @@ date: 2024-01-15
 tags: [tutorial, beginner]
 ---
 ```
-**Lesson**: Structured metadata at the start of documents is universally useful.
+
+- **Lesson**: Structured metadata at the start of documents is universally useful.
 
 ---
 
@@ -227,9 +254,7 @@ From teaching Markdown to non-programmers:
 ### 2.3 The "Ten-Second Rule"
 
 A good syntax should be:
+
 - **Learnable in 10 seconds** for basic use
 - **Memorable after 10 days** without use
 - **Unambiguous within 10 characters** of context
-
----
-

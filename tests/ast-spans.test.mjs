@@ -208,8 +208,74 @@ test('a malformed declaration line is an error, never a silent skip', () => {
   assert.match(problems[0], /^MALFORMED\s+line 1/)
 })
 
-test('the shipped span declaration parses and currently needs no baseline rows', () => {
-  const text = readFileSync(resolve(root, 'resources/ast-span-divergence.txt'), 'utf8')
-  const problems = reconcileSpans(new Map(), text)
-  assert.deepEqual(problems, [])
+/*
+ * WHAT `npm run ast:check` LAST MEASURED. Same contract, and same reason, as
+ * `LAST_MEASURED` in tests/ast-values.test.mjs: this suite runs on a host with
+ * no engine checkouts, so it cannot measure spans itself, and reconciling the
+ * shipped file against an EMPTY measurement only stays falsifiable while the
+ * ledger is empty - every declared row becomes an AGREED.
+ *
+ * Measured 2026-08-18 over 1259 corpus documents plus 3 synthetic samples, at
+ * carve-js 020c73e8, carve-rs a33c42ad and carve-php f30ebd1, each built from a
+ * worktree of that engine's main made for this run. ONE row across 1 document,
+ * of 25,563 spans compared: carve-php ending a hard break on the line the break
+ * is on rather than at column 1 of the following line, where the following line
+ * is a comment-only line the block layer removes
+ * (markup-carve/carve-php#1457).
+ *
+ * THE ROW BEFORE IT WAS A DIFFERENT KIND OF DISAGREEMENT ENTIRELY. The
+ * 2026-08-17 measurement this replaces read `text (presence)` across 3
+ * documents, carve-php dropping a line block's spaced content position
+ * (markup-carve/carve-php#1351, since closed). That row was about a span being
+ * ABSENT; this one is about a present span's line and column, with all three
+ * engines agreeing on both offsets. A key here says which type moved and
+ * nothing about which half of §4 it turned on.
+ *
+ * A NUMBER HERE IS NOT A GAP. Twice in the hour before this measurement a
+ * carve-php fix closed the documents its issue named and over-reached onto one
+ * it did not, so the row survived with a different document behind it and the
+ * engines the other way round - once at a count that did not move at all. This
+ * map cannot see that, and it is not supposed to: what it pins is that the
+ * shipped ledger matches the last run. The document names live in
+ * resources/ast-span-divergence.txt, and re-running the check is the only thing
+ * that says which gap a row currently describes.
+ *
+ * It read nine rows across 21 documents on 2026-08-17, five across 9 an hour
+ * later, four across 8 twice after that, three, then one. carve-php shipped
+ * the 326/327/329/333 container rulings, carve-js shipped #1152 and #1154, and
+ * carve-php then shipped #1365, #1366, #1367, #1370 and #1372 - and each time
+ * ast:check reported the rows AGREED or COUNT and this map moved with the run
+ * rather than with the merge notifications. Six measurements in one day, each
+ * one taken because the previous one had stopped being true, and a seventh the
+ * next day that replaced the surviving row with a different one.
+ */
+// The 2026-08-19 post-fix run compared 26,301 spans and all three engines
+// placed every node identically, retiring the final hard_break row.
+const LAST_MEASURED = new Map()
+
+const asMeasured = (counts) =>
+  new Map(
+    [...counts].map(([key, count]) => [
+      key,
+      new Set(Array.from({ length: count }, (_, i) => `measured-${i}.crv`)),
+    ]),
+  )
+
+const shippedSpanDeclaration = () =>
+  readFileSync(resolve(root, 'resources/ast-span-divergence.txt'), 'utf8')
+
+test('the shipped span declaration is exactly what ast:check last measured', () => {
+  // All three directions stay live without engines: a row in the file with no
+  // measurement is AGREED, a measured row the file omits is NEW, and a count
+  // edited on either side is COUNT. An empty ledger against an empty
+  // `LAST_MEASURED` still reconciles to nothing, so there is no floor.
+  assert.deepEqual(reconcileSpans(asMeasured(LAST_MEASURED), shippedSpanDeclaration()), [])
+})
+
+test('and a disagreement the shipped file does not declare is caught', () => {
+  const measured = asMeasured(LAST_MEASURED)
+  measured.set('table_cell (presence)', new Set(['a.crv', 'b.crv']))
+  const problems = reconcileSpans(measured, shippedSpanDeclaration())
+  assert.equal(problems.length, 1)
+  assert.match(problems[0], /^NEW\s+table_cell \(presence\) disagrees in 2 document\(s\)/)
 })

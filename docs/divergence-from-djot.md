@@ -1,4 +1,12 @@
+---
+description: Every place Carve deliberately parses differently from Djot - the reference for porting a Djot parser.
+---
+
 # Divergence from Djot
+
+::: info Who this is for
+**Implementers porting a Djot parser**, and authors coming from Djot who hit a surprise. This is the exhaustive list of deliberate parse differences - not an introduction to Carve.
+:::
 
 Carve starts from [Djot](https://djot.net) - John MacFarlane's predictable,
 backtracking-free reimagining of Markdown - and keeps almost all of it: the
@@ -240,10 +248,15 @@ surprise lists.
 
 **Djot:** `{% comment %}`.
 
-**Carve:** `%%` to end of line, `text %% trailing`, or a `%%%` fenced block.
+**Carve:** `%%` to end of line, `text %% trailing`, a `%%%` fenced block, or the
+Djot spelling `{% comment %}` for the delimited case.
 
 **Why.** `%%` is faster to type, reads like a comment in many config formats, and
-needs no closing delimiter for the common single-line case.
+needs no closing delimiter for the common single-line case. It runs to the end
+of its inline run, though, so prose cannot resume after it on the same line -
+and for that Carve takes Djot's `{% … %}` unchanged (PART 9 §21a), including
+its rules: no nesting, opaque in code spans, an unterminated opener stays
+literal. A Djot document's comments therefore keep working as written.
 
 ## 7. Block position follows Djot
 
@@ -716,7 +729,51 @@ hide that container's closer. A fence-shaped line inside an open paragraph is
 paragraph content under section 7. An unterminated `%%%` comment fence instead
 degrades to a line comment; Djot has no corresponding comment syntax.
 
+## 21. Footnote labels are matched exactly
+
+**Djot:** a footnote label is normalized before lookup, so runs of whitespace
+collapse and the ends are trimmed. Every reference below binds to the same
+definition.
+
+**Carve:** the label runs to the closing `]` and is matched exactly. Whitespace
+is not normalized, the ends are part of the identifier, and a reference may not
+contain a newline at all - so only a reference written the way the definition
+was written binds.
+
+Definition:
+
+```
+[^a b]: foo
+```
+
+References, measured against djot.js 0.3.2:
+
+```
+[^a b]      Djot: binds    Carve: binds
+[^a  b]     Djot: binds    Carve: literal text
+[^a<TAB>b]  Djot: binds    Carve: literal text
+[^ a b ]    Djot: binds    Carve: literal text
+```
+
+A reference may not contain a newline in Carve, so a wrapped one is literal:
+
+```
+see[^two
+words].
+
+[^two words]: foo
+```
+
+Matching the bytes keeps the source authoritative and follows the same ruling
+as link-reference labels. The cost is that a long label cannot be wrapped;
+`carve portability` reports documents that rely on Djot's folding behavior.
+
 ## What Carve adds on top (not breaks)
+
+An unterminated `%%%` degrades to a line comment rather than opening an opaque
+block, so `%%%` then `x` renders `<p>x</p>` where Djot - which has no comment
+syntax - renders both lines as text. That is part of the comment addition
+(section 6) rather than a separate design decision.
 
 These aren't divergences - Djot has no equivalent - but they're why Carve exists
 as more than restyled Djot:
@@ -736,10 +793,18 @@ as more than restyled Djot:
   is a spelling of decimal-dot, not a dialect, so it mixes with `1.` in one
   list; only `.` may drop its value, since a leading `) ` collides with prose
   parentheticals far more often (grammar, ordered_marker).
-- **Boolean attributes** - a bare word in `{…}` (`[Tab]{kbd}`, `{.note open}`)
-  is a value-less attribute rendered `name=""`. Canonical djot rejects bare
-  words (the whole block stays literal); carve accepts them, following djot-php
-  (grammar §14).
+- **Boolean attributes** - a bare word in `{…}` (`[text]{featured}`,
+  `{.note open}`) is a value-less attribute rendered `name=""`. Canonical djot
+  rejects bare words (the whole block stays literal); carve accepts them,
+  following djot-php (grammar §14). The three core semantic names below are
+  consumed instead of rendered; four more are consumed where the SemanticSpan
+  extension is enabled.
+- **Semantic span attributes** - `abbr`, `time` and `kbd` on an ordinary span
+  select an HTML element rather than an attribute, so `[Tab]{kbd}` is
+  `<kbd>Tab</kbd>`, and leftover attributes ride that element rather than a
+  wrapper. `abbr` and `time` values become `title` and `datetime`. Djot has no
+  equivalent: there the same span is `<span kbd="">` (PART 9 §9). Four more
+  names are available through the SemanticSpan extension.
 - **Target-aware rendering** - one parsed document, multiple renderers (HTML,
   ANSI, Markdown, plain text) behind a single extension contract.
 
@@ -752,7 +817,8 @@ Most Djot source needs only mechanical changes:
    bare sub/sup delimiter); if you used `~` for strikethrough-by-convention,
    it's now native.
 3. Replace `+` bullets with `-` or `*`.
-4. `{% comment %}` → `%%`.
+4. `{% comment %}` keeps working; rewrite to `%%` only where you want the
+   comment to run to the end of the line.
 5. Heading anchors are case-preserving (Djot-shaped), so hand-written
    `</#Anchor>` links work as written - cross-references resolve
    case-insensitively. For lowercase anchors, enable the opt-in
@@ -766,7 +832,22 @@ Most Djot source needs only mechanical changes:
    `:  definition`. A multi-paragraph Djot `<dd>` carries over - a Carve
    definition continues like a list item (indent a block after a blank line, or
    use a lone `+`; see section 9).
-8. Nested containers mostly carry over: equal-length fences nest in both
+8. **Attribute blocks that Djot accepted and Carve does not.** A class or id
+   starting with a digit (`{.123}`) is no longer an attribute block - it stays
+   literal text, so it becomes visible rather than silently styling nothing.
+   Rename it (section 16).
+9. **An attribute line inside a paragraph.** Djot consumed `{...}` on a soft
+   break and dropped the bytes; Carve ends the paragraph at the block below and
+   applies them to it. If you relied on the Djot reading, the attributes now
+   land on something. This is the one form on this list that silently CHANGED
+   meaning rather than becoming an error (section 18).
+10. **Indented block openers and tab separators.** ` # H` is prose in Carve and
+   `>\tq` is prose too - the opener must start at column 0 and the separator is
+   a literal space. Both are invisible in most editors, so search for them
+   rather than reading for them (section 15).
+11. **`-{.c} x`** is a list item with attributes in Carve and a paragraph in
+   Djot. Nothing is lost, but the block structure changes (section 17).
+12. Nested containers mostly carry over: equal-length fences nest in both
    languages, and an unclosed container ends at the end of the input in both.
    Two things need attention. A single bare closer that you relied on to close
    several containers at once now closes only the innermost - give each its

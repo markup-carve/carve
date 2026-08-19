@@ -98,7 +98,7 @@ email autolink <a href="mailto:hello@example.com">hello@example.com</a>, and a r
     <h2>Tables</h2>
     <table>
       <caption>Table 1: column alignment - left, right, center.</caption>
-      <thead><tr><th>Fruit</th><th style="text-align: right;">Price</th><th style="text-align: center;">Stock</th></tr></thead>
+      <thead><tr><th scope="col">Fruit</th><th scope="col" style="text-align: right;">Price</th><th scope="col" style="text-align: center;">Stock</th></tr></thead>
       <tbody>
         <tr><td>Apple</td><td style="text-align: right;">1.20</td><td style="text-align: center;">In</td></tr>
         <tr><td>Banana</td><td style="text-align: right;">0.50</td><td style="text-align: center;">In</td></tr>
@@ -161,7 +161,7 @@ the fence:</p>
   <section id="Mentions-tags-and-inline-extensions">
     <h2>Mentions, tags, and inline extensions</h2>
     <p>Mention a person with <span class="mention"><strong>@alice</strong></span> and reference a tag like <span class="tag"><strong>#release-1.0</strong></span>.
-An inline extension names a role: press <kbd>Ctrl+C</kbd> to copy.</p>
+An inline extension names a role: press <span class="ext-kbd">Ctrl+C</span> to copy.</p>
   </section>
   <section id="Footnotes">
     <h2>Footnotes</h2>

@@ -1,0 +1,39 @@
+A footnote definition's block runs to the end of its body
+
+```
+- a
+  [^f]: t
+
+    more
+tail
+
+x[^f]
+.
+<ul>
+  <li><p>a
+[^f]: t</p>
+    <p>more
+tail</p>
+  </li>
+</ul>
+<p>x[^f]</p>
+```
+
+```
+- a
+  [r]: /u
+
+    more
+tail
+
+[r][]
+.
+<ul>
+  <li><p>a
+[r]: /u</p>
+    <p>more
+tail</p>
+  </li>
+</ul>
+<p>[r][]</p>
+```

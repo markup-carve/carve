@@ -1,0 +1,25 @@
+A semantic name renames the span, and the leftovers ride the element
+
+```
+[x]{}
+.
+<p><span>x</span></p>
+```
+
+```
+[x]{onclick="steal()"}
+.
+<p><span>x</span></p>
+```
+
+```
+[x]{kbd onclick="steal()"}
+.
+<p><kbd>x</kbd></p>
+```
+
+```
+[x]{kbd}
+.
+<p><kbd>x</kbd></p>
+```

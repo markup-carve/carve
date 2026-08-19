@@ -1,0 +1,93 @@
+A paragraph opened after a block in an item is still open for a lazy line
+
+```
+- > | a |
+  + b |
+tail
+.
+<ul>
+  <li>
+    <blockquote>
+      <table>
+        <tbody>
+          <tr><td>a</td></tr>
+        </tbody>
+      </table>
+    </blockquote>
+    + b |
+tail
+  </li>
+</ul>
+```
+
+```
+- | a |
+  b
+tail
+.
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+    b
+tail
+  </li>
+</ul>
+```
+
+````
+- ```
+  c
+  ```
+  b
+tail
+.
+<ul>
+  <li>
+    <pre><code>c
+</code></pre>
+    b
+  </li>
+</ul>
+<p>tail</p>
+````
+
+```
+- | a |
+  b
+
+tail
+.
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a</td></tr>
+      </tbody>
+    </table>
+    b
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- | a |
+  | b |
+tail
+.
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a</td></tr>
+        <tr><td>b</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+<p>tail</p>
+```

@@ -75,3 +75,45 @@ for (const c of CONTAINERS) {
     }
   }
 }
+
+/*
+ * A HEADING IS STORED AS RENDERED HTML BEFORE ANY RESOLUTION PASS RUNS, so what
+ * a crossref clones can still hold a frame. Only the crossref frame was being
+ * stripped from the clone, and a heading holding a footnote reference or an
+ * inline note put its framing into the reader's HTML as the text `fn:1` and
+ * `note:...` (markup-carve/carve#1199).
+ *
+ * The generator above cannot reach this: it varies verbatim BODIES and the
+ * columns they sit at, and this shape is an inline construct in a heading that
+ * a later crossref names. So the inputs are written out.
+ *
+ * Deliberately indifferent to what the label should read, which is a separate
+ * question (the engines render the noteref's source there, the oracle drops the
+ * run as it already did for a nested crossref). The assertion is only that no
+ * framing survives, which is true whichever way that lands.
+ */
+const CLONED = [
+  { name: 'a footnote reference', text: 'a [^1] b', tail: '\n[^1]: n\n' },
+  { name: 'an inline note', text: 'a ^[n] b', tail: '' },
+  { name: 'a crossref', text: 'a </#h> b', tail: '' },
+  { name: 'a reference link', text: 'a [t][r] b', tail: '\n[r]: /u\n' },
+  { name: 'an image reference', text: 'a ![z][r] b', tail: '\n[r]: /i.png\n' },
+  { name: 'an inline note holding a crossref', text: 'a ^[</#h>] b', tail: '' },
+]
+
+for (const c of CLONED) {
+  const src = `# ${c.text}\n\n# h\n\nsee </#a-b>\n${c.tail}`
+  test(`no framing leaks: a crossref clones a heading holding ${c.name}`, () => {
+    let html
+    try {
+      html = renderDoc(parse(src))
+    } catch (e) {
+      if (e instanceof Refuse || e.refuse) return
+      throw e
+    }
+    assert.ok(
+      !SENTINELS.test(html),
+      `framing reached the output for ${JSON.stringify(src)}: ${JSON.stringify(html)}`,
+    )
+  })
+}

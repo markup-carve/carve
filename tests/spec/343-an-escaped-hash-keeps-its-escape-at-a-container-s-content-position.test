@@ -1,0 +1,32 @@
+An escaped hash keeps its escape at a container's content position
+
+```
+> \# heading
+>
+> C\# is a language
+
+- \# heading
+- \#tag rest
+.
+<blockquote>
+  <p># heading</p>
+  <p>C# is a language</p>
+</blockquote>
+<ul>
+  <li># heading</li>
+  <li>#tag rest</li>
+</ul>
+```
+
+```
+> > \# deep
+
+> a
+\# heading
+.
+<blockquote>
+  <blockquote><p># deep</p></blockquote>
+</blockquote>
+<blockquote><p>a
+# heading</p></blockquote>
+```

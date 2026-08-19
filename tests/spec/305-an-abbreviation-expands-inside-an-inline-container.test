@@ -1,0 +1,41 @@
+An abbreviation expands inside an inline container
+
+```
+*[HTML]: Long Form
+
+The [HTML]{.x} key.
+.
+<p>The <span class="x"><abbr title="Long Form">HTML</abbr></span> key.</p>
+```
+
+```
+*[HTML]: Long Form
+
+The [HTML]{kbd} key.
+.
+<p>The <kbd><abbr title="Long Form">HTML</abbr></kbd> key.</p>
+```
+
+```
+*[HTML]: Long Form
+
+The :kbd[HTML] key.
+.
+<p>The <span class="ext-kbd"><abbr title="Long Form">HTML</abbr></span> key.</p>
+```
+
+```
+*[HTML]: Long Form
+
+Both *HTML* and [HTML](/u) expand.
+.
+<p>Both <strong><abbr title="Long Form">HTML</abbr></strong> and <a href="/u"><abbr title="Long Form">HTML</abbr></a> expand.</p>
+```
+
+```
+*[HTML]: Long Form
+
+The [HTML]{abbr="Custom"} key.
+.
+<p>The <abbr title="Custom">HTML</abbr> key.</p>
+```

@@ -29,7 +29,7 @@ on:
     paths:
       - 'tests/corpus/**'
       - 'tests/spec/**'
-      - 'docs/examples.md'
+      - 'resources/examples/**'
       # carve-skill's spec-review record is generated FROM this document
       # (scripts/record-spec-review.mjs reads spec/docs/divergence-from-djot.md),
       # so a change here has to reach it the same way a corpus change does.
@@ -38,6 +38,10 @@ on:
       - 'docs/divergence-from-djot.md'
       - 'resources/grammar.ebnf'
   workflow_dispatch:
+  schedule:
+    # A bump PR's only payload is a moving target. Remove drafts whose target
+    # has already arrived on downstream main before they waste review time.
+    - cron: '17 */6 * * *'
 
 concurrency:
   group: bump-downstream
@@ -45,6 +49,7 @@ concurrency:
 
 jobs:
   bump:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -490,6 +495,7 @@ jobs:
   # tree-sitter-carve#46) - a check that cannot fail, because nothing compared
   # the two lists.
   matrix-coverage:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -545,3 +551,39 @@ jobs:
             exit 1
           fi
           echo "Bump matrix covers every repo carrying the spec submodule."
+
+  close-superseded-drafts:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - repo: markup-carve/carve-js
+            submodule: spec
+          - repo: markup-carve/carve-php
+            submodule: tests/spec
+          - repo: markup-carve/carve-rs
+            submodule: tests/spec
+          - repo: markup-carve/carve-grammars
+            submodule: spec
+          - repo: markup-carve/tree-sitter-carve
+            submodule: spec
+          - repo: markup-carve/vscode-carve
+            submodule: spec
+          - repo: markup-carve/pandoc-carve
+            submodule: spec
+          - repo: markup-carve/carve-skill
+            submodule: spec
+          - repo: markup-carve/carve-lsp
+            submodule: tests/spec
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Close a strictly superseded mechanical draft
+        env:
+          GH_TOKEN: ${{ secrets.BUMP_TOKEN }}
+          REPO: ${{ matrix.repo }}
+          SUB: ${{ matrix.submodule }}
+        run: ./tools/close-superseded-bump.sh

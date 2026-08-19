@@ -29,157 +29,74 @@ features:
   - title: Interactive Online, Readable Offline
     details: "Built for the interactive web first — diagrams, math, charts and tabs hydrate into rich output online. With no JavaScript every block degrades to clean semantic HTML: a Mermaid fence still shows its source, <details> stays native, tables stay tables."
   - title: Captions Everywhere
-    details: One ^ prefix adds captions to images, blockquotes, and tables — emitting semantic figure / figcaption / caption HTML.
+    details: One ^ prefix captions images, blockquotes, tables, listings, equations and composite figure groups — emitting semantic figure / figcaption / caption HTML.
   - title: Friendly Tables
     details: "|= for headers, ^ for rowspan, < for colspan, + for multi-line cells. No separator row required."
   - title: Built-in Extensions
-    details: ":type[content]{attrs} for keyboard hints, semantic spans, video embeds. @mentions and #tags as you'd expect from social platforms."
+    details: ":type[content]{attrs} for video embeds and the rest of the handler family. Keyboard hints and the other semantic spans are core attributes instead — [Tab]{kbd}. @mentions and #tags as you'd expect from social platforms."
   - title: Safe With Untrusted Input
     details: "Always-on URL-scheme and attribute hardening, Trojan-Source stripping in presentation targets, and linear-time DoS limits neutralize the common Markdown attack classes with no separate sanitizer. Canonical Carve preserves source and warns through lint. Raw HTML passthrough is the one switch you own: on by default, off with a single flag or a safe mode. Carve never executes embedded code (unlike MDX)."
+description: Carve is a post-Markdown markup language with visual mnemonics, a formal grammar, and safe-by-default rendering.
 ---
 
-## Quick Reference
+## What it looks like
 
-### Frontmatter
-
-```carve
----
-title: My Document
-tags: [carve, markup]
----
-```
-
-A leading `---` fenced block holds document metadata. Add a format token to the opening fence for non-YAML metadata (`---toml`, `---json`, or any label); a bare `---` uses the configurable default format (`yaml` unless the host sets `defaultFrontmatterFormat`):
+Emphasis you can read at a glance - slashes lean, asterisks are heavy,
+underscores sit below, tildes run through:
 
 ```carve
----toml
-title = "My Document"
----
+/italic/  *bold*  _underline_  ~strikethrough~  =highlight=
+
+H{,2,}O and E=mc{^2^}
 ```
 
-Carve holds the content **raw** - the verbatim text plus the format label - and does not parse it; your application interprets the declared format. The block is leading-only and never rendered as body content.
-
-### Emphasis
+Tables without a separator row. `|=` marks a header cell, `|=>` aligns that
+column right, a bare `|>` aligns a single body cell, and one `^` line captions
+the whole thing:
 
 ```carve
-/italic/   *bold*   /*bold italic*/
-_underline_   ~strikethrough~
-=highlight=   {^super^}   {,sub,}
+|= Fruit  |=> Price |
+| Apple    | $1      |
+| Pear     | $2      |
+|~ Total  |< $3     |
+^ Table 1: no separator row needed
 ```
 
-### Headings
+The same `^` captions an image or attributes a quote:
 
 ```carve
-# H1
-## H2
-### H3
-#### H4
+![Apollo 11](apollo.jpg)
+^ Figure 1: first moon landing
+
+> Stay hungry, stay foolish.
+^ Steve Jobs
 ```
 
-### Links & images
+Abbreviations expand wherever the word appears, defined once anywhere in the
+document:
 
 ```carve
-[link text](https://url.com)
-[Page Name][]              (wiki-style)
-![alt text](image.jpg)
-```
+The HTML spec is essential reading.
 
-### Captions (images, quotes, tables)
-
-```carve
-![Photo](img.jpg)
-^ Figure 1: Caption text
-```
-
-### Lists
-
-```carve
-- unordered item
-1. ordered item
-- [ ] task
-- [x] done
-```
-
-### Code
-
-````carve
-`inline code`
-
-```language
-code block
-```
-````
-
-### Math
-
-```carve
-Inline: $`e^{i\pi} + 1 = 0`
-Display: $$`\int_0^1 x \, dx`
-```
-
-### Quotes & admonitions
-
-```carve
-> quoted text
-^ Attribution
-
-::: note
-admonition content
-:::
-```
-
-### Tables
-
-```carve
-|= Header |= Header |      (|= for headers)
-| Cell    | Cell    |
-|= Row    | Cell    |      (|= in a body row = row header)
-^ Table caption
-
-| ^       | spanned |      (^ rowspan)
-| Header  | <       |      (< colspan)
-+ continuation cell  |     (+ multiline)
-```
-
-### Abbreviations
-
-```carve
 *[HTML]: HyperText Markup Language
 ```
 
-### Attributes
+Plus the conventions you already type - mentions, tags, and semantic spans:
 
 ```carve
-{#id .class key=value}
+Hey @alice, see #release-1.0.
+
+Press [Tab]{kbd} to indent.
 ```
 
-### Extensions, mentions, tags
-
-```carve
-@username   #tagname
-:youtube[VIDEO_ID]
-```
-
-`:name[content]{attrs}` is the generic inline-extension syntax; a specific embed
-like `:youtube[…]` is produced by a **registered extension** (built-in where
-shipped, otherwise a small custom one). `@mentions` and `#tags` render as inert
-spans until you supply URL templates.
-
-### Comments
-
-```carve
-%% whole-line comment
-text %% trailing comment
-%%%
-block comment
-%%%
-```
+Every construct is on the [cheat sheet](./cheatsheet), and every one of them is
+pinned to exact HTML in the [examples](./examples).
 
 ## Status
 
 **Carve 0.1 is specified and shipping.** Tier-1 core and Tier-2 standard
 extensions are normative and stable; Tier-3 app-level extensions ship but evolve
-(see [Versioning](./versioning)). Conformance is pinned by 894 corpus examples
+(see [Versioning](./versioning)). Conformance is pinned by 1308 corpus examples
 with exact HTML output, and the three reference engines - carve-js (TypeScript),
 carve-php, and carve-rs - all run the same corpus. Where the corpus pins a rule
 ahead of an engine, the window is declared on the
@@ -189,7 +106,7 @@ Pre-1.0, a minor release may still change the grammar.
 
 Reference material covers the normative [grammar](./grammar) and
 [extensions contract](./extensions), the [security model](./security), the
-[technical rationale](./technical-rationale), [parsing edge cases](./edge-cases),
+[technical rationale](./technical-rationale), [parsing ambiguities](./parsing-ambiguities),
 [native features](./native-features-analysis), and the
 [broader markup landscape](./markup-languages). The [Case Study](./case-study/)
 records the original design research the language grew out of; it is history,

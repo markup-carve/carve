@@ -6,7 +6,7 @@ Table per-cell alignment override
 | Subtotal   |< 12    |
 .
 <table>
-  <thead><tr><th>Item</th><th style="text-align: right;">Qty</th></tr></thead>
+  <thead><tr><th scope="col">Item</th><th scope="col" style="text-align: right;">Qty</th></tr></thead>
   <tbody>
     <tr><td>Apple</td><td style="text-align: right;">12</td></tr>
     <tr><td>Subtotal</td><td style="text-align: left;">12</td></tr>

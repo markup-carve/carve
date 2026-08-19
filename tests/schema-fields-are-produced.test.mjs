@@ -8,12 +8,15 @@
  * schema alone cannot tell the two apart - `additionalProperties: false` checks
  * that no engine invents a field, and nothing checked the other direction.
  *
- * That gap is the same shape as PART 10 §10a, which every engine violated
+ * That gap is the same shape as PART 11 §10a, which every engine violated
  * identically, and as §3a's resolved half, which the reference implementation
  * did not meet: a rule stated in one place, enforced in none. Here it hid
  * `block_quote.attribution`, described as "the `-- attribution` line" - a syntax
- * the grammar does not define, that no engine emits, and that two engines carry
- * dead plumbing for (carve#599).
+ * the grammar did not define, that no engine emitted, and that two engines
+ * carried dead plumbing for (carve#599). The field is gone from the schema:
+ * carve#1161 briefly gave it a producer by making a caption on a quote an
+ * attribution, and carve#1213 withdrew that, so a captioned quote is a `figure`
+ * again and the field promises nothing.
  *
  * PER TYPE, because per NAME was not enough. This check used to collect every
  * field name appearing anywhere in the produced trees into one set, so a name
@@ -54,10 +57,14 @@ const repo = resolve(here, '..')
 const OPT_IN_ONLY = {
   'citation.*': 'citations (Tier-2): the citation item shape, including its resolution results',
   'citation_group.*': 'citations (Tier-2): the group wrapper and the integral `+` form',
+  'citation_definition.*':
+    'citations (Tier-2): the `[@key]: entry` bibliography line, which is ordinary paragraph text with the extension off',
 }
 
 /** Fields permitted by the schema before the corresponding engine rollout. */
 const ENGINE_ROLLOUT_PENDING = {
+  'figure.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
+  'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
 }
 
 /**

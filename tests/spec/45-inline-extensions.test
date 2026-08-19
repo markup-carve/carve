@@ -3,6 +3,12 @@ Inline extensions
 ```
 Press :kbd[Ctrl+C] to copy.
 .
+<p>Press <span class="ext-kbd">Ctrl+C</span> to copy.</p>
+```
+
+```
+Press [Ctrl+C]{kbd} to copy.
+.
 <p>Press <kbd>Ctrl+C</kbd> to copy.</p>
 ```
 
@@ -36,4 +42,44 @@ Press :kbd[Ctrl+C] to copy.
 :foo[a]{.cls}
 .
 <p><span class="ext-foo cls">a</span></p>
+```
+
+```
+[HTML]{abbr="HyperText Markup Language"} [Noon]{time="12:00"} [Tab]{kbd}
+.
+<p><abbr title="HyperText Markup Language">HTML</abbr> <time datetime="12:00">Noon</time> <kbd>Tab</kbd></p>
+```
+
+```
+[*Ctrl*+C]{#copy .shortcut kbd data-key="copy" onclick="alert(1)"}
+[x]{kbd onclick="alert(1)"}
+.
+<p><kbd id="copy" class="shortcut" data-key="copy"><strong>Ctrl</strong>+C</kbd>
+<kbd>x</kbd></p>
+```
+
+```
+[x]{samp} [y]{dfn="a term"}
+.
+<p><span samp="">x</span> <span dfn="a term">y</span></p>
+```
+
+```
+*[HTML]: Hyper Text Markup Language
+
+[HTML]{abbr="Custom"}
+.
+<p><abbr title="Custom">HTML</abbr></p>
+```
+
+```
+:widget[x]{#i .c k=v}
+.
+<p><span id="i" class="ext-widget c" k="v">x</span></p>
+```
+
+```
+:widget[x]{#i k=v}
+.
+<p><span class="ext-widget" id="i" k="v">x</span></p>
 ```

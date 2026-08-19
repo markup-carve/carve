@@ -1,3 +1,7 @@
+---
+description: How Carve treats tabs, trailing spaces and line endings so a document survives an editor save.
+---
+
 # Portable Whitespace
 
 Carve is not required to follow every Djot whitespace rule. Carve 0.2 and Djot
@@ -11,11 +15,10 @@ forms, so following this page does not trade Markdown compatibility for Djot
 compatibility - it gives up neither.
 
 ::: tip
-These are advisory. They are reported only when you ask for them:
-
-```sh
-carve lint --portable doc.crv
-```
+These are advisory. Nothing reports them: the blank-line form is a portability
+convention rather than a defect, and the marker-space form became core syntax,
+where `carve lint` already reports a missing space as
+`blockquote-marker-without-space`.
 :::
 
 ## Leave a blank line before a block opener
@@ -53,7 +56,6 @@ first. A blank line between them nests in both.
 A tight sublist marker that reaches its item's content column is Carve's
 explicit structural exception; it nests without requiring a blank line.
 
-Reported as `portable-blank-line-before-block`.
 
 ## Put a space after every `>`
 

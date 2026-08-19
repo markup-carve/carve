@@ -21,25 +21,25 @@ says which: `markdown: compared=548 diffs=0 fixtures=3`.
 
 This exists because engine-against-engine agreement is a **necessary** invariant
 and not a sufficient one - it cannot tell "all three are right" from "all three
-are wrong". PART 10 §10a is normative, is about the Markdown, plain and terminal
+are wrong". PART 11 §10a is normative, is about the Markdown, plain and terminal
 targets, and every engine currently violates it identically, so nothing failed
 (carve#589). A Tier-1 rule about those targets needs a file to be written down
 in, and this is it.
 
 Add one only where the rule is settled and the expected output is the spec's
 answer rather than a transcript of what the engines happen to print. The `.crv`
-inputs and `.html` outputs are regenerated from `docs/examples/`; a target file
+inputs and `.html` outputs are regenerated from `resources/examples/`; a target file
 added here is kept as written.
 
 ## Regenerating
 
-The corpus is generated from the example pages in [`../../docs/examples/`](../../docs/examples/) (`core.md`, `extensions.md`, `edge-cases.md`):
+The corpus is generated from the sources in [`../../resources/examples/`](../../resources/examples/) (`core.md`, `extensions.md`, `edge-cases.md`):
 
 ```sh
 npm run corpus:build
 ```
 
-Each `::: compare` block in those pages containing one ```` ```carve ```` and one ```` ```html ```` fence becomes one pair here. Editing the pair files directly will be overwritten on the next build — edit the source pages under `docs/examples/` and regenerate.
+Each `::: compare` block in those files containing one ```` ```carve ```` and one ```` ```html ```` fence becomes one pair here. Editing the pair files directly will be overwritten on the next build — edit the sources under `resources/examples/` and regenerate.
 
 The generator preserves this README; only `.crv` / `.html` files are replaced on rebuild.
 
@@ -57,6 +57,11 @@ The filenames are stable (`NN-slug.crv` / `NN-slug.html`) so test runners can li
 Tier-2 optional coverage is intentionally separate at
 [`../corpus-optional/`](../corpus-optional/), because those cases require
 feature-specific configuration before rendering.
+
+This corpus runs one direction only: it pins what an implementation does when it
+READS Carve. The converters run the other way, and their escaper is pinned at
+[`../corpus-escape/`](../corpus-escape/) - text in, Carve source out, byte for
+byte.
 
 ## Alternate format: `.test` files
 

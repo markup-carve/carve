@@ -1,3 +1,7 @@
+---
+description: How the reference parser was built, and what the first implementation taught us.
+---
+
 # Implementation & Reflection
 
 ## Part 9: Implementation Considerations

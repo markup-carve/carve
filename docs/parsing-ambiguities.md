@@ -1,0 +1,585 @@
+---
+description: Non-normative analysis of the parsing situations most likely to surprise an author or an implementer.
+---
+
+# Carve Parsing Ambiguities
+
+> **Non-normative.** This document analyzes tricky cases for humans. The
+> normative specification is [`resources/grammar.ebnf`](https://github.com/markup-carve/carve/blob/main/resources/grammar.ebnf)
+> (PART 9 for semantic constraints); `resources/examples/*.md` + `tests/corpus`
+> are the conformance contract. On any disagreement, the grammar wins.
+
+This document analyzes potentially ambiguous or tricky parsing scenarios in Carve syntax.
+
+---
+
+## 1. Italic `/text/` vs File Paths
+
+**Problem:** Slashes are common in paths and URLs.
+
+**Resolution:** Carve uses a word-boundary emphasis rule that is *stricter*
+than Djot (Djot's `_`/`*` rule is purely whitespace-flanking; Carve adds
+word-boundary conditions so intraword `a/b/c`, `foo_bar_baz`, and `snake_case`
+stay literal). This rule applies to *every* bare delimiter
+(`/ * _ ~ =` — all single-char), so `foo*bar*baz` and `foo~bar~baz` are
+literal too. For deliberate intraword emphasis use the forced `{X … X}` family
+(PART 9 §22), e.g. `foo{*bar*}baz`. The normative statement lives in
+`resources/grammar.ebnf` PART 9 §9 and §22; in summary, for any bare delimiter:
+- **opens** only if *not* followed by whitespace **and** preceded by the start
+  of the line/block, whitespace, or punctuation — but not by an alphanumeric,
+  `_`, or the same delimiter (so `(/x/)` and `a./b/` open, while `snake_/case/`
+  and `//a/` do not)
+- **closes** only if *not* preceded by whitespace **and** *not* followed by an
+  alphanumeric (so `x /a/b y` stays literal — the candidate closer is followed
+  by `b`)
+- inner `/` characters become literal content (same-type spans do not nest)
+
+The **same-delimiter adjacency** part of that rule — a delimiter adjacent to
+another of the same delimiter (before or after) does not open — applies to all
+five single-character delimiters. So a doubled delimiter is always literal:
+`**x**`, `~~x~~`, and `==x==` render verbatim, exactly like `//x//` and
+`__x__` (corpus `74-doubled-emphasis-delimiters`). (`^` and `,` are not
+delimiters at all — superscript/subscript are the braced `{^x^}` / `{,x,}`
+forms only.)
+
+**This means a path in an emphasizing position still italicizes:**
+`/usr/local/` → `<em>usr/local</em>` (verified — corpus `01-emphasis-6`),
+because the opening `/` is at line start and the inner slashes are literal
+content. An intraword path fragment like `a/b/c` stays literal because the `/`
+is alphanumeric-flanked and cannot open; `x /a/b y` stays literal because the
+closing `/` is followed by an alphanumeric (corpus `01-emphasis-9`).
+
+**Recommendation:** For paths that sit in an emphasizing position, use code
+fencing - they're code anyway:
+
+```carve
+The config is in `/etc/nginx/nginx.conf` for setup.
+Use /italic/ for emphasis.
+```
+
+**Examples:**
+| Input | Output | Reason |
+|-------|--------|--------|
+| `/italic/` | *italic* | Valid emphasis |
+| `/etc/nginx/` | *etc/nginx* | Also valid (inner `/` is content) |
+| `` `/etc/nginx/` `` | `/etc/nginx/` | Code span - recommended for paths |
+| `` !`/etc/nginx/` `` | /etc/nginx/ | Inline literal - literal text, no code styling |
+| `the/path/here` | the/path/here | No whitespace before opener |
+| `/ spaced /` | / spaced / | Whitespace after opener - invalid |
+
+**Best practice:** Paths, URLs, and file references should use backticks - they're technical/code content.
+
+If you want the path to read as ordinary prose rather than monospace code, use
+the inline literal `` !`…` `` prefix instead (PART 9 §27): it suppresses *all*
+markup inside the span - so `_`, `/`, `*` stay literal - but emits plain text
+with no `<code>` wrapper. So `` !`/etc/nginx_foo/` `` renders the bare string
+`/etc/nginx_foo/` with no emphasis and no code styling, whereas the backtick
+form `` `/etc/nginx_foo/` `` renders it as a `<code>` span.
+
+---
+
+## 2. Caret `^` Overloading
+
+The `^` character has four meanings:
+
+| Context | Meaning | Example |
+|---------|---------|---------|
+| Braced inline | Superscript | `x{^2^}` |
+| Inline footnote opener | Note | `^[content]` |
+| Table cell | Rowspan | `\| ^ \|` |
+| Line start after block | Caption | `^ Figure 1` |
+
+**Resolution rules:**
+1. **Caption:** `^` at line start, immediately after image/quote/table/code block/display math
+2. **Rowspan:** `^` as sole content of a table cell (with optional whitespace)
+3. **Superscript:** only the braced `{^text^}`; a bare `^` is otherwise literal
+   (unless it opens an inline footnote `^[…]`)
+
+**Examples:**
+```carve
+x{^2^} + y{^2^} = z{^2^}     # Superscript (braced form)
+
+| Category | Item   |
+| ^        | Apple  |          # Rowspan (^ is sole cell content)
+
+![Photo](img.jpg)
+^ Figure 1: Caption            # Caption (^ at line start after image)
+
+The answer is ^ 42.            # Literal ^ (plain text)
+x^2^ + y^2^                    # Literal ^ (no bare superscript)
+```
+
+**Edge case - table cell with just `^2^`:**
+```carve
+| Value |
+| ^2^   |
+```
+This is literal text `^2^` in a cell (not rowspan — the `^` is not alone; not
+superscript — there is no bare superscript). Superscript in a cell is the
+braced `| {^2^} |`.
+
+---
+
+## 3. Less-than `<` Overloading
+
+| Context | Meaning | Example |
+|---------|---------|---------|
+| Table cell | Colspan | `\| < \|` |
+| Inline | Smart typography | `<-` → ← |
+| Autolinks | URL wrapper | `<https://...>` |
+
+**Resolution rules:**
+1. **Colspan:** `<` as sole content of a table cell
+2. **Autolink:** `<` followed by URL scheme or email pattern
+3. **Smart typography:** `<-`, `<->`, `<=` patterns
+4. **Literal:** Everything else
+
+**Examples:**
+```text
+| Header | <       |           # Colspan
+
+<https://example.com>          # Autolink
+
+The arrow points <- that way   # Smart typography (←)
+
+if (x < 5)                     # Literal <
+```
+
+---
+
+## 4. Asterisk `*` Contexts
+
+| Context | Meaning | Example |
+|---------|---------|---------|
+| Inline | Bold | `*bold*` |
+| Line start | List item | `* item` |
+| After `*[` | Abbreviation | `*[HTML]: ...` |
+
+**Resolution rules:**
+1. **List:** `*` at line start followed by space
+2. **Abbreviation:** `*[` at line start
+3. **Bold:** `*text*` with content between asterisks
+4. **Literal:** Standalone `*` or escaped `\*`
+
+**Examples:**
+```carve
+* List item                    # List
+*bold text*                    # Bold
+*[HTML]: HyperText...          # Abbreviation
+5 * 3 = 15                     # Literal (spaces around)
+```
+
+**Edge case - bold at line start:**
+```carve
+*This whole line is bold*
+*This is NOT bold - no closing delimiter, stays literal
+```
+The first line is bold, not a list item, because `*` is NOT followed by
+whitespace. The second stays literal text: an opener without a matching
+closer never emphasizes (corpus `01-emphasis-3`).
+
+List requires `* ` (asterisk + space). Bold opener requires `*` + non-whitespace
+AND a valid closer ahead.
+
+---
+
+## 5. `@mention` Boundaries
+
+**Problem:** Where does a mention end?
+
+**Resolution rules:**
+1. Starts with `@` followed by alphanumeric
+2. Continues with alphanumeric, `_`, `-`, and *interior* dots (a dot followed
+   by another name character)
+3. Ends at whitespace, other punctuation, or end of line; a *trailing* dot is
+   sentence punctuation, not part of the name
+
+**Examples:**
+| Input | Mention | Remainder |
+|-------|---------|-----------|
+| `@john` | `@john` | - |
+| `@john-doe` | `@john-doe` | - |
+| `@john_doe` | `@john_doe` | - |
+| `@john.doe` | `@john.doe` | - |
+| `@john.` | `@john` | `.` |
+| `@john's` | `@john` | `'s` |
+| `@john!` | `@john` | `!` |
+| `email@domain.com` | - | (not a mention, no word boundary before @) |
+
+The same name rule applies to `#tags` (`#release-1.0` is one tag). Pinned by
+corpus `89-mention-and-tag-name-boundaries`.
+
+---
+
+## 6. `#tag` vs Headings
+
+| Context | Meaning | Example |
+|---------|---------|---------|
+| Line start | Heading | `# Heading` |
+| Inline | Tag | `#project-x` |
+
+**Resolution rules:**
+1. **Heading:** `#` at line start, followed by space, then text
+2. **Tag:** `#` preceded by whitespace or start of inline content, followed by alphanumeric
+
+**Examples:**
+```carve
+# Heading 1                    # Heading
+
+Check out #project-x           # Tag
+
+Issue #123                     # Tag (#123 — digit-only tags are valid)
+
+#notaheading                   # Tag (no space after #)
+```
+
+---
+
+## 7. Abbreviation `*[` vs Bold
+
+**Problem:** `*[` could start bold with a link inside.
+
+```carve
+*[HTML]: HyperText Markup Language    # Abbreviation definition
+*[link text](url)* more text          # Bold containing a link
+```
+
+**Resolution rules:**
+1. **Abbreviation:** `*[` at line start, followed by `WORD]:` pattern
+2. **Bold with link:** `*[` inline, link syntax inside, closed with `*`
+
+**Examples:**
+```carve
+*[HTML]: HyperText Markup Language
+# → Abbreviation (line start, ]: pattern)
+
+See *[the docs](url) for more* info
+# → Bold span containing a link
+```
+
+---
+
+## 8. Nested Emphasis
+
+**Rule:** Same-type nesting is invalid. Different-type nesting is valid.
+
+```carve
+/This /does not/ nest/         # Invalid - ambiguous
+/This *does* nest/             # Valid: italic with bold inside
+*Bold with /italic/ inside*    # Valid
+/*Bold italic*/                # Valid: combined
+```
+
+**Parsing:** An opener matches a valid closer of the same type (a delimiter
+closes only when not preceded by whitespace, see §1). Same-type delimiters
+*inside* the span are literal content — same-type spans do not nest — so
+`/usr/local/` is `<em>usr/local</em>`, not `<em>usr</em>local/`. Different-type
+spans nest fully (`*Bold with /italic/ inside*`). Resolution uses a delimiter
+stack in a single left-to-right pass: linear time, no backtracking.
+
+> This is *not* "shortest span / first match wins" — that rule would truncate
+> `/usr/local/` to `<em>usr</em>` and break nested emphasis. The ambiguous form
+> `/This /does not/ nest/` is discouraged (use code spans for paths, §1); its
+> exact output is intentionally unspecified. See grammar.ebnf PART 8
+> (Disambiguation rule) and PART 9 §9.
+
+---
+
+## 9. Table Cells with Special Characters
+
+**Problem:** Pipes and other characters in cell content.
+
+```carve
+| Command | Description |
+| `ls | grep foo` | Filter output |
+| Price | $50 \| $100 |
+```
+
+**Resolution rules:**
+1. Code spans (backticks) protect content
+2. Backslash escapes pipe: `\|`
+3. Pipes inside inline elements (code, links) are protected
+
+---
+
+## 10. Comments (`%%` and `%%%`)
+
+**Line comments:**
+- `%%` is a comment marker when **preceded by whitespace or at the start of
+  the inline run** (line start counts) — including a *trailing* comment after
+  text: `Visible. %% this tail is a comment` keeps only `Visible.`
+  (corpus `46-comments-2`)
+- The comment runs to the end of the line; it never crosses a line break
+  (corpus `46-comments-6`)
+- Without preceding whitespace `%%` is literal: `The value is 50%% increase`
+  stays literal text — percentages are safe
+- `\%%` (escaped first percent) is literal
+- A **whole-line** comment may be **indented**: leading whitespace before `%%`
+  does not matter, so an indented line whose first non-whitespace content is
+  `%%` is a comment line just like one in the first column. It is recognized
+  only in block position; inside an open paragraph the same bytes remain
+  paragraph text. As a block it renders nothing and leaves no empty paragraph.
+
+**Block comments:**
+- `%%%` must start the line to open/close; the **leading run of `%` is the
+  delimiter and any trailing text on that line is ignored**, so `%%% TODO`,
+  `%%% notes` and `%%%html` all open a comment and `%%% end` closes one
+- `%%%` has **no info string** — a raw passthrough block is a *code* fence with
+  an `=FORMAT` info string (```` ```=html ````), so `%%% html` is a comment and
+  its body stays hidden, never raw output
+- Content can contain anything except the same-length delimiter
+- Use more `%` to nest: `%%%%` can contain `%%%`
+- An **unterminated** `%%%` (no matching closer anywhere ahead) does **not** open
+  a block: the line falls back to a `%%` line comment, so the following blocks
+  still render instead of vanishing. Same rule as `:::`, and for the same
+  reason — an unclosed opener must not swallow the rest of the document
+- `carve fmt` keeps an opener's trailing text as the comment's first body line
+  (nothing is lost); a closer's trailing text is dropped
+
+**Provenance marker (tool-written):**
+- Tooling such as `carve fmt --stamp` writes a trailing comment recording the
+  spec version a document was processed under and the engine that wrote it, e.g.
+  `%% carve-version: 0.1; generated-by: carve-js 0.1.0` (or the `%%%` block form)
+- It is an ordinary comment, so it renders nothing; it is identified by its
+  `carve-version:` first field
+- Deterministic (no timestamp) and replace-in-place (a tool updates the existing
+  marker, never appends a second), and it sits at the **end** of the document
+- Authors do not hand-write it; a plain `carve fmt` preserves it unchanged
+
+**Examples:**
+```carve
+%% This is a comment
+
+Text with 50%% is not a comment (no whitespace before %%).
+
+Visible text. %% trailing comment, consumed to end of line
+
+%%%
+Block comment with %% inside is fine.
+%%%
+```
+
+**In code blocks:** `%%` and `%%%` are literal (code blocks protect everything).
+
+---
+
+## 11. Code Blocks Override Everything
+
+Content inside code spans and code blocks is **never** parsed for Carve syntax.
+
+~~~carve
+```python
+# This is not a Carve heading
+*this* is not bold
+/path/to/file is just text
+```
+
+Inline `*not bold*` and `/not/italic/` are literal.
+~~~
+
+---
+
+## 12. Caption Timing
+
+**Problem:** When does `^` become a caption vs literal text?
+
+**Rules:**
+1. Caption `^` must be at **line start**
+2. Must **immediately follow** an image, blockquote, table, fenced code block
+   (a captioned code block is a numbered *listing*), or standalone display-math
+   block (a numbered *equation*)
+3. Blank line allowed between block and caption (for readability)
+
+```carve
+![Photo](img.jpg)
+^ This is a caption
+
+![Photo](img.jpg)
+
+^ This is also a caption (blank line OK)
+
+![Photo](img.jpg)
+Some other text
+^ This is NOT a caption (intervening content)
+```
+
+---
+
+## 13. The Three Faces of `+`
+
+**Note:** `+` is **not** a Carve bullet (unlike Markdown/Djot). Carve bullets are `-` and `*` only; `+` is reserved for two unrelated continuation roles plus plain text.
+
+```carve
+- item
++                              # List-continuation marker (lone +): attaches
+> note                         #   the following flush-left block to `item`
+
+| Cell |
++ cont |                       # Table continuation (+ line WITH pipe structure)
+
++ not a bullet                 # Plain paragraph text (+ then content, no pipe)
+```
+
+**Resolution:**
+- A **lone** `+` at the list marker column is the list-continuation marker
+- A `+ ... |` line (pipe structure) is a table continuation
+- Any other `+ x` line is ordinary paragraph text — `+` never starts a list
+
+---
+
+## 14. Escaping
+
+Backslash escapes any ASCII punctuation:
+
+```carve
+\*literal asterisks\*
+\/not italic\/
+\@not-a-mention
+\#not-a-tag
+\^ not a caption marker
+```
+
+Inside code spans, backslash is literal:
+```carve
+`\*still has backslash\*`
+```
+
+---
+
+## 15. Smart Typography Conflicts
+
+| Pattern | Output | Could conflict with |
+|---------|--------|---------------------|
+| `--` | – (en-dash) | Strikethrough delimiter start? No, `~` is used |
+| `---` | — (em-dash) | Horizontal rule? Only at line start alone |
+| `...` | … (ellipsis) | Nothing |
+| `->` | → | Nothing |
+| `<-` | ← | Less-than? Requires full pattern |
+| `<=` | ≤ | Less-than-equal? Yes, context-dependent |
+
+**Resolution:** Smart typography only applies to specific patterns, not partial matches.
+
+---
+
+## 16. Empty/Whitespace-Only Elements
+
+```text
+**               # Not bold (no content)
+//               # Not italic (no content between //)
+{^^}             # Not superscript (no content)
+||               # Empty table cells (valid)
+```
+
+**Rule:** Emphasis requires non-whitespace content between delimiters.
+
+---
+
+## 17. Block Position After an Open Paragraph
+
+**Rule:** once a paragraph opens, every following nonblank line remains in that
+paragraph. A heading, quote, list, table, fence, definition, attribute, comment,
+div, or extension block therefore needs block position, normally a preceding
+blank line. The rule is uniform at document level and inside containers.
+
+```carve
+Die Frage ist x = 5
+* 3 + 17 wahr.
+```
+
+This is **one paragraph** (`Die Frage ist x = 5\n* 3 + 17 wahr.`): block-looking
+text cannot end an open paragraph. Add a blank line before the marker to start a
+list.
+
+This avoids CommonMark's per-opener interruption exceptions and the false
+positive where hard-wrapped prose becomes a block.
+
+**A heading and a blockquote are different:** a list marker **ends** an open
+heading (a bounded title) and starts a top-level **sibling list**. A blockquote
+is *not* ended: a quoted line ends in an open paragraph, so a list marker folds
+into it as lazy continuation — `> q` / `- a` is **one** quote whose paragraph is
+`q\n- a`, not a quote plus a sibling list. Nothing folds into a heading at all,
+plain text included - a heading ends at the newline (§18). The blockquote half
+of this matches Djot; the heading half deliberately does not.
+
+This has two structural boundaries rather than opener exceptions: a marker at a
+container's applicable content column may open nested content, and a container
+closer ends that container. Captions remain host-sensitive (§4). A bare image is
+inline content and needs no special block rule.
+
+| Input | Result | Reason |
+|-------|--------|--------|
+| `Text` / `- a` / `- b` | one paragraph | list marker folds (no blank line) |
+| `x = 5` / `* 3 + 17` | one paragraph | list marker folds (no false positive) |
+| `Text` / `1. a` (or `2. a`, `1985. a`) | one paragraph | list marker folds |
+| `Text` / (blank) / `- a` | paragraph + list | blank line starts the list |
+| `Text` / `# H` | one paragraph | no blank establishes block position |
+| `Text` / `` ``` `` / `code` / `` ``` `` | one paragraph | fence-looking lines stay prose |
+| `Text` / `` ``` `` / `code` | one paragraph | same uniform rule |
+| `Text` / `---` / `more` | one paragraph | thematic-break-looking line stays prose |
+| `Text` / `![a](u)` | one paragraph (inline image) | image excluded |
+| `Text` / `^ cap` | one paragraph | §10 keeps it literal; §4 attaches only to a captionable host |
+| `![a](u)` / `^ cap` | `<figure>` | the paragraph IS the image, so §4 has a host and the caption attaches |
+| `See[^m].` / `[^m]: note` | one paragraph | definition needs block position |
+| `# H` / `- item` | heading + sibling list | list marker ENDS the heading |
+| `# H` / `1. one` | heading + sibling list | list marker ENDS the heading (ordered too) |
+| `> q` / `- a` | one quoted paragraph | the bullet folds in (lazy continuation) |
+| `> text` / `> # H` | one quoted paragraph | the rule is identical inside the quote |
+| `> p` / `> - x` | one quoted paragraph | quoted marker remains paragraph text |
+| `- a` / `  - b` | nested sublist | indented sublist still nests (content column) |
+| `- a` / ` - b` | one item (folds) | below the content column → lazy continuation |
+| `1. a` / `[r]: /u` / `after` | one item paragraph | definition-looking bytes cannot interrupt it |
+| `1. a` / ` [r]: /u` | one item (literal definition text) | nonzero column below content column reaches no definition opener |
+| `1. a` / `   [r]: /u` / `   after` | one item paragraph | no blank ends the paragraph |
+| `- text` / `  # H` | one item paragraph | heading-looking bytes remain prose |
+
+Normative statement: `resources/grammar.ebnf` PART 9 §10. Verified by corpus
+`05-lists-12` and the `81-paragraph-interruption` family.
+
+---
+
+## 18. Single-Line Headings (Nothing Folds INTO a Heading)
+
+**Rule (normative, grammar PART 2):** a heading **ends at the newline**.
+Nothing folds into it - the next line begins whatever block it begins, exactly
+as after any other closed block. A `^ ` caption line is no exception: it does
+not fold in, and it does not attach either, because a heading is not one of
+§4's captionable hosts. It opens an ordinary paragraph.
+
+The heading id derives from that single line.
+
+```carve
+# Title
+outside
+```
+
+Heading **plus** paragraph: `<h1 id="Title">Title</h1>` then `<p>outside</p>`.
+
+This used to be one heading holding both lines, with id `Title-outside`, and
+this document called it the biggest authoring trap in the heading syntax. It is
+gone rather than documented: see `divergence-from-djot` §14 for why, and corpus
+`82-single-line-headings` for the pins.
+
+```carve
+# Title
+
+outside
+```
+
+Identical output - the blank line is no longer load-bearing.
+
+---
+
+## Summary: Parser Priority
+
+When multiple interpretations are possible, use this order:
+
+1. **Code spans/blocks** - Highest priority, content is literal
+2. **Escapes** - `\x` makes `x` literal
+3. **Block-level constructs** - Headings, lists, tables, code blocks
+4. **Captions** - `^` at line start after captionable block
+5. **Autolinks** - `<url>` pattern
+6. **Links/Images** - `[text](url)`, `![alt](src)`
+7. **Emphasis** - `/italic/`, `*bold*`, etc.
+8. **Smart typography** - `--`, `->`, etc.
+9. **Extensions** - `@mention`, `#tag`, `:type[content]`
+10. **Plain text** - Everything else

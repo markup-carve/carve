@@ -38,6 +38,7 @@ import { mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { tmpdir } from 'node:os'
+import { rustBinary, rustBinaryCandidates } from './lib/engine-locations.mjs'
 import { shortfall } from './spec/participants.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -232,7 +233,20 @@ export function engineRunners(base = root) {
   const php = at('CARVE_PHP_DIR', '../carve-php')
 
   return [
-    { name: 'rust', dir: rs, run: (f) => execFileSync(resolve(rs, 'target/release/carve'), ['--carve', f], { encoding: 'utf8' }) },
+    {
+      name: 'rust',
+      dir: rs,
+      // The path is RESOLVED rather than spelled: CARGO_TARGET_DIR moves the
+      // binary out of the checkout, and a spelled path would then spawn
+      // something that does not exist and record ERROR for an engine that is
+      // built and fresh (carve#1287).
+      run: (f) => {
+        const bin = rustBinary(rs)
+        if (!bin) throw new Error(`carve-rs is not built; looked in ${rustBinaryCandidates(rs).join(', ')}`)
+
+        return execFileSync(bin, ['--carve', f], { encoding: 'utf8' })
+      },
+    },
     { name: 'js', dir: js, run: (f) => execFileSync('node', [resolve(js, 'dist/cli.js'), '--carve', f], { encoding: 'utf8' }) },
     { name: 'php', dir: php, run: (f) => execFileSync('php', [resolve(php, 'bin/carve'), '--carve', f], { encoding: 'utf8' }) },
   ]

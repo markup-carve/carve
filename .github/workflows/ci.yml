@@ -75,7 +75,7 @@ jobs:
       - name: Install
         run: npm ci
 
-      # Regenerate the corpus from docs/examples.md and fail if it
+      # Regenerate the corpus from resources/examples/*.md and fail if it
       # drifted from what is committed — keeps examples and fixtures
       # in lockstep.
       - name: Corpus is in sync with examples
@@ -89,6 +89,12 @@ jobs:
       # render-option suites in the same run.
       - name: Conformance
         run: npm test
+
+      - name: HTML import contract
+        run: npm run html-import:check
+
+      - name: Escaper corpus
+        run: npm run escape:check
 
       - name: Executable-spec gate (formal Core grammar vs corpus)
         run: npm run core:check

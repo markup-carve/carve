@@ -5,7 +5,7 @@ Table cell pipe inside code span
 | `a|b` | z |
 .
 <table>
-  <thead><tr><th>A</th><th>B</th></tr></thead>
+  <thead><tr><th scope="col">A</th><th scope="col">B</th></tr></thead>
   <tbody>
     <tr><td><code>a|b</code></td><td>z</td></tr>
   </tbody>

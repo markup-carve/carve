@@ -1,0 +1,17 @@
+{#fig-first}
+![lead](lead.png)
+^ Figure #: First
+
+{#fig-x}
+::: figure
+{#fig-x-a}
+![one](a.png)
+^ (a) One
+
+{#fig-x-b}
+![two](b.png)
+^ (b) Two
+:::
+^ Figure #: Second
+
+See </#fig-x> and </#fig-x-a>.

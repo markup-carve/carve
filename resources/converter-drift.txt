@@ -1,0 +1,62 @@
+# Converter-corpus cases an ENGINE is known to diverge on.
+#
+# `npm run compare:impls -- --corpus=convert` converts every case in
+# tests/corpus-convert/ with each engine that implements the source format,
+# renders every produced document through carve-js, and compares that render
+# against the case's expected.html. A mismatch is not automatically wrong:
+# when a converter rule is pinned here before an engine ships it, the corpus
+# is ahead of that engine until its fix lands. That window is normal, and -
+# exactly as with resources/engine-pin-drift.txt - it is DECLARED rather than
+# tolerated.
+#
+# The runner fails (under --fail-on-diff) when the real set differs in EITHER
+# direction:
+#
+#   - an (engine, case) pair mismatches and is not listed  -> new converter
+#     drift, or a wrong expectation. Red immediately, which is the point.
+#   - a pair is listed and now matches  -> the engine fix landed. Delete the
+#     line in the same commit that proves it.
+#
+# Engine names are the runner's: rust, js, php. An engine with NO importer for
+# a format does not belong here - that is a declared capability gap, and it
+# lives in scripts/lib/converter-formats.mjs instead.
+#
+# Format: <engine>/<case-slug><space><space><reason>
+
+# PART 11 section 1b, ruled at carve#1325: a producer that flattens block
+# content into an inline slot emits a separator at every boundary between two
+# former sibling blocks.
+#
+# Re-measured 2026-08-18 by converting all four inputs with each engine, built
+# from a clone made for this run: carve-rs `3f8bde7b`, carve-js `099db2cc`,
+# carve-php `925f7dcf`. carve-rs emits the separator on every row since
+# markup-carve/carve-rs#1094, so its four lines are gone; carve-js and carve-php
+# still join the blocks with nothing.
+#
+#     figcaption content                          rs        js and php
+#     <p>one</p><p>two</p>                        one two   onetwo
+#     <p><strong>a</strong></p>
+#     <p><strong>b</strong></p>                   *a* *b*   *a**b*
+#     <p><code>a</code></p>
+#     <p><code>b</code></p>                       `a` `b`   `a``b`
+#     <p>a</p><p></p><p>b</p>                     a b       ab
+#
+# The last row is the one that says the rule is over CONTRIBUTED TOKENS: the
+# empty block is not a side, so the emitted caption carries one separator and
+# not two. Each remaining line goes in the commit that lands the fix for that
+# engine.
+#
+# AND ALL THREE LANDED. Measured 2026-08-18 at the release freeze: carve-rs
+# first (markup-carve/carve-rs#1094), then carve-js and carve-php, so every
+# js/ and php/ line for cases 29 through 32 reported STALE and is deleted here.
+#
+# THIS FILE IS NOW EMPTY OF DECLARATIONS, and that is the intended end state
+# rather than a missing section: no engine is known to diverge on any
+# converter case. The window PART 11 s1b opened - corpus ahead of every engine
+# - is closed. A new declaration goes below, one line per (engine, case), and
+# is deleted by the commit that proves the engine matches.
+#
+# A ledger and an unwired gate look identical from outside, so read the
+# converter summary rather than this file: `npm run compare:convert` prints a
+# convert_pass count per engine, and it is that count, not the contents here,
+# that says the cases are being converted and compared.

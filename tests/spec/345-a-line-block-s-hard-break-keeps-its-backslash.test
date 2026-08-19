@@ -1,0 +1,39 @@
+A line block's hard break keeps its backslash
+
+```
+::: |
+a \
+b
+:::
+.
+<div class="line-block">
+  <p>a <br>
+b</p>
+</div>
+```
+
+```
+::: |
+a
+\
+b
+:::
+.
+<div class="line-block">
+  <p>a<br>
+<br>
+b</p>
+</div>
+```
+
+```
+::: |
+a  \
+b
+:::
+.
+<div class="line-block">
+  <p>a&nbsp;&nbsp;<br>
+b</p>
+</div>
+```

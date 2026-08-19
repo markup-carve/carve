@@ -1,0 +1,21 @@
+A marker-line link definition is collected where no paragraph is open
+
+```
+[f]: t
+* [d]: u
+
+[go][d]
+.
+<ul>
+  <li></li>
+</ul>
+<p><a href="u">go</a></p>
+```
+
+```
+para
+* [d]: u
+.
+<p>para
+* [d]: u</p>
+```

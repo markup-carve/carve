@@ -199,6 +199,10 @@ const INVENTORY = [
   // The line block. SS23 converts the two-column run into NBSPs, so the `.crv`
   // carries the run and the `.html` carries the entities rather than a run.
   { base: '268-trailing-whitespace-on-a-content-line-is-dropped-12', crv: ['trailing-WS'], html: [] },
+  // The definition term's continuation line (markup-carve/carve#1289). The
+  // trailing space is the whole case: strip it from the `.crv` and the pair
+  // asserts nothing, because the term already renders that way without it.
+  { base: '268-trailing-whitespace-on-a-content-line-is-dropped-13', crv: ['trailing-WS'], html: [] },
   // carve#844's category. The invisible character IS the assertion in each of
   // these three: it is the one thing keeping the line from being an autolink,
   // so an editor that strips it turns the pair into the plain `<https://e.com/>`
@@ -236,6 +240,33 @@ const INVENTORY = [
     crv: ['BOM'],
     html: ['BOM'],
   },
+  // The TRAILING TAB is the case in both of these (markup-carve/carve#1295):
+  // the opener is a fence in one and a frontmatter delimiter in the other, and
+  // each says the tab is dropped rather than read as a separator. Strip it and
+  // the document becomes the bare opener, which every other fence and
+  // frontmatter pair already pins - so the fixture would pass for free while
+  // asserting the opposite of what it is here to assert. The two SEPARATOR
+  // cases beside them carry their tab mid-line, where nothing cleans it up.
+  {
+    base: '330-a-tab-after-a-fence-or-a-frontmatter-opener-depends-on-where-it-sits-2',
+    crv: ['trailing-WS', 'trailing-TAB'],
+    html: [],
+  },
+  {
+    base: '330-a-tab-after-a-fence-or-a-frontmatter-opener-depends-on-where-it-sits-4',
+    crv: ['trailing-WS', 'trailing-TAB'],
+    html: [],
+  },
+  {
+    base: '379-a-reference-definition-cannot-take-its-destination-from-the-next-line',
+    crv: ['trailing-WS'],
+    html: [],
+  },
+  {
+    base: '379-a-reference-definition-cannot-take-its-destination-from-the-next-line-2',
+    crv: ['trailing-WS'],
+    html: [],
+  },
 ]
 
 function scan(text) {
@@ -245,6 +276,17 @@ function scan(text) {
     if (name) found.add(name)
   }
   if (/[ \t]+$/m.test(text)) found.add('trailing-WS')
+  // WHICH trailing whitespace, where the two are not interchangeable. Most
+  // pairs here only need the run to survive, and `trailing-WS` says that. The
+  // tab-position pairs need the run to survive AS A TAB: a formatter that
+  // expands it to spaces leaves a document whose expected HTML is unchanged -
+  // the space form of the same opener is pinned separately and renders
+  // identically - so both this file and the corpus test would stay green while
+  // the fixture quietly became a duplicate of its own control (carve#1295).
+  // Listing `trailing-TAB` is what makes that expansion visible. It is a
+  // narrowing of `trailing-WS`, never a replacement: entries assert the names
+  // they need and the completeness set is unchanged either way.
+  if (/\t+$/m.test(text)) found.add('trailing-TAB')
   // CARRIAGE RETURNS, which this file existed to protect and could not see.
   // Every other watched character is exotic enough that no tool touches it by
   // accident; a CR is the one byte git itself rewrites on checkout, under a

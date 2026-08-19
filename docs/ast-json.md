@@ -44,6 +44,69 @@ The encoding turns an N×M integration problem into N+M.
 
 Five rules carry most of the weight:
 
+Captioned `figure` and `table` nodes may also carry an optional
+`shortCaption` array of inline nodes. It is a structured publishing/navigation
+label (for example Pandoc's list-of-figures caption), not another visible
+caption. Carve 0.1 source has no spelling for it: parsers do not synthesize it,
+ordinary HTML/plain/ANSI renderers ignore it, and format bridges preserve it
+where their target has an equivalent field. This AST capability is independent
+of source serialization: a Carve 0.1 writer omits the field, and conversion
+APIs with diagnostics should report that loss. It is also independent
+of the proposed `^^` author syntax.
+
+A `figure` may target a `table` (§17). That is a different document from a
+table carrying its own `caption`: the wrapper renders `<figure>` and
+`<figcaption>` around the table, while `table.caption` renders `<caption>`
+inside it. Carve 0.1 source spells only the second, so the wrapper reaches a
+tree through a format bridge - an HTML importer reading
+`<figure><table>…<figcaption>` - and a canonical Carve writer loses it, writing
+the table and its caption line. Conversion APIs with diagnostics should report
+that loss. Every other captionable host - an image, a quote, a code block, a
+display-math paragraph - becomes a `figure` from source, so its wrapper is
+written back exactly. A composite figure's table panel is not this wrapper
+either: a table inside a `::: figure` group is a plain `table` child of the
+`figure_group` (§16), not a `figure` targeting one.
+
+A `table` may likewise carry an optional `rowGroups` object (§15), which
+partitions its `rows` into a head, any number of body groups and a foot:
+
+```json
+{
+  "type": "table",
+  "rows": ["..."],
+  "rowGroups": {
+    "headRows": 1,
+    "bodies": [{ "headRows": 1, "bodyRows": 3, "rowHeadColumns": 1 }],
+    "footRows": 1
+  }
+}
+```
+
+It holds **counts, never rows**: the counts consume `rows` in order and have to
+account for every row exactly once, so the grouping can never contradict the
+table's content. `rows` stays the one sequence every consumer reads. Absent
+means the implicit structure renderers already derive - a leading run of header
+rows as the head, everything after it as one body, no foot. Pipe-table parsers
+synthesize the simple partition spelled by `header-rows` / `footer-rows`, and
+ListTable-aware converters may additionally synthesize header-led body groups
+and row-header columns. Partitions without those landmarks remain
+interchange-only. Like `shortCaption`,
+it exists so a richer table model (several `tbody` groups, a group's own
+intermediate header rows, a foot, a count of leading row-header columns)
+survives a format bridge. HTML renders source-spelled head/foot ranges;
+plain and ANSI keep flattening the table.
+
+A `table` may also carry an optional positional `columns` array (§19). Each
+entry describes the corresponding column and may hold `align` (`left`, `right`
+or `center`), `valign` (`top`, `middle` or `bottom`), and `width`, a numeric fraction in `(0, 1]`. The array may be
+shorter than the widest row; an omitted entry or field is unset. A cell's own
+value wins over its column's value. Carve source spells the positional metadata
+with a table's preceding `aligns`, `valigns`, and `widths` attributes; parsers
+synthesize `columns` from those lists and canonical source writers retain the
+most local available spelling. The column record keeps format bridges from
+smearing column facts onto individual cells. A `table_cell` may likewise carry
+`valign`; horizontal and vertical inheritance resolve independently.
+
 **The root carries exactly three fields** - `type`, `children`, `srcByteLength`
 (PART 12 §7). Frontmatter and definitions are **block nodes in the tree**, not
 root fields, because a root field cannot carry a position and both are source an
@@ -216,6 +279,66 @@ category rather than a gap, so a merged run without a position is conformant.
 The schema cannot express this - JSON Schema has no way to forbid two adjacent
 array entries of the same shape - so it is checked by the shape comparison in
 `scripts/ast-conformance.mjs`.
+
+## U+E000 is a no-break space, on four fields
+
+U+E000 **stands for a no-break space**. It is not the same node content as a
+literal U+00A0 the author typed, which is published as itself.
+
+> A consumer **MUST** map U+E000 to its target's no-break space, or to an
+> ordinary space where the target has none, and **MUST NOT** emit it.
+
+Four fields may carry it, and every one of them resolves to a no-break space in
+the HTML renderer:
+
+| field | how the sentinel gets there |
+| --- | --- |
+| `text.value` | an escaped space (`\ `), a line block's preserved indentation, an authored U+E000 |
+| `code.value` | an authored U+E000 |
+| `code_block.content` | an authored U+E000 |
+| `literal_inline.content` | an authored U+E000 |
+
+The three verbatim fields carry it only because the author typed the character,
+but on the wire that is indistinguishable from a parser-resolved one, so the
+rule is the same everywhere it appears.
+
+**A line block's indentation is a run of the sentinel**, one per preserved
+space. This is the source that gets missed, and it is the common one - an
+escaped space is rare, indented verse is not.
+
+```
+::: |
+a
+    b
+:::
+```
+
+The second line's four spaces are four U+E000 in the leading `text.value`, and
+render as four no-break spaces:
+
+```html
+<div class="line-block">
+  <p>a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;b</p>
+</div>
+```
+
+`raw_block.content` is **deliberately not on the list**. Raw content is handed
+to its target byte for byte, so a U+E000 in it is a byte the author put there
+and a consumer must leave it alone; mapping it would corrupt the payload the
+node exists to carry unexamined.
+
+The cost of documenting one field out of four is measured: consumers in this
+org passed the sentinel straight through into Pandoc JSON, and back into Carve
+source in place of the `\ ` it came from ([carve#721][i721]). `carve-sile`
+handed it to SILE, which drew the font's `.notdef` glyph - a visible box in the
+PDF, no warning ([carve#1242][i1242]).
+
+Private-use codepoints **above** U+E000 are writer-internal staging and never
+reach a published value.
+
+[i721]: https://github.com/markup-carve/carve/issues/721
+[i1242]: https://github.com/markup-carve/carve/issues/1242
 
 ## Producing it
 
@@ -508,9 +631,9 @@ A row may name an issue only where one of those still declares the debt.
 
 | engine | shape | positions |
 |---|---|---|
-| carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together | every block and inline placed, except the two categories §4 exempts: a coalesced `text` run, and a table cell continued on a `+` line |
-| carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` | every block and inline placed, except the two categories §4 exempts: a coalesced `text` run, and a reassembled table cell |
-| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish on every corpus document | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the two categories §4 exempts: a coalesced `text` run, and a reassembled table cell |
+| carve-js | §3a conformant on the resolved form: publishes `href`, `ref` and `rawRef` together | every block and inline placed, except the categories §4 exempts: a coalesced `text` run, a table cell continued on a `+` line, and a verbatim run continued on a `+` line |
+| carve-rs | §3a conformant on the resolved form: `ref` and `rawRef` survive resolution beside `href` | every block and inline placed, except the categories §4 exempts: a coalesced `text` run, a reassembled table cell, and a verbatim run continued on a `+` line |
+| carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish on every corpus document | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the categories §4 exempts - a coalesced `text` run, a reassembled table cell, and a verbatim run continued on a `+` line |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
 The gaps are listed rather than smoothed over on purpose: "six implementations"
@@ -524,11 +647,29 @@ written down.
 
 The definition-list entry this paragraph used to name is fixed: carve-rs places
 `definition_term` and `definition_description` today, checked over every corpus
-document that contains one. So is the gap that replaced it. Re-measured over 833
+document that contains one. So is the gap that replaced it - re-measured over 833
 documents on 2026-08-07, the OWED half of `resources/ast-position-waivers.txt`
-is EMPTY: the paragraphs a capped container degrades to are placed in all three
-engines now, and so is everything else that stood in that column a day earlier.
-Every position finding left is `permitted` under §4.
+was EMPTY.
+
+It did not stay empty. Re-measured on 2026-08-17 over 1131 documents, at
+carve-js c8c8dc3, carve-rs d981df8 and carve-php d2e2fd6, that half holds one
+defect again: carve-php drops the position of a line block's content where the
+source's spaces became indentation sentinels, and carve-rs publishes the same
+value WITH a span, so a true span exists
+([carve-php#1351](https://github.com/markup-carve/carve-php/issues/1351)). Four
+findings over three documents, with nothing outstanding in carve-js or carve-rs.
+The corpus grew 298 documents between that measurement and the 833-document one
+above, which is the whole reason an undated "the gap is closed" sentence is worth
+nothing here - a re-measurement is what says so, and only for the corpus it ran
+over.
+
+That one defect is the ONLY thing either ledger still declares, and it survived
+a day in which the span ledger was re-measured six times and rewritten five. It
+is the constant because nobody has started it, not because it is small - which
+is a useful thing to know about a ledger: what stays in it is what nobody is
+working on.
+
+Every other position finding is `permitted` under §4.
 
 That is also how the carve-rs row went wrong. It named the capped-container gap
 for two days after the gap closed and the declaration behind it was deleted,
@@ -564,6 +705,116 @@ declaration is now EMPTY: no field the three publish differs anywhere in the
 corpus, so both lines were deleted rather than reworded. The caption line that
 sat beside it went the same way, fixed under
 [carve#963](https://github.com/markup-carve/carve/issues/963).
+
+It did not stay empty either. Re-measured on the morning of 2026-08-17 over 1124
+documents plus 3 synthetic samples, at carve-js `02c4d80`, carve-rs `1ad93f0` and
+carve-php `4610ef8`, two fields disagreed across four documents
+(`paragraph.attrs.classes` and `paragraph.attrs.order`) and nine node types were
+spanned differently across twenty-one. All eleven were declared in the two files
+rather than left to fail the run, which is what those files are for.
+
+Both halves moved again later the same day, and the two moved in opposite
+directions - which is the case for re-measuring rather than reading the ledger.
+At carve-js `80537c8`, carve-rs `71318e9` and carve-php `84c422b`, over the 1131
+corpus documents plus 3 synthetic samples, `npm run ast:check` reports:
+
+- **The value declaration is EMPTY again.** carve-php shipped the `326`/`329`
+  container rulings, and both fields now agree everywhere. The run reported the
+  two rows `FIXED` and stayed red until they were deleted.
+- **The span declaration holds five rows across nine documents**, down from nine
+  across twenty-one. `list`, `list_item`, `block_quote` and
+  `definition_description` came `AGREED`; `text (presence)`,
+  `code (presence)` and `definition_list (extent)` moved count.
+
+The morning's block attributed eight span rows to a single carve-php issue. That
+was too coarse, and the rows that survived their own issue's work are how it
+shows: each surviving row was given its own tracker, in carve-php
+([#1351](https://github.com/markup-carve/carve-php/issues/1351),
+[#1361](https://github.com/markup-carve/carve-php/issues/1361),
+[#1362](https://github.com/markup-carve/carve-php/issues/1362),
+[#1363](https://github.com/markup-carve/carve-php/issues/1363)) and in carve-js
+([#1145](https://github.com/markup-carve/carve-js/issues/1145),
+[#1153](https://github.com/markup-carve/carve-js/issues/1153)). Two of those were
+carve-js standing alone, so "one engine is behind" was never the whole shape
+either.
+
+Ninety minutes later it was four rows across eight documents, of 22,769 spans, at
+carve-js `c8c8dc3`, carve-rs `71318e9` and carve-php `6bd856f`. Both carve-js
+rows went in the two PRs that answered them - `code (extent)` came `AGREED` and
+`text (presence)` dropped from six documents to three - and that second fix also
+moved `resources/ast-position-waivers.txt`, which had not moved all day: a
+continuation row's carried text now has its own span, so two permitted omissions
+retire and a third halves.
+
+Which is the point of dating these paragraphs rather than writing them in the
+present tense. The block above says a row "will not clear when carve-php catches
+up" and names it the one worth watching; it cleared within two hours, in the
+other engine, for an unrelated reason. Every remaining span row is carve-php
+alone - the first time that day the panel had one engine on every row, and the
+third consecutive block to claim something like it.
+
+One more measurement that day, at carve-php `30cc587`, is the one worth keeping
+for what it says about the ledgers rather than about the engines. The span
+declaration read four rows across eight documents again, with all four counts
+identical to the measurement before it - and `code (presence)` had swapped both
+its three documents and which engine stood alone. carve-php stopped publishing a
+position for a node assembled from discontiguous source, which is right for a
+verbatim run carried across a `+` row and wrong for a fenced code block, whose
+position is an extent over one contiguous region
+([carve-php#1369](https://github.com/markup-carve/carve-php/issues/1369)).
+
+A row that changes its documents and its direction while holding its count is
+invisible to a count-based declaration - and the run still failed, because the
+six carve-php position findings arrived undeclared in
+`resources/ast-position-waivers.txt`. The two ledgers cover each other's blind
+spot, which is worth knowing before anyone proposes folding them into one.
+
+It happened a second time within the hour, which is what makes it a pattern
+rather than an anecdote. At carve-php `1f60342` the span declaration is three
+rows across seven documents: `paragraph (extent)` came `AGREED` and
+`definition_list (extent)` dropped from two documents to one - but the surviving
+document is not either of the two the closed issue named. Both `329` fixtures
+agree now; what is left is `266-a-reference-definition-is-anchored-at-end-of-line-12`,
+where the list's extent runs one line PAST a reference definition it does not
+consume, the mirror of the gap that was fixed
+([carve-php#1371](https://github.com/markup-carve/carve-php/issues/1371)).
+
+So twice in an hour a fix landed correctly on the documents its issue named and
+over-reached onto one it did not. The count moved just enough to read as
+progress. A row here is a NODE TYPE, and the documents behind a type turn over
+faster than the row does - which is why the ledger records document names in
+prose beside each count, and why "the number went down" is not an answer to
+"did that gap close".
+
+Both over-reaches were then fixed, and the day's last measurement - taken from a
+clone made for it, at carve-js `c8c8dc3`, carve-rs `d981df8` and carve-php
+`d2e2fd6` - reads ONE span row across three documents, of 22,766 spans:
+carve-php dropping the position of a line block's spaced content
+([carve-php#1351](https://github.com/markup-carve/carve-php/issues/1351)). The
+same three documents are the owed half of
+`resources/ast-position-waivers.txt`, so for the first time that day the two
+ledgers describe one gap rather than covering for each other. The value
+declaration is empty and carve-rb's tree matches carve-rs on all 1134 shared
+documents.
+
+Six measurements in one day, each taken because the one before it had stopped
+being true. That is the number worth carrying forward from this section: not
+which rows are declared, but how quickly a declared row stops describing
+anything, and therefore that the run - not the ledger, and not a merged pull
+request - is what answers a question about the engines.
+
+The seventh, on 2026-08-18 at carve-js `020c73e8`, carve-rs `a33c42ad` and
+carve-php `f30ebd1` over 1259 corpus documents, made that point again and
+changed the kind of row it makes it with. `text (presence)` came `AGREED` and
+carve-php's owed position findings emptied; what replaced it is
+`hard_break (extent)` on one document, where all three engines publish the same
+two offsets and disagree about the line and column the end offset names
+([carve-php#1457](https://github.com/markup-carve/carve-php/issues/1457)). The
+clause deciding it is not the markup-inclusive rule the other rows turn on but
+the sentence beside it: a break owns its line terminator and ends at column 1 of
+the following line. Three `permitted` position waivers went in the same run, two
+of them lines that had described a node carve-js and carve-rs were placing all
+along.
 
 An empty declaration is a statement about the corpus, which is the only thing
 the run measures. Four collapsed-reference labels the corpus does not hold - one
@@ -653,6 +904,78 @@ reasons:
   published three entries split differently - and all three engines rendered
   the same `<dl>`. A structure two producers disagree about, which no output
   depends on, is an internal.
+
+## Composite figures
+
+A bare `::: figure` container (PART 9 section 4c) serializes as its own node type,
+`figure_group` (§16):
+
+```json
+{"type": "figure_group",
+ "children": [ ... ],
+ "caption": [ ... ],
+ "attrs": { ... },
+ "pos": { ... }}
+```
+
+`children` are ordinary block nodes in source order; the panels are the
+`figure` and `table` nodes among them, and non-panel stray content sits
+between them in place. There is **no** `panels` array - repeating the children
+under a second key would let the two disagree, so a consumer derives the panel
+list the way the renderer does: by type, in order. `caption` is the group
+caption (the `^ ` line after the closing fence); absent means uncaptioned, not
+an empty array.
+
+The node is discriminated by its `type`, deliberately: every `figure` carries
+a `target`, the group does not, and a consumer probing for the missing field
+instead of reading the type string would break silently the day either shape
+grows a field. No `title`, no `label`, no `shortCaption`, no legend fields -
+that design space belongs to carve#1118 and carve#1121 and is not claimed
+here.
+
+## Bibliography definitions
+
+A `[@key]: entry` line is its own node (§18), not a paragraph and not consumed
+state:
+
+```json
+{"type": "citation_definition",
+ "key": "smith2020",
+ "attrs": {"keyValues": {"author": "Smith", "year": "2020"}},
+ "children": [ ... ],
+ "pos": { ... }}
+```
+
+`key` is the citation key without the `@`, the same string `citation.key`
+carries at the use site. `children` is the entry's INLINE content - what
+follows the `]: ` separator and the optional metadata block - which is why the
+node is shaped after §10's `link_reference_definition` rather than after the
+footnote definition: a footnote body holds blocks, an entry holds one line of
+rendered text. `attrs` is the leading `{author= year=}` block, feeding
+author-date mode. `children` is required as a FIELD but may be an empty array -
+which source lines carry no entry is a separate question §18 does not settle,
+and the two answers on record disagree: the production requires a space after
+`]:` while the reference build accepts a line without one.
+
+It is Tier-2, so it appears only where the Citations extension is enabled. With
+the extension off the line is ordinary paragraph text - it is not a link
+reference definition either, since a leading `@` is reserved against that in
+core.
+
+**No rendered output moves.** The node renders nothing where it sits and the
+entry's text renders in the references list, exactly as before, which is why the
+divergence this closes survived so long: carve-php consumed the line at parse
+time and carve-js left it as a paragraph whose first child is a `citation_group`
+followed by the literal text `: {author=`, and both produced byte-identical
+HTML. Anything reading the tree saw two different documents - a ProseMirror
+bridge on one engine received three paragraphs of citation-shaped prose and
+round-tripped them as prose ([carve#1276](https://github.com/markup-carve/carve/issues/1276)).
+
+**No engine emits it yet**, at the time of writing; the clause landed first and
+the engines follow. `tests/citation-definition-is-a-node.test.mjs` pins the wire
+shape against the schema and carries a tripwire that fails on the pinned build
+the day it does, so this paragraph cannot go stale the way the rows above have
+twice.
 
 ## Open question
 

@@ -1,0 +1,19 @@
+An empty inline note is literal
+
+```
+x ^[]
+.
+<p>x ^[]</p>
+```
+
+```
+x ^[ ]
+.
+<p>x ^[ ]</p>
+```
+
+```
+x ^[]{.c}
+.
+<p>x ^<span class="c"></span></p>
+```

@@ -1,0 +1,128 @@
+An inline note's content resolves after the note
+
+```
+a ^[see </#h>] b
+
+# h
+.
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<section id="h">
+  <h1>h</h1>
+</section>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <a href="#h">h</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+a ^[see </#nope>] b
+.
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see &lt;/#nope&gt;<a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+a ^[see [t][r]] b
+
+[r]: /u
+.
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <a href="/u">t</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+a ^[see ![z][r]] b
+
+[r]: /i.png
+.
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <img src="/i.png" alt="z"><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+a ^[see [h][]] b
+
+# h
+.
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<section id="h">
+  <h1>h</h1>
+</section>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <a href="#h">h</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+a ^[</#h>]{.c} b
+
+# h
+.
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref" class="c"><sup>1</sup></a> b</p>
+<section id="h">
+  <h1>h</h1>
+</section>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p><a href="#h">h</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+a [^1] b
+
+[^1]: see ^[</#h>]
+
+# h
+.
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
+<section id="h">
+  <h1>h</h1>
+</section>
+<section role="doc-endnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a><a href="#fnref1" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p><a href="#h">h</a><a href="#fnref2" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</section>
+```

@@ -1,0 +1,119 @@
+A container whose table ends on a continuation row
+
+```
+- | a |
+  + b |
+tail
+.
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a b</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- | a |
+  | b |
+tail
+.
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr><td>a</td></tr>
+        <tr><td>b</td></tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+> | a |
+> + b |
+tail
+.
+<blockquote>
+  <table>
+    <tbody>
+      <tr><td>a b</td></tr>
+    </tbody>
+  </table>
+</blockquote>
+<p>tail</p>
+```
+
+```
+> | a |
+> | b |
+tail
+.
+<blockquote>
+  <table>
+    <tbody>
+      <tr><td>a</td></tr>
+      <tr><td>b</td></tr>
+    </tbody>
+  </table>
+</blockquote>
+<p>tail</p>
+```
+
+```
+:: t
+:  > | a |
+   > + b |
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote>
+      <table>
+        <tbody>
+          <tr><td>a b</td></tr>
+        </tbody>
+      </table>
+    </blockquote>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: t
+:  | a |
+   + b |
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <table>
+      <tbody>
+        <tr><td>a b</td></tr>
+      </tbody>
+    </table>
+  </dd>
+</dl>
+<p>tail</p>
+```
+
+```
+- a
+  + b |
+tail
+.
+<ul>
+  <li>a
++ b |
+tail</li>
+</ul>
+```

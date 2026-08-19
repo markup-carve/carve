@@ -1,0 +1,18 @@
+A comment fence at an item's content column registers nothing either
+
+```
+- item
+  %%%
+  [r]: /url
+  %%%
+
+[r][]
+.
+<ul>
+  <li>item
+%%%
+[r]: /url
+%%%</li>
+</ul>
+<p>[r][]</p>
+```

@@ -1,0 +1,43 @@
+A tab after a fence or a frontmatter opener depends on where it sits
+
+````
+```	php
+x
+```
+.
+<p><code>	php
+x
+</code></p>
+````
+
+````
+```	
+x
+```
+.
+<pre><code>x
+</code></pre>
+````
+
+```
+---	yaml
+title: x
+---
+
+body
+.
+<p>—	yaml
+title: x
+—</p>
+<p>body</p>
+```
+
+```
+---	
+title: x
+---
+
+body
+.
+<p>body</p>
+```

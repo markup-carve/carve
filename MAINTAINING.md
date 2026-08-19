@@ -4,7 +4,7 @@ The spec and three implementations move in lockstep:
 
 | Repo | Role |
 |------|------|
-| [`carve`](https://github.com/markup-carve/carve) | Specification. `resources/grammar.ebnf` is **normative**; `docs/examples.md` generates the `tests/corpus/*.crv` + `*.html` pairs that are the **cross-impl conformance contract**. |
+| [`carve`](https://github.com/markup-carve/carve) | Specification. `resources/grammar.ebnf` is **normative**; `resources/examples/*.md` generates the `tests/corpus/*.crv` + `*.html` pairs that are the **cross-impl conformance contract**. |
 | [`carve-js`](https://github.com/markup-carve/carve-js) | Reference implementation (TypeScript). Its compiled output is vendored into `carve` to render the docs and validate the corpus. |
 | [`carve-php`](https://github.com/markup-carve/carve-php) | PHP implementation. Conforms to the same corpus. |
 | [`carve-rs`](https://github.com/markup-carve/carve-rs) | Rust implementation. Conforms to the same corpus. |
@@ -27,8 +27,32 @@ battery and keep all three in agreement.
 `npm run bump-carve-pin [sha|ref]` moves the pin; that one line is the whole
 statement of which reference build the corpus and the Playground run against.
 The corpus is generated separately by `scripts/generate-corpus.mjs`, which
-extracts the ` ```carve ` / ` ```html ` pairs from `docs/examples.md`
+extracts the ` ```carve ` / ` ```html ` pairs from `resources/examples/*.md`
 **verbatim** (`npm run corpus:build` + `git diff --exit-code`).
+
+### What a pin bump has to sweep
+
+Moving the pin changes which build the docs render with and which build the
+snapshots were taken against, so three things go stale at the same moment and
+none of them is the pin itself:
+
+1. **Extension classification.** A new factory in carve-js must be ENABLED or
+   EXCLUDED in `docs/.vitepress/carve-extensions.js`, or
+   `tests/playground-extensions.test.mjs` fails. Classify it *before* bumping;
+   the entry is harmless while the pinned build still lacks the export.
+2. **`resources/engine-pin-drift.txt`.** Every entry describes a document the
+   *pinned* build does not reproduce. An entry the new build satisfies is now a
+   lie about the engine - re-run `npm run engine:report` and delete what it no
+   longer reports.
+3. **Tier-3 snapshots.** `tests/examples-tier3.test.mjs` compares hand-written
+   examples against the pinned build. Tier-3 is never corpus-pinned, so this
+   test is their only verifier; a bump that changes Tier-3 output must be
+   re-snapshotted deliberately, not waved through.
+
+Claims keyed to the pinned build live in the docs too - the SemanticSpan row in
+`docs/extensions.md` says "no implementation registers it yet", which
+`tests/extension-catalog-claims.test.mjs` ties to the pinned export. That test
+tells you when the sentence stops being true.
 
 **The corpus oracle is the executable spec, not an engine.** `tests/corpus.test.mjs`
 renders every pair through `scripts/spec` (the layout automaton plus the
@@ -75,7 +99,7 @@ in each impl repo — weekly + manual dispatch, idempotent on a single
 
 1. **carve-js first.** Land the behavior in the reference impl with unit tests.
    Merge to `main`.
-2. **carve next.** Add the `docs/examples.md` pair(s), cover the rule in
+2. **carve next.** Add the `resources/examples/*.md` pair(s), cover the rule in
    `scripts/spec` so the executable spec renders it, then `npm run corpus:build`
    and `npm test`. Commit the examples, the regenerated corpus and the
    executable-spec change together. Bump the pin
@@ -109,7 +133,7 @@ in each impl repo — weekly + manual dispatch, idempotent on a single
 ### Resolved (now pinned in the corpus)
 
 These were verified carve-js ↔ carve-php differences; both impls now agree and
-the behavior is pinned in `docs/examples.md`:
+the behavior is pinned in `resources/examples/*.md`:
 
 | Input | Resolution |
 |-------|------------|
@@ -144,7 +168,15 @@ Decided canonical behavior, pinned in the corpus, where at least one
 implementation still diverges (lockstep order: carve-js first, then the carve
 pin; the corpus has no xfail). A row moves to *Resolved* once all impls agree.
 
-_None currently._
+| Input | Canonical, and who still diverges |
+|-------|-----------------------------------|
+| `- item`<br>`  %%%`<br>`  [r]: /url`<br>`  %%%` plus a `[r][]` below it - a definition inside a comment fence that is NOT at column 0 | The label is not registered and the reference stays literal, at every column a fence can sit at: PART 9 §24 S1 places a line by the column it reaches, S2 makes it verbatim under a fenced body, and §28 scopes neither to column 0. carve-js, carve-rs and the executable spec already do this - carve-rs since markup-carve/carve-rs#1052 landed, which is why it no longer appears here. **carve-php** is the only engine still diverging: it fails `335`, `336`, `337`, `338`, `339` and `340` (markup-carve/carve-php#1349). Filed as carve#1309. |
+
+The quoted spelling of the same shape (`> %%%` over a definition) is NOT in that
+row and is deliberately unpinned: all three engines register there and only the
+executable spec leaves it literal, so it is a three-engine disagreement about
+the rule rather than an engine lagging a decided one, and it wants a ruling
+before a corpus document takes a side.
 
 ### Extension API surface (parity beyond corpus output)
 
@@ -170,6 +202,6 @@ definitions, matching carve-php and carve-rs. All three impls now realize the
 full four-point contract.
 
 When a new divergence is found, verify it on both impls, decide the canonical,
-and either pin it as a `docs/examples.md` pair (and move it to *Resolved*) or
+and either pin it as a `resources/examples/*.md` pair (and move it to *Resolved*) or
 record it as *Intentional* with the reason, or under *Open (tracked)* if it is
 an implementation bug still being worked through.
