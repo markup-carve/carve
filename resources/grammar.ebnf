@@ -3314,12 +3314,19 @@ ellipsis = "..." ;    (* → … *)
    things, so their natural positions differ and the rule follows the construct.
 
    NOT FIXED BY THIS, and stated so it is a known limit rather than a
-   discovery: an HTML comment is HALF repaired. `<!-- c -->` renders
-   `&lt;!– c --&gt;` - the CLOSING run is preceded by whitespace and followed by
-   `>`, so it is flag-shaped and now stays literal, while the OPENING run is
-   preceded by `!` rather than whitespace and still converts. Recognising the
-   whole construct is what the opening half wants; a wider dash rule would cost
-   the numeric range.
+   discovery: an HTML comment survives NEITHER half, and each half is lost to a
+   different rule. `<!-- c -->` renders `&lt;!– c →`. The OPENING run is
+   preceded by `!` rather than whitespace, so this clause does not reach it and
+   it converts to a dash. The CLOSING run was flag-shaped and literal under this
+   clause until the arrow set took the doubled run (§8 ARROWS, carve#1442), and
+   an arrow is matched before a hyphen run is decomposed.
+
+   That order is deliberate. Guarding `-->` for this one context would put a
+   context-sensitive exception into a set whose whole argument is that it has
+   none, and Carve escapes raw HTML by default: a literal HTML comment in prose
+   is a document ABOUT HTML rather than HTML, where an author who wants the
+   characters can escape one of them. Recognising the whole construct is what
+   the opening half wants; a wider dash rule would cost the numeric range.
 
    Composes with the run decomposition below rather than replacing it: this
    decides WHETHER a run converts, the length decides INTO WHAT. *)

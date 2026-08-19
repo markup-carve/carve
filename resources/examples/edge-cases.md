@@ -25241,10 +25241,16 @@ But pages 1--10, the Mon--Fri window, a---- b----- and a -- b all convert.
 
 :::
 
-An HTML comment is half repaired by the same rule, which is worth pinning rather
-than leaving to be discovered: the closing `-->` is preceded by whitespace and
-followed by `>`, so it is flag-shaped and stays literal, while the opening `<!--`
-is preceded by `!` and still converts.
+An HTML comment is worth pinning rather than leaving to be discovered, because
+neither half survives and each is lost to a different rule. The opening `<!--`
+is preceded by `!`, so the flag rule does not reach it and it converts to a dash.
+The closing `-->` was flag-shaped and literal until the arrow set took the
+doubled run (markup-carve/carve#1442); it is now an arrow.
+
+Ruled deliberately rather than papered over. Guarding `-->` for this one context
+would put a context-sensitive exception into a set whose argument is that it has
+none, and Carve escapes raw HTML by default, so a literal HTML comment in prose
+is already a document about HTML rather than HTML.
 
 ::: compare
 
@@ -25253,7 +25259,7 @@ is preceded by `!` and still converts.
 ```
 
 ```html
-<p>&lt;!– a comment --&gt;</p>
+<p>&lt;!– a comment →</p>
 ```
 
 :::
