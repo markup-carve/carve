@@ -30,3 +30,5 @@
 384-a-continuation-marker-attaches-only-a-flush-left-block-6  carve#1436, the indented contrast: the pin attaches the line instead of folding it
 385-a-hyphen-run-opening-a-word-after-whitespace-is-a-flag  pinned carve-js predates the hyphen-run flanking rule (markup-carve/carve#1443): it renders `git log --oneline` as `git log –oneline`
 385-a-hyphen-run-opening-a-word-after-whitespace-is-a-flag-2  pinned carve-js predates the hyphen-run flanking rule (markup-carve/carve#1443): it converts the closing `-->` of an HTML comment
+20-smart-typography-arrows-and-symbols  pinned carve-js predates the canonical doubled-arrow set (markup-carve/carve#1442)
+385-the-doubled-run-is-the-canonical-arrow-in-both-families  pinned carve-js predates carve#1442: it renders `=>` as an arrow and `<==`/`==>`/`<-->` as text

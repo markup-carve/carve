@@ -1,0 +1,5 @@
+Canonical: <-- --> <--> and <== ==> <=>
+
+Deprecated but still rendered: <- -> <->
+
+Not an arrow: key => value stays literal, and p <= q is a comparison.

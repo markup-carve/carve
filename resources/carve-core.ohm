@@ -143,7 +143,9 @@ CarveCore {
   // NO other alternative begins with an alphanumeric or a space, so hoisting
   // them cannot change which alternative wins, and it lets an alnum/space char
   // match in one attempt. `litDelim` stays after `arrow` and `span` (they claim
-  // `=>` and `/*` first). This keeps the tokenizer's per-character work
+  // `<==`/`==>` and `/*` first; `=>` left that set in carve#1442, and a bare
+  // `=` before `>` does not pair as a highlight - measured). This keeps the
+  // tokenizer's per-character work
   // near-constant, so the inline pass (with the SS9 delimiter stack) is O(n).
   inline     = word | spComment | bracedComment | inlineSpace
              | arrow | span | inlineNote | litDelim
@@ -626,7 +628,18 @@ CarveCore {
   // SMART TYPOGRAPHY (PART 9 SS8). Multi-char patterns are consumed as
   // tokens; the open/close decision for quotes uses the previous source
   // character in the SEMANTICS (deterministic single-char lookbehind).
-  arrow      = "<->" | "->" | "<-" | "=>" | "!=" | "<=" | ">=" | "+-"
+  // ORDERED LONGEST-FIRST, and the order is the rule (carve#1442). The doubled
+  // run is the canonical arrow in both families: `<--` `-->` `<-->` and `<==`
+  // `==>` `<=>`. The single-hyphen forms still match and are deprecated rather
+  // than removed. `=>` is GONE - it is ubiquitous in prose about code
+  // (`key => value`, `x => x + 1`, `Some(x) => x`) and silently became an arrow
+  // there.
+  //
+  // `<==` must precede `<=`, and `-->` must precede the `dashRun` rule below,
+  // for the same reason `<->` already precedes `<-`.
+  arrow      = "<-->" | "<->" | "-->" | "<--"
+             | "<=>" | "==>" | "<=="
+             | "->" | "<-" | "!=" | "<=" | ">=" | "+-"
   symbol     = "(c)" | "(r)" | "(tm)"
   ellipsis   = "..."
   dashRun    = "-" "-"+

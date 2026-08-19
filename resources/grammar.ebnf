@@ -3346,7 +3346,35 @@ smart_quote = '"' | "'" ;
    the substitution never spans or pairs across other inline constructs.
    `\"` / `\'` escape to the straight character (PART 9 §8). *)
 
-arrow = "->" | "<-" | "<->" | "=>" ;
+arrow = "<--" | "-->" | "<-->"      (* → ← → ↔, canonical *)
+      | "<==" | "==>" | "<=>"       (* → ⇐ ⇒ ⇔ *)
+      | "<-" | "->" | "<->" ;       (* deprecated, still rendered *)
+(* THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES -- NORMATIVE
+   (carve#1442). Matched longest-first, as `<->` already beats `<-`, so `<==`
+   beats `<=` and `-->` beats the hyphen run.
+
+   The single-line family was complete and the double-line family was not:
+   `->`, `<-` and `<->` all existed, `=>` existed, and there was no `<=` arrow
+   because `<=` is the comparison. `<=>` -- the common spelling of "if and only
+   if", and the one a writer who has just met `=>` reaches for -- rendered
+   `≤>`.
+
+   `<=` KEEPS ≤, and that is what forces the answer. In technical prose `<=` is
+   far more often a comparison than a leftward implication, so the left double
+   arrow has to grow a character. Once it does, the family is spelled at one
+   width throughout rather than two, which is why the doubled run is canonical
+   everywhere rather than only where it had to be.
+
+   `->`, `<-` AND `<->` ARE DEPRECATED, NOT REMOVED. They keep rendering and
+   the canonical spelling is the doubled form; a document written before this
+   goes on working.
+
+   `=>` IS REMOVED, and that is a behavior change rather than a deprecation.
+   It is the one form that was actively harmful instead of merely
+   non-canonical: `key => value`, `x => x + 1` and `Some(x) => x` are ordinary
+   prose about code, and every one of them silently became ⇒. So the two
+   families are treated differently on purpose, and each exception has a reason
+   that fits in a line -- `<=` is a comparison, and `=>` is code. *)
 comparison = "!=" | "<=" | ">=" ;
 (* NOT the `:name:` symbol above -- these are the fixed typographic
    replacements (© ® ™ ±). Named `typographic_symbol` so the two do not
