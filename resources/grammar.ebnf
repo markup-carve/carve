@@ -6876,6 +6876,51 @@ EOF = (* end of file *) ;
       make such a heading unreachable -- it is still slugged, still
       deduped in the one namespace, and still a `</#id>` crossref
       target (R4), which addresses it by id rather than by wording.
+   R1a A DEFINITION IS COLLECTED FROM A LINE THE BLOCK STRUCTURE KEEPS --
+      NORMATIVE (carve#1428, and carve#1425 for the flush-left half). A
+      definition line that PART 0's S4 folds into an OPEN PARAGRAPH yields no
+      entry in ANY symbol table -- linkDefs, footnoteDefs or abbrDefs. It is
+      paragraph text, it renders as the text the author typed, and nothing on it
+      defines anything. The container makes no difference: the document level, a
+      quote and a div are one rule, because S4 asks only whether a paragraph is
+      open and which container holds it.
+
+      This is a consequence of NO OPEN PARAGRAPH, NO LAZY LINE, stated here
+      because collection runs BEFORE block structure in every implementation and
+      three engines each got a different answer without it: one deleted the
+      definition's text and left the marker, one registered it while also
+      rendering it, and one half-collected a footnote into the paragraph it was
+      written in.
+
+      HOW AN ENGINE MAY DECIDE IT. Collection is a pre-pass over lines, so the
+      answer is not local to the line. An implementation MAY ask the block
+      reader: parse the run of lines back to the last blank one twice, once
+      without the candidate line and once with it, and compare the open
+      last-child chains -- a line that folds adds no node at any level, while a
+      line that opens anything changes a count. An implementation MAY instead
+      derive the answer any other way; what is normative is the answer, not the
+      method.
+
+      A MATCHER IS A PURE PREDICATE, and this is what makes the probe legitimate
+      (carve#1432). An extension's block or inline matcher MUST be a pure
+      function of the input it is handed: no observable side effects, and the
+      same answer for the same (lines, position, context). An implementation
+      therefore MAY invoke a matcher speculatively, MORE THAN ONCE at the same
+      position, and discard the result -- which core parsing already does when a
+      matcher reports a consumption the parser rejects. An extension that needs
+      to allocate an id, count occurrences or record state does that in
+      `afterParse` or `beforeRender`, which run once over the finished document,
+      and never in a matcher.
+
+      AND IT FAILS TOWARD COLLECTING. An implementation that cannot answer --
+      no probe, an exhausted work budget, a construct it does not recognize --
+      MUST collect the definition rather than suppress it. The two errors are
+      not symmetric: collecting from a line that renders puts a visible line in
+      a symbol table, which a reader can see and report, while suppressing
+      deletes the author's line from the page. Every implementation of this rule
+      chose the first direction for that reason, and a budget exists precisely so
+      the pre-pass stays linear without ever choosing the second.
+
    R2 FOOTNOTES (rendering in PART 9 §16). A [^label] use with a matching
       footnoteDefs entry is numbered by FIRST-REFERENCE order from
       footnoteSeq; repeat references reuse the number (k-th repeat gets
