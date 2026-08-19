@@ -3309,6 +3309,14 @@ ellipsis = "..." ;    (* → … *)
    shape -- whitespace before, word after -- is the one no dash wants and every
    flag has.
 
+   THE SPACE CLASS IS PART 7'S, and that is not the host language's `\s`. A
+   VERTICAL TAB and a FORM FEED are CONTENT in Carve, so `---<VT>` converts or
+   stays literal exactly as `---!` does; a rule spelled with `\s` answered the
+   two differently, which is the divergence carve-php's whitespace-definition
+   sweep exists to catch. A NO-BREAK SPACE counts as a space here, because the
+   question asked is "does a space stand before this run" - the same question
+   quote flanking asks, and a nbsp is a space to the reader.
+
    ELLIPSIS IS NOT COVERED. `wait... really` is the ordinary use and it is
    word-then-whitespace; an ellipsis terminates a clause where a dash joins two
    things, so their natural positions differ and the rule follows the construct.
