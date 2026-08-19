@@ -622,14 +622,20 @@ const sem = g.createSemantics().addOperation('h', {
     // 19-smart-typography-dashes-and-quotes-7 pins it), as does a trailing
     // dash on an interrupted clause. Requiring matching sides would have
     // broken both.
+    //
+    // The space class is PART 7's, NOT the host language's `\s`: a VERTICAL TAB
+    // and a FORM FEED are CONTENT in Carve, so `---<VT>` has to answer the way
+    // `---!` answers. A NO-BREAK SPACE is included because the question here is
+    // "does a space stand before this run", which is the same question quote
+    // flanking asks, and a nbsp is a space to the reader.
     {
       const src = this.source.sourceString
       const at = this.source.startIdx
       const end = this.source.endIdx
       const prev = at > 0 ? src[at - 1] : ''
       const next = src[end] ?? ''
-      const prevIsSpace = prev === '' || /\s/.test(prev)
-      const nextIsSpace = next === '' || /\s/.test(next)
+      const prevIsSpace = prev === '' || FLANK_SPACE.test(prev)
+      const nextIsSpace = next === '' || FLANK_SPACE.test(next)
       if (prevIsSpace && !nextIsSpace) return escapeHtml(this.sourceString)
     }
     // PART 9 SS8: a run of n hyphens -> em/en dash mix (djot allocateDashes):
@@ -1105,6 +1111,10 @@ export function renderBlockAttrs(lists) {
 // corpus 37-3 pins a line-initial pair as two closers). A single quote
 // directly before a digit is always an apostrophe ('70s, '24).
 const QUOTE_OPEN_PREV = new Set([' ', '\t', '=', ':', '-', '/', '(', '[', '{'])
+// PART 7's whitespace plus the NO-BREAK SPACE, for the hyphen-run flanking
+// test (carve#1443). A vertical tab and a form feed are deliberately OUT:
+// Carve reads both as content, and `\s` takes them.
+const FLANK_SPACE = /[ \t\n\r\u00a0]/
 const QUOTE_CHARS = new Set(['"', "'"])
 // The glyph the previous quote token resolved to, so a quote directly after
 // another one can tell which half it follows: after an OPENING quote it opens
