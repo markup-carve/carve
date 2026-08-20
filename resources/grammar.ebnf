@@ -4670,6 +4670,18 @@ EOF = (* end of file *) ;
          a linter can name. Pinned by corpus
          390-a-table-cell-s-marker-run-ends-at-a-space.
 
+         THE LINTER NAMES IT `table-marker-run-padding` -- NORMATIVE
+         (carve#1464). One id for the whole run, because T11 is one rule for
+         the whole run: it reports a glued kind marker, a glued alignment run
+         and a glued attribute block alike, and `fmt --migrate` repairs any of
+         them by inserting the space. It SUPERSEDES
+         `table-alignment-run-padding`, which named the middle part only -
+         which is how the one part of the run that reinterprets existing
+         documents, the kind marker, ended up the part with no diagnostic.
+         A lint id is spec surface (docs/validation.md carries the row), so it
+         is agreed here BEFORE an engine emits it, rather than two engines
+         picking different names for it.
+
    6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R (rules
       R1-R3; this §-anchor stays for existing references). Summary: link
       labels match EXACTLY (case-sensitive, no whitespace folding; corpus
