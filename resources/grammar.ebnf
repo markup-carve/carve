@@ -3322,12 +3322,19 @@ ellipsis = "..." ;    (* → … *)
    things, so their natural positions differ and the rule follows the construct.
 
    NOT FIXED BY THIS, and stated so it is a known limit rather than a
-   discovery: an HTML comment is HALF repaired. `<!-- c -->` renders
-   `&lt;!– c --&gt;` - the CLOSING run is preceded by whitespace and followed by
-   `>`, so it is flag-shaped and now stays literal, while the OPENING run is
-   preceded by `!` rather than whitespace and still converts. Recognising the
-   whole construct is what the opening half wants; a wider dash rule would cost
-   the numeric range.
+   discovery: an HTML comment survives NEITHER half, and each half is lost to a
+   different rule. `<!-- c -->` renders `&lt;!– c →`. The OPENING run is
+   preceded by `!` rather than whitespace, so this clause does not reach it and
+   it converts to a dash. The CLOSING run was flag-shaped and literal under this
+   clause until the arrow set took the doubled run (§8 ARROWS, carve#1442), and
+   an arrow is matched before a hyphen run is decomposed.
+
+   That order is deliberate. Guarding `-->` for this one context would put a
+   context-sensitive exception into a set whose whole argument is that it has
+   none, and Carve escapes raw HTML by default: a literal HTML comment in prose
+   is a document ABOUT HTML rather than HTML, where an author who wants the
+   characters can escape one of them. Recognising the whole construct is what
+   the opening half wants; a wider dash rule would cost the numeric range.
 
    Composes with the run decomposition below rather than replacing it: this
    decides WHETHER a run converts, the length decides INTO WHAT. *)
@@ -3354,7 +3361,35 @@ smart_quote = '"' | "'" ;
    the substitution never spans or pairs across other inline constructs.
    `\"` / `\'` escape to the straight character (PART 9 §8). *)
 
-arrow = "->" | "<-" | "<->" | "=>" ;
+arrow = "<--" | "-->" | "<-->"      (* → ← → ↔, canonical *)
+      | "<==" | "==>" | "<=>"       (* → ⇐ ⇒ ⇔ *)
+      | "<-" | "->" | "<->" ;       (* deprecated, still rendered *)
+(* THE DOUBLED RUN IS THE CANONICAL ARROW, IN BOTH FAMILIES -- NORMATIVE
+   (carve#1442). Matched longest-first, as `<->` already beats `<-`, so `<==`
+   beats `<=` and `-->` beats the hyphen run.
+
+   The single-line family was complete and the double-line family was not:
+   `->`, `<-` and `<->` all existed, `=>` existed, and there was no `<=` arrow
+   because `<=` is the comparison. `<=>` -- the common spelling of "if and only
+   if", and the one a writer who has just met `=>` reaches for -- rendered
+   `≤>`.
+
+   `<=` KEEPS ≤, and that is what forces the answer. In technical prose `<=` is
+   far more often a comparison than a leftward implication, so the left double
+   arrow has to grow a character. Once it does, the family is spelled at one
+   width throughout rather than two, which is why the doubled run is canonical
+   everywhere rather than only where it had to be.
+
+   `->`, `<-` AND `<->` ARE DEPRECATED, NOT REMOVED. They keep rendering and
+   the canonical spelling is the doubled form; a document written before this
+   goes on working.
+
+   `=>` IS REMOVED, and that is a behavior change rather than a deprecation.
+   It is the one form that was actively harmful instead of merely
+   non-canonical: `key => value`, `x => x + 1` and `Some(x) => x` are ordinary
+   prose about code, and every one of them silently became ⇒. So the two
+   families are treated differently on purpose, and each exception has a reason
+   that fits in a line -- `<=` is a comparison, and `=>` is code. *)
 comparison = "!=" | "<=" | ">=" ;
 (* NOT the `:name:` symbol above -- these are the fixed typographic
    replacements (© ® ™ ±). Named `typographic_symbol` so the two do not

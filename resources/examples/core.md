@@ -2420,7 +2420,7 @@ intentionally **not** converted (they collide with dates and paths; see
 ::: compare
 
 ```carve
-Flow: a -> b <- c <-> d => e; x != y, p <= q, r >= s, +-1.
+Flow: a --> b <-- c <--> d ==> e; x != y, p <= q, r >= s, +-1.
 (c) 2024, (r), (tm). Dates like 1/2/2024 stay literal.
 ```
 

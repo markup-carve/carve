@@ -604,7 +604,14 @@ const sem = g.createSemantics().addOperation('h', {
     return ''
   },
   arrow(tok) {
-    return { '<->': '\u2194', '->': '\u2192', '<-': '\u2190', '=>': '\u21d2', '!=': '\u2260', '<=': '\u2264', '>=': '\u2265', '+-': '\u00b1' }[tok.sourceString]
+    // carve#1442: doubled runs are canonical in both families; the single
+    // forms are deprecated but still render; `=>` is removed.
+    return {
+      '<-->': '\u2194', '-->': '\u2192', '<--': '\u2190',
+      '<=>': '\u21d4', '==>': '\u21d2', '<==': '\u21d0',
+      '<->': '\u2194', '->': '\u2192', '<-': '\u2190',
+      '!=': '\u2260', '<=': '\u2264', '>=': '\u2265', '+-': '\u00b1',
+    }[tok.sourceString]
   },
   symbol(tok) {
     return { '(c)': '\u00a9', '(r)': '\u00ae', '(tm)': '\u2122' }[tok.sourceString]
