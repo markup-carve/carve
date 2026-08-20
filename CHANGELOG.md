@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **An attribute line below a list item interrupts it** (markup-carve/carve-rs#1167).
+  A `{...}` line is an invisible construct like a comment or a reference
+  definition, so at column 0 below an item it ends the item and floats forward
+  to the next block instead of folding in as literal text. The layout pass
+  already read the other two correctly in that position. Corpus 391.
+
 - **The AST span-divergence ledger now records the current zero-difference
   baseline.** The last `hard_break` extent disagreement cleared across all
   three engines and its regression test now pins an empty ledger (carve#1414).
