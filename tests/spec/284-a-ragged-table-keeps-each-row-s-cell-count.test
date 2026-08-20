@@ -18,7 +18,9 @@ A ragged table keeps each row's cell count
 | y |
 .
 <table>
-  <thead><tr><th scope="col"></th><th scope="col">x</th></tr></thead>
+  <thead>
+    <tr><th scope="col"></th><th scope="col">x</th></tr>
+  </thead>
   <tbody>
     <tr><td>y</td></tr>
   </tbody>
@@ -31,7 +33,9 @@ A ragged table keeps each row's cell count
 | |x |
 .
 <table>
-  <thead><tr><th scope="col">h</th></tr></thead>
+  <thead>
+    <tr><th scope="col">h</th></tr>
+  </thead>
   <tbody>
     <tr><td></td><td>x</td></tr>
   </tbody>

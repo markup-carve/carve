@@ -641,7 +641,9 @@ See </#tbl-r>.
 ```html
 <table id="tbl-r">
   <caption>Table 1: Stock</caption>
-  <thead><tr><th scope="col">Item</th><th scope="col">Qty</th></tr></thead>
+  <thead>
+    <tr><th scope="col">Item</th><th scope="col">Qty</th></tr>
+  </thead>
   <tbody>
     <tr><td>Apple</td><td>3</td></tr>
   </tbody>

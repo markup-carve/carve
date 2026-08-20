@@ -6,7 +6,9 @@ Table row attributes
 | Ann  | 9     |{.win}
 .
 <table>
-  <thead><tr class="head"><th scope="col">Name</th><th scope="col">Score</th></tr></thead>
+  <thead>
+    <tr class="head"><th scope="col">Name</th><th scope="col">Score</th></tr>
+  </thead>
   <tbody>
     <tr class="win"><td>Ann</td><td>9</td></tr>
   </tbody>

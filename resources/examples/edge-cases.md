@@ -19,7 +19,9 @@ The corner cases: precise boundary rules, table alignment variants, lazy continu
 
 ```html
 <table>
-  <thead><tr><th scope="col">Name</th><th scope="col" style="text-align: right;">Age</th><th scope="col" style="text-align: center;">City</th></tr></thead>
+  <thead>
+    <tr><th scope="col">Name</th><th scope="col" style="text-align: right;">Age</th><th scope="col" style="text-align: center;">City</th></tr>
+  </thead>
   <tbody>
     <tr><td>Alice</td><td style="text-align: right;">28</td><td style="text-align: center;">NYC</td></tr>
     <tr><td>Bob</td><td style="text-align: right;">34</td><td style="text-align: center;">London</td></tr>
@@ -41,7 +43,9 @@ The corner cases: precise boundary rules, table alignment variants, lazy continu
 
 ```html
 <table>
-  <thead><tr><th scope="col">Item</th><th scope="col" style="text-align: right;">Qty</th></tr></thead>
+  <thead>
+    <tr><th scope="col">Item</th><th scope="col" style="text-align: right;">Qty</th></tr>
+  </thead>
   <tbody>
     <tr><td>Apple</td><td style="text-align: right;">12</td></tr>
     <tr><td>Subtotal</td><td style="text-align: left;">12</td></tr>
@@ -83,7 +87,9 @@ The corner cases: precise boundary rules, table alignment variants, lazy continu
 
 ```html
 <table>
-  <thead><tr><th scope="col">Name</th><th scope="col">Age</th></tr></thead>
+  <thead>
+    <tr><th scope="col">Name</th><th scope="col">Age</th></tr>
+  </thead>
   <tbody>
     <tr><td>Alice</td><td>28</td></tr>
     <tr><td>Bob</td><td>34</td></tr>
@@ -105,7 +111,9 @@ The corner cases: precise boundary rules, table alignment variants, lazy continu
 
 ```html
 <table>
-  <thead><tr><th scope="col" style="text-align: right;">Category</th><th scope="col">Item</th><th scope="col">Price</th></tr></thead>
+  <thead>
+    <tr><th scope="col" style="text-align: right;">Category</th><th scope="col">Item</th><th scope="col">Price</th></tr>
+  </thead>
   <tbody>
     <tr><td style="text-align: right;">Fruit</td><td>Apple</td><td>$1</td></tr>
     <tr><td colspan="2" style="text-align: right;">Total</td><td>$1.50</td></tr>
@@ -130,7 +138,9 @@ than consuming a valid prefix. The header `=` remains independent.
 
 ```html
 <table>
-  <thead><tr><th scope="col">&lt;&lt; Note</th><th scope="col">Plain</th></tr></thead>
+  <thead>
+    <tr><th scope="col">&lt;&lt; Note</th><th scope="col">Plain</th></tr>
+  </thead>
   <tbody>
     <tr><td>a</td><td>b</td></tr>
   </tbody>
@@ -199,7 +209,9 @@ cell.
 
 ```html
 <table>
-  <thead><tr><th scope="col">A</th><th scope="col">B</th></tr></thead>
+  <thead>
+    <tr><th scope="col">A</th><th scope="col">B</th></tr>
+  </thead>
   <tbody>
     <tr><td>x | y</td><td>z</td></tr>
   </tbody>
@@ -221,7 +233,9 @@ A pipe inside a code span is protected and does not split the cell.
 
 ```html
 <table>
-  <thead><tr><th scope="col">A</th><th scope="col">B</th></tr></thead>
+  <thead>
+    <tr><th scope="col">A</th><th scope="col">B</th></tr>
+  </thead>
   <tbody>
     <tr><td><code>a|b</code></td><td>z</td></tr>
   </tbody>
@@ -312,7 +326,9 @@ markers produce `rowspan="3"`.
 
 ```html
 <table>
-  <thead><tr><th scope="col">Tier</th><th scope="col">User</th></tr></thead>
+  <thead>
+    <tr><th scope="col">Tier</th><th scope="col">User</th></tr>
+  </thead>
   <tbody>
     <tr><td rowspan="3">Gold</td><td>Ann</td></tr>
     <tr><td>Bo</td></tr>
@@ -357,7 +373,9 @@ span several source lines.
 
 ```html
 <table>
-  <thead><tr><th scope="col">Feature</th><th scope="col">Description</th></tr></thead>
+  <thead>
+    <tr><th scope="col">Feature</th><th scope="col">Description</th></tr>
+  </thead>
   <tbody>
     <tr><td>Complex</td><td>A long description that continues across lines.</td></tr>
     <tr><td>Simple</td><td>Single line.</td></tr>
@@ -383,7 +401,9 @@ A `+` continuation before a `^` rowspan extends the spanned cell.
 
 ```html
 <table>
-  <thead><tr><th scope="col">Category</th><th scope="col">Item</th></tr></thead>
+  <thead>
+    <tr><th scope="col">Category</th><th scope="col">Item</th></tr>
+  </thead>
   <tbody>
     <tr><td rowspan="2">Fresh Fruits from local farms</td><td>Apple</td></tr>
     <tr><td>Banana</td></tr>
@@ -2952,7 +2972,9 @@ line before a table attaches to the `<table>`:
 
 ```html
 <table class="data">
-  <thead><tr><th scope="col">A</th><th scope="col">B</th></tr></thead>
+  <thead>
+    <tr><th scope="col">A</th><th scope="col">B</th></tr>
+  </thead>
   <tbody>
     <tr><td>1</td><td>2</td></tr>
   </tbody>
@@ -3318,7 +3340,9 @@ renders as an empty cell rather than being dropped.
 
 ```html
 <table>
-  <thead><tr><th scope="col"></th><th scope="col">b</th></tr></thead>
+  <thead>
+    <tr><th scope="col"></th><th scope="col">b</th></tr>
+  </thead>
   <tbody>
     <tr><td>c</td><td>d</td></tr>
   </tbody>
@@ -3345,7 +3369,9 @@ cell with no marker it sits directly against the opening `|`.
 
 ```html
 <table>
-  <thead><tr><th scope="col" class="highlight">Total</th><th scope="col">99</th></tr></thead>
+  <thead>
+    <tr><th scope="col" class="highlight">Total</th><th scope="col">99</th></tr>
+  </thead>
   <tbody>
     <tr><td>a</td><td>b</td></tr>
   </tbody>
@@ -3372,7 +3398,9 @@ delimiter row.
 
 ```html
 <table>
-  <thead><tr class="head"><th scope="col">Name</th><th scope="col">Score</th></tr></thead>
+  <thead>
+    <tr class="head"><th scope="col">Name</th><th scope="col">Score</th></tr>
+  </thead>
   <tbody>
     <tr class="win"><td>Ann</td><td>9</td></tr>
   </tbody>
@@ -3397,7 +3425,9 @@ boundary: a header cell can span into the body rows below, rendering as
 
 ```html
 <table>
-  <thead><tr><th scope="col" rowspan="3">H</th><th scope="col">G</th></tr></thead>
+  <thead>
+    <tr><th scope="col" rowspan="3">H</th><th scope="col">G</th></tr>
+  </thead>
   <tbody>
     <tr><td>b</td></tr>
     <tr><td>c</td></tr>
@@ -3625,7 +3655,9 @@ that rowspan, so the leftward walk runs off the edge with nothing to merge and t
 
 ```html
 <table>
-  <thead><tr><th scope="col">A</th><th scope="col">B</th><th scope="col">C</th></tr></thead>
+  <thead>
+    <tr><th scope="col">A</th><th scope="col">B</th><th scope="col">C</th></tr>
+  </thead>
   <tbody>
     <tr><td rowspan="2">x</td><td>y</td><td>z</td></tr>
     <tr><td></td><td>d</td></tr>
@@ -3666,7 +3698,9 @@ author chooses the layout by where they place the markers.
 
 ```html
 <table>
-  <thead><tr><th scope="col">p</th><th scope="col">q</th><th scope="col">r</th><th scope="col">s</th></tr></thead>
+  <thead>
+    <tr><th scope="col">p</th><th scope="col">q</th><th scope="col">r</th><th scope="col">s</th></tr>
+  </thead>
   <tbody>
     <tr><td>a</td><td rowspan="2">b</td><td>c</td><td>d</td></tr>
     <tr><td colspan="2">p</td><td>e</td></tr>
@@ -4046,7 +4080,9 @@ its cells hold* below - so "no body row yet" would answer that document wrongly
 
 ```html
 <table>
-  <thead><tr><th scope="col">a</th><th scope="col">b</th></tr></thead>
+  <thead>
+    <tr><th scope="col">a</th><th scope="col">b</th></tr>
+  </thead>
 </table>
 <p>+ cont |</p>
 ```
@@ -5515,7 +5551,9 @@ A `|`-delimited table row is a block opener under the same content-column rule: 
 <ul>
   <li>one
     <table>
-      <thead><tr><th scope="col">H</th></tr></thead>
+      <thead>
+        <tr><th scope="col">H</th></tr>
+      </thead>
       <tbody>
         <tr><td>x</td></tr>
       </tbody>
@@ -8332,7 +8370,9 @@ see[^a]
     <li id="fn1">
       <p>intro</p>
       <table>
-        <thead><tr><th scope="col">a</th></tr></thead>
+        <thead>
+          <tr><th scope="col">a</th></tr>
+        </thead>
         <tbody>
           <tr><td>b</td></tr>
         </tbody>
@@ -9051,7 +9091,9 @@ see[^a]
     <li id="fn1">
       <p>note</p>
       <table>
-        <thead><tr><th scope="col">a</th></tr></thead>
+        <thead>
+          <tr><th scope="col">a</th></tr>
+        </thead>
         <tbody>
           <tr><td>b</td></tr>
         </tbody>
@@ -10745,7 +10787,9 @@ A header cell carries the same two slots, after its `=` marker:
 
 ```html
 <table>
-  <thead><tr><th scope="col">	h</th><th scope="col">	i</th></tr></thead>
+  <thead>
+    <tr><th scope="col">	h</th><th scope="col">	i</th></tr>
+  </thead>
   <tbody>
     <tr><td>1</td><td>2</td></tr>
   </tbody>
@@ -10763,7 +10807,9 @@ A header cell carries the same two slots, after its `=` marker:
 
 ```html
 <table>
-  <thead><tr><th scope="col">	 h</th><th scope="col">	 i</th></tr></thead>
+  <thead>
+    <tr><th scope="col">	 h</th><th scope="col">	 i</th></tr>
+  </thead>
   <tbody>
     <tr><td>1</td><td>2</td></tr>
   </tbody>
@@ -10781,7 +10827,9 @@ A header cell carries the same two slots, after its `=` marker:
 
 ```html
 <table>
-  <thead><tr><th scope="col">h	</th><th scope="col">i	</th></tr></thead>
+  <thead>
+    <tr><th scope="col">h	</th><th scope="col">i	</th></tr>
+  </thead>
   <tbody>
     <tr><td>1</td><td>2</td></tr>
   </tbody>
@@ -10799,7 +10847,9 @@ A header cell carries the same two slots, after its `=` marker:
 
 ```html
 <table>
-  <thead><tr><th scope="col">h 	</th><th scope="col">i 	</th></tr></thead>
+  <thead>
+    <tr><th scope="col">h 	</th><th scope="col">i 	</th></tr>
+  </thead>
   <tbody>
     <tr><td>1</td><td>2</td></tr>
   </tbody>
@@ -10982,7 +11032,9 @@ terminal.
 
 ```html
 <table>
-  <thead><tr><th scope="col">h</th><th scope="col">i</th></tr></thead>
+  <thead>
+    <tr><th scope="col">h</th><th scope="col">i</th></tr>
+  </thead>
   <tbody>
     <tr><td>a</td><td>b</td></tr>
   </tbody>
@@ -11001,7 +11053,9 @@ terminal.
 
 ```html
 <table>
-  <thead><tr><th scope="col">a</th><th scope="col" style="text-align: right;">b</th></tr></thead>
+  <thead>
+    <tr><th scope="col">a</th><th scope="col" style="text-align: right;">b</th></tr>
+  </thead>
   <tbody>
     <tr><td>1</td><td style="text-align: right;">2</td></tr>
   </tbody>
@@ -14725,7 +14779,9 @@ one line.
 ```html
 <table>
   <caption>Fruit prices</caption>
-  <thead><tr><th scope="col">Fruit</th><th scope="col">Price</th></tr></thead>
+  <thead>
+    <tr><th scope="col">Fruit</th><th scope="col">Price</th></tr>
+  </thead>
   <tbody>
     <tr><td>Apple</td><td>$1</td></tr>
   </tbody>
@@ -14751,7 +14807,9 @@ byte the same output as the row above.
 ```html
 <table>
   <caption>Fruit prices</caption>
-  <thead><tr><th scope="col">Fruit</th><th scope="col">Price</th></tr></thead>
+  <thead>
+    <tr><th scope="col">Fruit</th><th scope="col">Price</th></tr>
+  </thead>
   <tbody>
     <tr><td>Apple</td><td>$1</td></tr>
   </tbody>
@@ -14970,7 +15028,9 @@ attachment here is structural.
 ```html
 <table>
   <caption>Table: city sizes</caption>
-  <thead><tr><th scope="col">City</th><th scope="col">People</th></tr></thead>
+  <thead>
+    <tr><th scope="col">City</th><th scope="col">People</th></tr>
+  </thead>
   <tbody>
     <tr><td>Oslo</td><td>700k</td></tr>
   </tbody>
@@ -14996,7 +15056,9 @@ One line more than the control. The table keeps its rows and loses its
 
 ```html
 <table>
-  <thead><tr><th scope="col">City</th><th scope="col">People</th></tr></thead>
+  <thead>
+    <tr><th scope="col">City</th><th scope="col">People</th></tr>
+  </thead>
   <tbody>
     <tr><td>Oslo</td><td>700k</td></tr>
   </tbody>
@@ -15266,7 +15328,9 @@ short, and the canonical native `=` spelling does not need a delimiter row.
 
 ```html
 <table>
-  <thead><tr><th scope="col"></th><th scope="col">x</th></tr></thead>
+  <thead>
+    <tr><th scope="col"></th><th scope="col">x</th></tr>
+  </thead>
   <tbody>
     <tr><td>y</td></tr>
   </tbody>
@@ -15288,7 +15352,9 @@ still preserve it as a header without manufacturing another header cell.
 
 ```html
 <table>
-  <thead><tr><th scope="col">h</th></tr></thead>
+  <thead>
+    <tr><th scope="col">h</th></tr>
+  </thead>
   <tbody>
     <tr><td></td><td>x</td></tr>
   </tbody>
@@ -15345,13 +15411,17 @@ header row becomes part of the first table's body.
 <ul>
   <li>x
     <table>
-      <thead><tr><th scope="col">a</th></tr></thead>
+      <thead>
+        <tr><th scope="col">a</th></tr>
+      </thead>
       <tbody>
         <tr><td>b</td></tr>
       </tbody>
     </table>
     <table>
-      <thead><tr><th scope="col">a</th></tr></thead>
+      <thead>
+        <tr><th scope="col">a</th></tr>
+      </thead>
       <tbody>
         <tr><td>b</td></tr>
       </tbody>
@@ -18074,7 +18144,9 @@ $$`E = mc^2`
 <figure class="carve-figure-group" id="fig-m">
   <figure class="carve-figure-panel">
     <table>
-      <thead><tr><th scope="col">Kind</th><th scope="col">N</th></tr></thead>
+      <thead>
+        <tr><th scope="col">Kind</th><th scope="col">N</th></tr>
+      </thead>
       <tbody>
         <tr><td>a</td><td>1</td></tr>
       </tbody>
@@ -18151,7 +18223,9 @@ expressible: with the block bound ahead of the `=`, the only available shape is
 
 ```html
 <table>
-  <thead><tr><th scope="col" class="total">Total</th><th scope="col">99</th></tr></thead>
+  <thead>
+    <tr><th scope="col" class="total">Total</th><th scope="col">99</th></tr>
+  </thead>
   <tbody>
     <tr><td>a</td><td>b</td></tr>
   </tbody>
@@ -18173,7 +18247,9 @@ cell still sets the whole column's alignment.
 
 ```html
 <table>
-  <thead><tr><th scope="col" id="score" style="text-align: center;">Score</th></tr></thead>
+  <thead>
+    <tr><th scope="col" id="score" style="text-align: center;">Score</th></tr>
+  </thead>
   <tbody>
     <tr><td style="text-align: center;">9</td></tr>
   </tbody>
@@ -18194,7 +18270,9 @@ alignment composes with the authored block rather than replacing it.
 
 ```html
 <table>
-  <thead><tr><th scope="col">Item</th><th scope="col">Cost</th></tr></thead>
+  <thead>
+    <tr><th scope="col">Item</th><th scope="col">Cost</th></tr>
+  </thead>
   <tbody>
     <tr><td>Pen</td><td class="num" style="text-align: right;">9</td></tr>
   </tbody>
@@ -18256,7 +18334,9 @@ compose with cell attributes written in the new position.
 
 ```html
 <table>
-  <thead><tr class="head"><th scope="col" class="h" style="text-align: left;">Name</th><th scope="col" class="c" style="text-align: right;">Score</th></tr></thead>
+  <thead>
+    <tr class="head"><th scope="col" class="h" style="text-align: left;">Name</th><th scope="col" class="c" style="text-align: right;">Score</th></tr>
+  </thead>
   <tbody>
     <tr class="win"><td style="text-align: left;">Ann</td><td class="num" style="text-align: right;">9</td></tr>
   </tbody>
@@ -18438,7 +18518,9 @@ the spelling it was given rather than normalizing one into the other.
 
 ```html
 <table>
-  <thead><tr><th scope="col">a  b</th><th scope="col">c</th></tr></thead>
+  <thead>
+    <tr><th scope="col">a  b</th><th scope="col">c</th></tr>
+  </thead>
   <tbody>
     <tr><td>d</td><td>e</td></tr>
   </tbody>
@@ -20048,7 +20130,9 @@ The same under a header row, since nothing here depends on the row's position:
 
 ```html
 <table>
-  <thead><tr><th scope="col">h</th></tr></thead>
+  <thead>
+    <tr><th scope="col">h</th></tr>
+  </thead>
   <tbody>
     <tr><td>a <code>b | c</code></td></tr>
   </tbody>
@@ -22518,7 +22602,9 @@ continuation joins it - onto a native `|=` cell as readily as onto a data cell
 
 ```html
 <table>
-  <thead><tr><th scope="col">a cont</th><th scope="col">b</th></tr></thead>
+  <thead>
+    <tr><th scope="col">a cont</th><th scope="col">b</th></tr>
+  </thead>
 </table>
 ```
 
@@ -22561,7 +22647,9 @@ pins the GFM spelling of the same decline:
 
 ```html
 <table>
-  <thead><tr><th scope="col">a</th></tr></thead>
+  <thead>
+    <tr><th scope="col">a</th></tr>
+  </thead>
 </table>
 <p>+ cont |</p>
 ```
@@ -22624,7 +22712,9 @@ so the two halves of this rule compose rather than override:
 
 ```html
 <table>
-  <thead><tr><th scope="col">a</th><th scope="col">b</th></tr></thead>
+  <thead>
+    <tr><th scope="col">a</th><th scope="col">b</th></tr>
+  </thead>
 </table>
 <p>+ |</p>
 ```
@@ -22652,7 +22742,9 @@ tail
 <ul>
   <li>
     <table>
-      <thead><tr><th scope="col">a b</th></tr></thead>
+      <thead>
+        <tr><th scope="col">a b</th></tr>
+      </thead>
     </table>
   </li>
 </ul>
@@ -22700,7 +22792,9 @@ tail
 ```html
 <blockquote>
   <table>
-    <thead><tr><th scope="col">a b</th></tr></thead>
+    <thead>
+      <tr><th scope="col">a b</th></tr>
+    </thead>
   </table>
 </blockquote>
 <p>tail</p>
@@ -24332,7 +24426,9 @@ a body-cell run overrides only that cell.
 
 ```html
 <table>
-  <thead><tr><th scope="col" style="text-align: center;">Item</th><th scope="col" style="text-align: right; vertical-align: top;">Qty</th></tr></thead>
+  <thead>
+    <tr><th scope="col" style="text-align: center;">Item</th><th scope="col" style="text-align: right; vertical-align: top;">Qty</th></tr>
+  </thead>
   <tbody>
     <tr><td style="text-align: center;">Apple</td><td style="text-align: right; vertical-align: top;">12</td></tr>
     <tr><td style="text-align: center;">Subtotal</td><td style="text-align: left; vertical-align: bottom;">12</td></tr>
@@ -24382,7 +24478,9 @@ vertical-first runs stay visible rather than switching the order.
 
 ```html
 <table>
-  <thead><tr><th scope="col">^ Top</th><th scope="col">v Bottom</th><th scope="col" style="text-align: left; vertical-align: top;">Paired</th><th scope="col">v&gt; Reverse</th><th scope="col">~&gt; Middle</th></tr></thead>
+  <thead>
+    <tr><th scope="col">^ Top</th><th scope="col">v Bottom</th><th scope="col" style="text-align: left; vertical-align: top;">Paired</th><th scope="col">v&gt; Reverse</th><th scope="col">~&gt; Middle</th></tr>
+  </thead>
   <tbody>
     <tr><td>a</td><td>b</td><td style="text-align: left; vertical-align: top;">c</td><td>d</td><td>e</td></tr>
   </tbody>
@@ -24514,7 +24612,9 @@ marker of `?^`, `?~`, or `?v`; every other use stays visible content.
 
 ```html
 <table>
-  <thead><tr><th scope="col" style="text-align: right; vertical-align: top;">Name</th><th scope="col">Value</th></tr></thead>
+  <thead>
+    <tr><th scope="col" style="text-align: right; vertical-align: top;">Name</th><th scope="col">Value</th></tr>
+  </thead>
   <tbody>
     <tr><td style="text-align: right; vertical-align: bottom;">Bottom</td><td style="vertical-align: middle;">Middle</td></tr>
     <tr><td style="text-align: right; vertical-align: top;">Top</td><td>plain</td></tr>
@@ -24543,11 +24643,16 @@ to column headers; a native `|=` cell in the body remains a row header.
 
 ```html
 <table>
-  <thead><tr><th scope="col">Region</th><th scope="col">Q1</th></tr><tr><th scope="col">Detail</th><th scope="col">EUR</th></tr></thead>
+  <thead>
+    <tr><th scope="col">Region</th><th scope="col">Q1</th></tr>
+    <tr><th scope="col">Detail</th><th scope="col">EUR</th></tr>
+  </thead>
   <tbody>
     <tr><th scope="row">North</th><td>11</td></tr>
   </tbody>
-  <tfoot><tr><td>All</td><td>33</td></tr></tfoot>
+  <tfoot>
+    <tr><td>All</td><td>33</td></tr>
+  </tfoot>
 </table>
 ```
 

@@ -7,7 +7,9 @@ A caption attaches across one blank line
 .
 <table>
   <caption>Fruit prices</caption>
-  <thead><tr><th scope="col">Fruit</th><th scope="col">Price</th></tr></thead>
+  <thead>
+    <tr><th scope="col">Fruit</th><th scope="col">Price</th></tr>
+  </thead>
   <tbody>
     <tr><td>Apple</td><td>$1</td></tr>
   </tbody>
@@ -22,7 +24,9 @@ A caption attaches across one blank line
 .
 <table>
   <caption>Fruit prices</caption>
-  <thead><tr><th scope="col">Fruit</th><th scope="col">Price</th></tr></thead>
+  <thead>
+    <tr><th scope="col">Fruit</th><th scope="col">Price</th></tr>
+  </thead>
   <tbody>
     <tr><td>Apple</td><td>$1</td></tr>
   </tbody>

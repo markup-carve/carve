@@ -228,7 +228,9 @@ $$`E = mc^2`
 <figure class="carve-figure-group" id="fig-m">
   <figure class="carve-figure-panel">
     <table>
-      <thead><tr><th scope="col">Kind</th><th scope="col">N</th></tr></thead>
+      <thead>
+        <tr><th scope="col">Kind</th><th scope="col">N</th></tr>
+      </thead>
       <tbody>
         <tr><td>a</td><td>1</td></tr>
       </tbody>
