@@ -953,8 +953,15 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    OPT-IN, orthogonal transforms: lowercasing (carve-js `lowercaseHeadingIds`;
    carve-php `LowercaseHeadingIdsExtension`; carve-rs `lowercase_heading_ids`) and
    ASCII-folding for URL/CSS-fragment portability (carve-js `asciiHeadingIds`;
-   carve-php `AsciiHeadingIdsExtension`; not available in carve-rs). Neither is the
-   default. NOTE: carve PRESERVES case, matching djot.js / djot-php per #393;
+   carve-php `AsciiHeadingIdsExtension`; carve-rs `ascii_heading_ids`). Neither is
+   the default. ASCII-folding has TWO modes, because a transliteration table
+   covers some scripts and not others: BEST-EFFORT keeps what it cannot map, so a
+   CJK heading still has a usable and unique anchor, and STRICT drops that residue
+   so the id is guaranteed to match `[0-9A-Za-z-]`. carve-js spells them `'fold'`
+   and `'strict'`, carve-rs `AsciiHeadingIds::Fold` and `::Strict`; carve-php's
+   extension is the STRICT one. The table itself is not normative -- what is, is
+   that the three engines carry the SAME table, so a folded id is byte-identical
+   across them. NOTE: carve PRESERVES case, matching djot.js / djot-php per #393;
    cross-references resolve case-insensitively against the case-preserved id table. *)
 
 (* --- Thematic Breaks --- *)
