@@ -141,6 +141,11 @@ const NOT_IN_THE_PIN_YET = new Map([
     'unattached-block-attribute',
     'specified by markup-carve/carve#1281; no engine implements it yet',
   ],
+  [
+    'table-marker-run-padding',
+    'specified by markup-carve/carve#1464; no engine emits it yet, and it ' +
+      'supersedes table-alignment-run-padding once they do',
+  ],
 ])
 
 /** The rules this map calls with options, i.e. the ones that are not default-on. */
