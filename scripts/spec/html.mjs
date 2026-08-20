@@ -674,7 +674,11 @@ function renderTable(node, depth, ctx) {
     for (let c = 0; c < cells.length; c++) {
       const cell = cells[c]
       if (consumed.has(key(r, c))) continue
-      if (cell.content === '<' && cell.align === null) {
+      // A CELL CARRYING ATTRIBUTES IS NEVER A BARE SPAN MARKER (§5 T4,
+      // carve#1463). The attribute block is what makes the cell ordinary
+      // content, so the `<` is the literal character and the attributes stay on
+      // the cell that carries them.
+      if (cell.content === '<' && cell.align === null && cell.attrs == null) {
         let cc = c - 1
         while (cc >= 0 && consumed.has(key(r, cc))) cc--
         if (cc >= 0 && rows[r].cells[cc] !== undefined) {
@@ -686,7 +690,7 @@ function renderTable(node, depth, ctx) {
           cell.content = ''
           cell.empty = true
         }
-      } else if (cell.content === '^' && cell.align === null) {
+      } else if (cell.content === '^' && cell.align === null && cell.attrs == null) {
         let rr = r - 1
         while (rr >= 0 && consumed.has(key(rr, c))) rr--
         if (rr >= 0 && rows[rr].cells[c] !== undefined) {

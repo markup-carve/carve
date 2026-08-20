@@ -1529,7 +1529,14 @@ data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_conten
    ordinary content, NOT attributes. The whole brace payload must be valid
    attribute syntax (§15); otherwise the '{' is literal content. A cell
    carrying attributes is never a bare span_cell -- its content is literal even
-   if it is just '^' or '<'. A computed rowspan/colspan/alignment is
+   if it is just '^' or '<', AND THE ATTRIBUTES STAY ON IT (carve#1463). The
+   block is what makes the cell ordinary content, so reading it back out as
+   text would leave this sentence with nothing to act on; `|{.x} < |` is
+   `<td class="x">&lt;</td>`, never `<td>{.x} &lt;</td>`. The only stated route
+   from a brace run to literal text is an INVALID payload, two sentences up.
+   This repo's own executable spec read it the other way for a while - it
+   cleared the attributes and re-read the whole segment - which is what
+   carve#1463 records and corpus 392 now pins. A computed rowspan/colspan/alignment is
    authoritative, so an author copy of those keys is dropped. (corpus
    99-table-cell-attributes, 319-cell-attributes-bind-after-the-kind-and-alignment-markers.)
 

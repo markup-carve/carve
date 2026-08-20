@@ -1040,18 +1040,16 @@ function parseCell(seg) {
     s = seg.slice(run.end)
   }
   cell.content = padTrim(s)
-  if (cell.attrs && (cell.content === '^' || cell.content === '<')) {
-    // T4: there is no attributed span marker - the cell is ordinary content
-    // whose literal text includes the braces
-    cell.attrs = null
-    // `padTrim` is provably EQUIVALENT to `trim()` at this call site, and is
-    // written anyway so a sweep of the padding slots finds the same spelling
-    // everywhere. This branch is only reached when the space-trimmed content is
-    // exactly `^` or `<`, which rules out a tab beside the marker, and `seg`
-    // begins with the attribute block glued to the opening pipe, which rules
-    // out one before it. Mutating it therefore proves nothing either way.
-    cell.content = padTrim(seg)
-  }
+  // T4 SAYS THE CELL IS NOT A SPAN MARKER. IT DOES NOT SAY THE ATTRIBUTES GO
+  // (carve#1463). A branch here used to CLEAR `cell.attrs` and re-read the
+  // whole segment when the content was exactly `^` or `<`, so `|{.x} < |`
+  // rendered `{.x} &lt;` - the author's attribute block silently became text.
+  //
+  // The productions above settle it: a `data_cell` consumes `cell_attributes`
+  // and then its content, and nothing re-literalizes a block the cell already
+  // took. The only stated route from a brace run to literal text is an INVALID
+  // payload, which is decided where the block is read, a few lines up. All
+  // three engines read it that way; this file was alone.
   return cell
 }
 
@@ -2086,7 +2084,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             const add = padTrim(seg)
             const cell = prev.cells[ci]
             if (add === '' || cell === undefined) return
-            if (cell.content === '^' || cell.content === '<') {
+            if ((cell.content === '^' || cell.content === '<') && cell.attrs == null) {
               // the joined text belongs to the SPANNING cell (T6); applied
               // after the span walk resolves the marker's origin
               ;(cell.joins ??= []).push(add)
