@@ -62,6 +62,15 @@ import { loadDeclaredFmtDrift, loadWriterOnlyDrift } from './fmt-drift.mjs'
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, 'corpus')
 
+/** The oracle's rendering, or the refusal it raised - both are answers to compare. */
+const oracleHtml = (src) => {
+  try {
+    return renderDoc(parseSpec(src))
+  } catch (err) {
+    return `REFUSED: ${err.message}`
+  }
+}
+
 const documents = readdirSync(corpusDir)
   .filter((f) => f.endsWith('.crv'))
   .sort()
@@ -129,7 +138,16 @@ test('every writer-drift line still names a document the pin writes wrongly', ()
     const once = carveToCarve(source)
     const changesMeaning = carveToHtml(once).trim() !== carveToHtml(source).trim()
     const unsettled = carveToCarve(once) !== once
-    if (!changesMeaning && !unsettled) stale.push(`${slug} (round-trips clean)`)
+    // "CANNOT READ IT BACK THE SAME WAY" HAS TWO READERS, and the pin is only
+    // one of them. corpus-fmt-cross-read.test.mjs consults this same file to
+    // excuse the ORACLE reading a different document out of the pin's output,
+    // so a line excusing exactly that was reported stale here while it was the
+    // only thing keeping the other gate green (carve#1450). The reader that
+    // matters for a corpus document is the one the corpus states, which is the
+    // oracle; the pin's own reading is the second, not the only, way to be
+    // wrong.
+    const oracleChanges = oracleHtml(once) !== oracleHtml(source)
+    if (!changesMeaning && !unsettled && !oracleChanges) stale.push(`${slug} (round-trips clean)`)
   }
   assert.deepEqual(
     stale,

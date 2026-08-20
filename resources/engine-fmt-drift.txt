@@ -4,8 +4,15 @@
 # about the writer. A slug here means: the initial HTML matches the corpus, and
 # re-reading the writer's own output does not.
 #
+# "RE-READING" IS DONE BY TWO READERS. The pin can fail to read its own output
+# back, and the ORACLE can fail to read the pin's output back while the pin
+# reads it fine - which is what a spec rule the pin has not shipped looks like
+# from the writer side. Both belong here; corpus-fmt-cross-read.test.mjs has
+# always consulted this file for the second kind (carve#1450).
+#
 # Delete a line the moment the pin moves past its fix - the header of
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
 381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-6  carve-js#1228 hoists the nested definition but attaches the outer block to the empty inner item
+389-a-boolean-attribute-does-not-start-with-an-underscore-4  markup-carve/carve#1450: the pin shortens `{_u=""}` to `{_u}`, which the underscore rule reads back as text - correct for the grammar the pinned writer implements, and drift the day it ships the reading rule

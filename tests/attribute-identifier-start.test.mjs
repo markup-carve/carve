@@ -18,6 +18,11 @@
  * The dash is still legal from the SECOND character on (`identRest`), which is
  * most of what authors write - `{.my-class}`, `{#my-id}`, `{data-x=1}` - so the
  * boundary is asserted in both directions.
+ *
+ * The UNDERSCORE has a boundary of its own since carve#1450, and it is not the
+ * same shape: it stays legal first everywhere the identifier appears EXCEPT in
+ * `boolean_attribute`, because a bare `{_x_}` is also a forced underline. Both
+ * halves are asserted below.
  */
 
 import { test } from 'node:test'
@@ -61,8 +66,21 @@ test('a dash is still legal after the first character', () => {
 })
 
 test('an underscore may still start an identifier', () => {
-  // PART 7 allows `_` first; only `-` was over-permitted.
-  assert.equal(html('[x]{_u}\n'), '<p><span _u="">x</span></p>')
+  // PART 7 allows `_` first; only `-` was over-permitted. It still holds for
+  // every form that can carry one, which is all of them except the bare word.
+  assert.equal(html('[x]{#_u}\n'), '<p><span id="_u">x</span></p>')
+  assert.equal(html('[x]{._u}\n'), '<p><span class="_u">x</span></p>')
+  assert.equal(html('[x]{_u=1}\n'), '<p><span _u="1">x</span></p>')
+})
+
+test('an underscore-first BARE attribute is not an attribute', () => {
+  // carve#1450: `boolean_attribute` gives up the leading `_` because `{_x_}`
+  // is also a forced underline, and alone on a line the attribute reading won
+  // and rendered nothing at all. The bare form is the only one narrowed - see
+  // the test above for the three that keep it.
+  assert.equal(html('[x]{_u}\n'), '<p>[x]{_u}</p>')
+  assert.equal(html('{_x_}\n'), '<p><u>x</u></p>')
+  assert.equal(html('{_x_}\npara\n'), '<p><u>x</u>\npara</p>')
 })
 
 test('a colon is still not an identifier character', () => {

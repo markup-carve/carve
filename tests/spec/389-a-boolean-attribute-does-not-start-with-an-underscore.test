@@ -1,0 +1,31 @@
+A boolean attribute does not start with an underscore
+
+```
+{_x_}
+
+{_x_} y
+.
+<p><u>x</u></p>
+<p><u>x</u> y</p>
+```
+
+```
+{#_id ._c _k=1 _="on click"}
+para
+.
+<p id="_id" class="_c" _k="1" _="on click">para</p>
+```
+
+```
+{_foo}
+para
+.
+<p>{_foo}
+para</p>
+```
+
+```
+[x]{_u=""}
+.
+<p><span _u="">x</span></p>
+```

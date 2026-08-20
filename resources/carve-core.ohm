@@ -542,7 +542,12 @@ CarveCore {
   idAttr     = "#" ident
   classAttr  = "." ident
   kvAttr     = ident "=" attrVal
-  boolAttr   = ident
+  // NO LEADING UNDERSCORE ON THE BARE FORM (carve#1450). `{_x_}` is BOTH a
+  // boolean attribute named `_x_` and a forced underline, and the underline is
+  // what an author writing it means - so the bare form gives the collision up.
+  // Only the bare form: `{#_id}`, `{._c}` and `{_k=1}` all still parse, and
+  // none of them can be read as an underline, because none of them ends `_}`.
+  boolAttr   = ~"_" ident
   // `{:TAG}` is EXACT SUGAR for `lang=TAG`, and `{:}` for `lang=""`
   // (`language_attribute` in grammar.ebnf). The desugaring happens in the
   // `parseAttrs` action, not here, so every downstream rule - merge order,

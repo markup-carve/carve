@@ -3617,7 +3617,31 @@ key_value_attribute = identifier, '=', attribute_value ;
    rendered `name=""` (a carve extension beyond canonical djot, matching
    djot-php; matched after key_value_attribute so `k=v` is not read as a bare
    `k`). It mixes freely with the other forms. See PART 9 §14. *)
-boolean_attribute = identifier ;
+boolean_attribute = identifier - ('_', {character}) ;
+(* A BOOLEAN ATTRIBUTE DOES NOT START WITH AN UNDERSCORE -- NORMATIVE
+   (carve#1450). `identifier` admits a leading `_`, so `{_x_}` parsed BOTH as
+   the boolean attribute `_x_` and as a forced underline. Alone on a line the
+   attribute reading won and the underline was unreachable, and with no block
+   beneath it to attach to, the line rendered NOTHING - five characters kept
+   in the source and gone from the output.
+
+   The underline is what an author writing `{_x_}` means, so the BARE form
+   gives the collision up. There is no boolean attribute to lose: HTML's set
+   is `disabled`, `checked`, `readonly`, `required`, `hidden` and their kind,
+   and not one of them starts with `_`.
+
+   ONLY THE BARE FORM IS NARROWED. `{#_id}`, `{._class}` and `{_k=1}` all keep
+   their leading underscore, and none of them can be read as an underline
+   because none of them ends `_}`. The one underscore attribute in the wild,
+   hyperscript's `_="on click …"`, is a key/value and is unaffected.
+
+   The cost is `{_foo}`, which was a boolean attribute and is now text. It has
+   no underline reading either, so it renders literally rather than becoming
+   something else.
+
+   Measured: carve-php already read `{_x_}` as an underline. carve-js,
+   carve-rs and the executable spec produced `<p _x_="">` on the block that
+   followed. *)
 
 attribute_value = unquoted_value | quoted_value ;
 unquoted_value = (letter | digit | '-' | '_' | '.' | ':')+ ;
@@ -3726,6 +3750,8 @@ include_options = {space, '@', identifier, ':', attribute_value}+ ;
    ============================================================================ *)
 
 identifier = (letter | '_'), {letter | digit | '_' | '-'} ;
+(* The leading `_` is admitted HERE and refused for `boolean_attribute` alone,
+   which is where it collides with forced underline (carve#1450). *)
 
 letter = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j'
        | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't'
@@ -8059,9 +8085,22 @@ EOF = (* end of file *) ;
 
    6c. A VALUE-LESS ATTRIBUTE IS WRITTEN AS A BOOLEAN -- NORMATIVE. An
       attribute whose value is the empty string comes back as the bare name:
-      `[x]{kbd}`, not `[x]{kbd=""}`. `boolean_attribute = identifier` is the
-      production the language has for "this attribute is present and carries no
-      value" (PART 4), so that is the form the writer emits.
+      `[x]{kbd}`, not `[x]{kbd=""}`. `boolean_attribute` is the production the
+      language has for "this attribute is present and carries no value"
+      (PART 4), so that is the form the writer emits.
+
+      EXCEPT WHERE THE NAME STARTS WITH `_`, which `boolean_attribute` refuses
+      (carve#1450). `_x_=""` stays `{_x_=""}`: emitting `{_x_}` would write a
+      forced underline, and `{_u}` would write text. The rule is "use the
+      dedicated production where the production applies", and here it does not.
+
+      NOTHING EXTRA PINS THIS, on purpose. §1's `parse(fmt(x)) == parse(x)` is
+      already gated over the corpus for every engine, and corpus
+      389-a-boolean-attribute-does-not-start-with-an-underscore-4 holds
+      `[x]{_u=""}`, so an engine that shortens it breaks its own round-trip the
+      day it ships the reading rule - and not one day earlier, which is what a
+      `.fmt` fixture would have done to a writer that is still correct for the
+      grammar it implements.
 
       THE WRITER USES THE DEDICATED PRODUCTION, which is the one rule behind
       all three of these:
