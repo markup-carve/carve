@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`{--}` is an en dash, not an empty deletion** (carve#1447). The string the
   empty deletion freed becomes the braced en dash, which converts in the flag
   position the bare hyphen run refuses. Corpus 387.
+- **A boolean attribute does not start with an underscore** (carve#1450). A lone
+  `{_x_}` line is a forced underline, not a block attribute line that renders
+  nothing; `{#_id}`, `{._c}` and `{_k=1}` are unaffected, and a bare `{_foo}` is
+  text. A writer keeps `{_x_=""}` rather than shortening it. Corpus 389.
 - **The source-layout sidecar defines every optional fact it declares** (carve#1431,
   PART 12 §13 F1-F9). Twelve of the thirteen optional `nodeLayout` properties now say
   what they measure and in which unit; `paddingRaw` stays declared and undefined with

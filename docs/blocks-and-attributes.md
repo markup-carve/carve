@@ -164,7 +164,7 @@ The same `{…}` block is used in both positions:
 - `#id` - element id (one per element)
 - `.class` - add a class (repeatable)
 - `key=value` / `key="value"` - arbitrary attribute; quote when the value has spaces
-- `boolean` - a bare word (no `#`/`.`/`=`) becomes a value-less attribute, rendered `name=""` (e.g. `{.note open}` adds `open=""`). Three reserved names on inline spans instead select their HTML element (e.g. `[Tab]{kbd}` → `<kbd>Tab</kbd>`).
+- `boolean` - a bare word (no `#`/`.`/`=`) becomes a value-less attribute, rendered `name=""` (e.g. `{.note open}` adds `open=""`). It may not start with `_`: `{_x_}` is a forced underline, so a bare `{_foo}` is text and an underscore attribute must be written with a value (`{_k=1}`, `{_="on click"}`). An id, a class or a key/value may start with `_` as before. Three reserved names on inline spans instead select their HTML element (e.g. `[Tab]{kbd}` → `<kbd>Tab</kbd>`).
 - `:tag` - the natural language of the content, short for `lang=tag` (see below)
 
 ### Language: `{:fr}`
@@ -245,7 +245,7 @@ Three things worth knowing:
 
 - **The span survives only when no name was consumed.** `[x]{onclick="…"}` is still `<span>x</span>` - hardening removes attributes, never the element you wrote. A semantic name is not a removed attribute; it never reaches the output as one.
 - **The scope is exactly an ordinary span.** The same names on a code span, link, image or block-attribute line are ordinary attributes, so `` `c`{kbd} `` is `<code kbd="">c</code>`, not a `<kbd>`.
-- **Only HTML changes.** The AST keeps an ordinary span carrying the authored attributes, plain-text and terminal output render the content, and `carve fmt` writes the span back out with its attributes - a value-less one bare, so `[Tab]{kbd}` formats to itself.
+- **Only HTML changes.** The AST keeps an ordinary span carrying the authored attributes, plain-text and terminal output render the content, and `carve fmt` writes the span back out with its attributes - a value-less one bare, so `[Tab]{kbd}` formats to itself. A value-less name starting with `_` keeps its `=""`, since the bare form would be an underline.
 
 #### Why only three
 
