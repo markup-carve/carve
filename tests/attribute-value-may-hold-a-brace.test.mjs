@@ -87,12 +87,16 @@ test('a cell attribute block holds a brace, and is not truncated', () => {
 })
 
 test('the plain forms are untouched', () => {
-  // The boundary. No quoted brace, nothing to widen, and the two behaviors the
-  // cell reader gained most recently (glued block, invalid payload is text)
-  // must survive the widening.
+  // The boundary. No quoted brace, nothing to widen, and the behavior the cell
+  // reader gained most recently (an invalid payload is text) must survive the
+  // widening.
   assert.match(html('1.{#x} item\n'), /<li id="x">item<\/li>/)
   assert.match(html('| a | b |\n'), /<td>a<\/td><td>b<\/td>/)
-  assert.match(html('|{.hl}Total |\n'), /<td class="hl">Total<\/td>/)
+  // A GLUED block is no longer a block: PART 9 §5 T11 (carve#1259) ends the
+  // marker run at a space, so `{.hl}Total` has no run and every character of it
+  // is content. The quoted-brace widening this file is about does not reach
+  // that decision, which is the point of the row.
+  assert.match(html('|{.hl}Total |\n'), /<td>\{\.hl\}Total<\/td>/)
   assert.match(html('|{bad!!} Total |\n'), /<td>\{bad!!\} Total<\/td>/)
 })
 

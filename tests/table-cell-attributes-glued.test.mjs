@@ -1,12 +1,15 @@
 /*
- * A cell's attribute block needs no space after it, and an invalid payload is
- * literal content rather than grounds for refusing the document.
+ * A cell's attribute block is part of the marker run, so it ends at a space -
+ * and an invalid payload is literal content rather than grounds for refusing
+ * the document.
  *
- * §5 says an attribute block glued to the cell sets the cell's attributes
- * and "the rest of the cell, AFTER OPTIONAL WHITESPACE, is the content". The
- * oracle demanded that whitespace, so `|{.hl}Total |` rendered the braces as
- * text. carve-js, carve-rs and carve-php all applied the attribute - the oracle
- * was alone.
+ * §5 T11 gives the whole marker run one terminator: the kind marker, the
+ * alignment run and the attribute block are followed by a space, or none of
+ * them is a marker. So `|{.hl}Total |` renders its braces as text while
+ * `|{.hl} Total |` carries the attribute. This file used to pin the opposite
+ * for the block alone, from a reading of "the rest of the cell, AFTER OPTIONAL
+ * WHITESPACE, is the content" that made the block the one part of the run with
+ * no terminator - which is how `|=hot= |` ate the highlight its author wrote.
  *
  * The same three lines carried a second, worse defect. §5 also says "the whole
  * brace payload must be valid attribute syntax; otherwise the `{` is literal
@@ -28,8 +31,12 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (src) => renderDoc(parse(src))
 const table = (firstRow) => `${firstRow}\n|---|---|\n| a | b |\n`
 
-test('a glued attribute block applies', () => {
-  assert.match(html(table('|{.hl}Total| 99 |')), /<th scope="col" class="hl">Total<\/th>/)
+test('a glued attribute block is content', () => {
+  // T11: with no space to end the run, the braces are text and the cell is
+  // unattributed. This is the released spelling the clause reinterprets.
+  const out = html(table('|{.hl}Total| 99 |'))
+  assert.match(out, /<th scope="col">\{\.hl\}Total<\/th>/, out)
+  assert.ok(!out.includes('class="hl"'), out)
 })
 
 test('a spaced attribute block still applies', () => {
@@ -38,29 +45,40 @@ test('a spaced attribute block still applies', () => {
 })
 
 test('several spaces after the block are still layout, not content', () => {
+  // Cardinality is a separate question from the terminator: one space ends the
+  // run, the rest is padding.
   assert.match(html(table('|{.hl}   Total | 99 |')), /<th scope="col" class="hl">Total<\/th>/)
 })
 
-test('an attribute block on a body cell applies glued too', () => {
-  // The header row is a different code path from a data cell; §5 glues both.
-  const out = html('| h | i |\n|---|---|\n|{.hl}x| y |\n')
-  assert.match(out, /<td class="hl">x<\/td>/, out)
+test('an attribute block on a body cell needs the space too', () => {
+  // The header row is a different code path from a data cell; T11 covers both.
+  const glued = html('| h | i |\n|---|---|\n|{.hl}x| y |\n')
+  assert.match(glued, /<td>\{\.hl\}x<\/td>/, glued)
+  const spaced = html('| h | i |\n|---|---|\n|{.hl} x | y |\n')
+  assert.match(spaced, /<td class="hl">x<\/td>/, spaced)
 })
 
 test('an invalid payload is literal content, not a refusal', () => {
-  // Both spacings, because the spaced one is what used to throw.
+  // Both spacings, because the spaced one is what used to throw. Under T11 the
+  // spaced one is still content for a different reason - the payload is invalid
+  // either way, so there is no block to end the run.
   assert.match(html(table('|{bad!!} Total | 99 |')), /<th scope="col">\{bad!!\} Total<\/th>/)
   assert.match(html(table('|{bad!!}Total| 99 |')), /<th scope="col">\{bad!!\}Total<\/th>/)
 })
 
-test('a cell whose content is only an attribute block still carries it', () => {
-  const out = html(table('|{.hl}| 99 |'))
-  assert.match(out, /<th scope="col" class="hl">/, out)
+test('an empty attributed cell takes the space as well', () => {
+  // T11: the closing pipe is not a terminator, so `|{.hl}|` is a cell whose
+  // text is the braces. The empty attributed cell is `|{.hl} |`, which is what
+  // PART 11 §6e's canonical writer emits.
+  const glued = html(table('|{.hl}| 99 |'))
+  assert.match(glued, /<th scope="col">\{\.hl\}<\/th>/, glued)
+  assert.match(html(table('|{.hl} | 99 |')), /<th scope="col" class="hl"><\/th>/)
 })
 
 test('there is still no attributed span marker', () => {
   // T4, unchanged: `{...}` plus a lone `^`/`<` is ordinary content, braces and
-  // all - dropping the lookahead must not turn this into an attributed span.
+  // all - and under T11 the glued spelling below is content for the simpler
+  // reason that nothing ends its run.
   const out = html('| h | i |\n|---|---|\n|{.x}^| b |\n')
   assert.match(out, /\{\.x\}\^/, out)
   assert.ok(!out.includes('rowspan'), out)
@@ -100,8 +118,8 @@ test('the block follows the alignment marker on a data cell', () => {
 
 test('a marker written AFTER the block is content, not alignment', () => {
   // The retired order. `<` is no longer in a marker position, so the cell
-  // carries the attributes and is not aligned.
-  const out = html('|{#x}< content |\n')
+  // carries the attributes and is not aligned. Written with T11's space.
+  const out = html('|{#x} < content |\n')
   assert.match(out, /<td id="x">&lt; content<\/td>/, out)
   assert.ok(!out.includes('text-align'), out)
 })
@@ -109,8 +127,13 @@ test('a marker written AFTER the block is content, not alignment', () => {
 test('the ambiguous shape is still a data cell', () => {
   // `|{#x}=R|` is what a writer produced for an attributed header cell while
   // the block bound ahead of the `=`. It reads as a data cell whose content
-  // starts with `=`, which is the round-trip failure T10 removes.
-  assert.match(html('|{#x}=R|\n'), /<td id="x">=R<\/td>/)
+  // starts with `=`, which is the round-trip failure T10 removes. Under T11 the
+  // glued spelling is not even attributed - both readings are data cells, and
+  // neither is a header.
+  assert.match(html('|{#x} =R |\n'), /<td id="x">=R<\/td>/)
+  const glued = html('|{#x}=R|\n')
+  assert.ok(!glued.includes('<th'), glued)
+  assert.ok(!glued.includes('id="x"'), glued)
 })
 
 test('a space still keeps the block literal after a marker', () => {

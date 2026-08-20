@@ -55,10 +55,8 @@ Table cell padding must be a space
 | 1 | 2 |
 .
 <table>
-  <thead>
-    <tr><th scope="col">	h</th><th scope="col">	i</th></tr>
-  </thead>
   <tbody>
+    <tr><td>=	h</td><td>=	i</td></tr>
     <tr><td>1</td><td>2</td></tr>
   </tbody>
 </table>
@@ -69,10 +67,8 @@ Table cell padding must be a space
 | 1 | 2 |
 .
 <table>
-  <thead>
-    <tr><th scope="col">	 h</th><th scope="col">	 i</th></tr>
-  </thead>
   <tbody>
+    <tr><td>=	 h</td><td>=	 i</td></tr>
     <tr><td>1</td><td>2</td></tr>
   </tbody>
 </table>
@@ -210,10 +206,8 @@ Table cell padding must be a space
 |a|  b  |
 .
 <table>
-  <thead>
-    <tr><th scope="col">h</th><th scope="col">i</th></tr>
-  </thead>
   <tbody>
+    <tr><td>=h</td><th scope="row">i</th></tr>
     <tr><td>a</td><td>b</td></tr>
   </tbody>
 </table>

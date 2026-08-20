@@ -118,6 +118,8 @@ GFM tables use a delimiter row (`|---|`) to mark the header. Carve's native, can
 
 For convenience, Carve also accepts a GFM `|---|` delimiter row as a second line, so a pasted Markdown table still renders - but `|=` is the canonical form the converter emits.
 
+Note the space after `|=`. A cell marker is glued to the pipe and ends at a space, so `|=Name |` is a data cell whose text is `=Name`, not a header.
+
 Carve tables also support cell spanning and multi-line cells:
 
 ```carve

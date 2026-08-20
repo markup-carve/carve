@@ -127,7 +127,11 @@ The corner cases: precise boundary rules, table alignment variants, lazy continu
 
 An alignment run is accepted as a unit. A duplicate horizontal axis makes the
 whole run invalid, so `|=<<` keeps both `<` characters as visible content rather
-than consuming a valid prefix. The header `=` remains independent.
+than consuming a valid prefix. The kind marker falls with it: T11's run is
+atomic, and with no space to end it the `=` is content too, so the cell is an
+ordinary data cell whose text begins with `=<<`. The second cell, spelled with
+its space, is still a header -- and one header cell among data cells is a row
+header rather than a `thead`.
 
 ::: compare
 
@@ -138,10 +142,8 @@ than consuming a valid prefix. The header `=` remains independent.
 
 ```html
 <table>
-  <thead>
-    <tr><th scope="col">&lt;&lt; Note</th><th scope="col">Plain</th></tr>
-  </thead>
   <tbody>
+    <tr><td>=&lt;&lt; Note</td><th scope="row">Plain</th></tr>
     <tr><td>a</td><td>b</td></tr>
   </tbody>
 </table>
@@ -10776,7 +10778,9 @@ leading one:
 
 ::::
 
-A header cell carries the same two slots, after its `=` marker:
+A header cell carries the same two slots, after its `=` marker -- and since
+a tab is not the space that terminates a marker run, the `=` is content along
+with it (PART 9 §5 T11):
 
 :::: compare
 
@@ -10787,10 +10791,8 @@ A header cell carries the same two slots, after its `=` marker:
 
 ```html
 <table>
-  <thead>
-    <tr><th scope="col">	h</th><th scope="col">	i</th></tr>
-  </thead>
   <tbody>
+    <tr><td>=	h</td><td>=	i</td></tr>
     <tr><td>1</td><td>2</td></tr>
   </tbody>
 </table>
@@ -10807,10 +10809,8 @@ A header cell carries the same two slots, after its `=` marker:
 
 ```html
 <table>
-  <thead>
-    <tr><th scope="col">	 h</th><th scope="col">	 i</th></tr>
-  </thead>
   <tbody>
+    <tr><td>=	 h</td><td>=	 i</td></tr>
     <tr><td>1</td><td>2</td></tr>
   </tbody>
 </table>
@@ -11019,9 +11019,10 @@ to the standard row leaves it joining the tab away.
 
 ::::
 
-The spaced spellings are unchanged, and so is a cell with no padding at all or
-with more than one space -- cardinality is a separate question from the
-terminal.
+The spaced spellings are unchanged, and so is a cell with more than one space
+-- cardinality is a separate question from the terminal. A cell with NO padding
+is a separate question again: an unmarked cell is unchanged, while a marked one
+has nothing to end its run and keeps the marker as content (T11).
 
 :::: compare
 
@@ -11032,10 +11033,8 @@ terminal.
 
 ```html
 <table>
-  <thead>
-    <tr><th scope="col">h</th><th scope="col">i</th></tr>
-  </thead>
   <tbody>
+    <tr><td>=h</td><th scope="row">i</th></tr>
     <tr><td>a</td><td>b</td></tr>
   </tbody>
 </table>
@@ -18284,12 +18283,13 @@ alignment composes with the authored block rather than replacing it.
 The other order is no longer a marker position. A `<` written AFTER the
 attribute block is ordinary content, so the cell carries the attributes and is
 not aligned. This is the released spelling that changes meaning, and it
-reinterprets rather than erroring.
+reinterprets rather than erroring. The block is followed by the space that ends
+the marker run (T11); without it the braces would be content too.
 
 ::: compare
 
 ```carve
-|{#x}< content |
+|{#x} < content |
 ```
 
 ```html
@@ -18309,7 +18309,7 @@ because the block ahead of it already committed the cell.
 ::: compare
 
 ```carve
-|{#x}=R|
+|{#x} =R |
 ```
 
 ```html
@@ -22596,7 +22596,7 @@ continuation joins it - onto a native `|=` cell as readily as onto a data cell
 ::: compare
 
 ```carve
-|=a |=b |
+|= a |= b |
 + cont |
 ```
 
@@ -22617,7 +22617,7 @@ reason:
 
 ```carve
 | a |
-|=b |
+|= b |
 + c |
 ```
 
@@ -22640,7 +22640,7 @@ pins the GFM spelling of the same decline:
 ::: compare
 
 ```carve
-|=a |
+|= a |
 | - |
 + cont |
 ```
@@ -22733,7 +22733,7 @@ fixing the reader rather than by teaching the predicate the reader's rejections.
 ::: compare
 
 ```carve
-- |=a |
+- |= a |
   + b |
 tail
 ```
@@ -22784,7 +22784,7 @@ A quote is asked its own body and answers alike:
 ::: compare
 
 ```carve
-> |=a |
+> |= a |
 > + b |
 tail
 ```
@@ -24467,7 +24467,9 @@ after
 Horizontal alignment may stand alone. Vertical alignment is meaningful only as
 the second axis of a paired run, so a lone `^` or `v` stays visible instead of
 silently changing layout. Axes are always written horizontal then vertical;
-vertical-first runs stay visible rather than switching the order.
+vertical-first runs stay visible rather than switching the order. A rejected run
+takes the kind marker with it (T11): only the paired cell keeps its `=`, and the
+rest read as data cells whose text begins with `=`.
 
 ::: compare
 
@@ -24478,11 +24480,9 @@ vertical-first runs stay visible rather than switching the order.
 
 ```html
 <table>
-  <thead>
-    <tr><th scope="col">^ Top</th><th scope="col">v Bottom</th><th scope="col" style="text-align: left; vertical-align: top;">Paired</th><th scope="col">v&gt; Reverse</th><th scope="col">~&gt; Middle</th></tr>
-  </thead>
   <tbody>
-    <tr><td>a</td><td>b</td><td style="text-align: left; vertical-align: top;">c</td><td>d</td><td>e</td></tr>
+    <tr><td>=^ Top</td><td>=v Bottom</td><th scope="row" style="text-align: left; vertical-align: top;">Paired</th><td>=v&gt; Reverse</td><td>=~&gt; Middle</td></tr>
+    <tr><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td></tr>
   </tbody>
 </table>
 ```
@@ -25565,6 +25565,116 @@ engine's own round-trip on the day it ships the reading rule and not before.
 
 ```html
 <p><span _u="">x</span></p>
+```
+
+:::
+
+
+## A table cell's marker run ends at a space
+
+A cell's marker run is the kind marker `=`, the alignment run and the attribute
+block, in T10's order, and PART 9 §5 T11 gives it the terminator it never had: a
+run must be followed by one space. Without that space there is no run, and every
+character of it is content. The alignment run already worked this way; the kind
+marker and the attribute block did not, so a cell whose content began with `=`
+lost it to a marker nobody wrote.
+
+::: compare
+
+```carve
+|=hot= is the reading |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td><mark>hot</mark> is the reading</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+The header cell is the padded spelling, and it is what a canonical writer
+already emits (PART 11 §6e), so a formatted document needs no migration:
+
+::: compare
+
+```carve
+|= Item |= Qty |
+| Pen | 9 |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">Item</th><th scope="col">Qty</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Pen</td><td>9</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+An attribute block is part of the run and takes the same space. Glued to the
+content it is not a block at all, which is why the braces reach the output:
+
+::: compare
+
+```carve
+|{.total} 99 |
+|{.total}99 |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td class="total">99</td></tr>
+    <tr><td>{.total}99</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+THE CLOSING PIPE IS NOT A TERMINATOR, so an empty marked cell takes its space
+too. A cell with NO run is the one shape this clause leaves alone: `|a|` still
+means what it meant, because there is no marker for the space to end.
+
+::: compare
+
+```carve
+|= |a|
+|=|a|
+```
+
+```html
+<table>
+  <tbody>
+    <tr><th scope="row"></th><td>a</td></tr>
+    <tr><td>=</td><td>a</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+An escape reaches the reading a space cannot spell, unchanged by this clause:
+
+::: compare
+
+```carve
+|\= a |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>= a</td></tr>
+  </tbody>
+</table>
 ```
 
 :::

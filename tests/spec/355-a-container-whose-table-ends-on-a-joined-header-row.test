@@ -1,7 +1,7 @@
 A container whose table ends on a joined header row
 
 ```
-- |=a |
+- |= a |
   + b |
 tail
 .
@@ -35,7 +35,7 @@ tail
 ```
 
 ```
-> |=a |
+> |= a |
 > + b |
 tail
 .

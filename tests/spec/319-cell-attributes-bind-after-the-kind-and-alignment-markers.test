@@ -43,7 +43,7 @@ Cell attributes bind after the kind and alignment markers
 ```
 
 ```
-|{#x}< content |
+|{#x} < content |
 .
 <table>
   <tbody>
@@ -53,7 +53,7 @@ Cell attributes bind after the kind and alignment markers
 ```
 
 ```
-|{#x}=R|
+|{#x} =R |
 .
 <table>
   <tbody>
