@@ -791,20 +791,22 @@ function renderTable(node, depth, ctx) {
     }
     out.push(`${pad}  </colgroup>`)
   }
+  // A ROW IS A ROW, IN EVERY SECTION (carve#1459). `thead` and `tfoot` used to
+  // put their rows on the section's own line while `tbody` gave each row a line
+  // of its own, and nothing said why the same element was laid out two ways -
+  // which is how two fixtures in one commit came to demand different `tfoot`
+  // shapes with no rule to measure either against. One layout needs no
+  // exception, and the emitted HTML is read by people: these documents ARE the
+  // documentation, and their diffs are how a table defect gets noticed.
   const bodyStart = headCount
-  if (headCount > 0) {
-    const headRows = rows.slice(0, headCount).map((row, r) => renderRow(row, r)).join('')
-    out.push(`${pad}  <thead>${headRows}</thead>`)
+  const section = (tag, from, to) => {
+    out.push(`${pad}  <${tag}>`)
+    for (let r = from; r < to; r++) out.push(`${pad}    ${renderRow(rows[r], r)}`)
+    out.push(`${pad}  </${tag}>`)
   }
-  if (footStart > bodyStart) {
-    out.push(`${pad}  <tbody>`)
-    for (let r = bodyStart; r < footStart; r++) out.push(`${pad}    ${renderRow(rows[r], r)}`)
-    out.push(`${pad}  </tbody>`)
-  }
-  if (footStart < rows.length) {
-    const footRows = rows.slice(footStart).map((row, offset) => renderRow(row, footStart + offset)).join('')
-    out.push(`${pad}  <tfoot>${footRows}</tfoot>`)
-  }
+  if (headCount > 0) section('thead', 0, headCount)
+  if (footStart > bodyStart) section('tbody', bodyStart, footStart)
+  if (footStart < rows.length) section('tfoot', footStart, rows.length)
   out.push(`${pad}</table>`)
   return out.join('\n')
 }

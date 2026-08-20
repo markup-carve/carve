@@ -55,7 +55,9 @@ Table cell padding must be a space
 | 1 | 2 |
 .
 <table>
-  <thead><tr><th scope="col">	h</th><th scope="col">	i</th></tr></thead>
+  <thead>
+    <tr><th scope="col">	h</th><th scope="col">	i</th></tr>
+  </thead>
   <tbody>
     <tr><td>1</td><td>2</td></tr>
   </tbody>
@@ -67,7 +69,9 @@ Table cell padding must be a space
 | 1 | 2 |
 .
 <table>
-  <thead><tr><th scope="col">	 h</th><th scope="col">	 i</th></tr></thead>
+  <thead>
+    <tr><th scope="col">	 h</th><th scope="col">	 i</th></tr>
+  </thead>
   <tbody>
     <tr><td>1</td><td>2</td></tr>
   </tbody>
@@ -79,7 +83,9 @@ Table cell padding must be a space
 | 1 | 2 |
 .
 <table>
-  <thead><tr><th scope="col">h	</th><th scope="col">i	</th></tr></thead>
+  <thead>
+    <tr><th scope="col">h	</th><th scope="col">i	</th></tr>
+  </thead>
   <tbody>
     <tr><td>1</td><td>2</td></tr>
   </tbody>
@@ -91,7 +97,9 @@ Table cell padding must be a space
 | 1 | 2 |
 .
 <table>
-  <thead><tr><th scope="col">h 	</th><th scope="col">i 	</th></tr></thead>
+  <thead>
+    <tr><th scope="col">h 	</th><th scope="col">i 	</th></tr>
+  </thead>
   <tbody>
     <tr><td>1</td><td>2</td></tr>
   </tbody>
@@ -202,7 +210,9 @@ Table cell padding must be a space
 |a|  b  |
 .
 <table>
-  <thead><tr><th scope="col">h</th><th scope="col">i</th></tr></thead>
+  <thead>
+    <tr><th scope="col">h</th><th scope="col">i</th></tr>
+  </thead>
   <tbody>
     <tr><td>a</td><td>b</td></tr>
   </tbody>
@@ -215,7 +225,9 @@ Table cell padding must be a space
 | 1 | 2 |
 .
 <table>
-  <thead><tr><th scope="col">a</th><th scope="col" style="text-align: right;">b</th></tr></thead>
+  <thead>
+    <tr><th scope="col">a</th><th scope="col" style="text-align: right;">b</th></tr>
+  </thead>
   <tbody>
     <tr><td>1</td><td style="text-align: right;">2</td></tr>
   </tbody>

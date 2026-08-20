@@ -6,7 +6,9 @@ Table span marker in first column
 | c | d |
 .
 <table>
-  <thead><tr><th scope="col"></th><th scope="col">b</th></tr></thead>
+  <thead>
+    <tr><th scope="col"></th><th scope="col">b</th></tr>
+  </thead>
   <tbody>
     <tr><td>c</td><td>d</td></tr>
   </tbody>

@@ -140,6 +140,26 @@ const DECLARED_UNIMPLEMENTED = {
 }
 
 /*
+ * Cases the corpus states and the PINNED engine has not shipped, keyed by slug.
+ *
+ * The same window `resources/engine-pin-drift.txt` describes for the core
+ * corpus: when a spec rule lands, the fixture moves first and the engine
+ * follows. This file compares against a LIVE runner rather than a committed
+ * golden, so without a ledger the only way to land a rule here is to leave the
+ * fixture wrong - which is how carve#1459's two `tfoot` layouts got to
+ * contradict each other in the first place.
+ *
+ * An entry is deleted in the commit that moves the pin past it; the check below
+ * fails an entry whose case already matches, so a stale one cannot sit here.
+ */
+const AHEAD_OF_PIN = {
+  '42-list-table-header-rows-cols':
+    'carve#1459 gives every row its own line in thead/tfoot too; the pinned build still writes the section on one line',
+  '44-list-table-columns-and-foot':
+    'carve#1459 gives every row its own line in thead/tfoot too; the pinned build still writes the section on one line',
+}
+
+/*
  * THE RATCHET ON THE EXCUSE, because an entry above can only ever turn a
  * comparison into a skip.
  *
@@ -187,6 +207,9 @@ test('no unimplemented declaration outlives the engine gaining the feature', () 
  */
 let reached = 0
 let compared = 0
+// Cases the corpus states ahead of the pinned build (AHEAD_OF_PIN above).
+// Counted so the reconciliation below stays an identity rather than a floor.
+let aheadOfPin = 0
 for (const entry of manifest.cases) {
   reached++
   const slug = basename(entry.slug)
@@ -230,6 +253,24 @@ for (const entry of manifest.cases) {
     continue
   }
 
+  const ahead = AHEAD_OF_PIN[slug]
+  if (ahead) {
+    aheadOfPin++
+    // Asserted in BOTH directions, like the core corpus ledger: the fixture is
+    // what the spec now states, and the pinned engine must still disagree with
+    // it. An entry the pin has caught up on therefore fails and gets deleted.
+    test(`${slug} (${entry.feature}, ${targetName}) - ahead of the pinned build`, () => {
+      const source = readFileSync(crvPath, 'utf8')
+      const expected = readFileSync(expectedPath, 'utf8')
+      assert.notEqual(
+        runner(source, target.render).trim(),
+        expected.trim(),
+        `${slug}: the pinned build reproduces this now - delete its AHEAD_OF_PIN entry (${ahead})`,
+      )
+    })
+    continue
+  }
+
   compared++
   test(`${slug} (${entry.feature}, ${targetName})`, () => {
     assert.ok(existsSync(crvPath), `missing ${slug}.crv pair`)
@@ -263,9 +304,9 @@ test('the run compared the cases the manifest declares', () => {
   ).length
   const wrong = miscount({
     label: 'OPTIONAL',
-    actual: compared + declaredSkips,
+    actual: compared + declaredSkips + aheadOfPin,
     expected: reached,
-    of: 'case(s) compared or declared unimplemented',
+    of: 'case(s) compared, declared unimplemented, or declared ahead of the pin',
   })
   assert.equal(wrong, null, wrong ?? '')
 })

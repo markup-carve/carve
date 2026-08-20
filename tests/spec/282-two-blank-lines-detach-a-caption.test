@@ -8,7 +8,9 @@ Two blank lines detach a caption
 .
 <table>
   <caption>Table: city sizes</caption>
-  <thead><tr><th scope="col">City</th><th scope="col">People</th></tr></thead>
+  <thead>
+    <tr><th scope="col">City</th><th scope="col">People</th></tr>
+  </thead>
   <tbody>
     <tr><td>Oslo</td><td>700k</td></tr>
   </tbody>
@@ -23,7 +25,9 @@ Two blank lines detach a caption
 ^ Table: city sizes
 .
 <table>
-  <thead><tr><th scope="col">City</th><th scope="col">People</th></tr></thead>
+  <thead>
+    <tr><th scope="col">City</th><th scope="col">People</th></tr>
+  </thead>
   <tbody>
     <tr><td>Oslo</td><td>700k</td></tr>
   </tbody>

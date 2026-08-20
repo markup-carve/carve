@@ -7477,6 +7477,29 @@ EOF = (* end of file *) ;
       space after the colon, trailing semicolon); a cell with no effective
       alignment emits NO style attribute. `rowspan`/`colspan` are emitted
       only when their count is > 1.
+      A ROW IS A ROW, IN EVERY SECTION -- NORMATIVE (carve#1459). `<thead>`,
+      `<tbody>` and `<tfoot>` are each written on their own lines with ONE ROW
+      PER LINE, indented one level inside the section:
+
+        <table>
+          <thead>
+            <tr><th scope="col">a</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td></tr>
+          </tbody>
+        </table>
+
+      This was two layouts before, and neither was written down: a head and a
+      foot went on the section's own line while a body gave each row a line, so
+      the same element was laid out two ways for no stated reason. Two fixtures
+      in one commit then demanded DIFFERENT `tfoot` shapes and no engine could
+      satisfy both, which is what a rule nobody wrote looks like when it drifts.
+      One layout needs no exception and no rationale.
+      The emitted HTML is read by people - the corpus documents ARE this spec's
+      worked examples, and a table defect is usually spotted in their diffs - so
+      the line count is not what this optimizes for. Nothing renders differently:
+      whitespace between rows in table context is not rendered.
 
    8. STABLE STRINGS. Mentions and tags render as inert `<span>`s (no link)
       when no URL template is configured; a configured template links to them. The footnote

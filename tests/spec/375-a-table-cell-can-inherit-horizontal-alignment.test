@@ -8,7 +8,9 @@ A table cell can inherit horizontal alignment
 |?< wrong |^< axes |
 .
 <table>
-  <thead><tr><th scope="col" style="text-align: right; vertical-align: top;">Name</th><th scope="col">Value</th></tr></thead>
+  <thead>
+    <tr><th scope="col" style="text-align: right; vertical-align: top;">Name</th><th scope="col">Value</th></tr>
+  </thead>
   <tbody>
     <tr><td style="text-align: right; vertical-align: bottom;">Bottom</td><td style="vertical-align: middle;">Middle</td></tr>
     <tr><td style="text-align: right; vertical-align: top;">Top</td><td>plain</td></tr>
