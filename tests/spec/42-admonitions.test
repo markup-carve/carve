@@ -5,7 +5,7 @@ Admonitions
 Heads up — this is important.
 :::
 .
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>Heads up — this is important.</p>
 </aside>
 ```
@@ -15,8 +15,8 @@ Heads up — this is important.
 Save early, save often.
 :::
 .
-<aside class="admonition tip">
-  <p class="admonition-title">Pro Tip</p>
+<aside class="admonition tip" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Pro Tip</p>
   <p>Save early, save often.</p>
 </aside>
 ```
@@ -37,8 +37,8 @@ Custom call-out.
 Save early, save often.
 :::
 .
-<aside class="admonition tip">
-  <p class="admonition-title">Pro Tip</p>
+<aside class="admonition tip" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Pro Tip</p>
   <p class="div-label">Build</p>
   <p>Save early, save often.</p>
 </aside>
@@ -50,8 +50,8 @@ Save early, save often.
 Body.
 :::
 .
-<aside class="admonition note" title="attr title">
-  <p class="admonition-title">opener title</p>
+<aside class="admonition note" title="attr title" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">opener title</p>
   <p>Body.</p>
 </aside>
 ```
@@ -61,8 +61,8 @@ Body.
 Body.
 :::
 .
-<aside class="admonition note">
-  <p class="admonition-title">Install <strong>now</strong> via <code>npm</code></p>
+<aside class="admonition note" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Install <strong>now</strong> via <code>npm</code></p>
   <p>Body.</p>
 </aside>
 ```
@@ -94,7 +94,7 @@ First panel.
 Mind the gap.
 :::
 .
-<aside class="admonition warning">
+<aside class="admonition warning" aria-label="Warning">
   <p>Mind the gap.</p>
 </aside>
 ```
@@ -107,7 +107,7 @@ Quick steps:
 - run the demo
 :::
 .
-<aside class="admonition tip">
+<aside class="admonition tip" aria-label="Tip">
   <p>Quick steps:</p>
   <ul>
     <li>read the docs</li>

@@ -1,0 +1,87 @@
+An engine-written shape says what it is called
+
+```
+::: note
+Untitled.
+:::
+
+::: warning "Careful"
+Titled.
+:::
+.
+<aside class="admonition note" aria-label="Note">
+  <p>Untitled.</p>
+</aside>
+<aside class="admonition warning" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Careful</p>
+  <p>Titled.</p>
+</aside>
+```
+
+```
+{aria-label="Mine"}
+::: note "Careful"
+The author named it.
+:::
+.
+<aside class="admonition note" aria-label="Mine">
+  <p class="admonition-title">Careful</p>
+  <p>The author named it.</p>
+</aside>
+```
+
+```
+- [ ] read the /docs/
+- [x] done
+.
+<ul>
+  <li><input type="checkbox" disabled aria-label="read the docs"> read the <em>docs</em></li>
+  <li><input type="checkbox" checked disabled aria-label="done"> done</li>
+</ul>
+```
+
+```
+- [ ] > quoted lead
+.
+<ul>
+  <li><input type="checkbox" disabled> 
+    <blockquote><p>quoted lead</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+An inline $`x = 1` and a named $`y`{aria-label="why"} one.
+.
+<p>An inline <span class="math inline" role="math">\(x = 1\)</span> and a named <span class="math inline" aria-label="why" role="math">\(y\)</span> one.</p>
+```
+
+```
+Text[^a]
+
+[^a]: A note.
+.
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>A note.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+{ARIA-LABEL="Mine"}
+::: note
+body
+:::
+
+Math $`x`{ROLE="img"} here.
+.
+<aside class="admonition note" ARIA-LABEL="Mine">
+  <p>body</p>
+</aside>
+<p>Math <span class="math inline" ROLE="img">\(x\)</span> here.</p>
+```

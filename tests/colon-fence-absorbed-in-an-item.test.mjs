@@ -48,7 +48,7 @@ test('the absorbed fence leaves the paragraph open and the lazy line folds', () 
 test('a VALID opener closes the paragraph and the lazy line ends the item', () => {
   assert.equal(
     html('- item\n  ::: note\n  body\n  :::\ntail\n'),
-    '<ul><li>item <aside class="admonition note"><p>body</p></aside></li></ul><p>tail</p>',
+    '<ul><li>item <aside class="admonition note" aria-label="Note"><p>body</p></aside></li></ul><p>tail</p>',
   )
 })
 
@@ -81,7 +81,7 @@ test('the same shape inside a block quote folds too', () => {
 test('a blank line ends the absorption', () => {
   assert.equal(
     html('- item\n\n  :::note\n\n  ::: note\n  body\n  :::\ntail\n'),
-    '<ul><li><p>item</p><p>:::note</p><aside class="admonition note"><p>body</p></aside></li></ul><p>tail</p>',
+    '<ul><li><p>item</p><p>:::note</p><aside class="admonition note" aria-label="Note"><p>body</p></aside></li></ul><p>tail</p>',
   )
 })
 

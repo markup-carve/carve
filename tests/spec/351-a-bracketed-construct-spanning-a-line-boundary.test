@@ -51,7 +51,7 @@ A note ^[a
 b] here.
 .
 <p>A note <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> here.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">

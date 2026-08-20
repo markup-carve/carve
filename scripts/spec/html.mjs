@@ -22,14 +22,46 @@ import { Refuse, TIER1, bracketRunEnd } from './layout.mjs'
  */
 const LABELS = {
   footnoteBacklink: 'Back to reference',
+  endnotes: 'Footnotes',
+  admonitionNote: 'Note',
+  admonitionTip: 'Tip',
+  admonitionWarning: 'Warning',
+  admonitionDanger: 'Danger',
+  admonitionInfo: 'Info',
+  admonitionSuccess: 'Success',
+  admonitionExample: 'Example',
+  admonitionQuote: 'Quote',
 }
 import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, NOTE_FRAME } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
+// PART 9 SS12: the engine writes an accessible name for an admonition only
+// where the author wrote none. Either ARIA naming attribute counts, because
+// emitting a second one beside the author's leaves the name undefined.
+//
+// The comparison is ASCII-CASE-INSENSITIVE. Carve emits an author's attribute
+// NAME verbatim, and HTML attribute names are case-insensitive, so `ARIA-LABEL`
+// and `aria-label` are the SAME attribute - matching case-sensitively let the
+// engine write a duplicate of the one it was checking for.
+function hasAuthoredName(battrs) {
+  // A block-attribute tuple is TAGGED BY KIND - `['class', v]` for a class and
+  // `['kv', name, value]` for everything else - so a key/value attribute is
+  // read at index 1, not 0. Reading it at 0 found nothing and the engine wrote
+  // a second naming attribute beside the author's.
+  for (const list of battrs ?? []) {
+    for (const a of list) {
+      const name = (a[0] === 'kv' || a[0] === 'bool' ? a[1] : a[0]).toLowerCase()
+      if (name === 'aria-label' || name === 'aria-labelledby') return true
+    }
+  }
+  return false
+}
+
 export function renderDoc(doc) {
   const ctx = {
     slug: makeSlugger(),
+    admCount: 0,
     linkDefs: doc.linkDefs,
     abbrDefs: doc.abbrDefs,
     footnoteDefs: doc.footnoteDefs,
@@ -275,10 +307,34 @@ function renderBlock(b, depth, ctx) {
         }
         attrStr = ` class="${[...baseCls, ...extra].join(' ')}"` + renderBlockAttrs(rest)
       }
-      const open = `${pad2}<${tag}${attrStr}>`
+      // PART 9 SS12 AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME
+      // (carve#1468). An `<aside>` is a COMPLEMENTARY LANDMARK, and a landmark
+      // with no name is an anonymous row in a landmark list. A titled
+      // admonition already shows its name, so the title `<p>` is given an id
+      // and the aside points at it; an untitled one has no visible name to
+      // point at and takes the TYPE WORD from the `labels` map (SS16a).
+      // A `<div>` (an untyped `:::` block) is not a landmark and takes neither.
+      // An author who wrote their own `aria-label` / `aria-labelledby` on the
+      // attribute line keeps it - the engine never writes a name over one the
+      // author spelled.
+      let titleId = null
+      let ariaStr = ''
+      if (tag === 'aside' && !hasAuthoredName(b.battrs)) {
+        if (b.title !== null) {
+          titleId = ctx.slug(`adm-${++ctx.admCount}`)
+          ariaStr = ` aria-labelledby="${escapeAttr(titleId)}"`
+        } else {
+          const word = LABELS[`admonition${b.type[0].toUpperCase()}${b.type.slice(1)}`]
+          if (word !== undefined) ariaStr = ` aria-label="${escapeAttr(word)}"`
+        }
+      }
+      const open = `${pad2}<${tag}${attrStr}${ariaStr}>`
       const closeTag = `</${tag}>`
       const parts = []
-      if (b.title !== null) parts.push(`${pad2}  <p class="admonition-title">${renderInline(b.title)}</p>`)
+      if (b.title !== null) {
+        const idAttr = titleId === null ? '' : ` id="${escapeAttr(titleId)}"`
+        parts.push(`${pad2}  <p class="admonition-title"${idAttr}>${renderInline(b.title)}</p>`)
+      }
       if (b.label !== null) parts.push(`${pad2}  <p class="div-label">${renderInline(b.label)}</p>`)
       for (const c of b.children) parts.push(renderBlock(c, depth + 1, ctx))
       if (parts.length === 0) {
@@ -523,6 +579,20 @@ function renderList(list, depth, ctx) {
   return `${pad}<${tag}${attrs}>\n${items.join('\n')}\n${pad}</${tag}>`
 }
 
+// PART 2 `task_marker`: the task box is named by what the item VISIBLY says. Only the
+// item's FIRST block can sit beside the box, and only a paragraph carries
+// inline text, so that is the one block read.
+function taskLabel(item) {
+  const first = item.blocks[0]
+  if (first === undefined || first.t !== 'para') return ''
+  // A paragraph spans lines - a soft wrap, or a lazy continuation folded in -
+  // and a NAME is one line. Each run of ASCII whitespace collapses to a single
+  // space, which is what the reader hears anyway. A no-break space is CONTENT
+  // and survives, so the class is spelled out rather than using `\s`, which
+  // reaches past ASCII.
+  return derivedText(first.lines.join('\n')).replace(/[ \t\n\r\f\v]+/g, ' ').trim()
+}
+
 function renderItem(item, list, depth, ctx) {
   const pad = '  '.repeat(depth)
   let liAttrs = ''
@@ -531,8 +601,17 @@ function renderItem(item, list, depth, ctx) {
     if (parsed === null) throw new Refuse('invalid list-item attribute block')
     liAttrs = parsed
   }
+  // PART 2 `task_marker` THE TASK BOX CARRIES AN ACCESSIBLE NAME (carve#1468).
+  // The box's word is a SIBLING TEXT NODE, so the input had a
+  // state and no name - a reader met an unlabeled disabled checkbox and the
+  // word beside it was ordinary prose. The name is the item's own visible
+  // text, derived the way every other derived text in this grammar is (R4), so
+  // nothing new is written in English and nothing is translated twice. An item
+  // whose first block is not a paragraph, or whose text derives to nothing,
+  // takes NO attribute: an empty name is worse than none.
+  const taskName = list.task ? taskLabel(item) : ''
   const prefix = list.task
-    ? `<input type="checkbox"${item.checked ? ' checked' : ''} disabled> `
+    ? `<input type="checkbox"${item.checked ? ' checked' : ''} disabled${taskName === '' ? '' : ` aria-label="${escapeAttr(taskName)}"`}> `
     : ''
   const blocks = item.blocks
   if (blocks.length === 0) return `${pad}<li${liAttrs}></li>`
@@ -1102,7 +1181,12 @@ function resolveFootnotes(html, ctx) {
     }
     return `    <li id="fn${n}">\n${rendered}\n    </li>`
   })
-  const section = `<section role="doc-endnotes">\n  <hr>\n  <ol>\n${notes.join('\n')}\n  </ol>\n</section>`
+  // PART 9 SS16 THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME (carve#1468):
+  // the section is named for the same
+  // reason its backlinks do - `role="doc-endnotes"` says what the region IS and
+  // nothing said what it is CALLED, so a landmark list held an anonymous entry.
+  const sectionName = escapeAttr(LABELS.endnotes)
+  const section = `<section role="doc-endnotes" aria-label="${sectionName}">\n  <hr>\n  <ol>\n${notes.join('\n')}\n  </ol>\n</section>`
   if (placement) return html.replace('\uE000fnplacement\uE001', section).replace(/\uE000fnplacement\uE001\n?/g, '')
   return html + '\n' + section
 }

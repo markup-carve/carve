@@ -40,7 +40,7 @@ Nested item looseness does not propagate to the outer item
     > q
 .
 <ul>
-  <li><input type="checkbox" disabled> a
+  <li><input type="checkbox" disabled aria-label="a"> a
     <ul>
       <li>b
         <blockquote><p>q</p></blockquote>

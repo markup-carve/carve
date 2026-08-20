@@ -49,7 +49,7 @@ test('a math span with an id before its class keeps the break as content', () =>
   assert.equal(
     render('::: |\na $`x\nb`{#i .c}\nz\n:::\n'),
     '<div class="line-block">\n' +
-      '  <p>a <span id="i" class="math inline c">\\(x\nb\\)</span><br>\nz</p>\n' +
+      '  <p>a <span id="i" class="math inline c" role="math">\\(x\nb\\)</span><br>\nz</p>\n' +
       '</div>',
   )
 })

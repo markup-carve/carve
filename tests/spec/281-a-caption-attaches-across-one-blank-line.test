@@ -90,7 +90,7 @@ $$`E = mc^2`
 ^ Equation: mass-energy
 .
 <figure>
-  <p><span class="math display">\[E = mc^2\]</span></p>
+  <p><span class="math display" role="math">\[E = mc^2\]</span></p>
   <figcaption>Equation: mass-energy</figcaption>
 </figure>
 ```
@@ -101,7 +101,7 @@ $$`E = mc^2`
 ^ Equation: mass-energy
 .
 <figure>
-  <p><span class="math display">\[E = mc^2\]</span></p>
+  <p><span class="math display" role="math">\[E = mc^2\]</span></p>
   <figcaption>Equation: mass-energy</figcaption>
 </figure>
 ```

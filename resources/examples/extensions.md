@@ -33,7 +33,7 @@ Heads up — this is important.
 ```
 
 ```html
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>Heads up — this is important.</p>
 </aside>
 ```
@@ -65,8 +65,8 @@ Save early, save often.
 ```
 
 ```html
-<aside class="admonition tip">
-  <p class="admonition-title">Pro Tip</p>
+<aside class="admonition tip" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Pro Tip</p>
   <p>Save early, save often.</p>
 </aside>
 ```
@@ -103,8 +103,8 @@ Save early, save often.
 ```
 
 ```html
-<aside class="admonition tip">
-  <p class="admonition-title">Pro Tip</p>
+<aside class="admonition tip" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Pro Tip</p>
   <p class="div-label">Build</p>
   <p>Save early, save often.</p>
 </aside>
@@ -124,8 +124,8 @@ Body.
 ```
 
 ```html
-<aside class="admonition note" title="attr title">
-  <p class="admonition-title">opener title</p>
+<aside class="admonition note" title="attr title" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">opener title</p>
   <p>Body.</p>
 </aside>
 ```
@@ -143,8 +143,8 @@ Body.
 ```
 
 ```html
-<aside class="admonition note">
-  <p class="admonition-title">Install <strong>now</strong> via <code>npm</code></p>
+<aside class="admonition note" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Install <strong>now</strong> via <code>npm</code></p>
   <p>Body.</p>
 </aside>
 ```
@@ -198,7 +198,7 @@ Mind the gap.
 ```
 
 ```html
-<aside class="admonition warning">
+<aside class="admonition warning" aria-label="Warning">
   <p>Mind the gap.</p>
 </aside>
 ```
@@ -219,7 +219,7 @@ Quick steps:
 ````
 
 ```html
-<aside class="admonition tip">
+<aside class="admonition tip" aria-label="Tip">
   <p>Quick steps:</p>
   <ul>
     <li>read the docs</li>
@@ -761,7 +761,7 @@ See </#eq-emc>.
 
 ```html
 <figure id="eq-emc">
-  <p><span class="math display">\[E = mc^2\]</span></p>
+  <p><span class="math display" role="math">\[E = mc^2\]</span></p>
   <figcaption>Equation 1: mass-energy</figcaption>
 </figure>
 <p>See <a href="#eq-emc">Equation 1</a>.</p>

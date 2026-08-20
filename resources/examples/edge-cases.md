@@ -451,7 +451,7 @@ See the note.[^n]
 
 ```html
 <p>See the note.<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -479,7 +479,7 @@ A second paragraph, joined with +.
 
 ```html
 <p>See the note.<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -530,9 +530,9 @@ Nested.
 ```
 
 ```html
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>Outer.</p>
-  <aside class="admonition tip">
+  <aside class="admonition tip" aria-label="Tip">
     <p>Nested.</p>
   </aside>
 </aside>
@@ -555,8 +555,8 @@ Inner.
 ```
 
 ```html
-<aside class="admonition note">
-  <aside class="admonition tip">
+<aside class="admonition note" aria-label="Note">
+  <aside class="admonition tip" aria-label="Tip">
     <p>Inner.</p>
   </aside>
 </aside>
@@ -603,7 +603,7 @@ X
 ```
 
 ```html
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>X</p>
 </aside>
 ```
@@ -658,7 +658,7 @@ after
 ````
 
 ```html
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <pre><code>:::
 </code></pre>
   <p>body</p>
@@ -686,7 +686,7 @@ after
 ````
 
 ```html
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <pre><code>:::
 </code></pre>
   <p>body</p>
@@ -713,7 +713,7 @@ after
 ````
 
 ```html
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <pre><code class="language-text">::: tip
 </code></pre>
   <p>body</p>
@@ -739,7 +739,7 @@ after
 ```
 
 ```html
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>body</p>
 </aside>
 <p>after</p>
@@ -767,7 +767,7 @@ after
 ````
 
 ```html
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <pre><code>x
 </code></pre>
 </aside>
@@ -1463,7 +1463,7 @@ either, so neither 6 nor 8 is where the body starts.
 
 ```html
 <ul>
-  <li><input type="checkbox" disabled> item
+  <li><input type="checkbox" disabled aria-label="item # H"> item
 # H</li>
 </ul>
 ```
@@ -3093,7 +3093,7 @@ For a task item the block abuts the marker, before the task marker:
 
 ```html
 <ul>
-  <li class="c"><input type="checkbox" disabled> A classed task item.</li>
+  <li class="c"><input type="checkbox" disabled aria-label="A classed task item."> A classed task item.</li>
 </ul>
 ```
 
@@ -3995,7 +3995,7 @@ Body[^n]
   <h1>H</h1>
   <p>Body<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
 </section>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -4113,7 +4113,7 @@ A nested unordered list body is wrapped by the admonition:
 ```html
 <ul>
   <li>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <ul>
         <li>para text</li>
       </ul>
@@ -4137,7 +4137,7 @@ A nested ordered list body is wrapped the same way:
 ```html
 <ul>
   <li>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <ol>
         <li>para text</li>
       </ol>
@@ -4162,7 +4162,7 @@ A two-item nested list is wrapped whole:
 ```html
 <ul>
   <li>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <ul>
         <li>one</li>
         <li>two</li>
@@ -4188,7 +4188,7 @@ A blank line between the opener and the nested list still opens the block:
 ```html
 <ul>
   <li>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <ul>
         <li>para text</li>
       </ul>
@@ -4212,7 +4212,7 @@ ordinary nested list:
 ```html
 <ul>
   <li>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <ul>
         <li>para text</li>
       </ul>
@@ -4238,7 +4238,7 @@ the stray `:::` opens a second, top-level div with an empty body:
 ```html
 <ul>
   <li>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <ul>
         <li>para text</li>
       </ul>
@@ -4263,7 +4263,7 @@ GUARD: an empty body (opener immediately followed by its closer) still opens:
 ```html
 <ul>
   <li>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
 
     </aside>
   </li>
@@ -4293,7 +4293,7 @@ See [^a].
 <blockquote>
 
 </blockquote>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -4320,7 +4320,7 @@ See [^a].
 <ul>
   <li></li>
 </ul>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -4540,7 +4540,7 @@ More text.
 
 ```html
 <p>Intro<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a>.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -5127,7 +5127,7 @@ Literal !`  ` and math $`  ` keep their spaces.
 ```
 
 ```html
-<p>Literal    and math <span class="math inline">\(  \)</span> keep their spaces.</p>
+<p>Literal    and math <span class="math inline" role="math">\(  \)</span> keep their spaces.</p>
 ```
 
 :::
@@ -5171,7 +5171,7 @@ $`  `
 ```
 
 ```html
-<p><span class="math inline">\(  \)</span></p>
+<p><span class="math inline" role="math">\(  \)</span></p>
 ```
 
 :::
@@ -5412,7 +5412,7 @@ The content-column threshold follows the marker, so a task item's nested block b
 
 ```html
 <ul>
-  <li><input type="checkbox" disabled> a
+  <li><input type="checkbox" disabled aria-label="a"> a
     <ul>
       <li>b
         <blockquote><p>q</p></blockquote>
@@ -5636,7 +5636,7 @@ b
 ```html
 <ul>
   <li>one
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <p>b</p>
     </aside>
   </li>
@@ -6240,7 +6240,7 @@ Text[^a].
 
 ```html
 <p>Text<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -6450,8 +6450,8 @@ $$```x `` y```
 ```html
 <p>A <code>span with `` inside</code> stays one code span.</p>
 <p>A literal with `` inside stays prose.</p>
-<p>Then <span class="math inline">\(a `` b\)</span> ends the run.</p>
-<p><span class="math display">\[x `` y\]</span></p>
+<p>Then <span class="math inline" role="math">\(a `` b\)</span> ends the run.</p>
+<p><span class="math display" role="math">\[x `` y\]</span></p>
 ```
 
 :::
@@ -6794,7 +6794,7 @@ see [^f].
 
 ```html
 <p>see <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -7335,206 +7335,206 @@ x
 ```
 
 ```html
-<aside class="admonition note">
-  <aside class="admonition note">
-    <aside class="admonition note">
-      <aside class="admonition note">
-        <aside class="admonition note">
-          <aside class="admonition note">
-            <aside class="admonition note">
-              <aside class="admonition note">
-                <aside class="admonition note">
-                  <aside class="admonition note">
-                    <aside class="admonition note">
-                      <aside class="admonition note">
-                        <aside class="admonition note">
-                          <aside class="admonition note">
-                            <aside class="admonition note">
-                              <aside class="admonition note">
-                                <aside class="admonition note">
-                                  <aside class="admonition note">
-                                    <aside class="admonition note">
-                                      <aside class="admonition note">
-                                        <aside class="admonition note">
-                                          <aside class="admonition note">
-                                            <aside class="admonition note">
-                                              <aside class="admonition note">
-                                                <aside class="admonition note">
-                                                  <aside class="admonition note">
-                                                    <aside class="admonition note">
-                                                      <aside class="admonition note">
-                                                        <aside class="admonition note">
-                                                          <aside class="admonition note">
-                                                            <aside class="admonition note">
-                                                              <aside class="admonition note">
-                                                                <aside class="admonition note">
-                                                                  <aside class="admonition note">
-                                                                    <aside class="admonition note">
-                                                                      <aside class="admonition note">
-                                                                        <aside class="admonition note">
-                                                                          <aside class="admonition note">
-                                                                            <aside class="admonition note">
-                                                                              <aside class="admonition note">
-                                                                                <aside class="admonition note">
-                                                                                  <aside class="admonition note">
-                                                                                    <aside class="admonition note">
-                                                                                      <aside class="admonition note">
-                                                                                        <aside class="admonition note">
-                                                                                          <aside class="admonition note">
-                                                                                            <aside class="admonition note">
-                                                                                              <aside class="admonition note">
-                                                                                                <aside class="admonition note">
-                                                                                                  <aside class="admonition note">
-                                                                                                    <aside class="admonition note">
-                                                                                                      <aside class="admonition note">
-                                                                                                        <aside class="admonition note">
-                                                                                                          <aside class="admonition note">
-                                                                                                            <aside class="admonition note">
-                                                                                                              <aside class="admonition note">
-                                                                                                                <aside class="admonition note">
-                                                                                                                  <aside class="admonition note">
-                                                                                                                    <aside class="admonition note">
-                                                                                                                      <aside class="admonition note">
-                                                                                                                        <aside class="admonition note">
-                                                                                                                          <aside class="admonition note">
-                                                                                                                            <aside class="admonition note">
-                                                                                                                              <aside class="admonition note">
-                                                                                                                                <aside class="admonition note">
-                                                                                                                                  <aside class="admonition note">
-                                                                                                                                    <aside class="admonition note">
-                                                                                                                                      <aside class="admonition note">
-                                                                                                                                        <aside class="admonition note">
-                                                                                                                                          <aside class="admonition note">
-                                                                                                                                            <aside class="admonition note">
-                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                              <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                                <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                                  <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                                    <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                                      <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                                        <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                                          <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                                            <aside class="admonition note">
-                                                                                                                                                                                                                                                                                                                                                                                                              <aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
+  <aside class="admonition note" aria-label="Note">
+    <aside class="admonition note" aria-label="Note">
+      <aside class="admonition note" aria-label="Note">
+        <aside class="admonition note" aria-label="Note">
+          <aside class="admonition note" aria-label="Note">
+            <aside class="admonition note" aria-label="Note">
+              <aside class="admonition note" aria-label="Note">
+                <aside class="admonition note" aria-label="Note">
+                  <aside class="admonition note" aria-label="Note">
+                    <aside class="admonition note" aria-label="Note">
+                      <aside class="admonition note" aria-label="Note">
+                        <aside class="admonition note" aria-label="Note">
+                          <aside class="admonition note" aria-label="Note">
+                            <aside class="admonition note" aria-label="Note">
+                              <aside class="admonition note" aria-label="Note">
+                                <aside class="admonition note" aria-label="Note">
+                                  <aside class="admonition note" aria-label="Note">
+                                    <aside class="admonition note" aria-label="Note">
+                                      <aside class="admonition note" aria-label="Note">
+                                        <aside class="admonition note" aria-label="Note">
+                                          <aside class="admonition note" aria-label="Note">
+                                            <aside class="admonition note" aria-label="Note">
+                                              <aside class="admonition note" aria-label="Note">
+                                                <aside class="admonition note" aria-label="Note">
+                                                  <aside class="admonition note" aria-label="Note">
+                                                    <aside class="admonition note" aria-label="Note">
+                                                      <aside class="admonition note" aria-label="Note">
+                                                        <aside class="admonition note" aria-label="Note">
+                                                          <aside class="admonition note" aria-label="Note">
+                                                            <aside class="admonition note" aria-label="Note">
+                                                              <aside class="admonition note" aria-label="Note">
+                                                                <aside class="admonition note" aria-label="Note">
+                                                                  <aside class="admonition note" aria-label="Note">
+                                                                    <aside class="admonition note" aria-label="Note">
+                                                                      <aside class="admonition note" aria-label="Note">
+                                                                        <aside class="admonition note" aria-label="Note">
+                                                                          <aside class="admonition note" aria-label="Note">
+                                                                            <aside class="admonition note" aria-label="Note">
+                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                                <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                                  <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                                    <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                                      <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                                        <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                                          <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                                            <aside class="admonition note" aria-label="Note">
+                                                                                                                                                                                                                                                                                                                                                                                                              <aside class="admonition note" aria-label="Note">
                                                                                                                                                                                                                                                                                                                                                                                                                 <p>:::: note
 :::: note
 :::: note
@@ -8333,7 +8333,7 @@ see[^a] and [t][r]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and <a href="/u">t</a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -8366,7 +8366,7 @@ see[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -8405,7 +8405,7 @@ see[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -8436,7 +8436,7 @@ see[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -8468,7 +8468,7 @@ see[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -8603,7 +8603,7 @@ see[^f]
 <p>a</p>
 <p>b</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -8749,7 +8749,7 @@ see[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -8780,7 +8780,7 @@ see[^a] and [t][r]
 ```html
 <p>[r]: /u</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and [t][r]</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -8807,7 +8807,7 @@ see[^a] and [t][r]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and [t][r]</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -8934,7 +8934,7 @@ see[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -8962,7 +8962,7 @@ see[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -8991,7 +8991,7 @@ see[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -9027,7 +9027,7 @@ see[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -9057,7 +9057,7 @@ see[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -9087,7 +9087,7 @@ see[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -9124,12 +9124,12 @@ see[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
       <p>note</p>
-      <aside class="admonition note">
+      <aside class="admonition note" aria-label="Note">
         <p>d</p>
       </aside>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
@@ -9158,7 +9158,7 @@ see[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -9233,7 +9233,7 @@ see[^f]
   <dd></dd>
 </dl>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -9266,7 +9266,7 @@ see[^f]
   </li>
 </ul>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -9546,7 +9546,7 @@ see[^a] and [t][r]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and <a href="/u">t</a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -9572,7 +9572,7 @@ see[^b] and[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -9642,7 +9642,7 @@ see[^a]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -10042,7 +10042,7 @@ y
 ```
 
 ```html
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>x</p>
 </aside>
 <p>y</p>
@@ -10081,7 +10081,7 @@ see[^f]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -10561,7 +10561,7 @@ x
 ```
 
 ```html
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>x</p>
 </aside>
 ```
@@ -10661,8 +10661,8 @@ x
 ```
 
 ```html
-<aside class="admonition note">
-  <p class="admonition-title">Title</p>
+<aside class="admonition note" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Title</p>
   <p class="div-label">First</p>
   <p>x</p>
 </aside>
@@ -12315,7 +12315,7 @@ x[^f]
 
 ```html
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -12362,7 +12362,7 @@ x[^f]
 
 ```html
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -12405,7 +12405,7 @@ x[^f]
 
 ```html
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -12885,7 +12885,7 @@ tail
 ```html
 <ul>
   <li>item
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <p>body
 tail</p>
     </aside>
@@ -12911,7 +12911,7 @@ tail
 ```html
 <ul>
   <li>item
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
 
     </aside>
   </li>
@@ -12938,7 +12938,7 @@ tail
 ```html
 <ul>
   <li>item
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <p>body</p>
     </aside>
   </li>
@@ -12983,7 +12983,7 @@ tail
 ```html
 <blockquote>
   <p>quote</p>
-  <aside class="admonition note">
+  <aside class="admonition note" aria-label="Note">
 
   </aside>
 </blockquote>
@@ -13009,7 +13009,7 @@ tail
 ```html
 <blockquote>
   <p>quote</p>
-  <aside class="admonition note">
+  <aside class="admonition note" aria-label="Note">
 
   </aside>
 </blockquote>
@@ -13031,7 +13031,7 @@ tail
 ```html
 <blockquote>
   <p>quote</p>
-  <aside class="admonition note">
+  <aside class="admonition note" aria-label="Note">
     <p>body</p>
   </aside>
 </blockquote>
@@ -14187,7 +14187,7 @@ see[^f]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -14230,7 +14230,7 @@ see[^f]
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -14722,7 +14722,7 @@ d
 ```html
 <ul>
   <li>x
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
 
     </aside>
   </li>
@@ -14933,7 +14933,7 @@ $$`E = mc^2`
 
 ```html
 <figure>
-  <p><span class="math display">\[E = mc^2\]</span></p>
+  <p><span class="math display" role="math">\[E = mc^2\]</span></p>
   <figcaption>Equation: mass-energy</figcaption>
 </figure>
 ```
@@ -14957,7 +14957,7 @@ $$`E = mc^2`
 
 ```html
 <figure>
-  <p><span class="math display">\[E = mc^2\]</span></p>
+  <p><span class="math display" role="math">\[E = mc^2\]</span></p>
   <figcaption>Equation: mass-energy</figcaption>
 </figure>
 ```
@@ -15220,7 +15220,7 @@ $$`a + b = c`
 
 ```html
 <figure>
-  <p><span class="math display">\[a + b = c\]</span></p>
+  <p><span class="math display" role="math">\[a + b = c\]</span></p>
   <figcaption>Equation: the sum</figcaption>
 </figure>
 ```
@@ -15242,7 +15242,7 @@ $$`a + b = c`
 ```
 
 ```html
-<p><span class="math display">\[a + b = c\]</span></p>
+<p><span class="math display" role="math">\[a + b = c\]</span></p>
 <p>^ Equation: the sum</p>
 ```
 
@@ -15277,7 +15277,7 @@ See[^f]
 
 ```html
 <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -15571,7 +15571,7 @@ after[^f]
   <li>a</li>
 </ul>
 <p>after<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -15870,7 +15870,7 @@ x
 ````
 
 ````html
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <pre><code>x
 
 </code></pre>
@@ -16496,7 +16496,7 @@ $`E=mc^2`{#i .c k=v}
 ```
 
 ```html
-<p><span id="i" class="math inline c" k="v">\(E=mc^2\)</span></p>
+<p><span id="i" class="math inline c" k="v" role="math">\(E=mc^2\)</span></p>
 ```
 
 :::
@@ -16510,7 +16510,7 @@ $`E=mc^2`{#i k=v}
 ```
 
 ```html
-<p><span class="math inline" id="i" k="v">\(E=mc^2\)</span></p>
+<p><span class="math inline" id="i" k="v" role="math">\(E=mc^2\)</span></p>
 ```
 
 :::
@@ -16943,7 +16943,7 @@ x ^[a ^[b] c]
 
 ```html
 <p>x <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -16965,7 +16965,7 @@ x ^[a [^1] c]
 
 ```html
 <p>x <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -16985,7 +16985,7 @@ x ^[a ^[b ^[c] d] e]
 
 ```html
 <p>x <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17010,7 +17010,7 @@ x ^[a [^1]{.k} c]
 
 ```html
 <p>x <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17047,7 +17047,7 @@ a [t[^1]](/u) b
 
 ```html
 <p>a <a href="/u">t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17067,7 +17067,7 @@ a [t^[n]](/u) b
 
 ```html
 <p>a <a href="/u">t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17106,7 +17106,7 @@ a [t[^1]][r] b
 
 ```html
 <p>a <a href="/u">t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17128,7 +17128,7 @@ a [t^[n]][r] b
 
 ```html
 <p>a <a href="/u">t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17152,7 +17152,7 @@ a [t[^1]][r] c [^1] b
 
 ```html
 <p>a <a href="/u">t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></a> c <a id="fnref1-2" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17186,7 +17186,7 @@ a [^1] b
 
 ```html
 <p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17210,7 +17210,7 @@ a [^1] b
 
 ```html
 <p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17239,7 +17239,7 @@ a [^1] b
 
 ```html
 <p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17365,7 +17365,7 @@ a [t[^1]][nope] b [^1] c
 
 ```html
 <p>a [t[^1]][nope] b <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> c</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17402,7 +17402,7 @@ a [t[^1]] b
 
 ```html
 <p>a [t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>] b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17439,7 +17439,7 @@ a ^[see </#h>] b
 <section id="h">
   <h1>h</h1>
 </section>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17459,7 +17459,7 @@ a ^[see </#nope>] b
 
 ```html
 <p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17481,7 +17481,7 @@ a ^[see [t][r]] b
 
 ```html
 <p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17503,7 +17503,7 @@ a ^[see ![z][r]] b
 
 ```html
 <p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17531,7 +17531,7 @@ a ^[see [h][]] b
 <section id="h">
   <h1>h</h1>
 </section>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17556,7 +17556,7 @@ a ^[</#h>]{.c} b
 <section id="h">
   <h1>h</h1>
 </section>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17586,7 +17586,7 @@ a [^1] b
 <section id="h">
   <h1>h</h1>
 </section>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -17782,7 +17782,7 @@ a ^[t{# ] #}z] b
 
 ```html
 <p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -18033,7 +18033,7 @@ Body text.
 ```
 
 ```html
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>Body text.</p>
 </aside>
 <p>^ Not a caption</p>
@@ -18157,7 +18157,7 @@ $$`E = mc^2`
     <figcaption>A listing panel</figcaption>
   </figure>
   <figure class="carve-figure-panel">
-    <p><span class="math display">\[E = mc^2\]</span></p>
+    <p><span class="math display" role="math">\[E = mc^2\]</span></p>
     <figcaption>An equation panel</figcaption>
   </figure>
   <blockquote><p>Measured twice.</p></blockquote>
@@ -18192,7 +18192,7 @@ source.
 
 ```html
 <figure class="carve-figure-group">
-  <aside class="admonition note">
+  <aside class="admonition note" aria-label="Note">
     <figure>
       <img src="x.png" alt="x">
       <figcaption>Figure 2: inner</figcaption>
@@ -19341,7 +19341,7 @@ see[^f]
 </ul>
 <p>tail</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -20585,7 +20585,7 @@ c d
 
 ```html
 <div class="line-block">
-  <p>a <span class="math inline">\(x
+  <p>a <span class="math inline" role="math">\(x
 c d\)</span></p>
 </div>
 ```
@@ -20613,7 +20613,7 @@ rule can keep one and drop the other - only a list can:
 
 ```html
 <section id="a-x-b">
-  <h1>a <span class="math inline">\(x\)</span> b</h1>
+  <h1>a <span class="math inline" role="math">\(x\)</span> b</h1>
 </section>
 ```
 
@@ -20630,7 +20630,7 @@ fallback:
 
 ```html
 <section id="x">
-  <h1><span class="math inline">\(x\)</span></h1>
+  <h1><span class="math inline" role="math">\(x\)</span></h1>
 </section>
 ```
 
@@ -20647,7 +20647,7 @@ way:
 
 ```html
 <section id="a-x-b">
-  <h1>a <span class="math display">\[x\]</span> b</h1>
+  <h1>a <span class="math display" role="math">\[x\]</span> b</h1>
 </section>
 ```
 
@@ -20750,7 +20750,7 @@ the marker it renders as contributes nothing either:
 <section id="a-b">
   <h1>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</h1>
 </section>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -21147,7 +21147,7 @@ Body.
 ```
 
 ```html
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>Body.</p>
 </aside>
 <p>[r][]</p>
@@ -21751,7 +21751,7 @@ See [r][] [^f].
 
 </blockquote>
 <p>See <a href="/url">r</a> <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -22135,7 +22135,7 @@ x[^f]
 </ul>
 <p>tail</p>
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -22355,7 +22355,7 @@ b] here.
 
 ```html
 <p>A note <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> here.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -23183,7 +23183,7 @@ x[^f]
 </ul>
 <p>tail</p>
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -23216,7 +23216,7 @@ x[^f]
 </ul>
 <p>tail</p>
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -23301,7 +23301,7 @@ x[^f]
   </li>
 </ul>
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -23341,7 +23341,7 @@ x[^f]
 </ul>
 <p>tail</p>
 <p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -23449,7 +23449,7 @@ See [^f].
   </li>
 </ul>
 <p>See <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -24581,7 +24581,7 @@ see[^f]
 </ul>
 <p>tail</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -25775,3 +25775,158 @@ the same character is a span marker and the cell beside it grows.
 ```
 
 :::
+## An engine-written shape says what it is called
+
+Four places carried a ROLE, or a state, and no accessible NAME (carve#1468).
+An untitled admonition is named by its type word, drawn from the `labels` map
+so it is not fixed English; a TITLED one points at the title the author already
+wrote, so the visible name and the spoken one are one string.
+
+:::: compare
+
+```carve
+::: note
+Untitled.
+:::
+
+::: warning "Careful"
+Titled.
+:::
+```
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <p>Untitled.</p>
+</aside>
+<aside class="admonition warning" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Careful</p>
+  <p>Titled.</p>
+</aside>
+```
+
+::::
+
+The author's own name WINS, and no id is minted: a second naming attribute
+beside the author's would leave the name undefined.
+
+:::: compare
+
+```carve
+{aria-label="Mine"}
+::: note "Careful"
+The author named it.
+:::
+```
+
+```html
+<aside class="admonition note" aria-label="Mine">
+  <p class="admonition-title">Careful</p>
+  <p>The author named it.</p>
+</aside>
+```
+
+::::
+
+A task box takes the item's own visible text, DERIVED rather than invented, so
+nothing is written in English and a translated document translates it once.
+
+::: compare
+
+```carve
+- [ ] read the /docs/
+- [x] done
+```
+
+```html
+<ul>
+  <li><input type="checkbox" disabled aria-label="read the docs"> read the <em>docs</em></li>
+  <li><input type="checkbox" checked disabled aria-label="done"> done</li>
+</ul>
+```
+
+:::
+
+Only the item's FIRST block sits beside the box, and only a paragraph carries
+inline text, so a non-paragraph lead takes NO name - an empty one would be
+worse than none. The checkbox and its state are still written.
+
+::: compare
+
+```carve
+- [ ] > quoted lead
+```
+
+```html
+<ul>
+  <li><input type="checkbox" disabled> 
+    <blockquote><p>quoted lead</p></blockquote>
+  </li>
+</ul>
+```
+
+:::
+
+A math span says it is mathematics whether or not a typesetter ever runs, and
+the NAME stays the author's on the same carrier. `role` is written last, so it
+never moves an attribute the author placed, and an authored `role` is kept.
+
+::: compare
+
+```carve
+An inline $`x = 1` and a named $`y`{aria-label="why"} one.
+```
+
+```html
+<p>An inline <span class="math inline" role="math">\(x = 1\)</span> and a named <span class="math inline" aria-label="why" role="math">\(y\)</span> one.</p>
+```
+
+:::
+
+The endnotes section is named for the reason its backlinks are: the role says
+what the region IS and nothing said what it is CALLED.
+
+::: compare
+
+```carve
+Text[^a]
+
+[^a]: A note.
+```
+
+```html
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>A note.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+An author's attribute NAME is emitted verbatim and HTML attribute names are
+case-insensitive, so the author-wins test is too: `ARIA-LABEL` and `ROLE` are
+the same attributes as the lower-case spellings, and matching only the exact
+case wrote a DUPLICATE of the attribute being checked for.
+
+:::: compare
+
+```carve
+{ARIA-LABEL="Mine"}
+::: note
+body
+:::
+
+Math $`x`{ROLE="img"} here.
+```
+
+```html
+<aside class="admonition note" ARIA-LABEL="Mine">
+  <p>body</p>
+</aside>
+<p>Math <span class="math inline" ROLE="img">\(x\)</span> here.</p>
+```
+
+::::

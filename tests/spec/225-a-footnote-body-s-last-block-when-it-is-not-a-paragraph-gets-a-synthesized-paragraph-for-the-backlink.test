@@ -9,7 +9,7 @@ A footnote body's last block, when it is not a paragraph, gets a synthesized par
 see[^a]
 .
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -29,7 +29,7 @@ see[^a]
 see[^a]
 .
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -51,7 +51,7 @@ see[^a]
 see[^a]
 .
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -80,12 +80,12 @@ see[^a]
 see[^a]
 .
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
       <p>note</p>
-      <aside class="admonition note">
+      <aside class="admonition note" aria-label="Note">
         <p>d</p>
       </aside>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
@@ -104,7 +104,7 @@ see[^a]
 see[^a]
 .
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">

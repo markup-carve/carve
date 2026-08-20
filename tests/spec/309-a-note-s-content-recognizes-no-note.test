@@ -4,7 +4,7 @@ A note's content recognizes no note
 x ^[a ^[b] c]
 .
 <p>x <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -20,7 +20,7 @@ x ^[a [^1] c]
 [^1]: n
 .
 <p>x <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -34,7 +34,7 @@ x ^[a [^1] c]
 x ^[a ^[b ^[c] d] e]
 .
 <p>x <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -50,7 +50,7 @@ x ^[a [^1]{.k} c]
 [^1]: n
 .
 <p>x <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">

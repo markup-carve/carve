@@ -8,7 +8,7 @@ see[^a] and [t][r]
 .
 <p>[r]: /u</p>
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and [t][r]</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">

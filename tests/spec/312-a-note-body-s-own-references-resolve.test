@@ -8,7 +8,7 @@ a [^1] b
 [r]: /u
 .
 <p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -26,7 +26,7 @@ a [^1] b
 [^2]: two
 .
 <p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -49,7 +49,7 @@ a [^1] b
 [^2]: two
 .
 <p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">

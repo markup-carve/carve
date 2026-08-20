@@ -5,8 +5,8 @@ Task lists
 - [x] done
 .
 <ul>
-  <li><input type="checkbox" disabled> todo</li>
-  <li><input type="checkbox" checked disabled> done</li>
+  <li><input type="checkbox" disabled aria-label="todo"> todo</li>
+  <li><input type="checkbox" checked disabled aria-label="done"> done</li>
 </ul>
 ```
 
@@ -17,9 +17,9 @@ Task lists
 - [?] maybe
 .
 <ul>
-  <li><input type="checkbox" disabled> dropped</li>
-  <li><input type="checkbox" disabled> paused</li>
-  <li><input type="checkbox" disabled> deferred</li>
-  <li><input type="checkbox" disabled> maybe</li>
+  <li><input type="checkbox" disabled aria-label="dropped"> dropped</li>
+  <li><input type="checkbox" disabled aria-label="paused"> paused</li>
+  <li><input type="checkbox" disabled aria-label="deferred"> deferred</li>
+  <li><input type="checkbox" disabled aria-label="maybe"> maybe</li>
 </ul>
 ```

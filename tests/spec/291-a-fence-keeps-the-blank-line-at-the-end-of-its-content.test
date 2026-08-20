@@ -28,7 +28,7 @@ x
 
 :::
 .
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <pre><code>x
 
 </code></pre>

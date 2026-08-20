@@ -162,7 +162,8 @@ under the same semantic-span rule,
 `374-a-collected-definition-closes-the-item-paragraph`,
 `382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open`,
 `383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container`,
-`384-a-continuation-marker-attaches-only-a-flush-left-block`.
+`384-a-continuation-marker-attaches-only-a-flush-left-block`,
+`393-an-engine-written-shape-says-what-it-is-called`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative

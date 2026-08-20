@@ -9,7 +9,7 @@ body
 :::
 after
 .
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <pre><code>:::
 </code></pre>
   <p>body</p>
@@ -26,7 +26,7 @@ body
 :::
 after
 .
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <pre><code>:::
 </code></pre>
   <p>body</p>
@@ -43,7 +43,7 @@ body
 :::
 after
 .
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <pre><code class="language-text">::: tip
 </code></pre>
   <p>body</p>
@@ -60,7 +60,7 @@ body
 :::
 after
 .
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>body</p>
 </aside>
 <p>after</p>
@@ -73,7 +73,7 @@ x
 :::
 after
 .
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <pre><code>x
 </code></pre>
 </aside>

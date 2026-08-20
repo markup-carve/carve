@@ -10,9 +10,9 @@ Nested.
 ::::
 
 .
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>Outer.</p>
-  <aside class="admonition tip">
+  <aside class="admonition tip" aria-label="Tip">
     <p>Nested.</p>
   </aside>
 </aside>
@@ -25,8 +25,8 @@ Inner.
 :::
 :::
 .
-<aside class="admonition note">
-  <aside class="admonition tip">
+<aside class="admonition note" aria-label="Note">
+  <aside class="admonition tip" aria-label="Tip">
     <p>Inner.</p>
   </aside>
 </aside>
@@ -53,7 +53,7 @@ Inner
 ::: note
 X
 .
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>X</p>
 </aside>
 ```

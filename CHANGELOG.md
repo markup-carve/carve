@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Four engine-written shapes now carry an accessible name** (carve#1468).
+  A task checkbox takes its item's own text, an untitled admonition takes its
+  type word and a titled one points at its title, the endnotes section is
+  named, and a math span carries `role="math"`. The `labels` map (PART 9 §16a)
+  grows from one key to ten; no string an author already wrote became a label.
+
 - **An attributed cell keeps its attributes, and its marker stays literal**
   (carve#1463). PART 9 §5 T4 makes an attributed cell ordinary content, so
   `|{.x} < |` is `<td class="x">&lt;</td>` - the attributes stay on the cell and

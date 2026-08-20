@@ -7,7 +7,7 @@ Fence opener with a nested-list body inside a list item
 .
 <ul>
   <li>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <ul>
         <li>para text</li>
       </ul>
@@ -23,7 +23,7 @@ Fence opener with a nested-list body inside a list item
 .
 <ul>
   <li>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <ol>
         <li>para text</li>
       </ol>
@@ -40,7 +40,7 @@ Fence opener with a nested-list body inside a list item
 .
 <ul>
   <li>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <ul>
         <li>one</li>
         <li>two</li>
@@ -58,7 +58,7 @@ Fence opener with a nested-list body inside a list item
 .
 <ul>
   <li>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <ul>
         <li>para text</li>
       </ul>
@@ -73,7 +73,7 @@ Fence opener with a nested-list body inside a list item
 .
 <ul>
   <li>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <ul>
         <li>para text</li>
       </ul>
@@ -89,7 +89,7 @@ Fence opener with a nested-list body inside a list item
 .
 <ul>
   <li>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <ul>
         <li>para text</li>
       </ul>
@@ -106,7 +106,7 @@ Fence opener with a nested-list body inside a list item
 .
 <ul>
   <li>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
 
     </aside>
   </li>

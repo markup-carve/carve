@@ -30,7 +30,7 @@ a.{.c} An alpha item.
 -{.c} [ ] A classed task item.
 .
 <ul>
-  <li class="c"><input type="checkbox" disabled> A classed task item.</li>
+  <li class="c"><input type="checkbox" disabled aria-label="A classed task item."> A classed task item.</li>
 </ul>
 ```
 

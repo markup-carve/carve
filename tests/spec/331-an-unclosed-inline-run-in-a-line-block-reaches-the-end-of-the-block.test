@@ -39,7 +39,7 @@ c d
 :::
 .
 <div class="line-block">
-  <p>a <span class="math inline">\(x
+  <p>a <span class="math inline" role="math">\(x
 c d\)</span></p>
 </div>
 ```

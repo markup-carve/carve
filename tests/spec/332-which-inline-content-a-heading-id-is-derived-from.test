@@ -4,7 +4,7 @@ Which inline content a heading id is derived from
 # a $`x` b
 .
 <section id="a-x-b">
-  <h1>a <span class="math inline">\(x\)</span> b</h1>
+  <h1>a <span class="math inline" role="math">\(x\)</span> b</h1>
 </section>
 ```
 
@@ -12,7 +12,7 @@ Which inline content a heading id is derived from
 # $`x`
 .
 <section id="x">
-  <h1><span class="math inline">\(x\)</span></h1>
+  <h1><span class="math inline" role="math">\(x\)</span></h1>
 </section>
 ```
 
@@ -20,7 +20,7 @@ Which inline content a heading id is derived from
 # a $$`x` b
 .
 <section id="a-x-b">
-  <h1>a <span class="math display">\[x\]</span> b</h1>
+  <h1>a <span class="math display" role="math">\[x\]</span> b</h1>
 </section>
 ```
 
@@ -70,7 +70,7 @@ Which inline content a heading id is derived from
 <section id="a-b">
   <h1>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</h1>
 </section>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">

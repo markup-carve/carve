@@ -15,7 +15,7 @@ Trailing whitespace boundaries
 ```
 $`  `
 .
-<p><span class="math inline">\(  \)</span></p>
+<p><span class="math inline" role="math">\(  \)</span></p>
 ```
 
 ```

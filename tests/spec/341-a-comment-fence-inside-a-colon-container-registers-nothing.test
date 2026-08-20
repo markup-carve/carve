@@ -11,7 +11,7 @@ Body.
 
 [r][]
 .
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>Body.</p>
 </aside>
 <p>[r][]</p>
