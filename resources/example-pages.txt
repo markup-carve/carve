@@ -597,6 +597,7 @@ index: examples/edge-cases/index.md
   39-inline-span-3
   39-inline-span-4
   39-inline-span-5
+  an-attribute-line-below-a-list-item-interrupts-it
 
 [edge-headings] Headings and cross-references
 > Section wrapping, id derivation and normalization, implicit and collapsed heading references.

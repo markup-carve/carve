@@ -3647,7 +3647,7 @@ function collectItems(lines, i, list, state, ind, meas) {
       // A definition BELOW every open content column is untouched - it never
       // reaches column 0 in any collector, so it still folds as text (corpus
       // 183).
-      if (!nm && lm.col === 0 && (FOOTNOTE_DEF.test(line) || isLinkDef(line))) break
+      if (!nm && lm.col === 0 && (FOOTNOTE_DEF.test(line) || isLinkDef(line) || tryAttrLine([line], 0))) break
       // `afterComment` joins `openPara` here for the other half of the same
       // clause: a comment ends the paragraph but not the ITEM, so a below-column
       // NON-marker line still belongs to the item -- it "begins the item's

@@ -1,0 +1,22 @@
+An attribute line below a list item interrupts it
+
+```
+- b
+{.x}
+
+> q
+.
+<ul>
+  <li>b</li>
+</ul>
+<blockquote class="x"><p>q</p></blockquote>
+```
+
+```
+- b
+{.x}
+.
+<ul>
+  <li>b</li>
+</ul>
+```
