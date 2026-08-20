@@ -23,7 +23,7 @@ see[^a]
           <tr><td>b</td></tr>
         </tbody>
       </table>
-      <p>closing line.<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>closing line.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

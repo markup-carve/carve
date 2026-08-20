@@ -113,7 +113,7 @@ test('a `+`-attached comment fence stays whole inside a block quote', () => {
 // control that says the fix moved the OTHER collectors onto this answer rather
 // than moving this one.
 
-const NOTE_TAIL = '<p><a href="#fnref1" role="doc-backlink">↩</a></p>'
+const NOTE_TAIL = '<p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>'
 const REF = '<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>'
 const note = (body) =>
   `${REF}<section role="doc-endnotes"><hr><ol><li id="fn1"><p>n</p>${body}</li></ol></section>`
@@ -136,7 +136,7 @@ test('a `+`-attached comment fence stays whole inside a footnote body', () => {
   // Invisible, so the note body is its definition line and the backlink only.
   assert.equal(
     html(doc('[^f]: n', '+', ...COMMENT, '', 'see[^f]')),
-    `${REF}<section role="doc-endnotes"><hr><ol><li id="fn1"><p>n<a href="#fnref1" role="doc-backlink">↩</a></p></li></ol></section>`,
+    `${REF}<section role="doc-endnotes"><hr><ol><li id="fn1"><p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p></li></ol></section>`,
   )
 })
 

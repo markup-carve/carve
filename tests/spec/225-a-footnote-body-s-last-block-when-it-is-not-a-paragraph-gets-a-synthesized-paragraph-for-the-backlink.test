@@ -16,7 +16,7 @@ see[^a]
       <p>note</p>
       <pre><code>code
 </code></pre>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -35,7 +35,7 @@ see[^a]
     <li id="fn1">
       <p>note</p>
       <blockquote><p>quoted</p></blockquote>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -62,7 +62,7 @@ see[^a]
           <tr><td>b</td></tr>
         </tbody>
       </table>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -86,7 +86,7 @@ see[^a]
       <aside class="admonition note">
         <p>d</p>
       </aside>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -108,7 +108,7 @@ see[^a]
     <li id="fn1">
       <p>note</p>
       <b>x</b>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

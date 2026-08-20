@@ -2496,7 +2496,7 @@ Carve has footnotes.[^fn]
   <hr>
   <ol>
     <li id="fn1">
-      <p>Defined anywhere; resolved by label.<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>Defined anywhere; resolved by label.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -2522,7 +2522,7 @@ See the note[^m].
   <ol>
     <li id="fn1">
       <p>First line of the note
-and a continuation line.<a href="#fnref1" role="doc-backlink">↩</a></p>
+and a continuation line.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -2563,7 +2563,7 @@ Text[^a]{.ref}.
   <hr>
   <ol>
     <li id="fn1">
-      <p>note.<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -2587,7 +2587,7 @@ See[^m] and again[^m].
   <hr>
   <ol>
     <li id="fn1">
-      <p>One note, two refs.<a href="#fnref1" role="doc-backlink">↩<sup>1</sup></a> <a href="#fnref1-2" role="doc-backlink">↩<sup>2</sup></a></p>
+      <p>One note, two refs.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference 1">↩<sup>1</sup></a> <a href="#fnref1-2" role="doc-backlink" aria-label="Back to reference 2">↩<sup>2</sup></a></p>
     </li>
   </ol>
 </section>
@@ -2639,10 +2639,10 @@ A note^[see *later*] inline. And a ref[^a].
   <hr>
   <ol>
     <li id="fn1">
-      <p>see <strong>later</strong><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>see <strong>later</strong><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
     <li id="fn2">
-      <p>reference body.<a href="#fnref2" role="doc-backlink">↩</a></p>
+      <p>reference body.<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -2665,7 +2665,7 @@ Text^[note]{.ref}.
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

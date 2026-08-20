@@ -12,7 +12,7 @@ a [^1] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>see <a href="/u">x</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>see <a href="/u">x</a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -30,10 +30,10 @@ a [^1] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>see <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>see <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
     <li id="fn2">
-      <p>two<a href="#fnref2" role="doc-backlink">↩</a></p>
+      <p>two<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -53,10 +53,10 @@ a [^1] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>see <a href="/u">t<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></a><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>see <a href="/u">t<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
     <li id="fn2">
-      <p>two<a href="#fnref2" role="doc-backlink">↩</a></p>
+      <p>two<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

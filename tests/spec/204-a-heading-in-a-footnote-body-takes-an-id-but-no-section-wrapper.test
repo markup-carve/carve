@@ -16,7 +16,7 @@ see[^a]
     <li id="fn1">
       <p>note</p>
       <h1 id="H">H</h1>
-      <p>after<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>after<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

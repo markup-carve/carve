@@ -12,6 +12,17 @@
  */
 
 import { Refuse, TIER1, bracketRunEnd } from './layout.mjs'
+
+/*
+ * THE WORDS THE ENGINE WRITES ITSELF (PART 9 SS16a, carve#1456).
+ *
+ * A renderer's `labels` map overrides these; the oracle pins the DEFAULTS,
+ * which is what the corpus documents. Every value is TEXT and is escaped at the
+ * point of use - unlike the `symbols` map, which is emitted raw.
+ */
+const LABELS = {
+  footnoteBacklink: 'Back to reference',
+}
 import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, NOTE_FRAME } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
@@ -1055,11 +1066,18 @@ function resolveFootnotes(html, ctx) {
     // backlink into the LAST paragraph (PART 9 SS16); a k-th repeat
     // reference adds an indexed backlink `↩<sup>k</sup>`
     const total = counts.get(label) ?? 1
+    // The accessible name is the label plus what the link VISIBLY says
+    // (carve#1455): a lone backlink shows `↩` and is named by the label alone,
+    // a k-th of several shows `↩<sup>k</sup>` and takes that k. Matching the
+    // visible text is WCAG 2.5.3, and it is why the number is not the note's -
+    // the note number is nowhere in this link's text.
+    const label_ = LABELS.footnoteBacklink
     const backlink = total === 1
-      ? `<a href="#fnref${n}" role="doc-backlink">↩</a>`
+      ? `<a href="#fnref${n}" role="doc-backlink" aria-label="${escapeAttr(label_)}">↩</a>`
       : Array.from({ length: total }, (_, kk) => {
           const refId = kk === 0 ? `fnref${n}` : `fnref${n}-${kk + 1}`
-          return `<a href="#${refId}" role="doc-backlink">↩<sup>${kk + 1}</sup></a>`
+          const name = escapeAttr(`${label_} ${kk + 1}`)
+          return `<a href="#${refId}" role="doc-backlink" aria-label="${name}">↩<sup>${kk + 1}</sup></a>`
         }).join(' ')
     if (rendered.endsWith('</p>')) {
       rendered = rendered.slice(0, -4) + backlink + '</p>'

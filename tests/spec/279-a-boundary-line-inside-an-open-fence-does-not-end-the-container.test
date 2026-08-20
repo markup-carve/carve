@@ -21,7 +21,7 @@ see[^f]
 [^z]: zz
 b
 </code></pre>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -48,7 +48,7 @@ see[^f]
 
 b
 </code></pre>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

@@ -23,7 +23,7 @@ see[^a]
           </ul>
         </li>
       </ul>
-      <p>end.<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>end.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
