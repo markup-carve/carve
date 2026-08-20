@@ -152,17 +152,24 @@ with a space.
 
 `<` left, `~` center, `>` right; paired `^` top, `~` middle, `v` bottom. A
 horizontal marker may stand alone; a vertical marker always needs a horizontal
-partner. The run is glued to the pipe and terminated by a space. On `|=` it sets
-column defaults; on a plain `|` it overrides that cell. Table attributes can
-set headerless defaults: `{aligns="right,center" valigns="top," widths="30,70"}`.
-Use `{header-rows=N footer-rows=N}` before a pipe table for explicit
-`thead`/`tfoot` ranges; `|=` header cells still work in the body.
+partner. Where that partner should stay whatever the column already says, `?`
+stands in for it: `?^`, `?~` and `?v` set the vertical axis only and leave the
+horizontal one to the column. The run is glued to the pipe and terminated by a
+space. On `|=` it sets column defaults; on a plain `|` it overrides that cell.
+Table attributes can set headerless defaults:
+`{aligns="right,center" valigns="top," widths="30,70"}`. Use
+`{header-rows=N footer-rows=N}` before a pipe table for explicit `thead`/`tfoot`
+ranges; `|=` header cells still work in the body.
 
 ```carve
 |=~ Item |=>^ Qty |
 | Apple | 12 |
 | Subtotal |<v 12 |
+| Total |?v 15 |
 ```
+
+`<v` overrides both axes for that cell; `?v` moves only the vertical one, so the
+Total figure keeps the column's right alignment.
 
 Glued is what makes it alignment; the terminating space ends the run. A
 standalone `| < |` cell is the colspan merge, `| ^ |` the rowspan merge.
