@@ -1,0 +1,25 @@
+An attributed cell keeps its attributes and its literal marker
+
+```
+| a | b |
+|{.x} < |{.y} ^ |
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td class="x">&lt;</td><td class="y">^</td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | b |
+| c | < |
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td colspan="2">c</td></tr>
+  </tbody>
+</table>
+```

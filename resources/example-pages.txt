@@ -204,6 +204,7 @@ index: examples/edge-cases/index.md
   table-cell-pipe-inside-code-span
   an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe
   a-continuation-row-s-open-run-and-an-escaped-closing-pipe
+  an-attributed-cell-keeps-its-attributes-and-its-literal-marker
   table-stacked-rowspan
   table-rowspan-with-multi-line-content
   superscript-in-a-table-cell

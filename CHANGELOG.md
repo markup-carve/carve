@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **An attributed cell keeps its attributes, and its marker stays literal**
+  (carve#1463). PART 9 §5 T4 makes an attributed cell ordinary content, so
+  `|{.x} < |` is `<td class="x">&lt;</td>` - the attributes stay on the cell and
+  the `<` never spans. All three engines already read it that way; this repo's
+  executable spec cleared the attributes and re-read the whole segment. Corpus
+  392.
+
 - **An attribute line below a list item interrupts it** (markup-carve/carve-rs#1167).
   A `{...}` line is an invisible construct like a comment or a reference
   definition, so at column 0 below an item it ends the item and floats forward
