@@ -61,7 +61,7 @@ write references in whatever case they like.
 ASCII fragments remain available as opt-in, orthogonal options
 (`lowercaseHeadingIds`, `asciiHeadingIds` in carve-js; the
 `LowercaseHeadingIdsExtension` / `AsciiHeadingIdsExtension` in carve-php; the
-`lowercase_heading_ids` option in carve-rs):
+`lowercase_heading_ids` and `ascii_heading_ids` options in carve-rs):
 
 | `lowercase` | `asciiFold` | `# Über uns` → |
 |:-:|:-:|---|
@@ -70,9 +70,15 @@ ASCII fragments remain available as opt-in, orthogonal options
 | off | on | `Uber-uns` (ascii, case kept) |
 | on | on | `uber-uns` (share-safe) |
 
-ASCII-folding is not available in carve-rs (it would require a transliteration
-table, which the zero-dependency Rust crate avoids); attach an explicit `{#id}`
-there when an ASCII fragment is required.
+ASCII-folding has two modes, because the transliteration table covers Latin,
+IPA, combining marks, Cyrillic, punctuation and currency - and not Greek, CJK or
+Arabic. Best-effort (carve-js `'fold'`, carve-rs `AsciiHeadingIds::Fold`) keeps
+what it cannot map, so `Ωmega` stays `Ωmega` and the heading keeps a usable
+anchor; strict (carve-js `'strict'`, carve-rs `AsciiHeadingIds::Strict`, and what
+carve-php's extension does) drops it, so `Ωmega` becomes `mega` and the id is
+guaranteed to match `[0-9A-Za-z-]`. All three engines carry the same table, so a
+folded id is byte-identical across them; carve-rs bakes it rather than taking a
+dependency.
 
 Smart-typography substitutions are also reversed to their ASCII source before
 the id is computed, so an id never depends on presentational typography:
