@@ -1301,7 +1301,33 @@ task_state = ' ' | 'x' | 'X' | '-' | '_' | '>' | '?' ;
    was gone from the output while the item parsed correctly. One serializer
    branch built the opener without it, and it was the branch every
    non-paragraph lead takes. carve-js and carve-php write it in all of them.
-   Corpus 363 pins three leads and both states. (carve#1381) *)
+   Corpus 363 pins three leads and both states. (carve#1381)
+
+   THE TASK BOX CARRIES AN ACCESSIBLE NAME -- NORMATIVE (carve#1468). The box
+   is an <input type="checkbox"> and the word beside it is a SIBLING TEXT
+   NODE - not a <label>, not an aria-label - so the input carried a STATE and
+   no NAME, and a reader met an unlabeled disabled checkbox with ordinary prose
+   next to it. The box takes an `aria-label` naming it with the item's own
+   visible text: the DERIVED TEXT of the item's first block (PART 9R R4's
+   derivation, the same one a heading id and a crossref clone read). A
+   paragraph spans LINES -- a soft wrap, or a lazy continuation folded into it
+   -- and a name is ONE line, so each run of ASCII whitespace in the derived
+   text collapses to a single space and the result is trimmed. A NO-BREAK space
+   is content and survives; the collapse is ASCII-only for that reason.
+   Deriving rather than inventing is what keeps this string out of the `labels`
+   map (PART 9 SS16a) - it is the AUTHOR's text, already on the page, so a host
+   translating the document translates it exactly once.
+     `- [ ] unchecked`   ->  `<input type="checkbox" disabled
+                              aria-label="unchecked">`
+     `- [x] done with `c``  ->  `... checked disabled aria-label="done with c"`
+   NO NAME IS WRITTEN WHERE THERE IS NOTHING TO SAY. Only the item's FIRST
+   block can sit beside the box, and only a paragraph carries inline text, so
+   an item whose first block is a quote, a fence, a `:::` div, a table, a
+   heading or a thematic break takes NO `aria-label` - as does one whose first
+   paragraph derives to the empty string. An empty name is worse than an absent
+   one: it names the control the empty string instead of leaving a reader's own
+   fallback, the adjacent text, in play. The checkbox and its state are still
+   written in every one of those leads, which is the rule directly above. *)
 
 (* --- Definition Lists --- *)
 definition_list = definition_entry+ ;
@@ -5178,6 +5204,38 @@ EOF = (* end of file *) ;
            An explicitly empty `""` still counts as a supplied (empty)
            title. Applies to both tiers.
 
+      AN ADMONITION LANDMARK CARRIES AN ACCESSIBLE NAME -- NORMATIVE
+      (carve#1468). A Tier-1 block renders `<aside>`, which is a COMPLEMENTARY
+      LANDMARK, and a landmark with no name is an anonymous row in a reader's
+      landmark list -- the same defect as the unnamed backlink SS16 records, one
+      element up. Tier 2 renders `<div>`, is not a landmark, and takes nothing
+      here.
+
+        TITLED: the name is the title the author already wrote. The
+        `<p class="admonition-title">` takes an `id` and the aside points at it
+        with `aria-labelledby`, so the visible name and the accessible name are
+        ONE string that cannot drift apart:
+            <aside class="admonition warning" aria-labelledby="adm-1">
+              <p class="admonition-title" id="adm-1">Careful</p>
+
+        UNTITLED: there is no visible name to point at, so the name is the TYPE
+        WORD, drawn from the `labels` map (SS16a) rather than fixed English:
+            <aside class="admonition note" aria-label="Note">
+
+        The minted id is `adm-{n}`, n counting Tier-1 titled blocks in document
+        order from 1, allocated through the SAME slug registry as heading ids
+        so it can never collide with one this document generates. (An id the
+        author writes by hand does not register -- the pre-existing property of
+        SS13's registry, not a new hole here.)
+
+        THE AUTHOR'S OWN NAME WINS, MATCHED CASE-INSENSITIVELY. When the
+        attribute line carries either `aria-label` or `aria-labelledby` under
+        ANY ASCII casing -- an author's attribute NAME is emitted verbatim and
+        HTML attribute names are case-insensitive, so `ARIA-LABEL` is the same
+        attribute -- the engine writes NEITHER attribute and mints no id: a second naming attribute beside the author's leaves
+        the name undefined, and the author's is the more specific statement.
+        The title `<p>` is still emitted, unchanged, without an id.
+
    13. HEADING SECTION WRAPPING -- NORMATIVE (governs `atx_heading` in
       PART 2 and the renderer; matches djot, see `jgm/djot` official
       `headings.test`). Every heading emits a `<section id="{id}">`
@@ -5574,6 +5632,19 @@ EOF = (* end of file *) ;
         2.5.3, and it is why the number here is the REFERENCE ORDINAL and not
         the note number: the note number appears nowhere in this link's text.
         The name is TEXT and is attribute-escaped.
+        THE ENDNOTES SECTION CARRIES AN ACCESSIBLE NAME -- NORMATIVE
+        (carve#1468). The rule above names the LINKS and left the REGION they
+        sit in anonymous: `<section role="doc-endnotes">` says what the region
+        is and nothing said what it is called, so a landmark list held an
+        unnamed entry for exactly the reason the backlink did. The section
+        takes `aria-label`, the string is the `endnotes` label (SS16a), and it
+        is escaped the same way:
+            <section role="doc-endnotes" aria-label="Footnotes">
+        The default is "Footnotes" rather than "Endnotes" because that is the
+        word the rest of this grammar uses for the construct, and a reader
+        meeting the region should hear the name the document's own prose uses
+        for it. A host that renders them at the end and calls them endnotes
+        sets the label; that is what the map is for.
       - BACKLINK PLACEMENT WHEN THE BODY DOES NOT END IN A PARAGRAPH. "The
         note's last paragraph" above presumes there is one. When the note
         body's LAST BLOCK is not a paragraph (a code block, a block quote, a
@@ -5884,8 +5955,8 @@ EOF = (* end of file *) ;
       `$` + verbatim backtick span; display `$$` + verbatim backtick
       span. A `$` NOT immediately followed by a backtick run is literal
       (`$5` is currency); `\$` escapes a literal `$`. Rendering:
-        inline  -> <span class="math inline">\(content\)</span>
-        display -> <span class="math display">\[content\]</span>
+        inline  -> <span class="math inline" role="math">\(content\)</span>
+        display -> <span class="math display" role="math">\[content\]</span>
       `content` is the verbatim span text, HTML-escaped (`&`,`<`,`>`).
       Display math alone on a line renders inside its own paragraph. A
       standalone display-math block carrying a trailing caption (PART 9 §4)
@@ -5893,6 +5964,29 @@ EOF = (* end of file *) ;
       `</#id>` to it resolves to "Equation N" (§19).
       Author `{attrs}` after the span merge onto the <span> (the base
       `math …` class is kept; see PART 10 §1).
+
+      A MATH SPAN CARRIES ROLE MATH -- NORMATIVE (carve#1468). The delimiters
+      are written for a typesetter to find. Until one runs -- and if none ever
+      does, which is the default, since no engine ships one -- the span is a
+      plain `<span>` full of backslashes and carets, and a reader announces
+      them as prose: "backslash paren E equals m c caret 2". `role="math"` says
+      the run IS MATHEMATICS whether or not the script arrives, and a reader
+      that understands the role can hand the content to a math view instead of
+      spelling it.
+
+      THE NAME STAYS THE AUTHOR'S, and no key is added to §16a for it. A
+      formula's spoken form is not a string the engine could know -- it is
+      per-formula content, not an engine word -- and the seam for it already
+      exists: `{attrs}` merge onto this same span, so a trailing
+      {aria-label="E equals m c squared"} on the formula needs nothing new. An
+      author who spells their own `role` keeps it -- under any ASCII casing,
+      for the reason SS12 states: the name is emitted verbatim, HTML attribute
+      names are case-insensitive, so a case-SENSITIVE test writes a duplicate of
+      the very attribute it is checking for.
+
+      `role` is written LAST, after the merged author attributes, so adding it
+      never moves an attribute the author placed (the ordering PART 10 §1
+      pins for the base class).
 
    19. CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES -- NORMATIVE
       (resolution formalized as PART 9R rules R4/R5; behavior detail here).
@@ -7071,12 +7165,34 @@ EOF = (* end of file *) ;
 
      footnoteBacklink   "Back to reference"   PART 9 §16, the endnote backlink's
                                               accessible name
+     endnotes           "Footnotes"           PART 9 §16, the endnotes
+                                              section's accessible name
+     admonitionNote     "Note"                PART 9 §12, an UNTITLED Tier-1
+     admonitionTip      "Tip"                 admonition's accessible name.
+     admonitionWarning  "Warning"             One key per canonical type; a
+     admonitionDanger   "Danger"              TITLED admonition is named by
+     admonitionInfo     "Info"                its own title and draws no
+     admonitionSuccess  "Success"             string from here.
+     admonitionExample  "Example"
+     admonitionQuote    "Quote"
 
-   ONE KEY IS NOT AN OVERSIGHT. The set is small because the ENGINE writes
-   little: this is the only string core rendering produces that a reader hears.
-   The map exists rather than a per-construct option because core has no
-   extension to hang an option on, and because the next such string wants a
-   place to land that the three engines already agree on.
+   THE SET IS SMALL BECAUSE THE ENGINE WRITES LITTLE. Every key here names a
+   string a READER HEARS and no author can spell: an accessible name on an
+   element the author never wrote. That is the whole test for admission, and it
+   is why the set grew from one key to ten in a single sweep (carve#1468) and
+   is expected to stay near that size. The map exists rather than a
+   per-construct option because core has no extension to hang an option on, and
+   because a new such string needs a place to land that the three engines
+   already agree on.
+
+   WHAT DOES NOT BELONG HERE, restated because the sweep tested it four times:
+   a string the AUTHOR already wrote is never a key. A task box is named by its
+   item's own text and an admonition with a title is named by that title
+   (PART 2 `task_marker`, §12), both DERIVED rather than written, so neither
+   adds a key. A host that translates the document translates those once, in
+   the document. Only where there is nothing on the page to read does a label
+   appear -- the untitled admonition's type word, and the two footnote
+   strings.
 
    EXTENSION-WRITTEN STRINGS STAY WITH THEIR EXTENSION. The heading-permalink
    label and the table-of-contents summary are already options on the

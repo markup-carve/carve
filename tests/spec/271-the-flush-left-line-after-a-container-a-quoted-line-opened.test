@@ -7,7 +7,7 @@ tail
 .
 <blockquote>
   <p>quote</p>
-  <aside class="admonition note">
+  <aside class="admonition note" aria-label="Note">
 
   </aside>
 </blockquote>
@@ -23,7 +23,7 @@ tail
 .
 <blockquote>
   <p>quote</p>
-  <aside class="admonition note">
+  <aside class="admonition note" aria-label="Note">
 
   </aside>
 </blockquote>
@@ -39,7 +39,7 @@ tail
 .
 <blockquote>
   <p>quote</p>
-  <aside class="admonition note">
+  <aside class="admonition note" aria-label="Note">
     <p>body</p>
   </aside>
 </blockquote>

@@ -31,7 +31,7 @@ x
 
 y
 .
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>x</p>
 </aside>
 <p>y</p>
@@ -54,7 +54,7 @@ y
 see[^f]
 .
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">

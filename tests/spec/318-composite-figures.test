@@ -152,7 +152,7 @@ Body text.
 :::
 ^ Not a caption
 .
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>Body text.</p>
 </aside>
 <p>^ Not a caption</p>
@@ -242,7 +242,7 @@ $$`E = mc^2`
     <figcaption>A listing panel</figcaption>
   </figure>
   <figure class="carve-figure-panel">
-    <p><span class="math display">\[E = mc^2\]</span></p>
+    <p><span class="math display" role="math">\[E = mc^2\]</span></p>
     <figcaption>An equation panel</figcaption>
   </figure>
   <blockquote><p>Measured twice.</p></blockquote>
@@ -264,7 +264,7 @@ $$`E = mc^2`
 ^ Figure #: group
 .
 <figure class="carve-figure-group">
-  <aside class="admonition note">
+  <aside class="admonition note" aria-label="Note">
     <figure>
       <img src="x.png" alt="x">
       <figcaption>Figure 2: inner</figcaption>

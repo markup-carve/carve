@@ -126,7 +126,7 @@ $$`E = mc^2`
 See </#eq-emc>.
 .
 <figure id="eq-emc">
-  <p><span class="math display">\[E = mc^2\]</span></p>
+  <p><span class="math display" role="math">\[E = mc^2\]</span></p>
   <figcaption>Equation 1: mass-energy</figcaption>
 </figure>
 <p>See <a href="#eq-emc">Equation 1</a>.</p>

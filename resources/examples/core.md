@@ -799,7 +799,7 @@ A task item's content column is the bullet width (2), since the checkbox is cont
 
 ```html
 <ul>
-  <li><input type="checkbox" disabled> outer
+  <li><input type="checkbox" disabled aria-label="outer"> outer
     <ul>
       <li>inner</li>
     </ul>
@@ -1005,8 +1005,8 @@ lazy</li>
 
 ```html
 <ul>
-  <li><input type="checkbox" disabled> todo</li>
-  <li><input type="checkbox" checked disabled> done</li>
+  <li><input type="checkbox" disabled aria-label="todo"> todo</li>
+  <li><input type="checkbox" checked disabled aria-label="done"> done</li>
 </ul>
 ```
 
@@ -1025,10 +1025,10 @@ Only `[x]`/`[X]` render a checked box; every other state (`[ ]`, `[-]`, `[_]`, `
 
 ```html
 <ul>
-  <li><input type="checkbox" disabled> dropped</li>
-  <li><input type="checkbox" disabled> paused</li>
-  <li><input type="checkbox" disabled> deferred</li>
-  <li><input type="checkbox" disabled> maybe</li>
+  <li><input type="checkbox" disabled aria-label="dropped"> dropped</li>
+  <li><input type="checkbox" disabled aria-label="paused"> paused</li>
+  <li><input type="checkbox" disabled aria-label="deferred"> deferred</li>
+  <li><input type="checkbox" disabled aria-label="maybe"> maybe</li>
 </ul>
 ```
 
@@ -2462,8 +2462,8 @@ $$`\int_0^1 x\,dx`
 ```
 
 ```html
-<p>Inline <span class="math inline">\(E = mc^2\)</span> and currency $5 stays literal.</p>
-<p><span class="math display">\[\int_0^1 x\,dx\]</span></p>
+<p>Inline <span class="math inline" role="math">\(E = mc^2\)</span> and currency $5 stays literal.</p>
+<p><span class="math display" role="math">\[\int_0^1 x\,dx\]</span></p>
 ```
 
 :::
@@ -2480,7 +2480,7 @@ $`a^2`{.boxed #eq1 data-k=v}
 ```
 
 ```html
-<p><span class="math inline boxed" id="eq1" data-k="v">\(a^2\)</span></p>
+<p><span class="math inline boxed" id="eq1" data-k="v" role="math">\(a^2\)</span></p>
 ```
 
 :::
@@ -2508,7 +2508,7 @@ Carve has footnotes.[^fn]
 
 ```html
 <p>Carve has footnotes.<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -2533,7 +2533,7 @@ See the note[^m].
 
 ```html
 <p>See the note<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -2575,7 +2575,7 @@ Text[^a]{.ref}.
 
 ```html
 <p>Text<a id="fnref1" href="#fn1" role="doc-noteref" class="ref"><sup>1</sup></a>.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -2599,7 +2599,7 @@ See[^m] and again[^m].
 
 ```html
 <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and again<a id="fnref1-2" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -2651,7 +2651,7 @@ A note^[see *later*] inline. And a ref[^a].
 
 ```html
 <p>A note<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> inline. And a ref<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a>.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -2677,7 +2677,7 @@ Text^[note]{.ref}.
 
 ```html
 <p>Text<a id="fnref1" href="#fn1" role="doc-noteref" class="ref"><sup>1</sup></a>.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -2805,7 +2805,7 @@ X
 ```html
 <div class="outer">
   <div class="middle">
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <p>X</p>
     </aside>
   </div>
@@ -3821,7 +3821,7 @@ b
 <div class="hardbreaks">
   <p>indented<br>
 next</p>
-  <aside class="admonition note">
+  <aside class="admonition note" aria-label="Note">
     <p>a
 b</p>
   </aside>

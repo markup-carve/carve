@@ -58,7 +58,7 @@ test('a `+`-attached code fence stays whole inside a list item', () => {
 test('a `+`-attached colon fence stays whole inside a list item', () => {
   assert.equal(
     html(doc('- x', '+', ...COLON, '', 'z')),
-    '<ul><li>x <aside class="admonition note"><p>a</p><p>b</p></aside></li></ul><p>z</p>',
+    '<ul><li>x <aside class="admonition note" aria-label="Note"><p>a</p><p>b</p></aside></li></ul><p>z</p>',
   )
 })
 
@@ -80,7 +80,7 @@ test('a first-block `- +` keeps its code fence whole', () => {
 test('a first-block `- +` keeps its colon fence whole', () => {
   assert.equal(
     html(doc('- +', ...COLON, '', 'z')),
-    '<ul><li><aside class="admonition note"><p>a</p><p>b</p></aside></li></ul><p>z</p>',
+    '<ul><li><aside class="admonition note" aria-label="Note"><p>a</p><p>b</p></aside></li></ul><p>z</p>',
   )
 })
 
@@ -100,7 +100,7 @@ test('a `+`-attached code fence stays whole inside a block quote', () => {
 test('a `+`-attached colon fence stays whole inside a block quote', () => {
   assert.equal(
     html(doc('> q', '+', ...COLON, '', 'z')),
-    '<blockquote><p>q</p><aside class="admonition note"><p>a</p><p>b</p></aside></blockquote><p>z</p>',
+    '<blockquote><p>q</p><aside class="admonition note" aria-label="Note"><p>a</p><p>b</p></aside></blockquote><p>z</p>',
   )
 })
 
@@ -116,7 +116,7 @@ test('a `+`-attached comment fence stays whole inside a block quote', () => {
 const NOTE_TAIL = '<p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>'
 const REF = '<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>'
 const note = (body) =>
-  `${REF}<section role="doc-endnotes"><hr><ol><li id="fn1"><p>n</p>${body}</li></ol></section>`
+  `${REF}<section role="doc-endnotes" aria-label="Footnotes"><hr><ol><li id="fn1"><p>n</p>${body}</li></ol></section>`
 
 test('a `+`-attached code fence stays whole inside a footnote body', () => {
   assert.equal(
@@ -128,7 +128,7 @@ test('a `+`-attached code fence stays whole inside a footnote body', () => {
 test('a `+`-attached colon fence stays whole inside a footnote body', () => {
   assert.equal(
     html(doc('[^f]: n', '+', ...COLON, '', 'see[^f]')),
-    note(`<aside class="admonition note"><p>a</p><p>b</p></aside>${NOTE_TAIL}`),
+    note(`<aside class="admonition note" aria-label="Note"><p>a</p><p>b</p></aside>${NOTE_TAIL}`),
   )
 })
 
@@ -136,7 +136,7 @@ test('a `+`-attached comment fence stays whole inside a footnote body', () => {
   // Invisible, so the note body is its definition line and the backlink only.
   assert.equal(
     html(doc('[^f]: n', '+', ...COMMENT, '', 'see[^f]')),
-    `${REF}<section role="doc-endnotes"><hr><ol><li id="fn1"><p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p></li></ol></section>`,
+    `${REF}<section role="doc-endnotes" aria-label="Footnotes"><hr><ol><li id="fn1"><p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p></li></ol></section>`,
   )
 })
 
@@ -150,7 +150,7 @@ test('a `+`-attached code fence stays whole inside a `dd`', () => {
 test('a `+`-attached colon fence stays whole inside a `dd`', () => {
   assert.equal(
     html(doc(':: t', ':  d', '+', ...COLON, '', 'z')),
-    '<dl><dt>t</dt><dd><p>d</p><aside class="admonition note"><p>a</p><p>b</p></aside></dd></dl><p>z</p>',
+    '<dl><dt>t</dt><dd><p>d</p><aside class="admonition note" aria-label="Note"><p>a</p><p>b</p></aside></dd></dl><p>z</p>',
   )
 })
 

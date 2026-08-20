@@ -95,7 +95,7 @@ x
 x
 :::
 .
-<aside class="admonition note">
+<aside class="admonition note" aria-label="Note">
   <p>x</p>
 </aside>
 ```

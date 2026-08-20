@@ -7,7 +7,7 @@ A definition on a footnote body's continuation line is collected
 see[^a] and [t][r]
 .
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and <a href="/u">t</a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">

@@ -787,13 +787,20 @@ body
 :::
 
 Djot:   <div class="note"><p>body</p></div>
-Carve:  <aside class="admonition note"><p>body</p></aside>
+Carve:  <aside class="admonition note" aria-label="Note"><p>body</p></aside>
 ```
 
 **Why.** An admonition is a landmark for assistive technology, and `<aside>`
 carries that where a `<div>` does not. RENDERER SPECIALIZATION rather than a
 source or AST break: the same source produces the same tree shape, and only the
 element it renders to differs.
+
+The name comes with the landmark, because an unnamed one is an anonymous row in
+a reader's landmark list - the benefit the `<aside>` was chosen for is only
+delivered once the region can be told apart from the next one. An admonition
+that carries a title is named by that title instead
+(`aria-labelledby` pointing at the `<p class="admonition-title">`), so the
+visible name and the spoken one are a single string. See PART 9 §12.
 
 ## 21. Footnote labels are matched exactly
 

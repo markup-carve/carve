@@ -9,7 +9,7 @@ a ^[see </#h>] b
 <section id="h">
   <h1>h</h1>
 </section>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -23,7 +23,7 @@ a ^[see </#h>] b
 a ^[see </#nope>] b
 .
 <p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -39,7 +39,7 @@ a ^[see [t][r]] b
 [r]: /u
 .
 <p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -55,7 +55,7 @@ a ^[see ![z][r]] b
 [r]: /i.png
 .
 <p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -74,7 +74,7 @@ a ^[see [h][]] b
 <section id="h">
   <h1>h</h1>
 </section>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -93,7 +93,7 @@ a ^[</#h>]{.c} b
 <section id="h">
   <h1>h</h1>
 </section>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -114,7 +114,7 @@ a [^1] b
 <section id="h">
   <h1>h</h1>
 </section>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">

@@ -6,7 +6,7 @@ Carve has footnotes.[^fn]
 [^fn]: Defined anywhere; resolved by label.
 .
 <p>Carve has footnotes.<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -22,7 +22,7 @@ See the note[^m].
    and a continuation line.
 .
 <p>See the note<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -46,7 +46,7 @@ Text[^a]{.ref}.
 [^a]: note.
 .
 <p>Text<a id="fnref1" href="#fn1" role="doc-noteref" class="ref"><sup>1</sup></a>.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -62,7 +62,7 @@ See[^m] and again[^m].
 [^m]: One note, two refs.
 .
 <p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> and again<a id="fnref1-2" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">

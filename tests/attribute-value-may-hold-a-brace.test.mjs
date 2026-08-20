@@ -57,7 +57,7 @@ test('a task bullet keeps its block when a value holds a brace', () => {
   // The task state is read after the block, so a short run loses the checkbox
   // as well as the attribute.
   const out = html('-{title="a}b"} [x] done\n')
-  assert.match(out, /<li title="a}b"><input type="checkbox" checked disabled> done<\/li>/, out)
+  assert.match(out, /<li title="a}b"><input type="checkbox" checked disabled aria-label="done"> done<\/li>/, out)
 })
 
 test('either quote style holds a brace', () => {

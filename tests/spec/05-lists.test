@@ -135,7 +135,7 @@ not a list</p>
   - inner
 .
 <ul>
-  <li><input type="checkbox" disabled> outer
+  <li><input type="checkbox" disabled aria-label="outer"> outer
     <ul>
       <li>inner</li>
     </ul>

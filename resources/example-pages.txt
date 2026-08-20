@@ -599,6 +599,7 @@ index: examples/edge-cases/index.md
   39-inline-span-4
   39-inline-span-5
   an-attribute-line-below-a-list-item-interrupts-it
+  an-engine-written-shape-says-what-it-is-called
 
 [edge-headings] Headings and cross-references
 > Section wrapping, id derivation and normalization, implicit and collapsed heading references.

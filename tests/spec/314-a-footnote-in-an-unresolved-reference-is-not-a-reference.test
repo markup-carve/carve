@@ -14,7 +14,7 @@ a [t[^1]][nope] b [^1] c
 [^1]: n
 .
 <p>a [t[^1]][nope] b <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> c</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
@@ -36,7 +36,7 @@ a [t[^1]] b
 [^1]: n
 .
 <p>a [t<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>] b</p>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">

@@ -1042,7 +1042,20 @@ function mathSpan(kind, code, attrs) {
   )
   // No authored class at all: nothing to place the base class after, so it leads.
   if (!emittedClasses) rest = classAttr() + rest
-  return `<span${rest}>${wrap[0]}${body}${wrap[1]}</span>`
+  // PART 9 SS18 A MATH SPAN CARRIES ROLE MATH (carve#1468). The span carries
+  // `role="math"`. The delimiters exist for a
+  // typesetter to find, and until one runs - or if none ever does - a reader
+  // announces the backslashes and the caret as prose. The role says the run is
+  // MATHEMATICS whether or not the script arrives. The NAME stays the author's:
+  // `{aria-label="E equals m c squared"}` is an ordinary key/value on the same
+  // carrier, so the seam already exists and no engine-written English is added.
+  // An author who spelled their own `role` keeps it.
+  // ASCII-case-insensitive: an author's attribute NAME is emitted verbatim and
+  // HTML attribute names are case-insensitive, so `ROLE` and `role` are one
+  // attribute and a case-sensitive match writes a duplicate of it.
+  const authoredRole = list.some((a) => a[0] === 'kv' && a[1].toLowerCase() === 'role')
+  const roleStr = authoredRole ? '' : ' role="math"'
+  return `<span${rest}${roleStr}>${wrap[0]}${body}${wrap[1]}</span>`
 }
 
 // parse a standalone `{...}` attribute block (table row/cell attrs);
