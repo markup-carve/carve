@@ -1,0 +1,16 @@
+A braced hyphen pair is an en dash
+
+```
+The bare run is flag-shaped and stays literal: a ---(p) b.
+
+The braced form converts wherever it stands: a {--}(p) b, x{--}y, {--}start.
+.
+<p>The bare run is flag-shaped and stays literal: a ---(p) b.</p>
+<p>The braced form converts wherever it stands: a –(p) b, x–y, –start.</p>
+```
+
+```
+{---} and {-x-} still delete.
+.
+<p><del>-</del> and <del>x</del> still delete.</p>
+```

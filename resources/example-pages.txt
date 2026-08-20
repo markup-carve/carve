@@ -414,6 +414,8 @@ index: examples/edge-cases/index.md
   an-escaped-hash-keeps-its-escape-at-a-container-s-content-position
   an-unclosed-inline-literal-reaches-the-end-of-its-block
   a-hyphen-run-opening-a-word-after-whitespace-is-a-flag
+  a-braced-hyphen-pair-is-an-en-dash
+  an-empty-brace-pair-is-not-a-construct
   01-emphasis-2
   01-emphasis-3
   01-emphasis-6

@@ -2937,6 +2937,34 @@ forced_strike     = "{~", forced_content, "~}", [attributes] ;
    distinction from the raw-inline `{=format}` attribute). *)
 forced_highlight  = "{=", forced_content, "=}", [attributes] ;
 forced_content    = (inline_element | text_run | literal_special)+ ;
+(* AN EMPTY BRACE PAIR IS NOT A CONSTRUCT -- NORMATIVE (carve#1447). The `+`
+   above is load-bearing: an opener that meets its own closer with nothing
+   between them opened nothing, and its characters are TEXT.
+
+     {//}  {**}  {__}  {~~}  {^^}  {,,}  {==}  {++}  {##}
+
+   all render literally. This is not a new rule -- it is the one already
+   written here and in docs/parsing-ambiguities.md §16 ("`{^^}` # Not
+   superscript (no content)"), and the two engines that read it that way,
+   carve-js and carve-rs, were the ones in conformance. The oracle and
+   carve-php emitted empty elements: `<em></em>`, `<sup></sup>`, `<mark></mark>`.
+
+   IT APPLIES TO THE EDITORIAL FAMILY TOO, whose content slots are the same
+   `+` repetition. `{++}` was an `<ins>` inserting nothing and `{##}` a comment
+   saying nothing to anybody; `{--}` was a `<del>` deleting nothing, and the
+   string it freed is the braced en dash (PART 9 §8).
+
+   AN EMPTY ELEMENT IS NOT THE HARM -- the harm is that the braces vanish. An
+   author who wrote `{^^}` sees their four characters replaced by nothing
+   visible, in the output only, which is the same silent-loss shape the hyphen
+   flanking rule refuses. Reading them back as text loses nothing.
+
+   THE ONE FORM LEFT ALONE is a fully empty SUBSTITUTION, `{~~>~}`, which still
+   renders an empty del followed by an empty ins. Substitution is an open
+   divergence (see Editorial Markup below), and the same `+` on both of its
+   halves would also refuse `{~a~>~}` and `{~~>b~}` -- a deletion with no
+   replacement and an insertion replacing nothing, which are ordinary edits.
+   It needs its own decision rather than this one. *)
 
 (* TRAILING ATTRIBUTES -- each emphasis-family span MAY carry a trailing
    `[attributes]` block: the generic inline-attribute carrier that attaches
@@ -3149,7 +3177,9 @@ addition = "{+", inline_content, "+}", [attributes] ;
 deletion = "{-", inline_content, "-}", [attributes] ;
 substitution = "{~", inline_content, "~>", inline_content, "~}" ;
 editorial_comment = "{#", comment_content, "#}" ;
-comment_content = (* any text until the matching `#}`, preserved literally *) ;
+comment_content = (* any text until the matching `#}`, preserved literally;
+                     at least one character -- see the empty-brace clause under
+                     Forced Intraword Emphasis *) ;
 (* CONTENT IS LITERAL -- NORMATIVE. Nothing inside is parsed as markup, spaces
    are preserved, and no escape is resolved: `{# a *b* c #}` holds the eight
    characters ` a *b* c ` and renders them, asterisks included. This says what
@@ -3165,6 +3195,21 @@ comment_content = (* any text until the matching `#}`, preserved literally *) ;
 
    `addition` and `deletion` are NOT literal: they take `inline_content`, and
    `{+a *b* c+}` really does emphasize `b`.
+
+   AN ADDITION'S AND A DELETION'S CONTENT IS NON-EMPTY, and the productions
+   ALREADY SAID SO: `inline_content` is a `+` repetition. `comment_content` now
+   says it too. `{++}`, `{--}` and `{##}` are therefore text, under the same
+   empty-brace clause the forced spans carry (carve#1447); `{---}` is still
+   `<del>-</del>` and `{-x-}` is still `<del>x</del>`. The string `{--}` freed
+   is the braced en dash (PART 9 §8).
+
+   `substitution` is NOT widened. Both of its halves are spelled
+   `inline_content`, but a half-empty substitution is a real edit -- `{~a~>~}`
+   deletes and `{~~>b~}` inserts -- so requiring content on each half would
+   refuse them, and requiring it across the pair is a different production.
+   The fully empty `{~~>~}` therefore still renders two empty elements, and
+   that sits with substitution's open divergence rather than with this
+   clause.
 
    `substitution` is an OPEN divergence, deliberately left alone here. Its
    production says `inline_content`, and all three implementations render
@@ -3275,14 +3320,45 @@ symbol_name = (letter | digit | '+' | '-'), {letter | digit | '_' | '+' | '-'} ;
    is `word:±:`. Pinned by the corpus (Symbols section). *)
 
 (* --- Smart Typography --- *)
-smart_typography = em_dash | en_dash | ellipsis | smart_quote
+smart_typography = em_dash | en_dash | braced_en_dash | ellipsis | smart_quote
                  | arrow | comparison | typographic_symbol ;
 (* NOTE: fractions are deliberately NOT converted (PART 9 §8 / dismissed-
    syntax.md) -- `1/2` collides with dates (`1/2/2024`) and paths. *)
 
 em_dash = "---" ;     (* → — *)
 en_dash = "--" ;      (* → – *)
+braced_en_dash = "{--}" ;   (* → – *)
 ellipsis = "..." ;    (* → … *)
+(* A BRACED HYPHEN PAIR IS AN EN DASH, NOT AN EMPTY DELETION -- NORMATIVE
+   (carve#1447). `{--}` renders a single EN DASH and the braces are consumed.
+
+   It exists because the flanking rule below leaves a position an author cannot
+   spell. A run with whitespace before it and a non-whitespace character after
+   it is flag-shaped and stays literal, which is right for `git log --oneline`
+   and wrong for the author who meant a dash there -- `x ---That`, `x ---(p)`
+   and `x ---, y` are all refused by that rule, and only the first of them is
+   plausibly a flag. `{--}` is the way to say "a dash, here, whatever stands
+   next to it", and it follows the braced precedent that forced spans already
+   set: a collision-prone bare form keeps a braced spelling that never
+   collides.
+
+   THE SPELLING WAS TAKEN, AND WHAT IT COST IS NOTHING. `{--}` rendered
+   `<del></del>`: the `{-` opener meeting its `-}` closer with no content, a
+   deletion that deletes nothing. `deletion` never permitted that -- its
+   content slot is `inline_content`, a `+` repetition -- so no conforming
+   document loses anything, and exactly one string moves: `{---}` is still
+   `<del>-</del>`, `{-x-}` is still `<del>x</del>`.
+
+   Every other empty brace pair reads back as TEXT rather than as a dash: see
+   the empty-brace clause under Forced Intraword Emphasis. `{--}` is the one
+   that becomes something, because a dash wanted the spelling and nothing
+   wants `{++}`.
+
+   There is NO braced EM dash. `{---}` is a deletion of a hyphen, which is a
+   thing an author writes, and taking it would cost what taking `{--}` did not.
+   So a tight em dash -- the Spanish, French and Russian dialogue convention,
+   `---That is mine.` -- still has no shorthand and is written as the literal
+   character. *)
 (* A HYPHEN RUN OPENING A WORD AFTER WHITESPACE IS A FLAG, NOT A DASH --
    NORMATIVE (carve#1443). A run of hyphens PRECEDED by whitespace (or the
    start of the inline content) and FOLLOWED by a non-whitespace character

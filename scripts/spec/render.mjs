@@ -619,6 +619,14 @@ const sem = g.createSemantics().addOperation('h', {
   ellipsis(_e) {
     return '\u2026'
   },
+  bracedDash(_d) {
+    // A BRACED HYPHEN PAIR IS AN EN DASH, NOT AN EMPTY DELETION (carve#1447).
+    // The bare run carries a flanking guard, so `x --verbose y` is literal and
+    // an author who MEANT a dash in that position had no way to say so. `{--}`
+    // is that way, and it costs nothing: the string it took was an empty
+    // `<del></del>`, which deletes nothing and no author writes.
+    return '\u2013'
+  },
   dashRun(_a, _b) {
     // PART 9 SS8, carve#1443: a run PRECEDED by whitespace (or nothing) and
     // FOLLOWED by a non-whitespace character is a flag, not a dash, and stays

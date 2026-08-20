@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **An empty brace pair is not a construct** (carve#1447). `{//}`, `{**}`,
+  `{__}`, `{~~}`, `{^^}`, `{,,}`, `{==}`, `{++}` and `{##}` render literally;
+  every content slot was already a one-or-more repetition. A fully empty
+  substitution is unchanged. Corpus 387.
+- **`{--}` is an en dash, not an empty deletion** (carve#1447). The string the
+  empty deletion freed becomes the braced en dash, which converts in the flag
+  position the bare hyphen run refuses. Corpus 386.
 - **The source-layout sidecar defines every optional fact it declares** (carve#1431,
   PART 12 §13 F1-F9). Twelve of the thirteen optional `nodeLayout` properties now say
   what they measure and in which unit; `paddingRaw` stays declared and undefined with
