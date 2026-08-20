@@ -13,7 +13,7 @@ See the note.[^n]
   <ol>
     <li id="fn1">
       <p>First paragraph of the note.</p>
-      <p>Second paragraph, indented under the definition.<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>Second paragraph, indented under the definition.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -32,7 +32,7 @@ A second paragraph, joined with +.
   <ol>
     <li id="fn1">
       <p>First paragraph of the note.</p>
-      <p>A second paragraph, joined with +.<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>A second paragraph, joined with +.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

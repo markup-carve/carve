@@ -12,7 +12,7 @@ a [t[^1]][r] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>n<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -28,7 +28,7 @@ a [t^[n]][r] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>n<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -46,7 +46,7 @@ a [t[^1]][r] c [^1] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>n<a href="#fnref1" role="doc-backlink">↩<sup>1</sup></a> <a href="#fnref1-2" role="doc-backlink">↩<sup>2</sup></a></p>
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference 1">↩<sup>1</sup></a> <a href="#fnref1-2" role="doc-backlink" aria-label="Back to reference 2">↩<sup>2</sup></a></p>
     </li>
   </ol>
 </section>

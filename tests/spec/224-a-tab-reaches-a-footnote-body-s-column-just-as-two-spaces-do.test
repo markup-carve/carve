@@ -13,7 +13,7 @@ see[^a]
   <ol>
     <li id="fn1">
       <p>note</p>
-      <p>more<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -32,7 +32,7 @@ see[^a]
   <ol>
     <li id="fn1">
       <p>note</p>
-      <p>more<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -50,7 +50,7 @@ see[^a]
   <ol>
     <li id="fn1">
       <p>note
-more<a href="#fnref1" role="doc-backlink">↩</a></p>
+more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

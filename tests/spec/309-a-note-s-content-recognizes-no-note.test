@@ -8,7 +8,7 @@ x ^[a ^[b] c]
   <hr>
   <ol>
     <li id="fn1">
-      <p>a ^[b] c<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>a ^[b] c<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -24,7 +24,7 @@ x ^[a [^1] c]
   <hr>
   <ol>
     <li id="fn1">
-      <p>a [^1] c<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>a [^1] c<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -38,7 +38,7 @@ x ^[a ^[b ^[c] d] e]
   <hr>
   <ol>
     <li id="fn1">
-      <p>a ^[b ^[c] d] e<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>a ^[b ^[c] d] e<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -54,7 +54,7 @@ x ^[a [^1]{.k} c]
   <hr>
   <ol>
     <li id="fn1">
-      <p>a <span class="k">^1</span> c<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>a <span class="k">^1</span> c<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

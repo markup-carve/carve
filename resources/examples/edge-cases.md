@@ -434,7 +434,7 @@ See the note.[^n]
   <ol>
     <li id="fn1">
       <p>First paragraph of the note.</p>
-      <p>Second paragraph, indented under the definition.<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>Second paragraph, indented under the definition.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -462,7 +462,7 @@ A second paragraph, joined with +.
   <ol>
     <li id="fn1">
       <p>First paragraph of the note.</p>
-      <p>A second paragraph, joined with +.<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>A second paragraph, joined with +.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -3963,7 +3963,7 @@ Body[^n]
   <hr>
   <ol>
     <li id="fn1">
-      <p>see <a href="#H">H</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>see <a href="#H">H</a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -4259,7 +4259,7 @@ See [^a].
   <hr>
   <ol>
     <li id="fn1">
-      <p>note body<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note body<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -4286,7 +4286,7 @@ See [^a].
   <hr>
   <ol>
     <li id="fn1">
-      <p>note body<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note body<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -4506,10 +4506,10 @@ More text.
   <hr>
   <ol>
     <li id="fn1">
-      <p>first note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>first note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
     <li id="fn2">
-      <p>second note<a href="#fnref2" role="doc-backlink">↩</a></p>
+      <p>second note<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -6204,7 +6204,7 @@ Text[^a].
   <hr>
   <ol>
     <li id="fn1">
-      <p>note.<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -6758,7 +6758,7 @@ see [^f].
   <hr>
   <ol>
     <li id="fn1">
-      <p>one<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>one<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8297,7 +8297,7 @@ see[^a] and [t][r]
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8337,7 +8337,7 @@ see[^a]
           <tr><td>b</td></tr>
         </tbody>
       </table>
-      <p>closing line.<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>closing line.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8369,7 +8369,7 @@ see[^a]
     <li id="fn1">
       <p>note</p>
       <h1 id="H">H</h1>
-      <p>after<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>after<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8399,7 +8399,7 @@ see[^a]
   <ol>
     <li id="fn1">
       <p>note</p>
-      <p class="cls">styled<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p class="cls">styled<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8438,7 +8438,7 @@ see[^a]
           </ul>
         </li>
       </ul>
-      <p>end.<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>end.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8565,7 +8565,7 @@ see[^f]
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8714,7 +8714,7 @@ see[^a]
       <p>intro</p>
       <p>| a |
 | - |
-| b |<a href="#fnref1" role="doc-backlink">↩</a></p>
+| b |<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8742,7 +8742,7 @@ see[^a] and [t][r]
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8770,7 +8770,7 @@ see[^a] and [t][r]
   <ol>
     <li id="fn1">
       <p>note
-[r]: /u<a href="#fnref1" role="doc-backlink">↩</a></p>
+[r]: /u<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8897,7 +8897,7 @@ see[^a]
   <ol>
     <li id="fn1">
       <p>note</p>
-      <p>more<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8925,7 +8925,7 @@ see[^a]
   <ol>
     <li id="fn1">
       <p>note</p>
-      <p>more<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8954,7 +8954,7 @@ see[^a]
   <ol>
     <li id="fn1">
       <p>note
-more<a href="#fnref1" role="doc-backlink">↩</a></p>
+more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -8992,7 +8992,7 @@ see[^a]
       <p>note</p>
       <pre><code>code
 </code></pre>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -9021,7 +9021,7 @@ see[^a]
     <li id="fn1">
       <p>note</p>
       <blockquote><p>quoted</p></blockquote>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -9056,7 +9056,7 @@ see[^a]
           <tr><td>b</td></tr>
         </tbody>
       </table>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -9088,7 +9088,7 @@ see[^a]
       <aside class="admonition note">
         <p>d</p>
       </aside>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -9120,7 +9120,7 @@ see[^a]
     <li id="fn1">
       <p>note</p>
       <b>x</b>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -9193,7 +9193,7 @@ see[^f]
   <hr>
   <ol>
     <li id="fn1">
-      <p>x<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -9226,7 +9226,7 @@ see[^f]
   <hr>
   <ol>
     <li id="fn1">
-      <p>x<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -9506,7 +9506,7 @@ see[^a] and [t][r]
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -9532,10 +9532,10 @@ see[^b] and[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p>bee<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>bee<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
     <li id="fn2">
-      <p>ay<a href="#fnref2" role="doc-backlink">↩</a></p>
+      <p>ay<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -9605,7 +9605,7 @@ see[^a]
       <p>note</p>
       <b>x</b>
 <i>y</i>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -10041,7 +10041,7 @@ see[^f]
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -12266,7 +12266,7 @@ x[^f]
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -12313,7 +12313,7 @@ x[^f]
   <hr>
   <ol>
     <li id="fn1">
-      <p>&nbsp;note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>&nbsp;note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -12356,7 +12356,7 @@ x[^f]
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -14143,7 +14143,7 @@ see[^f]
 [^z]: zz
 b
 </code></pre>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -14186,7 +14186,7 @@ see[^f]
 
 b
 </code></pre>
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -15220,7 +15220,7 @@ See[^f]
   <hr>
   <ol>
     <li id="fn1">
-      <p><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -15506,7 +15506,7 @@ after[^f]
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -16878,7 +16878,7 @@ x ^[a ^[b] c]
   <hr>
   <ol>
     <li id="fn1">
-      <p>a ^[b] c<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>a ^[b] c<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -16900,7 +16900,7 @@ x ^[a [^1] c]
   <hr>
   <ol>
     <li id="fn1">
-      <p>a [^1] c<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>a [^1] c<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -16920,7 +16920,7 @@ x ^[a ^[b ^[c] d] e]
   <hr>
   <ol>
     <li id="fn1">
-      <p>a ^[b ^[c] d] e<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>a ^[b ^[c] d] e<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -16945,7 +16945,7 @@ x ^[a [^1]{.k} c]
   <hr>
   <ol>
     <li id="fn1">
-      <p>a <span class="k">^1</span> c<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>a <span class="k">^1</span> c<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -16982,7 +16982,7 @@ a [t[^1]](/u) b
   <hr>
   <ol>
     <li id="fn1">
-      <p>n<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17002,7 +17002,7 @@ a [t^[n]](/u) b
   <hr>
   <ol>
     <li id="fn1">
-      <p>n<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17041,7 +17041,7 @@ a [t[^1]][r] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>n<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17063,7 +17063,7 @@ a [t^[n]][r] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>n<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17087,7 +17087,7 @@ a [t[^1]][r] c [^1] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>n<a href="#fnref1" role="doc-backlink">↩<sup>1</sup></a> <a href="#fnref1-2" role="doc-backlink">↩<sup>2</sup></a></p>
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference 1">↩<sup>1</sup></a> <a href="#fnref1-2" role="doc-backlink" aria-label="Back to reference 2">↩<sup>2</sup></a></p>
     </li>
   </ol>
 </section>
@@ -17121,7 +17121,7 @@ a [^1] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>see <a href="/u">x</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>see <a href="/u">x</a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17145,10 +17145,10 @@ a [^1] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>see <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>see <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
     <li id="fn2">
-      <p>two<a href="#fnref2" role="doc-backlink">↩</a></p>
+      <p>two<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17174,10 +17174,10 @@ a [^1] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>see <a href="/u">t<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></a><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>see <a href="/u">t<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
     <li id="fn2">
-      <p>two<a href="#fnref2" role="doc-backlink">↩</a></p>
+      <p>two<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17300,7 +17300,7 @@ a [t[^1]][nope] b [^1] c
   <hr>
   <ol>
     <li id="fn1">
-      <p>n<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17337,7 +17337,7 @@ a [t[^1]] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>n<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17374,7 +17374,7 @@ a ^[see </#h>] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>see <a href="#h">h</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>see <a href="#h">h</a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17394,7 +17394,7 @@ a ^[see </#nope>] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>see &lt;/#nope&gt;<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>see &lt;/#nope&gt;<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17416,7 +17416,7 @@ a ^[see [t][r]] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>see <a href="/u">t</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>see <a href="/u">t</a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17438,7 +17438,7 @@ a ^[see ![z][r]] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>see <img src="/i.png" alt="z"><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>see <img src="/i.png" alt="z"><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17466,7 +17466,7 @@ a ^[see [h][]] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>see <a href="#h">h</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>see <a href="#h">h</a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17491,7 +17491,7 @@ a ^[</#h>]{.c} b
   <hr>
   <ol>
     <li id="fn1">
-      <p><a href="#h">h</a><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p><a href="#h">h</a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17521,10 +17521,10 @@ a [^1] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>see <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a><a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>see <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
     <li id="fn2">
-      <p><a href="#h">h</a><a href="#fnref2" role="doc-backlink">↩</a></p>
+      <p><a href="#h">h</a><a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -17717,7 +17717,7 @@ a ^[t{# ] #}z] b
   <hr>
   <ol>
     <li id="fn1">
-      <p>t<span class="critic-comment"> ] </span>z<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>t<span class="critic-comment"> ] </span>z<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -19263,7 +19263,7 @@ see[^f]
   <hr>
   <ol>
     <li id="fn1">
-      <p>t<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>t<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -20670,7 +20670,7 @@ the marker it renders as contributes nothing either:
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -21671,7 +21671,7 @@ See [r][] [^f].
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -22055,7 +22055,7 @@ x[^f]
   <hr>
   <ol>
     <li id="fn1">
-      <p>t<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>t<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -22276,7 +22276,7 @@ b] here.
   <ol>
     <li id="fn1">
       <p>a
-b<a href="#fnref1" role="doc-backlink">↩</a></p>
+b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -23094,7 +23094,7 @@ x[^f]
   <ol>
     <li id="fn1">
       <p>t
-more<a href="#fnref1" role="doc-backlink">↩</a></p>
+more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -23126,7 +23126,7 @@ x[^f]
   <hr>
   <ol>
     <li id="fn1">
-      <p>t<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>t<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -23212,7 +23212,7 @@ x[^f]
   <ol>
     <li id="fn1">
       <p>t
-more<a href="#fnref1" role="doc-backlink">↩</a></p>
+more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -23252,7 +23252,7 @@ x[^f]
   <ol>
     <li id="fn1">
       <p>t</p>
-      <p>more<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -23359,7 +23359,7 @@ See [^f].
   <hr>
   <ol>
     <li id="fn1">
-      <p>note<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -24488,7 +24488,7 @@ see[^f]
   <ol>
     <li id="fn1">
       <p>note
-more<a href="#fnref1" role="doc-backlink">↩</a></p>
+more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

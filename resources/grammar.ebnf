@@ -5476,11 +5476,24 @@ EOF = (* end of file *) ;
                        all body content (outside heading <section>s),
                        containing <hr> then an <ol> of <li id="fn{n}">;
                        each note's last paragraph gets a trailing backlink
-                       <a href="#{refId}" role="doc-backlink">↩</a>.
+                       <a href="#{refId}" role="doc-backlink"
+                          aria-label="{name}">↩</a>.
         First reference to note n has refId `fnref{n}`; a k-th (k>1)
         repeat uses `fnref{n}-{k}` and adds another backlink. The
         backlink glyph is the plain return arrow `↩` (Carve's choice;
         djot appends a variation selector).
+        THE BACKLINK CARRIES AN ACCESSIBLE NAME -- NORMATIVE (carve#1455).
+        The `role` alone was right and the NAME was the glyph, so a screen
+        reader announced the character's Unicode name ("leftwards arrow with
+        hook") or skipped the link outright: correct semantics, no way to know
+        where the link goes. `{name}` is the `footnoteBacklink` label (PART 9
+        §16a) followed by WHAT THE LINK VISIBLY SAYS -- the label alone for a
+        lone backlink (`↩`, so `aria-label="Back to reference"`), the label
+        plus k for the k-th of several (`↩<sup>k</sup>`, so
+        `aria-label="Back to reference 2"`). Matching the visible text is WCAG
+        2.5.3, and it is why the number here is the REFERENCE ORDINAL and not
+        the note number: the note number appears nowhere in this link's text.
+        The name is TEXT and is attribute-escaped.
       - BACKLINK PLACEMENT WHEN THE BODY DOES NOT END IN A PARAGRAPH. "The
         note's last paragraph" above presumes there is one. When the note
         body's LAST BLOCK is not a paragraph (a code block, a block quote, a
@@ -5522,6 +5535,16 @@ EOF = (* end of file *) ;
       - LIMITATION: a footnote (reference `[^1]` or inline `^[…]`) inside link
         text (`[t[^1]](u)`) or inside a heading later cloned by a `</#id>`
         crossref nests an <a> in an <a>; avoid footnotes in those positions.
+
+   16a. THE ENGINE'S OWN WORDS ARE A RENDER OPTION -- NORMATIVE (carve#1456).
+      A renderer takes a `labels` map from key to string, carrying the strings
+      the ENGINE writes rather than the author. Today that is one key,
+      `footnoteBacklink` ("Back to reference"), which names §16's endnote
+      backlink. A caption's label is the author's word and is not in this map;
+      neither are the extension-written strings, which stay options on the
+      extensions that write them. Values are TEXT and are escaped at the point
+      of use - the `symbols` map's raw emission is deliberately not the model
+      here. Stated in full below the footnote clause.
 
    17. TIGHT vs LOOSE LISTS + CONTINUATION MARKER -- OPERATIONAL (governs
       `list` rendering and the continuation_marker productions in PART 2).
@@ -6946,6 +6969,48 @@ EOF = (* end of file *) ;
            (carve#1076). Deciding it once would settle both.
 *)
 
+
+(* --- PART 9 §16a: the words the engine writes itself --- *)
+(* THE ENGINE'S OWN WORDS ARE A RENDER OPTION -- NORMATIVE (carve#1456).
+
+   Almost every string in the output is the author's: a caption's label is
+   written in the source (`^ Figure #: …`, so a German document writes
+   `^ Abbildung #:`), and a `</#id>` to a numbered caption reuses THAT label
+   rather than inventing one. This clause is about the remainder - the strings
+   an engine writes on its own, where the author has no place to spell them.
+
+   A renderer takes a `labels` map from KEY to STRING. A key the caller omits
+   keeps the default below. Unlike the `symbols` map, which is emitted RAW
+   because a processor's configuration is trusted, a label is TEXT: it is
+   escaped for the position it lands in (an attribute value, or character
+   data). A label is never markup, so nothing is lost by escaping it, and a
+   host that reads its strings from a translation catalog is not handing the
+   renderer an injection vector.
+
+   THE KEYS, and the whole set today:
+
+     footnoteBacklink   "Back to reference"   PART 9 §16, the endnote backlink's
+                                              accessible name
+
+   ONE KEY IS NOT AN OVERSIGHT. The set is small because the ENGINE writes
+   little: this is the only string core rendering produces that a reader hears.
+   The map exists rather than a per-construct option because core has no
+   extension to hang an option on, and because the next such string wants a
+   place to land that the three engines already agree on.
+
+   EXTENSION-WRITTEN STRINGS STAY WITH THEIR EXTENSION. The heading-permalink
+   label and the table-of-contents summary are already options on the
+   extensions that write them, in all three engines (carve-js `ariaLabel` /
+   `summary`, carve-php `$ariaLabel`, carve-rs `aria_label`). Moving them into
+   this map would give one string two spellings and no rule for which wins. An
+   extension MAY read the map for a string it shares with core; it MUST NOT
+   require the host to configure the same text twice.
+
+   WHAT THIS DOES NOT DO: it is not localization. There is no locale name and
+   no built-in table beyond the English defaults, because a locale table is
+   data an engine would then have to carry and keep current, and every host
+   that needs translated strings already has a catalog of its own. The map is
+   the seam to that catalog. *)
 
 (* ============================================================================
    PART 9R: RESOLUTION SEMANTICS (NORMATIVE) -- whole-document passes
