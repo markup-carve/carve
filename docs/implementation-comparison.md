@@ -21,15 +21,15 @@ implementation exposes.
 
 <div class="impl-summary-grid">
   <div class="impl-summary-card">
-    <strong>727 / 736</strong>
+    <strong>729 / 736</strong>
     <span>Rust corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>727 / 736</strong>
+    <strong>729 / 736</strong>
     <span>JS corpus pass</span>
   </div>
   <div class="impl-summary-card">
-    <strong>727 / 736</strong>
+    <strong>729 / 736</strong>
     <span>PHP corpus pass</span>
   </div>
   <div class="impl-summary-card">
@@ -40,9 +40,9 @@ implementation exposes.
 
 | Implementation | Commit | Corpus | Mismatches | Errors | Avg CLI ms/file |
 |----------------|--------|--------|------------|--------|-----------------|
-| Rust | `5b03787` | `727 / 736` | `0` | `0` | `3.01` |
-| JS | `8105210` | `727 / 736` | `0` | `0` | `76.02` |
-| PHP | `a5f18fb` | `727 / 736` | `0` | `0` | `68.54` |
+| Rust | `5b03787` | `729 / 736` | `0` | `0` | `3.01` |
+| JS | `8105210` | `729 / 736` | `0` | `0` | `76.02` |
+| PHP | `a5f18fb` | `729 / 736` | `0` | `0` | `68.54` |
 
 Spec commit: `2cde4a1`, plus the three corpus cases this change adds
 
