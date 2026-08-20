@@ -1507,12 +1507,19 @@ delimiter_cell = {space}, [':'], '-', {'-'}, [':'], {space} ;
 
 table_cell = header_cell | data_cell | span_cell ;
 
-header_cell = '=', [alignment_run], [cell_attributes], {space}, cell_content, {space} ;
-data_cell   =      [alignment_run], [cell_attributes], {space}, cell_content, {space} ;
+header_cell = '=', [alignment_run], [cell_attributes], cell_padding, cell_content, {space} ;
+data_cell   =      [alignment_run], [cell_attributes], cell_padding, cell_content, {space} ;
 (* THE MARKER RUN COMES FIRST, IN ONE ORDER, IN BOTH PRODUCTIONS. The kind
    marker `=` and then the alignment marker are glued to the opening `|` (no
    preceding whitespace); the attribute block attaches after them. A
-   whitespace-delimited lone '^'/'<' is span_cell. *)
+   whitespace-delimited lone '^'/'<' is span_cell.
+
+   AND IT ENDS AT A SPACE. `cell_padding` is the run's terminator, so a cell
+   carrying any part of the run -- kind marker, alignment run, attribute
+   block -- must follow it with one space. Without that space there is no
+   run and every character of it is content: `|=a |` is a data cell whose
+   text is `=a`. A cell with NO run keeps the unpadded spelling (`|a|`).
+   PART 9 §5 T11 is the rule and its cost. *)
 (* CELL ATTRIBUTES (NORMATIVE): an attribute block sets the cell's attributes.
    It binds LAST -- after the kind marker and after the alignment marker, in
    every cell -- and is GLUED to whatever precedes it: to the marker run where
@@ -1558,10 +1565,11 @@ alignment_run = horizontal_alignment, [vertical_alignment]
 horizontal_alignment = '<' | '>' | '~' ;  (* left, right, center *)
 vertical_alignment = '^' | '~' | 'v' ;    (* top, middle, bottom *)
 inherited_horizontal_alignment = '?' ;
-cell_padding = space | (* empty only when no alignment_run is present *) ;
+cell_padding = space | (* empty only when the cell carries no marker run *) ;
 (* An alignment run is a horizontal marker, optionally followed by a vertical
-   marker, and MUST be followed by one space after an
-   optional attached attribute block. A vertical marker therefore never stands
+   marker. Like every other part of the marker run it MUST be followed by one
+   space, after an optional attached attribute block (PART 9 §5 T11). A
+   vertical marker therefore never stands
    alone: `|^ x` and `|v x` keep `^`/`v` as visible content.
    Reverse-order pairs are invalid. Duplicate axes are invalid, except `~~`,
    whose first marker is horizontal center and second is vertical middle.
@@ -4596,7 +4604,9 @@ EOF = (* end of file *) ;
          `data_cell`: `|{#x}< content |` was documented as attributes then a
          left-alignment marker, and under T10 the `<` is no longer in a
          marker position, so it is literal content and the cell is not
-         aligned. That source REINTERPRETS rather than erroring, which is
+         aligned. (T11 moves that same spelling once more: with no space
+         after the closing brace there is no run, so the braces are content
+         too.) That source REINTERPRETS rather than erroring, which is
          the outcome to be careful about. It is accepted here for the
          uniform shape over the preserved special case, on a `0.x` line, and
          it ships WITH its migration rather than a deprecation window: a
@@ -4615,6 +4625,50 @@ EOF = (* end of file *) ;
          work was to start reading the marker-run position, not to stop
          reading the old one. Pinned by corpus
          319-cell-attributes-bind-after-the-kind-and-alignment-markers.
+
+      T11 A MARKER RUN ENDS AT A SPACE -- NORMATIVE. A cell's marker run is
+         the kind marker `=`, the alignment run and the attribute block, in
+         T10's order. A cell carrying ANY of the three must follow the run
+         with one literal space. Without it there is no run at all, and every
+         character of it is ordinary cell content:
+
+             |= a |          header cell, content `a`
+             |=a |           data cell, content `=a`
+             |=hot= |        data cell, content `=hot=`
+             |{#x} =R |      data cell with `id="x"`, content `=R`
+             |{#x}=R|        data cell, content `{#x}=R`
+
+         A cell with NO run is unchanged -- `| a |`, `|a|` and `||` all mean
+         what they meant.
+
+         THE RUN HAD NO TERMINATOR, SO IT TOOK CONTENT INSTEAD. `|=hot= |` is
+         a cell whose author wrote a highlight and got a header cell holding
+         `hot=`: the marker ate the opening `=` and nothing said so. Carve
+         resolves this class by making the failure VISIBLE -- `- {.notattr}
+         Milk` renders its braces rather than guessing -- and the table cell
+         was the outlier. The alignment run already required the space, and
+         a doubled marker (`|=<< Note |`) already fell back to content for
+         want of one; this states the rule ONCE, for the whole run, instead
+         of for one of its three parts.
+
+         THE CLOSING PIPE IS NOT A TERMINATOR. `|=|` and `|{#x}|` carry no
+         run; an empty marked cell is `|= |` and `|{#x} |` -- which is what
+         §6e's canonical writer already emits, and what `|> |` already
+         required of the alignment run. NEITHER IS A TAB: PART 7 gives a tab
+         no padding role inline, so `|=<TAB>h |` is content too.
+
+         AN ESCAPE REACHES THE OTHER READING where a space cannot. `|\= a |`
+         is a data cell whose content is a literal `= a`, unchanged here.
+
+         THE COST, STATED. This CHANGES released spellings: `|=a |` was a
+         header cell and is now a data cell, `|{#x}=R|` was an attributed
+         cell and is now literal text. Both REINTERPRET rather than error,
+         which is the outcome to be careful about. It is accepted on a `0.x`
+         line for one rule over three, and it ships WITH its migration: §6e's
+         canonical writer already emits a space after every prefix, so a
+         formatted document is already conformant, and the glued form is what
+         a linter can name. Pinned by corpus
+         390-a-table-cell-s-marker-run-ends-at-a-space.
 
    6. REFERENCE RESOLUTION -- FORMAL STATEMENT MOVED TO PART 9R (rules
       R1-R3; this §-anchor stays for existing references). Summary: link

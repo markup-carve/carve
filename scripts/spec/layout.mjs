@@ -971,48 +971,73 @@ const tableOpenAfter = (lines) => lines.reduce(tableRunStep, false)
 // that carries a tab at both ends cannot tell a half-fix from a whole one.
 const padTrim = (s) => s.replace(/^ +/, '').replace(/ +$/, '')
 
+// One alignment-marker run, decoded. Returns null when the marks are not a
+// valid run so the caller can try a SHORTER one: `<<` is not left-plus-a-
+// vertical, but its first `<` alone is a run, and only after that also fails
+// the space test does the cell end up with no run at all.
+function decodeAlignment(marks) {
+  if (marks === '') return { align: null, valign: null }
+  const [horizontalMark, verticalMark] = [...marks]
+  const inheritedHorizontal = horizontalMark === '?' && marks.length === 2 && '^~v'.includes(verticalMark)
+  const horizontal = '<>~'.includes(horizontalMark)
+    ? (horizontalMark === '<' ? 'left' : horizontalMark === '>' ? 'right' : 'center')
+    : null
+  const vertical = verticalMark !== undefined && '^~v'.includes(verticalMark)
+    ? (verticalMark === '^' ? 'top' : verticalMark === 'v' ? 'bottom' : 'middle')
+    : null
+  if (inheritedHorizontal) return { align: null, valign: vertical }
+  if (horizontal !== null && (marks.length === 1 || vertical !== null)) return { align: horizontal, valign: vertical }
+  return null
+}
+
+// PART 9 SS5 T11: a cell's marker run is the kind marker, the alignment run and
+// the attribute block, in T10's order, and it ENDS AT A SPACE. Returns the
+// decoded run plus its length, or null when the cell carries no run - either
+// because it opens with content, or because what looked like a run is not
+// followed by the space that terminates one. Both cases mean the same thing to
+// the caller: every character of the segment is content.
+//
+// Candidates are tried LONGEST FIRST, because a run that fails the space test
+// may contain a shorter one that passes: `|=~ x |` is header-plus-center, while
+// `|=~x~ |` is neither (it is the highlight its author wrote). The kind marker
+// is not tried separately - nothing shorter than `=` can start an alignment
+// run, so if the `=` family fails there is no run.
+function readMarkerRun(seg) {
+  const header = seg[0] === '='
+  const start = header ? 1 : 0
+  const marks = (/^[<>~^v?]{1,2}/.exec(seg.slice(start)) || [''])[0]
+  for (let len = marks.length; len >= 0; len--) {
+    const alignment = decodeAlignment(marks.slice(0, len))
+    if (alignment === null) continue
+    const afterMarks = start + len
+    // Validity decides here, not at render time: "the whole brace payload must
+    // be valid attribute syntax; otherwise the `{` is literal content". Testing
+    // it downstream made an invalid payload REFUSE the document instead.
+    const at = new RegExp(`^\\{(${ATTR_PAYLOAD})\\}`).exec(seg.slice(afterMarks))
+    const attrs = at && parseAttrBlock(`{${at[1]}}`) !== null ? `{${at[1]}}` : null
+    for (const withAttrs of attrs ? [true, false] : [false]) {
+      const end = withAttrs ? afterMarks + at[0].length : afterMarks
+      if (end === 0) return null // no marker at all: the unpadded cell is unchanged
+      if (seg[end] !== ' ') continue // a tab is not padding (PART 7), nor is the closing pipe
+      return { header, align: alignment.align, valign: alignment.valign, attrs: withAttrs ? attrs : null, end }
+    }
+  }
+  return null
+}
+
 // classify one raw cell segment
 function parseCell(seg) {
   const cell = { header: false, align: null, valign: null, attrs: null, content: '' }
+  const run = readMarkerRun(seg)
+  // `\=` needs no case of its own: it is not `=`, so it opens no run and the
+  // inline pass unescapes it into a literal `=` data cell.
   let s = seg
-  if (s.startsWith('=')) {
-    cell.header = true
-    s = s.slice(1)
-  } else if (s.startsWith('\\=')) {
-    s = '\\=' + s.slice(2) // literal `=` data cell; unescaped by inline pass
-  }
-  // A horizontal-only or paired run is committed only when its optional
-  // attribute block is followed by the required space. A lone vertical marker
-  // and invalid duplicate axes consume nothing.
-  const run = new RegExp(`^([<>~^v?]{1,2})(?=(?:\\{${ATTR_PAYLOAD}\\})? )`).exec(s)
   if (run) {
-    const marks = [...run[1]]
-    const horizontalMark = marks[0]
-    const verticalMark = marks[1]
-    const inheritedHorizontal = horizontalMark === '?' && marks.length === 2 && '^~v'.includes(verticalMark)
-    const horizontal = '<>~'.includes(horizontalMark)
-      ? (horizontalMark === '<' ? 'left' : horizontalMark === '>' ? 'right' : 'center')
-      : null
-    const vertical = verticalMark !== undefined && '^~v'.includes(verticalMark)
-      ? (verticalMark === '^' ? 'top' : verticalMark === 'v' ? 'bottom' : 'middle')
-      : null
-    if ((horizontal !== null && (marks.length === 1 || vertical !== null)) || inheritedHorizontal) {
-      cell.align = horizontal
-      cell.valign = vertical
-      s = s.slice(run[1].length)
-    }
-  }
-  // A glued attribute block; "the rest of the cell, AFTER OPTIONAL WHITESPACE, is
-  // the content" (§5), so no space is required after the closing brace - this
-  // used to demand one and read `|{.x}Total |` as literal text.
-  //
-  // Validity decides here, not at render time: "the whole brace payload must be
-  // valid attribute syntax; otherwise the `{` is literal content". Testing it
-  // downstream made an invalid payload REFUSE the document instead.
-  const at = new RegExp(`^\\{(${ATTR_PAYLOAD})\\}`).exec(s)
-  if (at && parseAttrBlock(`{${at[1]}}`) !== null) {
-    cell.attrs = `{${at[1]}}`
-    s = s.slice(at[0].length)
+    cell.header = run.header
+    cell.align = run.align
+    cell.valign = run.valign
+    cell.attrs = run.attrs
+    s = seg.slice(run.end)
   }
   cell.content = padTrim(s)
   if (cell.attrs && (cell.content === '^' || cell.content === '<')) {

@@ -128,7 +128,9 @@ two
 ## Tables
 
 `|=` marks a header cell: in the first row it heads a column, in a body row it
-heads that row. A `^` line after the table is its caption.
+heads that row. Every cell marker is glued to the pipe and followed by a space -
+that space is what ends the marker run, so `|=a |` is a data cell whose text is
+`=a`. A `^` line after the table is its caption.
 
 ```carve
 |= Item |= Qty |
@@ -155,7 +157,7 @@ horizontal marker may stand alone; a vertical marker always needs a horizontal
 partner. Where that partner should stay whatever the column already says, `?`
 stands in for it: `?^`, `?~` and `?v` set the vertical axis only and leave the
 horizontal one to the column. The run is glued to the pipe and terminated by a
-space. On `|=` it sets column defaults; on a plain `|` it overrides that cell.
+space -- and it is atomic, so a run that is rejected takes the `=` with it. On `|=` it sets column defaults; on a plain `|` it overrides that cell.
 Table attributes can set headerless defaults:
 `{aligns="right,center" valigns="top," widths="30,70"}`. Use
 `{header-rows=N footer-rows=N}` before a pipe table for explicit `thead`/`tfoot`

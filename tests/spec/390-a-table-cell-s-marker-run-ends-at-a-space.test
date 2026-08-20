@@ -1,0 +1,59 @@
+A table cell's marker run ends at a space
+
+```
+|=hot= is the reading |
+.
+<table>
+  <tbody>
+    <tr><td><mark>hot</mark> is the reading</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|= Item |= Qty |
+| Pen | 9 |
+.
+<table>
+  <thead>
+    <tr><th scope="col">Item</th><th scope="col">Qty</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Pen</td><td>9</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|{.total} 99 |
+|{.total}99 |
+.
+<table>
+  <tbody>
+    <tr><td class="total">99</td></tr>
+    <tr><td>{.total}99</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|= |a|
+|=|a|
+.
+<table>
+  <tbody>
+    <tr><th scope="row"></th><td>a</td></tr>
+    <tr><td>=</td><td>a</td></tr>
+  </tbody>
+</table>
+```
+
+```
+|\= a |
+.
+<table>
+  <tbody>
+    <tr><td>= a</td></tr>
+  </tbody>
+</table>
+```

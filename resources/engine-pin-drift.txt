@@ -170,3 +170,12 @@
 89-block-attribute-lines-4  pinned carve-js predates the one-row-per-line table sections (markup-carve/carve#1459): it writes a thead/tfoot on the section's own line
 98-table-span-marker-in-first-column  pinned carve-js predates the one-row-per-line table sections (markup-carve/carve#1459): it writes a thead/tfoot on the section's own line
 99-table-cell-attributes  pinned carve-js predates the one-row-per-line table sections (markup-carve/carve#1459): it writes a thead/tfoot on the section's own line
+256-table-cell-padding-must-be-a-space-18  pinned carve-js predates T11, a cell's marker run ends at a space (markup-carve/carve#1259): it reads a glued marker as a marker
+256-table-cell-padding-must-be-a-space-6  pinned carve-js predates T11, a cell's marker run ends at a space (markup-carve/carve#1259): it reads a glued marker as a marker
+256-table-cell-padding-must-be-a-space-7  pinned carve-js predates T11, a cell's marker run ends at a space (markup-carve/carve#1259): it reads a glued marker as a marker
+373-a-vertical-table-marker-needs-a-horizontal-partner  pinned carve-js predates T11, a cell's marker run ends at a space (markup-carve/carve#1259): it reads a glued marker as a marker
+390-a-table-cell-s-marker-run-ends-at-a-space  pinned carve-js predates T11, a cell's marker run ends at a space (markup-carve/carve#1259): it reads a glued marker as a marker
+390-a-table-cell-s-marker-run-ends-at-a-space-3  pinned carve-js predates T11, a cell's marker run ends at a space (markup-carve/carve#1259): it reads a glued marker as a marker
+390-a-table-cell-s-marker-run-ends-at-a-space-4  pinned carve-js predates T11, a cell's marker run ends at a space (markup-carve/carve#1259): it reads a glued marker as a marker
+53-table-doubled-alignment-marker  pinned carve-js predates T11, a cell's marker run ends at a space (markup-carve/carve#1259): it reads a glued marker as a marker
+390-a-table-cell-s-marker-run-ends-at-a-space-2  pinned carve-js predates the one-row-per-line table sections (markup-carve/carve#1459)
