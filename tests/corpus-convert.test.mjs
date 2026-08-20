@@ -145,7 +145,10 @@ const PINNED_UNIMPLEMENTED = {
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {}
+const PINNED_DRIFT = {
+  '18-markdown-a-gfm-table-survives':
+    'carve#1459 gives every row its own line in thead/tfoot too; the pinned build still writes the section on one line',
+}
 
 /**
  * The visible text of an HTML fragment.
