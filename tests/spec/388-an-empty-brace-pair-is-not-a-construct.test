@@ -1,0 +1,16 @@
+An empty brace pair is not a construct
+
+```
+Empty pairs are text: {//} {**} {__} {~~} {^^} {,,} {==} {++} {##}.
+
+A pair that holds something is the construct: {/i/} {*b*} {~s~} {+ins+} {# c #}.
+.
+<p>Empty pairs are text: {//} {**} {__} {~~} {^^} {,,} {==} {++} {##}.</p>
+<p>A pair that holds something is the construct: <em>i</em> <strong>b</strong> <s>s</s> <ins>ins</ins> <span class="critic-comment"> c </span>.</p>
+```
+
+```
+{~a~>~} deletes, {~~>b~} inserts, and {~~>~} still does both to nothing.
+.
+<p><del>a</del><ins></ins> deletes, <del></del><ins>b</ins> inserts, and <del></del><ins></ins> still does both to nothing.</p>
+```

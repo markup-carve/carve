@@ -1,0 +1,3 @@
+The bare run is flag-shaped and stays literal: a ---(p) b.
+
+The braced form converts wherever it stands: a {--}(p) b, x{--}y, {--}start.

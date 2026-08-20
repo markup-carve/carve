@@ -150,7 +150,7 @@ CarveCore {
   inline     = word | spComment | bracedComment | inlineSpace
              | arrow | span | inlineNote | litDelim
              | symbol | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
-             | editorial | forcedSpan
+             | editorial | bracedDash | forcedSpan
              | mathD | mathI | litInline | codeA | nbspEsc | hardBreak | escape | imageRef | image | bracketed
              | autolink | bang | dollar
              | ellipsis | dashRun | dot | dash | plus | pct | lt | gt
@@ -184,7 +184,7 @@ CarveCore {
   // constructs allowed inside any span (everything except spans themselves,
   // which are listed per-delimiter to exclude self-nesting)
   rich       = arrow | symbol | delimRun | inlineNote | footnoteRef | crossref | extension | symbolAttr | shortcode | mention | tag
-             | editorial | forcedSpan | mathD | mathI
+             | editorial | bracedDash | forcedSpan | mathD | mathI
              | codeA | escape | imageRef | image | bracketed | autolink | bang | dollar
              | ellipsis | dashRun | dquote | squote
              | dot | dash | plus | pct
@@ -280,7 +280,11 @@ CarveCore {
   // closer; other constructs nest normally.
   forcedSpan = forced<"/"> | forced<"*"> | forced<"_"> | forced<"~">
              | forced<"^"> | forced<","> | forced<"=">
-  forced<d>  = "{" d fInner<d>* d "}" attrs?
+  // CONTENT IS REQUIRED (`+`, not `*`): `forced_content` in grammar.ebnf is a
+  // one-or-more repetition and docs/parsing-ambiguities.md ss16 says `{^^}` is
+  // not a superscript. An empty pair is not the construct, so its characters
+  // are text (carve#1447).
+  forced<d>  = "{" d fInner<d>+ d "}" attrs?
   // `looseAttrs` is admitted so a nested bare span's trailing `{...}` attribute
   // block is consumed here (the removed bare-span rules used to grab it via
   // their `attrs?`); the SS9 stack over these tokens then re-attaches it.
@@ -291,12 +295,17 @@ CarveCore {
   // editorial: {+ins+} {-del-} {~old~>new~} {# comment #} (+ the doubled
   // {++...++} / {--...--} forms whose extra marker chars stay literal)
   editorial  = edSub | edIns | edDel | edComment
-  edIns      = "{+" (~"+}" edChar)* "+}" attrs?
-  edDel      = "{-" (~"-}" edChar)* "-}" attrs?
+  edIns      = "{+" (~"+}" edChar)+ "+}" attrs?
+  // Every editorial form needs CONTENT (`+`, not `*`), like the forced spans
+  // above: an opener meeting its own closer is not the construct (carve#1447).
+  // The one string the empty deletion spelled is `{--}`, and that is the braced
+  // en dash below. `edSub` is deliberately NOT widened: a half-empty
+  // substitution is a real edit (`{~a~>~}` deletes `a`).
+  edDel      = "{-" (~"-}" edChar)+ "-}" attrs?
   edSub      = "{~" (~"~>" ~"~}" edChar)* "~>" (~"~}" edChar)* "~}" attrs?
   edComment  = edCommentBody attrs?
   // The body, without the attribute block - see `litInlineBody`.
-  edCommentBody = "{#" (~"#}" edChar)* "#}"
+  edCommentBody = "{#" (~"#}" edChar)+ "#}"
   edChar     = any
 
   // raw inline passthrough: a code span whose trailing block is EXACTLY
@@ -643,6 +652,10 @@ CarveCore {
   symbol     = "(c)" | "(r)" | "(tm)"
   ellipsis   = "..."
   dashRun    = "-" "-"+
+  // The BRACED en dash (carve#1447): the bare run carries a flanking guard, so
+  // `x --verbose` is literal, and this is the spelling that says "a dash, here,
+  // whatever stands next to it". The braces are consumed.
+  bracedDash = "{--}"
   dquote     = "\""
   squote     = "'"
   // a bare `#` (not a tag opener: followed by space/colon/dot/end) is
