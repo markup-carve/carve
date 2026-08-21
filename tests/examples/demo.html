@@ -98,7 +98,9 @@ email autolink <a href="mailto:hello@example.com">hello@example.com</a>, and a r
     <h2>Tables</h2>
     <table>
       <caption>Table 1: column alignment - left, right, center.</caption>
-      <thead><tr><th scope="col">Fruit</th><th scope="col" style="text-align: right;">Price</th><th scope="col" style="text-align: center;">Stock</th></tr></thead>
+      <thead>
+        <tr><th scope="col">Fruit</th><th scope="col" style="text-align: right;">Price</th><th scope="col" style="text-align: center;">Stock</th></tr>
+      </thead>
       <tbody>
         <tr><td>Apple</td><td style="text-align: right;">1.20</td><td style="text-align: center;">In</td></tr>
         <tr><td>Banana</td><td style="text-align: right;">0.50</td><td style="text-align: center;">In</td></tr>
@@ -170,7 +172,7 @@ An inline extension names a role: press <span class="ext-kbd">Ctrl+C</span> to c
   <section id="Smart-typography">
     <h2>Smart typography</h2>
     <p>Dashes and ellipsis: an em dash — an en range 10–20 … and so on.
-Arrows and comparisons: → ← ↔ ⇒ , ≠ ≤ ≥ , © ® ™.</p>
+Arrows and comparisons: → ← ↔ ⇒ ⇐ ⇔ , ≠ ≤ ≥ , © ® ™.</p>
     <hr>
   </section>
   <section id="List-tables-Tier-2-extension">
@@ -250,10 +252,10 @@ Arrows and comparisons: → ← ↔ ⇒ , ≠ ≤ ≥ , © ® ™.</p>
   <hr>
   <ol>
     <li id="fn1">
-      <p>The reference and its definition are linked by label.<a href="#fnref1" role="doc-backlink">↩</a></p>
+      <p>The reference and its definition are linked by label.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
     <li id="fn2">
-      <p>Definitions can appear in any order.<a href="#fnref2" role="doc-backlink">↩</a></p>
+      <p>Definitions can appear in any order.<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

@@ -25,7 +25,7 @@ print("hi")
 :::
 ````
 ```html
-<div class="code-group">
+<div class="code-group" role="group" aria-label="Code examples">
 <input type="radio" name="codegroup-1" id="codegroup-1-tab-1" class="code-group-radio" checked>
 <label for="codegroup-1-tab-1" class="code-group-label">JavaScript</label>
 <input type="radio" name="codegroup-1" id="codegroup-1-tab-2" class="code-group-radio">
@@ -212,7 +212,7 @@ Carve:index[markup] is small.
 ```html
 <p>Carve<span id="idx-markup-1" class="index-term"></span> is small.</p>
 <ul class="index">
-  <li>markup <a href="#idx-markup-1" class="index-backref">↩</a></li>
+  <li>markup <a href="#idx-markup-1" class="index-backref" aria-label="Back to markup">↩</a></li>
 </ul>
 ```
 
