@@ -108,9 +108,13 @@ whether or not the script arrives, and the name says which one (carve#1468).
 - **The role and the name travel together.** An `img` with no accessible name is
   skipped entirely, which is worse than the source being read out, so setting
   the label to the empty string removes the role as well.
-- **The default is the fence's own word** (`mermaid`, `d2`, `chart`), not
-  invented English - so there is nothing here to translate and this is an option
-  on the extension rather than a `labels` key
+- **The default is the extension's own class word** (`mermaid`, `d2`, `chart`).
+  That is the fence's own word wherever a preset claims one language, and the
+  class wherever it claims aliases: a `dot` fence and a `puml` fence are named
+  `graphviz` and `plantuml`, after the class they render into, so one preset
+  names every fence it claims alike. Either way the word is one the extension
+  already carries rather than invented English - so there is nothing here to
+  translate and this is an option on the extension rather than a `labels` key
   ([extensions §1.5](./extensions#_1-5-the-strings-an-extension-writes-itself)).
   A host that wants a reader to hear something better sets it, and an author can
   name one diagram with `{aria-label="Deploy flow"}` on the fence.

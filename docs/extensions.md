@@ -221,8 +221,8 @@ language.
 
 **What does NOT get a key.** A string with no fixed English default is not in
 the map, because there is nothing to translate: a diagram fence's name defaults
-to the *fence's own word* (`mermaid`, `d2`), so it stays an option on the
-extension. Neither is a string the author already wrote - a tab's `[label]`, an
+to the *extension's own class word* (`mermaid`, `d2`, and `graphviz` for the
+`dot` fence it claims), so it stays an option on the extension. Neither is a string the author already wrote - a tab's `[label]`, an
 index term, an admonition title. Those are named by DERIVING from the document,
 so a translated document translates them exactly once, in the document.
 
