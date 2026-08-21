@@ -24,6 +24,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { numberExamples, readExampleFiles, scanExampleSource } from '../scripts/lib/example-sections.mjs'
+import { collectSections, headerOnlyPages, parseOptionalPages, parsePages, routePages, scanPageSources } from '../scripts/lib/example-page-manifest.mjs'
 import { optionalFeatureTitles } from '../scripts/lib/optional-feature-titles.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -123,7 +124,6 @@ test('every UNROUTED waiver still names a real page', () => {
 const exampleScan = scanExampleSource(readExampleFiles(repoRoot).split('\n'))
 numberExamples(exampleScan)
 const sectionSlugByFixture = new Map(exampleScan.examples.map((example) => [example.corpusName, example.slug]))
-const sectionSlugs = new Set(exampleScan.sections.map((section) => section.slug))
 
 /* The census is the fixtures a contributor actually commits, not the scanner's
  * own account of what it extracted - the same reason scripts/lib/example-pair-
@@ -134,15 +134,117 @@ const corpusFixtures = execFileSync('git', ['ls-files', 'tests/corpus'], { cwd: 
   .filter((path) => path.endsWith('.crv'))
   .map((path) => path.slice('tests/corpus/'.length, -'.crv'.length))
 
-/* A route entry is the only kind of line in the page file that is indented;
- * page ids, `key:` lines, descriptions and comments all start at column zero.
- * This mirrors parsePages in the generator, which reads an indented line as an
- * entry after every other form has failed to match. */
-const routeEntryLines = readFileSync(resolve(repoRoot, 'resources/example-pages.txt'), 'utf8')
-  .split('\n')
-  .filter((line) => line.startsWith('  ') && line.trim() !== '')
-  .map((line) => line.trim())
-const routeEntries = new Set(routeEntryLines)
+/*
+ * THE MANIFEST ITSELF, read by the generator's own parser.
+ *
+ * This block used to approximate the page file with a filter that kept only
+ * INDENTED lines, on the reasoning that a route entry is the only indented
+ * form. It is - but a filter that keeps only indented lines cannot see a
+ * `[id]` heading, a `> description` or a `key:` line, so every claim the
+ * generator makes about those was unreachable from `npm test`, and two of them
+ * were worse than unchecked: an entry sitting ABOVE the first `[id]` still
+ * landed in the route set below, so it SATISFIED the routing assertions
+ * instead of failing them, and a malformed line at column zero was dropped in
+ * silence (carve#1492).
+ *
+ * So the parsing now lives in scripts/lib/example-page-manifest.mjs and this
+ * file calls it. The generator calls the same functions and fails on the first
+ * complaint, which is why the assertions below can be `deepEqual` against an
+ * empty list: an empty complaint list is exactly the condition under which
+ * `docs:build` proceeds.
+ */
+const { pages, complaints: pageComplaints } = parsePages(
+  readFileSync(resolve(repoRoot, 'resources/example-pages.txt'), 'utf8'))
+const { pages: optionalPages, complaints: optionalPageComplaints } = parseOptionalPages(
+  readFileSync(resolve(repoRoot, 'resources/optional-example-pages.txt'), 'utf8'))
+const { sectionsBySlug, segmentsByName, complaints: sectionComplaints } = collectSections(repoRoot)
+/*
+ * FAIL-FAST ORDER, mirroring the generator, which exits on the section
+ * complaints before it resolves a single route. Two section titles that
+ * slugify to one slug also cost that slug's fixtures their names, so routing
+ * would report every entry naming one of them as dangling - a consequence of
+ * the collision, reported in the generator's voice for a run the generator
+ * never performs. The collision itself is asserted just below.
+ */
+const { complaints: routeComplaints } = sectionComplaints.length === 0
+  ? routePages({ pages, sectionsBySlug, segmentsByName })
+  : { complaints: [] }
+const routeEntries = new Set(pages.flatMap((page) => page.slugs))
+
+test('both page manifests parsed something', () => {
+  /* A parser returning nothing would make every assertion below pass over an
+   * empty manifest - the same liveness floor the corpus census carries. */
+  assert.ok(pages.length > 5, `expected the configured example pages, found ${pages.length}`)
+  assert.ok(optionalPages.length > 1, `expected the optional example pages, found ${optionalPages.length}`)
+  assert.ok(sectionsBySlug.size > 20, `expected the example source sections, found ${sectionsBySlug.size}`)
+})
+
+test('the page manifest has no structural complaint', () => {
+  assert.deepEqual(
+    pageComplaints,
+    [],
+    'resources/example-pages.txt would stop `npm run docs:build` for these reasons:\n' + pageComplaints.join('\n'),
+  )
+})
+
+test('the optional page manifest has no structural complaint', () => {
+  assert.deepEqual(
+    optionalPageComplaints,
+    [],
+    'resources/optional-example-pages.txt would stop `npm run docs:build` for these reasons:\n' +
+      optionalPageComplaints.join('\n'),
+  )
+})
+
+test('every example source section has a slug of its own', () => {
+  /* scanExampleSource throws on two identical section TITLES. Two different
+   * titles that slugify to one slug arrive here instead, where a page entry
+   * naming that slug could no longer say which section it meant. */
+  assert.deepEqual(
+    sectionComplaints,
+    [],
+    'resources/examples/*.md sections collide after slugification:\n' + sectionComplaints.join('\n'),
+  )
+})
+
+test('every page-file entry resolves to exactly one reading location', () => {
+  /*
+   * The routing AMBIGUITIES, which a Set of entry names cannot hold: a page
+   * naming both a section and one of that section's own fixtures, the same
+   * pairing spread across two pages, and one fixture reached from two pages.
+   * Each of those generates two readable pages, so nothing downstream ever
+   * notices that one rule acquired two apparently authoritative homes.
+   */
+  assert.deepEqual(
+    routeComplaints,
+    [],
+    'resources/example-pages.txt routes ambiguously:\n' + routeComplaints.join('\n'),
+  )
+})
+
+test('every page naming a hand-written source can read it', () => {
+  /* Reachable for `examples-tier3.md` alone before this, and only because
+   * tests/examples-tier3.test.mjs happens to read that one file at module
+   * scope. A second `source:` value would have inherited nothing. */
+  const { complaints } = scanPageSources(pages, repoRoot)
+  assert.deepEqual(
+    complaints,
+    [],
+    'these resources/example-pages.txt source: values cannot be generated from:\n' + complaints.join('\n'),
+  )
+})
+
+test('no page is an unshared header-only page', () => {
+  /* A page with no entries and no source is legitimate only as the frontmatter
+   * owner of an out: path another entry also writes to. Alone, it publishes a
+   * heading and no examples. */
+  const complaints = headerOnlyPages(pages, optionalPages)
+  assert.deepEqual(
+    complaints,
+    [],
+    'these resources/example-pages.txt entries would publish no examples:\n' + complaints.join('\n'),
+  )
+})
 
 test('the corpus census agrees with the example source', () => {
   /* Either list arriving empty - a failed git call, a moved source file - would
@@ -171,18 +273,6 @@ test('every corpus fixture is routed to a docs page', () => {
   )
 })
 
-test('every route entry names a section or fixture that exists', () => {
-  /* Without this, a typo in the manifest reports as the FIXTURE being
-   * unrouted, which sends the reader to the corpus instead of to the line that
-   * is actually wrong. */
-  const dangling = [...routeEntries].filter((entry) => !sectionSlugs.has(entry) && !sectionSlugByFixture.has(entry))
-  assert.deepEqual(
-    dangling,
-    [],
-    'these resources/example-pages.txt entries match no section slug and no fixture name:\n' + dangling.join('\n'),
-  )
-})
-
 /*
  * The optional corpus has the same shape and the same gap. Its generator check
  * is per FEATURE, not per case, so a new case under a feature that already has
@@ -192,12 +282,7 @@ test('every route entry names a section or fixture that exists', () => {
 const manifestFeatures = [...new Set(
   JSON.parse(readFileSync(resolve(repoRoot, 'tests/corpus-optional/manifest.json'), 'utf8')).cases.map((item) => item.feature),
 )]
-const assignedFeatures = new Set(
-  readFileSync(resolve(repoRoot, 'resources/optional-example-pages.txt'), 'utf8')
-    .split('\n')
-    .filter((line) => line.startsWith('  ') && line.trim() !== '')
-    .map((line) => line.trim()),
-)
+const assignedFeatures = new Set(optionalPages.flatMap((page) => page.features))
 
 test('the optional-corpus feature census is not empty', () => {
   /* Either list arriving empty would make every assertion below pass over
@@ -271,18 +356,9 @@ test('every authored title names a feature the manifest still has', () => {
 })
 
 /*
- * One route entry, one reading location. The generator rejects a duplicate
- * ("one corpus pair cannot have two reading locations") and this file collects
- * the entries into a Set, which is exactly where a duplicate disappears - so
- * the raw lines are kept above and counted here.
+ * A duplicate route entry, and an entry naming no section or fixture at all,
+ * each had a test of their own here, derived from the raw indented lines. Both
+ * claims are now made by the shared parser and router above - the first as a
+ * `duplicate entry` complaint, the second as `matches no source section or
+ * fixture` - with the generator's own wording, so they are not repeated here.
  */
-test('no corpus pair is routed twice from the page file', () => {
-  const seen = new Set()
-  const duplicated = routeEntryLines.filter((entry) => seen.size === seen.add(entry).size)
-  assert.deepEqual(
-    duplicated,
-    [],
-    'these resources/example-pages.txt entries appear more than once -\n' +
-      'one corpus pair cannot have two reading locations:\n' + duplicated.join('\n'),
-  )
-})

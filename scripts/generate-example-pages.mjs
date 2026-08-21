@@ -2,7 +2,8 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, posix, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { exampleFiles, numberExamples, readExampleFiles, scanExampleSource, slugify } from './lib/example-sections.mjs'
+import { slugify } from './lib/example-sections.mjs'
+import { collectSections, headerOnlyPages, parseOptionalPages, parsePages, routePages, scanPageSources, unroutedFixtures } from './lib/example-page-manifest.mjs'
 import { optionalFeatureTitles } from './lib/optional-feature-titles.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -18,48 +19,12 @@ const fail = (message) => {
   process.exit(1)
 }
 
-const parsePages = (source) => {
-  const pages = []
-  const seenSlugs = new Set()
-  let current = null
-  for (const [index, line] of source.split('\n').entries()) {
-    if (line.trim() === '' || line.startsWith('#')) continue
-    const heading = /^\[([^\]]+)\]\s+(.+)$/.exec(line)
-    if (heading) {
-      current = { id: heading[1], title: heading[2], description: null, out: null, index: null, source: null, order: 0, level: 2, slugs: [] }
-      pages.push(current)
-      continue
-    }
-    if (line.startsWith('> ')) {
-      if (!current) fail(`line ${index + 1} gives a description before any page; without a page identity its cases have no reader.`)
-      current.description = line.slice(2)
-      continue
-    }
-    const key = /^(out|index|source|order|level):\s*(.+)$/.exec(line)
-    if (key) {
-      if (!current) fail(`line ${index + 1} gives ${key[1]} before any page; the destination would have no page identity.`)
-      const value = key[2].trim()
-      current[key[1]] = key[1] === 'order' || key[1] === 'level' ? Number(value) : value
-      continue
-    }
-    if (line.startsWith('  ')) {
-      if (!current) fail(`line ${index + 1} assigns a case before any page; a corpus case with no page has no reader.`)
-      const slug = line.slice(2).trim()
-      if (seenSlugs.has(slug)) fail(`duplicate entry "${slug}" in the page file; one corpus pair cannot have two reading locations.`)
-      seenSlugs.add(slug)
-      current.slugs.push(slug)
-      continue
-    }
-    fail(`line ${index + 1} has invalid page syntax; ignoring it could leave a corpus case on no page with no reader.`)
-  }
-  for (const page of pages) {
-    if (!page.description) fail(`page "${page.id}" has no description; its generated page would give readers no topical context.`)
-    if (!page.out) fail(`page "${page.id}" has no out: path; its sections would have no generated reading location.`)
-    if (!page.out.endsWith('.md')) fail(`page "${page.id}" has out: "${page.out}" which does not end in .md; VitePress needs a Markdown page.`)
-    if (!Number.isInteger(page.order)) fail(`page "${page.id}" has a non-integer order; block ordering must be deterministic.`)
-    if (![2, 3].includes(page.level)) fail(`page "${page.id}" has level: "${page.level}"; section headings can only be level 2 or 3.`)
-  }
-  return pages
+/* Every structural claim about the two manifests now lives in
+ * scripts/lib/example-page-manifest.mjs so tests/no-orphan-pages.test.mjs can
+ * make it too; this script keeps failing on the first complaint, as it did
+ * when the checks were written out here (carve#1492). */
+const failOn = (complaints) => {
+  if (complaints.length > 0) fail(complaints[0])
 }
 
 /*
@@ -111,69 +76,20 @@ const githubAnchor = (title) => slugify(title)
  * no intentional markup, only element names being talked about.
  */
 const asProse = (text) => text.replace(/</g, '&lt;').replace(/>/g, '&gt;')
-const combinedScan = scanExampleSource(readExampleFiles(repoRoot).split('\n'))
-numberExamples(combinedScan)
-const numberedBySlug = new Map(combinedScan.sections.map((section) => [section.slug, section]))
-const sectionsBySlug = new Map()
-for (const sourceName of exampleFiles) {
-  const sourcePath = resolve(repoRoot, 'resources/examples', `${sourceName}.md`)
-  for (const section of scanExampleSource(readFileSync(sourcePath, 'utf8').split('\n')).sections) {
-    if (sectionsBySlug.has(section.slug)) fail(`source slug "${section.slug}" is duplicated; a page entry could not identify exactly one section.`)
-    const numbered = numberedBySlug.get(section.slug)
-    for (let i = 0; i < section.segments.length; i++) {
-      section.segments[i].corpusName = numbered?.segments[i]?.corpusName
-    }
-    sectionsBySlug.set(section.slug, { ...section, sourceName })
-  }
-}
+const { sectionsBySlug, segmentsByName, complaints: sectionComplaints } = collectSections(repoRoot)
+failOn(sectionComplaints)
 
-const pages = parsePages(readFileSync(pagesSource, 'utf8'))
-const segmentsByName = new Map([...sectionsBySlug.values()].flatMap((section) =>
-  section.segments.map((segment) => [segment.corpusName, { section, segment }])))
-const routedSegments = new Map()
-const allEntries = new Set(pages.flatMap((page) => page.slugs))
-for (const entry of allEntries) {
-  const fixture = segmentsByName.get(entry)
-  /* A whole-section route already includes every fixture in that section.
-   * Also naming one fixture obscures whether the author meant an override or
-   * duplication, so reject that ambiguity even when the names are on pages. */
-  if (fixture && allEntries.has(fixture.section.slug)) fail(`the page file names both section "${fixture.section.slug}" and fixture "${entry}" from that section; the intent for section "${fixture.section.slug}" is ambiguous.`)
-}
-for (const page of pages) {
-  const sectionEntries = new Set(page.slugs.filter((entry) => sectionsBySlug.has(entry)))
-  for (const entry of page.slugs) {
-    const fixture = segmentsByName.get(entry)
-    /* A misspelled fixture otherwise disappears from the output while looking
-     * like a deliberate fine-grained route in review. */
-    if (!sectionsBySlug.has(entry) && !fixture) fail(`page-file entry "${entry}" matches no source section or fixture; readers would be sent to a pair that does not exist.`)
-    if (fixture && sectionEntries.has(fixture.section.slug)) {
-      /* Naming a category and one of its fixtures makes it impossible to tell
-       * whether duplication was deliberate. Reject it before one rule gains
-       * two apparently authoritative reading locations. */
-      fail(`page "${page.id}" names both section "${fixture.section.slug}" and fixture "${entry}" from that section; the intent for section "${fixture.section.slug}" is ambiguous.`)
-    }
-    const selected = sectionsBySlug.has(entry) ? sectionsBySlug.get(entry).segments : [fixture.segment]
-    for (const segment of selected) {
-      /* Two destinations let surrounding prose turn one corpus pair into two
-       * different apparent rules, so ownership must remain singular. */
-      if (routedSegments.has(segment.corpusName)) fail(`fixture "${segment.corpusName}" is routed to both page "${routedSegments.get(segment.corpusName)}" and page "${page.id}"; it would read as two different rules.`)
-      routedSegments.set(segment.corpusName, page.id)
-    }
-  }
-}
-for (const fixture of segmentsByName.keys()) {
-  /* A generated corpus pair without documentation has no reader, which is the
-   * invariant this routing manifest exists to enforce at pair granularity. */
-  if (!routedSegments.has(fixture)) fail(`fixture "${fixture}" is routed to no page; this corpus fixture would have no reader.`)
-}
+const { pages, complaints: pageComplaints } = parsePages(readFileSync(pagesSource, 'utf8'))
+failOn(pageComplaints)
+const { routedSegments, complaints: routeComplaints } = routePages({ pages, sectionsBySlug, segmentsByName })
+failOn(routeComplaints)
+/* A generated corpus pair without documentation has no reader, which is the
+ * invariant this routing manifest exists to enforce at pair granularity. */
+failOn(unroutedFixtures({ routedSegments, segmentsByName }))
 
-for (const page of pages.filter((candidate) => candidate.source)) {
-  const sourcePath = resolve(repoRoot, 'resources', page.source)
-  if (!existsSync(sourcePath)) fail(`page "${page.id}" names missing source "${page.source}"; its examples could not be generated.`)
-  const scan = scanExampleSource(readFileSync(sourcePath, 'utf8').split('\n'))
-  if (scan.sections.length === 0) fail(`page "${page.id}" source has no sections; its generated page would be empty.`)
-  page.standaloneSections = scan.sections
-}
+const { sectionsByPage, complaints: sourceComplaints } = scanPageSources(pages, repoRoot)
+failOn(sourceComplaints)
+for (const page of pages) page.standaloneSections = sectionsByPage.get(page)
 
 const corpusUrl = (name) => `https://github.com/markup-carve/carve/blob/main/tests/corpus/${name}.crv`
 const sourceLink = (name) => `[\`resources/examples/${name}.md\`](https://github.com/markup-carve/carve/blob/main/resources/examples/${name}.md)`
@@ -289,42 +205,9 @@ for (const item of manifest.cases) {
   if (!casesByFeature.has(item.feature)) casesByFeature.set(item.feature, [])
   casesByFeature.get(item.feature).push(item)
 }
-const parseOptionalPages = (source) => {
-  const parsed = []
-  let current = null
-  for (const [index, line] of source.split('\n').entries()) {
-    if (line.trim() === '' || line.startsWith('#')) continue
-    const heading = /^\[([^\]]+)\]\s+(.+)$/.exec(line)
-    if (heading) {
-      current = { id: heading[1], title: heading[2], description: null, kind: null, out: null, order: 0, features: [], line: index + 1 }
-      parsed.push(current)
-      continue
-    }
-    if (!current) fail(`optional page line ${index + 1} has content before a page; a pinned behavior would have no reader.`)
-    if (line.startsWith('> ')) current.description = line.slice(2)
-    else if (/^(kind|out|order):\s*/.test(line)) {
-      const [, key, value] = /^(kind|out|order):\s*(.+)$/.exec(line)
-      current[key] = key === 'order' ? Number(value) : value
-    } else if (line.startsWith('  ')) current.features.push(line.trim())
-    else fail(`optional page line ${index + 1} has invalid syntax; ignoring it could leave a pinned behavior with no reader.`)
-  }
-  const kinds = new Set(['extensions-enable', 'core-configured', 'processor-options'])
-  for (let i = 0; i < parsed.length; i++) {
-    const page = parsed[i]
-    if (!page.description || !page.out || !kinds.has(page.kind)) fail(`optional page "${page.id}" needs a description, out, and classified kind; readers must know what activates it.`)
-    if (!Number.isInteger(page.order)) fail(`optional page "${page.id}" has a non-integer order; block ordering must be deterministic.`)
-  }
-  return parsed
-}
-const optionalPages = parseOptionalPages(readFileSync(optionalPagesSource, 'utf8'))
-const outputCounts = new Map()
-for (const entry of [...pages, ...optionalPages]) outputCounts.set(entry.out, (outputCounts.get(entry.out) ?? 0) + 1)
-for (const page of pages) {
-  /* A header-only block can own shared frontmatter and introductory prose,
-   * including when its companions come from the optional-page file. An
-   * unshared empty page would publish no examples at all. */
-  if (page.slugs.length === 0 && !page.source && outputCounts.get(page.out) === 1) fail(`page "${page.id}" has zero slugs and no source; that is allowed only when another entry shares its out: path as a legitimate header-only owner.`)
-}
+const { pages: optionalPages, complaints: optionalComplaints } = parseOptionalPages(readFileSync(optionalPagesSource, 'utf8'))
+failOn(optionalComplaints)
+failOn(headerOnlyPages(pages, optionalPages))
 const optionalAssigned = new Set(optionalPages.flatMap((page) => page.features))
 for (const feature of casesByFeature.keys()) {
   if (!optionalAssigned.has(feature)) fail(`manifest feature "${feature}" appears on no optional page; this pinned behavior has no reader.`)
