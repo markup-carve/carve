@@ -1019,6 +1019,63 @@ statement about tightness, not about where the list ends.
 :::
 
 
+A run of **three or more** blank lines is a hard list boundary (§11 N1a): the
+marker after it opens a new sibling list even though every N1 axis matches. One
+blank line still loosens, and so does two - the boundary is deliberately set
+above the run lengths documents already contain.
+
+::: compare
+
+```carve
+- apples
+
+
+
+- oranges
+```
+
+```html
+<ul>
+  <li>apples</li>
+</ul>
+<ul>
+  <li>oranges</li>
+</ul>
+```
+
+:::
+
+The boundary applies at every level, not only the top one - a list nested in an
+item separates on the same run. That shape has no corpus pair yet: the canonical
+writer cannot yet spell two sibling sub-lists inside a tight item, so a fixture
+for it would be pinned by a drift-ledger excuse rather than by the engines. The
+engines pin it in their own suites meanwhile.
+
+The run denies a following sibling marker the right to join; it does not end the
+item. A continuation that reaches the item's content column still continues it,
+at any run length.
+
+::: compare
+
+```carve
+- apples
+
+
+
+  still apples
+```
+
+```html
+<ul>
+  <li><p>apples</p>
+    <p>still apples</p>
+  </li>
+</ul>
+```
+
+:::
+
+
 ## Task lists
 
 ::: compare

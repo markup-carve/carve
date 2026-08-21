@@ -1678,3 +1678,63 @@ test('the definition body dedent strips no further than column 3', () => {
       `strip leaves as text.\n  doc: ${JSON.stringify(doc)}`,
   )
 })
+
+const siblingLists = (source) => parse(source).blocks.filter((block) => block.t === 'list')
+const compactHtml = (source) => renderDoc(parse(source)).replace(/\s+/g, ' ').replace(/> </g, '><').trim()
+
+test('one blank line remains the loose-list separator', () => {
+  const parsed = siblingLists('- a\n\n- b\n')
+  assert.equal(parsed.length, 1)
+  assert.equal(parsed[0].items.length, 2)
+  assert.equal(parsed[0].tight, false)
+})
+
+test('TWO blank lines still loosen rather than separate', () => {
+  // The threshold is three. Two is the run that decoration and generator
+  // output actually contain, so it must keep meaning what it always meant.
+  const parsed = siblingLists('- a\n\n\n- b\n')
+  assert.equal(parsed.length, 1)
+  assert.equal(parsed[0].items.length, 2)
+  assert.equal(parsed[0].tight, false)
+})
+
+test('three blank lines are a hard boundary between compatible lists', () => {
+  const source = '- a\n\n\n\n- b\n'
+  const parsed = siblingLists(source)
+  assert.equal(parsed.length, 2)
+  assert.deepEqual(parsed.map((list) => list.items.length), [1, 1])
+  assert.equal(compactHtml(source), '<ul><li>a</li></ul><ul><li>b</li></ul>')
+})
+
+test('the hard boundary applies to ordered lists too', () => {
+  const source = '1. a\n\n\n\n1. b\n'
+  assert.equal(siblingLists(source).length, 2)
+  assert.equal(compactHtml(source), '<ol><li>a</li></ol><ol><li>b</li></ol>')
+})
+
+test('the hard boundary separates a list NESTED IN AN ITEM', () => {
+  // The clause is stated for every level, so the nested case is the one that
+  // pins it: the run reaches the sub-list's own parse rather than being
+  // collapsed to a single blank by the outer item's continuation.
+  const [outer] = siblingLists('- outer\n\n  - a\n\n\n\n  - b\n')
+  const nested = outer.items[0].blocks.filter((block) => block.t === 'list')
+  assert.equal(nested.length, 2)
+  assert.deepEqual(nested.map((list) => list.items.length), [1, 1])
+})
+
+test('a run followed by a continuation closes nothing', () => {
+  // The run denies a following SIBLING MARKER the right to join. It is not an
+  // item terminator: content at the item's content column still continues it.
+  const parsed = siblingLists('- a\n\n\n\n  still a\n')
+  assert.equal(parsed.length, 1)
+  assert.equal(parsed[0].items.length, 1)
+  assert.equal(parsed[0].tight, false)
+})
+
+test('a run before an incompatible marker is not a boundary case', () => {
+  // Different axes already opened a different list under §11 N1, so there is
+  // nothing for the run to separate and the count never comes up.
+  const source = '- a\n\n\n\n* b\n'
+  assert.equal(siblingLists(source).length, 2)
+  assert.equal(compactHtml(source), '<ul><li>a</li></ul><ul><li>b</li></ul>')
+})

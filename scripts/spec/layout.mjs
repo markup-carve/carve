@@ -2898,6 +2898,9 @@ function collectItems(lines, i, list, state, ind, meas) {
     // A blank line was seen, and only invisible lines have followed it so far
     // (§17 L1b). The next PARAGRAPH closes the separation and loosens.
     let pendingSeparation = false
+    // §11 N1's hard boundary fired: this item is the list's last. Set where the
+    // run is measured, acted on after the item is pushed.
+    let hardListBoundary = false
     {
       // The marker line's content is the item's FIRST BLOCK, so it answers S4's
       // question exactly as any other line does. Only the quote spelling was
@@ -3133,6 +3136,21 @@ function collectItems(lines, i, list, state, ind, meas) {
           continue
         }
         if (nm && nm.indent === baseIndent) {
+          // §11 N1 HARD BOUNDARY. A run of THREE OR MORE blank lines ends the
+          // list: the sibling after it opens a new one instead of joining this
+          // one. One or two blank lines stay the ordinary loose separator
+          // (§17 L1), so the shape a document actually uses is untouched.
+          //
+          // `j - i` is the exact run length -- `i` is the first blank and `j`
+          // the line that ended the run -- so the test needs no counter.
+          // `sameAxes` is what makes it a BOUNDARY rather than a repeat of §11
+          // N1's ordinary split: a marker on different axes already opened a
+          // different list, and there is nothing for the run to separate.
+          if (j - i >= 3 && sameAxes(list, nm)) {
+            hardListBoundary = true
+            i = j
+            break
+          }
           // blank line between ITEMS of this list -> loose (SS17 L1); a
           // following DIFFERENT list is a sibling and loosens nothing
           if (sameAxes(list, nm)) list.tight = false
@@ -3238,7 +3256,15 @@ function collectItems(lines, i, list, state, ind, meas) {
         if (nm && nm.indent >= contentCol) {
           // sub-list after a blank: attaches, stays tight (SS17 L2)
           if (subCol < 0) subCol = nm.indent + nm.markerWidth
-          pushLine('', BLANK_MEAS)
+          // THE WHOLE RUN, not one blank standing in for it. §11 N1's boundary
+          // applies at every level, and the sub-list is parsed recursively from
+          // `itemLines`, so a run collapsed to a single blank here is a run the
+          // nested parse can never see: `- o` / `  - a` / three blanks /
+          // `  - b` came out as ONE nested list while the same three blanks at
+          // the top level split. Attaching still keeps THIS item tight - that
+          // is L2 and is unchanged; what the run decides is whether the marker
+          // below it joins the sub-list, which is the nested parse's question.
+          for (let k = i; k < j; k++) pushLine('', BLANK_MEAS)
           closePara()
           i = j
           continue
@@ -3684,6 +3710,9 @@ function collectItems(lines, i, list, state, ind, meas) {
     }
     item.blocks = parseBlocks(itemLines, state, false, true, itemMeas)
     list.items.push(item)
+    // Returning rather than breaking leaves `i` on the marker line, so the
+    // caller parses it as the first item of the next list.
+    if (hardListBoundary) return i
   }
   return i
 }
