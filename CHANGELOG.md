@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Table column metadata and two-axis cell alignment** (carve#1344).
+  `table.columns[]` carries a horizontal alignment, a vertical alignment and a
+  fractional width, `table_cell` gains `valign`, positional `aligns`, `valigns`
+  and `widths` table attributes set them, and a cell marker run may write both
+  axes (`|>^`, `|<v`). HTML gains cell styles and `colgroup` widths, and
+  `table-column-arity`, `table-column-overlap` and `table-width-total` lint the
+  result. Corpus 370, 371.
+- **A table cell can inherit its column's horizontal alignment** (carve#1408).
+  `?^`, `?~` and `?v` keep the column's horizontal alignment while setting the
+  cell's vertical one; a lone `?`, a reversed `v?` and a two-horizontal `?<`
+  stay literal content. Corpus 375.
+- **A pipe table can state its head and foot row counts** (carve#1413).
+  `header-rows=N` and `footer-rows=N` partition the table into `thead`, `tbody`
+  and `tfoot`; an explicit head cell becomes a column header and `|=` stays
+  valid in a body row. A ListTable cell's own `align`/`valign` outranks its
+  column's. Corpus 376.
+- **ListTable declares local headers and body row groups** (carve#1248,
+  carve#1337). A body group may carry its own header row, and a row group's
+  span boundaries are defined. Optional corpus 45.
+- **An extension block matcher is a pure predicate, and a definition probe may
+  ask it** (carve#1432, R1a). An engine deciding whether a definition line folds
+  into an open paragraph may consult a registered matcher instead of switching
+  the guard off wherever an extension exists.
+- **A block matcher's coordinates are local, not absolute** (carve#1437, R1b).
+  A matcher reads positions against its own container rather than the document.
+
 ### Fixed
 
 - **The index back-link says where it goes, and the extension-written strings
@@ -50,9 +78,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to the next block instead of folding in as literal text. The layout pass
   already read the other two correctly in that position. Corpus 391.
 
-- **The AST span-divergence ledger now records the current zero-difference
-  baseline.** The last `hard_break` extent disagreement cleared across all
-  three engines and its regression test now pins an empty ledger (carve#1414).
+- **The footnote backlink says where it goes, and the engine's own words are an
+  option** (carve#1457, PART 9 §16). `role="doc-backlink"` carried no accessible
+  name, so a reader announced the `↩` glyph. A lone backlink is now named by its
+  label, the k-th of several renders `↩<sup>k</sup>` and is named for that
+  reference ordinal, and the English string is a render option rather than a
+  fixed word.
+
+- **A continuation marker attaches only a flush-left block** (carve#1436,
+  carve#1437, §17 L3). The clause always said flush-left and no reader
+  implemented it, so a `+` marker attached the following block at any
+  indentation. Corpus 384.
+
+- **The hyphen-run flanking test reads PART 7's spaces, not the host
+  language's** (carve#1448). It was spelled with JavaScript's `\s`, which takes a
+  vertical tab and a form feed; Carve reads both as content, so two documents
+  that should agree answered differently.
 
 ### Changed
 
@@ -82,7 +123,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   an omitted one, and the fence pair is `dependentRequired`. Version stays 1: all three
   engines emit only `path`, `startByte` and `endByte`, so no sidecar in existence
   carries a field whose meaning moved.
-- **A vertical table-cell marker requires a horizontal partner.** `|^ x` and `|v x` remain visible content; paired runs such as `|<^`, `|~~`, and `|v>` carry both axes. Corpus 373.
+- **A vertical table-cell marker requires a horizontal partner, written first** (carve#1405, carve#1407). `|^ x` and `|v x` remain visible content, and so does a reversed pair such as `|v>`; a horizontal-first run such as `|<^` or `|>^` carries both axes. Corpus 373.
 - **A collected definition closes the item paragraph, and only a comment keeps
   the below-column path open** (carve#1376). Item prose reopens at the content
   column; a footnote body starts two columns beyond its definition; bare `. `
@@ -90,6 +131,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **A quote is reached by its marker, and a column never reaches into one** (carve#1384). A line writing no `>` is in no quote whatever column it lands on; it folds into the deepest open paragraph, renders where it was written, and registers nothing. Corpus 369.
 - **An unterminated fence at a container's content column opens no block** (carve#1387). Section 10 I4 asks for a closer; without one the line is paragraph text, the paragraph stays open, and a flush-left line below folds into it. Corpus 367.
 - **A raw block keeps the blank line at the end of its payload** (carve#1389). The payload is every line between the delimiters; the container and whether the closer was written are not parameters. Corpus 366.
+- **A heading at an item's content column leaves no paragraph open**
+  (carve#1377). A heading is the visible control: at the content column it ends
+  the item's paragraph, and an enclosing item's paragraph survives past a nested
+  heading. Corpus 368.
+- **An all-blank raw payload still emits its line** (carve#1401). Corpus 372.
+- **A resumed lazy run belongs to the innermost marker-line item** (carve#1424).
+  Corpus 381.
+- **A marker-line link definition is collected where no paragraph is open**
+  (carve#1425). A definition written directly after a list marker is metadata;
+  with a paragraph open above it the marker line is lazy text and the definition
+  defines nothing. Corpus 382.
+- **A lazy marker line's definition defines nothing, in any container**
+  (carve#1428). The corpus said this only at the document level, so the quote
+  and div spellings had three answers across the engines. Corpus 383.
+- **A hyphen run opening a word after whitespace is a flag, not a dash**
+  (carve#1443). `--oneline` and `--force-with-lease` stay literal; `1--10`,
+  `Mon--Fri` and a spaced `--` still convert. Corpus 385.
+- **The doubled run is the canonical arrow, in both families** (carve#1442).
+  `<--`, `-->`, `<-->` and the `=` family are canonical; the single-hyphen
+  spellings are deprecated and still render. Corpus 386.
+- **A row is a row, in every table section** (carve#1459). `thead`, `tbody` and
+  `tfoot` all write one row per line; a head and a foot used to be compact while
+  a body was expanded, so the same element had two layouts and no stated reason.
+- **`table-marker-run-padding` is one lint id for the whole marker run**
+  (carve#1464, PART 9 §5 T11). It names the kind marker as well as the alignment
+  run and the attribute block, and supersedes `table-alignment-run-padding`,
+  which named only the middle part; `fmt --migrate` inserts the missing space.
+- **ASCII-folding is available in all three engines, in two modes**
+  (carve#1470). Best-effort keeps what the transliteration table cannot map,
+  strict drops it so an id matches `[0-9A-Za-z-]`; carve-rs gains
+  `ascii_heading_ids`, and all three carry the same table, so a folded id is
+  byte-identical across them.
 
 ## [0.1.3] - 2026-08-18
 
