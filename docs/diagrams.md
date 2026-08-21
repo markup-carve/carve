@@ -88,14 +88,39 @@ is the host's job.
 like `-->` survives intact:
 
 ```html
-<pre class="mermaid">graph LR; A --&gt; B</pre>
+<pre class="mermaid" role="img" aria-label="mermaid">graph LR; A --&gt; B</pre>
 ```
 
 **JSON mode** (Vega-Lite, Chart.js) emits the body verbatim inside a script tag:
 
 ```html
-<div class="chart"><script type="application/json">{"type":"bar"}</script></div>
+<div class="chart" role="img" aria-label="chart"><script type="application/json">{"type":"bar"}</script></div>
 ```
+
+### The marker is an image, and it is named
+
+The body of a text-mode fence is diagram **source**. Before the client library
+runs - and if it never runs, which is the default, since no engine ships one - a
+reader announces the backslashes and arrows as prose; afterwards the injected
+`<svg>` has no accessible name either. `role="img"` says the block IS an image
+whether or not the script arrives, and the name says which one (carve#1468).
+
+- **The role and the name travel together.** An `img` with no accessible name is
+  skipped entirely, which is worse than the source being read out, so setting
+  the label to the empty string removes the role as well.
+- **The default is the fence's own word** (`mermaid`, `d2`, `chart`), not
+  invented English - so there is nothing here to translate and this is an option
+  on the extension rather than a `labels` key
+  ([extensions §1.5](./extensions#_1-5-the-strings-an-extension-writes-itself)).
+  A host that wants a reader to hear something better sets it, and an author can
+  name one diagram with `{aria-label="Deploy flow"}` on the fence.
+- **The author's own `role` or `aria-label` wins**, matched
+  ASCII-case-insensitively because HTML attribute names are. An author who wrote
+  only a name still gets the role - losing it there would leave the defect on
+  the one fence whose author cared enough to name it.
+- **The no-renderer static fallback is NOT named.** That path really is source
+  text in a `<pre><code>`; calling it an image would hide the one thing it
+  exists to show.
 
 ## Rendering without a browser
 

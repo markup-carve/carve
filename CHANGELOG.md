@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The index back-link says where it goes, and the extension-written strings
+  get one map** (carve#1469, carve#1468). The Index extension's own rendering rule mandated a bare `↩`, which
+  a reader announces as "leftwards arrow with hook" or skips - the sentence
+  PART 9 §16 exists to prevent, on the identical element, so the spec disagreed
+  with itself. §16's rule is mirrored: the k-th of several back-links renders
+  `↩<sup>k</sup>` and is named for it. Extensions §1.5 is new and states where
+  an extension's own strings live: one `labels` map localizes a document, an
+  extension option overrides it, and a string with no fixed English default
+  (a diagram's name is the fence's own word) gets no key. Tabs, code-group and
+  diagram fences also carry an accessible name; the optional-corpus tabs
+  fixture moves with them.
+
 - **Four engine-written shapes now carry an accessible name** (carve#1468).
   A task checkbox takes its item's own text, an untitled admonition takes its
   type word and a titled one points at its title, the endnotes section is

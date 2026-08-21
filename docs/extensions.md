@@ -178,6 +178,55 @@ text (see [dismissed syntax](./dismissed-syntax)). The djot-php
 `[…]{.fn}` form maps onto carve's inline `^[content]`; see
 `native-features-analysis.md`.
 
+### 1.5 The strings an extension writes itself
+
+Almost every string in the output is the author's. This section is about the
+remainder: the words an **extension** writes on its own, where the author has
+no place to spell them - a tab set's group name, an index back-link's leading
+words. PART 9 §16a governs the same question for core, and its rule binds here:
+
+> An extension MAY read the map for a string it shares with core; it MUST NOT
+> require the host to configure the same text twice.
+
+**One `labels` map localizes a whole document.** Every extension-written string
+that has a fixed English default has a key in the render's `labels` map, and the
+extension reads it. A host translating a document sets `labels` **once**:
+
+```js
+carveToHtml(src, {
+  labels: {
+    footnoteBacklink: 'Zurück zur Referenz',
+    endnotes: 'Fußnoten',
+    indexBackref: 'Zurück zu',
+    tabsGroup: 'Registerkarten',
+    codeGroup: 'Codebeispiele',
+  },
+  extensions: [index(), tabs(), codeGroup()],
+})
+```
+
+**Precedence: the extension's own option, then the map, then the default.** An
+option passed to one extension instance wins for that instance, so a page with
+two tab sets can name them apart without touching the map.
+
+| Key | Default | Written by |
+|-----|---------|-----------|
+| `indexBackref` | `Back to` | Index (§8.2) |
+| `tabsGroup` | `Tabs` | Tabs (§4.20) |
+| `codeGroup` | `Code examples` | CodeGroup |
+
+**What does NOT get a key.** A string with no fixed English default is not in
+the map, because there is nothing to translate: a diagram fence's name defaults
+to the *fence's own word* (`mermaid`, `d2`), so it stays an option on the
+extension. Neither is a string the author already wrote - a tab's `[label]`, an
+index term, an admonition title. Those are named by DERIVING from the document,
+so a translated document translates them exactly once, in the document.
+
+**Why this is not localization.** There is no locale name and no built-in
+translation table, for the reason §16a gives: a locale table is data every
+engine would then carry and keep current, and a host that needs translated
+strings already has a catalog. The map is the seam to that catalog.
+
 ## 2. Extension system
 
 An extension is a named unit contributing any subset of four things, run as:
@@ -838,9 +887,27 @@ either alone.
 - `::: index` renders `<ul class="index">` with one `<li>` per distinct slug,
   the list **sorted by slug in ascending Unicode-codepoint order** (equivalently
   UTF-8 byte order - a fixed, locale-independent sort, so all implementations
-  agree). Each item is `{display} <a href="#idx-{slug}-1"
-  class="index-backref">↩</a> …`, one back-link per occurrence `1 … n`. The
-  `{display}` text is the first occurrence's literal term text (HTML-escaped).
+  agree). Each item is `{display}` followed by one back-link per occurrence
+  `1 … n`. The `{display}` text is the first occurrence's literal term text
+  (HTML-escaped).
+- **Each back-link carries an accessible name** (carve#1469). A bare `↩` is
+  announced as "leftwards arrow with hook", or skipped - the sentence PART 9 §16
+  exists to prevent, on the identical element one document over. §16's rule is
+  **mirrored rather than reinvented**: the name is the label followed by *what
+  the link visibly says*. A term with ONE occurrence renders the plain glyph and
+  is named by label plus term; the k-th of SEVERAL renders `↩<sup>k</sup>` and
+  takes that k, so a row of otherwise identical arrows is distinguishable by
+  sight and by ear alike. Matching the visible text is WCAG 2.5.3, and it is why
+  the ordinal appears in both. The name is TEXT and is attribute-escaped.
+
+  ```html
+  <li>widget <a href="#idx-widget-1" class="index-backref" aria-label="Back to widget 1">↩<sup>1</sup></a> <a href="#idx-widget-2" class="index-backref" aria-label="Back to widget 2">↩<sup>2</sup></a></li>
+  <li>gadget <a href="#idx-gadget-1" class="index-backref" aria-label="Back to gadget">↩</a></li>
+  ```
+
+  The leading words default to `Back to`. They are settable on the extension
+  **and** in the render's `labels` map under `indexBackref` - see
+  [§1.5](#_1-5-the-strings-an-extension-writes-itself).
 - If no `:index[…]` marker exists, `::: index` stays a plain
   `<div class="index">` (nothing to collect), matching the §6.4 empty-section
   rule.
