@@ -1,0 +1,15 @@
+:::: tabs
+::: tab [First]
+Content one.
+:::
+
+{selected}
+::: tab [Second]
+Content two.
+:::
+
+{selected}
+::: tab [Third]
+Content three.
+:::
+::::

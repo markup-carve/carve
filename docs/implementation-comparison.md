@@ -825,14 +825,16 @@ Optional raw output:
 
 Optional corpus added since this run: `42-list-table-header-rows-cols`,
 `43-citations-at-label-in-reference-position`, `46-tabs-css-panel-name`,
-`47-tabs-aria-panel-binding`.
+`47-tabs-aria-panel-binding`, `48-tabs-aria-single-selection`,
+`49-tabs-css-single-selection`.
 
 The first pins `{header-rows}` / `{header-cols}` on a list table; the second is
 the citations-side control for the core rule that a label beginning with an at
-sign is not a reference label. The last two are the two halves of extensions
+sign is not a reference label. The next two are the two halves of extensions
 §13.2 and §13.3 - a `css`-mode panel named by its tab, and an `aria`-mode panel
-bound rather than named. All four landed after the run above was taken, so
-the corpus is four cases ahead of it. The
+bound rather than named. The last two are §13.5 under both modes: two marked
+items select one tab, and the same one in each. All six landed after the run
+above was taken, so the corpus is six cases ahead of it. The
 declaration is the same device the core block uses: it names the cases and
 carries no count, so there is nothing in it to fabricate, and
 `tests/implementation-comparison-counts.test.mjs` fails both when a named case

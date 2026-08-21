@@ -242,7 +242,17 @@
     {
       "slug": "47-tabs-aria-panel-binding",
       "feature": "tabs-aria",
-      "description": "In aria mode a panel is bound rather than named: role=\"tabpanel\" with aria-labelledby and hidden on every non-selected panel, and no role=\"group\"."
+      "description": "In aria mode a panel is bound rather than named: role=\"tabpanel\" with aria-labelledby and hidden on every non-selected panel, and no role=\"group\". The control is type=\"button\", not the implicit submit."
+    },
+    {
+      "slug": "48-tabs-aria-single-selection",
+      "feature": "tabs-aria",
+      "description": "Two marked items select one tab: the FIRST mark wins and later ones are ignored, so neither the default first item nor the last mark is selected."
+    },
+    {
+      "slug": "49-tabs-css-single-selection",
+      "feature": "tabs",
+      "description": "The same document under css: one radio carries checked, on the first marked item, so both modes select the same tab."
     }
   ]
 }
