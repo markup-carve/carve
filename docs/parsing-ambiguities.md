@@ -125,13 +125,14 @@ braced `| {^2^} |`.
 | Context | Meaning | Example |
 |---------|---------|---------|
 | Table cell | Colspan | `\| < \|` |
-| Inline | Smart typography | `<-` → ← |
+| Inline | Smart typography | `<--` → ← |
 | Autolinks | URL wrapper | `<https://...>` |
 
 **Resolution rules:**
 1. **Colspan:** `<` as sole content of a table cell
 2. **Autolink:** `<` followed by URL scheme or email pattern
-3. **Smart typography:** `<-`, `<->`, `<=` patterns
+3. **Smart typography:** `<--`, `<-->`, `<==`, `<=>`, `<=` patterns (and the
+   deprecated `<-` / `<->`), matched longest-first
 4. **Literal:** Everything else
 
 **Examples:**
@@ -140,7 +141,7 @@ braced `| {^2^} |`.
 
 <https://example.com>          # Autolink
 
-The arrow points <- that way   # Smart typography (←)
+The arrow points <-- that way  # Smart typography (←)
 
 if (x < 5)                     # Literal <
 ```
@@ -453,11 +454,17 @@ Inside code spans, backslash is literal:
 | `--` | – (en-dash) | Strikethrough delimiter start? No, `~` is used |
 | `---` | — (em-dash) | Horizontal rule? Only at line start alone |
 | `...` | … (ellipsis) | Nothing |
-| `->` | → | Nothing |
-| `<-` | ← | Less-than? Requires full pattern |
+| `-->` | → | Nothing |
+| `<--` | ← | Less-than? Requires full pattern |
+| `==>` | ⇒ | Nothing |
+| `<==` | ⇐ | `<=`? Yes - the longer run wins, so `<==` is the arrow and a bare `<=` stays ≤ |
+| `<=>` | ⇔ | `<=`? Same rule. `<==>` is `<==` then `>`, and renders `⇐>` |
 | `<=` | ≤ | Less-than-equal? Yes, context-dependent |
 
-**Resolution:** Smart typography only applies to specific patterns, not partial matches.
+**Resolution:** Smart typography only applies to specific patterns, not partial
+matches, and a longer pattern is matched before a shorter one it contains. The
+single-hyphen `->` / `<-` / `<->` still render and are deprecated; `=>` was
+removed and renders literally, because `key => value` is prose about code.
 
 ---
 
@@ -594,6 +601,6 @@ When multiple interpretations are possible, use this order:
 5. **Autolinks** - `<url>` pattern
 6. **Links/Images** - `[text](url)`, `![alt](src)`
 7. **Emphasis** - `/italic/`, `*bold*`, etc.
-8. **Smart typography** - `--`, `->`, etc.
+8. **Smart typography** - `--`, `-->`, etc.
 9. **Extensions** - `@mention`, `#tag`, `:type[content]`
 10. **Plain text** - Everything else
