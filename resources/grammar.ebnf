@@ -6310,6 +6310,35 @@ EOF = (* end of file *) ;
         it, which PART 12 containment refuses. The writer's answer for that
         empty line is PART 11 §7c.
 
+        AND §7c REACHES AN INTERIOR LINE, because the run's own CLOSER takes
+        the last one. A tree records no closer for a verbatim run (PART 12 §3
+        gives `code` a value and nothing else), so PART 11 §6's second half
+        hands that spelling to the writer, which CLOSES what the author left
+        open -- in an ordinary paragraph too, where a lone opener comes back
+        with a closer beside the run's end. Inside verse the closer occupies a
+        LINE, so §7c's `%%` is written for every emptied line the run still
+        spans and not for the one the closer lands on. Written as source over
+        the form the writer emits for it:
+
+          ::: |     ->     ::: |          the emptied line is INTERIOR: the
+          `                `              run spans past it to `x`, so §7c
+          %%               %%             spells it, and the closer follows
+          x                x`
+          :::              :::
+
+          ::: |     ->     ::: |          the run spans ONE boundary and its
+          `                `              value is a bare newline, so the
+          %%               `              closer takes the emptied line and
+          :::              :::            no empty line is left to spell
+
+        Both preserve the tree and the HTML. The second is corpus
+        380-a-terminal-comment-line-still-leaves-an-empty-verse-line, where
+        carve-js and carve-php agree with this clause and carve-rs publishes
+        the `comment` node the paragraph above refuses, then writes it as a
+        ` %%` tail on the closer's line (carve#1472). The `.fmt` beside the
+        case pins the form; the node is the defect and the tail is its
+        consequence, not a second question.
+
         A TRAILING COMMENT IS A DIFFERENT CONSTRUCT and this clause does not
         reach it. `x %% secret` is `inline_comment` (PART 3, §21), not
         `comment_line`, and §21's third bullet governs it: inside a verbatim
@@ -8205,6 +8234,36 @@ EOF = (* end of file *) ;
         would silently turn the image case into a figure. Escaping the caret in
         BOTH forms keeps the two renders identical on that point, at the cost
         of one escape on a character that is rare in prose.
+
+        THAT COST IS THE STRATEGY'S, NOT THE OUTPUT'S -- NORMATIVE, and the
+        difference is §4's own. This section names the sets W1 renders
+        against, so a caret named here is escaped in BOTH forms and W3 never
+        weighs the mark; it is not a license to EMIT an escape §2 does not
+        ask for. §4 pins the output on §2 and yields to it wherever the two
+        differ, and §10g already restates the reach in those terms -- "§5's
+        unconditional set escapes a LEADING caret in TEXT". §2a has filed the
+        other direction as a defect, on `}^p`, where the caret leads nothing,
+        dropping the escape re-derives the same document, and carve-rs and
+        carve-php escape it anyway. So "always escaped in a text node" is the
+        set's membership rule, and §2 is the test the emitted byte answers to.
+
+        MEASURED ON THE EMPTY CARET PAIR, which is where reading the paragraph
+        above WITHOUT §4 sends a writer (carve#1472). `{^^}` is TEXT by PART
+        3's AN EMPTY BRACE PAIR IS NOT A CONSTRUCT, and it is not text a caret
+        LEADS: carve-js emits it bare, carve-rs and carve-php emit `{\^\^}`.
+        Against carve-rs's own parser the two spellings differ in nothing but
+        the escaping, which §1's EQUALITY IS MODULO ESCAPING makes the same
+        document -- so §2's test returns "no escape needed" in the very engine
+        emitting the escape. The BARE form is canonical, and corpus
+        388-an-empty-brace-pair-is-not-a-construct.fmt pins it.
+
+        THE MARK IS THE PROMOTION, NOT A FIELD, which is why the LEADING case
+        needs no exception to §2. `resources/ast-schema.json` declares no
+        field for it and carve-rs publishes none: what the escape changes
+        there is whether the block comes back a PARAGRAPH or a FIGURE, and
+        that is a difference §2 already sees. An engine that reads the
+        paragraph above as promising a field has read a mechanism where the
+        rule is about an outcome.
 
       CANDIDATE -- escaped only when W4 selects the conservative form:
         `* _ ~ / = ,`        emphasis and the braced pair delimiters
