@@ -56,7 +56,7 @@ PART 9 §19); Tier-2 / Tier-3 are off until enabled.
 | ListTable (§5), Details, Spoiler, Tabs — shipped in all three engines and pinned in `tests/corpus-optional` | <Badge type="info" text="standard" /> | off | — |
 | Mermaid / FencedRender, MathBlock, Glossary, Index, HeadingNumbers, CodeGroup | <Badge type="warning" text="extension" /> | off | — |
 | Bibliography (§6) — an **option on Citations**, not a separate registration: the host passes a CSL-JSON pool to the Citations extension | <Badge type="warning" text="extension" /> | off | — |
-| TableOfContents, HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks and HeadingReference (§12), ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
+| TableOfContents and TocPlacement (§8b.1 - the injector and the `::: toc` directive; not interchangeable), HeadingPermalinks / LevelShift, ExternalLinks, Wikilinks and HeadingReference (§12), ColorSwatch, Lowercase/AsciiHeadingIds | <Badge type="warning" text="extension" /> | off | — |
 | Semantic span attributes — `[x]{kbd}`, `[HTML]{abbr="…"}`, `[now]{time="…"}` (three names; PART 9 §9) | <Badge type="tip" text="core" /> | on | no |
 | SemanticSpan — the four names core does not reserve (`samp`, `var`, `cite`, `dfn`), plus the soft-deprecated `:name[…]` spelling for all seven | <Badge type="info" text="standard" /> | off | — |
 | [ImgFence](/svg-images) (sanitized SVG `img` fence — sandboxed by default) | <Badge type="warning" text="extension" /> | off | — |
@@ -977,6 +977,73 @@ preceding attribute line, never inline on the opener):
   the TOC faithfully reflects each engine's parse.)
 - The nested `<ul>` HTML is byte-identical to the standalone TOC extension
   (one tag per line).
+
+**Two extensions produce a table of contents, and they are not
+interchangeable.** `TocPlacement` implements this directive. `TableOfContents`
+is the standalone injector on the Tier-3 catalog row: it puts one nav at the top
+or the bottom of every document and never looks at `::: toc`. Registering the
+wrong one is not an error and fails quietly, so it is worth knowing what each
+combination renders.
+
+For this document:
+
+```
+Intro paragraph.
+
+::: toc
+:::
+
+# One
+
+## One A
+```
+
+| registered | what renders |
+|---|---|
+| `TocPlacement` | `<nav class="toc">` where the directive is written |
+| `TableOfContents` | `<nav class="toc">` at the top (or bottom), **plus** an empty `<div class="toc">` where the directive is written |
+| both | two navs - one injected, one in place |
+| neither | the empty `<div class="toc">` only, and no nav anywhere |
+
+The `<div class="toc">` in rows two and four is the §8b.3 degradation floor for
+an unhandled directive, not a defect. Registering `TableOfContents` alone gives
+an author a table of contents in a place they did not choose beside an empty
+element where they did choose:
+
+```html
+<nav class="toc">
+<ul>
+<li><a href="#One">One</a>
+<ul>
+<li><a href="#One-A">One A</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+<p>Intro paragraph.</p>
+<div class="toc">
+
+</div>
+```
+
+The two also differ on a document with **no** directive: `TocPlacement` renders
+nothing at all, `TableOfContents` still injects its nav. So the choice is
+between letting each document say where its contents go and letting the site
+decide once for all of them. Registering both is supported and renders both.
+
+All three engines ship both, under parallel names:
+
+```js
+carveToHtml(src, { extensions: [tocPlacement()] })
+```
+
+```php
+new TocPlacementExtension();
+```
+
+```rust
+TocPlacement::new()
+```
 
 ### 8b.2 `::: footnotes` — endnotes placement
 
