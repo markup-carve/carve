@@ -1306,16 +1306,40 @@ On by default in the conformant core; a processor MAY disable it
 | `(c)`       | ©      | Copyright        |
 | `(r)`       | ®      | Registered       |
 | `(tm)`      | ™      | Trademark        |
-| `->`        | →      | Right arrow      |
-| `<-`        | ←      | Left arrow       |
-| `<->`       | ↔      | Bi-arrow         |
-| `=>`        | ⇒      | Double arrow     |
+| `-->`       | →      | Right arrow      |
+| `<--`       | ←      | Left arrow       |
+| `<-->`      | ↔      | Bi-arrow         |
+| `==>`       | ⇒      | Right double arrow |
+| `<==`       | ⇐      | Left double arrow |
+| `<=>`       | ⇔      | Bi double arrow  |
 | `!=`        | ≠      | Not equal        |
 | `<=`        | ≤      | Less or equal    |
 | `>=`        | ≥      | Greater or equal |
 | `+-`        | ±      | Plus/minus       |
 
-Escape with backslash: `\->` = literal `->`.
+**The doubled run is the canonical arrow in both families** (PART 9 §8). Runs
+are matched longest-first, so `<==` beats `<=` and `-->` beats the hyphen run.
+
+`->`, `<-` and `<->` are **deprecated but still rendered** - a document written
+before the doubled forms landed goes on working, and they are what an author
+should stop writing rather than what a processor may stop reading.
+
+`=>` is **removed**, not deprecated, and that one is a behavior change. It was
+the form that was actively harmful rather than merely non-canonical: every
+`key => value`, `x => x + 1` and `Some(x) => x` is ordinary prose about code,
+and every one of them silently became ⇒. It now renders as the two characters
+written.
+
+The double family is asymmetric on purpose. `<=` keeps its comparison meaning,
+so the left double arrow has to grow a character - and the bi-arrow is `<=>`,
+not `<==>`. `<==>` is read longest-first as `<==` followed by `>` and renders
+`⇐>`, which is correct rather than a bug.
+
+Escape with backslash: `\->` = literal `->`. A backslash breaks the run it
+starts, so escaping a DOUBLED arrow takes the escape one character in: `-\->`
+is a literal `-->`, while `\-->` leaves `-` followed by a live `->`. The
+double-line family has no such split - `\==>` is a literal `==>` - because `=`
+converts to nothing on its own.
 
 Single quotes are contextual (matching djot): a `'` is an apostrophe /
 closing quote `’` when the preceding character is alphanumeric (`it's`,

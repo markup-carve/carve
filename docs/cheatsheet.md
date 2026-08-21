@@ -45,7 +45,7 @@ make every line prose. For the working version of a notation block, see
 | `:youtube[ID]` ✦ | extension | `:type[content]{attrs}` — syntax is core; the handler is opt-in |
 | `@user` `#tag` | mention / tag | social conventions |
 | `\*literal\*` | escape | backslash + any ASCII punctuation |
-| `--` `---` `...` `->` `(c)` | – — … → © | smart typography; a run with a space before it and a non-space after it is a CLI flag and stays literal |
+| `--` `---` `...` `-->` `==>` `(c)` | – — … → ⇒ © | smart typography; a bare HYPHEN RUN with a space before it and a non-space after it is a CLI flag and stays literal (`x --next`) - the arrows are matched before that guard and still convert there (`x -->next` is `x →next`) |
 | `{--}` | – | braced en dash — converts in the flag position the bare run refuses |
 | `\` at end of line | hard break | `\ ` is a hard break here too — the trailing space is stripped before the escape is read |
 | `\ ` mid-line | no-break space | backslash-space; in the last column it is the hard break above |
