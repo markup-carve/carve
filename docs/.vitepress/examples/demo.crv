@@ -191,7 +191,7 @@ Carve supports footnotes[^note] with definitions collected anywhere.[^second]
 ## Smart typography
 
 Dashes and ellipsis: an em dash --- an en range 10--20 ... and so on.
-Arrows and comparisons: -> <- <-> ==> , != <= >= , (c) (r) (tm).
+Arrows and comparisons: --> <-- <--> ==> <== <=> , != <= >= , (c) (r) (tm).
 
 ---
 
