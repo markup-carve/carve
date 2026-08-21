@@ -15,7 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the escaped `{\^\^}` is the over-escape §2a already filed on `}^p`. PART 9
   §23's comment clause reaches the writer too: an unclosed verbatim run's own
   closer takes the emptied LAST verse line, so §7c's `%%` spells the interior
-  ones. Corpus 380 and 388 gain `.fmt` fixtures pinning both.
+  ones. Corpus 380 and 388 gain `.fmt` fixtures pinning both, and new corpus
+  394 pins the near miss: a LEADING escaped caret keeps its backslash, because
+  bare it re-parses as a figure caption.
 
 - **Four engine-written shapes now carry an accessible name** (carve#1468).
   A task checkbox takes its item's own text, an untitled admonition takes its

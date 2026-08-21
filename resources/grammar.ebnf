@@ -8265,6 +8265,14 @@ EOF = (* end of file *) ;
         paragraph above as promising a field has read a mechanism where the
         rule is about an outcome.
 
+        SO THE LEADING CASE IS UNMOVED, and corpus
+        394-a-leading-escaped-caret-keeps-its-escape pins it against the
+        reading that takes the bare `{^^}` above for a general permission.
+        An image over `\^ not a caption` keeps the backslash in all three
+        engines; bare, the same two lines are a `figure` with a
+        `figcaption`. That is §2 requiring the escape, not §5 excusing it,
+        and it is the difference between the two documents.
+
       CANDIDATE -- escaped only when W4 selects the conservative form:
         `* _ ~ / = ,`        emphasis and the braced pair delimiters
         `[ ] ( ) { } <`      links, images, spans, attributes, autolinks

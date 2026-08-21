@@ -163,7 +163,8 @@ under the same semantic-span rule,
 `382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open`,
 `383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container`,
 `384-a-continuation-marker-attaches-only-a-flush-left-block`,
-`393-an-engine-written-shape-says-what-it-is-called`.
+`393-an-engine-written-shape-says-what-it-is-called`,
+`394-a-leading-escaped-caret-keeps-its-escape`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative
@@ -195,6 +196,15 @@ failed on any engine. The declaration is kept rather than deleted because the
 run above still predates all seven, but it now names one engine, not two: a
 declared lag that keeps naming an engine somebody has since fixed reads as
 verified while being false, which is the failure this device exists to prevent.
+
+`394` IS DECLARED THOUGH ITS ENGINES WERE MEASURED, because measuring three
+engines is not retaking the run. Its one document renders byte-identically in
+carve-js `d9cb2c7`, carve-php `49e3e34` and carve-rs `54f596f2`, and all three
+write it back unchanged (carve#1472) - but those are three builds of a host's
+own choosing, not the three this page quotes, and the five-target transcript
+above was not retaken. Editing the denominators on that evidence would publish
+a run nobody made, which is the objection stated two paragraphs up. So the
+category is declared and the numbers stand as measured.
 
 A CATEGORY THAT ALREADY EXISTED CAN GO STALE TOO, and the declaration above
 cannot say so - it names categories ADDED since the run, and its count is
