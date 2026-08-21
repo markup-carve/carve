@@ -208,6 +208,29 @@ function buildStatus(artifact, sourceDir, extensions) {
 
 const staleBuilds = []
 
+/**
+ * Gate failures that must not exit where they are DETECTED.
+ *
+ * The rule this file already follows for its roll-ups - see the comment
+ * beginning "PROVENANCE BEFORE THE GATE" near the end - is that a gate placed
+ * above a measurement silently deletes that measurement from every run the gate
+ * fires on. The binding-parity gate was doing exactly that: it sits between
+ * carve-rb and carve-php, so a stale carve-rb pin, which its own comment calls
+ * the usual case, ended the process before carve-php was measured at all,
+ * before the three-way panel ran, and before the NOT MEASURED and STALE BUILDS
+ * roll-ups printed.
+ *
+ * That is worse than a missed gate. CARVE_REQUIRE_ALL_ENGINES=1 exists so an
+ * engine dropping out of the matrix is a red build rather than a line of prose
+ * (carve#475), and under the early exit that flag was what caused the drop: on
+ * run 32409466637 the report carried carve-js, carve-rs and carve-rb, no
+ * carve-php section, and no skip line saying why.
+ *
+ * So the message still prints exactly where it is found, and the EXIT waits
+ * until every engine has been measured. Drained at the bottom of this file.
+ */
+const deferredGateFailures = []
+
 
 /**
  * Engines that were not measured at all.
@@ -1167,7 +1190,13 @@ if (rbShapes.size > 0 && rsShapes) {
     if (drifted.length > 10) console.error(`  … and ${drifted.length - 10} more`)
     console.error("A binding has no vote of its own - every one of these is carve-rb's, not carve-rs's.")
     console.error('Usually a stale `ext/carve/Cargo.toml` pin; rebuild the extension after bumping it.\n')
-    if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') process.exit(1)
+    // DEFERRED, not exited on. carve-php, the three-way panel and every closing
+    // roll-up are all below this line; exiting here deleted them from the run.
+    if (process.env.CARVE_REQUIRE_ALL_ENGINES === '1') {
+      deferredGateFailures.push(
+        `BINDING PARITY: carve-rb's tree differs from carve-rs on ${drifted.length} of ${compared} document(s).`,
+      )
+    }
   }
 } else if (rbShapes.size > 0) {
   console.log('BINDING PARITY: not checked - carve-rs was not measured in this run.\n')
@@ -1585,3 +1614,13 @@ if (adjacentTextRunCounts.length > 0) {
   process.exit(1)
 }
 
+// The deferred gates, drained after every engine has been measured and every
+// roll-up has printed. Restated here rather than only where they were found,
+// because a reader looking for the verdict reads the bottom of the run and the
+// detail is several screens up by now.
+if (deferredGateFailures.length > 0) {
+  console.error('')
+  for (const line of deferredGateFailures) console.error(line)
+  console.error('Reported in full above, gated here so the rest of the run still measured.')
+  process.exit(1)
+}
