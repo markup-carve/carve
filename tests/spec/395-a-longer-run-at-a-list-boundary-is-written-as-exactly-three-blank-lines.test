@@ -1,0 +1,19 @@
+A longer run at a list boundary is written as exactly three blank lines
+
+```
+- apples
+
+
+
+
+
+
+- oranges
+.
+<ul>
+  <li>apples</li>
+</ul>
+<ul>
+  <li>oranges</li>
+</ul>
+```

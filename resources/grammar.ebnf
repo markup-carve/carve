@@ -9818,6 +9818,47 @@ EOF = (* end of file *) ;
       use the same two-space depth step; plain text differs only by omitting
       presentation styling, not by erasing hierarchy.
 
+  10i. A HARD LIST BOUNDARY IS WRITTEN AS EXACTLY THREE BLANK LINES --
+      NORMATIVE. The writer normalizes a run of blank lines between two blocks
+      to ONE. A run that is PART 9 §11 N1a's hard list boundary is the
+      exception, and it is written as EXACTLY THREE -- not one, and not the run
+      the author happened to type:
+
+        - apples                 is written as:   - apples
+        (six blank lines)                         (three blank lines)
+        - oranges                                 - oranges
+
+      ONE would MERGE the two lists, which §1 forbids: the boundary is the only
+      thing keeping them apart, so the general normalization cannot reach this
+      run. That much §1a already decides. THREE rather than the author's run is
+      what this section adds, and it is a canonical-form choice: N1a reads
+      THREE OR MORE, so every run at or above the threshold parses identically
+      and §1 is indifferent between them. Left unstated, one document has
+      unboundedly many canonical spellings, and `fmt` carries the author's
+      whitespace into the one form whose purpose is not to.
+
+      A RUN THAT IS NOT THE BOUNDARY NORMALIZES AS USUAL. Three blank lines
+      between two paragraphs, or between two lists that already differ on an N1
+      axis (`- a` then `* b`), separate nothing that one blank line does not
+      separate as well, so they come back as one. What earns the three is the
+      boundary's job, not the run's length.
+
+      THE THREE ARE LOAD-BEARING INSIDE THE WRITER TOO. carve-rs squeezes 3+
+      newlines to 2 as a pass over its own output, which would destroy the
+      boundary it had just written; it emits a verbatim-blank sentinel to keep
+      the run intact. A writer whose blank-line handling is a blanket squeeze
+      needs the same exemption, and this is where it is stated rather than
+      rediscovered.
+
+      ALL THREE ENGINES ALREADY DO THIS AND NOTHING SAID SO. Both pairs
+      carve#1499 added spell the boundary with a THREE-blank source, so a
+      writer that preserved the author's six passes them unchanged -- the
+      rendered HTML is equal and so is the tree, which is §1's equality half
+      forgiving it as well. Pinned by corpus
+      395-a-longer-run-at-a-list-boundary-is-written-as-exactly-three-blank-lines,
+      whose source has SIX blank lines and whose `.fmt` sidecar has three
+      (carve#1505).
+
   11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE. A resolved
       cross-reference is emitted as a Markdown link to the target heading's id,
       and the target heading gains an explicit `{#id}` suffix. Both halves are
