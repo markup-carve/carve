@@ -1,0 +1,9 @@
+A leading escaped caret keeps its escape
+
+```
+![a](b.png)
+\^ not a caption
+.
+<p><img src="b.png" alt="a">
+^ not a caption</p>
+```

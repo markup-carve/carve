@@ -418,6 +418,7 @@ index: examples/edge-cases/index.md
   a-hyphen-run-opening-a-word-after-whitespace-is-a-flag
   a-braced-hyphen-pair-is-an-en-dash
   an-empty-brace-pair-is-not-a-construct
+  a-leading-escaped-caret-keeps-its-escape
   a-boolean-attribute-does-not-start-with-an-underscore
   01-emphasis-2
   01-emphasis-3
