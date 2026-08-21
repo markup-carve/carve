@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, posix, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { exampleFiles, numberExamples, readExampleFiles, scanExampleSource, slugify } from './lib/example-sections.mjs'
+import { optionalFeatureTitles } from './lib/optional-feature-titles.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..')
@@ -260,39 +261,15 @@ for (const page of pages) {
 
 
 /*
- * Every manifest feature needs an authored heading. Title-casing the id
- * produces "Bare Url Autolink" and "Ansi Typography Source" - a slug wearing
- * capitals, not a name a reader recognizes. Making the map REQUIRED (see the
- * fail below) means a new manifest feature stops the build until someone names
- * it, instead of shipping the slug-cased fallback nobody would notice.
+ * The authored headings live in scripts/lib/optional-feature-titles.mjs so
+ * that tests/no-orphan-pages.test.mjs can assert both directions of the map.
+ * They used to sit here, where only docs:pages/docs:dev/docs:build reached
+ * them, so a feature added without a title passed npm test and failed in a
+ * later job (carve#1490).
  */
-const optionalTitle = new Map([
-  ['citations-numbered', 'Citations, numbered'],
-  ['citations-author-date', 'Citations, author-date'],
-  ['code-callouts', 'CodeCallouts'],
-  ['details', 'Details'],
-  ['list-table', 'ListTable'],
-  ['list-table-columns-1344', 'ListTable column metadata and footer rows'],
-  ['list-table-local-headers-1248', 'ListTable local headers and body groups'],
-  ['spoiler', 'Spoiler'],
-  ['tabs', 'Tabs'],
-  ['tabs-aria', 'Tabs in aria mode'],
-  ['semantic-span', 'SemanticSpan'],
-  ['social-link-templates', 'Mention and tag URL templates'],
-  ['symbol-map', 'Symbol map'],
-  ['smart-quotes-locale-de', 'Smart quotes (de locale)'],
-  ['bare-url-autolink', 'Bare-URL autolinking'],
-  ['smart-typography-off', 'Smart typography off'],
-  ['smart-typography-default', 'Smart typography at default (control)'],
-  ['section-wrapper-off', 'Section wrapper off'],
-  ['source-line-after-generated-id', 'Source-line annotation order'],
-  ['markdown-typography-source', 'Markdown target, source typography'],
-  ['plain-typography-source', 'Plain-text target, source typography'],
-  ['ansi-typography-source', 'ANSI target, source typography'],
-])
 const featureTitle = (feature) => {
-  const title = optionalTitle.get(feature)
-  if (!title) fail(`manifest feature "${feature}" has no authored title in optionalTitle; a slug-cased heading reads as a filename, not a feature.`)
+  const title = optionalFeatureTitles.get(feature)
+  if (!title) fail(`manifest feature "${feature}" has no authored title in scripts/lib/optional-feature-titles.mjs; a slug-cased heading reads as a filename, not a feature.`)
   return title
 }
 const languageByExtension = new Map([

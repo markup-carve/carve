@@ -24,6 +24,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { numberExamples, readExampleFiles, scanExampleSource } from '../scripts/lib/example-sections.mjs'
+import { optionalFeatureTitles } from '../scripts/lib/optional-feature-titles.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..')
@@ -137,12 +138,11 @@ const corpusFixtures = execFileSync('git', ['ls-files', 'tests/corpus'], { cwd: 
  * page ids, `key:` lines, descriptions and comments all start at column zero.
  * This mirrors parsePages in the generator, which reads an indented line as an
  * entry after every other form has failed to match. */
-const routeEntries = new Set(
-  readFileSync(resolve(repoRoot, 'resources/example-pages.txt'), 'utf8')
-    .split('\n')
-    .filter((line) => line.startsWith('  ') && line.trim() !== '')
-    .map((line) => line.trim()),
-)
+const routeEntryLines = readFileSync(resolve(repoRoot, 'resources/example-pages.txt'), 'utf8')
+  .split('\n')
+  .filter((line) => line.startsWith('  ') && line.trim() !== '')
+  .map((line) => line.trim())
+const routeEntries = new Set(routeEntryLines)
 
 test('the corpus census agrees with the example source', () => {
   /* Either list arriving empty - a failed git call, a moved source file - would
@@ -189,21 +189,100 @@ test('every route entry names a section or fixture that exists', () => {
  * a page is routed the moment it is added - but a new feature is not, and that
  * too was only visible at `docs:build`.
  */
+const manifestFeatures = [...new Set(
+  JSON.parse(readFileSync(resolve(repoRoot, 'tests/corpus-optional/manifest.json'), 'utf8')).cases.map((item) => item.feature),
+)]
+const assignedFeatures = new Set(
+  readFileSync(resolve(repoRoot, 'resources/optional-example-pages.txt'), 'utf8')
+    .split('\n')
+    .filter((line) => line.startsWith('  ') && line.trim() !== '')
+    .map((line) => line.trim()),
+)
+
+test('the optional-corpus feature census is not empty', () => {
+  /* Either list arriving empty would make every assertion below pass over
+   * nothing - the same liveness floor the corpus census carries. */
+  assert.ok(manifestFeatures.length > 10, `expected the optional-corpus features, found ${manifestFeatures.length}`)
+  assert.ok(assignedFeatures.size > 10, `expected the optional page assignments, found ${assignedFeatures.size}`)
+})
+
 test('every optional-corpus feature is routed to a docs page', () => {
-  const manifest = JSON.parse(readFileSync(resolve(repoRoot, 'tests/corpus-optional/manifest.json'), 'utf8'))
-  const features = [...new Set(manifest.cases.map((item) => item.feature))]
-  assert.ok(features.length > 10, `expected the optional-corpus features, found ${features.length}`)
-  const assigned = new Set(
-    readFileSync(resolve(repoRoot, 'resources/optional-example-pages.txt'), 'utf8')
-      .split('\n')
-      .filter((line) => line.startsWith('  ') && line.trim() !== '')
-      .map((line) => line.trim()),
-  )
-  const unrouted = features.filter((feature) => !assigned.has(feature))
+  const unrouted = manifestFeatures.filter((feature) => !assignedFeatures.has(feature))
   assert.deepEqual(
     unrouted,
     [],
     'these manifest features appear on no optional page, so the behavior they pin has no reader -\n' +
       'add them to resources/optional-example-pages.txt:\n' + unrouted.join('\n'),
+  )
+})
+
+/*
+ * THE REVERSE DIRECTION of the same manifest. A page naming a feature the
+ * manifest does not have generates a heading with nothing under it, and the
+ * generator says so ("readers would see a nonexistent behavior") - but only
+ * under `docs:build`. Both populations are already read above, so asking is
+ * free, and the failure names the line that is actually wrong instead of
+ * reporting the feature as merely unrouted.
+ */
+test('every optional page names a feature the manifest still has', () => {
+  const dangling = [...assignedFeatures].filter((feature) => !manifestFeatures.includes(feature))
+  assert.deepEqual(
+    dangling,
+    [],
+    'these resources/optional-example-pages.txt entries name no manifest feature -\n' +
+      'the page would introduce a behavior nothing pins:\n' + dangling.join('\n'),
+  )
+})
+
+/*
+ * THE TITLE, which is a second and independent claim about the same features.
+ *
+ * WHY. `scripts/generate-example-pages.mjs` requires an authored heading for
+ * every manifest feature - deliberately, because title-casing the id yields
+ * "Bare Url Autolink", a slug wearing capitals. But the requirement lived
+ * inside that script, which only `docs:pages`, `docs:dev` and `docs:build`
+ * reach, so a feature added without a title passed the entire local suite and
+ * went red in a later job (carve#1490, hit for real while landing carve#1489).
+ * Being routed to a page and being NAMED on it are different questions; the
+ * routing check above cannot answer the second one.
+ *
+ * The map is now scripts/lib/optional-feature-titles.mjs, imported by the
+ * generator and by this test, so the two cannot drift.
+ */
+test('every optional-corpus feature has an authored title', () => {
+  const unnamed = manifestFeatures.filter((feature) => !optionalFeatureTitles.get(feature))
+  assert.deepEqual(
+    unnamed,
+    [],
+    'these manifest features have no authored title, so their generated heading would be a slug -\n' +
+      'name them in scripts/lib/optional-feature-titles.mjs:\n' + unnamed.join('\n'),
+  )
+})
+
+test('every authored title names a feature the manifest still has', () => {
+  /* A title outliving its feature would silently name a future feature that
+   * happens to reuse the slug - the same hazard the UNROUTED waivers carry. */
+  const stale = [...optionalFeatureTitles.keys()].filter((feature) => !manifestFeatures.includes(feature))
+  assert.deepEqual(
+    stale,
+    [],
+    'these scripts/lib/optional-feature-titles.mjs entries name no manifest feature:\n' + stale.join('\n'),
+  )
+})
+
+/*
+ * One route entry, one reading location. The generator rejects a duplicate
+ * ("one corpus pair cannot have two reading locations") and this file collects
+ * the entries into a Set, which is exactly where a duplicate disappears - so
+ * the raw lines are kept above and counted here.
+ */
+test('no corpus pair is routed twice from the page file', () => {
+  const seen = new Set()
+  const duplicated = routeEntryLines.filter((entry) => seen.size === seen.add(entry).size)
+  assert.deepEqual(
+    duplicated,
+    [],
+    'these resources/example-pages.txt entries appear more than once -\n' +
+      'one corpus pair cannot have two reading locations:\n' + duplicated.join('\n'),
   )
 })
