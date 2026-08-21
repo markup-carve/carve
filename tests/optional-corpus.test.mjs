@@ -127,6 +127,14 @@ const featureRunners = {
   'semantic-span': (source, render) => render(source, { extensions: [semanticSpan()] }),
   spoiler: (source, render) => render(source, { extensions: [spoiler()] }),
   tabs: (source, render) => render(source, { extensions: [tabs()] }),
+  /*
+   * A second feature id rather than a second case under `tabs`, because a
+   * runner is keyed by feature id and this one needs the other mode. The two
+   * cases share one .crv on purpose: the same document under both modes is
+   * what makes the css-only rule (§13.2) legible as a rule about css and not
+   * about panels in general.
+   */
+  'tabs-aria': (source, render) => render(source, { extensions: [tabs({ mode: 'aria' })] }),
 }
 
 /*
@@ -152,7 +160,11 @@ const DECLARED_UNIMPLEMENTED = {
  * An entry is deleted in the commit that moves the pin past it; the check below
  * fails an entry whose case already matches, so a stale one cannot sit here.
  */
-const AHEAD_OF_PIN = {}
+const AHEAD_OF_PIN = {
+  '28-tabs-panel-title':
+    'carve#1468 §13.2 - the css-mode panel takes role="group" and its tab\'s label; no engine emits it yet',
+  '46-tabs-css-panel-name': 'carve#1468 §13.2 - same rule, with the attribute-escaping case',
+}
 
 /*
  * THE RATCHET ON THE EXCUSE, because an entry above can only ever turn a

@@ -221,6 +221,15 @@ const PLAIN_EXTENSION_FEATURES = {
   details: { js: 'details', php: 'DetailsExtension' },
   spoiler: { js: 'spoiler', php: 'SpoilerExtension' },
   tabs: { js: 'tabs', php: 'TabsExtension' },
+  // The same extension in its other mode. Not a plain registration for the
+  // same reason `citations-author-date` is not: registering with the default
+  // mode renders the css markup against a fixture that pins the aria one.
+  'tabs-aria': {
+    js: 'tabs',
+    jsOptions: "{ mode: 'aria' }",
+    php: 'TabsExtension',
+    phpArgs: "mode: 'aria'",
+  },
   'list-table': { js: 'listTable', php: 'ListTableExtension' },
   'list-table-columns-1344': { js: 'listTable', php: 'ListTableExtension' },
   'list-table-local-headers-1248': { js: 'listTable', php: 'ListTableExtension' },

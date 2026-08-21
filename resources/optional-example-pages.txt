@@ -16,6 +16,7 @@ order: 1
   list-table-local-headers-1248
   spoiler
   tabs
+  tabs-aria
   semantic-span
 
 [core-configured] Core syntax with configured resolution
