@@ -5695,7 +5695,10 @@ EOF = (* end of file *) ;
       neither are the extension-written strings, which stay options on the
       extensions that write them. Values are TEXT and are escaped at the point
       of use - the `symbols` map's raw emission is deliberately not the model
-      here. Stated in full below the footnote clause.
+      here. An HTML importer does not bake one of these strings back into
+      source: it drops an attribute whose value equals what the renderer
+      derives and keeps every other (carve#1500). Stated in full below the
+      footnote clause.
 
    17. TIGHT vs LOOSE LISTS + CONTINUATION MARKER -- OPERATIONAL (governs
       `list` rendering and the continuation_marker productions in PART 2).
@@ -7235,7 +7238,66 @@ EOF = (* end of file *) ;
    no built-in table beyond the English defaults, because a locale table is
    data an engine would then have to carry and keep current, and every host
    that needs translated strings already has a catalog of its own. The map is
-   the seam to that catalog. *)
+   the seam to that catalog.
+
+   AN IMPORTER DOES NOT BAKE A DERIVED NAME INTO SOURCE -- NORMATIVE
+   (carve#1500). An HTML importer DROPS an attribute whose value EQUALS what
+   the renderer derives for that element, and KEEPS every other one. It is the
+   rule already applied to a `<th>`'s generated `scope` and to a generated
+   `colspan` / `rowspan`, and it governs every string this clause and
+   Extensions §1.5 make engine-written: the accessible name on an untitled
+   admonition, on an endnotes section, on a footnote backlink, on a tab set and
+   on a `css`-mode tab panel, together with the `role` that accompanies each.
+
+   PROVENANCE IS NOT THE TEST, and cannot be. Nothing in the HTML says who
+   wrote an attribute. But where the value EQUALS the generated one the output
+   is identical whichever of them wrote it, so a value-matched drop is a no-op
+   for what a reader hears: the document rebuilds byte-identical at the default
+   labels. That is why the `scope` rule is phrased as "matches the value the
+   renderer derives" rather than as a test of who wrote it, and it is why this
+   rule cannot repeat the accessibility regression a blanket `aria-label` drop
+   caused. A name that DIFFERS from the derived one is kept, always.
+
+   WHAT THE DROP BUYS is the only thing keeping the `labels` map alive across a
+   round trip. A kept `aria-label="Note"` is indistinguishable from an authored
+   one, and §12's author-wins rule then makes it WIN on the next render: the
+   same source re-rendered with `admonitionNote` set to `Hinweis` still emits
+   `aria-label="Note"`. Dropping it emits `Hinweis`. So an import that keeps a
+   derived name has permanently unlocalized the document while changing no
+   byte of today's output.
+
+   NOTHING IS LOST, SO NOTHING IS DIAGNOSED. The renderer writes the value
+   back, so a value-matched drop is not a lossy decision and emits no
+   `attribute-dropped` -- the same reason the `<figure>` and `<blockquote cite>`
+   imports report nothing. A drop of the OTHER kind, where the value could not
+   be represented, is diagnosed as it always was.
+
+   BYTE-STABILITY IS THEREFORE NOT THE TEST EITHER. A round trip over that
+   admonition is byte-identical while the defect is present, so a round-trip
+   assertion passes and nothing is learned. The assertion has to be that a
+   DERIVED NAME IS ABSENT from the imported source.
+
+   TWO LIMITS, both accepted rather than closed:
+
+     - ATTRIBUTE ORDER moves. A dropped-and-regenerated name lands where the
+       renderer appends it rather than where the author's attributes sit, so
+       `<div aria-label="Tabs" class="tabs" role="group">` comes back as
+       `<div class="tabs" role="group" aria-label="Tabs">`. Semantically
+       identical, and it restores the canonical order rather than disturbing
+       one.
+     - IT CATCHES THE DEFAULT ONLY. HTML rendered with a German map carries
+       `aria-label="Hinweis"`, which matches no default, so it is kept and
+       laundered. An importer cannot know the render's configuration and a
+       non-default value is indistinguishable from an authored one, so failing
+       SAFE - keep - is the right side to err on. An importer MAY take the same
+       `labels` map the render used and match against that too, which closes
+       the residue; it is not required and neither half blocks the other.
+
+   WHAT IS NOT RULED HERE is dropping the name on a named construct REGARDLESS
+   of value. That would take an author's deliberate override -- an
+   `{aria-label="Wichtiger Hinweis"}` written on a `::: note`, which §12
+   currently honors -- so the residue above is accepted rather than closed by
+   force. *)
 
 (* ============================================================================
    PART 9R: RESOLUTION SEMANTICS (NORMATIVE) -- whole-document passes

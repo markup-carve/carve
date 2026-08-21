@@ -232,6 +232,16 @@ translation table, for the reason §16a gives: a locale table is data every
 engine would then carry and keep current, and a host that needs translated
 strings already has a catalog. The map is the seam to that catalog.
 
+**An import does not turn one of these strings back into source.** Whether an
+extension DERIVED the name from the document - a panel's tab label, a diagram
+fence's `aria-label` defaulting to its own class word - or read it from this
+map, the engine wrote it, so an HTML importer drops an attribute whose value
+equals what the renderer derives and keeps every other one (PART 9 §16a, and
+[HTML import](./html-import#a-derived-attribute-does-not-come-back)). Keeping it
+would make a generated string indistinguishable from an authored one, and the
+author-wins precedence above would then let the imported copy outrank the map on
+every later render.
+
 ## 2. Extension system
 
 An extension is a named unit contributing any subset of four things, run as:

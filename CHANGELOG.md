@@ -103,6 +103,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **An importer does not bake a derived accessible name into source**
+  (carve#1500, PART 9 §16a). An HTML importer drops an attribute whose value
+  equals what the renderer derives for that element - an untitled admonition's
+  name, an endnotes or backlink name, a tab set's or panel's name, a diagram
+  fence's `role="img"` and the `aria-label` defaulting to its class word - and
+  keeps every other one, so a name that differs from the derived value still
+  survives an import. The drop rebuilds
+  identical HTML at the default labels and is what keeps the `labels` map
+  reaching a document that has been through an import. Fixture
+  `derived-accessible-name`.
 - **A table cell's marker run ends at a space** (carve#1259, PART 9 §5 T11). The
   kind marker `=`, the alignment run and the attribute block are one run, and a
   cell carrying any of them must follow it with a space; without one there is no

@@ -76,9 +76,11 @@ test('every expected.crv is a fixed point of the canonical writer', async () => 
  * red too, so the line goes out with the pin bump that fixed it.
  */
 const PIN_LAG = new Map([
-  // NO ENTRIES. The pin imports every fixture the way the fixture says. The
-  // last entry, blockquote-cite, cleared when the pin moved past
-  // markup-carve/carve-js#1125.
+  // The pin keeps both derived values PART 9 §16a now says an importer drops:
+  // it imports the first block as `{.mermaid role=img aria-label=mermaid}`
+  // where the fixture says `{.mermaid}`. Clears with the carve-js side of
+  // markup-carve/carve#1500.
+  ['derived-accessible-name', 'keeps a derived role and aria-label (carve#1500)'],
 ])
 
 /*
