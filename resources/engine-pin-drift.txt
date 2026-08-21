@@ -27,3 +27,4 @@
 
 05-lists-22  The pinned JS build ends an ordered list at a blank line instead of loosening it (markup-carve/carve-js#1270); remove when the pin advances past the fix.
 05-lists-23  The pinned JS build predates §11 N1a's hard list boundary; remove when the pin advances past it.
+395-a-longer-run-at-a-list-boundary-is-written-as-exactly-three-blank-lines  The pinned JS build predates PART 9 §11 N1a, so it merges the two lists and the oracle reads a different document out of its formatted output; remove when the pin advances past it.

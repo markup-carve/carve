@@ -43,6 +43,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A hard list boundary is written as exactly three blank lines**
+  (carve#1505, PART 11 §10i). All three engines collapse a longer run to
+  three when writing and nothing said so, and both pairs carve#1499 added
+  spell the boundary with a three-blank source, which a writer that preserved
+  the author's six would pass unchanged. Corpus 395 has six in and three out.
 - **An extension writes into the same `labels` map, and every key is checked**
   (carve#1508, PART 9 §16a, extensions §1.5). §16a still said extension-written
   strings stay with their extension, which §1.5 had already overturned by

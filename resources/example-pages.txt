@@ -290,6 +290,7 @@ index: examples/edge-cases/index.md
   a-marker-line-link-definition-is-collected-where-no-paragraph-is-open
   a-lazy-marker-line-s-definition-defines-nothing-in-any-container
   a-continuation-marker-attaches-only-a-flush-left-block
+  a-longer-run-at-a-list-boundary-is-written-as-exactly-three-blank-lines
 
 [edge-containers] Containers, quotes and fences
 > Divs, block quotes, code and comment fences: nesting, lazy continuation, absorption and what closes what.
