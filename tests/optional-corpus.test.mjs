@@ -152,12 +152,7 @@ const DECLARED_UNIMPLEMENTED = {
  * An entry is deleted in the commit that moves the pin past it; the check below
  * fails an entry whose case already matches, so a stale one cannot sit here.
  */
-const AHEAD_OF_PIN = {
-  '42-list-table-header-rows-cols':
-    'carve#1459 gives every row its own line in thead/tfoot too; the pinned build still writes the section on one line',
-  '44-list-table-columns-and-foot':
-    'carve#1459 gives every row its own line in thead/tfoot too; the pinned build still writes the section on one line',
-}
+const AHEAD_OF_PIN = {}
 
 /*
  * THE RATCHET ON THE EXCUSE, because an entry above can only ever turn a
