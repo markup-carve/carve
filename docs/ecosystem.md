@@ -63,6 +63,9 @@ Carve embedded in another tool or framework.
 | [eleventy-carve](https://github.com/markup-carve/eleventy-carve) | Eleventy (11ty) | Plugin for processing Carve source files. |
 | [astro-carve](https://github.com/markup-carve/astro-carve) | Astro | Integration for importing `.crv` pages. |
 | [hugo-carve](https://github.com/markup-carve/hugo-carve) | Hugo | Preprocessor that converts `.crv` content to HTML, via carve-go. |
+| [docusaurus-carve](https://github.com/markup-carve/docusaurus-carve) | Docusaurus | Docs plugin: converts `.crv` pages and delegates routes, sidebars, and metadata to Docusaurus. |
+| [webpack-loader-carve](https://github.com/markup-carve/webpack-loader-carve) | webpack / Next.js | Build-time loader for importing `.crv` as rendered HTML modules. |
+| [obsidian-carve](https://github.com/markup-carve/obsidian-carve) | Obsidian | Community plugin with source and reading views for `.crv` notes. |
 | [symfony-carve](https://github.com/markup-carve/symfony-carve) | Symfony | Bundle to render Carve markup to HTML via carve-php. |
 | [symfony-carve-demo](https://github.com/markup-carve/symfony-carve-demo) | Symfony | Demo app showcasing the symfony-carve bundle. |
 | [laravel-carve](https://github.com/markup-carve/laravel-carve) | Laravel | Integration with Blade directives, services, validation, and caching. |
