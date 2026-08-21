@@ -1,0 +1,9 @@
+{.mermaid}
+```
+graph TD; A-->B;
+```
+
+{.mermaid aria-label="Architecture overview"}
+```
+graph TD; A-->B;
+```

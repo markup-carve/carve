@@ -209,6 +209,74 @@ paragraph that item spelled, which is the loss this rule exists to prevent.
 
 The three shapes are pinned as converter-corpus cases 27, 28 and 23.
 
+## A derived attribute does not come back
+
+An importer **drops an attribute whose value equals what the renderer derives
+for that element, and keeps every other one** (PART 9 §16a). It is the rule a
+`<th>`'s generated `scope` and a generated `colspan`/`rowspan` already follow,
+and it reaches every accessible name PART 9 §16a and
+[extensions §1.5](./extensions#_1-5-the-strings-an-extension-writes-itself)
+make engine-written: the name on an untitled admonition, an endnotes section, a
+footnote backlink, a tab set and a `css`-mode tab panel, plus the `role` beside
+each.
+
+````html
+<pre class="mermaid" role="img" aria-label="mermaid">graph TD; A--&gt;B;</pre>
+````
+
+````
+{.mermaid}
+```
+graph TD; A-->B;
+```
+````
+
+Both `role="img"` and `aria-label="mermaid"` are values the renderer writes
+for this element - the name defaults to the extension's own class word - so
+both attributes go. The `class` itself is the author's and stays: it is what
+the renderer reads to write them back.
+
+Nothing is diagnosed: the renderer puts the two attributes back, so no
+`attribute-dropped` fires, for the same reason the `<figure>` and
+`<blockquote cite>` imports above report nothing.
+
+**Provenance is not the test**, because the HTML never says who wrote an
+attribute. Where the value EQUALS the derived one the output is identical
+either way, so the drop is a no-op for what a reader hears - and it is the only
+thing that keeps a `labels` map reaching a document that has been through an
+import. A kept `aria-label="Note"` is indistinguishable from an authored one,
+so the author-wins rule makes it win: the same source re-rendered with
+`admonitionNote` set to `Hinweis` still says `Note`.
+
+**A name that DIFFERS is kept**, always. That is the half a blanket
+`aria-label` drop cost before, and the rule does not spend it:
+
+````html
+<pre class="mermaid" role="img" aria-label="Architecture overview">graph TD; A--&gt;B;</pre>
+````
+
+````
+{.mermaid aria-label="Architecture overview"}
+```
+graph TD; A-->B;
+```
+````
+
+Two limits come with it, both accepted. Attribute ORDER moves, because a
+regenerated name lands where the renderer appends it rather than where the
+author's attributes sit - which restores the canonical order rather than
+disturbing one. And the rule catches the DEFAULT only: HTML rendered with a
+German map carries `aria-label="Hinweis"`, which matches no default, so it is
+kept. An importer MAY take the same `labels` map the render used and match
+against that as well, closing the residue; it is not required.
+
+**The test for this is not a round trip.** An untitled admonition round-trips to
+byte-identical HTML *while* being permanently unlocalizable, so a round-trip
+assertion passes with the defect present. The assertion has to be that a derived
+name is ABSENT from the imported source, which is what
+`tests/a-derived-name-is-absent-from-imported-source.test.mjs` reads off the
+`derived-accessible-name` fixture.
+
 ## Modes
 
 - `safe` is the default for arbitrary input. It removes active content and
@@ -341,6 +409,7 @@ The shared set is deliberately small and each directory has one subject:
 | `semantic-span-carve-outs` | `<mark>`, inline `<code>` and `<pre><code>`, none of which take the compact form |
 | `figure-caption` | a `<figure>` with a `<figcaption>`, which imports as the image and a caption line |
 | `blockquote-cite` | a `<blockquote cite>`, whose attribute is kept on a block-attribute line |
+| `derived-accessible-name` | a diagram fence's derived `role` and name, dropped, beside an authored name that is kept |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one

@@ -1,0 +1,1 @@
+{"type":"document","children":[{"type":"code_block","content":"graph TD; A-->B;","attrs":{"classes":["mermaid"]}},{"type":"code_block","content":"graph TD; A-->B;","attrs":{"classes":["mermaid"],"keyValues":{"aria-label":"Architecture overview"}}}]}
