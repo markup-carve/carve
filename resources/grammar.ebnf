@@ -5039,6 +5039,38 @@ EOF = (* end of file *) ;
            * c
            * d
          `- a` followed by `- [x] b` is likewise two lists.
+         N1a HARD BOUNDARY AFTER THREE BLANK LINES -- NORMATIVE. A run of
+         THREE OR MORE blank lines before an item marker ends the list: the
+         marker after the run opens a NEW sibling list even when every N1
+         axis matches. ONE blank line remains the ordinary loose separator,
+         and so does TWO (SS17 L1). In the common LF spelling the boundary is
+         four newline bytes between the two item lines (`item\n\n\n\nitem`)
+         against two for the tight spelling and three for the loose one.
+         Example:
+           - apples         produces:    <ul><li>apples</li></ul>
+                                         <ul><li>oranges</li></ul>
+           (two more blank lines)
+           - oranges
+         AT EVERY LEVEL. The boundary is not restricted to the top level: it
+         applies wherever a list is, including a list nested in a list item
+         and a list inside a quote or a div. A rule that fired at the top
+         level and not inside an item would make one spelling mean two
+         things depending on where it sits, which Design Principle 1 exists
+         to prevent, and the marker's own container has nothing to do with
+         what the run separates.
+         THE RUN CLOSES NOTHING ON ITS OWN. It denies a FOLLOWING SIBLING
+         MARKER the right to join; it does not end the item. A run followed
+         by a continuation at the item's content column continues that item,
+         at any run length -- which is SS17's content-column model unchanged,
+         and is why three blank lines before indented text still leave one
+         loose item.
+         WHY THREE AND NOT TWO. Two fires on decoration. Sampling 8000
+         Markdown files for the shape that would change -- a list open above
+         the run, a compatible sibling marker after it -- found 30 sites at
+         two blank lines and NONE at three, and every one of the 30 was
+         generator output or a changelog's spacing rather than an author
+         separating two lists. A released line needs a threshold that fires
+         on nothing already written.
       N2 ORDERED DIALECT. A list's dialect (decimal / lower- or upper-alpha
          / lower- or upper-roman) and delimiter are fixed by its FIRST
          item; a later marker outside the dialect, or with the other
@@ -5701,7 +5733,10 @@ EOF = (* end of file *) ;
       `list` rendering and the continuation_marker productions in PART 2).
       L1 LOOSE(list) := some item is followed by a blank line before the
          next sibling marker, OR some item holds a blank-line-separated
-         second PARAGRAPH; otherwise TIGHT. Tightness is a property of the
+         second PARAGRAPH; otherwise TIGHT. This is a statement about ONE
+         and TWO blank lines: a run of THREE OR MORE is SS11 N1a's hard
+         boundary, so the marker below it is not a "next sibling marker" at
+         all and there is no one list left to be loose. Tightness is a property of the
          WHOLE ITEM, not of an individual block: a tight item's paragraphs
          ALL render WITHOUT `<p>` (<li>text</li>), every one of them, not
          only the first; a loose item's paragraphs are ALL wrapped
