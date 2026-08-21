@@ -74,7 +74,7 @@ test('a valid opener is unaffected', () => {
   // opening blocks at all.
   assert.equal(
     collapse(carveToHtml('::: note\nbody\n:::\n')),
-    '<aside class="admonition note"> <p>body</p> </aside>',
+    '<aside class="admonition note" aria-label="Note"> <p>body</p> </aside>',
   )
 })
 
@@ -87,13 +87,13 @@ test('a closer matches on EXACT length, not equal-or-greater', () => {
   // A wider bare fence does not close a narrower block - it opens one.
   assert.equal(
     collapse(carveToHtml('::: note\nbody\n::::\n')),
-    '<aside class="admonition note"> <p>body</p> <div> </div> </aside>',
+    '<aside class="admonition note" aria-label="Note"> <p>body</p> <div> </div> </aside>',
   )
   // And equal-length fences DO nest, because a closer must be BARE: the inner
   // line carries a label, so it is an opener.
   assert.equal(
     collapse(carveToHtml('::: note\nouter\n::: tip\ninner\n:::\n:::\n')),
-    '<aside class="admonition note"> <p>outer</p> ' +
-      '<aside class="admonition tip"> <p>inner</p> </aside> </aside>',
+    '<aside class="admonition note" aria-label="Note"> <p>outer</p> ' +
+      '<aside class="admonition tip" aria-label="Tip"> <p>inner</p> </aside> </aside>',
   )
 })

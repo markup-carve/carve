@@ -31,6 +31,7 @@ import { resolve, dirname, basename } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { carveToHtml } from '@markup-carve/carve'
 import { shortfall } from './spec/participants.mjs'
+import { parseDriftLedger } from './lib/drift-ledger.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const corpusDir = resolve(here, '..', 'tests/corpus')
@@ -121,17 +122,7 @@ if (!checkMode) process.exit(mismatches.length || threw.length ? 1 : 0)
  * pre-excused and never reported.
  */
 const driftPath = resolve(here, '..', 'resources/engine-pin-drift.txt')
-const declared = new Map(
-  readFileSync(driftPath, 'utf8')
-    .split('\n')
-    .map((l) => l.trim())
-    .filter((l) => l && !l.startsWith('#'))
-    .map((l) => {
-      const at = l.search(/\s{2,}/)
-      if (at === -1) throw new Error(`engine-pin-drift.txt: no reason on line: ${l}`)
-      return [l.slice(0, at), l.slice(at).trim()]
-    }),
-)
+const declared = parseDriftLedger(driftPath)
 
 const actual = new Set([...mismatches.map((m) => m.slug), ...threw.map((t) => t.slug)])
 const undeclared = [...actual].filter((s) => !declared.has(s)).sort()

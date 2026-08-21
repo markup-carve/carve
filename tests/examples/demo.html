@@ -75,9 +75,9 @@ email autolink <a href="mailto:hello@example.com">hello@example.com</a>, and a r
     </ol>
     <p>Tasks:</p>
     <ul>
-      <li><input type="checkbox" checked disabled> write the grammar</li>
-      <li><input type="checkbox" checked disabled> write the corpus</li>
-      <li><input type="checkbox" disabled> write more demos</li>
+      <li><input type="checkbox" checked disabled aria-label="write the grammar"> write the grammar</li>
+      <li><input type="checkbox" checked disabled aria-label="write the corpus"> write the corpus</li>
+      <li><input type="checkbox" disabled aria-label="write more demos"> write more demos</li>
     </ul>
     <p>Definition list:</p>
     <dl>
@@ -130,26 +130,26 @@ list:
   </section>
   <section id="Math">
     <h2>Math</h2>
-    <p>Inline math uses a dollar before a code span: <span class="math inline">\(e = mc^2\)</span>.</p>
+    <p>Inline math uses a dollar before a code span: <span class="math inline" role="math">\(e = mc^2\)</span>.</p>
     <p>Display math uses a double dollar:</p>
-    <p><span class="math display">\[e^{i\pi} + 1 = 0\]</span></p>
+    <p><span class="math display" role="math">\[e^{i\pi} + 1 = 0\]</span></p>
     <p>A fenced <code>math</code> block is the GFM-style block form (mathBlock extension):</p>
     <pre><code class="language-math">\sum_{k=1}^{n} k = \frac{n(n+1)}{2}
 </code></pre>
   </section>
   <section id="Admonitions-and-divs">
     <h2>Admonitions and divs</h2>
-    <aside class="admonition note">
+    <aside class="admonition note" aria-label="Note">
       <p>A plain note callout.</p>
     </aside>
-    <aside class="admonition tip">
-      <p class="admonition-title">With a title</p>
+    <aside class="admonition tip" aria-labelledby="adm-1">
+      <p class="admonition-title" id="adm-1">With a title</p>
       <p>Admonitions accept an optional quoted title.</p>
     </aside>
-    <aside class="admonition warning">
+    <aside class="admonition warning" aria-label="Warning">
       <p>Heed this warning.</p>
     </aside>
-    <aside class="admonition danger">
+    <aside class="admonition danger" aria-label="Danger">
       <p>Critical information.</p>
     </aside>
     <p>A bare <code>:::</code> fence with no admonition type is a generic styled container, not a
@@ -248,7 +248,7 @@ Arrows and comparisons: → ← ↔ ⇒ ⇐ ⇔ , ≠ ≤ ≥ , © ® ™.</p>
     </div>
   </section>
 </section>
-<section role="doc-endnotes">
+<section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
