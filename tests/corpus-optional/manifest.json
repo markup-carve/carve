@@ -233,6 +233,16 @@
       "slug": "45-list-table-local-headers",
       "feature": "list-table-local-headers-1248",
       "description": "A header-row attribute on a row's first cell starts a body group with an intermediate column-header row; a header attribute promotes only its own cell."
+    },
+    {
+      "slug": "46-tabs-css-panel-name",
+      "feature": "tabs",
+      "description": "Under the css default each tabs panel carries role=\"group\" named by its tab's own label, attribute-escaped."
+    },
+    {
+      "slug": "47-tabs-aria-panel-binding",
+      "feature": "tabs-aria",
+      "description": "In aria mode a panel is bound rather than named: role=\"tabpanel\" with aria-labelledby and hidden on every non-selected panel, and no role=\"group\"."
     }
   ]
 }

@@ -216,13 +216,14 @@ language.
 | Key | Default | Written by |
 |-----|---------|-----------|
 | `indexBackref` | `Back to` | Index (§8.2) |
-| `tabsGroup` | `Tabs` | Tabs (§4.20) |
-| `codeGroup` | `Code examples` | CodeGroup |
+| `tabsGroup` | `Tabs` | Tabs (§13.4) |
+| `codeGroup` | `Code examples` | CodeGroup (§13.4) |
 
 **What does NOT get a key.** A string with no fixed English default is not in
 the map, because there is nothing to translate: a diagram fence's name defaults
 to the *extension's own class word* (`mermaid`, `d2`, and `graphviz` for the
-`dot` fence it claims), so it stays an option on the extension. Neither is a string the author already wrote - a tab's `[label]`, an
+`dot` fence it claims), so it stays an option on the extension. Neither is a string the author already wrote - a tab's `[label]`, which
+also names its panel (§13.2), an
 index term, an admonition title. Those are named by DERIVING from the document,
 so a translated document translates them exactly once, in the document.
 
@@ -1375,3 +1376,143 @@ render degrades to the literal source text rather than inventing a URL. A site
 layer that knows which pages exist can walk the AST, match `ref` against its own
 index and fill `href` in - which is the same division of labor Wikilinks makes
 explicit through its URL generator.
+## 13. Tabs (Tier-2) and CodeGroup (Tier-3)
+
+Two constructs of the same shape. A `:::: tabs` container turns each `::: tab
+[Label]` child into one panel; a `::: code-group` container does the same with
+each fenced code block, taking the fence's `[Label]` as the tab name and its
+language word where none was written. Tabs is Tier-2 and pinned in
+`tests/corpus-optional`; CodeGroup is Tier-3 and is not corpus-pinned. Every
+rule in this section binds BOTH: two constructs of the same shape do not get
+different accessibility ceilings because one of them was written second
+(carve#1468).
+
+### 13.1 Two modes, and why `css` is the default
+
+Both extensions carry a `mode` option with exactly two values:
+
+| `mode` | How a panel is revealed | Needs a client script |
+|---|---|---|
+| `css` (default) | one `<input type="radio">` per tab plus a sibling `<label for=…>`; a stylesheet reveals the checked panel | no |
+| `aria` | a `<button role="tab">` per tab and `role="tabpanel"` panels; every non-selected panel carries `hidden` | yes |
+
+`css` is the default in both, and an implementation MUST NOT ship `aria` as the
+default. That is a consequence of the §2.5 rule rather than of compatibility:
+content is never dropped, only interaction. `aria` mode reveals with `hidden`,
+so a page that registers it and ships no script loses every panel but the first,
+while `css` mode with no stylesheet at all shows every panel. A default whose
+failure mode is missing content is the wrong default, whatever its semantics are
+when it works. The question reopens if `aria` mode stops using `hidden` for the
+reveal.
+
+An unknown `mode` value MUST be rejected rather than guessed, for the reason
+§2.5 gives about render modes: a guess turns a typo into silently different
+output.
+
+A `"static"` render (§2.5) takes neither mode. `renderStatic` flattens the set to
+one `<section>` per panel headed by its `[label]`, where the heading IS the name
+and no interaction survives to bind.
+
+### 13.2 A `css`-mode panel carries its tab's name
+
+Under `css` there are no tab roles, so nothing binds a panel to the control that
+reveals it: all radios and labels are emitted before all panels, and the panel
+itself is anonymous. Each panel therefore takes a role and a name of its own:
+
+```html
+<div class="tabs" role="group" aria-label="Tabs">
+<input type="radio" name="tabset-1" id="tabset-1-tab-1" class="tabs-radio" checked>
+<label for="tabset-1-tab-1" class="tabs-label">First</label>
+<div class="tabs-panel" role="group" aria-label="First">
+<p>Content one.</p>
+</div>
+</div>
+```
+
+- **The name is the tab's own label** - the same string the tab's `<label>`
+  element carries. It is DERIVED from the document, so per
+  [§1.5](#_1-5-the-strings-an-extension-writes-itself) it gets **no `labels`
+  key**, exactly as an admonition title does not: a translated document
+  translates it once, in the document. The name is TEXT and is
+  attribute-escaped.
+- There is no separate attribute for it, and none is introduced: an author
+  renames a panel by renaming its tab.
+- **`role="group"`, not `role="tabpanel"`.** The control that reveals this panel
+  is a `radio`, not a `tab`. `group` is all the CSS mode can honestly claim.
+- **Not `<section>`.** One landmark per panel is N landmarks per tab set, which
+  is the noise §1.5's sibling ruling removed from untitled admonitions.
+- **A bare `aria-labelledby` would not do instead.** ARIA marks `aria-label` and
+  `aria-labelledby` **prohibited** on role `generic`, which a plain `<div>` maps
+  to, so the attribute is ignored where it is not flagged outright - and there
+  is nothing to point one at, since the `<label>` elements carry `for=`, not
+  `id=`.
+
+`code-group` panels take the same treatment, keyed on the panel's own label: the
+tab name where one was written, otherwise the language word.
+
+```html
+<div class="code-group" role="group" aria-label="Code examples">
+<input type="radio" name="codegroup-1" id="codegroup-1-tab-1" class="code-group-radio" checked>
+<label for="codegroup-1-tab-1" class="code-group-label">Node</label>
+<input type="radio" name="codegroup-1" id="codegroup-1-tab-2" class="code-group-radio">
+<label for="codegroup-1-tab-2" class="code-group-label">python</label>
+<div class="code-group-panel" role="group" aria-label="Node"><pre><code class="language-js">console.log(1)
+</code></pre>
+</div>
+<div class="code-group-panel" role="group" aria-label="python"><pre><code class="language-python">print(1)
+</code></pre>
+</div>
+</div>
+```
+
+### 13.3 An `aria`-mode panel is bound, not named
+
+In `aria` mode the association already exists, so the panel takes **neither**
+`role="group"` **nor** an `aria-label`. It stays `role="tabpanel"`, bound by
+`aria-labelledby` to its `<button role="tab">`, and every non-selected panel
+carries `hidden`:
+
+```html
+<div class="tabs" role="tablist" aria-label="Tabs">
+<button role="tab" id="tabset-1-tab-1" aria-selected="true" aria-controls="tabset-1-panel-1" class="tabs-label">First</button>
+<button role="tab" id="tabset-1-tab-2" aria-selected="false" aria-controls="tabset-1-panel-2" class="tabs-label" tabindex="-1">Second</button>
+<div role="tabpanel" id="tabset-1-panel-1" aria-labelledby="tabset-1-tab-1" class="tabs-panel">
+<p>Content one.</p>
+</div>
+<div role="tabpanel" id="tabset-1-panel-2" aria-labelledby="tabset-1-tab-2" class="tabs-panel" hidden>
+<p>Content two.</p>
+</div>
+</div>
+```
+
+Naming it as well would give one element two accessible names and pull it out of
+the `tablist` relationship that is the only reason to be in this mode. So the
+rule in §13.2 is a `css`-mode rule specifically, not "every panel gets a name".
+
+### 13.4 The set's own name
+
+Both wrappers are named already, and unlike a panel name those two strings are
+extension-written with a fixed English default, so both DO have `labels` keys:
+
+```html
+<div class="tabs" role="group" aria-label="Tabs">
+<div class="code-group" role="group" aria-label="Code examples">
+```
+
+`tabsGroup` and `codeGroup` in the §1.5 table carry them, an option on the
+extension overrides the map, and an `aria-label` the author writes on the
+container outranks both - naming two tab sets on one page apart is the author's
+job. In `aria` mode the tabs wrapper is `role="tablist"` instead and keeps the
+same name.
+
+### 13.5 Conformance
+
+Tabs is pinned in `tests/corpus-optional`. Feature `tabs` covers the `css`
+panel name (cases 28 and 46); feature `tabs-aria` covers §13.3 - the
+`tabpanel` / `aria-labelledby` binding, the `hidden` reveal that §13.1 turns on,
+and the absence of `role="group"` there (case 47).
+
+CodeGroup is Tier-3 and NOT corpus-pinned; `resources/examples-tier3.md` is its
+only verifier in this repo. Its `mode` option, its panel naming and its
+rejection of an unknown mode are stated here and pinned by each implementation
+in its own suite, the same division §8.4 describes for Index.

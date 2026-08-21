@@ -127,6 +127,7 @@ const DECLARED_UNREACHABLE = {
   'rust:semantic-span': 'no CLI flag for the semantic-span extension',
   'rust:spoiler': 'no CLI flag for the spoiler extension',
   'rust:tabs': 'no CLI flag for the tabs extension',
+  'rust:tabs-aria': 'no CLI flag for the tabs extension, and none for its mode',
   'php:symbol-map': 'the symbol map is not reachable from CarveConverter::create()',
   // "`section-wrapper-off` and `source-line-after-generated-id` reach carve-js
   // and carve-php" - docs/implementation-comparison.md, on the same run.

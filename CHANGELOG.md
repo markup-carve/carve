@@ -34,6 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the guard off wherever an extension exists.
 - **A block matcher's coordinates are local, not absolute** (carve#1437, R1b).
   A matcher reads positions against its own container rather than the document.
+- **Tabs and code-group panels get an accessible name, and code-group gets a
+  mode** (carve#1468, extensions §13). `css` stays the default mode in both; a
+  `css`-mode panel takes `role="group"` named by its tab's own label, while an
+  `aria`-mode panel stays bound by `aria-labelledby` and takes neither.
+  CodeGroup grows the `mode: 'css' | 'aria'` option Tabs already has. Optional
+  corpus 46, 47.
 
 ### Fixed
 

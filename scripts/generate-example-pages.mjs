@@ -276,6 +276,7 @@ const optionalTitle = new Map([
   ['list-table-local-headers-1248', 'ListTable local headers and body groups'],
   ['spoiler', 'Spoiler'],
   ['tabs', 'Tabs'],
+  ['tabs-aria', 'Tabs in aria mode'],
   ['semantic-span', 'SemanticSpan'],
   ['social-link-templates', 'Mention and tag URL templates'],
   ['symbol-map', 'Symbol map'],
