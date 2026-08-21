@@ -994,6 +994,31 @@ lazy</li>
 
 :::
 
+A blank line is not a list boundary, so the ORDERED spelling loosens exactly
+as the bullet one does: the marker after the blank is still a sibling of the
+same list. §11 N1's axes are the bullet character, the ordered-marker
+alternative, the delimiter and plain-vs-task - a blank line is not among them -
+and §17 L1 reads "a blank line before the next sibling marker", which is a
+statement about tightness, not about where the list ends.
+
+::: compare
+
+```carve
+1. apples
+
+2. oranges
+```
+
+```html
+<ol>
+  <li><p>apples</p></li>
+  <li><p>oranges</p></li>
+</ol>
+```
+
+:::
+
+
 ## Task lists
 
 ::: compare

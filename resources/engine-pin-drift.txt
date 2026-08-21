@@ -25,3 +25,4 @@
 #
 # Format: <slug><space><space><reason>
 
+05-lists-22  The pinned JS build ends an ordered list at a blank line instead of loosening it (markup-carve/carve-js#1270); remove when the pin advances past the fix.
