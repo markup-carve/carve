@@ -14,5 +14,3 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
-381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-6  carve-js#1228 hoists the nested definition but attaches the outer block to the empty inner item
-389-a-boolean-attribute-does-not-start-with-an-underscore-4  markup-carve/carve#1450: the pin shortens `{_u=""}` to `{_u}`, which the underscore rule reads back as text - correct for the grammar the pinned writer implements, and drift the day it ships the reading rule
