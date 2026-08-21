@@ -7228,7 +7228,7 @@ EOF = (* end of file *) ;
    host that reads its strings from a translation catalog is not handing the
    renderer an injection vector.
 
-   THE KEYS, and the whole set today:
+   THE KEYS CORE DEFINES, and the whole set core defines today:
 
      footnoteBacklink   "Back to reference"   PART 9 §16, the endnote backlink's
                                               accessible name
@@ -7261,13 +7261,37 @@ EOF = (* end of file *) ;
    appear -- the untitled admonition's type word, and the two footnote
    strings.
 
-   EXTENSION-WRITTEN STRINGS STAY WITH THEIR EXTENSION. The heading-permalink
-   label and the table-of-contents summary are already options on the
-   extensions that write them, in all three engines (carve-js `ariaLabel` /
-   `summary`, carve-php `$ariaLabel`, carve-rs `aria_label`). Moving them into
-   this map would give one string two spellings and no rule for which wins. An
-   extension MAY read the map for a string it shares with core; it MUST NOT
-   require the host to configure the same text twice.
+   AN EXTENSION WRITES INTO THE SAME MAP -- NORMATIVE (carve#1508). The map is
+   the renderer's, not core's: Extensions §1.5 states which strings an
+   EXTENSION contributes to it, and those keys are part of the same map a host
+   passes once. So the list above is what CORE defines and not the whole map an
+   engine honors -- measured against the pinned build, `indexBackref`,
+   `tabsGroup` and `codeGroup` are honored beside the ten. A host translating a
+   document therefore sets ONE map, which is the whole reason the map exists
+   rather than a per-construct option.
+
+   THE EARLIER READING WAS THE OPPOSITE, and is recorded so a reader of the
+   history is not left with two rules. This clause said extension-written
+   strings STAY with their extension, because moving one into the map would
+   give it two spellings and no rule for which wins. §1.5 supplies exactly
+   that rule -- the author's attribute, then the extension's own option, then
+   the map, then the default -- so the objection no longer holds, and three
+   extension-written strings live under it with both a key and an option.
+
+   AN EXTENSION MAY read the map for a string it shares with core; it MUST NOT
+   require the host to configure the same text twice. Two extension-written
+   strings still have no key and are options only -- the heading-permalink
+   label and the table-of-contents summary (carve-js `ariaLabel` / `summary`,
+   carve-php `$ariaLabel`, carve-rs `aria_label`). That is the state, not a
+   rule: §1.5's admission sentence reads on both of them, and whether they
+   join the map is carve#1510.
+
+   EVERY DOCUMENTED KEY REACHES THE OUTPUT, and that is checked rather than
+   asserted (carve#1508). No fixture in the spec repo renders with a non-default
+   map, so every key was verified at its English default only and an engine that
+   hard-coded all of them would have passed every check. The key names are read
+   off this list and off §1.5's table and each is rendered with a sentinel, so
+   a key documented in neither, or documented and inert, fails.
 
    WHAT THIS DOES NOT DO: it is not localization. There is no locale name and
    no built-in table beyond the English defaults, because a locale table is

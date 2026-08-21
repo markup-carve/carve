@@ -219,6 +219,12 @@ language.
 | `tabsGroup` | `Tabs` | Tabs (§13.4) |
 | `codeGroup` | `Code examples` | CodeGroup (§13.4) |
 
+These are the extension-written keys, not the whole map: PART 9 §16a lists the
+ten core writes, and the two tables together are every key an engine honors.
+Both are checked - each key is rendered with a sentinel value and has to reach
+the output, so a key documented in neither table, or documented and inert, fails
+(carve#1508).
+
 **What does NOT get a key.** A string with no fixed English default is not in
 the map, because there is nothing to translate: a diagram fence's name defaults
 to the *extension's own class word* (`mermaid`, `d2`, and `graphviz` for the

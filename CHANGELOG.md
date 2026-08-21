@@ -43,6 +43,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **An extension writes into the same `labels` map, and every key is checked**
+  (carve#1508, PART 9 §16a, extensions §1.5). §16a still said extension-written
+  strings stay with their extension, which §1.5 had already overturned by
+  putting three of them in the map; and no fixture rendered with a non-default
+  map, so all thirteen keys were verified at their English defaults only. Each
+  documented key is now rendered with a sentinel and has to reach the output.
 - **A tab control is `type="button"`, and two marked items select one tab**
   (carve#1537, extensions §13.3 and §13.5). A generated control with no `type`
   is a submit button, so a tab set inside a `<form>` submitted the form instead
