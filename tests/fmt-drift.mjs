@@ -10,15 +10,20 @@
  * round-trip or cross-read purpose" want the UNION of the two, not either one
  * alone.
  */
-import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { parseDriftLedger } from '../scripts/lib/drift-ledger.mjs'
 
-const parseDriftFile = (path) =>
-  readFileSync(path, 'utf8')
-    .split('\n')
-    .map((l) => l.trim())
-    .filter((l) => l && !l.startsWith('#'))
-    .map((l) => l.slice(0, l.search(/\s{2,}/)))
+/*
+ * The shared parser rather than a local one, so a slug listed twice is refused
+ * here too. Reading these files into a Set hid the loss even better than the
+ * Map in `scripts/engine-report.mjs` did - a Set has no reason to discard, so
+ * there was nothing to notice missing (carve#1479). It also removes a second
+ * silent failure this loader had of its own: with no two-space run on a line,
+ * `search` returned -1 and `slice(0, -1)` quietly registered the slug with its
+ * last character chopped off, which would have excused nothing under a name
+ * nothing else uses.
+ */
+const parseDriftFile = (path) => [...parseDriftLedger(path).keys()]
 
 /**
  * @param {string} testsDir the directory of the calling test file (`__dirname`

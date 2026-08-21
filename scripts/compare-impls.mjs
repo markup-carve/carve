@@ -11,6 +11,7 @@ import {
   expectedFileFor,
   targetOf,
 } from './lib/corpus-targets.mjs'
+import { parseConverterLedger } from './lib/drift-ledger.mjs'
 import { phpDir, rustBinary, rustDir } from './lib/engine-locations.mjs'
 import { miscount, shortfall } from './spec/participants.mjs'
 
@@ -881,17 +882,11 @@ async function runConvertMode() {
 
   // resources/converter-drift.txt: `<engine>/<slug>  <reason>` per line.
   const driftPath = join(root, 'resources/converter-drift.txt')
-  const drift = new Map()
+  let drift = new Map()
   if (existsSync(driftPath)) {
-    for (const line of readFileSync(driftPath, 'utf8').split('\n')) {
-      if (line.trim() === '' || line.startsWith('#')) continue
-      const m = /^(\S+)\/(\S+) {2}(.+)$/.exec(line)
-      if (!m) {
-        failures.push(`converter-drift.txt line unparseable: ${JSON.stringify(line)} (format: engine/slug  reason)`)
-        continue
-      }
-      drift.set(`${m[1]}/${m[2]}`, { reason: m[3], used: false })
-    }
+    const parsed = parseConverterLedger(driftPath)
+    drift = parsed.entries
+    failures.push(...parsed.failures)
   }
 
   const convertStats = Object.fromEntries(
