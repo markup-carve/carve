@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { dirname, posix, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { slugify } from './lib/example-sections.mjs'
-import { collectSections, headerOnlyPages, parseOptionalPages, parsePages, routePages, scanPageSources, unroutedFixtures } from './lib/example-page-manifest.mjs'
+import { SECTION_HEADING_PREFIX, collectSections, headerOnlyPages, nonHeadingSections, optionalCaseFences, parseOptionalPages, parsePages, routePages, scanPageSources, unroutedFixtures } from './lib/example-page-manifest.mjs'
 import { optionalFeatureTitles } from './lib/optional-feature-titles.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -91,6 +91,12 @@ const { sectionsByPage, complaints: sourceComplaints } = scanPageSources(pages, 
 failOn(sourceComplaints)
 for (const page of pages) page.standaloneSections = sectionsByPage.get(page)
 
+/* Asked of both populations that reach `sectionLines` below, before anything is
+ * generated: the scanner guarantees a section opens at `##`, not what separates
+ * it from the title, and the separator is re-emitted verbatim (carve#1496). */
+failOn(nonHeadingSections([...sectionsBySlug.values()], 'resources/examples/*.md'))
+for (const [page, sections] of sectionsByPage) failOn(nonHeadingSections(sections, `page "${page.id}" source resources/${page.source}`))
+
 const corpusUrl = (name) => `https://github.com/markup-carve/carve/blob/main/tests/corpus/${name}.crv`
 const sourceLink = (name) => `[\`resources/examples/${name}.md\`](https://github.com/markup-carve/carve/blob/main/resources/examples/${name}.md)`
 /*
@@ -104,15 +110,21 @@ const banner = (sourceNames) => {
   const list = links.length === 1 ? links[0] : `${links.slice(0, -1).join(', ')} and ${links.at(-1)}`
   return `Generated from ${list} - edit the cases there, not here. Each case links the conformance fixture it produces.`
 }
-const sectionLines = (section, level, context) => {
+/*
+ * Re-emitting the heading at the page's level is a slice, not a reparse: the two
+ * `#`s go, everything after them travels verbatim. Both claims that used to be
+ * checked here are settled before this point (carve#1496). `scanExampleSource`
+ * opens a section only on `/^##\s+/`, so `bodyLines[0]` exists and begins at
+ * level 2 - a `###` line never opens a section, which is why the `### ` clause
+ * that lived here could not fire. What the separator may be is not guaranteed by
+ * that regex, so `nonHeadingSections` in scripts/lib/example-page-manifest.mjs
+ * asks it of both populations above, where a test can ask it too.
+ */
+const sectionLines = (section, level) => {
   const [heading, ...body] = rewriteProseLinks(section.bodyLines)
-  /* Generated nesting is only safe when the authored section starts at the
-   * documented ## boundary; accepting another level would silently corrupt
-   * both the outline and VitePress's stable anchor text. */
-  if (!heading?.startsWith('## ') || heading.startsWith('### ')) fail(`${context} section heading "${heading ?? ''}" is not ##; generated sections must begin at level 2 before nesting.`)
   return [`${'#'.repeat(level)}${heading.slice(2)}`, ...body]
 }
-const sectionHeading = (section, level, context) => sectionLines({ bodyLines: [section.bodyLines[0]] }, level, context)[0]
+const sectionHeading = (section, level) => sectionLines({ bodyLines: [section.bodyLines[0]] }, level)[0]
 const segmentLines = (segment) => rewriteProseLinks(segment.bodyLines)
 const blocksByOutput = new Map()
 let declarationIndex = 0
@@ -138,7 +150,7 @@ for (const page of pages) {
     bySection.get(section.slug).segments.push(...segments)
   }
   for (const { section, segments } of bySection.values()) {
-    lines.push(sectionHeading(section, page.level, `page "${page.id}"`))
+    lines.push(sectionHeading(section, page.level))
     /*
      * ONE collapsed list per section, not a citation line per pair. The
      * fixture name serves one flow - a maintainer asking which fixture pins a
@@ -170,7 +182,7 @@ for (const page of pages) {
   }
   if (page.source) {
     lines.push(`Hand-written source: [\`resources/${page.source}\`](https://github.com/markup-carve/carve/blob/main/resources/${page.source}).`, '')
-    for (const section of page.standaloneSections) lines.push(...sectionLines(section, page.level, `page "${page.id}"`))
+    for (const section of page.standaloneSections) lines.push(...sectionLines(section, page.level))
   }
   addBlock(page.out, { order: page.order, title: page.title, description: page.description, lines })
 }
@@ -188,12 +200,6 @@ const featureTitle = (feature) => {
   if (!title) fail(`manifest feature "${feature}" has no authored title in scripts/lib/optional-feature-titles.mjs; a slug-cased heading reads as a filename, not a feature.`)
   return title
 }
-const languageByExtension = new Map([
-  ['.html', 'html'],
-  ['.md', 'markdown'],
-  ['.txt', 'text'],
-  ['.ansi', 'ansi'],
-])
 const fenced = (language, content) => {
   const longest = Math.max(0, ...[...content.matchAll(/`+/g)].map((match) => match[0].length))
   const marker = '`'.repeat(Math.max(3, longest + 1))
@@ -205,6 +211,13 @@ for (const item of manifest.cases) {
   if (!casesByFeature.has(item.feature)) casesByFeature.set(item.feature, [])
   casesByFeature.get(item.feature).push(item)
 }
+/* The expected-output extension and its fence language both come from the
+ * case's `target`, through the map every other reader of this manifest uses.
+ * Resolved for the whole manifest up front so a target nobody implements is
+ * named as such, rather than defaulting to HTML - which pinned the wrong file
+ * silently wherever an `.html` happened to exist (carve#1496). */
+const { fences, complaints: fenceComplaints } = optionalCaseFences(manifest.cases)
+failOn(fenceComplaints)
 const { pages: optionalPages, complaints: optionalComplaints } = parseOptionalPages(readFileSync(optionalPagesSource, 'utf8'))
 failOn(optionalComplaints)
 failOn(headerOnlyPages(pages, optionalPages))
@@ -239,11 +252,9 @@ for (const page of optionalPages) {
     )
     for (const item of featureCases) {
       const sourcePath = resolve(optionalCorpusDir, `${item.slug}.crv`)
-      const targetExtension = item.target === 'markdown' ? '.md' : item.target === 'plain' ? '.txt' : item.target === 'ansi' ? '.ansi' : '.html'
+      const { extension: targetExtension, language } = fences.get(item)
       const targetPath = resolve(optionalCorpusDir, `${item.slug}${targetExtension}`)
       if (!existsSync(sourcePath) || !existsSync(targetPath)) fail(`optional case "${item.slug}" is missing its .crv or ${targetExtension} target; the generated comparison would be unverifiable.`)
-      const language = languageByExtension.get(targetExtension)
-      if (!language) fail(`optional case "${item.slug}" has unknown target extension "${targetExtension}"; the generator cannot choose a truthful fence language.`)
       /* These renders depend on configuration the docs page does not apply; live rendering would contradict the pinned output. */
       const carve = readFileSync(sourcePath, 'utf8').replace(/\n$/, '')
       const target = readFileSync(targetPath, 'utf8').replace(/\n$/, '')
@@ -277,7 +288,10 @@ for (const [out, blocks] of blocksByOutput) {
      * group boundary for every non-owner block, including a header-only owner. */
     if (blocks.length > 1 && block !== owner) parts.push(`## ${block.title}`, '', asProse(block.description), '')
     const nested = blocks.length > 1 && block !== owner
-      ? block.lines.map((line) => line.startsWith('## ') ? `###${line.slice(2)}` : line)
+      /* Same prefix `nonHeadingSections` guards, imported rather than respelled:
+       * a heading it let through with a different separator would silently stay
+       * at level 2 while its page-mates moved to level 3 (carve#1496). */
+      ? block.lines.map((line) => line.startsWith(SECTION_HEADING_PREFIX) ? `###${line.slice(2)}` : line)
       : block.lines
     parts.push(...nested)
   }

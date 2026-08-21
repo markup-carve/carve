@@ -27,6 +27,7 @@
  */
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { TARGET_EXTENSIONS, targetNames, targetOf } from './corpus-targets.mjs'
 import { exampleFiles, numberExamples, readExampleFiles, scanExampleSource } from './example-sections.mjs'
 
 /*
@@ -133,6 +134,48 @@ export const parseOptionalPages = (source) => {
 }
 
 /*
+ * Sections whose heading would not survive being generated.
+ *
+ * `scripts/generate-example-pages.mjs` re-emits a section heading at the page's
+ * own level by slicing off the two `#`s and keeping the rest verbatim, so the
+ * character between `##` and the title travels into the generated page.
+ * `scanExampleSource` opens a section on `/^##\s+/`, and `\s` is not only the
+ * space. Two different things go wrong, which is why the rule is the space and
+ * not "ATX whitespace". Measured through VitePress's own renderer:
+ *
+ *     "## Title"       ->  <h2 id="title">Title</h2>
+ *     "##<TAB>Title"   ->  <h2 id="title">Title</h2>
+ *     "##<U+00A0>Title" ->  <p>## Title</p>
+ *
+ * U+00A0 (and U+000B, U+000C) is not ATX whitespace, so the generated line
+ * renders as a PARAGRAPH: a section that quietly stops being a heading, loses
+ * the anchor every in-page link to it needs, and still owns its corpus
+ * fixtures. A tab does render as a heading - but the generator pushes a shared
+ * output's non-owner blocks down a level by matching
+ * `SECTION_HEADING_PREFIX` literally, so a tab-separated heading would sit at
+ * level 2 among page-mates that all moved to level 3. Both sides use the
+ * constant below so the guard and that rewrite cannot drift apart.
+ *
+ * The LEVEL needs no check. `/^##\s/` is the only way a section opens, so a
+ * `###` line is never a section heading and can never reach `bodyLines[0]`;
+ * the generator carried a `startsWith('### ')` clause that therefore could not
+ * fire and implied a guard that does not exist (carve#1496).
+ */
+export const SECTION_HEADING_PREFIX = '## '
+export const nonHeadingSections = (sections, context) =>
+  sections
+    .filter((section) => !section.bodyLines[0].startsWith(SECTION_HEADING_PREFIX))
+    .map((section) => {
+      const heading = section.bodyLines[0]
+      /* Name the CODE POINT. Every character this can report is invisible in a
+       * terminal, so a message that only quotes the line shows the reader a
+       * heading that looks perfectly correct. `##` plus one character is the
+       * shortest heading the scanner can open a section on, so index 2 exists. */
+      const separator = `U+${heading.codePointAt(2).toString(16).toUpperCase().padStart(4, '0')}`
+      return `${context} heading "${heading}" separates "##" from its title with ${separator} instead of a space; the separator is re-emitted verbatim, and only a space is read as a heading by VitePress AND recognized by the rewrite that pushes a shared page's sections to level 3.`
+    })
+
+/*
  * The sections a page entry may name, keyed by slug, and the corpus pairs those
  * sections hold, keyed by fixture name. Numbering comes from the CONCATENATION
  * of the three example files - that is what `generate-corpus.mjs` numbers by -
@@ -148,7 +191,8 @@ export const collectSections = (repoRoot) => {
   const sectionsBySlug = new Map()
   for (const sourceName of exampleFiles) {
     const sourcePath = resolve(repoRoot, 'resources/examples', `${sourceName}.md`)
-    for (const section of scanExampleSource(readFileSync(sourcePath, 'utf8').split('\n')).sections) {
+    const { sections } = scanExampleSource(readFileSync(sourcePath, 'utf8').split('\n'))
+    for (const section of sections) {
       /* `scanExampleSource` already throws on two identical section TITLES.
        * Two DIFFERENT titles that slugify to one slug reach here instead, and
        * a page entry naming that slug could not say which one it meant. */
@@ -264,4 +308,64 @@ export const headerOnlyPages = (pages, optionalPages) => {
   return pages
     .filter((page) => page.slugs.length === 0 && !page.source && outputCounts.get(page.out) === 1)
     .map((page) => `page "${page.id}" has zero slugs and no source; that is allowed only when another entry shares its out: path as a legitimate header-only owner.`)
+}
+
+/*
+ * The fence language an optional case's expected output is shown in, keyed by
+ * TARGET - the same key `scripts/lib/corpus-targets.mjs` names its extensions
+ * by, so one target vocabulary serves both halves of a generated comparison.
+ *
+ * WHY KEYED BY TARGET. The generator used to derive the extension from a closed
+ * four-arm ternary (`markdown` -> .md, `plain` -> .txt, `ansi` -> .ansi,
+ * ANYTHING ELSE -> .html) and then look the language up by extension. That made
+ * the language lookup unable to miss - a `fail()` call that could not fire -
+ * while the arm that actually mattered was the silent default: `carve` has been
+ * a legal target with a `.fmt` expected file, honored by
+ * `tests/optional-corpus.test.mjs`, `tests/corpus-targets.test.mjs` and
+ * `scripts/compare-impls.mjs`, and the ternary called it HTML. Measured: with
+ * one manifest case switched to `target: "carve"`, the old generator did not
+ * fail at all - it paired the case with the `.html` file it also happens to have
+ * and labeled the fence `html`, publishing an HTML expectation for a case pinned
+ * on Carve output. Where no `.html` exists it failed one step later naming the
+ * wrong file (carve#1496).
+ *
+ * Now an unknown target is caught by the extension map, which CAN miss, and a
+ * target added to `TARGET_EXTENSIONS` with no fence language is caught here.
+ * `tests/no-orphan-pages.test.mjs` asserts both directions of this map, the
+ * shape carve#1490 gave `optional-feature-titles.mjs`.
+ */
+export const fenceLanguages = new Map([
+  ['html', 'html'],
+  ['markdown', 'markdown'],
+  ['plain', 'text'],
+  ['ansi', 'ansi'],
+  ['carve', 'carve'],
+])
+
+/*
+ * Resolve every optional-corpus case to the expected-file extension and fence
+ * language its generated comparison needs.
+ *
+ * Keyed by the CASE OBJECT, not by `item.slug`. Nothing in this repo rejects
+ * two manifest entries sharing a slug, and a slug key would hand both of them
+ * the last one's target - the same keying trap `scanPageSources` documents.
+ */
+export const optionalCaseFences = (cases) => {
+  const fences = new Map()
+  const complaints = []
+  for (const item of cases) {
+    const target = targetOf(item)
+    const extension = TARGET_EXTENSIONS[target]
+    if (!extension) {
+      complaints.push(`optional case "${item.slug}" names target "${target}", which is not one of ${targetNames().join(', ')}; its expected output has no filename, so the generated comparison would pin nothing.`)
+      continue
+    }
+    const language = fenceLanguages.get(target)
+    if (!language) {
+      complaints.push(`optional case "${item.slug}" names target "${target}", which has no fence language in scripts/lib/example-page-manifest.mjs; the generator cannot label its expected output truthfully.`)
+      continue
+    }
+    fences.set(item, { extension: `.${extension}`, language })
+  }
+  return { fences, complaints }
 }

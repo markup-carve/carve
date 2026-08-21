@@ -24,7 +24,8 @@ import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { numberExamples, readExampleFiles, scanExampleSource } from '../scripts/lib/example-sections.mjs'
-import { collectSections, headerOnlyPages, parseOptionalPages, parsePages, routePages, scanPageSources } from '../scripts/lib/example-page-manifest.mjs'
+import { SECTION_HEADING_PREFIX, collectSections, fenceLanguages, headerOnlyPages, nonHeadingSections, optionalCaseFences, parseOptionalPages, parsePages, routePages, scanPageSources } from '../scripts/lib/example-page-manifest.mjs'
+import { TARGET_EXTENSIONS, targetNames } from '../scripts/lib/corpus-targets.mjs'
 import { optionalFeatureTitles } from '../scripts/lib/optional-feature-titles.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -234,6 +235,72 @@ test('every page naming a hand-written source can read it', () => {
   )
 })
 
+/*
+ * THE SECTION HEADING ITSELF, which the generator used to check where nothing
+ * could reach it - and where one half of the check could not fire at all.
+ *
+ * WHY. `scripts/generate-example-pages.mjs` re-emits a section heading at the
+ * page's level by slicing off the two `#`s and keeping the rest verbatim. It
+ * guarded that with `!heading.startsWith('## ') || heading.startsWith('### ')`.
+ * The second half is unreachable by construction: `scanExampleSource` opens a
+ * section only on `/^##\s+/`, so a `###` line never becomes `bodyLines[0]`, and
+ * the clause implied a level guard the scanner already makes impossible
+ * (carve#1496). The first half is NOT unreachable - `\s` is not only the space,
+ * and `##` followed by U+00A0 opens a section whose generated line VitePress
+ * renders as a paragraph, losing the heading and its anchor while the section
+ * keeps its corpus fixtures. A tab renders as a heading but is rejected for the
+ * other reason the lib records: the rewrite that pushes a shared page's
+ * sections to level 3 matches `SECTION_HEADING_PREFIX` literally.
+ *
+ * So the live half moved into the manifest lib, and it is asked here of the two
+ * populations the generator generates from.
+ */
+test('every routed section heading survives being generated', () => {
+  const complaints = nonHeadingSections([...sectionsBySlug.values()], 'resources/examples/*.md')
+  assert.deepEqual(
+    complaints,
+    [],
+    'these resources/examples/*.md headings would stop being headings once generated:\n' + complaints.join('\n'),
+  )
+})
+
+test('every hand-written source heading survives being generated', () => {
+  const { sectionsByPage } = scanPageSources(pages, repoRoot)
+  const complaints = [...sectionsByPage].flatMap(([page, sections]) =>
+    nonHeadingSections(sections, `page "${page.id}" source resources/${page.source}`))
+  assert.deepEqual(
+    complaints,
+    [],
+    'these source: headings would stop being headings once generated:\n' + complaints.join('\n'),
+  )
+})
+
+test('a heading whose separator is not a space is reported', () => {
+  /*
+   * The reachability proof. Without it the two assertions above pass for a
+   * check that cannot fail, which is the defect carve#1496 is about - so every
+   * separator the scanner's `/^##\s+/` CAN produce is asserted here, in both
+   * directions.
+   */
+  const sections = (heading) => [{ bodyLines: [heading] }]
+  assert.deepEqual(nonHeadingSections(sections('## Title'), 'ctx'), [])
+  for (const [label, separator] of [['tab', '\t'], ['U+00A0', '\u00a0'], ['form feed', '\u000c'], ['vertical tab', '\u000b']]) {
+    const complaints = nonHeadingSections(sections(`##${separator}Title`), 'ctx')
+    assert.equal(complaints.length, 1, `a ${label} after ## must be reported`)
+    assert.match(complaints[0], /^ctx heading .* separates "##" from its title with U\+[0-9A-F]{4} instead of a space/,
+      'the offending character is invisible, so the message has to name its code point')
+  }
+  assert.match(nonHeadingSections(sections('##\u00a0Title'), 'ctx')[0], /U\+00A0/)
+})
+
+test('the guard and the level rewrite share one heading prefix', () => {
+  /* The rewrite in scripts/generate-example-pages.mjs that pushes a shared
+   * page's non-owner sections to level 3 matches this exact prefix. A guard
+   * that accepted a heading the rewrite does not recognize would leave that
+   * section at level 2 among page-mates that all moved down. */
+  assert.equal(SECTION_HEADING_PREFIX, '## ')
+})
+
 test('no page is an unshared header-only page', () => {
   /* A page with no entries and no source is legitimate only as the frontmatter
    * owner of an out: path another entry also writes to. Alone, it publishes a
@@ -279,9 +346,8 @@ test('every corpus fixture is routed to a docs page', () => {
  * a page is routed the moment it is added - but a new feature is not, and that
  * too was only visible at `docs:build`.
  */
-const manifestFeatures = [...new Set(
-  JSON.parse(readFileSync(resolve(repoRoot, 'tests/corpus-optional/manifest.json'), 'utf8')).cases.map((item) => item.feature),
-)]
+const optionalCases = JSON.parse(readFileSync(resolve(repoRoot, 'tests/corpus-optional/manifest.json'), 'utf8')).cases
+const manifestFeatures = [...new Set(optionalCases.map((item) => item.feature))]
 const assignedFeatures = new Set(optionalPages.flatMap((page) => page.features))
 
 test('the optional-corpus feature census is not empty', () => {
@@ -362,3 +428,57 @@ test('every authored title names a feature the manifest still has', () => {
  * `duplicate entry` complaint, the second as `matches no source section or
  * fixture` - with the generator's own wording, so they are not repeated here.
  */
+
+/*
+ * THE TARGET each optional case pins, and the fence language its expected
+ * output is shown in.
+ *
+ * WHY. The generator derived the extension from a closed four-arm ternary
+ * (`markdown` -> .md, `plain` -> .txt, `ansi` -> .ansi, anything else -> .html)
+ * and then looked the language up by extension, so its
+ * `unknown target extension` failure could not fire over that range - while the
+ * default arm quietly claimed HTML for `carve`, a target that has had a `.fmt`
+ * expected file since `TARGET_EXTENSIONS` grew it and that every other reader of
+ * this manifest honors. Measured on the old generator: a `target: "carve"` case
+ * did not fail, it published the case's `.html` file under an `html` fence -
+ * an HTML expectation for a case pinned on Carve output (carve#1496). Both maps
+ * are keyed by target now, and both directions are asserted, the shape
+ * carve#1490 gave the feature titles.
+ */
+test('every optional-corpus case resolves an expected file and a fence language', () => {
+  const { fences, complaints } = optionalCaseFences(optionalCases)
+  assert.deepEqual(
+    complaints,
+    [],
+    'these tests/corpus-optional/manifest.json cases would stop `npm run docs:build`:\n' + complaints.join('\n'),
+  )
+  assert.equal(fences.size, optionalCases.length, 'every case must resolve exactly one fence')
+})
+
+test('a case naming a target nobody implements is reported', () => {
+  /* The reachability proof for the guard that replaced the closed ternary: the
+   * complaint names the TARGET, which is the wrong thing in the manifest, and
+   * not a derived `.html` filename that was never asked for. */
+  const { fences, complaints } = optionalCaseFences([{ slug: '99-invented', feature: 'x', target: 'pdf' }])
+  assert.equal(complaints.length, 1)
+  assert.match(complaints[0], /names target "pdf"/)
+  assert.match(complaints[0], new RegExp(targetNames().join(', ')))
+  assert.equal(fences.size, 0)
+})
+
+test('a case with no target pins the default HTML pairing', () => {
+  const { fences } = optionalCaseFences([{ slug: '01-plain', feature: 'x' }, { slug: '02-fmt', feature: 'x', target: 'carve' }])
+  assert.deepEqual([...fences.values()], [
+    { extension: '.html', language: 'html' },
+    /* The case the ternary got wrong. */
+    { extension: '.fmt', language: 'carve' },
+  ])
+})
+
+test('every corpus target has a fence language, and every fence language a target', () => {
+  /* A sixth target added to scripts/lib/corpus-targets.mjs with no fence
+   * language would otherwise reach the generator, which is the only place that
+   * pairing is needed - and the generator is what `npm test` does not run. */
+  assert.deepEqual(targetNames().filter((target) => !fenceLanguages.has(target)), [])
+  assert.deepEqual([...fenceLanguages.keys()].filter((target) => !Object.hasOwn(TARGET_EXTENSIONS, target)), [])
+})
