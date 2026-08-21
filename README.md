@@ -18,7 +18,7 @@ tested against, and the design rationale behind each decision.
 | **Bindings** | Python, Ruby, Go, and WebAssembly, all over carve-rs. |
 | **Tooling** | Language server, tree-sitter grammar, formatter and linter (`carve fmt` / `carve lint`), converters from Markdown, HTML, Djot, and BBCode. |
 | **Editors** | VS Code, JetBrains, Sublime Text, Vim/Neovim, Emacs, Zed, Helix. |
-| **Integrations** | Laravel, Symfony, WordPress, Shopware, Hugo, Astro, Eleventy, Jekyll, and a Pandoc bridge to LaTeX, Typst, DOCX, and PDF. |
+| **Integrations** | Laravel, Symfony, WordPress, Shopware, Hugo, Astro, Eleventy, Jekyll, Docusaurus, webpack/Next.js, Obsidian, and a Pandoc bridge to LaTeX, Typst, DOCX, and PDF. |
 
 Pre-1.0, a minor release may still change the grammar; the stability tiers and
 the release lockstep between the spec and the engines are defined in
