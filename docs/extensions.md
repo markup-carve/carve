@@ -1471,7 +1471,7 @@ Both extensions carry a `mode` option with exactly two values:
 | `mode` | How a panel is revealed | Needs a client script |
 |---|---|---|
 | `css` (default) | one `<input type="radio">` per tab plus a sibling `<label for=…>`; a stylesheet reveals the checked panel | no |
-| `aria` | a `<button role="tab">` per tab and `role="tabpanel"` panels; every non-selected panel carries `hidden` | yes |
+| `aria` | a `<button type="button" role="tab">` per tab and `role="tabpanel"` panels; every non-selected panel carries `hidden` | yes |
 
 `css` is the default in both, and an implementation MUST NOT ship `aria` as the
 default. That is a consequence of the §2.5 rule rather than of compatibility:
@@ -1546,13 +1546,13 @@ tab name where one was written, otherwise the language word.
 
 In `aria` mode the association already exists, so the panel takes **neither**
 `role="group"` **nor** an `aria-label`. It stays `role="tabpanel"`, bound by
-`aria-labelledby` to its `<button role="tab">`, and every non-selected panel
+`aria-labelledby` to its `<button type="button" role="tab">`, and every non-selected panel
 carries `hidden`:
 
 ```html
 <div class="tabs" role="tablist" aria-label="Tabs">
-<button role="tab" id="tabset-1-tab-1" aria-selected="true" aria-controls="tabset-1-panel-1" class="tabs-label">First</button>
-<button role="tab" id="tabset-1-tab-2" aria-selected="false" aria-controls="tabset-1-panel-2" class="tabs-label" tabindex="-1">Second</button>
+<button type="button" role="tab" id="tabset-1-tab-1" aria-selected="true" aria-controls="tabset-1-panel-1" class="tabs-label">First</button>
+<button type="button" role="tab" id="tabset-1-tab-2" aria-selected="false" aria-controls="tabset-1-panel-2" class="tabs-label" tabindex="-1">Second</button>
 <div role="tabpanel" id="tabset-1-panel-1" aria-labelledby="tabset-1-tab-1" class="tabs-panel">
 <p>Content one.</p>
 </div>
@@ -1565,6 +1565,18 @@ carries `hidden`:
 Naming it as well would give one element two accessible names and pull it out of
 the `tablist` relationship that is the only reason to be in this mode. So the
 rule in §13.2 is a `css`-mode rule specifically, not "every panel gets a name".
+
+**The control is `type="button"`, not the implicit `submit`.** A `<button>` with
+no `type` is a submit button, so a tab set rendered inside a `<form>` submitted
+the form when a tab was activated, instead of switching panels: the one
+interaction this mode exists to provide, traded for the one thing the page never
+asked for. The attribute is not a style choice and an implementation MUST write
+it, on every generated control in BOTH constructs. `css` mode is unaffected -
+its control is an `<input type="radio">`, which already says what it is.
+
+Nothing here is an invitation to write other attributes on the control. The
+`tabindex="-1"` on every non-selected tab is the roving-tabindex the `tablist`
+pattern requires, and it and `type` are the whole list.
 
 ### 13.4 The set's own name
 
@@ -1582,12 +1594,67 @@ container outranks both - naming two tab sets on one page apart is the author's
 job. In `aria` mode the tabs wrapper is `role="tablist"` instead and keeps the
 same name.
 
-### 13.5 Conformance
+### 13.5 Exactly one item is selected, and the first mark wins
+
+An item marked `{selected}` opens the set. Where the document marks none, the
+FIRST item opens it, in both modes and in both constructs. Where the document
+marks several, the first mark wins and the later ones are ignored:
+
+```
+:::: tabs
+::: tab [First]
+Content one.
+:::
+
+{selected}
+::: tab [Second]
+Content two.
+:::
+
+{selected}
+::: tab [Third]
+Content three.
+:::
+::::
+```
+
+Only `Second` is selected: not `First`, which is what the default would have
+chosen, and not `Third`, which is what a last-wins rule would.
+
+**Why first-wins and not last-wins.** The `css` mode is a radio group, and a
+radio group cannot have two checked members - the browser resolves it to one and
+the document's intent is already lost either way. `aria` mode emitting two
+`aria-selected="true"` tabs is not more expressive, it is a shape a
+single-select `tablist` has no state for: two panels are revealed, both take a
+normal tab stop, and no assistive technology can report which tab the set is on.
+So the only question is which single item the rule keeps, and first-wins is what
+the `css` default already does with `checked`. That makes the two modes agree,
+which is the whole point of this section binding both.
+
+Last-wins would mean an author scrolling a long tab set and marking the item in
+front of them silently unselects one above, with nothing in the rendered page
+saying so.
+
+**Over-specifying is not an error.** An implementation MUST NOT emit a
+diagnostic for a document that marks several items: the document is redundant,
+not wrong, and this section has no diagnostic channel. The same holds for a
+document that marks the first item explicitly, which asks for exactly what it
+would have got.
+
+### 13.6 Conformance
 
 Tabs is pinned in `tests/corpus-optional`. Feature `tabs` covers the `css`
 panel name (cases 28 and 46); feature `tabs-aria` covers §13.3 - the
 `tabpanel` / `aria-labelledby` binding, the `hidden` reveal that §13.1 turns on,
-and the absence of `role="group"` there (case 47).
+the absence of `role="group"` there, and the control's `type="button"`
+(case 47).
+
+§13.5 is pinned twice on one document, because a rule that says the two modes
+agree is not pinned by either mode alone: case 48 is the `aria` render under
+`tabs-aria` and case 49 the `css` render under `tabs`. Both mark the second and
+third items, so a fixture that selected the first would be reading the default
+rather than the rule, and one that selected the third would be reading
+last-wins.
 
 CodeGroup is Tier-3 and NOT corpus-pinned; `resources/examples-tier3.md` is its
 only verifier in this repo. Its `mode` option, its panel naming and its

@@ -43,6 +43,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A tab control is `type="button"`, and two marked items select one tab**
+  (carve#1537, extensions §13.3 and §13.5). A generated control with no `type`
+  is a submit button, so a tab set inside a `<form>` submitted the form instead
+  of switching panels; and several `{selected}` items each got their own
+  selection, which a single-select `tablist` has no state for. The first mark
+  wins and later ones are ignored, in both modes and both constructs. Optional
+  corpus 47, 48, 49.
 - **The index back-link says where it goes, and the extension-written strings
   get one map** (carve#1469, carve#1468). The Index extension's own rendering rule mandated a bare `↩`, which
   a reader announces as "leftwards arrow with hook" or skips - the sentence
