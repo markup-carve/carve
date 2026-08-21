@@ -205,9 +205,13 @@ carveToHtml(src, {
 })
 ```
 
-**Precedence: the extension's own option, then the map, then the default.** An
-option passed to one extension instance wins for that instance, so a page with
-two tab sets can name them apart without touching the map.
+**Precedence: the author's attribute, then the extension's own option, then the
+map, then the default.** An option passed to an extension wins over the map for
+every node that extension renders, so a host can override one string without
+restating the rest. Naming two tab sets on one page apart is the AUTHOR's job,
+not a second registration: an `aria-label` written on the set wins over both the
+option and the map, because a name the author wrote is already in the document's
+language.
 
 | Key | Default | Written by |
 |-----|---------|-----------|
