@@ -156,6 +156,14 @@ export function checkContainment(doc, findings) {
  *   node in any engine (carve#1344) and is the table's own markup rather than a
  *   child's.
  *
+ * AND `definition_list` IS ABSENT FOR A REASON THAT IS NOT A RULE. It answers
+ * the floating-attribute question the OTHER way - it reaches the attribute line
+ * no child covers, ruled at carve#1281 and pinned by
+ * `329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-5`. So the
+ * language says one thing for a list and the opposite for a definition list.
+ * That is a live inconsistency rather than a gap in this check, and folding it
+ * in here would settle a second question in passing.
+ *
  * An absent type is a type this rule does not reach, never a type permitted
  * anything: containment, overlap, the terminator rule and the slice comparison
  * all still apply to it.
