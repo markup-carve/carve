@@ -10694,6 +10694,59 @@ EOF = (* end of file *) ;
       line terminator is the source codepoint the break owns, so its exclusive
       end is column 1 of the following line.
 
+      A HOISTED SIBLING IS NOT A CHILD, AND A CLOSERLESS CONTAINER ENDS BEFORE
+      IT -- NORMATIVE. A definition written at a container's content column is
+      collected and hoisted to the DOCUMENT (§7), so it leaves the container
+      and becomes its sibling while its `pos` still points inside the source the
+      container encloses. Hoisting breaks the correspondence between tree
+      nesting and source nesting, and a span follows the TREE:
+
+          - a
+
+            [r]: /u
+
+      The `list` ends at offset 3, where its only `list_item` ends, and not at
+      14. The offsets between them belong to the `link_reference_definition`
+      alone, so the sibling-overlap rule below is satisfied here rather than
+      waived.
+
+      A CONTAINER THAT HAS A CLOSER STILL ENDS AT THE CLOSER. A definition
+      hoisted out of a `:::` div is a document-level sibling whose span sits
+      inside the div's, and no reading of this clause makes that pair stop
+      overlapping -- which is why the sibling-overlap rule exempts every hoisted
+      definition kind, and why the paragraph above is about the container that
+      has no closer to end at.
+
+      THE TRADE IS DELIBERATE. A list reports a shorter extent than the author
+      typed, which is worse for folding. An editor wanting the region the author
+      typed can recompute it from the item's content column; a consumer that
+      needs one unambiguous answer for one offset cannot recover it from two
+      overlapping spans, so the span carries the half that cannot be
+      reconstructed. (carve#1522.)
+
+      An unattached attribute block is the same rule reached from the other
+      clause above rather than a second one. `{.x}` written below an item
+      attaches to no block (PART 9 §15 A4) and so yields no child, and a
+      container whose span covers it is covering source nothing in it owns.
+      (carve#1524.)
+
+      A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS
+      THERE -- NORMATIVE. "Ends at its last placed child" is silent when there
+      is none, and a container can be emptied: a definition written as an item's
+      only content is collected out of it (§7) and the item keeps no trace.
+
+          * * [d]: u
+           :
+
+      The inner `list_item` spans `* ` and ends there. Zero width is not the
+      answer -- it is a shape every consumer has to special-case, and it
+      discards the marker the author typed -- and neither is the extent the
+      author typed, which is what the paragraph above rejects for a container
+      that DOES have children; permitting it only for an empty one would make
+      the rule depend on child count. Where the emptied container ran over
+      several lines, the markup it spans is the markup that OPENED it, on the
+      first of them. (carve#1522, markup-carve/carve-rs#1233.)
+
       WHY IT IS WRITTEN DOWN. Nothing compared two engines' spans until
       carve#917 built the panel, and the first run of it reported 279 of 690
       documents carrying a span the three engines do not agree on. The check

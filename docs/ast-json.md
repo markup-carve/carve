@@ -224,6 +224,41 @@ blank line, or unattached attribute block is not. Containers end at their
 closer, or at their last child when they have no closer. Break nodes own their
 line terminator and therefore end at column 1 of the following line.
 
+**A hoisted sibling is not a child.** A definition written at a container's
+content column is collected and hoisted to the document (§7), so it leaves the
+container while its `pos` still points inside the source that container
+encloses. Hoisting breaks the correspondence between tree nesting and source
+nesting, and a span follows the **tree**:
+
+```
+- a
+
+  [r]: /u
+```
+
+The `list` ends at offset 3, where its only `list_item` ends, and not at 14 -
+the offsets between belong to the `link_reference_definition` alone. A container
+that HAS a closer still ends at the closer, so a definition hoisted out of a
+`:::` div remains a sibling whose span sits inside it; that overlap follows from
+hoisting and is exempt. The trade is deliberate: a list reports a shorter extent
+than the author typed, which is worse for folding, and an editor can recompute
+the typed region from the item's content column where a consumer resolving one
+offset to one node cannot recover an answer from two overlapping spans. Ruled at
+[carve#1522](https://github.com/markup-carve/carve/issues/1522); the unattached
+attribute block the sentence above excludes is the same rule reached from the
+other side ([carve#1524](https://github.com/markup-carve/carve/issues/1524)).
+
+**A container with no placed child at all spans its own markup and stops
+there.** "Ends at its last placed child" says nothing when there is none, and a
+container can be emptied - a definition written as an item's only content is
+collected out of it (§7) and the item keeps no trace. In `* * [d]: u` the inner
+`list_item` spans `* ` and ends there. Zero width is not the answer, because it
+is a shape every consumer has to special-case and it discards the marker the
+author typed; neither is the extent the author typed, which is what the
+paragraph above rejects when a container does have children. Where the emptied
+container ran over several lines, the markup it spans is the markup that opened
+it, on the first of them.
+
 A parent's span **contains every child's**. The two rules point the same way -
 covering the opening markup is what puts a parent's start before its first
 child's - and they are checked separately anyway, so that revisiting one cannot
