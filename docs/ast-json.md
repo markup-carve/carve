@@ -487,6 +487,68 @@ The root type is not a leniency point either: §7 fixes it at `document` and the
 schema pins it as a `const`. Accepting `doc` means half-reading a ProseMirror
 payload instead of rejecting it.
 
+## U+0000 is replaced on ingest
+
+A reader **replaces every U+0000 with U+FFFD** in every string value it
+ingests, before it reads that value for anything else - before it looks for a
+sentinel in it, before it uses it as a key, before it hands it to a renderer.
+§21.
+
+The subject is the **decoded value**, not the bytes of a JSON document. A
+string reaches an ingest by two doors: decoded from JSON text, where the only
+spelling that can carry the character is the `\u0000` escape, and handed in
+directly by a host that built the tree in memory - carve-js's `fromAstJson`
+takes a parsed object, carve-php's `AstCodec::decode` takes an array. The rule
+is the same at both. It does not relax the JSON grammar: RFC 8259 forbids an
+unescaped U+0000 inside a string, so a raw byte in JSON text is a syntax error
+before any Carve rule is reached, and stays one.
+
+This mirrors the parse boundary rather than adding a rule to the wire format.
+Carve source gets the same replacement before its first line is read (grammar
+PART 0 INPUT), which is why PART 9 section 29 carves U+0000 out of the C0 controls it
+otherwise makes content. An AST is a second door into the same renderers; a
+format that admitted the character would put an authored NUL and an ingested
+one on different footings.
+
+**The value is not refused.** §11 and §12 refuse an unknown property and a
+deviant root because those are structure a producer got wrong, and repairing
+them silently would accept attacker-controlled shape. This is the opposite
+case: the replacement is what the parse boundary already does to the identical
+string, so performing it is the documented reading rather than a repair.
+Refusing would make an ingested document stricter than the same document
+written as source.
+
+### What it makes safe
+
+A NUL is the natural internal sentinel precisely because no document can hold
+one - and two engines reached for it while that guarantee held only on the
+parse path.
+
+| engine | the sentinel | what the ingest let through |
+| --- | --- | --- |
+| carve-rs | `\u0000carve:footnotes-placement\u0000` in rendered HTML | a text node carrying that string pulls the endnotes section into itself, `<p><section role="doc-endnotes">…</section></p>` ([carve-rs#1217][rs1217]) |
+| carve-js | term and expansion joined on a NUL for the PART 11 section 10f abbreviation pair key | `("A"·NUL·"b", "c")` and `("A", "b"·NUL·"c")` key identically, and one occurrence of the first drops the SECOND definition line - deleting the author's text ([carve-js#1294][js1294]) |
+
+Neither sentinel has to change once the rule holds. That is the point of
+putting it at the boundary instead of patching each collision: a guarantee the
+parser makes and the ingest does not is not a guarantee.
+
+Before the rule, all three engines let a NUL through the ingest and then
+disagreed about it (carve-js `8f83eea` and carve-php `b845640` measured
+2026-08-22; carve-rs as recorded in carve-rs#1217). Every one emits it on html, markdown
+and plain text; ANSI strips it, since it strips controls; and the canonical
+writer splits three ways - carve-js and carve-rs **delete** it, so `fmt` is
+silently lossy, while carve-php **emits** it.
+
+**An importer is the same boundary**, and *should* do the same where the format
+it reads has no rule of its own. Carve's Markdown importer performs the
+replacement per CommonMark 2.3 ([carve-js#1293][js1293]); its BBCode importer
+passes a raw NUL straight through into Carve output.
+
+[rs1217]: https://github.com/markup-carve/carve-rs/issues/1217
+[js1294]: https://github.com/markup-carve/carve-js/issues/1294
+[js1293]: https://github.com/markup-carve/carve-js/pull/1293
+
 ## A property the schema does not name
 
 `resources/ast-schema.json` closes every node with `additionalProperties: false`,

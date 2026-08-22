@@ -11765,3 +11765,91 @@ EOF = (* end of file *) ;
       `table_cell` carries optional `valign` beside `align`, with the same
       inheritance rule. A whitespace-delimited cell containing only `^` or `<`
       remains a rowspan/colspan marker; gluing is what distinguishes alignment.
+
+   21. U+0000 IS REPLACED ON INGEST -- NORMATIVE (carve#1523;
+      markup-carve/carve-rs#1217, markup-carve/carve-js#1294). A reader
+      replaces every U+0000 with U+FFFD REPLACEMENT CHARACTER in every string
+      value it ingests. It does this BEFORE any other reading of the value -
+      before a sentinel is looked for in it, before it is used as a key,
+      before it reaches a renderer.
+
+      THE SUBJECT IS THE DECODED VALUE, not the bytes of a JSON document. A
+      string reaches an ingest by two doors and the rule is the same at both:
+      decoded from JSON text, where the only spelling that can carry this
+      character is the `\u0000` escape, and handed in directly by a host that
+      built the tree in memory and called the ingest on it. This clause does
+      NOT relax the JSON grammar: RFC 8259 forbids an unescaped U+0000 inside
+      a string, so a raw byte in JSON text is a syntax error before any Carve
+      rule is reached, and stays one. It is named here only because the second
+      door has no JSON layer to raise it.
+
+      THIS MIRRORS THE PARSE BOUNDARY, which is the whole of the rule: PART 0
+      INPUT performs the same replacement on source, and PART 9 §29 carves
+      U+0000 out of the content class on that basis. A wire format that
+      admitted the character would put an authored NUL and an ingested one on
+      different footings - one replaced, one content - which is precisely the
+      divergence §29 exists to remove. An AST is a second door into the same
+      renderers; it takes the same doormat.
+
+      A READER DOES NOT REFUSE THE VALUE, which is the choice worth stating.
+      §11 and §12 refuse an unknown property and a deviant root, because those
+      are structure a producer got wrong and repairing them silently would
+      accept attacker-controlled shape. This is different: the replacement is
+      what the parse boundary already does to the identical string, so
+      performing it is not a repair, it is the documented reading. Refusing
+      instead would make an ingested document stricter than the same document
+      written as source, and a host that builds a tree programmatically would
+      have to implement CommonMark 2.3 itself before it could hand the tree
+      back.
+
+      WHY THE WIRE FORMAT DECIDES THIS AND NOT EACH ENGINE. All three engines
+      let a NUL through their ingest and then disagreed about what to do with
+      it, so the character was neither content nor absent but engine-dependent.
+      carve-js `8f83eea` and carve-php `b845640` were measured for this clause
+      on 2026-08-22; carve-rs is as recorded in markup-carve/carve-rs#1217:
+
+      - EVERY ENGINE EMITS IT on html, markdown and plain text, verbatim.
+      - THE ANSI TARGET STRIPS IT, since T4 strips controls.
+      - THE CANONICAL WRITER SPLITS THREE WAYS: carve-js and carve-rs DELETE
+        it, so `fmt` is silently lossy there, and carve-php EMITS it, so the
+        writer produces source the parser will not read back the same way.
+      - THE DOOR IS NOT THE JSON PARSER. Every engine's JSON reader refuses a
+        raw control byte in a string, which is RFC 8259 and not a Carve rule -
+        carve-php's raises `Control character error`, and markup-carve/carve-rs#1217
+        records the same refusal there. The escape passes it, and so does
+        every in-memory door, where there is no JSON layer at all:
+        carve-js's `fromAstJson` takes a parsed object and carve-php's
+        `AstCodec::decode` takes an array. Both measurements above were taken
+        through those doors.
+
+      WHAT IT MAKES SAFE, stated because two engines already relied on the
+      guarantee and had it only on the parse path. A NUL is the natural
+      internal sentinel precisely because no document can contain one, and
+      both engines reached for it:
+
+      - carve-rs marks a `::: footnotes` placement with
+        `\u0000carve:footnotes-placement\u0000` in the rendered HTML. Through
+        the ingest, a text node carrying that string pulls the endnotes section
+        into itself -- `<p><section role="doc-endnotes">...</section></p>`, and
+        no longer at the document end (markup-carve/carve-rs#1217).
+      - carve-js keys a PART 11 §10f abbreviation pair by joining term and
+        expansion on a NUL, on the premise that neither half can hold one.
+        Through the ingest they can: `("A" NUL "b", "c")` and
+        `("A", "b" NUL "c")` key identically, and rendering a document holding
+        both definitions with an occurrence of only the first DROPS the second
+        definition line -- deleting the author's text, which is the direction
+        §10f names as the one its two-pass design exists to avoid. Measured on
+        carve-js `8f83eea` (markup-carve/carve-js#1294).
+
+      Neither sentinel has to change once this clause holds. That is the point
+      of putting the rule at the boundary rather than patching each collision:
+      a guarantee the parser makes and the ingest does not is not a guarantee,
+      and every future sentinel would have to rediscover it.
+
+      AN IMPORTER IS THE SAME BOUNDARY BY THE SAME REASONING, and is stated
+      here as a SHOULD rather than a MUST because the format being imported may
+      have its own rule. Carve's Markdown importer performs the replacement,
+      following CommonMark 2.3 (markup-carve/carve-js#1293); its BBCode
+      importer passes a raw NUL straight through into its Carve output, which
+      is not a substitution and BBCode has no clause to follow, but is the same
+      missing normalization arriving by a third door.
