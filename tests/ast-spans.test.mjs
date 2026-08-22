@@ -249,25 +249,31 @@ test('a malformed declaration line is an error, never a silent skip', () => {
  * one taken because the previous one had stopped being true, and a seventh the
  * next day that replaced the surviving row with a different one.
  */
-// The POST-RULING run, 2026-08-22, from fresh clones of every main after
-// markup-carve/carve#1522 and #1524 landed in all three engines: 27,770 spans,
-// SEVEN rows across FOUR documents. `list` and `list_item` fell to one document
-// each - the rulings closed them - and `paragraph`, `code` and a new
-// `text (presence)` GREW on the NUL fixtures markup-carve/carve#1525 added the
-// same day, where carve-php writes a byte-shaped offset
-// (markup-carve/carve-php#1563).
+// The POST-FIX run, 2026-08-22, from fresh clones of every main after
+// markup-carve/carve-php#1564 merged: 27,915 spans, SIX rows across TWO
+// documents. `paragraph` fell from 4 to 2, `code` from 2 to 1, and
+// `text (presence)` AGREED and is gone - all three are the NUL fixtures
+// leaving, and nothing else moved. The two surviving documents are the two the
+// previous block predicted would survive.
 //
-// FOUR ROWS MOVED IN TWO DIRECTIONS FOR TWO REASONS, which this map cannot say
-// and the ledger's prose does. A count alone would read as one event, and three
-// engines moving on one afternoon is exactly when that reading is wrong.
+// ONE DEFECT ACCOUNTED FOR EVERY MOVED ROW THIS TIME, which is the unusual
+// outcome here and the reason to say so: subtract its +2, +1 and +1 and the
+// declared counts become the measured ones exactly. The runs above are mostly
+// the other shape, where a row survives with a different document behind it.
+//
+// The count also UNDERSTATED the defect rather than sizing it. Both of its
+// symptoms were properties of carve-php's document-wide offset table, so one
+// NUL moved every later offset in its document and cost every later text node
+// its position; the panel saw two documents because those are the only two
+// fixtures with a NUL. This map pins what was measured, and what was measured
+// is a floor - see resources/ast-span-divergence.txt.
 const LAST_MEASURED = new Map([
   ['list (extent)', 1],
   ['list_item (extent)', 1],
-  ['paragraph (extent)', 4],
-  ['code (extent)', 2],
+  ['paragraph (extent)', 2],
+  ['code (extent)', 1],
   ['soft_break (extent)', 1],
   ['text (extent)', 1],
-  ['text (presence)', 1],
 ])
 
 const asMeasured = (counts) =>
