@@ -283,3 +283,91 @@ lazy</li>
   </li>
 </ul>
 ```
+
+```
+- outer
+
+  - a
+
+
+
+  - b
+.
+<ul>
+  <li>outer
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- outer
+
+  - a
+
+
+
+
+
+
+  - b
+.
+<ul>
+  <li>outer
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- outer
+
+  para
+
+  - a
+
+
+
+  - b
+.
+<ul>
+  <li><p>outer</p>
+    <p>para</p>
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+> > - a
+> >
+> >
+> >
+> > - b
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul>
+      <li>b</li>
+    </ul>
+  </blockquote>
+</blockquote>
+```
