@@ -249,9 +249,20 @@ test('a malformed declaration line is an error, never a silent skip', () => {
  * one taken because the previous one had stopped being true, and a seventh the
  * next day that replaced the surviving row with a different one.
  */
-// The 2026-08-19 post-fix run compared 26,301 spans and all three engines
-// placed every node identically, retiring the final hard_break row.
-const LAST_MEASURED = new Map()
+// The 2026-08-22 run compared 27,696 spans and read EIGHT rows across 37
+// documents - the state the daily workflow had been red on for three
+// consecutive runs (carve#1451) with nothing declared to say why. Two of the
+// eight were carve-php and close in markup-carve/carve-php#1556; these six
+// across 7 documents are what remains, and they are carve-js and carve-rs. The
+// attribution the row syntax has no room for is in the ledger's prose.
+const LAST_MEASURED = new Map([
+  ['list (extent)', 5],
+  ['list_item (extent)', 4],
+  ['paragraph (extent)', 2],
+  ['code (extent)', 1],
+  ['soft_break (extent)', 1],
+  ['text (extent)', 1],
+])
 
 const asMeasured = (counts) =>
   new Map(

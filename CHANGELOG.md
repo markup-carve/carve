@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The AST span-divergence ledger records what the engines actually do.** The
+  daily conformance workflow had been red for three consecutive runs on eight
+  undeclared span rows across 37 documents. Two were carve-php and are fixed
+  (markup-carve/carve-php#1556); the six that remain are carve-js and carve-rs
+  and are declared, each with the issue that closes it (carve#1451).
+
 ### Added
 
 - **Table column metadata and two-axis cell alignment** (carve#1344).

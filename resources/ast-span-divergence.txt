@@ -280,3 +280,110 @@
 # DECLARED rather than tolerated, on the same terms as every block above: the row
 # fails this run the moment carve-php agrees, which is what makes deleting it the
 # closing step of that issue rather than a chore nobody is holding.
+
+# RE-MEASURED 2026-08-22 over 1347 corpus documents plus 3 synthetic samples, at
+# carve-js 906357c, carve-rs 3250454 and carve-php at markup-carve/carve-php#1556,
+# each built from a fresh clone. The 2026-08-19 claim above - every node placed
+# identically, nothing declared - stopped holding, and the daily AST conformance
+# workflow had been red on it for three consecutive runs (carve#1451) with
+# nothing declared to say why. Eight rows disagreed across 37 documents; six
+# across 7 remain, and they are declared below.
+#
+#   list (extent)        5 doc(s)   two engines, two causes - see below
+#   list_item (extent)   4 doc(s)   carve-rs on three, carve-js on one
+#   paragraph (extent)   2 doc(s)   carve-js on one, all three on the other
+#   code (extent)        1 doc(s)   all three differ
+#   soft_break (extent)  1 doc(s)   carve-js alone
+#   text (extent)        1 doc(s)   carve-js alone
+#
+# TWO OF THE EIGHT WERE CARVE-PHP AND ARE GONE. `frontmatter (extent)` and
+# `footnote (extent)` were one engine against two, both fixed in
+# markup-carve/carve-php#1556: a tagged frontmatter opener reported its opening
+# line as its whole extent because the dispatcher's first-character fast paths
+# stamped a block without an end line, and a footnote definition written behind a
+# container prefix reached its span into the blank line below the container. The
+# same fast-path stamp is why `list (extent)` fell from 30 documents to 5 and
+# `list_item (extent)` from 7 to 4: a `-` bullet was stamped at its first line
+# where the same document written with `*` was stamped whole.
+#
+# THIS FILE THEREFORE DESCRIBES THE STATE AFTER THAT PR LANDS, and the run stays
+# red on the two carve-php rows until it does. Declaring the pre-fix counts
+# instead would have gone green now and red the moment the fix merged, which is
+# the ledger holding a defect in place rather than tracking one.
+#
+# WHAT REMAINS IS CARVE-JS AND CARVE-RS, four filed defects, none of them a
+# design question. PART 12 §4 names a side on every one of them.
+#
+#   -- A LIST SWALLOWS THE BLANK-LINE RUN THAT FOLLOWS IT, on `05-lists-23` and
+#      `395-a-longer-run-at-a-list-boundary-is-written-as-exactly-three-blank-lines`.
+#      §4 excludes "a following newline, blank line, or unattached attribute
+#      block", and SS11 N1a is explicit that the run "closes nothing on its own",
+#      so there is no closer for the span to end after. carve-js and carve-rs end
+#      the list at the start of the LAST blank line in the run, so the span grows
+#      with the run length; carve-php ends it where all three end it when exactly
+#      one blank line follows. markup-carve/carve-js#1304, markup-carve/carve-rs#1232.
+#
+#   -- A NESTED ITEM EMPTIED BY A COLLECTED DEFINITION ends inside the
+#      definition's label in carve-rs, on the three `381-a-resumed-lazy-run`
+#      fixtures. `* * [d]: u` leaves the inner item with no placed child;
+#      carve-rs ends it at the `:` of `[d]:` while carve-js and carve-php end it
+#      at the end of the line the item owns. The single-level spelling
+#      `- [d]: u` is already unanimous, so only the nested one moves.
+#      markup-carve/carve-rs#1233.
+#
+#   -- AN OFFSET PAST A LINE THE BLOCK LAYER REMOVED maps to the wrong line in
+#      carve-js, on `384-a-continuation-marker-attaches-only-a-flush-left-block-6`.
+#      All three engines publish the same offsets; carve-js names line 3 for
+#      offset 16, which is on line 4, and is inconsistent with its own numbers
+#      rather than with anyone else's. It is the whole of the `soft_break` and
+#      `text` rows and one document of `list_item` and `paragraph`.
+#      markup-carve/carve-js#1305.
+#
+#   -- A LINE-BLOCK PARAGRAPH REACHES INTO THE REMOVED COMMENT, on
+#      `380-a-terminal-comment-line-still-leaves-an-empty-verse-line`, and this
+#      is the one row where all three differ. carve-js ends the paragraph and its
+#      `code` at offset 9, the second `%` of a comment marker the block layer
+#      removed; carve-rs ends both at 8 and names it line 3 column 1, which is
+#      where §4's break sentence puts an exclusive end that follows a line
+#      terminator; carve-php agrees on the offset and names it line 2 column 3, a
+#      column line 2 does not have. carve-php's half is the already-filed
+#      markup-carve/carve-php#1457 - the same defect, on the same kind of removed
+#      comment line - and is not re-filed here. markup-carve/carve-js#1305 carries
+#      carve-js's half.
+#
+# DECLARED, not left red, on the same terms as every block above: each row fails
+# this run the moment its engine agrees, so deleting the line is the closing step
+# of the issue behind it.
+#
+# WHAT WILL MOVE THESE ROWS NEXT, written down so the next reading is not taken
+# for a contradiction. carve#1522 and carve#1524 are ruled: a container ends at
+# its LAST PLACED CHILD, and an unattached attribute block is excluded. All three
+# engines move, and this snapshot predates that work.
+#
+#   -- The two blank-run documents in `list (extent)` - `05-lists-23` and `395` -
+#      are likely RETIRED by it, dropping that row to 3. The ruling scopes the
+#      blank-run defect out by name, and subsumes it anyway: a list that must stop
+#      at its last placed child cannot reach into a blank run at all. So the row
+#      may close without carve-js#1304 or carve-rs#1232 being touched.
+#   -- The three `381` documents in `list (extent)` and `list_item (extent)`
+#      probably SURVIVE. The inner item there has NO placed child, and "ends at
+#      its last placed child" does not decide a container with none.
+#      markup-carve/carve-rs#1233 still owes that answer.
+#   -- `paragraph`, `code`, `soft_break` and `text` are UNTOUCHED by both rulings.
+#      They are a removed comment line, a removed continuation-marker line, and an
+#      offset-to-line mapping: markup-carve/carve-js#1305 and
+#      markup-carve/carve-php#1457.
+#
+# AND THE WIDENING carve-php#1556 SHIPPED IS WHAT THOSE RULINGS NARROW. It made
+# carve-php's list extents marker-independent - the engine was reporting one
+# extent for a `-` bullet and another for a `*` bullet on the same document - so
+# the wide reading is now unanimous rather than two-against-one. That is the state
+# a single coordinated change can narrow, which is why the order was this way
+# round. A row moving here is this snapshot expiring, not a defect returning.
+
+list (extent) 5
+list_item (extent) 4
+paragraph (extent) 2
+code (extent) 1
+soft_break (extent) 1
+text (extent) 1
