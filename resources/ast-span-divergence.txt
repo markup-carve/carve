@@ -354,6 +354,32 @@
 # DECLARED, not left red, on the same terms as every block above: each row fails
 # this run the moment its engine agrees, so deleting the line is the closing step
 # of the issue behind it.
+#
+# WHAT WILL MOVE THESE ROWS NEXT, written down so the next reading is not taken
+# for a contradiction. carve#1522 and carve#1524 are ruled: a container ends at
+# its LAST PLACED CHILD, and an unattached attribute block is excluded. All three
+# engines move, and this snapshot predates that work.
+#
+#   -- The two blank-run documents in `list (extent)` - `05-lists-23` and `395` -
+#      are likely RETIRED by it, dropping that row to 3. The ruling scopes the
+#      blank-run defect out by name, and subsumes it anyway: a list that must stop
+#      at its last placed child cannot reach into a blank run at all. So the row
+#      may close without carve-js#1304 or carve-rs#1232 being touched.
+#   -- The three `381` documents in `list (extent)` and `list_item (extent)`
+#      probably SURVIVE. The inner item there has NO placed child, and "ends at
+#      its last placed child" does not decide a container with none.
+#      markup-carve/carve-rs#1233 still owes that answer.
+#   -- `paragraph`, `code`, `soft_break` and `text` are UNTOUCHED by both rulings.
+#      They are a removed comment line, a removed continuation-marker line, and an
+#      offset-to-line mapping: markup-carve/carve-js#1305 and
+#      markup-carve/carve-php#1457.
+#
+# AND THE WIDENING carve-php#1556 SHIPPED IS WHAT THOSE RULINGS NARROW. It made
+# carve-php's list extents marker-independent - the engine was reporting one
+# extent for a `-` bullet and another for a `*` bullet on the same document - so
+# the wide reading is now unanimous rather than two-against-one. That is the state
+# a single coordinated change can narrow, which is why the order was this way
+# round. A row moving here is this snapshot expiring, not a defect returning.
 
 list (extent) 5
 list_item (extent) 4
