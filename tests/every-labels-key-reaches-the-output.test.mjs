@@ -35,7 +35,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToHtml, codeGroup, index, tabs } from '@markup-carve/carve'
+import { carveToHtml, codeGroup, headingPermalinks, index, tableOfContents, tabs } from '@markup-carve/carve'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
@@ -186,4 +186,72 @@ test('a key the map does not define changes nothing', () => {
     labels: { admonitionNotUsed: 'SentinelUnusedValue' },
   })
   assert.equal(withBogus, plain)
+})
+
+/*
+ * THE OTHER HALF OF THE ADMISSION RULE (carve#1510).
+ *
+ * Everything above checks that a DOCUMENTED key reaches the output. This
+ * checks the opposite direction: a string the extension already exposes as an
+ * OPTION has no key, and the option is what configures it. Extensions §1.5's
+ * admission sentence used to read on these two - both have a fixed English
+ * default - and neither honored it, so the spec promised a host something two
+ * strings did not do.
+ *
+ * Asserting the ABSENCE alone would be a check that cannot fail for the right
+ * reason: a key nothing implements is absent from the output whether the rule
+ * is honored or an engine simply forgot the string. So each row asserts three
+ * things - the documented default renders, the map key does NOT reach it, and
+ * the extension option DOES. Only the third distinguishes "configured
+ * elsewhere" from "not configurable at all".
+ */
+const optionOnly = {
+  headingPermalink: {
+    source: '# One\n\nbody\n',
+    extension: (opts) => headingPermalinks(opts),
+    option: (value) => ({ ariaLabel: value }),
+    default: 'Permalink',
+    find: (html) => /class="permalink" aria-label="([^"]*)"/.exec(html)?.[1],
+  },
+  tocSummary: {
+    source: '::: toc\n:::\n\n# One\n\nbody\n',
+    extension: (opts) => tableOfContents({ collapsible: true, ...opts }),
+    option: (value) => ({ summary: value }),
+    default: 'Table of Contents',
+    find: (html) => /<summary>([^<]*)<\/summary>/.exec(html)?.[1],
+  },
+}
+
+for (const [key, row] of Object.entries(optionOnly)) {
+  test(`${key} is not a labels key, and its extension option is`, () => {
+    const render = (extensionOptions, renderOptions) =>
+      row.find(carveToHtml(row.source, { extensions: [row.extension(extensionOptions)], ...renderOptions }))
+
+    assert.equal(render({}, {}), row.default, `${key}: the probe did not find the documented default`)
+
+    assert.equal(
+      render({}, { labels: { [key]: `Sentinel${key}Value` } }),
+      row.default,
+      `${key} is not in the labels map (Extensions §1.5, PART 9 §16a), so setting it must change ` +
+        'nothing. A map key that works here is a key the two tables do not document.',
+    )
+
+    assert.equal(
+      render(row.option(`Option${key}Value`), {}),
+      `Option${key}Value`,
+      `${key}: the extension option did not reach the output, so the string is configurable ` +
+        'nowhere - which is the state §1.5 says it must not be in.',
+    )
+  })
+}
+
+test('neither option-only string is documented as a key', () => {
+  const both = [...documented.keys()]
+  for (const key of Object.keys(optionOnly)) {
+    assert.ok(
+      !both.includes(key),
+      `${key} is documented as a labels key in PART 9 §16a or Extensions §1.5, and §1.5 says a ` +
+        'string the extension exposes as an option does not get one. Remove the table row or the option.',
+    )
+  }
 })
