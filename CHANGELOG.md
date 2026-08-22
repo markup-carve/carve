@@ -144,6 +144,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The AST-JSON ingest replaces U+0000 too** (carve#1523, PART 12 §21). A
+  reader replaces every NUL with U+FFFD in every string it ingests, raw or
+  escaped, before reading the value for anything else - mirroring the parse
+  boundary, so an authored NUL and an ingested one are not on different
+  footings. Engine follow-ups: markup-carve/carve-js#1294,
+  markup-carve/carve-rs#1217.
 - **U+0000 is replaced before the document is read** (carve#1523, PART 0 INPUT,
   PART 9 §29). Every NUL becomes U+FFFD at the parse boundary, so it is never
   content and no target emits it; every other C0 control stays content and is
