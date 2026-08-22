@@ -8262,6 +8262,78 @@ EOF = (* end of file *) ;
       project runs: the HTML matches, the round trip holds, and only the AST
       shows the `escaped_text` node nobody wrote.
 
+   2b. THE SCOPE OF AN ESCALATION IS THE SMALLEST UNIT THAT FAILS --
+      NORMATIVE. A writer that cannot decide an occurrence exactly may fall
+      back to the conservative form (§4). That fallback reaches the SMALLEST
+      UNIT whose minimal form fails to re-parse -- the INLINE RUN, or the
+      BLOCK containing it -- and NOT the whole document. Outside that unit,
+      every candidate character is emitted by §2's own test, which for a
+      character nothing needs means BARE.
+
+      A paragraph the author indented so that its text reads `## H`, followed
+      by a paragraph reading `plain (b) text`, is written as
+
+        \#\# H
+
+        plain (b) text
+
+      The first paragraph's minimal form opens a heading the document does not
+      have, so that block escalates. The second paragraph's minimal form comes
+      back as itself, so it does not, and its parentheses stay bare. Writing
+      `plain \(b\) text` there is what §2 already calls a defect rather than a
+      safe default -- the escape changes nothing, and it is in the document
+      only because a DIFFERENT block needed one.
+
+      MEASURED, AND THE MEASUREMENT IS WHY IT IS A CLAUSE (carve#1507). Three
+      independently written writers -- carve-js, carve-php and carve-rs --
+      invent 72 idle escapes across the same 28 corpus documents, with the same
+      per-document counts, character for character. 67 of those 72, across 26
+      of the 28 documents, come from the document scope alone. Three writers
+      agreeing to the character is not coincidence and not inheritance: each
+      takes the scope deliberately, and each takes it from §4's own conclusion
+      that a two-render implementation is stuck with it. That conclusion is
+      what this section corrects.
+
+      THE REMAINING 2 DOCUMENTS ARE NOT THIS SECTION'S. Five escapes across
+      `72-escape-coverage-2` and
+      `390-a-table-cell-s-marker-run-ends-at-a-space-5` survive with the scope
+      narrowed: a literal backslash written doubled with a lone backslash
+      before a character that cannot be escaped, and an authored `\=` kept
+      after the writer's own cell padding retired it. Both are §2 defects in
+      the escape logic, they are fixed on their own merits, and an engine that
+      narrows the scope and does not land at exactly those two has found
+      something else.
+
+      THE COMPARISON STAYS DOCUMENT-SCOPED, WHICH IS THE OTHER QUESTION. §4
+      rules out re-parsing a LINE on its own, because a line has lost the
+      document's link-reference and footnote definitions and reports a
+      difference escaping never caused. That argument is about what the writer
+      PARSES in order to decide, and it stands unchanged. This section is about
+      which BYTES the decision then selects. A writer renders and re-parses
+      WHOLE documents, and takes the conservative spelling only where the
+      minimal one failed -- so the definitions are present for the comparison
+      and the escalation is still local.
+
+      THE UNIT NESTS, AND IT IS TRIED SMALLEST FIRST. The inline run carrying
+      the occurrence is tried before the block that holds it. A failure that
+      is not confined to the run widens to the block, which is the usual case
+      for a block opener at column 0: what such a run opens is a property of
+      the LINE it begins, not of the run. Widening then re-runs §1a's test on
+      the emitted bytes, because escalating a unit has changed them, and it
+      terminates -- a document in which every block escalates is the
+      conservative form, arrived at because every block needed it rather than
+      because one did.
+
+      IT DOES NOT LOOSEN §2 ANYWHERE. A unit that fails is escaped in full, by
+      §2's THE UNIT IS THE OPENER: `\#\# H` and not `\## H`. What narrows is
+      the reach of the fallback, not the strength of the escape it applies.
+
+      (Pinned by corpus
+      396-an-idle-escape-does-not-spread-from-the-block-that-needed-one, whose
+      `.fmt` sidecar is the only fixture that can see this: both spellings
+      render the same HTML and re-parse to the same tree, which is why three
+      writers carried the wider scope with every gate green.)
+
    3. WHY A STATIC CHARACTER TABLE CANNOT IMPLEMENT §2. Whether a character
       is significant depends on the line, not on the character:
 
@@ -8304,25 +8376,40 @@ EOF = (* end of file *) ;
       W3 Otherwise parse BOTH and compare the resulting documents, ignoring
          source positions and key order.
       W4 Equal -> emit the minimal form. Different -> emit the conservative
-         form.
+         form FOR THE SMALLEST UNIT THAT FAILS (§2b), and the minimal form
+         everywhere else, re-running W3 on the result.
 
       Two forms and one comparison, with the choice made by the parser rather
       than by a table -- so the writer cannot drift from the grammar as the
       grammar grows. What it buys is safety without a table; what it costs is
       precision, and §2 is where the precision is required.
 
-      WHY THIS SCOPE, FOR AN IMPLEMENTATION THAT USES IT. An earlier draft
-      decided per line. That cannot be implemented: a line re-parsed on its own
-      has lost the document's link-reference and footnote definitions, so a
-      paragraph carrying `[text][ref]` comes back with an empty destination and
-      reports a difference escaping never caused. Any scope smaller than the
-      document has the same defect for the same reason.
+      WHY THE COMPARISON IS DOCUMENT-SCOPED, FOR AN IMPLEMENTATION THAT USES
+      IT. An earlier draft decided per line. That cannot be implemented: a line
+      re-parsed on its own has lost the document's link-reference and footnote
+      definitions, so a paragraph carrying `[text][ref]` comes back with an
+      empty destination and reports a difference escaping never caused. Any
+      COMPARISON at a scope smaller than the document has the same defect for
+      the same reason, so W1 and W3 render and parse whole documents.
 
-      So an implementation that computes §2 by COMPARING TWO RENDERS is stuck
-      with document scope, and therefore with over-escaping. That is the trade
-      it accepts, and it is why this is a strategy rather than the requirement:
-      an implementation that instead asks, per position, whether a construct
-      would start there needs no comparison and no scope at all.
+      THAT IS NOT A REASON TO ESCALATE THE WHOLE DOCUMENT, and reading it as
+      one is what §2b now forbids. Where the two parses differ, they differ
+      SOMEWHERE, and W4 takes the conservative spelling only for the smallest
+      unit that fails. The definitions the comparison needs are present either
+      way, because nothing about the comparison changed.
+
+      THIS SECTION USED TO CONCLUDE OTHERWISE, and all three engines
+      implemented the conclusion: "an implementation that computes §2 by
+      COMPARING TWO RENDERS is stuck with document scope, and therefore with
+      over-escaping". It is not stuck, it was never measured to be, and the 72
+      idle escapes carve#1507 counted are what the sentence cost. It is
+      replaced rather than qualified, because an implementation reading it
+      correctly still lands on output §2 forbids.
+
+      What remains true is the rest of the trade: this is a strategy rather
+      than the requirement, and an implementation that instead asks, per
+      position, whether a construct would start there needs no comparison and
+      no scope at all.
 
       WHY THE TWO RENDERS ARE COMPARED WITH EACH OTHER, and not the minimal
       render with the document being written. The writer is not required to be

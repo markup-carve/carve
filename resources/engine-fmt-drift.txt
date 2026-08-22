@@ -15,3 +15,4 @@
 #
 # Format: <slug><space><space><reason>
 395-a-longer-run-at-a-list-boundary-is-written-as-exactly-three-blank-lines  The pinned JS build predates PART 9 §11 N1a, so it writes ONE blank line where PART 11 §10i requires three; remove when the pin advances past it.
+396-an-idle-escape-does-not-spread-from-the-block-that-needed-one  The pinned JS build escalates escaping to the WHOLE document, so it writes `plain \(b\) text` where PART 11 §2b confines the escalation to the block that failed; remove when the pin advances past markup-carve/carve-js#1286's fix.

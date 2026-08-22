@@ -147,7 +147,17 @@ test('every writer-drift line still names a document the pin writes wrongly', ()
     // oracle; the pin's own reading is the second, not the only, way to be
     // wrong.
     const oracleChanges = oracleHtml(once) !== oracleHtml(source)
-    if (!changesMeaning && !unsettled && !oracleChanges) stale.push(`${slug} (round-trips clean)`)
+    // A THIRD WAY TO BE WRONG IS TO WRITE THE WRONG BYTES, and it was missing
+    // here while the `.fmt` sweep below already consulted this file. Those two
+    // halves contradicted each other: a spec PR that pins a canonical form the
+    // pin does not emit declares the slug, the sweep honors the declaration -
+    // and this ratchet then calls the line stale, because a document whose two
+    // spellings render the same HTML and re-parse to the same tree round-trips
+    // clean by all three signals above. The escape valve the comment below
+    // describes could not actually be used (carve#1507).
+    const fixture = resolve(corpusDir, `${slug}.fmt`)
+    const fmtBytesDiffer = existsSync(fixture) && once !== readFileSync(fixture, 'utf8')
+    if (!changesMeaning && !unsettled && !oracleChanges && !fmtBytesDiffer) stale.push(`${slug} (round-trips clean)`)
   }
   assert.deepEqual(
     stale,
