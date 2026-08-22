@@ -249,19 +249,25 @@ test('a malformed declaration line is an error, never a silent skip', () => {
  * one taken because the previous one had stopped being true, and a seventh the
  * next day that replaced the surviving row with a different one.
  */
-// The 2026-08-22 run compared 27,696 spans and read EIGHT rows across 37
-// documents - the state the daily workflow had been red on for three
-// consecutive runs (carve#1451) with nothing declared to say why. Two of the
-// eight were carve-php and close in markup-carve/carve-php#1556; these six
-// across 7 documents are what remains, and they are carve-js and carve-rs. The
-// attribution the row syntax has no room for is in the ledger's prose.
+// The POST-RULING run, 2026-08-22, from fresh clones of every main after
+// markup-carve/carve#1522 and #1524 landed in all three engines: 27,770 spans,
+// SEVEN rows across FOUR documents. `list` and `list_item` fell to one document
+// each - the rulings closed them - and `paragraph`, `code` and a new
+// `text (presence)` GREW on the NUL fixtures markup-carve/carve#1525 added the
+// same day, where carve-php writes a byte-shaped offset
+// (markup-carve/carve-php#1563).
+//
+// FOUR ROWS MOVED IN TWO DIRECTIONS FOR TWO REASONS, which this map cannot say
+// and the ledger's prose does. A count alone would read as one event, and three
+// engines moving on one afternoon is exactly when that reading is wrong.
 const LAST_MEASURED = new Map([
-  ['list (extent)', 5],
-  ['list_item (extent)', 4],
-  ['paragraph (extent)', 2],
-  ['code (extent)', 1],
+  ['list (extent)', 1],
+  ['list_item (extent)', 1],
+  ['paragraph (extent)', 4],
+  ['code (extent)', 2],
   ['soft_break (extent)', 1],
   ['text (extent)', 1],
+  ['text (presence)', 1],
 ])
 
 const asMeasured = (counts) =>

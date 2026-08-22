@@ -381,9 +381,98 @@
 # a single coordinated change can narrow, which is why the order was this way
 # round. A row moving here is this snapshot expiring, not a defect returning.
 
-list (extent) 5
-list_item (extent) 4
-paragraph (extent) 2
-code (extent) 1
+
+# AND THE POST-RULING MEASUREMENT, 2026-08-22, from FRESH CLONES of every main
+# taken after the four PRs merged: carve-js cfb765b, carve-rs e5d2cdd and
+# carve-php 32bac49, against carve d9847ca9, over 1352 corpus documents plus 3
+# synthetic samples. Of 27,770 comparable spans, SEVEN rows disagree across FOUR
+# documents. The block above is the state before markup-carve/carve#1522 and
+# markup-carve/carve#1524 landed in all three engines on one afternoon, and it
+# is superseded.
+#
+#   list (extent)        5 -> 1   carve#1522 and carve#1524, closed by
+#                                 markup-carve/carve-js#1309,
+#                                 markup-carve/carve-php#1559 and
+#                                 markup-carve/carve-rs#1238.
+#   list_item (extent)   4 -> 1   the same three PRs.
+#   paragraph (extent)   2 -> 4   NOT those rulings - see below.
+#   code (extent)        1 -> 2   NOT those rulings - see below.
+#   soft_break (extent)  1 -> 1   unchanged.
+#   text (extent)        1 -> 1   unchanged.
+#   text (presence)      0 -> 1   NEW, and declared.
+#
+# TWO OF THE THREE PREDICTIONS THE BLOCK ABOVE MADE WERE WRONG, which is why
+# this one records what was measured rather than what was expected.
+#
+#   -- "the two blank-run documents are likely RETIRED, dropping that row to 3"
+#      was right about the documents and wrong about the number. It went to 1,
+#      because the ruling retired the three `381` documents as well.
+#   -- "the three `381` documents probably SURVIVE - the inner item has NO
+#      placed child, and 'ends at its last placed child' does not decide a
+#      container with none" was WRONG. The ruling was extended to decide exactly
+#      that: an emptied container spans the markup that opened it and stops
+#      there. All three engines implemented it, so
+#      markup-carve/carve-rs#1233 is answered by the same change rather than
+#      left owing.
+#   -- "`paragraph`, `code`, `soft_break` and `text` are UNTOUCHED by both
+#      rulings" is true of the rulings and false of the rows. Two of them moved,
+#      for a cause that did not exist when the sentence was written.
+#
+# THE TWO ROWS THAT GREW ARE A DIFFERENT ENGINE AND A DIFFERENT DEFECT. A reader
+# taking the panel as one event would attribute them to carve#1522, and three
+# engines moving on the same day is exactly when that is easiest to do. They are
+# the NUL fixtures markup-carve/carve#1525 added, also on 2026-08-22. carve-php
+# writes a BYTE-shaped offset where the replacement went: `a` U+FFFD `b` is
+# three codepoints and five UTF-8 bytes, and carve-php ends the paragraph at 5
+# where carve-js and carve-rs end it at 3. PART 12 §4 counts codepoints, so
+# carve-php is the engine that moves. Filed as markup-carve/carve-php#1563.
+#
+#   paragraph (extent)  +2   `397-a-null-byte-is-replaced-before-the-document-
+#                            is-read` and `397-...-2`
+#   code (extent)       +1   `397-...-2`
+#   text (presence)     +1   `397-...`, where carve-php omits the position
+#                            entirely and the other two place it. The same
+#                            engine and document are now the one OWED line in
+#                            resources/ast-position-waivers.txt.
+#
+# `397-...-3` is the vertical-tab control on the same documentation page and is
+# unanimous, and so is an ordinary multibyte character in the same shape - which
+# is what makes the divergence specific to the REPLACEMENT rather than to
+# multibyte input. carve-php also reports three `pos.endOffset past end of
+# source` findings on those two documents, which is the same arithmetic seen
+# from the other side.
+#
+# WHAT SURVIVES OF THE OLD ROWS IS TWO DOCUMENTS, and both were already
+# attributed: `384-a-continuation-marker-attaches-only-a-flush-left-block-6`
+# carries `list`, `list_item`, `soft_break`, `text` and one document of
+# `paragraph` (markup-carve/carve-js#1305, an offset past a line the block layer
+# removed mapping to the wrong line), and
+# `380-a-terminal-comment-line-still-leaves-an-empty-verse-line` carries the
+# other `paragraph` and one `code` (markup-carve/carve-js#1305 and
+# markup-carve/carve-php#1457). Neither is touched by the container rulings,
+# which is the one thing the block above got right.
+#
+# EVERY ENGINE'S OWN §4 REPORT IS CLEAN OF THE RULING. carve-js and carve-rs
+# report 56 findings each and carve-php 59; the 55 they share are the declared
+# missing-position waivers, and no engine reports a container reaching past its
+# last placed child on any document. The remainder are the NUL fixture: one
+# finding per engine from the harness defect in markup-carve/carve#1531, which
+# slices raw fixture bytes and so reads as a real unanimous defect, plus
+# carve-php's three real ones.
+#
+# THE CHURN THE RULING CAUSED WAS FOUR TIMES ITS TICKET'S ESTIMATE, and the
+# estimate was measuring something narrower than its own prose. carve#1522 said
+# "20-odd corpus documents at a glance"; the measurement was 98 findings across
+# 91 documents. Twenty-one were the hoisted-definition shape the ticket
+# eyeballed, eight were the attribute block, FORTY-FIVE were a list reaching
+# over the line terminator that ended it, and TWENTY were an emptied container -
+# a case the ruling did not originally reach. A seeded number is a reading of
+# one shape, not of the rule.
+
+list (extent) 1
+list_item (extent) 1
+paragraph (extent) 4
+code (extent) 2
 soft_break (extent) 1
 text (extent) 1
+text (presence) 1
