@@ -73,6 +73,24 @@
 # unimplemented under markup-carve/carve-rs#1222 pending this ruling.
 #
 # Each line goes in the commit that lands the fix for that engine.
-
-php/33-html-block-math-imports-as-the-core-form  Writes the ``` math ``` extension fence where PART 9 section 18 requires the core $$ form.
-rust/33-html-block-math-imports-as-the-core-form  Leaves <div class="math display"> as a generic div; PART 9 section 18's core $$ form is unimplemented (markup-carve/carve-rs#1222).
+#
+# AND BOTH LANDED, on the same day the clause did: carve-php took the core form
+# in markup-carve/carve-php#1561, and carve-rs rewrote the placeholder test that
+# held its gap open in markup-carve/carve-rs#1236. So both lines reported STALE
+# and are deleted here.
+#
+# The deletion is a MEASUREMENT, not an inference from the merges. Run against
+# the three merged mains - carve-js 93d469d, carve-php fc568db, carve-rs c7cee5a
+# - `npm run compare:convert` reported case 33 passing for every engine and
+# named exactly these two lines as the reason it failed:
+#
+#     rust: convert_pass=31/31 declared_drift=0 mismatch=0 error=0 skipped=2
+#     js:   convert_pass=31/31 declared_drift=0 mismatch=0 error=0 skipped=2
+#     php:  convert_pass=33/33 declared_drift=0 mismatch=0 error=0 skipped=0
+#     cross_convert_diffs=0
+#
+# That is the shape a stale ledger line has, and the reason the gate checks BOTH
+# directions: an undeclared divergence and a declaration nothing diverges on are
+# the same defect, and only one of them announces itself.
+#
+# THIS FILE IS EMPTY OF DECLARATIONS AGAIN, which is the intended end state.
