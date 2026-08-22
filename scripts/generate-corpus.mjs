@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { shortfall } from './spec/participants.mjs'
 import { numberExamples, readExampleFiles, scanExampleSource } from './lib/example-sections.mjs'
 import { censusComparePairs } from './lib/example-pair-census.mjs'
+import { displacedExamples, parseCorpusName } from './lib/example-displacement.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, '..')
@@ -202,10 +203,21 @@ numberExamples(scan)
 // and scanning it must not be the thing that fails.
 mkdirSync(outDir, { recursive: true })
 const existingNumbers = new Map()
+// The same read also keeps each example's INPUT BYTES, which is the only thing
+// that identifies a document inside a section: see scripts/lib/example-displacement.mjs.
+const existingExamples = []
+// `NN-slug-K` cannot be split without knowing which slugs exist: a section
+// headed `## Version 2` owns `NN-version-2` outright. The source is what knows.
+const sourceSlugs = new Set(examples.map((ex) => ex.slug))
 for (const f of readdirSync(outDir)) {
   if (!f.endsWith('.crv')) continue
-  const m = /^(\d+)-(.*?)(?:-\d+)?\.crv$/.exec(f)
-  if (m) existingNumbers.set(m[2], m[1])
+  const row = parseCorpusName(f.slice(0, -'.crv'.length), sourceSlugs)
+  if (!row) continue
+  existingNumbers.set(row.slug, row.idx)
+  existingExamples.push({
+    ...row,
+    hash: createHash('sha256').update(readFileSync(resolve(outDir, f))).digest('hex'),
+  })
 }
 
 if (existingNumbers.size > 0 && process.env['CORPUS_RENUMBER'] !== '1') {
@@ -233,7 +245,24 @@ if (existingNumbers.size > 0 && process.env['CORPUS_RENUMBER'] !== '1') {
     .filter(([slug]) => !present.has(slug))
     .map(([slug, idx]) => `${idx}-${slug}`)
 
-  if (moved.size || addedTooLow.size || removed.length) {
+  // A section's EXAMPLE SUFFIXES are append-only for the same reason its
+  // category number is, and nothing above can see them: inserting a pair
+  // mid-section keeps every category where it is and shifts the documents
+  // after the insertion point, carrying their hand-written sidecars onto
+  // whatever now holds the old name (carve#1536).
+  const displaced = displacedExamples(
+    existingExamples,
+    examples.map((ex) => ({
+      name: ex.corpusName,
+      slug: ex.slug,
+      suffix: ex.exampleIdx,
+      hash: createHash('sha256')
+        .update(applyModifiers(ex.carve + '\n', ex.modifiers))
+        .digest('hex'),
+    })),
+  )
+
+  if (moved.size || addedTooLow.size || removed.length || displaced.length) {
     console.error('generate-corpus: the corpus numbering is APPEND-ONLY.\n')
     if (moved.size) {
       console.error(`  ${moved.size} existing categor${moved.size === 1 ? 'y' : 'ies'} would be renumbered:`)
@@ -250,6 +279,17 @@ if (existingNumbers.size > 0 && process.env['CORPUS_RENUMBER'] !== '1') {
       console.error(`  ${removed.length} existing categor${removed.length === 1 ? 'y is' : 'ies are'} gone from the examples:`)
       for (const line of removed.slice(0, 10)) console.error(`    ${line}`)
       if (removed.length > 10) console.error(`    … and ${removed.length - 10} more`)
+      console.error('')
+    }
+    if (displaced.length) {
+      console.error(`  ${displaced.length} existing example${displaced.length === 1 ? '' : 's'} would be renumbered INSIDE ${displaced.length === 1 ? 'its' : 'their'} section:`)
+      for (const { from, to } of displaced.slice(0, 10)) console.error(`    ${from} -> ${to}`)
+      if (displaced.length > 10) console.error(`    … and ${displaced.length - 10} more`)
+      console.error('')
+      console.error('    Those documents keep their bytes and change their number, which is what')
+      console.error('    inserting a pair MID-SECTION does. A hand-written sidecar follows its')
+      console.error('    case by slug, so it would land on the document that took the old name.')
+      console.error('    Add the new pair at the END of its section instead (carve#1536).')
       console.error('')
     }
     console.error('  Every engine allowlists categories by `NN-slug`, so this invalidates')
