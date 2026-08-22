@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/editor-source-map-draft.schema.json",
+  "title": "Carve editor source map (RFC draft)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "sourceHash", "utf16Length", "utf8Length", "nodes", "unmapped"],
+  "properties": {
+    "version": { "const": 1 },
+    "sourceHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "utf16Length": { "type": "integer", "minimum": 0 },
+    "utf8Length": { "type": "integer", "minimum": 0 },
+    "nodes": { "type": "array", "items": { "$ref": "#/$defs/node" } },
+    "unmapped": { "type": "array", "items": { "$ref": "#/$defs/unmapped" } }
+  },
+  "$defs": {
+    "offsetRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["utf16", "utf8"],
+      "properties": {
+        "utf16": { "$ref": "#/$defs/offsetRange" },
+        "utf8": { "$ref": "#/$defs/offsetRange" }
+      }
+    },
+    "token": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "range"],
+      "properties": {
+        "role": {
+          "enum": ["block-marker", "open-marker", "close-marker", "content", "destination", "attribute", "fence-open", "fence-close", "table-marker", "caption-marker", "frontmatter-fence", "escape"]
+        },
+        "range": { "$ref": "#/$defs/range" }
+      }
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "range", "tokens"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^(?:/(?:[^~/]|~0|~1)*)*$" },
+        "range": { "$ref": "#/$defs/range" },
+        "tokens": { "type": "array", "items": { "$ref": "#/$defs/token" } }
+      }
+    },
+    "unmapped": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "reason"],
+      "properties": {
+        "path": { "type": "string" },
+        "reason": { "enum": ["generated", "recovered", "extension", "unmeasured"] }
+      }
+    }
+  }
+}

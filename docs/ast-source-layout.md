@@ -46,3 +46,8 @@ position conformance independently tracks range agreement.
 Default parsing, AST JSON, CLI JSON, and rendering do not change. An AST decoder
 does not accept a sidecar as an AST, and a sidecar reader rejects versions it
 does not implement.
+
+Live visual editors need a stricter cursor-oriented contract than this archival
+layout sidecar provides. The non-normative [editor source map RFC](./editor-source-map-rfc.md)
+proposes document-exact UTF-16 ranges and syntax-token roles without changing
+version 1.
