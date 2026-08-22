@@ -6026,6 +6026,54 @@ EOF = (* end of file *) ;
       never moves an attribute the author placed (the ordering PART 10 §1
       pins for the base class).
 
+      AN IMPORTER WRITES THE CORE FORM, NEVER THE EXTENSION FENCE --
+      NORMATIVE (carve#1514). An importer meeting `<div class="math display">`
+      emits the CORE display form -- `$$` followed by a verbatim backtick span,
+      a paragraph holding a `math` node -- and never the ```` ```math ````
+      fence. `<span class="math inline">` is the inline `$` form on the same
+      terms.
+
+      THE REASON IS THAT AN IMPORTER MUST NOT EMIT A CONSTRUCT WHOSE MEANING
+      DEPENDS ON THE CONSUMER'S CONFIGURATION. The ```` ```math ```` fence is
+      an EXTENSION. With that extension not loaded it degrades to a
+      `language-math` code block, so the same imported document is mathematics
+      for one consumer and a code block for another. `math_display` is core
+      (PART 3) and needs nothing loaded.
+
+      THE ROUND-TRIP ARGUMENT IS REAL AND LOSES ANYWAY. A math-block extension
+      WRITES that div, so the fence is an exact round trip of the document that
+      produced the HTML. But an importer's job is to produce a document that
+      means what the HTML meant, not to reconstruct the document that happened
+      to generate it -- and it cannot know that an extension generated it at
+      all. HTML from anywhere else carrying those classes gets the same
+      treatment.
+
+      THE CONDITIONAL FORM IS REJECTED ON PURPOSE. Emitting the fence when the
+      extension is registered and the core form otherwise makes the importer's
+      output depend on its own configuration, which is the same defect with a
+      nicer surface: two runs of the same tool over the same input produce
+      different documents.
+
+      THE MATHML PATH WRITES NO TRAILING DELIMITER, for the reason the core
+      form has none to write. Carve math is a PREFIX on a code span, so the
+      span's own closing backtick ends the construct: a `<math>` read through
+      its `alttext` is written `` $`E = mc^2` `` inline and ``` $$`E = mc^2` ```
+      for `display="block"`, with no `$` or `$$` after the closing backtick. A
+      trailing delimiter is literal text, and it renders as a stray dollar sign
+      beside the formula. carve-php carried that defect and removed it in
+      markup-carve/carve-php#1546; carve-js and carve-rs were measured and
+      never had it.
+
+      (Pinned twice, because the two halves need different readers. Converter
+      corpus 33-html-block-math-imports-as-the-core-form compares the RENDER of
+      the produced Carve, which is where the two spellings of the div are
+      distinguishable at all: the fence renders a `language-math` code block
+      where the core form renders the math span. The MathML half has no such
+      render difference -- a stray `$$` is only a stray dollar sign -- so it is
+      pinned on the BYTES, by the `tests/html-import/math-block-and-mathml`
+      fixture, which carries both halves and whose `expected.crv` is compared
+      exactly.)
+
    19. CROSSREF AUTO-TEXT + DEFAULT-ON / PROCESSOR FEATURES -- NORMATIVE
       (resolution formalized as PART 9R rules R4/R5; behavior detail here).
       - `</#id>` clones the target heading's full inline children, so a
