@@ -14,5 +14,9 @@
 # engine-pin-drift.txt says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+05-lists-25  The pinned JS build writes a tight item's two sibling sub-lists at the item's MARKER column, so it emits ONE blank line where PART 11 §10i requires three and the sub-lists merge back; remove when the pin advances past markup-carve/carve-js#1299's fix.
+05-lists-26  The pinned JS build writes a tight item's two sibling sub-lists at the item's MARKER column, so it emits ONE blank line where PART 11 §10i requires three and the sub-lists merge back; remove when the pin advances past markup-carve/carve-js#1299's fix.
+05-lists-27  The pinned JS build writes a tight item's two sibling sub-lists at the item's MARKER column, so it emits ONE blank line where PART 11 §10i requires three and the sub-lists merge back; remove when the pin advances past markup-carve/carve-js#1299's fix.
+05-lists-28  The pinned JS build writes a tight item's two sibling sub-lists at the item's MARKER column, so it emits ONE blank line where PART 11 §10i requires three and the sub-lists merge back; remove when the pin advances past markup-carve/carve-js#1299's fix.
 395-a-longer-run-at-a-list-boundary-is-written-as-exactly-three-blank-lines  The pinned JS build predates PART 9 §11 N1a, so it writes ONE blank line where PART 11 §10i requires three; remove when the pin advances past it.
 396-an-idle-escape-does-not-spread-from-the-block-that-needed-one  The pinned JS build escalates escaping to the WHOLE document, so it writes `plain \(b\) text` where PART 11 §2b confines the escalation to the block that failed; remove when the pin advances past markup-carve/carve-js#1286's fix.

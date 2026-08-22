@@ -1045,11 +1045,11 @@ above the run lengths documents already contain.
 
 :::
 
-The boundary applies at every level, not only the top one - a list nested in an
-item separates on the same run. That shape has no corpus pair yet: the canonical
-writer cannot yet spell two sibling sub-lists inside a tight item, so a fixture
-for it would be pinned by a drift-ledger excuse rather than by the engines. The
-engines pin it in their own suites meanwhile.
+The boundary applies at every level, not only the top one - a sub-list written
+at an item's content column separates from the one above it on the same run.
+That shape had no corpus pair when the clause landed, because the canonical
+writer could not spell it. It can now, and the pairs are at the end of this
+section.
 
 The run denies a following sibling marker the right to join; it does not end the
 item. A continuation that reaches the item's content column still continues it,
@@ -1071,6 +1071,152 @@ at any run length.
     <p>still apples</p>
   </li>
 </ul>
+```
+
+:::
+
+§11 N1a's boundary below the top level, and what the writer does with it. The
+clause is unrestricted, so a sub-list separates from the one above it on the
+same run - but the writer could not spell that until
+markup-carve/carve#1501: its tight-item join wrote both sub-lists at the item's
+MARKER column, which is column 0, and a compatible marker there dissolves them
+into the list around the item rather than attaching them to it. All three
+engine mainlines write them at the item's CONTENT column now, so these four
+pairs pin the reading and the `.fmt` sidecars beside them pin the spelling. The
+build this repository PINS is older than that fix and is declared behind on all
+four, in both engine ledgers, until the pin moves.
+
+::: compare
+
+```carve
+- outer
+
+  - a
+
+
+
+  - b
+```
+
+```html
+<ul>
+  <li>outer
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+The blank line after `- outer` is not part of the boundary, and the sidecar
+shows the writer dropping it: a blank line before a SUB-LIST does not loosen an
+item, only a blank line before a paragraph does. So the item comes back tight,
+with both sub-lists and the boundary between them.
+
+A source whose run is LONGER than three is what tells a writer that preserves
+the boundary apart from one that copies its input, because §10i fixes the
+written run at exactly three whatever the author typed. The HTML is the same
+either way, so the `.fmt` sidecar is again what measures it. This is the nested
+twin of the top-level six-blank case.
+
+::: compare
+
+```carve
+- outer
+
+  - a
+
+
+
+
+
+
+  - b
+```
+
+```html
+<ul>
+  <li>outer
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+A LOOSE item takes the same boundary. That is one document to a reader and two
+code paths to a writer - the tight-item join is not involved at all - and the
+engines that got this wrong got it wrong in both places, so the loose shape is
+pinned rather than assumed to follow the tight one.
+
+::: compare
+
+```carve
+- outer
+
+  para
+
+  - a
+
+
+
+  - b
+```
+
+```html
+<ul>
+  <li><p>outer</p>
+    <p>para</p>
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul>
+      <li>b</li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
+
+An item is not the only host with a content column. Inside a quote the boundary
+is spelled with the quote's own blank line, which is a bare `>` - an empty line
+would end the quote and take the second list out of it - and one level deeper it
+is `> >`. Only a sidecar can hold that: the marker lines carry NO trailing
+space, PART 11 §7 forbids one, and neither the HTML nor a check for
+whitespace-ONLY lines can tell `> >` from `> > `.
+
+::: compare
+
+```carve
+> > - a
+> >
+> >
+> >
+> > - b
+```
+
+```html
+<blockquote>
+  <blockquote>
+    <ul>
+      <li>a</li>
+    </ul>
+    <ul>
+      <li>b</li>
+    </ul>
+  </blockquote>
+</blockquote>
 ```
 
 :::
