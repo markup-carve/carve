@@ -374,7 +374,6 @@ carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv            
 carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                text        1  permitted
 carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                table_cell  1  permitted
 carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                text        1  permitted
-carve-php  397-a-null-byte-is-replaced-before-the-document-is-read.crv           text        1  markup-carve/carve-php#1563
 carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-3.crv             table_cell  1  permitted
 carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-3.crv             text        1  permitted
 carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-5.crv             table_cell  1  permitted

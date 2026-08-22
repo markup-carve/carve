@@ -469,10 +469,90 @@
 # a case the ruling did not originally reach. A seeded number is a reading of
 # one shape, not of the rule.
 
+
+# AND THE POST-FIX MEASUREMENT, 2026-08-22, from FRESH CLONES of every main
+# taken after markup-carve/carve-php#1564 merged: carve-js afc38ba, carve-rs
+# 6f36d9d and carve-php ce29a62, against carve c508053e, over 1356 corpus
+# documents plus 3 synthetic samples. Of 27,915 comparable spans, SIX rows
+# disagree across TWO documents. The block above is the state while
+# markup-carve/carve-php#1563 was open, and its three NUL rows are superseded.
+#
+#   paragraph (extent)   4 -> 2   the NUL fixtures leave it; carve-php#1564.
+#   code (extent)        2 -> 1   the same, on `397-...-2`.
+#   text (presence)      1 -> 0   AGREED, and the line is deleted.
+#   list (extent)        1 -> 1   unchanged.
+#   list_item (extent)   1 -> 1   unchanged.
+#   soft_break (extent)  1 -> 1   unchanged.
+#   text (extent)        1 -> 1   unchanged.
+#
+# THE BLOCK ABOVE PREDICTED THIS ONE CORRECTLY, which is worth recording because
+# the block before it got two of three wrong. "What survives of the old rows is
+# two documents" named `384-a-continuation-marker-attaches-only-a-flush-left-
+# block-6` and `380-a-terminal-comment-line-still-leaves-an-empty-verse-line`,
+# and those are exactly the two the panel now reports. Every document the NUL
+# defect contributed left in one change, and no row moved that it did not cause:
+# subtract its +2, +1 and +1 from the declared counts and you get the measured
+# ones exactly. So this is a clean retirement rather than one defect's rows
+# being replaced by another's, which is the outcome this file has NOT usually
+# had - see the run-by-run history in tests/ast-spans.test.mjs.
+#
+# THE CAUSE WAS NOT THE ONE THE BLOCK ABOVE INFERRED, and the difference matters
+# to anyone reading these rows as evidence. "carve-php writes a BYTE-shaped
+# offset where the replacement went" describes the symptom exactly and the
+# mechanism not at all: carve-php's offsets were honest BYTE offsets into the
+# substituted buffer, and nothing computed one in the wrong unit. What was wrong
+# was the CONVERSION. `BlockParser::parse()` captured the string its byte-to-
+# codepoint table is built from BEFORE the U+0000 substitution ran, so the table
+# saw a NUL - one ASCII byte - took its pure-ASCII identity path, and published
+# the parser's post-substitution byte offset unconverted. The same stale string
+# is what `SourceMap::spanFor()` sliced to verify a node against its own text,
+# which is why the `text (presence)` row only ever appeared alongside the extent
+# ones: ONE stale string, read by two consumers.
+#
+# WHICH ALSO MEANS THE ROWS UNDERSTATED THE DEFECT. Both faults were properties
+# of the document-wide offset table, not of the node holding the substituted
+# byte, so one NUL moved EVERY later offset in the document and cost EVERY later
+# text node its position - including blocks containing no NUL at all. The panel
+# saw two documents because those are the only two fixtures with a NUL, not
+# because the blast radius was two documents. A count column is a floor here,
+# and this is the clearest case of it the file has.
+#
+# THE CONTROLS ARE WHY THE ATTRIBUTION HELD. `397-...-3`, the vertical-tab
+# control on the same documentation page, was unanimous throughout, and so were
+# an ordinary multibyte character and an author-written U+FFFD in the same
+# shape. All three were unanimous BEFORE the fix as well as after, which is what
+# ruled out a general byte/codepoint confusion in carve-php and pointed at the
+# substitution path. Kept here because the next NUL-adjacent row will want them.
+#
+# CARVE-PHP'S OWN §4 REPORT REJOINED THE OTHER TWO. It reported 59 findings
+# while this was open, against 56 each for carve-js and carve-rs; the three
+# extra were `pos.endOffset past end of source` on the two NUL documents, the
+# same arithmetic seen from the other side. Those three are gone.
+#
+# TWO FIXES LANDED ON THIS FIXTURE IN ONE EVENING AND ONLY ONE OF THEM WAS A
+# DIVERGENCE, which is the thing to keep straight when reading these numbers.
+# The rows above were carve-php's and were real. Separately, every engine also
+# reported one `pos does not cover the text it belongs to` on `397` - the
+# harness comparing a span against RAW fixture bytes, so its source side still
+# held the NUL while the node held U+FFFD. That was markup-carve/carve#1531, it
+# landed on all three engines identically, and it was never a divergence.
+# markup-carve/carve#1537 closed it while this ledger edit was being prepared.
+#
+# SO THE FINDING COUNTS HERE ARE POST-#1537 AND ARE NOT COMPARABLE TO THE BLOCK
+# ABOVE. Measured on top of it, all three engines report 55 findings, 3
+# distinct, 55 waived, 0 outstanding - identical to each other, and with no
+# "not a position" line left on any of them. The span rows are UNCHANGED by
+# #1537: the panel was re-run against it and reported the same six rows across
+# the same two documents, so the counts below were not affected by which
+# harness measured them.
+#
+# carve-rb is not measured by this panel at all - INDEPENDENT_ENGINES in
+# scripts/ast-conformance.mjs is carve-js, carve-rs and carve-php, because
+# carve-rb serializes carve-rs's tree rather than deriving its own spans.
+
 list (extent) 1
 list_item (extent) 1
-paragraph (extent) 4
-code (extent) 2
+paragraph (extent) 2
+code (extent) 1
 soft_break (extent) 1
 text (extent) 1
-text (presence) 1
