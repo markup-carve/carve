@@ -1,0 +1,10 @@
+An idle escape does not spread from the block that needed one
+
+```
+  ## H
+
+plain (b) text
+.
+<p>## H</p>
+<p>plain (b) text</p>
+```
