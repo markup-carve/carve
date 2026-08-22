@@ -8405,23 +8405,61 @@ EOF = (* end of file *) ;
 
       MEASURED, AND THE MEASUREMENT IS WHY IT IS A CLAUSE (carve#1507). Three
       independently written writers -- carve-js, carve-php and carve-rs --
-      invent 72 idle escapes across the same 28 corpus documents, with the same
-      per-document counts, character for character. 67 of those 72, across 26
-      of the 28 documents, come from the document scope alone. Three writers
-      agreeing to the character is not coincidence and not inheritance: each
-      takes the scope deliberately, and each takes it from §4's own conclusion
-      that a two-render implementation is stuck with it. That conclusion is
-      what this section corrects.
+      invented 72 idle escapes across the same 28 corpus documents, with the
+      same per-document counts, character for character. Three writers agreeing
+      to the character is not coincidence and not inheritance: each took the
+      scope deliberately, and each took it from §4's own conclusion that a
+      two-render implementation is stuck with it. That conclusion is what this
+      section corrects.
 
-      THE REMAINING 2 DOCUMENTS ARE NOT THIS SECTION'S. Five escapes across
-      `72-escape-coverage-2` and
-      `390-a-table-cell-s-marker-run-ends-at-a-space-5` survive with the scope
-      narrowed: a literal backslash written doubled with a lone backslash
-      before a character that cannot be escaped, and an authored `\=` kept
-      after the writer's own cell padding retired it. Both are §2 defects in
-      the escape logic, they are fixed on their own merits, and an engine that
-      narrows the scope and does not land at exactly those two has found
-      something else.
+      NARROWING RETIRES 15 OF THE 72, NOT 67 (carve#1532). The ruling that
+      seeded this section predicted that 26 documents / 67 escapes were the
+      document scope and would retire with it, leaving EXACTLY 2. Implemented,
+      all three engines land at 24 DOCUMENTS / 57 ESCAPES -- character for
+      character again (carve-js#1307, carve-php#1560, carve-rs#1239). The gap
+      is a property of the prediction rather than of a narrowing that stopped
+      short. The seeded split was measured by asking "did the writer return the
+      conservative form?", which is TRUE OF EVERY SINGLE-BLOCK DOCUMENT -- and
+      for a single-block document this section's smallest failing unit IS the
+      document. `103-heading-marker-column-zero-2` is `  ## H` alone, and it
+      was counted as document scope on exactly that reading. Document scope
+      owned 15 escapes, and those retired.
+
+      WHAT REMAINS IS THREE CAUSES, AND NONE OF THEM IS THIS SECTION'S.
+
+        `unit scope`     20 documents, 47 escapes. §4's strategy has ONE KNOB
+                         PER UNIT, so a unit that fails is written
+                         conservatively IN FULL and every candidate in it is
+                         escaped alongside the one that needed it: `\{\.note\}`
+                         where §2 wants `\{.note}`. This section bounds how
+                         far the fallback REACHES; it does not make it
+                         per-occurrence. Retiring these needs §2's own
+                         per-OPENER-OCCURRENCE test, a different mechanism
+                         rather than a narrower scope, and out of this
+                         section's scope by design (carve#1533).
+
+        `opener run`     2 documents, 5 escapes. A FLOOR THE MEASUREMENT CANNOT
+                         GO BELOW, AND NOT DEBT. §2's THE UNIT IS THE OPENER
+                         requires the whole opener run escaped -- `\#\# H` and
+                         never `\## H` -- while the sweep that counts idle
+                         escapes removes ONE BACKSLASH AT A TIME, so with the
+                         first still in place no heading forms either way and
+                         the sweep reads the rest of a correctly escaped run as
+                         idle. Driving these to zero would mean emitting output
+                         §2 forbids. `103-heading-marker-column-zero-2` and
+                         `132-thematic-break-requires-contiguous-markers-3`.
+
+        `minimal class`  2 documents, 5 escapes. The two the ruling named,
+                         unchanged: `72-escape-coverage-2` carries a literal
+                         backslash written doubled with a lone backslash before
+                         a character that cannot be escaped, and
+                         `390-a-table-cell-s-marker-run-ends-at-a-space-5`
+                         keeps an authored `\=` after the writer's own cell
+                         padding retired it. Both are §2 defects in the escape
+                         logic and are fixed on their own merits.
+
+      An engine that narrows the scope and does not land at exactly these three
+      causes has found something else.
 
       THE COMPARISON STAYS DOCUMENT-SCOPED, WHICH IS THE OTHER QUESTION. §4
       rules out re-parsing a LINE on its own, because a line has lost the
@@ -8520,10 +8558,11 @@ EOF = (* end of file *) ;
       THIS SECTION USED TO CONCLUDE OTHERWISE, and all three engines
       implemented the conclusion: "an implementation that computes §2 by
       COMPARING TWO RENDERS is stuck with document scope, and therefore with
-      over-escaping". It is not stuck, it was never measured to be, and the 72
-      idle escapes carve#1507 counted are what the sentence cost. It is
-      replaced rather than qualified, because an implementation reading it
-      correctly still lands on output §2 forbids.
+      over-escaping". It is not stuck, it was never measured to be, and 15 of
+      the 72 idle escapes carve#1507 counted are what the sentence cost -- the
+      other 57 have the three causes §2b names, and none of them is this
+      scope. It is replaced rather than qualified, because an implementation
+      reading it correctly still lands on output §2 forbids.
 
       What remains true is the rest of the trade: this is a strategy rather
       than the requirement, and an implementation that instead asks, per
