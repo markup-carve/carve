@@ -53,6 +53,11 @@ const BREAK_TYPES = new Set(['soft_break', 'hard_break'])
  * skipping past it keeps the rule from going quiet exactly where a span is
  * most likely to be wrong.
  *
+ * ONE BOUND OF TWO. This says a parent covers its children; it does not say the
+ * parent STOPS there, and for as long as it was the only containment rule a
+ * container could reach arbitrarily far past everything in it and read as clean.
+ * `checkStopsAtChildren` below is the other bound (carve#1522, carve#1524).
+ *
  * ITS OWN PASS, deliberately (carve#913). The opening-markup convention ruled
  * there points the same way - a span covering the construct's markup contains
  * the children inside it - and a checker that derived containment from that
@@ -93,6 +98,166 @@ export function checkContainment(doc, findings) {
   walk(doc, '$', null, '$')
 
   return compared
+}
+
+/**
+ * A CONTAINER STOPS AT ITS LAST PLACED CHILD.
+ *
+ * The other half of `checkContainment`, and the half that was never written:
+ * covering every child is one bound, and a checker that tests only that one
+ * passes a container whose span runs arbitrarily far past everything in it.
+ *
+ * All three engines published
+ *
+ *     - a
+ *
+ *       [r]: /u
+ *
+ * with the `list` ending at 14 and its only `list_item` ending at 3, so the
+ * offsets between them sat in a node the TREE says is a document-level sibling
+ * - the definition, hoisted out by PART 12 §7 - and two nodes claimed offset 8.
+ * Ruled at carve#1522: hoisting breaks the correspondence between tree nesting
+ * and source nesting, and a span follows the tree. And they published
+ *
+ *     - a
+ *       {.x}
+ *     tail
+ *
+ * with the `list` covering an attribute block that attaches to nothing and
+ * yields no child, which §4 excludes by name - "a following line terminator,
+ * blank line, or unattached attribute block does not [belong] and is excluded"
+ * (carve#1524).
+ *
+ * NOTHING SAW EITHER, because the three-way span panel in
+ * scripts/ast-conformance.mjs compares the engines against EACH OTHER and the
+ * three agreed byte for byte. A rule every engine breaks the same way is
+ * structurally invisible to a comparison - the carve#755 family - so this rule
+ * reads the SOURCE, which is the only party to the question that cannot agree
+ * with an engine by accident.
+ *
+ * NOR DID THE OVERLAP RULE, which does run over document-level siblings but
+ * exempts every hoisted definition kind by name (`EXEMPT_FROM_OVERLAP`, below).
+ * The exemption is load-bearing and stays: a definition written inside a `:::`
+ * div is a document-level sibling whose span sits inside a div that legitimately
+ * ends at its own closer, and no ruling makes that pair stop overlapping. What
+ * carve#1522 settles is the CLOSERLESS case, where the container had no reason
+ * to reach that far in the first place.
+ *
+ * A TYPE SET, for the reason `OPENING_MARKUP` is one: only the type says
+ * whether a node has a closer, and §4 ends a container "at their closer, or at
+ * their last child when they have no closer". Everything absent here has
+ * something after its last child that it does own, and each is absent for a
+ * stated reason rather than an oversight:
+ *
+ *   `div`, `admonition`, `line_block`, `figure_group` and `code_block` end at a
+ *   fence closer, `table_row` at its trailing pipe, and every inline container
+ *   at its closing delimiter run and whatever attribute block is attached to it.
+ *   `table` reaches past its last row over the alignment row, which produces no
+ *   node in any engine (carve#1344) and is the table's own markup rather than a
+ *   child's.
+ *
+ * An absent type is a type this rule does not reach, never a type permitted
+ * anything: containment, overlap, the terminator rule and the slice comparison
+ * all still apply to it.
+ *
+ * A TRAILING BLANK RUN IS NOT CARVED OUT, and the decision is worth stating
+ * because the first draft of this rule did carve it out. carve-js and carve-rs
+ * end a list after the blank run that follows it and carve-php does not
+ * (markup-carve/carve-js#1304, markup-carve/carve-rs#1232), so the three-way
+ * panel already reports that one and the tolerance looked free. It is not: a
+ * container that stops at its last placed child cannot reach into a trailing
+ * blank run at all, so the two are ONE defect seen from two sides, and a rule
+ * that tolerated whitespace would have been a rule contradicting the ruling it
+ * enforces. Those documents are declared with the rest and close with them.
+ *
+ * RETURNS THE NUMBER OF NODES IT EXAMINED, for the reason the two rules above
+ * return their own counts: positions are an opt-in parse option in two of the
+ * three engines, and zero findings out of zero nodes is the output of a clean
+ * run and of a run that never happened.
+ */
+export const ENDS_AT_LAST_CHILD = new Set([
+  'block_quote',
+  'figure',
+  'list',
+  'list_item',
+  'paragraph',
+])
+
+/**
+ * What an EMPTY container of each kind is allowed to span: its own markup, and
+ * the whitespace that separates that markup from the content it never got.
+ *
+ * A type with no entry is a type this rule leaves alone when it is empty - a
+ * `paragraph` or a `figure` with no children at all is a different defect and
+ * `checkContainment` and the schema are where it belongs.
+ */
+export const EMPTY_CONTAINER_MARKUP = new Map(
+  Object.entries({
+    block_quote: /^[ \t]*>[ \t]*$/,
+    list: /^[ \t]*(?:[-+*]|[0-9]+[.)]|[A-Za-z]+[.)]|\.)[ \t]*$/,
+    list_item: /^[ \t]*(?:[-+*]|[0-9]+[.)]|[A-Za-z]+[.)]|\.)[ \t]*$/,
+  }),
+)
+
+export function checkStopsAtChildren(doc, codepoints, findings) {
+  let examined = 0
+  for (const [node, path] of walkNodes(doc)) {
+    if (!ENDS_AT_LAST_CHILD.has(node.type)) continue
+    const pos = node.pos
+    if (!pos || !Number.isInteger(pos.startOffset) || !Number.isInteger(pos.endOffset)) continue
+    const children = []
+    for (const [key, value] of Object.entries(node)) {
+      if (key === 'pos' || !Array.isArray(value)) continue
+      for (const child of value) {
+        if (child && typeof child === 'object' && typeof child.type === 'string') {
+          children.push(child)
+        }
+      }
+    }
+    if (children.length === 0) {
+      // A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS
+      // THERE. "Ends at its last placed child" is silent when there is none,
+      // and that silence is three of the documents the engines still disagree
+      // on: in the `381` family a collected definition empties the inner item,
+      // so the extent question is live and the ruling did not reach it
+      // (markup-carve/carve-rs#1233). Zero width was rejected - it is a shape
+      // every consumer has to special-case and it discards the marker the
+      // author typed - and so was the typed extent, which is what carve#1522
+      // rejected for the non-empty case; allowing it only when a container is
+      // empty would make the rule depend on child count.
+      const markup = EMPTY_CONTAINER_MARKUP.get(node.type)
+      if (!markup) continue
+      examined += 1
+      const slice = codepoints.slice(pos.startOffset, pos.endOffset).join('')
+      if (!markup.test(slice)) {
+        findings.push(
+          `span covers more than its own markup on an empty "${node.type}" at ${path}: ` +
+            `[${pos.startOffset}, ${pos.endOffset}] is ${JSON.stringify(slice)}, and an empty ` +
+            'container spans the markup that opened it and stops there',
+        )
+      }
+      continue
+    }
+    // A CHILD WITH NO USABLE POSITION SKIPS THE NODE, not just the child. §4
+    // permits a reassembled node to omit `pos`, and where one does, the last
+    // PLACED child is not the container's last child - so the bound this rule
+    // would compare against is short by however much the unplaced child covers,
+    // and every finding it produced would be false. A line block's spaced
+    // content is exactly that case, and it is the one node in the corpus that
+    // reaches here (`41-line-blocks-9`).
+    if (children.some((child) => !child.pos || !Number.isInteger(child.pos.endOffset))) continue
+    examined += 1
+    const lastChildEnd = Math.max(...children.map((child) => child.pos.endOffset))
+    if (pos.endOffset <= lastChildEnd) continue
+    const tail = codepoints.slice(lastChildEnd, pos.endOffset).join('')
+    findings.push(
+      `span reaches past its last child on "${node.type}" at ${path}: ` +
+        `it ends at ${pos.endOffset}, its last child ends at ${lastChildEnd}, and ` +
+        `${JSON.stringify(tail)} belongs to no child of it`,
+    )
+  }
+
+  return examined
 }
 
 /**
@@ -286,6 +451,7 @@ export function checkPositions(doc, source, findings) {
   const codepoints = [...source]
   checkContainment(doc, findings)
   checkOpeningMarkup(doc, codepoints, findings)
+  checkStopsAtChildren(doc, codepoints, findings)
   for (const [node, path] of walkNodes(doc)) {
     checkSiblingOverlap(node, path, findings)
     // An unknown type is the schema's job now (it enumerates them, and the

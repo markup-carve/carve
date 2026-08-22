@@ -1,0 +1,27 @@
+A container's span ends at its last placed child
+
+```
+- a
+
+  [r]: /u
+
+see [text][r]
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>see <a href="/u">text</a></p>
+```
+
+```
+- a
+
+  {.x}
+
+tail
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>tail</p>
+```

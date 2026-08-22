@@ -18,11 +18,13 @@ import { fileURLToPath } from 'node:url'
 import { parse } from '@markup-carve/carve'
 import { replaceNulls } from '../scripts/spec/layout.mjs'
 import {
+  ENDS_AT_LAST_CHILD,
   HOISTED_DEFINITION_TYPES,
   OPENING_MARKUP,
   checkContainment,
   checkOpeningMarkup,
   checkPositions,
+  checkStopsAtChildren,
   walkNodes,
 } from '../scripts/spec/ast-positions.mjs'
 
@@ -145,8 +147,22 @@ test('a child whose span leaves its parent is reported', () => {
     ],
   }
   const findings = findingsFor(doc, source)
-  assert.equal(findings.length, 1, findings.join('\n'))
-  assert.match(findings[0], /span outside its parent: "paragraph"/)
+  // ONE CONTAINMENT FINDING, FILTERED RATHER THAN COUNTED. This asserted that
+  // the whole run produced exactly one finding, and that held only because
+  // nothing else reached this document: the same synthetic list ends at 15 with
+  // its last placed child ending at 5, so carve#1522's stops-at-its-children
+  // rule reports it too and the count went to two. The original argument is
+  // unchanged and now spelled as a filter - a child leaving its parent is
+  // reported exactly once - and the second finding is asserted on its own line
+  // so neither rule can go quiet behind the other.
+  const outside = findings.filter((f) => f.startsWith('span outside its parent'))
+  assert.equal(outside.length, 1, findings.join('\n'))
+  assert.match(outside[0], /span outside its parent: "paragraph"/)
+  assert.equal(
+    findings.filter((f) => f.startsWith('span reaches past its last child')).length,
+    1,
+    findings.join('\n'),
+  )
 })
 
 test('a child that STARTS before its parent is reported', () => {
@@ -239,7 +255,19 @@ test('no corpus document has a span starting on a line terminator', () => {
     // CRLF or BOM'd document (carve#876).
     const source = replaceNulls(raw)
     const findings = findingsFor(parse(raw), source)
-    const unexpected = findings.filter((f) => !f.startsWith('missing pos on '))
+    const unexpected = findings.filter(
+      (f) =>
+        !f.startsWith('missing pos on ') &&
+        // AND NOT carve#1522 / carve#1524, which are declared document by
+        // document in the STOPS AT ITS CHILDREN test below. Excluded here
+        // rather than tolerated: this test's subject is a span that starts on a
+        // line terminator, and ninety-odd findings of another class landing in
+        // it would bury the one it was written to catch. The exact set is
+        // pinned below and fails in both directions, so nothing is lost by
+        // filtering it out here.
+        !f.startsWith('span reaches past its last child') &&
+        !f.startsWith('span covers more than its own markup'),
+    )
     assert.deepEqual(unexpected, [], `${name}\n${unexpected.join('\n')}`)
   }
   assert.ok(cases.length > 400, `only ${cases.length} corpus documents reached the rules`)
@@ -356,9 +384,21 @@ test('every definition kind the schema hoists is exempt from the overlap rule', 
 
 test('a span that starts at the content rather than the marker is reported', () => {
   const source = '> q\n'
+  // THE QUOTE CARRIES ITS PARAGRAPH, which it did not when this was written:
+  // an EMPTY container is a case of its own now, and a childless quote spanning
+  // `q` is reported twice - once for starting at the content and once for
+  // covering more than the markup it opened with. The argument here is the
+  // first of those, so the document says what a quote holding `q` really is
+  // and the finding count stays the assertion it was.
   const doc = {
     type: 'document',
-    children: [{ type: 'block_quote', pos: pos(2, 3), children: [] }],
+    children: [
+      {
+        type: 'block_quote',
+        pos: pos(2, 3),
+        children: [{ type: 'paragraph', pos: pos(2, 3), children: [] }],
+      },
+    ],
   }
   const findings = findingsFor(doc, source)
   assert.equal(findings.length, 1, findings.join('\n'))
@@ -371,7 +411,13 @@ test('the same quote spanning its marker is accepted', () => {
   const source = '> q\n'
   const doc = {
     type: 'document',
-    children: [{ type: 'block_quote', pos: pos(0, 3), children: [] }],
+    children: [
+      {
+        type: 'block_quote',
+        pos: pos(0, 3),
+        children: [{ type: 'paragraph', pos: pos(2, 3), children: [] }],
+      },
+    ],
   }
   assert.deepEqual(findingsFor(doc, source), [])
 })
@@ -380,7 +426,13 @@ test('the indentation before a nested marker is inside the item, not outside it'
   const source = '  - a\n'
   const placed = {
     type: 'document',
-    children: [{ type: 'list_item', pos: pos(0, 5), children: [] }],
+    children: [
+      {
+        type: 'list_item',
+        pos: pos(0, 5),
+        children: [{ type: 'paragraph', pos: pos(4, 5), children: [] }],
+      },
+    ],
   }
   assert.deepEqual(findingsFor(placed, source), [])
 
@@ -388,7 +440,13 @@ test('the indentation before a nested marker is inside the item, not outside it'
   // allowance is for indentation and not for everything before the marker.
   const contentOnly = {
     type: 'document',
-    children: [{ type: 'list_item', pos: pos(4, 5), children: [] }],
+    children: [
+      {
+        type: 'list_item',
+        pos: pos(4, 5),
+        children: [{ type: 'paragraph', pos: pos(4, 5), children: [] }],
+      },
+    ],
   }
   assert.match(
     findingsFor(contentOnly, source).join('\n'),
@@ -469,4 +527,357 @@ test('CONTAINMENT, in a pass of its own, over every corpus document', () => {
     assert.deepEqual(findings, [], `${name}\n${findings.join('\n')}`)
   }
   assert.ok(pairs > 2000, `only ${pairs} parent/child pair(s) were compared`)
+})
+
+/*
+ * A CONTAINER STOPS AT ITS LAST PLACED CHILD (PART 12 section 4, carve#1522
+ * and carve#1524).
+ *
+ * The half of containment nobody wrote. `checkContainment` says a parent covers
+ * its children and says nothing about where it ends, so a container reaching
+ * arbitrarily far past everything in it read as a clean run for as long as this
+ * file has existed - and all three engines did exactly that, identically, which
+ * is why the three-way span panel could not see it either.
+ */
+
+const stopFindings = (doc, source) => {
+  const findings = []
+  checkStopsAtChildren(doc, [...source], findings)
+  return findings
+}
+
+test('a list ending past the definition hoisted out of it is reported', () => {
+  // carve#1522, the shape every engine published. The definition is a
+  // document-level sibling (PART 12 section 7), so offsets 5..14 sat in two
+  // nodes at once and a consumer resolving offset 8 got two answers.
+  const source = '- a\n\n  [r]: /u\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'list',
+        pos: pos(0, 14),
+        children: [
+          {
+            type: 'list_item',
+            pos: pos(0, 3),
+            children: [{ type: 'paragraph', pos: pos(2, 3), children: [] }],
+          },
+        ],
+      },
+      { type: 'link_reference_definition', pos: pos(5, 14) },
+    ],
+  }
+  const findings = stopFindings(doc, source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /span reaches past its last child on "list"/)
+  assert.match(findings[0], /it ends at 14, its last child ends at 3/)
+})
+
+test('a list ending past an unattached attribute block is reported', () => {
+  // carve#1524. No ruling was needed: section 4 excludes an unattached
+  // attribute block by name, and the block yields no child to end at.
+  const source = '- a\n  {.x}\ntail\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'list',
+        pos: pos(0, 10),
+        children: [
+          {
+            type: 'list_item',
+            pos: pos(0, 3),
+            children: [{ type: 'paragraph', pos: pos(2, 3), children: [] }],
+          },
+        ],
+      },
+      { type: 'paragraph', pos: pos(11, 15), children: [] },
+    ],
+  }
+  const findings = stopFindings(doc, source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /"\\n {2}\{\.x\}" belongs to no child of it/)
+})
+
+test('a container ending exactly at its last child is not reported', () => {
+  const source = '- a\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'list',
+        pos: pos(0, 3),
+        children: [
+          {
+            type: 'list_item',
+            pos: pos(0, 3),
+            children: [{ type: 'paragraph', pos: pos(2, 3), children: [] }],
+          },
+        ],
+      },
+    ],
+  }
+  assert.deepEqual(stopFindings(doc, source), [])
+})
+
+test('a trailing blank run is reported too, and is the same defect', () => {
+  // SUBSUMED, not carved out. carve-js and carve-rs end a list after the blank
+  // run that follows it and carve-php does not, which is filed separately
+  // (markup-carve/carve-js#1304, markup-carve/carve-rs#1232) - and a container
+  // that stops at its last placed child cannot reach into a blank run at all,
+  // so the two are one defect seen from two sides. An earlier draft of this
+  // rule tolerated a whitespace-only tail so as not to report a row that had
+  // an owner; that made the rule contradict the ruling it enforces, which is
+  // why it now fires and those documents are declared with the rest.
+  const source = '- a\n\n\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'list',
+        pos: pos(0, 6),
+        children: [
+          {
+            type: 'list_item',
+            pos: pos(0, 3),
+            children: [{ type: 'paragraph', pos: pos(2, 3), children: [] }],
+          },
+        ],
+      },
+    ],
+  }
+  const findings = stopFindings(doc, source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /"\\n\\n\\n" belongs to no child of it/)
+})
+
+test('an emptied container spans the markup that opened it and stops there', () => {
+  // The addendum to carve#1522: "ends at its last placed child" is silent when
+  // there is none, and a definition written as an item's only content is
+  // collected out of it and leaves nothing behind (markup-carve/carve-rs#1233).
+  const source = '* * [d]: u\n :\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'list',
+        pos: pos(0, 4),
+        items: [
+          {
+            type: 'list_item',
+            pos: pos(0, 4),
+            children: [{ type: 'list', pos: pos(2, 10), items: [] }],
+          },
+        ],
+      },
+    ],
+  }
+  const findings = stopFindings(doc, source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /span covers more than its own markup on an empty "list"/)
+  assert.match(findings[0], /is "\* \[d\]: u"/)
+})
+
+test('an emptied container spanning only its marker is accepted', () => {
+  // The pair, for the reason the opening-markup rule keeps one: the rule has to
+  // be the reason the finding appears, not the document.
+  const source = '* * [d]: u\n :\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'list',
+        pos: pos(0, 4),
+        items: [
+          {
+            type: 'list_item',
+            pos: pos(0, 4),
+            children: [{ type: 'list', pos: pos(2, 4), items: [] }],
+          },
+        ],
+      },
+    ],
+  }
+  assert.deepEqual(stopFindings(doc, source), [])
+})
+
+test('a container holding an unplaced child is skipped rather than guessed at', () => {
+  // Section 4 permits a REASSEMBLED node to omit `pos`. Where one does, the
+  // last PLACED child is not the container's last child, so the bound this rule
+  // would compare against is short by whatever the unplaced child covers and
+  // every finding would be false. A line block's spaced content is that case.
+  const source = 'ab\ncd\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'paragraph',
+        pos: pos(0, 5),
+        children: [{ type: 'text', pos: pos(0, 2), value: 'ab' }, { type: 'text', value: 'cd' }],
+      },
+    ],
+  }
+  assert.deepEqual(stopFindings(doc, source), [])
+})
+
+test('a container with a closer is not reached by this rule', () => {
+  // A div ends at `:::`, not at its last child, and section 4 says so. The rule
+  // is a type set for the same reason OPENING_MARKUP is one: only the type says
+  // whether a node has a closer.
+  const source = '::: n\na\n:::\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'div',
+        pos: pos(0, 11),
+        children: [{ type: 'paragraph', pos: pos(6, 7), children: [] }],
+      },
+    ],
+  }
+  assert.deepEqual(stopFindings(doc, source), [])
+  assert.ok(!ENDS_AT_LAST_CHILD.has('div'))
+  assert.ok(!ENDS_AT_LAST_CHILD.has('table'))
+})
+
+/*
+ * THE CORPUS, DECLARED RED.
+ *
+ * Measured 2026-08-22 against the carve-js this repository pins, over every
+ * corpus document: 98 findings across 91 documents, out of 2846 containers
+ * examined. Until the engines land carve#1522 and carve#1524 that is the state
+ * this file RECORDS rather than hides - the same discipline
+ * resources/ast-span-divergence.txt applies one layer up.
+ *
+ * IT FAILS IN BOTH DIRECTIONS, which is the point. A document that starts
+ * over-reaching is not on the list and fails; a document that STOPS is on the
+ * list with a count that no longer matches and fails, so deleting lines here is
+ * the closing step of each engine's fix rather than a chore nobody is holding.
+ * When the list empties, the assertion becomes a plain "no findings" and both
+ * issues are done.
+ *
+ * WHAT THE 98 ARE: 74 a `list` reaching past its last item, 4 a `block_quote`
+ * doing the same, and 20 a container a collected definition emptied, which the
+ * ruling reached separately (markup-carve/carve-rs#1233). Forty-five of the
+ * first group are a list reaching over the line terminator that ends it -
+ * markup-carve/carve-js#1304 and markup-carve/carve-rs#1232, filed separately
+ * and subsumed by this rule rather than excluded from it.
+ */
+const DECLARED_OVER_REACH = [
+  '05-lists-10.crv 1',
+  '105-marker-line-nested-lists-3.crv 1',
+  '105-marker-line-nested-lists-4.crv 1',
+  '117-footnote-definition-inside-a-container-is-collected-2.crv 1',
+  '117-footnote-definition-inside-a-container-is-collected.crv 1',
+  '143-post-blank-list-continuation-content-column-model.crv 1',
+  '16-reference-link-3.crv 1',
+  '16-reference-link-4.crv 2',
+  '162-outer-item-with-an-internal-blank-before-an-attached-block-is-loose.crv 1',
+  '173-implicit-heading-references-with-no-definition.crv 1',
+  '174-bare-dot-ordered-markers-2.crv 1',
+  '180-a-list-item-does-not-define-an-abbreviation-either.crv 1',
+  '191-a-blank-after-a-comment-still-ends-the-item.crv 1',
+  '194-an-abbreviation-at-a-list-item-s-content-column-is-still-not-a-definition-2.crv 1',
+  '194-an-abbreviation-at-a-list-item-s-content-column-is-still-not-a-definition.crv 1',
+  '195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column-2.crv 2',
+  '195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column.crv 1',
+  '206-a-nested-list-in-a-footnote-body-stays-nested.crv 1',
+  '226-a-definition-attached-by-a-continuation-marker-is-collected-and-the-item-keeps-no-trace.crv 1',
+  '228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block.crv 1',
+  '246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it-2.crv 1',
+  '246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it-3.crv 1',
+  '246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it.crv 1',
+  '247-a-continuation-marker-after-a-blank-line-in-the-item.crv 1',
+  '249-trailing-whitespace-after-a-block-marker-6.crv 1',
+  '251-a-continuation-marker-after-a-blank-line-in-a-loose-item.crv 1',
+  '259-a-tab-continues-a-list-item-just-as-two-spaces-do-2.crv 1',
+  '259-a-tab-continues-a-list-item-just-as-two-spaces-do.crv 1',
+  '266-a-reference-definition-is-anchored-at-end-of-line-11.crv 1',
+  '266-a-reference-definition-is-anchored-at-end-of-line-14.crv 1',
+  '266-a-reference-definition-is-anchored-at-end-of-line-15.crv 1',
+  '268-trailing-whitespace-on-a-content-line-is-dropped-4.crv 2',
+  '279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-7.crv 1',
+  '290-adjacent-sibling-lists-survive-the-round-trip-2.crv 2',
+  '290-adjacent-sibling-lists-survive-the-round-trip-3.crv 1',
+  '290-adjacent-sibling-lists-survive-the-round-trip.crv 1',
+  '324-an-abbreviation-definition-in-an-item-body-is-paragraph-text-4.crv 1',
+  '326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-21.crv 1',
+  '326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-22.crv 1',
+  '326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-7.crv 1',
+  '326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-8.crv 1',
+  '326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-9.crv 1',
+  '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-2.crv 1',
+  '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-3.crv 1',
+  '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-4.crv 1',
+  '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it.crv 1',
+  '335-a-comment-fence-at-an-item-s-content-column-registers-nothing-either.crv 1',
+  '336-a-footnote-definition-inside-an-item-s-comment-registers-nothing.crv 1',
+  '337-a-comment-fence-opened-on-an-item-s-marker-line-hides-its-body-too.crv 1',
+  '338-a-comment-fence-one-item-deeper-registers-nothing-either.crv 1',
+  '339-a-wider-comment-fence-inside-an-item-hides-its-body-the-same-way.crv 1',
+  '347-a-comment-fence-reached-through-a-quote-registers-nothing-either-3.crv 1',
+  '350-a-definition-at-a-container-s-content-column-2.crv 1',
+  '350-a-definition-at-a-container-s-content-column-3.crv 1',
+  '350-a-definition-at-a-container-s-content-column.crv 1',
+  '356-a-quote-inside-a-quote-is-asked-what-it-ends-on-5.crv 1',
+  '357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-4.crv 1',
+  '357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-5.crv 1',
+  '357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-6.crv 1',
+  '357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders.crv 1',
+  '358-what-a-content-column-block-does-not-reach-2.crv 1',
+  '359-a-footnote-definition-s-block-runs-to-the-end-of-its-body-2.crv 1',
+  '359-a-footnote-definition-s-block-runs-to-the-end-of-its-body.crv 1',
+  '360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column-2.crv 2',
+  '360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column-4.crv 1',
+  '360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column.crv 2',
+  '361-a-paragraph-opened-after-a-block-in-an-item-is-still-open-for-a-lazy-line-4.crv 1',
+  '362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line.crv 1',
+  '364-only-lazy-folding-demotes-a-marker-line-colon-opener-2.crv 1',
+  '364-only-lazy-folding-demotes-a-marker-line-colon-opener.crv 1',
+  '367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open-4.crv 1',
+  '369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one-2.crv 1',
+  '369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one-4.crv 1',
+  '374-a-collected-definition-closes-the-item-paragraph-2.crv 1',
+  '374-a-collected-definition-closes-the-item-paragraph-4.crv 1',
+  '374-a-collected-definition-closes-the-item-paragraph.crv 1',
+  '379-a-reference-definition-cannot-take-its-destination-from-the-next-line-3.crv 1',
+  '381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-5.crv 1',
+  '381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-6.crv 1',
+  '381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-8.crv 1',
+  '382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open.crv 2',
+  '383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-4.crv 1',
+  '383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-5.crv 1',
+  '384-a-continuation-marker-attaches-only-a-flush-left-block-2.crv 1',
+  '384-a-continuation-marker-attaches-only-a-flush-left-block-3.crv 1',
+  '398-a-container-s-span-ends-at-its-last-placed-child-2.crv 1',
+  '398-a-container-s-span-ends-at-its-last-placed-child.crv 1',
+  '82-blockquote-lazy-continuation-6.crv 1',
+  '86-list-lazy-continuation-5.crv 1',
+  '87-compact-list-blocks-5.crv 1',
+  '87-compact-list-blocks-9.crv 1',
+]
+
+test('STOPS AT ITS CHILDREN, over every corpus document', () => {
+  // Declared as `<document> <count>`, so a document growing a second
+  // over-reaching container fails here too rather than reading as the one
+  // already declared. Same non-vacuity guard as the two passes above: the rule
+  // counts the nodes it examined, because zero findings out of zero nodes is
+  // the output of a clean run and of a run that never happened.
+  const dir = resolve(repo, 'tests/corpus')
+  const cases = readdirSync(dir).filter((name) => name.endsWith('.crv'))
+  let examined = 0
+  const measured = new Map()
+  for (const name of cases) {
+    const source = readFileSync(resolve(dir, name), 'utf8')
+    const findings = []
+    examined += checkStopsAtChildren(parse(source), [...source], findings)
+    if (findings.length > 0) measured.set(name, findings.length)
+  }
+  assert.deepEqual(
+    [...measured.entries()].map(([name, count]) => `${name} ${count}`).sort(),
+    [...DECLARED_OVER_REACH].sort(),
+    'update DECLARED_OVER_REACH in the commit that moves the engines, never to quiet a run',
+  )
+  assert.ok(examined > 2000, `only ${examined} node(s) reached the stops-at-its-children rule`)
 })

@@ -149,6 +149,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   content and no target emits it; every other C0 control stays content and is
   unchanged. The three engines already did this and the spec said the opposite.
   Corpus 397.
+- **A container's span ends at its last placed child** (carve#1522, carve#1524,
+  PART 12 §4). A definition hoisted out of a list or quote is a document-level
+  sibling, so the container stops before it instead of overlapping it; an
+  unattached attribute block is excluded for the same reason. A container with
+  no placed child spans the markup that opened it. Published spans move in all
+  three engines. Corpus 398.
 - **An importer does not bake a derived accessible name into source**
   (carve#1500, PART 9 §16a). An HTML importer drops an attribute whose value
   equals what the renderer derives for that element - an untitled admonition's
