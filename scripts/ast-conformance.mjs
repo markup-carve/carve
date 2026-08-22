@@ -52,6 +52,7 @@ import {
   partitionFindings,
 } from './spec/ast-waivers.mjs'
 import { checkPositions } from './spec/ast-positions.mjs'
+import { replaceNulls } from './spec/layout.mjs'
 import { checkReferenceFields } from './spec/ast-references.mjs'
 import {
   UNKNOWN_PROPERTY_PROBE,
@@ -746,7 +747,32 @@ function checkAdjacentTextRuns(doc, findings) {
   scan(doc.children ?? [], '$.children')
 }
 
-function checkDocument(name, doc, source, findings) {
+function checkDocument(name, doc, raw, findings) {
+  // MEASURE AGAINST THE SOURCE THE ENGINE READ, NOT THE FIXTURE BYTES.
+  //
+  // PART 0 INPUT replaces every U+0000 with U+FFFD before the first line is
+  // read, one codepoint for one, so a node's text holds the replacement where
+  // the fixture holds the byte. Slicing the raw fixture reported
+  // `397-a-null-byte-is-replaced-before-the-document-is-read.crv` as a bad span
+  // on EVERY engine while every offset in it was right - and a finding that is
+  // identical across engines is one the three-way panel cannot surface as a
+  // divergence, so it reads exactly like a unanimous defect (carve#1531).
+  //
+  // ONLY this transform is applied, which is the precedent
+  // `tests/ast-positions.test.mjs` set for the same reason: the BOM strip and
+  // the line-ending fold change LENGTH, and the engines report positions
+  // against the source as it arrived, so applying those would move every offset
+  // in a CRLF or BOM'd document (carve#876).
+  //
+  // The engines are still fed `raw`. Handing them the replaced text instead
+  // would compare a document none of them was asked to read, and would retire
+  // the corpus case's whole subject - whether the engine performs the
+  // replacement itself.
+  //
+  // Here rather than at the four call sites, because this script measures four
+  // engines in four separate loops and a fifth is a plausible next commit: one
+  // choke point cannot be half-applied.
+  const source = replaceNulls(raw)
   // Prefix every finding with the document, the way the parse/serialize
   // failures above already do. Without it the shape and position checks - the
   // large majority - reached the report anonymous, so the grouping had no

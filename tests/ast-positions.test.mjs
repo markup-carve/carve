@@ -503,9 +503,17 @@ test('no corpus document begins a span away from its opening markup', () => {
   const cases = readdirSync(dir).filter((name) => name.endsWith('.crv'))
   let examined = 0
   for (const name of cases) {
-    const source = readFileSync(resolve(dir, name), 'utf8')
+    const raw = readFileSync(resolve(dir, name), 'utf8')
+    // Measured against the source PART 0 INPUT hands the parser, not the
+    // fixture bytes, for the reason spelled out on the line-terminator pass
+    // above: NUL becomes U+FFFD before the first line is read. The engine still
+    // gets `raw`. Latent rather than firing today - no opener window or
+    // over-reach tail currently covers the NUL in `397-...` - but it is the
+    // same defect `scripts/ast-conformance.mjs` was reporting for real, and a
+    // check that is only accidentally right is one carve#1531 is about.
+    const source = replaceNulls(raw)
     const findings = []
-    examined += checkOpeningMarkup(parse(source), [...source], findings)
+    examined += checkOpeningMarkup(parse(raw), [...source], findings)
     assert.deepEqual(findings, [], `${name}\n${findings.join('\n')}`)
   }
   assert.ok(examined > 1000, `only ${examined} span(s) reached the opening-markup rule`)
@@ -869,9 +877,17 @@ test('STOPS AT ITS CHILDREN, over every corpus document', () => {
   let examined = 0
   const measured = new Map()
   for (const name of cases) {
-    const source = readFileSync(resolve(dir, name), 'utf8')
+    const raw = readFileSync(resolve(dir, name), 'utf8')
+    // Measured against the source PART 0 INPUT hands the parser, not the
+    // fixture bytes, for the reason spelled out on the line-terminator pass
+    // above: NUL becomes U+FFFD before the first line is read. The engine still
+    // gets `raw`. Latent rather than firing today - no opener window or
+    // over-reach tail currently covers the NUL in `397-...` - but it is the
+    // same defect `scripts/ast-conformance.mjs` was reporting for real, and a
+    // check that is only accidentally right is one carve#1531 is about.
+    const source = replaceNulls(raw)
     const findings = []
-    examined += checkStopsAtChildren(parse(source), [...source], findings)
+    examined += checkStopsAtChildren(parse(raw), [...source], findings)
     if (findings.length > 0) measured.set(name, findings.length)
   }
   assert.deepEqual(
