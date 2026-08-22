@@ -23,6 +23,14 @@ import { fileURLToPath } from 'node:url'
  * 41-line-blocks" is answered by `41-line-blocks.crv` or by
  * `41-line-blocks-2.crv`, since categories are numbered per family and the
  * grammar cites the family when any member will do.
+ *
+ * THE CONVERTER CORPUS IS A SECOND DESTINATION, and citations to it were
+ * unroutable rather than unchecked: "converter corpus NN-slug" matched the
+ * pattern below and then looked for a `.crv` in tests/corpus, where a
+ * converter case never lives. So the only way to cite one was to phrase it so
+ * the checker could not see it, which is the same as not checking it. A
+ * citation carrying the word CONVERTER resolves against the case directories
+ * in tests/corpus-convert instead (carve#1514).
  */
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -30,15 +38,32 @@ const grammar = readFileSync(resolve(here, '../resources/grammar.ebnf'), 'utf8')
 const cases = readdirSync(resolve(here, 'corpus'))
   .filter((f) => f.endsWith('.crv'))
   .map((f) => f.slice(0, -4))
+const convertCases = readdirSync(resolve(here, 'corpus-convert'), { withFileTypes: true })
+  .filter((e) => e.isDirectory())
+  .map((e) => e.name)
 
-/** Every `corpus NNN-slug` the grammar names, de-duplicated. */
+/**
+ * Every `corpus NNN-slug` the grammar names, de-duplicated, each tagged with
+ * the corpus it belongs to. `converter corpus 33-x` is the converter corpus;
+ * everything else is the conformance corpus.
+ */
 function citations() {
-  return [...new Set(grammar.match(/corpus\s+\d+-[a-z0-9-]+/g) ?? [])].map((m) =>
-    m.replace(/^corpus\s+/, ''),
-  )
+  const found = grammar.match(/([Cc]onverter\s+)?corpus\s+\d+-[a-z0-9-]+/g) ?? []
+  const seen = new Map()
+  for (const m of found) {
+    const converter = /^[Cc]onverter/.test(m)
+    const cite = m.replace(/^([Cc]onverter\s+)?corpus\s+/, '')
+    // Keyed by DESTINATION as well as slug. The two corpora number
+    // independently, so one slug can name a real case in each, and a map keyed
+    // by the slug alone would let the later citation overwrite the earlier
+    // one's destination - checking one route and silently passing the other.
+    seen.set(`${converter ? 'converter' : 'core'}|${cite}`, { cite, converter })
+  }
+  return [...seen.values()]
 }
 
-const resolvesTo = (cite) => cases.some((c) => c === cite || c.startsWith(`${cite}-`))
+const resolvesTo = ({ cite, converter }) =>
+  (converter ? convertCases : cases).some((c) => c === cite || c.startsWith(`${cite}-`))
 
 test('every corpus case the grammar cites exists', () => {
   const cited = citations()
@@ -48,7 +73,7 @@ test('every corpus case the grammar cites exists', () => {
     cited.length >= 30,
     `only ${cited.length} citations matched; the pattern probably stopped matching rather than the grammar losing them`,
   )
-  const missing = cited.filter((c) => !resolvesTo(c))
+  const missing = cited.filter((c) => !resolvesTo(c)).map(({ cite, converter }) => (converter ? `converter ${cite}` : cite))
   assert.deepEqual(
     missing,
     [],

@@ -60,3 +60,19 @@
 # converter summary rather than this file: `npm run compare:convert` prints a
 # convert_pass count per engine, and it is that count, not the contents here,
 # that says the cases are being converted and compared.
+
+# PART 9 section 18, ruled at carve#1514: an importer meeting
+# <div class="math display"> emits the CORE $$ form, never the ``` math ```
+# extension fence, because the fence degrades to a language-math code block
+# wherever the extension is not loaded.
+#
+# Measured 2026-08-22, each engine built from a clone made for the run:
+# carve-js 906357c writes the core form already (markup-carve/carve-js#1295);
+# carve-php 3a06c99 writes the fence (markup-carve/carve-php#1546 chose it and
+# now changes to match); carve-rs 3250454 leaves the div generic, deliberately
+# unimplemented under markup-carve/carve-rs#1222 pending this ruling.
+#
+# Each line goes in the commit that lands the fix for that engine.
+
+php/33-html-block-math-imports-as-the-core-form  Writes the ``` math ``` extension fence where PART 9 section 18 requires the core $$ form.
+rust/33-html-block-math-imports-as-the-core-form  Leaves <div class="math display"> as a generic div; PART 9 section 18's core $$ form is unimplemented (markup-carve/carve-rs#1222).

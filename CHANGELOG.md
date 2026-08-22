@@ -43,6 +43,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **An HTML import of block math writes the core `$$` form** (carve#1514,
+  PART 9 §18). The ```` ```math ```` fence is an extension and degrades to a
+  `language-math` code block wherever it is not loaded, so an importer that
+  emits it produces a document whose meaning depends on the consumer. The
+  MathML path writes no trailing `$` / `$$` either. Converter corpus 33.
 - **An escape escalation reaches the block that failed, not the document**
   (carve#1507, PART 11 §2b, §4). All three writers took one needed escape as
   license to escape every candidate in the document, which invented 72 idle

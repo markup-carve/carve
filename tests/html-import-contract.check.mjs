@@ -81,6 +81,12 @@ const PIN_LAG = new Map([
   // where the fixture says `{.mermaid}`. Clears with the carve-js side of
   // markup-carve/carve#1500.
   ['derived-accessible-name', 'keeps a derived role and aria-label (carve#1500)'],
+  // The pin predates markup-carve/carve-js#1295, so it imports
+  // `<div class="math display">` as a generic colon fence where PART 9 §18
+  // requires the core `$$` form. The two MathML halves of the same fixture
+  // already match, which is the measurement behind that clause's sentence that
+  // carve-js never wrote a trailing delimiter. Clears with the pin bump.
+  ['math-block-and-mathml', 'imports a math div as a colon fence (carve#1514)'],
 ])
 
 /*

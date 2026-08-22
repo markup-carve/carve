@@ -145,7 +145,10 @@ const PINNED_UNIMPLEMENTED = {
  * that starts matching fails as STALE until the entry is deleted in the commit
  * that moves the pin, and the meaning assertion still runs regardless.
  */
-const PINNED_DRIFT = {}
+const PINNED_DRIFT = {
+  '33-html-block-math-imports-as-the-core-form':
+    'the pinned build predates markup-carve/carve-js#1295, so it imports <div class="math display"> as a generic div; PART 9 §18 requires the core $$ form. Delete when the pin advances past that fix.',
+}
 
 /**
  * The visible text of an HTML fragment.
