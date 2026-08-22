@@ -213,13 +213,25 @@ export function checkStopsAtChildren(doc, codepoints, findings) {
     if (!ENDS_AT_LAST_CHILD.has(node.type)) continue
     const pos = node.pos
     if (!pos || !Number.isInteger(pos.startOffset) || !Number.isInteger(pos.endOffset)) continue
+    // A STRUCTURAL CHILD IS NOT ALWAYS AN ARRAY ENTRY. A `figure` carries its
+    // `target` as a SINGLE node, so a rule that only walked array-valued
+    // properties saw a target-only figure as empty, skipped it for want of an
+    // `EMPTY_CONTAINER_MARKUP` entry, and compared a captioned one against the
+    // caption alone. `figure` would then have been a type this rule names and
+    // never reaches - the carve#755 shape, in the very check written to close
+    // one. Found by review, not by a run: the corpus figures all end at their
+    // caption, so nothing failed either way.
     const children = []
     for (const [key, value] of Object.entries(node)) {
-      if (key === 'pos' || !Array.isArray(value)) continue
-      for (const child of value) {
-        if (child && typeof child === 'object' && typeof child.type === 'string') {
-          children.push(child)
+      if (key === 'pos') continue
+      if (Array.isArray(value)) {
+        for (const child of value) {
+          if (child && typeof child === 'object' && typeof child.type === 'string') {
+            children.push(child)
+          }
         }
+      } else if (value && typeof value === 'object' && typeof value.type === 'string') {
+        children.push(value)
       }
     }
     if (children.length === 0) {
