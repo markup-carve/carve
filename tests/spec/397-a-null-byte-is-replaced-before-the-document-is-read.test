@@ -1,0 +1,7 @@
+A null byte is replaced before the document is read
+
+```
+cd
+.
+<p>cd</p>
+```
