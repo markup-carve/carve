@@ -210,6 +210,11 @@ does not launder an attack:
   deletes content is lossy rather than safe - a Markdown reader keeps them too.
   Hardening on these two targets is escaping and URL filtering, not deletion.
   The per-target rule is grammar PART 9 §29.
+- **U+0000 never reaches any target.** It is replaced by U+FFFD REPLACEMENT
+  CHARACTER before the first line is read (grammar PART 0 INPUT), the same
+  replacement CommonMark 2.3 mandates, so no renderer has to decide about it and
+  no output can carry a NUL. It is the one C0 control §29 carves out; every
+  other one is content.
 - **HTML import** (`HtmlToCarve`, where provided) drops all `on*` event-handler
   attributes and dangerous URL schemes, so round-tripping HTML through Carve
   cannot smuggle a handler into the output.

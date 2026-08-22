@@ -16,6 +16,7 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parse } from '@markup-carve/carve'
+import { replaceNulls } from '../scripts/spec/layout.mjs'
 import {
   HOISTED_DEFINITION_TYPES,
   OPENING_MARKUP,
@@ -227,8 +228,17 @@ test('no corpus document has a span starting on a line terminator', () => {
   const dir = resolve(repo, 'tests/corpus')
   const cases = readdirSync(dir).filter((name) => name.endsWith('.crv'))
   for (const name of cases) {
-    const source = readFileSync(resolve(dir, name), 'utf8')
-    const findings = findingsFor(parse(source), source)
+    const raw = readFileSync(resolve(dir, name), 'utf8')
+    // PART 0 INPUT replaces every U+0000 with U+FFFD before the first line is
+    // read, one codepoint for one, so the node's text holds the replacement
+    // where the fixture holds the byte. Slicing the raw fixture reported the
+    // NUL corpus document as a bad span while every offset in it was right
+    // (carve#1523). Only this transform is applied: the BOM strip and the
+    // line-ending fold change LENGTH, and the engines report positions against
+    // the source as it arrived, so applying those would move every offset in a
+    // CRLF or BOM'd document (carve#876).
+    const source = replaceNulls(raw)
+    const findings = findingsFor(parse(raw), source)
     const unexpected = findings.filter((f) => !f.startsWith('missing pos on '))
     assert.deepEqual(unexpected, [], `${name}\n${unexpected.join('\n')}`)
   }

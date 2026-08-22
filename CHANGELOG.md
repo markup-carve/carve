@@ -144,6 +144,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **U+0000 is replaced before the document is read** (carve#1523, PART 0 INPUT,
+  PART 9 §29). Every NUL becomes U+FFFD at the parse boundary, so it is never
+  content and no target emits it; every other C0 control stays content and is
+  unchanged. The three engines already did this and the spec said the opposite.
+  Corpus 397.
 - **An importer does not bake a derived accessible name into source**
   (carve#1500, PART 9 §16a). An HTML importer drops an attribute whose value
   equals what the renderer derives for that element - an untitled admonition's

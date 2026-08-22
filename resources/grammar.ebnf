@@ -132,6 +132,32 @@
            The executable spec did NOT, and rendered the heading as a paragraph
            - a divergence no corpus document could see, because none carried a
            BOM (carve#872).
+
+           A NULL IS REPLACED BEFORE THE FIRST LINE IS READ -- NORMATIVE.
+           Every U+0000 in the source becomes U+FFFD REPLACEMENT CHARACTER,
+           wherever it stands, before the first line is read. It is therefore
+           not content, and it is the ONE C0 control PART 9 §29 does not make
+           content; §29 carries the carve-out and its reasons, and the
+           transform itself belongs here because it happens at this boundary
+           and for the same kind of reason as the mark above -- a document is
+           read over the OUTPUT of this layer, not over the bytes as authored.
+
+           EVERY occurrence, not only a leading one, which is where it differs
+           from the mark. A NUL is not a character an author writes and means;
+           it is what a truncated read, a C string or a mangled encoding
+           leaves behind, and CommonMark 2.3 replaces it for that reason. The
+           replacement is ONE codepoint for one, so unlike the stripped mark
+           it moves no offset: a position reported against the transformed
+           source is the position in the source, and `tests/ast-positions`
+           needs no waiver for it (the reason carve#876 blocks a BOM'd corpus
+           document and does not block this one).
+
+           Stated for the same reason as the mark: all three engines do it --
+           carve-js calls it "decided cross-impl behavior; WHATWG-style" --
+           and none of them said so, while the executable spec did not do it
+           at all and emitted the raw NUL. No corpus document carried the byte,
+           so neither behavior was pinned. One does now (carve#1523).
+
            Column arithmetic is PART 9 §24 C1. A TAB IS SYNTAX ONLY IN THE
            LEADING RUN (PART 7).
    STATE.  open := stack of open containers, bottom-up (document ->
@@ -3988,6 +4014,15 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
      VERTICAL TAB (U+000B) is CONTENT.
      FORM FEED     (U+000C) is CONTENT.
 
+   OVER THE OUTPUT OF PART 0, like every other production here. One character
+   never reaches this clause: U+0000 is replaced by U+FFFD before the first
+   line is read (PART 0 INPUT; PART 9 §29 carries the reasons), so the
+   question of whether a NUL is whitespace or content does not arise. That is
+   the same layering as the byte order mark, which this file calls an ordinary
+   zero-width character while PART 0 strips a LEADING one before the reading
+   starts -- not an exception to "every other character is content", but a
+   statement about a stream that no longer holds the character.
+
    IN EVERY CONSTRUCT, which is the half that had to be said. A production
    that spells a whitespace run for itself spells THIS one: `blank_line`,
    `indent`, `definition_indent`, `line_block_line`, `comment_line`,
@@ -7164,13 +7199,47 @@ EOF = (* end of file *) ;
 
       THE SUBJECT IS A CLASS, NOT TWO CHARACTERS. After carve#963 the
       whitespace of this language is exactly U+0020, U+0009, U+000A and
-      U+000D. EVERY OTHER C0 CONTROL -- U+0000..U+0008, U+000B, U+000C,
+      U+000D. EVERY OTHER C0 CONTROL -- U+0001..U+0008, U+000B, U+000C,
       U+000E..U+001F -- is ordinary CONTENT: it parses as content, it
       survives into the AST, and it satisfies no whitespace slot anywhere.
       The rows below say what happens to ALL of them on each target. Naming
       only the vertical tab and the form feed, because those are the two the
       whitespace clause happens to mention, would leave the rest to habit,
       which is the state this section replaces.
+
+      U+0000 IS NOT ONE OF THOSE CONTROLS -- NORMATIVE (carve#1523). The NULL is
+      REPLACED BY U+FFFD before the first line is read (PART 0 INPUT, A NULL
+      IS REPLACED BEFORE THE FIRST LINE IS READ). So it is not content, it
+      never reaches the AST, and no target is ever asked whether to emit it.
+      T1..T4 below therefore say NOTHING about it: by the time a target runs
+      there is no NUL left to emit, and what each one emits is the ordinary
+      U+FFFD it was handed. HTML, Markdown and plain text emit that character
+      as text like any other, the canonical `carve` writer serializes it as
+      source text, and ANSI is not asked to strip it either -- T4 strips
+      CONTROLS, and U+FFFD is not one. An engine that reaches T1..T4 still
+      holding a NUL has skipped the parse boundary, not found an exception
+      here.
+
+      WHY THE ONE CARVE-OUT, since a rule with an exception has to say why
+      the exception does not spread. Three reasons, none of which reaches
+      another C0 control:
+      - A NUL IS NOT VALID IN AN HTML DOCUMENT. T1's argument for emitting
+        the rest is that the consumer is a parser which treats a stray
+        control as inert character data. That is the argument that fails for
+        this one character, and it fails on the consumer's own terms rather
+        than on a general worry about control characters -- which is exactly
+        the shape T4 already uses to reach one target and no other.
+      - THE IMPORTER ALREADY REPLACES IT. CommonMark 2.3 mandates the
+        replacement and Carve's Markdown importer performs it
+        (markup-carve/carve-js#1293). A language that strips the character on
+        the way in and emits it on the way out is incoherent at its own
+        boundary, and the incoherence is not fixable in the importer: the
+        authored NUL would still reach the output.
+      - THE ENGINES ALREADY AGREED, DELIBERATELY. All three replace it and
+        none said so, while the executable spec kept it -- the same shape as
+        the byte order mark (carve#872), down to why it stayed invisible: no
+        corpus document carried the byte, so neither behavior was pinned.
+        This is not three independent accidents being ratified.
 
       T1 HTML EMITS THEM. The HTML target does not strip a non-whitespace C0
          control from rendered text. That is the status quo, and the

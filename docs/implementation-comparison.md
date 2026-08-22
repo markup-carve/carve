@@ -164,7 +164,8 @@ under the same semantic-span rule,
 `383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container`,
 `384-a-continuation-marker-attaches-only-a-flush-left-block`,
 `393-an-engine-written-shape-says-what-it-is-called`,
-`394-a-leading-escaped-caret-keeps-its-escape`.
+`394-a-leading-escaped-caret-keeps-its-escape`,
+`397-a-null-byte-is-replaced-before-the-document-is-read`.
 
 Every category up to and including `334` landed on a host that could not retake
 the run above, so its numbers describe the corpus WITHOUT them. The alternative

@@ -31,8 +31,15 @@ const lines = src.split('\n')
  * These modifiers apply the byte transform when the fixture is written. The
  * example stays readable, and the .crv - which IS protected - carries the real
  * bytes (carve#872).
+ *
+ * `nul` is the same problem one step worse. A U+0000 in the example source
+ * would make git call resources/examples/edge-cases.md BINARY - no diff for
+ * the whole 26,000-line file, on every future review of any example in it -
+ * and it is invisible in an editor besides. So the example writes U+2400
+ * SYMBOL FOR NULL, which is exactly as reviewable as the character it stands
+ * for is not, and this transform substitutes the real byte (carve#1523).
  */
-const KNOWN_MODIFIERS = new Set(['no-render', 'crlf', 'cr', 'bom'])
+const KNOWN_MODIFIERS = new Set(['no-render', 'crlf', 'cr', 'bom', 'nul'])
 
 // Byte transforms, applied to the .crv in this order. The expected HTML is
 // unaffected: the point of each pair is that the document means the same thing
@@ -42,6 +49,19 @@ const applyModifiers = (carve, modifiers) => {
   if (modifiers.has('crlf')) out = out.replace(/\n/g, '\r\n')
   if (modifiers.has('cr')) out = out.replace(/\n/g, '\r')
   if (modifiers.has('bom')) out = '\ufeff' + out
+  // U+2400 SYMBOL FOR NULL stands in for the byte in the example source; the
+  // fixture gets the byte. A `nul` block whose carve side holds no placeholder
+  // would write an ordinary document and assert nothing, so that is an error
+  // rather than a no-op - the same reasoning as the unknown-modifier check.
+  if (modifiers.has('nul')) {
+    if (!out.includes('\u2400')) {
+      console.error('generate-corpus: a `::: compare nul` block carries no U+2400 SYMBOL FOR NULL.')
+      console.error('  That placeholder is what becomes the byte, so the fixture would be written')
+      console.error('  with ordinary characters and would pin nothing it claims to.')
+      process.exit(1)
+    }
+    out = out.replace(/\u2400/g, '\u0000')
+  }
   return out
 }
 let scan
@@ -369,11 +389,15 @@ const maxRun = (s, ch) => {
 
 // One .test file per section, concatenating every example in the section.
 //
-// A case whose bytes were transformed is LEFT OUT. This format delimits its
-// pairs by lines, so a document whose line endings are the subject would be
-// re-split by the reader and arrive as something else - the mirror cannot carry
-// it. Skipping is stated rather than silent: a case that quietly vanished from
-// a downstream runner is the shape this repo has been bitten by before.
+// A case whose bytes were transformed is LEFT OUT, for two reasons depending on
+// the transform. This format delimits its pairs by LINES, so a document whose
+// line endings are the subject would be re-split by the reader and arrive as
+// something else. And a `nul` case would put a U+0000 into a concatenated file
+// holding every other case in its section, making that file binary for every
+// downstream runner that reads it - the byte belongs in a fixture of its own,
+// which tests/corpus already is. Skipping is stated rather than silent: a case
+// that quietly vanished from a downstream runner is the shape this repo has
+// been bitten by before.
 const mirrored = examples.filter((ex) => ex.modifiers.size === 0 || (ex.modifiers.size === 1 && ex.modifiers.has('no-render')))
 const notMirrored = examples.filter((ex) => !mirrored.includes(ex))
 const bySection = new Map()
@@ -395,5 +419,9 @@ for (const [section, exs] of bySection) {
 }
 console.log(`Wrote ${bySection.size} .test files to ${specDir}`)
 for (const ex of notMirrored) {
-  console.log(`  not mirrored (line-ending bytes are the case): ${ex.idx}-${ex.slug}`)
+  // Name the transform. The reason used to read "line-ending bytes are the
+  // case" for every skipped case, which stopped being true the moment a second
+  // kind of transform existed (carve#1523).
+  const why = [...ex.modifiers].filter((m) => m !== 'no-render').join(', ')
+  console.log(`  not mirrored (transformed bytes are the case: ${why}): ${ex.idx}-${ex.slug}`)
 }

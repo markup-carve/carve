@@ -373,6 +373,12 @@ const ORDERED = new RegExp(`^([ \\t]*)([0-9]+|[a-z]+|[A-Z]+|(?=\\.))([.)])(${ATT
 const CONT_MARKER = /^\+[ \t]*$/
 // marks a lazily-folded line (PART 9 SS10 I2): always paragraph text, never
 // re-classified as structure when an item's content is re-parsed
+//
+// STILL A NUL, and now unforgeable rather than merely unlikely: `parse` below
+// replaces every U+0000 with U+FFFD before the first line is read (PART 0
+// INPUT), so no document can carry the character this frame is built from.
+// Until that line existed a source holding a NUL could forge the frame - the
+// same collision shape as markup-carve/carve-rs#1217 (carve#1523).
 export const LAZY = '\u0000L\u0000'
 
 /// A body line with the internal LAZY frame removed.
@@ -1336,7 +1342,23 @@ function opensSubBlock(line) {
   return isColonBlockOpener(line)
 }
 
-export function parse(src) {
+/*
+ * The LENGTH-PRESERVING half of PART 0 INPUT, exported on its own.
+ *
+ * PART 0 applies three transforms before the first line is read. Two of them
+ * change the string's LENGTH - the BOM strip removes a codepoint, the
+ * line-ending fold removes one per CRLF - and the engines report positions
+ * against the source as it arrived, so a checker that slices the source must
+ * NOT apply those two (that is carve#876's territory).
+ *
+ * The NUL replacement is one codepoint for one and moves no offset, so a
+ * checker MUST apply it: `tests/ast-positions.test.mjs` sliced the raw fixture
+ * and reported the NUL corpus document as a bad span while every offset in it
+ * was right - the source said U+0000 where the node said U+FFFD (carve#1523).
+ */
+export const replaceNulls = (src) => src.replace(/\u0000/g, '\uFFFD')
+
+function normalizeSource(src) {
   // A single leading U+FEFF is stripped before the first line is read, so
   // `<BOM># T` is a heading rather than paragraph text. All three engines do
   // this and none of them says so anywhere normative; the oracle did not, and
@@ -1346,12 +1368,30 @@ export function parse(src) {
   // zero-width character, which PART 9 already says of U+FEFF on a destination
   // ("ZERO-WIDTH characters are NOT whitespace and ARE ordinary characters").
   if (src.charCodeAt(0) === 0xfeff) src = src.slice(1)
+  // Every U+0000 becomes U+FFFD before the first line is read (PART 0 INPUT,
+  // A NULL IS REPLACED BEFORE THE FIRST LINE IS READ; PART 9 §29 carries the
+  // reasons). All three engines did this and none said so; the oracle did
+  // not, and emitted the raw NUL, which no corpus document could see because
+  // none carried the byte (carve#1523).
+  //
+  // It also makes the LAZY frame below SAFE BY CONSTRUCTION rather than by
+  // luck: that frame is U+0000 'L' U+0000, and until this line existed a
+  // document carrying a NUL could forge one. Nothing downstream of here can
+  // hold the character, so the sentinel stays a NUL and stays unforgeable -
+  // and scripts/formal-core-check.mjs can go on treating a U+0000 in the
+  // OUTPUT as a framing leak, since that is now the only way one gets there.
+  src = replaceNulls(src)
   // `newline = '\n' | '\r\n' | '\r'` - all three end a line, and splitting on
   // '\n' alone left the carriage return as ordinary text at the end of every
   // line, which the inline grammar then refused outright. So the oracle could
   // not read a CRLF document at all, while the production says it is one
   // (carve#872).
   src = src.replace(/\r\n?/g, '\n')
+  return src
+}
+
+export function parse(src) {
+  src = normalizeSource(src)
   const lines = src.split('\n')
   if (lines[lines.length - 1] === '') lines.pop()
   const state = {

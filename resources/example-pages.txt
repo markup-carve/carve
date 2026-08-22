@@ -644,6 +644,7 @@ index: examples/edge-cases/index.md
   the-same-column-written-with-four-spaces
   trailing-whitespace-after-a-block-marker
   line-endings-and-a-byte-order-mark
+  a-null-byte-is-replaced-before-the-document-is-read
   a-tab-separates-two-attributes-and-pads-a-block-as-a-space-does
   colon-fence-separator-must-be-a-space
   colon-fence-metadata-slots-must-be-a-space-too
