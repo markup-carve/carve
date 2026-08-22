@@ -43,6 +43,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The `labels` admission rule stops reading on two strings that have no key**
+  (carve#1510, Extensions §1.5, PART 9 §16a). The heading-permalink label and
+  the table-of-contents summary stay options on the extensions that write
+  them; the map carries the strings that have no other home, and a string an
+  extension already exposes as an option does not get a key as well.
 - **An HTML import of block math writes the core `$$` form** (carve#1514,
   PART 9 §18). The ```` ```math ```` fence is an extension and degrades to a
   `language-math` code block wherever it is not loaded, so an importer that

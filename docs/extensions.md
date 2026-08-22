@@ -188,9 +188,12 @@ words. PART 9 §16a governs the same question for core, and its rule binds here:
 > An extension MAY read the map for a string it shares with core; it MUST NOT
 > require the host to configure the same text twice.
 
-**One `labels` map localizes a whole document.** Every extension-written string
-that has a fixed English default has a key in the render's `labels` map, and the
-extension reads it. A host translating a document sets `labels` **once**:
+**One `labels` map localizes a whole document.** The map carries the
+extension-written strings that have no other home: an extension-written string
+with a fixed English default has a key here, and the extension reads it, **unless
+the extension already exposes that string as an option of its own** - in which
+case the option is where it is configured and the map has no key for it. A host
+translating a document sets `labels` **once** for everything in the map:
 
 ```js
 carveToHtml(src, {
@@ -232,6 +235,23 @@ to the *extension's own class word* (`mermaid`, `d2`, and `graphviz` for the
 also names its panel (§13.2), an
 index term, an admonition title. Those are named by DERIVING from the document,
 so a translated document translates them exactly once, in the document.
+
+**Nor does a string the extension already exposes as an option** (carve#1510).
+The heading-permalink label (default `Permalink`) and the table-of-contents
+`summary` (default `Table of Contents`, visible whenever `collapsible` is on)
+both have a fixed English default and neither is in the map. They are configured
+on the extensions that write them - `headingPermalinks({ ariaLabel })` and
+`tableOfContents({ summary })` - and adding a key would give one string two
+spellings where the extension already had one. Measured on the pinned build:
+`labels: { headingPermalink: 'PERM' }` changes nothing, while
+`tableOfContents({ summary: 'INHALT' })` reaches the `<summary>`.
+
+**The rule for a new one.** An extension-written string with a fixed English
+default gets a `labels` key **unless** the extension already exposes it as an
+option, and it does not get both. Decide it once, when the string is added: the
+map is for strings that would otherwise have nowhere to be set, and an option is
+already somewhere. The three keys in the table above predate this rule and each
+carries an option as well, arbitrated by the precedence order stated here.
 
 **Why this is not localization.** There is no locale name and no built-in
 translation table, for the reason §16a gives: a locale table is data every

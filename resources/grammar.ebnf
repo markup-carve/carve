@@ -7328,11 +7328,13 @@ EOF = (* end of file *) ;
 
    AN EXTENSION MAY read the map for a string it shares with core; it MUST NOT
    require the host to configure the same text twice. Two extension-written
-   strings still have no key and are options only -- the heading-permalink
-   label and the table-of-contents summary (carve-js `ariaLabel` / `summary`,
-   carve-php `$ariaLabel`, carve-rs `aria_label`). That is the state, not a
-   rule: §1.5's admission sentence reads on both of them, and whether they
-   join the map is carve#1510.
+   strings have no key and are options only -- the heading-permalink label and
+   the table-of-contents summary (carve-js `ariaLabel` / `summary`, carve-php
+   `$ariaLabel`, carve-rs `aria_label`). That is now the RULE and not merely the
+   state (carve#1510): a string the extension already exposes as an option is
+   configured there, and §1.5's admission sentence has been narrowed to say so
+   instead of reading on these two. Adding a key would give one string two
+   spellings where the extension already had one.
 
    EVERY DOCUMENTED KEY REACHES THE OUTPUT, and that is checked rather than
    asserted (carve#1508). No fixture in the spec repo renders with a non-default
