@@ -11,6 +11,20 @@
  *     the class of bug that shipped in carve-rs as a nested list being
  *     reformatted from tight to loose (carve-rs#286).
  *
+ *     The tree those invariants are compared over is the PUBLISHED one -
+ *     `toAstJson(parse(x))`, the PART 12 shape - never the engine's internal
+ *     `parse()` return. An internal tree carries fields PART 12 never declares
+ *     and `resources/ast-schema.json` never lists, and those fields record
+ *     where a node was WRITTEN: `footnoteDefPos` on the root,
+ *     `termSpans` / `definitionSpans` / `definitionLines` on a definition-list
+ *     item. Moving nodes is most of what the writer does, so comparing them
+ *     reports a difference for every document whose definitions the writer
+ *     hoists or whose blocks it re-separates - 74 of the 1371 corpus documents,
+ *     none of which says anything different afterwards (carve#1616). This file
+ *     was green on that reading only because none of its 12 documents had a
+ *     definition list and only one had a footnote definition; `13` and `14`
+ *     below close that hole.
+ *
  *   - The BYTES (PART 11 §2, §4) pin the escaping decision itself. They were
  *     skipped while no engine implemented minimal escaping; the pinned carve-js
  *     build does now (carve-js#397), and it reproduces them exactly apart from
@@ -24,7 +38,7 @@ import assert from 'node:assert/strict'
 import { readFileSync, readdirSync } from 'node:fs'
 import { basename, dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToCarve, parse } from '@markup-carve/carve'
+import { carveToCarve, parse, toAstJson } from '@markup-carve/carve'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const dir = resolve(here, 'corpus-roundtrip')
@@ -74,8 +88,13 @@ function mergeTextRuns(node) {
   return node
 }
 
-// `pos` records source offsets, which legitimately move when the writer
-// renormalizes indentation, so it is not part of "same document".
+/*
+ * Drop the recorded source positions.
+ *
+ * `pos` and `srcByteLength` record WHERE a node was written, which legitimately
+ * moves when the writer renormalizes indentation, so neither is part of "same
+ * document".
+ */
 function withoutPositions(node) {
   if (Array.isArray(node)) return node.map(withoutPositions)
   if (node && typeof node === 'object') {
@@ -90,7 +109,7 @@ function withoutPositions(node) {
 }
 
 for (const { slug, source, expected } of cases) {
-  const comparable = (src) => mergeTextRuns(withoutPositions(parse(src)))
+  const comparable = (src) => mergeTextRuns(withoutPositions(toAstJson(parse(src))))
 
   test(`${slug}: parse(fmt(x)) == parse(x)`, () => {
     assert.deepEqual(
