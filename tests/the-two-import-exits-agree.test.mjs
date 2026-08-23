@@ -34,20 +34,17 @@ const root = new URL('./html-import/', import.meta.url)
  * fixture that disagrees and is not listed is red; a listed fixture that now
  * agrees is red too, so the line goes out with the commit that fixed it.
  *
- * Both entries were found by writing this check, and neither is
- * markup-carve/carve#1601's own subject.
+ * All three entries were found by writing this check, and none is
+ * markup-carve/carve#1601's own subject. Two are gone again: the `<figure>`
+ * pair was RULED rather than tolerated (markup-carve/carve#1606). The tree was
+ * the wrong exit - PART 9 §4b's hosts are "an image, a quote, a code block, a
+ * display-math paragraph", so the image host is the image and only the math
+ * host is a paragraph - and the fixtures now record `figure{target: image}`,
+ * which is what the source beside them always parsed to. The engine that wraps
+ * is declared as pin lag in the contract check, and the tree it returned is
+ * held as a literal below so retiring these entries does not retire the proof.
  */
 const UNMET = new Map([
-  [
-    'figure-caption',
-    'the tree wraps the figure target in a paragraph, which the source it ' +
-      'writes does not spell and which renders <p><img></p> rather than <img> ' +
-      '(markup-carve/carve#1606)',
-  ],
-  [
-    'caption-attributes',
-    'the same paragraph wrapper as figure-caption (markup-carve/carve#1606)',
-  ],
   [
     'derived-endnotes-section',
     'the tree says a one-item list is loose where its own source says tight, ' +
@@ -214,4 +211,39 @@ test('the invariant rejects the source both engines wrote for the three shapes',
         `tree, so this check would not have caught the shape it was written for`,
     )
   }
+})
+
+/*
+ * THE WRAPPER IS HELD AS A LITERAL TOO, and for the same reason - but on the
+ * other side of the invariant. The three shapes above were wrong in the SOURCE
+ * an importer wrote, so the literal to keep is a source string. The `<figure>`
+ * pair was wrong in the TREE (markup-carve/carve#1606): the source both engines
+ * write is `![a](i.png)` plus a caption line, which is right, and one of the
+ * two trees beside it wrapped the image in a paragraph. So the literal to keep
+ * is the tree, measured on carve-js `1568546` and declared as pin lag in
+ * tests/html-import-contract.check.mjs (markup-carve/carve-js#1381).
+ *
+ * Both directions are asserted. Rejecting the wrapper says the check can see
+ * the shape; accepting the ruled tree says it is not simply rejecting every
+ * tree put in front of it, which is the failure mode that would make the first
+ * assertion worthless.
+ */
+test('the invariant rejects the paragraph-wrapped figure tree, and accepts the ruled one', async () => {
+  const { parse } = await import('@markup-carve/carve')
+  const source = '![a](i.png)\n^ cap\n'
+  const image = { type: 'image', src: 'i.png', alt: 'a' }
+  const caption = [{ type: 'text', value: 'cap' }]
+  const figure = (target) => ({ type: 'document', children: [{ type: 'figure', target, caption }] })
+
+  assert.ok(
+    disagreement(normalize(parse(source)), normalize(figure({ type: 'paragraph', children: [image] }))),
+    'the paragraph-wrapped tree agrees with the source it was written beside, so this ' +
+      'check would not have caught the shape markup-carve/carve#1606 ruled',
+  )
+  assert.equal(
+    disagreement(normalize(parse(source)), normalize(figure(image))),
+    null,
+    'the ruled tree disagrees with its own source, so the check rejects everything ' +
+      'and the assertion above means nothing',
+  )
 })
