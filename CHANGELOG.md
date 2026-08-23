@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A blank verbatim line inside a block quote has a canonical spelling, and it
+  is pinned** (carve#1544, PART 11 §7/§7a). The three engines wrote three
+  documents for four core corpus cases with every other gate green. `.fmt`
+  sidecars now pin all four, and a failed engine run is NAMED - `compare:impls`
+  counted it into `errors=N`, folded it into the case's DIFF line, and printed
+  nothing that said which document or why.
+
 - **The AST span-divergence ledger records what the engines actually do.** The
   daily conformance workflow had been red for three consecutive runs on eight
   undeclared span rows across 37 documents. Two were carve-php and are fixed

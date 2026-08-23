@@ -641,7 +641,28 @@ const impls = [
   },
 ]
 
-function run(cmd, cwd, extraArgs = [], timeout = 15000) {
+/*
+ * PER-DOCUMENT WALL-CLOCK BUDGET for one engine on one document.
+ *
+ * A ceiling, not a performance gate: this runner compares OUTPUT, and the cost
+ * of a render is measured elsewhere. The budget exists so a hung engine ends the
+ * run instead of the job's own timeout ending it with nothing reported.
+ *
+ * It was 15s, chosen when the heaviest corpus document cost a fraction of a
+ * second in every engine. PART 11 §2b's escape escalation moved that: the
+ * escalation search renders and re-parses the WHOLE document once per step, and
+ * on `182-openers-past-the-nesting-cap-are-one-paragraph` - 200 nested colon
+ * fences, every one of which comes back as text the writer must not let re-open
+ * a div - it took carve-php from 0.47s to 4.51s, carve-js from 0.40s to 3.01s
+ * and carve-rs from 0.04s to 0.40s (measured across the three merges, same
+ * machine, load stated in carve#1544). Three-and-a-bit seconds of headroom on a
+ * shared runner is not headroom, and a run that trips it reports a DIFF on a
+ * document all three engines write identically - which is what happened
+ * (carve#1544). A minute leaves the ceiling doing the job it was put there for.
+ */
+const RENDER_TIMEOUT_MS = 60000
+
+function run(cmd, cwd, extraArgs = [], timeout = RENDER_TIMEOUT_MS) {
   const [bin, ...baseArgs] = cmd
   const started = process.hrtime.bigint()
   const result = spawnSync(bin, [...baseArgs, ...extraArgs], {
@@ -663,6 +684,11 @@ function run(cmd, cwd, extraArgs = [], timeout = 15000) {
     stderr: (result.stderr ?? '').trim(),
     elapsedMs,
     error: result.error?.message,
+    // KEPT, because it is the only field that says why on the failure mode with
+    // no other witness. A signal-killed process has `status: null`, no `error`
+    // and, usually, no stderr - so dropping this reported "exit status null"
+    // for an OOM kill, which is the case the ERROR line below exists to name.
+    signal: result.signal ?? null,
   }
 }
 
@@ -1190,6 +1216,28 @@ for (const pair of pairs) {
       if (!result.ok) {
         stats[impl.name].error++
         targetStats[target].errors++
+        // NAME IT, HERE. An error was counted into `errors=N`, folded into the
+        // DIFF line for the case (an `ERROR:` string never equals a render), and
+        // never printed - so a run that reported `carve: diffs=4 errors=1` said
+        // neither WHICH document errored nor WHY, and the DIFF line above it
+        // read as a fourth writer disagreement. It was not one: all three
+        // engines write that document identically, and the diff was the error
+        // wearing a diff's clothes (markup-carve/carve#1544).
+        //
+        // That is the same defect the `mismatched` list above was given a name
+        // to fix, and worse in one way: a mismatch can be reproduced by running
+        // the engine by hand, and a timeout or a signal cannot, because it is a
+        // property of the machine the run happened on. So the reason and the
+        // ELAPSED time both go out - `run()` reports a timeout as a null status
+        // with no stderr, which is indistinguishable from a silent non-zero
+        // exit unless the duration is next to it.
+        const reason =
+          result.stderr ||
+          result.error ||
+          (result.signal ? `killed by ${result.signal}` : `exit status ${result.status}`)
+        console.log(
+          `ERROR [${target}] ${pair.slug} (${impl.name}) after ${Math.round(result.elapsedMs)}ms: ${reason}`,
+        )
         outputs.push([impl.name, `ERROR:${result.stderr || result.error || result.status}`])
         ran.push(impl.name)
         continue
