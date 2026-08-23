@@ -245,6 +245,35 @@ export function noteFrame(payload) {
   return `\uE000note:${json}\uE001`
 }
 
+/*
+ * BOTH PART 9R R2 FRAMES, IN ONE PATTERN.
+ *
+ * The note frame above, or a labeled reference: `fn:` then the label, the
+ * U+0002 separator, then the rendered attributes.
+ *
+ * R2 numbers both forms from ONE shared document-order counter, so the pass
+ * that numbers them has to meet them in the order the document writes them.
+ * A single left-to-right `replace` does that; two consecutive ones number by
+ * FORM instead, which is what gave an inline note a number ahead of an
+ * earlier labeled use (markup-carve/carve#1562).
+ *
+ * The NOTE branch leads, so a frame-shaped run inside a note's JSON payload is
+ * consumed together with the note that carries it - the one property the old
+ * note-pass-first ordering was really providing. `json === undefined` tells
+ * the consumer which branch matched.
+ *
+ * Each branch is the pattern its own consumer already used, unchanged. The
+ * reference branch is spelled here rather than at the use site so the two
+ * frames are declared together, beside the functions that write them, and
+ * the note branch is BUILT from `NOTE_FRAME` rather than respelled - two
+ * copies of that pattern would be free to drift, and the one nothing reads
+ * directly would be the copy that rots.
+ */
+export const FOOTNOTE_FRAMES = new RegExp(
+  `${NOTE_FRAME.source}|\\uE000fn:([\\s\\S]*?)\\u0002(.*?)\\uE001`,
+  'g',
+)
+
 export function renderAttrs(list) {
   // serialization: SOURCE order; all classes merge (deduplicated, corpus
   // 121) into one class attribute at the position of the FIRST class;

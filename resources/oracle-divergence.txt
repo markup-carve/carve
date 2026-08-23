@@ -13,12 +13,16 @@
 #   - markup-carve/carve#1517: three engines folded a later list marker into an
 #     open paragraph, the oracle read the clause correctly, and nothing in this
 #     repository went red for months.
-#   - markup-carve/carve#1561 and markup-carve/carve#1562: three engines agree
-#     with each other AND with the normative text, and the oracle is the one
-#     that is wrong. Named here rather than counted, because an EMPTY list is
-#     the goal - a count would turn retiring the last entry into a
-#     documentation change, which is how a ledger acquires a header nobody
-#     believes.
+#   - markup-carve/carve#1561 and markup-carve/carve#1562: three engines agreed
+#     with each other AND with the normative text, and the oracle was the one
+#     that was wrong. Both were the comparison's first-run findings and both
+#     are fixed, which is why the list below is currently EMPTY.
+#
+# AN EMPTY LIST IS THE GOAL, not an error, and it is the state this file is
+# expected to sit in. The two directions above are named rather than counted
+# for that reason: a header that counted its entries would turn retiring the
+# last one into a documentation change, and a ledger nobody can empty is a
+# ledger whose header stops being believed.
 #
 # So the reason field says which way the finding points, and names the clause it
 # was decided against. That is what makes the entry retirable: the gate fails on
@@ -34,4 +38,3 @@
 #
 # Format: <document id><space><space><reason>
 
-docs/migrate-from-markdown.md#7  The oracle numbers an inline `^[...]` note ahead of an earlier `[^label]` use; PART 10 R2 numbers by FIRST-REFERENCE order from one shared footnoteSeq, which is what all three engines do. Oracle defect, markup-carve/carve#1562.
