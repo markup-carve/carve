@@ -609,6 +609,134 @@ test('no corpus document has a sibling overlap, in either engine shape', () => {
 })
 
 /*
+ * A HOISTED DEFINITION AGAINST THE CONTAINER IT WAS AUTHORED IN (PART 12 §4,
+ * carve#1571).
+ *
+ * The other exemption, and until this ruling it was the wide form the break
+ * half had just shed: every definition kind dropped out of the comparison
+ * entirely, against every sibling of any kind. Narrowing it to CONTAINMENT was
+ * not available, because carve#1522 ends a container emptied by hoisting at its
+ * own markup and the definition then reaches PAST its host - 13 corpus
+ * documents on carve-php and the same 13 on carve-rs. Three rulings collide
+ * there and one had to give; §4 states the exception, §7 and carve#1522 stand.
+ *
+ * THE ENGINE SHAPES BOTH GO THROUGH IT. The tests below build carve-php's and
+ * carve-rs's reading BY HAND, because the carve-js this repository pins has not
+ * implemented carve#1522 for this arrangement and publishes the quote covering
+ * the whole line - under which the definition is contained and the pair never
+ * exercises the ruling. A rule verified only against the shape that does not
+ * need it is a rule verified against nothing.
+ */
+
+const overlaps = (doc, source) => {
+  const findings = []
+  checkPositions(doc, source, findings)
+  return findings.filter((f) => f.includes('sibling spans overlap'))
+}
+
+test('the corpus document for it is a definition written inside a quote', () => {
+  // Read from the fixture rather than retyped, so the pair and the clause
+  // cannot drift apart. Thirteen corpus documents carry this arrangement and
+  // none was held by a test; this is the one the ruling works through.
+  const source = readFileSync(
+    resolve(repo, 'tests/corpus', '82-blockquote-lazy-continuation-6.crv'),
+    'utf8',
+  )
+  assert.equal(source, '> [f]: ~\n/\n')
+
+  const wire = toAstJson(parse(source))
+  const [quote, , definition] = wire.children
+  assert.equal(quote.type, 'block_quote')
+  assert.equal(definition.type, 'link_reference_definition')
+  // The definition was authored inside the quote and hoisted out by §7, so its
+  // span still points at the quote's source. That is the pair, in every engine.
+  assert.ok(quote.pos.startOffset <= definition.pos.startOffset)
+  assert.ok(definition.pos.startOffset < quote.pos.endOffset)
+  assert.deepEqual(overlaps(wire, source), [])
+})
+
+test('the emptied host the other two engines publish is exempt too', () => {
+  // carve-php's and carve-rs's reading of the same document, which is the one
+  // the ruling is about: carve#1522 ends the emptied quote at `> `, so the
+  // definition reaches past its host instead of sitting inside it, and
+  // containment cannot be what excuses the pair.
+  const source = '> [f]: ~\n/\n'
+  const doc = {
+    type: 'document',
+    children: [
+      { type: 'block_quote', pos: span(0, 2), children: [] },
+      { type: 'paragraph', pos: span(9, 10), children: [] },
+      { type: 'link_reference_definition', label: 'f', href: '~', pos: span(0, 8) },
+    ],
+  }
+  assert.deepEqual(overlaps(doc, source), [])
+})
+
+test('a footnote hosts the definition hoisted out of its body', () => {
+  // Corpus `202-...`, and the reason the host test is a child list rather than
+  // a type that is not a definition kind: both nodes here are hoisted
+  // definition kinds, and the footnote is still the container the reference
+  // definition was written inside.
+  const source = '[^a]: note\n  [r]: /u\n\nsee[^a] [t][r]\n'
+  const wire = toAstJson(parse(source))
+  const footnote = wire.children.find((c) => c.type === 'footnote')
+  const definition = wire.children.find((c) => c.type === 'link_reference_definition')
+  assert.ok(footnote.pos.endOffset > definition.pos.startOffset, 'the pair must actually overlap')
+  assert.deepEqual(overlaps(wire, source), [])
+})
+
+test('two definitions claiming the same source overlap each other', () => {
+  // What the wide form let through, and the reason the exemption had to become
+  // a pair test rather than merely a narrower set. Neither of these hosts
+  // anything - a label and a destination, no children - so neither can be the
+  // container the other was authored in.
+  const doc = {
+    type: 'document',
+    children: [
+      { type: 'link_reference_definition', label: 'a', href: '/u', pos: span(0, 8) },
+      { type: 'link_reference_definition', label: 'b', href: '/v', pos: span(4, 12) },
+    ],
+  }
+  const found = overlaps(doc, 'x'.repeat(20))
+  assert.equal(found.length, 1, `expected one overlap finding, got: ${JSON.stringify(found)}`)
+  assert.match(
+    found[0],
+    /"link_reference_definition" starts at 4, inside "link_reference_definition" which ends at 8/,
+  )
+})
+
+test('a definition does not claim source inside a sibling that opens after it', () => {
+  // The other half of the pair test. A definition cannot have been written
+  // inside a container that opens later, so this host is not its host and the
+  // overlap is a finding rather than an exemption.
+  const doc = {
+    type: 'document',
+    children: [
+      { type: 'abbreviation_def', abbr: 'HT', expansion: 'Hypertext', pos: span(0, 10) },
+      { type: 'block_quote', pos: span(5, 15), children: [] },
+    ],
+  }
+  const found = overlaps(doc, 'x'.repeat(20))
+  assert.equal(found.length, 1, `expected one overlap finding, got: ${JSON.stringify(found)}`)
+  assert.match(found[0], /"block_quote" starts at 5, inside "abbreviation_def" which ends at 10/)
+})
+
+test('a definition inside a div that ends at its closer is still exempt', () => {
+  // The arrangement the exemption was written for and which the narrowing must
+  // not lose: a container WITH a closer keeps the extent it always had, so the
+  // definition sits inside it and no reading makes the pair stop overlapping.
+  const source = '::: n\n[r]: /u\n:::\n'
+  const doc = {
+    type: 'document',
+    children: [
+      { type: 'div', pos: span(0, 17), children: [] },
+      { type: 'link_reference_definition', label: 'r', href: '/u', pos: span(6, 13) },
+    ],
+  }
+  assert.deepEqual(overlaps(doc, source), [])
+})
+
+/*
  * A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP (PART 12 section 4,
  * carve#913).
  *

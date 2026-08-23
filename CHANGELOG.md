@@ -30,6 +30,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   documents red: markup-carve/carve-js#1347, markup-carve/carve-js#1348 and
   markup-carve/carve-js#1349. `table_cell` and `definition_description` stay
   out, each with a measured reason.
+- **The sibling non-overlap rule's hoisted-definition exemption is a pair test,
+  and PART 12 §4 states the exception it applies** (carve#1571). A hoisted
+  definition may claim source inside the container it was authored in, whatever
+  that container's extent - which is what §7 and carve#1522 together produce on
+  13 corpus documents, and neither ruling moves. The checker used to drop every
+  definition kind out of the comparison entirely, so two definitions claiming
+  the same source, or a definition claiming source inside a sibling it was not
+  written in, were both invisible. 296 sibling pairs newly reach the rule and
+  none of them is a finding.
 - **A diagnostic on a bare inline run is numbered among the body children, not
   inside the paragraph the importer wrapped it in** (carve#1554, PART 12 §16).
   The index basis and the dropped-wrapper rule are one rule, and the

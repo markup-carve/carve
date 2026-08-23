@@ -249,6 +249,37 @@ offset to one node cannot recover an answer from two overlapping spans. Ruled at
 attribute block the sentence above excludes is the same rule reached from the
 other side ([carve#1524](https://github.com/markup-carve/carve/issues/1524)).
 
+**A hoisted definition may claim source inside the container it was authored
+in**, whatever that container's extent. This is the one exception to the
+non-overlap rule below, and it exists because §7 makes the definition a child of
+the document while §4 keeps its `pos` pointing back at the container it was
+written inside. Emptying that container does not withdraw the exception:
+
+```
+> [f]: ~
+/
+```
+
+spans the emptied `block_quote` as `> ` and the hoisted
+`link_reference_definition` over the whole line, so offsets 0 to 2 sit in two
+document-level siblings at once and the definition reaches past its host rather
+than sitting inside it. Ruled at
+[carve#1571](https://github.com/markup-carve/carve/issues/1571), which leaves §7
+and carve#1522 unchanged.
+
+The exception is about the **pair**, not about a definition: it does not say a
+hoisted definition overlaps nothing. Two definitions claiming the same source
+overlap each other, and a definition claiming source inside a sibling it was not
+authored in overlaps that sibling; both are findings. The host is the sibling
+whose span **begins at or before** the definition's - a definition cannot have
+been written inside a container that opens after it - and which **holds a child
+list**, since nothing is authored inside a node that has none. So a
+`link_reference_definition` and an `abbreviation_def` host nothing, while a
+`footnote` does: a reference definition written on a footnote body's
+continuation line is hoisted out of it, and that pair is two definition kinds.
+A host reaching past its own content is still wrong under the paragraphs above;
+the exception excuses an overlap, it does not extend a span.
+
 **A `definition_list` is not an exception**, and it is named here because it
 used to be one. It has no closer, so it ends at its last placed
 `definition_term` or `definition_description`. A floating attribute is *scoped*
