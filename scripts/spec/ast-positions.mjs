@@ -727,10 +727,21 @@ export function checkPositions(doc, source, findings) {
       // AND ONLY WHERE AN ESCAPE COULD ACTUALLY EXPLAIN THE DIFFERENCE
       // (carve#1566). The reason above is that resolving an escape leaves the
       // slice LONGER than the value it produced, so any backslash used to
-      // disable the comparison outright. A backslash the parser left literal -
-      // one before a character Carve does not escape - resolves to nothing and
-      // keeps the two the same length, and skipping those discarded a
-      // comparison that had every reason to run.
+      // disable the comparison outright. Two spans that a backslash was hiding
+      // are worth recovering, and the bound is arithmetic rather than a guess:
+      // resolving an escape consumes exactly ONE backslash and emits one
+      // character, so a set of escapes can shorten the value by AT MOST the
+      // number of backslashes in the slice, and never lengthen it.
+      //
+      //   equal lengths - a backslash the parser left literal, before a
+      //   character Carve does not escape. Nothing was resolved, so the two
+      //   are directly comparable.
+      //   shorter by more than the backslash count - no set of escapes reaches
+      //   that far, so the difference is a wrong span rather than the format
+      //   working.
+      //
+      // Both used to be skipped, which is how `a\q` against a value of `x`
+      // could pass a rule whose entire subject is a span not covering its text.
       if (
         node.type === 'text' &&
         typeof node.value === 'string' &&
@@ -738,8 +749,9 @@ export function checkPositions(doc, source, findings) {
       ) {
         const sliceChars = codepoints.slice(pos.startOffset, pos.endOffset)
         const slice = sliceChars.join('')
-        const anEscapeCouldExplainIt =
-          sliceChars.includes('\\') && sliceChars.length > [...node.value].length
+        const shortfall = sliceChars.length - [...node.value].length
+        const backslashes = sliceChars.filter((c) => c === '\\').length
+        const anEscapeCouldExplainIt = shortfall > 0 && shortfall <= backslashes
         if (!anEscapeCouldExplainIt && slice !== node.value) {
           findings.push(
             `pos does not cover the text it belongs to on "${node.type}" at ${path}: ` +

@@ -158,6 +158,31 @@ test('a text node holding a LITERAL backslash is still compared', () => {
   assert.match(findings[0], /does not cover the text it belongs to/)
 })
 
+test('a backslash cannot excuse a difference larger than the backslash count', () => {
+  // Resolving an escape consumes exactly one backslash and emits one character,
+  // so a set of escapes shortens the value by at most the number of backslashes
+  // in the slice. `a\\q` against a value of `x` is two characters short with one
+  // backslash to pay for it, which no escape reaches - so it is a wrong span
+  // rather than the format working, and the bound says so arithmetically.
+  const source = 'a\\q'
+  const doc = {
+    type: 'document',
+    children: [{ type: 'text', value: 'x', pos: pos(0, 3) }],
+  }
+  const findings = findingsFor(doc, source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /does not cover the text it belongs to/)
+})
+
+test('two escapes may account for two characters', () => {
+  const source = 'a\\*b\\*c'
+  const doc = {
+    type: 'document',
+    children: [{ type: 'text', value: 'a*b*c', pos: pos(0, 7) }],
+  }
+  assert.deepEqual(findingsFor(doc, source), [])
+})
+
 test('a text node whose backslash IS an escape is left alone', () => {
   // The reason the skip exists, and it survives the narrowing: the escape is
   // resolved into the value, so the source is longer than the text it produced
