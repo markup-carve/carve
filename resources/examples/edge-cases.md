@@ -26695,3 +26695,96 @@ until that is fixed (markup-carve/carve-js#1356).
 ```
 
 :::
+
+## One consumed boolean spells the looseness no blank line can
+
+PART 9 section 17 L7. Carve spells looseness with a blank line, and a blank line
+needs two things to stand between, so the shape with nothing on one side has no
+spelling at all: a ONE-ITEM loose list, and a definition description holding ONE
+block. The second is the worse case, because a blank line between two ENTRIES
+does not loosen a `<dl>` in the first place - only a second block inside the
+description wraps it - so `<dd><p>x</p></dd>` is unspellable at every entry
+count.
+
+`loose` on the preceding block-attribute line says both, in the one place the
+axis exists, and is CONSUMED: neither `<ul>` nor `<dl>` below carries a `loose`
+attribute. It follows PART 12 section 15's `header-rows` in all three respects -
+the same line, a structural fact carried as a boolean, consumed rather than
+emitted.
+
+The `<dl>` pair carries a second finding. This repository's own oracle never read
+a definition list's block attributes at all: `{.foo}` before a `:: term` line
+parsed correctly, attached to the node and was dropped on the way out, where
+carve-js emits `<dl class="foo">`. No corpus document had ever put an attribute
+line before a definition list, so nothing was red - the same gap carve#626 and
+carve#693 left one container over.
+
+Both documents are declared in `resources/engine-pin-drift.txt`: the pinned build
+has not shipped the key and renders the attribute literally, as `<ul loose="">`.
+
+::: compare
+
+```carve
+{loose}
+- Note text.
+```
+
+```html
+<ul>
+  <li><p>Note text.</p></li>
+</ul>
+```
+
+:::
+
+::: compare
+
+```carve
+{loose}
+:: Term
+:  Definition.
+```
+
+```html
+<dl>
+  <dt>Term</dt>
+  <dd><p>Definition.</p></dd>
+</dl>
+```
+
+:::
+
+## The writer spells looseness only where a blank line cannot
+
+The other half of L7, and the load-bearing half. `loose` is legal on a container
+the blank lines already loosened - it is a no-op there, deliberately, so a
+producer that always emits it stays simple. What the CANONICAL WRITER does is a
+separate question, and the answer is that it emits the key only where the
+blank-line spelling cannot express the looseness. PART 12 section 15's writer
+"retains `header-rows` / `footer-rows` when they are present" rather than
+deriving them onto every table, and PART 11 section 2 spends a mark only where
+omitting it would change the re-parsed document; on the list below the blank line
+already says loose, so the key would be idle by exactly that test.
+
+The alternative - emit it on every loose container - would rewrite a large share
+of this corpus and of every document anyone has written, and would gain nothing.
+So the rule needs a fixture that goes red when a writer starts decorating
+everything, which is what the `.fmt` sidecar beside this pair is: the HTML is
+identical under both spellings, so no HTML fixture can see the difference.
+
+::: compare
+
+```carve
+- alpha
+
+- beta
+```
+
+```html
+<ul>
+  <li><p>alpha</p></li>
+  <li><p>beta</p></li>
+</ul>
+```
+
+:::

@@ -3779,6 +3779,20 @@ key_value_attribute = identifier, '=', attribute_value ;
    djot-php; matched after key_value_attribute so `k=v` is not read as a bare
    `k`). It mixes freely with the other forms. See PART 9 §14. *)
 boolean_attribute = identifier - ('_', {character}) ;
+(* A FEW BOOLEAN NAMES ARE CONSUMED RATHER THAN EMITTED -- the attribute
+   vocabulary, listed once so a reader looking for "which names mean something"
+   finds them from the production rather than from three separate sections:
+
+     loose         on a LIST or a DEFINITION LIST: the container's children
+                   render as blocks rather than inline runs (PART 9 §17 L7)
+     header-rows   on a PIPE TABLE, with `footer-rows`: the leading and
+     footer-rows   trailing row ranges become `thead` / `tfoot`, boolean
+                   meaning one (PART 12 §15)
+
+   `aligns`, `valigns` and `widths` (PART 12 §19) are the same class in
+   key/value form. Every other name reaches the output as the attribute it is,
+   and each of these does too on a block that has nothing to consume it: the
+   name is not reserved, it is read by the block below it. *)
 (* A BOOLEAN ATTRIBUTE DOES NOT START WITH AN UNDERSCORE -- NORMATIVE
    (carve#1450). `identifier` admits a leading `_`, so `{_x_}` parsed BOTH as
    the boolean attribute `_x_` and as a forced underline. Alone on a line the
@@ -6162,6 +6176,128 @@ EOF = (* end of file *) ;
          rule found nowhere else in this grammar; treating it as loosening
          the item on its own would contradict L2 directly. Three engines
          each did one of those two things; neither is this rule.
+
+      L7 ONE CONSUMED BOOLEAN SPELLS THE LOOSENESS NO BLANK LINE CAN --
+         NORMATIVE (carve#1612). A container's preceding BLOCK-ATTRIBUTE LINE
+         (§15) MAY carry the boolean `loose`. It says that the container's
+         children render as BLOCKS rather than as inline runs, and it is
+         CONSUMED: it never reaches the output as an HTML attribute. The
+         precedent is PART 12 §15's `header-rows`, which rides the same line,
+         carries a structural fact as a boolean, and is likewise consumed rather
+         than emitted.
+
+             {loose}
+             - Note text.
+
+         renders
+
+             <ul>
+               <li><p>Note text.</p></li>
+             </ul>
+
+         THE KEY IS NOT LIST-SPECIFIC, and writing it as if it were would have
+         been the first of at least two one-off keys. Measured over every
+         container that can suppress a paragraph wrapper:
+
+             list item, tight              no <p>    <li>x</li>
+             list item, loose              has <p>   <li><p>x</p></li>
+             definition description        no <p>    <dd>x</dd>
+             definition description, 2 blocks  has <p>  <dd><p>x</p><p>y</p></dd>
+             table cell                    no <p>    no wrapped alternative
+             caption                       no <p>    no wrapped alternative
+             block quote, div, line block, footnote body   always <p>
+
+         So the tight/loose axis exists in exactly TWO places, and this key
+         applies wherever it exists: a LIST (L1) and a DEFINITION LIST (PART 2,
+         definition lists) today, and any container a later clause gives the
+         axis to, with no second key to invent. On a container with no such axis
+         the name has no special meaning and renders `loose=""` like any other
+         boolean. This clause adds a meaning at the positions that have one and
+         reserves the name nowhere else.
+
+         WHAT IS UNSPELLABLE WITHOUT IT. Looseness is spelled with a blank line,
+         and a blank line needs two things to stand between, so the shape with
+         nothing on one side has no spelling:
+
+           - a ONE-ITEM list. `<ul><li><p>x</p></li></ul>` has no "between
+             items" to put a blank line in.
+           - a definition description holding ONE block. A blank line between
+             two ENTRIES does not loosen a `<dl>` at all -- only a second block
+             inside the description wraps it -- so `<dd><p>x</p></dd>` is
+             unspellable at every entry count, not just at one.
+
+         The definition list is therefore worse off than the list, which is the
+         measurement that made the general key the cheaper answer: a list-only
+         key would have left the container with NO looseness mechanism at all
+         still without one.
+
+         THE SHAPE ARRIVES FROM ORDINARY HTML, which is why it earns syntax
+         rather than an interchange-only declaration. `<li><p>...</p></li>` is
+         what WordPress, TinyMCE and Google Docs export emit, so an importer
+         meets it on routine input (carve#1607). The alternative -- keep the
+         tree, report `structure-unspellable`, carry the shape through AST
+         encode/decode by PART 12 §6, exactly how multiple table bodies already
+         work -- costs no syntax and was rejected for that reason: the
+         diagnostic would fire on ordinary imports and tell the author only that
+         Carve cannot say what their document said.
+
+         THERE IS NO `tight` TWIN, and its absence is a decision rather than an
+         omission. TIGHT IS ALWAYS SPELLABLE: remove the blank lines. Only loose
+         has an unspellable case, so a `tight` key would be surface with no
+         shape behind it -- and it would introduce the one genuinely ambiguous
+         document this asymmetric design does not have, where the blank lines
+         say loose and the attribute says tight. Symmetry is the instinct here
+         and it buys a contradiction.
+
+         THE NAME IS THE TERM OF ART, on purpose. A name describing the tree --
+         `block-children` and its neighbours -- would name the wrong fact: the
+         children are already block nodes in both spellings, and what moves is
+         how they RENDER. A name describing the output -- `paragraphs`,
+         `wrapped` -- would be an HTML artifact, and this axis has to mean
+         something on the Markdown, plain and terminal targets too. `loose` is
+         what CommonMark, djot and Markdown Extra all call this distinction, in
+         lists and in definition lists alike, and L1 above already spells the
+         axis LOOSE. A second vocabulary for one axis inside one grammar costs
+         more than the imperfect fit of "a loose `<dd>`".
+
+         REDUNDANT USE IS A NO-OP. `loose` on a list the blank lines already
+         made loose is legal and changes nothing, and so is `loose` on a
+         description that already holds two blocks. Rejecting it would make the
+         key context-sensitive, and a producer that always emits it is simpler
+         than one that has to decide.
+
+         THE CANONICAL WRITER EMITS IT ONLY WHERE THE BLANK-LINE SPELLING
+         CANNOT. This follows PART 12 §15, whose writer "retains `header-rows` /
+         `footer-rows` when they are present" rather than deriving them onto
+         every table, and PART 11 §2, which spends a mark only where omitting it
+         would change the re-parsed document. On a multi-item loose list the
+         blank lines already say it, so the key would be an idle mark by exactly
+         that test. The alternative -- emit it on every loose container -- would
+         rewrite a large share of the corpus and of every document anyone has
+         written, for nothing gained.
+
+         ORDERED AND NESTED CONTAINERS TAKE THE SAME KEY AT THE SAME PLACEMENT,
+         at the nested container's own indent, so this needs no rediscovering:
+         `{loose}` before `1.` loosens an `<ol>`, and an attribute line written
+         at a sub-list's indentation loosens the sub-list and not its parent.
+
+         A BOOLEAN AND AN EMPTY VALUE ARE ONE KEY; A VALUED ONE IS NOT. PART 4
+         makes `{loose}` and `{loose=""}` the same attribute, so both are
+         consumed. `loose=x` names a value this key does not take, so it is not
+         this key: it stays an ordinary attribute and renders `loose="x"`. There
+         is no error state to define, and no spelling that half-applies.
+
+         THE DEFINITION-LIST HALF HAS NO AST FIELD YET, and PART 12 §6's round
+         trip does not cover it. A loosened LIST is representable: `list` carries
+         `tight`, and the key sets it false. A loosened DEFINITION LIST is not --
+         PART 12 §8's `definition_list` has no such field, and the `<dd>` wrapper
+         is derived from the description's block count, so a serialized tree
+         cannot say which of the two spellings it came from. Until §8 grows the
+         field, the definition-list looseness survives in SOURCE and not through
+         an AST round trip. Stated rather than left to be discovered, because
+         §8's own node shape is not yet produced by any engine, so a field added
+         here would be a second unkept promise on an unreached shape.
+
 
    18. MATH -- NORMATIVE (governs `math` in PART 3; djot form). Inline
       `$` + verbatim backtick span; display `$$` + verbatim backtick

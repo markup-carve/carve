@@ -257,6 +257,76 @@ A name is reserved only where Carve has no other **inline** spelling for that el
 
 The `:name[content]{attrs}` form has no core handler at all - `:kbd[Tab]` is `<span class="ext-kbd">Tab</span>` unless the extension is enabled, where it is accepted as a **soft-deprecated** spelling and slated for removal in 0.2.
 
+## Consumed structural keys
+
+A handful of names on a **block-attribute line** are read as structure and
+**consumed**: they change what the block renders as, and they never come back
+out as an HTML attribute. They are not a second attribute syntax - the spelling
+is the ordinary one - they are the short list of names that mean something to
+the block below them.
+
+| key | on | what it does |
+| --- | --- | --- |
+| `loose` | a list, a definition list | the container's children render as **blocks** rather than inline runs |
+| `header-rows=N`, `footer-rows=N` | a pipe table | the leading / trailing row ranges become `<thead>` / `<tfoot>` |
+| `aligns`, `valigns`, `widths` | a pipe table | per-column alignment and width, as positional comma-separated lists |
+
+Everything else on that line is an ordinary attribute and reaches the output as
+one, `loose` included when it sits on a block with nothing to loosen: `{loose}`
+before a block quote is just `<blockquote loose="">`.
+
+### `{loose}`: the looseness a blank line cannot spell
+
+Carve spells looseness with a **blank line**, and a blank line needs two things
+to stand between. So the shape with nothing on one side has no spelling at all,
+and `{loose}` is it:
+
+```carve
+{loose}
+- Note text.
+```
+
+```html
+<ul>
+  <li><p>Note text.</p></li>
+</ul>
+```
+
+A one-item list has no "between items". A definition description is worse off: a
+blank line between two **entries** does not loosen a `<dl>` at all - only a
+second block inside the description wraps it - so a `<dd>` holding one paragraph
+is unspellable at every entry count.
+
+```carve
+{loose}
+:: Term
+:  Definition.
+```
+
+```html
+<dl>
+  <dt>Term</dt>
+  <dd><p>Definition.</p></dd>
+</dl>
+```
+
+Ordered lists and nested lists take the same key at the same placement, at the
+nested list's own indent. Writing it on a container the blank lines already
+loosened is legal and does nothing.
+
+::: info There is no `{tight}`
+Deliberately, and the asymmetry is the point. **Tight is always spellable** -
+remove the blank lines. Only loose has a shape with no spelling, so a `{tight}`
+key would be surface with nothing behind it, and it would create the one
+genuinely ambiguous document this design does not have: blank lines saying
+loose, attribute saying tight.
+:::
+
+`carve fmt` writes `{loose}` **only where the blank-line spelling cannot express
+the looseness**. On a multi-item loose list the blank lines already say it, so
+the key would be an idle mark, and emitting it everywhere would rewrite every
+document anyone has written.
+
 ## The one outlier: list items
 
 Every block takes its attributes on the preceding line and every inline takes them trailing - with a single exception: a list item's attribute block **abuts its marker**.

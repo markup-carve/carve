@@ -483,19 +483,34 @@ function renderBlock(b, depth, ctx) {
       return `${pad2}<div class="hardbreaks">\n${parts.join('\n')}\n${pad2}</div>`
     }
     case 'deflist': {
+      // A DEFINITION LIST TAKES ITS ATTRIBUTES LIKE ANY BLOCK (PART 9 §15 A2),
+      // and this renderer never read them: `{.foo}` before a `:: term` line
+      // parsed correctly, attached to the node, and was dropped on the way out.
+      // No corpus document put an attribute line before a definition list, so
+      // nothing was red - the same reason carve#626 and carve#693 went unseen
+      // one container over. carve-js emits `<dl class="foo">`.
+      const dlAttrs = b.battrs ? renderBlockAttrs(b.battrs) : ''
       const rows = b.items.map((it) => {
         if (it.dt !== undefined) return `${pad}  <dt>${renderInline(it.dt)}</dt>`
         const blocks = it.ddBlocks
         if (blocks.length === 0) return `${pad}  <dd></dd>`
         // a single paragraph stays tight (inline <dd>); anything more is a loose
         // multi-block <dd> with each block on its own indented line.
+        //
+        // `b.loose` is PART 9 §17 L7's consumed boolean, and it reaches exactly
+        // the one shape the blank line cannot: a description holding ONE
+        // paragraph, which wraps as `<dd><p>x</p></dd>` - the same one-line
+        // shape a loose item's single paragraph takes in `<li>`. A description
+        // that already holds two blocks is wrapped either way, so the key is a
+        // no-op there.
         if (blocks.length === 1 && blocks[0].t === 'para' && blocks[0].caption === undefined) {
-          return `${pad}  <dd>${renderInline(blocks[0].lines.join('\n'))}</dd>`
+          const inline = renderInline(blocks[0].lines.join('\n'))
+          return `${pad}  <dd>${b.loose ? `<p>${inline}</p>` : inline}</dd>`
         }
         const inner = blocks.map((c) => renderBlock(c, depth + 2, ctx)).filter((x) => x !== null).join('\n')
         return `${pad}  <dd>\n${inner}\n${pad}  </dd>`
       })
-      return `${pad}<dl>\n${rows.join('\n')}\n${pad}</dl>`
+      return `${pad}<dl${dlAttrs}>\n${rows.join('\n')}\n${pad}</dl>`
     }
     case 'raw':
       // PART 9 SS20: verbatim for the html target, dropped otherwise.

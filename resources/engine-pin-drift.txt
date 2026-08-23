@@ -24,3 +24,5 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+407-one-consumed-boolean-spells-the-looseness-no-blank-line-can  PART 9 section 17 L7: the pin has not shipped the consumed `loose` boolean and renders it literally, as `<ul loose="">`.
+407-one-consumed-boolean-spells-the-looseness-no-blank-line-can-2  PART 9 section 17 L7: the same, on the definition-list half, as `<dl loose="">`.

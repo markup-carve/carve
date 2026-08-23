@@ -38,3 +38,5 @@
 #
 # Format: <document id><space><space><reason>
 
+docs/blocks-and-attributes.md#11  PART 9 section 17 L7: the oracle consumes `{loose}` and the pinned build has not shipped the key, so it renders `<ul loose="">`. The oracle is right; the engines follow through the bump-conformance cycle (markup-carve/carve#1612).
+docs/blocks-and-attributes.md#12  PART 9 section 17 L7: the same on the definition-list half, as `<dl loose="">` with an unwrapped `<dd>` (markup-carve/carve#1612).

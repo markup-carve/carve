@@ -295,6 +295,8 @@ index: examples/edge-cases/index.md
   a-lazy-marker-line-s-definition-defines-nothing-in-any-container
   a-continuation-marker-attaches-only-a-flush-left-block
   a-longer-run-at-a-list-boundary-is-written-as-exactly-three-blank-lines
+  407-one-consumed-boolean-spells-the-looseness-no-blank-line-can
+  408-the-writer-spells-looseness-only-where-a-blank-line-cannot
 
 [edge-containers] Containers, quotes and fences
 > Divs, block quotes, code and comment fences: nesting, lazy continuation, absorption and what closes what.
@@ -574,6 +576,7 @@ index: examples/edge-cases/index.md
   a-definition-body-continuation-indented-past-its-column-is-lazy-text
   an-abbreviation-expands-inside-an-inline-container
   25-definition-lists-7
+  407-one-consumed-boolean-spells-the-looseness-no-blank-line-can-2
 
 [edge-attributes] Attributes
 > Attribute lines and inline blocks, names and values, classes, booleans and the semantic/language sugar.
