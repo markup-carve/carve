@@ -4,9 +4,8 @@
  *
  * WHY THIS EXISTS BESIDE THE FIXTURE. The same reason its sibling for
  * `derived-accessible-name` does: tests/html-import-contract.check.mjs runs
- * this fixture through the PINNED engine, and while that engine still reports
- * the endnotes wrapper as a loss the fixture sits under a declared PIN_LAG
- * entry. A lagging fixture is compared only for INEQUALITY, so its
+ * this fixture through the PINNED engine, and while that engine does not write
+ * the `{loose}` key the fixture sits under a declared PIN_LAG entry. A lagging fixture is compared only for INEQUALITY, so its
  * expectations could be rewritten to say anything at all - including a blanket
  * "report nothing for a `<section>`", which the clause does not adopt - and the
  * contract check would stay green, because the engine disagrees with that too.
@@ -41,10 +40,13 @@ test('the fixture states an empty report, and its source keeps every visible byt
   const report = JSON.parse(await read('expected.report.json'))
   assert.deepEqual(report.diagnostics, [])
   const crv = await read('expected.crv')
-  // The degraded form: the `<hr>` and the `<ol>` the section is built from.
+  // The degraded form: the `<hr>` and the `<ol>` the section is built from,
+  // with the looseness spelled by the consumed `{loose}` boolean - a one-item
+  // list has no BETWEEN for a blank line to stand in (PART 9 section 17 L7;
+  // markup-carve/carve#1607, markup-carve/carve#1612).
   // Reported nothing AND lost nothing - the two claims have to hold together,
   // because silence over a document that lost its text is the worse defect.
-  assert.equal(crv, '---\n\n1. Note text.\n')
+  assert.equal(crv, '---\n\n{loose}\n1. Note text.\n')
 })
 
 test('the source and the AST carry neither derived attribute', async () => {

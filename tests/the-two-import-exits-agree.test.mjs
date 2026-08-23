@@ -47,9 +47,13 @@ const root = new URL('./html-import/', import.meta.url)
 const UNMET = new Map([
   [
     'derived-endnotes-section',
-    'the tree says a one-item list is loose where its own source says tight, ' +
-      'and Carve has no spelling for a loose one-item list ' +
-      '(markup-carve/carve#1607)',
+    'the source now spells the looseness with the consumed `{loose}` boolean, ' +
+      'and the PINNED build does not consume it - it reads the list tight and ' +
+      'carries the key as an attribute, where the fixture records the loose ' +
+      'list with no attribute. A pin-lag entry, not an open question: the ' +
+      'shape was ruled in markup-carve/carve#1607 and the spelling landed as ' +
+      'PART 9 section 17 L7. Delete this with the bump that ships it in the ' +
+      'engines (markup-carve/carve#1612)',
   ],
 ])
 

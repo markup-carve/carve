@@ -126,6 +126,13 @@ const PIN_LAG = new Map([
       'markup-carve/carve-js#1380, markup-carve/carve-php#1615)',
   ],
   [
+    'derived-endnotes-section',
+    'the importer writes no `{loose}` key, so a one-item list whose HTML said ' +
+      'loose comes back tight - and the pinned build does not consume the key ' +
+      'either, rendering it as `<ol loose="">` ' +
+      '(PART 9 section 17 L7; markup-carve/carve#1612)',
+  ],
+  [
     'empty-definition-description',
     'the importer writes a bare `:` line for an empty <dd>, which the parser ' +
       'reads as more of the term above it - so the loss exceeds the row that ' +
