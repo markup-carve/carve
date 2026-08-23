@@ -5199,6 +5199,55 @@ EOF = (* end of file *) ;
       rather than quietly corrected because the two sentences had been read as
       the rule (carve#770).
 
+      THE CANONICAL WIDTH IS A FUNCTION OF DEPTH, AND THAT COSTS O(depth^2)
+      BYTES (carve#1553). The exact-length guard leaves the DIRECTION free --
+      longer-outer documents and longer-inner ones both parse -- and `carve
+      fmt` writes the inward one: the outermost container is `:::` and each
+      level inward adds one colon (PART 11; the `colon_fence` note in PART 2).
+      So the writer sizes each fence from the depth it is ALREADY CARRYING. It
+      needs no lookahead and no scan of the subtree it has not written yet, and
+      the widths it emits cannot collide with one another, because along any
+      one chain they are STRICTLY INCREASING: a container's closer is wider
+      than every fence enclosing it and narrower than every fence it encloses.
+      (A fence-shaped line in TEXT is a different problem, answered by PART 11
+      §5's escaping rather than by this width.)
+
+      WHAT THAT BUYS IS PAID FOR IN BYTES, quadratically, where the content is
+      linear. A nest d containers deep spends sum(3..d+2) colons on its openers
+      and the same again on its closers -- d^2 + 5d bytes of fence marker. At
+      d = 3, the depth this file's own examples use, that is 24 bytes.
+
+      MEASURED, AT THE CAP AND NOWHERE ELSE. Over the corpus of 1367 documents
+      at spec f6af10f9, `182-openers-past-the-nesting-cap-are-one-paragraph` is
+      2,032 source bytes, and the canonical form its `.fmt` sidecar pins is
+      42,435 -- a 20.9x expansion, of which 41,012 bytes, 96.6% of the output,
+      are colons. Its widest fence is 202 colons at MAX_NESTING_DEPTH = 200
+      (§25), and the arithmetic closes exactly: 2 x sum(3..202) = 41,000, plus
+      the 12 colons of the three OVER-CAP openers, which degraded to paragraph
+      text and kept the width the author typed.
+
+      READ THAT NUMBER AT THE DOCUMENT THAT PRODUCED IT. `182` exists to sit AT
+      the cap and is adversarial by construction -- 203 openers and one word of
+      content -- so 21x is the WORST case of this rule and not a typical one.
+      The ratio falls off with the depth it squares: a three-deep container in
+      ordinary prose pays those 24 bytes. A property measured only at the cap
+      has to be labeled as such, or the number reads as the common case.
+
+      THE TRADE WAS PRICED AND KEPT (carve#1553). The alternative a reader
+      reaches for first -- the narrowest fence that does not collide with the
+      content -- needs a subtree scan per fence and moves canonical output for
+      EVERY nested-container document. Widening only where a collision actually
+      exists is the more interesting one and it is unmeasured: whether the
+      writer can know that without a separate pass is what decides whether it
+      is cheaper at all. Neither was worth a corpus-wide churn to improve a
+      case nobody authors, and nothing is slow because of the widening today --
+      the complaint that surfaced it (carve#1546) was an escalation search
+      paying the 42 KB 24 times, and it was fixed by not searching the units
+      that cannot move. The property is recorded here so that the next reader
+      who measures 21x can tell a deliberate trade from an oversight, which is
+      precisely why it was filed. A REAL document that hits it is the trigger
+      to reopen; a threshold is not.
+
       A COLON-FENCE LINE THAT FAILS THE OPENER TEST LEAVES THE PARAGRAPH
       EXPECTING A CLOSER -- NORMATIVE. A `:::` line that is not a valid opener
       (an attribute block where the opener takes a type word, say) is ordinary

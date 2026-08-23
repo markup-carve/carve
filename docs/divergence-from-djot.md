@@ -629,6 +629,25 @@ way, sizing the fence from one level of lookahead and silently unnesting the
 middle container of a three-level document. Exact matching removes the class:
 width is local depth, computable on the way down.
 
+**What the writer pays for it.** The width is a function of depth, so canonical
+output spends `d^2 + 5d` bytes of fence marker on a nest `d` containers deep -
+`sum(3..d+2)` colons on the openers and the same again on the closers - while
+the content inside it grows linearly. At three levels, the depth real documents
+use, that is 24 bytes and nobody notices. At the parse cap it dominates the
+document: `182-openers-past-the-nesting-cap-are-one-paragraph` is 2,032 source
+bytes and 42,435 bytes of canonical form, a **21x expansion**, of which 41,012
+bytes - 96.6% of the output - are colons, with the widest fence 202 colons wide
+at `MAX_NESTING_DEPTH = 200`. (Measured over the corpus of 1367 documents at
+spec `f6af10f9`, against that document's `.crv` source and its `.fmt` sidecar.)
+
+That document exists to sit *at* the cap and is adversarial by construction -
+203 openers and one word of content - so read the 21x as this rule's worst case
+rather than its typical one. It is the price of the paragraph above: a writer
+that instead chose the narrowest fence its content does not collide with would
+have to scan every subtree before writing its opener, which is the lookahead
+exact matching was adopted to remove. The trade was re-examined and kept
+(markup-carve/carve#1553); the normative statement of it is PART 9 §12.
+
 ## 14. Headings are single-line
 
 **Djot:** a heading's text spills onto following lines until a blank line. A
