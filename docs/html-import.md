@@ -387,7 +387,8 @@ body children: there is no `/html[1]/body[1]` prefix, and no step for a wrapper
 element the importer added.
 
 Each step's index counts among ALL of the parent's child nodes, text nodes
-included, not among the same-named siblings.
+included, not among the same-named siblings. Exactly three exemptions from that
+basis exist, and the list of them below is exhaustive.
 
 ```html
 <p><abbr class="x" id="z" title="y">A</abbr> <kbd id="k" class="key">Tab</kbd> <abbr title="a b c">S</abbr> <abbr title="">E</abbr> <time datetime="">T</time> <kbd onclick="steal()">Esc</kbd></p>
@@ -429,6 +430,50 @@ flattened and rows are renumbered across the whole table, so a `<td>` inside a
 ```
 /table[1]/tr[2]/td[1]
 ```
+
+Where the traversal renumbers, it is the index basis too, and those are the ONLY
+exemptions from counting among all child nodes. There are exactly three, because
+the importer reads their parent through a shape of its own:
+
+- an `<li>` is numbered among the list's ITEMS;
+- a `<tr>` among the table's ROWS, flattened across its sections;
+- a table CELL, `<td>` and `<th>` alike, among the CELLS of its row.
+
+Counting exemptions rather than element names is deliberate: the cell case is
+ONE rule over two element names, and an implementation that took it for `<td>`
+and not for `<th>` would have a header cell and a body cell of the same row
+answering to different bases.
+
+Every other element kind counts among all of its parent's child nodes, a `<dd>`
+and a `<figcaption>` included. The three are the whole of it: an importer MUST
+NOT number any other kind among its same-named siblings. That is why the row
+above is `tr[2]` and its cell `td[1]` however much whitespace the table is
+written with, while a `<dd>` in a `<dl>` written across lines is `dd[4]`
+(markup-carve/carve#1554).
+
+One path can carry both bases, and which it uses turns on the parent rather
+than on the step:
+
+```html
+<ul>
+<li>a</li>
+<li>b <kbd onclick="i()">K</kbd></li>
+</ul>
+```
+
+```
+/ul[1]/li[2]/kbd[2]
+```
+
+The `<li>` is the second ITEM and the fourth child of the `<ul>`, so the item
+basis applies; the `<kbd>` is the second CHILD of that item, and no shape
+renumbers an item's children, so the ordinary basis applies. Numbering the
+`<li>` among all children instead would print `li[4]`, a number that counts
+markup a reader of a list does not see. The three exemptions came in together
+with the convergence on one convention, for the reason the table rows are
+flattened: the path names the traversal the conversion performs, and these are
+the parents that traversal reads through a shape of their own
+(markup-carve/carve#1257, markup-carve/carve#1556).
 
 The notation invites the XPath reading, and the reading is false. Every value an
 importer emits is valid XPath SYNTAX that finds nothing. Resolved as XPath
