@@ -290,6 +290,7 @@ index: examples/edge-cases/index.md
   adjacent-sibling-lists-survive-the-round-trip
   a-multi-letter-ordered-marker-opens-no-list
   a-block-attached-after-an-invisible-line-leaves-the-item-tight
+  a-blank-line-loosens-an-item-only-when-a-paragraph-follows-it
   a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item
   a-marker-line-link-definition-is-collected-where-no-paragraph-is-open
   a-lazy-marker-line-s-definition-defines-nothing-in-any-container
@@ -532,6 +533,7 @@ index: examples/edge-cases/index.md
   an-attribute-line-inside-a-footnote-body-attaches-inside-it
   a-nested-list-in-a-footnote-body-stays-nested
   a-flush-left-line-after-a-footnote-definition-belongs-to-the-document
+  a-footnote-continuation-survives-a-blank-run
   a-footnote-body-s-own-column-is-two-and-a-third-column-is-its-text
   a-definition-below-a-footnote-body-s-column-is-the-document-s-own-text
   a-definition-past-a-footnote-body-s-column-is-the-body-s-own-text

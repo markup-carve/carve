@@ -585,6 +585,20 @@ function isFootnoteContinuationLine(line) {
   return col >= FOOTNOTE_BODY_COLUMN && rest !== ''
 }
 
+/*
+ * The index just past the blank run starting at `i`, when a footnote
+ * continuation line follows it; -1 when nothing does (carve#1620).
+ *
+ * Spelled once rather than at the two places the definition loop needs it - the
+ * test and the advance - because a fix reaching only one of them is the
+ * recurring shape catalogued in carve#755.
+ */
+function footnoteBlankRunEnd(lines, i, n) {
+  let k = i
+  while (k < n && isBlank(lines[k])) k++
+  return isFootnoteContinuationLine(lines[k]) ? k : -1
+}
+
 // A definition body's own column is fixed at 3 (grammar.ebnf,
 // `definition_indent`) -- the column `:  ` establishes -- regardless of how the
 // first continuation line is actually indented.
@@ -1819,15 +1833,37 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // (PART 9 SS24 C1 column arithmetic), not two literal space characters.
       // A tab from column 0 already reaches column 4, so a bare tab or a
       // space-then-tab both satisfy the floor; a single space (column 1) does
-      // not. Single blank lines are allowed between continuation lines.
+      // not. A blank RUN of any length is allowed between continuation lines.
       while (i < n) {
         if (isFootnoteContinuationLine(lines[i])) {
           bodyLines.push(dedent(lines[i], FOOTNOTE_BODY_COLUMN))
           pullPending = false
           i++
-        } else if (isBlank(lines[i]) && isFootnoteContinuationLine(lines[i + 1])) {
-          bodyLines.push('')
-          i++
+        } else if (isBlank(lines[i]) && footnoteBlankRunEnd(lines, i, n) !== -1) {
+          // A BLANK RUN DOES NOT END THE DEFINITION -- carve#1620.
+          //
+          // An indented continuation belongs to the construct whose
+          // indentation it matches, and a blank run ends no other indented
+          // block in Carve: a list item, a quote and a container all keep an
+          // indented continuation across one. A footnote definition is an
+          // indented container like the others and the clause names no
+          // difference, so the run is interior to the body exactly as a single
+          // blank already was.
+          //
+          // This tested only `lines[i + 1]`, so the body ended at the SECOND
+          // blank and the continuation was ejected - and ejecting relocates it,
+          // since a note's body renders in the endnotes section at the foot
+          // while the ejected paragraph lands at document level ABOVE it. The
+          // paragraph moved backwards past unrelated blocks, which is not what
+          // "the definition ended here" means.
+          //
+          // The WHOLE run is pushed, not one blank standing in for it: the body
+          // is parsed recursively from `bodyLines`, so a run collapsed here is a
+          // run that parse can never see, and §11 N1a's three-blank boundary is
+          // measured inside the body like anywhere else.
+          const end = footnoteBlankRunEnd(lines, i, n)
+          for (let k = i; k < end; k++) bodyLines.push('')
+          i = end
         } else if (CONT_MARKER.test(lines[i] ?? '')) {
           // A `+` pull-left block joins the note (SS17 L4): the following
           // flush-left block folds into the note's <li> as a new block. The

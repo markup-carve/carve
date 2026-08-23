@@ -177,6 +177,8 @@ under the same semantic-span rule,
 `406-a-heading-s-marker-separator-is-a-run-and-none-of-it-is-content`,
 `407-one-consumed-boolean-spells-the-looseness-no-blank-line-can`,
 `408-the-writer-spells-looseness-only-where-a-blank-line-cannot`,
+`409-a-blank-line-loosens-an-item-only-when-a-paragraph-follows-it`,
+`410-a-footnote-continuation-survives-a-blank-run`,
 `05-lists-25`,
 `05-lists-26`,
 `05-lists-27`,
@@ -230,6 +232,18 @@ reading all three engines already had. Both documents render byte-identically
 in the carve-js this repository pins (`d9cb2c7`); carve-js `main`, carve-php and
 carve-rs were not measured, which is why the category is declared and not
 counted (carve#1581).
+
+`409` AND `410` ARE THE SECOND KIND OF LAG, like `335` through `341` and unlike
+everything between: the engines that fail them fail them on purpose, because
+both categories pin a ruling made after those builds shipped. `409-2` is the
+shape carve#1622 ruled tight, which carve-php reads loose, and every `410`
+document is the shape carve#1620 ruled stays in the note, which carve-php and
+carve-rs eject. Both rulings have engine work behind them - carve-rs#1294 landed
+the narrowed tightness rule - so a retaken snapshot's mismatch counts would
+describe a window that is being closed rather than a disagreement. All seven
+documents render byte-identically in the carve-js this repository pins
+(`71add23f`); carve-php and carve-rs were not measured here, and the run above
+predates all seven either way.
 
 `394` IS DECLARED THOUGH ITS ENGINES WERE MEASURED, because measuring three
 engines is not retaking the run. Its one document renders byte-identically in
