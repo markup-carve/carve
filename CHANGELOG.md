@@ -36,6 +36,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **PART 9 §16a names what makes a value DERIVED, and reaches the wrapper**
+  (carve-php#1588, ruling carve#1500). Reconstructability is the property: a
+  value the importer can rebuild from the element it is reading was written by
+  the renderer, whichever ran first. It covers the endnotes `<section>` itself,
+  and it does not depend on what the import goes on to do with the element - a
+  reference-less section reports nothing either, though the renderer writes no
+  section back for it. `derived-endnotes-section` pins the shape.
+
 - **An imported nested container widens INWARD, and a fixture pins it**
   (carve-php#1583, PART 9 §12). `docs/html-import.md` names the direction a
   writer takes where the grammar leaves both parsing: `carve fmt` widens on the

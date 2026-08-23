@@ -81,6 +81,12 @@ const PIN_LAG = new Map([
   // where the fixture says `{.mermaid}`. Clears with the carve-js side of
   // markup-carve/carve#1500.
   ['derived-accessible-name', 'keeps a derived role and aria-label (carve#1500)'],
+  // The pin reports `element-unwrapped` plus `attribute-dropped` for the
+  // endnotes `<section>`, where the fixture states an empty report and
+  // carve-php already answers with none. Both engines write this fixture's
+  // SOURCE byte for byte; the report was the only thing keeping the shape out
+  // of this directory. Clears with markup-carve/carve-js#1350.
+  ['derived-endnotes-section', 'reports a derived endnotes wrapper as a loss (carve-php#1588)'],
   // The pin predates markup-carve/carve-js#1295, so it imports
   // `<div class="math display">` as a generic colon fence where PART 9 §18
   // requires the core `$$` form. The two MathML halves of the same fixture

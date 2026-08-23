@@ -352,6 +352,43 @@ name is ABSENT from the imported source, which is what
 `tests/a-derived-name-is-absent-from-imported-source.test.mjs` reads off the
 `derived-accessible-name` fixture.
 
+### What makes a value derived
+
+A value is derived where the importer can **rebuild it from the element it is
+reading** - the tag, the classes, the `role`, the element's own text, a control
+beside it, or the documented default of a `labels` key - and the value present
+equals that rebuild. That is the whole test. The list of shapes above is not
+one: a list grows an entry every time the question recurs, and an importer
+keyed on one entry is a check that cannot fail for the rest of the family.
+
+Reconstructability is what makes the equality test stand in for the provenance
+test the HTML cannot answer. A value the importer can compute is one the
+renderer computed, whichever of them ran first. A value the element does not
+determine is the author's, and is kept.
+
+**A wrapper element can be derived too.** The endnotes `<section>` is: PART 9
+§16 writes one around the notes whenever the document has any, and no Carve
+construct spells a `<section>`. So unwrapping it removes nothing an author
+wrote, and it is reported neither as `element-unwrapped` nor as an
+`attribute-dropped` naming the `doc-endnotes` role or the `endnotes` name that
+came with it. Whether a NON-derived wrapper is reported is not settled here.
+
+**The import's outcome does not change the answer.** Derivation is a property
+of the element being read, not of what the import does with it. A referenced
+endnotes section is consumed into footnote definitions and the renderer writes
+the section back; a reference-less one degrades to the `<hr>` and `<ol>` it is
+built from, and the renderer writes no section for it at all. The second still
+reports nothing, because the author still wrote none of it. An importer that
+asks its own emitted document whether the value came back answers no for the
+degraded form - correctly, and about the wrong question.
+
+Everything the property does not reach is still reported. An authored `class`
+on an endnotes section, and an `aria-label` no default matches, each go out with
+a row when the section is unwrapped; suppressing the element row and the
+attribute row together silences both.
+
+The shape is pinned as the `derived-endnotes-section` fixture.
+
 ## Modes
 
 - `safe` is the default for arbitrary input. It removes active content and
@@ -545,6 +582,7 @@ The shared set is deliberately small and each directory has one subject:
 | `figure-caption` | a `<figure>` with a `<figcaption>`, which imports as the image and a caption line |
 | `blockquote-cite` | a `<blockquote cite>`, whose attribute is kept on a block-attribute line |
 | `derived-accessible-name` | a diagram fence's derived `role` and name, dropped, beside an authored name that is kept |
+| `derived-endnotes-section` | a reference-less endnotes `<section>`, whose wrapper and both attributes are derived, so nothing is reported |
 | `synthesized-wrapper-path` | a bare inline run wrapped in a paragraph the importer added, whose diagnostic is numbered among the body children rather than inside the wrapper |
 | `container-round-trip` | a rendered callout and a named container, which come back as the containers they were written from rather than as a body and a `div` |
 | `caption-attributes` | an attribute on a `<figcaption>`, dropped because a caption line has no slot for it, and reported rather than dropped in silence |
