@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A table `<caption>` is worked through PART 12 §16, and pinned by a fixture**
+  (carve#1560). The clause's three index exemptions do not reach a caption - a
+  table has at most one, so "among the captions" is always `[1]` - and carve-js
+  and carve-rs printed that literal step, which agrees with the child index only
+  for a table written on one line. `table-caption-index` pins the same caption
+  written across lines at `caption[2]`, where the existing
+  `table-caption-attributes` cannot. The fixture table also gains the
+  `traversal-shaped-index` row it was missing.
 - **A caption's marker separator is a run, and none of it is content**
   (carve#1575, PART 2 / PART 11 §1). The executable spec read the `space` in
   `caption` literally and published `^   cap` as the caption `  cap`, where all

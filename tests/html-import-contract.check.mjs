@@ -124,6 +124,18 @@ const PIN_LAG = new Map([
   // the same pin bump as the row above - markup-carve/carve-js#1335 fixed both
   // caption sites at once.
   ['table-caption-attributes', 'drops a table caption attribute without reporting it (carve-js#1332)'],
+  // The SAME shape as the row above, written across lines, and it is here for a
+  // second reason. The pin is silent for markup-carve/carve-js#1332, so its
+  // report is empty where the fixture has one row; once it speaks, the step it
+  // prints is a literal `caption[1]` that never consults a position, which is
+  // the caption's rank among the captions - a basis PART 12 §16's MUST NOT
+  // forbids for every kind outside its three exemptions. A table written on ONE
+  // line hides that, because there the caption really is the first child, which
+  // is why `table-caption-attributes` beside it cannot pin the index and this
+  // one can. carve-php reproduces both; carve-js and carve-rs need
+  // markup-carve/carve#1560, and both clear with the same pin bump as the row
+  // above.
+  ['table-caption-index', 'numbers a table caption among the captions (carve#1560)'],
 ])
 
 /*

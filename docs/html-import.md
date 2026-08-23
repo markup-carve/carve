@@ -528,6 +528,28 @@ above is `tr[2]` and its cell `td[1]` however much whitespace the table is
 written with, while a `<dd>` in a `<dl>` written across lines is `dd[4]`
 (markup-carve/carve#1554).
 
+A table `<caption>` is where the forbidden reading is hardest to see, because a
+table has at most one, so "among the captions" can only ever be `[1]`. There is
+nothing there to renumber, and a step that prints `[1]` unconditionally is not
+applying a different basis but no basis at all.
+
+```html
+<table>
+<caption onclick="x()">c</caption>
+<tr><td>a</td></tr>
+</table>
+```
+
+```
+/table[1]/caption[2]
+```
+
+The caption is the SECOND child: the newline after `<table>` is the first.
+Written on one line the same caption is `caption[1]`, so a hard-coded step
+agrees there and nowhere else - and `caption[1]` is what resolving the path as
+XPath yields too, which is what makes the wrong answer read as a right one
+(markup-carve/carve#1560).
+
 One path can carry both bases, and which it uses turns on the parent rather
 than on the step:
 
@@ -604,6 +626,8 @@ The shared set is deliberately small and each directory has one subject:
 | `container-round-trip` | a rendered callout and a named container, which come back as the containers they were written from rather than as a body and a `div` |
 | `caption-attributes` | an attribute on a `<figcaption>`, dropped because a caption line has no slot for it, and reported rather than dropped in silence |
 | `table-caption-attributes` | an attribute on a table's `<caption>`, the other spelling of a caption line, reported by the same rule |
+| `traversal-shaped-index` | the three index exemptions on one document - an item, a row and a cell, none of which whitespace can move |
+| `table-caption-index` | the same table caption written across lines, where it is the SECOND child and no exemption applies to it |
 | `container-nesting` | containers two and three deep, whose fences widen INWARD because that is the form `carve fmt` writes |
 | `attribute-less-div` | a bare `<div>` unwrapped to its content beside an id-bearing one that keeps its fence, which is where that boundary sits |
 
