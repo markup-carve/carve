@@ -24,5 +24,6 @@
 # Emptying this file is the normal end state after `npm run bump-carve-pin`.
 #
 # Format: <slug><space><space><reason>
+362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line-5  PART 11 section 1: the pin reads the unterminated spelling of this item as LOOSE and the closed spelling (case 6) as TIGHT, so a closer moves the list tightness. carve-js#1379 fixed it after this pin.
 407-one-consumed-boolean-spells-the-looseness-no-blank-line-can  PART 9 section 17 L7: the pin has not shipped the consumed `loose` boolean and renders it literally, as `<ul loose="">`.
 407-one-consumed-boolean-spells-the-looseness-no-blank-line-can-2  PART 9 section 17 L7: the same, on the definition-list half, as `<dl loose="">`.

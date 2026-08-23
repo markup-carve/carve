@@ -23813,6 +23813,74 @@ separate question and stays open (carve#1602).
 
 :::
 
+THE SAME PRODUCTION, ONE CONFIGURATION OVER. Above, the container is the item's
+LEAD, so every block the item holds sits inside it and a tight list's paragraph
+suppression never reaches any of them - which is why that pair renders
+byte-identically under either reading and had to be pinned at the parse level.
+Move the container BELOW a lead block and the item keeps a paragraph of its own,
+and that paragraph is exactly what suppression does reach: a loose item wraps `x`
+in `<p>`, a tight one leaves it bare. So this configuration PRINTS the tightness
+the other one hides, and an ordinary `.html` fixture can hold the rule.
+
+The reading is TIGHT, and it is the missing closer that has to not matter. The
+blank line is inside the div, so nothing separates the item's blocks and §17 L1
+finds no separator to loosen on; writing the `:::` the document leaves open ends
+the container where the item already ended it, so the two spellings are one
+document and the tightness cannot move across them (carve-js#1376, carve-js#1379).
+
+::: compare
+
+```carve
+- x
+  :::
+  a
+
+  b
+```
+
+```html
+<ul>
+  <li>x
+    <div>
+      <p>a</p>
+      <p>b</p>
+    </div>
+  </li>
+</ul>
+```
+
+:::
+
+The closed spelling of the document above. Here PART 11 §1's
+`parse(fmt(x)) == parse(x)` and §1a's weaker HTML form say the same thing, which
+they do not in the pair further up: the item's lead paragraph puts the tightness
+into the output, so a reader that moved it across the closer is caught by the
+rendered bytes rather than only by the parse.
+
+::: compare
+
+```carve
+- x
+  :::
+  a
+
+  b
+  :::
+```
+
+```html
+<ul>
+  <li>x
+    <div>
+      <p>a</p>
+      <p>b</p>
+    </div>
+  </li>
+</ul>
+```
+
+:::
+
 ## A task item's checkbox is not decided by its first block
 
 The checkbox belongs to the ITEM. Nothing about what the item's first block turns
