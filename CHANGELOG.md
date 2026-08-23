@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **An explicit closer is a spelling change, so it cannot move a list's
+  tightness** (carve#1602). Corpus
+  `362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line-4`
+  is the closed spelling of `-3`, and the pair is pinned at the PARSE level
+  because their HTML is byte-identical: no fixture over rendered output can see
+  the rule. Which of tight or loose the two spellings agree on stays open.
 - **An import's two exits say the same thing** (carve#1601).
   `parse(htmlToCarve(h))` equals `htmlToAst(h)`, modulo escaping and source
   positions, with a `structure-unspellable` row as the only carve-out. Nothing

@@ -23767,6 +23767,52 @@ one wrong in the other direction.
 
 :::
 
+An explicit closer is a SPELLING CHANGE, and the document above is where that
+gets tested. Writing the `:::` it left open ends the container exactly where the
+item already ended it, so the two spellings are one document: the same blocks,
+in the same order, under the same list. The list's TIGHTNESS is part of that,
+and this is the spelling the canonical writer emits for the document above, so
+PART 11 §1's `parse(fmt(x)) == parse(x)` says outright that supplying the closer
+cannot move it.
+
+The fixture below cannot say any of this. It is byte-identical to the one above,
+because the item's blocks sit inside the div and a tight list's paragraph
+suppression never reaches them - so tightness leaves no mark in the HTML, and a
+check comparing rendered output here passes under either reading. The pair is
+pinned at the PARSE level instead, by
+`tests/an-explicit-closer-does-not-move-list-tightness.test.mjs`.
+
+What the rule settles is that the two spellings AGREE, not which of tight or
+loose they agree on. carve-js and carve-rs read the open spelling as loose and
+the closed one as tight, contradicting themselves rather than each other, and
+converge on loose; carve-php already reads both loose; the executable spec reads
+both tight, which is self-consistent and therefore conforms. Whether an item
+whose only child is a container holding a blank line is loose at all is a
+separate question and stays open (carve#1602).
+
+::: compare
+
+```carve
+- ::: d
+  b
+
+  tail
+  :::
+```
+
+```html
+<ul>
+  <li>
+    <div class="d">
+      <p>b</p>
+      <p>tail</p>
+    </div>
+  </li>
+</ul>
+```
+
+:::
+
 ## A task item's checkbox is not decided by its first block
 
 The checkbox belongs to the ITEM. Nothing about what the item's first block turns
