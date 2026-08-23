@@ -966,6 +966,10 @@
             ]
           }
         },
+        "loose": {
+          "const": true,
+          "description": "The looseness was SPELLED, with PART 9 §17 L7's consumed `loose` boolean, so every description renders its children as blocks. Absent means each description derives its own wrapper from its block count, which is what every other definition list does. Only the spelled fact is published, because only it is underivable: a `<dl>` has no blank-line spelling for a one-block description at any entry count, so a serialized tree could not otherwise say which of the two spellings it came from (carve#1624)."
+        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },
