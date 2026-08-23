@@ -10863,9 +10863,48 @@ EOF = (* end of file *) ;
       A CONTAINER THAT HAS A CLOSER STILL ENDS AT THE CLOSER. A definition
       hoisted out of a `:::` div is a document-level sibling whose span sits
       inside the div's, and no reading of this clause makes that pair stop
-      overlapping -- which is why the sibling-overlap rule exempts every hoisted
-      definition kind, and why the paragraph above is about the container that
-      has no closer to end at.
+      overlapping -- which is why the clause below states an exception to the
+      sibling-overlap rule, and why the paragraph above is about the container
+      that has no closer to end at.
+
+      A HOISTED DEFINITION MAY CLAIM SOURCE INSIDE THE CONTAINER IT WAS
+      AUTHORED IN -- NORMATIVE. The one exception to the sibling-overlap rule
+      stated further down this section, and it holds WHATEVER THAT CONTAINER'S
+      EXTENT. §7 makes the definition a child of the document while this section
+      keeps its `pos` pointing back at the container it was written inside, so
+      the two are siblings whose spans meet by construction; and the paragraph
+      above ends an emptied closerless container at its own markup, which leaves
+      the definition reaching PAST its host rather than sitting inside it:
+
+          > [f]: ~
+          /
+
+      spans the emptied `block_quote` as `> ` and the hoisted
+      `link_reference_definition` over the whole line, and offsets 0 to 2 sit in
+      two document-level siblings at once. Neither engine that publishes that is
+      wrong: §7, the emptied-container paragraph above and the sibling-overlap
+      rule cannot all three hold on this document, and the exception is where it
+      gives. (carve#1571, which leaves §7 and carve#1522 exactly as they are.)
+
+      THE EXCEPTION IS ABOUT THE PAIR, NOT ABOUT A DEFINITION. It does not say a
+      hoisted definition overlaps nothing. Two definitions that claim the same
+      source overlap each other, and a definition that claims source inside a
+      sibling it was NOT authored in overlaps that sibling; both are findings.
+      What identifies the host, from the tree alone:
+
+      -- the host's span BEGINS AT OR BEFORE the definition's. A definition
+         cannot have been written inside a container that opens after it.
+      -- the host HOLDS A CHILD LIST. Nothing is authored inside a node that has
+         none, so a `link_reference_definition` and an `abbreviation_def` -- a
+         label and a destination, an abbreviation and its expansion, no children
+         -- host nothing. A `footnote` does hold one and is a host: a reference
+         definition written on a footnote body's continuation line is hoisted
+         out of it, and that pair is two definition kinds.
+
+      A HOST THAT REACHES PAST ITS OWN CONTENT IS STILL WRONG, under the
+      paragraphs above rather than under this one. The exception excuses an
+      overlap; it does not extend a container's span, and nothing here permits a
+      host to cover source no child of it owns.
 
       THE TRADE IS DELIBERATE. A list reports a shorter extent than the author
       typed, which is worse for folding. An editor wanting the region the author
@@ -11068,7 +11107,11 @@ EOF = (* end of file *) ;
       table above that range runs from line 2 to line 4 and CONTAINS the
       sibling cell `Apple` entirely, so two cells would claim overlapping
       offsets and a consumer resolving a click to a node could not tell which
-      it hit. Sibling spans that overlap are checked for, and are a finding.
+      it hit. Sibling spans that overlap are checked for, and are a finding --
+      with two exceptions, each stated as a property of the PAIR: two breaks
+      meeting at one line terminator share the codepoint that anchors both, and
+      a hoisted definition against the container it was authored in, per the
+      clause of that name above.
 
       The cost is an absent navigation target for that node; its contiguous
       children may still be placed. This keeps `pos` meaning one thing:

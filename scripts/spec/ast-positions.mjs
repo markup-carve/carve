@@ -589,19 +589,66 @@ export const HOISTED_DEFINITION_TYPES = new Set([
  * so the parent bound holds - which left this rule as the only one for the
  * shape, with the exemption turning it off.
  *
- * HOISTED DEFINITIONS ARE STILL EXEMPT AGAINST ANY SIBLING, and that breadth is
- * deliberate rather than the same defect left in place - it was measured, not
- * assumed. A definition's span points at the container it was AUTHORED in (§7),
- * and carve#1522 ends a container emptied by that same hoisting at its own
- * markup. Once it does, the definition is no longer INSIDE its host: on 13
- * corpus documents carve-php and carve-rs both span the emptied quote as `> `
- * while the definition hoisted out of it spans the whole line, and the two
- * genuinely overlap without either engine being wrong under the rulings as they
- * stand. Narrowing this half needs that collision ruled on first, which is
- * carve#1571 - a checker is not where three rulings get reconciled.
+ * THE HOISTED-DEFINITION HALF IS A PAIR TEST TOO NOW (carve#1571), and it took a
+ * ruling to get there rather than a rewrite. It used to drop every definition
+ * kind out of the comparison entirely, which is the same shape the break half
+ * had, and the reason it survived carve#1566 is that narrowing it to
+ * CONTAINMENT reported 13 corpus documents on carve-php and the same 13 on
+ * carve-rs. Three rulings collide on those documents: §7 hoists a definition to
+ * the document with its `pos` still pointing into the container it was authored
+ * in, carve#1522 ends a container emptied by that same hoisting at its own
+ * markup, and §4 forbids two siblings claiming the same source. On
+ *
+ *     > [f]: ~
+ *     /
+ *
+ * (corpus `82-blockquote-lazy-continuation-6`) the two engines span the emptied
+ * quote as `> ` while the definition hoisted out of it spans the whole line, so
+ * the definition is no longer INSIDE its host and the pair genuinely overlaps
+ * with neither engine wrong. Ruled at carve#1571, option 1: §4 states the
+ * exception, §7 and carve#1522 both stand unchanged, and no engine moves.
+ *
+ * THE EXCEPTION IS ABOUT THE AUTHORING PAIR, NOT ABOUT A DEFINITION. "A hoisted
+ * definition overlaps nothing" is the wide form that was just retired; what §4
+ * now says is that a hoisted definition may claim source inside THE CONTAINER IT
+ * WAS AUTHORED IN, whatever that container's extent. Two facts stand in for
+ * authorship, and both come off the tree rather than off a remembered list:
+ *
+ *   THE HOST OPENED FIRST. A definition cannot have been written inside a
+ *   container that opens after it, so a host whose span starts later than the
+ *   definition's is not its host and the pair is compared.
+ *   THE HOST HOLDS A CHILD LIST. Nothing can be authored inside a node that has
+ *   none, so `link_reference_definition` and `abbreviation_def` - which carry
+ *   `label`, `href`, `abbr` and `expansion` and no children at all - are hosts
+ *   to nothing. That is what keeps two definitions overlapping EACH OTHER a
+ *   finding, which is the real overlap the wide form let through. A `footnote`
+ *   does hold one, and is a host: corpus `202-...` hoists a reference definition
+ *   out of a footnote body, and that pair is two definition kinds.
+ *
+ * A HOST THAT REACHES PAST ITS OWN CONTENT IS STILL REPORTED, one rule over.
+ * `list`, `block_quote`, `definition_list`, `footnote` and `paragraph` are all
+ * in `ENDS_AT_LAST_CHILD`, so a host span running over a definition it does not
+ * contain is a finding there whether or not this rule excuses the pair. The two
+ * bounds are deliberately separate, for the reason `checkContainment` and
+ * `checkStopsAtChildren` are.
  */
+function holdsAChildList(node) {
+  for (const [key, value] of Object.entries(node)) {
+    if (key === 'pos' || !Array.isArray(value)) continue
+    if (value.every((child) => child && typeof child === 'object')) return true
+  }
+  return false
+}
+
+function hoistedIntoItsHost(definition, host) {
+  if (!HOISTED_DEFINITION_TYPES.has(definition.type)) return false
+  if (!holdsAChildList(host)) return false
+  return host.pos.startOffset <= definition.pos.startOffset
+}
+
 function overlapExemptPair(a, b) {
-  return BREAK_TYPES.has(a.type) && BREAK_TYPES.has(b.type)
+  if (BREAK_TYPES.has(a.type) && BREAK_TYPES.has(b.type)) return true
+  return hoistedIntoItsHost(a, b) || hoistedIntoItsHost(b, a)
 }
 
 /**
@@ -625,11 +672,12 @@ function checkSiblingOverlap(node, path, findings) {
     const placed = value
       .map((child, i) => [child, i])
       .filter(([c]) => c && typeof c === 'object' && c.pos &&
-        Number.isInteger(c.pos.startOffset) && Number.isInteger(c.pos.endOffset) &&
-        // Hoisted definitions leave the comparison entirely, rather than being
-        // excused pair by pair: see `overlapExemptPair` for why that half is
-        // still the broad form.
-        !HOISTED_DEFINITION_TYPES.has(c.type))
+        Number.isInteger(c.pos.startOffset) && Number.isInteger(c.pos.endOffset))
+    // A HOISTED DEFINITION STAYS IN THE COMPARISON and is excused pair by pair
+    // (carve#1571). It used to be filtered out here, which is what made a
+    // definition overlapping something that is NOT its authoring container
+    // invisible - the same defect carve#1566 fixed on the break half, one
+    // exemption over. See `overlapExemptPair`.
     // EVERY PAIR, not each node against the one before it. Once an exemption is
     // a property of the PAIR, an exempt node has to stay in the comparison - and
     // a chain that only compares neighbours then loses the pair on either side
