@@ -130,6 +130,58 @@ with `structure-unspellable` on the `<figure>`. Every other captionable target
 - an image, a quote, a code block, a paragraph - keeps its figure and reports
 nothing.
 
+## A container comes back as the container
+
+A colon fence renders to one of exactly two shapes, and an importer reads that
+mapping backwards. A Tier-1 kind renders as
+`<aside class="admonition {kind}">`; every other kind - a tab set, a code
+group, a panel, a container an extension invented - renders as
+`<div class="{kind}">`. Either one imports as the container it was written
+from, with the structural class CONSUMED as the fence word rather than kept
+beside it:
+
+```html
+<aside class="admonition note" aria-label="Note"><p>body</p></aside>
+```
+
+```
+::: note
+body
+:::
+```
+
+**The rule is the inverse of the renderer, not a list of names.** A list would
+cover the containers that exist today and go on unwrapping the next one, and
+the loss it leaves is invisible to an HTML-to-HTML check: an unwrapped
+`<aside>` re-renders as the same `<p>` it went in as, and a
+`<div class="tabs">` kept as a `div` node carrying a `.tabs` class re-renders
+byte-identically. Only the NODE moved, so the document stopped being a callout
+while looking exactly like one (markup-carve/carve-js#1295).
+
+The class the fence word consumes must be one a fence opener can spell,
+`[a-zA-Z_][\w-]*` per PART 9's `admonition_open`. A class outside that shape -
+`2col` - would be written after the colons and read back as a paragraph, so
+that element keeps the generic `div` node where the class survives as a class.
+
+A TITLED callout's `<p class="admonition-title">` is the container's title, not
+its first body block, and the `aria-labelledby` pointing at that paragraph is
+consumed with it: a lifted title is no longer an element with an id, so a
+reference left standing would name nothing. A title slot holds inline content
+and has no attribute slot, so anything else the paragraph carried is reported
+as `attribute-dropped`.
+
+Nothing here is diagnosed on its own account, because nothing is lost: the
+renderer writes the class, the name and the reference back from the node.
+
+**An endnotes section is deliberately NOT in this family.** A
+`<section role="doc-endnotes">` that nothing references imports as the `<hr>`
+and `<ol>` it is built from, not as a footnote definition. An unreferenced
+definition renders to the empty string, so rebuilding one there would delete
+the note's text from the document while reporting nothing - a loss where the
+degraded form keeps every byte a reader could see. A footnote whose
+`role="doc-noteref"` reference IS present rebuilds as a footnote, which is the
+shape a rendered document has.
+
 ## A flattened boundary keeps a separator
 
 A caption line holds inline content only, so a `<figcaption>` carrying two
@@ -426,6 +478,8 @@ The shared set is deliberately small and each directory has one subject:
 | `blockquote-cite` | a `<blockquote cite>`, whose attribute is kept on a block-attribute line |
 | `derived-accessible-name` | a diagram fence's derived `role` and name, dropped, beside an authored name that is kept |
 | `synthesized-wrapper-path` | a bare inline run wrapped in a paragraph the importer added, whose diagnostic is numbered among the body children rather than inside the wrapper |
+| `container-round-trip` | a rendered callout and a named container, which come back as the containers they were written from rather than as a body and a `div` |
+| `caption-attributes` | an attribute on a `<figcaption>`, dropped because a caption line has no slot for it, and reported rather than dropped in silence |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one

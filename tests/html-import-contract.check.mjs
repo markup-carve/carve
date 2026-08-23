@@ -96,6 +96,15 @@ const PIN_LAG = new Map([
   // unrelated reason, and carried the wrong path in its own fixture until this
   // commit, which is why nothing caught the numbering.
   ['synthesized-wrapper-path', 'numbers a wrapped inline run inside its wrapper (carve#1554)'],
+  // The pin unwraps a rendered `<aside class="admonition note">` to its own body
+  // and keeps a `<div class="code-group">` as a generic div carrying the class,
+  // so it writes neither container. carve-php already reproduces this fixture.
+  // Clears with markup-carve/carve-js#1316.
+  ['container-round-trip', 'unwraps a rendered callout and keeps a container as a div (carve-js#1316)'],
+  // The pin drops the `<figcaption>`'s event handler and says nothing, so its
+  // report is empty where the fixture has one row. carve-php and carve-rs both
+  // reproduce this fixture. Clears with markup-carve/carve-js#1332.
+  ['caption-attributes', 'drops a figcaption attribute without reporting it (carve-js#1332)'],
 ])
 
 /*
