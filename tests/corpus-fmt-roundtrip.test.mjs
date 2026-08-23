@@ -82,11 +82,28 @@ test('the corpus is non-empty, so a broken glob cannot pass as a clean run', () 
   assert.ok(documents.length > 100, `found ${documents.length} corpus documents`)
 })
 
+// BYTE FOR BYTE, which is what the three engines running this same property
+// do: carve-js `test/render-carve.test.ts`, carve-php
+// `tests/TestCase/CarveFmtCorpusTest.php` and carve-rs `tests/render_carve.rs`
+// all compare the two renders untrimmed. This sweep used to trim both sides,
+// which made the reference gate the loosest of the four - the wrong way round
+// for the one a spec PR runs before the engines see the change.
+//
+// What a trim cannot see is a writer that adds or drops whitespace at a
+// DOCUMENT boundary, and the corpus already holds the document that exposes
+// it: `372-an-all-blank-raw-payload-still-emits-its-line` renders HTML that
+// STARTS with two newlines, so a writer that ate the blank payload line - the
+// exact rule that document exists to pin - changed what the document says and
+// this sweep passed.
+//
+// The predicate is spelled a second time in the staleness ratchet below, and
+// the two have to stay identical: strict here and trimmed there means a
+// document excused here is reported there as an excuse that no longer applies.
 test('formatting never changes what a corpus document says', () => {
   const changed = []
   for (const { slug, source } of documents) {
     const formatted = carveToCarve(source)
-    if (carveToHtml(formatted).trim() !== carveToHtml(source).trim()) changed.push(slug)
+    if (carveToHtml(formatted) !== carveToHtml(source)) changed.push(slug)
   }
   const undeclared = changed.filter((slug) => !declaredDrift.has(slug))
   assert.deepEqual(
@@ -136,7 +153,8 @@ test('every writer-drift line still names a document the pin writes wrongly', ()
       continue
     }
     const once = carveToCarve(source)
-    const changesMeaning = carveToHtml(once).trim() !== carveToHtml(source).trim()
+    // Untrimmed, and the same predicate as the sweep above by construction.
+    const changesMeaning = carveToHtml(once) !== carveToHtml(source)
     const unsettled = carveToCarve(once) !== once
     // "CANNOT READ IT BACK THE SAME WAY" HAS TWO READERS, and the pin is only
     // one of them. corpus-fmt-cross-read.test.mjs consults this same file to
@@ -229,7 +247,9 @@ test('every drifting .fmt fixture still says what its case input says', () => {
   const wrong = []
   for (const { slug, source, expected } of pinned) {
     if (!declaredDrift.has(slug)) continue
-    if (renderDoc(parseSpec(expected)).trim() !== renderDoc(parseSpec(source)).trim()) wrong.push(slug)
+    // Untrimmed too: a fixture that drops a boundary blank line is exactly the
+    // unfaithful serialization this check exists to catch.
+    if (renderDoc(parseSpec(expected)) !== renderDoc(parseSpec(source))) wrong.push(slug)
   }
   assert.deepEqual(
     wrong,
