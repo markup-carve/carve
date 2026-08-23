@@ -26360,3 +26360,58 @@ para
 ```
 
 :::
+
+## A container ends at the markup that closes it even where its last child is unplaced
+
+The MIRROR of "A container starts at its opening markup even where its first
+child is unplaced" two sections up, and the last arrangement the extent rules
+did not name: a container that HAS children whose LAST child carries no
+position.
+PART 12 §4 ends a closerless container at its last placed child (carve#1522),
+and read literally that pulls the end BACK over source the container's own
+unplaced child covers.
+
+Swap the two lines of that document's stanza and this case appears. The verse text is
+still reassembled around expanded tabs, so no engine places it - but now it is
+the paragraph's LAST child, and the last child that does carry a position is the
+`hard_break` ending the `%%` line above it. carve-rs ended the paragraph there,
+at offset 9, where carve-js and carve-php end it at 12, where the tab-bearing
+line ends.
+
+Ending at 9 is not a matter of taste. Offset 9 is one past the line terminator
+the break owns, so the span ends immediately after a terminator, which §4
+excludes by name - and the stanza's own last line falls outside the paragraph
+that holds it, exactly as its FIRST line did before
+markup-carve/carve-rs#1247 was fixed. Ruled at markup-carve/carve#1551: a
+container ends at the markup that CLOSES it, whether or not its last child is
+placed, and "ends at its last placed child" is the case for a container whose
+closer is IMPLICIT rather than the general rule.
+
+NOTHING REPORTED IT, for the same reason a third time. `checkStopsAtChildren`
+in the spec's scripts/spec/ast-positions.mjs SKIPPED every container holding an
+unplaced child, so the check enforcing carve#1522's ruling declined the one
+arrangement that ruling did not reach, and two engines disagreed on this
+document with nothing red. An unplaced child only moves the bound when it is the
+LAST child; the skip declined the whole family to protect one arrangement of it.
+
+The HTML below was never in dispute - the three engines and the canonical writer
+all agree on it. The pair is here because the SPAN this document publishes is
+what moved.
+
+:::: compare
+
+```carve
+::: |
+%%
+a	b
+:::
+```
+
+```html
+<div class="line-block">
+  <p><br>
+a&nbsp;&nbsp;&nbsp;b</p>
+</div>
+```
+
+::::

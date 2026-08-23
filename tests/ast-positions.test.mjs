@@ -1084,3 +1084,170 @@ test('the corpus pair for it starts on the line the author wrote', () => {
     'the break that ends the tab-bearing line sits outside its own paragraph',
   )
 })
+
+/*
+ * A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD IS
+ * UNPLACED (PART 12 section 4, carve#1551).
+ *
+ * The mirror of the rule above it, and the arrangement `checkStopsAtChildren`
+ * used to SKIP. Its skip read: a child may omit `pos`, and where one does the
+ * last placed child is not the container's last child, so the bound is short
+ * and every finding false. True only where the unplaced child sits after the
+ * last placed one - which is to say where it is the LAST child - and that is
+ * the one arrangement carve#1522's ruling did not name. So the check enforcing
+ * that ruling excused itself on precisely its undefined case, and carve-rs and
+ * the other two engines disagreed on a document with nothing red.
+ *
+ * The document is corpus 402: `::: |`, a `%%` line, then a tab-bearing verse
+ * line. The verse text is reassembled around expanded tabs so no engine places
+ * it, and it is the paragraph's LAST child; the last child that does carry a
+ * position is the `hard_break` ending the `%%` line above it. carve-rs ended
+ * the paragraph at 9, where that break ends, and carve-js and carve-php at 12,
+ * where the tab-bearing line ends.
+ *
+ * Ending at 9 puts the paragraph's end one past the terminator the break owns
+ * and drops the stanza's own last line out of the paragraph holding it - which
+ * is markup-carve/carve-rs#1247 read backwards, and why the two halves of the
+ * clause are now symmetric statements about markup.
+ */
+
+test('a container stopping at its last PLACED child is reported', () => {
+  // The shape carve-rs published for corpus 402, spelled out: the `%%` line at
+  // 6..8, the break ending it at 8..9, and the reassembled verse text over
+  // 9..12 carrying no position. The paragraph took the break's end.
+  const source = '::: |\n%%\na\tb\n:::\n'
+  const findings = stopFindings(
+    {
+      type: 'document',
+      children: [
+        {
+          type: 'line_block',
+          pos: pos(0, 16),
+          children: [
+            {
+              type: 'paragraph',
+              pos: pos(6, 9),
+              children: [
+                { type: 'comment', block: false, content: '', pos: pos(6, 8) },
+                { type: 'hard_break', pos: pos(8, 9) },
+                { type: 'text', value: 'ab' },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    source,
+  )
+
+  assert.equal(findings.length, 1)
+  assert.match(
+    findings[0],
+    /span stops at its last PLACED child on "paragraph".*it ends at 9, its last child carries no position, and the source from 9 on is that child's/,
+  )
+})
+
+test('the same container ending where the stanza ends is clean', () => {
+  // The ruled shape, and the one carve-js and carve-php already published. The
+  // ONLY difference from the case above is the paragraph's end, so a check that
+  // reported both or neither would prove nothing about the rule.
+  const source = '::: |\n%%\na\tb\n:::\n'
+  assert.deepEqual(
+    stopFindings(
+      {
+        type: 'document',
+        children: [
+          {
+            type: 'line_block',
+            pos: pos(0, 16),
+            children: [
+              {
+                type: 'paragraph',
+                pos: pos(6, 12),
+                children: [
+                  { type: 'comment', block: false, content: '', pos: pos(6, 8) },
+                  { type: 'hard_break', pos: pos(8, 9) },
+                  { type: 'text', value: 'ab' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      source,
+    ),
+    [],
+  )
+})
+
+test('an unplaced child with a placed sibling after it still bounds the container', () => {
+  // The other half of the un-skip, and the half the old code had no reason to
+  // decline: the unplaced `text` moves no bound, because the `comment` after it
+  // supplies one. This is corpus 400's arrangement with the container's end
+  // pushed one line too far, and it was UNREACHABLE while any unplaced child
+  // skipped the node.
+  const source = '::: |\na\tb\n%%\n:::\n'
+  const findings = stopFindings(
+    {
+      type: 'document',
+      children: [
+        {
+          type: 'line_block',
+          pos: pos(0, 16),
+          children: [
+            {
+              type: 'paragraph',
+              pos: pos(6, 16),
+              children: [
+                { type: 'text', value: 'ab' },
+                { type: 'hard_break', pos: pos(9, 10) },
+                { type: 'comment', block: false, content: '', pos: pos(10, 12) },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    source,
+  )
+
+  assert.equal(findings.length, 1)
+  assert.match(findings[0], /span reaches past its last child on "paragraph".*it ends at 16, its last child ends at 12/)
+})
+
+test('the corpus pair for it ends where the author closed the stanza', () => {
+  // Read from the fixture rather than retyped, for the reason the pair above
+  // gives: the document's point is a byte an editor does not show.
+  const source = readFileSync(
+    resolve(
+      repo,
+      'tests/corpus',
+      '402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced.crv',
+    ),
+    'utf8',
+  )
+  assert.ok(source.includes('\t'), 'the tab is the case; without it nothing here is unplaced')
+
+  const wire = toAstJson(parse(source))
+  const paragraph = wire.children[0].children[0]
+  const children = paragraph.children
+  const last = children[children.length - 1]
+
+  // The reassembled text keeps NO position, and it is the LAST child - which is
+  // the whole arrangement. Without both halves this document is corpus 400.
+  assert.equal(last.type, 'text')
+  assert.equal(last.pos, undefined)
+
+  // 12 is the end of the tab-bearing line; 9 is one past the terminator the
+  // break above it owns.
+  assert.equal(paragraph.pos.endOffset, 12)
+  const placed = children.filter((child) => child.pos)
+  assert.equal(Math.max(...placed.map((child) => child.pos.endOffset)), 9)
+
+  // And the rule REACHES it now. Zero findings out of a node the check declined
+  // to look at is the output this case used to produce.
+  const findings = []
+  const examined = checkStopsAtChildren(wire, [...source], findings)
+  assert.deepEqual(findings, [])
+  assert.ok(examined > 0, 'the container with an unplaced last child was skipped again')
+})

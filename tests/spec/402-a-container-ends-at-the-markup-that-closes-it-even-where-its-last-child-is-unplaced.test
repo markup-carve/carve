@@ -1,0 +1,13 @@
+A container ends at the markup that closes it even where its last child is unplaced
+
+```
+::: |
+%%
+a	b
+:::
+.
+<div class="line-block">
+  <p><br>
+a&nbsp;&nbsp;&nbsp;b</p>
+</div>
+```

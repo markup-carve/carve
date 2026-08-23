@@ -191,10 +191,22 @@ export function checkContainment(doc, findings) {
  * that tolerated whitespace would have been a rule contradicting the ruling it
  * enforces. Those documents are declared with the rest and close with them.
  *
+ * AN UNPLACED CHILD NO LONGER SKIPS THE NODE (carve#1551). It did, and that
+ * skip is why two engines could disagree about a line block stanza's paragraph
+ * with nothing red: the check enforcing carve#1522's ruling declined every
+ * container holding a child §4 permits to omit `pos`, which includes the one
+ * arrangement carve#1522 did not name. A container whose LAST child is unplaced
+ * is now checked the other way round - it must reach PAST its last placed
+ * child, because the source between them is the unplaced child's - and one
+ * whose unplaced child has a placed sibling after it is checked exactly as
+ * before, because the sibling supplies the bound.
+ *
  * RETURNS THE NUMBER OF NODES IT EXAMINED, for the reason the two rules above
  * return their own counts: positions are an opt-in parse option in two of the
  * three engines, and zero findings out of zero nodes is the output of a clean
- * run and of a run that never happened.
+ * run and of a run that never happened. Measured over the corpus the un-skip
+ * moved that count from 2943 to 2945 with the findings unchanged, and both
+ * nodes it used to decline are line block stanzas.
  */
 export const ENDS_AT_LAST_CHILD = new Set([
   'block_quote',
@@ -272,16 +284,56 @@ export function checkStopsAtChildren(doc, codepoints, findings) {
       }
       continue
     }
-    // A CHILD WITH NO USABLE POSITION SKIPS THE NODE, not just the child. §4
-    // permits a reassembled node to omit `pos`, and where one does, the last
-    // PLACED child is not the container's last child - so the bound this rule
-    // would compare against is short by however much the unplaced child covers,
-    // and every finding it produced would be false. A line block's spaced
-    // content is exactly that case, and it is the one node in the corpus that
-    // reaches here (`41-line-blocks-9`).
-    if (children.some((child) => !child.pos || !Number.isInteger(child.pos.endOffset))) continue
+    // AN UNPLACED CHILD USED TO SKIP THE NODE, not just the child - and that
+    // skip is why two engines could disagree here with nothing red. §4 permits
+    // a reassembled node to omit `pos`, so the reasoning went, and where one
+    // does the last PLACED child is not the container's last child, so the
+    // bound would be short and every finding false.
+    //
+    // The premise is true and the conclusion was too wide. It is true only
+    // where the unplaced child sits AFTER the last placed one, which is to say
+    // where the container's LAST child is the unplaced one; an unplaced child
+    // with a placed sibling after it moves no bound at all, because the sibling
+    // supplies it. So the skip declined the whole family to protect one
+    // arrangement of it - and that arrangement is exactly the one no rule
+    // covered until carve#1551, which is how the check enforcing carve#1522's
+    // ruling came to excuse itself on the one shape the ruling did not reach.
+    // The carve#755 family, in the check written to close one, for the second
+    // time in this file.
+    const placedEnds = children
+      .filter((child) => child.pos && Number.isInteger(child.pos.endOffset))
+      .map((child) => child.pos.endOffset)
+    const lastChild = children[children.length - 1]
     examined += 1
-    const lastChildEnd = Math.max(...children.map((child) => child.pos.endOffset))
+    if (!lastChild.pos || !Number.isInteger(lastChild.pos.endOffset)) {
+      // A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT, WHETHER OR NOT ITS LAST
+      // CHILD IS PLACED (carve#1551). The mirror of the start rule, ruled the
+      // same way: an unplaced child says nothing about where the construct was
+      // written, so the source it covers is still the container's and the
+      // container must reach past its last PLACED child rather than stop there.
+      //
+      // A line block stanza whose LAST line holds a tab is the shape - `::: |`,
+      // a `%%` line, then `a<TAB>b` - and carve-rs ended the paragraph at 9,
+      // where the break above the tab-bearing line ends, while carve-js and
+      // carve-php ended it at 12 where that line does. Ending at 9 puts the
+      // paragraph's end immediately after a line terminator, which §4 excludes
+      // by name, and drops the stanza's own last line out of the extent.
+      //
+      // WITH NO PLACED CHILD AT ALL the bound falls back to the container's own
+      // start, which refuses a zero-width span and nothing more: children that
+      // carry no position supply no stronger bound, and saying so is not the
+      // same as declining to look. The terminator rule, the containment pass
+      // and the slice comparison all still reach such a node.
+      const bound = placedEnds.length > 0 ? Math.max(...placedEnds) : pos.startOffset
+      if (pos.endOffset > bound) continue
+      findings.push(
+        `span stops at its last PLACED child on "${node.type}" at ${path}: ` +
+          `it ends at ${pos.endOffset}, its last child carries no position, and the source ` +
+          `from ${bound} on is that child's rather than nothing's`,
+      )
+      continue
+    }
+    const lastChildEnd = Math.max(...placedEnds)
     if (pos.endOffset <= lastChildEnd) continue
     const tail = codepoints.slice(lastChildEnd, pos.endOffset).join('')
     findings.push(

@@ -10735,9 +10735,10 @@ EOF = (* end of file *) ;
       belong to the construct and are included. A following line terminator,
       blank line, or unattached attribute block does not and is excluded.
       A container ends after its explicit closer when it has one, otherwise
-      after its last placed child. A soft or hard break is the exception: the
-      line terminator is the source codepoint the break owns, so its exclusive
-      end is column 1 of the following line.
+      after its last child -- its last PLACED child, which is what a container
+      whose closer is IMPLICIT has instead of one. A soft or hard break is the
+      exception: the line terminator is the source codepoint the break owns, so
+      its exclusive end is column 1 of the following line.
 
       A HOISTED SIBLING IS NOT A CHILD, AND A CLOSERLESS CONTAINER ENDS BEFORE
       IT -- NORMATIVE. A definition written at a container's content column is
@@ -10838,6 +10839,47 @@ EOF = (* end of file *) ;
       the line BELOW that one, which also put the break ending the tab-bearing
       line outside the paragraph holding it and so contradicted the containment
       clause above. (markup-carve/carve-rs#1247.)
+
+      A CONTAINER ENDS AT THE MARKUP THAT CLOSES IT EVEN WHERE ITS LAST CHILD
+      IS UNPLACED -- NORMATIVE. A container whose last child omits `pos` ends
+      where the markup that closes it was written, not at the last child that
+      does carry one. The source between them is that unplaced child's, and an
+      unplaced child says nothing about where the author closed the construct.
+
+      THIS LOCATES THE END RULE RATHER THAN OVERTURNING IT. Read as two
+      statements about MARKUP the two halves of this clause are symmetric: a
+      container starts at the markup that opens it, and ends at the markup that
+      closes it. "Ends at its last placed child" is the case for a container
+      whose closer is IMPLICIT -- a list, an item, a definition list -- where
+      the last child's end is what the container has instead of a closer, and
+      where the source past it belongs to a hoisted sibling or to nothing. It
+      was the only rule written because it was the only case measured; it does
+      not narrow a container over source its own child covers.
+
+      A closerless container whose last child is unplaced therefore ends where
+      its content ends, which is line geometry the block layer knows even where
+      the text on that line cannot be sliced out of the source. A line block
+      stanza whose LAST line holds a tab is the shape:
+
+          ::: |
+          %%
+          a<TAB>b
+          :::
+
+      carve-rs ended the paragraph at offset 9, where the break above the
+      tab-bearing line ends, while carve-js and carve-php ended it at 12 where
+      that line ends. Offset 9 is one past the terminator the break owns, so
+      that span ends immediately after a line terminator -- excluded by name
+      above -- and drops the stanza's own last line out of the paragraph
+      holding it, which is markup-carve/carve-rs#1247 read backwards.
+
+      NOTHING REPORTED IT. `checkStopsAtChildren` in the spec's
+      scripts/spec/ast-positions.mjs skipped every container holding an unplaced
+      child, so the check enforcing carve#1522 declined the one arrangement
+      carve#1522 did not reach and two engines disagreed on that document with
+      nothing red. An unplaced child moves the bound only where it is the LAST
+      child; the skip declined the whole family to protect one arrangement of
+      it. (carve#1551.)
 
       WHY IT IS WRITTEN DOWN. Nothing compared two engines' spans until
       carve#917 built the panel, and the first run of it reported 279 of 690
