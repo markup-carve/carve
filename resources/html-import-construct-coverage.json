@@ -1,0 +1,28 @@
+{
+  "sharedFixtures": [
+    "heading", "thematic_break", "code_block", "blockquote", "unordered_list",
+    "ordered_list", "definition_list", "table", "admonition", "div", "paragraph",
+    "block_attributes", "code_span", "inline_link", "inline_span", "inline_image",
+    "math_inline", "math_display", "emphasis", "highlight", "forced_emphasis",
+    "forced_highlight"
+  ],
+  "engineTestsOnly": [
+    "strong", "bold_italic", "underline", "strikethrough", "hard_break",
+    "forced_super", "forced_sub", "addition", "deletion", "figure_group",
+    "footnote_definition", "reference_footnote", "escaped_char", "line_block",
+    "abbreviation_definition", "autolink", "mention", "tag", "raw_block",
+    "raw_inline", "smart_quote", "reference_definition", "reference_link",
+    "collapsed_reference_link", "reference_image", "collapsed_reference_image"
+  ],
+  "uncoveredImportable": [
+    "forced_strong", "forced_underline", "forced_strike", "local_hard_break_block",
+    "auto_text_link", "extension_inline", "substitution", "editorial_comment"
+  ],
+  "notImportable": [
+    "comment_block", "comment_line", "inline_comment", "braced_comment",
+    "literal_inline", "soft_break", "symbol", "inline_footnote", "em_dash",
+    "en_dash", "braced_en_dash", "ellipsis", "arrow", "comparison",
+    "typographic_symbol"
+  ],
+  "structural": ["blank_line"]
+}

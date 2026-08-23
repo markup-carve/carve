@@ -1131,6 +1131,19 @@ portable adapter names are `generic`, `tiptap`, `prosemirror`, `ckeditor`,
 
 ## Conformance fixtures
 
+HTML import is gated at three scales. The normative fixture directories below
+pin source, published AST, and diagnostics. `resources/html-import-construct-coverage.json`
+classifies every construct derived from the normative grammar, including
+importable constructs that still have no shared fixture. The converter runner
+also hands every fixture to Rust, JavaScript, and PHP and reconciles known drift
+in `resources/converter-drift.txt` in both directions.
+
+The wider population gate renders all 1,384 corpus documents and imports that
+HTML through the pinned JavaScript engine. At the current pin, 1,383 complete,
+1,329 imports are canonical-writer fixed points, and 1,351 preserve visible
+rendered text. These are pinned measurements, not claims that HTML is lossless;
+any movement forces inspection and an explicit baseline update.
+
 Each directory under `tests/html-import` contains `input.html`,
 `expected.crv`, `expected.ast.json`, and `expected.report.json`. Implementations
 may add platform-specific fixtures, but shared fixtures define the portable

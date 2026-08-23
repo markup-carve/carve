@@ -94,3 +94,15 @@
 # the same defect, and only one of them announces itself.
 #
 # THIS FILE IS EMPTY OF DECLARATIONS AGAIN, which is the intended end state.
+
+# Full HTML-import fixture sweep added by carve#1600, measured 2026-08-24 on
+# clean current mains: carve-rs 9cf16d05, carve-js 05e1cc27, carve-php 06c27aaa.
+# Each entry is removed when that engine reproduces the normative fixture.
+rust/html-import--derived-endnotes-section  the importer does not preserve the derived endnotes list looseness (carve#1612)
+js/html-import--derived-endnotes-section  the importer does not preserve the derived endnotes list looseness (carve#1612)
+php/html-import--derived-endnotes-section  the importer does not preserve the derived endnotes list looseness (carve#1612)
+rust/html-import--empty-definition-description  an empty description is not reproduced as the fixture's definition-list row (carve#1636)
+rust/html-import--empty-definition-description-not-last  dropping the empty description changes the following definition-list structure (carve#1636)
+php/html-import--empty-definition-description-not-last  dropping the empty description changes the following definition-list structure (carve#1636)
+rust/html-import--endnotes-section-not-last  the importer relocates a non-final endnotes section (carve#1600)
+rust/html-import--note-reference-in-a-span  the note reference consumes the surrounding span boundary (carve#1600)

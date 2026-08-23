@@ -1,0 +1,48 @@
+{
+  "requiredOutputs": ["html", "markdown", "plain", "ansi", "carve", "ast"],
+  "optionalImporters": ["html", "markdown", "djot"],
+  "bindings": {
+    "carve-go": {
+      "commit": "cb26ca6",
+      "outputs": ["html", "markdown", "plain", "ansi", "carve", "ast"],
+      "importers": {},
+      "outOfScopeImporters": {
+        "html": "the WASI binding does not currently expose migration commands",
+        "markdown": "the WASI binding does not currently expose migration commands",
+        "djot": "the WASI binding does not currently expose migration commands"
+      }
+    },
+    "carve-py": {
+      "commit": "e352220",
+      "implementation": "markup-carve/carve-py#59",
+      "outputs": ["html", "markdown", "plain", "ansi", "carve", "ast"],
+      "importers": {},
+      "outOfScopeImporters": {
+        "html": "importers are not part of the current Python API",
+        "markdown": "importers are not part of the current Python API",
+        "djot": "importers are not part of the current Python API"
+      }
+    },
+    "carve-rb": {
+      "commit": "6bfe761",
+      "implementation": "markup-carve/carve-rb#88",
+      "outputs": ["html", "markdown", "plain", "ansi", "carve", "ast"],
+      "importers": {},
+      "outOfScopeImporters": {
+        "html": "importers are not part of the current Ruby API",
+        "markdown": "importers are not part of the current Ruby API",
+        "djot": "importers are not part of the current Ruby API"
+      }
+    },
+    "carve-wasm": {
+      "commit": "01588bc",
+      "implementation": "markup-carve/carve-wasm#54",
+      "outputs": ["html", "markdown", "plain", "ansi", "carve", "ast"],
+      "importers": {"html": "htmlToCarve"},
+      "outOfScopeImporters": {
+        "markdown": "only HTML import is currently part of the WASM API",
+        "djot": "only HTML import is currently part of the WASM API"
+      }
+    }
+  }
+}

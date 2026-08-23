@@ -27,6 +27,13 @@ the bar for "a Carve implementation" is **Tier-1 core** (native syntax) - see
 
 Higher-level bindings and satellite packages that wrap one of the engine implementations.
 
+A binding over carve-rs exposes the complete core output surface: HTML,
+Markdown, plain text, ANSI, canonical Carve, and the published AST. Importers
+are optional, but each binding declares every HTML, Markdown, and Djot importer
+as either implemented or out of scope. The machine-readable declaration in
+`resources/binding-contract.json` checks that the required output set is exact
+and that every importer has exactly one declaration.
+
 | Project | Language | Notes |
 |---|---|---|
 | [carve-go](https://github.com/markup-carve/carve-go) | Go | Pure-Go module via wazero + WASI over carve-rs. |
