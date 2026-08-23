@@ -88,13 +88,32 @@ const normalize = (value) => {
 }
 
 /*
- * ABSENT OPTIONAL FIELDS ARE IGNORED, which docs/html-import.md already
- * promises implementations for the AST comparison. A key present on only one
- * side is skipped; a key present on BOTH must agree. That is what leaves
- * `order`, `bulletChar` and `delim` - source-layout fields a fixture omits and
- * a parse fills in - out of the comparison while still catching a `tight` or a
- * `type` that says two different things.
+ * SOURCE-LAYOUT FIELDS ARE THE ONLY ONES SKIPPED, and the list is CLOSED.
+ *
+ * These record HOW a source spelled a construct - which bullet character, which
+ * ordered delimiter, which slot an attribute sat in, where a definition's lines
+ * ran. A parse fills them in because it read source; an import records none of
+ * them, because it read HTML and there was no source to read them off. So a
+ * fixture omitting one is the absent optional field docs/html-import.md already
+ * tells implementations to ignore, and it is the ONLY absence that is.
+ *
+ * Skipping every key that is missing from either side instead would be a check
+ * that cannot fail for a whole class: a recorded `{type: "text", value: "x"}`
+ * beside a parsed `{type: "text"}` would AGREE, on nothing. Every other key is
+ * compared in both directions, so a field only one side carries is a
+ * disagreement. A new source-layout field turns this red until it is added
+ * here, which is the direction worth failing in.
  */
+const SOURCE_LAYOUT_FIELDS = new Set([
+  'order',
+  'bulletChar',
+  'bareMarker',
+  'delim',
+  'definitionLines',
+  'definitionSpans',
+  'termSpans',
+])
+
 const disagreement = (parsed, recorded, path = '') => {
   if (Array.isArray(parsed) || Array.isArray(recorded)) {
     if (!Array.isArray(parsed) || !Array.isArray(recorded)) return `${path}: array against non-array`
@@ -108,8 +127,11 @@ const disagreement = (parsed, recorded, path = '') => {
     return null
   }
   if (parsed !== null && typeof parsed === 'object' && recorded !== null && typeof recorded === 'object') {
-    for (const key of Object.keys(parsed)) {
-      if (!(key in recorded)) continue
+    const keys = [...new Set([...Object.keys(parsed), ...Object.keys(recorded)])]
+    for (const key of keys) {
+      if (SOURCE_LAYOUT_FIELDS.has(key)) continue
+      if (!(key in parsed)) return `${path}.${key}: the source says nothing, the tree says it`
+      if (!(key in recorded)) return `${path}.${key}: the source says it, the tree says nothing`
       const miss = disagreement(parsed[key], recorded[key], `${path}.${key}`)
       if (miss) return miss
     }
