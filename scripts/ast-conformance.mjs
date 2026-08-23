@@ -48,6 +48,7 @@ import {
   describeDocuments,
   groupFindings,
   notReconciledBecause,
+  parseExtentDeclarations,
   parseWaivers,
   partitionFindings,
 } from './spec/ast-waivers.mjs'
@@ -460,13 +461,21 @@ function reportValueDisagreements(present) {
  * the fix for a red run "wait". A declared count still fails the moment an
  * engine changes its mind about a span, which nothing else here can see.
  *
- * IT NOW NAMES A SIDE. Whether a span covers the markup that opens a node was
- * markup-carve/carve#913, and most of these rows are that question; §4 answers
- * it markup-inclusive, so an extent row is an engine owing a fix rather than an
+ * IT NOW NAMES A SIDE, AND THERE ARE TWO OF THEM. Whether a span covers the
+ * markup that opens a node was markup-carve/carve#913, and §4 answers it
+ * markup-inclusive - so an extent row is an engine owing a fix rather than an
  * open convention. What the panel still does not do is say WHICH engine owes
- * it - that needs the source, and the source-side rule is `checkOpeningMarkup`
- * in scripts/spec/ast-positions.mjs, which each engine's `report` runs against
- * its own tree.
+ * it: that needs the source, and WHICH source-side rule applies depends on
+ * which END of the span moved. `checkOpeningMarkup` tests where a span BEGINS;
+ * `checkStopsAtChildren`, over the types in `ENDS_AT_LAST_CHILD`, tests where
+ * it ENDS. Both live in scripts/spec/ast-positions.mjs and each engine's
+ * `report` runs both against its own tree.
+ *
+ * The advice below used to name only the first, so a row with a unanimous
+ * `startOffset` differing at the END read as "the narrow engine moves" when the
+ * rule for that end says the WIDE one does - carve#1637, where six of eight
+ * rows were end-only and the text pointed at the one engine with no end-side
+ * finding at all.
  */
 function reportSpanDisagreements(present) {
   const byKey = new Map()
@@ -529,8 +538,13 @@ function reportSpanDisagreements(present) {
       console.log(`  ${String(docs.size).padStart(4)} doc(s)  ${key}`)
       console.log(`        e.g. ${[...docs][0]}: ${who}`)
     }
-    console.log('  EXTENT rows are PART 12 §4: a span begins at the markup that opens the node,')
-    console.log('  so an engine spanning the content alone is the one that moves (carve#913).')
+    console.log('  EXTENT rows are PART 12 §4, and WHICH END moved decides which engine owes it:')
+    console.log('    startOffset differs - a span "begins at the markup that opens the construct",')
+    console.log('      so the engine spanning the content alone moves (carve#913, checkOpeningMarkup).')
+    console.log('    endOffset differs, startOffset unanimous - a span "ends immediately after the')
+    console.log('      last source codepoint the construct owns", and a container with no closer ends')
+    console.log('      at its last child, so the WIDE engine moves (checkStopsAtChildren, over the')
+    console.log('      types in ENDS_AT_LAST_CHILD). Read the "e.g." line to see which end moved.')
   }
 
   const problems = reconcileSpans(
@@ -544,11 +558,21 @@ function reportSpanDisagreements(present) {
     advice: [
       'Each line there is a node type the engines span differently, with the number of',
       'documents it shows up in. Update it in the commit that moves the number.',
-      'A row moving does not say WHICH engine is wrong - this panel has the trees and',
-      'not the source - but the extent rule itself is settled: PART 12 §4 is',
-      'markup-inclusive (markup-carve/carve#913; docs/ast-json.md: a span "begins at the',
-      'markup that opens the construct"), and',
-      'checkOpeningMarkup in scripts/spec/ast-positions.mjs is what names a side.',
+      'A row moving does not say WHICH engine is wrong - this panel has the trees and not',
+      'the source - and WHICH RULE names a side depends on WHICH END of the span moved.',
+      'PART 12 §4 has two sentences and they point at different checkers:',
+      '  START. A span "begins at the markup that opens the construct"',
+      '  (markup-carve/carve#913), so an engine spanning the content alone is the one that',
+      '  moves. checkOpeningMarkup in scripts/spec/ast-positions.mjs is the source-side rule.',
+      '  END. A span "ends immediately after the last source codepoint the construct owns",',
+      '  and a container with no closer "ends at its last child", so on those rows the WIDE',
+      '  engine is the one that moves. checkStopsAtChildren, over the types in',
+      '  ENDS_AT_LAST_CHILD, is the source-side rule, and what it finds is declared in',
+      '  resources/ast-extent-findings.txt.',
+      'A row whose engines agree on startOffset and differ on endOffset is the SECOND case.',
+      'Reading it as the first blames the narrow engine, which is the exact inverse',
+      '(carve#1637): six of eight rows were end-only, and the advice pointed at carve-js -',
+      'the one engine with no span-reaches-past-its-last-child finding at all.',
     ],
   })
   if (byKey.size > 0) {
@@ -559,6 +583,7 @@ function reportSpanDisagreements(present) {
 const VALUE_DIVERGENCE_FILE = resolve(here, '..', 'resources', 'ast-value-divergence.txt')
 const SPAN_DIVERGENCE_FILE = resolve(here, '..', 'resources', 'ast-span-divergence.txt')
 const POSITION_WAIVER_FILE = resolve(here, '..', 'resources', 'ast-position-waivers.txt')
+const EXTENT_FINDING_FILE = resolve(here, '..', 'resources', 'ast-extent-findings.txt')
 
 /*
  * The position declaration, read ONCE and up front.
@@ -578,8 +603,28 @@ if (waiverFileErrors.length > 0) {
   process.exit(2)
 }
 
+/*
+ * The §4 EXTENT declaration, read the same way and for the same reason.
+ *
+ * A malformed line here is a hard stop too, and the status field is stricter
+ * than the waiver file's: there is no `permitted`, so a typo cannot quietly
+ * turn a violation into a permitted one. It can only fail.
+ */
+const { declared: declaredExtents, errors: extentFileErrors } = parseExtentDeclarations(
+  readFileSync(EXTENT_FINDING_FILE, 'utf8'),
+)
+if (extentFileErrors.length > 0) {
+  console.error('resources/ast-extent-findings.txt is malformed:')
+  for (const e of extentFileErrors) console.error(`  ${e}`)
+  process.exit(2)
+}
+
 /** Accumulated across every engine's `report`, gated at the end of the run. */
 const waiverProblems = []
+
+/** The same, for the extent ledger and for the findings no ledger covers. */
+const extentDriftProblems = []
+const ungatedProblems = []
 
 /**
  * Every declaration this run reconciles, gated together at the end.
@@ -1449,10 +1494,30 @@ function report(engine, label, findings) {
   // carve-rs issue would then leave the run red until the duplicate lines went
   // too. It is the same reason the shape panel does not give that engine a vote.
   const exempt = notReconciledBecause(engine)
-  const { waived, outstanding, undeclared, unwaivable, problems } = exempt
-    ? { waived: 0, outstanding: 0, undeclared: 0, unwaivable: 0, problems: [] }
-    : partitionFindings(engine, findings, declaredWaivers)
+  const {
+    waived,
+    outstanding,
+    undeclared,
+    extent,
+    ungated,
+    problems,
+    extentProblems,
+    ungatedProblems: ungatedLines,
+  } = exempt
+    ? {
+        waived: 0,
+        outstanding: 0,
+        undeclared: 0,
+        extent: 0,
+        ungated: 0,
+        problems: [],
+        extentProblems: [],
+        ungatedProblems: [],
+      }
+    : partitionFindings(engine, findings, declaredWaivers, declaredExtents)
   waiverProblems.push(...problems)
+  extentDriftProblems.push(...extentProblems)
+  ungatedProblems.push(...ungatedLines)
 
   if (findings.length === 0) {
     console.log(`${label}: conformant\n`)
@@ -1469,10 +1534,11 @@ function report(engine, label, findings) {
   const ranked = groupFindings(findings)
   const split = exempt
     ? `not reconciled: ${exempt}`
-    : waived + outstanding + undeclared + unwaivable === findings.length
+    : waived + outstanding + undeclared + extent + ungated === findings.length
       ? `${waived} waived, ${outstanding} outstanding` +
         (undeclared > 0 ? `, ${undeclared} UNDECLARED` : '') +
-        (unwaivable > 0 ? `, ${unwaivable} not a position` : '')
+        (extent > 0 ? `, ${extent} §4 extent (declared)` : '') +
+        (ungated > 0 ? `, ${ungated} UNGATED` : '')
       : 'partition disagrees with the total - this is a bug in partitionFindings'
   console.log(`${label}: ${findings.length} findings, ${ranked.length} distinct (${split})`)
   for (const entry of ranked.slice(0, DISPLAY_LIMIT)) {
@@ -1617,6 +1683,46 @@ declarationDrift.push({
   ],
 })
 
+/*
+ * THE §4 EXTENT DECLARATION, gated beside the position one.
+ *
+ * Its findings were printed in full by every run and gated by none of them
+ * (carve#1637). The counter that held them was named `unwaivable`, which was
+ * true of a LINE in the waiver file and false of the run: nothing absorbed
+ * them and nothing failed on them either.
+ *
+ * DECLARED rather than gated at zero, and the difference matters. Thirty
+ * violations stand in carve-rs and thirty-eight in carve-php as this lands;
+ * gating at zero would put a scheduled job red until nine ports finish across
+ * three engines, and a permanently red scheduled job gets muted - which is the
+ * failure the whole workflow exists to undo. The ledger ratchets: a count that
+ * moves in EITHER direction fails, so a fix must delete its line and a new
+ * violation is red the day it lands.
+ */
+declarationDrift.push({
+  file: 'resources/ast-extent-findings.txt',
+  what: 'PART 12 §4 EXTENT FINDINGS',
+  problems: extentDriftProblems,
+  advice: [
+    'Each line there is one engine, one §4 extent rule and one node type, with a count',
+    'and the issue that will delete it. There is no "permitted" status: a span that is',
+    'PRESENT and points at the wrong codepoint has no exempt reading the way a',
+    'REASSEMBLED node has. Fix the engine and delete the line, or lower the count in the',
+    'commit that lowers the number. UNDECLARED lines above print the line to paste.',
+  ],
+})
+
+// The findings no ledger covers, and none should. A wrong slice, a span outside
+// its parent, a §1a run: each is a defect to fix rather than a number to
+// record, so this gate has no declaration file and no way to be silenced.
+if (ungatedProblems.length > 0) {
+  console.error('')
+  console.error('PART 12 findings with no permitted category at all:')
+  for (const p of ungatedProblems) console.error(`  ${p}`)
+  console.error('')
+  console.error('These have no ledger by design. Fix the engine.')
+}
+
 const drifted = declarationDrift.filter((d) => d.problems.length > 0)
 if (drifted.length > 0) {
   for (const d of drifted) {
@@ -1628,6 +1734,8 @@ if (drifted.length > 0) {
   }
   process.exit(1)
 }
+
+if (ungatedProblems.length > 0) process.exit(1)
 
 if (adjacentTextRunCounts.length > 0) {
   const total = adjacentTextRunCounts.reduce((n, e) => n + e.count, 0)

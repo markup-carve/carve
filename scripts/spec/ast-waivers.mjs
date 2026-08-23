@@ -69,6 +69,121 @@ export function waivableType(text) {
   return m ? m[1] : null
 }
 
+/*
+ * THE OTHER HALF OF §4, and the half that could not fail.
+ *
+ * `waivableType` above recognizes an ABSENT position. Everything else this
+ * checker produces used to fall into a counter called `unwaivable`, whose
+ * comment said "never absorbable by a line" - true, and read as "cannot be
+ * waived" when its effect was "is never gated". `partitionFindings` incremented
+ * it and `continue`d, so no `problems` entry was ever produced and a grep of a
+ * whole run for UNWAIVED returned nothing (carve#1637).
+ *
+ * What sat in it was thirty §4 EXTENT violations per engine: a span that IS
+ * present and is WRONG. `checkStopsAtChildren` in ./ast-positions.mjs was
+ * written precisely because a rule every engine breaks the same way is
+ * invisible to the three-way panel - it reads the SOURCE, the only party that
+ * cannot agree with an engine by accident - and its findings landed in the one
+ * bucket that could not fail. Had all three engines still carried the defect
+ * the panel would have been unanimous and the run GREEN.
+ *
+ * These are declared, not gated at zero, for the reason the sibling ledgers
+ * give: in this fleet a fix lands in one engine and is ported over the
+ * following days, and a gate that goes red until nine ports land across three
+ * engines is a check that cannot PASS - the mirror of the one it replaces. The
+ * declaration ratchets instead: exact in three directions, so the counts have
+ * to come down as the engines conform and a new violation is red the day it
+ * lands.
+ *
+ * DECLARED PER (engine, rule, node type) rather than per document. Per document
+ * is the finer ledger and it is the wrong one here: an extent defect is one
+ * construct behaving one way everywhere it appears - the same argument
+ * `compareSpans` gives for keying by type - so a per-document list is sixty
+ * lines describing two facts, and every engine fix would rewrite all sixty. Per
+ * type still fails on a NEW violation of a type nothing declares, which a bare
+ * per-engine total would not.
+ *
+ * THERE IS NO `permitted` STATUS HERE. A missing position has a permitted
+ * category because §4 exempts a REASSEMBLED node - no honest span exists. A
+ * span that exists and points at the wrong codepoint has no such reading, so
+ * every line names the issue that will delete it. A ledger that could say
+ * "permitted" would be the off switch this file's other half refuses to be.
+ */
+const EXTENT_RULES = [
+  ['ends-past-last-child', /^span reaches past its last child on "([A-Za-z_][A-Za-z0-9_]*)" at /],
+  [
+    'ends-before-placed-child',
+    /^span stops at its last PLACED child on "([A-Za-z_][A-Za-z0-9_]*)" at /,
+  ],
+  [
+    'starts-past-opening-markup',
+    /^pos does not begin at the markup that opens "([A-Za-z_][A-Za-z0-9_]*)" at /,
+  ],
+  [
+    'empty-span-covers-more',
+    /^span covers more than its own markup on an empty "([A-Za-z_][A-Za-z0-9_]*)" at /,
+  ],
+]
+
+/** The rule ids a declaration line may name, in the order they are checked. */
+export const EXTENT_RULE_IDS = EXTENT_RULES.map(([id]) => id)
+
+/** The §4 extent rule a finding names and the node type it names, or null. */
+export function extentFinding(text) {
+  for (const [rule, pattern] of EXTENT_RULES) {
+    const m = pattern.exec(text)
+    if (m) return { rule, type: m[1] }
+  }
+
+  return null
+}
+
+const extentKeyOf = (engine, rule, type) => `${engine}\t${rule}\t${type}`
+
+/** `<engine>  <rule>  <type>  <count>  <owner/repo#N>` - the extent ledger. */
+export function parseExtentDeclarations(text) {
+  const declared = new Map()
+  const errors = []
+  let lineNo = 0
+  for (const raw of text.split('\n')) {
+    lineNo += 1
+    const line = raw.trim()
+    if (line === '' || line.startsWith('#')) continue
+    const parts = line.split(/\s+/)
+    if (parts.length !== 5) {
+      errors.push(`line ${lineNo}: expected 5 fields (engine rule type count issue), got ${parts.length}`)
+      continue
+    }
+    const [engine, rule, type, countText, status] = parts
+    if (!EXTENT_RULE_IDS.includes(rule)) {
+      errors.push(`line ${lineNo}: unknown rule "${rule}"; known rules are ${EXTENT_RULE_IDS.join(', ')}`)
+      continue
+    }
+    const count = Number(countText)
+    if (!Number.isInteger(count) || count < 1) {
+      errors.push(`line ${lineNo}: count must be a positive integer, got "${countText}"`)
+      continue
+    }
+    // No `permitted` here, deliberately - see the note above. A §4 extent
+    // violation is always owed, so the status field is an issue or an error.
+    if (!/^[\w.-]+\/[\w.-]+#\d+$/.test(status)) {
+      errors.push(
+        `line ${lineNo}: status must be a fully qualified owner/repo#N - a §4 extent ` +
+          `violation is never "permitted", got "${status}"`,
+      )
+      continue
+    }
+    const key = extentKeyOf(engine, rule, type)
+    if (declared.has(key)) {
+      errors.push(`line ${lineNo}: ${engine} ${rule} ${type} is declared twice`)
+      continue
+    }
+    declared.set(key, { engine, rule, type, count, status, lineNo })
+  }
+
+  return { declared, errors }
+}
+
 const keyOf = (engine, document, type) => `${engine}\t${document}\t${type}`
 
 /**
@@ -139,24 +254,44 @@ export function parseWaivers(text) {
 }
 
 /**
- * One engine's findings against the declaration.
+ * One engine's findings against BOTH declarations.
  *
- * Returns the two totals the report prints and the problems that fail the run.
- * `unwaivable` is every finding that is not a missing position: counted so the
- * three numbers still add up to the total, and never absorbable by a line.
+ * Every finding now leaves through one of three doors, and each of them can
+ * fail the run. The old third door could not: `unwaivable` counted a finding
+ * and dropped it, which is how thirty §4 extent violations per engine were
+ * printed in full by a run that exited green (carve#1637).
+ *
+ *   MISSING POSITION -> `resources/ast-position-waivers.txt`, which has a
+ *   `permitted` category because §4 exempts a reassembled node.
+ *   §4 EXTENT       -> `resources/ast-extent-findings.txt`, issue-only, no
+ *   permitted category at all.
+ *   ANYTHING ELSE   -> `ungated`, which fails on sight. There is no ledger for
+ *   a wrong slice, a span outside its parent or a §1a run, and there should not
+ *   be: those are defects to fix, not numbers to record.
+ *
+ * Returns the totals the report prints and three separate problem lists, so
+ * each ledger's drift is reported against the file that owns it rather than
+ * under whichever heading happened to be printing.
  */
-export function partitionFindings(engine, findings, declared) {
+export function partitionFindings(engine, findings, declared, extentDeclared = new Map()) {
   const measured = new Map()
-  let unwaivable = 0
+  const extentMeasured = new Map()
+  const ungated = []
   for (const finding of findings) {
     const { document, text } = splitFinding(finding)
     const type = document === null ? null : waivableType(text)
-    if (type === null) {
-      unwaivable += 1
+    if (type !== null) {
+      const key = keyOf(engine, document, type)
+      measured.set(key, (measured.get(key) ?? 0) + 1)
       continue
     }
-    const key = keyOf(engine, document, type)
-    measured.set(key, (measured.get(key) ?? 0) + 1)
+    const found = extentFinding(text)
+    if (found !== null) {
+      const key = extentKeyOf(engine, found.rule, found.type)
+      extentMeasured.set(key, (extentMeasured.get(key) ?? 0) + 1)
+      continue
+    }
+    ungated.push(finding)
   }
 
   let waived = 0
@@ -196,7 +331,55 @@ export function partitionFindings(engine, findings, declared) {
     }
   }
 
-  return { waived, outstanding, undeclared, unwaivable, problems }
+  // THE EXTENT LEDGER, the same three directions. UNDECLARED prints the line to
+  // paste, because the alternative is a reader deriving five whitespace-separated
+  // fields from a sentence, and a ledger that is tedious to update is a ledger
+  // that gets widened instead.
+  let extent = 0
+  const extentProblems = []
+  for (const [key, count] of extentMeasured) {
+    extent += count
+    const [, rule, type] = key.split('\t')
+    const line = extentDeclared.get(key)
+    if (!line) {
+      extentProblems.push(
+        `UNDECLARED ${engine}  ${rule}  ${type}  ${count}  - a PART 12 §4 extent violation no ` +
+          'line covers. Fix the engine, or record it as:  ' +
+          `${engine}  ${rule}  ${type}  ${count}  <owner/repo#N>`,
+      )
+      continue
+    }
+    if (line.count !== count) {
+      extentProblems.push(
+        `COUNT      ${engine}  ${rule}  ${type}  declares ${line.count}, measured ${count}` +
+          ` (${line.status})`,
+      )
+    }
+  }
+  for (const [key, line] of extentDeclared) {
+    if (line.engine !== engine) continue
+    if (!extentMeasured.has(key)) {
+      extentProblems.push(
+        `FIXED      ${engine}  ${line.rule}  ${line.type}  is declared (${line.status}) but ` +
+          'no longer occurs - delete the line',
+      )
+    }
+  }
+
+  return {
+    waived,
+    outstanding,
+    undeclared,
+    extent,
+    ungated: ungated.length,
+    problems,
+    extentProblems,
+    ungatedProblems: ungated.map(
+      (finding) =>
+        `UNGATED    ${engine}  ${finding}  - no ledger covers this finding class, and none ` +
+        'should: fix it rather than declaring it',
+    ),
+  }
 }
 
 /**

@@ -1,0 +1,56 @@
+# The PART 12 §4 EXTENT findings `npm run ast:check` reports: a span that IS
+# present and points at the wrong codepoint.
+#
+# `scripts/spec/ast-positions.mjs` reads the SOURCE rather than another engine,
+# which is the only way a rule every engine breaks the same way can be seen at
+# all - the three-way panel compares the engines against each other and calls a
+# unanimous defect agreement. `checkStopsAtChildren` says so in its own
+# docblock. Its findings then landed in a counter called `unwaivable` that
+# `partitionFindings` incremented and dropped, so a run printed thirty of them
+# per engine in full and exited green (carve#1637). This file is where they are
+# reconciled instead.
+#
+# THE FORMAT is `<engine>  <rule>  <type>  <count>  <owner/repo#N>`, whitespace
+# separated, `#` comments and blank lines ignored. `rule` is one of the ids in
+# EXTENT_RULES in scripts/spec/ast-waivers.mjs:
+#
+#   ends-past-last-child         a container ends after its last child, over
+#                                source that belongs to no child of it
+#   ends-before-placed-child     it stops at its last PLACED child, leaving the
+#                                source an unplaced child owns in nothing
+#   starts-past-opening-markup   it begins inside the construct rather than at
+#                                the markup that opens it
+#   empty-span-covers-more       an empty container spans past the markup that
+#                                opened it
+#
+# THERE IS NO `permitted` STATUS, deliberately. The sibling file
+# resources/ast-position-waivers.txt has one because §4 exempts a REASSEMBLED
+# node - its value is not a slice of the source at any offset, so no honest span
+# exists. A span that exists and is wrong has no such reading, so every line
+# here names the issue that will delete it, and a status this cannot parse is an
+# error rather than a default.
+#
+# EXACT IN THREE DIRECTIONS, like every other declaration in this directory:
+#
+#   a finding no line covers          -> UNDECLARED, fails
+#   a declared line whose count moved -> COUNT, fails
+#   a declared line nothing produces  -> FIXED, fails until the line is deleted
+#
+# The third is what makes this a ratchet rather than a silencer: an engine that
+# conforms turns the run red until its line goes, so the numbers below can only
+# come down.
+#
+# DECLARED PER (engine, rule, node type), NOT PER DOCUMENT. An extent defect is
+# one construct behaving one way everywhere it appears - the argument
+# `compareSpans` gives for keying its own rows by type - so a per-document
+# ledger would be sixty lines describing two facts and every engine fix would
+# rewrite all sixty. Per type still fails on a new violation of a type nothing
+# declares, which a bare per-engine total would not.
+#
+# WHY DECLARED AT ALL, rather than gated at zero. In this fleet a fix lands in
+# one engine and is ported over the following days. Gating at zero would put the
+# scheduled AST conformance job red until every port finished, and a permanently
+# red scheduled job gets muted - which is the failure that workflow exists to
+# undo. A check that cannot pass is the same defect as a check that cannot fail.
+#
+# <engine>  <rule>  <type>  <count>  <owner/repo#N>
