@@ -36,6 +36,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **PART 12 §16 names the three exemptions from a diagnostic path's index
+  basis, and closes the list** (carve#1556). An `<li>`, a `<tr>` and a
+  `<td>`/`<th>` are numbered among their own kind because the traversal
+  renumbers them; every other kind counts among all the parent's child nodes.
+  All three engines already did exactly this - the clause read as universal and
+  was not. `traversal-shaped-index` pins the three, and a new test keeps the
+  list closed.
 - **The table-of-contents nav carries an accessible name** (carve#1509).
   `<nav class="toc">` takes an `aria-label` from a new `tocNav` label
   (default `Table of contents`), read by both TOC extensions so their navs stay
