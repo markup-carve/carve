@@ -108,6 +108,15 @@ jobs:
             lang: node
             test: npm ci && npm run build && npm test
             allowlist: none - its regression tests consume the pinned engine and spec fixtures
+          # The Pygments lexer. It does not render either, so its conformance
+          # is that no corpus document drives the lexer into an Error token,
+          # over every document rather than a sampled few, plus a construct
+          # sweep against the shared inventory. Same draft signal as the rest.
+          - repo: markup-carve/pygments-carve
+            submodule: spec
+            lang: python
+            test: pip install -e '.[test]' && pytest -q
+            allowlist: the `NOT_COVERED` map in `tests/test_constructs.py` (the corpus check has none by design - every document must lex without Error tokens)
           # NOT here: markup-carve/intellij-carve, which also carries the spec
           # submodule. Its corpus snapshots run through Gradle with an IDE SDK
           # download, which does not fit this workflow's node/rust/php shape.
@@ -130,6 +139,11 @@ jobs:
         with:
           php-version: '8.2'
           coverage: none
+      - name: Set up Python
+        if: matrix.lang == 'python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
       # Some downstream suites need a host executable in addition to their
       # language runtime. Keep that setup beside the matrix entry so a missing
@@ -577,6 +591,8 @@ jobs:
             submodule: spec
           - repo: markup-carve/carve-lsp
             submodule: tests/spec
+          - repo: markup-carve/pygments-carve
+            submodule: spec
     steps:
       - uses: actions/checkout@v4
         with:
