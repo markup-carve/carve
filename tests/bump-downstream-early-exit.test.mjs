@@ -452,6 +452,23 @@ test('pandoc-carve installs its required host executable before conformance', ()
   )
 })
 
+/**
+ * Slice one job out of the workflow by its top-level key.
+ *
+ * The two matrices this file asserts on live in different jobs, and a repo's
+ * stale-draft row (a `- repo:` line plus `submodule:`, nothing else) is a
+ * strict PREFIX of its bump row. So a regex run over the whole file finds the
+ * bump row twice and the stale-draft row never - the match silently lands in
+ * the wrong matrix. Cutting the job out first is what tells the two rows apart.
+ */
+function jobSection(text, name) {
+  const keys = [...text.matchAll(/^ {2}([a-z][\w-]*):$/gm)]
+  const at = keys.findIndex((m) => m[1] === name)
+  assert.notEqual(at, -1, 'the workflow no longer has a job named ' + name)
+  const end = at + 1 < keys.length ? keys[at + 1].index : text.length
+  return text.slice(keys[at].index, end)
+}
+
 test('carve-lsp is covered by the downstream bump matrix', () => {
   const text = readFileSync(workflow, 'utf8')
   const row = text.match(
@@ -460,4 +477,30 @@ test('carve-lsp is covered by the downstream bump matrix', () => {
   assert.ok(row, 'carve-lsp is absent from the bump matrix')
   assert.match(row.groups.body, /submodule: tests\/spec/)
   assert.match(row.groups.body, /test: npm ci && npm run build && npm test/)
+})
+
+test('the Pygments lexer is covered by both downstream matrices', () => {
+  const text = readFileSync(workflow, 'utf8')
+
+  const bump = jobSection(text, 'bump')
+  assert.match(bump, /- name: Bump /, 'the bump job slice is not the bump job')
+  const bumpRow = bump.match(
+    /- repo: markup-carve\/pygments-carve\n(?<body>[\s\S]*?)(?=\n\s+(?:- repo:|# NOT here:))/,
+  )
+  assert.ok(bumpRow, 'pygments-carve is absent from the bump matrix')
+  assert.match(bumpRow.groups.body, /submodule: spec/)
+  assert.match(bumpRow.groups.body, /lang: python/)
+  assert.match(bumpRow.groups.body, /test: pip install -e '\.\[test\]' && pytest -q/)
+
+  const stale = jobSection(text, 'close-superseded-drafts')
+  assert.match(
+    stale,
+    /close-superseded-bump\.sh/,
+    'the close-superseded-drafts job slice is not the stale-draft job',
+  )
+  const staleRow = stale.match(
+    /- repo: markup-carve\/pygments-carve\n(?<body>[\s\S]*?)(?=\n\s+(?:- repo:|steps:))/,
+  )
+  assert.ok(staleRow, 'pygments-carve is absent from the stale-draft matrix')
+  assert.match(staleRow.groups.body, /submodule: spec/)
 })

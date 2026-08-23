@@ -106,5 +106,11 @@ snapshot is maintained on the wiki:
 
 ## Release tracking
 
-Active release coordination happens in issue
-[carve#65](https://github.com/markup-carve/carve/issues/65).
+The maintained release process lives in [`MAINTAINING.md`](MAINTAINING.md):
+the lockstep between the spec and the engines, what a pin bump has to sweep,
+the order for a cross-cutting behavior change, and the coordination rules that
+keep parallel automation from stacking duplicate or reverting PRs.
+
+This section used to point at issue `carve#65`, "Prepare first (0.1) release".
+That issue was a one-off for the 0.1 cut and closed with it, so it is not where
+release coordination lives.
