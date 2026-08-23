@@ -74,6 +74,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **PART 9 §12 states what a colon fence's width costs, and why the widening
+  is kept** (carve#1553). The fence widens by one colon per level so the writer
+  needs no subtree scan - O(1) per fence, no lookahead, widths strictly
+  increasing along a chain - at `d^2 + 5d` bytes of fence marker for a nest `d`
+  containers deep. Measured at the parse cap on corpus 182: 2,032 source bytes
+  to 42,435 canonical, 96.6% of the output colons. No canonical output moves,
+  and `docs/divergence-from-djot.md` §13 carries the same trade for readers.
+
 - **PART 9 §16a names what makes a value DERIVED, and reaches the wrapper**
   (carve-php#1588, ruling carve#1500). Reconstructability is the property: a
   value the importer can rebuild from the element it is reading was written by
