@@ -140,6 +140,14 @@ const PIN_LAG = new Map([
       '(markup-carve/carve-js#1394, markup-carve/carve-php#1629)',
   ],
   [
+    'whitespace-only-block',
+    'the importer collapses every whitespace-only block to a paragraph holding ' +
+      'one ASCII SPACE: the no-break space is normalized away rather than kept, ' +
+      'the narrow no-break and ideographic spaces with it, and the two blocks ' +
+      'that hold nothing but layout are neither dropped nor reported ' +
+      '(PART 11 §7; markup-carve/carve#1628)',
+  ],
+  [
     'endnotes-section-not-last',
     'the importer moves a `role="doc-endnotes"` section to the end of the ' +
       'document instead of writing `::: footnotes` where it sat, so the same ' +

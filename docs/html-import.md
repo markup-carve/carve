@@ -332,6 +332,73 @@ with `structure-unspellable` on the `<figure>`. Every other captionable target
 - an image, a quote, a code block, a paragraph - keeps its figure and reports
 nothing.
 
+## A whitespace-only block keeps its content and drops its layout
+
+An element whose text is entirely whitespace is two different documents
+depending on ONE question, and the answer is the one the canonical writer
+already gives (PART 11 §7): ASCII SPACE and TAB are LAYOUT, and every other
+character is CONTENT (markup-carve/carve#1628).
+
+| HTML | Carve | reported |
+| --- | --- | --- |
+| `<p>&nbsp;</p>` | a paragraph holding U+00A0, written as itself | nothing |
+| `<p> </p>` | no node at all | `element-dropped` |
+| `<p>&#9;</p>` | no node at all | `element-dropped` |
+
+**THE RULE IS OVER THE CHARACTER CLASS, not over `&nbsp;`.** The dividing line
+is the same two-character `whitespace` terminal PART 2 names and nothing else,
+so NARROW NO-BREAK SPACE (U+202F) and IDEOGRAPHIC SPACE (U+3000) are kept
+exactly as U+00A0 is, and the line terminators an HTML parser folds into
+whitespace go with the ASCII pair. An importer that special-cases the `&nbsp;`
+entity has implemented a different rule that happens to agree on one row.
+
+What makes the two rows differ is spellability, and it is measurable rather
+than a matter of taste. A lone content-space line parses back as a PARAGRAPH:
+
+```
+- a
+
+ 
+- b
+```
+
+(the middle line is a single U+00A0) is three top-level blocks - list,
+paragraph, list. A lone ASCII-space line is a BLANK LINE, so the same document
+with a space there is two lists and no paragraph at all.
+
+So keeping U+00A0 is not manufacturing a node the language cannot express, and
+it is the only answer where
+
+```
+parse(htmlToCarve(h)) == htmlToAst(h)
+```
+
+holds on the first row with no special case. It holds on the other two rows as
+well, and only because the node is never built: a paragraph holding one ASCII
+space is unspellable, so it would vanish the moment the writer ran and the two
+exits would disagree about the same import.
+
+**Normalizing a content space to an ASCII one is forbidden outright**, which is
+the answer this rule removes rather than ranks. It keeps a node while
+discarding the single property that distinguishes U+00A0 from a space, and the
+paragraph it leaves behind is the unspellable one above - so it fails
+`parse(fmt(x)) == parse(x)` on a document the importer built itself.
+
+**The drop is reported and the keep is not**, and that asymmetry is the whole
+argument. Dropping a block the input had is a real loss, so it takes
+`element-dropped` - a code that already exists, so no vocabulary grows for
+this. Keeping a character costs nothing to declare because nothing is given up:
+it survives the write intact. A silent drop would be the one outcome the loss
+report exists to prevent.
+
+**The spacer argument is real and is not this rule.** Word, CKEditor and
+TinyMCE all emit `<p>&nbsp;</p>` as a layout spacer, so a migration may well
+want it gone - but that is an OPT-IN on `migrate`, not a silent default that
+throws away content the language can spell.
+
+`whitespace-only-block` pins all three rows, plus the two non-ASCII spaces the
+class reaches.
+
 ## A declared loss is a ceiling, not a licence
 
 A diagnostic states what the import gave up. It does not license giving up more
@@ -1019,6 +1086,7 @@ The shared set is deliberately small and each directory has one subject:
 | `note-reference-in-a-span` | a span whose text opens a note-reference label, escaped beside the unlabeled caret that needs no escape |
 | `empty-definition-description` | an empty `<dd>`, dropped with a row that declares it, where the bare colon line would have taken the `<dt>` too |
 | `endnotes-section-not-last` | an endnotes section with a paragraph after it, which keeps its position through `::: footnotes` |
+| `whitespace-only-block` | a `<p>` holding one no-break space, kept as itself, beside the ASCII-space and tab spellings that carry nothing and are dropped with a row |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one

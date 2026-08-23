@@ -9480,6 +9480,44 @@ EOF = (* end of file *) ;
       it (this text said case 139, which has been an inline-literal category
       for some time).
 
+      THE SAME LINE DECIDES WHAT AN IMPORT KEEPS -- NORMATIVE (carve#1628).
+      An HTML importer meeting a BLOCK ELEMENT whose text content is entirely
+      whitespace keeps exactly the characters this clause calls CONTENT, and
+      builds no node at all where every character it holds is LAYOUT:
+
+        <p>&nbsp;</p>   ->  a paragraph holding U+00A0, written as itself
+        <p> </p>        ->  no node, and `element-dropped` reported
+        <p>&#9;</p>     ->  no node, and `element-dropped` reported
+
+      THE CLASS, NOT THE ENTITY. What separates the two rows is the same
+      two-character `whitespace` terminal named above and nothing else: ASCII
+      SPACE and TAB are layout, together with the line terminators an HTML
+      parser folds into them, and EVERY other character is content. So NARROW
+      NO-BREAK SPACE (U+202F) and IDEOGRAPHIC SPACE (U+3000) are kept exactly
+      as U+00A0 is, and an importer that special-cases `&nbsp;` has implemented
+      a different rule that happens to agree on one row. A lone content-space
+      line parses back as a PARAGRAPH and a lone ASCII-space line is a BLANK
+      LINE, which is the whole of why the two rows differ.
+
+      NORMALIZING TO A SPACE IS THE ONE ANSWER FORBIDDEN OUTRIGHT. It keeps a
+      node while discarding the single property that distinguishes U+00A0 from
+      a space, and the paragraph it leaves is unspellable, so it vanishes the
+      moment the writer runs -- the two exits then disagree about the same
+      import, and §1 is broken on a document the importer built itself.
+
+      THE DROP IS REPORTED because it is a real loss: an element the input had
+      contributes nothing, which is `element-dropped` and needs no new code.
+      KEEPING owes nothing and reports nothing, since a kept character survives
+      the write intact. That asymmetry is what decides the two rows against
+      each other where taste would not: `parse(htmlToCarve(h)) == htmlToAst(h)`
+      holds on the first row with no special case, and holds on the second only
+      because the node was never built.
+
+      THE SPACER ARGUMENT IS REAL AND IS NOT THIS RULE. Word, CKEditor and
+      TinyMCE emit `<p>&nbsp;</p>` as layout, so a migration may well want it
+      gone -- but that is an OPT-IN on the importer, not a silent default that
+      discards content the language can spell.
+
    7a. AN EMPTY CONTAINER BODY IS A BLANK LINE HERE TOO -- NORMATIVE. A COLON
       FENCE whose body is empty is written with a BLANK LINE between its
       opener and its closer:
@@ -10571,6 +10609,54 @@ EOF = (* end of file *) ;
       395-a-longer-run-at-a-list-boundary-is-written-as-exactly-three-blank-lines,
       whose source has SIX blank lines and whose `.fmt` sidecar has three
       (carve#1505).
+
+  10j. AN UNSPELLABLE BLOCK DOES NOT CANCEL THE ADJACENCY IT CANNOT SPELL --
+      NORMATIVE (carve#1621). Where EVERY block between two sibling lists is
+      UNSPELLABLE -- it reaches the writer from the AST and leaves no character
+      on the page -- the two lists are ADJACENT for §10i's purposes, and
+      §10i decides the run between them as if nothing had stood there.
+
+      WHAT THE RULE REPAIRS. A whitespace-only paragraph does two things at
+      once. It is not empty, so a writer tracking list adjacency treats it as a
+      block that separates the two lists and never writes PART 9 §11 N1a's
+      boundary; and it has no Carve spelling, so nothing of it reaches the
+      output. The lists come back with ONE blank line between them, which is
+      the loose separator, so they MERGE:
+
+        list, paragraph, list       is written as:   - a
+        -- the paragraph holding                     [blank line]
+        one ASCII SPACE                              - b
+
+      That source re-reads as ONE loose list, so two lists became one and the
+      items changed shape with them. What is lost is a document boundary rather
+      than a blank line, and §1's `to_html(fmt(x)) == to_html(x)` forbids it.
+
+      THE RULE IS ALREADY FOLLOWED ON THE SIBLING SHAPE, which is what settles
+      it without a cross-engine tally. The pinned build writes the boundary
+      across an EMPTY paragraph and not across a whitespace-only one, and those
+      two trees differ in nothing the writer can put on the page. That is one
+      engine reading its own rule two ways, and the reading that keeps §1 is
+      the one that survives.
+
+      IT IS NOT A PARAGRAPH RULE. Any INTERCHANGE-ONLY block has this shape: a
+      `figure` wrapping a `table` (PART 12 §17) is unspellable in the same
+      sense and would cancel the same adjacency. So the rule is stated over what
+      a block SPELLS and never over its type, and it reaches every such shape a
+      later clause admits without naming one of them. A block that spells
+      ANYTHING -- a thematic break, or a paragraph holding a NO-BREAK SPACE
+      (§7) -- separates the two lists as it always did, and no boundary is
+      written.
+
+      THE BLOCK IS STILL LOST, and this clause does not pretend otherwise. It
+      bounds the loss TO the block, which is what §1 can be held to, instead
+      of letting it take a document boundary with it. Refusing the tree was the
+      alternative and is worse: it fails an editor's round trip on a tree the
+      renderer accepts, trading a silent loss for a loud one on the path that
+      can least afford it.
+
+      NO CARVE SOURCE REACHES THIS, so nothing in the parse-driven corpus can
+      pin it and the fixture is a hand-built payload entering through the AST
+      ingest (tests/an-unspellable-block-does-not-cancel-list-adjacency.test.mjs).
 
   11. THE MARKDOWN TARGET'S CROSS-REFERENCES -- NORMATIVE. A resolved
       cross-reference is emitted as a Markdown link to the target heading's id,
