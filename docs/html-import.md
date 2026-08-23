@@ -630,6 +630,13 @@ The importer writes the key **only where the blank-line spelling cannot express
 the looseness** - a multi-item loose list keeps the blank lines and takes no
 attribute line - which is the same rule the canonical writer follows.
 
+The `derived-endnotes-section` fixture is where this is recorded, and it is the
+shape that raised the question: a document with a single footnote imports as a
+one-item `<li><p>...</p></li>` list, which is exactly the case a blank line
+cannot reach (markup-carve/carve#1607). Its source carries the key, its tree
+carries no attribute for it - the key is consumed - and the two exits therefore
+say the same thing with no carve-out left to justify.
+
 ## A derived attribute does not come back
 
 An importer **drops an attribute whose value equals what the renderer derives
@@ -995,7 +1002,7 @@ The shared set is deliberately small and each directory has one subject:
 | `figure-caption` | a `<figure>` with a `<figcaption>`, which imports as the image and a caption line |
 | `blockquote-cite` | a `<blockquote cite>`, whose attribute is kept on a block-attribute line |
 | `derived-accessible-name` | a diagram fence's derived `role` and name, dropped, beside an authored name that is kept |
-| `derived-endnotes-section` | a reference-less endnotes `<section>`, whose wrapper and both attributes are derived, so nothing is reported |
+| `derived-endnotes-section` | a reference-less endnotes `<section>`, whose wrapper and both attributes are derived, so nothing is reported - and whose one-item list spells its looseness with `{loose}` |
 | `synthesized-wrapper-path` | a bare inline run wrapped in a paragraph the importer added, whose diagnostic is numbered among the body children rather than inside the wrapper |
 | `container-round-trip` | a rendered callout and a named container, which come back as the containers they were written from rather than as a body and a `div` |
 | `caption-attributes` | an attribute on a `<figcaption>`, dropped because a caption line has no slot for it, and reported rather than dropped in silence |
