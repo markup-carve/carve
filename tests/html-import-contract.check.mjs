@@ -93,6 +93,23 @@ const PIN_LAG = new Map([
       'node and spelled `[t]()`, which is literal text ' +
       '(markup-carve/carve-js#1371)',
   ],
+  // THE TREE, NOT THE SOURCE. Both fixtures' `expected.crv` is what the pin
+  // already writes; what lags is `htmlToAst`, which wraps the image in a
+  // paragraph the source does not spell and the render does not agree with
+  // (markup-carve/carve#1606). carve-rs writes the same source and returns
+  // `figure{target: image}` for the same input, so this is one engine's
+  // wrapper rather than an unruled shape.
+  [
+    'figure-caption',
+    'the tree wraps a captionable figure target in a synthesized paragraph, ' +
+      'so the same import renders <p><img></p> from the tree and <img> from ' +
+      'the source it writes (PART 9 §4b; markup-carve/carve-js#1381)',
+  ],
+  [
+    'caption-attributes',
+    'the same paragraph wrapper as figure-caption ' +
+      '(markup-carve/carve-js#1381)',
+  ],
 ])
 
 /*

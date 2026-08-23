@@ -51,10 +51,11 @@ and whose source disagree is green twice over. That is how three shapes arrived
 here at once (markup-carve/carve#1601) - a table cell, an anchor and a text run,
 each of which leaves `htmlToCarve` meaning something the `htmlToAst` tree never
 said. Writing the check found two more in fixtures that had been read and
-reviewed: a `<figure>` whose target the tree wraps in a paragraph no source
-spells (markup-carve/carve#1606), and a one-item `<li><p>` list whose tree says
-loose where its own source says tight (markup-carve/carve#1607, which needs a
-call rather than a derivation).
+reviewed. One is settled: a `<figure>` whose target the tree wrapped in a
+paragraph no source spells (markup-carve/carve#1606), where the TREE was the
+wrong exit and the fixtures now record the target itself. The other is a
+one-item `<li><p>` list whose tree says loose where its own source says tight
+(markup-carve/carve#1607, which needs a call rather than a derivation).
 
 THE SOURCE IS THE ARTIFACT A MIGRATION KEEPS, which is what makes the invariant
 worth more than either exit alone. A reader who runs `carve migrate` keeps
@@ -221,6 +222,17 @@ caption line produces, so the import is a round trip rather than a rescue:
 ![a](i.png)
 ^ cap
 ```
+
+THE TARGET IS THE CAPTIONED BLOCK, NOT A PARAGRAPH AROUND IT, and on this shape
+the round trip is what says so. PART 9 §4b's hosts are "an image, a quote, a
+code block, a display-math paragraph": the image host is the image, and only
+the math host is a paragraph, which §4b spells out for that one. So the tree is
+`figure{target: image}` - the same node the source above parses to - and a
+synthesized paragraph wrapper is a different document, rendering
+`<figure><p><img></p>` where the input had no `<p>` at all. A `<figure>` whose
+body is genuinely prose is the other case and is untouched: a caption line does
+not attach to prose (§4's enumeration is closed), so that target stays a
+paragraph and the loss is on the writing side (markup-carve/carve#1606).
 
 The `cite` attribute rides the block-attribute line, which is the ordinary
 channel for an attribute on a block:
