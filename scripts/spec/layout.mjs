@@ -78,17 +78,32 @@ export function resetLayoutWork() {
   layoutWork.lineVisits = 0
 }
 
-// Content after the marker+space must carry at least one non-ASCII-whitespace
-// character: `#  ` / `#   ` (marker + whitespace only) is NOT a heading, exactly
-// like a caption. A leading tab is content (`# \tx` is a heading with `\tx`).
+// Content after the marker+separator must carry at least one
+// non-ASCII-whitespace character: `#  ` / `#   ` (marker + whitespace only) is
+// NOT a heading, exactly like a caption. A leading tab is content (`# \tx` is a
+// heading with `\tx`).
 //
-// THE SEPARATOR HERE IS STILL ONE SPACE, and that is a known divergence rather
-// than a reading: `##<SP><SP>h` gives this reader the heading `<SP>h` where all
-// three engines give `h`. It is the same defect carve#1575 fixed on `CAPTION`
-// below, on a second construct, and it is filed as carve#1581 rather than fixed
-// here because it moves a production, the ohm block layer and a corpus pair
-// together, and this repository rules one construct at a time.
-const HEADING = /^(#{1,6}) ((?=.*[^ \t\n\r\f]).*)$/
+// THE MARKER SEPARATOR IS A RUN, AND NONE OF IT IS CONTENT (carve#1581). This
+// read `#{1,6} `, one space, so `##<SP><SP>h` gave the heading `<SP>h` where
+// all three engines give `h` - a divergence no gate could reach, because no
+// corpus document, no optional-corpus case and none of the authored documents
+// spells a heading with a second space after the marker. It is the same defect
+// carve#1575 fixed on `CAPTION` below, one construct over, and the same two
+// normative clauses settle it. PART 2's MARKER SEPARATORS AND PADDING SLOTS
+// defines a marker separator as "what stands between the marker and the content
+// it introduces" and rules that a writer aligning in a column "is writing
+// separator, not content" (carve#892); and PART 11 §1 names MARKER ALIGNMENT
+// among the spellings `fmt` may normalize while preserving what the document
+// says, which is only true if the run is not content.
+//
+// A TAB IS STILL CONTENT. `space = ' '` (PART 1), so the run is ASCII spaces
+// and the first character that is not one begins the heading text.
+//
+// THE ID DOES NOT MOVE WITH THE TEXT, which is worth saying because the ticket
+// predicted it would: slugging drops a leading run either way, so `##<SP><SP>a
+// b` was `a-b` before this and is `a-b` after. What moves is the heading's TEXT
+// and therefore a crossref's auto-text (PART 9 §19).
+const HEADING = /^(#{1,6}) +(?=.*[^ \t\n\r\f])(.*)$/
 const HR = /^(-{3,}|\*{3,}|_{3,})[ \t]*$/
 const FENCE = /^(`{3,}|~{3,})(.*)$/
 const PURE_FENCE = /^(`{3,}|~{3,})[ \t]*$/

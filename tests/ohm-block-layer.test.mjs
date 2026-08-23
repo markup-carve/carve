@@ -99,8 +99,17 @@ const CASES = {
 
   // --- headings -------------------------------------------------------------
   heading: {
-    accept: ['# T\n', '###### T\n', '## a b\n', '# T'],
-    // seven hashes; and the space after the run is required
+    // The separator is a RUN (carve#1581). `##  h` was accepted before that
+    // ruling too, because `inline` matches a space and the second one landed
+    // in the CONTENT - which is the defect, and one this rule cannot show:
+    // it recognizes, it does not expose the text. What shows it is the
+    // corpus, and scripts/spec/layout.mjs is the reader that produced it.
+    accept: ['# T\n', '###### T\n', '## a b\n', '# T', '##  h\n', '#   a b\n'],
+    // seven hashes, and the space after the run is required. MARKER REQUIRES
+    // CONTENT (PART 2) is NOT among these: it is prose, `inline_content`
+    // admits a whitespace run in grammar.ebnf exactly as `inline+` does here,
+    // and `#  ` is accepted by both files. The oracle's `HEADING` pattern is
+    // where that clause is enforced, and 84-single-line-headings-5 pins it.
     reject: ['####### T\n', '#T\n', ' # T\n', '#\n'],
   },
   hashes: {
@@ -108,7 +117,10 @@ const CASES = {
     reject: ['', '#######', ' #'],
   },
   headingStart: {
-    accept: ['# ', '### ', '###### '],
+    // `#  ` and `##   ` are the run (carve#1581); they were rejected while
+    // this rule spelled a single space, which is the one place the ohm
+    // heading change is observable as a start rule.
+    accept: ['# ', '### ', '###### ', '#  ', '##   '],
     reject: ['#', '#x', ' # '],
   },
 

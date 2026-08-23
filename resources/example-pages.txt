@@ -397,6 +397,7 @@ index: examples/edge-cases/index.md
   a-caret-line-does-not-end-a-paragraph-it-cannot-caption
   a-caption-s-marker-separator-is-a-run-and-none-of-it-is-content
   a-quote-holding-a-captioned-block-indents-it-like-any-other-nested-block
+  a-heading-s-marker-separator-is-a-run-and-none-of-it-is-content
 
 [edge-inline] Inline spans
 > Emphasis flanking, mentions and tags, smart typography, inline literals and escaping.
