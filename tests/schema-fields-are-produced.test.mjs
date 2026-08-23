@@ -63,6 +63,8 @@ const OPT_IN_ONLY = {
 
 /** Fields permitted by the schema before the corresponding engine rollout. */
 const ENGINE_ROLLOUT_PENDING = {
+  'definition_list.loose':
+    'PART 9 §17 L7 (carve#1624): the consumed `loose` boolean, which no engine has shipped yet - the pinned build still renders it literally as `<dl loose="">`. The two corpus documents that spell it are declared in resources/engine-pin-drift.txt for the same window.',
   'figure.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
   'table.shortCaption': 'structural publishing field: Carve 0.1 source has no spelling; produced only by AST/Pandoc consumers',
 }

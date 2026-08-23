@@ -6287,16 +6287,16 @@ EOF = (* end of file *) ;
          this key: it stays an ordinary attribute and renders `loose="x"`. There
          is no error state to define, and no spelling that half-applies.
 
-         THE DEFINITION-LIST HALF HAS NO AST FIELD YET, and PART 12 §6's round
-         trip does not cover it. A loosened LIST is representable: `list` carries
-         `tight`, and the key sets it false. A loosened DEFINITION LIST is not --
-         PART 12 §8's `definition_list` has no such field, and the `<dd>` wrapper
-         is derived from the description's block count, so a serialized tree
-         cannot say which of the two spellings it came from. Until §8 grows the
-         field, the definition-list looseness survives in SOURCE and not through
-         an AST round trip. Stated rather than left to be discovered, because
-         §8's own node shape is not yet produced by any engine, so a field added
-         here would be a second unkept promise on an unreached shape.
+         EACH CONTAINER CARRIES THE KEY'S EFFECT IN ITS OWN FIELD, and PART 12
+         §6's round trip covers both. A loosened LIST sets `list.tight` false --
+         the field is required there, and the axis is total, so nothing else is
+         needed. A loosened DEFINITION LIST sets `definition_list.loose`, which
+         PART 12 §8 defines: the `<dd>` wrapper is otherwise derived from the
+         description's block count, and that derivation cannot reach the one
+         shape this key exists for, so the SPELLED fact is published and nothing
+         else is (carve#1624). The two fields are named differently because they
+         say different things: `tight` states the whole axis for a list, while
+         `loose` records only what a definition list's own derivation misses.
 
 
    18. MATH -- NORMATIVE (governs `math` in PART 3; djot form). Inline
@@ -11866,6 +11866,47 @@ EOF = (* end of file *) ;
       An engine whose parser groups differently therefore has one more thing to
       fix than the serializer: carve-rs opened a new entry per `::` line, so
       §6's round trip only holds once the parser groups the way the list shows.
+
+      A SPELLED LOOSENESS IS A FIELD; A DERIVED ONE IS NOT. `definition_list`
+      MAY carry `loose: true`, and it means what PART 9 §17 L7's consumed
+      boolean means: every description renders its children as BLOCKS. Absent,
+      each description derives its own wrapper from its own block count -- one
+      block renders inline, two or more render as blocks -- which is what every
+      definition list written without the key does.
+
+        {"type":"definition_list","loose":true,"items":[
+          {"type":"definition_term","children":[...]},
+          {"type":"definition_description","children":[...]}]}
+
+      ONLY THE SPELLED FACT IS PUBLISHED, for the same reason the grouping is
+      not: everything else is derivable. What is NOT derivable is the one shape
+      the key exists for. A blank line between two ENTRIES does not loosen a
+      `<dl>` at all -- only a second block inside a description wraps it -- so
+      `<dd><p>x</p></dd>` has no blank-line spelling at any entry count, and a
+      tree without this field cannot say which of the two spellings it came
+      from. That is what makes a definition list unlike a `list`, where `tight`
+      is required and states the whole axis: here the derivation covers
+      everything except the case the derivation cannot see.
+
+      THE NAME IS `loose` AND NOT `tight`, and the divergence from `list` is
+      the point rather than an inconsistency. A `tight` field would be absent on
+      almost every definition list, and an absent boolean read as false says
+      LOOSE -- the opposite of the default, in the one place a consumer is most
+      likely to write `if (node.tight)`. `loose: true` has no such reading:
+      absent means derived, which is the truth. It also matches L7's own key,
+      and follows `list.bareMarker`, the other field here that records an
+      authored distinction the default spelling cannot express.
+
+      THE ENGINES ARE BEHIND THIS SECTION; THE SECTION IS NOT AHEAD OF AN
+      UNMADE DECISION. Measured on the pinned reference build (carve-js
+      71add23f): `carveToAstJson` publishes the `definition_term` /
+      `definition_description` sequence above, while the INTERNAL tree `parse`
+      returns still carries the old `{terms, definitions}` object. §1 governs
+      the PUBLISHED AST and not an implementation's internals, so the shape this
+      section describes has a producer and reading the internal tree for one
+      answers a different question (carve#1624, carve#1625). What no engine has
+      yet is L7 itself, so none produces this field: ordinary pin lag, declared
+      where pin lag is declared, and not an unkept promise on an unreached shape.
 
    9. HOW DEEP AN INGESTED AST MAY NEST -- NORMATIVE. Reading a serialized AST
       is a recursive descent over attacker-controlled structure, so it needs a

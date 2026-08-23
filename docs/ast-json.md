@@ -1108,6 +1108,40 @@ reasons:
   the same `<dl>`. A structure two producers disagree about, which no output
   depends on, is an internal.
 
+### A spelled looseness is a field
+
+A `definition_list` may carry `loose: true`. It means what
+[`{loose}`](/blocks-and-attributes)
+means in source: every description renders its children as **blocks**. Absent,
+each description derives its own wrapper from its own block count - one block
+renders inline, two or more render as blocks - which is what every definition
+list written without the key does.
+
+```json
+{"type": "definition_list", "loose": true, "items": [
+  {"type": "definition_term", "children": [ ... ]},
+  {"type": "definition_description", "children": [ ... ]}
+]}
+```
+
+Only the **spelled** fact is published, for the same reason the grouping is not:
+everything else is derivable. What is not derivable is the one shape the key
+exists for - a blank line between two entries does not loosen a `<dl>` at all,
+so `<dd><p>x</p></dd>` has no blank-line spelling at any entry count, and a tree
+without this field cannot say which of the two spellings it came from.
+
+That makes a definition list unlike a `list`, where `tight` is required and
+states the whole axis. The name differs for the same reason: a `tight` field
+would be absent on almost every definition list, and an absent boolean read as
+false says *loose* - the opposite of the default, in the one place a consumer is
+most likely to write `if (node.tight)`.
+
+::: info Engine support
+No engine has shipped `{loose}` yet, so none emits this field. The corpus
+documents that spell it are declared in `resources/engine-pin-drift.txt` until a
+pin catches up.
+:::
+
 ## Composite figures
 
 A bare `::: figure` container (PART 9 section 4c) serializes as its own node type,
