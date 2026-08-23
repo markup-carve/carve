@@ -140,6 +140,14 @@ const PIN_LAG = new Map([
       '(markup-carve/carve-js#1394, markup-carve/carve-php#1629)',
   ],
   [
+    'empty-definition-description-not-last',
+    'the importer drops the empty <dd> and writes both terms into ONE list, so ' +
+      'the surviving term inherits the description below it - an addition, ' +
+      'which no row can declare - and no `structure-split` row is reported ' +
+      '(markup-carve/carve#1636; markup-carve/carve-js#1402, ' +
+      'markup-carve/carve-php#1636)',
+  ],
+  [
     'whitespace-only-block',
     'the importer collapses every whitespace-only block to a paragraph holding ' +
       'one ASCII SPACE: the no-break space is normalized away rather than kept, ' +
