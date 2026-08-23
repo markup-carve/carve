@@ -1,0 +1,1 @@
+{"type":"document","children":[{"type":"paragraph","children":[{"type":"text","value":"a"},{"type":"footnote_ref","id":"1"}]},{"type":"admonition","kind":"footnotes","children":[]},{"type":"paragraph","children":[{"type":"text","value":"after"}]},{"type":"footnote","label":"1","children":[{"type":"paragraph","children":[{"type":"text","value":"n"}]}]}]}

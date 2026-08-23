@@ -125,6 +125,20 @@ const PIN_LAG = new Map([
       'attribute block comes back as literal text (PART 11 §2; ' +
       'markup-carve/carve-js#1380, markup-carve/carve-php#1615)',
   ],
+  [
+    'empty-definition-description',
+    'the importer writes a bare `:` line for an empty <dd>, which the parser ' +
+      'reads as more of the term above it - so the loss exceeds the row that ' +
+      'declares it, taking the <dt> as well ' +
+      '(markup-carve/carve-js#1394, markup-carve/carve-php#1629)',
+  ],
+  [
+    'endnotes-section-not-last',
+    'the importer moves a `role="doc-endnotes"` section to the end of the ' +
+      'document instead of writing `::: footnotes` where it sat, so the same ' +
+      'characters come back in the wrong order with no diagnostic ' +
+      '(markup-carve/carve-js#1394, markup-carve/carve-php#1629)',
+  ],
 ])
 
 /*
@@ -165,6 +179,15 @@ const subsetOf = (expected, actual, path = '') => {
  * key order, which deepStrictEqual already ignores, and the source-location
  * fields, which are absent from every fixture here by construction and are a
  * property of the input rather than of the import.
+ *
+ * THE ENGINE SIDE IS PUBLISHED FIRST (markup-carve/carve#1616). A fixture
+ * records the PART 12 shape, which is what the contract page is a statement
+ * about and what an implementation in another language is measured against. An
+ * engine's INTERNAL tree is a different object - it spells a definition-list
+ * entry as `{terms, definitions}` rather than as the `definition_term` and
+ * `definition_description` nodes §8 publishes, and it hangs footnote
+ * definitions off the root that §7 fixes at three fields. Comparing the fixture
+ * against it pins one implementation's internals as the portable minimum.
  */
 const LOCATION_FIELDS = new Set(['pos', 'srcByteLength'])
 const withoutLocations = (value) => {
@@ -186,7 +209,7 @@ const astDiff = (expected, actual) => {
 }
 
 test('the pinned build imports every fixture the way the fixture says', async () => {
-  const { htmlToCarve, htmlToAst } = await import('@markup-carve/carve')
+  const { htmlToCarve, htmlToAst, toAstJson } = await import('@markup-carve/carve')
   const fixtures = (await readdir(root, { withFileTypes: true })).filter((e) => e.isDirectory())
   assert.ok(fixtures.length > 0)
   const reproduced = []
@@ -202,7 +225,7 @@ test('the pinned build imports every fixture the way the fixture says', async ()
     const failures = [
       source.value === expectedCrv ? null : `expected.crv: got ${JSON.stringify(source.value)}`,
       subsetOf(expectedReport, source.report, 'expected.report.json'),
-      astDiff(expectedAst, ast.value),
+      astDiff(expectedAst, toAstJson(ast.value)),
     ].filter(Boolean)
 
     if (PIN_LAG.has(name)) {
