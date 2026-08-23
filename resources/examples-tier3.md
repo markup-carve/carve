@@ -30,10 +30,10 @@ print("hi")
 <label for="codegroup-1-tab-1" class="code-group-label">JavaScript</label>
 <input type="radio" name="codegroup-1" id="codegroup-1-tab-2" class="code-group-radio">
 <label for="codegroup-1-tab-2" class="code-group-label">Python</label>
-<div class="code-group-panel"><pre><code class="language-js">console.log("hi")
+<div class="code-group-panel" role="group" aria-label="JavaScript"><pre><code class="language-js">console.log("hi")
 </code></pre>
 </div>
-<div class="code-group-panel"><pre><code class="language-py">print("hi")
+<div class="code-group-panel" role="group" aria-label="Python"><pre><code class="language-py">print("hi")
 </code></pre>
 </div>
 </div>
