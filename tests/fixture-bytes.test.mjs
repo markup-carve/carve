@@ -82,6 +82,12 @@ const INVENTORY = [
   { base: '249-trailing-whitespace-after-a-block-marker-4', crv: ['trailing-WS'], html: [] }, // a table's continuation row
   { base: '249-trailing-whitespace-after-a-block-marker-6', crv: ['trailing-WS'], html: [] }, // the `+` continuation marker - §17 L3 says "only content is `+`"
   { base: '84-single-line-headings-5', crv: ['trailing-WS'], html: [] },
+  // The caret and its separator with NOTHING after them is the case: MARKER
+  // REQUIRES CONTENT (PART 2) opens no caption there, so the quote above stays
+  // a quote and the line is the paragraph `^`. Strip the run and both lines
+  // become a bare caret, which is a different document and the one already
+  // pinned elsewhere (carve#1575).
+  { base: '404-a-caption-s-marker-separator-is-a-run-and-none-of-it-is-content-2', crv: ['trailing-WS'], html: [] },
   // The no-break space is the case: it is non-ASCII, so it passes into the
   // heading id unchanged instead of being slugged to a separator, and the
   // id carries the character rather than an entity.

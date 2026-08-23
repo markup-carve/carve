@@ -81,6 +81,13 @@ export function resetLayoutWork() {
 // Content after the marker+space must carry at least one non-ASCII-whitespace
 // character: `#  ` / `#   ` (marker + whitespace only) is NOT a heading, exactly
 // like a caption. A leading tab is content (`# \tx` is a heading with `\tx`).
+//
+// THE SEPARATOR HERE IS STILL ONE SPACE, and that is a known divergence rather
+// than a reading: `##<SP><SP>h` gives this reader the heading `<SP>h` where all
+// three engines give `h`. It is the same defect carve#1575 fixed on `CAPTION`
+// below, on a second construct, and it is filed as carve#1581 rather than fixed
+// here because it moves a production, the ohm block layer and a corpus pair
+// together, and this repository rules one construct at a time.
 const HEADING = /^(#{1,6}) ((?=.*[^ \t\n\r\f]).*)$/
 const HR = /^(-{3,}|\*{3,}|_{3,})[ \t]*$/
 const FENCE = /^(`{3,}|~{3,})(.*)$/
@@ -238,7 +245,36 @@ const ABBR_DEF = /^\*\[([A-Za-z0-9]+)\]: +(?![ \t]*$)([^ ].*)$/
 // line (PART 2, NO TRAILING WHITESPACE; carve#926). Done in the PATTERN rather
 // than at each use: five places read this capture, and the rule was missing
 // from all five - one rule, one spelling.
-const CAPTION = /^\^ (.*?)[ \t]*$/
+//
+// THE MARKER SEPARATOR IS A RUN, AND NONE OF IT IS CONTENT (carve#1575). This
+// read `^\^ `, one space, so `^   cap` gave the caption `  cap` where all three
+// engines give `cap` - a divergence no gate could reach, because no corpus
+// document, no optional-corpus case and none of the 85 authored documents
+// spells a caption with two spaces after the caret. Two normative clauses
+// settle it against this reading. PART 2's MARKER SEPARATORS AND PADDING SLOTS
+// defines a marker separator as "what stands between the marker and the content
+// it introduces" and rules that a writer aligning in a column "is writing
+// separator, not content" (carve#892); and PART 11 §1 names MARKER ALIGNMENT
+// among the spellings `fmt` may normalize while preserving what the document
+// says, which is only true if the run is not content. The engines' writers do
+// normalize it - `^   cap` comes back `^ cap` - so under the old reading every
+// one of them was changing the document on every pass.
+//
+// A TAB IS STILL CONTENT. `space = ' '` (PART 1), so the run is ASCII spaces
+// and the first character that is not one begins the caption: `^ <TAB>cap`
+// keeps the tab, which is what the engines already do and what the heading
+// comment above says for the same position.
+//
+// AND THE MARKER REQUIRES CONTENT, which the comment on `HEADING` above already
+// claimed for this pattern - "`#  ` / `#   ` (marker + whitespace only) is NOT a
+// heading, exactly like a caption" - while this pattern did the opposite. `^   `
+// matched and yielded an EMPTY caption, so a quote above it became a figure
+// carrying `<figcaption></figcaption>`, where all three engines leave the quote
+// alone and read the line as the paragraph `^`. MARKER REQUIRES CONTENT (PART 2)
+// is normative and names the shape: a marker followed by the separator and
+// nothing but whitespace opens no block. The lookahead is the same one `HEADING`
+// carries, for the same clause.
+const CAPTION = /^\^ +(?=.*[^ \t\n\r\f])(.*?)[ \t]*$/
 // SS4's two PROSE-spelled captionable hosts: a paragraph whose WHOLE content is
 // one image (inline or reference form, trailing attribute block allowed), and
 // one whose whole content is a display-math span. The other three hosts have a

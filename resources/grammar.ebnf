@@ -1651,8 +1651,46 @@ cell_content = inline_content ;
    the exception is not expressible context-free. *)
 
 (* --- Captions --- *)
-caption = '^', space, inline_content, newline, {caption_continuation_line} ;
+caption = '^', space+, inline_content, newline, {caption_continuation_line} ;
 caption_continuation_line = inline_content, newline ;  (* a PLAIN line only *)
+(* THE CAPTION MARKER SEPARATOR IS A RUN -- NORMATIVE. `space+`: one or more
+   ASCII spaces after the caret, ALL of them separator, and the first character
+   that is not one BEGINS the caption. `^<SP><SP><SP>cap` is the caption `cap`,
+   not `<SP><SP>cap`.
+
+   A CORRECTION, NOT A WIDENING, and the same one carve#892 made at the footnote
+   and abbreviation markers: this production said `space` while every engine
+   consumed a run, so the grammar forbade a shape nothing rejected. The
+   executable spec was the one reader that took the production literally, which
+   is how it came to publish `<figcaption><SP><SP>cap</figcaption>` where all
+   three engines publish `cap` -- a divergence no gate could reach, since no
+   corpus document, no optional-corpus case and none of the authored documents
+   spelled a caption that way (carve#1575).
+
+   TWO CLAUSES DECIDE IT, neither of them a nose count. MARKER SEPARATORS AND
+   PADDING SLOTS (PART 2) defines a marker separator as what stands between the
+   marker and the content it introduces and rules that a writer aligning in a
+   column "is writing separator, not content"; the four slots that clause
+   narrows to exactly one space are PADDING slots, an enumeration it closes, and
+   the caret is not among them. And PART 11 §1 names MARKER ALIGNMENT among the
+   spellings `fmt` may normalize while preserving what the document says -- which
+   holds only if the run is not content. All three writers already normalize
+   `^<SP><SP><SP>cap` to `^<SP>cap`, so under the literal reading every one of
+   them changed the document on every pass.
+
+   A TAB IS NOT SEPARATOR. `space = ' '`, so `^<SP><TAB>cap` keeps the tab as
+   the caption's first character, exactly as a heading does at the same
+   position. MARKER REQUIRES CONTENT (PART 2) applies after the run as well:
+   a caret, the separator and nothing but whitespace opens no caption, and the
+   line is ordinary paragraph text.
+
+   THE CONTINUATION LINE IS NOT TOUCHED BY THIS, and the two are different
+   positions rather than one rule read twice. A continuation line carries no
+   marker, so its leading run is INDENTATION and it is kept as written -- ruled
+   at carve#1561 on the ground that MULTI-LINE CAPTIONS enumerates only where a
+   caption ENDS and nothing in it, or in `caption_continuation_line`, dedents.
+   This clause is about the run that follows the CARET, which is the one
+   position on a caption where a separator exists at all. *)
 (* MULTI-LINE CAPTIONS -- NORMATIVE. A caption is multi-line inline CONTENT, so
    its text spills onto following lines exactly like a PARAGRAPH (§10), NOT like
    a heading. It ends the same way an open paragraph does:

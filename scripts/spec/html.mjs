@@ -257,7 +257,22 @@ function renderBlock(b, depth, ctx) {
       const captioned = b.caption !== undefined
       // A captioned quote sits one level deeper: inside the `<figure>`.
       const quotePad = captioned ? `${pad}  ` : pad
-      const compact = b.children.length === 1 && b.children[0].t === 'para'
+      // THE COMPACT FORM IS FOR A CHILD THAT RENDERS ON ONE LINE, and a
+      // CAPTIONED paragraph does not (carve#1575). PART 10 §4 BLOCK WHITESPACE
+      // names `figure` among the nested block structures that "indent their
+      // children by TWO spaces per nesting level", and a captioned paragraph
+      // renders as one - `<figure>`, its target and its `<figcaption>` on three
+      // lines. Asking only whether the child is a `para` put all three on the
+      // quote's own line and produced `<blockquote><figure>` ... `</figure>`
+      // `</blockquote>`, which is the one shape in this renderer where a
+      // multi-line child was not indented. Every other host of the same figure
+      // - a div, a list item, a quote holding a captioned CODE block - already
+      // indents it, so this was the quote contradicting the rest of the file
+      // rather than a reading of the clause.
+      const compact =
+        b.children.length === 1 &&
+        b.children[0].t === 'para' &&
+        b.children[0].caption === undefined
       // Depth-first and synchronous, so a saved/restored flag is a stack. The
       // children are rendered ONCE, under `inBlockquote`, which is what keeps a
       // quoted heading out of the implicit-reference index.

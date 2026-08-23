@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A caption's marker separator is a run, and none of it is content**
+  (carve#1575, PART 2 / PART 11 §1). The executable spec read the `space` in
+  `caption` literally and published `^   cap` as the caption `  cap`, where all
+  three engines publish `cap` and all three writers normalize the run. The
+  `caption` production spells `space+`, which is the correction carve#892 made
+  at the definition markers. The same pattern now enforces MARKER REQUIRES
+  CONTENT, so a caret followed by whitespace alone opens no caption instead of
+  an empty one. Corpus 404.
+- **A quote holding a captioned block indents it like any other nested block**
+  (carve#1575, PART 10 §4). The executable spec chose the compact one-line form
+  for a quote whose single child is a paragraph, and a captioned paragraph
+  renders as a three-line `<figure>`, so a quoted figure was the one multi-line
+  child it left un-indented. Corpus 405.
 - **The position checker's closerless-container set no longer claims to be
   complete while three types are missing from it** (carve#1574, PART 12 §4).
   `footnote`, `definition_term` and `heading` reached past their last placed
