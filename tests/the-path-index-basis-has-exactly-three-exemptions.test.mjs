@@ -76,29 +76,24 @@ const SHAPES = [
  * it. Declared rather than omitted, and checked in both directions below: a
  * silent omission is how a kind escapes a sweep, which is the whole subject of
  * markup-carve/carve#1556.
+ *
+ * Empty since the pin moved to carve-js 71add23: `figcaption` and `caption`
+ * both report a path now (markup-carve/carve-js#1332 and #1335), so both are
+ * read by SHAPES like every other kind.
  */
-const NO_PATH_ON_THE_PIN = new Map([
-  // The pin drops the handler and says nothing, so there is no path to read.
-  // Clears with markup-carve/carve-js#1332, the same defect
-  // `caption-attributes` is declared for in the contract check.
-  ['figcaption', 'drops the attribute without reporting it (carve-js#1332)'],
-  // Same silence, and the path this one emits once it does emit one is wrong in
-  // its own right: markup-carve/carve#1560.
-  ['caption', 'drops the attribute without reporting it (carve#1560)'],
-])
+const NO_PATH_ON_THE_PIN = new Map([])
 
 /*
  * Kinds the pinned build MISREADS: it reports a path and the index does not
  * move, which looks exactly like an exemption and is not one. `<cite>` after a
- * `<p>` is a bare inline run, so the pin numbers it inside the paragraph it
- * synthesized rather than among the quote's children - the defect
- * markup-carve/carve#1554 ruled and `synthesized-wrapper-path` is declared for.
- * At carve-js head the same shape shifts. Declared, so it clears with the pin
- * bump instead of sitting inside the closure claim.
+ * `<p>` is a bare inline run, and the pin used to number it inside the
+ * paragraph it synthesized rather than among the quote's children - the defect
+ * markup-carve/carve#1554 ruled.
+ *
+ * Empty since the pin moved to carve-js 71add23, which shifts that shape, so
+ * `cite` is read by SHAPES with the rest.
  */
-const MISREAD_ON_THE_PIN = new Map([
-  ['cite', 'numbers a bare inline run inside its wrapper (carve#1554)'],
-])
+const MISREAD_ON_THE_PIN = new Map([])
 
 const stepFor = async (name, html) => {
   const { htmlToCarve } = await import('@markup-carve/carve')

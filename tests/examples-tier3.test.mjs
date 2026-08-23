@@ -42,25 +42,7 @@ const factories = new Map([
  * still compared EXACTLY, against the output the entry claims, and an unrelated
  * change in it cannot hide inside the declaration.
  */
-const AHEAD_OF_PIN = {
-  CodeGroup: {
-    reason:
-      "carve#1489 Extensions §13.2 - a css-mode panel carries its tab's name, and " +
-      "code-group panels take the same treatment keyed on the panel's own label; the " +
-      'pinned build names the wrapper only and leaves every panel anonymous',
-    pinned: [
-      ['<div class="code-group-panel" role="group" aria-label="JavaScript">', '<div class="code-group-panel">'],
-      ['<div class="code-group-panel" role="group" aria-label="Python">', '<div class="code-group-panel">'],
-    ],
-  },
-  TableOfContents: {
-    reason:
-      'carve#1509 Extensions §8b.1 - <nav> is a navigation landmark unconditionally, and a ' +
-      'page can hold more than one table-of-contents nav, so it carries an accessible name ' +
-      'from the tocNav label; the pinned build leaves every one of them anonymous',
-    pinned: [['<nav class="toc" aria-label="Table of contents">', '<nav class="toc">']],
-  },
-}
+const AHEAD_OF_PIN = {}
 
 const scan = scanExampleSource(readFileSync(resolve(__dirname, '../resources/examples-tier3.md'), 'utf8').split('\n'))
 

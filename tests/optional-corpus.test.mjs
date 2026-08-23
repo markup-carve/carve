@@ -160,17 +160,7 @@ const DECLARED_UNIMPLEMENTED = {
  * An entry is deleted in the commit that moves the pin past it; the check below
  * fails an entry whose case already matches, so a stale one cannot sit here.
  */
-const AHEAD_OF_PIN = {
-  '28-tabs-panel-title':
-    'carve#1468 §13.2 - the css-mode panel takes role="group" and its tab\'s label; no engine emits it yet',
-  '46-tabs-css-panel-name': 'carve#1468 §13.2 - same rule, with the attribute-escaping case',
-  '47-tabs-aria-panel-binding':
-    'carve#1537 §13.3 - the tab control is type="button"; a bare <button> submits the form it sits in, and no engine writes the attribute yet',
-  '48-tabs-aria-single-selection':
-    'carve#1537 §13.5 - the first {selected} wins and later ones are ignored; every engine still emits one aria-selected="true" per mark',
-  '49-tabs-css-single-selection':
-    'carve#1537 §13.5 - the same rule in css mode, where every mark still gets its own checked',
-}
+const AHEAD_OF_PIN = {}
 
 /*
  * THE RATCHET ON THE EXCUSE, because an entry above can only ever turn a
