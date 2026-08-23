@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A diagnostic list is ordered by the losing element's document position**
+  (carve#1586). `docs/html-import.md` said the import diagnostic list is ordered
+  and never said ordered by what, so each engine answered with the order its own
+  walk produced. The basis is now stated - the position of the losing element,
+  not where the row was constructed and not the traversal order of the shape the
+  importer reads the parent through - and the `diagnostic-order` fixture pins two
+  losses under ONE parent, which is the first shared fixture whose row order the
+  engines did not already agree on by construction.
+  carve-php already answered this way; markup-carve/carve-js#1358 and
+  markup-carve/carve-rs#1271 change.
 - **A table `<caption>` is worked through PART 12 §16, and pinned by a fixture**
   (carve#1560). The clause's three index exemptions do not reach a caption - a
   table has at most one, so "among the captions" is always `[1]` - and carve-js

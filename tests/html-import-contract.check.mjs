@@ -136,6 +136,17 @@ const PIN_LAG = new Map([
   // markup-carve/carve#1560, and both clear with the same pin bump as the row
   // above.
   ['table-caption-index', 'numbers a table caption among the captions (carve#1560)'],
+  // THE TWO-DIAGNOSTIC FIXTURE markup-carve/carve#1586 opens, and it waits on
+  // two separate carve-js fixes at once. The pin is still silent about the
+  // table `<caption>`'s event handler - the same silence declared for
+  // `caption-attributes` and `table-caption-attributes` above - so it answers
+  // with ONE row where this fixture has two. Once it speaks, it builds the
+  // cell's row before the caption's, because a table's caption fills a slot on
+  // the FINISHED table, and the two rows come out in the other order. Both
+  // halves are already true of carve-php, which reproduces this fixture whole.
+  // Clears with markup-carve/carve-js#1358 and the pin bump that carries it,
+  // which is at or past markup-carve/carve-js#1332.
+  ['diagnostic-order', 'says nothing about the caption, and orders what it does say by construction (carve#1586)'],
 ])
 
 /*

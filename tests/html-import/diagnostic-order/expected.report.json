@@ -1,0 +1,1 @@
+{"mode":"safe","adapter":"generic","diagnostics":[{"code":"attribute-dropped","message":"Dropped event-handler attribute onclick on <caption>","severity":"warning","path":"/table[1]/caption[2]"},{"code":"attribute-dropped","message":"Dropped event-handler attribute onclick on <td>","severity":"warning","path":"/table[1]/tr[1]/td[1]"}]}
