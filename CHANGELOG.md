@@ -162,6 +162,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   unattached attribute block is excluded for the same reason. A container with
   no placed child spans the markup that opened it. Published spans move in all
   three engines. Corpus 398.
+- **A definition list ends at its last placed child too** (carve#1530,
+  PART 12 §4). It was the one container that reached an attribute line no child
+  covers; §4 gains no exception and carve#1281's extent half is superseded.
+  Published spans move in all three engines. Corpus 399.
 - **An importer does not bake a derived accessible name into source**
   (carve#1500, PART 9 §16a). An HTML importer drops an attribute whose value
   equals what the renderer derives for that element - an untitled admonition's

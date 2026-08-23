@@ -10769,6 +10769,36 @@ EOF = (* end of file *) ;
       container whose span covers it is covering source nothing in it owns.
       (carve#1524.)
 
+      A `definition_list` IS NOT AN EXCEPTION -- NORMATIVE, and it is named
+      because it used to be one. It has no closer, so it ends at its last
+      placed `definition_term` or `definition_description` like every other
+      closerless container:
+
+          :: t
+          :  d
+             {.k}
+          tail
+
+      The `definition_list` ends where the description ends, not on the
+      attribute line below it.
+
+      WHY THE OTHER READING LOOKED RIGHT. A floating attribute is SCOPED to the
+      container that holds it (PART 9 §15 A4, carve#1281), so the attribute line
+      is one the definition list CONSUMED - and consuming it was read as owning
+      it, which made the extent run to the last line the list read rather than
+      to its last child. Scope and extent are different questions. Scope decides
+      which blocks an attribute may reach, and it answers "not past this
+      container"; extent decides which source a node claims, and it answers "not
+      past my last child". The same line is inside the container for the first
+      question and outside its span for the second, and the bullet list one
+      construct over already answered it that way: `- a` / `  {.x}` / `tail`
+      scopes the attribute to the item and still excludes it from the list's
+      span, by the clause above that names the construct. Nothing about a
+      definition list's shape changes that arithmetic, and the attribute line
+      leaves no attributes on the `definition_list` node either - it produces
+      nothing at all, which is what "unattached" means. (carve#1530, superseding
+      the extent half of carve#1281 and markup-carve/carve-php#1366.)
+
       A CONTAINER WITH NO PLACED CHILD AT ALL SPANS ITS OWN MARKUP AND STOPS
       THERE -- NORMATIVE. "Ends at its last placed child" is silent when there
       is none, and a container can be emptied: a definition written as an item's

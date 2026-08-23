@@ -1,0 +1,30 @@
+A definition list ends at its last placed child too
+
+```
+:: t
+:  d
+   {.k}
+tail
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+<p>tail</p>
+```
+
+```
+:: t
+:  a
+   [r]: /u
+tail
+
+[r][]
+.
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+</dl>
+<p>tail</p>
+<p><a href="/u">r</a></p>
+```

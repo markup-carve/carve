@@ -156,13 +156,26 @@ export function checkContainment(doc, findings) {
  *   node in any engine (carve#1344) and is the table's own markup rather than a
  *   child's.
  *
- * AND `definition_list` IS ABSENT FOR A REASON THAT IS NOT A RULE. It answers
- * the floating-attribute question the OTHER way - it reaches the attribute line
- * no child covers, ruled at carve#1281 and pinned by
- * `329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-5`. So the
- * language says one thing for a list and the opposite for a definition list.
- * That is a live inconsistency rather than a gap in this check, and folding it
- * in here would settle a second question in passing.
+ * `definition_list` IS PRESENT, AND IT USED TO BE THE ONE EXCEPTION. It has no
+ * closer, so §4 ends it at its last placed `definition_term` or
+ * `definition_description` like every other closerless container. It answered
+ * the floating-attribute question the other way until carve#1530 - it reached
+ * the attribute line no child covers - on the reading that a floating attribute
+ * is SCOPED to the container that holds it (carve#1281,
+ * markup-carve/carve-php#1366), so the line the list consumed was one it owned.
+ * Scope and extent are different questions: scope decides which blocks an
+ * attribute may reach, extent decides which source a node claims, and the
+ * bullet list one construct over already excluded the same line from its span.
+ *
+ * THE TYPE ALONE WOULD HAVE BEEN A CHECK THAT CANNOT FAIL. carve-js's parse
+ * tree spells a `definition_list`'s items as bare `{ terms, definitions, ... }`
+ * records with no `type` and no `pos`, so the child scan below finds NOTHING in
+ * one and the node falls through the empty-container branch and out. Reading
+ * the PART 12 wire shape - which is what §4 is normative about, and where the
+ * items are `definition_term` and `definition_description` nodes with spans -
+ * is what makes the type do any work; see the corpus pass in
+ * tests/ast-positions.test.mjs. Adding the type without it would have been the
+ * carve#755 shape a second time, in the check written to close one.
  *
  * An absent type is a type this rule does not reach, never a type permitted
  * anything: containment, overlap, the terminator rule and the slice comparison
@@ -185,6 +198,7 @@ export function checkContainment(doc, findings) {
  */
 export const ENDS_AT_LAST_CHILD = new Set([
   'block_quote',
+  'definition_list',
   'figure',
   'list',
   'list_item',
