@@ -32,7 +32,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, NOTE_FRAME } from './render.mjs'
+import { renderInline, renderInlineHardBreaks, renderInlineWithoutSymbols, deTypography, makeSlugger, checkUrl, escapeAttr, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, REF_FRAME, FOOTNOTE_FRAMES } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -1078,38 +1078,69 @@ function resolveFootnotes(html, ctx) {
   const order = [] // labels by first reference
   const counts = new Map()
   const inlineNotes = [] // rendered content per anonymous note, by number
-  // TWO FRAMES, TWO SCANS. A footnote REFERENCE frame stays raw - its payload
-  // is a label, which cannot hold a frame - while an inline NOTE frame carries
-  // a JSON payload so that a reference or a crossref inside the note cannot end
-  // the note's own frame early (render.mjs `noteFrame`, carve#1199). One
-  // alternation cannot read both, and the note is consumed first because its
-  // content is re-scanned below once the payload is decoded.
-  const substituteNotes = (s) => s.replace(NOTE_FRAME, (m, json) => {
-    let parsed
-    try {
-      parsed = JSON.parse(json)
-    } catch {
-      return m
-    }
-    // an inline note draws a fresh number from the SAME sequence (R2)
-    order.push({ inline: inlineNotes.length })
-    inlineNotes.push(parsed.content)
-    const n = order.length
-    return `<a id="fnref${n}" href="#fn${n}" role="doc-noteref"${parsed.attrs}><sup>${n}</sup></a>`
-  })
-  const substitute = (s) => substituteNotes(s).replace(/fn:([\s\S]*?)\u0002(.*?)/g, (_, payload, attrs) => {
-    const label = payload
-    if (!ctx.footnoteDefs.has(label)) return `[^${label}]` // unresolved -> literal
-    let n = order.indexOf(label) + 1
-    if (n === 0) {
-      order.push(label)
-      n = order.length
-    }
-    const k = (counts.get(label) ?? 0) + 1
-    counts.set(label, k)
-    const refId = k === 1 ? `fnref${n}` : `fnref${n}-${k}`
-    return `<a id="${refId}" href="#fn${n}" role="doc-noteref"${attrs}><sup>${n}</sup></a>`
-  })
+  /*
+   * TWO FRAMES, ONE SCAN -- PART 9R R2 (markup-carve/carve#1562).
+   *
+   * "A `[^label]` use with a matching footnoteDefs entry is numbered by
+   * FIRST-REFERENCE order from footnoteSeq [...] An inline `^[content]` note
+   * draws a fresh anonymous number from the SAME footnoteSeq." ONE counter,
+   * and the state PART 9R declares it in says so twice over - "footnoteSeq :
+   * ONE shared document-order counter for both footnote forms". What decides
+   * a number is therefore where the use SITS, not which of the two spellings
+   * it wears.
+   *
+   * This ran the frames in TWO passes: every inline note in the document drew
+   * its number, and only then did the labeled references draw theirs. The
+   * order was by FORM rather than by position, so a document mixing the two
+   * spellings numbered every note ahead of every reference however they were
+   * written. `Reference-style[^1] and inline^[...]` gave the labeled use 2 and
+   * the note 1 where the clause and all three engines give 1 and 2, and the
+   * endnote list follows the same order - so the two readings also disagreed
+   * about which body is `fn1`. No corpus document mixes the forms, and the
+   * authored docs sample that does had no reader until
+   * markup-carve/carve#1552.
+   *
+   * ONE ALTERNATION CAN READ BOTH, which is what the two-scan note that stood
+   * here used to deny. The two frames are spelled differently on purpose - a
+   * REFERENCE frame stays raw because its payload is a label, which cannot
+   * hold a frame, while a NOTE frame carries JSON so a reference or a crossref
+   * inside it cannot end the note's own frame early (render.mjs `noteFrame`,
+   * carve#1199) - but two distinguishable spellings are what an alternation is
+   * for, and which branch matched is read back off `json === undefined`.
+   *
+   * THE NOTE BRANCH IS FIRST, and that ordering is load-bearing: it keeps a
+   * frame-shaped run inside a note's payload consumed together with the note
+   * that carries it, which is the one property running the note pass first
+   * was really providing. Position still decides between two frames, because
+   * a single `replace` walks the string once, left to right.
+   */
+  const substitute = (s) =>
+    s.replace(FOOTNOTE_FRAMES, (m, json, payload, attrs) => {
+      if (json !== undefined) {
+        let parsed
+        try {
+          parsed = JSON.parse(json)
+        } catch {
+          return m
+        }
+        // an inline note draws a fresh number from the SAME sequence (R2)
+        order.push({ inline: inlineNotes.length })
+        inlineNotes.push(parsed.content)
+        const n = order.length
+        return `<a id="fnref${n}" href="#fn${n}" role="doc-noteref"${parsed.attrs}><sup>${n}</sup></a>`
+      }
+      const label = payload
+      if (!ctx.footnoteDefs.has(label)) return `[^${label}]` // unresolved -> literal
+      let n = order.indexOf(label) + 1
+      if (n === 0) {
+        order.push(label)
+        n = order.length
+      }
+      const k = (counts.get(label) ?? 0) + 1
+      counts.set(label, k)
+      const refId = k === 1 ? `fnref${n}` : `fnref${n}-${k}`
+      return `<a id="${refId}" href="#fn${n}" role="doc-noteref"${attrs}><sup>${n}</sup></a>`
+    })
   html = substitute(html)
   if (order.length === 0) return html.replace(/\uE000fnplacement\uE001\n?/g, '')
 
