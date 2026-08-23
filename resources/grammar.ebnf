@@ -7383,7 +7383,11 @@ EOF = (* end of file *) ;
    EXTENSION contributes to it, and those keys are part of the same map a host
    passes once. So the list above is what CORE defines and not the whole map an
    engine honors -- measured against the pinned build, `indexBackref`,
-   `tabsGroup` and `codeGroup` are honored beside the ten. A host translating a
+   `tabsGroup` and `codeGroup` are honored beside the ten. A fourth,
+   `tocNav` (Extensions SS8b.1, carve#1509), is STATED and not yet honored by
+   any engine: the table-of-contents nav is a navigation landmark and carries an
+   accessible name, and until an engine ships it the key is declared ahead of
+   the pin rather than measured. A host translating a
    document therefore sets ONE map, which is the whole reason the map exists
    rather than a per-construct option.
 
@@ -7398,7 +7402,9 @@ EOF = (* end of file *) ;
    AN EXTENSION MAY read the map for a string it shares with core; it MUST NOT
    require the host to configure the same text twice. Two extension-written
    strings have no key and are options only -- the heading-permalink label and
-   the table-of-contents summary (carve-js `ariaLabel` / `summary`, carve-php
+   the table-of-contents summary (which is the `<details>` disclosure's VISIBLE
+   text, and not the nav's name: that one is the `tocNav` key above, on a shape
+   the summary never shares) (carve-js `ariaLabel` / `summary`, carve-php
    `$ariaLabel`, carve-rs `aria_label`). That is now the RULE and not merely the
    state (carve#1510): a string the extension already exposes as an option is
    configured there, and §1.5's admission sentence has been narrowed to say so

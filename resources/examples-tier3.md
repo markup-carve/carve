@@ -155,7 +155,7 @@ Not enabled on this site, so the output is shown rather than rendered.
 ```
 
 ```html
-<nav class="toc">
+<nav class="toc" aria-label="Table of contents">
 <ul>
 <li><a href="#Alpha">Alpha</a></li>
 <li><a href="#Beta">Beta</a></li>

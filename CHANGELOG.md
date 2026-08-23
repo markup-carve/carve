@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The table-of-contents nav carries an accessible name** (carve#1509).
+  `<nav class="toc">` takes an `aria-label` from a new `tocNav` label
+  (default `Table of contents`), read by both TOC extensions so their navs stay
+  byte-identical; an authored `aria-label` outranks it. Extensions §8b.1, §1.5.
 - **Table column metadata and two-axis cell alignment** (carve#1344).
   `table.columns[]` carries a horizontal alignment, a vertical alignment and a
   fractional width, `table_cell` gains `valign`, positional `aligns`, `valigns`

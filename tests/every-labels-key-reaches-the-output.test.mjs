@@ -35,7 +35,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { carveToHtml, codeGroup, headingPermalinks, index, tableOfContents, tabs } from '@markup-carve/carve'
+import { carveToHtml, codeGroup, headingPermalinks, index, tableOfContents, tabs, tocPlacement } from '@markup-carve/carve'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const grammar = readFileSync(resolve(root, 'resources/grammar.ebnf'), 'utf8')
@@ -127,6 +127,33 @@ const probes = {
     options: { extensions: [codeGroup()] },
     find: (html) => /<div class="code-group" role="group" aria-label="([^"]*)"/.exec(html)?.[1],
   },
+  tocNav: {
+    source: '::: toc\n:::\n\n# One\n',
+    options: { extensions: [tocPlacement()] },
+    find: (html) => /<nav class="toc" aria-label="([^"]*)"/.exec(html)?.[1],
+  },
+}
+
+/*
+ * Keys the SPEC states and the PINNED build has not shipped.
+ *
+ * Without this window the only way to land a labels ruling was to leave the key
+ * out of the two tables until an engine caught up - and a key nobody documents
+ * is a key nobody implements, which is how a ruling goes quiet. The same shape
+ * as `AHEAD_OF_PIN` in tests/examples-tier3.test.mjs and
+ * `resources/engine-pin-drift.txt` for the core corpus.
+ *
+ * The check is INVERTED, so an entry cannot rot into coverage: a declared key
+ * must still be MISSING from the output. The commit that moves the pin past one
+ * deletes its entry, because leaving it there fails.
+ */
+const AHEAD_OF_PIN = {
+  tocNav: {
+    reason:
+      'carve#1509 Extensions §8b.1 - the table-of-contents nav is a navigation landmark ' +
+      'and carries an accessible name; the pinned build leaves every <nav class="toc"> ' +
+      'anonymous and exposes no option that would name one',
+  },
 }
 
 test('the two tables and the probes name the same keys', () => {
@@ -145,12 +172,41 @@ test('the two tables and the probes name the same keys', () => {
  */
 test('both tables were actually read', () => {
   assert.equal(coreKeys().size, 10, 'PART 9 §16a states ten core keys')
-  assert.equal(extensionKeys().size, 3, 'Extensions §1.5 states three extension keys')
+  assert.equal(extensionKeys().size, 4, 'Extensions §1.5 states four extension keys')
+})
+
+/*
+ * The ledger's own liveness. An entry naming a key no table documents declares
+ * nothing - its key is never reached by the loop below, so the entry can never
+ * be deleted by a bump because no check consults it.
+ */
+test('every ahead-of-pin entry names a documented key with a probe', () => {
+  for (const key of Object.keys(AHEAD_OF_PIN)) {
+    assert.ok(documented.has(key), `AHEAD_OF_PIN declares ${key}, which neither table documents`)
+    assert.ok(probes[key], `AHEAD_OF_PIN declares ${key}, which has no probe here`)
+    assert.ok(AHEAD_OF_PIN[key].reason, `AHEAD_OF_PIN.${key} carries no reason`)
+  }
 })
 
 for (const [key, documentedDefault] of documented) {
   const probe = probes[key]
   if (!probe) continue
+
+  const ahead = AHEAD_OF_PIN[key]
+  if (ahead) {
+    test(`${key} is declared ahead of the pinned build`, () => {
+      // Inverted on purpose. The day the build writes this string, this fails
+      // and the entry above comes out in the same commit that moves the pin.
+      const found = probe.find(carveToHtml(probe.source, probe.options))
+      assert.equal(
+        found,
+        undefined,
+        `${key} is declared ahead of the pin (${ahead.reason}), but the pinned build now ` +
+          `renders "${found}". Delete the AHEAD_OF_PIN entry so the key is checked for real.`,
+      )
+    })
+    continue
+  }
 
   test(`${key} renders its documented default`, () => {
     const found = probe.find(carveToHtml(probe.source, probe.options))

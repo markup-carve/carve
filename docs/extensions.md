@@ -221,6 +221,7 @@ language.
 | `indexBackref` | `Back to` | Index (§8.2) |
 | `tabsGroup` | `Tabs` | Tabs (§13.4) |
 | `codeGroup` | `Code examples` | CodeGroup (§13.4) |
+| `tocNav` | `Table of contents` | TocPlacement / TableOfContents (§8b.1) |
 
 These are the extension-written keys, not the whole map: PART 9 §16a lists the
 ten core writes, and the two tables together are every key an engine honors.
@@ -246,12 +247,21 @@ spellings where the extension already had one. Measured on the pinned build:
 `labels: { headingPermalink: 'PERM' }` changes nothing, while
 `tableOfContents({ summary: 'INHALT' })` reaches the `<summary>`.
 
+The table-of-contents NAV's name is a different string and does get a key
+(`tocNav`, §8b.1). `summary` is VISIBLE text in a `<details>` disclosure, and
+the collapsible shape renders that `<details>` *instead of* the `<nav>` - so the
+two never appear in one document and neither can stand in for the other. Their
+near-identical defaults are a coincidence of English, not one string with two
+homes.
+
 **The rule for a new one.** An extension-written string with a fixed English
 default gets a `labels` key **unless** the extension already exposes it as an
 option, and it does not get both. Decide it once, when the string is added: the
 map is for strings that would otherwise have nowhere to be set, and an option is
-already somewhere. The three keys in the table above predate this rule and each
-carries an option as well, arbitrated by the precedence order stated here.
+already somewhere. The first three keys in the table above predate this rule and
+each carries an option as well, arbitrated by the precedence order stated here.
+`tocNav` is the first admitted under the rule, and it has no option: the
+extensions that write it expose nothing that names the nav (§8b.1).
 
 **Why this is not localization.** There is no locale name and no built-in
 translation table, for the reason §16a gives: a locale table is data every
@@ -339,7 +349,7 @@ from disagree whenever a render option reaches inline rendering. Given
 and a symbols map of `ok` to `OK`, a hook rendering with defaults produces
 
 ```html
-<nav class="toc">
+<nav class="toc" aria-label="Table of contents">
 <ul>
 <li><a href="#h">:ok: h</a></li>
 </ul>
@@ -1014,6 +1024,55 @@ preceding attribute line, never inline on the opener):
 - The nested `<ul>` HTML is byte-identical to the standalone TOC extension
   (one tag per line).
 
+**The nav carries an accessible name** (carve#1509). `<nav>` is a navigation
+landmark unconditionally - unlike `<section>`, which maps to `generic` until it
+is named - so an unnamed one is an entry in every landmark list reading only
+"navigation". That is the argument PART 9 §16a accepted for
+`<section role="doc-endnotes">` and §1.5 accepted for an untitled admonition,
+and it is worse here, because a page can hold **more than one**: the table below
+renders two navs when both extensions are registered, a document may write
+`::: toc` more than once, and a surrounding site template's own nav makes it
+three. Indistinguishable entries are the defect; a single anonymous one is only
+how it starts.
+
+The `<nav>` takes `aria-label`, the string is the `tocNav` label (§1.5), and it
+is escaped the way every label is:
+
+```html
+<nav class="toc" aria-label="Table of contents">
+```
+
+**Both extensions read the same key.** `TocPlacement` and `TableOfContents`
+render the same nav, and §8b.3 makes that byte-identical fragment the cross-impl
+contract - so a name chosen per-extension would be the one change that breaks
+it.
+
+**A name the author wrote outranks the label**, by §1.5's precedence, and the
+seam already exists: `{#id .class}` is carried onto the `<nav>`, so an
+`aria-label` written on the attribute line is kept and NO label is added beside
+it. The match is on the attribute name, case-insensitively, as §16a already
+rules for the shapes carve#1468 closed - an author who writes `ARIA-LABEL` has
+named the nav.
+
+**The `collapsible` shape has no landmark to name.** With `collapsible` on, the
+standalone extension renders `<details class="toc">` with a `<summary>` and no
+`<nav>` at all, so nothing there takes this label; `TocPlacement` has no such
+option and always renders the nav. This is also why the name and the `summary`
+string are not one string with two spellings (§1.5): the shapes are mutually
+exclusive, one is a landmark's accessible name and the other is visible text.
+
+**Why a key rather than an option.** §1.5 admits an extension-written string
+with a fixed English default unless the extension already exposes it as an
+option. Nothing exposes this one - no configuration puts an `aria-label` on the
+nav in any engine - so the "unless" does not fire, and the map is exactly where
+a string with nowhere else to be set belongs. Nor is this the class-word case
+that keeps a diagram fence's name an option: `mermaid` is the thing's own name
+and has no translation, whereas a landmark entry reading "toc" is an
+abbreviation a reader hears spelled out, and "Table of contents" is ordinary
+English that a host's catalog already holds. The map is the seam to that
+catalog, and it is the one seam all three engines already honor - which matters
+because the engines do not agree on this extension's options at all.
+
 **Two extensions produce a table of contents, and they are not
 interchangeable.** `TocPlacement` implements this directive. `TableOfContents`
 is the standalone injector on the Tier-3 catalog row: it puts one nav at the top
@@ -1036,8 +1095,8 @@ Intro paragraph.
 
 | registered | what renders |
 |---|---|
-| `TocPlacement` | `<nav class="toc">` where the directive is written |
-| `TableOfContents` | `<nav class="toc">` at the top (or bottom), **plus** an empty `<div class="toc">` where the directive is written |
+| `TocPlacement` | `<nav class="toc">` (named, above) where the directive is written |
+| `TableOfContents` | `<nav class="toc">` (named, above) at the top (or bottom), **plus** an empty `<div class="toc">` where the directive is written |
 | both | two navs - one injected, one in place |
 | neither | the empty `<div class="toc">` only, and no nav anywhere |
 
@@ -1047,7 +1106,7 @@ an author a table of contents in a place they did not choose beside an empty
 element where they did choose:
 
 ```html
-<nav class="toc">
+<nav class="toc" aria-label="Table of contents">
 <ul>
 <li><a href="#One">One</a>
 <ul>
