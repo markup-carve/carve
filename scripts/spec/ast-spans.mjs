@@ -44,10 +44,13 @@
  *
  * What this module still does not do is say WHICH engine owes it, because that
  * needs the source and this module only has the trees. It reports a
- * DISAGREEMENT; `checkOpeningMarkup` in ./ast-positions.mjs is the rule that
- * names a side, and each engine runs it against its own tree. A declared count
- * that moves means an engine changed its mind about a span, and nothing else in
- * this repo can see that happen.
+ * DISAGREEMENT; the rules that name a side live in ./ast-positions.mjs and each
+ * engine runs them against its own tree - `checkOpeningMarkup` for where a span
+ * BEGINS, `checkStopsAtChildren` for where it ENDS. Which one applies depends
+ * on which end of the row moved, and reading an end-only row under the start
+ * rule blames the narrow engine when the wide one owes it (carve#1637). A
+ * declared count that moves means an engine changed its mind about a span, and
+ * nothing else in this repo can see that happen.
  */
 
 import { POS_KEYS } from './ast-shape.mjs'

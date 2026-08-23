@@ -839,6 +839,20 @@ A row may name an issue only where one of those still declares the debt.
 | carve-php | §3a conformant on both forms: an unresolved reference is a `link` node, and the collapsed form carries the resolution key in `ref` beside `rawRef`, the same label the other two publish on every corpus document | recorded behind a parse option, enabled whenever it serializes; every block and inline placed, except the categories §4 exempts - a coalesced `text` run, a reassembled table cell, and a verbatim run continued on a `+` line |
 | carve-rb / carve-py / carve-go / carve-wasm | publish carve-rs's bytes | whatever carve-rs records |
 
+A third ledger, `resources/ast-extent-findings.txt`, records the other half of
+§4: a span that is PRESENT and points at the wrong codepoint. Those findings are
+produced by `checkStopsAtChildren` and its neighbours, which read the SOURCE
+rather than another engine - the only way a rule every engine breaks the same
+way can be seen at all, since the three-way panel compares the engines against
+each other and reads a unanimous defect as agreement. Until
+[carve#1637](https://github.com/markup-carve/carve/issues/1637) that reading was
+theoretical: the findings reached a counter that could not fail, so a run printed
+thirty of them per engine and exited green. There is no `permitted` status in
+that file - a reassembled node has no honest span, which is why the position
+waivers have one, and a span that exists and is wrong has no such reading - so
+every line names the engine issue that will delete it, and the count fails when
+it moves in either direction.
+
 The gaps are listed rather than smoothed over on purpose: "six implementations"
 is only a claim worth making if the disagreements are visible.
 
