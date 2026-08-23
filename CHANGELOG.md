@@ -94,9 +94,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **An escape escalation reaches the block that failed, not the document**
   (carve#1507, PART 11 §2b, §4). All three writers took one needed escape as
   license to escape every candidate in the document, which invented 72 idle
-  escapes across the same 28 corpus documents; 15 of them came from the scope
-  alone, and the engines land at 24 documents / 57 escapes (carve#1532).
-  Corpus 396.
+  escapes across the same 28 corpus documents. Swept as an A/B at one corpus
+  pin, the scope alone owns 4 documents / 17 escapes and the reading lands at
+  25 documents / 59 escapes (carve#1532, carve#1549). Corpus 396.
 - **A hard list boundary is written as exactly three blank lines**
   (carve#1505, PART 11 §10i). All three engines collapse a longer run to
   three when writing and nothing said so, and both pairs carve#1499 added

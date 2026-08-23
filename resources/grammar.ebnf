@@ -8412,24 +8412,40 @@ EOF = (* end of file *) ;
       MEASURED, AND THE MEASUREMENT IS WHY IT IS A CLAUSE (carve#1507). Three
       independently written writers -- carve-js, carve-php and carve-rs --
       invented 72 idle escapes across the same 28 corpus documents, with the
-      same per-document counts, character for character. Three writers agreeing
-      to the character is not coincidence and not inheritance: each took the
-      scope deliberately, and each took it from §4's own conclusion that a
-      two-render implementation is stuck with it. That conclusion is what this
-      section corrects.
+      same per-document counts, character for character, on the corpus those
+      runs carried at the time. Three writers agreeing to the character is not
+      coincidence and not inheritance: each took the scope deliberately, and
+      each took it from §4's own conclusion that a two-render implementation is
+      stuck with it. That conclusion is what this section corrects.
 
-      NARROWING RETIRES 15 OF THE 72, NOT 67 (carve#1532). The ruling that
-      seeded this section predicted that 26 documents / 67 escapes were the
-      document scope and would retire with it, leaving EXACTLY 2. Implemented,
-      all three engines land at 24 DOCUMENTS / 57 ESCAPES -- character for
-      character again (carve-js#1307, carve-php#1560, carve-rs#1239). The gap
-      is a property of the prediction rather than of a narrowing that stopped
-      short. The seeded split was measured by asking "did the writer return the
-      conservative form?", which is TRUE OF EVERY SINGLE-BLOCK DOCUMENT -- and
-      for a single-block document this section's smallest failing unit IS the
+      NARROWING RETIRES A MINORITY OF THE IDLE ESCAPES, NOT ALL BUT TWO
+      (carve#1532). The ruling that seeded this section predicted that document
+      scope owned 26 documents / 67 escapes and would take them with it,
+      leaving EXACTLY 2. Swept as an A/B at ONE corpus pin -- the same writer
+      without and with the narrowing, carve-js 234fff0 against 8f83eea
+      (carve-js#1307), over the 1362 corpus documents at spec 7cb4769 -- the
+      reading moves from 29 DOCUMENTS / 76 ESCAPES to 25 DOCUMENTS / 59
+      ESCAPES, so document scope owned 4 documents and 17 escapes and those
+      retired. carve-php#1560 and carve-rs#1239 are the same narrowing in the
+      other two writers. The gap against the prediction is a property of the
+      prediction rather than of a narrowing that stopped short: the seeded
+      split was measured by asking "did the writer return the conservative
+      form?", which is TRUE OF EVERY SINGLE-BLOCK DOCUMENT -- and for a
+      single-block document this section's smallest failing unit IS the
       document. `103-heading-marker-column-zero-2` is `  ## H` alone, and it
-      was counted as document scope on exactly that reading. Document scope
-      owned 15 escapes, and those retired.
+      was counted as document scope on exactly that reading.
+
+      A COUNT HERE IS A READING AT A PIN, NOT AN INVARIANT (carve#1549). The
+      corpus grows, so both halves of a difference have to be swept at the SAME
+      corpus pin, with the same writer save the one change under test. This
+      section shipped with "15 of 72 retired", which subtracted a
+      post-narrowing reading from a pre-narrowing one taken on a corpus that
+      did not yet hold corpus 396 -- the document this very clause added, and
+      its own worked example. At one pin the pair is 17 of 76, and 396 itself
+      carries 4 idle escapes before the narrowing and 2 after, which is the
+      paragraph above coming out as it says it does. What is durable here is
+      the CAUSE SPLIT below; a pair of magnitudes is its arithmetic at a stated
+      pin, and stating the pin is the whole of what makes it checkable.
 
       WHAT REMAINS IS THREE CAUSES, AND NONE OF THEM IS THIS SECTION'S.
 
@@ -8442,9 +8458,10 @@ EOF = (* end of file *) ;
                          per-occurrence. Retiring these needs §2's own
                          per-OPENER-OCCURRENCE test, a different mechanism
                          rather than a narrower scope, and out of this
-                         section's scope by design (carve#1533).
+                         section's scope by design (carve#1533). Since taken,
+                         and these retired with it -- see below.
 
-        `opener run`     2 documents, 5 escapes. A FLOOR THE MEASUREMENT CANNOT
+        `opener run`     3 documents, 7 escapes. A FLOOR THE MEASUREMENT CANNOT
                          GO BELOW, AND NOT DEBT. §2's THE UNIT IS THE OPENER
                          requires the whole opener run escaped -- `\#\# H` and
                          never `\## H` -- while the sweep that counts idle
@@ -8452,8 +8469,13 @@ EOF = (* end of file *) ;
                          first still in place no heading forms either way and
                          the sweep reads the rest of a correctly escaped run as
                          idle. Driving these to zero would mean emitting output
-                         §2 forbids. `103-heading-marker-column-zero-2` and
-                         `132-thematic-break-requires-contiguous-markers-3`.
+                         §2 forbids. `103-heading-marker-column-zero-2`,
+                         `132-thematic-break-requires-contiguous-markers-3`
+                         and corpus 396, this section's own worked example.
+                         The third arrived with the CORPUS rather than with a
+                         writer, which is how this row came to name two: the
+                         reading behind it was taken at a pin that predated the
+                         commit adding the document the clause shipped.
 
         `minimal class`  2 documents, 5 escapes. The two the ruling named,
                          unchanged: `72-escape-coverage-2` carries a literal
@@ -8466,6 +8488,15 @@ EOF = (* end of file *) ;
 
       An engine that narrows the scope and does not land at exactly these three
       causes has found something else.
+
+      TWO OF THE THREE ARE WHAT AN ENGINE READS TODAY. All three writers have
+      since taken §2's test per OPENER OCCURRENCE inside the failing unit
+      (carve-js#1327, carve-php#1578, carve-rs#1254), which retires the `unit
+      scope` rows entirely: their ratchets carry the same five slugs with the
+      same counts, 5 DOCUMENTS / 12 ESCAPES, and every one of those is an
+      `opener run` or a `minimal class` row above. That is a §2 mechanism
+      rather than a narrower scope, so nothing this section rules changed with
+      it, and the clause carve#1533 asks for is still open.
 
       THE COMPARISON STAYS DOCUMENT-SCOPED, WHICH IS THE OTHER QUESTION. §4
       rules out re-parsing a LINE on its own, because a line has lost the
