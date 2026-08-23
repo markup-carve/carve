@@ -73,10 +73,22 @@ CarveCore {
 
   blankLine  = spaceChar* newline
 
-  // --- Headings: 1-6 '#' at column 0, one space, inline text to EOL --------
+  // --- Headings: 1-6 '#' at column 0, a space RUN, inline text to EOL ------
   heading    = headingL<"######"> | headingL<"#####"> | headingL<"####">
              | headingL<"###"> | headingL<"##"> | headingL<"#">
-  headingL<h> = h " " inline+ lineEnd
+  // `" "+`, matching `heading_first_line = heading_marker, space+,
+  // inline_content, newline` in resources/grammar.ebnf. It said `" "` until
+  // carve#1581, which put the second space of `##  h` in the CONTENT where
+  // every engine reads the whole run as separator; `space` is U+0020 only, so
+  // the first character that is not one still BEGINS the text.
+  //
+  // This rule RECOGNIZES and does not expose the text, so it accepted `##  h`
+  // under either spelling and the correction is a spelling one here. MARKER
+  // REQUIRES CONTENT (PART 2) is not expressed here either, exactly as it is
+  // not expressed by `inline_content` in grammar.ebnf: `#  ` matches both
+  // files and is refused by the clause, which the oracle's `HEADING` pattern
+  // is what enforces.
+  headingL<h> = h " "+ inline+ lineEnd
   // A heading ENDS AT THE NEWLINE and needs no boundary check: nothing folds
   // into it, so whatever follows simply begins its own block. The lookahead
   // this rule used to carry existed only to refuse djot-style folding, which
@@ -127,7 +139,9 @@ CarveCore {
   paraLine   = ~blankLine ~structural inline+ lineEnd
   structural = headingStart | thematicBreak | btOpen | tdOpen
              | colonFence | ordMarker
-  headingStart = hashes " "
+  // the run, like `headingL` above - a paragraph line is interrupted by a
+  // heading opener however wide its separator is spelled (carve#1581)
+  headingStart = hashes " "+
   colonFence = ":::"
   // an ordered-list marker line (digit/letter run + `)` + space) is a
   // Full-Carve list: Core refuses the document rather than rendering a

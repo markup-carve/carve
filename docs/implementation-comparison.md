@@ -174,6 +174,7 @@ under the same semantic-span rule,
 `403-an-idle-escape-does-not-spread-from-the-occurrence-that-needed-one`,
 `404-a-caption-s-marker-separator-is-a-run-and-none-of-it-is-content`,
 `405-a-quote-holding-a-captioned-block-indents-it-like-any-other-nested-block`,
+`406-a-heading-s-marker-separator-is-a-run-and-none-of-it-is-content`,
 `05-lists-25`,
 `05-lists-26`,
 `05-lists-27`,
@@ -218,6 +219,15 @@ what the pair asserts is the reading all three engines already had. It was
 verified on the carve-js this repository pins and on carve-js `main`, and not on
 carve-php or carve-rs, which is why they are declared and not counted
 (carve#1575).
+
+`406` IS DECLARED ON THE PINNED ENGINE ALONE, which is one measurement fewer
+than `404` and `405` carry and is said rather than rounded up to match them.
+Its pair pins the ORACLE against the engines - the executable spec kept a
+heading's marker-separator run as content - so what the pair asserts is the
+reading all three engines already had. Both documents render byte-identically
+in the carve-js this repository pins (`d9cb2c7`); carve-js `main`, carve-php and
+carve-rs were not measured, which is why the category is declared and not
+counted (carve#1581).
 
 `394` IS DECLARED THOUGH ITS ENGINES WERE MEASURED, because measuring three
 engines is not retaking the run. Its one document renders byte-identically in

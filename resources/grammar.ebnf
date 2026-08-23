@@ -879,7 +879,7 @@ blank_line = {whitespace}, newline ;
 heading = atx_heading ;
 
 atx_heading = heading_first_line ;
-heading_first_line = heading_marker, space, inline_content, newline ;
+heading_first_line = heading_marker, space+, inline_content, newline ;
 heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
 (* COLUMN ZERO -- NORMATIVE. A heading_marker sits at COLUMN 0 of its line (no
    leading spaces or tabs); carve does NOT accept CommonMark's 0-3 space indent.
@@ -890,6 +890,55 @@ heading_marker = '#' | "##" | "###" | "####" | "#####" | "######" ;
    measured after the container's own markers are stripped, e.g. "> # H" is a
    quoted heading.) Matches Djot (which dropped CommonMark's indent fuzz);
    pinned by corpus 103-heading-marker-column-zero. *)
+
+(* THE HEADING MARKER SEPARATOR IS A RUN -- NORMATIVE. `space+`: one or more
+   ASCII spaces after the hashes, ALL of them separator, and the first
+   character that is not one BEGINS the heading. `##<SP><SP>h` is the heading
+   `h`, not `<SP>h`.
+
+   A CORRECTION, NOT A WIDENING, and the third time the same one is made: at
+   the footnote and abbreviation markers (carve#892), at the caption
+   (carve#1575) and here. This production said `space` while every engine
+   consumed a run, so the grammar forbade a shape nothing rejected. The
+   executable spec was the one reader that took it literally, which is how it
+   came to publish `<h2><SP>h</h2>` where all three engines publish `h`
+   (carve#1581).
+
+   TWO CLAUSES DECIDE IT, and neither of them counts engines. MARKER
+   SEPARATORS AND PADDING SLOTS (PART 2) defines a marker separator as what
+   stands between the marker and the content it introduces and rules that a
+   writer aligning in a column "is writing separator, not content"; the four
+   slots that clause narrows to exactly one space are PADDING slots, an
+   enumeration it closes, and the heading marker is not among them. And
+   PART 11 §1 names MARKER ALIGNMENT among the spellings `fmt` may normalize
+   while preserving what the document says -- which holds only if the run is
+   not content. All three writers already normalize `##<SP><SP>h` to
+   `##<SP>h`, so under the literal reading every one of them changed the
+   document on every pass.
+
+   NO GATE COULD REACH IT. No corpus document, no optional-corpus case and
+   none of the authored documents in the oracle comparison's population
+   spelled a heading with a second space after the marker.
+   `84-single-line-headings-5` is `#` and two spaces and NOTHING else, which
+   is a different rule and is answered below.
+
+   A TAB IS NOT SEPARATOR. `space = ' '`, so `#<SP><TAB>x` is a heading whose
+   text BEGINS with the tab, and `#<TAB>x` is not a heading at all -- the
+   run is ASCII spaces and the first character that is not one ends it. This
+   is the same answer the caption gives at the same position.
+
+   AND THE MARKER REQUIRES CONTENT after the run as well: hashes, the
+   separator and nothing but whitespace open no heading, and the line is
+   ordinary paragraph text with its trailing run dropped. That half needs no
+   correction -- it is the one thing every reader including the executable
+   spec already had, which is why `84-single-line-headings-5` was never red.
+
+   WHAT MOVES WITH THE TEXT, AND WHAT DOES NOT. The derived id does NOT
+   change: slugging drops a leading run either way, so `##<SP><SP>a b` is
+   `a-b` under both readings, and a ticket predicting otherwise is predicting
+   from the text rather than from the slug. A CROSSREF's AUTO-TEXT does move,
+   because §19 takes the heading's own text -- `</#a-b>` rendered
+   `<SP>a b` under the literal reading and renders `a b` under this one. *)
 
 (* SINGLE-LINE HEADINGS -- NORMATIVE (diverges from Djot). A heading ENDS AT
    THE NEWLINE. It has no continuation line, and nothing following it folds in:
@@ -4075,9 +4124,12 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
    AND IN THE CONSTRUCTS THAT SPELL NO RUN AT ALL, which is where this bites
    hardest, because there an implementation had to invent something. A
-   heading, a caption, a definition term, a bullet item and an ordered item
-   take `space` -- one, exactly, not a class. The CONTINUATION MARKER takes
-   none: `continuation_marker = '+', newline`, so any character between the
+   definition term, a bullet item and an ordered item take `space` -- one,
+   exactly, not a class. A heading and a caption stood in that list and no
+   longer do: both spell `space+` now, a RUN of the same terminal, each for
+   the reason its own clause states rather than for anything here
+   (carve#1575, carve#1581). The CONTINUATION MARKER takes none:
+   `continuation_marker = '+', newline`, so any character between the
    `+` and the line end is content and the line is not a marker. The
    block-attribute line takes `opt_ws`, `attr_separator` and `continuation`,
    all three built from `whitespace`. A VERTICAL TAB or a FORM FEED in any of
