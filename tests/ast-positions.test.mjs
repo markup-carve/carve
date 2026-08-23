@@ -1226,17 +1226,28 @@ test('the parse tree cannot answer for a definition list, so the corpus pass rea
   // takes the empty-container branch and falls out, so naming the type would
   // buy nothing. `toAstJson` is what gives the items spans to be measured
   // against.
+  //
+  // READ OFF THE SHAPE RATHER THAN OFF A FINDING, since the pin moved to
+  // carve-js 71add23: the engine stops at its last description now
+  // (markup-carve/carve-js#1322), so this document is clean through either
+  // tree and a finding can no longer tell them apart. What still can is that
+  // one tree carries items the rule can measure and the other carries none -
+  // and the hand-built pair above is what keeps the rule able to report.
   const source = ':: t\n:  d\n   {.k}\ntail\n'
   const parsed = parse(source)
   const list = parsed.children[0]
   assert.equal(list.type, 'definition_list')
   assert.ok(list.items.every((item) => typeof item.type !== 'string'))
+  assert.ok(list.items.every((item) => item.pos === undefined))
   assert.deepEqual(stopFindings(parsed, source), [])
 
-  const wire = toAstJson(parse(source))
-  const findings = stopFindings(wire, source)
-  assert.equal(findings.length, 1, findings.join('\n'))
-  assert.match(findings[0], /"definition_list"/)
+  const wire = toAstJson(parse(source)).children[0]
+  assert.deepEqual(
+    wire.items.map((item) => item.type),
+    ['definition_term', 'definition_description'],
+  )
+  assert.ok(wire.items.every((item) => Number.isInteger(item.pos.endOffset)))
+  assert.equal(wire.pos.endOffset, wire.items.at(-1).pos.endOffset)
 })
 
 test('a container with a closer is not reached by this rule', () => {
@@ -1274,61 +1285,119 @@ test('a container with a closer is not reached by this rule', () => {
  * what each reaches over is source the clauses exclude BY NAME. That is why
  * these are the clause applied rather than three new rulings.
  *
- * THEY GO THROUGH THE ENGINE, not through a hand-built tree, for the reason the
- * corpus pass serializes before it checks: a type in this set does no work
- * unless the shape the engine publishes actually reaches the rule, and a
- * hand-built node proves only that the rule can be handed one. Remove any of the
- * three names from the set and its test below goes green-to-red on a real parse.
+ * THEY WENT THROUGH THE ENGINE while the pin published the shape, for the
+ * reason the corpus pass serializes before it checks: a type in this set does
+ * no work unless the shape the engine publishes actually reaches the rule, and
+ * a hand-built node proves only that the rule can be handed one.
+ *
+ * The pin at carve-js 71add23 carries all three fixes (markup-carve/carve-js
+ * #1354, #1355 and #1357), so no real parse produces the span any more and each
+ * test below states TWO things instead of one: the rule reports the span when
+ * it is handed one, which is what keeps the name in the set doing work, and the
+ * engine's answer to the same document, which is what the fix means. Remove any
+ * of the three names from the set and its test goes green-to-red on the first
+ * half; regress the engine and it goes red on the second. The corpus pass at
+ * the end of this file is the live measurement over the whole population.
  */
 
 test('a footnote definition ending past the newline that ends it is reported', () => {
   // §4: "a following newline, blank line, or unattached attribute block is
   // not" included in a span. The footnote has no closer, so it ends at its
   // paragraph. markup-carve/carve-js#1347, and 26 of the 27 corpus footnote
-  // rows are this shape.
+  // rows were this shape.
+  //
+  // HAND-BUILT SINCE THE PIN CARRIES THE FIX (markup-carve/carve-js#1354, on
+  // the pin at carve-js 71add23). The rule is what is under test and it has to
+  // stay able to report the span; the engine's answer to the same document is
+  // asserted below, so the test still fails if either half moves.
   const source = 'x[^n]\n\n[^n]: b\n\ntail\n'
-  const findings = stopFindings(toAstJson(parse(source)), source)
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'footnote',
+        pos: pos(7, 15),
+        children: [{ type: 'paragraph', pos: pos(13, 14), children: [] }],
+      },
+    ],
+  }
+  const findings = stopFindings(doc, source)
   assert.equal(findings.length, 1, findings.join('\n'))
   assert.match(findings[0], /"footnote"/)
   assert.match(findings[0], /"\\n" belongs to no child of it/)
   assert.ok(ENDS_AT_LAST_CHILD.has('footnote'))
+  assert.deepEqual(stopFindings(toAstJson(parse(source)), source), [])
 })
 
 test('a footnote definition ending past the definition hoisted out of it is reported', () => {
-  // The 27th row (`202-...`), and carve#1522's arrangement one container down:
-  // §7 hoists the reference definition to the document, §4 says a hoisted
-  // sibling is not a child, so the source it covers is not the footnote's.
+  // The one row that survives the bump (`202-...`), and carve#1522's
+  // arrangement one container down: §7 hoists the reference definition to the
+  // document, §4 says a hoisted sibling is not a child, so the source it covers
+  // is not the footnote's.
+  //
+  // markup-carve/carve-js#1354 shortened the span - the footnote no longer
+  // reaches over the newline that ends it - and it goes on reaching over the
+  // hoisted line, which is a different defect with no carve-js ticket yet.
   const source = '[^a]: note\n  [r]: /u\n\nsee[^a] [t][r]\n'
   const findings = stopFindings(toAstJson(parse(source)), source)
   assert.equal(findings.length, 1, findings.join('\n'))
   assert.match(findings[0], /"footnote"/)
-  assert.match(findings[0], /"\\n {2}\[r\]: \/u\\n" belongs to no child of it/)
+  assert.match(findings[0], /"\\n {2}\[r\]: \/u" belongs to no child of it/)
 })
 
 test('a heading ending past the trailing whitespace its line drops is reported', () => {
   // PART 2's NO TRAILING WHITESPACE clause is normative that the run "does not
   // reach the output, and it is not content", and names a heading among the
   // lines it holds for (carve#926). A construct cannot own source that is not
-  // content. markup-carve/carve-js#1348.
+  // content. markup-carve/carve-js#1348, fixed by markup-carve/carve-js#1355,
+  // so the span is built here and the engine's answer asserted beside it.
   const source = '# h  \n'
-  const findings = stopFindings(toAstJson(parse(source)), source)
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'heading',
+        pos: pos(0, 5),
+        children: [{ type: 'text', pos: pos(2, 3) }],
+      },
+    ],
+  }
+  const findings = stopFindings(doc, source)
   assert.equal(findings.length, 1, findings.join('\n'))
   assert.match(findings[0], /"heading"/)
   assert.match(findings[0], /" {2}" belongs to no child of it/)
   assert.ok(ENDS_AT_LAST_CHILD.has('heading'))
+  assert.deepEqual(stopFindings(toAstJson(parse(source)), source), [])
 })
 
 test('a definition term ending past the trailing whitespace its line drops is reported', () => {
   // The same clause, which names a definition term too. Written multi-line
   // because that is the corpus shape and the one the other two engines filed:
-  // markup-carve/carve-php#1330, markup-carve/carve-rs#1029, and now
-  // markup-carve/carve-js#1349.
+  // markup-carve/carve-php#1330, markup-carve/carve-rs#1029, and
+  // markup-carve/carve-js#1349, closed by markup-carve/carve-js#1357. Built
+  // here for the same reason as the heading above, with the engine's answer
+  // asserted beside it. The enclosing list stops at its last item, so the one
+  // finding is the term's.
   const source = ':: `a\nb \n:  d\n'
-  const findings = stopFindings(toAstJson(parse(source)), source)
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'definition_list',
+        pos: pos(0, 13),
+        items: [
+          { type: 'definition_term', pos: pos(0, 8), children: [{ type: 'text', pos: pos(3, 7) }] },
+          { type: 'definition_description', pos: pos(9, 13), children: [] },
+        ],
+      },
+    ],
+  }
+  const findings = stopFindings(doc, source)
   assert.equal(findings.length, 1, findings.join('\n'))
   assert.match(findings[0], /"definition_term"/)
   assert.match(findings[0], /" " belongs to no child of it/)
   assert.ok(ENDS_AT_LAST_CHILD.has('definition_term'))
+  assert.deepEqual(stopFindings(toAstJson(parse(source)), source), [])
 })
 
 test('a table cell is bounded by the pipes on BOTH sides, which is why it is absent', () => {
@@ -1351,33 +1420,36 @@ test('a table cell is bounded by the pipes on BOTH sides, which is why it is abs
 })
 
 test('a definition description has nothing after its last child, which is why it is absent', () => {
-  // The other absence carve#1574 had to account for. A description never
-  // over-reaches: every trailing run a description line carries lands on the
-  // enclosing `definition_list`, which IS in this set, so the source is already
-  // reported - once, against the node that claims it. Naming the type would be
-  // a check that cannot fail, which this file refused once already for
-  // `definition_list` itself.
+  // The other absence carve#1574 had to account for. A description ends where
+  // its last block ends and has nothing after it to claim, so naming the type
+  // would be a check that cannot fail - which this file refused once already
+  // for `definition_list` itself.
+  //
+  // The trailing run PART 2 excludes from content used to land on the enclosing
+  // `definition_list`, which is where it was reported. Since
+  // markup-carve/carve-js#1322 and #1357 the list stops at its last item too,
+  // so the run is claimed by no node at all - which changes where the source
+  // goes, not whether a description ever over-reaches.
   const source = ':: t\n:  a\n\n   b  \n'
   const wire = toAstJson(parse(source))
   const list = wire.children[0]
   const description = list.items[1]
   assert.equal(description.type, 'definition_description')
   assert.equal([...source].slice(description.pos.startOffset, description.pos.endOffset).join(''), ':  a\n\n   b')
-  assert.equal([...source].slice(list.pos.startOffset, list.pos.endOffset).join(''), ':: t\n:  a\n\n   b  ')
-  const findings = stopFindings(wire, source)
-  assert.equal(findings.length, 1, findings.join('\n'))
-  assert.match(findings[0], /"definition_list"/)
+  assert.equal([...source].slice(list.pos.startOffset, list.pos.endOffset).join(''), ':: t\n:  a\n\n   b')
+  assert.equal(description.pos.endOffset, description.children.at(-1).pos.endOffset)
+  assert.deepEqual(stopFindings(wire, source), [])
   assert.ok(!ENDS_AT_LAST_CHILD.has('definition_description'))
 })
 
 /*
  * THE CORPUS, DECLARED RED.
  *
- * Measured 2026-08-23 against the carve-js this repository pins, over every
- * corpus document: 135 findings across 125 documents, out of 3199 containers
- * examined. Until the engines land carve#1522, carve#1524, carve#1530 and
- * carve#1574 that is the state this file RECORDS rather than hides - the same
- * discipline resources/ast-span-divergence.txt applies one layer up.
+ * Measured 2026-08-23 against the carve-js this repository pins
+ * (71add23f80f1884684cea2c8bf46de08d0b64e5c), over every corpus document: 1
+ * finding across 1 document, out of 3225 containers examined. That is the state
+ * this file RECORDS rather than hides - the same discipline
+ * resources/ast-span-divergence.txt applies one layer up.
  *
  * IT FAILS IN BOTH DIRECTIONS, which is the point. A document that starts
  * over-reaching is not on the list and fails; a document that STOPS is on the
@@ -1386,164 +1458,24 @@ test('a definition description has nothing after its last child, which is why it
  * When the list empties, the assertion becomes a plain "no findings" and both
  * issues are done.
  *
- * WHAT THE 135 ARE: 75 a `list` reaching past its last item, 4 a `block_quote`
- * doing the same, 20 a container a collected definition emptied, which the
- * ruling reached separately (markup-carve/carve-rs#1233), 6 a `definition_list`
- * reaching past its last description (carve#1530), and 30 the three types
- * carve#1574 added to the set. Forty-five of the first group are a list reaching
- * over the line terminator that ends it - markup-carve/carve-js#1304 and
- * markup-carve/carve-rs#1232, filed separately and subsumed by this rule rather
- * than excluded from it.
+ * WHAT THE ONE IS: a `footnote` reaching over a reference definition hoisted
+ * out of its own body - carve#1522's arrangement, the same defect the emptied
+ * containers were - on `202-...`. There is no carve-js ticket for that half
+ * yet.
  *
- * THE THIRTY ARE 27 `footnote`, 2 `definition_term` and 1 `heading`, and they
- * are three shapes this list already carries one construct over. 26 of the
- * footnotes reach over the blank line that ends the definition, which is
- * markup-carve/carve-js#1304's shape on a different container and is filed as
- * markup-carve/carve-js#1347. The 27th (`202-...`) reaches over a definition
- * hoisted out of its own body, carve#1522's arrangement, and is the same defect
- * the 20 emptied containers above are. The `definition_term` pair
- * (`268-...-13`, `268-...-5`) and the `heading` row (`268-...-4`) reach over
- * trailing whitespace, which PART 2 rules is not content at all - filed as
- * markup-carve/carve-js#1349 and markup-carve/carve-js#1348, the carve-js half
- * of the pair markup-carve/carve-php#1330 and markup-carve/carve-rs#1029
- * already closed for the term.
- *
- * THE SIX ARE THE SAME THREE SHAPES ONE CONTAINER OVER, which is the evidence
- * that nothing about a definition list's shape was doing the work: two are the
- * unattached attribute block of carve#1524 (`329-...-5`, `329-...-6`), one is
- * the hoisted definition of carve#1522 (`350-...-5`), one is the trailing
- * whitespace the same rule excludes (`268-...-5`), and two are the pair added
- * to pin it (`399-...`). The 75th `list` row is `401-...`, the fixture added for
- * markup-carve/carve#1517: its item holds a sub-list the blank line closed, and
- * the pinned build reaches over that blank run - markup-carve/carve-js#1304, the
- * same defect this rule subsumes rather than excludes.
+ * WHAT THE OTHER 134 WERE, and why they are gone. The list carried 135 findings
+ * across 125 documents while the pin sat at carve-js d9cb2c71: 75 a `list`
+ * reaching past its last item, 4 a `block_quote` doing the same, 20 a container
+ * a collected definition emptied, 6 a `definition_list` reaching past its last
+ * description, and 30 the three types carve#1574 added to the set (27
+ * `footnote`, 2 `definition_term`, 1 `heading`). The pin bump to 71add23 clears
+ * every one of them - markup-carve/carve-js#1309, #1322, #1354, #1355 and
+ * #1357 between them - and 105 of the rows had already stopped reproducing on
+ * carve-js main before the last three merged, which is why the list was
+ * re-measured wholesale rather than struck row by row (carve#1589).
  */
 const DECLARED_OVER_REACH = [
-  '05-lists-10.crv 1',
-  '105-marker-line-nested-lists-3.crv 1',
-  '105-marker-line-nested-lists-4.crv 1',
-  '117-footnote-definition-inside-a-container-is-collected-2.crv 1',
-  '117-footnote-definition-inside-a-container-is-collected.crv 1',
-  '122-footnotes-placement.crv 1',
-  '143-post-blank-list-continuation-content-column-model.crv 1',
-  '162-outer-item-with-an-internal-blank-before-an-attached-block-is-loose.crv 1',
-  '16-reference-link-3.crv 1',
-  '16-reference-link-4.crv 2',
-  '173-implicit-heading-references-with-no-definition.crv 1',
-  '174-bare-dot-ordered-markers-2.crv 1',
-  '175-a-repeated-definition-which-one-wins-3.crv 1',
-  '180-a-list-item-does-not-define-an-abbreviation-either.crv 1',
-  '191-a-blank-after-a-comment-still-ends-the-item.crv 1',
-  '194-an-abbreviation-at-a-list-item-s-content-column-is-still-not-a-definition-2.crv 1',
-  '194-an-abbreviation-at-a-list-item-s-content-column-is-still-not-a-definition.crv 1',
-  '195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column-2.crv 2',
-  '195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column.crv 1',
   '202-a-definition-on-a-footnote-body-s-continuation-line-is-collected.crv 1',
-  '203-a-footnote-body-holds-blocks-and-they-render-where-they-were-written.crv 1',
-  '204-a-heading-in-a-footnote-body-takes-an-id-but-no-section-wrapper.crv 1',
-  '205-an-attribute-line-inside-a-footnote-body-attaches-inside-it.crv 1',
-  '206-a-nested-list-in-a-footnote-body-stays-nested.crv 2',
-  '218-a-footnote-body-s-own-column-is-two-and-a-third-column-is-its-text.crv 1',
-  '220-a-definition-past-a-footnote-body-s-column-is-the-body-s-own-text.crv 1',
-  '224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-2.crv 1',
-  '224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-3.crv 1',
-  '224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do.crv 1',
-  '225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-2.crv 1',
-  '225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-3.crv 1',
-  '225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-4.crv 1',
-  '225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-5.crv 1',
-  '225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink.crv 1',
-  '226-a-definition-attached-by-a-continuation-marker-is-collected-and-the-item-keeps-no-trace.crv 1',
-  '228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block.crv 1',
-  '22-footnotes-6.crv 1',
-  '239-a-link-definition-written-before-a-footnote-stays-before-it-2.crv 1',
-  '241-a-multi-line-raw-block-is-placed-at-its-opening-and-verbatim-after-it.crv 1',
-  '246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it-2.crv 1',
-  '246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it-3.crv 1',
-  '246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it.crv 1',
-  '247-a-continuation-marker-after-a-blank-line-in-the-item.crv 1',
-  '249-trailing-whitespace-after-a-block-marker-5.crv 1',
-  '249-trailing-whitespace-after-a-block-marker-6.crv 1',
-  '251-a-continuation-marker-after-a-blank-line-in-a-loose-item.crv 1',
-  '259-a-tab-continues-a-list-item-just-as-two-spaces-do-2.crv 1',
-  '259-a-tab-continues-a-list-item-just-as-two-spaces-do.crv 1',
-  '266-a-reference-definition-is-anchored-at-end-of-line-11.crv 1',
-  '266-a-reference-definition-is-anchored-at-end-of-line-14.crv 1',
-  '266-a-reference-definition-is-anchored-at-end-of-line-15.crv 1',
-  '268-trailing-whitespace-on-a-content-line-is-dropped-13.crv 1',
-  '268-trailing-whitespace-on-a-content-line-is-dropped-4.crv 3',
-  '268-trailing-whitespace-on-a-content-line-is-dropped-5.crv 2',
-  '279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-2.crv 1',
-  '279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-7.crv 1',
-  '279-a-boundary-line-inside-an-open-fence-does-not-end-the-container.crv 1',
-  '290-adjacent-sibling-lists-survive-the-round-trip-2.crv 2',
-  '290-adjacent-sibling-lists-survive-the-round-trip-3.crv 1',
-  '290-adjacent-sibling-lists-survive-the-round-trip.crv 1',
-  '312-a-note-body-s-own-references-resolve-2.crv 1',
-  '312-a-note-body-s-own-references-resolve-3.crv 1',
-  '312-a-note-body-s-own-references-resolve.crv 1',
-  '315-an-inline-note-s-content-resolves-after-the-note-7.crv 1',
-  '324-an-abbreviation-definition-in-an-item-body-is-paragraph-text-4.crv 1',
-  '326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-21.crv 1',
-  '326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-22.crv 1',
-  '326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-7.crv 1',
-  '326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-8.crv 1',
-  '326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-9.crv 1',
-  '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-2.crv 1',
-  '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-3.crv 1',
-  '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-4.crv 1',
-  '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-5.crv 1',
-  '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-6.crv 1',
-  '329-a-floating-attribute-is-scoped-to-the-container-that-holds-it.crv 1',
-  '335-a-comment-fence-at-an-item-s-content-column-registers-nothing-either.crv 1',
-  '336-a-footnote-definition-inside-an-item-s-comment-registers-nothing.crv 1',
-  '337-a-comment-fence-opened-on-an-item-s-marker-line-hides-its-body-too.crv 1',
-  '338-a-comment-fence-one-item-deeper-registers-nothing-either.crv 1',
-  '339-a-wider-comment-fence-inside-an-item-hides-its-body-the-same-way.crv 1',
-  '347-a-comment-fence-reached-through-a-quote-registers-nothing-either-3.crv 1',
-  '350-a-definition-at-a-container-s-content-column-2.crv 1',
-  '350-a-definition-at-a-container-s-content-column-3.crv 1',
-  '350-a-definition-at-a-container-s-content-column-5.crv 1',
-  '350-a-definition-at-a-container-s-content-column.crv 1',
-  '356-a-quote-inside-a-quote-is-asked-what-it-ends-on-5.crv 1',
-  '357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-4.crv 1',
-  '357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-5.crv 1',
-  '357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-6.crv 1',
-  '357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders.crv 1',
-  '358-what-a-content-column-block-does-not-reach-2.crv 1',
-  '359-a-footnote-definition-s-block-runs-to-the-end-of-its-body-2.crv 1',
-  '359-a-footnote-definition-s-block-runs-to-the-end-of-its-body.crv 1',
-  '360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column-2.crv 2',
-  '360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column-4.crv 1',
-  '360-a-definition-behind-an-alternating-container-prefix-registers-at-the-innermost-content-column.crv 2',
-  '361-a-paragraph-opened-after-a-block-in-an-item-is-still-open-for-a-lazy-line-4.crv 1',
-  '362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line.crv 1',
-  '364-only-lazy-folding-demotes-a-marker-line-colon-opener-2.crv 1',
-  '364-only-lazy-folding-demotes-a-marker-line-colon-opener.crv 1',
-  '367-an-unterminated-fence-at-a-content-column-opens-no-block-so-the-paragraph-stays-open-4.crv 1',
-  '369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one-2.crv 1',
-  '369-a-quote-is-reached-by-its-marker-and-a-column-never-reaches-into-one-4.crv 1',
-  '374-a-collected-definition-closes-the-item-paragraph-2.crv 1',
-  '374-a-collected-definition-closes-the-item-paragraph-4.crv 1',
-  '374-a-collected-definition-closes-the-item-paragraph.crv 1',
-  '379-a-reference-definition-cannot-take-its-destination-from-the-next-line-3.crv 1',
-  '381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-5.crv 1',
-  '381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-6.crv 1',
-  '381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-8.crv 1',
-  '382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open.crv 2',
-  '383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-4.crv 1',
-  '383-a-lazy-marker-line-s-definition-defines-nothing-in-any-container-5.crv 1',
-  '384-a-continuation-marker-attaches-only-a-flush-left-block-2.crv 1',
-  '384-a-continuation-marker-attaches-only-a-flush-left-block-3.crv 1',
-  '398-a-container-s-span-ends-at-its-last-placed-child-2.crv 1',
-  '398-a-container-s-span-ends-at-its-last-placed-child.crv 1',
-  '399-a-definition-list-ends-at-its-last-placed-child-too-2.crv 1',
-  '399-a-definition-list-ends-at-its-last-placed-child-too.crv 1',
-  '401-a-marker-at-an-item-content-column-opens-a-sublist-first-in-the-item-or-not.crv 1',
-  '82-blockquote-lazy-continuation-6.crv 1',
-  '86-list-lazy-continuation-5.crv 1',
-  '87-compact-list-blocks-5.crv 1',
-  '87-compact-list-blocks-9.crv 1',
 ]
 
 test('STOPS AT ITS CHILDREN, over every corpus document', () => {

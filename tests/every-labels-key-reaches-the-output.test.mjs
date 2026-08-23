@@ -147,14 +147,7 @@ const probes = {
  * must still be MISSING from the output. The commit that moves the pin past one
  * deletes its entry, because leaving it there fails.
  */
-const AHEAD_OF_PIN = {
-  tocNav: {
-    reason:
-      'carve#1509 Extensions §8b.1 - the table-of-contents nav is a navigation landmark ' +
-      'and carries an accessible name; the pinned build leaves every <nav class="toc"> ' +
-      'anonymous and exposes no option that would name one',
-  },
-}
+const AHEAD_OF_PIN = {}
 
 test('the two tables and the probes name the same keys', () => {
   assert.deepEqual(

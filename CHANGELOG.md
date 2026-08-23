@@ -33,9 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   where all three engines publish `h`. The production spells `space+`, and
   `headingL` / `headingStart` in `resources/carve-core.ohm` move with it. The
   derived id does not change - a leading run is slugged away either way - but a
-  crossref's auto-text does. Corpus 406. A tab is still content, and the pinned
-  JS writer drops it (markup-carve/carve-js#1356), so 406-3 is declared in
-  `resources/engine-fmt-drift.txt`.
+  crossref's auto-text does. Corpus 406. A tab is still content; the JS writer
+  dropped it (markup-carve/carve-js#1356) and markup-carve/carve-js#1359 fixed
+  it, so 406-3 is no longer declared in `resources/engine-fmt-drift.txt`.
 - **A caption's marker separator is a run, and none of it is content**
   (carve#1575, PART 2 / PART 11 §1). The executable spec read the `space` in
   `caption` literally and published `^   cap` as the caption `  cap`, where all
