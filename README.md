@@ -19,11 +19,15 @@ tested against, and the design rationale behind each decision.
 | **Tooling** | Language server, tree-sitter grammar, formatter and linter (`carve fmt` / `carve lint`), converters from Markdown, HTML, Djot, and BBCode. |
 | **Editors** | VS Code, JetBrains, Sublime Text, Vim/Neovim, Emacs, Zed, Helix. |
 | **Integrations** | Laravel, Symfony, WordPress, Shopware, Hugo, Astro, Eleventy, Jekyll, Docusaurus, webpack/Next.js, Obsidian, and a Pandoc bridge to LaTeX, Typst, DOCX, and PDF. |
+| **Ecosystem** | The [Ecosystem page](https://markup-carve.github.io/carve/ecosystem) groups every project by role with conformance status; [Awesome Carve](https://github.com/markup-carve/awesome-carve) is the curated list. |
 
 Pre-1.0, a minor release may still change the grammar; the stability tiers and
 the release lockstep between the spec and the engines are defined in
-[VERSIONING.md](VERSIONING.md) and [MAINTAINING.md](MAINTAINING.md). The full
-project list is at <https://github.com/markup-carve#projects>.
+[VERSIONING.md](VERSIONING.md) and [MAINTAINING.md](MAINTAINING.md). Every
+project maintained here is listed at <https://github.com/markup-carve#projects>;
+[Awesome Carve](https://github.com/markup-carve/awesome-carve) curates the same
+ground for readers and is where third-party tools built outside the organization
+are submitted.
 
 **File extension:** `.crv`
 
