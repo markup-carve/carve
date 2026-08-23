@@ -524,6 +524,34 @@ the text they claim.
 that loses a field is not a lossy convenience; it is a consumer breaking silently
 one document later. Both halves are checked over the whole corpus.
 
+## A value the schema calls absent is normalized away
+
+The schema describes a list's `start` as "First number of an ordered list, when
+it is not 1". That sentence pins the PRODUCER, and every engine complies -
+`1. a` yields a list with no `start` at all. §22 says the CONSUMER honors it too:
+when an ingested tree carries `start: 1`, the encoder drops it, so every tree an
+implementation publishes matches the documented shape.
+
+§6's round trip is no argument against that. It is scoped to `parse(x)`, a
+parsed tree, which never carries the value - reading it as "JSON to JSON is an
+identity" extends it onto a payload no parser produced. What decides it is that
+normalizing is **lossless**: `start: 1` and no `start` describe the same
+document, and both render `<ol>` with no attribute, `1` being the HTML default.
+Preserving the field keeps an inert value that makes the encoder's output depend
+on where the tree came from.
+
+The rule is not "drop `start` always". `start: 0` and `start: 2` are carried
+through unchanged.
+
+The value is unreachable from Carve source, so no corpus document can pin it and
+the pin is a hand-built payload,
+[`tests/an-ingested-default-start-is-not-re-emitted.test.mjs`](https://github.com/markup-carve/carve/blob/main/tests/an-ingested-default-start-is-not-re-emitted.test.mjs).
+That blind spot is why the three engines drifted apart here unnoticed: carve-php
+drops the field, carve-js and carve-rs re-emit it, and carve-rs additionally
+spells it as `<ol start="1">`
+([carve-js#1391](https://github.com/markup-carve/carve-js/issues/1391),
+[carve-rs#1293](https://github.com/markup-carve/carve-rs/issues/1293)).
+
 ## Destinations are the author's text, not a sanitized URL
 
 `href`, `src` and every other destination field carry what the AUTHOR wrote,
