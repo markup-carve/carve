@@ -354,6 +354,7 @@ carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv            
 carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                text        1  permitted
 carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                table_cell  1  permitted
 carve-js   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                text        1  permitted
+carve-js   400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  text        1  permitted
 carve-php  349-a-container-whose-table-ends-on-a-continuation-row-3.crv             table_cell  1  permitted
 carve-php  349-a-container-whose-table-ends-on-a-continuation-row-3.crv             text        1  permitted
 carve-php  349-a-container-whose-table-ends-on-a-continuation-row-5.crv             table_cell  1  permitted
@@ -374,6 +375,7 @@ carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv            
 carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                text        1  permitted
 carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                table_cell  1  permitted
 carve-php  356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                text        1  permitted
+carve-php  400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  text        1  permitted
 carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-3.crv             table_cell  1  permitted
 carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-3.crv             text        1  permitted
 carve-rs   349-a-container-whose-table-ends-on-a-continuation-row-5.crv             table_cell  1  permitted
@@ -394,3 +396,4 @@ carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv            
 carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-8.crv                text        1  permitted
 carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                table_cell  1  permitted
 carve-rs   356-a-quote-inside-a-quote-is-asked-what-it-ends-on-9.crv                text        1  permitted
+carve-rs   400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv  text        1  permitted

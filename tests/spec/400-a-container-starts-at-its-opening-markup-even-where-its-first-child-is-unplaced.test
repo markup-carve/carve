@@ -1,0 +1,13 @@
+A container starts at its opening markup even where its first child is unplaced
+
+```
+::: |
+a	b
+%%
+:::
+.
+<div class="line-block">
+  <p>a&nbsp;&nbsp;&nbsp;b<br>
+</p>
+</div>
+```

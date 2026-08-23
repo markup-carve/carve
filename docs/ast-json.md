@@ -272,6 +272,13 @@ paragraph above rejects when a container does have children. Where the emptied
 container ran over several lines, the markup it spans is the markup that opened
 it, on the first of them.
 
+**A container starts at its opening markup even where its first child is
+unplaced**, rather than at the first child that does carry one: the end rule
+asks where a container's content stops and the start rule asks where the
+construct begins, and a construct begins at its own markup whether or not any
+child was placed. Ruled at
+[carve-rs#1247](https://github.com/markup-carve/carve-rs/issues/1247).
+
 A parent's span **contains every child's**. The two rules point the same way -
 covering the opening markup is what puts a parent's start before its first
 child's - and they are checked separately anyway, so that revisiting one cannot
