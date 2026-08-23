@@ -221,7 +221,8 @@ between the pipes because the `|` opens the row.
 A span **ends immediately after the last source codepoint the construct owns**.
 Closing delimiters and attached attributes are included; a following newline,
 blank line, or unattached attribute block is not. Containers end at their
-closer, or at their last child when they have no closer. Break nodes own their
+closer, or at their last *placed* child when they have no closer - which is what
+a container whose closer is implicit has instead of one. Break nodes own their
 line terminator and therefore end at column 1 of the following line.
 
 **A hoisted sibling is not a child.** A definition written at a container's
@@ -278,6 +279,32 @@ asks where a container's content stops and the start rule asks where the
 construct begins, and a construct begins at its own markup whether or not any
 child was placed. Ruled at
 [carve-rs#1247](https://github.com/markup-carve/carve-rs/issues/1247).
+
+**A container ends at the markup that closes it even where its last child is
+unplaced**, rather than at the last child that does carry one: the source
+between them is that unplaced child's, and an unplaced child says nothing about
+where the author closed the construct. Read as two statements about *markup* the
+two halves are symmetric - a container starts at the markup that opens it and
+ends at the markup that closes it - and "ends at its last placed child" is the
+case for a container whose closer is **implicit**, where the last child's end is
+what it has instead of a closer and the source past it belongs to a hoisted
+sibling or to nothing. A closerless container whose last child is unplaced still
+ends where its content ends. In
+
+```
+::: |
+%%
+a	b
+:::
+```
+
+the stanza's `paragraph` ends at offset 12, where the tab-bearing line ends, and
+not at 9 where the break above it ends: 9 is one past the terminator the break
+owns, so that span would end immediately after a line terminator and drop the
+stanza's own last line out of the paragraph holding it. Ruled at
+[carve#1551](https://github.com/markup-carve/carve/issues/1551), which locates
+[carve#1522](https://github.com/markup-carve/carve/issues/1522) rather than
+overturning it.
 
 A parent's span **contains every child's**. The two rules point the same way -
 covering the opening markup is what puts a parent's start before its first

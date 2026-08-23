@@ -201,6 +201,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   mirror the end rule: it names where the construct begins, so a container whose
   first child omits `pos` still starts at its own markup. Published spans move
   in carve-rs. Corpus 400.
+- **A container ends at the markup that closes it even where its last child is
+  unplaced** (carve#1551, PART 12 §4). The mirror of the start rule, and it
+  locates carve#1522 rather than overturning it: "ends at its last placed child"
+  is the case for a container whose closer is implicit. Published spans move in
+  carve-rs. Corpus 402.
 - **An importer does not bake a derived accessible name into source**
   (carve#1500, PART 9 §16a). An HTML importer drops an attribute whose value
   equals what the renderer derives for that element - an untitled admonition's
