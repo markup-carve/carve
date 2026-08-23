@@ -158,6 +158,29 @@ the loss it leaves is invisible to an HTML-to-HTML check: an unwrapped
 byte-identically. Only the NODE moved, so the document stopped being a callout
 while looking exactly like one (markup-carve/carve-js#1295).
 
+A NESTED container widens INWARD. A colon fence closes on an exact length
+match (PART 9 §12), so "longer-outer documents and longer-inner ones both
+parse" and the direction is a writer's choice - which the rule at the top of
+this page has already made: `carve fmt` emits the inward-widening form, so an
+importer does too. It is not the code fence's relation, where the length axis
+really is quoting and the outer fence must be able to hold a shorter one.
+
+```html
+<div class="tabs"><div class="tabs-panel"><p>a</p></div></div>
+```
+
+```
+::: tabs
+:::: tabs-panel
+a
+::::
+:::
+```
+
+An importer that instead reads the width off the body it has already written
+can only widen outward, so it inverts every depth at once
+(markup-carve/carve-php#1583). `container-nesting` pins two and three levels.
+
 The class the fence word consumes must be one a fence opener can spell,
 `[a-zA-Z_][\w-]*` per PART 9's `admonition_open`. A class outside that shape -
 `2col` - would be written after the colons and read back as a paragraph, so
@@ -526,6 +549,7 @@ The shared set is deliberately small and each directory has one subject:
 | `container-round-trip` | a rendered callout and a named container, which come back as the containers they were written from rather than as a body and a `div` |
 | `caption-attributes` | an attribute on a `<figcaption>`, dropped because a caption line has no slot for it, and reported rather than dropped in silence |
 | `table-caption-attributes` | an attribute on a table's `<caption>`, the other spelling of a caption line, reported by the same rule |
+| `container-nesting` | containers two and three deep, whose fences widen INWARD because that is the form `carve fmt` writes |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
