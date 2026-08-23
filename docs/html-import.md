@@ -186,6 +186,23 @@ The class the fence word consumes must be one a fence opener can spell,
 `2col` - would be written after the colons and read back as a paragraph, so
 that element keeps the generic `div` node where the class survives as a class.
 
+**A `<div>` that carries no attribute at all is UNWRAPPED to its content, and
+no `div` node is produced** (markup-carve/carve#1578). A bare `<div>` carries
+nothing the container is needed for, so the fence would cost a reader two lines
+of markup and tell them nothing. The element not surviving the round trip is
+the honest outcome, because there is nothing in it to survive, and nothing is
+diagnosed: a diagnostic announces a loss, and no attribute lost its carrier
+here.
+
+The boundary is the ATTRIBUTE rather than the tag, and it is the attribute that
+SURVIVES rather than the one the markup spelled. One attribute the language can
+hold brings the container back, because then there is something only the
+container can hold; a `style` whose declarations the CSS policy above refuses
+leaves the element carrying nothing, so it unwraps like any other bare `<div>`
+and the refusal is still reported as `style-unmapped`. A class naming a
+container is answered earlier by the family above and never reaches this rule.
+`attribute-less-div` pins both sides.
+
 A TITLED callout's `<p class="admonition-title">` is the container's title, not
 its first body block, and the `aria-labelledby` pointing at that paragraph is
 consumed with it: a lifted title is no longer an element with an id, so a
@@ -588,6 +605,7 @@ The shared set is deliberately small and each directory has one subject:
 | `caption-attributes` | an attribute on a `<figcaption>`, dropped because a caption line has no slot for it, and reported rather than dropped in silence |
 | `table-caption-attributes` | an attribute on a table's `<caption>`, the other spelling of a caption line, reported by the same rule |
 | `container-nesting` | containers two and three deep, whose fences widen INWARD because that is the form `carve fmt` writes |
+| `attribute-less-div` | a bare `<div>` unwrapped to its content beside an id-bearing one that keeps its fence, which is where that boundary sits |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
