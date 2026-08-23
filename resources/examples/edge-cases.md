@@ -26213,3 +26213,52 @@ tail
 ```
 
 :::
+
+## A container starts at its opening markup even where its first child is unplaced
+
+PART 12 §4 begins a span at the markup that opens the construct, and the
+container-extent rules beside it end one at its last placed child - or, where it
+has none, at its own markup. The arrangement none of them named is the symmetric
+one: a container that HAS children whose FIRST child carries no position.
+
+A line block stanza holding a tab is that case. The verse text is rebuilt with
+expanded tabs, and a tab's display width is not a source length, so all three
+engines decline to place it - an absent position is honest and a fabricated one
+is not. The `hard_break` beside it is placed anyway, because a line ending is
+line geometry rather than something measured from that text, and so is the
+`comment` the block layer leaves where it empties a `%%` line (PART 9 §23).
+
+The start and end rules are not symmetric, because they answer different
+questions. The end rule asks where a container's content stops, so its last
+placed child is the right boundary. The start rule asks where the construct
+begins, and a construct begins at its own markup, which exists whether or not
+any child was placed. Read symmetrically, the paragraph below started at the
+`%%` line - dropping its own first line from its extent, and leaving the break
+that ends that line OUTSIDE the paragraph holding it, which §4 containment
+refuses. Ruled at markup-carve/carve-rs#1247.
+
+NO DOCUMENT PUT A TAB IN A STANZA THAT ALSO HOLDS A COMMENT LINE, which is why
+the span panel saw neither that illegal tree nor the second divergence on the
+same document - carve-js published no position for the `comment` at all, while
+the other two placed it (markup-carve/carve-js#1323). The HTML below was never
+in dispute; the pair is here because the SPANS the same document publishes are
+what moved, and because a shape the corpus does not hold is a shape three
+engines can disagree about indefinitely.
+
+:::: compare
+
+```carve
+::: |
+a	b
+%%
+:::
+```
+
+```html
+<div class="line-block">
+  <p>a&nbsp;&nbsp;&nbsp;b<br>
+</p>
+</div>
+```
+
+::::

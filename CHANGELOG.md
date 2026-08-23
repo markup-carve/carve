@@ -177,6 +177,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   PART 12 §4). It was the one container that reached an attribute line no child
   covers; §4 gains no exception and carve#1281's extent half is superseded.
   Published spans move in all three engines. Corpus 399.
+- **A container starts at its opening markup even where its first child is
+  unplaced** (markup-carve/carve-rs#1247, PART 12 §4). The start rule does not
+  mirror the end rule: it names where the construct begins, so a container whose
+  first child omits `pos` still starts at its own markup. Published spans move
+  in carve-rs. Corpus 400.
 - **An importer does not bake a derived accessible name into source**
   (carve#1500, PART 9 §16a). An HTML importer drops an attribute whose value
   equals what the renderer derives for that element - an untitled admonition's

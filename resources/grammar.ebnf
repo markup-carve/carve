@@ -10822,6 +10822,23 @@ EOF = (* end of file *) ;
       several lines, the markup it spans is the markup that OPENED it, on the
       first of them. (carve#1522, markup-carve/carve-rs#1233.)
 
+      A CONTAINER STARTS AT ITS OPENING MARKUP EVEN WHERE ITS FIRST CHILD IS
+      UNPLACED -- NORMATIVE. A container whose first child omits `pos` starts
+      where the markup that opens it was written, not at the first child that
+      does carry one.
+
+      THE START AND END RULES ARE NOT SYMMETRIC, which is why this needs saying
+      next to the two above. The end rule asks where a container's CONTENT
+      stops, so its last placed child is the right boundary; this one asks where
+      the CONSTRUCT begins, and a construct begins at its own markup, which
+      exists whether or not any child was placed. An unplaced child says nothing
+      about where the construct was written. Read symmetrically, a line block
+      stanza whose first line holds a tab -- reassembled around expanded tabs,
+      so it carries no position by the clause below -- started its paragraph on
+      the line BELOW that one, which also put the break ending the tab-bearing
+      line outside the paragraph holding it and so contradicted the containment
+      clause above. (markup-carve/carve-rs#1247.)
+
       WHY IT IS WRITTEN DOWN. Nothing compared two engines' spans until
       carve#917 built the panel, and the first run of it reported 279 of 690
       documents carrying a span the three engines do not agree on. The check

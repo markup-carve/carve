@@ -988,3 +988,95 @@ test('STOPS AT ITS CHILDREN, over every corpus document', () => {
   )
   assert.ok(examined > 2000, `only ${examined} node(s) reached the stops-at-its-children rule`)
 })
+
+/*
+ * A CONTAINER STARTS AT ITS OPENING MARKUP EVEN WHERE ITS FIRST CHILD IS
+ * UNPLACED (PART 12 section 4, markup-carve/carve-rs#1247).
+ *
+ * The arrangement the extent rules above do not name. `checkStopsAtChildren`
+ * answers the end, its empty-container branch answers a container with no
+ * placed child at all, and neither reaches a container that HAS children whose
+ * FIRST one omits `pos`.
+ *
+ * A line block stanza holding a TAB is that shape: the verse text is rebuilt
+ * with expanded tabs, whose display width is not a source length, so every
+ * engine declines to place it - while the break ending that line and the
+ * `comment` an emptied `%%` line leaves behind are both line geometry and are
+ * placed. Starting the paragraph at the first PLACED child then dropped the
+ * stanza's own first line out of its extent and left the break OUTSIDE the
+ * paragraph holding it, which is a containment violation rather than a matter
+ * of taste - and `checkContainment` is what names it.
+ *
+ * NOTHING SAW IT, which is the reason the corpus pair went in with the clause:
+ * no corpus document put a tab in a stanza that also holds a comment line, so
+ * the three-way span panel had no such document to compare and neither this
+ * arrangement nor the illegal tree it produced was reachable from any run.
+ */
+
+test('a container starting at its first PLACED child is reported by containment', () => {
+  // The shape carve-rs published, spelled out: `a`, TAB, `b` at 6..9, the
+  // terminator at 9..10, the `%%` line at 10..12. The paragraph took the
+  // comment's own span and so began one line below its own first line.
+  const findings = []
+  const pairs = checkContainment(
+    {
+      type: 'document',
+      children: [
+        {
+          type: 'line_block',
+          pos: pos(0, 16),
+          children: [
+            {
+              type: 'paragraph',
+              pos: pos(10, 12),
+              children: [
+                { type: 'text', value: 'ab' },
+                { type: 'hard_break', pos: pos(9, 10) },
+                { type: 'comment', block: false, content: '', pos: pos(10, 12) },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    findings,
+  )
+
+  assert.equal(pairs, 3)
+  assert.equal(findings.length, 1)
+  assert.match(findings[0], /"hard_break".*\[9, 10\].*is not inside "paragraph".*\[10, 12\]/)
+})
+
+test('the corpus pair for it starts on the line the author wrote', () => {
+  // Read from the fixture rather than retyped, so the pair and the clause
+  // cannot drift apart - and because the document's whole point is a byte an
+  // editor does not show.
+  const source = readFileSync(
+    resolve(
+      repo,
+      'tests/corpus',
+      '400-a-container-starts-at-its-opening-markup-even-where-its-first-child-is-unplaced.crv',
+    ),
+    'utf8',
+  )
+  assert.ok(source.includes('\t'), 'the tab is the case; without it nothing here is unplaced')
+
+  const wire = toAstJson(parse(source))
+  const paragraph = wire.children[0].children[0]
+  const [text, hardBreak] = paragraph.children
+
+  // The reassembled text keeps NO position, and that half was ruled explicitly:
+  // an absent span is honest where a fabricated one is not.
+  assert.equal(text.type, 'text')
+  assert.equal(text.pos, undefined)
+
+  // And the paragraph still starts on the line holding it, not below.
+  assert.equal(paragraph.pos.startOffset, 6)
+  assert.equal(hardBreak.type, 'hard_break')
+  assert.equal(hardBreak.pos.startOffset, 9)
+  assert.ok(
+    hardBreak.pos.startOffset >= paragraph.pos.startOffset &&
+      hardBreak.pos.endOffset <= paragraph.pos.endOffset,
+    'the break that ends the tab-bearing line sits outside its own paragraph',
+  )
+})
