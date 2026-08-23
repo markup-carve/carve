@@ -8345,6 +8345,43 @@ EOF = (* end of file *) ;
       escapes on this occurrence let the construct form? Yes -> escape the run.
       No -> emit it bare.
 
+      AND THAT HOLDS INSIDE A UNIT THAT ESCALATED -- NORMATIVE (carve#1533).
+      One occurrence needing the conservative form does not put the OTHER
+      occurrences in the unit with it. §2b bounds how far the fallback reaches;
+      the reach is not the only thing that was too wide. An indented paragraph
+      whose text reads `{.note}` is written
+
+        \{.note}
+        This paragraph.
+
+      and not `\{\.note\}`. The `{` is load bearing: bare, at column zero,
+      the first line opens a block attribute the document does not have. The `.`
+      and the `}` beside it open nothing at those positions, and neither does
+      the `.` ending the second line, so by the test above they are emitted
+      BARE -- in the same unit, in the same line, beside the escape that stayed.
+
+      MEASURED, AND THE MEASUREMENT IS WHY THIS IS SPELLED OUT. All three
+      writers read this clause as one knob per unit and wrote the unit
+      conservatively IN FULL, which is §2b's `unit scope` row: 20 documents and
+      47 idle escapes that the reach could not retire because the reach was
+      never what put them there. Taking the test per occurrence retires exactly
+      those (carve-js#1327, carve-php#1578, carve-rs#1254), and the three
+      writers' idle-escape ratchets go from 25 documents / 59 escapes to 5 / 12,
+      the same five slugs with the same counts in each. Nothing in this section
+      changed to allow that; it was already what this section said.
+
+      A WRITER MAY STILL BE UNABLE TO DECIDE AN OCCURRENCE, and §2b's fallback
+      is what it falls back to -- per occurrence now rather than per unit. A
+      fallback that spends more escapes than this test asks for is wider than
+      the minimum and never narrower, which is the only direction §1 tolerates.
+
+      (Pinned by corpus
+      403-an-idle-escape-does-not-spread-from-the-occurrence-that-needed-one.
+      Like corpus 396 one clause down, its `.fmt` sidecar is the only fixture
+      that can see it: `\{\.note\}` renders the same HTML, re-parses to the
+      same tree and is happily idempotent, so every other gate in every engine
+      was green on the wider form.)
+
    2a. THE WRITER DOES NOT SUBSTITUTE ONE CONSTRUCT FOR ANOTHER -- NORMATIVE.
       §2 governs ESCAPING. It does not license rewriting a construct into a
       different one that happens to render the same, and neither does §1's
@@ -8496,7 +8533,8 @@ EOF = (* end of file *) ;
       same counts, 5 DOCUMENTS / 12 ESCAPES, and every one of those is an
       `opener run` or a `minimal class` row above. That is a §2 mechanism
       rather than a narrower scope, so nothing this section rules changed with
-      it, and the clause carve#1533 asks for is still open.
+      it, and §2 now states that test where the coarser reading was taken
+      (carve#1533), with corpus 403 pinning it and §4's W5 carrying the search.
 
       THE COMPARISON STAYS DOCUMENT-SCOPED, WHICH IS THE OTHER QUESTION. §4
       rules out re-parsing a LINE on its own, because a line has lost the
@@ -8572,6 +8610,31 @@ EOF = (* end of file *) ;
       W4 Equal -> emit the minimal form. Different -> emit the conservative
          form FOR THE SMALLEST UNIT THAT FAILS (§2b), and the minimal form
          everywhere else, re-running W3 on the result.
+      W5 Inside a unit that stayed conservative, offer each OPENER OCCURRENCE
+         its bare form and keep the bare form wherever W3 still holds (§2).
+         A unit is not one knob: the occurrences that survive escaped are the
+         ones that failed, not the ones that shared a block with a failure.
+
+      W5 IS WHERE THE STRATEGY COSTS, AND THE COST IS BOUNDED BY SEARCHING
+      RATHER THAN BY ENUMERATING. Offering the occurrences ONE AT A TIME is a
+      render and a re-parse of the whole document per candidate, which is
+      quadratic in the document -- and on ordinary input, not adversarial:
+      a paragraph of indented table rows puts a load-bearing occurrence beside
+      an idle one on every line. Offering a GROUP its bare form and halving the
+      group only where that fails costs a number of renders proportional to how
+      many occurrences FAIL rather than to how many there are. Measured on that
+      shape at 50 / 100 / 200 / 400 rows, in RENDERS rather than in
+      milliseconds: 249 / 499 / 999 / 1999 offering one at a time, flat at
+      about 5 renders per row, against 64 / 72 / 80 / 88 searched -- eight more
+      renders per doubling of the input, which is the logarithm the halving
+      buys. The same bound applies to W4's own search over units.
+
+      A WRITER MAY STOP THE SEARCH SHORT, and §2b's fallback is what it returns
+      to when it does: the occurrences it did not get to stay escaped. That is
+      WIDER than §2's minimum and never narrower, so a spent budget costs
+      idle escapes and never correctness. It is also why the state a bounded
+      search returns is still checked by W3 against the conservative form's own
+      re-parse rather than assumed.
 
       Two forms and one comparison, with the choice made by the parser rather
       than by a table -- so the writer cannot drift from the grammar as the
@@ -8595,16 +8658,26 @@ EOF = (* end of file *) ;
       THIS SECTION USED TO CONCLUDE OTHERWISE, and all three engines
       implemented the conclusion: "an implementation that computes §2 by
       COMPARING TWO RENDERS is stuck with document scope, and therefore with
-      over-escaping". It is not stuck, it was never measured to be, and 15 of
-      the 72 idle escapes carve#1507 counted are what the sentence cost -- the
-      other 57 have the three causes §2b names, and none of them is this
-      scope. It is replaced rather than qualified, because an implementation
-      reading it correctly still lands on output §2 forbids.
+      over-escaping". It is not stuck, and it was never measured to be. Swept
+      as an A/B at ONE corpus pin -- the reading rule §2b states -- document
+      scope owns 4 documents / 17 escapes, and W4's own selection is what
+      retires them. It is replaced rather than qualified, because an
+      implementation reading it correctly still lands on output §2 forbids.
+
+      W5 IS THE SECOND HALF OF THE SAME CORRECTION. Narrowing the SCOPE left
+      the unit as one knob, which §2b records as its `unit scope` row, and W5
+      is what retires that. Swept the same way -- carve-js 66d2b3d against
+      e9d03dd over the 1363 corpus documents at spec 85fdc504, one writer with
+      and without W5 -- the reading moves from 25 DOCUMENTS / 59 ESCAPES to
+      5 DOCUMENTS / 12 ESCAPES, and every document that retires is a `unit
+      scope` one. carve-js#1327, carve-php#1578 and carve-rs#1254 are the same
+      step in the three writers, and their idle-escape ratchets carry the same
+      five slugs with the same counts.
 
       What remains true is the rest of the trade: this is a strategy rather
       than the requirement, and an implementation that instead asks, per
-      position, whether a construct would start there needs no comparison and
-      no scope at all.
+      position, whether a construct would start there needs neither the
+      comparison, nor the scope, nor W5's search.
 
       WHY THE TWO RENDERS ARE COMPARED WITH EACH OTHER, and not the minimal
       render with the document being written. The writer is not required to be

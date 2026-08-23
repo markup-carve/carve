@@ -97,6 +97,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `language-math` code block wherever it is not loaded, so an importer that
   emits it produces a document whose meaning depends on the consumer. The
   MathML path writes no trailing `$` / `$$` either. Converter corpus 33.
+- **The writer escapes per opener occurrence, not per unit** (carve#1533,
+  PART 11 §2, §4). §2 already took the decision per opener occurrence; all
+  three writers read it as one knob per unit and wrote a failing unit
+  conservatively in full, which is §2b's `unit scope` row. §2 now says so
+  where that reading was taken, and §4's strategy names the occurrence level
+  and its bounded search. Swept as an A/B at one corpus pin, the reading goes
+  from 25 documents / 59 escapes to 5 / 12. Corpus 403.
 - **An escape escalation reaches the block that failed, not the document**
   (carve#1507, PART 11 §2b, §4). All three writers took one needed escape as
   license to escape every candidate in the document, which invented 72 idle
