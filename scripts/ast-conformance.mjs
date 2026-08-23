@@ -626,6 +626,17 @@ const waiverProblems = []
 const extentDriftProblems = []
 const ungatedProblems = []
 
+/*
+ * The cross-engine shape diffs, per engine, rolled up at the end of the run.
+ *
+ * They are NOT gated - `reportEngineDisagreement` states the policy for that
+ * whole family below - but they must not be silent either, which is the defect
+ * carve#1637 is about. Counted here, named on each engine's summary line, and
+ * printed once at the end so a reader knows the number exists and which panel
+ * owns it.
+ */
+const referenceShapeCounts = []
+
 /**
  * Every declaration this run reconciles, gated together at the end.
  *
@@ -1499,6 +1510,7 @@ function report(engine, label, findings) {
     outstanding,
     undeclared,
     extent,
+    reference,
     ungated,
     problems,
     extentProblems,
@@ -1509,6 +1521,7 @@ function report(engine, label, findings) {
         outstanding: 0,
         undeclared: 0,
         extent: 0,
+        reference: 0,
         ungated: 0,
         problems: [],
         extentProblems: [],
@@ -1518,6 +1531,7 @@ function report(engine, label, findings) {
   waiverProblems.push(...problems)
   extentDriftProblems.push(...extentProblems)
   ungatedProblems.push(...ungatedLines)
+  if (reference > 0) referenceShapeCounts.push({ label, count: reference })
 
   if (findings.length === 0) {
     console.log(`${label}: conformant\n`)
@@ -1534,10 +1548,11 @@ function report(engine, label, findings) {
   const ranked = groupFindings(findings)
   const split = exempt
     ? `not reconciled: ${exempt}`
-    : waived + outstanding + undeclared + extent + ungated === findings.length
+    : waived + outstanding + undeclared + extent + reference + ungated === findings.length
       ? `${waived} waived, ${outstanding} outstanding` +
         (undeclared > 0 ? `, ${undeclared} UNDECLARED` : '') +
         (extent > 0 ? `, ${extent} §4 extent (declared)` : '') +
+        (reference > 0 ? `, ${reference} reference-shape (the panel's, not gated here)` : '') +
         (ungated > 0 ? `, ${ungated} UNGATED` : '')
       : 'partition disagrees with the total - this is a bug in partitionFindings'
   console.log(`${label}: ${findings.length} findings, ${ranked.length} distinct (${split})`)
@@ -1711,6 +1726,19 @@ declarationDrift.push({
     'commit that lowers the number. UNDECLARED lines above print the line to paste.',
   ],
 })
+
+if (referenceShapeCounts.length > 0) {
+  const total = referenceShapeCounts.reduce((n, e) => n + e.count, 0)
+  console.log(
+    `REFERENCE SHAPE DIFFS: ${total} (${referenceShapeCounts
+      .map((e) => `${e.label.split(' ')[0]} ${e.count}`)
+      .join(', ')}) - reported, not gated here.`,
+  )
+  console.log('  A tree differing from carve-js is an ENGINE-AGAINST-ENGINE finding, and this')
+  console.log('  fleet ports a fix over several days, so the engine that is RIGHT is routinely')
+  console.log('  the odd one out. The THREE-WAY SHAPE COMPARISON above owns these, and a')
+  console.log('  reference off its pin makes every line here describe that checkout instead.\n')
+}
 
 // The findings no ledger covers, and none should. A wrong slice, a span outside
 // its parent, a §1a run: each is a defect to fix rather than a number to

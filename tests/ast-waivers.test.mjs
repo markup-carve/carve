@@ -24,6 +24,7 @@ import {
   describeDocuments,
   extentFinding,
   groupFindings,
+  isReferenceShapeFinding,
   notReconciledBecause,
   parseExtentDeclarations,
   parseWaivers,
@@ -133,7 +134,12 @@ test('UNWAIVED: a finding no line covers', () => {
   // the report's own summary line understates what the run measured.
   assert.equal(result.undeclared, 1)
   assert.equal(
-    result.waived + result.outstanding + result.undeclared + result.extent + result.ungated,
+    result.waived +
+      result.outstanding +
+      result.undeclared +
+      result.extent +
+      result.reference +
+      result.ungated,
     2,
   )
 })
@@ -200,6 +206,41 @@ test('a finding that is not a position can never be waived, and now it GATES', (
   // alive by an unrelated finding in the same document.
   assert.equal(result.problems.length, 1)
   assert.match(result.problems[0], /^FIXED/)
+})
+
+test('a cross-engine shape diff is counted and named, and gated by neither ledger', () => {
+  // THE ONE CLASS THAT MUST NOT GATE HERE, and the reason it is named rather
+  // than dropped. `checkShapeParity` diffs a satellite against carve-js, and
+  // this fleet ports a fix over several days - so the engine that is RIGHT is
+  // routinely the odd one out, and the run's own policy for that family is to
+  // attribute it loudly and let the panel carry it. A reference checkout off
+  // its pin makes the line describe the operator's working copy besides.
+  //
+  // Silently dropping it would be the carve#1637 defect wearing a new hat, so
+  // it lands in its own counted bucket and on the engine's summary line.
+  assert.equal(
+    isReferenceShapeFinding(
+      'tree differs from the reference at $.children[1]:footnote - reference has 12 nodes, this has 12',
+    ),
+    true,
+  )
+  assert.equal(isReferenceShapeFinding('missing pos on "text" at $.c[0]'), false)
+  assert.equal(isReferenceShapeFinding('span reaches past its last child on "footnote" at $.c[0]: x'), false)
+
+  const result = partitionFindings(
+    'carve-php',
+    [
+      '410-a-footnote-continuation-survives-a-blank-run.crv: tree differs from the reference ' +
+        'at $.children[1]:footnote - reference has 10 nodes, this has 10 (got $.children[1]:paragraph)',
+    ],
+    declare(''),
+    declareExtents(''),
+  )
+  assert.equal(result.reference, 1)
+  assert.equal(result.ungated, 0)
+  assert.deepEqual(result.problems, [])
+  assert.deepEqual(result.extentProblems, [])
+  assert.deepEqual(result.ungatedProblems, [])
 })
 
 test('every §4 extent rule is recognized, and nothing else is', () => {
@@ -370,7 +411,15 @@ test('every finding leaves through exactly one door, and the doors add up', () =
     declare('carve-rs  a.crv  text  1  permitted'),
     declareExtents('carve-rs  ends-past-last-child  footnote  1  markup-carve/carve-rs#1303'),
   )
-  assert.equal(result.waived + result.outstanding + result.undeclared + result.extent + result.ungated, 3)
+  assert.equal(
+    result.waived +
+      result.outstanding +
+      result.undeclared +
+      result.extent +
+      result.reference +
+      result.ungated,
+    3,
+  )
   assert.equal(result.waived, 1)
   assert.equal(result.extent, 1)
   assert.equal(result.ungated, 1)
