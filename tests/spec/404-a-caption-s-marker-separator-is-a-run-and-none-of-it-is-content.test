@@ -1,0 +1,33 @@
+A caption's marker separator is a run, and none of it is content
+
+```
+> q
+
+^   cap
+
+![a](i.png)
+^ 	second
+.
+<figure>
+  <blockquote><p>q</p></blockquote>
+  <figcaption>cap</figcaption>
+</figure>
+<figure>
+  <img src="i.png" alt="a">
+  <figcaption>	second</figcaption>
+</figure>
+```
+
+```
+> q
+
+^   
+
+![a](i.png)
+^ 
+.
+<blockquote><p>q</p></blockquote>
+<p>^</p>
+<p><img src="i.png" alt="a">
+^</p>
+```

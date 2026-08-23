@@ -1,0 +1,16 @@
+A quote holding a captioned block indents it like any other nested block
+
+```
+> ![a](i.png)
+> ^ cap
+
+> plain
+.
+<blockquote>
+  <figure>
+    <img src="i.png" alt="a">
+    <figcaption>cap</figcaption>
+  </figure>
+</blockquote>
+<blockquote><p>plain</p></blockquote>
+```

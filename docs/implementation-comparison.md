@@ -172,6 +172,8 @@ under the same semantic-span rule,
 `401-a-marker-at-an-item-content-column-opens-a-sublist-first-in-the-item-or-not`,
 `402-a-container-ends-at-the-markup-that-closes-it-even-where-its-last-child-is-unplaced`,
 `403-an-idle-escape-does-not-spread-from-the-occurrence-that-needed-one`,
+`404-a-caption-s-marker-separator-is-a-run-and-none-of-it-is-content`,
+`405-a-quote-holding-a-captioned-block-indents-it-like-any-other-nested-block`,
 `05-lists-25`,
 `05-lists-26`,
 `05-lists-27`,
@@ -207,6 +209,15 @@ failed on any engine. The declaration is kept rather than deleted because the
 run above still predates all seven, but it now names one engine, not two: a
 declared lag that keeps naming an engine somebody has since fixed reads as
 verified while being false, which is the failure this device exists to prevent.
+
+`404` AND `405` ARE DECLARED ON ONE MEASURED ENGINE, which is less than `394`
+had and is said plainly rather than rounded up. Both documents pin the ORACLE
+against the engines - the executable spec kept a caption's marker-separator run
+as content, and put a quoted figure's three lines on the quote's own line - so
+what the pair asserts is the reading all three engines already had. It was
+verified on the carve-js this repository pins and on carve-js `main`, and not on
+carve-php or carve-rs, which is why they are declared and not counted
+(carve#1575).
 
 `394` IS DECLARED THOUGH ITS ENGINES WERE MEASURED, because measuring three
 engines is not retaking the run. Its one document renders byte-identically in

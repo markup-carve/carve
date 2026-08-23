@@ -26450,3 +26450,118 @@ This paragraph.</p>
 ```
 
 :::
+
+## A caption's marker separator is a run, and none of it is content
+
+The caret takes `space+` and every one of those spaces is separator, so the
+caption below is `cap` and not `<SP><SP>cap`. Two normative clauses settle it
+and neither counts engines. PART 2's MARKER SEPARATORS AND PADDING SLOTS
+defines a marker separator as what stands between the marker and the content it
+introduces, and rules that a writer aligning in a column is writing separator
+rather than content; the four slots that clause narrows to exactly one space are
+PADDING slots, and the caret is not one of them. PART 11 section 1 names marker
+alignment among the spellings `fmt` may normalize while preserving what the
+document says, which holds only if the run is not content.
+
+The executable spec read the production literally and published a figcaption
+starting with two spaces, where all three engines publish `cap`. Nothing was red:
+no corpus document, no optional-corpus case and none of the authored documents
+spelled a caption with a second space after the caret, which is why this pair
+exists (carve#1575).
+
+The second caption keeps its TAB. `space` is U+0020 only, so the first character
+that is not a space begins the caption, exactly as it does after a heading
+marker.
+
+::: compare
+
+```carve
+> q
+
+^   cap
+
+![a](i.png)
+^ 	second
+```
+
+```html
+<figure>
+  <blockquote><p>q</p></blockquote>
+  <figcaption>cap</figcaption>
+</figure>
+<figure>
+  <img src="i.png" alt="a">
+  <figcaption>	second</figcaption>
+</figure>
+```
+
+:::
+
+MARKER REQUIRES CONTENT (PART 2) applies after the run as well: a caret, its
+separator and nothing but whitespace opens no caption. Both lines below are
+ordinary paragraph text with the trailing run dropped, and the blocks above them
+keep their own shape - the quote stays a quote and the image paragraph stays a
+paragraph, neither promoted to a figure. The executable spec matched an empty
+caption here and published `<figcaption></figcaption>` on a figure the author
+never wrote, while the comment beside its own heading pattern claimed the
+opposite.
+
+::: compare
+
+```carve
+> q
+
+^   
+
+![a](i.png)
+^ 
+```
+
+```html
+<blockquote><p>q</p></blockquote>
+<p>^</p>
+<p><img src="i.png" alt="a">
+^</p>
+```
+
+:::
+
+## A quote holding a captioned block indents it like any other nested block
+
+PART 10 section 4 BLOCK WHITESPACE names `figure` among the nested block
+structures that indent their children by two spaces per nesting level, and a
+caption makes its host a figure (PART 9 section 4b). So a quote whose only child
+is a captioned image holds a three-line `<figure>`, and that figure is indented
+inside the `<blockquote>` exactly as a quoted list, table, admonition, nested
+quote or captioned code block already is.
+
+The executable spec put all three lines on the quote's own line, emitting
+`<blockquote><figure>` and closing `</figure></blockquote>`, because it chose the
+compact one-line form for a quote whose single child is a paragraph and a
+captioned paragraph is still a paragraph. It was the one shape in that renderer
+where a multi-line child went un-indented, and no document in any of its three
+populations reached it (carve#1575).
+
+The uncaptioned quote below is the compact form the same rule keeps: its single
+child renders on one line, so it stays on the quote's line.
+
+::: compare
+
+```carve
+> ![a](i.png)
+> ^ cap
+
+> plain
+```
+
+```html
+<blockquote>
+  <figure>
+    <img src="i.png" alt="a">
+    <figcaption>cap</figcaption>
+  </figure>
+</blockquote>
+<blockquote><p>plain</p></blockquote>
+```
+
+:::
