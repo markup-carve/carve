@@ -332,6 +332,97 @@ with `structure-unspellable` on the `<figure>`. Every other captionable target
 - an image, a quote, a code block, a paragraph - keeps its figure and reports
 nothing.
 
+## A declared loss is a ceiling, not a licence
+
+A diagnostic states what the import gave up. It does not license giving up more
+than it names. An importer may lose what it declares AND NO MORE - so a source
+that damages a neighbouring construct on the way to the declared loss is wrong
+even though the row is present and honest about its own subject
+(markup-carve/carve#1608).
+
+An empty `<dd>` is the shape that makes the rule concrete, because Carve has no
+spelling for it:
+
+```html
+<dl><dt>term</dt><dd></dd></dl>
+```
+
+Six candidate spellings were probed and none works. `: `, `:  `, `: {}` and a
+tab after the colon each leak a `:` into the text or fold into the term above,
+and a colon followed by three spaces renders `<dd>&nbsp;</dd>`, which is not
+empty. The bare colon line is the worst of them: it is read as a continuation of
+the term, so the re-render is
+
+```html
+<dl>
+  <dt>term
+:</dt>
+</dl>
+```
+
+and the `<dt>` is damaged as well as the `<dd>` lost. That is a loss the row
+does not declare, which is what this rule forbids.
+
+The import writes the term alone:
+
+```
+:: term
+```
+
+with `structure-unspellable` on the `<dd>`. That code already says exactly what
+happened - the empty description survives in the AST, as a
+`definition_description` with no children, and not in written Carve - and the
+loss is now bounded by the row that declares it.
+
+**No general key covers this one.** The one-item and one-block `<dd>` shapes
+above take `{loose}`, because what they needed was a way to spell a tightness a
+blank line could not reach. An empty description has no blocks at all, so there
+is nothing for a looseness key to say about it, and the answer here is the
+diagnostic rather than a second spelling
+(markup-carve/carve#1607, markup-carve/carve#1612).
+
+## An endnotes section keeps the position it was written at
+
+A `role="doc-endnotes"` section's POSITION is meaning, and an import keeps it.
+Carve spells the position with `::: footnotes`, so a section that is not the
+last thing in the document imports as that directive WHERE THE SECTION SAT
+(markup-carve/carve#1608).
+
+```html
+<p>a<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes"><ol><li id="fn1"><p>n</p></li></ol></section>
+<p>after</p>
+```
+
+```
+a[^1]
+
+::: footnotes
+
+:::
+
+after
+
+[^1]: n
+```
+
+Definitions are collected to document level whatever the source says, which is
+why the definition itself is written last; the directive is what puts the
+RENDERED section back where the HTML had it, and that source renders the input
+in the input's order.
+
+This is not `structure-unspellable` and there is nothing to report. That code is
+for a structure Carve source has no spelling for, and here the language has one
+- which is also the whole argument. Treating placement as a rendering artifact
+would be defensible only if Carve could not say otherwise, and it can, so
+discarding a position the language can express is a loss with no justification
+behind it. Corpus document `122-footnotes-placement` is authored with the
+directive, so the shape is not a bridge-only corner.
+
+Where the section IS last, the directive is not written: the definitions already
+render there, and adding it would put a construct in the source that the input
+did not distinguish.
+
 ## A container comes back as the container
 
 A colon fence renders to one of exactly two shapes, and an importer reads that
@@ -919,6 +1010,8 @@ The shared set is deliberately small and each directory has one subject:
 | `symbol-sigil-escape` | a symbol sigil in imported text, escaped so it stays the text the HTML held |
 | `detached-caption-caret` | a paragraph that looks like a caption line under an image, escaped so it stays a paragraph |
 | `note-reference-in-a-span` | a span whose text opens a note-reference label, escaped beside the unlabeled caret that needs no escape |
+| `empty-definition-description` | an empty `<dd>`, dropped with a row that declares it, where the bare colon line would have taken the `<dt>` too |
+| `endnotes-section-not-last` | an endnotes section with a paragraph after it, which keeps its position through `::: footnotes` |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one

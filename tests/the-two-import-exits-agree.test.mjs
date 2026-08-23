@@ -139,6 +139,24 @@ const disagreement = (parsed, recorded, path = '') => {
     : `${path}: source says ${JSON.stringify(parsed)}, tree says ${JSON.stringify(recorded)}`
 }
 
+/*
+ * THE LEFT SIDE IS THE PUBLISHED TREE, not the engine's internal `parse()`
+ * return (markup-carve/carve#1616).
+ *
+ * A fixture's `expected.ast.json` records the PART 12 shape. An internal tree
+ * is a different object: it spells a definition-list entry as
+ * `{terms, definitions}` rather than as the `definition_term` and
+ * `definition_description` nodes §8 publishes, and it hangs footnote
+ * definitions off the ROOT rather than carrying them as `footnote` children,
+ * which §7 forbids outright. Reading it here would report a disagreement for
+ * every fixture holding either shape, on a difference neither exit ever had -
+ * and would pin one implementation's internals as the portable minimum.
+ */
+const publishedParse = async () => {
+  const { parse, toAstJson } = await import('@markup-carve/carve')
+  return (source) => toAstJson(parse(source))
+}
+
 const readFixture = async (name) => {
   const read = (file) => readFile(new URL(`${name}/${file}`, root), 'utf8')
   return {
@@ -149,7 +167,7 @@ const readFixture = async (name) => {
 }
 
 test('every fixture records two exits that say the same thing', async () => {
-  const { parse } = await import('@markup-carve/carve')
+  const published = await publishedParse()
   const fixtures = (await readdir(root, { withFileTypes: true })).filter((entry) => entry.isDirectory())
   assert.ok(fixtures.length > 0)
 
@@ -160,7 +178,7 @@ test('every fixture records two exits that say the same thing', async () => {
     // survives in the AST and not in the source, and the row says so.
     if (report.diagnostics.some((row) => row.code === 'structure-unspellable')) continue
 
-    const miss = disagreement(normalize(parse(crv)), normalize(ast))
+    const miss = disagreement(normalize(published(crv)), normalize(ast))
     if (UNMET.has(name)) {
       assert.ok(
         miss,
@@ -192,7 +210,7 @@ test('every fixture records two exits that say the same thing', async () => {
  * that fixing an engine does not quietly retire the proof.
  */
 test('the invariant rejects the source both engines wrote for the three shapes', async () => {
-  const { parse } = await import('@markup-carve/carve')
+  const published = await publishedParse()
   const measured = [
     // A cell whose payload is a rowspan marker: the caret's cell is deleted and
     // the cell above grows a rowspan.
@@ -206,7 +224,7 @@ test('the invariant rejects the source both engines wrote for the three shapes',
   for (const [name, source] of measured) {
     const { ast } = await readFixture(name)
     assert.ok(
-      disagreement(normalize(parse(source)), normalize(ast)),
+      disagreement(normalize(published(source)), normalize(ast)),
       `the source measured for tests/html-import/${name} agrees with the fixture's ` +
         `tree, so this check would not have caught the shape it was written for`,
     )
@@ -229,19 +247,19 @@ test('the invariant rejects the source both engines wrote for the three shapes',
  * assertion worthless.
  */
 test('the invariant rejects the paragraph-wrapped figure tree, and accepts the ruled one', async () => {
-  const { parse } = await import('@markup-carve/carve')
+  const published = await publishedParse()
   const source = '![a](i.png)\n^ cap\n'
   const image = { type: 'image', src: 'i.png', alt: 'a' }
   const caption = [{ type: 'text', value: 'cap' }]
   const figure = (target) => ({ type: 'document', children: [{ type: 'figure', target, caption }] })
 
   assert.ok(
-    disagreement(normalize(parse(source)), normalize(figure({ type: 'paragraph', children: [image] }))),
+    disagreement(normalize(published(source)), normalize(figure({ type: 'paragraph', children: [image] }))),
     'the paragraph-wrapped tree agrees with the source it was written beside, so this ' +
       'check would not have caught the shape markup-carve/carve#1606 ruled',
   )
   assert.equal(
-    disagreement(normalize(parse(source)), normalize(figure(image))),
+    disagreement(normalize(published(source)), normalize(figure(image))),
     null,
     'the ruled tree disagrees with its own source, so the check rejects everything ' +
       'and the assertion above means nothing',
