@@ -75,7 +75,17 @@ export function checkContainment(doc, findings) {
       return
     }
     if (!node || typeof node !== 'object') return
-    const placed = typeof node.type === 'string' && node.pos
+    // AN INTEGER PAIR, not merely a `pos` object. The count below is what makes
+    // a vacuous pass distinguishable from a clean one, so counting a pair whose
+    // offsets cannot be compared inflates the one number that exists to say the
+    // rule did some work: `undefined < 3` and `undefined > 7` are both false, so
+    // such a pair is silently clean AND silently counted. A node whose offsets
+    // are not integers is reported by `checkPositions` under its own rule.
+    const placed =
+      typeof node.type === 'string' &&
+      node.pos &&
+      Number.isInteger(node.pos.startOffset) &&
+      Number.isInteger(node.pos.endOffset)
     if (placed && parent) {
       compared += 1
       const outside =
@@ -442,8 +452,24 @@ export function checkOpeningMarkup(doc, codepoints, findings) {
     const pos = node.pos
     if (!pos || !Number.isInteger(pos.startOffset) || !Number.isInteger(pos.endOffset)) continue
     if (pos.startOffset > codepoints.length) continue
+    // LEADING INDENTATION, and the line's own - not any whitespace the span
+    // happens to open on. The clause puts the indent inside the span because the
+    // indent is what places a nested item's marker, and a nested list's span
+    // legitimately starts PART WAY into that run, at its parent's content
+    // column (corpus 245 and two others). What the run may not do is skip
+    // whitespace that follows text on the line: a span opening on a space in
+    // mid-line has not begun at the construct's markup, and walking past it
+    // turned that into a pass.
     let at = pos.startOffset
-    while (at < pos.endOffset && (codepoints[at] === ' ' || codepoints[at] === '\t')) at += 1
+    let indented = true
+    for (let k = at - 1; k >= 0; k--) {
+      const c = codepoints[k]
+      if (c === '\n' || c === '\r') break
+      if (c !== ' ' && c !== '\t') { indented = false; break }
+    }
+    if (indented) {
+      while (at < pos.endOffset && (codepoints[at] === ' ' || codepoints[at] === '\t')) at += 1
+    }
     examined += 1
     // WIDE ENOUGH FOR THE LONGEST MARKER. An ordered marker is digits then a
     // delimiter, so a window that truncates before the delimiter turns a
@@ -494,7 +520,48 @@ export const HOISTED_DEFINITION_TYPES = new Set([
   'link_reference_definition',
 ])
 
-const EXEMPT_FROM_OVERLAP = new Set([...HOISTED_DEFINITION_TYPES, 'hard_break', 'soft_break'])
+/**
+ * WHICH PAIR OF SIBLINGS MAY SHARE SOURCE - a question about the PAIR, never
+ * about one node (carve#1566).
+ *
+ * The break half of this used to be a set of TYPES, consulted against each node
+ * on its own, and its stated reason was already the pair: "two BREAKS meeting at
+ * one newline share that boundary". A per-node set cannot say that. It exempted
+ * a break from the rule against every sibling of any kind, so a break
+ * overlapping a NON-break sibling - the shape the rule exists to catch - was
+ * invisible, in both directions, because an exempt node was dropped from the
+ * comparison entirely rather than merely excused from one pair.
+ *
+ * markup-carve/carve-rs#1246 is the witness. On
+ *
+ *     ::: |
+ *     *a
+ *     %% secret
+ *     c*
+ *     :::
+ *
+ * carve-rs published the break ending the emptied comment line at 9..19 beside
+ * the `comment` at 9..18: two siblings holding the same nine codepoints, which
+ * is what PART 12 §4's span tree exists to rule out. Both that reading and the
+ * fixed one passed every checker in this file. `checkContainment` was never
+ * going to see it either - the break sits inside the `strong` that contains it,
+ * so the parent bound holds - which left this rule as the only one for the
+ * shape, with the exemption turning it off.
+ *
+ * HOISTED DEFINITIONS ARE STILL EXEMPT AGAINST ANY SIBLING, and that breadth is
+ * deliberate rather than the same defect left in place - it was measured, not
+ * assumed. A definition's span points at the container it was AUTHORED in (§7),
+ * and carve#1522 ends a container emptied by that same hoisting at its own
+ * markup. Once it does, the definition is no longer INSIDE its host: on 13
+ * corpus documents carve-php and carve-rs both span the emptied quote as `> `
+ * while the definition hoisted out of it spans the whole line, and the two
+ * genuinely overlap without either engine being wrong under the rulings as they
+ * stand. Narrowing this half needs that collision ruled on first, which is
+ * carve#1571 - a checker is not where three rulings get reconciled.
+ */
+function overlapExemptPair(a, b) {
+  return BREAK_TYPES.has(a.type) && BREAK_TYPES.has(b.type)
+}
 
 /**
  * SIBLING SPANS MUST NOT OVERLAP.
@@ -518,16 +585,41 @@ function checkSiblingOverlap(node, path, findings) {
       .map((child, i) => [child, i])
       .filter(([c]) => c && typeof c === 'object' && c.pos &&
         Number.isInteger(c.pos.startOffset) && Number.isInteger(c.pos.endOffset) &&
-        !EXEMPT_FROM_OVERLAP.has(c.type))
-    for (let i = 1; i < placed.length; i++) {
-      const [prev] = placed[i - 1]
-      const [cur, idx] = placed[i]
-      // Zero-width spans touching at a boundary are fine; a real overlap is not.
-      if (cur.pos.startOffset < prev.pos.endOffset) {
-        findings.push(
-          `sibling spans overlap at ${path}.${key}[${idx}]: "${cur.type}" starts at ` +
-            `${cur.pos.startOffset}, inside "${prev.type}" which ends at ${prev.pos.endOffset}`,
-        )
+        // Hoisted definitions leave the comparison entirely, rather than being
+        // excused pair by pair: see `overlapExemptPair` for why that half is
+        // still the broad form.
+        !HOISTED_DEFINITION_TYPES.has(c.type))
+    // EVERY PAIR, not each node against the one before it. Once an exemption is
+    // a property of the PAIR, an exempt node has to stay in the comparison - and
+    // a chain that only compares neighbours then loses the pair on either side
+    // of it. A break between two siblings that overlap each other is the shape:
+    // each of them is compared against the break, the break is exempt against
+    // neither, and the two of them are never compared at all.
+    for (let j = 1; j < placed.length; j++) {
+      for (let i = 0; i < j; i++) {
+        const a = placed[i]
+        const b = placed[j]
+        if (overlapExemptPair(a[0], b[0])) continue
+        // ORDERED BY OFFSET, not by array index. Comparing every pair reaches
+        // siblings the tree lists out of source order, and `starts inside` is
+        // only meaningful about the one that starts LATER. The array index
+        // breaks a tie, so two nodes claiming the same offset are reported
+        // against the one written first.
+        const [first, second] =
+          a[0].pos.startOffset <= b[0].pos.startOffset ? [a, b] : [b, a]
+        // Zero-width spans touching at a boundary are fine; a real overlap is
+        // not. Both ends are tested: `second` starting before `first` ends is
+        // not an overlap on its own once the pair can be out of source order.
+        if (
+          first[0].pos.startOffset < second[0].pos.endOffset &&
+          second[0].pos.startOffset < first[0].pos.endOffset
+        ) {
+          findings.push(
+            `sibling spans overlap at ${path}.${key}[${second[1]}]: "${second[0].type}" starts at ` +
+              `${second[0].pos.startOffset}, inside "${first[0].type}" which ends at ${first[0].pos.endOffset}`,
+          )
+          break
+        }
       }
     }
   }
@@ -593,11 +685,23 @@ export function checkPositions(doc, source, findings) {
       // hard-break fence turning every newline into one - has no backslash
       // before it and is left alone, which is why the rule tests the source
       // rather than the node type.
+      //
+      // A CRLF TERMINATOR IS THE SAME CONSTRUCT (carve#1566). The rule used to
+      // test for a bare `\n` with the backslash directly before it, which on a
+      // CRLF document is true of neither anchoring: a break starting at the CR
+      // is not looking at a `\n` at all, and one starting at the LF finds the CR
+      // where the backslash would be. So on a CRLF document a break that
+      // dropped its backslash was invisible to the rule written for it - the
+      // terminator rule one screen up has known about `\r` from the start.
+      const at = pos.startOffset
+      const onTerminator = codepoints[at] === '\n' || codepoints[at] === '\r'
+      const beforeTerminator =
+        codepoints[at] === '\n' && codepoints[at - 1] === '\r' ? at - 2 : at - 1
       if (
         node.type === 'hard_break' &&
-        codepoints[pos.startOffset] === '\n' &&
-        pos.startOffset > 0 &&
-        codepoints[pos.startOffset - 1] === '\\'
+        onTerminator &&
+        beforeTerminator >= 0 &&
+        codepoints[beforeTerminator] === '\\'
       ) {
         findings.push(
           `hard break span starts after its backslash on "${node.type}" at ${path}: ` +
@@ -620,14 +724,23 @@ export function checkPositions(doc, source, findings) {
       // positions while spanning the same codepoints. The span is not wrong -
       // it covers precisely the source the node came from - and the engine's
       // internal spelling of an indent is not something this check can compare.
+      // AND ONLY WHERE AN ESCAPE COULD ACTUALLY EXPLAIN THE DIFFERENCE
+      // (carve#1566). The reason above is that resolving an escape leaves the
+      // slice LONGER than the value it produced, so any backslash used to
+      // disable the comparison outright. A backslash the parser left literal -
+      // one before a character Carve does not escape - resolves to nothing and
+      // keeps the two the same length, and skipping those discarded a
+      // comparison that had every reason to run.
       if (
         node.type === 'text' &&
         typeof node.value === 'string' &&
-        !node.value.includes('\ue000') &&
-        !codepoints.slice(pos.startOffset, pos.endOffset).includes('\\')
+        !node.value.includes('\ue000')
       ) {
-        const slice = codepoints.slice(pos.startOffset, pos.endOffset).join('')
-        if (slice !== node.value) {
+        const sliceChars = codepoints.slice(pos.startOffset, pos.endOffset)
+        const slice = sliceChars.join('')
+        const anEscapeCouldExplainIt =
+          sliceChars.includes('\\') && sliceChars.length > [...node.value].length
+        if (!anEscapeCouldExplainIt && slice !== node.value) {
           findings.push(
             `pos does not cover the text it belongs to on "${node.type}" at ${path}: ` +
               `offsets give ${JSON.stringify(slice)}, node says ${JSON.stringify(node.value)}`,

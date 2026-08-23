@@ -97,6 +97,31 @@ test('a hard break that starts after its backslash is reported', () => {
   assert.match(findings[0], /hard break span starts after its backslash/)
 })
 
+test('a CRLF hard break that dropped its backslash is reported', () => {
+  // THE SAME DEFECT, ON A CRLF DOCUMENT (carve#1566). The rule tested for a
+  // bare newline with the backslash directly before it, and on CRLF that is
+  // true of neither anchoring: a break at the CR is not looking at a newline,
+  // and one at the LF finds the CR where the backslash would be. So the rule
+  // written for markup-carve/carve-rs#492 could not see it here at all.
+  const source = 'a\\\r\nb\r\n'
+  const doc = {
+    type: 'document',
+    children: [{ type: 'hard_break', pos: pos(2, 4) }],
+  }
+  const findings = findingsFor(doc, source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /hard break span starts after its backslash/)
+})
+
+test('a CRLF hard break covering its backslash is accepted', () => {
+  const source = 'a\\\r\nb\r\n'
+  const doc = {
+    type: 'document',
+    children: [{ type: 'hard_break', pos: pos(1, 4) }],
+  }
+  assert.deepEqual(findingsFor(doc, source), [])
+})
+
 test('a hard break covering the backslash and the newline is accepted', () => {
   const source = 'a\\\nb\n'
   const doc = {
@@ -113,6 +138,34 @@ test('a synthesized break over a bare newline is accepted', () => {
   const doc = {
     type: 'document',
     children: [{ type: 'hard_break', pos: pos(1, 2) }],
+  }
+  assert.deepEqual(findingsFor(doc, source), [])
+})
+
+test('a text node holding a LITERAL backslash is still compared', () => {
+  // The skip's stated reason is that resolving an escape leaves the slice
+  // LONGER than the value it produced. A backslash the parser left literal -
+  // one before a character Carve does not escape - resolves to nothing and
+  // keeps the two the same length, so the reason does not reach it and the
+  // comparison runs (carve#1566). Two corpus text nodes are in this shape.
+  const source = 'a\\q b\n'
+  const doc = {
+    type: 'document',
+    children: [{ type: 'text', value: 'WRONG', pos: pos(0, 5) }],
+  }
+  const findings = findingsFor(doc, source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /does not cover the text it belongs to/)
+})
+
+test('a text node whose backslash IS an escape is left alone', () => {
+  // The reason the skip exists, and it survives the narrowing: the escape is
+  // resolved into the value, so the source is longer than the text it produced
+  // and the two can never be equal.
+  const source = 'say\\ hello\n'
+  const doc = {
+    type: 'document',
+    children: [{ type: 'text', value: 'say hello', pos: pos(0, 10) }],
   }
   assert.deepEqual(findingsFor(doc, source), [])
 })
@@ -370,6 +423,167 @@ test('every definition kind the schema hoists is exempt from the overlap rule', 
 })
 
 /*
+ * A BREAK IS EXEMPT FROM THE OVERLAP RULE AGAINST ANOTHER BREAK, AND NOTHING
+ * ELSE (carve#1566).
+ *
+ * The exemption was a set of TYPES consulted against one node at a time, while
+ * its stated reason was already about the PAIR - "two breaks meeting at one
+ * newline". So a break overlapping a non-break sibling, the shape the rule
+ * exists to catch, was invisible; and because an exempt node was dropped from
+ * the comparison entirely, it was invisible in both directions.
+ */
+
+test('a break overlapping a comment is reported', () => {
+  // markup-carve/carve-rs#1246, the shape it published for
+  //
+  //     ::: |
+  //     *a
+  //     %% secret
+  //     c*
+  //     :::
+  //
+  // The `%% secret` line is 9..18 and the break that ends it is 18..19.
+  // carve-rs gave the break 9..19, so the two siblings held the same nine
+  // codepoints - and every checker in the file passed both readings.
+  const source = '::: |\n*a\n%% secret\nc*\n:::\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'strong',
+        pos: span(6, 21),
+        children: [
+          { type: 'text', value: 'a', pos: span(7, 8) },
+          { type: 'hard_break', pos: span(8, 9) },
+          { type: 'comment', pos: span(9, 18) },
+          { type: 'hard_break', pos: span(9, 19) },
+          { type: 'text', value: 'c', pos: span(19, 20) },
+        ],
+      },
+    ],
+  }
+  const findings = []
+  checkPositions(doc, source, findings)
+  const overlap = findings.filter((f) => f.includes('sibling spans overlap'))
+  assert.equal(overlap.length, 1, `expected one overlap finding, got: ${JSON.stringify(findings)}`)
+  assert.match(overlap[0], /"hard_break" starts at 9, inside "comment" which ends at 18/)
+})
+
+test('the same document with the break where it belongs is clean', () => {
+  // markup-carve/carve-rs#1265 fixed it to 18..19. The rule has to clear on the
+  // fix as well as fire on the defect, or it is a rule against the construct
+  // rather than against the span.
+  const source = '::: |\n*a\n%% secret\nc*\n:::\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'strong',
+        pos: span(6, 21),
+        children: [
+          { type: 'text', value: 'a', pos: span(7, 8) },
+          { type: 'hard_break', pos: span(8, 9) },
+          { type: 'comment', pos: span(9, 18) },
+          { type: 'hard_break', pos: span(18, 19) },
+          { type: 'text', value: 'c', pos: span(19, 20) },
+        ],
+      },
+    ],
+  }
+  const findings = []
+  checkPositions(doc, source, findings)
+  assert.deepEqual(findings.filter((f) => f.includes('sibling spans overlap')), [])
+})
+
+for (const [a, b] of [
+  ['soft_break', 'soft_break'],
+  ['hard_break', 'hard_break'],
+  ['soft_break', 'hard_break'],
+]) {
+  test(`a ${a} and a ${b} may meet at one newline`, () => {
+    // The reason the exemption exists, and it survives the narrowing: a break
+    // is anchored at a line terminator, so two of them sharing that boundary
+    // are both right.
+    const doc = {
+      type: 'document',
+      children: [{ type: a, pos: span(1, 2) }, { type: b, pos: span(1, 2) }],
+    }
+    const findings = []
+    checkPositions(doc, 'a\nb\n', findings)
+    assert.deepEqual(findings.filter((f) => f.includes('sibling spans overlap')), [])
+  })
+}
+
+test('a break between two overlapping siblings does not hide them', () => {
+  // WHY EVERY PAIR IS COMPARED. Once the exemption is a property of the pair,
+  // an exempt node stays in the comparison - and a chain that only compares
+  // neighbours then never compares the two siblings on either side of it. Each
+  // of these is compared against the break, the break is exempt against
+  // neither, and the overlap between them is the finding.
+  const doc = {
+    type: 'document',
+    children: [
+      { type: 'text', value: 'x', pos: span(0, 10) },
+      { type: 'hard_break', pos: span(10, 11) },
+      { type: 'comment', pos: span(5, 8) },
+    ],
+  }
+  const findings = []
+  checkPositions(doc, 'x'.repeat(20), findings)
+  const overlap = findings.filter((f) => f.includes('sibling spans overlap'))
+  assert.equal(overlap.length, 1, `expected one overlap finding, got: ${JSON.stringify(findings)}`)
+  assert.match(overlap[0], /"comment" starts at 5, inside "text" which ends at 10/)
+})
+
+test('siblings the tree lists out of source order are not an overlap', () => {
+  // Comparing every pair reaches siblings whose array order is not their source
+  // order, which hoisting routinely produces. `second starts before first ends`
+  // is not an overlap on its own once that is possible, so both ends are
+  // tested: these two are disjoint and the rule has to say so.
+  const doc = {
+    type: 'document',
+    children: [
+      { type: 'paragraph', pos: span(15, 29), children: [] },
+      { type: 'block_quote', pos: span(0, 13), children: [] },
+    ],
+  }
+  const findings = []
+  checkPositions(doc, 'x'.repeat(30), findings)
+  assert.deepEqual(findings.filter((f) => f.includes('sibling spans overlap')), [])
+})
+
+test('no corpus document has a sibling overlap, in either engine shape', () => {
+  // The synthetic cases above prove the narrowed rule fires; this proves it
+  // does not fire on a real document. Measured over 1363 documents when the
+  // narrowing landed: nought, which is what makes this a ratchet rather than a
+  // number to update.
+  const dir = resolve(repo, 'tests/corpus')
+  const cases = readdirSync(dir).filter((name) => name.endsWith('.crv'))
+  let compared = 0
+  for (const name of cases) {
+    const raw = readFileSync(resolve(dir, name), 'utf8')
+    const findings = []
+    // The PART 12 wire shape, for the reason the STOPS AT ITS CHILDREN pass
+    // below reads it: §4 is normative about the interchange document, and a
+    // parse tree spells some children without a `type` at all - which would
+    // drop them out of the sibling comparison entirely.
+    const doc = toAstJson(parse(raw))
+    checkPositions(doc, replaceNulls(raw), findings)
+    for (const [node] of walkNodes(doc)) {
+      for (const [key, value] of Object.entries(node)) {
+        if (key !== 'pos' && Array.isArray(value)) compared += value.length
+      }
+    }
+    assert.deepEqual(
+      findings.filter((f) => f.includes('sibling spans overlap')),
+      [],
+      `${name}: a sibling overlap is a defect in the engine, not a number to declare`,
+    )
+  }
+  assert.ok(compared > 2000, `only ${compared} sibling(s) reached the overlap rule`)
+})
+
+/*
  * A SPAN BEGINS AT THE CONSTRUCT'S OPENING MARKUP (PART 12 section 4,
  * carve#913).
  *
@@ -494,6 +708,58 @@ test('THE OPT-IN TRAP: a tree with no positions examines nothing, and says so', 
   assert.deepEqual(findings, [])
 })
 
+test('a span opening on a space in MID-LINE has not begun at its markup', () => {
+  // THE INDENT SKIP IS THE LINE'S OWN INDENTATION (carve#1566). It walked past
+  // any space or tab the span happened to open on, wherever that was, so a span
+  // starting one character early on a mid-line space matched the markup after
+  // it and read as a pass - in a rule whose whole subject is whether a span
+  // begins at the markup.
+  const source = 'see `x` here\n'
+  const doc = {
+    type: 'document',
+    children: [{ type: 'code', pos: pos(3, 7) }],
+  }
+  const findings = findingsFor(doc, source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /does not begin at the markup that opens "code"/)
+})
+
+test('a nested list starting part way into the indent run is accepted', () => {
+  // The reason the skip exists, and it survives the narrowing. Corpus 245:
+  //
+  //     - a
+  //         - b
+  //
+  // the inner list's span starts at offset 6, inside the four-space indent, at
+  // its parent item's content column rather than at the line start. Everything
+  // between the line start and there is whitespace, so it is indentation and
+  // the marker is what follows it.
+  const source = '- a\n    - b\n'
+  const doc = {
+    type: 'document',
+    children: [
+      {
+        type: 'list',
+        pos: pos(6, 11),
+        children: [
+          {
+            type: 'list_item',
+            pos: pos(6, 11),
+            children: [
+              {
+                type: 'paragraph',
+                pos: pos(10, 11),
+                children: [{ type: 'text', value: 'b', pos: pos(10, 11) }],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }
+  assert.deepEqual(findingsFor(doc, source), [])
+})
+
 test('no corpus document begins a span away from its opening markup', () => {
   // The synthetic documents above prove the rule fires; this proves it does not
   // fire on a real one, over every type the table names. The EXAMINED count is
@@ -517,6 +783,30 @@ test('no corpus document begins a span away from its opening markup', () => {
     assert.deepEqual(findings, [], `${name}\n${findings.join('\n')}`)
   }
   assert.ok(examined > 1000, `only ${examined} span(s) reached the opening-markup rule`)
+})
+
+test('CONTAINMENT does not count a pair it could not compare', () => {
+  // The count is what makes a vacuous pass distinguishable from a clean one, so
+  // a pair whose offsets are not integers must not inflate it: `undefined < 3`
+  // and `undefined > 7` are both false, which made such a pair silently clean
+  // AND silently counted (carve#1566). Latent on today's corpus - no engine
+  // publishes a non-integer offset - and the count is the only thing standing
+  // between this rule and the carve#755 shape, so it is checked here rather
+  // than left to the day one does.
+  const doc = {
+    type: 'document',
+    pos: pos(0, 10),
+    children: [
+      { type: 'paragraph', pos: { startLine: 1, endLine: 1, startColumn: 1, endColumn: 1 }, children: [] },
+    ],
+  }
+  assert.equal(checkContainment(doc, []), 0)
+  const placed = {
+    type: 'document',
+    pos: pos(0, 10),
+    children: [{ type: 'paragraph', pos: pos(0, 5), children: [] }],
+  }
+  assert.equal(checkContainment(placed, []), 1)
 })
 
 test('CONTAINMENT, in a pass of its own, over every corpus document', () => {
