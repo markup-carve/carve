@@ -1132,13 +1132,124 @@ test('a container with a closer is not reached by this rule', () => {
 })
 
 /*
+ * THE THREE TYPES THE COMMENT SAID IT HAD CONSIDERED (carve#1574).
+ *
+ * `ENDS_AT_LAST_CHILD` said everything absent from it was absent "for a stated
+ * reason rather than an oversight", and then stated reasons for a fence closer,
+ * a trailing pipe, an alignment row and an inline delimiter run. `footnote`,
+ * `definition_term` and `heading` were named by none of them and reached past
+ * their last child on real corpus documents, so a reader auditing the guard was
+ * told they had been considered when they had not been - an enumeration
+ * asserting its own completeness without it, the carve#755 shape one level up.
+ *
+ * Each is a closerless container, so §4 ends it at its last placed child, and
+ * what each reaches over is source the clauses exclude BY NAME. That is why
+ * these are the clause applied rather than three new rulings.
+ *
+ * THEY GO THROUGH THE ENGINE, not through a hand-built tree, for the reason the
+ * corpus pass serializes before it checks: a type in this set does no work
+ * unless the shape the engine publishes actually reaches the rule, and a
+ * hand-built node proves only that the rule can be handed one. Remove any of the
+ * three names from the set and its test below goes green-to-red on a real parse.
+ */
+
+test('a footnote definition ending past the newline that ends it is reported', () => {
+  // §4: "a following newline, blank line, or unattached attribute block is
+  // not" included in a span. The footnote has no closer, so it ends at its
+  // paragraph. markup-carve/carve-js#1347, and 26 of the 27 corpus footnote
+  // rows are this shape.
+  const source = 'x[^n]\n\n[^n]: b\n\ntail\n'
+  const findings = stopFindings(toAstJson(parse(source)), source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /"footnote"/)
+  assert.match(findings[0], /"\\n" belongs to no child of it/)
+  assert.ok(ENDS_AT_LAST_CHILD.has('footnote'))
+})
+
+test('a footnote definition ending past the definition hoisted out of it is reported', () => {
+  // The 27th row (`202-...`), and carve#1522's arrangement one container down:
+  // §7 hoists the reference definition to the document, §4 says a hoisted
+  // sibling is not a child, so the source it covers is not the footnote's.
+  const source = '[^a]: note\n  [r]: /u\n\nsee[^a] [t][r]\n'
+  const findings = stopFindings(toAstJson(parse(source)), source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /"footnote"/)
+  assert.match(findings[0], /"\\n {2}\[r\]: \/u\\n" belongs to no child of it/)
+})
+
+test('a heading ending past the trailing whitespace its line drops is reported', () => {
+  // PART 2's NO TRAILING WHITESPACE clause is normative that the run "does not
+  // reach the output, and it is not content", and names a heading among the
+  // lines it holds for (carve#926). A construct cannot own source that is not
+  // content. markup-carve/carve-js#1348.
+  const source = '# h  \n'
+  const findings = stopFindings(toAstJson(parse(source)), source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /"heading"/)
+  assert.match(findings[0], /" {2}" belongs to no child of it/)
+  assert.ok(ENDS_AT_LAST_CHILD.has('heading'))
+})
+
+test('a definition term ending past the trailing whitespace its line drops is reported', () => {
+  // The same clause, which names a definition term too. Written multi-line
+  // because that is the corpus shape and the one the other two engines filed:
+  // markup-carve/carve-php#1330, markup-carve/carve-rs#1029, and now
+  // markup-carve/carve-js#1349.
+  const source = ':: `a\nb \n:  d\n'
+  const findings = stopFindings(toAstJson(parse(source)), source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /"definition_term"/)
+  assert.match(findings[0], /" " belongs to no child of it/)
+  assert.ok(ENDS_AT_LAST_CHILD.has('definition_term'))
+})
+
+test('a table cell is bounded by the pipes on BOTH sides, which is why it is absent', () => {
+  // The reason `table_cell` stays out, measured rather than asserted. A cell
+  // runs BETWEEN the pipes - `OPENING_MARKUP` says so one rule over, because
+  // the `|` opens the row and a cell claiming it would overlap the cell before
+  // it - so the padding is the cell's own source on the side the rule looks at
+  // exactly as it is on the side it does not. 382 of the 400 cells the corpus
+  // places reach past their last child, all over spaces, and naming the type
+  // would report a cell's own source as nobody's.
+  const source = '| a | bb  |\n|---|---|\n'
+  const cell = toAstJson(parse(source)).children[0].rows[0].cells[1]
+  assert.equal(cell.type, 'table_cell')
+  const slice = [...source].slice(cell.pos.startOffset, cell.pos.endOffset).join('')
+  assert.equal(slice, ' bb  ')
+  const child = cell.children[0]
+  assert.ok(cell.pos.startOffset < child.pos.startOffset, 'padding before the content is inside')
+  assert.ok(cell.pos.endOffset > child.pos.endOffset, 'and so is the padding after it')
+  assert.ok(!ENDS_AT_LAST_CHILD.has('table_cell'))
+})
+
+test('a definition description has nothing after its last child, which is why it is absent', () => {
+  // The other absence carve#1574 had to account for. A description never
+  // over-reaches: every trailing run a description line carries lands on the
+  // enclosing `definition_list`, which IS in this set, so the source is already
+  // reported - once, against the node that claims it. Naming the type would be
+  // a check that cannot fail, which this file refused once already for
+  // `definition_list` itself.
+  const source = ':: t\n:  a\n\n   b  \n'
+  const wire = toAstJson(parse(source))
+  const list = wire.children[0]
+  const description = list.items[1]
+  assert.equal(description.type, 'definition_description')
+  assert.equal([...source].slice(description.pos.startOffset, description.pos.endOffset).join(''), ':  a\n\n   b')
+  assert.equal([...source].slice(list.pos.startOffset, list.pos.endOffset).join(''), ':: t\n:  a\n\n   b  ')
+  const findings = stopFindings(wire, source)
+  assert.equal(findings.length, 1, findings.join('\n'))
+  assert.match(findings[0], /"definition_list"/)
+  assert.ok(!ENDS_AT_LAST_CHILD.has('definition_description'))
+})
+
+/*
  * THE CORPUS, DECLARED RED.
  *
  * Measured 2026-08-23 against the carve-js this repository pins, over every
- * corpus document: 105 findings across 98 documents, out of 2943 containers
- * examined. Until the engines land carve#1522, carve#1524 and carve#1530 that
- * is the state this file RECORDS rather than hides - the same discipline
- * resources/ast-span-divergence.txt applies one layer up.
+ * corpus document: 135 findings across 125 documents, out of 3199 containers
+ * examined. Until the engines land carve#1522, carve#1524, carve#1530 and
+ * carve#1574 that is the state this file RECORDS rather than hides - the same
+ * discipline resources/ast-span-divergence.txt applies one layer up.
  *
  * IT FAILS IN BOTH DIRECTIONS, which is the point. A document that starts
  * over-reaching is not on the list and fails; a document that STOPS is on the
@@ -1147,13 +1258,27 @@ test('a container with a closer is not reached by this rule', () => {
  * When the list empties, the assertion becomes a plain "no findings" and both
  * issues are done.
  *
- * WHAT THE 105 ARE: 75 a `list` reaching past its last item, 4 a `block_quote`
+ * WHAT THE 135 ARE: 75 a `list` reaching past its last item, 4 a `block_quote`
  * doing the same, 20 a container a collected definition emptied, which the
- * ruling reached separately (markup-carve/carve-rs#1233), and 6 a
- * `definition_list` reaching past its last description (carve#1530). Forty-five
- * of the first group are a list reaching over the line terminator that ends it -
- * markup-carve/carve-js#1304 and markup-carve/carve-rs#1232, filed separately
- * and subsumed by this rule rather than excluded from it.
+ * ruling reached separately (markup-carve/carve-rs#1233), 6 a `definition_list`
+ * reaching past its last description (carve#1530), and 30 the three types
+ * carve#1574 added to the set. Forty-five of the first group are a list reaching
+ * over the line terminator that ends it - markup-carve/carve-js#1304 and
+ * markup-carve/carve-rs#1232, filed separately and subsumed by this rule rather
+ * than excluded from it.
+ *
+ * THE THIRTY ARE 27 `footnote`, 2 `definition_term` and 1 `heading`, and they
+ * are three shapes this list already carries one construct over. 26 of the
+ * footnotes reach over the blank line that ends the definition, which is
+ * markup-carve/carve-js#1304's shape on a different container and is filed as
+ * markup-carve/carve-js#1347. The 27th (`202-...`) reaches over a definition
+ * hoisted out of its own body, carve#1522's arrangement, and is the same defect
+ * the 20 emptied containers above are. The `definition_term` pair
+ * (`268-...-13`, `268-...-5`) and the `heading` row (`268-...-4`) reach over
+ * trailing whitespace, which PART 2 rules is not content at all - filed as
+ * markup-carve/carve-js#1349 and markup-carve/carve-js#1348, the carve-js half
+ * of the pair markup-carve/carve-php#1330 and markup-carve/carve-rs#1029
+ * already closed for the term.
  *
  * THE SIX ARE THE SAME THREE SHAPES ONE CONTAINER OVER, which is the evidence
  * that nothing about a definition list's shape was doing the work: two are the
@@ -1171,25 +1296,45 @@ const DECLARED_OVER_REACH = [
   '105-marker-line-nested-lists-4.crv 1',
   '117-footnote-definition-inside-a-container-is-collected-2.crv 1',
   '117-footnote-definition-inside-a-container-is-collected.crv 1',
+  '122-footnotes-placement.crv 1',
   '143-post-blank-list-continuation-content-column-model.crv 1',
+  '162-outer-item-with-an-internal-blank-before-an-attached-block-is-loose.crv 1',
   '16-reference-link-3.crv 1',
   '16-reference-link-4.crv 2',
-  '162-outer-item-with-an-internal-blank-before-an-attached-block-is-loose.crv 1',
   '173-implicit-heading-references-with-no-definition.crv 1',
   '174-bare-dot-ordered-markers-2.crv 1',
+  '175-a-repeated-definition-which-one-wins-3.crv 1',
   '180-a-list-item-does-not-define-an-abbreviation-either.crv 1',
   '191-a-blank-after-a-comment-still-ends-the-item.crv 1',
   '194-an-abbreviation-at-a-list-item-s-content-column-is-still-not-a-definition-2.crv 1',
   '194-an-abbreviation-at-a-list-item-s-content-column-is-still-not-a-definition.crv 1',
   '195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column-2.crv 2',
   '195-a-definition-inside-a-container-is-collected-at-that-container-s-content-column.crv 1',
-  '206-a-nested-list-in-a-footnote-body-stays-nested.crv 1',
+  '202-a-definition-on-a-footnote-body-s-continuation-line-is-collected.crv 1',
+  '203-a-footnote-body-holds-blocks-and-they-render-where-they-were-written.crv 1',
+  '204-a-heading-in-a-footnote-body-takes-an-id-but-no-section-wrapper.crv 1',
+  '205-an-attribute-line-inside-a-footnote-body-attaches-inside-it.crv 1',
+  '206-a-nested-list-in-a-footnote-body-stays-nested.crv 2',
+  '218-a-footnote-body-s-own-column-is-two-and-a-third-column-is-its-text.crv 1',
+  '220-a-definition-past-a-footnote-body-s-column-is-the-body-s-own-text.crv 1',
+  '224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-2.crv 1',
+  '224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do-3.crv 1',
+  '224-a-tab-reaches-a-footnote-body-s-column-just-as-two-spaces-do.crv 1',
+  '225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-2.crv 1',
+  '225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-3.crv 1',
+  '225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-4.crv 1',
+  '225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink-5.crv 1',
+  '225-a-footnote-body-s-last-block-when-it-is-not-a-paragraph-gets-a-synthesized-paragraph-for-the-backlink.crv 1',
   '226-a-definition-attached-by-a-continuation-marker-is-collected-and-the-item-keeps-no-trace.crv 1',
   '228-a-line-at-a-footnote-definition-s-own-column-followed-by-non-blank-text-forms-its-own-tight-block.crv 1',
+  '22-footnotes-6.crv 1',
+  '239-a-link-definition-written-before-a-footnote-stays-before-it-2.crv 1',
+  '241-a-multi-line-raw-block-is-placed-at-its-opening-and-verbatim-after-it.crv 1',
   '246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it-2.crv 1',
   '246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it-3.crv 1',
   '246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it.crv 1',
   '247-a-continuation-marker-after-a-blank-line-in-the-item.crv 1',
+  '249-trailing-whitespace-after-a-block-marker-5.crv 1',
   '249-trailing-whitespace-after-a-block-marker-6.crv 1',
   '251-a-continuation-marker-after-a-blank-line-in-a-loose-item.crv 1',
   '259-a-tab-continues-a-list-item-just-as-two-spaces-do-2.crv 1',
@@ -1197,12 +1342,19 @@ const DECLARED_OVER_REACH = [
   '266-a-reference-definition-is-anchored-at-end-of-line-11.crv 1',
   '266-a-reference-definition-is-anchored-at-end-of-line-14.crv 1',
   '266-a-reference-definition-is-anchored-at-end-of-line-15.crv 1',
-  '268-trailing-whitespace-on-a-content-line-is-dropped-4.crv 2',
-  '268-trailing-whitespace-on-a-content-line-is-dropped-5.crv 1',
+  '268-trailing-whitespace-on-a-content-line-is-dropped-13.crv 1',
+  '268-trailing-whitespace-on-a-content-line-is-dropped-4.crv 3',
+  '268-trailing-whitespace-on-a-content-line-is-dropped-5.crv 2',
+  '279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-2.crv 1',
   '279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-7.crv 1',
+  '279-a-boundary-line-inside-an-open-fence-does-not-end-the-container.crv 1',
   '290-adjacent-sibling-lists-survive-the-round-trip-2.crv 2',
   '290-adjacent-sibling-lists-survive-the-round-trip-3.crv 1',
   '290-adjacent-sibling-lists-survive-the-round-trip.crv 1',
+  '312-a-note-body-s-own-references-resolve-2.crv 1',
+  '312-a-note-body-s-own-references-resolve-3.crv 1',
+  '312-a-note-body-s-own-references-resolve.crv 1',
+  '315-an-inline-note-s-content-resolves-after-the-note-7.crv 1',
   '324-an-abbreviation-definition-in-an-item-body-is-paragraph-text-4.crv 1',
   '326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-21.crv 1',
   '326-a-column-0-line-after-a-container-s-last-block-when-that-block-left-no-paragraph-open-22.crv 1',

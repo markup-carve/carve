@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The position checker's closerless-container set no longer claims to be
+  complete while three types are missing from it** (carve#1574, PART 12 §4).
+  `footnote`, `definition_term` and `heading` reached past their last placed
+  child on real corpus documents and were named by none of the exemptions the
+  comment enumerated. All three are in the set now, which declares 30 more
+  documents red: markup-carve/carve-js#1347, markup-carve/carve-js#1348 and
+  markup-carve/carve-js#1349. `table_cell` and `definition_description` stay
+  out, each with a measured reason.
 - **A diagnostic on a bare inline run is numbered among the body children, not
   inside the paragraph the importer wrapped it in** (carve#1554, PART 12 §16).
   The index basis and the dropped-wrapper rule are one rule, and the
