@@ -1,0 +1,51 @@
+A marker at an item content column opens a sublist, first in the item or not
+
+```
+- o
+  - z
+
+  para
+  - s1
+.
+<ul>
+  <li><p>o</p>
+    <ul>
+      <li>z</li>
+    </ul>
+    <p>para</p>
+    <ul>
+      <li>s1</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- o
+
+  para
+  - s1
+.
+<ul>
+  <li><p>o</p>
+    <p>para</p>
+    <ul>
+      <li>s1</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+| a |
+para
+- s1
+.
+<table>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+<p>para
+- s1</p>
+```
