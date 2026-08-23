@@ -1,0 +1,9 @@
+An idle escape does not spread from the occurrence that needed one
+
+```
+ {.note}
+ This paragraph.
+.
+<p>{.note}
+This paragraph.</p>
+```

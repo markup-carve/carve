@@ -96,6 +96,7 @@
   "395-a-longer-run-at-a-list-boundary-is-written-as-exactly-three-blank-lines.fmt": "963ecbbc838a0653",
   "396-an-idle-escape-does-not-spread-from-the-block-that-needed-one.fmt": "c9151e95ecf1b1ca",
   "40-superscript-and-subscript-2.fmt": "2fcb4ff9ef264022",
+  "403-an-idle-escape-does-not-spread-from-the-occurrence-that-needed-one.fmt": "a1871bc5b452f602",
   "43-abbreviations.ansi": "4332a088c2ae546d",
   "43-abbreviations.md": "4332a088c2ae546d",
   "43-abbreviations.txt": "4332a088c2ae546d",

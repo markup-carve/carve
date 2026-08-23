@@ -433,6 +433,7 @@ index: examples/edge-cases/index.md
   an-empty-brace-pair-is-not-a-construct
   a-leading-escaped-caret-keeps-its-escape
   an-idle-escape-does-not-spread-from-the-block-that-needed-one
+  an-idle-escape-does-not-spread-from-the-occurrence-that-needed-one
   a-boolean-attribute-does-not-start-with-an-underscore
   01-emphasis-2
   01-emphasis-3
