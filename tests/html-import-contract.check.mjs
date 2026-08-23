@@ -110,6 +110,21 @@ const PIN_LAG = new Map([
     'the same paragraph wrapper as figure-caption ' +
       '(markup-carve/carve-js#1381)',
   ],
+  [
+    'detached-caption-caret',
+    'the writer hardens the caption caret after a table, a quote and a code ' +
+      'block and not after an image, so a paragraph that merely LOOKS like a ' +
+      'caption is consumed as one - and the tree it decides from carries a ' +
+      'trailing whitespace-only text node no source spells (PART 11 §2; ' +
+      'markup-carve/carve-js#1380, markup-carve/carve-php#1615)',
+  ],
+  [
+    'note-reference-in-a-span',
+    'the writer hardens no caret inside a span\'s bracket run, so a span whose ' +
+      'text opens a note-reference label comes back as the reference and the ' +
+      'attribute block comes back as literal text (PART 11 §2; ' +
+      'markup-carve/carve-js#1380, markup-carve/carve-php#1615)',
+  ],
 ])
 
 /*
