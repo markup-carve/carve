@@ -122,6 +122,40 @@ that: carve-js and carve-php respelled EVERY break to `***`, carve-rs respelled
 only the leading one. Reproducing the author's `___` removes the collision
 instead of paying for it, and the three converge on the identity.
 
+## 13-definition-list-after-a-list and 14-footnote-definition-inside-a-container
+
+Neither is an escaping case. Both exist because the comparison this corpus is
+read through used to be the wrong object, and no document here could see it
+(carve#1616).
+
+`../roundtrip.test.mjs` compared carve-js's INTERNAL `parse()` return rather
+than the published PART 12 tree. An internal tree carries fields the schema
+never declares - `footnoteDefPos` on the root, and `termSpans`,
+`definitionSpans` and `definitionLines` on a definition-list item - and every
+one of them records where a node was WRITTEN. Moving blocks is most of what the
+writer does, so the reading reported a difference for 74 of the 1371 corpus
+documents that say nothing different afterwards. This corpus stayed green on it
+by luck: none of `01` through `12` holds a definition list, and the one that
+holds footnote definitions (`11`) has them at document level already, so no
+recorded span moved.
+
+`13` is the smallest document whose spans move. `:: term` is a first-class block
+opener, so it interrupts the list above it, and the writer separates the two
+blocks with a blank line - which shifts every term and definition span down one
+line. `14` is the same failure through the other field: the definition is
+authored inside a container, §7 collects it to document level, and its recorded
+position moves with it. The container is left empty, which is what faithfully
+writing a tree whose only child was hoisted out looks like.
+
+Both expected files were derived the way this README requires, from PART 11 and
+§7 rather than from the writer: definitions are collected to document level and
+written in source order, sibling blocks are separated by one blank line. The
+pinned build then reproduces both byte for byte.
+
+The pair also fails LOUDLY under the old reading - two assertions each, the §1
+invariant and the fixture's own self-check - so the object being compared cannot
+quietly revert.
+
 ## Regenerating
 
 Do **not** regenerate expected files from an implementation's current output -
