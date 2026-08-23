@@ -75,7 +75,25 @@ test('every expected.crv is a fixed point of the canonical writer', async () => 
  * that disagrees and is not listed is red; a listed fixture that now agrees is
  * red too, so the line goes out with the pin bump that fixed it.
  */
-const PIN_LAG = new Map([])
+const PIN_LAG = new Map([
+  [
+    'marker-shaped-cell',
+    'the writer escapes the colspan half of `span_cell` and not the rowspan half, ' +
+      'so a cell holding a caret comes back as a rowspan marker and is deleted ' +
+      '(PART 11 §2 and §6f; markup-carve/carve-js#1371)',
+  ],
+  [
+    'symbol-sigil-escape',
+    'the writer hardens the tag sigil and not the symbol sigil, so imported text ' +
+      're-parses as a `symbol` node (PART 11 §2; markup-carve/carve-js#1371)',
+  ],
+  [
+    'destination-less-link',
+    'an anchor or image with no destination is still built as a link or image ' +
+      'node and spelled `[t]()`, which is literal text ' +
+      '(markup-carve/carve-js#1371)',
+  ],
+])
 
 /*
  * A DIAGNOSTIC is a pattern: the page calls diagnostic objects MINIMUM matches,

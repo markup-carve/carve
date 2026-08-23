@@ -1,0 +1,1 @@
+{"mode":"safe","adapter":"generic","diagnostics":[{"code":"element-unwrapped","message":"Unwrapped <a> with no destination","severity":"info"},{"code":"element-unwrapped","message":"Unwrapped <a> with no destination","severity":"info"},{"code":"element-unwrapped","message":"Unwrapped <img> with no source","severity":"info"}]}

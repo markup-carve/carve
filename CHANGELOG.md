@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **An import's two exits say the same thing** (carve#1601).
+  `parse(htmlToCarve(h))` equals `htmlToAst(h)`, modulo escaping and source
+  positions, with a `structure-unspellable` row as the only carve-out. Nothing
+  compared the tree an importer returns against the source it writes before.
+- **A destination Carve cannot carry is not a destination** (carve#1601). An
+  `<a>` with no `href`, an `<a href="">` and an `<img>` whose `src` is either
+  build no link or image node and come back as their content, instead of the
+  literal `[t]()` that four punctuation characters make. The importer must not
+  rebuild a destination PART 9 §25's denylist blanked. Fixture
+  `destination-less-link`.
+- **PART 11 §6f: padding is not an escape where the production admits padding**
+  (carve#1601). `span_cell` is written with its padding inside it, so a cell
+  whose whole payload is `^` or `<` is escaped by §2's own test. Fixtures
+  `marker-shaped-cell`, `symbol-sigil-escape`; escaper cases
+  `a-symbol-shortcode`, `a-colon-that-closes-no-shortcode`.
 - **Table column metadata and two-axis cell alignment** (carve#1344).
   `table.columns[]` carries horizontal alignment, vertical alignment and a
   fractional width; `table_cell` gains `valign`; `aligns`, `valigns` and

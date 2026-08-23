@@ -23,6 +23,49 @@ importer emits the source `carve fmt` emits, down to whether an attribute value
 carries quotes and which slot it sits in. An importer that builds its source
 by hand rather than through the writer has to hold that line itself.
 
+## The two exits say the same thing
+
+An import has two exits and they are one import: `htmlToAst` returns the tree,
+`htmlToCarve` returns source the canonical writer wrote FROM that tree. So what
+the source says and what the tree says are the same claim, and the invariant is
+stated rather than assumed:
+
+```
+parse(htmlToCarve(h)) == htmlToAst(h)
+```
+
+modulo escaping - PART 11 §1's EQUALITY IS MODULO ESCAPING - and modulo source
+positions, which imported nodes do not carry at all.
+
+ONE CARVE-OUT, and it is one this page already names. `structure-unspellable`
+exists for a tree Carve source cannot spell, and it is reported on the exit that
+writes source. Where a row carries it the two exits differ by exactly the
+structure that row names, and this invariant is not the rule that applies.
+Everywhere else a difference is a defect. Which of the two exits is the wrong
+one is a separate question, and the invariant deliberately does not answer it.
+
+WHY IT NEEDS SAYING: nothing compared them. A fixture records an
+`expected.ast.json` beside an `expected.crv`, and every runner reads each of
+them against an engine and neither against the other, so an importer whose tree
+and whose source disagree is green twice over. That is how three shapes arrived
+here at once (markup-carve/carve#1601) - a table cell, an anchor and a text run,
+each of which leaves `htmlToCarve` meaning something the `htmlToAst` tree never
+said. Writing the check found two more in fixtures that had been read and
+reviewed: a `<figure>` whose target the tree wraps in a paragraph no source
+spells (markup-carve/carve#1606), and a one-item `<li><p>` list whose tree says
+loose where its own source says tight (markup-carve/carve#1607, which needs a
+call rather than a derivation).
+
+THE SOURCE IS THE ARTIFACT A MIGRATION KEEPS, which is what makes the invariant
+worth more than either exit alone. A reader who runs `carve migrate` keeps
+bytes; the tree is a claim about what those bytes will mean when something
+parses them back. An importer that reports a clean migration and writes source
+saying something else has failed at the one job a migration boundary is for.
+
+`tests/the-two-import-exits-agree.test.mjs` reads the invariant off the shared
+fixtures, and carries a declared ledger for the fixtures that do not meet it
+yet.
+
 ## Semantic elements
 
 Seven inline elements import as the compact semantic span, which is the exact
@@ -66,6 +109,96 @@ None of the seven is active content - no URL, no event handler, no script - so
 needs a mode branch. An event handler on one of them is still stripped and
 still diagnosed: the mapping renames the element, it does not exempt it from
 hardening.
+
+## A destination Carve cannot carry is not a destination
+
+A `link` node needs a destination and an `image` node needs a source, and Carve
+spells both in the same slot. It has NO spelling for an empty one: `[t]()` and
+`![t]()` are literal text. So an importer that writes the empty slot has not
+written a link, it has written four punctuation characters the HTML never held,
+into the middle of the prose.
+
+THE RULE IS OVER THE DESTINATION, not over the reason it is missing. An `<a>`
+with no `href`, an `<a href="">`, and an `<img>` whose `src` is either of those,
+are ONE shape: the element names no destination the source can carry. For any of
+them the importer produces NO link or image node, and writes what the element's
+CONTENT and its SURVIVING attributes would produce without it - the span where
+an attribute survives, the bare content where none does. That is the
+attribute-less `<div>` boundary one layer down, and it is the same boundary
+because it is the same question: what is the element still needed to hold?
+
+```html
+<p><a href="">click here</a> and <a id="k">a named one</a></p>
+```
+
+```
+click here and [a named one]{#k}
+```
+
+AN IMAGE'S CONTENT IS ITS ALTERNATIVE TEXT. That is what every target with no
+image shows for it, and what a browser shows for one it cannot load, so it is
+the text a reader of this document was going to see either way.
+
+EMPTY IS A PROPERTY OF THE STRING, read the way an HTML URL attribute is read: a
+value of zero length, or of zero length once leading and trailing ASCII
+whitespace is stripped, because that is what a URL parser strips before
+resolving one. A value that is merely unusual is not empty and is kept.
+
+The element is reported as `element-unwrapped`. A link that comes back as prose
+is a lossy decision, and this page requires those to be observable. It is not
+the bare `<div>`'s case, where nothing was lost because nothing was carried: an
+anchor has a slot for a destination, and this one is standing empty.
+
+**THE SECURITY HALF, AND WHY AN IMPORTER MUST NOT REBUILD THE LINK.** This is
+not hypothetical input. It is what Carve's own renderer EMITS: PART 9 §25's URL
+sink denylist blanks a destination whose scheme is dangerous, emitting
+`href=""` or `src=""` while keeping the visible text, because WHAT IS BLANKED IS
+THE DESTINATION, NOT THE TEXT. Seven corpus documents are exactly that output.
+An importer reading a hardened render therefore turned the renderer's deliberate
+half-measure into visible punctuation, and did so on the documents whose output
+had been thought about hardest.
+
+WHAT THE ROUND TRIP OWES THERE IS THE TEXT, and nothing else. The destination is
+gone from the HTML by design: the renderer withheld it and wrote no provenance
+for it, so there is nothing in the document to rebuild it from. An importer MUST
+NOT ATTEMPT TO RECONSTRUCT IT - not from a `title`, not from the anchor's own
+text, not from a Carve provenance attribute in `roundtrip` mode, not from
+anything. Any route that produced a destination here would be reconstructing the
+exact value a security rule removed, which would make the importer a way around
+PART 9 §25 rather than a reader of its output. Keeping the text and writing no
+link is the whole of what is owed, and it is the outcome this rule already
+reaches.
+
+`destination-less-link` pins the anchor, the image and the surviving-attribute
+side.
+
+## The escaping reaches the imported source
+
+Two of the three shapes markup-carve/carve#1601 found are not import policy at
+all. They are PART 11 §2 applied to the source an importer writes, and §2
+already rules them: a character is escaped IF AND ONLY IF omitting the escape
+would change the re-parsed AST. They are recorded here because the importer is
+where they were found and where a shared fixture can hold them, not because this
+page adds a rule.
+
+A TABLE CELL WHOSE WHOLE PAYLOAD IS A SPAN MARKER. `<td>^</td>` in an ordinary
+two-by-two table comes back as `| ^ |`, which re-reads as a rowspan marker: the
+cell above it grows `rowspan="2"` and the cell holding the caret is deleted
+outright. The escape is `| \^ |`, it renders `<td>^</td>`, and it is a writer
+fixed point. The COLSPAN half of the same production is already escaped - the
+pinned build writes `| \< |` for `<td>&lt;</td>` - so this is one production
+spelled twice with one half missing, rather than an unruled shape. PART 11 §6e
+now says why the cell padding does not cover it.
+
+THE SYMBOL SIGIL. `<p>a :rocket: b</p>` comes back as `a :rocket: b`, which
+re-parses as a `symbol` node, so under a configured symbol map the text stops
+being the text the HTML held. The escape is `a \:rocket: b`. `:` is already in
+PART 11 §5's candidate set, and the tag sigil beside it is already hardened -
+the pinned build writes `a \#t b` for `<p>a #t b</p>` - so this too is a miss
+rather than a question. `tests/corpus-escape` carries the case for the escaper
+itself.
+
+`marker-shaped-cell` and `symbol-sigil-escape` pin the import direction.
 
 ## Block structure Carve can spell
 
@@ -676,6 +809,9 @@ The shared set is deliberately small and each directory has one subject:
 | `container-nesting` | containers two and three deep, whose fences widen INWARD because that is the form `carve fmt` writes |
 | `attribute-less-div` | a bare `<div>` unwrapped to its content beside an id-bearing one that keeps its fence, which is where that boundary sits |
 | `diagnostic-order` | two losses in one table, whose rows follow the document and not the order the importer builds them in |
+| `destination-less-link` | an anchor and an image with no destination the source can carry, which come back as their content rather than as `[t]()` |
+| `marker-shaped-cell` | a table cell whose whole payload is a span marker, escaped so the cell survives |
+| `symbol-sigil-escape` | a symbol sigil in imported text, escaped so it stays the text the HTML held |
 
 Because source comparison is byte-exact, every `expected.crv` here is also a
 fixed point of `carve fmt` in all three engines. A fixture that is not one
