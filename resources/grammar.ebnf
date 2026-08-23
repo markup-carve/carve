@@ -7481,7 +7481,56 @@ EOF = (* end of file *) ;
    of value. That would take an author's deliberate override -- an
    `{aria-label="Wichtiger Hinweis"}` written on a `::: note`, which §12
    currently honors -- so the residue above is accepted rather than closed by
-   force. *)
+   force.
+
+   A DERIVED VALUE IS ONE THE IMPORTER CAN RECONSTRUCT -- NORMATIVE
+   (carve-php#1588). The rule above says WHAT to do with a derived value; this
+   says what makes one derived, because the list of shapes it reaches is not the
+   test and cannot be. A list grows an entry every time the question recurs, and
+   an implementation keyed on one entry is a check that cannot fail for the rest
+   of the family.
+
+   THE PROPERTY IS RECONSTRUCTABILITY. An attribute is DERIVED where the
+   importer can rebuild its value FROM THE ELEMENT IT IS READING -- the tag, the
+   classes, the `role`, the element's own text, a control beside it, or the
+   documented default of a `labels` key -- and the value present EQUALS that
+   rebuild. Nothing else qualifies. It follows that the renderer wrote it, from
+   the same document the importer is reading: a value the importer can compute
+   is one the renderer computed, whichever of them ran first, which is why the
+   equality test above stands in for a provenance test that is not available.
+   A value the element does not determine is the author's and is kept.
+
+   THE WRAPPER IS DERIVED ON THE SAME TERMS. The rule is stated over attributes
+   because that is where it was first needed, but an ELEMENT can be
+   reconstructable too, and the endnotes `<section>` is: PART 9 §16 writes one
+   around the notes whenever the document has any, and no Carve construct spells
+   a `<section>` at all. So unwrapping it removes nothing an author wrote, and
+   an importer does not report the unwrapping -- not as `element-unwrapped`, and
+   not as an `attribute-dropped` naming the `doc-endnotes` role or the
+   `endnotes` name that came with it. Whether an importer reports a
+   NON-derived wrapper is not settled here; the engines differ and no document
+   loses anything either way.
+
+   THE IMPORT'S OUTCOME DOES NOT CHANGE THE ANSWER. Derivation is a property of
+   the element being READ, not of what the import goes on to do with it. Both
+   halves of §16's endnotes section are covered: the REFERENCED form is consumed
+   into footnote definitions and the renderer writes the section back, while the
+   REFERENCE-LESS form degrades to the `<hr>` and `<ol>` it is built from
+   (carve#1558) and the renderer writes no section for it at all. The second
+   still reports nothing, because the author still wrote none of it. An importer
+   that instead asks its own EMITTED document whether the value came back
+   answers no for the degraded form -- correctly, and about the wrong question,
+   which is the measurement carve#1502 records: a report built that way
+   contradicts the conversion beside it and calls every value an extension
+   derives a loss.
+
+   WHAT IS STILL REPORTED is everything the element carried that this property
+   does not reach. An authored `class` on an endnotes section is reported when
+   the section is unwrapped, and so is an `aria-label` no default matches --
+   the residue "IT CATCHES THE DEFAULT ONLY" above already accepts, arriving
+   here unchanged. Suppressing the element row and the attribute row TOGETHER
+   silences both, which is a loss of exactly the kind the report exists to
+   name. *)
 
 (* ============================================================================
    PART 9R: RESOLUTION SEMANTICS (NORMATIVE) -- whole-document passes
