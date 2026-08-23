@@ -52,8 +52,9 @@ here at once (markup-carve/carve#1601) - a table cell, an anchor and a text run,
 each of which leaves `htmlToCarve` meaning something the `htmlToAst` tree never
 said. Writing the check found two more in fixtures that had been read and
 reviewed: a `<figure>` whose target the tree wraps in a paragraph no source
-spells, and a one-item `<li><p>` list whose tree says loose where its own source
-says tight.
+spells (markup-carve/carve#1606), and a one-item `<li><p>` list whose tree says
+loose where its own source says tight (markup-carve/carve#1607, which needs a
+call rather than a derivation).
 
 THE SOURCE IS THE ARTIFACT A MIGRATION KEEPS, which is what makes the invariant
 worth more than either exit alone. A reader who runs `carve migrate` keeps
